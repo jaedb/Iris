@@ -64163,10 +64163,10 @@ var ContextMenu = function (_React$Component) {
 			if (this.props.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR && this.props.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR.status == 'running') {
 				loader = _react2.default.createElement(
 					'div',
-					{ className: 'menu-item-wrapper' },
+					{ className: 'context-menu__item' },
 					_react2.default.createElement(
 						'div',
-						{ className: 'menu-item mini-loader loading' },
+						{ className: 'context-menu__item mini-loader loading' },
 						_react2.default.createElement('div', { className: 'loader' })
 					)
 				);
@@ -64174,10 +64174,10 @@ var ContextMenu = function (_React$Component) {
 
 			var list = _react2.default.createElement(
 				'span',
-				{ className: 'menu-item-wrapper' },
+				{ className: 'context-menu__item' },
 				_react2.default.createElement(
 					'span',
-					{ className: 'menu-item mid_grey-text' },
+					{ className: 'context-menu__item mid_grey-text' },
 					'No writable playlists'
 				)
 			);
@@ -64185,15 +64185,15 @@ var ContextMenu = function (_React$Component) {
 				list = playlists.map(function (playlist) {
 					return _react2.default.createElement(
 						'span',
-						{ className: 'menu-item-wrapper', key: playlist.uri },
+						{ className: 'context-menu__item', key: playlist.uri },
 						_react2.default.createElement(
 							'a',
-							{ className: 'menu-item', onClick: function onClick(e) {
+							{ className: 'context-menu__item__link', onClick: function onClick(e) {
 									return _this2.addTracksToPlaylist(e, playlist.uri);
 								} },
 							_react2.default.createElement(
 								'span',
-								{ className: 'label' },
+								{ className: 'context-menu__item__label' },
 								playlist.name
 							)
 						)
@@ -64203,18 +64203,18 @@ var ContextMenu = function (_React$Component) {
 
 			return _react2.default.createElement(
 				'div',
-				{ className: this.state.submenu_expanded ? 'submenu expanded' : 'submenu' },
+				{ className: 'context-menu__submenu' + (this.state.submenu_expanded ? ' context-menu__submenu--expanded' : '') },
 				_react2.default.createElement(
 					'span',
-					{ className: 'menu-item-wrapper' },
+					{ className: 'context-menu__item' },
 					_react2.default.createElement(
 						'a',
-						{ className: 'menu-item close-submenu', onClick: function onClick(e) {
+						{ className: 'context-menu__item close-submenu', onClick: function onClick(e) {
 								return _this2.setState({ submenu_expanded: false });
 							} },
 						_react2.default.createElement(
 							'span',
-							{ className: 'label' },
+							{ className: 'context-menu__item__label' },
 							_react2.default.createElement(_Icon2.default, { name: 'arrow_back' }),
 							'Back'
 						)
@@ -64232,11 +64232,11 @@ var ContextMenu = function (_React$Component) {
 			if (context.name == 'custom') {
 				return _react2.default.createElement(
 					'span',
-					{ className: 'title' },
-					_react2.default.createElement('div', { className: 'background generic' }),
+					{ className: 'context-menu__title' },
+					_react2.default.createElement('div', { className: 'context-menu__title__background context-menu__title__background--generic' }),
 					_react2.default.createElement(
 						'div',
-						{ className: 'text' },
+						{ className: 'context-menu__title__text' },
 						this.props.menu.title
 					)
 				);
@@ -64251,18 +64251,18 @@ var ContextMenu = function (_React$Component) {
 
 					return _react2.default.createElement(
 						_Link2.default,
-						{ className: 'title', to: global.baseURL + context.type + '/' + context.item.uri },
-						style ? _react2.default.createElement('div', { className: 'background', style: style }) : null,
+						{ className: 'context-menu__title', to: global.baseURL + context.type + '/' + context.item.uri },
+						style ? _react2.default.createElement('div', { className: 'context-menu__title__background', style: style }) : null,
 						_react2.default.createElement(
 							'div',
-							{ className: 'type' },
+							{ className: 'context-menu__title__type' },
 							context.source,
 							'\xA0',
 							context.nice_name
 						),
 						_react2.default.createElement(
 							'div',
-							{ className: 'text' },
+							{ className: 'context-menu__title__text' },
 							context.item.name
 						)
 					);
@@ -64271,10 +64271,10 @@ var ContextMenu = function (_React$Component) {
 				default:
 					return _react2.default.createElement(
 						'span',
-						{ className: 'title' },
+						{ className: 'context-menu__title' },
 						_react2.default.createElement(
 							'div',
-							{ className: 'type' },
+							{ className: 'context-menu__title__type' },
 							context.source,
 							'\xA0',
 							context.nice_name,
@@ -64282,11 +64282,11 @@ var ContextMenu = function (_React$Component) {
 						),
 						_react2.default.createElement(
 							'div',
-							{ className: 'text' },
+							{ className: 'context-menu__title__text' },
 							context.items_count,
 							' items'
 						),
-						_react2.default.createElement('div', { className: 'background generic' })
+						_react2.default.createElement('div', { className: 'context-menu__title__background context-menu__title__background--generic' })
 					);
 					break;
 
@@ -64317,15 +64317,15 @@ var ContextMenu = function (_React$Component) {
 
 			var play_uris = _react2.default.createElement(
 				'span',
-				{ className: 'menu-item-wrapper' },
+				{ className: 'context-menu__item' },
 				_react2.default.createElement(
 					'a',
-					{ className: 'menu-item', onClick: function onClick(e) {
+					{ className: 'context-menu__item__link', onClick: function onClick(e) {
 							return _this3.playURIs(e);
 						} },
 					_react2.default.createElement(
 						'span',
-						{ className: 'label' },
+						{ className: 'context-menu__item__label' },
 						'Play'
 					)
 				)
@@ -64333,15 +64333,15 @@ var ContextMenu = function (_React$Component) {
 
 			var play_playlist = _react2.default.createElement(
 				'span',
-				{ className: 'menu-item-wrapper' },
+				{ className: 'context-menu__item' },
 				_react2.default.createElement(
 					'a',
-					{ className: 'menu-item', onClick: function onClick(e) {
+					{ className: 'context-menu__item__link', onClick: function onClick(e) {
 							return _this3.playPlaylist(e);
 						} },
 					_react2.default.createElement(
 						'span',
-						{ className: 'label' },
+						{ className: 'context-menu__item__label' },
 						'Play'
 					)
 				)
@@ -64349,15 +64349,15 @@ var ContextMenu = function (_React$Component) {
 
 			var shuffle_play_playlist = _react2.default.createElement(
 				'span',
-				{ className: 'menu-item-wrapper' },
+				{ className: 'context-menu__item' },
 				_react2.default.createElement(
 					'a',
-					{ className: 'menu-item', onClick: function onClick(e) {
+					{ className: 'context-menu__item__link', onClick: function onClick(e) {
 							return _this3.shufflePlayPlaylist(e);
 						} },
 					_react2.default.createElement(
 						'span',
-						{ className: 'label' },
+						{ className: 'context-menu__item__label' },
 						'Shuffle play'
 					)
 				)
@@ -64365,15 +64365,15 @@ var ContextMenu = function (_React$Component) {
 
 			var play_queue_item = _react2.default.createElement(
 				'span',
-				{ className: 'menu-item-wrapper' },
+				{ className: 'context-menu__item' },
 				_react2.default.createElement(
 					'a',
-					{ className: 'menu-item', onClick: function onClick(e) {
+					{ className: 'context-menu__item__link', onClick: function onClick(e) {
 							return _this3.playQueueItem(e);
 						} },
 					_react2.default.createElement(
 						'span',
-						{ className: 'label' },
+						{ className: 'context-menu__item__label' },
 						'Play'
 					)
 				)
@@ -64381,15 +64381,15 @@ var ContextMenu = function (_React$Component) {
 
 			var play_uris_next = _react2.default.createElement(
 				'span',
-				{ className: 'menu-item-wrapper' },
+				{ className: 'context-menu__item' },
 				_react2.default.createElement(
 					'a',
-					{ className: 'menu-item', onClick: function onClick(e) {
+					{ className: 'context-menu__item__link', onClick: function onClick(e) {
 							return _this3.addToQueue(e, true);
 						} },
 					_react2.default.createElement(
 						'span',
-						{ className: 'label' },
+						{ className: 'context-menu__item__label' },
 						'Play next'
 					)
 				)
@@ -64397,15 +64397,15 @@ var ContextMenu = function (_React$Component) {
 
 			var play_artist_top_tracks = _react2.default.createElement(
 				'span',
-				{ className: 'menu-item-wrapper' },
+				{ className: 'context-menu__item' },
 				_react2.default.createElement(
 					'a',
-					{ className: 'menu-item', onClick: function onClick(e) {
+					{ className: 'context-menu__item__link', onClick: function onClick(e) {
 							return _this3.playArtistTopTracks(e);
 						} },
 					_react2.default.createElement(
 						'span',
-						{ className: 'label' },
+						{ className: 'context-menu__item__label' },
 						'Play top tracks'
 					)
 				)
@@ -64413,15 +64413,15 @@ var ContextMenu = function (_React$Component) {
 
 			var add_to_queue = _react2.default.createElement(
 				'span',
-				{ className: 'menu-item-wrapper' },
+				{ className: 'context-menu__item' },
 				_react2.default.createElement(
 					'a',
-					{ className: 'menu-item', onClick: function onClick(e) {
+					{ className: 'context-menu__item__link', onClick: function onClick(e) {
 							return _this3.addToQueue(e);
 						} },
 					_react2.default.createElement(
 						'span',
-						{ className: 'label' },
+						{ className: 'context-menu__item__label' },
 						'Add to queue'
 					)
 				)
@@ -64429,15 +64429,15 @@ var ContextMenu = function (_React$Component) {
 
 			var add_to_playlist = _react2.default.createElement(
 				'span',
-				{ className: 'menu-item-wrapper has-submenu' },
+				{ className: 'context-menu__item context-menu__item--has-submenu' },
 				_react2.default.createElement(
 					'a',
-					{ className: 'menu-item', onClick: function onClick(e) {
+					{ className: 'context-menu__item__link', onClick: function onClick(e) {
 							return _this3.setPlaylistSubmenu();
 						} },
 					_react2.default.createElement(
 						'span',
-						{ className: 'label' },
+						{ className: 'context-menu__item__label' },
 						'Add to playlist'
 					),
 					_react2.default.createElement(_Icon2.default, { className: 'submenu-icon', name: 'arrow_forward' })
@@ -64447,15 +64447,15 @@ var ContextMenu = function (_React$Component) {
 
 			var toggle_in_library = _react2.default.createElement(
 				'span',
-				{ className: 'menu-item-wrapper' },
+				{ className: 'context-menu__item' },
 				_react2.default.createElement(
 					'a',
-					{ className: 'menu-item', onClick: function onClick(e) {
+					{ className: 'context-menu__item__link', onClick: function onClick(e) {
 							return _this3.toggleInLibrary(e, context.in_library);
 						} },
 					_react2.default.createElement(
 						'span',
-						{ className: 'label' },
+						{ className: 'context-menu__item__label' },
 						context.in_library ? 'Remove from library' : 'Add to library'
 					)
 				)
@@ -64466,13 +64466,13 @@ var ContextMenu = function (_React$Component) {
 			} else if (helpers.isLoading(this.props.load_queue, ['lastfm_track.getInfo'])) {
 				var toggle_loved = _react2.default.createElement(
 					'span',
-					{ className: 'menu-item-wrapper' },
+					{ className: 'context-menu__item' },
 					_react2.default.createElement(
 						'a',
-						{ className: 'menu-item' },
+						{ className: 'context-menu__item__link' },
 						_react2.default.createElement(
 							'span',
-							{ className: 'label mid_grey-text' },
+							{ className: 'context-menu__item__label mid_grey-text' },
 							'Love track'
 						)
 					)
@@ -64480,15 +64480,15 @@ var ContextMenu = function (_React$Component) {
 			} else {
 				var toggle_loved = _react2.default.createElement(
 					'span',
-					{ className: 'menu-item-wrapper' },
+					{ className: 'context-menu__item' },
 					_react2.default.createElement(
 						'a',
-						{ className: 'menu-item', onClick: function onClick(e) {
+						{ className: 'context-menu__item__link', onClick: function onClick(e) {
 								return _this3.toggleLoved(e, context.is_loved);
 							} },
 						_react2.default.createElement(
 							'span',
-							{ className: 'label' },
+							{ className: 'context-menu__item__label' },
 							context.is_loved ? 'Unlove' : 'Love',
 							' track'
 						)
@@ -64498,15 +64498,15 @@ var ContextMenu = function (_React$Component) {
 
 			var go_to_artist = _react2.default.createElement(
 				'span',
-				{ className: 'menu-item-wrapper' },
+				{ className: 'context-menu__item' },
 				_react2.default.createElement(
 					'a',
-					{ className: 'menu-item', onClick: function onClick(e) {
+					{ className: 'context-menu__item__link', onClick: function onClick(e) {
 							return _this3.goToArtist(e);
 						} },
 					_react2.default.createElement(
 						'span',
-						{ className: 'label' },
+						{ className: 'context-menu__item__label' },
 						'Go to artist'
 					)
 				)
@@ -64514,15 +64514,15 @@ var ContextMenu = function (_React$Component) {
 
 			var go_to_album = _react2.default.createElement(
 				'span',
-				{ className: 'menu-item-wrapper' },
+				{ className: 'context-menu__item' },
 				_react2.default.createElement(
 					'a',
-					{ className: 'menu-item', onClick: function onClick(e) {
+					{ className: 'context-menu__item__link', onClick: function onClick(e) {
 							return _this3.goToAlbum(e);
 						} },
 					_react2.default.createElement(
 						'span',
-						{ className: 'label' },
+						{ className: 'context-menu__item__label' },
 						'Go to album'
 					)
 				)
@@ -64530,15 +64530,15 @@ var ContextMenu = function (_React$Component) {
 
 			var go_to_user = _react2.default.createElement(
 				'span',
-				{ className: 'menu-item-wrapper' },
+				{ className: 'context-menu__item' },
 				_react2.default.createElement(
 					'a',
-					{ className: 'menu-item', onClick: function onClick(e) {
+					{ className: 'context-menu__item__link', onClick: function onClick(e) {
 							return _this3.goToUser(e);
 						} },
 					_react2.default.createElement(
 						'span',
-						{ className: 'label' },
+						{ className: 'context-menu__item__label' },
 						'Go to user'
 					)
 				)
@@ -64546,15 +64546,15 @@ var ContextMenu = function (_React$Component) {
 
 			var go_to_track = _react2.default.createElement(
 				'span',
-				{ className: 'menu-item-wrapper' },
+				{ className: 'context-menu__item' },
 				_react2.default.createElement(
 					'a',
-					{ className: 'menu-item', onClick: function onClick(e) {
+					{ className: 'context-menu__item__link', onClick: function onClick(e) {
 							return _this3.goToTrack(e);
 						} },
 					_react2.default.createElement(
 						'span',
-						{ className: 'label' },
+						{ className: 'context-menu__item__label' },
 						'Track info'
 					)
 				)
@@ -64562,15 +64562,15 @@ var ContextMenu = function (_React$Component) {
 
 			var go_to_recommendations = _react2.default.createElement(
 				'span',
-				{ className: 'menu-item-wrapper' },
+				{ className: 'context-menu__item' },
 				_react2.default.createElement(
 					'a',
-					{ className: 'menu-item', onClick: function onClick(e) {
+					{ className: 'context-menu__item__link', onClick: function onClick(e) {
 							return _this3.goToRecommendations(e);
 						} },
 					_react2.default.createElement(
 						'span',
-						{ className: 'label' },
+						{ className: 'context-menu__item__label' },
 						'Discover similar'
 					)
 				)
@@ -64578,15 +64578,15 @@ var ContextMenu = function (_React$Component) {
 
 			var start_radio = _react2.default.createElement(
 				'span',
-				{ className: 'menu-item-wrapper' },
+				{ className: 'context-menu__item' },
 				_react2.default.createElement(
 					'a',
-					{ className: 'menu-item', onClick: function onClick(e) {
+					{ className: 'context-menu__item__link', onClick: function onClick(e) {
 							return _this3.startRadio(e);
 						} },
 					_react2.default.createElement(
 						'span',
-						{ className: 'label' },
+						{ className: 'context-menu__item__label' },
 						'Start radio'
 					)
 				)
@@ -64594,15 +64594,15 @@ var ContextMenu = function (_React$Component) {
 
 			var remove_from_queue = _react2.default.createElement(
 				'span',
-				{ className: 'menu-item-wrapper' },
+				{ className: 'context-menu__item' },
 				_react2.default.createElement(
 					'a',
-					{ className: 'menu-item', onClick: function onClick(e) {
+					{ className: 'context-menu__item__link', onClick: function onClick(e) {
 							return _this3.removeFromQueue(e);
 						} },
 					_react2.default.createElement(
 						'span',
-						{ className: 'label' },
+						{ className: 'context-menu__item__label' },
 						'Remove'
 					)
 				)
@@ -64610,15 +64610,15 @@ var ContextMenu = function (_React$Component) {
 
 			var remove_from_playlist = _react2.default.createElement(
 				'span',
-				{ className: 'menu-item-wrapper' },
+				{ className: 'context-menu__item' },
 				_react2.default.createElement(
 					'a',
-					{ className: 'menu-item', onClick: function onClick(e) {
+					{ className: 'context-menu__item__link', onClick: function onClick(e) {
 							return _this3.removeFromPlaylist(e);
 						} },
 					_react2.default.createElement(
 						'span',
-						{ className: 'label' },
+						{ className: 'context-menu__item__label' },
 						'Remove'
 					)
 				)
@@ -64626,15 +64626,15 @@ var ContextMenu = function (_React$Component) {
 
 			var delete_playlist = _react2.default.createElement(
 				'span',
-				{ className: 'menu-item-wrapper' },
+				{ className: 'context-menu__item' },
 				_react2.default.createElement(
 					'a',
-					{ className: 'menu-item', onClick: function onClick(e) {
+					{ className: 'context-menu__item__link', onClick: function onClick(e) {
 							return _this3.deletePlaylist(e);
 						} },
 					_react2.default.createElement(
 						'span',
-						{ className: 'label' },
+						{ className: 'context-menu__item__label' },
 						'Delete'
 					)
 				)
@@ -64642,15 +64642,15 @@ var ContextMenu = function (_React$Component) {
 
 			var copy_uris = _react2.default.createElement(
 				'span',
-				{ className: 'menu-item-wrapper' },
+				{ className: 'context-menu__item' },
 				_react2.default.createElement(
 					'a',
-					{ className: 'menu-item', onClick: function onClick(e) {
+					{ className: 'context-menu__item__link', onClick: function onClick(e) {
 							return _this3.copyURIs(e);
 						} },
 					_react2.default.createElement(
 						'span',
-						{ className: 'label' },
+						{ className: 'context-menu__item__label' },
 						'Copy URI',
 						context.items_count > 1 ? 's' : ''
 					)
@@ -64666,9 +64666,9 @@ var ContextMenu = function (_React$Component) {
 						play_uris,
 						play_uris_next,
 						add_to_queue,
-						this.canBeInLibrary() ? _react2.default.createElement('div', { className: 'divider' }) : null,
+						this.canBeInLibrary() ? _react2.default.createElement('div', { className: 'context-menu__divider' }) : null,
 						this.canBeInLibrary() ? toggle_in_library : null,
-						_react2.default.createElement('div', { className: 'divider' }),
+						_react2.default.createElement('div', { className: 'context-menu__divider' }),
 						go_to_artist,
 						copy_uris
 					);
@@ -64680,9 +64680,9 @@ var ContextMenu = function (_React$Component) {
 						null,
 						context.source == 'spotify' ? play_artist_top_tracks : null,
 						context.source == 'spotify' ? start_radio : null,
-						this.canBeInLibrary() ? _react2.default.createElement('div', { className: 'divider' }) : null,
+						this.canBeInLibrary() ? _react2.default.createElement('div', { className: 'context-menu__divider' }) : null,
 						this.canBeInLibrary() ? toggle_in_library : null,
-						_react2.default.createElement('div', { className: 'divider' }),
+						_react2.default.createElement('div', { className: 'context-menu__divider' }),
 						context.source == 'spotify' ? go_to_recommendations : null,
 						copy_uris
 					);
@@ -64694,9 +64694,9 @@ var ContextMenu = function (_React$Component) {
 						null,
 						play_playlist,
 						shuffle_play_playlist,
-						this.canBeInLibrary() ? _react2.default.createElement('div', { className: 'divider' }) : null,
+						this.canBeInLibrary() ? _react2.default.createElement('div', { className: 'context-menu__divider' }) : null,
 						this.canBeInLibrary() ? toggle_in_library : null,
-						_react2.default.createElement('div', { className: 'divider' }),
+						_react2.default.createElement('div', { className: 'context-menu__divider' }),
 						context.source == 'spotify' ? go_to_user : null,
 						copy_uris
 					);
@@ -64708,12 +64708,12 @@ var ContextMenu = function (_React$Component) {
 						null,
 						play_playlist,
 						shuffle_play_playlist,
-						this.canBeInLibrary() ? _react2.default.createElement('div', { className: 'divider' }) : null,
+						this.canBeInLibrary() ? _react2.default.createElement('div', { className: 'context-menu__divider' }) : null,
 						this.canBeInLibrary() ? toggle_in_library : null,
-						_react2.default.createElement('div', { className: 'divider' }),
+						_react2.default.createElement('div', { className: 'context-menu__divider' }),
 						context.source == 'spotify' ? go_to_user : null,
 						copy_uris,
-						_react2.default.createElement('div', { className: 'divider' }),
+						_react2.default.createElement('div', { className: 'context-menu__divider' }),
 						delete_playlist
 					);
 					break;
@@ -64723,14 +64723,14 @@ var ContextMenu = function (_React$Component) {
 						'div',
 						null,
 						context.items_count == 1 ? play_queue_item : null,
-						_react2.default.createElement('div', { className: 'divider' }),
+						_react2.default.createElement('div', { className: 'context-menu__divider' }),
 						add_to_playlist,
 						toggle_loved,
-						_react2.default.createElement('div', { className: 'divider' }),
+						_react2.default.createElement('div', { className: 'context-menu__divider' }),
 						context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null,
 						context.items_count == 1 ? go_to_track : null,
 						copy_uris,
-						_react2.default.createElement('div', { className: 'divider' }),
+						_react2.default.createElement('div', { className: 'context-menu__divider' }),
 						remove_from_queue
 					);
 					break;
@@ -64743,14 +64743,14 @@ var ContextMenu = function (_React$Component) {
 						play_uris_next,
 						add_to_queue,
 						context.source == 'spotify' && context.items_count == 1 ? start_radio : null,
-						_react2.default.createElement('div', { className: 'divider' }),
+						_react2.default.createElement('div', { className: 'context-menu__divider' }),
 						add_to_playlist,
 						toggle_loved,
-						_react2.default.createElement('div', { className: 'divider' }),
+						_react2.default.createElement('div', { className: 'context-menu__divider' }),
 						context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null,
 						context.items_count == 1 ? go_to_track : null,
 						copy_uris,
-						_react2.default.createElement('div', { className: 'divider' }),
+						_react2.default.createElement('div', { className: 'context-menu__divider' }),
 						remove_from_playlist
 					);
 					break;
@@ -64763,14 +64763,14 @@ var ContextMenu = function (_React$Component) {
 						play_uris_next,
 						add_to_queue,
 						context.source == 'spotify' && context.items_count == 1 ? start_radio : null,
-						_react2.default.createElement('div', { className: 'divider' }),
+						_react2.default.createElement('div', { className: 'context-menu__divider' }),
 						add_to_playlist,
 						toggle_loved,
-						_react2.default.createElement('div', { className: 'divider' }),
+						_react2.default.createElement('div', { className: 'context-menu__divider' }),
 						context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null,
 						context.items_count == 1 ? go_to_album : null,
 						context.items_count == 1 ? go_to_track : null,
-						_react2.default.createElement('div', { className: 'divider' }),
+						_react2.default.createElement('div', { className: 'context-menu__divider' }),
 						copy_uris
 					);
 					break;
@@ -64790,7 +64790,7 @@ var ContextMenu = function (_React$Component) {
 			var height = 200; // TODO: use jquery to detect height
 			var className = "context-menu " + this.props.menu.context;
 			if (this.state.submenu_expanded) {
-				className += ' submenu-expanded';
+				className += ' context-menu--submenu-expanded';
 			}
 
 			if (this.props.menu.position_x > window.innerWidth - 174) {
@@ -64807,11 +64807,11 @@ var ContextMenu = function (_React$Component) {
 				{ id: 'context-menu', className: className, style: style },
 				_react2.default.createElement(
 					'div',
-					{ className: 'liner' },
+					{ className: 'context-menu__inner' },
 					this.renderTitle(),
 					this.props.menu.context == 'custom' ? this.props.menu.options : this.renderItems()
 				),
-				_react2.default.createElement('div', { className: 'background', onClick: function onClick(e) {
+				_react2.default.createElement('div', { className: 'context-menu__background', onClick: function onClick(e) {
 						return _this4.props.uiActions.hideContextMenu();
 					} })
 			);

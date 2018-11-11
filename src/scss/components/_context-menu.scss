@@ -7,11 +7,11 @@
 	}
 }
 
-#context-menu {
+.context-menu {
 	position: fixed;
 	z-index: 99;
 
-	& > .liner {
+	&__inner {
 		width: 190px;
 		box-shadow: 2px 3px 6px rgba(0,0,0,0.2);
 		border-radius: 3px;
@@ -20,138 +20,10 @@
 		font-weight: 500;
 		font-family: "Overpass";
 
-		.title {
-			display: none;
-			padding: 10px 14px;
-			font-weight: bold;
-			box-sizing: border-box;
-			position: relative;
-			overflow: hidden;
-			text-decoration: none;
-			background: colour(darkest_grey);
-
-			.background {
-				@include blur(5px);
-				background-size: cover;
-				background-position: 50% 20%;
-				opacity: 0.65;
-				position: absolute;
-				top: -10px;
-				left: -10px;
-				bottom: -10px;
-				right: -10px;
-				z-index: 1;
-
-				&.generic {
-					opacity: 0.9;
-					background: rgba(50,181,242,1);
-					background: -moz-linear-gradient(45deg, rgba(50,181,242,1) 0%, rgba(50,181,242,1) 18%, rgba(5,118,166,1) 100%);
-					background: -webkit-gradient(left bottom, right top, color-stop(0%, rgba(50,181,242,1)), color-stop(18%, rgba(50,181,242,1)), color-stop(100%, rgba(5,118,166,1)));
-					background: -webkit-linear-gradient(45deg, rgba(50,181,242,1) 0%, rgba(50,181,242,1) 18%, rgba(5,118,166,1) 100%);
-					background: -o-linear-gradient(45deg, rgba(50,181,242,1) 0%, rgba(50,181,242,1) 18%, rgba(5,118,166,1) 100%);
-					background: -ms-linear-gradient(45deg, rgba(50,181,242,1) 0%, rgba(50,181,242,1) 18%, rgba(5,118,166,1) 100%);
-					background: linear-gradient(45deg, rgba(50,181,242,1) 0%, rgba(50,181,242,1) 18%, rgba(5,118,166,1) 100%);
-					filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#32b5f2', endColorstr='#0576a6', GradientType=1 );
-				}
-			}
-
-			.text {
-				@include one_line_text();
-				position: relative;
-				z-index: 2;
-				color: #FFFFFF;
-			}
-
-			.type {
-				position: relative;
-				z-index: 2;
-				color: #FFFFFF;
-				opacity: 0.5;
-				font-weight: 200;
-				text-transform: capitalize;
-			}
-		}
-
-		.menu-item-wrapper {
-			display: block;
-			overflow-x: hidden;
-
-			.menu-item {
-				@include gradient_overlay(3px);
-				cursor: pointer;
-				display: block;
-				padding: 9px 12px 8px;
-				box-sizing: border-box;
-				position: relative;
-				color: colour(white);
-
-				.notouch &:hover {
-					&:before {
-						opacity: 0.15;
-					}
-				}
-
-				.notouch &:active {
-					background: colour(black);
-					color: colour(white);
-				}
-			}
-
-			.icon {
-				font-size: 12px;
-
-				&.submenu-icon {
-					display: inline-block;
-					float: right;
-					padding-top: 4px;
-				}
-			}
-
-			.submenu {
-				@include animate();
-				position: absolute;
-				top: 0;
-				right: 0;
-				left: 100%;
-				height: 100%;
-				min-height: 300px;
-				max-height: 90vh;
-				width: 0;
-				height: 100%;
-				overflow-y: scroll;			
-				background: lighten(colour(grey), 10%);
-				z-index: 3;
-				border-radius: 3px;
-
-				&.expanded {
-					width: 100%;
-					left: 0;
-				}
-
-				.label {
-					.icon {
-						margin-bottom: 0.4em;
-						padding-right: 6px;
-					}
-				}
-
-				.menu-item {
-					width: 100%;
-
-					&.close-submenu {
-						color: colour(mid_grey);
-					}
-				}
-			}
-		}
-
-		.divider {
-			height: 1px;
-			padding: 0;
-			margin: 0;
-			background: lighten(colour(grey), 5%);
-		}
-
+		/**
+		 * The following is for buttons automatically pulled from
+		 * a page header, so we don't have classname control
+		 **/
 		& > span {
 			display: block;
 			margin-bottom: -1px;
@@ -239,9 +111,147 @@
 						}
 					}
 				}
-			}			
+			}	
 		}
 	}
+
+	&__title {
+		display: none;
+		padding: 10px 14px;
+		font-weight: bold;
+		box-sizing: border-box;
+		position: relative;
+		overflow: hidden;
+		text-decoration: none;
+		background: colour(darkest_grey);
+
+		&__background {
+			@include blur(5px);
+			background-size: cover;
+			background-position: 50% 20%;
+			opacity: 0.65;
+			position: absolute;
+			top: -10px;
+			left: -10px;
+			bottom: -10px;
+			right: -10px;
+			z-index: 1;
+		}
+
+		&--generic {
+			.context-menu__title__background {
+				opacity: 0.9;
+				background: rgba(50,181,242,1);
+				background: -moz-linear-gradient(45deg, rgba(50,181,242,1) 0%, rgba(50,181,242,1) 18%, rgba(5,118,166,1) 100%);
+				background: -webkit-gradient(left bottom, right top, color-stop(0%, rgba(50,181,242,1)), color-stop(18%, rgba(50,181,242,1)), color-stop(100%, rgba(5,118,166,1)));
+				background: -webkit-linear-gradient(45deg, rgba(50,181,242,1) 0%, rgba(50,181,242,1) 18%, rgba(5,118,166,1) 100%);
+				background: -o-linear-gradient(45deg, rgba(50,181,242,1) 0%, rgba(50,181,242,1) 18%, rgba(5,118,166,1) 100%);
+				background: -ms-linear-gradient(45deg, rgba(50,181,242,1) 0%, rgba(50,181,242,1) 18%, rgba(5,118,166,1) 100%);
+				background: linear-gradient(45deg, rgba(50,181,242,1) 0%, rgba(50,181,242,1) 18%, rgba(5,118,166,1) 100%);
+				filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#32b5f2', endColorstr='#0576a6', GradientType=1 );
+			}
+		}
+
+		&__text {
+			@include one_line_text();
+			position: relative;
+			z-index: 2;
+			color: colour(white);
+		}
+
+		&__type {
+			position: relative;
+			z-index: 2;
+			color: colour(white);
+			opacity: 0.5;
+			font-weight: 200;
+			text-transform: capitalize;
+		}
+	}
+
+
+	&__item {
+		display: block;
+		overflow-x: hidden;
+
+		&__link {
+			@include gradient_overlay(3px);
+			cursor: pointer;
+			display: block;
+			padding: 9px 12px 8px;
+			box-sizing: border-box;
+			position: relative;
+			color: colour(white);
+
+			.notouch &:hover {
+				&:before {
+					opacity: 0.15;
+				}
+			}
+
+			.notouch &:active {
+				background: colour(black);
+				color: colour(white);
+			}
+
+			.icon {
+				font-size: 12px;
+
+				&.submenu-icon {
+					display: inline-block;
+					float: right;
+					padding-top: 4px;
+				}
+			}
+		}
+	}
+
+	&__submenu {
+		@include animate();
+		position: absolute;
+		top: 0;
+		right: 0;
+		left: 100%;
+		height: 100%;
+		min-height: 300px;
+		max-height: 90vh;
+		width: 0;
+		height: 100%;
+		overflow-y: scroll;			
+		background: lighten(colour(grey), 10%);
+		z-index: 3;
+		border-radius: 3px;
+
+		&--expanded {
+			width: 100%;
+			left: 0;
+		}
+
+		.context-menu {
+			&__item {
+				width: 100%;
+
+				&.close-submenu {
+					color: colour(mid_grey);
+				}
+
+				&__label {
+					.icon {
+						margin-bottom: 0.4em;
+						padding-right: 6px;
+					}
+				}
+			}
+		}
+	}
+
+	&__divider {
+		height: 1px;
+		padding: 0;
+		margin: 0;
+		background: lighten(colour(grey), 5%);
+	}
+
 
 	@include responsive($bp_medium){
 		top: 0 !important;
@@ -251,7 +261,7 @@
 		margin: 0 !important;
 		overflow-y: scroll;
 
-		.background {
+		&__background {
 			position: fixed;
 			top: 0;
 			right: 0;
@@ -261,39 +271,56 @@
 			z-index: 1;
 		}
 
-		& > .liner {
+		&__inner {
 			width: 250px;
 			margin: 30px auto;
 			max-width: 90vw;
 			position: relative;
 			z-index: 2;
 			border-radius: 3px;
+			background: none;
+			box-shadow: none;
 
-			.title {
-				display: block;			
-				padding: 14px 18px;
-				box-sizing: border-box;
-				border-radius: 3px 3px 0 0;
-			}
 
+			/**
+			 * These are the rules for automatically collated page headers
+			 * as context menus
+			 **/
 			& > span {
 				button,
 				.button {
 					color: colour(white);
-					font-weight: 800;
 					background: transparent;
+					border: 0 !important;
+					padding: 16px 22px;
+					font-size: 1.2rem;
+					font-weight: 800;
 				}
 
 				.dropdown-field {
 					color: colour(white);
 				}
 			}
+		}
 
-			.menu-item-wrapper {
-				.menu-item {
-					padding: 14px 18px;
-					box-sizing: border-box;
-				}
+		&__title {
+			display: block;			
+			padding: 14px 18px;
+			box-sizing: border-box;
+			border-radius: 3px 3px 0 0;
+		}
+
+		&__divider {
+			display: none;
+		}
+
+		&__item {
+			font-size: 1.2rem;
+			font-weight: 800;
+
+			&__link {
+				padding: 16px 22px;
+				box-sizing: border-box;
 			}
 		}
 	}
