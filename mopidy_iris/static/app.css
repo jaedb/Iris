@@ -4075,7 +4075,9 @@ input[type="submit"] {
       content: ')'; }
     .list__item__column__item--context-menu-trigger {
       font-size: 14px;
-      margin: -14px -14px -14px 0; }
+      margin: -14px -14px -14px 0;
+      position: relative;
+      z-index: 2; }
       .list__item__column__item--context-menu-trigger:before {
         display: none !important; }
     .light-theme .list__item__column__item .flag {
@@ -6351,6 +6353,19 @@ main header {
         .related-artists__item--link:hover .related-artists__item__thumbnail {
           border-color: #08d58f;
           opacity: 1; }
+
+.error-boundary {
+  padding: 20px; }
+  .error-boundary__title {
+    color: #cf2d2d;
+    padding: 10px;
+    margin: 0; }
+    .error-boundary__title .icon {
+      font-size: 1em;
+      padding-right: 10px;
+      vertical-align: middle; }
+  .error-boundary__trace {
+    padding: 10px; }
 
 .artist-view .body-loader:not(.lazy-loader) {
   padding: 15vh 0; }

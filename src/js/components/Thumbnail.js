@@ -53,7 +53,7 @@ class Thumbnail extends React.Component{
 			var images = this.props.images;
 
 			// An array of image objects (eg Artists), so just pick the first one
-			if (Array.isArray(images)){
+			if (Array.isArray(images) && images.length > 0){
 				images = images[0];
 			}
 
@@ -63,7 +63,10 @@ class Thumbnail extends React.Component{
 				size = this.props.size;
 			}
 
-			return images[size];
+			// Return the requested size
+			if (images[size]){
+				return images[size];
+			}
 		}
 
 		// No images

@@ -232,6 +232,8 @@
 				&--context-menu-trigger {
 					font-size: 14px;
 					margin: -14px -14px -14px 0;
+					position: relative;
+					z-index: 2;
 
 					&:before {
 						display: none !important;
