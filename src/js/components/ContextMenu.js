@@ -354,13 +354,13 @@ class ContextMenu extends React.Component{
 
 		return (			
 			<div className={'context-menu__submenu' + (this.state.submenu_expanded ? ' context-menu__submenu--expanded' : '')}>
-				<span className="context-menu__item">
-					<a className="context-menu__item close-submenu" onClick={e => this.setState({submenu_expanded: false})}>
+				<div className="context-menu__item">
+					<a className="context-menu__item__link context-menu__item__link--close-submenu" onClick={e => this.setState({submenu_expanded: false})}>
 						<span className="context-menu__item__label">
 							<Icon name="arrow_back" />Back
 						</span>
 					</a>
-				</span>
+				</div>
 				{list}
 				{loader}
 			</div>
@@ -372,12 +372,12 @@ class ContextMenu extends React.Component{
 
 		if (context.name == 'custom'){
 			return (
-				<span className="context-menu__title">
+				<div className="context-menu__title">
 					<div className="context-menu__title__background context-menu__title__background--generic"></div>
 					<div className="context-menu__title__text">
 						{this.props.menu.title}
 					</div>
-				</span>
+				</div>
 			)
 		}
 
@@ -389,7 +389,7 @@ class ContextMenu extends React.Component{
 				var style = null;
 
 				return (
-					<Link className="context-menu__title" to={global.baseURL+context.type+'/'+context.item.uri}>
+					<div className="context-menu__title">
 						{style ? <div className="context-menu__title__background" style={style}></div> : null}
 						<div className="context-menu__title__type">
 							{context.source}
@@ -397,13 +397,13 @@ class ContextMenu extends React.Component{
 							{context.nice_name}
 						</div>
 						<div className="context-menu__title__text">{context.item.name}</div>
-					</Link>
+					</div>
 				)
 				break
 
 			default:
 				return (
-					<span className="context-menu__title">
+					<div className="context-menu__title">
 						<div className="context-menu__title__type">
 							{context.source}
 							&nbsp;
@@ -413,7 +413,7 @@ class ContextMenu extends React.Component{
 							{context.items_count} items
 						</div>
 						<div className="context-menu__title__background context-menu__title__background--generic"></div>
-					</span>
+					</div>
 				)
 				break
 
@@ -437,190 +437,190 @@ class ContextMenu extends React.Component{
 		var context = this.getContext()
 
 		var play_uris = (
-			<span className="context-menu__item">
+			<div className="context-menu__item">
 				<a className="context-menu__item__link" onClick={e => this.playURIs(e)}>
 					<span className="context-menu__item__label">Play</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		var play_playlist = (
-			<span className="context-menu__item">
+			<div className="context-menu__item">
 				<a className="context-menu__item__link" onClick={e => this.playPlaylist(e)}>
 					<span className="context-menu__item__label">Play</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		var shuffle_play_playlist = (
-			<span className="context-menu__item">
+			<div className="context-menu__item">
 				<a className="context-menu__item__link" onClick={e => this.shufflePlayPlaylist(e)}>
 					<span className="context-menu__item__label">Shuffle play</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		var play_queue_item = (
-			<span className="context-menu__item">
+			<div className="context-menu__item">
 				<a className="context-menu__item__link" onClick={e => this.playQueueItem(e)}>
 					<span className="context-menu__item__label">Play</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		var play_uris_next = (
-			<span className="context-menu__item">
+			<div className="context-menu__item">
 				<a className="context-menu__item__link" onClick={e => this.addToQueue(e, true)}>
 					<span className="context-menu__item__label">Play next</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		var play_artist_top_tracks = (
-			<span className="context-menu__item">
+			<div className="context-menu__item">
 				<a className="context-menu__item__link" onClick={e => this.playArtistTopTracks(e)}>
 					<span className="context-menu__item__label">Play top tracks</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		var add_to_queue = (
-			<span className="context-menu__item">
+			<div className="context-menu__item">
 				<a className="context-menu__item__link" onClick={e => this.addToQueue(e)}>
 					<span className="context-menu__item__label">Add to queue</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		var add_to_playlist = (
-			<span className="context-menu__item context-menu__item--has-submenu">
+			<div className="context-menu__item context-menu__item--has-submenu">
 				<a className="context-menu__item__link" onClick={e => this.setPlaylistSubmenu()}>
 					<span className="context-menu__item__label">Add to playlist</span>
 					<Icon className="submenu-icon" name="arrow_forward" />
 				</a>
 				{this.renderPlaylistSubmenu()}
-			</span>
+			</div>
 		)
 
 		var toggle_in_library = (
-			<span className="context-menu__item">
+			<div className="context-menu__item">
 				<a className="context-menu__item__link" onClick={e => this.toggleInLibrary(e, context.in_library)}>
 					<span className="context-menu__item__label">
 						{context.in_library ? 'Remove from library' : 'Add to library'}
 					</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		if (!this.props.lastfm_authorized){
 			var toggle_loved = null;
 		} else if (helpers.isLoading(this.props.load_queue,['lastfm_track.getInfo'])){
 			var toggle_loved = (
-				<span className="context-menu__item">
+				<div className="context-menu__item">
 					<a className="context-menu__item__link">
 						<span className="context-menu__item__label mid_grey-text">
 							Love track
 						</span>
 					</a>
-				</span>
+				</div>
 			)
 		} else {			
 			var toggle_loved = (
-				<span className="context-menu__item">
+				<div className="context-menu__item">
 					<a className="context-menu__item__link" onClick={e => this.toggleLoved(e, context.is_loved)}>
 						<span className="context-menu__item__label">
 							{context.is_loved ? 'Unlove' : 'Love'} track
 						</span>
 					</a>
-				</span>
+				</div>
 			)
 		}
 
 		var go_to_artist = (
-			<span className="context-menu__item">
+			<div className="context-menu__item">
 				<a className="context-menu__item__link" onClick={e => this.goToArtist(e)}>
 					<span className="context-menu__item__label">Go to artist</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		var go_to_album = (
-			<span className="context-menu__item">
+			<div className="context-menu__item">
 				<a className="context-menu__item__link" onClick={e => this.goToAlbum(e)}>
 					<span className="context-menu__item__label">Go to album</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		var go_to_user = (
-			<span className="context-menu__item">
+			<div className="context-menu__item">
 				<a className="context-menu__item__link" onClick={e => this.goToUser(e)}>
 					<span className="context-menu__item__label">Go to user</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		var go_to_track = (
-			<span className="context-menu__item">
+			<div className="context-menu__item">
 				<a className="context-menu__item__link" onClick={e => this.goToTrack(e)}>
 					<span className="context-menu__item__label">Track info</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		var go_to_recommendations = (
-			<span className="context-menu__item">
+			<div className="context-menu__item">
 				<a className="context-menu__item__link" onClick={e => this.goToRecommendations(e)}>
 					<span className="context-menu__item__label">Discover similar</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		var start_radio = (
-			<span className="context-menu__item">
+			<div className="context-menu__item">
 				<a className="context-menu__item__link" onClick={e => this.startRadio(e)}>
 					<span className="context-menu__item__label">Start radio</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		var remove_from_queue = (
-			<span className="context-menu__item">
+			<div className="context-menu__item">
 				<a className="context-menu__item__link" onClick={e => this.removeFromQueue(e)}>
 					<span className="context-menu__item__label">Remove</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		var remove_from_playlist = (
-			<span className="context-menu__item">
+			<div className="context-menu__item">
 				<a className="context-menu__item__link" onClick={e => this.removeFromPlaylist(e)}>
 					<span className="context-menu__item__label">Remove</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		var delete_playlist = (
-			<span className="context-menu__item">
+			<div className="context-menu__item">
 				<a className="context-menu__item__link" onClick={e => this.deletePlaylist(e)}>
 					<span className="context-menu__item__label">Delete</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		var copy_uris = (
-			<span className="context-menu__item">
+			<div className="context-menu__item">
 				<a className="context-menu__item__link" onClick={e => this.copyURIs(e)}>
 					<span className="context-menu__item__label">Copy URI{context.items_count > 1 ? 's' : ''}</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		switch (context.name){
 
 			case 'album':
 				return (
-					<div>
+					<div className="context-menu__items">
 						{play_uris}
 						{play_uris_next}
 						{add_to_queue}
@@ -635,7 +635,7 @@ class ContextMenu extends React.Component{
 
 			case 'artist':
 				return (
-					<div>
+					<div className="context-menu__items">
 						{context.source == 'spotify' ? play_artist_top_tracks : null}
 						{context.source == 'spotify' ? start_radio : null}
 						{this.canBeInLibrary() ? <div className="context-menu__divider" /> : null}
@@ -649,7 +649,7 @@ class ContextMenu extends React.Component{
 
 			case 'playlist':
 				return (
-					<div>
+					<div className="context-menu__items">
 						{play_playlist}
 						{shuffle_play_playlist}
 						{this.canBeInLibrary() ? <div className="context-menu__divider" /> : null}
@@ -663,7 +663,7 @@ class ContextMenu extends React.Component{
 
 			case 'editable-playlist':
 				return (
-					<div>
+					<div className="context-menu__items">
 						{play_playlist}
 						{shuffle_play_playlist}
 						{this.canBeInLibrary() ? <div className="context-menu__divider" /> : null}
@@ -679,7 +679,7 @@ class ContextMenu extends React.Component{
 
 			case 'queue-track':
 				return (
-					<div>
+					<div className="context-menu__items">
 						{context.items_count == 1 ? play_queue_item : null}
 						<div className="context-menu__divider" />
 						{add_to_playlist}
@@ -696,7 +696,7 @@ class ContextMenu extends React.Component{
 
 			case 'editable-playlist-track':
 				return (
-					<div>
+					<div className="context-menu__items">
 						{play_uris}
 						{play_uris_next}
 						{add_to_queue}
@@ -716,7 +716,7 @@ class ContextMenu extends React.Component{
 
 			default:
 				return (
-					<div>
+					<div className="context-menu__items">
 						{play_uris}
 						{play_uris_next}
 						{add_to_queue}
