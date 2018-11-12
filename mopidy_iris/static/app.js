@@ -5585,33 +5585,6 @@ var Thumbnail = function (_React$Component) {
 
 		return _possibleConstructorReturn(this, (Thumbnail.__proto__ || Object.getPrototypeOf(Thumbnail)).call(this, props));
 	}
-	/*
- 	// TODO: ascertain whether this is improving or hindering performance
- 	// The UI appears to work perfectly fine without this
- 	shouldComponentUpdate(nextProps, nextState){
- 
- 		// no images at all, and we already know it
- 		if (!nextProps.image && !this.props.image && !nextProps.images && !this.props.images) return false
- 
- 		// image changed
- 		if (!this.props.image && nextProps.image) return true
- 		if (this.props.image && nextProps.image) return true
- 		if (this.props.image != nextProps.image) return true
- 
- 		// images array changed
- 		if (this.props.images === undefined && nextProps.images ) return true
- 		if (this.props.images && nextProps.images === undefined) return true
- 		if (this.props.images && !nextProps.images || this.props.images.length != nextProps.images.length ) return true
- 
- 		// image item changed	
- 		var size = 'medium'
- 		var images = helpers.sizedImages(nextProps.images )
- 		if (this.props.size ) size = this.props.size
- 		if (this.props.images[size] != images[size]) return true
- 
- 		return false
- 	}
- 	*/
 
 	_createClass(Thumbnail, [{
 		key: 'mapImageSizes',
