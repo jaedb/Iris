@@ -21,7 +21,7 @@ class ContextMenu extends React.Component{
 	constructor(props){
 		super(props)
 		this.state = {
-			submenu_expanded: false
+			submenu: null
 		}
 		this.handleScroll = this.handleScroll.bind(this);
 		this.handleMouseDown = this.handleMouseDown.bind(this);
@@ -44,7 +44,7 @@ class ContextMenu extends React.Component{
 
 		// if we've been given a menu object (ie activated) when we didn't have one prior
 		if (nextProps.menu && !this.props.menu){			
-			this.setState({ submenu_expanded: false });
+			this.setState({ submenu: null });
 
 			var context = this.getContext(nextProps);
 
@@ -320,53 +320,6 @@ class ContextMenu extends React.Component{
 		// TODO
 	}
 
-	renderPlaylistSubmenu(){
-		var playlists = []
-		for (var uri in this.props.playlists){
-			if (this.props.playlists[uri].can_edit) playlists.push(this.props.playlists[uri])
-		}
-
-		playlists = helpers.sortItems(playlists, 'name')
-
-		var loader = null
-		if (this.props.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR && this.props.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR.status == 'running'){
-			loader = (
-				<div className="context-menu__item">
-					<div className="context-menu__item mini-loader loading">
-						<div className="loader"></div>
-					</div>
-				</div>
-			)
-		}
-
-		var list = <span className="context-menu__item"><span className="context-menu__item mid_grey-text">No writable playlists</span></span>
-		if (playlists.length > 0){
-			list = playlists.map(playlist => {
-				return (
-					<span className="context-menu__item" key={playlist.uri}>
-						<a className="context-menu__item__link" onClick={e => this.addTracksToPlaylist(e,playlist.uri) }>
-							<span className="context-menu__item__label">{ playlist.name }</span>
-						</a>
-					</span>
-				)
-			})
-		}
-
-		return (			
-			<div className={'context-menu__submenu' + (this.state.submenu_expanded ? ' context-menu__submenu--expanded' : '')}>
-				<div className="context-menu__item">
-					<a className="context-menu__item__link context-menu__item__link--close-submenu" onClick={e => this.setState({submenu_expanded: false})}>
-						<span className="context-menu__item__label">
-							<Icon name="arrow_back" />Back
-						</span>
-					</a>
-				</div>
-				{list}
-				{loader}
-			</div>
-		)
-	}
-
 	renderTitle(){
 		var context = this.getContext()
 
@@ -420,10 +373,9 @@ class ContextMenu extends React.Component{
 		}
 	}
 
-	setPlaylistSubmenu(expanded = !this.state.submenu_expanded){
-		this.setState({submenu_expanded: expanded})
+	setSubmenu(name){
 
-		if (expanded){
+		if (this.state.submenu !== name && name == 'add-to-playlist'){
 			if (!this.props.spotify_library_playlists_loaded_all){
 				this.props.spotifyActions.getLibraryPlaylists()
 			}
@@ -431,6 +383,63 @@ class ContextMenu extends React.Component{
 				this.props.mopidyActions.getLibraryPlaylists()
 			}
 		}
+
+		this.setState({submenu: name});
+	}
+
+	renderSubmenu(){
+		var list = null;
+		var loader = null;
+
+		switch (this.state.submenu){
+
+			case 'add-to-playlist':
+
+				var playlists = []
+				for (var uri in this.props.playlists){
+					if (this.props.playlists[uri].can_edit) playlists.push(this.props.playlists[uri])
+				}
+
+				playlists = helpers.sortItems(playlists, 'name')
+
+				if (this.props.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR && this.props.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR.status == 'running'){
+					loader = (
+						<div className="context-menu__item">
+							<div className="context-menu__item mini-loader loading">
+								<div className="loader"></div>
+							</div>
+						</div>
+					)
+				}
+
+				list = <span className="context-menu__item"><span className="context-menu__item mid_grey-text">No writable playlists</span></span>
+				if (playlists.length > 0){
+					list = playlists.map(playlist => {
+						return (
+							<span className="context-menu__item" key={playlist.uri}>
+								<a className="context-menu__item__link" onClick={e => this.addTracksToPlaylist(e,playlist.uri) }>
+									<span className="context-menu__item__label">{ playlist.name }</span>
+								</a>
+							</span>
+						)
+					})
+				}
+
+		}
+
+		return (
+			<div className='context-menu__submenu'>
+				<div className="context-menu__item">
+					<a className="context-menu__item__link context-menu__item__link--close-submenu" onClick={e => this.setState({submenu: null})}>
+						<span className="context-menu__item__label">
+							<Icon name="arrow_back" /> Back
+						</span>
+					</a>
+				</div>
+				{list}
+				{loader}
+			</div>
+		);
 	}
 
 	renderItems(){
@@ -494,11 +503,10 @@ class ContextMenu extends React.Component{
 
 		var add_to_playlist = (
 			<div className="context-menu__item context-menu__item--has-submenu">
-				<a className="context-menu__item__link" onClick={e => this.setPlaylistSubmenu()}>
+				<a className="context-menu__item__link" onClick={e => this.setSubmenu('add-to-playlist')}>
 					<span className="context-menu__item__label">Add to playlist</span>
 					<Icon className="submenu-icon" name="arrow_forward" />
 				</a>
-				{this.renderPlaylistSubmenu()}
 			</div>
 		)
 
@@ -737,7 +745,9 @@ class ContextMenu extends React.Component{
 	}
 
 	render(){
-		if (!this.props.menu) return null;
+		if (!this.props.menu){
+			return null;
+		}
 
 		var style = {
 			left: this.props.menu.position_x,
@@ -745,14 +755,15 @@ class ContextMenu extends React.Component{
 		}
 		var height = 200 // TODO: use jquery to detect height
 		var className = "context-menu "+this.props.menu.context
-		if (this.state.submenu_expanded){
-			className += ' context-menu--submenu-expanded'
+		if (this.state.submenu){
+			className += ' context-menu--submenu-expanded';
 		}
 
 		if (this.props.menu.position_x > (window.innerWidth - 174)){
 			style.left = 'auto';
 			style.right = 10;
 		}
+
 		if (this.props.menu.position_y > (window.innerHeight - height)){
 			style.top = 'auto';
 			style.bottom = 10;
@@ -763,6 +774,7 @@ class ContextMenu extends React.Component{
 				<div className="context-menu__inner">
 					{this.renderTitle()}
 					{this.props.menu.context == 'custom' ? this.props.menu.options : this.renderItems()}
+					{this.renderSubmenu()}
 				</div>
 				<div className="context-menu__background" onClick={e => this.props.uiActions.hideContextMenu()}></div>
 			</div>
