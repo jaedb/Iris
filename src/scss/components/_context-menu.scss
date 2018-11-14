@@ -10,15 +10,11 @@
 .context-menu {
 	position: fixed;
 	z-index: 99;
+	font-size: 14px;
+	font-weight: 500;
+	font-family: "Overpass";
 
 	&__inner {
-		width: 190px;
-		box-shadow: 2px 3px 6px rgba(0,0,0,0.2);
-		border-radius: 3px;
-		background: colour(grey);
-		font-size: 14px;
-		font-weight: 500;
-		font-family: "Overpass";
 
 		/**
 		 * The following is for buttons automatically pulled from
@@ -115,62 +111,15 @@
 		}
 	}
 
-	&__title {
-		display: none;
-		padding: 10px 14px;
-		font-weight: bold;
-		box-sizing: border-box;
-		position: relative;
-		overflow: hidden;
-		text-decoration: none;
-		background: colour(darkest_grey);
 
-		&__background {
-			@include blur(5px);
-			background-size: cover;
-			background-position: 50% 20%;
-			opacity: 0.65;
-			position: absolute;
-			top: -10px;
-			left: -10px;
-			bottom: -10px;
-			right: -10px;
-			z-index: 1;
-		}
-
-		&--generic {
-			.context-menu__title__background {
-				opacity: 0.9;
-				background: rgba(50,181,242,1);
-				background: -moz-linear-gradient(45deg, rgba(50,181,242,1) 0%, rgba(50,181,242,1) 18%, rgba(5,118,166,1) 100%);
-				background: -webkit-gradient(left bottom, right top, color-stop(0%, rgba(50,181,242,1)), color-stop(18%, rgba(50,181,242,1)), color-stop(100%, rgba(5,118,166,1)));
-				background: -webkit-linear-gradient(45deg, rgba(50,181,242,1) 0%, rgba(50,181,242,1) 18%, rgba(5,118,166,1) 100%);
-				background: -o-linear-gradient(45deg, rgba(50,181,242,1) 0%, rgba(50,181,242,1) 18%, rgba(5,118,166,1) 100%);
-				background: -ms-linear-gradient(45deg, rgba(50,181,242,1) 0%, rgba(50,181,242,1) 18%, rgba(5,118,166,1) 100%);
-				background: linear-gradient(45deg, rgba(50,181,242,1) 0%, rgba(50,181,242,1) 18%, rgba(5,118,166,1) 100%);
-				filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#32b5f2', endColorstr='#0576a6', GradientType=1 );
-			}
-		}
-
-		&__text {
-			@include one_line_text();
-			position: relative;
-			z-index: 2;
-			color: colour(white);
-		}
-
-		&__type {
-			position: relative;
-			z-index: 2;
-			color: colour(white);
-			opacity: 0.5;
-			font-weight: 200;
-			text-transform: capitalize;
-		}
+	&__items,
+	&__submenu {
+		@include animate();
+		max-width: 190px;
+		overflow-y: scroll;
 	}
 
 	&__items {
-		@include animate();
 		opacity: 1;
 		position: relative;
 		z-index: 2;
@@ -219,16 +168,7 @@
 		background: lighten(colour(grey), 5%);
 	}
 
-	&__submenu {
-		@include animate();
-		position: absolute;
-		top: 0;
-		right: 0;
-		bottom: 0;
-		left: 0;
-		min-height: 300px;
-		max-height: 90vh;
-		overflow-y: scroll;			
+	&__submenu {		
 		background: lighten(colour(grey), 10%);
 		z-index: 3;
 		border-radius: 3px;
@@ -268,6 +208,17 @@
 		}
 	}
 
+	@include responsive(null, $bp_medium){
+		&__items,
+		&__submenu {
+			background: colour(grey);
+			border-radius: 3px;
+		}
+
+		&__title {
+			display: none;
+		}
+	}
 
 	@include responsive($bp_medium){
 		top: 0 !important;
@@ -288,16 +239,36 @@
 			z-index: 1;
 		}
 
+		&__title {
+			&__text {
+				@include one_line_text();
+				position: relative;
+				z-index: 2;
+				color: colour(white);
+			}
+
+			&__type {
+				position: relative;
+				z-index: 2;
+				color: colour(white);
+				opacity: 0.5;
+				font-weight: 200;
+				text-transform: capitalize;
+			}
+		}
+
+		&__items,
+		&__submenu {
+			width: 90vw;
+			max-width: 250px;
+			position: absolute;
+			top: 5vh;
+			left: 50%;
+			margin-left: -125px;
+			bottom: 0;
+		}
+
 		&__inner {
-			@include animate();
-			width: 250px;
-			margin: 30px auto;
-			max-width: 90vw;
-			position: relative;
-			z-index: 2;
-			border-radius: 3px;
-			background: none;
-			box-shadow: none;
 
 
 
@@ -320,13 +291,6 @@
 					color: colour(white);
 				}
 			}
-		}
-
-		&__title {
-			display: none;
-			padding: 14px 18px;
-			box-sizing: border-box;
-			border-radius: 3px 3px 0 0;
 		}
 
 		&__divider {
@@ -355,9 +319,6 @@
 		}
 
 		&__submenu {
-			width: 250px;
-			margin: 30px auto;
-			max-width: 90vw;
 			background: none;
 			border-radius: 0;
 			opacity: 0;

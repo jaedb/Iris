@@ -7,6 +7,7 @@ import { bindActionCreators } from 'redux'
 
 import TrackList from './TrackList'
 import Icon from './Icon'
+import Thumbnail from './Thumbnail'
 
 import * as helpers from '../helpers'
 import * as coreActions from '../services/core/actions'
@@ -343,13 +344,11 @@ class ContextMenu extends React.Component{
 
 				return (
 					<div className="context-menu__title">
-						{style ? <div className="context-menu__title__background" style={style}></div> : null}
+						<Thumbnail images={context.item ? context.item.images : null} circle={context.type = 'artist'} />
+						<div className="context-menu__title__text">{context.item.name}</div>
 						<div className="context-menu__title__type">
 							{context.source}
-							&nbsp;
-							{context.nice_name}
 						</div>
-						<div className="context-menu__title__text">{context.item.name}</div>
 					</div>
 				)
 				break

@@ -3658,15 +3658,11 @@ input[type="submit"] {
 
 .context-menu {
   position: fixed;
-  z-index: 99; }
+  z-index: 99;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: "Overpass"; }
   .context-menu__inner {
-    width: 190px;
-    box-shadow: 2px 3px 6px rgba(0, 0, 0, 0.2);
-    border-radius: 3px;
-    background: #383734;
-    font-size: 14px;
-    font-weight: 500;
-    font-family: "Overpass";
     /**
 		 * The following is for buttons automatically pulled from
 		 * a page header, so we don't have classname control
@@ -3739,56 +3735,14 @@ input[type="submit"] {
                 padding-right: 2px;
                 padding-bottom: 3px;
                 font-size: 0.9em; }
-  .context-menu__title {
-    display: none;
-    padding: 10px 14px;
-    font-weight: bold;
-    box-sizing: border-box;
-    position: relative;
-    overflow: hidden;
-    text-decoration: none;
-    background: #121212; }
-    .context-menu__title__background {
-      -webkit-filter: blur(5px);
-      filter: blur(5px);
-      background-size: cover;
-      background-position: 50% 20%;
-      opacity: 0.65;
-      position: absolute;
-      top: -10px;
-      left: -10px;
-      bottom: -10px;
-      right: -10px;
-      z-index: 1; }
-    .context-menu__title--generic .context-menu__title__background {
-      opacity: 0.9;
-      background: #32b5f2;
-      background: -moz-linear-gradient(45deg, #32b5f2 0%, #32b5f2 18%, #0576a6 100%);
-      background: -webkit-gradient(left bottom, right top, color-stop(0%, #32b5f2), color-stop(18%, #32b5f2), color-stop(100%, #0576a6));
-      background: -webkit-linear-gradient(45deg, #32b5f2 0%, #32b5f2 18%, #0576a6 100%);
-      background: -o-linear-gradient(45deg, #32b5f2 0%, #32b5f2 18%, #0576a6 100%);
-      background: -ms-linear-gradient(45deg, #32b5f2 0%, #32b5f2 18%, #0576a6 100%);
-      background: linear-gradient(45deg, #32b5f2 0%, #32b5f2 18%, #0576a6 100%);
-      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#32b5f2', endColorstr='#0576a6', GradientType=1 ); }
-    .context-menu__title__text {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      position: relative;
-      z-index: 2;
-      color: #FFFFFF; }
-    .context-menu__title__type {
-      position: relative;
-      z-index: 2;
-      color: #FFFFFF;
-      opacity: 0.5;
-      font-weight: 200;
-      text-transform: capitalize; }
-  .context-menu__items {
+  .context-menu__items, .context-menu__submenu {
     -webkit-transition: all 0.2s ease-in-out;
     -moz-transition: all 0.2s ease-in-out;
     -o-transition: all 0.2s ease-in-out;
     transition: all 0.2s ease-in-out;
+    max-width: 190px;
+    overflow-y: scroll; }
+  .context-menu__items {
     opacity: 1;
     position: relative;
     z-index: 2; }
@@ -3841,18 +3795,6 @@ input[type="submit"] {
     margin: 0;
     background: #454440; }
   .context-menu__submenu {
-    -webkit-transition: all 0.2s ease-in-out;
-    -moz-transition: all 0.2s ease-in-out;
-    -o-transition: all 0.2s ease-in-out;
-    transition: all 0.2s ease-in-out;
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    min-height: 300px;
-    max-height: 90vh;
-    overflow-y: scroll;
     background: #52514d;
     z-index: 3;
     border-radius: 3px;
@@ -3871,6 +3813,12 @@ input[type="submit"] {
   .context-menu--submenu-expanded .context-menu__submenu {
     transform: translateX(0);
     opacity: 1; }
+  @media (min-width: 800px) {
+    .context-menu__items, .context-menu__submenu {
+      background: #383734;
+      border-radius: 3px; }
+    .context-menu__title {
+      display: none; } }
   @media (max-width: 800px) {
     .context-menu {
       top: 0 !important;
@@ -3898,19 +3846,29 @@ input[type="submit"] {
         left: 0;
         background: rgba(0, 0, 0, 0.88);
         z-index: 1; }
-      .context-menu__inner {
-        -webkit-transition: all 0.2s ease-in-out;
-        -moz-transition: all 0.2s ease-in-out;
-        -o-transition: all 0.2s ease-in-out;
-        transition: all 0.2s ease-in-out;
-        width: 250px;
-        margin: 30px auto;
-        max-width: 90vw;
+      .context-menu__title__text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         position: relative;
         z-index: 2;
-        border-radius: 3px;
-        background: none;
-        box-shadow: none;
+        color: #FFFFFF; }
+      .context-menu__title__type {
+        position: relative;
+        z-index: 2;
+        color: #FFFFFF;
+        opacity: 0.5;
+        font-weight: 200;
+        text-transform: capitalize; }
+      .context-menu__items, .context-menu__submenu {
+        width: 90vw;
+        max-width: 250px;
+        position: absolute;
+        top: 5vh;
+        left: 50%;
+        margin-left: -125px;
+        bottom: 0; }
+      .context-menu__inner {
         /**
 			 * These are the rules for automatically collated page headers
 			 * as context menus
@@ -3925,11 +3883,6 @@ input[type="submit"] {
           font-weight: 800; }
         .context-menu__inner > span .dropdown-field {
           color: #FFFFFF; }
-      .context-menu__title {
-        display: none;
-        padding: 14px 18px;
-        box-sizing: border-box;
-        border-radius: 3px 3px 0 0; }
       .context-menu__divider {
         display: none; }
       .context-menu__item {
@@ -3948,9 +3901,6 @@ input[type="submit"] {
           .context-menu__item__link:focus, .context-menu__item__link:active {
             background: #08d58f !important; }
       .context-menu__submenu {
-        width: 250px;
-        margin: 30px auto;
-        max-width: 90vw;
         background: none;
         border-radius: 0;
         opacity: 0; } }
