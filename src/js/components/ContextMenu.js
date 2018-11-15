@@ -322,12 +322,19 @@ class ContextMenu extends React.Component{
 	}
 
 	renderTitle(){
+		
+		// Do we need titles or does it just confuse things and rip off Spotify too hard?
+		return null;
+
 		var context = this.getContext()
 
 		if (context.name == 'custom'){
+			if (!this.props.menu.title){
+				return null;
+			}
+
 			return (
 				<div className="context-menu__title">
-					<div className="context-menu__title__background context-menu__title__background--generic"></div>
 					<div className="context-menu__title__text">
 						{this.props.menu.title}
 					</div>
@@ -344,30 +351,25 @@ class ContextMenu extends React.Component{
 
 				return (
 					<div className="context-menu__title">
-						<Thumbnail images={context.item ? context.item.images : null} circle={context.type = 'artist'} />
+						<Thumbnail size="small" images={context.item ? context.item.images : null} circle={context.type == 'artist'} />
 						<div className="context-menu__title__text">{context.item.name}</div>
 						<div className="context-menu__title__type">
 							{context.source}
 						</div>
 					</div>
-				)
-				break
+				);
 
 			default:
 				return (
 					<div className="context-menu__title">
+						<div className="context-menu__title__text">							
+							{context.items_count} {context.nice_name}{context.items_count > 1 ? 's' : null}
+						</div>
 						<div className="context-menu__title__type">
 							{context.source}
-							&nbsp;
-							{context.nice_name}s
 						</div>
-						<div className="context-menu__title__text">							
-							{context.items_count} items
-						</div>
-						<div className="context-menu__title__background context-menu__title__background--generic"></div>
 					</div>
-				)
-				break
+				);
 
 		}
 	}
@@ -427,7 +429,7 @@ class ContextMenu extends React.Component{
 		}
 
 		return (
-			<div className='context-menu__submenu'>
+			<div className='context-menu__section context-menu__section--submenu'>
 				<div className="context-menu__item">
 					<a className="context-menu__item__link context-menu__item__link--close-submenu" onClick={e => this.setState({submenu: null})}>
 						<span className="context-menu__item__label">
@@ -627,7 +629,7 @@ class ContextMenu extends React.Component{
 
 			case 'album':
 				return (
-					<div className="context-menu__items">
+					<div>
 						{play_uris}
 						{play_uris_next}
 						{add_to_queue}
@@ -642,7 +644,7 @@ class ContextMenu extends React.Component{
 
 			case 'artist':
 				return (
-					<div className="context-menu__items">
+					<div>
 						{context.source == 'spotify' ? play_artist_top_tracks : null}
 						{context.source == 'spotify' ? start_radio : null}
 						{this.canBeInLibrary() ? <div className="context-menu__divider" /> : null}
@@ -656,7 +658,7 @@ class ContextMenu extends React.Component{
 
 			case 'playlist':
 				return (
-					<div className="context-menu__items">
+					<div>
 						{play_playlist}
 						{shuffle_play_playlist}
 						{this.canBeInLibrary() ? <div className="context-menu__divider" /> : null}
@@ -670,7 +672,7 @@ class ContextMenu extends React.Component{
 
 			case 'editable-playlist':
 				return (
-					<div className="context-menu__items">
+					<div>
 						{play_playlist}
 						{shuffle_play_playlist}
 						{this.canBeInLibrary() ? <div className="context-menu__divider" /> : null}
@@ -686,7 +688,7 @@ class ContextMenu extends React.Component{
 
 			case 'queue-track':
 				return (
-					<div className="context-menu__items">
+					<div>
 						{context.items_count == 1 ? play_queue_item : null}
 						<div className="context-menu__divider" />
 						{add_to_playlist}
@@ -703,7 +705,7 @@ class ContextMenu extends React.Component{
 
 			case 'editable-playlist-track':
 				return (
-					<div className="context-menu__items">
+					<div>
 						{play_uris}
 						{play_uris_next}
 						{add_to_queue}
@@ -723,7 +725,7 @@ class ContextMenu extends React.Component{
 
 			default:
 				return (
-					<div className="context-menu__items">
+					<div>
 						{play_uris}
 						{play_uris_next}
 						{add_to_queue}
@@ -770,11 +772,11 @@ class ContextMenu extends React.Component{
 
 		return (
 			<div id="context-menu" className={className} style={style}>
-				<div className="context-menu__inner">
+				<div className="context-menu__section context-menu__section--items">
 					{this.renderTitle()}
 					{this.props.menu.context == 'custom' ? this.props.menu.options : this.renderItems()}
-					{this.renderSubmenu()}
 				</div>
+				{this.renderSubmenu()}
 				<div className="context-menu__background" onClick={e => this.props.uiActions.hideContextMenu()}></div>
 			</div>
 		);

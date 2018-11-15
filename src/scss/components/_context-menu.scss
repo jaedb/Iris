@@ -111,18 +111,41 @@
 		}
 	}
 
-
-	&__items,
-	&__submenu {
+	&__section {
 		@include animate();
 		max-width: 190px;
 		overflow-y: scroll;
-	}
 
-	&__items {
-		opacity: 1;
-		position: relative;
-		z-index: 2;
+		&--submenu {			
+			background: lighten(colour(grey), 10%);
+			z-index: 3;
+			border-radius: 3px;
+			transform: translateX(100%);
+			opacity: 0;
+
+			.context-menu {
+				&__item {
+					width: 100%;
+
+					&--close-submenu {
+						opacity: 0.5;
+					}
+
+					&__label {
+						.icon {
+							margin-bottom: 0.4em;
+							padding-right: 6px;
+						}
+					}
+				}
+			}
+		}
+
+		&--items {
+			opacity: 1;
+			position: relative;
+			z-index: 2;
+		}
 	}
 
 	&__item {
@@ -168,49 +191,23 @@
 		background: lighten(colour(grey), 5%);
 	}
 
-	&__submenu {		
-		background: lighten(colour(grey), 10%);
-		z-index: 3;
-		border-radius: 3px;
-		transform: translateX(100%);
-		opacity: 0;
-
-		.context-menu {
-			&__item {
-				width: 100%;
-
-				&--close-submenu {
-					opacity: 0.5;
-				}
-
-				&__label {
-					.icon {
-						margin-bottom: 0.4em;
-						padding-right: 6px;
-					}
-				}
-			}
-		}
-	}
-
 	&--submenu-expanded {
 		.context-menu {
 
-			&__items {
+			&__section {
 				transform: translateX(-100%);
 				opacity: 0;
-			}
 
-			&__submenu {
-				transform: translateX(0);
-				opacity: 1;
+				&--submenu {
+					transform: translateX(0);
+					opacity: 1;
+				}
 			}
 		}
 	}
 
 	@include responsive(null, $bp_medium){
-		&__items,
-		&__submenu {
+		&__section {
 			background: colour(grey);
 			border-radius: 3px;
 		}
@@ -235,19 +232,34 @@
 			right: 0;
 			bottom: 0;
 			left: 0;
-			background: colour(overlay_dark);
+			background-image: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.50) 10%, rgba(0,0,0,0.88) 20%);
 			z-index: 1;
 		}
 
 		&__title {
+			@include clearfix();
+			padding: 16px 22px;
+			pointer-events: none;
+
+			.thumbnail {
+				float: left;
+				width: 36px;
+				margin-right: 20px;
+			}
+
 			&__text {
 				@include one_line_text();
 				position: relative;
 				z-index: 2;
 				color: colour(white);
+				font-size: 1.2rem;
+				font-weight: 800;
+				padding-top: 8px;
+				opacity: 0.5;
 			}
 
 			&__type {
+				display: none;
 				position: relative;
 				z-index: 2;
 				color: colour(white);
@@ -257,38 +269,48 @@
 			}
 		}
 
-		&__items,
-		&__submenu {
+		&__section {
 			width: 90vw;
 			max-width: 250px;
 			position: absolute;
-			top: 5vh;
+			top: 10vh;
 			left: 50%;
 			margin-left: -125px;
 			bottom: 0;
-		}
 
-		&__inner {
+			&--submenu {
+				background: none;
+				border-radius: 0;
+				opacity: 0;
+			}
 
+			&--items {
 
+				/**
+				 * These are the rules for automatically collated page headers
+				 * as context menus
+				 **/
+				& > span {
+					button,
+					.button {
+						display: block;
+						color: colour(white);
+						background: transparent;
+						border: 0 !important;
+						padding: 16px 22px;
+						font-size: 1.2rem;
+						font-weight: 800;
+						text-decoration: none !important;
+						text-align: left;
 
-			/**
-			 * These are the rules for automatically collated page headers
-			 * as context menus
-			 **/
-			& > span {
-				button,
-				.button {
-					color: colour(white);
-					background: transparent;
-					border: 0 !important;
-					padding: 16px 22px;
-					font-size: 1.2rem;
-					font-weight: 800;
-				}
+						& > .icon {
+							display: none;
+						}
+					}
 
-				.dropdown-field {
-					color: colour(white);
+					.dropdown-field {
+						color: colour(white);
+					}
 				}
 			}
 		}
@@ -316,12 +338,6 @@
 					background: colour(turquoise) !important;
 				}
 			}
-		}
-
-		&__submenu {
-			background: none;
-			border-radius: 0;
-			opacity: 0;
 		}
 	}
 }

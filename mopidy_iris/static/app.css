@@ -3735,17 +3735,30 @@ input[type="submit"] {
                 padding-right: 2px;
                 padding-bottom: 3px;
                 font-size: 0.9em; }
-  .context-menu__items, .context-menu__submenu {
+  .context-menu__section {
     -webkit-transition: all 0.2s ease-in-out;
     -moz-transition: all 0.2s ease-in-out;
     -o-transition: all 0.2s ease-in-out;
     transition: all 0.2s ease-in-out;
     max-width: 190px;
     overflow-y: scroll; }
-  .context-menu__items {
-    opacity: 1;
-    position: relative;
-    z-index: 2; }
+    .context-menu__section--submenu {
+      background: #52514d;
+      z-index: 3;
+      border-radius: 3px;
+      transform: translateX(100%);
+      opacity: 0; }
+      .context-menu__section--submenu .context-menu__item {
+        width: 100%; }
+        .context-menu__section--submenu .context-menu__item--close-submenu {
+          opacity: 0.5; }
+        .context-menu__section--submenu .context-menu__item__label .icon {
+          margin-bottom: 0.4em;
+          padding-right: 6px; }
+    .context-menu__section--items {
+      opacity: 1;
+      position: relative;
+      z-index: 2; }
   .context-menu__item {
     display: block;
     overflow-x: hidden; }
@@ -3794,27 +3807,14 @@ input[type="submit"] {
     padding: 0;
     margin: 0;
     background: #454440; }
-  .context-menu__submenu {
-    background: #52514d;
-    z-index: 3;
-    border-radius: 3px;
-    transform: translateX(100%);
-    opacity: 0; }
-    .context-menu__submenu .context-menu__item {
-      width: 100%; }
-      .context-menu__submenu .context-menu__item--close-submenu {
-        opacity: 0.5; }
-      .context-menu__submenu .context-menu__item__label .icon {
-        margin-bottom: 0.4em;
-        padding-right: 6px; }
-  .context-menu--submenu-expanded .context-menu__items {
+  .context-menu--submenu-expanded .context-menu__section {
     transform: translateX(-100%);
     opacity: 0; }
-  .context-menu--submenu-expanded .context-menu__submenu {
-    transform: translateX(0);
-    opacity: 1; }
+    .context-menu--submenu-expanded .context-menu__section--submenu {
+      transform: translateX(0);
+      opacity: 1; }
   @media (min-width: 800px) {
-    .context-menu__items, .context-menu__submenu {
+    .context-menu__section {
       background: #383734;
       border-radius: 3px; }
     .context-menu__title {
@@ -3844,45 +3844,71 @@ input[type="submit"] {
         right: 0;
         bottom: 0;
         left: 0;
-        background: rgba(0, 0, 0, 0.88);
+        background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5) 10%, rgba(0, 0, 0, 0.88) 20%);
         z-index: 1; }
-      .context-menu__title__text {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        position: relative;
-        z-index: 2;
-        color: #FFFFFF; }
-      .context-menu__title__type {
-        position: relative;
-        z-index: 2;
-        color: #FFFFFF;
-        opacity: 0.5;
-        font-weight: 200;
-        text-transform: capitalize; }
-      .context-menu__items, .context-menu__submenu {
+      .context-menu__title {
+        padding: 16px 22px;
+        pointer-events: none; }
+        .context-menu__title::after {
+          content: '';
+          clear: both;
+          display: block; }
+        .context-menu__title .thumbnail {
+          float: left;
+          width: 36px;
+          margin-right: 20px; }
+        .context-menu__title__text {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          position: relative;
+          z-index: 2;
+          color: #FFFFFF;
+          font-size: 1.2rem;
+          font-weight: 800;
+          padding-top: 8px;
+          opacity: 0.5; }
+        .context-menu__title__type {
+          display: none;
+          position: relative;
+          z-index: 2;
+          color: #FFFFFF;
+          opacity: 0.5;
+          font-weight: 200;
+          text-transform: capitalize; }
+      .context-menu__section {
         width: 90vw;
         max-width: 250px;
         position: absolute;
-        top: 5vh;
+        top: 10vh;
         left: 50%;
         margin-left: -125px;
         bottom: 0; }
-      .context-menu__inner {
-        /**
-			 * These are the rules for automatically collated page headers
-			 * as context menus
-			 **/ }
-        .context-menu__inner > span button,
-        .context-menu__inner > span .button {
-          color: #FFFFFF;
-          background: transparent;
-          border: 0 !important;
-          padding: 16px 22px;
-          font-size: 1.2rem;
-          font-weight: 800; }
-        .context-menu__inner > span .dropdown-field {
-          color: #FFFFFF; }
+        .context-menu__section--submenu {
+          background: none;
+          border-radius: 0;
+          opacity: 0; }
+        .context-menu__section--items {
+          /**
+				 * These are the rules for automatically collated page headers
+				 * as context menus
+				 **/ }
+          .context-menu__section--items > span button,
+          .context-menu__section--items > span .button {
+            display: block;
+            color: #FFFFFF;
+            background: transparent;
+            border: 0 !important;
+            padding: 16px 22px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            text-decoration: none !important;
+            text-align: left; }
+            .context-menu__section--items > span button > .icon,
+            .context-menu__section--items > span .button > .icon {
+              display: none; }
+          .context-menu__section--items > span .dropdown-field {
+            color: #FFFFFF; }
       .context-menu__divider {
         display: none; }
       .context-menu__item {
@@ -3899,11 +3925,7 @@ input[type="submit"] {
           .context-menu__item__link:before {
             display: none !important; }
           .context-menu__item__link:focus, .context-menu__item__link:active {
-            background: #08d58f !important; }
-      .context-menu__submenu {
-        background: none;
-        border-radius: 0;
-        opacity: 0; } }
+            background: #08d58f !important; } }
 
 .context-menu-trigger {
   display: inline-block;
