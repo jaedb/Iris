@@ -232,7 +232,7 @@
 			right: 0;
 			bottom: 0;
 			left: 0;
-			background-image: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.50) 10%, rgba(0,0,0,0.88) 20%);
+			background-image: linear-gradient(rgba(10,10,10,0.50), rgba(10,10,10,0.80) 10%, rgba(10,10,10,0.95) 25%);
 			z-index: 1;
 		}
 
@@ -273,10 +273,10 @@
 			width: 90vw;
 			max-width: 250px;
 			position: absolute;
-			top: 10vh;
+			top: 10%;
 			left: 50%;
 			margin-left: -125px;
-			bottom: 0;
+			max-height: 90%;
 
 			&--submenu {
 				background: none;
@@ -335,6 +335,7 @@
 
 				&:focus,
 				&:active {
+					@include noanimate();
 					background: colour(turquoise) !important;
 				}
 			}
