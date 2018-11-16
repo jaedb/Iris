@@ -591,7 +591,7 @@ export let formatUser = function(data){
 		user.images = formatImages(user.images);
 	}
 
-	if (data.followers && data.followers.total){
+	if (data.followers && data.followers.total !== undefined){
 		user.followers = data.followers.total;
 	}
 	if (data.realname){

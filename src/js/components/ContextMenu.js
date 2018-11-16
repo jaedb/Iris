@@ -322,11 +322,18 @@ class ContextMenu extends React.Component{
 	}
 
 	renderTitle(){
-		
-		// Do we need titles or does it just confuse things and rip off Spotify too hard?
-		return null;
 
 		var context = this.getContext()
+
+		if (context.items_count > 1){
+			return (
+				<div className="context-menu__title">
+					<div className="context-menu__title__text">							
+						{context.items_count} {context.nice_name}{context.items_count > 1 ? 's' : null} selected
+					</div>
+				</div>
+			)
+		}
 
 		if (context.name == 'custom'){
 			if (!this.props.menu.title){
@@ -341,7 +348,10 @@ class ContextMenu extends React.Component{
 				</div>
 			)
 		}
-
+		
+		// Do we need titles or does it just confuse things and rip off Spotify too hard?
+		return null;
+/*
 		switch (context.type){
 
 			case 'artist':
@@ -371,7 +381,7 @@ class ContextMenu extends React.Component{
 					</div>
 				);
 
-		}
+		}*/
 	}
 
 	setSubmenu(name){

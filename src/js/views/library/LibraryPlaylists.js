@@ -217,6 +217,7 @@ class LibraryPlaylists extends React.Component{
 		var options = (
 			<span>
 				<FilterField 
+					initialValue={this.state.filter}
 					handleChange={value => this.setState({filter: value})}
 				/>
 				<DropdownField 

@@ -3662,85 +3662,11 @@ input[type="submit"] {
   font-size: 14px;
   font-weight: 500;
   font-family: "Overpass"; }
-  .context-menu__inner {
-    /**
-		 * The following is for buttons automatically pulled from
-		 * a page header, so we don't have classname control
-		 **/ }
-    .context-menu__inner > span {
-      display: block;
-      margin-bottom: -1px; }
-      .context-menu__inner > span button,
-      .context-menu__inner > span .button,
-      .context-menu__inner > span .dropdown-field {
-        text-decoration: none;
-        display: block;
-        margin: 0;
-        min-width: 100% !important;
-        max-width: 100% !important;
-        box-sizing: border-box;
-        font-size: inherit;
-        text-align: left;
-        text-transform: none;
-        font-weight: 300;
-        color: inherit;
-        border-bottom: 1px solid #454440 !important; }
-        .context-menu__inner > span button .icon,
-        .context-menu__inner > span button .icon,
-        .context-menu__inner > span .button .icon,
-        .context-menu__inner > span .button .icon,
-        .context-menu__inner > span .dropdown-field .icon,
-        .context-menu__inner > span .dropdown-field .icon {
-          display: none; }
-        .notouch .context-menu__inner > span button:hover, .notouch
-        .context-menu__inner > span .button:hover, .notouch
-        .context-menu__inner > span .dropdown-field:hover {
-          background: #252525; }
-      .context-menu__inner > span button,
-      .context-menu__inner > span .button {
-        padding: 16px 20px;
-        min-width: 100% !important;
-        max-width: 100% !important; }
-      .context-menu__inner > span .dropdown-field {
-        padding: 16px 20px; }
-        .context-menu__inner > span .dropdown-field .label {
-          padding: 0 0 3px 0;
-          font-weight: 800; }
-        .context-menu__inner > span .dropdown-field .options {
-          display: block;
-          position: static;
-          background: transparent;
-          border-radius: 0;
-          border: 0;
-          box-shadow: none; }
-          .context-menu__inner > span .dropdown-field .options:before {
-            display: none !important; }
-          .context-menu__inner > span .dropdown-field .options > .liner {
-            background: transparent;
-            color: #FFFFFF !important;
-            margin: -3px -5px; }
-            .context-menu__inner > span .dropdown-field .options > .liner:before {
-              display: none !important; }
-            .context-menu__inner > span .dropdown-field .options > .liner .option {
-              display: inline-block;
-              padding: 3px 5px;
-              border-radius: 0;
-              opacity: 0.6;
-              color: #FFFFFF !important; }
-              .context-menu__inner > span .dropdown-field .options > .liner .option:before {
-                display: none !important; }
-              .context-menu__inner > span .dropdown-field .options > .liner .option .icon {
-                display: inline-block;
-                position: static;
-                padding-right: 2px;
-                padding-bottom: 3px;
-                font-size: 0.9em; }
   .context-menu__section {
     -webkit-transition: all 0.2s ease-in-out;
     -moz-transition: all 0.2s ease-in-out;
     -o-transition: all 0.2s ease-in-out;
     transition: all 0.2s ease-in-out;
-    max-width: 190px;
     overflow-y: scroll; }
     .context-menu__section--submenu {
       background: #52514d;
@@ -3814,11 +3740,22 @@ input[type="submit"] {
       transform: translateX(0);
       opacity: 1; }
   @media (min-width: 800px) {
-    .context-menu__section {
+    .context-menu {
       background: #383734;
+      width: 200px;
+      overflow-x: hidden;
       border-radius: 3px; }
-    .context-menu__title {
-      display: none; } }
+      .context-menu__section {
+        background: none;
+        overflow: visible; }
+        .context-menu__section--submenu {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0; }
+      .context-menu__title {
+        display: none; } }
   @media (max-width: 800px) {
     .context-menu {
       top: 0 !important;
@@ -3826,7 +3763,6 @@ input[type="submit"] {
       bottom: 0 !important;
       left: 0 !important;
       margin: 0 !important;
-      overflow-y: scroll;
       animation-name: fadein;
       animation-duration: 0.2s;
       animation-timing-function: linear;
@@ -3839,12 +3775,12 @@ input[type="submit"] {
         opacity: 1;
         transform: translateY(0px); } }
       .context-menu__background {
-        position: fixed;
+        position: absolute;
         top: 0;
         right: 0;
         bottom: 0;
         left: 0;
-        background-image: linear-gradient(rgba(10, 10, 10, 0.5), rgba(10, 10, 10, 0.8) 10%, rgba(10, 10, 10, 0.95) 25%);
+        background-image: linear-gradient(rgba(10, 10, 10, 0) 10%, rgba(10, 10, 10, 0.6) 15%, rgba(10, 10, 10, 0.95) 20%);
         z-index: 1; }
       .context-menu__title {
         padding: 16px 22px;
@@ -3880,35 +3816,59 @@ input[type="submit"] {
         width: 90vw;
         max-width: 250px;
         position: absolute;
-        top: 10%;
+        top: 20%;
         left: 50%;
         margin-left: -125px;
-        max-height: 90%; }
+        max-height: 80%;
+        overflow: auto; }
         .context-menu__section--submenu {
           background: none;
           border-radius: 0;
           opacity: 0; }
         .context-menu__section--items {
           /**
-				 * These are the rules for automatically collated page headers
-				 * as context menus
+				 * The following is for buttons automatically pulled from
+				 * a page header, so we don't have classname control
 				 **/ }
-          .context-menu__section--items > span button,
-          .context-menu__section--items > span .button {
-            display: block;
-            color: #FFFFFF;
-            background: transparent;
-            border: 0 !important;
-            padding: 16px 22px;
-            font-size: 1.2rem;
-            font-weight: 800;
-            text-decoration: none !important;
-            text-align: left; }
-            .context-menu__section--items > span button > .icon,
-            .context-menu__section--items > span .button > .icon {
-              display: none; }
-          .context-menu__section--items > span .dropdown-field {
-            color: #FFFFFF; }
+          .context-menu__section--items > span {
+            display: block; }
+            .context-menu__section--items > span button,
+            .context-menu__section--items > span .button,
+            .context-menu__section--items > span .dropdown-field {
+              text-decoration: none;
+              display: block;
+              margin: 0;
+              width: auto !important;
+              box-sizing: border-box;
+              text-align: left;
+              text-transform: none;
+              font-weight: 700;
+              font-size: 1.2rem;
+              color: #FFFFFF;
+              background: none;
+              transform: none;
+              padding: 16px 22px; }
+              .context-menu__section--items > span button:before,
+              .context-menu__section--items > span .button:before,
+              .context-menu__section--items > span .dropdown-field:before {
+                display: none !important; }
+              .context-menu__section--items > span button:focus, .context-menu__section--items > span button:active,
+              .context-menu__section--items > span .button:focus,
+              .context-menu__section--items > span .button:active,
+              .context-menu__section--items > span .dropdown-field:focus,
+              .context-menu__section--items > span .dropdown-field:active {
+                -webkit-transition: none !important;
+                -moz-transition: none !important;
+                -o-transition: none !important;
+                transition: none !important;
+                background: #08d58f !important; }
+              .context-menu__section--items > span button .icon,
+              .context-menu__section--items > span button .icon,
+              .context-menu__section--items > span .button .icon,
+              .context-menu__section--items > span .button .icon,
+              .context-menu__section--items > span .dropdown-field .icon,
+              .context-menu__section--items > span .dropdown-field .icon {
+                display: none; }
       .context-menu__divider {
         display: none; }
       .context-menu__item {
@@ -5748,6 +5708,46 @@ main header {
           .notouch .dropdown-field .options > .liner .option:hover:before {
             opacity: 0.15; }
 
+#context-menu .dropdown-field {
+  padding: 16px 20px; }
+  #context-menu .dropdown-field:active, #context-menu .dropdown-field:focus {
+    background: none !important; }
+  #context-menu .dropdown-field .label {
+    padding: 0 0 3px 0;
+    opacity: 0.5;
+    font-size: 1rem; }
+    #context-menu .dropdown-field .label, #context-menu .dropdown-field .label:hover {
+      color: #FFFFFF; }
+  #context-menu .dropdown-field .options {
+    display: block;
+    position: static;
+    background: transparent;
+    border-radius: 0;
+    border: 0;
+    box-shadow: none;
+    font-weight: 700; }
+    #context-menu .dropdown-field .options:before {
+      display: none !important; }
+    #context-menu .dropdown-field .options > .liner {
+      background: transparent;
+      color: #FFFFFF !important;
+      margin: -3px -5px; }
+      #context-menu .dropdown-field .options > .liner:before {
+        display: none !important; }
+      #context-menu .dropdown-field .options > .liner .option {
+        display: inline-block;
+        padding: 3px 5px;
+        border-radius: 0;
+        color: #FFFFFF !important; }
+        #context-menu .dropdown-field .options > .liner .option:before {
+          display: none !important; }
+        #context-menu .dropdown-field .options > .liner .option .icon {
+          display: inline-block;
+          position: static;
+          padding-right: 2px;
+          padding-bottom: 3px;
+          font-size: 0.9em; }
+
 .autocomplete-field {
   position: relative; }
   .autocomplete-field .input {
@@ -5828,18 +5828,23 @@ main header {
   background: #383734; }
 
 #context-menu .filter-field {
-  display: block;
-  border-bottom: 1px solid #454440; }
-  #context-menu .filter-field .icon {
-    top: 15px;
-    left: 24px;
-    color: #FFFFFF !important; }
+  display: block; }
   #context-menu .filter-field form {
-    width: 100%; }
+    width: auto;
+    padding: 10px 18px; }
+    #context-menu .filter-field form .icon {
+      display: none; }
     #context-menu .filter-field form input {
-      padding: 14px 18px 14px 42px;
+      padding: 6px 4px;
       width: 100%;
-      box-sizing: border-box; }
+      box-sizing: border-box;
+      font-size: 1.2rem;
+      font-weight: 700;
+      background: transparent !important;
+      border-bottom: 2px solid rgba(128, 128, 128, 0.25);
+      border-radius: 0; }
+      #context-menu .filter-field form input:focus {
+        border-color: #FFFFFF; }
 
 .sources-priority-field {
   padding: 7px 0; }
