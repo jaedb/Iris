@@ -73237,7 +73237,7 @@ var Settings = function (_React$Component) {
 				commands.map(function (command) {
 					return _react2.default.createElement(
 						'div',
-						{ className: 'list__item commands-setup__item', key: command.id },
+						{ className: 'list__item commands-setup__item no-click', key: command.id },
 						_react2.default.createElement(
 							'div',
 							{ className: 'col col--w90' },
@@ -80769,7 +80769,7 @@ var DiscoverFeatured = function (_React$Component) {
 					{ className: 'view discover-featured-view' },
 					_react2.default.createElement(
 						_Header2.default,
-						{ className: 'overlay' },
+						{ className: 'overlay', uiActions: this.props.uiActions },
 						_react2.default.createElement(_Icon2.default, { name: 'star', type: 'material' }),
 						'Featured playlists'
 					),
@@ -80798,9 +80798,9 @@ var DiscoverFeatured = function (_React$Component) {
 			}
 
 			var options = _react2.default.createElement(
-				'button',
-				{ className: 'no-hover', onClick: function onClick(e) {
-						return _this3.props.spotifyActions.getFeaturedPlaylists();
+				'a',
+				{ className: 'button no-hover', onClick: function onClick(e) {
+						_this3.props.uiActions.hideContextMenu();_this3.props.spotifyActions.getFeaturedPlaylists();
 					} },
 				_react2.default.createElement(_Icon2.default, { name: 'refresh' }),
 				'Refresh'
@@ -80955,7 +80955,7 @@ var DiscoverCategories = function (_React$Component) {
 				{ className: 'view discover-categories-view' },
 				_react2.default.createElement(
 					_Header2.default,
-					null,
+					{ uiActions: this.props.uiActions },
 					_react2.default.createElement(_Icon2.default, { name: 'mood', type: 'material' }),
 					'Genre / Mood'
 				),
@@ -81212,7 +81212,7 @@ var DiscoverCategory = function (_React$Component) {
 				{ className: 'view discover-categories-view' },
 				_react2.default.createElement(
 					_Header2.default,
-					null,
+					{ uiActions: this.props.uiActions },
 					_react2.default.createElement(_Icon2.default, { name: 'mood', type: 'material' }),
 					category.name
 				),
@@ -81502,9 +81502,9 @@ var DiscoverNewReleases = function (_React$Component) {
 			}
 
 			var options = _react2.default.createElement(
-				'button',
-				{ className: 'no-hover', onClick: function onClick(e) {
-						return _this3.props.spotifyActions.getNewReleases();
+				'a',
+				{ className: 'button no-hover', onClick: function onClick(e) {
+						_this3.props.uiActions.hideContextMenu();_this3.props.spotifyActions.getNewReleases();
 					} },
 				_react2.default.createElement(_Icon2.default, { name: 'refresh' }),
 				'Refresh'
@@ -81515,7 +81515,7 @@ var DiscoverNewReleases = function (_React$Component) {
 				{ className: 'view discover-new-releases-view preserve-3d' },
 				_react2.default.createElement(
 					_Header2.default,
-					{ className: 'overlay', options: options },
+					{ className: 'overlay', options: options, uiActions: this.props.uiActions },
 					_react2.default.createElement(_Icon2.default, { name: 'new_releases', type: 'material' }),
 					'New releases'
 				),
@@ -82723,16 +82723,12 @@ var LibraryTracks = function (_React$Component) {
 			}
 
 			var options = _react2.default.createElement(
-				'span',
-				null,
-				_react2.default.createElement(
-					'button',
-					{ className: 'no-hover', onClick: function onClick(e) {
-							return _this2.playAll(e);
-						} },
-					_react2.default.createElement(_Icon2.default, { name: 'play_circle_filled' }),
-					'Play all'
-				)
+				'a',
+				{ className: 'button button--no-hover', onClick: function onClick(e) {
+						return _this2.playAll(e);
+					} },
+				_react2.default.createElement(_Icon2.default, { name: 'play_circle_filled' }),
+				'Play all'
 			);
 
 			return _react2.default.createElement(
@@ -83441,17 +83437,17 @@ var LibraryBrowse = function (_React$Component) {
 					}
 				}),
 				tracks ? _react2.default.createElement(
-					'button',
-					{ className: 'no-hover', onClick: function onClick(e) {
-							return _this2.playAll(e, tracks);
+					'a',
+					{ className: 'button no-hover', onClick: function onClick(e) {
+							_this2.props.uiActions.hideContextMenu();_this2.playAll(e, tracks);
 						} },
 					_react2.default.createElement(_Icon2.default, { name: 'play_circle_filled' }),
 					'Play all'
 				) : null,
 				_react2.default.createElement(
-					'button',
-					{ className: 'no-hover', onClick: function onClick(e) {
-							return _this2.goBack(e);
+					'a',
+					{ className: 'button no-hover', onClick: function onClick(e) {
+							_this2.props.uiActions.hideContextMenu();_this2.goBack(e);
 						} },
 					_react2.default.createElement(_Icon2.default, { name: 'keyboard_backspace' }),
 					'Back'
@@ -83568,7 +83564,7 @@ var LibraryBrowse = function (_React$Component) {
 				{ className: 'view library-local-view' },
 				_react2.default.createElement(
 					_Header2.default,
-					null,
+					{ uiActions: this.props.uiActions },
 					_react2.default.createElement(_Icon2.default, { name: 'folder', type: 'material' }),
 					'Browse'
 				),

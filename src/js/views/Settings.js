@@ -167,7 +167,7 @@ class Settings extends React.Component {
 				{
 	    			commands.map(command => {
 	    				return (
-	    					<div className="list__item commands-setup__item" key={command.id}>
+	    					<div className="list__item commands-setup__item no-click" key={command.id}>
 	    						<div className="col col--w90">
 	    							<div className="commands__item commands__item--interactive" onClick={e => this.props.pusherActions.sendCommand(command.id, true)}>
 										<Icon className="commands__item__icon" name={command.icon} />

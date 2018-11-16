@@ -184,12 +184,11 @@
 		}
 
 		&__section {
-			width: 90vw;
-			max-width: 250px;
+			width: 300px;
 			position: absolute;
 			top: 20%;
 			left: 50%;
-			margin-left: -125px;
+			margin-left: -150px;
 			max-height: 80%;
 			overflow: auto;
 
@@ -205,40 +204,37 @@
 				 * The following is for buttons automatically pulled from
 				 * a page header, so we don't have classname control
 				 **/
+				.button,
 				& > span {
 					display: block;
+					text-decoration: none;
+					display: block;
+					margin: 0;
+					width: auto !important;
+					box-sizing: border-box;
+					text-align: left;
+					text-transform: none;
+					font-weight: 700;
+					font-size: 1.2rem;
+					color: colour(white);
+					background: none;
+					transform: none;
+					padding: 16px 22px;
 
-					button,
-					.button,
-					.dropdown-field {
-						text-decoration: none;
-						display: block;
-						margin: 0;
-						width: auto !important;
-						box-sizing: border-box;
-						text-align: left;
-						text-transform: none;
-						font-weight: 700;
-						font-size: 1.2rem;
-						color: colour(white);
-						background: none;
-						transform: none;
-						padding: 16px 22px;
+					.icon {
+						display: none;					
+					}
+				}
 
-						&:before {
-							display: none !important;
-						}
+				.button {
+					&:before {
+						display: none !important;
+					}
 
-						&:focus,
-						&:active {
-							@include noanimate();
-							background: colour(turquoise) !important;
-						}
-
-						.icon,
-						.icon {
-							display: none;
-						}
+					&:focus,
+					&:active {
+						@include noanimate();
+						background: colour(turquoise) !important;
 					}
 				}
 			}
@@ -268,6 +264,15 @@
 					background: colour(turquoise) !important;
 				}
 			}
+		}
+	}
+
+	@include responsive(340px){
+
+		&__section {
+			width: 90%;
+			left: 5%;
+			margin-left: 0;
 		}
 	}
 }

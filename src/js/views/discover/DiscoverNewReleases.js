@@ -121,14 +121,14 @@ class DiscoverNewReleases extends React.Component{
 		}
 
 		var options = (
-			<button className="no-hover" onClick={e => this.props.spotifyActions.getNewReleases()}>
+			<a className="button no-hover" onClick={e => {this.props.uiActions.hideContextMenu(); this.props.spotifyActions.getNewReleases()}}>
 				<Icon name="refresh" />Refresh
-			</button>
+			</a>
 		);
 
 		return (
 			<div className="view discover-new-releases-view preserve-3d">
-				<Header className="overlay" options={options}>
+				<Header className="overlay" options={options} uiActions={this.props.uiActions}>
 					<Icon name="new_releases" type="material" />
 					New releases
 				</Header>

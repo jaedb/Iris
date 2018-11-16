@@ -3069,10 +3069,10 @@ footer {
 @media (max-width: 800px) {
   h1 {
     font-size: 2rem;
-    line-height: 1.8rem; }
+    line-height: 2rem; }
   h2 {
     font-size: 1.6rem;
-    line-height: 1.5rem; }
+    line-height: 1.7rem; }
   h3 {
     font-size: 1.4rem; }
   h4 {
@@ -3813,12 +3813,11 @@ input[type="submit"] {
           font-weight: 200;
           text-transform: capitalize; }
       .context-menu__section {
-        width: 90vw;
-        max-width: 250px;
+        width: 300px;
         position: absolute;
         top: 20%;
         left: 50%;
-        margin-left: -125px;
+        margin-left: -150px;
         max-height: 80%;
         overflow: auto; }
         .context-menu__section--submenu {
@@ -3830,45 +3829,33 @@ input[type="submit"] {
 				 * The following is for buttons automatically pulled from
 				 * a page header, so we don't have classname control
 				 **/ }
+          .context-menu__section--items .button,
           .context-menu__section--items > span {
-            display: block; }
-            .context-menu__section--items > span button,
-            .context-menu__section--items > span .button,
-            .context-menu__section--items > span .dropdown-field {
-              text-decoration: none;
-              display: block;
-              margin: 0;
-              width: auto !important;
-              box-sizing: border-box;
-              text-align: left;
-              text-transform: none;
-              font-weight: 700;
-              font-size: 1.2rem;
-              color: #FFFFFF;
-              background: none;
-              transform: none;
-              padding: 16px 22px; }
-              .context-menu__section--items > span button:before,
-              .context-menu__section--items > span .button:before,
-              .context-menu__section--items > span .dropdown-field:before {
-                display: none !important; }
-              .context-menu__section--items > span button:focus, .context-menu__section--items > span button:active,
-              .context-menu__section--items > span .button:focus,
-              .context-menu__section--items > span .button:active,
-              .context-menu__section--items > span .dropdown-field:focus,
-              .context-menu__section--items > span .dropdown-field:active {
-                -webkit-transition: none !important;
-                -moz-transition: none !important;
-                -o-transition: none !important;
-                transition: none !important;
-                background: #08d58f !important; }
-              .context-menu__section--items > span button .icon,
-              .context-menu__section--items > span button .icon,
-              .context-menu__section--items > span .button .icon,
-              .context-menu__section--items > span .button .icon,
-              .context-menu__section--items > span .dropdown-field .icon,
-              .context-menu__section--items > span .dropdown-field .icon {
-                display: none; }
+            display: block;
+            text-decoration: none;
+            display: block;
+            margin: 0;
+            width: auto !important;
+            box-sizing: border-box;
+            text-align: left;
+            text-transform: none;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #FFFFFF;
+            background: none;
+            transform: none;
+            padding: 16px 22px; }
+            .context-menu__section--items .button .icon,
+            .context-menu__section--items > span .icon {
+              display: none; }
+          .context-menu__section--items .button:before {
+            display: none !important; }
+          .context-menu__section--items .button:focus, .context-menu__section--items .button:active {
+            -webkit-transition: none !important;
+            -moz-transition: none !important;
+            -o-transition: none !important;
+            transition: none !important;
+            background: #08d58f !important; }
       .context-menu__divider {
         display: none; }
       .context-menu__item {
@@ -3890,6 +3877,11 @@ input[type="submit"] {
             -o-transition: none !important;
             transition: none !important;
             background: #08d58f !important; } }
+  @media (max-width: 340px) {
+    .context-menu__section {
+      width: 90%;
+      left: 5%;
+      margin-left: 0; } }
 
 .context-menu-trigger {
   display: inline-block;
@@ -5725,7 +5717,8 @@ main header {
     border-radius: 0;
     border: 0;
     box-shadow: none;
-    font-weight: 700; }
+    font-weight: 700;
+    font-size: 1.2rem; }
     #context-menu .dropdown-field .options:before {
       display: none !important; }
     #context-menu .dropdown-field .options > .liner {
@@ -5830,6 +5823,7 @@ main header {
 #context-menu .filter-field {
   display: block; }
   #context-menu .filter-field form {
+    display: block;
     width: auto;
     padding: 10px 18px; }
     #context-menu .filter-field form .icon {
@@ -7080,7 +7074,9 @@ main .track-view {
 .settings-view .commands-setup {
   padding-bottom: 20px; }
   .settings-view .commands-setup__item {
-    position: relative; }
+    position: relative;
+    padding-top: 10px;
+    padding-bottom: 10px; }
     .settings-view .commands-setup__item .commands__item {
       float: left;
       margin-bottom: -5px; }
