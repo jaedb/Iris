@@ -14,33 +14,6 @@ class Thumbnail extends React.Component{
 	constructor(props){
 		super(props);
 	}
-/*
-	// TODO: ascertain whether this is improving or hindering performance
-	// The UI appears to work perfectly fine without this
-	shouldComponentUpdate(nextProps, nextState){
-
-		// no images at all, and we already know it
-		if (!nextProps.image && !this.props.image && !nextProps.images && !this.props.images) return false
-
-		// image changed
-		if (!this.props.image && nextProps.image) return true
-		if (this.props.image && nextProps.image) return true
-		if (this.props.image != nextProps.image) return true
-
-		// images array changed
-		if (this.props.images === undefined && nextProps.images ) return true
-		if (this.props.images && nextProps.images === undefined) return true
-		if (this.props.images && !nextProps.images || this.props.images.length != nextProps.images.length ) return true
-
-		// image item changed	
-		var size = 'medium'
-		var images = helpers.sizedImages(nextProps.images )
-		if (this.props.size ) size = this.props.size
-		if (this.props.images[size] != images[size]) return true
-
-		return false
-	}
-	*/
 
 	mapImageSizes(){
 
@@ -53,7 +26,7 @@ class Thumbnail extends React.Component{
 			var images = this.props.images;
 
 			// An array of image objects (eg Artists), so just pick the first one
-			if (Array.isArray(images)){
+			if (Array.isArray(images) && images.length > 0){
 				images = images[0];
 			}
 
@@ -63,7 +36,10 @@ class Thumbnail extends React.Component{
 				size = this.props.size;
 			}
 
-			return images[size];
+			// Return the requested size
+			if (images[size]){
+				return images[size];
+			}
 		}
 
 		// No images

@@ -43,22 +43,30 @@
 #context-menu {
 	.filter-field {
 		display: block;
-		border-bottom: 1px solid lighten(colour(grey), 5%);
-
-		.icon {
-			top: 15px;
-			left: 24px;
-			color: colour(white) !important;
-		}
 
 		form {
-			width: 100%;
+			display: block;
+			width: auto;
+			padding: 10px 18px;
+
+			.icon {
+				display: none;
+			}
 
 			input {
-				padding: 14px 18px 14px 42px;
+				padding: 6px 4px;
 				width: 100%;
 				box-sizing: border-box;
-			}			
+				font-size: 1.2rem;
+				font-weight: 700;
+				background: transparent !important;
+				border-bottom: 2px solid rgba(128,128,128,0.25);
+				border-radius: 0;
+
+				&:focus {
+					border-color: colour(white);
+				}
+			}
 		}
 	}
 }

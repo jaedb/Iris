@@ -3069,10 +3069,10 @@ footer {
 @media (max-width: 800px) {
   h1 {
     font-size: 2rem;
-    line-height: 1.8rem; }
+    line-height: 2rem; }
   h2 {
     font-size: 1.6rem;
-    line-height: 1.5rem; }
+    line-height: 1.7rem; }
   h3 {
     font-size: 1.4rem; }
   h4 {
@@ -3656,244 +3656,232 @@ input[type="submit"] {
     -webkit-filter: blur(10px);
     filter: blur(10px); } }
 
-#context-menu {
+.context-menu {
   position: fixed;
-  z-index: 99; }
-  #context-menu > .liner {
-    width: 190px;
-    box-shadow: 2px 3px 6px rgba(0, 0, 0, 0.2);
-    border-radius: 3px;
-    background: #383734;
-    font-size: 14px;
-    font-weight: 500;
-    font-family: "Overpass"; }
-    #context-menu > .liner .title {
-      display: none;
-      padding: 10px 14px;
-      font-weight: bold;
+  z-index: 99;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: "Overpass"; }
+  .context-menu__section {
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+    overflow-y: scroll; }
+    .context-menu__section--submenu {
+      background: #52514d;
+      z-index: 3;
+      border-radius: 3px;
+      transform: translateX(100%);
+      opacity: 0; }
+      .context-menu__section--submenu .context-menu__item {
+        width: 100%; }
+        .context-menu__section--submenu .context-menu__item--close-submenu {
+          opacity: 0.5; }
+        .context-menu__section--submenu .context-menu__item__label .icon {
+          margin-bottom: 0.4em;
+          padding-right: 6px; }
+    .context-menu__section--items {
+      opacity: 1;
+      position: relative;
+      z-index: 2; }
+  .context-menu__item {
+    display: block;
+    overflow-x: hidden; }
+    .context-menu__item__link {
+      position: relative;
+      border-radius: 3px;
+      cursor: pointer;
+      display: block;
+      padding: 9px 12px 8px;
       box-sizing: border-box;
       position: relative;
-      overflow: hidden;
-      text-decoration: none;
-      background: #121212; }
-      #context-menu > .liner .title .background {
-        -webkit-filter: blur(5px);
-        filter: blur(5px);
-        background-size: cover;
-        background-position: 50% 20%;
-        opacity: 0.65;
-        position: absolute;
-        top: -10px;
-        left: -10px;
-        bottom: -10px;
-        right: -10px;
-        z-index: 1; }
-        #context-menu > .liner .title .background.generic {
-          opacity: 0.9;
-          background: #32b5f2;
-          background: -moz-linear-gradient(45deg, #32b5f2 0%, #32b5f2 18%, #0576a6 100%);
-          background: -webkit-gradient(left bottom, right top, color-stop(0%, #32b5f2), color-stop(18%, #32b5f2), color-stop(100%, #0576a6));
-          background: -webkit-linear-gradient(45deg, #32b5f2 0%, #32b5f2 18%, #0576a6 100%);
-          background: -o-linear-gradient(45deg, #32b5f2 0%, #32b5f2 18%, #0576a6 100%);
-          background: -ms-linear-gradient(45deg, #32b5f2 0%, #32b5f2 18%, #0576a6 100%);
-          background: linear-gradient(45deg, #32b5f2 0%, #32b5f2 18%, #0576a6 100%);
-          filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#32b5f2', endColorstr='#0576a6', GradientType=1 ); }
-      #context-menu > .liner .title .text {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        position: relative;
-        z-index: 2;
-        color: #FFFFFF; }
-      #context-menu > .liner .title .type {
-        position: relative;
-        z-index: 2;
-        color: #FFFFFF;
-        opacity: 0.5;
-        font-weight: 200;
-        text-transform: capitalize; }
-    #context-menu > .liner .menu-item-wrapper {
-      display: block;
-      overflow-x: hidden; }
-      #context-menu > .liner .menu-item-wrapper .menu-item {
-        position: relative;
-        border-radius: 3px;
-        cursor: pointer;
-        display: block;
-        padding: 9px 12px 8px;
-        box-sizing: border-box;
-        position: relative;
-        color: #FFFFFF; }
-        #context-menu > .liner .menu-item-wrapper .menu-item:before {
-          -webkit-transition: all 0.2s ease-in-out;
-          -moz-transition: all 0.2s ease-in-out;
-          -o-transition: all 0.2s ease-in-out;
-          transition: all 0.2s ease-in-out;
-          border-radius: 3px;
-          content: '';
-          display: block;
-          position: absolute;
-          top: 0;
-          right: 0;
-          bottom: 0;
-          left: 0;
-          opacity: 0;
-          z-index: 9;
-          pointer-events: none;
-          background: -webkit-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
-          background: -moz-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
-          background: -o-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
-          background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black); }
-        .notouch #context-menu > .liner .menu-item-wrapper .menu-item:hover:before {
-          opacity: 0.15; }
-        .notouch #context-menu > .liner .menu-item-wrapper .menu-item:active {
-          background: #000000;
-          color: #FFFFFF; }
-      #context-menu > .liner .menu-item-wrapper .icon {
-        font-size: 12px; }
-        #context-menu > .liner .menu-item-wrapper .icon.submenu-icon {
-          display: inline-block;
-          float: right;
-          padding-top: 4px; }
-      #context-menu > .liner .menu-item-wrapper .submenu {
+      color: #FFFFFF; }
+      .context-menu__item__link:before {
         -webkit-transition: all 0.2s ease-in-out;
         -moz-transition: all 0.2s ease-in-out;
         -o-transition: all 0.2s ease-in-out;
         transition: all 0.2s ease-in-out;
+        border-radius: 3px;
+        content: '';
+        display: block;
         position: absolute;
         top: 0;
         right: 0;
-        left: 100%;
-        height: 100%;
-        min-height: 300px;
-        max-height: 90vh;
-        width: 0;
-        height: 100%;
-        overflow-y: scroll;
-        background: #52514d;
-        z-index: 3;
-        border-radius: 3px; }
-        #context-menu > .liner .menu-item-wrapper .submenu.expanded {
-          width: 100%;
-          left: 0; }
-        #context-menu > .liner .menu-item-wrapper .submenu .label .icon {
-          margin-bottom: 0.4em;
-          padding-right: 6px; }
-        #context-menu > .liner .menu-item-wrapper .submenu .menu-item {
-          width: 100%; }
-          #context-menu > .liner .menu-item-wrapper .submenu .menu-item.close-submenu {
-            color: #a3a19f; }
-    #context-menu > .liner .divider {
-      height: 1px;
-      padding: 0;
-      margin: 0;
-      background: #454440; }
-    #context-menu > .liner > span {
-      display: block;
-      margin-bottom: -1px; }
-      #context-menu > .liner > span button,
-      #context-menu > .liner > span .button,
-      #context-menu > .liner > span .dropdown-field {
-        text-decoration: none;
-        display: block;
-        margin: 0;
-        min-width: 100% !important;
-        max-width: 100% !important;
-        box-sizing: border-box;
-        font-size: inherit;
-        text-align: left;
-        text-transform: none;
-        font-weight: 300;
-        color: inherit;
-        border-bottom: 1px solid #454440 !important; }
-        #context-menu > .liner > span button .icon,
-        #context-menu > .liner > span button .icon,
-        #context-menu > .liner > span .button .icon,
-        #context-menu > .liner > span .button .icon,
-        #context-menu > .liner > span .dropdown-field .icon,
-        #context-menu > .liner > span .dropdown-field .icon {
-          display: none; }
-        .notouch #context-menu > .liner > span button:hover, .notouch
-        #context-menu > .liner > span .button:hover, .notouch
-        #context-menu > .liner > span .dropdown-field:hover {
-          background: #252525; }
-      #context-menu > .liner > span button,
-      #context-menu > .liner > span .button {
-        padding: 16px 20px;
-        min-width: 100% !important;
-        max-width: 100% !important; }
-      #context-menu > .liner > span .dropdown-field {
-        padding: 16px 20px; }
-        #context-menu > .liner > span .dropdown-field .label {
-          padding: 0 0 3px 0;
-          font-weight: 800; }
-        #context-menu > .liner > span .dropdown-field .options {
-          display: block;
-          position: static;
-          background: transparent;
-          border-radius: 0;
-          border: 0;
-          box-shadow: none; }
-          #context-menu > .liner > span .dropdown-field .options:before {
-            display: none !important; }
-          #context-menu > .liner > span .dropdown-field .options > .liner {
-            background: transparent;
-            color: #FFFFFF !important;
-            margin: -3px -5px; }
-            #context-menu > .liner > span .dropdown-field .options > .liner:before {
-              display: none !important; }
-            #context-menu > .liner > span .dropdown-field .options > .liner .option {
-              display: inline-block;
-              padding: 3px 5px;
-              border-radius: 0;
-              opacity: 0.6;
-              color: #FFFFFF !important; }
-              #context-menu > .liner > span .dropdown-field .options > .liner .option:before {
-                display: none !important; }
-              #context-menu > .liner > span .dropdown-field .options > .liner .option .icon {
-                display: inline-block;
-                position: static;
-                padding-right: 2px;
-                padding-bottom: 3px;
-                font-size: 0.9em; }
+        bottom: 0;
+        left: 0;
+        opacity: 0;
+        z-index: 9;
+        pointer-events: none;
+        background: -webkit-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
+        background: -moz-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
+        background: -o-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
+        background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black); }
+      .notouch .context-menu__item__link:hover:before {
+        opacity: 0.15; }
+      .notouch .context-menu__item__link:active {
+        background: #000000;
+        color: #FFFFFF; }
+      .context-menu__item__link .icon {
+        font-size: 12px; }
+        .context-menu__item__link .icon.submenu-icon {
+          display: inline-block;
+          float: right;
+          padding-top: 4px; }
+  .context-menu__divider {
+    height: 1px;
+    padding: 0;
+    margin: 0;
+    background: #454440; }
+  .context-menu--submenu-expanded .context-menu__section {
+    transform: translateX(-100%);
+    opacity: 0; }
+    .context-menu--submenu-expanded .context-menu__section--submenu {
+      transform: translateX(0);
+      opacity: 1; }
+  @media (min-width: 800px) {
+    .context-menu {
+      background: #383734;
+      width: 200px;
+      overflow-x: hidden;
+      border-radius: 3px; }
+      .context-menu__section {
+        background: none;
+        overflow: visible; }
+        .context-menu__section--submenu {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0; }
+      .context-menu__title {
+        display: none; } }
   @media (max-width: 800px) {
-    #context-menu {
+    .context-menu {
       top: 0 !important;
       right: 0 !important;
       bottom: 0 !important;
       left: 0 !important;
       margin: 0 !important;
-      overflow-y: scroll; }
-      #context-menu .background {
-        position: fixed;
+      animation-name: fadein;
+      animation-duration: 0.2s;
+      animation-timing-function: linear;
+      animation-iteration-count: 1; }
+    @keyframes fadein {
+      0% {
+        opacity: 0;
+        transform: translateY(20px); }
+      100% {
+        opacity: 1;
+        transform: translateY(0px); } }
+      .context-menu__background {
+        position: absolute;
         top: 0;
         right: 0;
         bottom: 0;
         left: 0;
-        background: rgba(0, 0, 0, 0.88);
+        background-image: linear-gradient(rgba(10, 10, 10, 0) 10%, rgba(10, 10, 10, 0.6) 15%, rgba(10, 10, 10, 0.95) 20%);
         z-index: 1; }
-      #context-menu > .liner {
-        width: 250px;
-        margin: 30px auto;
-        max-width: 90vw;
-        position: relative;
-        z-index: 2;
-        border-radius: 3px; }
-        #context-menu > .liner .title {
-          display: block;
-          padding: 14px 18px;
-          box-sizing: border-box;
-          border-radius: 3px 3px 0 0; }
-        #context-menu > .liner > span button,
-        #context-menu > .liner > span .button {
+      .context-menu__title {
+        padding: 16px 22px;
+        pointer-events: none; }
+        .context-menu__title::after {
+          content: '';
+          clear: both;
+          display: block; }
+        .context-menu__title .thumbnail {
+          float: left;
+          width: 36px;
+          margin-right: 20px; }
+        .context-menu__title__text {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          position: relative;
+          z-index: 2;
           color: #FFFFFF;
+          font-size: 1.2rem;
           font-weight: 800;
-          background: transparent; }
-        #context-menu > .liner > span .dropdown-field {
-          color: #FFFFFF; }
-        #context-menu > .liner .menu-item-wrapper .menu-item {
-          padding: 14px 18px;
-          box-sizing: border-box; } }
+          padding-top: 8px;
+          opacity: 0.5; }
+        .context-menu__title__type {
+          display: none;
+          position: relative;
+          z-index: 2;
+          color: #FFFFFF;
+          opacity: 0.5;
+          font-weight: 200;
+          text-transform: capitalize; }
+      .context-menu__section {
+        width: 300px;
+        position: absolute;
+        top: 20%;
+        left: 50%;
+        margin-left: -150px;
+        max-height: 80%;
+        overflow: auto; }
+        .context-menu__section--submenu {
+          background: none;
+          border-radius: 0;
+          opacity: 0; }
+        .context-menu__section--items {
+          /**
+				 * The following is for buttons automatically pulled from
+				 * a page header, so we don't have classname control
+				 **/ }
+          .context-menu__section--items .button,
+          .context-menu__section--items > span {
+            display: block;
+            text-decoration: none;
+            display: block;
+            margin: 0;
+            width: auto !important;
+            box-sizing: border-box;
+            text-align: left;
+            text-transform: none;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #FFFFFF;
+            background: none;
+            transform: none;
+            padding: 16px 22px; }
+            .context-menu__section--items .button .icon,
+            .context-menu__section--items > span .icon {
+              display: none; }
+          .context-menu__section--items .button:before {
+            display: none !important; }
+          .context-menu__section--items .button:focus, .context-menu__section--items .button:active {
+            -webkit-transition: none !important;
+            -moz-transition: none !important;
+            -o-transition: none !important;
+            transition: none !important;
+            background: #08d58f !important; }
+      .context-menu__divider {
+        display: none; }
+      .context-menu__item {
+        font-size: 1.2rem;
+        font-weight: 800;
+        opacity: 1; }
+        .context-menu__item__link {
+          -webkit-transition: all 0.2s ease-in-out;
+          -moz-transition: all 0.2s ease-in-out;
+          -o-transition: all 0.2s ease-in-out;
+          transition: all 0.2s ease-in-out;
+          padding: 16px 22px;
+          box-sizing: border-box; }
+          .context-menu__item__link:before {
+            display: none !important; }
+          .context-menu__item__link:focus, .context-menu__item__link:active {
+            -webkit-transition: none !important;
+            -moz-transition: none !important;
+            -o-transition: none !important;
+            transition: none !important;
+            background: #08d58f !important; } }
+  @media (max-width: 340px) {
+    .context-menu__section {
+      width: 90%;
+      left: 5%;
+      margin-left: 0; } }
 
 .context-menu-trigger {
   display: inline-block;
@@ -4057,7 +4045,9 @@ input[type="submit"] {
       content: ')'; }
     .list__item__column__item--context-menu-trigger {
       font-size: 14px;
-      margin: -14px -14px -14px 0; }
+      margin: -14px -14px -14px 0;
+      position: relative;
+      z-index: 2; }
       .list__item__column__item--context-menu-trigger:before {
         display: none !important; }
     .light-theme .list__item__column__item .flag {
@@ -5710,6 +5700,47 @@ main header {
           .notouch .dropdown-field .options > .liner .option:hover:before {
             opacity: 0.15; }
 
+#context-menu .dropdown-field {
+  padding: 16px 20px; }
+  #context-menu .dropdown-field:active, #context-menu .dropdown-field:focus {
+    background: none !important; }
+  #context-menu .dropdown-field .label {
+    padding: 0 0 3px 0;
+    opacity: 0.5;
+    font-size: 1rem; }
+    #context-menu .dropdown-field .label, #context-menu .dropdown-field .label:hover {
+      color: #FFFFFF; }
+  #context-menu .dropdown-field .options {
+    display: block;
+    position: static;
+    background: transparent;
+    border-radius: 0;
+    border: 0;
+    box-shadow: none;
+    font-weight: 700;
+    font-size: 1.2rem; }
+    #context-menu .dropdown-field .options:before {
+      display: none !important; }
+    #context-menu .dropdown-field .options > .liner {
+      background: transparent;
+      color: #FFFFFF !important;
+      margin: -3px -5px; }
+      #context-menu .dropdown-field .options > .liner:before {
+        display: none !important; }
+      #context-menu .dropdown-field .options > .liner .option {
+        display: inline-block;
+        padding: 3px 5px;
+        border-radius: 0;
+        color: #FFFFFF !important; }
+        #context-menu .dropdown-field .options > .liner .option:before {
+          display: none !important; }
+        #context-menu .dropdown-field .options > .liner .option .icon {
+          display: inline-block;
+          position: static;
+          padding-right: 2px;
+          padding-bottom: 3px;
+          font-size: 0.9em; }
+
 .autocomplete-field {
   position: relative; }
   .autocomplete-field .input {
@@ -5790,18 +5821,24 @@ main header {
   background: #383734; }
 
 #context-menu .filter-field {
-  display: block;
-  border-bottom: 1px solid #454440; }
-  #context-menu .filter-field .icon {
-    top: 15px;
-    left: 24px;
-    color: #FFFFFF !important; }
+  display: block; }
   #context-menu .filter-field form {
-    width: 100%; }
+    display: block;
+    width: auto;
+    padding: 10px 18px; }
+    #context-menu .filter-field form .icon {
+      display: none; }
     #context-menu .filter-field form input {
-      padding: 14px 18px 14px 42px;
+      padding: 6px 4px;
       width: 100%;
-      box-sizing: border-box; }
+      box-sizing: border-box;
+      font-size: 1.2rem;
+      font-weight: 700;
+      background: transparent !important;
+      border-bottom: 2px solid rgba(128, 128, 128, 0.25);
+      border-radius: 0; }
+      #context-menu .filter-field form input:focus {
+        border-color: #FFFFFF; }
 
 .sources-priority-field {
   padding: 7px 0; }
@@ -6333,6 +6370,19 @@ main header {
         .related-artists__item--link:hover .related-artists__item__thumbnail {
           border-color: #08d58f;
           opacity: 1; }
+
+.error-boundary {
+  padding: 20px; }
+  .error-boundary__title {
+    color: #cf2d2d;
+    padding: 10px;
+    margin: 0; }
+    .error-boundary__title .icon {
+      font-size: 1em;
+      padding-right: 10px;
+      vertical-align: middle; }
+  .error-boundary__trace {
+    padding: 10px; }
 
 .artist-view .body-loader:not(.lazy-loader) {
   padding: 15vh 0; }
@@ -7024,7 +7074,9 @@ main .track-view {
 .settings-view .commands-setup {
   padding-bottom: 20px; }
   .settings-view .commands-setup__item {
-    position: relative; }
+    position: relative;
+    padding-top: 10px;
+    padding-bottom: 10px; }
     .settings-view .commands-setup__item .commands__item {
       float: left;
       margin-bottom: -5px; }

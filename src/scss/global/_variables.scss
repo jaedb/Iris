@@ -84,11 +84,11 @@ $bp_shallow: 650px;
     animation-iteration-count: infinite;
 }
 
-@mixin fadein($duration: 0.2s){
+@mixin fadein($duration: 0.2s, $distance: 5px, $opacity: 0){
 	@keyframes fadein {
 	    0% {
-	    	opacity: 0;
-	    	transform: translateY(5px);
+	    	opacity: $opacity;
+	    	transform: translateY($distance);
 	    }
 	    100% {
 	    	opacity: 1;

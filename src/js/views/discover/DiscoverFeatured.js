@@ -77,7 +77,7 @@ class DiscoverFeatured extends React.Component{
 		if (helpers.isLoading(this.props.load_queue,['spotify_browse/featured-playlists'])){
 			return (
 				<div className="view discover-featured-view">
-					<Header className="overlay">
+					<Header className="overlay" uiActions={this.props.uiActions}>
 						<Icon name="star" type="material" />
 						Featured playlists
 					</Header>
@@ -105,9 +105,9 @@ class DiscoverFeatured extends React.Component{
 		}
 
 		var options = (
-			<button className="no-hover" onClick={e => this.props.spotifyActions.getFeaturedPlaylists()}>
+			<a className="button no-hover" onClick={e => {this.props.uiActions.hideContextMenu(); this.props.spotifyActions.getFeaturedPlaylists()}}>
 				<Icon name="refresh" />Refresh
-			</button>
+			</a>
 		);
 
 		return (

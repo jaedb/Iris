@@ -17,11 +17,12 @@ export default class FilterField extends React.Component{
 	}
 
 	componentWillMount(){
-		window.addEventListener("keyup", this.handleKeyUp, false)
+		window.addEventListener("keyup", this.handleKeyUp, false);
+		this.setState({value: this.props.initialValue});
 	}
 
 	componentWillUnmount(){
-		window.removeEventListener("keyup", this.handleKeyUp, false)
+		window.removeEventListener("keyup", this.handleKeyUp, false);
 	}
 
 	handleKeyUp(e){
@@ -59,7 +60,6 @@ export default class FilterField extends React.Component{
 		return (
 			<span className={"filter-field "+(this.state.active ? 'active' : '')} onClick={e => this.activate()}>
 				<form>
-					<Icon name="search" type="material" />
 					<input
 						type="text"
 						placeholder="Filter"
@@ -68,6 +68,7 @@ export default class FilterField extends React.Component{
 						onBlur={e => this.handleBlur()}
 						onChange={e => this.handleChange(e.target.value)}
 					/>
+					<Icon name="search" type="material" />
 				</form>
 			</span>
 		)

@@ -310,7 +310,10 @@ class LibraryAlbums extends React.Component{
 
 		var options = (
 			<span>
-				<FilterField handleChange={value => this.setState({filter: value, limit: this.state.per_page})} />
+				<FilterField 
+					initialValue={this.state.filter}
+					handleChange={value => this.setState({filter: value, limit: this.state.per_page})}
+				/>
 				<DropdownField
 					icon="sort" 
 					name="Sort"

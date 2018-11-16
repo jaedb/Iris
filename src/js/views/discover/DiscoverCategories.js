@@ -52,7 +52,7 @@ class DiscoverCategories extends React.Component{
 
 		return (
 			<div className="view discover-categories-view">
-				<Header>
+				<Header uiActions={this.props.uiActions}>
 					<Icon name="mood" type="material" />
 					Genre / Mood
 				</Header>
