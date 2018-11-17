@@ -101,7 +101,7 @@ class PlaybackControls extends React.Component{
 	renderConsumeButton(){
 		var button = <a className="control tooltip" onClick={() => this.props.mopidyActions.setConsume(true)}><Icon name="restaurant" type="material" /><span className="tooltip__content">Consume</span></a>
 		if (this.props.consume){
-			button = <a className="control active tooltip" onClick={() => this.props.mopidyActions.setConsume(false)}><Icon name="restaurant" type="material" /><span className="tooltip__content">Consume</span></a>
+			button = <a className="control control--active tooltip" onClick={() => this.props.mopidyActions.setConsume(false)}><Icon name="restaurant" type="material" /><span className="tooltip__content">Consume</span></a>
 		}
 		return button;
 	}
@@ -109,7 +109,7 @@ class PlaybackControls extends React.Component{
 	renderRandomButton(){
 		var button = <a className="control tooltip" onClick={() => this.props.mopidyActions.setRandom(true)}><Icon name="shuffle" type="material" /><span className="tooltip__content">Shuffle</span></a>
 		if (this.props.random){
-			button = <a className="control active tooltip" onClick={() => this.props.mopidyActions.setRandom(false)}><Icon name="shuffle" type="material" /><span className="tooltip__content">Shuffle</span></a>
+			button = <a className="control control--active tooltip" onClick={() => this.props.mopidyActions.setRandom(false)}><Icon name="shuffle" type="material" /><span className="tooltip__content">Shuffle</span></a>
 		}
 		return button;
 	}
@@ -117,7 +117,7 @@ class PlaybackControls extends React.Component{
 	renderRepeatButton(){
 		var button = <a className="control tooltip" onClick={() => this.props.mopidyActions.setRepeat(true)}><Icon name="repeat" /><span className="tooltip__content">Repeat</span></a>
 		if (this.props.repeat){
-			button = <a className="control active tooltip" onClick={() => this.props.mopidyActions.setRepeat(false)}><Icon name="repeat" /><span className="tooltip__content">Repeat</span></a>
+			button = <a className="control control--active tooltip" onClick={() => this.props.mopidyActions.setRepeat(false)}><Icon name="repeat" /><span className="tooltip__content">Repeat</span></a>
 		}
 		return button;
 	}
@@ -129,7 +129,7 @@ class PlaybackControls extends React.Component{
 		}
 
 		return (
-			<div className={(this.state.expanded ? "expanded playback-controls" : "playback-controls")}>
+			<div className={(this.state.expanded ? "playback-controls--expanded playback-controls" : "playback-controls")}>
 
 				{this.props.next_track && this.props.next_track.images ? <Thumbnail className="hide" size="large" images={this.props.next_track.images} /> : null}
 				

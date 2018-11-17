@@ -29,8 +29,8 @@
 				&__item {
 					width: 100%;
 
-					&--close-submenu {
-						opacity: 0.5;
+					&__link--close-submenu {
+						color: colour(mid_grey);
 					}
 
 					&__label {
@@ -114,6 +114,10 @@
 		overflow-x: hidden;
 		border-radius: 3px;
 
+		&--closing {
+			display: none;
+		}
+
 		&__section {
 			background: none;
 			overflow: visible;
@@ -133,12 +137,17 @@
 	}
 
 	@include responsive($bp_medium){
+		@include fadein(0.2s, 40px);
 		top: 0 !important;
 		right: 0 !important;
 		bottom: 0 !important;
 		left: 0 !important;
 		margin: 0 !important;
-		@include fadein(0.2s, 20px);
+		text-align: center;
+
+		&--closing {
+			@include fadeout(0.2s, 40px);
+		}
 
 		&__background {
 			position: absolute;
@@ -146,7 +155,7 @@
 			right: 0;
 			bottom: 0;
 			left: 0;
-			background-image: linear-gradient(rgba(10,10,10,0) 10%, rgba(10,10,10,0.60) 15%, rgba(10,10,10,0.95) 20%);
+			background-image: linear-gradient(rgba(24,24,24,0) 0%, rgba(24,24,24,0.95) 20%);
 			z-index: 1;
 		}
 
@@ -184,11 +193,11 @@
 		}
 
 		&__section {
-			width: 300px;
 			position: absolute;
 			top: 20%;
-			left: 50%;
-			margin-left: -150px;
+			left: 0;
+			right: 0;
+			padding: 0 10%;
 			max-height: 80%;
 			overflow: auto;
 
@@ -204,15 +213,14 @@
 				 * The following is for buttons automatically pulled from
 				 * a page header, so we don't have classname control
 				 **/
-				.button,
-				& > span {
+				.button {
 					display: block;
 					text-decoration: none;
 					display: block;
 					margin: 0;
 					width: auto !important;
 					box-sizing: border-box;
-					text-align: left;
+					text-align: center;
 					text-transform: none;
 					font-weight: 700;
 					font-size: 1.2rem;
@@ -224,9 +232,7 @@
 					.icon {
 						display: none;					
 					}
-				}
 
-				.button {
 					&:before {
 						display: none !important;
 					}
@@ -264,15 +270,6 @@
 					background: colour(turquoise) !important;
 				}
 			}
-		}
-	}
-
-	@include responsive(340px){
-
-		&__section {
-			width: 90%;
-			left: 5%;
-			margin-left: 0;
 		}
 	}
 }

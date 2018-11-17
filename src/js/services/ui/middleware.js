@@ -64,11 +64,35 @@ const UIMiddleware = (function(){
 
             case 'CLOSE_MODAL':
                 if (store.getState().ui.allow_reporting){
-	                ReactGA.event({ category: 'Modal', action: 'Closed', label: null });
-	            }
+                    ReactGA.event({ category: 'Modal', action: 'Closed', label: null });
+                }
                 $('body').removeClass('modal-open')
                 next(action)
                 break
+
+            case 'HIDE_CONTEXT_MENU':
+                if (store.getState().ui.context_menu){
+                    setTimeout(
+                        () => {
+                            store.dispatch(uiActions.removeContextMenu())
+                        },
+                        200
+                    );
+                    next(action);
+                }
+                break;
+
+            case 'HIDE_TOUCH_CONTEXT_MENU':
+                if (store.getState().ui.context_menu){
+                    setTimeout(
+                        () => {
+                            store.dispatch(uiActions.removeTouchContextMenu())
+                        },
+                        200
+                    );
+                    next(action);
+                }
+                break;
 
             case 'BROWSER_NOTIFICATION':
 

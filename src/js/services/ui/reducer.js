@@ -50,6 +50,15 @@ export default function reducer(ui = {}, action){
             });
 
         case 'HIDE_CONTEXT_MENU':
+            return Object.assign(
+                {}, 
+                ui, 
+                {
+                    context_menu: Object.assign({}, ui.context_menu, {closing: true})
+                }
+            );
+
+        case 'REMOVE_CONTEXT_MENU':
             return Object.assign({}, ui, {context_menu: null});
 
         case 'SHOW_TOUCH_CONTEXT_MENU':
@@ -58,6 +67,15 @@ export default function reducer(ui = {}, action){
             });
 
         case 'HIDE_TOUCH_CONTEXT_MENU':
+            return Object.assign(
+                {}, 
+                ui, 
+                {
+                    touch_context_menu: Object.assign({}, ui.touch_context_menu, {closing: true})
+                }
+            );
+
+        case 'REMOVE_TOUCH_CONTEXT_MENU':
             return Object.assign({}, ui, {touch_context_menu: null});
 
 

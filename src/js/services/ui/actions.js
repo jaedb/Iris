@@ -56,6 +56,12 @@ export function hideContextMenu(){
     }
 }
 
+export function removeContextMenu(){
+    return {
+        type: 'REMOVE_CONTEXT_MENU'
+    }
+}
+
 export function showTouchContextMenu(data){
     return {
         type: 'SHOW_TOUCH_CONTEXT_MENU',
@@ -66,6 +72,12 @@ export function showTouchContextMenu(data){
 export function hideTouchContextMenu(){
     return {
         type: 'HIDE_TOUCH_CONTEXT_MENU'
+    }
+}
+
+export function removeTouchContextMenu(){
+    return {
+        type: 'REMOVE_TOUCH_CONTEXT_MENU'
     }
 }
 

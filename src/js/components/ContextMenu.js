@@ -769,6 +769,10 @@ class ContextMenu extends React.Component{
 		if (this.state.submenu){
 			className += ' context-menu--submenu-expanded';
 		}
+		
+		if (this.props.menu.closing){
+			className += ' context-menu--closing';
+		}
 
 		if (this.props.menu.position_x > (window.innerWidth - 174)){
 			style.left = 'auto';

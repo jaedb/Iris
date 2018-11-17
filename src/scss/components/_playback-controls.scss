@@ -105,7 +105,7 @@
 			margin-bottom: 0;
 		}
 
-		&.active {
+		&--active {
 			color: colour(turquoise) !important;
 		}
 
@@ -264,8 +264,9 @@
 			}
 		}
 
-		&.expanded {
+		&--expanded {
 			height: 135px;
+			max-height: 100%;
 
 			section {
 				&.settings {
