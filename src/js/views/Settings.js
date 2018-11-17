@@ -194,9 +194,9 @@ class Settings extends React.Component {
 
 		var options = (
 			<span>
-				<button className="no-hover" onClick={e => hashHistory.push(global.baseURL+'settings/debug')}>
+				<a className="button no-hover" onClick={e => hashHistory.push(global.baseURL+'settings/debug')}>
 					<Icon name="code" />Debug
-				</button>
+				</a>
 				<a className="no-hover button" href="https://github.com/jaedb/Iris/wiki" target="_blank">
 					<Icon name="help" />Help
 				</a>

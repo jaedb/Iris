@@ -63,7 +63,7 @@ class OutputControl extends React.Component{
 		for (var key in this.props.snapcast_clients){
 			if (this.props.snapcast_clients.hasOwnProperty(key)){
 				var client = this.props.snapcast_clients[key];
-				if (client.connected){
+				if (client.connected || this.props.show_disconnected_clients){
 					clients.push(client);
 				}
 			}
@@ -213,6 +213,7 @@ const mapStateToProps = (state, ownProps) => {
 		http_streaming_mute: state.core.http_streaming_mute,
 		pusher_connected: state.pusher.connected,
 		snapcast_enabled: (state.pusher.config ? state.pusher.config.snapcast_enabled : null),
+		show_disconnected_clients: (state.ui.snapcast_show_disconnected_clients !== undefined ? state.ui.snapcast_show_disconnected_clients : false),
 		snapcast_clients: state.snapcast.clients,
 		pusher_commands: (state.pusher.commands ? state.pusher.commands : {})
 	}

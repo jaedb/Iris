@@ -84,7 +84,7 @@ $bp_shallow: 650px;
     animation-iteration-count: infinite;
 }
 
-@mixin fadein($duration: 0.2s, $distance: 5px, $opacity: 0){
+@mixin fadein($duration: 0.2s, $distance: 5px, $opacity: 0, $delay: 0){
 	@keyframes fadein {
 	    0% {
 	    	opacity: $opacity;
@@ -96,24 +96,30 @@ $bp_shallow: 650px;
 	    }
 	}
 
+	animation-delay: $delay;
+	-webkit-animation-fill-mode: forwards;
+	animation-fill-mode: forwards;
     animation-name: fadein;
     animation-duration: $duration;
     animation-timing-function: linear;
     animation-iteration-count: 1;
 }
 
-@mixin fadeout($duration: 0.2s){
+@mixin fadeout($duration: 0.2s, $distance: 5px, $opacity: 1, $delay: 0){
 	@keyframes fadeout {
 	    0% {
-	    	opacity: 1;
+	    	opacity: $opacity;
 	    	transform: translateY(0px);
 	    }
 	    100% {
 	    	opacity: 0;
-	    	transform: translateY(5px);
+	    	transform: translateY($distance);
 	    }
 	}
 
+	animation-delay: $delay;
+	-webkit-animation-fill-mode: forwards;
+	animation-fill-mode: forwards;
     animation-name: fadeout;
     animation-duration: $duration;
     animation-timing-function: linear;

@@ -151,9 +151,9 @@ class Queue extends React.Component{
 				<Link className="button no-hover" to={global.baseURL+'queue/history'}>
 					<Icon name="history" />History
 				</Link>
-				<button className="no-hover" onClick={e => {this.props.mopidyActions.clearTracklist(); this.props.uiActions.hideContextMenu();}}>
+				<a className="button no-hover" onClick={e => {this.props.mopidyActions.clearTracklist(); this.props.uiActions.hideContextMenu();}}>
 					<Icon name="delete_sweep" />Clear
-				</button>
+				</a>
 				<Link className="button no-hover" to={global.baseURL+'queue/add-uri'}>
 					<Icon name="playlist_add" />Add URI
 				</Link>

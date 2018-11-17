@@ -96,7 +96,10 @@ const MopidyMiddleware = (function(){
 
             case 'event:trackPlaybackEnded':
                 store.dispatch(mopidyActions.clearCurrentTrack());
-                store.dispatch(mopidyActions.getTimePosition());
+                store.dispatch({
+                    type: 'MOPIDY_TIME_POSITION',
+                    time_position: 0
+                });
                 break;
 
             case 'event:trackPlaybackStarted':
