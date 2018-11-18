@@ -18698,19 +18698,41 @@ var TrackList = function (_React$Component) {
 			// Construct a basic track object, based on our unique track key
 			// This is enough to perform interactions (dragging, selecting, etc)
 			var array = [];
-			for (var i = 0; i < keys.length; i++) {
-				var key = keys[i].split('@@');
+			var _iteratorNormalCompletion = true;
+			var _didIteratorError = false;
+			var _iteratorError = undefined;
 
-				if (indexes_only) {
-					array.push(key[0]);
-				} else {
-					array.push({
-						index: parseInt(key[0]),
-						tlid: parseInt(key[1]),
-						uri: key[2],
-						context: key[3],
-						context_uri: key[4]
-					});
+			try {
+				for (var _iterator = keys[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+					var key = _step.value;
+
+					var key_components = key.split('@@');
+
+					if (indexes_only) {
+						array.push(key_components[0]);
+					} else {
+						array.push({
+							key: key,
+							index: parseInt(key_components[0]),
+							tlid: parseInt(key_components[1]),
+							uri: key_components[2],
+							context: key_components[3],
+							context_uri: key_components[4]
+						});
+					}
+				}
+			} catch (err) {
+				_didIteratorError = true;
+				_iteratorError = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion && _iterator.return) {
+						_iterator.return();
+					}
+				} finally {
+					if (_didIteratorError) {
+						throw _iteratorError;
+					}
 				}
 			}
 
@@ -64195,6 +64217,7 @@ var ContextMenu = function (_React$Component) {
 	}, {
 		key: 'renderTitle',
 		value: function renderTitle() {
+			var _this2 = this;
 
 			var context = this.getContext();
 
@@ -64209,7 +64232,14 @@ var ContextMenu = function (_React$Component) {
 						' ',
 						context.nice_name,
 						context.items_count > 1 ? 's' : null,
-						' selected'
+						' selected ',
+						_react2.default.createElement(
+							'span',
+							{ className: 'context-menu__title__deselect', onClick: function onClick(e) {
+									_this2.props.uiActions.setSelectedTracks([]);_this2.props.uiActions.hideContextMenu();
+								} },
+							_react2.default.createElement(_Icon2.default, { name: 'close' })
+						)
 					)
 				);
 			}
@@ -64282,7 +64312,7 @@ var ContextMenu = function (_React$Component) {
 	}, {
 		key: 'renderSubmenu',
 		value: function renderSubmenu() {
-			var _this2 = this;
+			var _this3 = this;
 
 			var list = null;
 			var loader = null;
@@ -64327,7 +64357,7 @@ var ContextMenu = function (_React$Component) {
 								_react2.default.createElement(
 									'a',
 									{ className: 'context-menu__item__link', onClick: function onClick(e) {
-											return _this2.addTracksToPlaylist(e, playlist.uri);
+											return _this3.addTracksToPlaylist(e, playlist.uri);
 										} },
 									_react2.default.createElement(
 										'span',
@@ -64350,7 +64380,7 @@ var ContextMenu = function (_React$Component) {
 					_react2.default.createElement(
 						'a',
 						{ className: 'context-menu__item__link context-menu__item__link--close-submenu', onClick: function onClick(e) {
-								return _this2.setState({ submenu: null });
+								return _this3.setState({ submenu: null });
 							} },
 						_react2.default.createElement(
 							'span',
@@ -64367,7 +64397,7 @@ var ContextMenu = function (_React$Component) {
 	}, {
 		key: 'renderItems',
 		value: function renderItems() {
-			var _this3 = this;
+			var _this4 = this;
 
 			var context = this.getContext();
 
@@ -64377,7 +64407,7 @@ var ContextMenu = function (_React$Component) {
 				_react2.default.createElement(
 					'a',
 					{ className: 'context-menu__item__link', onClick: function onClick(e) {
-							return _this3.playURIs(e);
+							return _this4.playURIs(e);
 						} },
 					_react2.default.createElement(
 						'span',
@@ -64393,7 +64423,7 @@ var ContextMenu = function (_React$Component) {
 				_react2.default.createElement(
 					'a',
 					{ className: 'context-menu__item__link', onClick: function onClick(e) {
-							return _this3.playPlaylist(e);
+							return _this4.playPlaylist(e);
 						} },
 					_react2.default.createElement(
 						'span',
@@ -64409,7 +64439,7 @@ var ContextMenu = function (_React$Component) {
 				_react2.default.createElement(
 					'a',
 					{ className: 'context-menu__item__link', onClick: function onClick(e) {
-							return _this3.shufflePlayPlaylist(e);
+							return _this4.shufflePlayPlaylist(e);
 						} },
 					_react2.default.createElement(
 						'span',
@@ -64425,7 +64455,7 @@ var ContextMenu = function (_React$Component) {
 				_react2.default.createElement(
 					'a',
 					{ className: 'context-menu__item__link', onClick: function onClick(e) {
-							return _this3.playQueueItem(e);
+							return _this4.playQueueItem(e);
 						} },
 					_react2.default.createElement(
 						'span',
@@ -64441,7 +64471,7 @@ var ContextMenu = function (_React$Component) {
 				_react2.default.createElement(
 					'a',
 					{ className: 'context-menu__item__link', onClick: function onClick(e) {
-							return _this3.addToQueue(e, true);
+							return _this4.addToQueue(e, true);
 						} },
 					_react2.default.createElement(
 						'span',
@@ -64457,7 +64487,7 @@ var ContextMenu = function (_React$Component) {
 				_react2.default.createElement(
 					'a',
 					{ className: 'context-menu__item__link', onClick: function onClick(e) {
-							return _this3.playArtistTopTracks(e);
+							return _this4.playArtistTopTracks(e);
 						} },
 					_react2.default.createElement(
 						'span',
@@ -64473,7 +64503,7 @@ var ContextMenu = function (_React$Component) {
 				_react2.default.createElement(
 					'a',
 					{ className: 'context-menu__item__link', onClick: function onClick(e) {
-							return _this3.addToQueue(e);
+							return _this4.addToQueue(e);
 						} },
 					_react2.default.createElement(
 						'span',
@@ -64489,7 +64519,7 @@ var ContextMenu = function (_React$Component) {
 				_react2.default.createElement(
 					'a',
 					{ className: 'context-menu__item__link', onClick: function onClick(e) {
-							return _this3.setSubmenu('add-to-playlist');
+							return _this4.setSubmenu('add-to-playlist');
 						} },
 					_react2.default.createElement(
 						'span',
@@ -64506,7 +64536,7 @@ var ContextMenu = function (_React$Component) {
 				_react2.default.createElement(
 					'a',
 					{ className: 'context-menu__item__link', onClick: function onClick(e) {
-							return _this3.toggleInLibrary(e, context.in_library);
+							return _this4.toggleInLibrary(e, context.in_library);
 						} },
 					_react2.default.createElement(
 						'span',
@@ -64539,7 +64569,7 @@ var ContextMenu = function (_React$Component) {
 					_react2.default.createElement(
 						'a',
 						{ className: 'context-menu__item__link', onClick: function onClick(e) {
-								return _this3.toggleLoved(e, context.is_loved);
+								return _this4.toggleLoved(e, context.is_loved);
 							} },
 						_react2.default.createElement(
 							'span',
@@ -64557,7 +64587,7 @@ var ContextMenu = function (_React$Component) {
 				_react2.default.createElement(
 					'a',
 					{ className: 'context-menu__item__link', onClick: function onClick(e) {
-							return _this3.goToArtist(e);
+							return _this4.goToArtist(e);
 						} },
 					_react2.default.createElement(
 						'span',
@@ -64573,7 +64603,7 @@ var ContextMenu = function (_React$Component) {
 				_react2.default.createElement(
 					'a',
 					{ className: 'context-menu__item__link', onClick: function onClick(e) {
-							return _this3.goToAlbum(e);
+							return _this4.goToAlbum(e);
 						} },
 					_react2.default.createElement(
 						'span',
@@ -64589,7 +64619,7 @@ var ContextMenu = function (_React$Component) {
 				_react2.default.createElement(
 					'a',
 					{ className: 'context-menu__item__link', onClick: function onClick(e) {
-							return _this3.goToUser(e);
+							return _this4.goToUser(e);
 						} },
 					_react2.default.createElement(
 						'span',
@@ -64605,7 +64635,7 @@ var ContextMenu = function (_React$Component) {
 				_react2.default.createElement(
 					'a',
 					{ className: 'context-menu__item__link', onClick: function onClick(e) {
-							return _this3.goToTrack(e);
+							return _this4.goToTrack(e);
 						} },
 					_react2.default.createElement(
 						'span',
@@ -64621,7 +64651,7 @@ var ContextMenu = function (_React$Component) {
 				_react2.default.createElement(
 					'a',
 					{ className: 'context-menu__item__link', onClick: function onClick(e) {
-							return _this3.goToRecommendations(e);
+							return _this4.goToRecommendations(e);
 						} },
 					_react2.default.createElement(
 						'span',
@@ -64637,7 +64667,7 @@ var ContextMenu = function (_React$Component) {
 				_react2.default.createElement(
 					'a',
 					{ className: 'context-menu__item__link', onClick: function onClick(e) {
-							return _this3.startRadio(e);
+							return _this4.startRadio(e);
 						} },
 					_react2.default.createElement(
 						'span',
@@ -64653,7 +64683,7 @@ var ContextMenu = function (_React$Component) {
 				_react2.default.createElement(
 					'a',
 					{ className: 'context-menu__item__link', onClick: function onClick(e) {
-							return _this3.removeFromQueue(e);
+							return _this4.removeFromQueue(e);
 						} },
 					_react2.default.createElement(
 						'span',
@@ -64669,7 +64699,7 @@ var ContextMenu = function (_React$Component) {
 				_react2.default.createElement(
 					'a',
 					{ className: 'context-menu__item__link', onClick: function onClick(e) {
-							return _this3.removeFromPlaylist(e);
+							return _this4.removeFromPlaylist(e);
 						} },
 					_react2.default.createElement(
 						'span',
@@ -64685,7 +64715,7 @@ var ContextMenu = function (_React$Component) {
 				_react2.default.createElement(
 					'a',
 					{ className: 'context-menu__item__link', onClick: function onClick(e) {
-							return _this3.deletePlaylist(e);
+							return _this4.deletePlaylist(e);
 						} },
 					_react2.default.createElement(
 						'span',
@@ -64701,7 +64731,7 @@ var ContextMenu = function (_React$Component) {
 				_react2.default.createElement(
 					'a',
 					{ className: 'context-menu__item__link', onClick: function onClick(e) {
-							return _this3.copyURIs(e);
+							return _this4.copyURIs(e);
 						} },
 					_react2.default.createElement(
 						'span',
@@ -64834,7 +64864,7 @@ var ContextMenu = function (_React$Component) {
 	}, {
 		key: 'render',
 		value: function render() {
-			var _this4 = this;
+			var _this5 = this;
 
 			if (!this.props.menu) {
 				return null;
@@ -64875,7 +64905,7 @@ var ContextMenu = function (_React$Component) {
 				),
 				this.renderSubmenu(),
 				_react2.default.createElement('div', { className: 'context-menu__background', onClick: function onClick(e) {
-						return _this4.props.uiActions.hideContextMenu();
+						return _this5.props.uiActions.hideContextMenu();
 					} })
 			);
 		}
@@ -67607,7 +67637,7 @@ var Track = function (_React$Component) {
 			if (!this.props.track) {
 				return null;
 			} else {
-				var track = this.props.track;
+				var track = helpers.collate(this.props.track, { tracks: this.props.tracks, artists: this.props.artists, albums: this.props.albums });
 			}
 
 			return _react2.default.createElement(

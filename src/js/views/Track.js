@@ -197,7 +197,7 @@ class Track extends React.Component{
 		if (!this.props.track){
 			return null
 		} else {
-			var track = this.props.track;
+			var track = helpers.collate(this.props.track, {tracks: this.props.tracks, artists: this.props.artists, albums: this.props.albums});
 		}
 
 		return (

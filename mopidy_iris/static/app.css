@@ -3804,8 +3804,8 @@ input[type="submit"] {
         background-image: linear-gradient(rgba(24, 24, 24, 0) 0%, rgba(24, 24, 24, 0.95) 20%);
         z-index: 1; }
       .context-menu__title {
-        padding: 16px 22px;
-        pointer-events: none; }
+        color: #a3a19f;
+        padding: 16px 22px; }
         .context-menu__title::after {
           content: '';
           clear: both;
@@ -3820,19 +3820,18 @@ input[type="submit"] {
           text-overflow: ellipsis;
           position: relative;
           z-index: 2;
-          color: #FFFFFF;
           font-size: 1.2rem;
           font-weight: 800;
-          padding-top: 8px;
-          opacity: 0.5; }
+          padding-top: 8px; }
         .context-menu__title__type {
           display: none;
           position: relative;
           z-index: 2;
-          color: #FFFFFF;
-          opacity: 0.5;
+          opacity: 0.3;
           font-weight: 200;
           text-transform: capitalize; }
+        .context-menu__title__deselect {
+          font-size: 0.86em; }
       .context-menu__section {
         position: absolute;
         top: 20%;
@@ -6675,8 +6674,8 @@ main .track-view {
       padding-top: 0;
       padding-left: 10px; }
       main .track-view .thumbnail-wrapper {
-        width: 40%;
-        padding: 10px 20px 10px 0;
+        width: 100px;
+        padding: 0 20px 10px 0;
         float: left;
         position: static; }
         main .track-view .thumbnail-wrapper .thumbnail {
@@ -6684,23 +6683,16 @@ main .track-view {
           max-width: none;
           margin: 0 0 0 0; }
       main .track-view .title {
-        padding: 30px 0 20px 40%; }
+        padding: 5px 0 20px 100px; }
         main .track-view .title .details {
           padding: 5px 0; }
       main .track-view .actions {
-        padding: 10px 0 20px 40%; }
+        padding: 10px 0 20px; }
         main .track-view .actions::after {
           content: '';
           clear: both;
           display: block; } }
   @media (max-width: 500px) {
-    main .track-view .title {
-      padding: 20px 20px 10px 40%;
-      min-height: 20vw; }
-      main .track-view .title::after {
-        content: '';
-        clear: both;
-        display: block; }
     main .track-view .actions {
       padding: 0; } }
 

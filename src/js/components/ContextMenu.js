@@ -329,7 +329,7 @@ class ContextMenu extends React.Component{
 			return (
 				<div className="context-menu__title">
 					<div className="context-menu__title__text">							
-						{context.items_count} {context.nice_name}{context.items_count > 1 ? 's' : null} selected
+						{context.items_count} {context.nice_name}{context.items_count > 1 ? 's' : null} selected <span className="context-menu__title__deselect" onClick={e => {this.props.uiActions.setSelectedTracks([]); this.props.uiActions.hideContextMenu()}}><Icon name="close" /></span>
 					</div>
 				</div>
 			)
