@@ -3676,8 +3676,8 @@ input[type="submit"] {
       opacity: 0; }
       .context-menu__section--submenu .context-menu__item {
         width: 100%; }
-        .context-menu__section--submenu .context-menu__item--close-submenu {
-          opacity: 0.5; }
+        .context-menu__section--submenu .context-menu__item__link--close-submenu {
+          color: #a3a19f; }
         .context-menu__section--submenu .context-menu__item__label .icon {
           margin-bottom: 0.4em;
           padding-right: 6px; }
@@ -3745,6 +3745,8 @@ input[type="submit"] {
       width: 200px;
       overflow-x: hidden;
       border-radius: 3px; }
+      .context-menu--closing {
+        display: none; }
       .context-menu__section {
         background: none;
         overflow: visible; }
@@ -3758,29 +3760,48 @@ input[type="submit"] {
         display: none; } }
   @media (max-width: 800px) {
     .context-menu {
+      animation-delay: 0;
+      -webkit-animation-fill-mode: forwards;
+      animation-fill-mode: forwards;
+      animation-name: fadein;
+      animation-duration: 0.2s;
+      animation-timing-function: linear;
+      animation-iteration-count: 1;
       top: 0 !important;
       right: 0 !important;
       bottom: 0 !important;
       left: 0 !important;
       margin: 0 !important;
-      animation-name: fadein;
-      animation-duration: 0.2s;
-      animation-timing-function: linear;
-      animation-iteration-count: 1; }
+      text-align: center; }
     @keyframes fadein {
       0% {
         opacity: 0;
-        transform: translateY(20px); }
+        transform: translateY(40px); }
       100% {
         opacity: 1;
         transform: translateY(0px); } }
+      .context-menu--closing {
+        animation-delay: 0;
+        -webkit-animation-fill-mode: forwards;
+        animation-fill-mode: forwards;
+        animation-name: fadeout;
+        animation-duration: 0.2s;
+        animation-timing-function: linear;
+        animation-iteration-count: 1; }
+    @keyframes fadeout {
+      0% {
+        opacity: 1;
+        transform: translateY(0px); }
+      100% {
+        opacity: 0;
+        transform: translateY(40px); } }
       .context-menu__background {
         position: absolute;
         top: 0;
         right: 0;
         bottom: 0;
         left: 0;
-        background-image: linear-gradient(rgba(10, 10, 10, 0) 10%, rgba(10, 10, 10, 0.6) 15%, rgba(10, 10, 10, 0.95) 20%);
+        background-image: linear-gradient(rgba(24, 24, 24, 0) 0%, rgba(24, 24, 24, 0.95) 20%);
         z-index: 1; }
       .context-menu__title {
         padding: 16px 22px;
@@ -3813,11 +3834,11 @@ input[type="submit"] {
           font-weight: 200;
           text-transform: capitalize; }
       .context-menu__section {
-        width: 300px;
         position: absolute;
         top: 20%;
-        left: 50%;
-        margin-left: -150px;
+        left: 0;
+        right: 0;
+        padding: 0 10%;
         max-height: 80%;
         overflow: auto; }
         .context-menu__section--submenu {
@@ -3829,15 +3850,14 @@ input[type="submit"] {
 				 * The following is for buttons automatically pulled from
 				 * a page header, so we don't have classname control
 				 **/ }
-          .context-menu__section--items .button,
-          .context-menu__section--items > span {
+          .context-menu__section--items .button {
             display: block;
             text-decoration: none;
             display: block;
             margin: 0;
             width: auto !important;
             box-sizing: border-box;
-            text-align: left;
+            text-align: center;
             text-transform: none;
             font-weight: 700;
             font-size: 1.2rem;
@@ -3845,17 +3865,16 @@ input[type="submit"] {
             background: none;
             transform: none;
             padding: 16px 22px; }
-            .context-menu__section--items .button .icon,
-            .context-menu__section--items > span .icon {
+            .context-menu__section--items .button .icon {
               display: none; }
-          .context-menu__section--items .button:before {
-            display: none !important; }
-          .context-menu__section--items .button:focus, .context-menu__section--items .button:active {
-            -webkit-transition: none !important;
-            -moz-transition: none !important;
-            -o-transition: none !important;
-            transition: none !important;
-            background: #08d58f !important; }
+            .context-menu__section--items .button:before {
+              display: none !important; }
+            .context-menu__section--items .button:focus, .context-menu__section--items .button:active {
+              -webkit-transition: none !important;
+              -moz-transition: none !important;
+              -o-transition: none !important;
+              transition: none !important;
+              background: #08d58f !important; }
       .context-menu__divider {
         display: none; }
       .context-menu__item {
@@ -3877,11 +3896,6 @@ input[type="submit"] {
             -o-transition: none !important;
             transition: none !important;
             background: #08d58f !important; } }
-  @media (max-width: 340px) {
-    .context-menu__section {
-      width: 90%;
-      left: 5%;
-      margin-left: 0; } }
 
 .context-menu-trigger {
   display: inline-block;
@@ -4629,7 +4643,7 @@ input[type="submit"] {
     .playback-controls .control .icon {
       font-size: 0.9em;
       margin-bottom: 0; }
-    .playback-controls .control.active {
+    .playback-controls .control--active {
       color: #08d58f !important; }
     .playback-controls .control:hover {
       opacity: 1; }
@@ -4729,22 +4743,23 @@ input[type="submit"] {
           width: 100vw;
           height: 100vh;
           z-index: 99; }
-    .playback-controls.expanded {
-      height: 135px; }
-      .playback-controls.expanded section.settings {
+    .playback-controls--expanded {
+      height: 135px;
+      max-height: 100%; }
+      .playback-controls--expanded section.settings {
         display: block;
         right: 0;
         bottom: 90px;
         padding-right: 10px;
         text-align: right;
         width: 100px; }
-      .playback-controls.expanded section.volume {
+      .playback-controls--expanded section.volume {
         width: auto;
         display: block;
         right: 100px;
         left: 10px;
         bottom: 88px; }
-      .playback-controls.expanded section.progress {
+      .playback-controls--expanded section.progress {
         display: block;
         bottom: 55px;
         left: -15px;
@@ -5458,6 +5473,9 @@ main header {
   pointer-events: none;
   width: 300px; }
   .notifications .notification {
+    animation-delay: 0;
+    -webkit-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
     animation-name: fadein;
     animation-duration: 0.2s;
     animation-timing-function: linear;
@@ -5562,6 +5580,9 @@ main header {
             bottom: 0;
             opacity: 0.35; }
     .notifications .notification.closing, .notifications .notification.finishing {
+      animation-delay: 0;
+      -webkit-animation-fill-mode: forwards;
+      animation-fill-mode: forwards;
       animation-name: fadeout;
       animation-duration: 0.2s;
       animation-timing-function: linear;
@@ -5701,7 +5722,7 @@ main header {
             opacity: 0.15; }
 
 #context-menu .dropdown-field {
-  padding: 16px 20px; }
+  padding: 16px 0; }
   #context-menu .dropdown-field:active, #context-menu .dropdown-field:focus {
     background: none !important; }
   #context-menu .dropdown-field .label {
@@ -6722,8 +6743,10 @@ main .track-view {
     position: relative;
     z-index: 2; }
   @media (max-width: 800px) {
-    .queue-view .current-track .artwork {
-      width: 80%; } }
+    .queue-view .current-track {
+      padding-bottom: 20px; }
+      .queue-view .current-track .artwork {
+        width: 80%; } }
 
 .search-view .search-form {
   position: absolute;
@@ -7118,6 +7141,9 @@ main .track-view {
     padding: 20px; } }
 
 .modal {
+  animation-delay: 0;
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
   animation-name: fadein;
   animation-duration: 0.2s;
   animation-timing-function: linear;
