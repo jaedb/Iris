@@ -197,7 +197,16 @@ class Track extends React.Component{
 		if (!this.props.track){
 			return null
 		} else {
-			var track = helpers.collate(this.props.track, {tracks: this.props.tracks, artists: this.props.artists, albums: this.props.albums});
+			var track = this.props.track;
+
+			// Flatten our simple album so we can inherit artwork
+			if (track.album){
+				var album = this.props.albums[track.album.uri];
+
+				if (album && album.images){
+					track.images = album.images;
+				}
+			}
 		}
 
 		return (
@@ -233,7 +242,7 @@ class Track extends React.Component{
 							{track.track_number ? <span>Track {track.track_number}</span> : null}
 						</li>
 						{track.duration ? <li><Dater type="length" data={track.duration} /></li> : null}
-						{track.popularity ? <li><Popularity popularity={track.popularity} /></li> : null}
+						{track.popularity ? <li>{track.popularity}% popularity</li> : null}
 					</ul>
 				</div>
 

@@ -6963,6 +6963,11 @@ main .track-view {
 .discover-view section .grid {
   padding-bottom: 20px; }
 
+.discover-view section.tracks h4::after {
+  content: '';
+  clear: both;
+  display: block; }
+
 .discover-view section.tracks .pull-right .button,
 .discover-view section.tracks .pull-right button {
   margin-right: 0; }

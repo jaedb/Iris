@@ -227,10 +227,10 @@ class Artist extends React.Component{
 				return (
 					<div className="body overview">
 						<div className={"top-tracks col col--w"+(artist.related_artists && artist.related_artists.length > 0 ? "70" : "100")}>
-							<h4>Top tracks</h4>
+							{artist.tracks ? <h4>Top tracks</h4> : null}
 							<div className="list-wrapper">
 								<TrackList className="artist-track-list" uri={artist.uri} tracks={artist.tracks} />
-								<LazyLoadListener forceLoader={is_loading_tracks} />
+								<LazyLoadListener showLoader={is_loading_tracks} />
 							</div>
 						</div>
 
@@ -240,7 +240,7 @@ class Artist extends React.Component{
 
 						<div className="cf"></div>
 
-						<div className="albums">
+						{artist.albums ? <div className="albums">
 							<h4>
 								Albums
 								<DropdownField
@@ -268,7 +268,7 @@ class Artist extends React.Component{
 									loadMore={() => this.loadMore()} 
 								/>
 							</section>
-						</div>
+						</div> : null}
 					</div>
 				)
 		}

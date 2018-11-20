@@ -64167,16 +64167,6 @@ var ContextMenu = function (_React$Component) {
 			}
 		}
 	}, {
-		key: 'goToAlbum',
-		value: function goToAlbum(e) {
-			if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].album_uri) {
-				return null;
-			} else {
-				this.props.uiActions.hideContextMenu();
-				_reactRouter.hashHistory.push(global.baseURL + 'album/' + this.props.menu.items[0].album_uri);
-			}
-		}
-	}, {
 		key: 'goToUser',
 		value: function goToUser(e) {
 			if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].user_uri) {
@@ -64597,22 +64587,6 @@ var ContextMenu = function (_React$Component) {
 				)
 			);
 
-			var go_to_album = _react2.default.createElement(
-				'div',
-				{ className: 'context-menu__item' },
-				_react2.default.createElement(
-					'a',
-					{ className: 'context-menu__item__link', onClick: function onClick(e) {
-							return _this4.goToAlbum(e);
-						} },
-					_react2.default.createElement(
-						'span',
-						{ className: 'context-menu__item__label' },
-						'Go to album'
-					)
-				)
-			);
-
 			var go_to_user = _react2.default.createElement(
 				'div',
 				{ className: 'context-menu__item' },
@@ -64853,7 +64827,6 @@ var ContextMenu = function (_React$Component) {
 						toggle_loved,
 						_react2.default.createElement('div', { className: 'context-menu__divider' }),
 						context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null,
-						context.items_count == 1 ? go_to_album : null,
 						context.items_count == 1 ? go_to_track : null,
 						_react2.default.createElement('div', { className: 'context-menu__divider' }),
 						copy_uris
@@ -66391,16 +66364,16 @@ var Artist = function (_React$Component) {
 						_react2.default.createElement(
 							'div',
 							{ className: "top-tracks col col--w" + (artist.related_artists && artist.related_artists.length > 0 ? "70" : "100") },
-							_react2.default.createElement(
+							artist.tracks ? _react2.default.createElement(
 								'h4',
 								null,
 								'Top tracks'
-							),
+							) : null,
 							_react2.default.createElement(
 								'div',
 								{ className: 'list-wrapper' },
 								_react2.default.createElement(_TrackList2.default, { className: 'artist-track-list', uri: artist.uri, tracks: artist.tracks }),
-								_react2.default.createElement(_LazyLoadListener2.default, { forceLoader: is_loading_tracks })
+								_react2.default.createElement(_LazyLoadListener2.default, { showLoader: is_loading_tracks })
 							)
 						),
 						_react2.default.createElement('div', { className: 'col col--w5' }),
@@ -66424,7 +66397,7 @@ var Artist = function (_React$Component) {
 							)
 						) : null,
 						_react2.default.createElement('div', { className: 'cf' }),
-						_react2.default.createElement(
+						artist.albums ? _react2.default.createElement(
 							'div',
 							{ className: 'albums' },
 							_react2.default.createElement(
@@ -66463,7 +66436,7 @@ var Artist = function (_React$Component) {
 									}
 								})
 							)
-						)
+						) : null
 					);
 			}
 		}
@@ -67637,7 +67610,16 @@ var Track = function (_React$Component) {
 			if (!this.props.track) {
 				return null;
 			} else {
-				var track = helpers.collate(this.props.track, { tracks: this.props.tracks, artists: this.props.artists, albums: this.props.albums });
+				var track = this.props.track;
+
+				// Flatten our simple album so we can inherit artwork
+				if (track.album) {
+					var album = this.props.albums[track.album.uri];
+
+					if (album && album.images) {
+						track.images = album.images;
+					}
+				}
 			}
 
 			return _react2.default.createElement(
@@ -67733,7 +67715,8 @@ var Track = function (_React$Component) {
 						track.popularity ? _react2.default.createElement(
 							'li',
 							null,
-							_react2.default.createElement(_Popularity2.default, { popularity: track.popularity })
+							track.popularity,
+							'% popularity'
 						) : null
 					)
 				),

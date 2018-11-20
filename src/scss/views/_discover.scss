@@ -186,6 +186,10 @@
 		}
 
 		&.tracks {
+			h4 {
+				@include clearfix();
+			}
+			
 			.pull-right {
 				.button,
 				button {

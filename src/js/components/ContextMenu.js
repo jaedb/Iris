@@ -278,15 +278,6 @@ class ContextMenu extends React.Component{
 		}
 	}
 
-	goToAlbum(e){
-		if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].album_uri){
-			return null;
-		} else {
-			this.props.uiActions.hideContextMenu();
-			hashHistory.push(global.baseURL +'album/'+ this.props.menu.items[0].album_uri);
-		}
-	}
-
 	goToUser(e){
 		if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].user_uri){
 			return null;
@@ -563,14 +554,6 @@ class ContextMenu extends React.Component{
 			</div>
 		)
 
-		var go_to_album = (
-			<div className="context-menu__item">
-				<a className="context-menu__item__link" onClick={e => this.goToAlbum(e)}>
-					<span className="context-menu__item__label">Go to album</span>
-				</a>
-			</div>
-		)
-
 		var go_to_user = (
 			<div className="context-menu__item">
 				<a className="context-menu__item__link" onClick={e => this.goToUser(e)}>
@@ -745,7 +728,6 @@ class ContextMenu extends React.Component{
 						{toggle_loved}
 						<div className="context-menu__divider" />
 						{context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null}
-						{context.items_count == 1 ? go_to_album : null}
 						{context.items_count == 1 ? go_to_track : null}
 						<div className="context-menu__divider" />
 						{copy_uris}
