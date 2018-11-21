@@ -46,15 +46,15 @@ const MopidyMiddleware = (function(){
                 store.dispatch(mopidyActions.getTimePosition());
                 store.dispatch(mopidyActions.getUriSchemes());
 
-                // every 1000s update our play position (when playing)
+                // Every 1s update our play position (when playing)
                 progress_interval = setInterval(() => {
                     if (store.getState().mopidy.play_state == 'playing'){
 
-                        // every 10s get real position from server
-                        if (progress_interval_counter % 5 == 0){
+                        // Every 10s get real position from server, provided we're in-focus
+                        if (progress_interval_counter % 5 == 0 && store.getState().ui.window_focus === true){
                             store.dispatch(mopidyActions.getTimePosition());
 
-                        // otherwise we just assume to add 1000ms every 1000ms of play time
+                        // Otherwise we just assume to add 1000ms every 1000ms of play time
                         } else {
                             store.dispatch(mopidyActions.timePosition(store.getState().mopidy.time_position + 1000));
                         }
@@ -250,6 +250,21 @@ const MopidyMiddleware = (function(){
                     .then(response => {
                         store.dispatch({type: 'DEBUG', response: response});
                     })
+                break;
+
+            case 'SET_WINDOW_FOCUS':
+
+                // Focus has just been regained
+                if (action.window_focus === true){
+                    store.dispatch(mopidyActions.getPlayState());
+                    store.dispatch(mopidyActions.getVolume());
+                    store.dispatch(mopidyActions.getMute());
+                    store.dispatch(mopidyActions.getConsume());
+                    store.dispatch(mopidyActions.getRandom());
+                    store.dispatch(mopidyActions.getRepeat());
+                    store.dispatch(mopidyActions.getCurrentTrack());
+                    store.dispatch(mopidyActions.getTimePosition());
+                }
                 break;
 
             case 'MOPIDY_REQUEST':

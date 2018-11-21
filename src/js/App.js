@@ -36,6 +36,7 @@ class App extends React.Component{
 		this.handleKeyDown = this.handleKeyDown.bind(this);
 		this.handleWindowResize = this.handleWindowResize.bind(this);
 		this.handleInstallPrompt = this.handleInstallPrompt.bind(this);
+		this.handleFocusAndBlur = this.handleFocusAndBlur.bind(this);
 	}
 
 	componentWillMount(){
@@ -43,6 +44,8 @@ class App extends React.Component{
 		window.addEventListener("keydown", this.handleKeyDown, false);
 		window.addEventListener("resize", this.handleWindowResize, false);
 		window.addEventListener("beforeinstallprompt", this.handleInstallPrompt, false);
+		window.addEventListener("focus", this.handleFocusAndBlur, false);
+		window.addEventListener("blur", this.handleFocusAndBlur, false);
 	}
 
 	componentWillUnmount(){
@@ -50,6 +53,8 @@ class App extends React.Component{
 		window.removeEventListener("keydown", this.handleKeyDown, false);
 		window.removeEventListener("resize", this.handleWindowResize, false);
 		window.removeEventListener("beforeinstallprompt", this.handleInstallPrompt, false);
+		window.removeEventListener("focus", this.handleFocusAndBlur, false);
+		window.removeEventListener("blur", this.handleFocusAndBlur, false);
 	}
 
 	componentDidMount(){
@@ -173,6 +178,10 @@ class App extends React.Component{
 			e.preventDefault();
 			return true;
 		}
+	}
+
+	handleFocusAndBlur(e){
+		this.props.uiActions.setWindowFocus(document.hasFocus());
 	}
 
 	handleInstallPrompt(e){

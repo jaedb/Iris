@@ -50,6 +50,13 @@ export function setSlimMode(slim_mode){
     }
 }
 
+export function setWindowFocus(window_focus){
+    return {
+        type: 'SET_WINDOW_FOCUS',
+        window_focus: window_focus
+    }
+}
+
 export function hideContextMenu(){
     return {
         type: 'HIDE_CONTEXT_MENU'

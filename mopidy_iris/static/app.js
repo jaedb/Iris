@@ -1974,6 +1974,7 @@ exports.setWindowTitle = setWindowTitle;
 exports.setSelectedTracks = setSelectedTracks;
 exports.showContextMenu = showContextMenu;
 exports.setSlimMode = setSlimMode;
+exports.setWindowFocus = setWindowFocus;
 exports.hideContextMenu = hideContextMenu;
 exports.removeContextMenu = removeContextMenu;
 exports.showTouchContextMenu = showTouchContextMenu;
@@ -2058,6 +2059,13 @@ function setSlimMode(slim_mode) {
     return {
         type: 'SET_SLIM_MODE',
         slim_mode: slim_mode
+    };
+}
+
+function setWindowFocus(window_focus) {
+    return {
+        type: 'SET_WINDOW_FOCUS',
+        window_focus: window_focus
     };
 }
 
@@ -51323,6 +51331,7 @@ var initialState = {
 		shortkeys_enabled: true,
 		disable_parallax: false,
 		allow_reporting: true,
+		window_focus: true,
 		slim_mode: false,
 		selected_tracks: [],
 		notifications: {},
@@ -51804,6 +51813,9 @@ function reducer() {
 
         case 'SET_SLIM_MODE':
             return Object.assign({}, ui, { slim_mode: action.slim_mode });
+
+        case 'SET_WINDOW_FOCUS':
+            return Object.assign({}, ui, { window_focus: action.window_focus });
 
         case 'DEBUG':
             return Object.assign({}, ui, { debug_response: action.response });
@@ -54985,15 +54997,15 @@ var MopidyMiddleware = function () {
                 store.dispatch(mopidyActions.getTimePosition());
                 store.dispatch(mopidyActions.getUriSchemes());
 
-                // every 1000s update our play position (when playing)
+                // Every 1s update our play position (when playing)
                 progress_interval = setInterval(function () {
                     if (store.getState().mopidy.play_state == 'playing') {
 
-                        // every 10s get real position from server
-                        if (progress_interval_counter % 5 == 0) {
+                        // Every 10s get real position from server, provided we're in-focus
+                        if (progress_interval_counter % 5 == 0 && store.getState().ui.window_focus === true) {
                             store.dispatch(mopidyActions.getTimePosition());
 
-                            // otherwise we just assume to add 1000ms every 1000ms of play time
+                            // Otherwise we just assume to add 1000ms every 1000ms of play time
                         } else {
                             store.dispatch(mopidyActions.timePosition(store.getState().mopidy.time_position + 1000));
                         }
@@ -55182,6 +55194,21 @@ var MopidyMiddleware = function () {
                         request(socket, store, action.call, action.value).then(function (response) {
                             store.dispatch({ type: 'DEBUG', response: response });
                         });
+                        break;
+
+                    case 'SET_WINDOW_FOCUS':
+
+                        // Focus has just been regained
+                        if (action.window_focus === true) {
+                            store.dispatch(mopidyActions.getPlayState());
+                            store.dispatch(mopidyActions.getVolume());
+                            store.dispatch(mopidyActions.getMute());
+                            store.dispatch(mopidyActions.getConsume());
+                            store.dispatch(mopidyActions.getRandom());
+                            store.dispatch(mopidyActions.getRepeat());
+                            store.dispatch(mopidyActions.getCurrentTrack());
+                            store.dispatch(mopidyActions.getTimePosition());
+                        }
                         break;
 
                     case 'MOPIDY_REQUEST':
@@ -61533,6 +61560,7 @@ var App = function (_React$Component) {
 		_this.handleKeyDown = _this.handleKeyDown.bind(_this);
 		_this.handleWindowResize = _this.handleWindowResize.bind(_this);
 		_this.handleInstallPrompt = _this.handleInstallPrompt.bind(_this);
+		_this.handleFocusAndBlur = _this.handleFocusAndBlur.bind(_this);
 		return _this;
 	}
 
@@ -61543,6 +61571,8 @@ var App = function (_React$Component) {
 			window.addEventListener("keydown", this.handleKeyDown, false);
 			window.addEventListener("resize", this.handleWindowResize, false);
 			window.addEventListener("beforeinstallprompt", this.handleInstallPrompt, false);
+			window.addEventListener("focus", this.handleFocusAndBlur, false);
+			window.addEventListener("blur", this.handleFocusAndBlur, false);
 		}
 	}, {
 		key: 'componentWillUnmount',
@@ -61551,6 +61581,8 @@ var App = function (_React$Component) {
 			window.removeEventListener("keydown", this.handleKeyDown, false);
 			window.removeEventListener("resize", this.handleWindowResize, false);
 			window.removeEventListener("beforeinstallprompt", this.handleInstallPrompt, false);
+			window.removeEventListener("focus", this.handleFocusAndBlur, false);
+			window.removeEventListener("blur", this.handleFocusAndBlur, false);
 		}
 	}, {
 		key: 'componentDidMount',
@@ -61675,6 +61707,11 @@ var App = function (_React$Component) {
 				e.preventDefault();
 				return true;
 			}
+		}
+	}, {
+		key: 'handleFocusAndBlur',
+		value: function handleFocusAndBlur(e) {
+			this.props.uiActions.setWindowFocus(document.hasFocus());
 		}
 	}, {
 		key: 'handleInstallPrompt',
