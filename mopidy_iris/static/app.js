@@ -61656,22 +61656,6 @@ var App = function (_React$Component) {
 				_reactRouter.hashHistory.push(global.baseURL + 'initial-setup');
 			}
 		}
-
-		/*
-  componentWillReceiveProps(nextProps){
-  
-  	// We've navigated to a new location
-      if (this.props.location.pathname !== nextProps.location.pathname){
-  
-  		// Scroll to bottom, only if we've PUSHed to a new route
-  		// We also prevent scroll reset for any sub_view routes (like tabs, services, etc)
-  		if (nextProps.location.action == 'PUSH' && nextProps.params.sub_view === undefined){
-  			window.scrollTo(0, 0);
-  		}
-  	}
-  }
-  */
-
 	}, {
 		key: 'shouldTriggerShortcut',
 		value: function shouldTriggerShortcut(e) {
@@ -61708,6 +61692,17 @@ var App = function (_React$Component) {
 				return true;
 			}
 		}
+
+		/**
+   * Using Visibility API, detect whether the browser is in focus or not
+   *
+   * This is used to keep background requests lean, preventing a queue of requests building up
+   * for when focus is retained. Seems most obvious on mobile devices with Chrome as it has throttled
+   * quota significantly: https://developers.google.com/web/updates/2017/03/background_tabs
+   *
+   * @param e Event
+   **/
+
 	}, {
 		key: 'handleFocusAndBlur',
 		value: function handleFocusAndBlur(e) {
