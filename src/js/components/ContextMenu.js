@@ -55,6 +55,11 @@ class ContextMenu extends React.Component{
 					case 'artist':
 					case 'album':
 					case 'playlist':
+					case 'editable-playlist':
+					case 'track':
+					case 'playlist-track':
+					case 'editable-playlist-track':
+					case 'queue-track':
 						this.props.spotifyActions.following(nextProps.menu.items[0].uri)
 						break
 				}
@@ -148,6 +153,9 @@ class ContextMenu extends React.Component{
 				break;
 			case 'playlist':
 				return (this.props.spotify_library_playlists && this.props.spotify_library_playlists.indexOf(item.uri) > -1);
+				break;
+			case 'track':
+				return (this.props.spotify_library_tracks && this.props.spotify_library_tracks.indexOf(item.uri) > -1);
 				break;
 		}
 		return false;
@@ -522,6 +530,30 @@ class ContextMenu extends React.Component{
 			</div>
 		)
 
+		if (!this.props.spotify_authorized){
+			var toggle_in_library = null;
+		} else if (helpers.isLoading(this.props.load_queue,['spotify_me/tracks/contains','spotify_me/playlists/contains','spotify_me/albums/contains','spotify_me/artists/contains'])){
+			var toggle_in_library = (
+				<div className="context-menu__item">
+					<a className="context-menu__item__link">
+						<span className="context-menu__item__label mid_grey-text">
+							Add to library
+						</span>
+					</a>
+				</div>
+			)
+		} else {			
+			var toggle_in_library = (
+				<div className="context-menu__item">
+					<a className="context-menu__item__link" onClick={e => this.toggleInLibrary(e, context.in_library)}>
+						<span className="context-menu__item__label">
+							{context.in_library ? 'Remove from library' : 'Add to library'}
+						</span>
+					</a>
+				</div>
+			)
+		}
+
 		if (!this.props.lastfm_authorized){
 			var toggle_loved = null;
 		} else if (helpers.isLoading(this.props.load_queue,['lastfm_track.getInfo'])){
@@ -685,6 +717,7 @@ class ContextMenu extends React.Component{
 						{context.items_count == 1 ? play_queue_item : null}
 						<div className="context-menu__divider" />
 						{add_to_playlist}
+						{this.canBeInLibrary() ? toggle_in_library : null}
 						{toggle_loved}
 						<div className="context-menu__divider" />
 						{context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null}
@@ -705,6 +738,7 @@ class ContextMenu extends React.Component{
 						{context.source == 'spotify' && context.items_count == 1 ? start_radio : null}
 						<div className="context-menu__divider" />
 						{add_to_playlist}
+						{this.canBeInLibrary() ? toggle_in_library : null}
 						{toggle_loved}
 						<div className="context-menu__divider" />
 						{context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null}
@@ -725,6 +759,7 @@ class ContextMenu extends React.Component{
 						{context.source == 'spotify' && context.items_count == 1 ? start_radio : null}
 						<div className="context-menu__divider" />
 						{add_to_playlist}
+						{this.canBeInLibrary() ? toggle_in_library : null}
 						{toggle_loved}
 						<div className="context-menu__divider" />
 						{context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null}
@@ -794,6 +829,7 @@ const mapStateToProps = (state, ownProps) => {
 		mopidy_library_artists: state.mopidy.library_artists,
 		spotify_library_albums: state.spotify.library_albums,
 		mopidy_library_albums: state.mopidy.library_albums,
+		spotify_library_tracks: state.spotify.library_tracks,
 		playlists: state.core.playlists,
 		tracks: state.core.tracks,
 		spotify_authorized: state.spotify.authorization,
