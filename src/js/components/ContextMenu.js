@@ -530,6 +530,30 @@ class ContextMenu extends React.Component{
 			</div>
 		)
 
+		if (!this.props.spotify_authorized){
+			var toggle_in_library = null;
+		} else if (helpers.isLoading(this.props.load_queue,['spotify_me/tracks/contains','spotify_me/playlists/contains','spotify_me/albums/contains','spotify_me/artists/contains'])){
+			var toggle_in_library = (
+				<div className="context-menu__item">
+					<a className="context-menu__item__link">
+						<span className="context-menu__item__label mid_grey-text">
+							Add to library
+						</span>
+					</a>
+				</div>
+			)
+		} else {			
+			var toggle_in_library = (
+				<div className="context-menu__item">
+					<a className="context-menu__item__link" onClick={e => this.toggleInLibrary(e, context.in_library)}>
+						<span className="context-menu__item__label">
+							{context.in_library ? 'Remove from library' : 'Add to library'}
+						</span>
+					</a>
+				</div>
+			)
+		}
+
 		if (!this.props.lastfm_authorized){
 			var toggle_loved = null;
 		} else if (helpers.isLoading(this.props.load_queue,['lastfm_track.getInfo'])){
