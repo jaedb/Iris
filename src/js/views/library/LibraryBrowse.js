@@ -2,7 +2,8 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { Link, hashHistory } from 'react-router'
+import { hashHistory } from 'react-router'
+import Link from '../../components/Link';
 
 import Header from '../../components/Header'
 import List from '../../components/List'
@@ -89,7 +90,7 @@ class LibraryBrowse extends React.Component{
 							<span key={uri}>
 								{index > 0 ? <span>&nbsp; <Icon type="fontawesome" name="angle-right" /> &nbsp;&nbsp;</span> : null}
 								<URILink type="browse" uri={uri}>
-									{uri_element}
+									{decodeURI(uri_element)}
 								</URILink>
 							</span>
 						);
@@ -106,8 +107,7 @@ class LibraryBrowse extends React.Component{
 			return (
 				<List
 					nocontext
-					columns={[{ name: 'name', width: '100'}]} 
-					rows={subdirectories} 
+					rows={subdirectories}
 					className="library-local-directory-list"
 					link_prefix={global.baseURL+'library/browse/'}
 				/>
@@ -174,12 +174,12 @@ class LibraryBrowse extends React.Component{
 					options={view_options}
 					handleChange={value => {this.props.uiActions.set({ library_directory_view: value }); this.props.uiActions.hideContextMenu()}}
 				/>
-				{tracks ? <button className="no-hover" onClick={e => this.playAll(e, tracks)}>
+				{tracks ? <a className="button no-hover" onClick={e => {this.props.uiActions.hideContextMenu(); this.playAll(e, tracks)}}>
 					<Icon name="play_circle_filled" />Play all
-				</button> : null }
-				<button className="no-hover" onClick={e => this.goBack(e)}>
+				</a> : null }
+				<a className="button no-hover" onClick={e => {this.props.uiActions.hideContextMenu(); this.goBack(e)}}>
 					<Icon name="keyboard_backspace" />Back
-				</button>
+				</a>
 			</span>
 		);
 
@@ -266,7 +266,7 @@ class LibraryBrowse extends React.Component{
 
 		return (
 			<div className="view library-local-view">
-				<Header>				
+				<Header uiActions={this.props.uiActions}>				
 					<Icon name="folder" type="material" />
 					Browse
 				</Header>

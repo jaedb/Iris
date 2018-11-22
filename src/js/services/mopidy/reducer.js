@@ -1,24 +1,32 @@
 
-import * as helpers from '../../helpers'
+import * as helpers from '../../helpers';
 
 export default function reducer(mopidy = {}, action){
     switch (action.type){
 
+        case 'MOPIDY_SET':
+            return Object.assign({}, mopidy, action.data);
+
         case 'MOPIDY_CONNECT':
         case 'MOPIDY_CONNECTING':
-            return Object.assign({}, mopidy, { connected: false, connecting: true });
-
-        case 'MOPIDY_RESTARTING':
-            return Object.assign({}, mopidy, { restarting: true });
-
-        case 'MOPIDY_UPGRADING':
-            return Object.assign({}, mopidy, { upgrading: true });
+            return Object.assign({}, mopidy, { 
+            	connected: false, 
+            	connecting: true
+            });
 
         case 'MOPIDY_CONNECTED':
-            return Object.assign({}, mopidy, { connected: true, connecting: false, restarting: false, upgrading: false });
+            return Object.assign({}, mopidy, { 
+            	connected: true, 
+            	connecting: false,
+            	restart_running: false,
+            	upgrade_running: false 
+            });
 
         case 'MOPIDY_DISCONNECTED':
-            return Object.assign({}, mopidy, { connected: false, connecting: false });
+            return Object.assign({}, mopidy, {
+            	connected: false,
+            	connecting: false
+            });
 
         case 'MOPIDY_CHANGE_TRACK':
             return Object.assign({}, mopidy, {
@@ -30,8 +38,23 @@ export default function reducer(mopidy = {}, action){
                 uri_schemes: action.uri_schemes
             });
 
-        case 'MOPIDY_SET':
-            return Object.assign({}, mopidy, action.data);
+        case 'MOPIDY_RESTART_STARTED':
+            return Object.assign({}, mopidy, { restart_running: true });
+
+        case 'MOPIDY_RESTART_FINISHED':
+            return Object.assign({}, mopidy, { restart_running: false });
+
+        case 'MOPIDY_UPGRADE_STARTED':
+            return Object.assign({}, mopidy, { upgrade_running: true });
+
+        case 'MOPIDY_UPGRADE_FINISHED':
+            return Object.assign({}, mopidy, { upgrade_running: false });
+
+        case 'MOPIDY_LOCAL_SCAN_STARTED':
+            return Object.assign({}, mopidy, { local_scan_running: true });
+
+        case 'MOPIDY_LOCAL_SCAN_FINISHED':
+            return Object.assign({}, mopidy, { local_scan_running: false });
 
 
         /**

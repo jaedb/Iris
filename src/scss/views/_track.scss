@@ -6,7 +6,7 @@ main .track-view {
 	.title {
 		h2 {
 			a:hover {
-				color: darken($mid_grey, 20%);
+				color: darken(colour(mid_grey), 20%);
 			}
 		}
 
@@ -63,8 +63,8 @@ main .track-view {
 		padding-left: 10px;
 
 		.thumbnail-wrapper {
-			width: 40%;
-			padding: 10px 20px 10px 0;
+			width: 100px;
+			padding: 0 20px 10px 0;
 			float: left;
 			position: static;
 
@@ -76,7 +76,7 @@ main .track-view {
 		}
 
 		.title {
-			padding: 30px 0 20px 40%;
+			padding: 5px 0 20px 100px;
 
 			.details {
 				padding: 5px 0;
@@ -85,16 +85,11 @@ main .track-view {
 
 		.actions {
 			@include clearfix();
-			padding: 10px 0 20px 40%;
+			padding: 10px 0 20px;
 		}
 	}
 
 	@include responsive($bp_small){
-		.title {
-			@include clearfix();
-			padding: 20px 20px 10px 40%;
-			min-height: 20vw;
-		}
 
 		.actions {
 			padding: 0;

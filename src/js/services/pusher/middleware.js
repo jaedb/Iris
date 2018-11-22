@@ -1,14 +1,15 @@
 
-import ReactGA from 'react-ga'
+import ReactGA from 'react-ga';
 
-var helpers = require('../../helpers')
-var coreActions = require('../core/actions')
-var uiActions = require('../ui/actions')
-var mopidyActions = require('../mopidy/actions')
-var pusherActions = require('./actions')
-var lastfmActions = require('../lastfm/actions')
-var geniusActions = require('../genius/actions')
-var spotifyActions = require('../spotify/actions')
+var helpers = require('../../helpers');
+var coreActions = require('../core/actions');
+var uiActions = require('../ui/actions');
+var mopidyActions = require('../mopidy/actions');
+var pusherActions = require('./actions');
+var lastfmActions = require('../lastfm/actions');
+var geniusActions = require('../genius/actions');
+var spotifyActions = require('../spotify/actions');
+var snapcastActions = require('../snapcast/actions');
 
 const PusherMiddleware = (function(){ 
 
@@ -108,18 +109,61 @@ const PusherMiddleware = (function(){
                     case 'radio_stopped':
                         store.dispatch(pusherActions.radioStopped());
                         break;
+                    case 'commands_changed':
+                        store.dispatch(pusherActions.commandsUpdated(message.params.commands));
+                        break;
                     case 'reload':
                         window.location.reload(true);
                         break;
-                    case 'upgrading':
+
+                    // Local scan
+                    case 'local_scan_started':
+                        store.dispatch(uiActions.updateProcess('local_scan', 'Scanning local library'));
+                        break;
+                    case 'local_scan_finished':
+                        store.dispatch(uiActions.processFinished('local_scan'));
+                        store.dispatch(uiActions.createNotification({key: 'local_scan', type: 'info', content: 'Local scan finished', description: message.params.output}));
+                        break;
+                    case 'local_scan_error':
+                        store.dispatch(uiActions.processFinished('local_scan'));
+                        store.dispatch(uiActions.createNotification({key: 'local_scan', type: 'bad', content: 'Local scan failed'}));
+                        break;
+
+                    // Upgrade
                     case 'upgrade_started':
-                        store.dispatch(mopidyActions.upgrading());
-                        store.dispatch(uiActions.createNotification({content: 'Upgrading...', type: 'info'}));
+                        store.dispatch(uiActions.updateProcess('upgrade', 'Upgrading'));
                         break;
-                    case 'restarting':
-                        store.dispatch(mopidyActions.restarting());
-                        store.dispatch(uiActions.createNotification({content: 'Restarting...', type: 'info'}));
+                    case 'upgrade_finished':
+                        store.dispatch(uiActions.updateProcess('upgrade', 'Restarting to complete upgrade'));
                         break;
+                    case 'upgrade_error':
+                        store.dispatch(uiActions.processFinished('upgrade'));
+                        store.dispatch(uiActions.createNotification({type: 'bad', content: 'Upgrade failed'}));
+                        break;
+
+                    // Restart
+                    case 'restart_started':
+                        store.dispatch(uiActions.processFinished('upgrade'));
+                        store.dispatch(uiActions.createNotification({type: 'info', content: 'Restarting server...'}));
+                        break;
+
+                    // Test
+                    case 'test_started':
+                        store.dispatch(uiActions.updateProcess('test', 'Running test'));
+                        break;
+                    case 'test_finished':
+                        store.dispatch(uiActions.processFinished('test'));
+                        store.dispatch(uiActions.createNotification({type: 'info', content: 'Test finished', description: message.params.output}));
+                        break;
+                    case 'test_error':
+                        store.dispatch(uiActions.processFinished('test'));
+                        store.dispatch(uiActions.createNotification({type: 'bad', content: 'Test failed'}));
+                        break;
+                }
+
+                // Pass snapcast events to the Snapcast service
+                if (message.method.startsWith('snapcast_')){
+                    store.dispatch(snapcastActions.eventReceived(message));
                 }
             }
         }
@@ -168,6 +212,8 @@ const PusherMiddleware = (function(){
     }
 
     return store => next => action => {
+    	var pusher = store.getState().pusher;
+    	
         switch(action.type){
 
             case 'PUSHER_CONNECT':
@@ -227,6 +273,7 @@ const PusherMiddleware = (function(){
 
                 store.dispatch(pusherActions.getConfig());
                 store.dispatch(pusherActions.getRadio());
+                store.dispatch(pusherActions.getCommands());
                 store.dispatch(pusherActions.getQueueMetadata());
 
                 // Give things a few moments to setup before we check for version.
@@ -236,7 +283,7 @@ const PusherMiddleware = (function(){
                     function(){
                         store.dispatch(pusherActions.getVersion());
                     },
-                    2000
+                    500
                 );
                 next(action);
                 break;
@@ -303,7 +350,7 @@ const PusherMiddleware = (function(){
                 request(store, 'add_queue_metadata', {
                     tlids: action.tlids, 
                     added_from: action.from_uri,
-                    added_by: store.getState().pusher.username
+                    added_by: pusher.username
                 })
                 break;
 
@@ -387,6 +434,112 @@ const PusherMiddleware = (function(){
                 return next(action);
                 break;
 
+
+            /**
+             * Commands
+             **/
+
+            case 'PUSHER_GET_COMMANDS':
+                request(store, 'get_commands')
+                    .then(
+                        response => {
+                			store.dispatch(pusherActions.commandsUpdated(response.commands));
+                        },
+                        error => {                            
+                            // We're not too worried about capturing errors here
+                            // It's also likely to fail where UI has been updated but
+                            // server hasn't been restarted yet.
+                        }
+                    );                
+                next(action);
+                break
+
+            case 'PUSHER_SET_COMMAND':
+                var commands_index = Object.assign({}, pusher.commands);
+
+                if (commands_index[action.command.id]){
+                    var command = Object.assign({}, commands_index[action.command.id], action.command);
+                } else {
+                    var command = action.command;
+                }
+                commands_index[action.command.id] = command;
+
+                request(store, 'set_commands', {commands: commands_index})
+                    .then(
+                        response => {
+                			// No action required, the change will be broadcast
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Could not set commands',
+                                error
+                            ));
+                        }
+                    );
+                
+                next(action);
+                break
+
+            case 'PUSHER_REMOVE_COMMAND':
+                var commands_index = Object.assign({}, pusher.commands);
+                delete commands_index[action.id];
+
+                request(store, 'set_commands', {commands: commands_index})
+                    .then(
+                        response => {
+                            // No action required, the change will be broadcast
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Could not remove command',
+                                error
+                            ));
+                        }
+                    );
+                
+                next(action);
+                break
+
+            case 'PUSHER_SEND_COMMAND':
+                var command = Object.assign({}, pusher.commands[action.id]);
+                var notification_key = 'command_'+action.id;
+            	
+            	if (action.notify){
+                    store.dispatch(uiActions.startProcess(notification_key, 'Sending command'));
+                }
+
+				try {
+					var ajax_settings = JSON.parse(command.command);
+				} catch(error){
+                    store.dispatch(uiActions.createNotification({key: notification_key, type: 'bad', content: 'Command failed', description: error}));
+                    break;
+				}
+
+                // Handle success and failure
+                ajax_settings.success = function(response){
+                	console.log("Command sent, response was:",response);
+
+                	if (action.notify){
+	                	store.dispatch(uiActions.processFinished(notification_key));
+                    	store.dispatch(uiActions.createNotification({key: notification_key, type: 'info', content: 'Command sent'}));
+	                }
+                }
+                ajax_settings.error = function(xhr, status, error){
+                    console.error("Command failed, response was:",xhr,error);
+	                store.dispatch(uiActions.processFinished(notification_key));
+                    store.dispatch(uiActions.createNotification({key: notification_key, type: 'bad', content: 'Command failed', description: xhr.status+": "+error}));
+                }
+
+                // Actually send the request
+                $.ajax(ajax_settings);
+
+                break
+
+
+            /**
+             * Radio
+             **/
+
             case 'PUSHER_GET_RADIO':
                 request(store, 'get_radio')
                     .then(
@@ -445,7 +598,7 @@ const PusherMiddleware = (function(){
                         {
                             notification: {
                                 type: 'info',
-                                content: store.getState().pusher.username + ' is starting radio mode'
+                                content: pusher.username + ' is starting radio mode'
                             }
                         }
                     ));
@@ -482,7 +635,7 @@ const PusherMiddleware = (function(){
                     {
                         notification: {
                             type: 'info',
-                            content: store.getState().pusher.username + ' stopped radio mode'
+                            content: pusher.username + ' stopped radio mode'
                         }
                     }
                 ));
@@ -506,6 +659,11 @@ const PusherMiddleware = (function(){
                     );
                 break
 
+
+            /**
+             * Notifications and alerts
+             **/
+
             case 'PUSHER_BROWSER_NOTIFICATION':
                 store.dispatch(uiActions.createBrowserNotification(action))
                 break
@@ -520,6 +678,11 @@ const PusherMiddleware = (function(){
                 store.dispatch(uiActions.createNotification(data));
                 break
 
+
+            /**
+             * Server actions
+             **/
+
             case 'PUSHER_RELOAD':
                 // Hard reload. This doesn't strictly clear the cache, but our compiler's
                 // cache buster should handle that 
@@ -527,15 +690,7 @@ const PusherMiddleware = (function(){
                 break
 
             case 'PUSHER_RESTART':
-                request(store, 'restart')
-                    .then(
-                        response => {
-                            store.dispatch(mopidyActions.restarting());
-                        },
-                        error => {
-                            store.dispatch(uiActions.createNotification({content: error.message, description: (error.description ? error.description : null), type: 'bad'}));
-                        }
-                    );
+                request(store, 'restart');
                 next(action);
                 break
 
@@ -543,15 +698,18 @@ const PusherMiddleware = (function(){
                 if (store.getState().ui.allow_reporting){
 	                ReactGA.event({ category: 'Pusher', action: 'Upgrade', label: '' });
 	            }
-                request(store, 'upgrade')
-                    .then(
-                        response => {
-                            store.dispatch(mopidyActions.upgrading());
-                        },
-                        error => {
-                            store.dispatch(uiActions.createNotification({content: error.message, description: (error.description ? error.description : null), type: 'bad'}));
-                        }
-                    );
+                request(store, 'upgrade');
+                break;
+
+            case 'PUSHER_LOCAL_SCAN':
+                if (store.getState().ui.allow_reporting){
+	                ReactGA.event({ category: 'Pusher', action: 'Local scan', label: '' });
+	            }
+                request(store, 'local_scan');
+                break;
+
+            case 'PUSHER_TEST':
+                request(store, 'test');
                 break;
 
             case 'PUSHER_VERSION':

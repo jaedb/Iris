@@ -7,13 +7,14 @@ aside{
 	z-index: 96;
 	width: 220px;
 	overflow: hidden;
-	background: $darkest_grey;
-	border-right: 1px solid lighten($dark_grey, 2%);
-	color: $white;
+	background: colour(darkest_grey);
+	border-right: 1px solid lighten(colour(dark_grey), 2%);
+	color: colour(white);
 	box-sizing: border-box;
+	transform-style: preserve-3d;
 
 	.light-theme & {
-		background: lighten($faint_grey, 2%);
+		background: lighten(colour(faint_grey), 2%);
 		border-right: none;
 	}
 
@@ -53,7 +54,7 @@ aside{
 			font-family: "Overpass";
 			font-weight: 500;
 			font-size: 14px;
-			color: $white;
+			color: colour(white);
 			text-decoration: none;
 			display: block;
 			padding: 10px 10px 8px;
@@ -61,7 +62,7 @@ aside{
 			border-radius: 3px;
 	
 			.light-theme & {
-				color: $dark_grey;
+				color: colour(dark_grey);
 				font-weight: 600;
 			}
 
@@ -83,12 +84,12 @@ aside{
 			}
 
 			&.active {
-				background: $turquoise;
-				color: $white;
+				background: colour(turquoise);
+				color: colour(white);
 
 				.status {
 					.icon {
-						color: $white !important;
+						color: colour(white) !important;
 					}
 				}
 
@@ -123,7 +124,7 @@ aside{
 				font-size: 10px;
 				text-transform: uppercase;
 				opacity: 0.5;
-				color: $mid_grey;
+				color: colour(mid_grey);
 			}
 		}
 	}

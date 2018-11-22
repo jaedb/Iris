@@ -7,94 +7,71 @@
 	}
 }
 
-#context-menu {
+.context-menu {
 	position: fixed;
 	z-index: 99;
+	font-size: 14px;
+	font-weight: 500;
+	font-family: "Overpass";
 
-	& > .liner {
-		width: 190px;
-		box-shadow: 2px 3px 6px rgba(0,0,0,0.2);
-		border-radius: 3px;
-		background: $grey;
-		font-size: 14px;
-		font-weight: 500;
-		font-family: "Overpass";
+	&__section {
+		@include animate();
+		overflow-y: scroll;
 
-		.title {
-			display: none;
-			padding: 10px 14px;
-			font-weight: bold;
-			box-sizing: border-box;
-			position: relative;
-			overflow: hidden;
-			text-decoration: none;
-			background: $darkest_grey;
+		&--submenu {			
+			background: lighten(colour(grey), 10%);
+			z-index: 3;
+			border-radius: 3px;
+			transform: translateX(100%);
+			opacity: 0;
 
-			.background {
-				@include blur(5px);
-				background-size: cover;
-				background-position: 50% 20%;
-				opacity: 0.65;
-				position: absolute;
-				top: -10px;
-				left: -10px;
-				bottom: -10px;
-				right: -10px;
-				z-index: 1;
+			.context-menu {
+				&__item {
+					width: 100%;
 
-				&.generic {
-					opacity: 0.9;
-					background: rgba(50,181,242,1);
-					background: -moz-linear-gradient(45deg, rgba(50,181,242,1) 0%, rgba(50,181,242,1) 18%, rgba(5,118,166,1) 100%);
-					background: -webkit-gradient(left bottom, right top, color-stop(0%, rgba(50,181,242,1)), color-stop(18%, rgba(50,181,242,1)), color-stop(100%, rgba(5,118,166,1)));
-					background: -webkit-linear-gradient(45deg, rgba(50,181,242,1) 0%, rgba(50,181,242,1) 18%, rgba(5,118,166,1) 100%);
-					background: -o-linear-gradient(45deg, rgba(50,181,242,1) 0%, rgba(50,181,242,1) 18%, rgba(5,118,166,1) 100%);
-					background: -ms-linear-gradient(45deg, rgba(50,181,242,1) 0%, rgba(50,181,242,1) 18%, rgba(5,118,166,1) 100%);
-					background: linear-gradient(45deg, rgba(50,181,242,1) 0%, rgba(50,181,242,1) 18%, rgba(5,118,166,1) 100%);
-					filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#32b5f2', endColorstr='#0576a6', GradientType=1 );
+					&__link--close-submenu {
+						color: colour(mid_grey);
+					}
+
+					&__label {
+						.icon {
+							margin-bottom: 0.4em;
+							padding-right: 6px;
+						}
+					}
 				}
-			}
-
-			.text {
-				@include one_line_text();
-				position: relative;
-				z-index: 2;
-				color: #FFFFFF;
-			}
-
-			.type {
-				position: relative;
-				z-index: 2;
-				color: #FFFFFF;
-				opacity: 0.5;
-				font-weight: 200;
-				text-transform: capitalize;
 			}
 		}
 
-		.menu-item-wrapper {
+		&--items {
+			opacity: 1;
+			position: relative;
+			z-index: 2;
+		}
+	}
+
+	&__item {
+		display: block;
+		overflow-x: hidden;
+
+		&__link {
+			@include gradient_overlay(3px);
+			cursor: pointer;
 			display: block;
-			overflow-x: hidden;
+			padding: 9px 12px 8px;
+			box-sizing: border-box;
+			position: relative;
+			color: colour(white);
 
-			.menu-item {
-				@include gradient_overlay(3px);
-				cursor: pointer;
-				display: block;
-				padding: 9px 12px 8px;
-				box-sizing: border-box;
-				position: relative;
-				color: $white;
-
-				.notouch &:hover {
-					&:before {
-						opacity: 0.15;
-					}
+			.notouch &:hover {
+				&:before {
+					opacity: 0.15;
 				}
+			}
 
-				.notouch &:active {
-					background: $black;
-					color: $white;
-				}
+			.notouch &:active {
+				background: colour(black);
+				color: colour(white);
 			}
 
 			.icon {
@@ -106,193 +83,192 @@
 					padding-top: 4px;
 				}
 			}
+		}
+	}
 
-			.submenu {
-				@include animate();
+	&__divider {
+		height: 1px;
+		padding: 0;
+		margin: 0;
+		background: lighten(colour(grey), 5%);
+	}
+
+	&--submenu-expanded {
+		.context-menu {
+
+			&__section {
+				transform: translateX(-100%);
+				opacity: 0;
+
+				&--submenu {
+					transform: translateX(0);
+					opacity: 1;
+				}
+			}
+		}
+	}
+
+	@include responsive(null, $bp_medium){
+		background: colour(grey);
+		width: 200px;
+		overflow-x: hidden;
+		border-radius: 3px;
+
+		&--closing {
+			display: none;
+		}
+
+		&__section {
+			background: none;
+			overflow: visible;
+
+			&--submenu {
 				position: absolute;
 				top: 0;
+				left: 0;
 				right: 0;
-				left: 100%;
-				height: 100%;
-				min-height: 300px;
-				max-height: 90vh;
-				width: 0;
-				height: 100%;
-				overflow-y: scroll;			
-				background: lighten($grey, 10%);
-				z-index: 3;
-				border-radius: 3px;
-
-				&.expanded {
-					width: 100%;
-					left: 0;
-				}
-
-				.label {
-					.icon {
-						margin-bottom: 0.4em;
-						padding-right: 6px;
-					}
-				}
-
-				.menu-item {
-					width: 100%;
-
-					&.close-submenu {
-						color: $mid_grey;
-					}
-				}
+				bottom: 0;
 			}
 		}
 
-		.divider {
-			height: 1px;
-			padding: 0;
-			margin: 0;
-			background: lighten($grey, 5%);
-		}
-
-		& > span {
-			display: block;
-			margin-bottom: -1px;
-
-			button,
-			.button,
-			.dropdown-field {
-				text-decoration: none;
-				display: block;
-				margin: 0;
-				min-width: 100% !important;
-				max-width: 100% !important;
-				box-sizing: border-box;
-				font-size: inherit;
-				text-align: left;
-				text-transform: none;
-				font-weight: 300;
-				color: inherit;
-				border-bottom: 1px solid lighten($grey, 5%) !important;
-
-				.icon,
-				.icon {
-					display: none;
-				}
-
-				.notouch &:hover {
-					background: lighten($dark_grey, 5%);
-				}
-			}
-
-			button,
-			.button {
-				padding: 16px 20px;
-				min-width: 100% !important;
-				max-width: 100% !important;
-			}	
-
-			.dropdown-field {
-				padding: 16px 20px;
-
-				.label {
-					padding: 0 0 3px 0;
-					font-weight: 800;
-				}
-
-				.options {
-					display: block;
-					position: static;
-					background: transparent;
-					border-radius: 0;
-					border: 0;
-					box-shadow: none;
-
-					&:before {
-						display: none !important;
-					}
-
-					& > .liner {
-						background: transparent;
-						color: $white !important;
-						margin: -3px -5px;
-
-						&:before {
-							display: none !important;
-						}
-
-						.option {
-							display: inline-block;
-							padding: 3px 5px;
-							border-radius: 0;
-							opacity: 0.6;
-							color: $white !important;
-
-							&:before {
-								display: none !important;
-							}
-
-							.icon {
-								display: inline-block;
-								position: static;
-								padding-right: 2px;
-								padding-bottom: 3px;
-								font-size: 0.9em;
-							}
-						}
-					}
-				}
-			}			
+		&__title {
+			display: none;
 		}
 	}
 
 	@include responsive($bp_medium){
+		@include fadein(0.2s, 40px);
 		top: 0 !important;
 		right: 0 !important;
 		bottom: 0 !important;
 		left: 0 !important;
 		margin: 0 !important;
-		overflow-y: scroll;
+		text-align: center;
 
-		.background {
-			position: fixed;
+		&--closing {
+			@include fadeout(0.2s, 40px);
+		}
+
+		&__background {
+			position: absolute;
 			top: 0;
 			right: 0;
 			bottom: 0;
 			left: 0;
-			background: $overlay_dark;
+			background-image: linear-gradient(rgba(24,24,24,0) 0%, rgba(24,24,24,0.95) 20%);
 			z-index: 1;
 		}
 
-		& > .liner {
-			width: 250px;
-			margin: 30px auto;
-			max-width: 90vw;
-			position: relative;
-			z-index: 2;
-			border-radius: 3px;
+		&__title {
+			@include clearfix();
+			color: colour(mid_grey);
+			padding: 16px 22px;
 
-			.title {
-				display: block;			
-				padding: 14px 18px;
-				box-sizing: border-box;
-				border-radius: 3px 3px 0 0;
+			.thumbnail {
+				float: left;
+				width: 36px;
+				margin-right: 20px;
 			}
 
-			& > span {
-				button,
+			&__text {
+				@include one_line_text();
+				position: relative;
+				z-index: 2;
+				font-size: 1.2rem;
+				font-weight: 800;
+				padding-top: 8px;
+			}
+
+			&__type {
+				display: none;
+				position: relative;
+				z-index: 2;
+				opacity: 0.3;
+				font-weight: 200;
+				text-transform: capitalize;
+			}
+
+			&__deselect {
+				font-size: 0.86em;
+			}
+		}
+
+		&__section {
+			position: absolute;
+			top: 20%;
+			left: 0;
+			right: 0;
+			padding: 0 10%;
+			max-height: 80%;
+			overflow: auto;
+
+			&--submenu {
+				background: none;
+				border-radius: 0;
+				opacity: 0;
+			}
+
+			&--items {
+
+				/**
+				 * The following is for buttons automatically pulled from
+				 * a page header, so we don't have classname control
+				 **/
 				.button {
-					color: $white;
-					font-weight: 800;
-					background: transparent;
-				}
+					display: block;
+					text-decoration: none;
+					display: block;
+					margin: 0;
+					width: auto !important;
+					box-sizing: border-box;
+					text-align: center;
+					text-transform: none;
+					font-weight: 700;
+					font-size: 1.2rem;
+					color: colour(white);
+					background: none;
+					transform: none;
+					padding: 16px 22px;
 
-				.dropdown-field {
-					color: $white;
+					.icon {
+						display: none;					
+					}
+
+					&:before {
+						display: none !important;
+					}
+
+					&:focus,
+					&:active {
+						@include noanimate();
+						background: colour(turquoise) !important;
+					}
 				}
 			}
+		}
 
-			.menu-item-wrapper {
-				.menu-item {
-					padding: 14px 18px;
-					box-sizing: border-box;
+		&__divider {
+			display: none;
+		}
+
+		&__item {
+			font-size: 1.2rem;
+			font-weight: 800;
+			opacity: 1;
+
+			&__link {
+				@include animate();
+				padding: 16px 22px;
+				box-sizing: border-box;
+
+				&:before {
+					display: none !important;
+				}
+
+				&:focus,
+				&:active {
+					@include noanimate();
+					background: colour(turquoise) !important;
 				}
 			}
 		}
@@ -315,7 +291,7 @@
 
 		&:hover {
 			cursor: pointer;
-			color: $blue !important;
+			color: colour(blue) !important;
 		}
 	}
 

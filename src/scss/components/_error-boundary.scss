@@ -1,0 +1,20 @@
+
+.error-boundary {
+	padding: 20px;
+	
+	&__title {
+		color: colour(red);
+		padding: 10px;
+		margin: 0;
+
+		.icon {
+			font-size: 1em;
+			padding-right: 10px;
+			vertical-align: middle;
+		}
+	}
+
+	&__trace {
+		padding: 10px;
+	}
+}

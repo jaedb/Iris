@@ -10,16 +10,17 @@ export default class LazyLoadListener extends React.Component{
 			listening: (this.props.loadKey ? true : false),
 			loadKey: this.props.loadKey
 		}
-		
+
 		this.handleScroll = helpers.throttle(this.handleScroll.bind(this), 50);
 	}
 
-	componentWillMount(){
-		window.addEventListener("scroll", this.handleScroll, false);
+	componentDidMount(){
+		this.element = document.getElementById('main');
+		this.element.addEventListener("scroll", this.handleScroll, false);
 	}
 
 	componentWillUnmount(){
-		window.removeEventListener("scroll", this.handleScroll, false);
+		this.element.removeEventListener("scroll", this.handleScroll, false);
 	}
 
 	componentWillReceiveProps(nextProps){
@@ -35,7 +36,7 @@ export default class LazyLoadListener extends React.Component{
 		if (this.state.listening){
 
 			// At, or nearly at the bottom of the page
-		    if ((window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 80)){
+		    if (this.element.scrollTop > (this.element.scrollHeight - this.element.offsetHeight - 100)){
 
 				// Immediately stop listening to avoid duplicating pagination requests
 				this.setState(

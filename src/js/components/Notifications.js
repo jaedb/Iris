@@ -1,6 +1,7 @@
 
 import React, { PropTypes } from 'react';
-import { Link, hashHistory } from 'react-router';
+import { hashHistory } from 'react-router'
+import Link from './Link';
 import Icon from './Icon';
 
 export default class Notifications extends React.Component{
@@ -27,10 +28,6 @@ export default class Notifications extends React.Component{
 
 		if (configuration.genius){
 			this.props.geniusActions.importAuthorization(configuration.genius.authorization, configuration.genius.me);
-		}
-
-		if (configuration.snapcast_client_commands){
-			this.props.snapcastActions.clientCommandsUpdated(configuration.snapcast_client_commands);
 		}
 
 		this.props.uiActions.removeNotification(notification_key, true);
@@ -72,7 +69,6 @@ export default class Notifications extends React.Component{
 												{notification.configuration.spotify ? <li>Spotify</li> : null}
 												{notification.configuration.lastfm ? <li>LastFM</li> : null}
 												{notification.configuration.genius ? <li>Genius</li> : null}
-												{notification.configuration.snapcast_client_commands ? <li>Snapcast</li> : null}
 											</ul>
 											<p>Do you want to import this?</p>
 										</div>
@@ -86,7 +82,7 @@ export default class Notifications extends React.Component{
 									<div className={"notification notification--"+notification.type+(notification.closing ? ' closing' : '')} key={notification.key} data-key={notification.key} data-duration={notification.duration}>
 										<Icon name="close" className="close-button" onClick={ e => this.props.uiActions.removeNotification(notification.key, true) } />
 										{notification.title ? <h4>{notification.title}</h4> : null}
-										{notification.content ? <p className="content" dangerouslySetInnerHTML={{__html: notification.content}}></p> :null}
+										{notification.content ? <p className="content" dangerouslySetInnerHTML={{__html: notification.content}}></p> : null}
 										{notification.description ? <p className="description" dangerouslySetInnerHTML={{__html: notification.description}}></p> : null }
 									</div>
 								)

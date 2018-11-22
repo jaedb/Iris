@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { Link } from 'react-router'
+import Link from '../../components/Link';
 
 import TrackList from '../../components/TrackList'
 import Header from '../../components/Header'
@@ -68,11 +68,9 @@ class LibraryTracks extends React.Component{
 		}
 
 		var options = (
-			<span>
-				<button className="no-hover" onClick={e => this.playAll(e)}>
-					<Icon name="play_circle_filled" />Play all
-				</button>
-			</span>
+			<a className="button button--no-hover" onClick={e => this.playAll(e)}>
+				<Icon name="play_circle_filled" />Play all
+			</a>
 		);
 
 		return (

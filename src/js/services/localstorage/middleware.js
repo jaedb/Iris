@@ -240,11 +240,11 @@ const localstorageMiddleware = (function(){
                 );
                 break;
 
-            case 'SNAPCAST_CLIENT_COMMANDS_UPDATED':
+            case 'SNAPCAST_COMMANDS_UPDATED':
                 helpers.setStorage(
                     'snapcast',
                     {
-                    	client_commands: action.client_commands
+                    	commands: action.commands
                     }
                 );
                 break;

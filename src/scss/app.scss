@@ -1,6 +1,7 @@
 
 @import 'vendor/font-awesome/index';
 
+@import 'global/colours';
 @import 'global/variables';
 @import 'global/core';
 @import 'global/reset';
@@ -11,6 +12,7 @@
 @import 'components/loader';
 @import 'components/dragger';
 @import 'components/images';
+@import 'components/parallax';
 @import 'components/icon';
 @import 'components/slider';
 @import 'components/playback-controls';
@@ -30,6 +32,11 @@
 @import 'components/services';
 @import 'components/snapcast';
 @import 'components/popularity';
+@import 'components/colour-field';
+@import 'components/icon-field';
+@import 'components/commands';
+@import 'components/related-artists';
+@import 'components/error-boundary';
 
 @import 'views/artist';
 @import 'views/user';

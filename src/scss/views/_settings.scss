@@ -25,16 +25,48 @@
 				&[href]:hover {
 					.thumbnail {
 						cursor: pointer;
-						border-color: $turquoise;
+						border-color: colour(turquoise);
 					}
 				}
 			}
 		}
 	}
 
+	.commands-setup {
+		padding-bottom: 20px;
+		
+		&__item {
+			position: relative;
+			padding-top: 10px;
+			padding-bottom: 10px;
+
+			.commands__item {
+				float: left;
+				margin-bottom: -5px;
+			}
+
+			&__url {
+				@include one_line_text();
+				max-width: 100%;
+				padding-top: 5px;
+				padding-left: 10px;
+			}
+
+			&__actions {
+				position: absolute;
+				top: 16px;
+				right: 0;
+
+				.action {
+					padding: 12px 8px;
+				}
+			} 
+		}
+	}
+
 	.field.pusher-connections {
 		.connection.me {
-			color: $turquoise;
+			color: colour(turquoise);
 		}
 	}
 
@@ -57,6 +89,13 @@
 			.text {
 				padding-top: 10px;
 				padding-bottom: 10px;
+			}
+		}
+
+		.commands-setup {
+			&__item {
+				&__url {
+				}
 			}
 		}
 

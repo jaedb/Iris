@@ -1,12 +1,13 @@
 
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { Link, hashHistory } from 'react-router'
+import { hashHistory } from 'react-router'
 import { bindActionCreators } from 'redux'
 
 import Header from '../components/Header'
 import Thumbnail from '../components/Thumbnail'
 import Icon from '../components/Icon'
+import Link from '../components/Link';
 
 import * as uiActions from '../services/ui/actions'
 import * as pusherActions from '../services/pusher/actions'
@@ -51,11 +52,9 @@ class Debug extends React.Component{
 	render(){
 
 		var options = (
-			<span>
-				<button className="no-hover" onClick={e => hashHistory.push(global.baseURL+'settings')}>
-					<Icon name="keyboard_backspace" />Back
-				</button>
-			</span>
+			<a className="button no-hover" onClick={e => hashHistory.push(global.baseURL+'settings')}>
+				<Icon name="keyboard_backspace" />Back
+			</a>
 		)
 
 		return (
@@ -121,8 +120,7 @@ class Debug extends React.Component{
 							<div className="name"></div>
 							<div className="input">
 								<a className="button secondary" onClick={e => this.props.uiActions.createNotification({content: 'Test notification'})}>Create notification</a>
-								<a className="button secondary" onClick={e => this.props.uiActions.startProcess('test_process', 'Test process', {total: 100, remaining: 17})}>Start process</a>
-								<a className="button secondary" onClick={e => this.props.uiActions.processFinishing('test_process')}>Stop process</a>
+								<a className="button secondary" onClick={e => this.props.pusherActions.request('test')}>Run test process</a>
 							</div>
 						</div>
 					</form>

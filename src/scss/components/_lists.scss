@@ -1,7 +1,8 @@
 
 .list {
 	&__item {
-		@include clearfix;
+		@include clearfix();
+		@include animate(0.1s);
 		-webkit-touch-callout: none;
 		-webkit-user-select: none;
 		-khtml-user-select: none;
@@ -11,42 +12,49 @@
 
 		display: block;
 		position: relative;
-		margin: 0 -10px -1px -10px;
-		padding: 14px 30px 13px 10px;
+		margin: 0 -20px 0 -20px;
+		padding: 0 20px;
 		border-radius: 3px;
-		border-bottom: 1px solid rgba(255,255,255,0.05);
-		border-top: 1px solid rgba(255,255,255,0.05);
 
-		:root .notouch:not(.dragging) &:not(.header):not(.no-click).hover {
-			background: rgba(255,255,255,0.03);
+		&:not(.no-click){
 			cursor: pointer;
-
-			.light-theme & {
-				background: rgba(0,0,0,0.03);
-			}
 		}
 
-		&.selected {
-			background: rgba(255,255,255,0.08) !important;
+		&:before {
+			pointer-events: none;
+			content: '';
+			display: block;
+			position: absolute;
+			top: -5px;
+			left: 0;
+			bottom: 0;
+			right: 0;
+			height: 3px;
+			background: colour(blue);
+			opacity: 0;
+		}
 
-			.select-zone {
-				&::after {
-					background: $blue;
-					border-color: $blue !important;
+		&:not(:first-child){
+			border-top: 1px solid rgba(128,128,128,0.05);
+		}
+
+		:root .notouch:not(.dragging) &:not(.no-click) {
+			&:hover {
+				background: rgba(255,255,255,0.03);
+				cursor: pointer;
+
+				.light-theme & {
+					background: rgba(0,0,0,0.03);
 				}
 			}
-		}
 
-		.light-theme & {
-			border-color: rgba(0,0,0,0.05);
-
-			&.selected {
-				background: $faint_grey !important;
+			&:active,
+			&:focus {
+				@include noanimate();
+				-moz-transform: scale(0.997);
+				-webkit-transform: scale(0.997);
+				transform: scale(0.997);
 			}
-		}
-
-		&.playing {
-			color: $turquoise;
 		}
 
 		.select-zone,
@@ -58,31 +66,11 @@
 			}
 		}
 
-		.context-menu-trigger {
-			position: absolute;
-			top: 0;
-			right: 0;
-			font-size: 14px;
-			z-index: 2;
-
-			&:before {
-				display: none !important;
-			}
-		}
-
 		.icon.source {
-			color: $mid_grey;
+			color: colour(mid_grey);
 			position: absolute;
 			top: 16px;
 			right: 40px;
-		}
-
-		&.header {
-			font-size: 10px;
-			color: $grey;
-			text-transform: uppercase;
-			border-top: 0;
-			padding-bottom: 2px;
 		}
 
 		&.field {
@@ -99,38 +87,177 @@
 		.uri-placeholder {
 			word-break: break-all;
 		}
-	}
 
-	&.track-list {
-		.list__item {
-			cursor: pointer;
+		&--selected {
+			background: rgba(125,125,125,0.15) !important;
+		}
 
-			.col {
-				&.name { 
-					width: 36%;
+		&--playing {
+			.list__item {
+				&__column {
+					&__item {
+						&--name {
+							color: colour(turquoise);
 
-					.light-theme & .flag {
-						background: $light_grey;
-						color: $white;
+							.icon {
+								padding-left: 5px;
+								font-size: 12px;
+
+								@include responsive($bp_medium){
+									display: none;
+								}
+							}
+						}
 					}
 				}
-				&.artists,
-				&.album { 
-					width: 25%;
+			}
+		}
+
+		&--has-drag-zone {
+			padding-left: 45px;
+
+			.list__item {
+				&__column {
+					&__item {
+						&--drag-zone {
+							position: absolute;
+							top: 0;
+							left: 0;
+							bottom: 0;
+							width: 35px;
+							padding-top: 22px;
+							text-align: center;
+						}
+					}
 				}
-				&.duration {
-					width: 7%;
+			}
+		}
+
+		&--has-middle-column {
+			.list__item {
+				&__column {
+					&--name {
+						width: 60%;
+						float: left;
+					}
+
+					&--middle {
+						width: 25%;
+						float: left;
+					}
 				}
-				&.popularity {
-					width: 3%;
+			}
+		}
+
+		&--has-thumbnail {
+			.list__item {
+				&__column {
+					&--name {
+						padding-left: 46px;
+					}
+				}
+			}
+		}
+
+		&--has-details {
+			.list__item {
+				&__column {
+					&--name {
+						padding-top: 14px;
+						padding-bottom: 10px;
+					}
+				}
+			}
+		}
+
+		&__column {
+			padding: 24px 0 16px;
+
+			&--right {
+				float: right;
+
+				.list__item__column__item {
+					padding-left: 10px;
+					display: inline-block;
 				}
 			}
 
-			:root .dragging &.hover,
+			&__item {
+
+				&--thumbnail {
+					&,
+					&.thumbnail {
+						width: 40px;
+						position: absolute;
+						top: 12px;
+						left: 12px;
+
+						@include responsive($bp_medium){
+							left: 16px;
+						}
+					}
+				}
+
+				&--name {
+					padding-bottom: 2px;
+					font-size: 15px;
+				}
+
+				&--details {
+					padding: 0;
+					margin: 0;
+					opacity: 0.5;
+
+					.details__item {
+						display: inline;
+						overflow-wrap: break-word;
+
+						&:not(:first-child) {
+							@include bullet();
+						}
+					}
+				}
+
+				&--added {
+					.from {
+						&:before {
+							content: '(';
+						}
+						&:after {
+							content: ')';
+						}
+					}
+				}
+
+				&--context-menu-trigger {
+					font-size: 14px;
+					margin: -14px -14px -14px 0;
+					position: relative;
+					z-index: 2;
+
+					&:before {
+						display: none !important;
+					}
+				}
+
+				.light-theme & .flag {
+					background: colour(light_grey);
+					color: colour(white);
+				}
+			}
+		}
+	}
+
+	&--tracks {
+		.list__item {
+			cursor: pointer;
+
+			:root .dragging &:hover,
+			:root .dragging &--hover,
 			&.touch-drag-hover {
-				border-top: 3px solid $blue;
-				margin-top: -3px;
-				background: transparent;
+				&:before {
+					opacity: 1;
+				}
 			}
 
 			&.has-touch-drag-zone {
@@ -139,12 +266,13 @@
 				.drag-zone {
 					position: absolute;
 					top: 0;
-					left: 0;
+					left: 5px;
 					height: 100%;
 					width: 34px;
 					font-size: 14px;
 					display: block;
-					color: $mid_grey;
+					color: colour(mid_grey);
+					padding: 0;
 					
 					.icon {
 						position: absolute;
@@ -158,325 +286,64 @@
 		}
 	}
 
-	&.playlist-list {
-		.list__item {
-			cursor: pointer;
-
-			.col {
-				&.name { 
-					width: 50%;
-				}
-				&.owner {
-					width: 20%
-				}
-				&.source,
-				&.can_edit,
-				&.tracks_total,
-				&.popularity {
-					width: 10%;
-				}
-			}
-		}
-	}
-
-	&.album-list {
-		.list__item {
-			cursor: pointer;
-
-			.col {
-				&.name,
-				&.artists { 
-					width: 30%;
-				}
-				&.added_at,
-				&.release_date {
-					width: 15%;
-				}
-				&.tracks_total {
-					width: 10%;
-				}
-			}
-		}
-	}
-
-	&.library-local-album-list {
-		.list__item {
-			cursor: pointer;
-
-			.col {
-				&.name,
-				&.artists { 
-					width: 45%;
-				}
-				&.tracks_total {
-					width: 10%;
-				}
-			}
-		}
-	}
-
-	&.artist-list {
-		.list__item {
-			cursor: pointer;
-
-			.col {
-				&.name { 
-					width: 60%;
-				}
-				&.followers_total {
-					width: 25%;
-				}
-				&.popularity {
-					width: 10%;
-				}
-			}
-		}
-	}
-
-	&.queue-track-list {
-		cursor: pointer;
-
-		.list__item {
-			padding-right: 60px;
-			.col {
-				&.name,
-				&.artists,
-				&.album { 
-					width: 25%;
-				}
-				&.added { 
-					width: 20%;
-
-					.by {
-						padding-right: 0.25em;
-					}
-
-					.from {
-						&:before {
-							content: '(';
-							display: inline-block;
-						}
-						&:after {
-							content: ')';
-							display: inline-block;
-						}
-					}
-				}
-				&.duration {
-					width: 5%;
-				}
-			}
-		}
-	}
-
-	&.queue-history-track-list {
-		.list__item {
-			cursor: pointer;
-			
-			.col {
-				&.name,
-				&.artists,
-				&.album { 
-					width: 25%;
-				}
-				&.played_at {
-					width: 15%;
-				}
-			}
-		}
-	}
-
-	&.related-artist-list {
-		padding-bottom: 20px;
-		cursor: pointer;
-		
-		.artist {
-			display: block;
-			border: 0;
-			margin: 10px 0;
-			@include clearfix;
-
-			.thumbnail {
-				@include animate();
-				border-radius: 50%;
-				width: 50px;
-				margin-right: 15px;
-				float: left;
-				border: 3px solid transparent;
-			}
-
-			.name {
-				display: block;
-				padding-top: 20px;
-			}
-		}
-
-		a.artist:hover {
-			.thumbnail {
-				border-color: $turquoise;
-				opacity: 1;
-			}
-		}
-	}
-
-	&.library-local-view,
-	&.library-local-directory-list {
-		.list__item {
-			cursor: pointer;
-		}
-	}
-
 	@include responsive($bp_medium){
-
 		&__item {
-			padding: 12px !important;
 
-			.source {
-				position: static;
-				float: none;
+			:root .notouch:not(.dragging) &:not(.no-click) {
+				&:active,
+				&:focus {
+					@include noanimate();
+					-moz-transform: scale(0.98);
+					-webkit-transform: scale(0.98);
+					transform: scale(0.98);
+				}
+			}
+
+			&--has-middle-column {
+				.list__item__column {
+					&--name {
+						width: auto;
+						float: none;
+					}
+				}
+			}
+
+			&__column {
+
+				&--middle {
+					display: none;
+				}
+
+				&__item {
+
+					&--name {
+						font-size: 14px;
+					}
+
+					&--source {
+						display: none !important;
+					}
+
+					&--added {
+
+						.by {
+							display: none;
+						}
+
+						.from {
+							text-transform: capitalize;
+
+							&:before,
+							&:after {
+								display: none;
+							}
+						}
+					}
+				}
 			}
 
 			.context-zone {
 				top: 14px;
-			}
-
-			.col {
-				&.name {
-					width: auto !important;
-					padding-right: 10%;
-					display: block;
-					float: none;
-				}
-
-				&.duration {
-					width: auto !important;
-					position: absolute;
-					right: 10px;
-					text-align: right;
-					z-index: 1;
-				}
-
-				&:not(.name):not(.duration):not(.album):not(.added){
-					color: $mid_grey;
-					display: inline;
-					width: auto !important;
-					float: none !important;
-					word-wrap: break-word;
-				}
-
-				&.followers_total:after {
-					content: ' followers';
-				}
-
-				&.tracks_total:after {
-					content: ' tracks';
-				}
-
-				&.popularity {
-					@include bullet();
-
-					.popularity {
-						&-bars {
-							margin: 0.1em 0 0 0;
-						}
-					}
-				}
-
-				&.album,
-				&.can_edit,
-				&.release_date {
-					display: none;
-				}
-			}
-
-			&.header { 
-				display: none; 
-			}
-		}
-
-		&.queue-track-list {
-			.list__item {
-				.artists {
-					padding-left: 0 !important;
-
-					&:before {
-						display: none !important;
-					}
-				}
-
-				.source {
-					display: none !important;
-				}
-
-				.added {
-					width: auto !important;
-					float: none !important;
-					padding-left: 0.25em;
-
-					.by,
-					.empty {
-						display: none;
-					}
-
-					.from {
-						@include bullet();
-						text-transform: capitalize;
-
-						&:after {
-							display: none !important;
-						}
-
-						.label {
-							display: none;
-						}
-					}
-				}
-			}
-		}
-
-		&.queue-history-track-list {
-			.list__item {
-				.source {
-					display: none !important;
-				}
-			}
-		}
-
-		&.track-list {
-			.list__item {
-				&.can-sort {
-					padding-left: 40px !important;
-				}
-			}
-		}
-
-		&.album-list {
-			.list__item {
-				.col {
-					&.added_at,
-					&.source {
-						display: none !important;
-					}
-
-					&.tracks_total {
-						@include bullet();
-					}
-				}
-			}
-		}
-
-		&.playlist-list {
-			.list__item {
-				.col {
-					&.can_edit,
-					&.source {
-						display: none !important;
-					}
-
-					&.tracks_total {
-						@include bullet();
-					}
-				}
 			}
 		}
 	}

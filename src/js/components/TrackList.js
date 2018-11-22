@@ -134,7 +134,7 @@ class TrackList extends React.Component{
 			let touch = e.touches[0];
 			let over = $(document.elementFromPoint(touch.clientX, touch.clientY));
 			if (!over.is('.track')){
-				over = over.closest('.track');
+				over = over.closest('.list__item--track');
 			}
 			$(document).find('.touch-drag-hover').removeClass('touch-drag-hover');
 			if (over.length > 0){
@@ -153,12 +153,12 @@ class TrackList extends React.Component{
 		if (this.touch_dragging_tracks_keys){
 			let touch = e.changedTouches[0];
 			let over = $(document.elementFromPoint(touch.clientX, touch.clientY));
-			if (!over.is('.track')){
-				over = over.closest('.track');
+			if (!over.is('.list__item--track')){
+				over = over.closest('.list__item--track');
 			}
 			if (over.length > 0){
-				let siblings = over.parent().children('.track');
-				let dropped_at = siblings.index(over) - 1;
+				let siblings = over.parent().children('.list__item--track');
+				let dropped_at = siblings.index(over);
 
 				if (this.props.reorderTracks !== undefined){
 					this.props.reorderTracks(helpers.arrayOf('index',this.digestTracksKeys()),dropped_at);
@@ -350,7 +350,7 @@ class TrackList extends React.Component{
 		}
 
 		// Accommodate a single key
-		let singleton = false
+		var singleton = false
 		if (!(keys instanceof Array)){
 			singleton = true
 			keys = [keys]
@@ -358,20 +358,21 @@ class TrackList extends React.Component{
 
 		// Construct a basic track object, based on our unique track key
 		// This is enough to perform interactions (dragging, selecting, etc)
-		let array = []
-		for (let i = 0; i < keys.length; i++){
-			let key = keys[i].split('@@')
+		var array = [];
+		for (var key of keys){
+			var key_components = key.split('@@')
 
 			if (indexes_only){
-				array.push(key[0])
+				array.push(key_components[0])
 
 			} else {
 				array.push({
-					index: parseInt(key[0]),
-					tlid: parseInt(key[1]),
-					uri: key[2],
-					context: key[3],
-					context_uri: key[4]
+					key: key,
+					index: parseInt(key_components[0]),
+					tlid: parseInt(key_components[1]),
+					uri: key_components[2],
+					context: key_components[3],
+					context_uri: key_components[4]
 				})				
 			}
 		}
@@ -383,64 +384,19 @@ class TrackList extends React.Component{
 		}
 	}
 
-	renderHeader(){
-		if (this.props.noheader ) return null
-		
-		switch (this.props.context){
-
-			case 'history':
-				return (
-					<div className="list__item header track">
-						<div className="liner">
-							<span className="col name">Name</span>
-							<span className="col artists">Artists</span>
-							<span className="col album">Album</span>
-							<span className="col played_at">Started playing</span>
-						</div>
-					</div>
-				)
-				break
-
-			case 'queue':
-				return (
-					<div className="list__item header track">
-						<div className="liner">
-							<span className="col name">Name</span>
-							<span className="col artists">Artists</span>
-							<span className="col album">Album</span>
-							<span className="col added">Added by</span>
-							<span className="col duration">Duration</span>
-						</div>
-					</div>
-				)
-				break
-
-			default:
-				return (
-					<div className="list__item header track">
-						<div className="liner">
-							<span className="col name">Name</span>
-							<span className="col artists">Artists</span>
-							<span className="col album">Album</span>
-							<span className="col duration">Duration</span>
-							<span className="col popularity"></span>
-						</div>
-					</div>
-				)
-		}
-	}
 
 	render(){
-		if (!this.props.tracks || Object.prototype.toString.call(this.props.tracks) !== '[object Array]' ) return null
+		if (!this.props.tracks || Object.prototype.toString.call(this.props.tracks) !== '[object Array]' ){
+			return null;
+		}
 
-		var className = 'list track-list '+this.props.context
+		var className = 'list list--tracks '+this.props.context
 		if (this.props.className){
 			className += ' '+this.props.className
 		}
 
 		return (
 			<div className={className}>
-				{ this.renderHeader() }
 				{
 					this.props.tracks.map(
 						(track, index) => {
@@ -455,6 +411,7 @@ class TrackList extends React.Component{
 									context={this.props.context} 
 									can_sort={this.props.context == 'queue' || this.props.context == 'editable-playlist'} 
 									selected={this.props.selected_tracks.includes(track_key)} 
+									play_state={this.props.play_state} 
 									dragger={this.props.dragger} 
 									handleClick={(e) => this.handleClick(e, track_key)}
 									handleDoubleClick={e => this.handleDoubleClick(e, track_key)}
@@ -474,15 +431,9 @@ class TrackList extends React.Component{
 	}
 }
 
-
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- **/
-
 const mapStateToProps = (state, ownProps) => {
 	return {
+		play_state: state.mopidy.play_state,
 		slim_mode: state.ui.slim_mode,
 		selected_tracks: state.ui.selected_tracks,
 		dragger: state.ui.dragger,

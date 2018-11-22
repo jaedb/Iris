@@ -6,9 +6,6 @@ export default function reducer(snapcast = {}, action){
             var server = Object.assign({}, action.server);
             return Object.assign({}, snapcast, { server: server });
 
-        case 'SNAPCAST_CLIENT_COMMANDS_UPDATED':
-            return Object.assign({}, snapcast, { client_commands: action.client_commands });
-
         case 'SNAPCAST_CLIENTS_LOADED':
             if (action.flush){
                 var clients = {};

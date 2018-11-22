@@ -1,7 +1,7 @@
 
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { Link } from 'react-router'
+import Link from '../components/Link';
 import { bindActionCreators } from 'redux'
 
 import Header from '../components/Header'
@@ -57,7 +57,7 @@ class Track extends React.Component{
 		if (nextProps.params.uri != this.props.params.uri){
 			this.props.coreActions.loadTrack(nextProps.params.uri);
 
-			if (nextProps.tracks.artists){
+			if (nextProps.genius_authorized && nextProps.tracks.artists){
 				this.props.geniusActions.findTrackLyrics(nextProps.track);
 			}
 
@@ -175,7 +175,7 @@ class Track extends React.Component{
 			return (
 				<div className="lyrics">
 					<div className="content" dangerouslySetInnerHTML={{__html: this.props.track.lyrics}}></div>
-					<div className="origin grey-text">
+					<div className="origin mid_grey-text">
 						Origin: <a href={"https://genius.com"+this.props.track.lyrics_path} target="_blank">{"https://genius.com"+this.props.track.lyrics_path}</a>
 					</div>
 				</div>
@@ -198,6 +198,15 @@ class Track extends React.Component{
 			return null
 		} else {
 			var track = this.props.track;
+
+			// Flatten our simple album so we can inherit artwork
+			if (track.album){
+				var album = this.props.albums[track.album.uri];
+
+				if (album && album.images){
+					track.images = album.images;
+				}
+			}
 		}
 
 		return (
@@ -216,7 +225,7 @@ class Track extends React.Component{
 				<div className="title">
 
 					<h1>{track.name}</h1>
-					<h2 className="grey-text">
+					<h2 className="mid_grey-text">
 						{track.album && track.album.uri ? <Link to={global.baseURL+'album/'+track.album.uri}>{track.album.name}</Link> : null}
 						{track.album && !track.album.uri ? track.album.name : null}
 						{!track.album ? "Unknown album" : null}
@@ -233,7 +242,7 @@ class Track extends React.Component{
 							{track.track_number ? <span>Track {track.track_number}</span> : null}
 						</li>
 						{track.duration ? <li><Dater type="length" data={track.duration} /></li> : null}
-						{track.popularity ? <li><Popularity popularity={track.popularity} /></li> : null}
+						{track.popularity ? <li>{track.popularity}% popularity</li> : null}
 					</ul>
 				</div>
 
@@ -243,7 +252,7 @@ class Track extends React.Component{
 					<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 				</div>
 
-				{!this.props.genius_authorized ? <p className="no-results">Want track lyrics? Authorize Genius under <Link to={global.baseURL+"settings/service/genius"}>Settings</Link>.</p> : null}
+				{!this.props.genius_authorized ? <p className="no-results">Want track lyrics? Authorize Genius under <Link to={global.baseURL+"settings/service/genius"} scrollTo="services-menu">Settings</Link>.</p> : null}
 				{this.props.genius_authorized ? this.renderLyricsSelector() : null}
 				{this.props.genius_authorized ? this.renderLyrics() : null}
 

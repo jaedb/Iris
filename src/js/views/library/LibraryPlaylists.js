@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { Link } from 'react-router'
+import Link from '../../components/Link';
 
 import PlaylistGrid from '../../components/PlaylistGrid'
 import List from '../../components/List'
@@ -124,36 +124,15 @@ class LibraryPlaylists extends React.Component{
 		playlists = playlists.slice(0, this.state.limit);
 
 		if (this.props.view == 'list'){
-			var columns = [
-				{
-					label: 'Name',
-					name: 'name'
-				},
-				{
-					label: 'Owner',
-					name: 'owner'
-				},
-				{
-					label: 'Tracks',
-					name: 'tracks_total'
-				},
-				{
-					label: 'Editable',
-					name: 'can_edit'
-				},
-				{
-					label: 'Source',
-					name: 'source'
-				}
-			];
-
 			return (
 				<section className="content-wrapper">
 					<List
 						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						rows={playlists}
-						columns={columns}
-						className="playlist-list"
+						thumbnail={true}
+						details={['owner','tracks_total']}
+						right_column={['source']}
+						className="playlists"
 						link_prefix={global.baseURL+"playlist/"} />
 					<LazyLoadListener 
 						loadKey={this.state.limit}
@@ -238,6 +217,7 @@ class LibraryPlaylists extends React.Component{
 		var options = (
 			<span>
 				<FilterField 
+					initialValue={this.state.filter}
 					handleChange={value => this.setState({filter: value})}
 				/>
 				<DropdownField 

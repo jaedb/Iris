@@ -3,17 +3,19 @@ from __future__ import unicode_literals
 
 import random, string, logging, json, pykka, pylast, urllib, urllib2, os, sys, mopidy_iris, subprocess
 import tornado.web
-import tornado.websocket
 import tornado.ioloop
 import tornado.httpclient
 import requests
 import time
+import pickle
 from mopidy import config, ext
 from mopidy.core import CoreListener
 from pkg_resources import parse_version
 from tornado.escape import json_encode, json_decode
 
-import socket
+from .system import IrisSystemThread
+from .snapcast import IrisSnapcast
+from .snapcast_thread import IrisSnapcastThread
 
 if sys.platform == 'win32':
     import ctypes
@@ -21,11 +23,12 @@ if sys.platform == 'win32':
 # import logger
 logger = logging.getLogger(__name__)
 
-class IrisCore(object):
+class IrisCore(pykka.ThreadingActor):
     version = 0
     spotify_token = False
     queue_metadata = {}
     connections = {}
+    commands = {}
     initial_consume = False
     radio = {
         "enabled": 0,
@@ -34,151 +37,96 @@ class IrisCore(object):
         "seed_tracks": [],
         "results": []
     }
-    snapcast_listener = False
+    snapcast_daemon = False
 
 
     ##
-    # Create a new snapcast TCP connection
-    #
-    # @return socket
+    # Mopidy server is starting
     ##
-    def new_snapcast_socket(self):
+    def start(self):
+        logger.info('Starting Iris '+self.version)
 
-        if not self.config['iris'].get('snapcast_enabled'):
-            logger.error("Iris Snapcast not enabled")
-            raise Exception("Snapcast not enabled")
+        # Load our commands from file
+        self.commands = self.load_from_file('commands')
 
-        try:
-            snapcast = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            snapcast.settimeout(10)
-            snapcast.connect((self.config['iris']['snapcast_host'], self.config['iris']['snapcast_port']))
-        except socket.gaierror, e:
-            logger.error("Iris could not connect to Snapcast: %s" % e)
-            raise Exception(e);
-        except socket.error, e:
-            logger.error("Iris could not connect to Snapcast: %s" % e)
-            raise Exception(e);
-
-        return snapcast
+        # Start our TCP watcher with no request, so it becomes our
+        # long-running socket connection
+        if self.config['iris'].get('snapcast_enabled'):
+            self.snapcast_daemon = IrisSnapcastThread(self.config, self.broadcast)
+            self.snapcast_daemon.start()
 
 
+    ## 
+    # Mopidy is shutting down
     ##
-    # Create our ongoing notification listener
-    #
-    # TODO: Make non-blocking
-    ##
-    def create_snapcast_listener(self):
-        try:
-            listener = self.new_snapcast_socket()
-            self.snapcast_listener = listener
-            logger.info("Iris connected to Snapcast")
-        except Exception, e:
-            logger.error("Iris could not connect to Snapcast: %s" % e)
+    def stop(self):
+        logger.info('Stopping Iris')
+
+        if self.snapcast_daemon:
+            logger.info('Stoppping Snapcast daemon')
+            self.snapcast_daemon.close()
 
 
     ##
-    # Disconnect our Snapcast listener
+    # Make a request to snapcast
     ##
-    def snapcast_disconnect_listener(self):
-        if self.snapcast_listener:
-            self.snapcast_listener.close()
-            self.snapcast_listener = None
-
-
-    ##
-    # Handle a message from the Snapcast Telnet API
-    # We create a connection for this request, and then drop it once completed. This is because
-    # we have a separate socket for monitoring notifications
-    #
-    # @param data = string
-    ##
-    def snapcast_handle_message(self, data):
-        logger.debug("Iris received Snapcast message: "+data)
-
-        try:
-            data = json.loads(data)
-        except:
-            logger.error("Iris could not digest Snapcast message: "+data)
-
-        print "broadcasting..."
-        print data
-
-        self.broadcast(data)
-
-
-    ##
-    # Send a request to Snapcast
-    #
-    # We create a connection for this request, and then drop it once completed. This is because
-    # we have a separate socket for monitoring notifications
-    ##
-    def snapcast_instruct(self, *args, **kwargs):
+    def snapcast(self, *args, **kwargs):
         callback = kwargs.get('callback', None)
         request_id = kwargs.get('request_id', None)
         data = kwargs.get('data', {})
 
-        request = {
-            'id': self.generateGuid(),
-            'jsonrpc': '2.0',
-            'method': data['method'],
-            'params': data['params'] if 'params' in data else {}
-        }
+        # Start a new thread, just for this request
+        socket = IrisSnapcast(self.config)
+        socket.connect()
 
-        # Convert to string. For some really nuts reason we need an extra trailing curly brace...
-        request = json.dumps(request)+'}'
+        response = socket.request(data)
 
-        # Create our connection
+        if (callback):
+            callback(response)
+        else:
+            return response
+
+
+    ##
+    # Save dict object to disk
+    #
+    # @param dict Dict
+    # @param name String
+    # @return void
+    ##
+    def save_to_file(self, dict, name):
+
+        # Build path to our special Iris folder
+        path = self.config['core'].get('cache_dir')+'/iris/'
+
+        # Create the folder if it doesn't yet exist
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+        # And now open the file, and drop in our dict
         try:
-            snapcast_socket = self.new_snapcast_socket()
-        except Exception, e:
-            callback(response=None, error={
-                'message': "Could not connect to Snapcast",
-                'data': str(e)
-            })
-            return
+            with open(path + name + '.pkl', 'wb') as f:
+                pickle.dump(dict, f, pickle.HIGHEST_PROTOCOL)
+        except Exception:
+            return False
 
-        # Attempt to send the request
+
+    ##
+    # Load a dict from disk
+    #
+    # @param name String
+    # @return Dict
+    ##
+    def load_from_file(self, name):
+
+        # Build path to our special Iris folder
+        path = self.config['core'].get('cache_dir')+'/iris/'
+
         try:
-            snapcast_socket.send(request.encode('ascii')+b"\n")
-        except socket.error, e:
-            logger.error("Iris could not send request to Snapcast: %s" % e)
-            callback(response=None, error={
-                'message': "Failed to send request to Snapcast",
-                'data': str(e)
-            })
-            return
-
-        # Wait for response
-        while True:
-            try:
-                response = snapcast_socket.recv(8192)
-            except socket.error, e:
-                logger.error("Iris failed to receive Snapcast response: %s" % e)
-                callback(response=None, error={
-                    'message': "Failed to receive Snapcast response",
-                    'data': str(e)
-                })
-
-            snapcast_socket.close()
-
-            if not len(response):
-                break
-
-            try:
-                response = json.loads(response)
-                if 'result' in response:
-                    callback(response=response['result'])
-                else:
-                    callback(error=response['error'])
-            except:
-                logger.error("Iris received malformed Snapcast response: "+response)
-                callback(response=None, error={
-                    'message': "Malformed Snapcast response",
-                    'data': response
-                })
-                return
-
-            return
+            with open(path + name + '.pkl', 'rb') as f:
+                return pickle.load(f)
+        except Exception:
+            return {}
 
 
     ##
@@ -227,6 +175,8 @@ class IrisCore(object):
             "username": username,
             "generated": generated
         }
+
+
 
 
     def send_message(self, *args, **kwargs):
@@ -505,114 +455,109 @@ class IrisCore(object):
             return response
 
 
-    def upgrade(self, *args, **kwargs):
-        logger.info("Upgrading")
-
-        callback = kwargs.get('callback', False)
-
-        try:
-            self.check_system_access()
-        except Exception, e:
-            logger.error(e)
-
-            error = {
-                'message': "Permission denied",
-                'description': str(e)
-            }
-
-            if (callback):
-                callback(False, error)
-                return
-            else:
-                return error
-
-        self.broadcast(data={
-            'method': "upgrade_started",
-            'params': {}
-        });
-
-        # Run the system task
-        path = os.path.dirname(__file__)
-
-        # Attempt the upgrade
-        upgrade_process = subprocess.Popen("sudo "+path+"/system.sh upgrade", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-        result, error = upgrade_process.communicate()
-        exitCode = upgrade_process.wait()
-
-        if exitCode > 0:
-            output = error.decode('ascii')
-            logger.error("Upgrade failed: "+output)
-
-            error = {
-                'message': "Upgrade failed",
-                'data': {
-                    'output': output
-                }
-            }
-
-            if (callback):
-                callback(False, error)
-                return
-            else:
-                return error
-
-        self.broadcast(data={
-            'method': "upgrade_complete",
-            'params': {}
-        });
-
-        output = result.decode();
-
-        response = {
-            'message': "Restart required to complete upgrade",
-            'data': {
-                'output': output
-            }
-        }
-
-        if (callback):
-            callback(response)
-        else:
-            return response
-
-
+    ##
+    # Restart Mopidy
+    # This requires sudo access to system.sh
+    ##
     def restart(self, *args, **kwargs):
-        logger.info("Restarting")
         callback = kwargs.get('callback', False)
 
-        try:
-            self.check_system_access()
-        except Exception, e:
-            logger.error(e)
-
-            error = {
-                'message': "Permission denied",
-                'description': str(e)
-            }
-
-            if (callback):
-                callback(False, error)
-                return
-            else:
-                return error
-
+        # Trigger the action
+        IrisSystemThread('restart', self.restart_callback).start()
 
         self.broadcast(data={
-            'method': "restarting",
-            'params': {}
+            'method': "restart_started"
         })
 
-        path = os.path.dirname(__file__)
-
-        subprocess.Popen(["sudo "+path+"/system.sh restart 0"], shell=True)
-
         response = {
-            'message': "Restarting... please wait"
+            'message': "Restart started"
         }
         if (callback):
             callback(response)
         else:
             return response
+
+    def restart_callback(self, response, error):
+        if error:
+            self.broadcast(data={
+                'method': "restart_error",
+                'params': error
+            })
+        else:
+            self.broadcast(data={
+                'method': "restart_finished"
+            })
+
+
+    ##
+    # Run an upgrade of Iris
+    ##
+    def upgrade(self, *args, **kwargs):
+        callback = kwargs.get('callback', False)
+
+        self.broadcast(data={
+            'method': "upgrade_started"
+        })
+
+        # Trigger the action
+        IrisSystemThread('upgrade', self.upgrade_callback).start()
+
+        response = {
+            'message': "Upgrade started"
+        }
+
+        if (callback):
+            callback(response)
+        else:
+            return response
+
+    def upgrade_callback(self, response, error):
+        if error:
+            self.broadcast(data={
+                'method': "upgrade_error",
+                'params': error
+            })
+        else:
+            self.broadcast(data={
+                'method': "upgrade_finished",
+                'params': response
+            })
+            self.restart()
+
+
+    ##
+    # Run a mopidy local scan
+    # Essetially an alias to "mopidyctl local scan"
+    ##
+    def local_scan(self, *args, **kwargs):
+        callback = kwargs.get('callback', False)
+
+        # Trigger the action
+        IrisSystemThread('local_scan', self.local_scan_callback).start()
+
+        self.broadcast(data={
+            'method': "local_scan_started"
+        })
+
+        response = {
+            'message': "Local scan started"
+        }
+        if (callback):
+            callback(response)
+        else:
+            return response
+
+    def local_scan_callback(self, response, error):
+        if error:
+            self.broadcast(data={
+                'method': "local_scan_error",
+                'params': error
+            })
+        else:
+            self.broadcast(data={
+                'method': "local_scan_finished",
+                'params': response
+            })
 
 
     ##
@@ -862,6 +807,50 @@ class IrisCore(object):
         self.queue_metadata = cleaned_queue_metadata
 
 
+
+    ##
+    # Commands
+    #
+    # These are stored locally for all users to access
+    ##
+
+    def get_commands(self, *args, **kwargs):
+        callback = kwargs.get('callback', False)
+
+        response = {
+            'commands': self.commands
+        }
+        if (callback):
+            callback(response)
+        else:
+            return response
+
+    def set_commands(self, *args, **kwargs):
+        callback = kwargs.get('callback', False)
+        data = kwargs.get('data', {})
+
+        # Update our temporary variable
+        self.commands = data['commands']
+
+        # Save the new commands to file storage
+        self.save_to_file(self.commands, 'commands')
+
+        self.broadcast(data={
+            'method': 'commands_changed',
+            'params': {
+                'commands': self.commands
+            }
+        })
+
+        response = {
+            'message': 'Commands saved'
+        }
+        if (callback):
+            callback(response)
+        else:
+            return response
+
+
     ##
     # Spotify authentication
     #
@@ -943,28 +932,6 @@ class IrisCore(object):
 
 
     ##
-    # Check if we have access to the system script (system.sh)
-    #
-    # @return boolean or exception
-    ##
-    def check_system_access(self, *args, **kwargs):
-        callback = kwargs.get('callback', None)
-
-        # Run the system task
-        path = os.path.dirname(__file__)
-
-        # Attempt the upgrade
-        process = subprocess.Popen("sudo -n "+path+"/system.sh", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-        result, error = process.communicate()
-        exitCode = process.wait()
-
-        if exitCode > 0:
-            raise Exception("Password-less access to "+path+"/system.sh was refused. Check your /etc/sudoers file.")
-        else:
-            return True
-
-
-    ##
     # Spotify authentication
     #
     # Uses the Client Credentials Flow, so is invisible to the user. We need this token for
@@ -1020,30 +987,32 @@ class IrisCore(object):
     # Simple test method. Not for use in production for any purposes.
     ##
     def test(self, *args, **kwargs):
-        callback = kwargs.get('callback', None)
+        callback = kwargs.get('callback', False)
 
-        try:
-            self.check_system_access()
-        except Exception, e:
-            logger.error(e)
+        self.broadcast(data={
+            'method': "test_started"
+        })
 
-            error = {
-                'message': "Permission denied",
-                'description': str(e)
-            }
-
-            if (callback):
-                callback(False, error)
-                return
-            else:
-                return error
+        # Trigger the action
+        IrisSystemThread('test', self.test_callback).start()
 
         response = {
-            'message': "Permission granted"
+            'message': "Running test... please wait"
         }
-
         if (callback):
             callback(response)
-            return
         else:
             return response
+
+    def test_callback(self, response, error):
+        if error:
+            self.broadcast(data={
+                'method': "test_error",
+                'params': error
+            })
+        else:
+            self.broadcast(data={
+                'method': "test_finished",
+                'params': response
+            })
+

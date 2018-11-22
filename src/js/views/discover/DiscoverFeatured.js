@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { Link } from 'react-router'
+import Link from '../../components/Link';
 
 import PlaylistGrid from '../../components/PlaylistGrid'
 import Header from '../../components/Header'
@@ -46,8 +46,8 @@ class DiscoverFeatured extends React.Component{
 	renderIntro(playlist = null){
 		if (playlist){
 			return (
-				<div className="intro">
-					<Parallax image={playlist.images ? playlist.images.large : null} blur theme={this.props.theme} disabled={this.props.disable_parallax} />
+				<div className="intro preserve-3d">
+					<Parallax image={playlist.images ? playlist.images.large : null} blur />
 					<div className="content cf">
 						<Link 
 							to={global.baseURL+'playlist/'+playlist.uri}
@@ -77,7 +77,7 @@ class DiscoverFeatured extends React.Component{
 		if (helpers.isLoading(this.props.load_queue,['spotify_browse/featured-playlists'])){
 			return (
 				<div className="view discover-featured-view">
-					<Header className="overlay">
+					<Header className="overlay" uiActions={this.props.uiActions}>
 						<Icon name="star" type="material" />
 						Featured playlists
 					</Header>
@@ -105,13 +105,13 @@ class DiscoverFeatured extends React.Component{
 		}
 
 		var options = (
-			<button className="no-hover" onClick={e => this.props.spotifyActions.getFeaturedPlaylists()}>
+			<a className="button no-hover" onClick={e => {this.props.uiActions.hideContextMenu(); this.props.spotifyActions.getFeaturedPlaylists()}}>
 				<Icon name="refresh" />Refresh
-			</button>
+			</a>
 		);
 
 		return (
-			<div className="view discover-featured-view">
+			<div className="view discover-featured-view preserve-3d">
 				<Header className="overlay" options={options}>
 					<Icon name="star" type="material" />
 					Featured playlists
@@ -125,16 +125,8 @@ class DiscoverFeatured extends React.Component{
 	}
 }
 
-
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- **/
-
 const mapStateToProps = (state, ownProps) => {
 	return {
-		disable_parallax: state.ui.disable_parallax,
 		theme: state.ui.theme,
 		load_queue: state.ui.load_queue,
 		featured_playlists: state.spotify.featured_playlists,

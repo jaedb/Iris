@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { Link } from 'react-router'
+import Link from '../../components/Link'
 import ReactGA from 'react-ga'
 
 import Modal from './Modal';
@@ -189,8 +189,8 @@ class EditRadio extends React.Component{
 							seeds.map((seed,index) => {
 								return (
 									<div className="list__item" key={seed.uri}>
-										{seed.unresolved ? <span className="grey-text">{seed.uri}</span> : <span>{seed.name}</span> }
-										{!seed.unresolved ? <span className="grey-text">&nbsp;({seed.type})</span> : null}
+										{seed.unresolved ? <span className="mid_grey-text">{seed.uri}</span> : <span>{seed.name}</span> }
+										{!seed.unresolved ? <span className="mid_grey-text">&nbsp;({seed.type})</span> : null}
 										<span className="button discrete remove-uri no-hover" onClick={e => this.removeSeed(seed.uri)}>
 											<Icon name="delete" />Remove
 										</span>
@@ -212,7 +212,7 @@ class EditRadio extends React.Component{
 		return (
 			<Modal className="modal--edit-radio">
 				<h1>Radio</h1>
-				<h2 className="grey-text">Add and remove seeds to shape the sound of your radio. Radio uses Spotify's recommendations engine to suggest tracks similar to your seeds.</h2>
+				<h2 className="mid_grey-text">Add and remove seeds to shape the sound of your radio. Radio uses Spotify's recommendations engine to suggest tracks similar to your seeds.</h2>
 
 				<form onSubmit={e => {(this.state.enabled ? this.handleUpdate(e) : this.handleStart(e))}}>
 

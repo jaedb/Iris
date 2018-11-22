@@ -6,15 +6,6 @@
 		padding: 90px 40px 70px;
 		z-index: 1;
 
-		.parallax {
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			z-index: 1;
-		}
-
 		h1 {
 			font-size: 3rem;
 			line-height: 3rem;
@@ -23,14 +14,14 @@
 		.liner {
 			z-index: 2;
 			position: relative;
-			color: $white;
+			color: colour(white);
 
 			h2 {
 				padding-bottom: 8px;
 			}
 
 			.light-theme & {
-				color: $darkest_grey;
+				color: colour(darkest_grey);
 			}
 		}
 	}
@@ -47,7 +38,7 @@
 
 	.seeds {
 		.seed {
-			color: $white;			
+			color: colour(white);			
 			padding: 0 30px 30px 0;
 			float: left;
 
@@ -66,7 +57,7 @@
 					margin-left: 4px;
 
 					&:hover {
-						color: $red;
+						color: colour(red);
 					}
 				}
 			}
@@ -84,7 +75,7 @@
 			}
 
 			.light-theme & {
-				color: $darkest_grey;
+				color: colour(darkest_grey);
 			}
 		}
 	}
@@ -119,7 +110,7 @@
 				margin-left: 4px;
 
 				&:hover {
-					color: $red;
+					color: colour(red);
 				}
 			}
 		}
@@ -141,7 +132,7 @@
 
 				input {
 					background: rgba(100,100,100,0.5);
-					color: $white;
+					color: colour(white);
 					padding: 15px 13px 10px;
 					font-size: 16px;
 					border: 1px solid transparent;
@@ -150,7 +141,7 @@
 
 					&:focus,
 					&:active {
-						border-color: $blue;
+						border-color: colour(blue);
 					}
 
 					&:not(*:root){
@@ -160,7 +151,7 @@
 				}
 
 				&:after {
-					background: $blue;
+					background: colour(blue);
 				}
 			}
 
@@ -172,7 +163,7 @@
 		.dropdown-field {
 			.button {
 				background: rgba(100,100,100,0.5);
-				color: $white;
+				color: colour(white);
 				padding: 16px 20px 14px 20px;
 				border-top-left-radius: 0;
 				border-bottom-left-radius: 0;
@@ -195,6 +186,10 @@
 		}
 
 		&.tracks {
+			h4 {
+				@include clearfix();
+			}
+			
 			.pull-right {
 				.button,
 				button {
@@ -272,17 +267,13 @@
 		}
 
 		.parallax {
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			z-index: 1;
+			height: 60vh;
+			opacity: 0.5;
 		}
 
 		.content {
 			padding: 40px;
-			color: $white;
+			color: colour(white);
 			position: relative;
 			z-index: 2;
 
@@ -311,7 +302,7 @@
 			}
 
 			.light-theme & {
-				color: $darkest_grey;
+				color: colour(darkest_grey);
 			}
 		}
 	}

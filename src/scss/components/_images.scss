@@ -11,13 +11,13 @@
 		padding-bottom: 100%;
 		position: relative;
 		background-repeat: no-repeat;
-		background-color: lighten($dark_grey, 2%);
+		background-color: lighten(colour(dark_grey), 2%);
 		background-position: 50% 50%;
 		background-size: cover;
 		border-radius: 3px;
 
 		.light-theme & {
-			background-color: $faint_grey;
+			background-color: colour(faint_grey);
 		}
 	}
 
@@ -34,10 +34,10 @@
 		font-size: 12px;
 		cursor: pointer;
 		color: #FFFFFF;
-		border: 0;
+		border: 0 !important;
 
 		&:hover {
-			background: $black;
+			background: colour(black);
 		}
 	}
 
@@ -63,33 +63,6 @@
 	}
 }
 
-.parallax {
-	height: 50vh;
-	width: 100%;
-	overflow: hidden;
-	background: $dark_grey;
-	position: relative;
-
-	canvas {
-		width: 110%;
-		height: 110%;
-		opacity: 0;
-		position: absolute;
-		top: -5%;
-		left: -5%;
-
-		&.loaded {
-			opacity: 1;
-		}
-	}
-
-	&.blur {
-		canvas {
-			@include blur();
-		}
-	}
-
-	.light-theme & {
-		background: $white;
-	}
+.playback-controls {
+	z-index: 3;
 }

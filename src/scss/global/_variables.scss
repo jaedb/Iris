@@ -1,24 +1,4 @@
 
-$turquoise: #08d58f;
-$off_white: #F5F5F5;
-$faint_grey: #f4f2f0;
-$light_grey: #cecac4;
-$mid_grey: #a3a19f;
-$grey: #383734;
-$dark_grey: #181818;
-$darkest_grey: #121212;
-$secondary_grey: #888888;
-$white: #FFFFFF;
-$black: #000000;
-$red: #cf2d2d;
-$green: #47af2a;
-$blue: #32b5f2;
-$light_blue: #96cfea;
-$yellow: #FFF39C;
-$orange: #f16f19;
-$overlay_dark: rgba(0, 0, 0, 0.88);
-$overlay_light: rgba(255, 255, 255, 0.70);
-
 $bp_wide: 1000px;
 $bp_medium: 800px;
 $bp_small: 500px;
@@ -104,11 +84,11 @@ $bp_shallow: 650px;
     animation-iteration-count: infinite;
 }
 
-@mixin fadein($duration: 0.2s){
+@mixin fadein($duration: 0.2s, $distance: 5px, $opacity: 0, $delay: 0){
 	@keyframes fadein {
 	    0% {
-	    	opacity: 0;
-	    	transform: translateY(5px);
+	    	opacity: $opacity;
+	    	transform: translateY($distance);
 	    }
 	    100% {
 	    	opacity: 1;
@@ -116,24 +96,30 @@ $bp_shallow: 650px;
 	    }
 	}
 
+	animation-delay: $delay;
+	-webkit-animation-fill-mode: forwards;
+	animation-fill-mode: forwards;
     animation-name: fadein;
     animation-duration: $duration;
     animation-timing-function: linear;
     animation-iteration-count: 1;
 }
 
-@mixin fadeout($duration: 0.2s){
+@mixin fadeout($duration: 0.2s, $distance: 5px, $opacity: 1, $delay: 0){
 	@keyframes fadeout {
 	    0% {
-	    	opacity: 1;
+	    	opacity: $opacity;
 	    	transform: translateY(0px);
 	    }
 	    100% {
 	    	opacity: 0;
-	    	transform: translateY(5px);
+	    	transform: translateY($distance);
 	    }
 	}
 
+	animation-delay: $delay;
+	-webkit-animation-fill-mode: forwards;
+	animation-fill-mode: forwards;
     animation-name: fadeout;
     animation-duration: $duration;
     animation-timing-function: linear;
@@ -257,8 +243,8 @@ $bp_shallow: 650px;
 }
 
 @mixin blur($size: 10px){
-	-webkit-filter: blur($size );
-	filter: blur($size );
+	-webkit-filter: blur($size);
+	filter: blur($size);
 }
 
 @mixin feature_font(){

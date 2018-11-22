@@ -1,7 +1,7 @@
 
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { Link } from 'react-router'
+import Link from './Link'
 import { bindActionCreators } from 'redux'
 
 import Thumbnail from './Thumbnail'
@@ -32,13 +32,13 @@ class Services extends React.Component{
 	}
 
 	componentDidMount(){
-		if (this.props.spotify.me && this.props.core.users[this.props.spotify.me.id] === undefined){
+		if ((this.props.spotify.enabled || this.props.spotify.authorization) && (!this.props.spotify.me || this.props.core.users[this.props.spotify.me.id] === undefined)){
 			this.props.spotifyActions.getMe();
 		}
 		if (this.props.lastfm.authorization && this.props.core.users["lastfm:user:"+this.props.lastfm.authorization.name] === undefined){
 			this.props.lastfmActions.getMe();
 		}
-		if (this.props.genius.me && this.props.core.users["genius:user:"+this.props.genius.me.id] === undefined){
+		if (this.props.genius.authorization && (!this.props.genius.me || this.props.core.users["genius:user:"+this.props.genius.me.id] === undefined)){
 			this.props.geniusActions.getMe();
 		}
 	}
@@ -76,7 +76,7 @@ class Services extends React.Component{
 					<Thumbnail circle={true} size="small" images={user_object.images} />
 					<span className="user-name">
 						{user_object.name ? user_object.name : user_object.id}
-						{!this.props.spotify.authorization ? <span className="grey-text">&nbsp;&nbsp;(Limited access)</span> : null}
+						{!this.props.spotify.authorization ? <span className="mid_grey-text">&nbsp;&nbsp;(Limited access)</span> : null}
 					</span>
 				</URILink>
 			)
@@ -295,51 +295,51 @@ class Services extends React.Component{
 		}
 
 		return (
-			<div className="menu">
+			<div className="menu" id="services-menu">
 				<div className="menu__inner">
-					<Link className={"menu-item"+(this.props.active == 'spotify' ? ' menu-item--active' : '')} to={this.props.active == 'spotify' ? global.baseURL+'settings' : global.baseURL+'settings/service/spotify'}>
+					<Link className={"menu-item"+(this.props.active == 'spotify' ? ' menu-item--active' : '')} to={this.props.active == 'spotify' ? global.baseURL+'settings' : global.baseURL+'settings/service/spotify'} scrollTo="services-menu">
 						<div className="menu-item__inner">
 							{spotify_icon}
 							<div className="menu-item__title">
 								Spotify
 							</div>
-							{this.props.spotify.authorization ? <span className="status green-text">Authorized</span> : <span className="status grey-text">Read-only</span>}
+							{this.props.spotify.authorization ? <span className="status green-text">Authorized</span> : <span className="status mid_grey-text">Read-only</span>}
 						</div>
 					</Link>
-					<Link className={"menu-item"+(this.props.active == 'lastfm' ? ' menu-item--active' : '')} to={this.props.active == 'lastfm' ? global.baseURL+'settings' : global.baseURL+'settings/service/lastfm'}>
+					<Link className={"menu-item"+(this.props.active == 'lastfm' ? ' menu-item--active' : '')} to={this.props.active == 'lastfm' ? global.baseURL+'settings' : global.baseURL+'settings/service/lastfm'} scrollTo="services-menu">
 						<div className="menu-item__inner">
 							{lastfm_icon}
 							<div className="menu-item__title">
 								LastFM
 							</div>
-							{this.props.lastfm.authorization ? <span className="status green-text">Authorized</span> : <span className="status grey-text">Read-only</span>}
+							{this.props.lastfm.authorization ? <span className="status green-text">Authorized</span> : <span className="status mid_grey-text">Read-only</span>}
 						</div>
 					</Link>
-					<Link className={"menu-item"+(this.props.active == 'genius' ? ' menu-item--active' : '')} to={this.props.active == 'genius' ? global.baseURL+'settings' : global.baseURL+'settings/service/genius'}>
+					<Link className={"menu-item"+(this.props.active == 'genius' ? ' menu-item--active' : '')} to={this.props.active == 'genius' ? global.baseURL+'settings' : global.baseURL+'settings/service/genius'} scrollTo="services-menu">
 						<div className="menu-item__inner">
 							{genius_icon}
 							<div className="menu-item__title">
 								Genius
 							</div>
-							{this.props.genius.authorization ? <span className="status green-text">Authorized</span> : <span className="status grey-text">Unauthorized</span>}
+							{this.props.genius.authorization ? <span className="status green-text">Authorized</span> : <span className="status mid_grey-text">Unauthorized</span>}
 						</div>
 					</Link>
-					<Link className={"menu-item"+(this.props.active == 'snapcast' ? ' menu-item--active' : '')} to={this.props.active == 'snapcast' ? global.baseURL+'settings' : global.baseURL+'settings/service/snapcast'}>
+					<Link className={"menu-item"+(this.props.active == 'snapcast' ? ' menu-item--active' : '')} to={this.props.active == 'snapcast' ? global.baseURL+'settings' : global.baseURL+'settings/service/snapcast'} scrollTo="services-menu">
 						<div className="menu-item__inner">
 							<Icon className="menu-item__icon" name="devices" />
 							<div className="menu-item__title">
 								Snapcast
 							</div>
-							{this.props.pusher.config.snapcast_enabled ? <span className="status green-text">Enabled</span> : <span className="status grey-text">Disabled</span>}
+							{this.props.pusher.config.snapcast_enabled ? <span className="status green-text">Enabled</span> : <span className="status mid_grey-text">Disabled</span>}
 						</div>
 					</Link>
-					<Link className={"menu-item"+(this.props.active == 'icecast' ? ' menu-item--active' : '')} to={this.props.active == 'icecast' ? global.baseURL+'settings' : global.baseURL+'settings/service/icecast'}>
+					<Link className={"menu-item"+(this.props.active == 'icecast' ? ' menu-item--active' : '')} to={this.props.active == 'icecast' ? global.baseURL+'settings' : global.baseURL+'settings/service/icecast'} scrollTo="services-menu">
 						<div className="menu-item__inner">
 							<Icon className="menu-item__icon" name="wifi_tethering" />
 							<div className="menu-item__title">
 								Icecast
 							</div>
-							{this.props.core.http_streaming_enabled ? <span className="status green-text">Enabled</span> : <span className="status grey-text">Disabled</span>}
+							{this.props.core.http_streaming_enabled ? <span className="status green-text">Enabled</span> : <span className="status mid_grey-text">Disabled</span>}
 						</div>
 					</Link>
 				</div>

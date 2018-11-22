@@ -6,8 +6,9 @@
 	right: 0;
 	left: 0;
 	height: 50px;
-	background: lighten($dark_grey, 15%);
-	color: $white;
+	background: lighten(colour(dark_grey), 15%);
+	color: colour(white);
+	transform-style: preserve-3d;
 
 	.current-track {
 		@include animate();
@@ -15,11 +16,11 @@
 		bottom: 50px;
 		width: 220px;
 		font-size: 14px;
-		color: $white;
+		color: colour(white);
 		text-decoration: none;
 
 		.light-theme & {
-			color: $darkest_grey;
+			color: colour(darkest_grey);
 		}
 
 		.thumbnail {
@@ -40,7 +41,7 @@
 				margin-top: -9px;
 				text-align: center;
 				font-size: 18px;
-				color: $white;
+				color: colour(white);
 				z-index: 1;
 				opacity: 0;
 			}
@@ -88,7 +89,7 @@
 	.control {
 		@include animate();
 		@include noselect();
-		color: $white;
+		color: colour(white);
 		cursor: pointer;
 		padding: 10px 6px;
 		display: inline-block;
@@ -104,8 +105,8 @@
 			margin-bottom: 0;
 		}
 
-		&.active {
-			color: $turquoise !important;
+		&--active {
+			color: colour(turquoise) !important;
 		}
 
 		&:hover {
@@ -137,7 +138,7 @@
 			right: 260px;
 			padding-left: 20px;
 			padding-right: 20px;
-			color: $mid_grey;
+			color: colour(mid_grey);
 
 			.slider {
 				position: absolute;
@@ -199,7 +200,7 @@
 			right: 80px;
 			text-align: center;
 			font-size: 12px;
-			color: $white !important;
+			color: colour(white) !important;
 
 			.title {
 				padding-top: 0;
@@ -253,18 +254,19 @@
 						content: '';
 						display: block;
 						position: fixed;
-						top: 0;
-						left: 0;
 						bottom: 0;
 						right: 0;
+						width: 100vw;
+						height: 100vh;
 						z-index: 99;
 					}
 				}
 			}
 		}
 
-		&.expanded {
+		&--expanded {
 			height: 135px;
+			max-height: 100%;
 
 			section {
 				&.settings {

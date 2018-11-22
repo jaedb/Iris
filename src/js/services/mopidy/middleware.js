@@ -1,16 +1,17 @@
 
-import ReactGA from 'react-ga'
-import Mopidy from 'mopidy'
+import ReactGA from 'react-ga';
+import Mopidy from 'mopidy';
 import md5 from 'md5';
-import { hashHistory } from 'react-router'
-import * as helpers from '../../helpers'
+import { hashHistory } from 'react-router';
+import * as helpers from '../../helpers';
 
-var mopidyActions = require('./actions.js')
-var coreActions = require('../core/actions.js')
-var uiActions = require('../ui/actions.js')
-var spotifyActions = require('../spotify/actions.js')
-var pusherActions = require('../pusher/actions.js')
-var lastfmActions = require('../lastfm/actions.js')
+var mopidyActions = require('./actions.js');
+var coreActions = require('../core/actions.js');
+var uiActions = require('../ui/actions.js');
+var spotifyActions = require('../spotify/actions.js');
+var pusherActions = require('../pusher/actions.js');
+var googleActions = require('../google/actions.js');
+var lastfmActions = require('../lastfm/actions.js');
 
 const MopidyMiddleware = (function(){
 
@@ -45,15 +46,15 @@ const MopidyMiddleware = (function(){
                 store.dispatch(mopidyActions.getTimePosition());
                 store.dispatch(mopidyActions.getUriSchemes());
 
-                // every 1000s update our play position (when playing)
+                // Every 1s update our play position (when playing)
                 progress_interval = setInterval(() => {
                     if (store.getState().mopidy.play_state == 'playing'){
 
-                        // every 10s get real position from server
-                        if (progress_interval_counter % 5 == 0){
+                        // Every 10s get real position from server, provided we're in-focus
+                        if (progress_interval_counter % 5 == 0 && store.getState().ui.window_focus === true){
                             store.dispatch(mopidyActions.getTimePosition());
 
-                        // otherwise we just assume to add 1000ms every 1000ms of play time
+                        // Otherwise we just assume to add 1000ms every 1000ms of play time
                         } else {
                             store.dispatch(mopidyActions.timePosition(store.getState().mopidy.time_position + 1000));
                         }
@@ -95,7 +96,10 @@ const MopidyMiddleware = (function(){
 
             case 'event:trackPlaybackEnded':
                 store.dispatch(mopidyActions.clearCurrentTrack());
-                store.dispatch(mopidyActions.getTimePosition());
+                store.dispatch({
+                    type: 'MOPIDY_TIME_POSITION',
+                    time_position: 0
+                });
                 break;
 
             case 'event:trackPlaybackStarted':
@@ -227,6 +231,7 @@ const MopidyMiddleware = (function(){
                     var hashed_hostname = md5(window.location.hostname);
 	                ReactGA.event({ category: 'Mopidy', action: 'Connected', label: hashed_hostname });
 	            }
+                store.dispatch(uiActions.createNotification({content: 'Mopidy connected'}));
                 next(action);
                 break;
 
@@ -236,11 +241,30 @@ const MopidyMiddleware = (function(){
                 store.dispatch({ type: 'MOPIDY_DISCONNECTED' })
                 break;
 
+            case 'MOPIDY_DISCONNECTED':
+                store.dispatch(uiActions.createNotification({type: 'bad', content: 'Mopidy disconnected'}));
+                break;
+
             case 'MOPIDY_DEBUG':
                 request(socket, store, action.call, action.value )
                     .then(response => {
                         store.dispatch({type: 'DEBUG', response: response});
                     })
+                break;
+
+            case 'SET_WINDOW_FOCUS':
+
+                // Focus has just been regained
+                if (action.window_focus === true){
+                    store.dispatch(mopidyActions.getPlayState());
+                    store.dispatch(mopidyActions.getVolume());
+                    store.dispatch(mopidyActions.getMute());
+                    store.dispatch(mopidyActions.getConsume());
+                    store.dispatch(mopidyActions.getRandom());
+                    store.dispatch(mopidyActions.getRepeat());
+                    store.dispatch(mopidyActions.getCurrentTrack());
+                    store.dispatch(mopidyActions.getTimePosition());
+                }
                 break;
 
             case 'MOPIDY_REQUEST':
@@ -530,21 +554,8 @@ const MopidyMiddleware = (function(){
                             }
 
                             // Enable Iris providers when the backend is available
-                            if (uri_schemes.includes('spotify:')){
-                                store.dispatch({
-                                    type: 'SPOTIFY_SET',
-                                    data: {
-                                        enabled: true
-                                    }
-                                });
-                            } else {
-                                store.dispatch({
-                                    type: 'SPOTIFY_SET',
-                                    data: {
-                                        enabled: false
-                                    }
-                                });
-                            }
+                            store.dispatch(spotifyActions.set({enabled: uri_schemes.includes('spotify:')}));
+                            store.dispatch(googleActions.set({enabled: uri_schemes.includes('gmusic:')}));
 
                             // If we haven't customised our search schemes, add all to search
                             if (store.getState().ui.uri_schemes_search_enabled === undefined){
@@ -770,12 +781,19 @@ const MopidyMiddleware = (function(){
                     store.dispatch(mopidyActions.clearTracklist());
                 }
 
-                var first_uri = action.uris[0];
+                // Shuffle/random mode
+                if (store.getState().mopidy.random){
+                	var first_uri_index = Math.floor(Math.random() * action.uris.length);
+	            } else {
+                	var first_uri_index = 0;
+	            }
+	            var first_uri = action.uris[first_uri_index];
 
                 // add our first track
                 request(socket, store, 'tracklist.add', { uri: first_uri, at_position: 0 })
                     .then(
                         response => {
+
                             // play it (only if we got a successful lookup)
                             if (response.length > 0){
                                 store.dispatch(mopidyActions.changeTrack(response[0].tlid));
@@ -792,11 +810,13 @@ const MopidyMiddleware = (function(){
                                 ));
                             }
 
-                            // add the rest of our uris (if any)
-                            action.uris.shift();
+                            // Remove our first_uri as we've already added it
+                            action.uris.splice(first_uri_index, 1);
+
+                            // And add the rest of our uris (if any)
                             if (action.uris.length > 0){
 
-                                // wait 100ms so the server can trigger track_changed etc
+                                // Wait a moment so the server can trigger track_changed etc
                                 // this means our UI feels snappier as the first track shows up quickly
                                 setTimeout(
                                     function(){
@@ -1715,7 +1735,7 @@ const MopidyMiddleware = (function(){
                 var last_run = store.getState().ui.processes.MOPIDY_LIBRARY_ALBUMS_PROCESSOR
 
                 if (!last_run){
-                    request(socket, store, 'library.browse', { uri: store.getState().mopidy.library_albums_uri } )
+                    request(socket, store, 'library.browse', { uri: store.getState().mopidy.library_albums_uri })
                         .then(response => {
                             if (response.length <= 0) return
 
@@ -2021,9 +2041,9 @@ const MopidyMiddleware = (function(){
                         var existing_artist = store.getState().core.artists[artist.uri];
                         if (existing_artist && !existing_artist.images){
                             if (artist.musicbrainz_id){
-                                store.dispatch(lastfmActions.getArtist(artist.uri, false, artist.musicbrainz_id))
+                                store.dispatch(lastfmActions.getArtist(artist.uri, false, artist.musicbrainz_id));
                             } else {
-                                store.dispatch(lastfmActions.getArtist(artist.uri, artist.name))
+                                store.dispatch(lastfmActions.getArtist(artist.uri, artist.name));
                             }
                         }
                     })
@@ -2242,8 +2262,10 @@ const MopidyMiddleware = (function(){
                         for (var item of response){
                             if (item.type === "track"){
                                 tracks_uris.push(item.uri);
+                                tracks_uris = helpers.sortItems(tracks_uris, 'name');
                             } else {
                                 subdirectories.push(item);
+                                subdirectories = helpers.sortItems(subdirectories, 'name');
                             }
                         }
                         

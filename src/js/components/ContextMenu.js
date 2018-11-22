@@ -1,11 +1,13 @@
 
 import React, { PropTypes } from 'react'
-import { Link, hashHistory } from 'react-router'
+import { hashHistory } from 'react-router'
+import Link from './Link'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
 import TrackList from './TrackList'
 import Icon from './Icon'
+import Thumbnail from './Thumbnail'
 
 import * as helpers from '../helpers'
 import * as coreActions from '../services/core/actions'
@@ -20,7 +22,7 @@ class ContextMenu extends React.Component{
 	constructor(props){
 		super(props)
 		this.state = {
-			submenu_expanded: false
+			submenu: null
 		}
 		this.handleScroll = this.handleScroll.bind(this);
 		this.handleMouseDown = this.handleMouseDown.bind(this);
@@ -43,8 +45,7 @@ class ContextMenu extends React.Component{
 
 		// if we've been given a menu object (ie activated) when we didn't have one prior
 		if (nextProps.menu && !this.props.menu){			
-			this.setState({ submenu_expanded: false })
-			$('body').addClass('context-menu-open')
+			this.setState({ submenu: null });
 
 			var context = this.getContext(nextProps);
 
@@ -70,10 +71,6 @@ class ContextMenu extends React.Component{
 					this.props.lastfmActions.getTrack(nextProps.menu.items[0].uri);
 				}
 			}
-
-		// we DID have one prior, and now we don't
-		} else if (this.props.menu && !nextProps.menu){
-			$('body').removeClass('context-menu-open')
 		}
 	}
 
@@ -289,15 +286,6 @@ class ContextMenu extends React.Component{
 		}
 	}
 
-	goToAlbum(e){
-		if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].album_uri){
-			return null;
-		} else {
-			this.props.uiActions.hideContextMenu();
-			hashHistory.push(global.baseURL +'album/'+ this.props.menu.items[0].album_uri);
-		}
-	}
-
 	goToUser(e){
 		if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].user_uri){
 			return null;
@@ -332,67 +320,37 @@ class ContextMenu extends React.Component{
 		// TODO
 	}
 
-	renderPlaylistSubmenu(){
-		var playlists = []
-		for (var uri in this.props.playlists){
-			if (this.props.playlists[uri].can_edit) playlists.push(this.props.playlists[uri])
-		}
+	renderTitle(){
 
-		playlists = helpers.sortItems(playlists, 'name')
+		var context = this.getContext()
 
-		var loader = null
-		if (this.props.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR && this.props.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR.status == 'running'){
-			loader = (
-				<div className="menu-item-wrapper">
-					<div className="menu-item mini-loader loading">
-						<div className="loader"></div>
+		if (context.items_count > 1){
+			return (
+				<div className="context-menu__title">
+					<div className="context-menu__title__text">							
+						{context.items_count} {context.nice_name}{context.items_count > 1 ? 's' : null} selected <span className="context-menu__title__deselect" onClick={e => {this.props.uiActions.setSelectedTracks([]); this.props.uiActions.hideContextMenu()}}><Icon name="close" /></span>
 					</div>
 				</div>
 			)
 		}
 
-		var list = <span className="menu-item-wrapper"><span className="menu-item grey-text">No writable playlists</span></span>
-		if (playlists.length > 0){
-			list = playlists.map(playlist => {
-				return (
-					<span className="menu-item-wrapper" key={playlist.uri}>
-						<a className="menu-item" onClick={e => this.addTracksToPlaylist(e,playlist.uri) }>
-							<span className="label">{ playlist.name }</span>
-						</a>
-					</span>
-				)
-			})
-		}
-
-		return (			
-			<div className={this.state.submenu_expanded ? 'submenu expanded' : 'submenu'}>
-				<span className="menu-item-wrapper">
-					<a className="menu-item close-submenu" onClick={e => this.setState({submenu_expanded: false})}>
-						<span className="label">
-							<Icon name="arrow_back" />Back
-						</span>
-					</a>
-				</span>
-				{list}
-				{loader}
-			</div>
-		)
-	}
-
-	renderTitle(){
-		var context = this.getContext()
-
 		if (context.name == 'custom'){
+			if (!this.props.menu.title){
+				return null;
+			}
+
 			return (
-				<span className="title">
-					<div className="background generic"></div>
-					<div className="text">
+				<div className="context-menu__title">
+					<div className="context-menu__title__text">
 						{this.props.menu.title}
 					</div>
-				</span>
+				</div>
 			)
 		}
-
+		
+		// Do we need titles or does it just confuse things and rip off Spotify too hard?
+		return null;
+/*
 		switch (context.type){
 
 			case 'artist':
@@ -401,41 +359,33 @@ class ContextMenu extends React.Component{
 				var style = null;
 
 				return (
-					<Link className="title" to={global.baseURL+context.type+'/'+context.item.uri}>
-						{style ? <div className="background" style={style}></div> : null}
-						<div className="type">
+					<div className="context-menu__title">
+						<Thumbnail size="small" images={context.item ? context.item.images : null} circle={context.type == 'artist'} />
+						<div className="context-menu__title__text">{context.item.name}</div>
+						<div className="context-menu__title__type">
 							{context.source}
-							&nbsp;
-							{context.nice_name}
 						</div>
-						<div className="text">{context.item.name}</div>
-					</Link>
-				)
-				break
+					</div>
+				);
 
 			default:
 				return (
-					<span className="title">
-						<div className="type">
+					<div className="context-menu__title">
+						<div className="context-menu__title__text">							
+							{context.items_count} {context.nice_name}{context.items_count > 1 ? 's' : null}
+						</div>
+						<div className="context-menu__title__type">
 							{context.source}
-							&nbsp;
-							{context.nice_name}s
 						</div>
-						<div className="text">							
-							{context.items_count} items
-						</div>
-						<div className="background generic"></div>
-					</span>
-				)
-				break
+					</div>
+				);
 
-		}
+		}*/
 	}
 
-	setPlaylistSubmenu(expanded = !this.state.submenu_expanded){
-		this.setState({submenu_expanded: expanded})
+	setSubmenu(name){
 
-		if (expanded){
+		if (this.state.submenu !== name && name == 'add-to-playlist'){
 			if (!this.props.spotify_library_playlists_loaded_all){
 				this.props.spotifyActions.getLibraryPlaylists()
 			}
@@ -443,189 +393,237 @@ class ContextMenu extends React.Component{
 				this.props.mopidyActions.getLibraryPlaylists()
 			}
 		}
+
+		this.setState({submenu: name});
+	}
+
+	renderSubmenu(){
+		var list = null;
+		var loader = null;
+
+		switch (this.state.submenu){
+
+			case 'add-to-playlist':
+
+				var playlists = []
+				for (var uri in this.props.playlists){
+					if (this.props.playlists[uri].can_edit) playlists.push(this.props.playlists[uri])
+				}
+
+				playlists = helpers.sortItems(playlists, 'name')
+
+				if (this.props.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR && this.props.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR.status == 'running'){
+					loader = (
+						<div className="context-menu__item">
+							<div className="context-menu__item mini-loader loading">
+								<div className="loader"></div>
+							</div>
+						</div>
+					)
+				}
+
+				list = <span className="context-menu__item"><span className="context-menu__item mid_grey-text">No writable playlists</span></span>
+				if (playlists.length > 0){
+					list = playlists.map(playlist => {
+						return (
+							<span className="context-menu__item" key={playlist.uri}>
+								<a className="context-menu__item__link" onClick={e => this.addTracksToPlaylist(e,playlist.uri) }>
+									<span className="context-menu__item__label">{ playlist.name }</span>
+								</a>
+							</span>
+						)
+					})
+				}
+
+		}
+
+		return (
+			<div className='context-menu__section context-menu__section--submenu'>
+				<div className="context-menu__item">
+					<a className="context-menu__item__link context-menu__item__link--close-submenu" onClick={e => this.setState({submenu: null})}>
+						<span className="context-menu__item__label">
+							<Icon name="arrow_back" /> Back
+						</span>
+					</a>
+				</div>
+				{list}
+				{loader}
+			</div>
+		);
 	}
 
 	renderItems(){
 		var context = this.getContext()
 
 		var play_uris = (
-			<span className="menu-item-wrapper">
-				<a className="menu-item" onClick={e => this.playURIs(e)}>
-					<span className="label">Play</span>
+			<div className="context-menu__item">
+				<a className="context-menu__item__link" onClick={e => this.playURIs(e)}>
+					<span className="context-menu__item__label">Play</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		var play_playlist = (
-			<span className="menu-item-wrapper">
-				<a className="menu-item" onClick={e => this.playPlaylist(e)}>
-					<span className="label">Play</span>
+			<div className="context-menu__item">
+				<a className="context-menu__item__link" onClick={e => this.playPlaylist(e)}>
+					<span className="context-menu__item__label">Play</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		var shuffle_play_playlist = (
-			<span className="menu-item-wrapper">
-				<a className="menu-item" onClick={e => this.shufflePlayPlaylist(e)}>
-					<span className="label">Shuffle play</span>
+			<div className="context-menu__item">
+				<a className="context-menu__item__link" onClick={e => this.shufflePlayPlaylist(e)}>
+					<span className="context-menu__item__label">Shuffle play</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		var play_queue_item = (
-			<span className="menu-item-wrapper">
-				<a className="menu-item" onClick={e => this.playQueueItem(e)}>
-					<span className="label">Play</span>
+			<div className="context-menu__item">
+				<a className="context-menu__item__link" onClick={e => this.playQueueItem(e)}>
+					<span className="context-menu__item__label">Play</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		var play_uris_next = (
-			<span className="menu-item-wrapper">
-				<a className="menu-item" onClick={e => this.addToQueue(e, true)}>
-					<span className="label">Play next</span>
+			<div className="context-menu__item">
+				<a className="context-menu__item__link" onClick={e => this.addToQueue(e, true)}>
+					<span className="context-menu__item__label">Play next</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		var play_artist_top_tracks = (
-			<span className="menu-item-wrapper">
-				<a className="menu-item" onClick={e => this.playArtistTopTracks(e)}>
-					<span className="label">Play top tracks</span>
+			<div className="context-menu__item">
+				<a className="context-menu__item__link" onClick={e => this.playArtistTopTracks(e)}>
+					<span className="context-menu__item__label">Play top tracks</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		var add_to_queue = (
-			<span className="menu-item-wrapper">
-				<a className="menu-item" onClick={e => this.addToQueue(e)}>
-					<span className="label">Add to queue</span>
+			<div className="context-menu__item">
+				<a className="context-menu__item__link" onClick={e => this.addToQueue(e)}>
+					<span className="context-menu__item__label">Add to queue</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		var add_to_playlist = (
-			<span className="menu-item-wrapper has-submenu">
-				<a className="menu-item" onClick={e => this.setPlaylistSubmenu()}>
-					<span className="label">Add to playlist</span>
+			<div className="context-menu__item context-menu__item--has-submenu">
+				<a className="context-menu__item__link" onClick={e => this.setSubmenu('add-to-playlist')}>
+					<span className="context-menu__item__label">Add to playlist</span>
 					<Icon className="submenu-icon" name="arrow_forward" />
 				</a>
-				{this.renderPlaylistSubmenu()}
-			</span>
+			</div>
 		)
 
 		var toggle_in_library = (
-			<span className="menu-item-wrapper">
-				<a className="menu-item" onClick={e => this.toggleInLibrary(e, context.in_library)}>
-					<span className="label">
+			<div className="context-menu__item">
+				<a className="context-menu__item__link" onClick={e => this.toggleInLibrary(e, context.in_library)}>
+					<span className="context-menu__item__label">
 						{context.in_library ? 'Remove from library' : 'Add to library'}
 					</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		if (!this.props.lastfm_authorized){
 			var toggle_loved = null;
 		} else if (helpers.isLoading(this.props.load_queue,['lastfm_track.getInfo'])){
 			var toggle_loved = (
-				<span className="menu-item-wrapper">
-					<a className="menu-item">
-						<span className="label grey-text">
+				<div className="context-menu__item">
+					<a className="context-menu__item__link">
+						<span className="context-menu__item__label mid_grey-text">
 							Love track
 						</span>
 					</a>
-				</span>
+				</div>
 			)
 		} else {			
 			var toggle_loved = (
-				<span className="menu-item-wrapper">
-					<a className="menu-item" onClick={e => this.toggleLoved(e, context.is_loved)}>
-						<span className="label">
+				<div className="context-menu__item">
+					<a className="context-menu__item__link" onClick={e => this.toggleLoved(e, context.is_loved)}>
+						<span className="context-menu__item__label">
 							{context.is_loved ? 'Unlove' : 'Love'} track
 						</span>
 					</a>
-				</span>
+				</div>
 			)
 		}
 
 		var go_to_artist = (
-			<span className="menu-item-wrapper">
-				<a className="menu-item" onClick={e => this.goToArtist(e)}>
-					<span className="label">Go to artist</span>
+			<div className="context-menu__item">
+				<a className="context-menu__item__link" onClick={e => this.goToArtist(e)}>
+					<span className="context-menu__item__label">Go to artist</span>
 				</a>
-			</span>
-		)
-
-		var go_to_album = (
-			<span className="menu-item-wrapper">
-				<a className="menu-item" onClick={e => this.goToAlbum(e)}>
-					<span className="label">Go to album</span>
-				</a>
-			</span>
+			</div>
 		)
 
 		var go_to_user = (
-			<span className="menu-item-wrapper">
-				<a className="menu-item" onClick={e => this.goToUser(e)}>
-					<span className="label">Go to user</span>
+			<div className="context-menu__item">
+				<a className="context-menu__item__link" onClick={e => this.goToUser(e)}>
+					<span className="context-menu__item__label">Go to user</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		var go_to_track = (
-			<span className="menu-item-wrapper">
-				<a className="menu-item" onClick={e => this.goToTrack(e)}>
-					<span className="label">Track info</span>
+			<div className="context-menu__item">
+				<a className="context-menu__item__link" onClick={e => this.goToTrack(e)}>
+					<span className="context-menu__item__label">Track info</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		var go_to_recommendations = (
-			<span className="menu-item-wrapper">
-				<a className="menu-item" onClick={e => this.goToRecommendations(e)}>
-					<span className="label">Discover similar</span>
+			<div className="context-menu__item">
+				<a className="context-menu__item__link" onClick={e => this.goToRecommendations(e)}>
+					<span className="context-menu__item__label">Discover similar</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		var start_radio = (
-			<span className="menu-item-wrapper">
-				<a className="menu-item" onClick={e => this.startRadio(e)}>
-					<span className="label">Start radio</span>
+			<div className="context-menu__item">
+				<a className="context-menu__item__link" onClick={e => this.startRadio(e)}>
+					<span className="context-menu__item__label">Start radio</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		var remove_from_queue = (
-			<span className="menu-item-wrapper">
-				<a className="menu-item" onClick={e => this.removeFromQueue(e)}>
-					<span className="label">Remove</span>
+			<div className="context-menu__item">
+				<a className="context-menu__item__link" onClick={e => this.removeFromQueue(e)}>
+					<span className="context-menu__item__label">Remove</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		var remove_from_playlist = (
-			<span className="menu-item-wrapper">
-				<a className="menu-item" onClick={e => this.removeFromPlaylist(e)}>
-					<span className="label">Remove</span>
+			<div className="context-menu__item">
+				<a className="context-menu__item__link" onClick={e => this.removeFromPlaylist(e)}>
+					<span className="context-menu__item__label">Remove</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		var delete_playlist = (
-			<span className="menu-item-wrapper">
-				<a className="menu-item" onClick={e => this.deletePlaylist(e)}>
-					<span className="label">Delete</span>
+			<div className="context-menu__item">
+				<a className="context-menu__item__link" onClick={e => this.deletePlaylist(e)}>
+					<span className="context-menu__item__label">Delete</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		var copy_uris = (
-			<span className="menu-item-wrapper">
-				<a className="menu-item" onClick={e => this.copyURIs(e)}>
-					<span className="label">Copy URI{context.items_count > 1 ? 's' : ''}</span>
+			<div className="context-menu__item">
+				<a className="context-menu__item__link" onClick={e => this.copyURIs(e)}>
+					<span className="context-menu__item__label">Copy URI{context.items_count > 1 ? 's' : ''}</span>
 				</a>
-			</span>
+			</div>
 		)
 
 		switch (context.name){
@@ -636,9 +634,9 @@ class ContextMenu extends React.Component{
 						{play_uris}
 						{play_uris_next}
 						{add_to_queue}
-						{this.canBeInLibrary() ? <div className="divider" /> : null}
+						{this.canBeInLibrary() ? <div className="context-menu__divider" /> : null}
 						{this.canBeInLibrary() ? toggle_in_library : null}
-						<div className="divider" />
+						<div className="context-menu__divider" />
 						{go_to_artist}
 						{copy_uris}
 					</div>
@@ -650,9 +648,9 @@ class ContextMenu extends React.Component{
 					<div>
 						{context.source == 'spotify' ? play_artist_top_tracks : null}
 						{context.source == 'spotify' ? start_radio : null}
-						{this.canBeInLibrary() ? <div className="divider" /> : null}
+						{this.canBeInLibrary() ? <div className="context-menu__divider" /> : null}
 						{this.canBeInLibrary() ? toggle_in_library : null}
-						<div className="divider" />
+						<div className="context-menu__divider" />
 						{context.source == 'spotify' ? go_to_recommendations : null}
 						{copy_uris}
 					</div>
@@ -664,9 +662,9 @@ class ContextMenu extends React.Component{
 					<div>
 						{play_playlist}
 						{shuffle_play_playlist}
-						{this.canBeInLibrary() ? <div className="divider" /> : null}
+						{this.canBeInLibrary() ? <div className="context-menu__divider" /> : null}
 						{this.canBeInLibrary() ? toggle_in_library : null}
-						<div className="divider" />
+						<div className="context-menu__divider" />
 						{context.source == 'spotify' ? go_to_user : null}
 						{copy_uris}
 					</div>
@@ -678,12 +676,12 @@ class ContextMenu extends React.Component{
 					<div>
 						{play_playlist}
 						{shuffle_play_playlist}
-						{this.canBeInLibrary() ? <div className="divider" /> : null}
+						{this.canBeInLibrary() ? <div className="context-menu__divider" /> : null}
 						{this.canBeInLibrary() ? toggle_in_library : null}
-						<div className="divider" />
+						<div className="context-menu__divider" />
 						{context.source == 'spotify' ? go_to_user : null}
 						{copy_uris}
-						<div className="divider" />
+						<div className="context-menu__divider" />
 						{delete_playlist}
 					</div>
 				)
@@ -693,15 +691,15 @@ class ContextMenu extends React.Component{
 				return (
 					<div>
 						{context.items_count == 1 ? play_queue_item : null}
-						<div className="divider" />
+						<div className="context-menu__divider" />
 						{add_to_playlist}
-						{toggle_loved}
 						{this.canBeInLibrary() ? toggle_in_library : null}
-						<div className="divider" />
+						{toggle_loved}
+						<div className="context-menu__divider" />
 						{context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null}
 						{context.items_count == 1 ? go_to_track : null}
 						{copy_uris}
-						<div className="divider" />
+						<div className="context-menu__divider" />
 						{remove_from_queue}
 					</div>
 				)
@@ -714,15 +712,15 @@ class ContextMenu extends React.Component{
 						{play_uris_next}
 						{add_to_queue}
 						{context.source == 'spotify' && context.items_count == 1 ? start_radio : null}
-						<div className="divider" />
+						<div className="context-menu__divider" />
 						{add_to_playlist}
-						{toggle_loved}
 						{this.canBeInLibrary() ? toggle_in_library : null}
-						<div className="divider" />
+						{toggle_loved}
+						<div className="context-menu__divider" />
 						{context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null}
 						{context.items_count == 1 ? go_to_track : null}
 						{copy_uris}
-						<div className="divider" />
+						<div className="context-menu__divider" />
 						{remove_from_playlist}
 					</div>
 				)
@@ -735,15 +733,14 @@ class ContextMenu extends React.Component{
 						{play_uris_next}
 						{add_to_queue}
 						{context.source == 'spotify' && context.items_count == 1 ? start_radio : null}
-						<div className="divider" />
+						<div className="context-menu__divider" />
 						{add_to_playlist}
-						{toggle_loved}
 						{this.canBeInLibrary() ? toggle_in_library : null}
-						<div className="divider" />
+						{toggle_loved}
+						<div className="context-menu__divider" />
 						{context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null}
-						{context.items_count == 1 ? go_to_album : null}
 						{context.items_count == 1 ? go_to_track : null}
-						<div className="divider" />
+						<div className="context-menu__divider" />
 						{copy_uris}
 					</div>
 				)
@@ -752,7 +749,9 @@ class ContextMenu extends React.Component{
 	}
 
 	render(){
-		if (!this.props.menu) return null;
+		if (!this.props.menu){
+			return null;
+		}
 
 		var style = {
 			left: this.props.menu.position_x,
@@ -760,26 +759,32 @@ class ContextMenu extends React.Component{
 		}
 		var height = 200 // TODO: use jquery to detect height
 		var className = "context-menu "+this.props.menu.context
-		if (this.state.submenu_expanded){
-			className += ' submenu-expanded'
+		if (this.state.submenu){
+			className += ' context-menu--submenu-expanded';
+		}
+		
+		if (this.props.menu.closing){
+			className += ' context-menu--closing';
 		}
 
 		if (this.props.menu.position_x > (window.innerWidth - 174)){
-			style.left = 'auto'
-			style.right = 10
+			style.left = 'auto';
+			style.right = 10;
 		}
+
 		if (this.props.menu.position_y > (window.innerHeight - height)){
-			style.top = 'auto'
-			style.bottom = 10
+			style.top = 'auto';
+			style.bottom = 10;
 		}
 
 		return (
 			<div id="context-menu" className={className} style={style}>
-				<div className="liner">
+				<div className="context-menu__section context-menu__section--items">
 					{this.renderTitle()}
 					{this.props.menu.context == 'custom' ? this.props.menu.options : this.renderItems()}
 				</div>
-				<div className="background" onClick={e => this.props.uiActions.hideContextMenu()}></div>
+				{this.renderSubmenu()}
+				<div className="context-menu__background" onClick={e => this.props.uiActions.hideContextMenu()}></div>
 			</div>
 		);
 	}

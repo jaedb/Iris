@@ -20,7 +20,8 @@ class AlbumGrid extends React.Component{
 			e: e,
 			context: 'album',
 			uris: [item.uri],
-			items: [item]
+			items: [item],
+			tracklist_uri: item.uri
 		}
 		this.props.uiActions.showContextMenu(data)
 	}

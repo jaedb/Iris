@@ -3,10 +3,17 @@ main .playlist-view {
 	padding-left: 30%;
 	position: relative;
 
+	.parallax {
+		height: 60vh;
+		opacity: 0.5;
+	}
+
 	.title {
 		h2 {
+			padding-top: 10px;
+			
 			a:hover {
-				color: darken($mid_grey, 20%);
+				color: darken(colour(mid_grey), 20%);
 			}
 		}
 
@@ -32,15 +39,23 @@ main .playlist-view {
 		}
 	}
 
+	@include responsive(null, $bp_medium){
+		.parallax {
+			height: 30vh;
+			opacity: 0.25;
+		}
+	}
+
 	@include responsive($bp_medium){
 		padding-top: 0;
 		padding-left: 10px;
 
 		.thumbnail-wrapper {
-			width: 40%;
-			padding: 10px 20px 10px 0;
-			float: left;
+			width: 300px;
+			max-width: 60%;
+			padding: 30px 0 0 0;
 			position: static;
+			margin: 0 auto;
 
 			.thumbnail {
 				float: none;
@@ -50,7 +65,12 @@ main .playlist-view {
 		}
 
 		.title {
-			padding: 30px 0 20px 40%;
+			padding: 40px 0 0 0;
+			text-align: center;
+
+			.description {
+				padding-top: 10px;
+			}
 
 			.details {
 				padding: 5px 0;
@@ -59,19 +79,8 @@ main .playlist-view {
 
 		.actions {
 			@include clearfix();
-			padding: 10px 0 20px 40%;
-		}
-	}
-
-	@include responsive($bp_small){
-		.title {
-			@include clearfix();
-			padding: 20px 20px 10px 40%;
-			min-height: 20vw;
-		}
-
-		.actions {
-			padding: 0;
+			text-align: center;
+			padding: 30px 0 20px 0;
 		}
 	}
 }

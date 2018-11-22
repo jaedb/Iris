@@ -12,16 +12,16 @@
 		font-size: 12px;
 		font-weight: normal;
 		background: rgba(255,255,255,0.1);
-		color: $white;
+		color: colour(white);
 
 		&.sortable-chosen {
-			background: $grey;
+			background: colour(grey);
 		}
 
 		.icon {
 			font-size: 14px;
 			padding-right: 0.1em;
-			color: $darkest_grey;
+			color: colour(darkest_grey);
 		}
 
 		&:hover {
@@ -31,22 +31,22 @@
 		&:focus,
 		&:active {
 			@include noanimate();
-			background: $blue;
-			color: $white;
+			background: colour(blue);
+			color: colour(white);
 		}
 
 		.light-theme & {
-			background: $faint_grey;
+			background: colour(faint_grey);
 			color: inherit;
 
 			&:hover {
-				background: darken($faint_grey, 4%);
+				background: darken(colour(faint_grey), 4%);
 			}
 
 			&:focus,
 			&:active {
-				background: $blue;
-				color: $white;
+				background: colour(blue);
+				color: colour(white);
 			}
 		}
 	}

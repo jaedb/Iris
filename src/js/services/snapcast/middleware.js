@@ -13,7 +13,7 @@ const SnapcastMiddleware = (function(){
     const request = (store, params = null, response_callback = null, error_callback = null) => {
         store.dispatch(
         	pusherActions.request(
-        		'snapcast_instruct',
+        		'snapcast',
         		params,
         		response_callback,
         		error_callback
@@ -228,37 +228,6 @@ const SnapcastMiddleware = (function(){
                 );
                 break
 
-            case 'SNAPCAST_SET_CLIENT_COMMAND':
-	            var client_commands_index = Object.assign({}, snapcast.client_commands);
-
-	            if (client_commands_index[action.id]){
-	            	var client_command = Object.assign({}, client_commands_index[action.id], action.command);
-	            } else {
-	            	var client_command = action.command;
-	            }
-	            client_commands_index[action.id] = client_command;
-
-	            store.dispatch(snapcastActions.clientCommandsUpdated(client_commands_index));
-                
-                next(action);
-                break
-
-            case 'SNAPCAST_SEND_CLIENT_COMMAND':
-
-                // Prepare our command
-                // We try and make it cross-origin compatible
-                var command = JSON.parse(action.command);
-                command.crossDomain = true;
-                command.dataType = "jsonp";
-                command.success = function(response){
-                	store.dispatch(uiActions.createNotification({type: 'info', content: 'Command sent', description: command.url}));
-                }
-
-                // Actually send the request
-                $.ajax(command);
-
-                break
-
             case 'SNAPCAST_SET_CLIENT_GROUP':
 
                 var group = snapcast.groups[action.group_id];
@@ -420,6 +389,77 @@ const SnapcastMiddleware = (function(){
                     }
 
                     store.dispatch(snapcastActions.setClientVolume(client_to_update.id, volume));
+                }
+                break;
+
+            case 'SNAPCAST_EVENT_RECEIVED':
+
+                // Drop the prefix
+                action.method = action.method.replace('snapcast_','');
+
+                switch (action.method){
+
+                    case 'Client.OnConnect':
+                        store.dispatch(snapcastActions.clientLoaded(
+                            {
+                                id: action.params.client.id,
+                                name: action.params.client.name,
+                                volume: action.params.client.volume.percent,
+                                mute: action.params.client.volume.muted,
+                                connected: action.params.client.connected
+                            }
+                        ));
+                        break;
+
+                    case 'Client.OnDisconnect':
+                        store.dispatch(snapcastActions.clientLoaded(
+                            {
+                                id: action.params.client.id,
+                                connected: action.params.client.connected
+                            }
+                        ));
+                        break;
+
+                    case 'Client.OnVolumeChanged':
+                        store.dispatch(snapcastActions.clientLoaded(
+                            {
+                                id: action.params.id,
+                                mute: action.params.volume.muted,
+                                volume: action.params.volume.percent
+                            }
+                        ));
+                        break;
+
+                    case 'Client.OnLatencyChanged':
+                        store.dispatch(snapcastActions.clientLoaded(
+                            {
+                                id: action.params.id,
+                                latency: action.params.latency
+                            }
+                        ));
+                        break;
+
+                    case 'Client.OnNameChanged':
+                        store.dispatch(snapcastActions.clientLoaded(
+                            {
+                                id: action.params.id,
+                                name: action.params.name
+                            }
+                        ));
+                        break;
+
+                    case 'Group.OnMute':
+                        store.dispatch(snapcastActions.groupLoaded(
+                            {
+                                id: action.params.id,
+                                mute: action.params.mute
+                            }
+                        ));
+                        break;
+
+                    case 'Server.OnUpdate':
+                        store.dispatch(snapcastActions.serverLoaded(action.params));
+                        break;
                 }
                 break;
 

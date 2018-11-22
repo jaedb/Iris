@@ -1,7 +1,7 @@
 
-var coreActions = require('../core/actions')
-var uiActions = require('../ui/actions')
-var helpers = require('../../helpers')
+var coreActions = require('../core/actions');
+var uiActions = require('../ui/actions');
+var helpers = require('../../helpers');
 
 export function set(data){
     return {
@@ -172,7 +172,7 @@ export function getTrackLyrics(uri, path){
 	                        });
 
 	                        var lyrics_html = lyrics.html();
-	                        lyrics_html = lyrics_html.replace(/(\[)/g, '<span class="grey-text">[');
+	                        lyrics_html = lyrics_html.replace(/(\[)/g, '<span class="mid_grey-text">[');
 	                        lyrics_html = lyrics_html.replace(/(\])/g, ']</span>');
 
 	                        dispatch(coreActions.trackLoaded({
@@ -202,7 +202,7 @@ export function getTrackLyrics(uri, path){
 
 export function findTrackLyrics(track){
     return (dispatch, getState) => {
-
+    	
         var query = '';
         query += track.artists[0].name+' ';
         query += track.name;

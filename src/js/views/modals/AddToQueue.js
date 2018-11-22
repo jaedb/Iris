@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { Link } from 'react-router'
+import Link from '../../components/Link'
 import ReactGA from 'react-ga'
 
 import Modal from './Modal';
@@ -38,7 +38,7 @@ class AddToQueue extends React.Component{
 		return (
 			<Modal className="modal--add-to-queue">
 				<h1>Add to queue</h1>
-				<h2 className="grey-text">Add a comma-separated list of URIs to the play queue. You must have the appropriate Mopidy backend enabled for each URI schema (eg spotify:, yt:).</h2>
+				<h2 className="mid_grey-text">Add a comma-separated list of URIs to the play queue. You must have the appropriate Mopidy backend enabled for each URI schema (eg spotify:, yt:).</h2>
 
 				<form onSubmit={e => this.handleSubmit(e)}>
 					<div className="field text">

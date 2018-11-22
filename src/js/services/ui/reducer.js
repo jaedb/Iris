@@ -10,6 +10,9 @@ export default function reducer(ui = {}, action){
         case 'SET_SLIM_MODE':
             return Object.assign({}, ui, { slim_mode: action.slim_mode });
 
+        case 'SET_WINDOW_FOCUS':
+            return Object.assign({}, ui, { window_focus: action.window_focus });
+
         case 'DEBUG':
             return Object.assign({}, ui, { debug_response: action.response })
 
@@ -50,6 +53,15 @@ export default function reducer(ui = {}, action){
             });
 
         case 'HIDE_CONTEXT_MENU':
+            return Object.assign(
+                {}, 
+                ui, 
+                {
+                    context_menu: Object.assign({}, ui.context_menu, {closing: true})
+                }
+            );
+
+        case 'REMOVE_CONTEXT_MENU':
             return Object.assign({}, ui, {context_menu: null});
 
         case 'SHOW_TOUCH_CONTEXT_MENU':
@@ -58,6 +70,15 @@ export default function reducer(ui = {}, action){
             });
 
         case 'HIDE_TOUCH_CONTEXT_MENU':
+            return Object.assign(
+                {}, 
+                ui, 
+                {
+                    touch_context_menu: Object.assign({}, ui.touch_context_menu, {closing: true})
+                }
+            );
+
+        case 'REMOVE_TOUCH_CONTEXT_MENU':
             return Object.assign({}, ui, {touch_context_menu: null});
 
 

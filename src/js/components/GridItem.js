@@ -25,6 +25,11 @@ export default class GridItem extends React.Component{
 
 	handleClick(e){
 		if (this.props.onClick && e.target.tagName.toLowerCase() !== 'a'){
+
+			// Scroll to the top
+			helpers.scrollTo();
+
+			// And then trigger the click event
 			this.props.onClick(e);
 		}
 	}
@@ -57,8 +62,8 @@ export default class GridItem extends React.Component{
 			case 'artist':
 				return (
 					<span>
-						{item.followers ? item.followers.toLocaleString()+' followers' : null}
-						{item.albums_uris ? item.albums_uris.length+' albums' : null}
+						{item.followers !== undefined ? item.followers.toLocaleString()+' followers' : null}
+						{item.albums_uris !== undefined ? item.albums_uris.length+' albums' : null}
 					</span>
 				)
 				break
@@ -66,7 +71,7 @@ export default class GridItem extends React.Component{
 			case 'album':
 				return (
 					<span>
-						{item.artists ? <ArtistSentence artists={item.artists} /> : null}
+						{item.artists !== undefined ? <ArtistSentence artists={item.artists} /> : null}
 					</span>
 				)
 				break
@@ -74,8 +79,8 @@ export default class GridItem extends React.Component{
 			default:
 				return (
 					<span>
-						{ item.artists ? <ArtistSentence artists={ item.artists } /> : null }
-						{ item.followers ? item.followers.toLocaleString()+' followers' : null }
+						{ item.artists !== undefined ? <ArtistSentence artists={ item.artists } /> : null }
+						{ item.followers !== undefined ? item.followers.toLocaleString()+' followers' : null }
 					</span>
 				)
 		}
@@ -93,16 +98,20 @@ export default class GridItem extends React.Component{
 		}
 		var images = null
 		if (this.props.item.images){
-			images = this.props.item.images
+			if (Array.isArray(this.props.item.images)){
+				images = this.props.item.images[0];
+			} else {
+				images = this.props.item.images;
+			}
 		} else if (this.props.item.icons){
-			images = this.props.item.icons
+			images = this.props.item.icons;
 		}
 
 		return (
 			<div className={"grid-item "+this.props.type+"-grid-item"} onClick={e => this.handleClick(e)} onContextMenu={e => this.handleContextMenu(e)}>
 				<Thumbnail size="medium" images={images} />
 				<div className="name">
-					{item.name ? item.name : <span className="dark-grey-text">{item.uri}</span>}
+					{item.name ? item.name : <span className="opaque-text">{item.uri}</span>}
 				</div>
 				<div className="secondary">					
 					{this.props.show_source_icon ? <Icon name={helpers.sourceIcon(item.uri)} type="fontawesome" className="source" /> : null}

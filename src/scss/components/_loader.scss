@@ -25,10 +25,10 @@
 		position: absolute;
 		top: 0;
 		left: 0;
-		border-color: lighten($dark_grey, 5%);
+		border-color: lighten(colour(dark_grey), 5%);
 
 		.light-theme & {
-			border-color: $faint_grey;
+			border-color: colour(faint_grey);
 		}
 	}
 	
@@ -37,7 +37,7 @@
 		border-top-color: transparent;
 		border-left-color: transparent;
 		border-bottom-color: transparent;
-		border-right-color: $blue;
+		border-right-color: colour(blue);
 	}
 }
 
@@ -77,10 +77,10 @@
 		opacity: 1;
 
 		&:before {
-			border-color: darken($secondary_grey, 5%);
+			border-color: darken(colour(secondary_grey), 5%);
 
 			.light-theme & {
-				border-color: $faint_grey;
+				border-color: colour(faint_grey);
 			}
 		}
 	}

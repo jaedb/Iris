@@ -8,7 +8,7 @@ export function set(data){
     }
 }
 
-export function request(method, params = null, response_callback = null, error_callback = null){
+export function request(method, params = {}, response_callback = null, error_callback = null){
 	return {
 		type: 'MOPIDY_REQUEST',
 		method: method,
@@ -30,18 +30,6 @@ export function connecting(){
 	}
 }
 
-export function upgrading(){
-	return {
-		type: 'MOPIDY_UPGRADING'
-	}
-}
-
-export function restarting(){
-	return {
-		type: 'MOPIDY_RESTARTING'
-	}
-}
-
 export function disconnect(){
 	return {
 		type: 'MOPIDY_DISCONNECT'
@@ -53,6 +41,42 @@ export function debug(call, value){
 		type: 'MOPIDY_DEBUG',
 		call: call,
 		value: value
+	}
+}
+
+export function restartStarted(){
+	return {
+		type: 'MOPIDY_RESTART_STARTED'
+	}
+}
+
+export function restartFinished(){
+	return {
+		type: 'MOPIDY_RESTART_FINISHED'
+	}
+}
+
+export function upgradeStarted(){
+	return {
+		type: 'MOPIDY_UPGRADE_STARTED'
+	}
+}
+
+export function upgradeFinished(){
+	return {
+		type: 'MOPIDY_UPGRADE_FINISHED'
+	}
+}
+
+export function localScanStarted(){
+	return {
+		type: 'MOPIDY_LOCAL_SCAN_STARTED'
+	}
+}
+
+export function localScanFinished(){
+	return {
+		type: 'MOPIDY_LOCAL_SCAN_FINISHED'
 	}
 }
 
@@ -357,9 +381,10 @@ export function getTrack(uri){
 	}
 }
 
-export function getLibraryArtists(){
+export function getLibraryArtists(uri = null){
 	return { 
-		type: 'MOPIDY_GET_LIBRARY_ARTISTS' 
+		type: 'MOPIDY_GET_LIBRARY_ARTISTS',
+		uri: uri
 	}
 }
 
@@ -399,9 +424,10 @@ export function getAlbums(uris, processor = null){
 	}
 }
 
-export function getLibraryAlbums(){
+export function getLibraryAlbums(uri = null){
 	return { 
-		type: 'MOPIDY_GET_LIBRARY_ALBUMS'
+		type: 'MOPIDY_GET_LIBRARY_ALBUMS',
+		uri: uri
 	}
 }
 

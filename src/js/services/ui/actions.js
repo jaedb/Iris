@@ -50,9 +50,22 @@ export function setSlimMode(slim_mode){
     }
 }
 
+export function setWindowFocus(window_focus){
+    return {
+        type: 'SET_WINDOW_FOCUS',
+        window_focus: window_focus
+    }
+}
+
 export function hideContextMenu(){
     return {
         type: 'HIDE_CONTEXT_MENU'
+    }
+}
+
+export function removeContextMenu(){
+    return {
+        type: 'REMOVE_CONTEXT_MENU'
     }
 }
 
@@ -66,6 +79,12 @@ export function showTouchContextMenu(data){
 export function hideTouchContextMenu(){
     return {
         type: 'HIDE_TOUCH_CONTEXT_MENU'
+    }
+}
+
+export function removeTouchContextMenu(){
+    return {
+        type: 'REMOVE_TOUCH_CONTEXT_MENU'
     }
 }
 
@@ -136,6 +155,12 @@ export function createBrowserNotification(data){
 }
 
 export function createNotification(data){
+
+	// Allow 'message' as an alias of our content
+	if (data.message){
+		data.content = data.message;
+	}
+
     return { 
         type: 'CREATE_NOTIFICATION',
         notification: Object.assign(

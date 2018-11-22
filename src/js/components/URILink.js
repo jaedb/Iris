@@ -1,6 +1,6 @@
 
-import React from 'react'
-import { Link } from 'react-router'
+import React from 'react';
+import Link from './Link';
 
 export default class URILink extends React.Component{
 

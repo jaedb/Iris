@@ -1,7 +1,8 @@
 
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { hashHistory, Link } from 'react-router'
+import { hashHistory } from 'react-router'
+import Link from '../components/Link';
 import { bindActionCreators } from 'redux'
 
 import Icon from '../components/Icon'
@@ -60,7 +61,7 @@ class Queue extends React.Component{
 		var total_time = 0
 
 		return (
-			<div className="queue-stats grey-text">
+			<div className="queue-stats mid_grey-text">
 				<span>{this.props.current_tracklist.length} tracks</span>
 				&nbsp;&nbsp;|&nbsp;&nbsp;
 				{this.props.current_tracklist.length > 0 ? <Dater type="total-time" data={this.props.current_tracklist} /> : <span>0 mins</span>}
@@ -150,9 +151,9 @@ class Queue extends React.Component{
 				<Link className="button no-hover" to={global.baseURL+'queue/history'}>
 					<Icon name="history" />History
 				</Link>
-				<button className="no-hover" onClick={e => {this.props.mopidyActions.clearTracklist(); this.props.uiActions.hideContextMenu();}}>
+				<a className="button no-hover" onClick={e => {this.props.mopidyActions.clearTracklist(); this.props.uiActions.hideContextMenu();}}>
 					<Icon name="delete_sweep" />Clear
-				</button>
+				</a>
 				<Link className="button no-hover" to={global.baseURL+'queue/add-uri'}>
 					<Icon name="playlist_add" />Add URI
 				</Link>
@@ -160,12 +161,12 @@ class Queue extends React.Component{
 		)
 
 		return (
-			<div className="view queue-view">			
-				<Header className="overlay" options={options} uiActions={this.props.uiActions}>
+			<div className="view queue-view preserve-3d">			
+				<Header options={options} uiActions={this.props.uiActions}>
 					<Icon name="play_arrow" type="material" />
 					Now playing
 				</Header>
-				<Parallax blur image={current_track_image} theme={this.props.theme} disabled={this.props.disable_parallax} />
+				<Parallax blur image={current_track_image} />
 				<div className="content-wrapper">
 				
 					<div className="current-track">
@@ -204,7 +205,6 @@ class Queue extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		disable_parallax: state.ui.disable_parallax,
 		theme: state.ui.theme,
 		spotify_enabled: state.spotify.enabled,
 		radio: state.core.radio,

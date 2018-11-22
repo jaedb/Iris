@@ -2,9 +2,11 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Link, hashHistory } from 'react-router';
+import { hashHistory } from 'react-router'
+import Link from './Link';
 
 import VolumeControl from './Fields/VolumeControl';
+import MuteControl from './Fields/MuteControl';
 import LatencyControl from './Fields/LatencyControl';
 import TextField from './Fields/TextField';
 import DropdownField from './Fields/DropdownField';
@@ -69,7 +71,7 @@ class Snapcast extends React.Component{
 
 		if (!clients || clients.length <= 0){
 			return (
-				<div className="text grey-text">
+				<div className="text mid_grey-text">
 					No clients
 				</div>
 			);
@@ -87,12 +89,6 @@ class Snapcast extends React.Component{
 						}
 
 						if (this.state.clients_expanded.includes(client.id)){
-
-							var commands = {};
-							if (this.props.client_commands[client.id]){
-								commands = this.props.client_commands[client.id];
-							}
-
 							return (
 								<div className={class_name+" snapcast__client--expanded"} key={client.id}>
 									<div className="snapcast__client__header" onClick={e => this.toggleClientExpanded(client.id)}>
@@ -140,12 +136,15 @@ class Snapcast extends React.Component{
 												Volume
 											</div>
 											<div className="input">
+												<MuteControl 
+													className="snapcast__client__mute-control"
+													mute={client.mute}
+													onMuteChange={mute => this.props.snapcastActions.setClientMute(client.id, mute)}
+												/>
 												<VolumeControl 
 													className="snapcast__client__volume-control"
 													volume={client.volume}
-													mute={client.mute}
 													onVolumeChange={percent => this.props.snapcastActions.setClientVolume(client.id, percent)}
-													onMuteChange={mute => this.props.snapcastActions.setClientMute(client.id, mute)}
 												/>
 											</div>
 										</div>
@@ -164,21 +163,6 @@ class Snapcast extends React.Component{
 													type="number"
 													onChange={value => this.props.snapcastActions.setClientLatency(client.id, parseInt(value))}
 													value={String(client.latency)}
-												/>
-											</div>
-										</div>
-										<div className="field">
-											<div className="name tooltip">
-												Power command
-												<span className="tooltip__content">
-													Ajax request to trigger power
-												</span>
-											</div>
-											<div className="input">
-												<TextField
-													onChange={value => this.props.snapcastActions.setClientCommand(client.id, {power: value})}
-													value={commands.power ? commands.power : ""}
-													placeholder='{"url":"https://myserver.local:8080/sendCommand/power"}'
 												/>
 											</div>
 										</div>
@@ -274,7 +258,7 @@ class Snapcast extends React.Component{
 										<div className="input">	
 											<div className="text">
 												{group.name} &nbsp;
-												<span className="grey-text">({group.id})</span>
+												<span className="mid_grey-text">({group.id})</span>
 											</div>
 										</div>
 									</div>
@@ -301,12 +285,15 @@ class Snapcast extends React.Component{
 											Volume
 										</div>
 										<div className="input">	
+											<MuteControl 
+												className="snapcast__group__mute-control"
+												mute={group.muted}
+												onMuteChange={mute => this.props.snapcastActions.setGroupMute(group.id, mute)}
+											/>
 											<VolumeControl 
 												className="snapcast__group__volume-control"
 												volume={group_volume}
-												mute={group.muted}
 												onVolumeChange={(percent, old_percent) => this.props.snapcastActions.setGroupVolume(group.id, percent, old_percent)}
-												onMuteChange={mute => this.props.snapcastActions.setGroupMute(group.id, mute)}
 											/>
 										</div>
 									</div>
@@ -335,8 +322,7 @@ const mapStateToProps = (state, ownProps) => {
 		show_disconnected_clients: (state.ui.snapcast_show_disconnected_clients !== undefined ? state.ui.snapcast_show_disconnected_clients : false),
 		streams: (state.snapcast.streams ? state.snapcast.streams : null),
 		groups: (state.snapcast.groups ? state.snapcast.groups : null),
-		clients: (state.snapcast.clients ? state.snapcast.clients : null),
-		client_commands: (state.snapcast.client_commands ? state.snapcast.client_commands : {})
+		clients: (state.snapcast.clients ? state.snapcast.clients : null)
 	}
 }
 

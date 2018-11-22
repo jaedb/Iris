@@ -33,42 +33,24 @@
 
 body,
 html {
-	background: $dark_grey;
-	color: $light_grey;
+	color: colour(light_grey);
 	font-family: "Overpass", Helvetica, Arial, sans-serif;
 	font-size: 14px;
 	letter-spacing: -0.01rem;
 	touch-action: manipulation;
 	text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
 
 	.light-theme {
-		background: $white;
-		color: $darkest_grey;
-	}
-}
-
-*::-webkit-scrollbar{
-	width: 8px;
-	height: 8px;
-}
-
-*::-webkit-scrollbar-track {
-	background: $dark_grey;
-}
-
-*::-webkit-scrollbar-thumb {
-	@include animate();
-	background: $grey;
-	border-radius: 4px;
-
-	&:hover {
-		background: $mid_grey;
+		color: colour(darkest_grey);
 	}
 }
 
 body {
-	overflow-y: scroll;
-	overflow-x: hidden;
+	transform: translateZ(0px);
+	transform-style: preserve-3d;
 
 	&.touch-dragging,
 	&.no-scrollbars {
@@ -82,35 +64,81 @@ body {
 	}
 }
 
-main,
-footer {
-	margin-left: 220px;
-
-	@include responsive(null, null, $bp_shallow){
-		padding-bottom: 60px;
-	}
-
-	@include responsive($bp_medium){
-		margin-left: 0;
-	}
+.smooth-scroll {
+	scroll-behavior: smooth;
 }
 
 main {
-	position: relative;
-	min-height: 100vh;
+	position: fixed;
+	top: 0;
+	left: 220px;
+	bottom: 50px;
+	right: 0;
+	perspective: 1000px;
+	perspective-origin: top;
+	background: colour(dark_grey);
+	z-index: 1;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	overscroll-behavior: contain;
+
+	/**
+	 * iOS drops smooth-scrolling on divs, so we need to manually re-set it
+	 * NOTE: This breaks parallax effects on iOS
+	 **/
+	-webkit-overflow-scrolling: touch;
+
+	.notouch & {
+		&::-webkit-scrollbar{
+			width: 8px;
+			height: 8px;
+		}
+
+		&::-webkit-scrollbar-track {
+			background: colour(dark_grey);
+		}
+
+		&::-webkit-scrollbar-thumb {
+			@include animate();
+			background: colour(grey);
+
+			&:hover {
+				background: colour(mid_grey);
+			}
+		}
+	}
+
+	.modal-open & {
+		left: 0;
+		bottom: 0;
+		z-index: 999;
+	}
+
+	/* All children between <main> and the parallax need this to work in Firefox */
+	&,
+	& .preserve-3d {
+		transform-style: preserve-3d;
+	}
+
+	.light-theme & {
+		background: colour(white);
+	}
 
 	.content-wrapper {
-		padding: 40px 40px 80px;
+		padding: 40px 40px 20px 40px;
 	}
 
 	a {
 		color: inherit;
 		text-decoration: none;
 		cursor: pointer;
-		border-bottom: 1px solid transparent;
 
-		&:hover {
-			border-color: $mid_grey;
+		&:not(.control):not(.action) {
+			border-bottom: 1px solid transparent;
+
+			&:hover {
+				border-color: colour(mid_grey);
+			}
 		}
 	}
 
@@ -121,9 +149,10 @@ main {
 	}
 
 	@include responsive($bp_medium){
+		left: 0;
 
 		.content-wrapper {
-			padding: 20px 10px 60px;
+			padding: 20px 10px;
 		}
 
 		section.list-wrapper {
@@ -133,9 +162,9 @@ main {
 
 	pre {
 		padding: 20px;
-		background: $darkest_grey;
+		background: colour(darkest_grey);
 		border-radius: 3px;
-		color: $white;
+		color: colour(white);
 		white-space: pre-wrap;
 		word-wrap: break-word;
 	}
@@ -143,20 +172,20 @@ main {
 
 h1 {
 	@include feature_font();
-	color: $white;
+	color: colour(white);
 	font-weight: 700;
-	font-size: 3rem;
-	line-height: 3.2rem;
+	font-size: 3.4rem;
+	line-height: 3.4rem;
 
 	.light-theme & {
-		color: $dark_grey;
+		color: colour(dark_grey);
 	}
 }
 
 h2 {
-	@include feature_font();
-	font-size: 1.8rem;
 	font-weight: 400;
+	@include feature_font();
+	font-size: 2rem;
 	line-height: 2.2rem;
 
 	a {
@@ -164,22 +193,22 @@ h2 {
 		text-decoration: none;
 
 		&:hover {
-			border-bottom: 1px solid $white;
+			border-bottom: 1px solid colour(white);
 		}
 	}
 
 	&.grey-text {
 		a:hover {
-			color: $mid_grey !important;
-			border-bottom: 1px solid $mid_grey;
+			color: colour(mid_grey) !important;
+			border-bottom: 1px solid colour(mid_grey);
 		}
 	}
 }
 
 h3 {
 	font-weight: 100;
-	font-size: 1.4em;
-	line-height: 1.6em;
+	font-size: 1.8rem;
+	line-height: 1.8rem;
 
 	&.bottom-padding {
 		padding-bottom: 30px;
@@ -188,13 +217,13 @@ h3 {
 
 h4 {
 	@include feature_font();
-	font-size: 1.3rem;
-	margin-bottom: 14px;
+	font-size: 1.5rem;
+	margin-bottom: 16px;
 	font-weight: 700;
 
 	&.underline {
 		padding-bottom: 4px;
-		border-bottom: 1px solid $grey;
+		border-bottom: 1px solid colour(grey);
 	}
 
 	&:not(:first-child){
@@ -234,7 +263,7 @@ p {
 .no-results {
 	text-align: center;
 	padding: 40px;
-	color: $grey;
+	color: colour(grey);
 	font-style: italic;
 	font-size: 1.2rem;
 }
@@ -319,28 +348,28 @@ button.placeholder {
 	min-height: 1px;
 	float: left;
 
-	&.w5 {		width: 5%; }
-	&.w10 {		width: 10%; }
-	&.w15 {		width: 15%; }
-	&.w20 {		width: 20%; }
-	&.w25 {		width: 25%; }
-	&.w30 {		width: 30%; }
-	&.w33 {		width: 33.3334%; }
-	&.w35 {		width: 35%; }
-	&.w40 {		width: 40%; }
-	&.w45 {		width: 45%; }
-	&.w50 {		width: 50%; }
-	&.w55 {		width: 55%; }
-	&.w60 {		width: 60%; }
-	&.w65 {		width: 65%; }
-	&.w66 {		width: 66.6667%; }
-	&.w70 {		width: 70%; }
-	&.w75 {		width: 75%; }
-	&.w80 {		width: 80%; }
-	&.w85 {		width: 85%; }
-	&.w90 {		width: 90%; }
-	&.w95 {		width: 95%; }
-	&.w100 {	width: 100%; }
+	&--w5 {		width: 5%; }
+	&--w10 {		width: 10%; }
+	&--w15 {		width: 15%; }
+	&--w20 {		width: 20%; }
+	&--w25 {		width: 25%; }
+	&--w30 {		width: 30%; }
+	&--w33 {		width: 33.3334%; }
+	&--w35 {		width: 35%; }
+	&--w40 {		width: 40%; }
+	&--w45 {		width: 45%; }
+	&--w50 {		width: 50%; }
+	&--w55 {		width: 55%; }
+	&--w60 {		width: 60%; }
+	&--w65 {		width: 65%; }
+	&--w66 {		width: 66.6667%; }
+	&--w70 {		width: 70%; }
+	&--w75 {		width: 75%; }
+	&--w80 {		width: 80%; }
+	&--w85 {		width: 85%; }
+	&--w90 {		width: 90%; }
+	&--w95 {		width: 95%; }
+	&--w100 {	width: 100%; }
 }
 
 .pull-left {
@@ -362,23 +391,10 @@ button.placeholder {
 .pulse { @include pulse(); }
 .one-liner { @include one_line_text; }
 .centred-text { text-align: center; }
-.grey-text { color: $mid_grey !important; }
-.dark-grey-text { color: lighten($dark_grey, 8%) !important; }
-.red-text { color: $red !important; }
-.blue-text { color: $blue !important; }
-.green-text { color: $green !important; }
-.orange-text { color: $orange !important; }
-.yellow-text { color: $yellow !important; }
-.dark-text { color: $dark_grey !important; }
-.grey-border { border-color: $mid_grey !important; }
-.red-border { border-color: $red !important; }
-.green-border { border-color: $green !important; }
-.orange-border { border-color: $orange !important; }
-.dark-border { border-color: $dark_grey !important; }
 
 footer {
 	display: block;
-	color: $light_grey;
+	color: colour(light_grey);
 	padding-top: 50px;
 	padding-bottom: 50px;
 	text-align: center;
@@ -386,7 +402,7 @@ footer {
 
 .details {
 	list-style-type: none;
-	color: $mid_grey;
+	color: colour(mid_grey);
 
 	li {
 		display: inline-block;
@@ -402,35 +418,35 @@ footer {
 	font-weight: bold;
 	display: inline-block;
 	padding: 3px 5px 1px;
-	background: $light_grey;
-	color: $dark_grey;
+	background: colour(light_grey);
+	color: colour(dark_grey);
 	border-radius: 3px;
 	vertical-align: bottom;
 	margin: 0 8px 1px;
 
 	&.blue {
-		background: $blue;
-		color: $white;
+		background: colour(blue);
+		color: colour(white);
 	}
 
 	&.info {
-		background: $yellow;
+		background: colour(yellow);
 	}
 
 	&.warning {
-		background: $orange;
-		color: $white;
+		background: colour(orange);
+		color: colour(white);
 	}
 
 	&.error,
 	&.bad {
-		background: $red;
-		color: $white;
+		background: colour(red);
+		color: colour(white);
 	}
 
 	&.dark {
-		background: lighten($dark_grey,10%);
-		color: $mid_grey;
+		background: lighten(colour(dark_grey),10%);
+		color: colour(mid_grey);
 	}
 
 	&.large {
@@ -447,36 +463,36 @@ footer {
 
 .message {
 	padding: 10px 12px 8px;
-	background: $yellow;
-	color: $dark_grey;
+	background: colour(yellow);
+	color: colour(dark_grey);
 	clear: both;
 	font-size: 14px;
 	border-radius: 3px;
 
 	&.info {
-		background: $yellow;
+		background: colour(yellow);
 	}
 
 	&.notice {
-		background: $blue;
-		color: $white;
+		background: colour(blue);
+		color: colour(white);
 	}
 
 	&.good,
 	&.success {
-		background: $green;
-		color: $white;
+		background: colour(green);
+		color: colour(white);
 	}
 
 	&.warning {
-		background: $orange;
-		color: $white;
+		background: colour(orange);
+		color: colour(white);
 	}
 
 	&.error,
 	&.bad {
-		background: $red;
-		color: $white;
+		background: colour(red);
+		color: colour(white);
 	}
 }
 
@@ -485,17 +501,25 @@ footer {
 @include responsive($bp_medium){
 	
 	h1 {
-		font-size: 1.8rem;
-		line-height: 1.8rem;
+		font-size: 2rem;
+		line-height: 2rem;
 	}
 	
 	h2 {
-		font-size: 1.2rem;
-		line-height: 1.5rem;
+		font-size: 1.6rem;
+		line-height: 1.7rem;
 	}
 	
 	h3 {
-		font-size: 1rem;
+		font-size: 1.4rem;
+	}
+	
+	h4 {
+		font-size: 1.3rem;
+	}
+	
+	h5 {
+		font-size: 1.1rem;
 	}
 	
 	.right-padding {

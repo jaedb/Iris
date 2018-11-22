@@ -38,12 +38,10 @@ class QueueHistory extends React.Component{
 
 	render(){
 		var options = (
-			<span>
-				<button className="no-hover" onClick={e => hashHistory.push(global.baseURL+'queue')}>
-					<Icon name="keyboard_backspace" />&nbsp;
-					Back
-				</button>
-			</span>
+			<a className="button no-hover" onClick={e => hashHistory.push(global.baseURL+'queue')}>
+				<Icon name="keyboard_backspace" />&nbsp;
+				Back
+			</a>
 		)
 
 		var tracks = [];
@@ -73,6 +71,7 @@ class QueueHistory extends React.Component{
 						className="queue-history-track-list"
 						context="history"
 						tracks={tracks}
+						show_source_icon={true}
 					/>
 				</section>
 				

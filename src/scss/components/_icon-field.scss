@@ -1,0 +1,52 @@
+
+.icon-field {
+	&__option {
+		@include animate(0.1s);
+		display: inline-block;
+		border-radius: 3px;
+		width: 30px;
+		height: 30px;
+		margin: 0 4px 4px 0;
+		position: relative;
+		cursor: pointer;
+		overflow: hidden;
+
+		&--selected {
+			&:after {
+				background: colour(grey) !important;
+			}
+		}
+
+		&__icon {
+			position: absolute;
+			top: 6px;
+			left: 6px;
+			font-size: 18px;
+			z-index: 3;
+		}
+
+		&:after {
+			content: '';
+			display: block;
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			z-index: 2;
+		}
+
+		&:hover {
+			&:after {
+				background: rgba(255,255,255,0.15);
+			}
+		}
+
+		&:active,
+		&:focus {
+			&:after {
+				background: rgba(255,255,255,0.3);
+			}
+		}
+	}
+}

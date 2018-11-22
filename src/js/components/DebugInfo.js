@@ -1,7 +1,7 @@
 
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { Link } from 'react-router'
+import Link from './Link'
 import { createStore, bindActionCreators } from 'redux'
 
 import * as helpers from '../helpers'
@@ -51,7 +51,7 @@ class DebugInfo extends React.Component{
 
 	renderLoadQueue(){
 		if (!this.props.ui.load_queue){
-			return <div className="debug-info-item grey-text">Nothing loading</div>;
+			return <div className="debug-info-item mid_grey-text">Nothing loading</div>;
 		}
 
 		var load_queue = this.props.ui.load_queue
@@ -69,7 +69,7 @@ class DebugInfo extends React.Component{
 				</div>
 			)
 		} else {
-			return <div className="debug-info-item grey-text">Nothing loading</div>;
+			return <div className="debug-info-item mid_grey-text">Nothing loading</div>;
 		}
 	}
 

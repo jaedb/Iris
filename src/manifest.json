@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2.6,
+  "manifest_version": 2.7,
   "short_name": "Iris",
   "name": "Iris",
   "icons": [
@@ -27,7 +27,7 @@
   "start_url": "/iris/#/",
   "background_color": "#08d58f",
   "theme_color": "#181818",
-  "display": "fullscreen",
+  "display": "standalone",
   "app": {
     "background": {}
   }
