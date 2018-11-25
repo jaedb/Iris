@@ -24,7 +24,6 @@ class ArtistGrid extends React.Component{
 	}
 
 	handleContextMenu(e,item){
-		console.log(item);
 		e.preventDefault();
 		var data = {
 			e: e,

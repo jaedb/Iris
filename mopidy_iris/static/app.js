@@ -20872,7 +20872,6 @@ var ArtistGrid = function (_React$Component) {
 	}, {
 		key: 'handleContextMenu',
 		value: function handleContextMenu(e, item) {
-			console.log(item);
 			e.preventDefault();
 			var data = {
 				e: e,
@@ -70783,7 +70782,7 @@ var Track = function (_React$Component) {
 			if (this.props.track) {
 				this.setWindowTitle(this.props.track);
 
-				if (this.props.track.artists && !this.props.track.lyrics_results) {
+				if (this.props.genius_authorized && this.props.track.artists && !this.props.track.lyrics_results) {
 					this.props.geniusActions.findTrackLyrics(this.props.track);
 				}
 			}

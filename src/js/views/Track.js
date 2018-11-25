@@ -39,7 +39,7 @@ class Track extends React.Component{
 		if (this.props.track){
 			this.setWindowTitle(this.props.track);
 
-			if (this.props.track.artists && !this.props.track.lyrics_results){
+			if (this.props.genius_authorized && this.props.track.artists && !this.props.track.lyrics_results){
 				this.props.geniusActions.findTrackLyrics(this.props.track);
 			}
 		}
