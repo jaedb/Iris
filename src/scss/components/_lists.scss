@@ -12,9 +12,9 @@
 
 		display: block;
 		position: relative;
-		margin: 0 -20px 0 -20px;
+		margin: 0 -20px;
 		padding: 0 20px;
-		border-radius: 3px;
+		border-radius: 2px;
 
 		&:not(.no-click){
 			cursor: pointer;
@@ -36,6 +36,10 @@
 
 		&:not(:first-child){
 			border-top: 1px solid rgba(128,128,128,0.05);
+
+			.light-theme & {
+				border-top-color: rgba(128,128,128,0.15);
+			}
 		}
 
 		:root .notouch:not(.dragging) &:not(.no-click) {
@@ -163,15 +167,15 @@
 			.list__item {
 				&__column {
 					&--name {
-						padding-top: 14px;
-						padding-bottom: 10px;
+						padding-top: 16px;
+						padding-bottom: 12px;
 					}
 				}
 			}
 		}
 
 		&__column {
-			padding: 24px 0 16px;
+			padding: 26px 0 18px;
 
 			&--right {
 				float: right;

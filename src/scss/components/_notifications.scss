@@ -13,11 +13,11 @@
 		display: block;
 		position: relative;
 		background: colour(grey);
-		padding: 16px 40px 16px 22px;
+		padding: 18px 40px 18px 24px;
 		margin: 10px 0 0 0;
 		color: colour(white);
 		pointer-events: all; 
-		border-radius: 3px;
+		border-radius: 2px;
 		
 		h4 {
 			padding-top: 0;
@@ -37,7 +37,7 @@
 		}
 
 		p.description {
-			font-size: 14px;
+			font-size: 15px;
 			opacity: 0.5;
 			padding-top: 5px;
 			line-height: 1.1em;

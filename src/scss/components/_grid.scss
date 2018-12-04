@@ -1,27 +1,29 @@
 
 .grid {
 
-	.grid-item-wrapper {
-		display: inline-block;
-	}
 
-	.grid-item {
+	.grid__item {
 		display: inline-block;
 		vertical-align: top;
 		border-bottom: 0;
 		position: relative;
 
-		.thumbnail {
+		&__wrapper {
+			display: inline-block;
+		}
+
+		&__thumbnail {
 			@include animate();
 			max-width: 100%;
 		}
 
-		.name {
+		&__name {
 			@include one_line_text;
-			padding-top: 8px;
+			padding-top: 14px;
+			font-weight: 600;
 		}
 
-		.secondary {
+		&__secondary {
 			@include one_line_text;
 			padding-top: 2px;
 			color: colour(secondary_grey);
@@ -34,7 +36,7 @@
 		&:hover{
 			cursor: pointer;
 
-			.thumbnail {
+			&__thumbnail {
 				opacity: 0.75;
 			}
 		}
@@ -48,10 +50,10 @@
 	}
 
 	&.category-grid {
-		.grid-item {
+		.grid__item {
 			position: relative;
 
-			.name {
+			&__name {
 				position: absolute;
 				bottom: 15%;
 				left: 0;
@@ -64,8 +66,8 @@
 		}
 
 		@include responsive(null, $bp_wide){
-			.grid-item {
-				.name {
+			.grid__item {
+				&__name {
 					font-size: 16px;
 				}
 			}
@@ -73,22 +75,22 @@
 	}
 
 	@include responsive(null, 1900px){
-		&.mini {
-			.grid-item {
+		&--mini {
+			.grid__item {
 				@include grid_item(3)
 			}
-			&.single-row {
-				.grid-item:nth-child(1n+4){
+			&--single-row {
+				.grid__item:nth-child(1n+4){
 					display: none;
 				}
 			}		
 		}
 		&:not(.mini){
-			.grid-item {
+			.grid__item {
 				@include grid_item(5 )
 			}
 			&.single-row {
-				.grid-item:nth-child(1n+6){
+				.grid__item:nth-child(1n+6){
 					display: none;
 				}
 			}
@@ -96,22 +98,22 @@
 	}
 
 	@include responsive(1899px, 1200px){
-		&.mini {
-			.grid-item {
+		&--mini {
+			.grid__item {
 				@include grid_item(2 )
 			}	
-			&.single-row {
-				.grid-item:nth-child(1n+3){
+			&--single-row {
+				.grid__item:nth-child(1n+3){
 					display: none;
 				}
 			}		
 		}
-		&:not(.mini){
-			.grid-item {
+		&:not(.grid--mini){
+			.grid__item {
 				@include grid_item(4 )
 			}	
-			&.single-row {
-				.grid-item:nth-child(1n+5){
+			&--single-row {
+				.grid__item:nth-child(1n+5){
 					display: none;
 				}
 			}
@@ -119,22 +121,22 @@
 	}
 
 	@include responsive(1199px, 800px){
-		&.mini {
-			.grid-item {
+		&--mini {
+			.grid__item {
 				@include grid_item(2 )
 			}			
-			&.single-row {
-				.grid-item:nth-child(1n+3){
+			&--single-row {
+				.grid__item:nth-child(1n+3){
 					display: none;
 				}
 			}
 		}
-		&:not(.mini){
-			.grid-item {
+		&:not(.grid--mini){
+			.grid__item {
 				@include grid_item(4 )
 			}	
-			&.single-row {
-				.grid-item:nth-child(1n+5){
+			&--single-row {
+				.grid__item:nth-child(1n+5){
 					display: none;
 				}
 			}
@@ -142,22 +144,22 @@
 	}
 
 	@include responsive(799px, 500px){
-		&.mini{
-			.grid-item {
+		&--mini{
+			.grid__item {
 				@include grid_item(6, 2%, 4% )
 			}	
-			&.single-row {
-				.grid-item:nth-child(1n+7){
+			&--single-row {
+				.grid__item:nth-child(1n+7){
 					display: none;
 				}
 			}
 		}
-		&:not(.mini){
-			.grid-item {
+		&:not(.grid--mini){
+			.grid__item {
 				@include grid_item(3, 2%, 4% )
 			}	
-			&.single-row {
-				.grid-item:nth-child(1n+4){
+			&--single-row {
+				.grid__item:nth-child(1n+4){
 					display: none;
 				}
 			}
@@ -165,22 +167,22 @@
 	}
 
 	@include responsive(499px){
-		&.mini{
-			.grid-item {
+		&--mini{
+			.grid__item {
 				@include grid_item(3, 2%, 4% )
 			}	
-			&.single-row {
-				.grid-item:nth-child(1n+4){
+			&--single-row {
+				.grid__item:nth-child(1n+4){
 					display: none;
 				}
 			}
 		}
-		&:not(.mini){
-			.grid-item {
+		&:not(.grid--mini){
+			.grid__item {
 				@include grid_item(2, 2%, 4% )
 			}	
-			&.single-row {
-				.grid-item:nth-child(1n+5){
+			&--single-row {
+				.grid__item:nth-child(1n+5){
 					display: none;
 				}
 			}

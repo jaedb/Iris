@@ -19,8 +19,8 @@ select {
 	background: rgba(255,255,255,0.1);
 	color: colour(white);
 	font-family: "Overpass", Helvetica, Arial, sans-serif;
-	font-size: 14px;
-	border-radius: 3px;
+	font-size: 15px;
+	border-radius: 2px;
 	letter-spacing: -0.01rem;
 
 	&:focus,
@@ -195,14 +195,14 @@ input[type="submit"] {
 	@include animate();
 	@include feature_font();
 	@include noselect();
-	font-size: 14px;
+	font-size: 15px;
 	color: colour(black);
 	display: inline-block;
-	padding: 9px 30px 7px;
+	padding: 12px 30px 10px;
 	margin: 0 20px 10px 0;
 	background: colour(white);
 	box-sizing: border-box;
-	border-radius: 3px;
+	border-radius: 2px;
 	vertical-align: middle;
 	position: relative;
 	border: 0 !important;

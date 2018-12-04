@@ -21327,15 +21327,15 @@ var GridItem = function (_React$Component) {
 
 			return _react2.default.createElement(
 				'div',
-				{ className: "grid-item " + this.props.type + "-grid-item", onClick: function onClick(e) {
+				{ className: "grid__item grid__item--" + this.props.type, onClick: function onClick(e) {
 						return _this2.handleClick(e);
 					}, onContextMenu: function onContextMenu(e) {
 						return _this2.handleContextMenu(e);
 					} },
-				_react2.default.createElement(_Thumbnail2.default, { size: 'medium', images: images }),
+				_react2.default.createElement(_Thumbnail2.default, { className: 'grid__item__thumbnail', size: 'medium', images: images }),
 				_react2.default.createElement(
 					'div',
-					{ className: 'name' },
+					{ className: 'grid__item__name' },
 					item.name ? item.name : _react2.default.createElement(
 						'span',
 						{ className: 'opaque-text' },
@@ -21344,7 +21344,7 @@ var GridItem = function (_React$Component) {
 				),
 				_react2.default.createElement(
 					'div',
-					{ className: 'secondary' },
+					{ className: 'grid__item__secondary' },
 					this.props.show_source_icon ? _react2.default.createElement(_Icon2.default, { name: helpers.sourceIcon(item.uri), type: 'fontawesome', className: 'source' }) : null,
 					this.renderSecondary(item)
 				)
