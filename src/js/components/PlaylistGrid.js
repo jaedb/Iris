@@ -29,9 +29,9 @@ class PlaylistGrid extends React.Component{
 	render(){
 		if (!this.props.playlists ) return null
 
-		var className = "grid playlist-grid"
+		var className = "grid grid--playlists"
 		if (this.props.className) className += ' '+this.props.className
-		if (this.props.single_row) className += ' single-row'
+		if (this.props.single_row) className += ' grid--single-row'
 		return (
 			<div className={className}>
 				{

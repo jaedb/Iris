@@ -28,9 +28,9 @@ class AlbumGrid extends React.Component{
 
 	render(){
 		if (this.props.albums){
-			var className = "grid album-grid"
+			var className = "grid grid--albums"
 			if (this.props.className) className += ' '+this.props.className
-			if (this.props.single_row) className += ' single-row'
+			if (this.props.single_row) className += ' grid--single-row'
 				
 			return (
 				<div className={className}>

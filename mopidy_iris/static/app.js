@@ -20887,9 +20887,9 @@ var ArtistGrid = function (_React$Component) {
 			var _this2 = this;
 
 			if (this.props.artists) {
-				var className = "grid artist-grid";
+				var className = "grid grid--artists";
 				if (this.props.className) className += ' ' + this.props.className;
-				if (this.props.single_row) className += ' single-row';
+				if (this.props.single_row) className += ' grid--single-row';
 
 				return _react2.default.createElement(
 					'div',
@@ -21133,15 +21133,15 @@ var GridItem = function (_React$Component) {
 
 			return _react2.default.createElement(
 				'div',
-				{ className: "grid-item " + this.props.type + "-grid-item", onClick: function onClick(e) {
+				{ className: "grid__item grid__item--" + this.props.type, onClick: function onClick(e) {
 						return _this2.handleClick(e);
 					}, onContextMenu: function onContextMenu(e) {
 						return _this2.handleContextMenu(e);
 					} },
-				_react2.default.createElement(_Thumbnail2.default, { size: 'medium', images: images }),
+				_react2.default.createElement(_Thumbnail2.default, { size: 'medium', className: 'grid__item__thumbnail', images: images }),
 				_react2.default.createElement(
 					'div',
-					{ className: 'name' },
+					{ className: 'grid__item__name' },
 					item.name ? item.name : _react2.default.createElement(
 						'span',
 						{ className: 'opaque-text' },
@@ -21150,7 +21150,7 @@ var GridItem = function (_React$Component) {
 				),
 				_react2.default.createElement(
 					'div',
-					{ className: 'secondary' },
+					{ className: 'grid__item__secondary' },
 					this.props.show_source_icon ? _react2.default.createElement(_Icon2.default, { name: helpers.sourceIcon(item.uri), type: 'fontawesome', className: 'source' }) : null,
 					this.renderSecondary(item)
 				)
@@ -21363,9 +21363,9 @@ var AlbumGrid = function (_React$Component) {
 			var _this2 = this;
 
 			if (this.props.albums) {
-				var className = "grid album-grid";
+				var className = "grid grid--albums";
 				if (this.props.className) className += ' ' + this.props.className;
-				if (this.props.single_row) className += ' single-row';
+				if (this.props.single_row) className += ' grid--single-row';
 
 				return _react2.default.createElement(
 					'div',
@@ -21483,9 +21483,9 @@ var PlaylistGrid = function (_React$Component) {
 
 			if (!this.props.playlists) return null;
 
-			var className = "grid playlist-grid";
+			var className = "grid grid--playlists";
 			if (this.props.className) className += ' ' + this.props.className;
-			if (this.props.single_row) className += ' single-row';
+			if (this.props.single_row) className += ' grid--single-row';
 			return _react2.default.createElement(
 				'div',
 				{ className: className },
@@ -81180,7 +81180,7 @@ var CategoryGrid = function (_React$Component) {
 		value: function render() {
 			if (!this.props.categories) return null;
 
-			var className = "grid category-grid";
+			var className = "grid grid--categories";
 			if (this.props.className) className += ' ' + this.props.className;
 			return _react2.default.createElement(
 				'div',
