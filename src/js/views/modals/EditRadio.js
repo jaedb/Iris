@@ -234,9 +234,9 @@ class EditRadio extends React.Component{
 					</div>
 
 					<div className="actions centered-text">
-						{this.state.enabled ? <span className="button destructive large" onClick={e => this.handleStop(e)}>Stop</span> : null}
+						{this.state.enabled ? <span className="button button--destructive button--large" onClick={e => this.handleStop(e)}>Stop</span> : null}
 
-						{this.state.enabled ? <button className="primary large" onClick={e => this.handleUpdate(e)}>Save</button> : <button className="primary large" onClick={e => this.handleStart(e)}>Start</button>}
+						{this.state.enabled ? <button className="button button--primary button--large" onClick={e => this.handleUpdate(e)}>Save</button> : <button className="button button--primary button--large" onClick={e => this.handleStart(e)}>Start</button>}
 					</div>
 				</form>
 			</Modal>

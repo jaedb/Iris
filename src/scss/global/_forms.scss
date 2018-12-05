@@ -188,10 +188,7 @@ select {
 	}
 }
 
-.button,
-button,
-input[type="button"],
-input[type="submit"] {
+.button {
 	@include animate();
 	@include feature_font();
 	@include noselect();
@@ -242,51 +239,51 @@ input[type="submit"] {
 		}
 	}
 
-	&.small {
+	&--small {
 		padding: 6px 18px 4px;
 	}
 
-	&.large {
+	&--large {
 		padding: 16px 50px 14px;
 	}
 
-	&.pull-right {
+	&--pull-right {
 		margin-right: 0;
 		margin-left: 30px;
 	}
 
-	&.primary {
+	&--primary {
 		background: colour(turquoise);
 		color: colour(white);
 	}
 
-	&.white {
+	&--white {
 		color: colour(black);
 		background: colour(white);
 	}
 
-	&.grey {
+	&--grey {
 		color: colour(white);
 		background: colour(grey);
 	}
 
-	&.black {
+	&--black {
 		color: colour(white);
 		background: colour(darkest_grey);
 	}
 
-	&.confirming,
-	&.destructive {
+	&--confirming,
+	&--destructive {
 		background: colour(red);
 		color: colour(white);
 	}
 
-	&.alternative {
+	&--alternative {
 		background: colour(blue);
 		color: colour(white);
 	}
 
-	&.timing-out {
+	&--timing-out {
 		position: relative;
 
 		&:before {
@@ -302,7 +299,7 @@ input[type="submit"] {
 		}
 	}
 
-	&.discrete {
+	&--discrete {
 		border: transparent;
 
 		&[disabled],
@@ -311,7 +308,7 @@ input[type="submit"] {
 		}
 	}
 
-	&.working {
+	&--working {
 		position: relative;
 		cursor: wait !important;
 		background: colour(grey);
@@ -332,7 +329,7 @@ input[type="submit"] {
 		}
 	}
 
-	&.disabled,
+	&--disabled,
 	&[disabled],
 	&[disabled="disabled"]{
 		opacity: 0.5;

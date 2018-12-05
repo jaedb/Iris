@@ -4,16 +4,18 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import Link from '../../components/Link';
 
-import PlaylistGrid from '../../components/PlaylistGrid'
-import Header from '../../components/Header'
-import Icon from '../../components/Icon'
-import Parallax from '../../components/Parallax'
-import Thumbnail from '../../components/Thumbnail'
+import PlaylistGrid from '../../components/PlaylistGrid';
+import Header from '../../components/Header';
+import Icon from '../../components/Icon';
+import Parallax from '../../components/Parallax';
+import Thumbnail from '../../components/Thumbnail';
+import URILink from '../../components/URILink';
+import Dater from '../../components/Dater';
 
-import * as helpers from '../../helpers'
-import * as uiActions from '../../services/ui/actions'
-import * as mopidyActions from '../../services/mopidy/actions'
-import * as spotifyActions from '../../services/spotify/actions'
+import * as helpers from '../../helpers';
+import * as uiActions from '../../services/ui/actions';
+import * as mopidyActions from '../../services/mopidy/actions';
+import * as spotifyActions from '../../services/spotify/actions';
 
 class DiscoverFeatured extends React.Component{
 
@@ -48,20 +50,6 @@ class DiscoverFeatured extends React.Component{
 			return (
 				<div className="intro preserve-3d">
 					<Parallax image={playlist.images ? playlist.images.large : null} blur />
-					<div className="content cf">
-						<Link 
-							to={global.baseURL+'playlist/'+playlist.uri}
-							onContextMenu={e => this.handleContextMenu(e,playlist)}>
-								<Thumbnail images={playlist.images} />
-						</Link>
-						<Link to={global.baseURL+'playlist/'+playlist.uri}>
-							<h2>{playlist.name}</h2>
-						</Link>
-						{playlist.description ? <h3 dangerouslySetInnerHTML={{__html: playlist.description}}></h3> : null}
-						<div className="actions">
-							<button className="primary" onClick={e => this.playPlaylist(e,playlist)}>Play</button>
-						</div>
-					</div>
 				</div>
 			)
 		} else {
@@ -98,11 +86,8 @@ class DiscoverFeatured extends React.Component{
 			}
 		}
 
-		// Pull the first playlist out and we'll use this as a banner
-		var first_playlist = playlists.splice(0,1)
-		if (first_playlist){
-			first_playlist = first_playlist[0]
-		}
+		// Pull the first playlist out and we'll use this for the parallax artwork
+		var first_playlist = playlists[0];
 
 		var options = (
 			<a className="button no-hover" onClick={e => {this.props.uiActions.hideContextMenu(); this.props.spotifyActions.getFeaturedPlaylists()}}>

@@ -181,7 +181,7 @@ class ShareConfiguration extends React.Component {
 					</div>
 
 					<div className="actions centered-text">
-						{this.state.recipients.length > 0 ? <button className="primary large" onClick={e => this.handleSubmit(e)}>Send</button> : <button className="primary large" disabled="disabled" onClick={e => this.handleSubmit(e)}>Send</button>}
+						{this.state.recipients.length > 0 ? <button className="button button--primary button--large" onClick={e => this.handleSubmit(e)}>Send</button> : <button className="button button--primary button--large" disabled="disabled" onClick={e => this.handleSubmit(e)}>Send</button>}
 					</div>
 				</form>
 			</Modal>

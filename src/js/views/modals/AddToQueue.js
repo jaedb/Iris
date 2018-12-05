@@ -76,7 +76,7 @@ class AddToQueue extends React.Component{
 					</div>
 
 					<div className="actions centered-text">
-						<button type="submit" className="primary large">Add</button>
+						<button type="submit" className="button button--primary button--large">Add</button>
 					</div>
 				</form>
 			</Modal>

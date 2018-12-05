@@ -28,15 +28,15 @@ class FollowButton extends React.Component{
 			return false;
 		}
 
-		var className = '';
+		var className = 'button';
 		if (this.props.className){
 			className += ' '+this.props.className;
 		}
 
 		if (!this.props.spotify_authorized){
-			return <button className={className+' disabled'} onClick={e => this.props.uiActions.createNotification({content: 'You must authorize Spotify first', type: 'warning'})}>{this.props.addText}</button>
+			return <button className={className+' button--disabled'} onClick={e => this.props.uiActions.createNotification({content: 'You must authorize Spotify first', type: 'warning'})}>{this.props.addText}</button>
 		} else if (this.props.is_following === true){
-			return <button className={className+' destructive'} onClick={e => this.remove()}>{this.props.removeText}</button>
+			return <button className={className+' button--destructive'} onClick={e => this.remove()}>{this.props.removeText}</button>
 		} else {
 			return <button className={className} onClick={e => this.add()}>{this.props.addText}</button>
 		}

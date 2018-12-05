@@ -218,7 +218,7 @@ class Snapcast extends React.Component{
 					</div>
 					<div className="input">
 						<button 
-							className="small"
+							className="button button--small"
 							onClick={e => this.props.snapcastActions.getServer()}>
 								Refresh
 						</button>

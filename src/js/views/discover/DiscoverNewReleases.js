@@ -61,24 +61,6 @@ class DiscoverNewReleases extends React.Component{
 			return (
 				<div className="intro preserve-3d">
 					<Parallax image={album.images ? album.images.large : null} blur />
-					<div className="content cf">
-						<Link 
-							to={global.baseURL+'album/'+album.uri}
-							onContextMenu={e => this.handleContextMenu(e,album)}>
-								<Thumbnail images={album.images} />
-						</Link>
-						<h2>
-							<Link to={global.baseURL+'album/'+album.uri}>
-								{album.name}
-							</Link>
-						</h2>
-						<h3>
-							<ArtistSentence artists={album.artists} />
-						</h3>
-						<div className="actions">
-							<button className="primary" onClick={e => this.playAlbum(e,album)}>Play</button>
-						</div>
-					</div>
 				</div>
 			)
 		} else {
@@ -115,9 +97,9 @@ class DiscoverNewReleases extends React.Component{
 		}
 
 		// Pull the first playlist out and we'll use this as a banner
-		var first_album = albums.splice(0,1)
+		var first_album = albums[0];
 		if (first_album){
-			first_album = helpers.collate(first_album[0], {artists: this.props.artists});
+			first_album = helpers.collate(first_album, {artists: this.props.artists});
 		}
 
 		var options = (

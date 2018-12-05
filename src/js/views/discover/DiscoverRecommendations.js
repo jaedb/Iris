@@ -462,7 +462,7 @@ class Discover extends React.Component{
 						Tracks
 						<div className="pull-right">
 							<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
-							<button className="primary" onClick={e => this.playTracks(e)}>Play all</button>
+							<button className="button button--primary" onClick={e => this.playTracks(e)}>Play all</button>
 						</div>
 					</h4>
 					<TrackList className="discover-track-list" uri={uri} tracks={tracks} />
@@ -516,23 +516,23 @@ class Discover extends React.Component{
 
 					<Parallax image="assets/backgrounds/discover.jpg" />
 
-					<div className="liner">
+					<div className="intro__liner">
 						<h1>Explore new music</h1>
 						<h2 className="mid_grey-text">
 							Add seeds and musical properties below to build your sound
 						</h2>
-						<div className="parameters">
+						<div className="intro__parameters">
 
 							{this.renderSeeds()}
 							{this.renderTunabilities()}
 							{this.state.seeds.length > 5 ? <p className="message error">Too many seeds! You can use up to a total of 5 seed tracks, artists and genres.</p> : null}
 
 						</div>
-						<div className="actions">
+						<div className="intro__actions">
 
 							<AddSeedField onSelect={(e,uri) => this.handleSelect(e,uri)} />
 							<DropdownField className="add-properties" name="Properties" options={addable_tunabilities} no_status_icon button="default" handleChange={val => {this.toggleTunability(val)}} />
-							<span className={"submit button primary large"+(is_loading ? " working" : "")} onClick={e => this.getRecommendations()}>
+							<span className={"submit button button--primary button--large"+(is_loading ? " button--working" : "")} onClick={e => this.getRecommendations()}>
 								<Icon name="explore" />&nbsp; 
 								Find recommendations
 							</span>

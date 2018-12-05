@@ -11,7 +11,7 @@
 			line-height: 3rem;
 		}
 
-		.liner {
+		&__liner {
 			z-index: 2;
 			position: relative;
 			color: colour(white);
@@ -26,13 +26,73 @@
 		}
 	}
 
-	.parameters {
+	&__parameters {
 		@include clearfix();
 		padding-top: 50px;
 
 		.seeds,
 		.tunabilities {
 			float: left;
+		}
+	}
+
+	&__actions {
+		padding-top: 40px;
+
+		.autocomplete-field {
+			width: 250px;
+			display: inline-block;
+			vertical-align: bottom;
+			padding: 0;
+			margin-right: 1px;
+
+			.input {
+				float: none;
+				margin: 0 10px 10px 0;
+
+				input {
+					background: rgba(100,100,100,0.5);
+					color: colour(white);
+					padding: 15px 13px 10px;
+					font-size: 16px;
+					border: 1px solid transparent;
+					border-top-right-radius: 0;
+					border-bottom-right-radius: 0;
+
+					&:focus,
+					&:active {
+						border-color: colour(blue);
+					}
+
+					&:not(*:root){
+						padding-top: 16px;
+						padding-bottom: 11px;
+					}
+				}
+
+				&:after {
+					background: colour(blue);
+				}
+			}
+
+			.results {
+				top: 49px;
+			}
+		}
+
+		.dropdown-field {
+			.button {
+				background: rgba(100,100,100,0.5);
+				color: colour(white);
+				padding: 16px 20px 14px 20px;
+				border-top-left-radius: 0;
+				border-bottom-left-radius: 0;
+			}
+
+			.options {
+				top: 50px;
+				right: 20px;
+			}
 		}
 	}
 
@@ -116,69 +176,6 @@
 		}
 	}
 
-	.actions {
-		padding-top: 40px;
-
-		.autocomplete-field {
-			width: 250px;
-			display: inline-block;
-			vertical-align: bottom;
-			padding: 0;
-			margin-right: 1px;
-
-			.input {
-				float: none;
-				margin: 0 10px 10px 0;
-
-				input {
-					background: rgba(100,100,100,0.5);
-					color: colour(white);
-					padding: 15px 13px 10px;
-					font-size: 16px;
-					border: 1px solid transparent;
-					border-top-right-radius: 0;
-					border-bottom-right-radius: 0;
-
-					&:focus,
-					&:active {
-						border-color: colour(blue);
-					}
-
-					&:not(*:root){
-						padding-top: 16px;
-						padding-bottom: 11px;
-					}
-				}
-
-				&:after {
-					background: colour(blue);
-				}
-			}
-
-			.results {
-				top: 49px;
-			}
-		}
-
-		.dropdown-field {
-			.button {
-				background: rgba(100,100,100,0.5);
-				color: colour(white);
-				padding: 16px 20px 14px 20px;
-				border-top-left-radius: 0;
-				border-bottom-left-radius: 0;
-			}
-
-			.options {
-				top: 50px;
-				right: 20px;
-			}
-		}
-
-		.submit {
-
-		}
-	}
 	
 	section {
 		.grid {
@@ -203,43 +200,43 @@
 		
 		.intro {
 			padding: 40px 20px;
-		}
 
-		.parameters {
+			&__parameters {
 
-			.seeds {
-				padding-top: 20px;
-				float: none;
-
-				.seed {
+				.seeds {
+					padding-top: 20px;
 					float: none;
+
+					.seed {
+						float: none;
+					}
+				}
+
+				.tunabilities {
+					float: none;
+
+					.tunability {
+						width: 100%;
+						float: none;
+					}
+				}
+
+				.add {
+					.add-properties {
+						margin-right: 0;
+					}
 				}
 			}
 
-			.tunabilities {
-				float: none;
-
-				.tunability {
-					width: 100%;
-					float: none;
+			&__actions {
+				.add-seed-field {
+					width: 69%;
 				}
-			}
 
-			.add {
 				.add-properties {
+					width: 30%;
 					margin-right: 0;
 				}
-			}
-		}
-
-		.actions {
-			.add-seed-field {
-				width: 69%;
-			}
-
-			.add-properties {
-				width: 30%;
-				margin-right: 0;
 			}
 		}
 
@@ -260,86 +257,21 @@
 .discover-new-releases-view {
 	.intro {
 		position: relative;
-		padding-top: 80px;
+		padding-top: 100px;
 
 		header {
 			margin-bottom: 0;
 		}
 
 		.parallax {
-			height: 60vh;
+			height: 30vh;
 			opacity: 0.5;
-		}
-
-		.content {
-			padding: 40px;
-			color: colour(white);
-			position: relative;
-			z-index: 2;
-
-			.thumbnail {
-				float: left;
-				max-width: 200px;
-			}
-
-			h1,
-			h2,
-			h3,
-			.actions {
-				padding-left: 240px;
-			}
-
-			h2 {
-				padding-top: 20px;
-			}
-
-			h3 {
-				opacity: 0.5;
-			}
-
-			.actions {
-				padding-top: 40px;
-			}
-
-			.light-theme & {
-				color: colour(darkest_grey);
-			}
 		}
 	}
 
 	@include responsive($bp_medium){
 		.intro {
 			padding-top: 50px;
-
-			.content {
-				padding: 20px;
-
-				h1 {
-					padding-top: 0;
-				}
-
-				h2 {
-					padding-top: 0;
-				}
-
-				h3 {
-					line-height: 1.3em;
-				}
-
-				h2,
-				h3,
-				.actions {
-					padding-left: 45%;
-				}
-
-				.actions {
-					padding-top: 15px;
-				}
-
-				.thumbnail {
-					max-width: 40%;
-				}
-			}
 		}
 	}
 }
