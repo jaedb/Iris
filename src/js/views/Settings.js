@@ -421,7 +421,7 @@ class Settings extends React.Component {
 			        </div>
 					
 					<div className="field">
-						{this.props.pusher.version.upgrade_available ? <button className="button button--alternative" onClick={e => this.props.pusherActions.upgrade()}>Upgrade to { this.props.pusher.version.latest }</button> : null }
+						{this.props.pusher.version.upgrade_available ? <button className="button button--secondary" onClick={e => this.props.pusherActions.upgrade()}>Upgrade to { this.props.pusher.version.latest }</button> : null }
 				        <button className={"button button--destructive"+(this.props.mopidy.restarting ? ' button--working' : '')} onClick={e => this.props.pusherActions.restart()}>Restart server</button>
 				        <ConfirmationButton className="button--destructive" content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />
 			        </div>

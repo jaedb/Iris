@@ -211,11 +211,11 @@ select {
 		padding-right: 8px;
 	}
 
-	&:not(.no-hover){
+	&:not(.button--no-hover){
 		@include gradient_overlay(3px, 0.05);
 	}
 
-	.notouch &:not(.no-hover):hover {
+	.notouch &:not(.button--no-hover):hover {
 		box-shadow: 1px 2px 6px rgba(0,0,0,0.2);
 
 		&:before {
@@ -230,7 +230,7 @@ select {
 		opacity: 0.8;
 	}
 
-	.light-theme & {
+	.light-theme &--default {
 		background: colour(dark_grey);
 		color: colour(white);
 
@@ -257,6 +257,11 @@ select {
 		color: colour(white);
 	}
 
+	&--secondary {
+		background: colour(blue);
+		color: colour(white);
+	}
+
 	&--white {
 		color: colour(black);
 		background: colour(white);
@@ -275,11 +280,6 @@ select {
 	&--confirming,
 	&--destructive {
 		background: colour(red);
-		color: colour(white);
-	}
-
-	&--alternative {
-		background: colour(blue);
 		color: colour(white);
 	}
 

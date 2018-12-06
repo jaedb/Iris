@@ -105,7 +105,7 @@ class Discover extends React.Component{
 					}
 				},
 				popularity: {
-					enabled: true,
+					enabled: false,
 					min: 0,
 					max: 100,
 					value: {
@@ -479,7 +479,7 @@ class Discover extends React.Component{
 					<br />
 					<section>
 						<h4>Albums</h4>
-						<AlbumGrid className="mini" albums={albums} />
+						<AlbumGrid className="grid--mini" albums={albums} />
 					</section>
 				</div>
 

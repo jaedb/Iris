@@ -1,21 +1,22 @@
 
-import React, { PropTypes } from 'react'
-import { hashHistory } from 'react-router'
-import Link from './Link'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
+import React, { PropTypes } from 'react';
+import { hashHistory } from 'react-router';
+import Link from './Link';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
-import TrackList from './TrackList'
-import Icon from './Icon'
-import Thumbnail from './Thumbnail'
+import TrackList from './TrackList';
+import Icon from './Icon';
+import Thumbnail from './Thumbnail';
+import URILink from './URILink';
 
-import * as helpers from '../helpers'
-import * as coreActions from '../services/core/actions'
-import * as uiActions from '../services/ui/actions'
-import * as pusherActions from '../services/pusher/actions'
-import * as mopidyActions from '../services/mopidy/actions'
-import * as lastfmActions from '../services/lastfm/actions'
-import * as spotifyActions from '../services/spotify/actions'
+import * as helpers from '../helpers';
+import * as coreActions from '../services/core/actions';
+import * as uiActions from '../services/ui/actions';
+import * as pusherActions from '../services/pusher/actions';
+import * as mopidyActions from '../services/mopidy/actions';
+import * as lastfmActions from '../services/lastfm/actions';
+import * as spotifyActions from '../services/spotify/actions';
 
 class ContextMenu extends React.Component{
 
@@ -315,13 +316,7 @@ class ContextMenu extends React.Component{
 		this.props.uiActions.hideContextMenu()
 	}
 
-	closeAndDeselectTracks(e){
-		this.props.uiActions.hideContextMenu();
-		// TODO
-	}
-
 	renderTitle(){
-
 		var context = this.getContext()
 
 		if (context.items_count > 1){
@@ -332,6 +327,41 @@ class ContextMenu extends React.Component{
 					</div>
 				</div>
 			)
+		}
+
+		if (context.items_count == 1 && context.item !== undefined){
+			if (this.props.queue_metadata["tlid_"+context.item.tlid] !== undefined){
+				var metadata = this.props.queue_metadata["tlid_"+context.item.tlid];
+
+				if (metadata.added_from && metadata.added_by){
+					var type = (metadata.added_from ? helpers.uriType(metadata.added_from) : null);
+
+					switch (type){
+						case "discover":
+							var link = <URILink type="recommendations" uri={helpers.getFromUri('seeds',metadata.added_from)}>discover</URILink>
+							break;
+
+						case "browse":
+							var link = <URILink type="browse" uri={metadata.added_from.replace("iris:browse:","")}>browse</URILink>
+							break;
+
+						case "search":
+							var link = <URILink type="search" uri={metadata.added_from.replace("iris:","")}>search</URILink>
+							break;
+
+						default:
+							var link = <URILink type={type} uri={metadata.added_from}>{type}</URILink>;
+					}
+
+					return (
+						<div className="context-menu__title">
+							<div className="context-menu__title__text">							
+								{metadata.added_by} added from {link}
+							</div>
+						</div>
+					)
+				}
+			}
 		}
 
 		if (context.name == 'custom'){
@@ -347,40 +377,6 @@ class ContextMenu extends React.Component{
 				</div>
 			)
 		}
-		
-		// Do we need titles or does it just confuse things and rip off Spotify too hard?
-		return null;
-/*
-		switch (context.type){
-
-			case 'artist':
-			case 'album':
-			case 'playlist':
-				var style = null;
-
-				return (
-					<div className="context-menu__title">
-						<Thumbnail size="small" images={context.item ? context.item.images : null} circle={context.type == 'artist'} />
-						<div className="context-menu__title__text">{context.item.name}</div>
-						<div className="context-menu__title__type">
-							{context.source}
-						</div>
-					</div>
-				);
-
-			default:
-				return (
-					<div className="context-menu__title">
-						<div className="context-menu__title__text">							
-							{context.items_count} {context.nice_name}{context.items_count > 1 ? 's' : null}
-						</div>
-						<div className="context-menu__title__type">
-							{context.source}
-						</div>
-					</div>
-				);
-
-		}*/
 	}
 
 	setSubmenu(name){
@@ -821,6 +817,7 @@ const mapStateToProps = (state, ownProps) => {
 		processes: state.ui.processes,
 		current_track: state.core.current_track,
 		current_tracklist: state.core.current_tracklist,
+		queue_metadata: state.core.queue_metadata,
 		spotify_library_playlists: state.spotify.library_playlists,
 		spotify_library_playlists_loaded_all: state.spotify.library_playlists_loaded_all,
 		mopidy_library_playlists: state.mopidy.library_playlists,

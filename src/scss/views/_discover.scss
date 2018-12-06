@@ -9,6 +9,7 @@
 		h1 {
 			font-size: 3rem;
 			line-height: 3rem;
+			padding-bottom: 10px;
 		}
 
 		&__liner {
@@ -24,74 +25,74 @@
 				color: colour(darkest_grey);
 			}
 		}
-	}
 
-	&__parameters {
-		@include clearfix();
-		padding-top: 50px;
+		&__parameters {
+			@include clearfix();
+			padding-top: 50px;
 
-		.seeds,
-		.tunabilities {
-			float: left;
+			.seeds,
+			.tunabilities {
+				float: left;
+			}
 		}
-	}
 
-	&__actions {
-		padding-top: 40px;
+		&__actions {
+			padding-top: 40px;
 
-		.autocomplete-field {
-			width: 250px;
-			display: inline-block;
-			vertical-align: bottom;
-			padding: 0;
-			margin-right: 1px;
+			.autocomplete-field {
+				width: 250px;
+				display: inline-block;
+				vertical-align: bottom;
+				padding: 0;
+				margin-right: 1px;
 
-			.input {
-				float: none;
-				margin: 0 10px 10px 0;
+				.input {
+					float: none;
+					margin: 0 10px 10px 0;
 
-				input {
+					input {
+						background: rgba(100,100,100,0.5);
+						color: colour(white);
+						padding: 15px 13px 10px;
+						font-size: 16px;
+						border: 1px solid transparent;
+						border-top-right-radius: 0;
+						border-bottom-right-radius: 0;
+
+						&:focus,
+						&:active {
+							border-color: colour(blue);
+						}
+
+						&:not(*:root){
+							padding-top: 16px;
+							padding-bottom: 11px;
+						}
+					}
+
+					&:after {
+						background: colour(blue);
+					}
+				}
+
+				.results {
+					top: 49px;
+				}
+			}
+
+			.dropdown-field {
+				.button {
 					background: rgba(100,100,100,0.5);
 					color: colour(white);
-					padding: 15px 13px 10px;
-					font-size: 16px;
-					border: 1px solid transparent;
-					border-top-right-radius: 0;
-					border-bottom-right-radius: 0;
-
-					&:focus,
-					&:active {
-						border-color: colour(blue);
-					}
-
-					&:not(*:root){
-						padding-top: 16px;
-						padding-bottom: 11px;
-					}
+					padding: 16px 20px 14px 20px;
+					border-top-left-radius: 0;
+					border-bottom-left-radius: 0;
 				}
 
-				&:after {
-					background: colour(blue);
+				.options {
+					top: 50px;
+					right: 20px;
 				}
-			}
-
-			.results {
-				top: 49px;
-			}
-		}
-
-		.dropdown-field {
-			.button {
-				background: rgba(100,100,100,0.5);
-				color: colour(white);
-				padding: 16px 20px 14px 20px;
-				border-top-left-radius: 0;
-				border-bottom-left-radius: 0;
-			}
-
-			.options {
-				top: 50px;
-				right: 20px;
 			}
 		}
 	}
@@ -202,6 +203,7 @@
 			padding: 40px 20px;
 
 			&__parameters {
+				padding-top: 20px;
 
 				.seeds {
 					padding-top: 20px;
@@ -229,6 +231,8 @@
 			}
 
 			&__actions {
+				padding-top: 10px;
+
 				.add-seed-field {
 					width: 69%;
 				}
