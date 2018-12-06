@@ -1224,6 +1224,10 @@ export let createRange = function (indexes){
  **/
 export let sortItems = function (array, property, reverse = false, sort_map = null){
 
+	if (!array || array.length <= 0){
+		return [];
+	}
+
 	function compare(a,b){
 
 		var a_value = a;

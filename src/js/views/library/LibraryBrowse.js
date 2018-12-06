@@ -152,7 +152,10 @@ class LibraryBrowse extends React.Component{
 		}
 
 		var tracks = (this.props.directory.tracks && this.props.directory.tracks.length > 0 ? this.props.directory.tracks : null);
+		tracks = helpers.sortItems(tracks, 'name');
+		
 		var subdirectories = (this.props.directory.subdirectories && this.props.directory.subdirectories.length > 0 ? this.props.directory.subdirectories : null);
+		subdirectories = helpers.sortItems(subdirectories, 'name');
 
 		var view_options = [
 			{

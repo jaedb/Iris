@@ -1661,6 +1661,10 @@ var sortItems = exports.sortItems = function sortItems(array, property) {
 	var sort_map = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 
 
+	if (!array || array.length <= 0) {
+		return [];
+	}
+
 	function compare(a, b) {
 
 		var a_value = a;
@@ -60230,10 +60234,8 @@ var MopidyMiddleware = function () {
 
                                     if (item.type === "track") {
                                         tracks_uris.push(item.uri);
-                                        tracks_uris = helpers.sortItems(tracks_uris, 'name');
                                     } else {
                                         subdirectories.push(item);
-                                        subdirectories = helpers.sortItems(subdirectories, 'name');
                                     }
                                 }
                             } catch (err) {
@@ -83504,7 +83506,10 @@ var LibraryBrowse = function (_React$Component) {
 			}
 
 			var tracks = this.props.directory.tracks && this.props.directory.tracks.length > 0 ? this.props.directory.tracks : null;
+			tracks = helpers.sortItems(tracks, 'name');
+
 			var subdirectories = this.props.directory.subdirectories && this.props.directory.subdirectories.length > 0 ? this.props.directory.subdirectories : null;
+			subdirectories = helpers.sortItems(subdirectories, 'name');
 
 			var view_options = [{
 				label: 'Thumbnails',
