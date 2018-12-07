@@ -90,7 +90,7 @@ class DiscoverFeatured extends React.Component{
 		var first_playlist = playlists[0];
 
 		var options = (
-			<a className="button no-hover" onClick={e => {this.props.uiActions.hideContextMenu(); this.props.spotifyActions.getFeaturedPlaylists()}}>
+			<a className="button button--no-hover" onClick={e => {this.props.uiActions.hideContextMenu(); this.props.spotifyActions.getFeaturedPlaylists()}}>
 				<Icon name="refresh" />Refresh
 			</a>
 		);

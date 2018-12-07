@@ -317,7 +317,7 @@ class ContextMenu extends React.Component{
 	}
 
 	renderTitle(){
-		var context = this.getContext()
+		var context = this.getContext();
 
 		if (context.items_count > 1){
 			return (
@@ -329,7 +329,7 @@ class ContextMenu extends React.Component{
 			)
 		}
 
-		if (context.items_count == 1 && context.item !== undefined){
+		if (context.items_count == 1 && context.name == 'queue-track' && context.item !== undefined){
 			if (this.props.queue_metadata["tlid_"+context.item.tlid] !== undefined){
 				var metadata = this.props.queue_metadata["tlid_"+context.item.tlid];
 

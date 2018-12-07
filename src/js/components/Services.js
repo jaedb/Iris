@@ -147,7 +147,7 @@ class Services extends React.Component{
 					<div className="name">Authorization</div>
 					<div className="input">
 						<SpotifyAuthenticationFrame />
-						{this.props.spotify.refreshing_token ? <button className="button button--working">Refreshing...</button> : <button onClick={e => this.props.spotifyActions.refreshingToken()}>Force token refresh</button>}
+						{this.props.spotify.refreshing_token ? <a className="button button--working">Refreshing...</a> : <a className="button" onClick={e => this.props.spotifyActions.refreshingToken()}>Force token refresh</a>}
 					</div>
 				</div>
 			</div>

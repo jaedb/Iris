@@ -103,7 +103,7 @@ class DiscoverNewReleases extends React.Component{
 		}
 
 		var options = (
-			<a className="button no-hover" onClick={e => {this.props.uiActions.hideContextMenu(); this.props.spotifyActions.getNewReleases()}}>
+			<a className="button button--no-hover" onClick={e => {this.props.uiActions.hideContextMenu(); this.props.spotifyActions.getNewReleases()}}>
 				<Icon name="refresh" />Refresh
 			</a>
 		);

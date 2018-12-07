@@ -3593,10 +3593,6 @@ function getFeaturedPlaylists() {
                 }));
             }
 
-            // Pick the first playlist, and get the full playlist object
-            // We use this as in our introduction parallax panel, and need the full playlist
-            dispatch(getPlaylist(playlists[0].uri));
-
             dispatch({
                 type: 'PLAYLISTS_LOADED',
                 playlists: playlists
@@ -67558,7 +67554,7 @@ var ContextMenu = function (_React$Component) {
 				);
 			}
 
-			if (context.items_count == 1 && context.item !== undefined) {
+			if (context.items_count == 1 && context.name == 'queue-track' && context.item !== undefined) {
 				if (this.props.queue_metadata["tlid_" + context.item.tlid] !== undefined) {
 					var metadata = this.props.queue_metadata["tlid_" + context.item.tlid];
 
@@ -71109,7 +71105,7 @@ var Track = function (_React$Component) {
 					{ className: 'actions' },
 					_react2.default.createElement(
 						'button',
-						{ className: 'primary', onClick: function onClick(e) {
+						{ className: 'button button--primary', onClick: function onClick(e) {
 								return _this3.play();
 							} },
 						'Play'
@@ -71252,7 +71248,7 @@ var FollowButton = function (_React$Component) {
 				return false;
 			}
 
-			var className = '';
+			var className = 'button';
 
 			// Inherit passed-down classes
 			if (this.props.className) {
@@ -71262,7 +71258,7 @@ var FollowButton = function (_React$Component) {
 			if (!this.props.lastfm_authorized) {
 				return _react2.default.createElement(
 					'button',
-					{ className: className + ' disabled', onClick: function onClick(e) {
+					{ className: className + ' button--disabled', onClick: function onClick(e) {
 							return _this2.props.uiActions.createNotification({ content: 'You must authorize LastFM first', type: 'warning' });
 						} },
 					this.props.addText
@@ -71270,7 +71266,7 @@ var FollowButton = function (_React$Component) {
 			} else if (this.props.is_loved && this.props.is_loved !== "0") {
 				return _react2.default.createElement(
 					'button',
-					{ className: className + ' destructive', onClick: function onClick(e) {
+					{ className: className + ' button--destructive', onClick: function onClick(e) {
 							return _this2.remove();
 						} },
 					this.props.removeText
@@ -71539,7 +71535,7 @@ var Queue = function (_React$Component) {
 				null,
 				this.props.spotify_enabled ? _react2.default.createElement(
 					_Link2.default,
-					{ className: 'button no-hover', to: global.baseURL + 'queue/radio' },
+					{ className: 'button button--no-hover', to: global.baseURL + 'queue/radio' },
 					_react2.default.createElement(_Icon2.default, { name: 'radio' }),
 					'Radio',
 					this.props.radio && this.props.radio.enabled ? _react2.default.createElement(
@@ -71550,13 +71546,13 @@ var Queue = function (_React$Component) {
 				) : null,
 				_react2.default.createElement(
 					_Link2.default,
-					{ className: 'button no-hover', to: global.baseURL + 'queue/history' },
+					{ className: 'button button--no-hover', to: global.baseURL + 'queue/history' },
 					_react2.default.createElement(_Icon2.default, { name: 'history' }),
 					'History'
 				),
 				_react2.default.createElement(
 					'a',
-					{ className: 'button no-hover', onClick: function onClick(e) {
+					{ className: 'button button--no-hover', onClick: function onClick(e) {
 							_this2.props.mopidyActions.clearTracklist();_this2.props.uiActions.hideContextMenu();
 						} },
 					_react2.default.createElement(_Icon2.default, { name: 'delete_sweep' }),
@@ -71564,7 +71560,7 @@ var Queue = function (_React$Component) {
 				),
 				_react2.default.createElement(
 					_Link2.default,
-					{ className: 'button no-hover', to: global.baseURL + 'queue/add-uri' },
+					{ className: 'button button--no-hover', to: global.baseURL + 'queue/add-uri' },
 					_react2.default.createElement(_Icon2.default, { name: 'playlist_add' }),
 					'Add URI'
 				)
@@ -71764,7 +71760,7 @@ var QueueHistory = function (_React$Component) {
 		value: function render() {
 			var options = _react2.default.createElement(
 				'a',
-				{ className: 'button no-hover', onClick: function onClick(e) {
+				{ className: 'button button--no-hover', onClick: function onClick(e) {
 						return _reactRouter.hashHistory.push(global.baseURL + 'queue');
 					} },
 				_react2.default.createElement(_Icon2.default, { name: 'keyboard_backspace' }),
@@ -71951,7 +71947,7 @@ var Debug = function (_React$Component) {
 
 			var options = _react2.default.createElement(
 				'a',
-				{ className: 'button no-hover', onClick: function onClick(e) {
+				{ className: 'button button--no-hover', onClick: function onClick(e) {
 						return _reactRouter.hashHistory.push(global.baseURL + 'settings');
 					} },
 				_react2.default.createElement(_Icon2.default, { name: 'keyboard_backspace' }),
@@ -73442,7 +73438,7 @@ var Settings = function (_React$Component) {
 				null,
 				_react2.default.createElement(
 					'a',
-					{ className: 'button no-hover', onClick: function onClick(e) {
+					{ className: 'button button--no-hover', onClick: function onClick(e) {
 							return _reactRouter.hashHistory.push(global.baseURL + 'settings/debug');
 						} },
 					_react2.default.createElement(_Icon2.default, { name: 'code' }),
@@ -73450,7 +73446,7 @@ var Settings = function (_React$Component) {
 				),
 				_react2.default.createElement(
 					'a',
-					{ className: 'no-hover button', href: 'https://github.com/jaedb/Iris/wiki', target: '_blank' },
+					{ className: 'button button--no-hover', href: 'https://github.com/jaedb/Iris/wiki', target: '_blank' },
 					_react2.default.createElement(_Icon2.default, { name: 'help' }),
 					'Help'
 				)
@@ -76302,12 +76298,12 @@ var Services = function (_React$Component) {
 						{ className: 'input' },
 						_react2.default.createElement(_SpotifyAuthenticationFrame2.default, null),
 						this.props.spotify.refreshing_token ? _react2.default.createElement(
-							'button',
+							'a',
 							{ className: 'button button--working' },
 							'Refreshing...'
 						) : _react2.default.createElement(
-							'button',
-							{ onClick: function onClick(e) {
+							'a',
+							{ className: 'button', onClick: function onClick(e) {
 									return _this2.props.spotifyActions.refreshingToken();
 								} },
 							'Force token refresh'
@@ -80932,7 +80928,7 @@ var DiscoverFeatured = function (_React$Component) {
 
 			var options = _react2.default.createElement(
 				'a',
-				{ className: 'button no-hover', onClick: function onClick(e) {
+				{ className: 'button button--no-hover', onClick: function onClick(e) {
 						_this2.props.uiActions.hideContextMenu();_this2.props.spotifyActions.getFeaturedPlaylists();
 					} },
 				_react2.default.createElement(_Icon2.default, { name: 'refresh' }),
@@ -81595,7 +81591,7 @@ var DiscoverNewReleases = function (_React$Component) {
 
 			var options = _react2.default.createElement(
 				'a',
-				{ className: 'button no-hover', onClick: function onClick(e) {
+				{ className: 'button button--no-hover', onClick: function onClick(e) {
 						_this2.props.uiActions.hideContextMenu();_this2.props.spotifyActions.getNewReleases();
 					} },
 				_react2.default.createElement(_Icon2.default, { name: 'refresh' }),
