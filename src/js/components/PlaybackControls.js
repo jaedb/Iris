@@ -185,10 +185,10 @@ class PlaybackControls extends React.Component{
 				</section>
 
 				<section className="triggers">
-					<a className="control expanded-controls" onClick={() => this.setState({expanded: !this.state.expanded})}>
+					<a className="control expanded-controls" onClick={e => this.setState({expanded: !this.state.expanded})}>
 						{this.state.expanded ? <Icon name="expand_more" type="material" /> : <Icon name="expand_less" type="material" />}
 					</a>
-					<a className={"control sidebar-toggle"+(this.props.sidebar_open ? ' open' : '')} onClick={() => this.props.uiActions.toggleSidebar()}>
+					<a className={"control sidebar-toggle"+(this.props.sidebar_open ? ' open' : '')} onClick={e => this.props.uiActions.toggleSidebar()}>
 						<Icon className="open" name="menu" type="material" />
 					</a>
 				</section>

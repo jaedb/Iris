@@ -293,12 +293,12 @@ const PusherMiddleware = (function(){
                     .then(
                         response => {
 	                        if (action.response_callback){
-	                            store.dispatch(action.response_callback.call(this, response));
+	                            action.response_callback.call(this, response);
 	                        }
                         },
                         error => {
 	                        if (action.error_callback){
-	                            store.dispatch(action.error_callback.call(this, error));
+	                            action.error_callback.call(this, error);
 	                        } else {
 	                            store.dispatch(coreActions.handleException(
 	                                'Pusher request failed',
