@@ -350,7 +350,7 @@ class TrackList extends React.Component{
 		}
 
 		// Accommodate a single key
-		let singleton = false
+		var singleton = false
 		if (!(keys instanceof Array)){
 			singleton = true
 			keys = [keys]
@@ -358,20 +358,21 @@ class TrackList extends React.Component{
 
 		// Construct a basic track object, based on our unique track key
 		// This is enough to perform interactions (dragging, selecting, etc)
-		let array = []
-		for (let i = 0; i < keys.length; i++){
-			let key = keys[i].split('@@')
+		var array = [];
+		for (var key of keys){
+			var key_components = key.split('@@')
 
 			if (indexes_only){
-				array.push(key[0])
+				array.push(key_components[0])
 
 			} else {
 				array.push({
-					index: parseInt(key[0]),
-					tlid: parseInt(key[1]),
-					uri: key[2],
-					context: key[3],
-					context_uri: key[4]
+					key: key,
+					index: parseInt(key_components[0]),
+					tlid: parseInt(key_components[1]),
+					uri: key_components[2],
+					context: key_components[3],
+					context_uri: key_components[4]
 				})				
 			}
 		}

@@ -36,6 +36,7 @@ class App extends React.Component{
 		this.handleKeyDown = this.handleKeyDown.bind(this);
 		this.handleWindowResize = this.handleWindowResize.bind(this);
 		this.handleInstallPrompt = this.handleInstallPrompt.bind(this);
+		this.handleFocusAndBlur = this.handleFocusAndBlur.bind(this);
 	}
 
 	componentWillMount(){
@@ -43,6 +44,8 @@ class App extends React.Component{
 		window.addEventListener("keydown", this.handleKeyDown, false);
 		window.addEventListener("resize", this.handleWindowResize, false);
 		window.addEventListener("beforeinstallprompt", this.handleInstallPrompt, false);
+		window.addEventListener("focus", this.handleFocusAndBlur, false);
+		window.addEventListener("blur", this.handleFocusAndBlur, false);
 	}
 
 	componentWillUnmount(){
@@ -50,6 +53,8 @@ class App extends React.Component{
 		window.removeEventListener("keydown", this.handleKeyDown, false);
 		window.removeEventListener("resize", this.handleWindowResize, false);
 		window.removeEventListener("beforeinstallprompt", this.handleInstallPrompt, false);
+		window.removeEventListener("focus", this.handleFocusAndBlur, false);
+		window.removeEventListener("blur", this.handleFocusAndBlur, false);
 	}
 
 	componentDidMount(){
@@ -125,21 +130,6 @@ class App extends React.Component{
 		}
 	}
 
-	/*
-	componentWillReceiveProps(nextProps){
-
-		// We've navigated to a new location
-	    if (this.props.location.pathname !== nextProps.location.pathname){
-
-			// Scroll to bottom, only if we've PUSHed to a new route
-			// We also prevent scroll reset for any sub_view routes (like tabs, services, etc)
-			if (nextProps.location.action == 'PUSH' && nextProps.params.sub_view === undefined){
-				window.scrollTo(0, 0);
-			}
-		}
-	}
-	*/
-
 	shouldTriggerShortcut(e){
 
 		if (!this.props.shortkeys_enabled){
@@ -173,6 +163,19 @@ class App extends React.Component{
 			e.preventDefault();
 			return true;
 		}
+	}
+
+	/**
+	 * Using Visibility API, detect whether the browser is in focus or not
+	 *
+	 * This is used to keep background requests lean, preventing a queue of requests building up
+	 * for when focus is retained. Seems most obvious on mobile devices with Chrome as it has throttled
+	 * quota significantly: https://developers.google.com/web/updates/2017/03/background_tabs
+	 *
+	 * @param e Event
+	 **/
+	handleFocusAndBlur(e){
+		this.props.uiActions.setWindowFocus(document.hasFocus());
 	}
 
 	handleInstallPrompt(e){

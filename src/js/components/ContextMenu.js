@@ -1,21 +1,22 @@
 
-import React, { PropTypes } from 'react'
-import { hashHistory } from 'react-router'
-import Link from './Link'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
+import React, { PropTypes } from 'react';
+import { hashHistory } from 'react-router';
+import Link from './Link';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
-import TrackList from './TrackList'
-import Icon from './Icon'
-import Thumbnail from './Thumbnail'
+import TrackList from './TrackList';
+import Icon from './Icon';
+import Thumbnail from './Thumbnail';
+import URILink from './URILink';
 
-import * as helpers from '../helpers'
-import * as coreActions from '../services/core/actions'
-import * as uiActions from '../services/ui/actions'
-import * as pusherActions from '../services/pusher/actions'
-import * as mopidyActions from '../services/mopidy/actions'
-import * as lastfmActions from '../services/lastfm/actions'
-import * as spotifyActions from '../services/spotify/actions'
+import * as helpers from '../helpers';
+import * as coreActions from '../services/core/actions';
+import * as uiActions from '../services/ui/actions';
+import * as pusherActions from '../services/pusher/actions';
+import * as mopidyActions from '../services/mopidy/actions';
+import * as lastfmActions from '../services/lastfm/actions';
+import * as spotifyActions from '../services/spotify/actions';
 
 class ContextMenu extends React.Component{
 
@@ -55,6 +56,11 @@ class ContextMenu extends React.Component{
 					case 'artist':
 					case 'album':
 					case 'playlist':
+					case 'editable-playlist':
+					case 'track':
+					case 'playlist-track':
+					case 'editable-playlist-track':
+					case 'queue-track':
 						this.props.spotifyActions.following(nextProps.menu.items[0].uri)
 						break
 				}
@@ -148,6 +154,9 @@ class ContextMenu extends React.Component{
 				break;
 			case 'playlist':
 				return (this.props.spotify_library_playlists && this.props.spotify_library_playlists.indexOf(item.uri) > -1);
+				break;
+			case 'track':
+				return (this.props.spotify_library_tracks && this.props.spotify_library_tracks.indexOf(item.uri) > -1);
 				break;
 		}
 		return false;
@@ -278,15 +287,6 @@ class ContextMenu extends React.Component{
 		}
 	}
 
-	goToAlbum(e){
-		if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].album_uri){
-			return null;
-		} else {
-			this.props.uiActions.hideContextMenu();
-			hashHistory.push(global.baseURL +'album/'+ this.props.menu.items[0].album_uri);
-		}
-	}
-
 	goToUser(e){
 		if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].user_uri){
 			return null;
@@ -316,23 +316,52 @@ class ContextMenu extends React.Component{
 		this.props.uiActions.hideContextMenu()
 	}
 
-	closeAndDeselectTracks(e){
-		this.props.uiActions.hideContextMenu();
-		// TODO
-	}
-
 	renderTitle(){
-
-		var context = this.getContext()
+		var context = this.getContext();
 
 		if (context.items_count > 1){
 			return (
 				<div className="context-menu__title">
 					<div className="context-menu__title__text">							
-						{context.items_count} {context.nice_name}{context.items_count > 1 ? 's' : null} selected
+						{context.items_count} {context.nice_name}{context.items_count > 1 ? 's' : null} selected <span className="context-menu__title__deselect" onClick={e => {this.props.uiActions.setSelectedTracks([]); this.props.uiActions.hideContextMenu()}}><Icon name="close" /></span>
 					</div>
 				</div>
 			)
+		}
+
+		if (context.items_count == 1 && context.name == 'queue-track' && context.item !== undefined){
+			if (this.props.queue_metadata["tlid_"+context.item.tlid] !== undefined){
+				var metadata = this.props.queue_metadata["tlid_"+context.item.tlid];
+
+				if (metadata.added_from && metadata.added_by){
+					var type = (metadata.added_from ? helpers.uriType(metadata.added_from) : null);
+
+					switch (type){
+						case "discover":
+							var link = <URILink type="recommendations" uri={helpers.getFromUri('seeds',metadata.added_from)}>discover</URILink>
+							break;
+
+						case "browse":
+							var link = <URILink type="browse" uri={metadata.added_from.replace("iris:browse:","")}>browse</URILink>
+							break;
+
+						case "search":
+							var link = <URILink type="search" uri={metadata.added_from.replace("iris:","")}>search</URILink>
+							break;
+
+						default:
+							var link = <URILink type={type} uri={metadata.added_from}>{type}</URILink>;
+					}
+
+					return (
+						<div className="context-menu__title">
+							<div className="context-menu__title__text">							
+								{metadata.added_by} added from {link}
+							</div>
+						</div>
+					)
+				}
+			}
 		}
 
 		if (context.name == 'custom'){
@@ -348,40 +377,6 @@ class ContextMenu extends React.Component{
 				</div>
 			)
 		}
-		
-		// Do we need titles or does it just confuse things and rip off Spotify too hard?
-		return null;
-/*
-		switch (context.type){
-
-			case 'artist':
-			case 'album':
-			case 'playlist':
-				var style = null;
-
-				return (
-					<div className="context-menu__title">
-						<Thumbnail size="small" images={context.item ? context.item.images : null} circle={context.type == 'artist'} />
-						<div className="context-menu__title__text">{context.item.name}</div>
-						<div className="context-menu__title__type">
-							{context.source}
-						</div>
-					</div>
-				);
-
-			default:
-				return (
-					<div className="context-menu__title">
-						<div className="context-menu__title__text">							
-							{context.items_count} {context.nice_name}{context.items_count > 1 ? 's' : null}
-						</div>
-						<div className="context-menu__title__type">
-							{context.source}
-						</div>
-					</div>
-				);
-
-		}*/
 	}
 
 	setSubmenu(name){
@@ -531,6 +526,30 @@ class ContextMenu extends React.Component{
 			</div>
 		)
 
+		if (!this.props.spotify_authorized){
+			var toggle_in_library = null;
+		} else if (helpers.isLoading(this.props.load_queue,['spotify_me/tracks/contains','spotify_me/playlists/contains','spotify_me/albums/contains','spotify_me/artists/contains'])){
+			var toggle_in_library = (
+				<div className="context-menu__item">
+					<a className="context-menu__item__link">
+						<span className="context-menu__item__label mid_grey-text">
+							Add to library
+						</span>
+					</a>
+				</div>
+			)
+		} else {			
+			var toggle_in_library = (
+				<div className="context-menu__item">
+					<a className="context-menu__item__link" onClick={e => this.toggleInLibrary(e, context.in_library)}>
+						<span className="context-menu__item__label">
+							{context.in_library ? 'Remove from library' : 'Add to library'}
+						</span>
+					</a>
+				</div>
+			)
+		}
+
 		if (!this.props.lastfm_authorized){
 			var toggle_loved = null;
 		} else if (helpers.isLoading(this.props.load_queue,['lastfm_track.getInfo'])){
@@ -559,14 +578,6 @@ class ContextMenu extends React.Component{
 			<div className="context-menu__item">
 				<a className="context-menu__item__link" onClick={e => this.goToArtist(e)}>
 					<span className="context-menu__item__label">Go to artist</span>
-				</a>
-			</div>
-		)
-
-		var go_to_album = (
-			<div className="context-menu__item">
-				<a className="context-menu__item__link" onClick={e => this.goToAlbum(e)}>
-					<span className="context-menu__item__label">Go to album</span>
 				</a>
 			</div>
 		)
@@ -702,6 +713,7 @@ class ContextMenu extends React.Component{
 						{context.items_count == 1 ? play_queue_item : null}
 						<div className="context-menu__divider" />
 						{add_to_playlist}
+						{this.canBeInLibrary() ? toggle_in_library : null}
 						{toggle_loved}
 						<div className="context-menu__divider" />
 						{context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null}
@@ -722,6 +734,7 @@ class ContextMenu extends React.Component{
 						{context.source == 'spotify' && context.items_count == 1 ? start_radio : null}
 						<div className="context-menu__divider" />
 						{add_to_playlist}
+						{this.canBeInLibrary() ? toggle_in_library : null}
 						{toggle_loved}
 						<div className="context-menu__divider" />
 						{context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null}
@@ -742,10 +755,10 @@ class ContextMenu extends React.Component{
 						{context.source == 'spotify' && context.items_count == 1 ? start_radio : null}
 						<div className="context-menu__divider" />
 						{add_to_playlist}
+						{this.canBeInLibrary() ? toggle_in_library : null}
 						{toggle_loved}
 						<div className="context-menu__divider" />
 						{context.source == 'spotify' && context.items_count <= 5 ? go_to_recommendations : null}
-						{context.items_count == 1 ? go_to_album : null}
 						{context.items_count == 1 ? go_to_track : null}
 						<div className="context-menu__divider" />
 						{copy_uris}
@@ -804,6 +817,7 @@ const mapStateToProps = (state, ownProps) => {
 		processes: state.ui.processes,
 		current_track: state.core.current_track,
 		current_tracklist: state.core.current_tracklist,
+		queue_metadata: state.core.queue_metadata,
 		spotify_library_playlists: state.spotify.library_playlists,
 		spotify_library_playlists_loaded_all: state.spotify.library_playlists_loaded_all,
 		mopidy_library_playlists: state.mopidy.library_playlists,
@@ -812,6 +826,7 @@ const mapStateToProps = (state, ownProps) => {
 		mopidy_library_artists: state.mopidy.library_artists,
 		spotify_library_albums: state.spotify.library_albums,
 		mopidy_library_albums: state.mopidy.library_albums,
+		spotify_library_tracks: state.spotify.library_tracks,
 		playlists: state.core.playlists,
 		tracks: state.core.tracks,
 		spotify_authorized: state.spotify.authorization,

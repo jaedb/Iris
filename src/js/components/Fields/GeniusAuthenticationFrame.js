@@ -94,17 +94,17 @@ class GeniusAuthenticationFrame extends React.Component{
 	render(){
 		if (this.state.authorizing){
 			return (
-				<button className="working">
+				<button className="button button--working">
 					Authorizing...
 				</button>
 			)
 		} else if (this.props.authorized){
 			return (
-				<button className="destructive" onClick={() => this.props.geniusActions.revokeAuthorization()}>Log out</button>
+				<button className="button button--destructive" onClick={() => this.props.geniusActions.revokeAuthorization()}>Log out</button>
 			)
 		} else {
 			return (
-				<button className="primary" onClick={() => this.startAuthorization()}>Log in</button>
+				<button className="button button--primary" onClick={() => this.startAuthorization()}>Log in</button>
 			)
 		}
 	}

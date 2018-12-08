@@ -13,8 +13,10 @@ export default class CategoryGrid extends React.Component{
 	render(){
 		if (!this.props.categories ) return null
 
-		var className = "grid category-grid"
-		if (this.props.className ) className += ' '+this.props.className
+		var className = "grid grid--categories";
+		if (this.props.className) className += ' '+this.props.className;
+		if (this.props.mini) className += ' grid--mini';
+
 		return (
 			<div className={className}>
 				{

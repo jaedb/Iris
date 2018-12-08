@@ -10,6 +10,9 @@ export default function reducer(ui = {}, action){
         case 'SET_SLIM_MODE':
             return Object.assign({}, ui, { slim_mode: action.slim_mode });
 
+        case 'SET_WINDOW_FOCUS':
+            return Object.assign({}, ui, { window_focus: action.window_focus });
+
         case 'DEBUG':
             return Object.assign({}, ui, { debug_response: action.response })
 

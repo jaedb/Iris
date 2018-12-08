@@ -27,7 +27,7 @@ class FollowButton extends React.Component{
 			return false;
 		}
 
-		var className = '';
+		var className = 'button';
 
 		// Inherit passed-down classes
 		if (this.props.className){
@@ -35,9 +35,9 @@ class FollowButton extends React.Component{
 		}
 
 		if (!this.props.lastfm_authorized){
-			return <button className={className+' disabled'} onClick={e => this.props.uiActions.createNotification({content: 'You must authorize LastFM first', type: 'warning'})}>{this.props.addText}</button>
+			return <button className={className+' button--disabled'} onClick={e => this.props.uiActions.createNotification({content: 'You must authorize LastFM first', type: 'warning'})}>{this.props.addText}</button>
 		} else if (this.props.is_loved && this.props.is_loved !== "0"){
-			return <button className={className+' destructive'} onClick={e => this.remove()}>{this.props.removeText}</button>
+			return <button className={className+' button--destructive'} onClick={e => this.remove()}>{this.props.removeText}</button>
 		} else {
 			return <button className={className} onClick={e => this.add()}>{this.props.addText}</button>
 		}

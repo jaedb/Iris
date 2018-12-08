@@ -158,8 +158,8 @@ class EditCommand extends React.Component{
 					</div>
 
 					<div className="actions centered-text">
-						{this.props.command ? <button type="button" className="destructive large" onClick={e => this.handleDelete(e)}>Delete</button> : null}
-						<button type="submit" className="primary large">Save</button>
+						{this.props.command ? <button type="button" className="button button--destructive button--large" onClick={e => this.handleDelete(e)}>Delete</button> : null}
+						<button type="submit" className="button button--primary button--large">Save</button>
 					</div>
 
 				</form>

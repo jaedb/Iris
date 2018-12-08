@@ -152,7 +152,10 @@ class LibraryBrowse extends React.Component{
 		}
 
 		var tracks = (this.props.directory.tracks && this.props.directory.tracks.length > 0 ? this.props.directory.tracks : null);
+		tracks = helpers.sortItems(tracks, 'name');
+		
 		var subdirectories = (this.props.directory.subdirectories && this.props.directory.subdirectories.length > 0 ? this.props.directory.subdirectories : null);
+		subdirectories = helpers.sortItems(subdirectories, 'name');
 
 		var view_options = [
 			{
@@ -174,10 +177,10 @@ class LibraryBrowse extends React.Component{
 					options={view_options}
 					handleChange={value => {this.props.uiActions.set({ library_directory_view: value }); this.props.uiActions.hideContextMenu()}}
 				/>
-				{tracks ? <a className="button no-hover" onClick={e => {this.props.uiActions.hideContextMenu(); this.playAll(e, tracks)}}>
+				{tracks ? <a className="button button--no-hover" onClick={e => {this.props.uiActions.hideContextMenu(); this.playAll(e, tracks)}}>
 					<Icon name="play_circle_filled" />Play all
 				</a> : null }
-				<a className="button no-hover" onClick={e => {this.props.uiActions.hideContextMenu(); this.goBack(e)}}>
+				<a className="button button--no-hover" onClick={e => {this.props.uiActions.hideContextMenu(); this.goBack(e)}}>
 					<Icon name="keyboard_backspace" />Back
 				</a>
 			</span>

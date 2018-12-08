@@ -126,7 +126,9 @@ class Search extends React.Component{
 				sort_map = this.props.uri_schemes_priority;
 				break;
 
-			case 'followers.total':
+			// Followers (aka popularlity works in reverse-numerical order)
+			// Ie "more popular" is a bigger number
+			case 'followers':
 				sort_reverse = !sort_reverse;
 				break;
 		}
@@ -166,7 +168,7 @@ class Search extends React.Component{
 			tracks = [...tracks, ...this.props.spotify_search_results.tracks];
 		}
 
-		tracks = helpers.sortItems(tracks, (sort == 'followers.total' ? 'popularity' : sort), sort_reverse, sort_map);
+		tracks = helpers.sortItems(tracks, (sort == 'followers' ? 'popularity' : sort), sort_reverse, sort_map);
 		
 		switch (this.state.type){
 
@@ -252,8 +254,8 @@ class Search extends React.Component{
 								<URILink type="search" uri={"search:artist:"+this.state.term}>
 									<h4>Artists</h4>
 								</URILink>
-								<ArtistGrid show_source_icon artists={artists.slice(0,5)} />
-								{artists.length > 4 ? <URILink type="search" uri={"search:artist:"+this.state.term} className="button grey">
+								<ArtistGrid mini show_source_icon artists={artists.slice(0,6)} />
+								{artists.length >= 6 ? <URILink type="search" uri={"search:artist:"+this.state.term} className="button grey">
 									All artists ({artists.length})
 								</URILink> : null}
 							</div>
@@ -270,8 +272,8 @@ class Search extends React.Component{
 								<URILink type="search" uri={"search:album:"+this.state.term}>
 									<h4>Albums</h4>
 								</URILink>
-								<AlbumGrid show_source_icon albums={albums.slice(0,5)} />
-								{albums.length > 4 ? <URILink type="search" uri={"search:album:"+this.state.term} className="button grey">
+								<AlbumGrid mini show_source_icon albums={albums.slice(0,6)} />
+								{albums.length >= 6 ? <URILink type="search" uri={"search:album:"+this.state.term} className="button grey">
 									All albums ({albums.length})
 								</URILink> : null}
 							</div>
@@ -288,8 +290,8 @@ class Search extends React.Component{
 								<URILink type="search" uri={"search:playlist:"+this.state.term}>
 									<h4>Playlists</h4>
 								</URILink>
-								<PlaylistGrid show_source_icon playlists={playlists.slice(0,5)} />
-								{playlists.length > 4 ? <URILink type="search" uri={"search:playlist:"+this.state.term} className="button grey">
+								<PlaylistGrid mini show_source_icon playlists={playlists.slice(0,6)} />
+								{playlists.length >= 6 ? <URILink type="search" uri={"search:playlist:"+this.state.term} className="button grey">
 									All playlists ({playlists.length})
 								</URILink> : null}
 							</div>
@@ -349,7 +351,7 @@ class Search extends React.Component{
 
 		var sort_options = [
 			{
-				value: 'followers.total',
+				value: 'followers',
 				label: 'Popularity'
 			},
 			{

@@ -39,7 +39,7 @@ class Track extends React.Component{
 		if (this.props.track){
 			this.setWindowTitle(this.props.track);
 
-			if (this.props.track.artists && !this.props.track.lyrics_results){
+			if (this.props.genius_authorized && this.props.track.artists && !this.props.track.lyrics_results){
 				this.props.geniusActions.findTrackLyrics(this.props.track);
 			}
 		}
@@ -198,6 +198,15 @@ class Track extends React.Component{
 			return null
 		} else {
 			var track = this.props.track;
+
+			// Flatten our simple album so we can inherit artwork
+			if (track.album){
+				var album = this.props.albums[track.album.uri];
+
+				if (album && album.images){
+					track.images = album.images;
+				}
+			}
 		}
 
 		return (
@@ -224,7 +233,7 @@ class Track extends React.Component{
 					</h2>
 
 					<ul className="details">
-						{!this.props.slim_mode ? <li className="tooltip"><Icon type="fontawesome" name={helpers.sourceIcon(this.props.params.uri)} /><span className="tooltip__content">{helpers.uriSource(this.props.params.uri)} track</span></li> : null}
+						{!this.props.slim_mode ? <li><Icon type="fontawesome" name={helpers.sourceIcon(this.props.params.uri)} /></li> : null}
 						{track.date ? <li><Dater type="date" data={track.date} /></li> : null}
 						{track.explicit ? <li><span className="flag dark">EXPLICIT</span></li> : null}
 						<li>
@@ -233,12 +242,12 @@ class Track extends React.Component{
 							{track.track_number ? <span>Track {track.track_number}</span> : null}
 						</li>
 						{track.duration ? <li><Dater type="length" data={track.duration} /></li> : null}
-						{track.popularity ? <li><Popularity popularity={track.popularity} /></li> : null}
+						{track.popularity ? <li>{track.popularity}% popularity</li> : null}
 					</ul>
 				</div>
 
 				<div className="actions">
-					<button className="primary" onClick={e => this.play()}>Play</button>
+					<button className="button button--primary" onClick={e => this.play()}>Play</button>
 					<LastfmLoveButton uri={this.props.params.uri} artist={(this.props.track.artists ? this.props.track.artists[0].name : null)} track={this.props.track.name} addText="Love" removeText="Unlove" is_loved={this.props.track.userloved} />
 					<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 				</div>

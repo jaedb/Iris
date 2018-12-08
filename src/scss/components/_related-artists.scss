@@ -14,6 +14,7 @@
 			@include animate();
 			border-radius: 50%;
 			width: 60px;
+			max-width: 60px;
 			margin-right: 15px;
 			float: left;
 			border: 3px solid transparent;
@@ -22,6 +23,7 @@
 		&__name {
 			display: block;
 			padding-top: 20px;
+			font-size: 15px;
 		}
 
 		&--link {

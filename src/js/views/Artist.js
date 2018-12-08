@@ -227,10 +227,10 @@ class Artist extends React.Component{
 				return (
 					<div className="body overview">
 						<div className={"top-tracks col col--w"+(artist.related_artists && artist.related_artists.length > 0 ? "70" : "100")}>
-							<h4>Top tracks</h4>
+							{artist.tracks ? <h4>Top tracks</h4> : null}
 							<div className="list-wrapper">
 								<TrackList className="artist-track-list" uri={artist.uri} tracks={artist.tracks} />
-								<LazyLoadListener forceLoader={is_loading_tracks} />
+								<LazyLoadListener showLoader={is_loading_tracks} />
 							</div>
 						</div>
 
@@ -240,7 +240,7 @@ class Artist extends React.Component{
 
 						<div className="cf"></div>
 
-						<div className="albums">
+						{artist.albums ? <div className="albums">
 							<h4>
 								Albums
 								<DropdownField
@@ -268,7 +268,7 @@ class Artist extends React.Component{
 									loadMore={() => this.loadMore()} 
 								/>
 							</section>
-						</div>
+						</div> : null}
 					</div>
 				)
 		}
@@ -312,7 +312,7 @@ class Artist extends React.Component{
 					<div className="liner">
 						<h1>{this.props.artist ? this.props.artist.name : null}</h1>
 						<div className="actions">
-							<button className="primary" onClick={e => this.props.mopidyActions.playURIs(uris_to_play, this.props.artist.uri)}>Play</button>
+							<button className="button button--primary" onClick={e => this.props.mopidyActions.playURIs(uris_to_play, this.props.artist.uri)}>Play</button>
 							{is_spotify ? <FollowButton uri={this.props.params.uri} removeText="Remove from library" addText="Add to library" is_following={this.inLibrary()} /> : null}
 							<ContextMenuTrigger className="white" onTrigger={e => this.handleContextMenu(e)} />
 						</div>

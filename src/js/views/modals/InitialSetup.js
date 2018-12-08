@@ -125,7 +125,7 @@ class InitialSetup extends React.Component{
 					</div>}
 
 					<div className="actions centered-text">
-						<button className={"primary large"+(this.state.saving ? " working" : "")} onClick={e => this.handleSubmit(e)}>
+						<button className={"button button--primary button--large"+(this.state.saving ? " button--working" : "")} onClick={e => this.handleSubmit(e)}>
 							{this.state.saving ? "Saving" : "Save"}
 						</button>
 					</div>

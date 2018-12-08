@@ -153,7 +153,7 @@ class CreatePlaylist extends React.Component{
 					{this.renderFields()}
 
 					<div className="actions centered-text">
-						<button type="submit" className="primary large">Create playlist</button>
+						<button type="submit" className="button button--primary button--large">Create playlist</button>
 					</div>
 
 				</form>

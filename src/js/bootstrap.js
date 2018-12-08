@@ -46,6 +46,7 @@ var initialState = {
 		shortkeys_enabled: true,
 		disable_parallax: false,
 		allow_reporting: true,
+		window_focus: true,
 		slim_mode: false,
 		selected_tracks: [],
 		notifications: {},

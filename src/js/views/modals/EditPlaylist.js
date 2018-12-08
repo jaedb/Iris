@@ -195,7 +195,7 @@ class EditPlaylist extends React.Component{
 					{this.renderFields()}
 
 					<div className="actions centered-text">
-						<button type="submit" className="primary large">Save</button>
+						<button type="submit" className="button button--primary button--large">Save</button>
 					</div>
 				</form>
 			</Modal>

@@ -109,7 +109,7 @@ class Settings extends React.Component {
 			<div className="field">
 				<div className="name"></div>
 				<div className="input">
-					<button type="submit" className="secondary">Apply and reload</button>
+					<button type="submit" className="button button--secondary">Apply and reload</button>
 				</div>
 			</div>
 		)
@@ -194,10 +194,10 @@ class Settings extends React.Component {
 
 		var options = (
 			<span>
-				<a className="button no-hover" onClick={e => hashHistory.push(global.baseURL+'settings/debug')}>
+				<a className="button button--no-hover" onClick={e => hashHistory.push(global.baseURL+'settings/debug')}>
 					<Icon name="code" />Debug
 				</a>
-				<a className="no-hover button" href="https://github.com/jaedb/Iris/wiki" target="_blank">
+				<a className="button button--no-hover" href="https://github.com/jaedb/Iris/wiki" target="_blank">
 					<Icon name="help" />Help
 				</a>
 			</span>
@@ -416,14 +416,14 @@ class Settings extends React.Component {
 			        </div>
 					
 					<div className="field">
-						<button onClick={e => this.props.pusherActions.localScan()}>Run local scan</button>
+						<button className="button" onClick={e => this.props.pusherActions.localScan()}>Run local scan</button>
 				        <Link className="button" to={global.baseURL+"share-configuration"}>Share configuration</Link>
 			        </div>
 					
 					<div className="field">
-						{this.props.pusher.version.upgrade_available ? <button className="alternative" onClick={e => this.props.pusherActions.upgrade()}>Upgrade to { this.props.pusher.version.latest }</button> : null }
-				        <button className={"destructive"+(this.props.mopidy.restarting ? ' working' : '')} onClick={e => this.props.pusherActions.restart()}>Restart server</button>
-				        <ConfirmationButton className="destructive" content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />
+						{this.props.pusher.version.upgrade_available ? <button className="button button--secondary" onClick={e => this.props.pusherActions.upgrade()}>Upgrade to { this.props.pusher.version.latest }</button> : null }
+				        <button className={"button button--destructive"+(this.props.mopidy.restarting ? ' button--working' : '')} onClick={e => this.props.pusherActions.restart()}>Restart server</button>
+				        <ConfirmationButton className="button--destructive" content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />
 			        </div>
 
 					<h4 className="underline">About<a name="about"></a></h4>

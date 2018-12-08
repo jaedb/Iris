@@ -136,8 +136,8 @@ class Playlist extends React.Component{
 			case 'm3u':
 				return (
 					<div className="actions">
-						<button className="primary" onClick={ e => this.play() }>Play</button>
-						<Link className="button secondary" to={global.baseURL+'playlist/'+encodeURIComponent(this.props.params.uri)+'/edit'}>Edit</Link>
+						<button className="button button--primary" onClick={ e => this.play() }>Play</button>
+						<Link className="button" to={global.baseURL+'playlist/'+encodeURIComponent(this.props.params.uri)+'/edit'}>Edit</Link>
 						<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 					</div>
 				)
@@ -146,16 +146,16 @@ class Playlist extends React.Component{
 				if (this.props.playlist.can_edit){
 					return (
 						<div className="actions">
-							<button className="primary" onClick={ e => this.play() }>Play</button>
-							<Link className="button secondary" to={global.baseURL+'playlist/'+encodeURIComponent(this.props.params.uri)+'/edit'}>Edit</Link>
+							<button className="button button--primary" onClick={ e => this.play() }>Play</button>
+							<Link className="button" to={global.baseURL+'playlist/'+encodeURIComponent(this.props.params.uri)+'/edit'}>Edit</Link>
 							<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 						</div>
 					)
 				}
 				return (
 					<div className="actions">
-						<button className="primary" onClick={ e => this.play() }>Play</button>
-						<FollowButton className="secondary" uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" is_following={this.inLibrary()} />
+						<button className="button button--primary" onClick={ e => this.play() }>Play</button>
+						<FollowButton uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" is_following={this.inLibrary()} />
 						<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 					</div>
 				)
@@ -163,7 +163,7 @@ class Playlist extends React.Component{
 			default:
 				return (
 					<div className="actions">
-						<button className="primary" onClick={ e => this.play() }>Play</button>
+						<button className="button button--primary" onClick={ e => this.play() }>Play</button>
 						<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 					</div>
 				)
@@ -213,14 +213,14 @@ class Playlist extends React.Component{
 					{playlist.description ? <h2 className="description mid_grey-text" dangerouslySetInnerHTML={{__html: playlist.description}}></h2> : null }
 
 					<ul className="details">
-						{!this.props.slim_mode ? <li className="tooltip"><Icon type="fontawesome" name={helpers.sourceIcon(playlist.uri)} /><span className="tooltip__content">{helpers.uriSource(playlist.uri)} playlist</span></li> : null }
-						{playlist.user_uri ? <li><URILink type="user" uri={playlist.user_uri}>{playlist.user ? playlist.user.name : helpers.getFromUri('userid',playlist.user_uri)}</URILink></li> : null }
-						{!this.props.slim_mode && playlist.followers !== undefined ? <li>{playlist.followers.toLocaleString()} followers</li> : null }
-						{!this.props.slim_mode && playlist.last_modified_date ? <li>Edited <Dater type="ago" data={playlist.last_modified_date} /></li> : null }
+						{!this.props.slim_mode ? <li><Icon type="fontawesome" name={helpers.sourceIcon(playlist.uri)} /></li> : null }
 						<li>
 							{playlist.tracks_total ? playlist.tracks_total : (playlist.tracks ? playlist.tracks.length : '0')} tracks,&nbsp;
 							<Dater type="total-time" data={playlist.tracks} />
 						</li>
+						{!this.props.slim_mode && playlist.followers !== undefined ? <li>{playlist.followers.toLocaleString()} followers</li> : null }
+						{!this.props.slim_mode && playlist.last_modified_date ? <li>Edited <Dater type="ago" data={playlist.last_modified_date} /></li> : null }
+						{playlist.user_uri ? <li><URILink type="user" uri={playlist.user_uri}>{playlist.user ? playlist.user.name : helpers.getFromUri('userid',playlist.user_uri)}</URILink></li> : null }
 					</ul>
 				</div>
 

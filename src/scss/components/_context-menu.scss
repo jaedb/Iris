@@ -161,8 +161,8 @@
 
 		&__title {
 			@include clearfix();
+			color: colour(mid_grey);
 			padding: 16px 22px;
-			pointer-events: none;
 
 			.thumbnail {
 				float: left;
@@ -174,21 +174,26 @@
 				@include one_line_text();
 				position: relative;
 				z-index: 2;
-				color: colour(white);
 				font-size: 1.2rem;
 				font-weight: 800;
 				padding-top: 8px;
-				opacity: 0.5;
 			}
 
 			&__type {
 				display: none;
 				position: relative;
 				z-index: 2;
-				color: colour(white);
-				opacity: 0.5;
+				opacity: 0.3;
 				font-weight: 200;
 				text-transform: capitalize;
+			}
+
+			&__deselect {
+				font-size: 0.86em;
+			}
+
+			a {
+				color: inherit;
 			}
 		}
 

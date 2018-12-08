@@ -183,8 +183,8 @@ h1 {
 }
 
 h2 {
-	font-weight: 400;
 	@include feature_font();
+	font-weight: 400;
 	font-size: 2rem;
 	line-height: 2.2rem;
 
@@ -402,7 +402,7 @@ footer {
 
 .details {
 	list-style-type: none;
-	color: colour(mid_grey);
+	opacity: 0.5;
 
 	li {
 		display: inline-block;

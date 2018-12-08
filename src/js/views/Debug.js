@@ -52,7 +52,7 @@ class Debug extends React.Component{
 	render(){
 
 		var options = (
-			<a className="button no-hover" onClick={e => hashHistory.push(global.baseURL+'settings')}>
+			<a className="button button--no-hover" onClick={e => hashHistory.push(global.baseURL+'settings')}>
 				<Icon name="keyboard_backspace" />Back
 			</a>
 		)
@@ -71,7 +71,7 @@ class Debug extends React.Component{
 						<div className="field checkbox">
 							<div className="name">Test mode</div>
 							<div className="input">
-								{this.state.toggling_test_mode ? <span className="button working">Applying...</span> : (this.props.test_mode ? <span className="button destructive" onClick={e => this.toggleTestMode(e)}>Disable</span> : <span className="button primary" onClick={e => this.toggleTestMode(e)}>Enable</span>)}
+								{this.state.toggling_test_mode ? <span className="button button--working">Applying...</span> : (this.props.test_mode ? <span className="button button--destructive" onClick={e => this.toggleTestMode(e)}>Disable</span> : <span className="button button--primary" onClick={e => this.toggleTestMode(e)}>Enable</span>)}
 							</div>
 						</div>
 						<div className="field checkbox">

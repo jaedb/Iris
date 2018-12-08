@@ -188,10 +188,7 @@ select {
 	}
 }
 
-.button,
-button,
-input[type="button"],
-input[type="submit"] {
+.button {
 	@include animate();
 	@include feature_font();
 	@include noselect();
@@ -214,11 +211,11 @@ input[type="submit"] {
 		padding-right: 8px;
 	}
 
-	&:not(.no-hover){
+	&:not(.button--no-hover){
 		@include gradient_overlay(3px, 0.05);
 	}
 
-	.notouch &:not(.no-hover):hover {
+	.notouch &:not(.button--no-hover):hover {
 		box-shadow: 1px 2px 6px rgba(0,0,0,0.2);
 
 		&:before {
@@ -233,7 +230,7 @@ input[type="submit"] {
 		opacity: 0.8;
 	}
 
-	.light-theme & {
+	.light-theme &--default {
 		background: colour(dark_grey);
 		color: colour(white);
 
@@ -242,51 +239,51 @@ input[type="submit"] {
 		}
 	}
 
-	&.small {
+	&--small {
 		padding: 6px 18px 4px;
 	}
 
-	&.large {
+	&--large {
 		padding: 16px 50px 14px;
 	}
 
-	&.pull-right {
+	&--pull-right {
 		margin-right: 0;
 		margin-left: 30px;
 	}
 
-	&.primary {
+	&--primary {
 		background: colour(turquoise);
 		color: colour(white);
 	}
 
-	&.white {
-		color: colour(black);
-		background: colour(white);
-	}
-
-	&.grey {
-		color: colour(white);
-		background: colour(grey);
-	}
-
-	&.black {
-		color: colour(white);
-		background: colour(darkest_grey);
-	}
-
-	&.confirming,
-	&.destructive {
-		background: colour(red);
-		color: colour(white);
-	}
-
-	&.alternative {
+	&--secondary {
 		background: colour(blue);
 		color: colour(white);
 	}
 
-	&.timing-out {
+	&--white {
+		color: colour(black);
+		background: colour(white);
+	}
+
+	&--grey {
+		color: colour(white);
+		background: colour(grey);
+	}
+
+	&--black {
+		color: colour(white);
+		background: colour(darkest_grey);
+	}
+
+	&--confirming,
+	&--destructive {
+		background: colour(red);
+		color: colour(white);
+	}
+
+	&--timing-out {
 		position: relative;
 
 		&:before {
@@ -302,7 +299,7 @@ input[type="submit"] {
 		}
 	}
 
-	&.discrete {
+	&--discrete {
 		border: transparent;
 
 		&[disabled],
@@ -311,7 +308,7 @@ input[type="submit"] {
 		}
 	}
 
-	&.working {
+	&--working {
 		position: relative;
 		cursor: wait !important;
 		background: colour(grey);
@@ -332,7 +329,7 @@ input[type="submit"] {
 		}
 	}
 
-	&.disabled,
+	&--disabled,
 	&[disabled],
 	&[disabled="disabled"]{
 		opacity: 0.5;

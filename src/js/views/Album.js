@@ -141,7 +141,7 @@ class Album extends React.Component{
 					<h1>{album.name}</h1>
 
 					<ul className="details">
-						{!this.props.slim_mode ? <li className="tooltip"><Icon type="fontawesome" name={helpers.sourceIcon(album.uri )} /><span className="tooltip__content">{helpers.uriSource(this.props.params.uri )} {album.type ? album.type : 'album'}</span></li> : null}
+						{!this.props.slim_mode ? <li><Icon type="fontawesome" name={helpers.sourceIcon(album.uri )} /></li> : null}
 						{album.artists && album.artists.length > 0 ? <li><ArtistSentence artists={album.artists} /></li> : null}
 						{album.release_date ? <li><Dater type="date" data={album.release_date} /></li> : null}
 						{!this.props.slim_mode ? <li>
@@ -151,7 +151,7 @@ class Album extends React.Component{
 				</div>
 
 				<div className="actions">
-					<button className="primary" onClick={e => this.play()}>Play</button>
+					<button className="button button--primary" onClick={e => this.play()}>Play</button>
 					{ helpers.uriSource(this.props.params.uri) == 'spotify' ? <FollowButton className="secondary" uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" is_following={this.inLibrary()} /> : null }
 					<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 				</div>
