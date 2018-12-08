@@ -5043,7 +5043,7 @@ aside {
   .grid:not(.grid--mini)\--single-row .grid-item:nth-child(1n+6) {
     display: none; } }
 
-@media (max-width: 1899px) and (min-width: 1200px) {
+@media (max-width: 1900px) and (min-width: 1200px) {
   .grid--mini .grid__item {
     width: 48%;
     box-sizing: border-box;
@@ -6681,20 +6681,12 @@ main .track-view {
     margin-right: 3.5%; }
     .search-view .search-result-sections section:last-child {
       margin-right: 0; }
-    .search-view .search-result-sections section .grid-item {
-      width: 48%;
-      box-sizing: border-box;
-      margin: 0 2% 3%; }
-      .search-view .search-result-sections section .grid-item:nth-child(2n-2) {
-        margin-right: 0; }
-        .search-view .search-result-sections section .grid-item:nth-child(2n-2)::after {
-          content: '';
-          clear: both;
-          display: block; }
-      .search-view .search-result-sections section .grid-item:nth-child(2n-1) {
-        margin-left: 0; }
-      .search-view .search-result-sections section .grid-item:nth-child(1n+5) {
-        display: none; }
+    .search-view .search-result-sections section .button {
+      margin-top: 10px; }
+
+@media (max-width: 1900px) {
+  .search-view .search-result-sections .grid__item:nth-child(1n+5) {
+    display: none; } }
 
 @media (max-width: 800px) {
   .search-view .search-form {
@@ -6708,7 +6700,11 @@ main .track-view {
     padding: 10px 10px 0; }
     .search-view .search-result-sections section {
       width: auto;
-      float: none; } }
+      float: none;
+      margin-right: 0;
+      padding-bottom: 20px; }
+      .search-view .search-result-sections section .button {
+        display: none; } }
 
 .library-albums-view .albums-detail-subview > .album {
   position: relative;

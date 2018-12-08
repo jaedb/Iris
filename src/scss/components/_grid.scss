@@ -73,7 +73,7 @@
 		}
 	}
 
-	@include responsive(null, 1900px){
+	@include responsive(null, $bp_huge){
 		&--mini {
 			.grid__item {
 				@include grid_item(3)
@@ -96,7 +96,7 @@
 		}
 	}
 
-	@include responsive(1899px, 1200px){
+	@include responsive($bp_huge, 1200px){
 		&--mini {
 			.grid__item {
 				@include grid_item(2 )

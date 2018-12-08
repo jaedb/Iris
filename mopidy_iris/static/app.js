@@ -1671,7 +1671,7 @@ var sortItems = exports.sortItems = function sortItems(array, property) {
 		var a_property_split = property.split('.');
 		for (var i = 0; i < a_property_split.length; i++) {
 			if (typeof a_value[a_property_split[i]] === 'undefined') {
-				a_value = false;
+				a_value = null;
 				break;
 			} else {
 				a_value = a_value[a_property_split[i]];
@@ -1682,7 +1682,7 @@ var sortItems = exports.sortItems = function sortItems(array, property) {
 		var b_property_split = property.split('.');
 		for (var i = 0; i < b_property_split.length; i++) {
 			if (typeof b_value[b_property_split[i]] === 'undefined') {
-				b_value = false;
+				b_value = null;
 				break;
 			} else {
 				b_value = b_value[b_property_split[i]];
@@ -1719,6 +1719,9 @@ var sortItems = exports.sortItems = function sortItems(array, property) {
 
 			// Numeric sorting
 		} else {
+			if (a_value == null && b_value == null) return 0;
+			if (a_value == null) return -1;
+			if (b_value == null) return 1;
 			if (parseInt(a_value) > parseInt(b_value)) return 1;
 			if (parseInt(a_value) < parseInt(b_value)) return -1;
 			return 0;
@@ -20990,6 +20993,7 @@ var ArtistGrid = function (_React$Component) {
 				var className = "grid grid--artists";
 				if (this.props.className) className += ' ' + this.props.className;
 				if (this.props.single_row) className += ' grid--single-row';
+				if (this.props.mini) className += ' grid--mini';
 
 				return _react2.default.createElement(
 					'div',
@@ -21559,6 +21563,7 @@ var AlbumGrid = function (_React$Component) {
 				var className = "grid grid--albums";
 				if (this.props.className) className += ' ' + this.props.className;
 				if (this.props.single_row) className += ' grid--single-row';
+				if (this.props.mini) className += ' grid--mini';
 
 				return _react2.default.createElement(
 					'div',
@@ -21679,6 +21684,8 @@ var PlaylistGrid = function (_React$Component) {
 			var className = "grid grid--playlists";
 			if (this.props.className) className += ' ' + this.props.className;
 			if (this.props.single_row) className += ' grid--single-row';
+			if (this.props.mini) className += ' grid--mini';
+
 			return _react2.default.createElement(
 				'div',
 				{ className: className },
@@ -65976,15 +65983,8 @@ var Album = function (_React$Component) {
 						{ className: 'details' },
 						!this.props.slim_mode ? _react2.default.createElement(
 							'li',
-							{ className: 'tooltip' },
-							_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(album.uri) }),
-							_react2.default.createElement(
-								'span',
-								{ className: 'tooltip__content' },
-								helpers.uriSource(this.props.params.uri),
-								' ',
-								album.type ? album.type : 'album'
-							)
+							null,
+							_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(album.uri) })
 						) : null,
 						album.artists && album.artists.length > 0 ? _react2.default.createElement(
 							'li',
@@ -67033,14 +67033,8 @@ var Playlist = function (_React$Component) {
 						{ className: 'details' },
 						!this.props.slim_mode ? _react2.default.createElement(
 							'li',
-							{ className: 'tooltip' },
-							_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(playlist.uri) }),
-							_react2.default.createElement(
-								'span',
-								{ className: 'tooltip__content' },
-								helpers.uriSource(playlist.uri),
-								' playlist'
-							)
+							null,
+							_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(playlist.uri) })
 						) : null,
 						_react2.default.createElement(
 							'li',
@@ -67769,14 +67763,8 @@ var Track = function (_React$Component) {
 						{ className: 'details' },
 						!this.props.slim_mode ? _react2.default.createElement(
 							'li',
-							{ className: 'tooltip' },
-							_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(this.props.params.uri) }),
-							_react2.default.createElement(
-								'span',
-								{ className: 'tooltip__content' },
-								helpers.uriSource(this.props.params.uri),
-								' track'
-							)
+							null,
+							_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(this.props.params.uri) })
 						) : null,
 						track.date ? _react2.default.createElement(
 							'li',
@@ -69322,7 +69310,9 @@ var Search = function (_React$Component) {
 					sort_map = this.props.uri_schemes_priority;
 					break;
 
-				case 'followers.total':
+				// Followers (aka popularlity works in reverse-numerical order)
+				// Ie "more popular" is a bigger number
+				case 'followers':
 					sort_reverse = !sort_reverse;
 					break;
 			}
@@ -69362,7 +69352,7 @@ var Search = function (_React$Component) {
 				tracks = [].concat(_toConsumableArray(tracks), _toConsumableArray(this.props.spotify_search_results.tracks));
 			}
 
-			tracks = helpers.sortItems(tracks, sort == 'followers.total' ? 'popularity' : sort, sort_reverse, sort_map);
+			tracks = helpers.sortItems(tracks, sort == 'followers' ? 'popularity' : sort, sort_reverse, sort_map);
 
 			switch (this.state.type) {
 
@@ -69493,8 +69483,8 @@ var Search = function (_React$Component) {
 										'Artists'
 									)
 								),
-								_react2.default.createElement(_ArtistGrid2.default, { show_source_icon: true, artists: artists.slice(0, 5) }),
-								artists.length > 4 ? _react2.default.createElement(
+								_react2.default.createElement(_ArtistGrid2.default, { mini: true, show_source_icon: true, artists: artists.slice(0, 6) }),
+								artists.length >= 6 ? _react2.default.createElement(
 									_URILink2.default,
 									{ type: 'search', uri: "search:artist:" + this.state.term, className: 'button grey' },
 									'All artists (',
@@ -69523,8 +69513,8 @@ var Search = function (_React$Component) {
 										'Albums'
 									)
 								),
-								_react2.default.createElement(_AlbumGrid2.default, { show_source_icon: true, albums: albums.slice(0, 5) }),
-								albums.length > 4 ? _react2.default.createElement(
+								_react2.default.createElement(_AlbumGrid2.default, { mini: true, show_source_icon: true, albums: albums.slice(0, 6) }),
+								albums.length >= 6 ? _react2.default.createElement(
 									_URILink2.default,
 									{ type: 'search', uri: "search:album:" + this.state.term, className: 'button grey' },
 									'All albums (',
@@ -69553,8 +69543,8 @@ var Search = function (_React$Component) {
 										'Playlists'
 									)
 								),
-								_react2.default.createElement(_PlaylistGrid2.default, { show_source_icon: true, playlists: playlists.slice(0, 5) }),
-								playlists.length > 4 ? _react2.default.createElement(
+								_react2.default.createElement(_PlaylistGrid2.default, { mini: true, show_source_icon: true, playlists: playlists.slice(0, 6) }),
+								playlists.length >= 6 ? _react2.default.createElement(
 									_URILink2.default,
 									{ type: 'search', uri: "search:playlist:" + this.state.term, className: 'button grey' },
 									'All playlists (',
@@ -69617,7 +69607,7 @@ var Search = function (_React$Component) {
 			}];
 
 			var sort_options = [{
-				value: 'followers.total',
+				value: 'followers',
 				label: 'Popularity'
 			}, {
 				value: 'name',
@@ -77894,6 +77884,8 @@ var CategoryGrid = function (_React$Component) {
 
 			var className = "grid grid--categories";
 			if (this.props.className) className += ' ' + this.props.className;
+			if (this.props.mini) className += ' grid--mini';
+
 			return _react2.default.createElement(
 				'div',
 				{ className: className },

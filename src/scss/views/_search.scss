@@ -44,18 +44,23 @@
 				margin-right: 0;
 			}
 
-			.grid-item {
-				@include grid_item(2);
+			.button {
+				margin-top: 10px;
+			}
+		}
+	}
 
+	@include responsive($bp_huge){
+		.search-result-sections {
+			.grid__item {
 				&:nth-child(1n+5){
 					display: none;
 				}
 			}
 		}
 	}
-
+		
 	@include responsive($bp_medium){
-
 		.search-form {
 			top: 10px;
 			left: 40px;
@@ -73,6 +78,12 @@
 			section {
 				width: auto;
 				float: none;
+				margin-right: 0;
+				padding-bottom: 20px;
+
+				.button {
+					display: none;
+				}
 			}
 		}
 	}

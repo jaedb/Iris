@@ -213,7 +213,7 @@ class Playlist extends React.Component{
 					{playlist.description ? <h2 className="description mid_grey-text" dangerouslySetInnerHTML={{__html: playlist.description}}></h2> : null }
 
 					<ul className="details">
-						{!this.props.slim_mode ? <li className="tooltip"><Icon type="fontawesome" name={helpers.sourceIcon(playlist.uri)} /><span className="tooltip__content">{helpers.uriSource(playlist.uri)} playlist</span></li> : null }
+						{!this.props.slim_mode ? <li><Icon type="fontawesome" name={helpers.sourceIcon(playlist.uri)} /></li> : null }
 						<li>
 							{playlist.tracks_total ? playlist.tracks_total : (playlist.tracks ? playlist.tracks.length : '0')} tracks,&nbsp;
 							<Dater type="total-time" data={playlist.tracks} />

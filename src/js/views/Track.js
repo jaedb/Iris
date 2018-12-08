@@ -233,7 +233,7 @@ class Track extends React.Component{
 					</h2>
 
 					<ul className="details">
-						{!this.props.slim_mode ? <li className="tooltip"><Icon type="fontawesome" name={helpers.sourceIcon(this.props.params.uri)} /><span className="tooltip__content">{helpers.uriSource(this.props.params.uri)} track</span></li> : null}
+						{!this.props.slim_mode ? <li><Icon type="fontawesome" name={helpers.sourceIcon(this.props.params.uri)} /></li> : null}
 						{track.date ? <li><Dater type="date" data={track.date} /></li> : null}
 						{track.explicit ? <li><span className="flag dark">EXPLICIT</span></li> : null}
 						<li>
