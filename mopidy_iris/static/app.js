@@ -21480,7 +21480,7 @@ var FollowButton = function (_React$Component) {
 			} else {
 				return _react2.default.createElement(
 					'button',
-					{ className: className, onClick: function onClick(e) {
+					{ className: className + ' button--default', onClick: function onClick(e) {
 							return _this2.add();
 						} },
 					this.props.addText
@@ -55326,13 +55326,17 @@ var MopidyMiddleware = function () {
                         break;
 
                     case 'MOPIDY_PREVIOUS':
+
+                        // Let the UI know we're in transition
+                        store.dispatch(uiActions.setCurrentTrackTransition('previous'));
+
                         request(socket, store, 'playback.previous');
                         break;
 
                     case 'MOPIDY_NEXT':
 
                         // Let the UI know we're in transition
-                        store.dispatch(uiActions.setCurrentTrackTransition(true));
+                        store.dispatch(uiActions.setCurrentTrackTransition('next'));
 
                         request(socket, store, 'playback.next').then(function (response) {
                             store.dispatch(pusherActions.deliverBroadcast('notification', {
@@ -60824,7 +60828,6 @@ var SnapcastMiddleware = function () {
                         request(store, {
                             method: 'Server.GetStatus'
                         }, function (response) {
-                            console.log(response);
                             store.dispatch(snapcastActions.serverLoaded(response.server));
                         }, function (error) {
                             store.dispatch(coreActions.handleException('Could not get server', error));
@@ -63358,7 +63361,7 @@ var PlaybackControls = function (_React$Component) {
 				_react2.default.createElement(
 					'div',
 					{
-						className: "current-track" + (this.props.current_track_transition ? " current-track--transition" : ""),
+						className: "current-track" + (this.props.current_track_transition ? " current-track--transition current-track--transition-" + this.props.current_track_transition : ""),
 						onTouchStart: function onTouchStart(e) {
 							return _this6.handleTouchStart(e);
 						},
@@ -66606,7 +66609,7 @@ var Artist = function (_React$Component) {
 							),
 							_react2.default.createElement(
 								_Link2.default,
-								{ to: global.baseURL + 'artist/' + artist.uri + '/related-artists', scrollTo: 'sub-views-menu', className: 'button grey' },
+								{ to: global.baseURL + 'artist/' + artist.uri + '/related-artists', scrollTo: 'sub-views-menu', className: 'button button--default' },
 								'All related artists'
 							)
 						) : null,
@@ -68096,7 +68099,7 @@ var FollowButton = function (_React$Component) {
 			} else {
 				return _react2.default.createElement(
 					'button',
-					{ className: className, onClick: function onClick(e) {
+					{ className: className + ' button--default', onClick: function onClick(e) {
 							return _this2.add();
 						} },
 					this.props.addText
@@ -68769,7 +68772,7 @@ var Debug = function (_React$Component) {
 
 			var options = _react2.default.createElement(
 				'a',
-				{ className: 'button button--no-hover', onClick: function onClick(e) {
+				{ className: 'button button--default button--no-hover', onClick: function onClick(e) {
 						return _reactRouter.hashHistory.push(global.baseURL + 'settings');
 					} },
 				_react2.default.createElement(_Icon2.default, { name: 'keyboard_backspace' }),
@@ -68925,14 +68928,14 @@ var Debug = function (_React$Component) {
 								{ className: 'input' },
 								_react2.default.createElement(
 									'a',
-									{ className: 'button secondary', onClick: function onClick(e) {
+									{ className: 'button button--default', onClick: function onClick(e) {
 											return _this2.props.uiActions.createNotification({ content: 'Test notification' });
 										} },
 									'Create notification'
 								),
 								_react2.default.createElement(
 									'a',
-									{ className: 'button secondary', onClick: function onClick(e) {
+									{ className: 'button button--default', onClick: function onClick(e) {
 											return _this2.props.pusherActions.request('test');
 										} },
 									'Run test process'
@@ -69020,7 +69023,7 @@ var Debug = function (_React$Component) {
 								{ className: 'input' },
 								_react2.default.createElement(
 									'button',
-									{ type: 'submit', className: 'secondary' },
+									{ type: 'submit', className: 'button button--default' },
 									'Send'
 								)
 							)
@@ -69137,7 +69140,7 @@ var Debug = function (_React$Component) {
 								{ className: 'input' },
 								_react2.default.createElement(
 									'button',
-									{ type: 'submit', className: 'secondary' },
+									{ type: 'submit', className: 'button button--default' },
 									'Send'
 								)
 							)
@@ -70262,7 +70265,7 @@ var Settings = function (_React$Component) {
 				null,
 				_react2.default.createElement(
 					'a',
-					{ className: 'button button--no-hover', onClick: function onClick(e) {
+					{ className: 'button button--default button--no-hover', onClick: function onClick(e) {
 							return _reactRouter.hashHistory.push(global.baseURL + 'settings/debug');
 						} },
 					_react2.default.createElement(_Icon2.default, { name: 'code' }),
@@ -70270,7 +70273,7 @@ var Settings = function (_React$Component) {
 				),
 				_react2.default.createElement(
 					'a',
-					{ className: 'button button--no-hover', href: 'https://github.com/jaedb/Iris/wiki', target: '_blank' },
+					{ className: 'button button--default button--no-hover', href: 'https://github.com/jaedb/Iris/wiki', target: '_blank' },
 					_react2.default.createElement(_Icon2.default, { name: 'help' }),
 					'Help'
 				)
@@ -70586,7 +70589,7 @@ var Settings = function (_React$Component) {
 							this.renderCommands(),
 							_react2.default.createElement(
 								_reactRouter.Link,
-								{ to: global.baseURL + 'edit-command', className: 'button' },
+								{ to: global.baseURL + 'edit-command', className: 'button button--default' },
 								'Add new'
 							)
 						)
@@ -70706,14 +70709,14 @@ var Settings = function (_React$Component) {
 						{ className: 'field' },
 						_react2.default.createElement(
 							'button',
-							{ className: 'button', onClick: function onClick(e) {
+							{ className: 'button button--default', onClick: function onClick(e) {
 									return _this3.props.pusherActions.localScan();
 								} },
 							'Run local scan'
 						),
 						_react2.default.createElement(
 							_reactRouter.Link,
-							{ className: 'button', to: global.baseURL + "share-configuration" },
+							{ className: 'button button--default', to: global.baseURL + "share-configuration" },
 							'Share configuration'
 						)
 					),
@@ -70775,19 +70778,19 @@ var Settings = function (_React$Component) {
 							null,
 							_react2.default.createElement(
 								'a',
-								{ className: 'button', href: 'https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=james%40barnsley%2enz&lc=NZ&item_name=James%20Barnsley&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted', target: '_blank' },
+								{ className: 'button button--default', href: 'https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=james%40barnsley%2enz&lc=NZ&item_name=James%20Barnsley&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted', target: '_blank' },
 								_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'paypal' }),
 								' Donate'
 							),
 							_react2.default.createElement(
 								'a',
-								{ className: 'button', href: 'https://github.com/jaedb/Iris', target: '_blank' },
+								{ className: 'button button--default', href: 'https://github.com/jaedb/Iris', target: '_blank' },
 								_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'github' }),
 								' GitHub'
 							),
 							_react2.default.createElement(
 								'a',
-								{ className: 'button', href: 'http://creativecommons.org/licenses/by-nc/4.0/', target: '_blank' },
+								{ className: 'button button--default', href: 'http://creativecommons.org/licenses/by-nc/4.0/', target: '_blank' },
 								_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'creative-commons' }),
 								'\xA0Licence'
 							)
@@ -73127,7 +73130,7 @@ var Services = function (_React$Component) {
 							'Refreshing...'
 						) : _react2.default.createElement(
 							'a',
-							{ className: 'button', onClick: function onClick(e) {
+							{ className: 'button button--default', onClick: function onClick(e) {
 									return _this2.props.spotifyActions.refreshingToken();
 								} },
 							'Force token refresh'
@@ -74088,7 +74091,7 @@ var Snapcast = function (_React$Component) {
 						_react2.default.createElement(
 							'button',
 							{
-								className: 'button button--small',
+								className: 'button button--default button--small',
 								onClick: function onClick(e) {
 									return _this3.props.snapcastActions.getServer();
 								} },

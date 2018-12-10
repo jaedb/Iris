@@ -34,7 +34,6 @@ const SnapcastMiddleware = (function(){
 	                	method: 'Server.GetStatus'
 	                },
 	                response => {
-                        console.log(response);
                         store.dispatch(snapcastActions.serverLoaded(response.server));
 	                },
 	                error => {

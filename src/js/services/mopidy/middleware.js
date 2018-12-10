@@ -372,13 +372,17 @@ const MopidyMiddleware = (function(){
                 break
 
             case 'MOPIDY_PREVIOUS':
+
+                // Let the UI know we're in transition
+                store.dispatch(uiActions.setCurrentTrackTransition('previous'));
+
                 request(socket, store, 'playback.previous');
                 break
 
             case 'MOPIDY_NEXT':
 
                 // Let the UI know we're in transition
-                store.dispatch(uiActions.setCurrentTrackTransition(true));
+                store.dispatch(uiActions.setCurrentTrackTransition('next'));
 
                 request(socket, store, 'playback.next')
                     .then(response => {

@@ -39,7 +39,7 @@ class FollowButton extends React.Component{
 		} else if (this.props.is_loved && this.props.is_loved !== "0"){
 			return <button className={className+' button--destructive'} onClick={e => this.remove()}>{this.props.removeText}</button>
 		} else {
-			return <button className={className} onClick={e => this.add()}>{this.props.addText}</button>
+			return <button className={className+' button--default'} onClick={e => this.add()}>{this.props.addText}</button>
 		}
 	}
 }

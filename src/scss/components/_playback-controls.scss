@@ -24,8 +24,15 @@
 			opacity: 0.25;
 
 			@include responsive($bp_medium){
-				transform: translateX(-15px);
 				opacity: 0;
+				
+				&-previous {
+					transform: translateX(15px);
+				}
+
+				&-next {
+					transform: translateX(-15px);
+				}
 			}
 		}
 

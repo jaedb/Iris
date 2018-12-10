@@ -187,7 +187,7 @@ class PlaybackControls extends React.Component{
 				{this.props.next_track && this.props.next_track.images ? <Thumbnail className="hide" size="large" images={this.props.next_track.images} /> : null}
 				
 				<div 
-					className={"current-track"+(this.props.current_track_transition ? " current-track--transition" : "")}
+					className={"current-track"+(this.props.current_track_transition ? " current-track--transition current-track--transition-"+this.props.current_track_transition : "")}
 					onTouchStart={e => this.handleTouchStart(e)}
 					onTouchEnd={e => this.handleTouchEnd(e)}>
 						<Link className="thumbnail-wrapper" to={global.baseURL+'kiosk-mode'}>

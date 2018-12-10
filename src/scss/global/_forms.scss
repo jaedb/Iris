@@ -197,7 +197,6 @@ select {
 	display: inline-block;
 	padding: 9px 30px 7px;
 	margin: 0 20px 10px 0;
-	background: colour(white);
 	box-sizing: border-box;
 	border-radius: 3px;
 	vertical-align: middle;
@@ -225,9 +224,7 @@ select {
 
 	&:active {
 		@include noanimate();
-		background: darken(colour(white), 5%);
 		transform: translate(1px,1px);
-		opacity: 0.8;
 	}
 
 	.light-theme &--default {
@@ -255,32 +252,57 @@ select {
 	&--primary {
 		background: colour(turquoise);
 		color: colour(white);
+
+		&:active {
+			background: darken(colour(turquoise), 10%);
+		}
 	}
 
 	&--secondary {
 		background: colour(blue);
 		color: colour(white);
+
+		&:active {
+			background: darken(colour(blue), 10%);
+		}
 	}
 
+	&--default,
 	&--white {
-		color: colour(black);
 		background: colour(white);
+		color: colour(black);
+
+		&:active {
+			background: darken(colour(white), 10%);
+		}
 	}
 
 	&--grey {
-		color: colour(white);
 		background: colour(grey);
+		color: colour(white);
+
+		&:active {
+			background: darken(colour(grey), 10%);
+		}
 	}
 
 	&--black {
-		color: colour(white);
 		background: colour(darkest_grey);
+		color: colour(white);
+
+		&:active {
+			background: darken(colour(darkest_grey), 10%);
+		}
 	}
 
 	&--confirming,
 	&--destructive {
 		background: colour(red);
 		color: colour(white);
+
+		&:active {
+			background: darken(colour(red), 10%);
+		}
 	}
 
 	&--timing-out {
