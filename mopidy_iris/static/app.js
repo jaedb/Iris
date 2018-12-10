@@ -1985,6 +1985,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 exports.setWindowTitle = setWindowTitle;
+exports.setCurrentTrackTransition = setCurrentTrackTransition;
 exports.setSelectedTracks = setSelectedTracks;
 exports.showContextMenu = showContextMenu;
 exports.setSlimMode = setSlimMode;
@@ -2030,6 +2031,19 @@ function setWindowTitle() {
         type: 'SET_WINDOW_TITLE',
         title: title,
         play_state: play_state
+    };
+}
+
+/**
+ * Gives us the ability to load/fade current track when
+ * we're pending transition to a new/next track
+ *
+ * @param transitioning Boolean
+ **/
+function setCurrentTrackTransition(current_track_transition) {
+    return {
+        type: 'SET_CURRENT_TRACK_TRANSITION',
+        current_track_transition: current_track_transition
     };
 }
 
@@ -51848,6 +51862,9 @@ function reducer() {
             if (typeof action.new_state !== 'undefined') new_state = action.new_state;
             return Object.assign({}, ui, { sidebar_open: new_state });
 
+        case 'SET_CURRENT_TRACK_TRANSITION':
+            return Object.assign({}, ui, { current_track_transition: action.current_track_transition });
+
         case 'SET_SELECTED_TRACKS':
             return Object.assign({}, ui, { selected_tracks: Object.assign([], action.keys) });
 
@@ -55050,7 +55067,12 @@ var MopidyMiddleware = function () {
 
             case 'event:tracklistChanged':
                 store.dispatch(mopidyActions.getQueue());
-                store.dispatch(mopidyActions.getNextTrack());
+
+                // Wait a jiffy before we get the next track
+                // We don't want to impede snappyness for this luxury request
+                setTimeout(function () {
+                    store.dispatch(mopidyActions.getNextTrack());
+                }, 1000);
                 break;
 
             case 'event:playbackStateChanged':
@@ -55078,7 +55100,12 @@ var MopidyMiddleware = function () {
 
             case 'event:trackPlaybackStarted':
                 store.dispatch(mopidyActions.currentTrackLoaded(data.tl_track));
-                store.dispatch(mopidyActions.getNextTrack());
+
+                // Wait a jiffy before we get the next track
+                // We don't want to impede snappyness for this luxury request
+                setTimeout(function () {
+                    store.dispatch(mopidyActions.getNextTrack());
+                }, 1000);
                 break;
 
             case 'event:volumeChanged':
@@ -55288,14 +55315,14 @@ var MopidyMiddleware = function () {
                                 type: 'MOPIDY_PLAY_STATE',
                                 play_state: 'paused'
                             });
+                            store.dispatch(pusherActions.deliverBroadcast('notification', {
+                                notification: {
+                                    content: store.getState().pusher.username + ' paused playback',
+                                    icon: store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false
+                                }
+                            }));
                         });
 
-                        store.dispatch(pusherActions.deliverBroadcast('notification', {
-                            notification: {
-                                content: store.getState().pusher.username + ' paused playback',
-                                icon: store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false
-                            }
-                        }));
                         break;
 
                     case 'MOPIDY_PREVIOUS':
@@ -55303,46 +55330,52 @@ var MopidyMiddleware = function () {
                         break;
 
                     case 'MOPIDY_NEXT':
-                        request(socket, store, 'playback.next');
 
-                        store.dispatch(pusherActions.deliverBroadcast('notification', {
-                            notification: {
-                                content: store.getState().pusher.username + ' skipped <em>' + store.getState().core.current_track.name + '</em>',
-                                icon: store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false
-                            }
-                        }));
+                        // Let the UI know we're in transition
+                        store.dispatch(uiActions.setCurrentTrackTransition(true));
+
+                        request(socket, store, 'playback.next').then(function (response) {
+                            store.dispatch(pusherActions.deliverBroadcast('notification', {
+                                notification: {
+                                    content: store.getState().pusher.username + ' skipped <em>' + store.getState().core.current_track.name + '</em>',
+                                    icon: store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false
+                                }
+                            }));
+                        });
+
                         break;
 
                     case 'MOPIDY_STOP':
                         request(socket, store, 'playback.stop').then(function (response) {
                             store.dispatch(mopidyActions.clearCurrentTrack());
-                        });
 
-                        store.dispatch(pusherActions.deliverBroadcast('notification', {
-                            notification: {
-                                content: store.getState().pusher.username + ' stopped playback',
-                                icon: store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false
-                            }
-                        }));
+                            store.dispatch(pusherActions.deliverBroadcast('notification', {
+                                notification: {
+                                    content: store.getState().pusher.username + ' stopped playback',
+                                    icon: store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false
+                                }
+                            }));
+                        });
                         break;
 
                     case 'MOPIDY_CHANGE_TRACK':
-                        request(socket, store, 'playback.play', { tlid: action.tlid });
-
-                        store.dispatch(pusherActions.deliverBroadcast('notification', {
-                            notification: {
-                                content: store.getState().pusher.username + ' changed track'
-                            }
-                        }));
+                        request(socket, store, 'playback.play', { tlid: action.tlid }).then(function (response) {
+                            store.dispatch(pusherActions.deliverBroadcast('notification', {
+                                notification: {
+                                    content: store.getState().pusher.username + ' changed track'
+                                }
+                            }));
+                        });
                         break;
 
                     case 'MOPIDY_REMOVE_TRACKS':
-                        request(socket, store, 'tracklist.remove', { tlid: action.tlids });
-                        store.dispatch(pusherActions.deliverBroadcast('notification', {
-                            notification: {
-                                content: store.getState().pusher.username + ' removed ' + action.tlids.length + ' tracks'
-                            }
-                        }));
+                        request(socket, store, 'tracklist.remove', { tlid: action.tlids }).then(function (response) {
+                            store.dispatch(pusherActions.deliverBroadcast('notification', {
+                                notification: {
+                                    content: store.getState().pusher.username + ' removed ' + action.tlids.length + ' tracks'
+                                }
+                            }));
+                        });
                         break;
 
                     case 'MOPIDY_GET_REPEAT':
@@ -55394,12 +55427,13 @@ var MopidyMiddleware = function () {
                         break;
 
                     case 'MOPIDY_SET_MUTE':
-                        request(socket, store, 'mixer.setMute', [action.mute]);
-                        store.dispatch(pusherActions.deliverBroadcast('notification', {
-                            notification: {
-                                content: store.getState().pusher.username + (action.mute ? ' muted' : ' unmuted') + ' playback'
-                            }
-                        }));
+                        request(socket, store, 'mixer.setMute', [action.mute]).then(function (response) {
+                            store.dispatch(pusherActions.deliverBroadcast('notification', {
+                                notification: {
+                                    content: store.getState().pusher.username + (action.mute ? ' muted' : ' unmuted') + ' playback'
+                                }
+                            }));
+                        });
                         break;
 
                     case 'MOPIDY_GET_VOLUME':
@@ -56842,10 +56876,21 @@ var MopidyMiddleware = function () {
                         break;
 
                     case 'MOPIDY_CURRENT_TRACK_LOADED':
-                        var track = helpers.formatTrack(action.tl_track);
 
-                        // We don't have the track already in our index, or we do but it's a partial record
+                        // Let the UI know we're finished transition
+                        store.dispatch(uiActions.setCurrentTrackTransition(false));
+
+                        var track = helpers.formatTrack(action.tl_track);
                         if (track.uri) {
+
+                            // Deliver the data we've got already
+                            store.dispatch({
+                                type: 'CURRENT_TRACK_LOADED',
+                                track: track,
+                                uri: track.uri
+                            });
+
+                            // Now attempt to get supporting images
                             if (store.getState().core.tracks[track.uri] === undefined || store.getState().core.tracks[track.uri].images === undefined) {
 
                                 // We've got Spotify running, and it's a spotify track - go straight to the source!
@@ -56857,12 +56902,6 @@ var MopidyMiddleware = function () {
                                     store.dispatch(mopidyActions.getImages('tracks', [track.uri]));
                                 }
                             }
-
-                            store.dispatch({
-                                type: 'CURRENT_TRACK_LOADED',
-                                track: track,
-                                uri: track.uri
-                            });
                         }
                         break;
 
@@ -63319,7 +63358,7 @@ var PlaybackControls = function (_React$Component) {
 				_react2.default.createElement(
 					'div',
 					{
-						className: 'current-track',
+						className: "current-track" + (this.props.current_track_transition ? " current-track--transition" : ""),
 						onTouchStart: function onTouchStart(e) {
 							return _this6.handleTouchStart(e);
 						},
@@ -63462,6 +63501,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		random: state.mopidy.random,
 		volume: state.mopidy.volume,
 		mute: state.mopidy.mute,
+		current_track_transition: state.ui.current_track_transition,
 		sidebar_open: state.ui.sidebar_open,
 		slim_mode: state.ui.slim_mode
 	};

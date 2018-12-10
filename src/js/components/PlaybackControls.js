@@ -187,7 +187,7 @@ class PlaybackControls extends React.Component{
 				{this.props.next_track && this.props.next_track.images ? <Thumbnail className="hide" size="large" images={this.props.next_track.images} /> : null}
 				
 				<div 
-					className="current-track"
+					className={"current-track"+(this.props.current_track_transition ? " current-track--transition" : "")}
 					onTouchStart={e => this.handleTouchStart(e)}
 					onTouchEnd={e => this.handleTouchEnd(e)}>
 						<Link className="thumbnail-wrapper" to={global.baseURL+'kiosk-mode'}>
@@ -279,6 +279,7 @@ const mapStateToProps = (state, ownProps) => {
 		random: state.mopidy.random,
 		volume: state.mopidy.volume,
 		mute: state.mopidy.mute,
+		current_track_transition: state.ui.current_track_transition,
 		sidebar_open: state.ui.sidebar_open,
 		slim_mode: state.ui.slim_mode
 	}

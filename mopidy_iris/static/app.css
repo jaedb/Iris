@@ -4429,16 +4429,23 @@ select {
   color: #FFFFFF;
   transform-style: preserve-3d; }
   .playback-controls .current-track {
-    -webkit-transition: all 0.2s ease-in-out;
-    -moz-transition: all 0.2s ease-in-out;
-    -o-transition: all 0.2s ease-in-out;
-    transition: all 0.2s ease-in-out;
+    -webkit-transition: all 0.1s ease-in-out;
+    -moz-transition: all 0.1s ease-in-out;
+    -o-transition: all 0.1s ease-in-out;
+    transition: all 0.1s ease-in-out;
     position: absolute;
     bottom: 50px;
     width: 220px;
     font-size: 14px;
     color: #FFFFFF;
-    text-decoration: none; }
+    text-decoration: none;
+    transform: translateX(0px); }
+    .playback-controls .current-track--transition {
+      opacity: 0.25; }
+      @media (max-width: 800px) {
+        .playback-controls .current-track--transition {
+          transform: translateX(-15px);
+          opacity: 0; } }
     .light-theme .playback-controls .current-track {
       color: #121212; }
     .playback-controls .current-track .thumbnail {

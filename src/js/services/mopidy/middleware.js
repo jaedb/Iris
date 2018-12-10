@@ -76,7 +76,15 @@ const MopidyMiddleware = (function(){
 
             case 'event:tracklistChanged':
                 store.dispatch(mopidyActions.getQueue());
-                store.dispatch(mopidyActions.getNextTrack());
+
+                // Wait a jiffy before we get the next track
+                // We don't want to impede snappyness for this luxury request
+                setTimeout(
+                    () => { 
+                        store.dispatch(mopidyActions.getNextTrack());
+                    }, 
+                    1000
+                );
                 break;
 
             case 'event:playbackStateChanged':
@@ -104,7 +112,15 @@ const MopidyMiddleware = (function(){
 
             case 'event:trackPlaybackStarted':
                 store.dispatch(mopidyActions.currentTrackLoaded(data.tl_track));
-                store.dispatch(mopidyActions.getNextTrack());
+
+                // Wait a jiffy before we get the next track
+                // We don't want to impede snappyness for this luxury request
+                setTimeout(
+                    () => { 
+                        store.dispatch(mopidyActions.getNextTrack());
+                    }, 
+                    1000
+                );
                 break;
 
             case 'event:volumeChanged':
@@ -335,24 +351,24 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_PAUSE':
                 request(socket, store, 'playback.pause')
-                    .then(
-                        response => {
+                    .then(response => {
                             store.dispatch({
                                 type: 'MOPIDY_PLAY_STATE',
                                 play_state: 'paused'
                             })
+                            ;
+                            store.dispatch(pusherActions.deliverBroadcast(
+                                'notification',
+                                {
+                                    notification: {
+                                        content: store.getState().pusher.username +' paused playback',
+                                        icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
+                                    }
+                                }
+                            ));
                         }
                     );
 
-                store.dispatch(pusherActions.deliverBroadcast(
-                    'notification',
-                    {
-                        notification: {
-                            content: store.getState().pusher.username +' paused playback',
-                            icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
-                        }
-                    }
-                ));
                 break
 
             case 'MOPIDY_PREVIOUS':
@@ -360,71 +376,78 @@ const MopidyMiddleware = (function(){
                 break
 
             case 'MOPIDY_NEXT':
-                request(socket, store, 'playback.next');
 
-                store.dispatch(pusherActions.deliverBroadcast(
-                    'notification',
-                    {
-                        notification: {
-                            content: store.getState().pusher.username +' skipped <em>'+store.getState().core.current_track.name+'</em>',
-                            icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
-                        }
-                    }
-                ));
+                // Let the UI know we're in transition
+                store.dispatch(uiActions.setCurrentTrackTransition(true));
+
+                request(socket, store, 'playback.next')
+                    .then(response => {
+                        store.dispatch(pusherActions.deliverBroadcast(
+                            'notification',
+                            {
+                                notification: {
+                                    content: store.getState().pusher.username +' skipped <em>'+store.getState().core.current_track.name+'</em>',
+                                    icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
+                                }
+                            }
+                        ));
+                    });
+
                 break
 
             case 'MOPIDY_STOP':
                 request(socket, store, 'playback.stop')
                     .then(response => {
-                            store.dispatch(mopidyActions.clearCurrentTrack());
-                        });
+                        store.dispatch(mopidyActions.clearCurrentTrack());
 
-                store.dispatch(pusherActions.deliverBroadcast(
-                    'notification',
-                    {
-                        notification: {
-                            content: store.getState().pusher.username +' stopped playback',
-                            icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
-                        }
-                    }
-                ));
+                        store.dispatch(pusherActions.deliverBroadcast(
+                            'notification',
+                            {
+                                notification: {
+                                    content: store.getState().pusher.username +' stopped playback',
+                                    icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
+                                }
+                            }
+                        ));
+                    });
                 break
 
             case 'MOPIDY_CHANGE_TRACK':
-                request(socket, store, 'playback.play', {tlid: action.tlid});
-
-                store.dispatch(pusherActions.deliverBroadcast(
-                    'notification',
-                    {
-                        notification: {
-                            content: store.getState().pusher.username +' changed track'
-                        }
-                    }
-                ));
+                request(socket, store, 'playback.play', {tlid: action.tlid})
+                    .then(response => {
+                        store.dispatch(pusherActions.deliverBroadcast(
+                            'notification',
+                            {
+                                notification: {
+                                    content: store.getState().pusher.username +' changed track'
+                                }
+                            }
+                        ));
+                    });
                 break;
 
             case 'MOPIDY_REMOVE_TRACKS':
-                request(socket, store, 'tracklist.remove', {tlid: action.tlids});
-                store.dispatch(pusherActions.deliverBroadcast(
-                    'notification',
-                    {
-                        notification: {
-                            content: store.getState().pusher.username +' removed '+action.tlids.length+' tracks'
-                        }
-                    }
-                ));
+                request(socket, store, 'tracklist.remove', {tlid: action.tlids})
+                    .then(response => {
+                        store.dispatch(pusherActions.deliverBroadcast(
+                            'notification',
+                            {
+                                notification: {
+                                    content: store.getState().pusher.username +' removed '+action.tlids.length+' tracks'
+                                }
+                            }
+                        ));
+                    });
                 break;
 
             case 'MOPIDY_GET_REPEAT':
                 request(socket, store, 'tracklist.getRepeat')
-                    .then(
-                        response => {
-                            store.dispatch({
-                                type: 'MOPIDY_REPEAT',
-                                repeat: response
-                            });
-                        }
-                    );
+                    .then(response => {
+                        store.dispatch({
+                            type: 'MOPIDY_REPEAT',
+                            repeat: response
+                        });
+                    });
                 break;
 
             case 'MOPIDY_SET_REPEAT':
@@ -433,14 +456,12 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_GET_RANDOM':
                 request(socket, store, 'tracklist.getRandom')
-                    .then(
-                        response => {
-                            store.dispatch({
-                                type: 'MOPIDY_RANDOM',
-                                random: response
-                            });
-                        }
-                    );
+                    .then(response => {
+                        store.dispatch({
+                            type: 'MOPIDY_RANDOM',
+                            random: response
+                        });
+                    });
                 break;
 
             case 'MOPIDY_SET_RANDOM':
@@ -449,14 +470,12 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_GET_CONSUME':
                 request(socket, store, 'tracklist.getConsume')
-                    .then(
-                        response => {
-                            store.dispatch({
-                                type: 'MOPIDY_CONSUME',
-                                consume: response
-                            });
-                        }
-                    );
+                    .then(response => {
+                        store.dispatch({
+                            type: 'MOPIDY_CONSUME',
+                            consume: response
+                        });
+                    });
                 break;
 
             case 'MOPIDY_SET_CONSUME':
@@ -465,26 +484,26 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_GET_MUTE':
                 request(socket, store, 'mixer.getMute')
-                    .then(
-                        response => {
-                            store.dispatch({
-                                type: 'MOPIDY_MUTE',
-                                mute: response
-                            });
-                        }
-                    );
+                    .then(response => {
+                        store.dispatch({
+                            type: 'MOPIDY_MUTE',
+                            mute: response
+                        });
+                    });
                 break;
 
             case 'MOPIDY_SET_MUTE':
-                request(socket, store, 'mixer.setMute', [action.mute]);
-                store.dispatch(pusherActions.deliverBroadcast(
-                    'notification',
-                    {
-                        notification: {
-                            content: store.getState().pusher.username +(action.mute ? ' muted' : ' unmuted')+' playback'
-                        }
-                    }
-                ));
+                request(socket, store, 'mixer.setMute', [action.mute])
+                    .then(response => {
+                        store.dispatch(pusherActions.deliverBroadcast(
+                            'notification',
+                            {
+                                notification: {
+                                    content: store.getState().pusher.username +(action.mute ? ' muted' : ' unmuted')+' playback'
+                                }
+                            }
+                        ));
+                    });
                 break;
 
             case 'MOPIDY_GET_VOLUME':
@@ -2127,10 +2146,21 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_CURRENT_TRACK_LOADED':
-                var track = helpers.formatTrack(action.tl_track);
 
-                // We don't have the track already in our index, or we do but it's a partial record
+                // Let the UI know we're finished transition
+                store.dispatch(uiActions.setCurrentTrackTransition(false));
+
+                var track = helpers.formatTrack(action.tl_track);
                 if (track.uri){
+
+                    // Deliver the data we've got already
+                    store.dispatch({
+                        type: 'CURRENT_TRACK_LOADED',
+                        track: track,
+                        uri: track.uri
+                    });
+
+                    // Now attempt to get supporting images
 	                if (store.getState().core.tracks[track.uri] === undefined || store.getState().core.tracks[track.uri].images === undefined){
 
 	                    // We've got Spotify running, and it's a spotify track - go straight to the source!
@@ -2142,12 +2172,6 @@ const MopidyMiddleware = (function(){
 	                        store.dispatch(mopidyActions.getImages('tracks',[track.uri]));
 	                    }
 	                }
-
-	                store.dispatch({
-	                    type: 'CURRENT_TRACK_LOADED',
-	                    track: track,
-	                    uri: track.uri
-	                });
 	            }
                 break;
 
