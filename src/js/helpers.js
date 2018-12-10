@@ -1433,10 +1433,17 @@ export let scrollTo = function(target = null, smooth_scroll = false){
 	}
 
 	// And now scroll to it
+	// We make sure the target supports scrolling before we attempt it
+	// Safari and IE Edge, well, don't.
 	if (target){
-		document.getElementById(target).scrollIntoView();
+		var element = document.getElementById(target);
+		if (typeof element.scrollIntoView === "function"){
+			element.scrollIntoView();
+		}
 	} else {
-		main.scrollTo(0, 0);
+		if (typeof main.scrollTo === "function"){
+			main.scrollTo(0, 0);
+		}
 	}
 
 	// Now reinstate smooth scroll
