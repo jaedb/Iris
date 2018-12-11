@@ -21,8 +21,6 @@
 		transform: translateX(0px);
 
 		&--transition {
-			opacity: 0.25;
-
 			@include responsive($bp_medium){
 				opacity: 0;
 				
@@ -238,9 +236,12 @@
 					&.play {
 						margin-bottom: -8px;
 					}
-					&.previous {
+
+					&.previous,
+					&.next {
 						display: none;
 					}
+					
 					&.stop {
 						display: none;
 					}

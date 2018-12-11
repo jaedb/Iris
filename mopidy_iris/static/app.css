@@ -4459,15 +4459,13 @@ select {
     color: #FFFFFF;
     text-decoration: none;
     transform: translateX(0px); }
-    .playback-controls .current-track--transition {
-      opacity: 0.25; }
-      @media (max-width: 800px) {
-        .playback-controls .current-track--transition {
-          opacity: 0; }
-          .playback-controls .current-track--transition-previous {
-            transform: translateX(15px); }
-          .playback-controls .current-track--transition-next {
-            transform: translateX(-15px); } }
+    @media (max-width: 800px) {
+      .playback-controls .current-track--transition {
+        opacity: 0; }
+        .playback-controls .current-track--transition-previous {
+          transform: translateX(15px); }
+        .playback-controls .current-track--transition-next {
+          transform: translateX(-15px); } }
     .light-theme .playback-controls .current-track {
       color: #121212; }
     .playback-controls .current-track .thumbnail {
@@ -4651,7 +4649,7 @@ select {
       width: 70px; }
       .playback-controls section.playback .control.play {
         margin-bottom: -8px; }
-      .playback-controls section.playback .control.previous {
+      .playback-controls section.playback .control.previous, .playback-controls section.playback .control.next {
         display: none; }
       .playback-controls section.playback .control.stop {
         display: none; }
@@ -5666,6 +5664,8 @@ main header {
     font-size: 1rem; }
     #context-menu .dropdown-field .label, #context-menu .dropdown-field .label:hover {
       color: #FFFFFF; }
+      .light-theme #context-menu .dropdown-field .label, .light-theme #context-menu .dropdown-field .label:hover {
+        color: #181818 !important; }
   #context-menu .dropdown-field .options {
     display: block;
     position: static;
@@ -5681,6 +5681,8 @@ main header {
       background: transparent;
       color: #FFFFFF !important;
       margin: -3px -5px; }
+      .light-theme #context-menu .dropdown-field .options > .liner {
+        color: #181818 !important; }
       #context-menu .dropdown-field .options > .liner:before {
         display: none !important; }
       #context-menu .dropdown-field .options > .liner .option {
@@ -5688,6 +5690,8 @@ main header {
         padding: 3px 5px;
         border-radius: 0;
         color: #FFFFFF !important; }
+        .light-theme #context-menu .dropdown-field .options > .liner .option {
+          color: #181818 !important; }
         #context-menu .dropdown-field .options > .liner .option:before {
           display: none !important; }
         #context-menu .dropdown-field .options > .liner .option .icon {
