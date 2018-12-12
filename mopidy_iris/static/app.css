@@ -4646,7 +4646,7 @@ select {
         display: none; }
     .playback-controls section.playback {
       left: 0;
-      width: 70px; }
+      width: 40px; }
       .playback-controls section.playback .control.play {
         margin-bottom: -8px; }
       .playback-controls section.playback .control.previous, .playback-controls section.playback .control.next {
@@ -4960,6 +4960,8 @@ aside {
     display: inline-block;
     opacity: 0.5;
     z-index: 99; }
+    .light-theme aside .close {
+      color: #121212; }
   @media (max-width: 800px) {
     aside {
       -webkit-transition: all 0.15s ease-in-out;

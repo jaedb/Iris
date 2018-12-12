@@ -138,6 +138,10 @@ aside{
 		display: inline-block;
 		opacity: 0.5;
 		z-index: 99;
+		
+		.light-theme & {
+			color: colour(darkest_grey);
+		}
 	}
 
 	@include responsive($bp_medium){
