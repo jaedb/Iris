@@ -4182,9 +4182,8 @@ select {
 .thumbnail {
   width: 100%;
   max-width: 300px;
-  overflow: hidden;
   position: relative; }
-  .thumbnail .image {
+  .thumbnail__image {
     width: 100%;
     padding-bottom: 100%;
     position: relative;
@@ -4192,10 +4191,29 @@ select {
     background-color: #1d1d1d;
     background-position: 50% 50%;
     background-size: cover;
-    border-radius: 3px; }
-    .light-theme .thumbnail .image {
+    border-radius: 3px;
+    z-index: 2; }
+    .light-theme .thumbnail__image {
       background-color: #f4f2f0; }
-  .thumbnail .zoom {
+  .thumbnail__glow {
+    -webkit-filter: blur(20px);
+    filter: blur(20px);
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+    position: absolute;
+    top: 40%;
+    right: 10%;
+    bottom: -3.5%;
+    left: 10%;
+    opacity: 0.4;
+    z-index: 1;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    background-size: cover;
+    border-radius: 3px; }
+  .thumbnail__zoom {
     -webkit-transition: all 0.2s ease-in-out;
     -moz-transition: all 0.2s ease-in-out;
     -o-transition: all 0.2s ease-in-out;
@@ -4204,7 +4222,7 @@ select {
     position: absolute;
     bottom: 5px;
     right: 5px;
-    z-index: 1;
+    z-index: 3;
     padding: 10px;
     border-radius: 100%;
     background: rgba(0, 0, 0, 0.4);
@@ -4212,17 +4230,24 @@ select {
     cursor: pointer;
     color: #FFFFFF;
     border: 0 !important; }
-    .thumbnail .zoom:hover {
+    .thumbnail__zoom:hover {
       background: #000000; }
-  .thumbnail.small {
+  .thumbnail--small {
     max-width: 50px; }
-  .thumbnail.circle .image {
+  .thumbnail--circle .thumbnail__image {
     border-radius: 50%; }
-  .thumbnail.circle .zoom {
+  .thumbnail--circle .thumbnail__zoom {
     bottom: 0;
     right: 0; }
-  .thumbnail:hover .zoom {
+  .thumbnail:hover .thumbnail__zoom {
     display: block; }
+  .thumbnail:hover .thumbnail__glow {
+    -webkit-filter: blur(25px);
+    filter: blur(25px);
+    right: 15%;
+    bottom: -5%;
+    left: 15%;
+    opacity: 0.3; }
 
 .playback-controls {
   z-index: 3; }

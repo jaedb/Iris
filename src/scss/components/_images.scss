@@ -3,10 +3,9 @@
 .thumbnail {
 	width: 100%;
 	max-width: 300px;
-	overflow: hidden;
 	position: relative;
 	
-	.image {
+	&__image {
 		width: 100%;
 		padding-bottom: 100%;
 		position: relative;
@@ -15,25 +14,42 @@
 		background-position: 50% 50%;
 		background-size: cover;
 		border-radius: 3px;
+		z-index: 2;
 
 		.light-theme & {
 			background-color: colour(faint_grey);
 		}
 	}
 
-	.zoom {
+	&__glow {
+		@include blur(20px);
+		@include animate();
+		position: absolute;
+		top: 40%;
+		right: 10%;
+		bottom: -3.5%;
+		left: 10%;
+		opacity: 0.4;
+		z-index: 1;
+		background-repeat: no-repeat;
+		background-position: 50% 50%;
+		background-size: cover;
+		border-radius: 3px;
+	}
+
+	&__zoom {
 		@include animate();
 		display: none;
 		position: absolute;
 		bottom: 5px;
 		right: 5px;
-		z-index: 1;
+		z-index: 3;
 		padding: 10px;
 		border-radius: 100%;
 		background: rgba(0,0,0,0.4);
 		font-size: 12px;
 		cursor: pointer;
-		color: #FFFFFF;
+		color: colour(white);
 		border: 0 !important;
 
 		&:hover {
@@ -41,24 +57,37 @@
 		}
 	}
 
-	&.small {
+	&--small {
 		max-width: 50px;
 	}
 
-	&.circle {
-		.image {
-			border-radius: 50%;
-		}
+	&--circle {
+		.thumbnail {
 
-		.zoom {
-			bottom: 0;
-			right: 0;
+			&__image {
+				border-radius: 50%;
+			}
+
+			&__zoom {
+				bottom: 0;
+				right: 0;
+			}
 		}
 	}
 
 	&:hover {
-		.zoom {
-			display: block;
+		.thumbnail {
+			&__zoom {
+				display: block;
+			}
+
+			&__glow {
+				@include blur(25px);
+				right: 15%;
+				bottom: -5%;
+				left: 15%;
+				opacity: 0.3;
+			}
 		}
 	}
 }
