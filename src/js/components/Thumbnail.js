@@ -48,7 +48,7 @@ class Thumbnail extends React.Component{
 
 	render(){
 		var image = this.mapImageSizes();
-		var class_name = 'thumbnail ';
+		var class_name = 'thumbnail thumbnail--loaded';
 		if (this.props.size){
 			class_name += ' thumbnail--'+this.props.size;
 		}
@@ -63,17 +63,11 @@ class Thumbnail extends React.Component{
 		if (this.props.canZoom && image){
 			zoom_icon = <Link className="thumbnail__zoom" to={global.baseURL+'image-zoom?url='+image}><Icon name="search" /></Link>;
 		}
-		
-		var glow = null;
-		if (!this.props.noGlow && image){
-			glow = <div className="thumbnail__glow" style={{backgroundImage: 'url("'+image+'")'}}></div>;
-		}
 
 		return (
 			<div className={class_name}>
-				<div className="thumbnail__image thumbnail__image--loaded" style={{backgroundImage: 'url("'+(image ? image : require('../../assets/no-image.svg'))+'")'}}></div>
+				<div className="thumbnail__image" style={{backgroundImage: 'url("'+(image ? image : require('../../assets/no-image.svg'))+'")'}}></div>
 				{zoom_icon}
-				{glow}
 			</div>
 		);
 	}

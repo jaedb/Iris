@@ -2820,12 +2820,12 @@ p a {
     opacity: 0.8; }
 
 .hide {
-  width: 0px;
-  height: 0px;
-  position: fixed;
-  z-index: -99;
-  top: -99px;
-  left: -99px; }
+  width: 0px !important;
+  height: 0px !important;
+  position: fixed !important;
+  z-index: -99 !important;
+  top: -99px !important;
+  left: -99px !important; }
 
 .no-results {
   text-align: center;
@@ -4195,24 +4195,6 @@ select {
     z-index: 2; }
     .light-theme .thumbnail__image {
       background-color: #f4f2f0; }
-  .thumbnail__glow {
-    -webkit-filter: blur(20px);
-    filter: blur(20px);
-    -webkit-transition: all 0.2s ease-in-out;
-    -moz-transition: all 0.2s ease-in-out;
-    -o-transition: all 0.2s ease-in-out;
-    transition: all 0.2s ease-in-out;
-    position: absolute;
-    top: 40%;
-    right: 10%;
-    bottom: -3.5%;
-    left: 10%;
-    opacity: 0.4;
-    z-index: 1;
-    background-repeat: no-repeat;
-    background-position: 50% 50%;
-    background-size: cover;
-    border-radius: 3px; }
   .thumbnail__zoom {
     -webkit-transition: all 0.2s ease-in-out;
     -moz-transition: all 0.2s ease-in-out;
@@ -4241,13 +4223,6 @@ select {
     right: 0; }
   .thumbnail:hover .thumbnail__zoom {
     display: block; }
-  .thumbnail:hover .thumbnail__glow {
-    -webkit-filter: blur(25px);
-    filter: blur(25px);
-    right: 15%;
-    bottom: -5%;
-    left: 15%;
-    opacity: 0.3; }
 
 .playback-controls {
   z-index: 3; }
@@ -5019,7 +4994,8 @@ aside {
   display: inline-block;
   vertical-align: top;
   border-bottom: 0;
-  position: relative; }
+  position: relative;
+  cursor: pointer; }
   .grid__item__wrapper {
     display: inline-block; }
   .grid__item__thumbnail {
@@ -5042,10 +5018,8 @@ aside {
     color: #888888; }
     .grid__item__secondary .source {
       padding-right: 6px; }
-  .grid__item:hover {
-    cursor: pointer; }
-    .grid__item:hover__thumbnail {
-      opacity: 0.75; }
+  .grid__item:hover .thumbnail {
+    opacity: 0.75; }
   .grid__item:active, .grid__item:focus {
     -moz-transform: scale(0.98);
     -webkit-transform: scale(0.98);

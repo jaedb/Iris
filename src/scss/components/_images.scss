@@ -21,22 +21,6 @@
 		}
 	}
 
-	&__glow {
-		@include blur(20px);
-		@include animate();
-		position: absolute;
-		top: 40%;
-		right: 10%;
-		bottom: -3.5%;
-		left: 10%;
-		opacity: 0.4;
-		z-index: 1;
-		background-repeat: no-repeat;
-		background-position: 50% 50%;
-		background-size: cover;
-		border-radius: 3px;
-	}
-
 	&__zoom {
 		@include animate();
 		display: none;
@@ -79,14 +63,6 @@
 		.thumbnail {
 			&__zoom {
 				display: block;
-			}
-
-			&__glow {
-				@include blur(25px);
-				right: 15%;
-				bottom: -5%;
-				left: 15%;
-				opacity: 0.3;
 			}
 		}
 	}
