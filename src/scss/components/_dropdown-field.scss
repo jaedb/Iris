@@ -130,6 +130,7 @@
 #context-menu {	
 	.dropdown-field {
 		padding: 16px 0;
+		display: block;
 
 		&:active,
 		&:focus {
@@ -144,6 +145,10 @@
 			&,
 			&:hover {
 				color: colour(white);
+
+				.light-theme & {
+					color: colour(dark_grey) !important;
+				}
 			}
 		}
 
@@ -166,6 +171,10 @@
 				color: colour(white) !important;
 				margin: -3px -5px;
 
+				.light-theme & {
+					color: colour(dark_grey) !important;
+				}
+
 				&:before {
 					display: none !important;
 				}
@@ -175,6 +184,10 @@
 					padding: 3px 5px;
 					border-radius: 0;
 					color: colour(white) !important;
+
+					.light-theme & {
+						color: colour(dark_grey) !important;
+					}
 
 					&:before {
 						display: none !important;

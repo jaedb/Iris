@@ -52,7 +52,7 @@ class Debug extends React.Component{
 	render(){
 
 		var options = (
-			<a className="button button--no-hover" onClick={e => hashHistory.push(global.baseURL+'settings')}>
+			<a className="button button--default button--no-hover" onClick={e => hashHistory.push(global.baseURL+'settings')}>
 				<Icon name="keyboard_backspace" />Back
 			</a>
 		)
@@ -119,8 +119,8 @@ class Debug extends React.Component{
 						<div className="field">
 							<div className="name"></div>
 							<div className="input">
-								<a className="button secondary" onClick={e => this.props.uiActions.createNotification({content: 'Test notification'})}>Create notification</a>
-								<a className="button secondary" onClick={e => this.props.pusherActions.request('test')}>Run test process</a>
+								<a className="button button--default" onClick={e => this.props.uiActions.createNotification({content: 'Test notification'})}>Create notification</a>
+								<a className="button button--default" onClick={e => this.props.pusherActions.request('test')}>Run test process</a>
 							</div>
 						</div>
 					</form>
@@ -159,7 +159,7 @@ class Debug extends React.Component{
 						<div className="field">
 							<div className="name"></div>
 							<div className="input">
-								<button type="submit" className="secondary">Send</button>
+								<button type="submit" className="button button--default">Send</button>
 							</div>
 						</div>
 					</form>
@@ -196,7 +196,7 @@ class Debug extends React.Component{
 						<div className="field">
 							<div className="name"></div>
 							<div className="input">
-								<button type="submit" className="secondary">Send</button>
+								<button type="submit" className="button button--default">Send</button>
 							</div>
 						</div>
 					</form>

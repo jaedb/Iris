@@ -137,7 +137,7 @@ class Playlist extends React.Component{
 				return (
 					<div className="actions">
 						<button className="button button--primary" onClick={ e => this.play() }>Play</button>
-						<Link className="button" to={global.baseURL+'playlist/'+encodeURIComponent(this.props.params.uri)+'/edit'}>Edit</Link>
+						<Link className="button button--default" to={global.baseURL+'playlist/'+encodeURIComponent(this.props.params.uri)+'/edit'}>Edit</Link>
 						<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 					</div>
 				)
@@ -147,7 +147,7 @@ class Playlist extends React.Component{
 					return (
 						<div className="actions">
 							<button className="button button--primary" onClick={ e => this.play() }>Play</button>
-							<Link className="button" to={global.baseURL+'playlist/'+encodeURIComponent(this.props.params.uri)+'/edit'}>Edit</Link>
+							<Link className="button button--default" to={global.baseURL+'playlist/'+encodeURIComponent(this.props.params.uri)+'/edit'}>Edit</Link>
 							<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 						</div>
 					)

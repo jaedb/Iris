@@ -12,9 +12,9 @@
 		@include fadein();
 		display: block;
 		position: relative;
-		background: colour(grey);
 		padding: 18px 40px 16px 22px;
 		margin: 10px 0 0 0;
+		background: darken(colour(grey), 8%);
 		color: colour(white);
 		pointer-events: all; 
 		border-radius: 3px;

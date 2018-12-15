@@ -11,13 +11,28 @@
 	transform-style: preserve-3d;
 
 	.current-track {
-		@include animate();
+		@include animate(0.1s);
 		position: absolute;
 		bottom: 50px;
 		width: 220px;
 		font-size: 14px;
 		color: colour(white);
 		text-decoration: none;
+		transform: translateX(0px);
+
+		&--transition {
+			@include responsive($bp_medium){
+				opacity: 0;
+				
+				&-previous {
+					transform: translateX(15px);
+				}
+
+				&-next {
+					transform: translateX(-15px);
+				}
+			}
+		}
 
 		.light-theme & {
 			color: colour(darkest_grey);
@@ -42,7 +57,7 @@
 				text-align: center;
 				font-size: 18px;
 				color: colour(white);
-				z-index: 1;
+				z-index: 3;
 				opacity: 0;
 			}
 
@@ -58,6 +73,7 @@
 				right: 0;
 				border-radius: 3px;
 				opacity: 0;
+				z-index: 2;
 			}
 
 			&:hover{
@@ -215,15 +231,18 @@
 
 			&.playback {
 				left: 0;
-				width: 70px;
+				width: 40px;
 
 				.control {
 					&.play {
 						margin-bottom: -8px;
 					}
-					&.previous {
+
+					&.previous,
+					&.next {
 						display: none;
 					}
+					
 					&.stop {
 						display: none;
 					}

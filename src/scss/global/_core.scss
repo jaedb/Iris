@@ -36,7 +36,7 @@ html {
 	color: colour(light_grey);
 	font-family: "Overpass", Helvetica, Arial, sans-serif;
 	font-size: 14px;
-	letter-spacing: -0.01rem;
+	letter-spacing: -0.02rem;
 	touch-action: manipulation;
 	text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
 	width: 100%;
@@ -252,12 +252,12 @@ p {
 }
 
 .hide {
-	width: 0px;
-	height: 0px;
-	position: fixed;
-	z-index: -99;
-	top: -99px;
-	left: -99px;
+	width: 0px !important;
+	height: 0px !important;
+	position: fixed !important;
+	z-index: -99 !important;
+	top: -99px !important;
+	left: -99px !important;
 }
 
 .no-results {

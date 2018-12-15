@@ -9,6 +9,19 @@ export function setWindowTitle(title = null, play_state = null){
     }
 }
 
+/**
+ * Gives us the ability to load/fade current track when
+ * we're pending transition to a new/next track
+ *
+ * @param transitioning Boolean
+ **/
+export function setCurrentTrackTransition(current_track_transition){
+    return {
+        type: 'SET_CURRENT_TRACK_TRANSITION',
+        current_track_transition: current_track_transition
+    }
+}
+
 export function setSelectedTracks(keys = []){
     if (typeof(keys) === 'string'){
         keys = [keys]

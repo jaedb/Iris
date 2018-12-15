@@ -6,6 +6,7 @@
 		vertical-align: top;
 		border-bottom: 0;
 		position: relative;
+		cursor: pointer;
 
 		&__wrapper {
 			display: inline-block;
@@ -32,10 +33,8 @@
 			}
 		}
 
-		&:hover{
-			cursor: pointer;
-
-			&__thumbnail {
+		&:hover{			
+			.thumbnail {
 				opacity: 0.75;
 			}
 		}
@@ -60,7 +59,8 @@
 				text-align: center;
 				font-size: 14px;
 				font-weight: 600;
-				color: #FFFFFF;
+				color: colour(white);
+				z-index: 2;
 			}
 		}
 

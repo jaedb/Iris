@@ -89,22 +89,16 @@ input[type="radio"]{
 	&:checked + .label:after {
 		content: ' ';
 		display: inline-block;
-		width: 6px;
-		height: 6px;
+		width: 8px;
+		height: 8px;
 	    border-radius: 50%;
 		position: absolute;
-		top: 11px;
-		left: 7px;
+		top: 10px;
+		left: 6px;
 		background: colour(white);
 	}
 
-	&:focus + .label:before,
-	&:active + .label:before {
-		background: rgba(255,255,255,0.3);
-	}
-
 	.light-theme & {
-
 		& + .label:before {
 			background: colour(faint_grey);
 		}
@@ -112,11 +106,11 @@ input[type="radio"]{
 		&:checked + .label:after {
 			background: colour(darkest_grey);
 		}
+	}
 
-		&:focus + .label:before,
-		&:active + .label:before {
-			background: colour(grey);
-		}
+	&:focus + .label:before,
+	&:active + .label:before {
+		background: colour(turquoise) !important;
 	}
 }
 
@@ -142,21 +136,16 @@ input[type="checkbox"]{
 		content: '\e5ca';
 	}
 
-	&:focus + .label:before,
-	&:active + .label:before {
-		background: rgba(255,255,255,0.3);
-	}
-
 	.light-theme & {
 		& + .label:before {
 			background: colour(faint_grey);
 			color: colour(darkest_grey);
 		}
+	}
 
-		&:focus + .label:before,
-		&:active + .label:before {
-			background: colour(grey);
-		}
+	&:focus + .label:before,
+	&:active + .label:before {
+		background: colour(turquoise) !important;
 	}
 }
 
@@ -197,7 +186,6 @@ select {
 	display: inline-block;
 	padding: 9px 30px 7px;
 	margin: 0 20px 10px 0;
-	background: colour(white);
 	box-sizing: border-box;
 	border-radius: 3px;
 	vertical-align: middle;
@@ -225,9 +213,7 @@ select {
 
 	&:active {
 		@include noanimate();
-		background: darken(colour(white), 5%);
 		transform: translate(1px,1px);
-		opacity: 0.8;
 	}
 
 	.light-theme &--default {
@@ -255,32 +241,57 @@ select {
 	&--primary {
 		background: colour(turquoise);
 		color: colour(white);
+
+		&:active {
+			background: darken(colour(turquoise), 10%);
+		}
 	}
 
 	&--secondary {
 		background: colour(blue);
 		color: colour(white);
+
+		&:active {
+			background: darken(colour(blue), 10%);
+		}
 	}
 
+	&--default,
 	&--white {
-		color: colour(black);
 		background: colour(white);
+		color: colour(black);
+
+		&:active {
+			background: darken(colour(white), 10%);
+		}
 	}
 
 	&--grey {
-		color: colour(white);
 		background: colour(grey);
+		color: colour(white);
+
+		&:active {
+			background: darken(colour(grey), 10%);
+		}
 	}
 
 	&--black {
-		color: colour(white);
 		background: colour(darkest_grey);
+		color: colour(white);
+
+		&:active {
+			background: darken(colour(darkest_grey), 10%);
+		}
 	}
 
 	&--confirming,
 	&--destructive {
 		background: colour(red);
 		color: colour(white);
+
+		&:active {
+			background: darken(colour(red), 10%);
+		}
 	}
 
 	&--timing-out {

@@ -194,10 +194,10 @@ class Settings extends React.Component {
 
 		var options = (
 			<span>
-				<a className="button button--no-hover" onClick={e => hashHistory.push(global.baseURL+'settings/debug')}>
+				<a className="button button--default button--no-hover" onClick={e => hashHistory.push(global.baseURL+'settings/debug')}>
 					<Icon name="code" />Debug
 				</a>
-				<a className="button button--no-hover" href="https://github.com/jaedb/Iris/wiki" target="_blank">
+				<a className="button button--default button--no-hover" href="https://github.com/jaedb/Iris/wiki" target="_blank">
 					<Icon name="help" />Help
 				</a>
 			</span>
@@ -361,7 +361,7 @@ class Settings extends React.Component {
 						</div>
 						<div className="input">
 			        		{this.renderCommands()}
-			        		<Link to={global.baseURL+'edit-command'} className="button">Add new</Link>
+			        		<Link to={global.baseURL+'edit-command'} className="button button--default">Add new</Link>
 			        	</div>
 			        </div>
 
@@ -416,8 +416,8 @@ class Settings extends React.Component {
 			        </div>
 					
 					<div className="field">
-						<button className="button" onClick={e => this.props.pusherActions.localScan()}>Run local scan</button>
-				        <Link className="button" to={global.baseURL+"share-configuration"}>Share configuration</Link>
+						<button className="button button--default" onClick={e => this.props.pusherActions.localScan()}>Run local scan</button>
+				        <Link className="button button--default" to={global.baseURL+"share-configuration"}>Share configuration</Link>
 			        </div>
 					
 					<div className="field">
@@ -434,13 +434,13 @@ class Settings extends React.Component {
 						</div>
 						<br /><br />
 						<div>
-					        <a className="button" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=james%40barnsley%2enz&lc=NZ&item_name=James%20Barnsley&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted" target="_blank">
+					        <a className="button button--default" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=james%40barnsley%2enz&lc=NZ&item_name=James%20Barnsley&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted" target="_blank">
 					        	<Icon type="fontawesome" name="paypal" /> Donate
 					        </a>
-					        <a className="button" href="https://github.com/jaedb/Iris" target="_blank">
+					        <a className="button button--default" href="https://github.com/jaedb/Iris" target="_blank">
 					        	<Icon type="fontawesome" name="github" /> GitHub
 					        </a>
-					        <a className="button" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank"><Icon type="fontawesome" name="creative-commons" />&nbsp;Licence</a>
+					        <a className="button button--default" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank"><Icon type="fontawesome" name="creative-commons" />&nbsp;Licence</a>
 						</div>
 			        </div>
 

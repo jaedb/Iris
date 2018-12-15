@@ -90,6 +90,59 @@ class PlaybackControls extends React.Component{
 		}
 	}
 
+	handleTouchStart(e){
+		var target = $(e.target);
+		var timestamp = Math.floor(Date.now());
+
+		// Save touch start details
+		this.start_time = timestamp;
+		this.start_position = {
+			x: e.touches[0].clientX
+		}
+
+		return false;
+	}
+
+	handleTouchEnd(e){
+		var target = $(e.target);
+		var timestamp = Math.floor(Date.now());
+		var tap_distance_threshold = 10;		// Max distance (px) between touchstart and touchend to qualify as a tap
+		var tap_time_threshold = 200;			// Max time (ms) between touchstart and touchend to qualify as a tap
+		var end_position = {
+			x: e.changedTouches[0].clientX
+		}
+
+		// Too long between touchstart and touchend
+		if (this.start_time + tap_time_threshold < timestamp){
+			return false;
+		}
+
+		// Make sure there's enough distance between start and end before we handle
+		// this event as a 'tap'
+		if (this.start_position.x + tap_distance_threshold > end_position.x &&
+			this.start_position.x - tap_distance_threshold < end_position.x){
+
+			// We received a touchend within 300ms ago, so handle as double-tap
+			if ((timestamp - this.end_time) > 0 && (timestamp - this.end_time) <= 300){
+				e.preventDefault();
+				console.log('double tap >> go to track');
+				return false;
+			}
+		} else {
+
+			// Swipe to the left = previous track
+			if (this.start_position.x < end_position.x){
+				this.props.mopidyActions.previous();
+
+			// Swipe to the right = skip track
+			} else if (this.start_position.x > end_position.x){
+				this.props.mopidyActions.next();
+			}
+		}
+
+		this.end_time = timestamp;
+	}
+
 	renderPlayButton(){
 		var button = <a className="control play" onClick={() => this.props.mopidyActions.play()}><Icon name="play_circle_filled" type="material" /></a>
 		if (this.props.play_state == 'playing'){
@@ -133,16 +186,19 @@ class PlaybackControls extends React.Component{
 
 				{this.props.next_track && this.props.next_track.images ? <Thumbnail className="hide" size="large" images={this.props.next_track.images} /> : null}
 				
-				<div className="current-track">
-					<Link className="thumbnail-wrapper" to={global.baseURL+'kiosk-mode'}>
-						<Thumbnail size="small" images={images} />
-					</Link>
-					<div className="title">
-						{ this.props.current_track ? this.props.current_track.name : <span>-</span> }
-					</div>
-					<div className="artist">
-						{ this.props.current_track ? <ArtistSentence artists={ this.props.current_track.artists } /> : <ArtistSentence /> }
-					</div>
+				<div 
+					className={"current-track"+(this.props.current_track_transition ? " current-track--transition current-track--transition-"+this.props.current_track_transition : "")}
+					onTouchStart={e => this.handleTouchStart(e)}
+					onTouchEnd={e => this.handleTouchEnd(e)}>
+						<Link className="thumbnail-wrapper" to={global.baseURL+'kiosk-mode'}>
+							<Thumbnail size="small" images={images} />
+						</Link>
+						<div className="title">
+							{ this.props.current_track ? this.props.current_track.name : <span>-</span> }
+						</div>
+						<div className="artist">
+							{this.props.current_track ? <ArtistSentence artists={ this.props.current_track.artists } nolinks={this.props.slim_mode} /> : <ArtistSentence />}
+						</div>
 				</div>
 
 				<section className="playback">
@@ -223,7 +279,9 @@ const mapStateToProps = (state, ownProps) => {
 		random: state.mopidy.random,
 		volume: state.mopidy.volume,
 		mute: state.mopidy.mute,
-		sidebar_open: state.ui.sidebar_open
+		current_track_transition: state.ui.current_track_transition,
+		sidebar_open: state.ui.sidebar_open,
+		slim_mode: state.ui.slim_mode
 	}
 }
 
