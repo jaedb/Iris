@@ -57,7 +57,7 @@
 				text-align: center;
 				font-size: 18px;
 				color: colour(white);
-				z-index: 1;
+				z-index: 3;
 				opacity: 0;
 			}
 
@@ -73,6 +73,7 @@
 				right: 0;
 				border-radius: 3px;
 				opacity: 0;
+				z-index: 2;
 			}
 
 			&:hover{

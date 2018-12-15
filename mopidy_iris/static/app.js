@@ -69597,7 +69597,7 @@ var Search = function (_React$Component) {
 								_react2.default.createElement(_ArtistGrid2.default, { mini: true, show_source_icon: true, artists: artists.slice(0, 6) }),
 								artists.length >= 6 ? _react2.default.createElement(
 									_URILink2.default,
-									{ type: 'search', uri: "search:artist:" + this.state.term, className: 'button grey' },
+									{ type: 'search', uri: "search:artist:" + this.state.term, className: 'button button--default' },
 									'All artists (',
 									artists.length,
 									')'
@@ -69627,7 +69627,7 @@ var Search = function (_React$Component) {
 								_react2.default.createElement(_AlbumGrid2.default, { mini: true, show_source_icon: true, albums: albums.slice(0, 6) }),
 								albums.length >= 6 ? _react2.default.createElement(
 									_URILink2.default,
-									{ type: 'search', uri: "search:album:" + this.state.term, className: 'button grey' },
+									{ type: 'search', uri: "search:album:" + this.state.term, className: 'button button--default' },
 									'All albums (',
 									albums.length,
 									')'
@@ -69657,7 +69657,7 @@ var Search = function (_React$Component) {
 								_react2.default.createElement(_PlaylistGrid2.default, { mini: true, show_source_icon: true, playlists: playlists.slice(0, 6) }),
 								playlists.length >= 6 ? _react2.default.createElement(
 									_URILink2.default,
-									{ type: 'search', uri: "search:playlist:" + this.state.term, className: 'button grey' },
+									{ type: 'search', uri: "search:playlist:" + this.state.term, className: 'button button--default' },
 									'All playlists (',
 									playlists.length,
 									')'

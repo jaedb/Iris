@@ -255,7 +255,7 @@ class Search extends React.Component{
 									<h4>Artists</h4>
 								</URILink>
 								<ArtistGrid mini show_source_icon artists={artists.slice(0,6)} />
-								{artists.length >= 6 ? <URILink type="search" uri={"search:artist:"+this.state.term} className="button grey">
+								{artists.length >= 6 ? <URILink type="search" uri={"search:artist:"+this.state.term} className="button button--default">
 									All artists ({artists.length})
 								</URILink> : null}
 							</div>
@@ -273,7 +273,7 @@ class Search extends React.Component{
 									<h4>Albums</h4>
 								</URILink>
 								<AlbumGrid mini show_source_icon albums={albums.slice(0,6)} />
-								{albums.length >= 6 ? <URILink type="search" uri={"search:album:"+this.state.term} className="button grey">
+								{albums.length >= 6 ? <URILink type="search" uri={"search:album:"+this.state.term} className="button button--default">
 									All albums ({albums.length})
 								</URILink> : null}
 							</div>
@@ -291,7 +291,7 @@ class Search extends React.Component{
 									<h4>Playlists</h4>
 								</URILink>
 								<PlaylistGrid mini show_source_icon playlists={playlists.slice(0,6)} />
-								{playlists.length >= 6 ? <URILink type="search" uri={"search:playlist:"+this.state.term} className="button grey">
+								{playlists.length >= 6 ? <URILink type="search" uri={"search:playlist:"+this.state.term} className="button button--default">
 									All playlists ({playlists.length})
 								</URILink> : null}
 							</div>

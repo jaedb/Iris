@@ -89,22 +89,16 @@ input[type="radio"]{
 	&:checked + .label:after {
 		content: ' ';
 		display: inline-block;
-		width: 6px;
-		height: 6px;
+		width: 8px;
+		height: 8px;
 	    border-radius: 50%;
 		position: absolute;
-		top: 11px;
-		left: 7px;
+		top: 10px;
+		left: 6px;
 		background: colour(white);
 	}
 
-	&:focus + .label:before,
-	&:active + .label:before {
-		background: rgba(255,255,255,0.3);
-	}
-
 	.light-theme & {
-
 		& + .label:before {
 			background: colour(faint_grey);
 		}
@@ -112,11 +106,11 @@ input[type="radio"]{
 		&:checked + .label:after {
 			background: colour(darkest_grey);
 		}
+	}
 
-		&:focus + .label:before,
-		&:active + .label:before {
-			background: colour(grey);
-		}
+	&:focus + .label:before,
+	&:active + .label:before {
+		background: colour(turquoise) !important;
 	}
 }
 
@@ -142,21 +136,16 @@ input[type="checkbox"]{
 		content: '\e5ca';
 	}
 
-	&:focus + .label:before,
-	&:active + .label:before {
-		background: rgba(255,255,255,0.3);
-	}
-
 	.light-theme & {
 		& + .label:before {
 			background: colour(faint_grey);
 			color: colour(darkest_grey);
 		}
+	}
 
-		&:focus + .label:before,
-		&:active + .label:before {
-			background: colour(grey);
-		}
+	&:focus + .label:before,
+	&:active + .label:before {
+		background: colour(turquoise) !important;
 	}
 }
 
