@@ -3224,17 +3224,13 @@ input[type="radio"] + .label:before {
 input[type="radio"]:checked + .label:after {
   content: ' ';
   display: inline-block;
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   position: absolute;
-  top: 11px;
-  left: 7px;
+  top: 10px;
+  left: 6px;
   background: #FFFFFF; }
-
-input[type="radio"]:focus + .label:before,
-input[type="radio"]:active + .label:before {
-  background: rgba(255, 255, 255, 0.3); }
 
 .light-theme input[type="radio"] + .label:before {
   background: #f4f2f0; }
@@ -3242,9 +3238,9 @@ input[type="radio"]:active + .label:before {
 .light-theme input[type="radio"]:checked + .label:after {
   background: #121212; }
 
-.light-theme input[type="radio"]:focus + .label:before,
-.light-theme input[type="radio"]:active + .label:before {
-  background: #383734; }
+input[type="radio"]:focus + .label:before,
+input[type="radio"]:active + .label:before {
+  background: #08d58f !important; }
 
 input[type="checkbox"] + .label:before {
   font-family: "Material Icons";
@@ -3265,17 +3261,13 @@ input[type="checkbox"] + .label:before {
 input[type="checkbox"]:checked + .label:before {
   content: '\E5CA'; }
 
-input[type="checkbox"]:focus + .label:before,
-input[type="checkbox"]:active + .label:before {
-  background: rgba(255, 255, 255, 0.3); }
-
 .light-theme input[type="checkbox"] + .label:before {
   background: #f4f2f0;
   color: #121212; }
 
-.light-theme input[type="checkbox"]:focus + .label:before,
-.light-theme input[type="checkbox"]:active + .label:before {
-  background: #383734; }
+input[type="checkbox"]:focus + .label:before,
+input[type="checkbox"]:active + .label:before {
+  background: #08d58f !important; }
 
 select {
   max-width: 100%; }
@@ -4489,7 +4481,7 @@ select {
         text-align: center;
         font-size: 18px;
         color: #FFFFFF;
-        z-index: 1;
+        z-index: 3;
         opacity: 0; }
       .playback-controls .current-track .thumbnail:after {
         -webkit-transition: all 0.2s ease-in-out;
@@ -4505,7 +4497,8 @@ select {
         bottom: 0;
         right: 0;
         border-radius: 3px;
-        opacity: 0; }
+        opacity: 0;
+        z-index: 2; }
       .playback-controls .current-track .thumbnail:hover:after, .playback-controls .current-track .thumbnail:hover:before {
         opacity: 1; }
     .playback-controls .current-track .title {
@@ -5035,7 +5028,8 @@ aside {
     text-align: center;
     font-size: 14px;
     font-weight: 600;
-    color: #FFFFFF; }
+    color: #FFFFFF;
+    z-index: 2; }
 
 @media (min-width: 1000px) {
   .grid--categories .grid__item__name {
