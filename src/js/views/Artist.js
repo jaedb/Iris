@@ -307,7 +307,7 @@ class Artist extends React.Component{
 			<div className="view artist-view preserve-3d">
 				<div className="intro preserve-3d">
 
-					<Parallax image={image} />
+					<Parallax image={image} boxed />
 
 					<div className="liner">
 						<h1>{this.props.artist ? this.props.artist.name : null}</h1>

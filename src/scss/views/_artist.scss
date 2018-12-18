@@ -9,18 +9,10 @@
 		position: relative;
 		@include clearfix();
 
-		.parallax {
-			.light-theme & {
-				&__overlay {
-					display: none;
-				}
-			}
-		}
-
 		.liner {
 			position: relative;
 			z-index: 1;
-			padding: 0 40px 0;
+			padding: 35vh 40px 0;
 
 			h1 {
 				padding-bottom: 25px;
@@ -42,7 +34,14 @@
 				padding-top: 25px;
 			}
 		}
+	}
 
+	.content-wrapper {
+		background: colour(dark_grey);
+
+		.light-theme & {
+			background: colour(white);
+		}
 	}
 
 	.body {

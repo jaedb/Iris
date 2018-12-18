@@ -56,6 +56,9 @@ export default class Parallax extends React.Component{
 		if (this.state.loaded){
 			class_name += " parallax--loaded";
 		}
+		if (this.props.boxed){
+			class_name += " parallax--boxed";
+		}
 
 		var style = {};
 		if (this.state.loaded && this.state.url){
