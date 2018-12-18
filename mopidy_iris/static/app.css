@@ -4220,23 +4220,8 @@ select {
   z-index: 3; }
 
 .parallax {
-  overflow: hidden;
-  position: absolute;
-  top: 0;
-  left: -10px;
-  right: -10px;
-  height: 100%;
-  max-height: 80vh;
-  transform: translateZ(-400px) scale(1.4);
-  transform-origin: top center;
-  z-index: -1;
-  background-color: #323232; }
-  .parallax__inner {
-    position: absolute;
-    top: -1px;
-    right: -1px;
-    left: -1px;
-    bottom: -1px; }
+  position: relative;
+  height: 40vh; }
   .parallax__image {
     -webkit-transition: all 0.5s ease-in-out;
     -moz-transition: all 0.5s ease-in-out;
@@ -4250,7 +4235,9 @@ select {
     background-repeat: no-repeat;
     background-size: cover;
     background-position: 50% 30%;
-    opacity: 0; }
+    opacity: 0;
+    transform: translateZ(-400px) scale(1.4);
+    transform-origin: top center; }
   .parallax__overlay {
     content: '';
     display: block;
@@ -4266,12 +4253,10 @@ select {
     filter: blur(10px); }
   .parallax--loaded .parallax__image {
     opacity: 1; }
-  .light-theme .parallax {
-    background: #FFFFFF; }
-    .light-theme .parallax__image {
-      background-color: #FFFFFF; }
-    .light-theme .parallax__overlay {
-      background-image: linear-gradient(rgba(255, 255, 255, 0), white); }
+  .light-theme .parallax__stage {
+    background-color: #f4f2f0; }
+  .light-theme .parallax__overlay {
+    background-image: linear-gradient(rgba(255, 255, 255, 0), white); }
 
 @font-face {
   font-family: 'Material Icons';
@@ -6350,10 +6335,12 @@ main header {
     content: '';
     clear: both;
     display: block; }
+  .light-theme .artist-view .intro .parallax__overlay {
+    display: none; }
   .artist-view .intro .liner {
     position: relative;
     z-index: 1;
-    padding: 35vh 40px 0; }
+    padding: 0 40px 0; }
     .artist-view .intro .liner h1 {
       padding-bottom: 25px;
       font-size: 5rem;
@@ -6521,9 +6508,6 @@ main .album-view {
 main .playlist-view {
   padding-left: 30%;
   position: relative; }
-  main .playlist-view .parallax {
-    height: 60vh;
-    opacity: 0.5; }
   main .playlist-view .title h2 {
     padding-top: 10px; }
     main .playlist-view .title h2 a:hover {

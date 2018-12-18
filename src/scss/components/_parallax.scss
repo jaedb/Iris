@@ -1,25 +1,8 @@
 $parallax: 'parallax';
 
 .#{$parallax} {
-	overflow: hidden;
-	position: absolute;
-	top: 0;
-	left: -10px;
-	right: -10px;
-	height: 100%;
-	max-height: 80vh;
-	transform: translateZ(-400px) scale(1.4);
-	transform-origin: top center;
-	z-index: -1;
-	background-color: lighten(colour(dark_grey), 10%);
-
-	&__inner {
-		position: absolute;
-		top: -1px;
-		right: -1px;
-		left: -1px;
-		bottom: -1px;
-	}
+	position: relative;
+	height: 40vh;
 
 	&__image {
 		@include animate(0.5s);
@@ -32,6 +15,8 @@ $parallax: 'parallax';
 		background-size: cover;
 		background-position: 50% 30%;
 		opacity: 0;
+		transform: translateZ(-400px) scale(1.4);
+		transform-origin: top center;
 	}
 
 	&__overlay {
@@ -63,10 +48,8 @@ $parallax: 'parallax';
 	}
 
 	.light-theme & {
-		background: colour(white);
-
-		&__image {
-			background-color: colour(white);
+		&__stage {
+			background-color: colour(faint_grey);
 		}
 
 		&__overlay {

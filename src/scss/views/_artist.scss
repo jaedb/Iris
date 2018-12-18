@@ -9,10 +9,18 @@
 		position: relative;
 		@include clearfix();
 
+		.parallax {
+			.light-theme & {
+				&__overlay {
+					display: none;
+				}
+			}
+		}
+
 		.liner {
 			position: relative;
 			z-index: 1;
-			padding: 35vh 40px 0;
+			padding: 0 40px 0;
 
 			h1 {
 				padding-bottom: 25px;

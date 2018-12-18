@@ -64,10 +64,8 @@ export default class Parallax extends React.Component{
 
 		return (
 			<div className={class_name}>
-				<div className="parallax__inner preserve-3d">
-					<div className="parallax__image" style={style}></div>
-					<div className="parallax__overlay"></div>
-				</div>
+				<div className="parallax__image" style={style}></div>
+				<div className="parallax__overlay"></div>
 			</div>
 		);
 	}
