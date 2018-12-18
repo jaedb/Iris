@@ -4225,20 +4225,22 @@ select {
   left: 0;
   right: 0;
   height: 100%;
-  max-height: 60vh; }
+  max-height: 60vh;
+  z-index: -1; }
   .parallax__image {
     -webkit-transition: all 0.5s ease-in-out;
     -moz-transition: all 0.5s ease-in-out;
     -o-transition: all 0.5s ease-in-out;
     transition: all 0.5s ease-in-out;
-    width: 100%;
-    height: 100%;
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    bottom: -10px;
+    right: -10px;
     background-repeat: no-repeat;
     background-size: cover;
     background-position: 50% 30%;
-    opacity: 0;
-    transform: translateZ(-400px) scale(1.4);
-    transform-origin: top center; }
+    opacity: 0; }
   .parallax__overlay {
     content: '';
     display: block;
@@ -4249,7 +4251,15 @@ select {
     height: 100%;
     background-image: linear-gradient(rgba(24, 24, 24, 0), #181818);
     z-index: 1; }
-  .parallax:not(.parallax--boxed) .parallax__overlay {
+  .parallax--flexible-height {
+    /**
+		 * We need to apply the transform on the whole parallax. I think this is because
+		 * our 'frame' is the entire <main> element, rather than a fixed-height sub-element
+		 **/
+    transform: translateZ(-400px) scale(1.4);
+    transform-origin: top center;
+    overflow: hidden; }
+  .parallax--fixed-height .parallax__image {
     transform: translateZ(-400px) scale(1.4);
     transform-origin: top center; }
   .parallax--blur .parallax__image {
@@ -6381,8 +6391,6 @@ main header {
 @media (max-width: 800px) {
   .artist-view .intro {
     margin-bottom: 0; }
-    .artist-view .intro .parallax {
-      height: 60vh; }
     .artist-view .intro .liner {
       padding-left: 0;
       padding-right: 0;

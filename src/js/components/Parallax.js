@@ -56,8 +56,10 @@ export default class Parallax extends React.Component{
 		if (this.state.loaded){
 			class_name += " parallax--loaded";
 		}
-		if (this.props.boxed){
-			class_name += " parallax--boxed";
+		if (this.props.fixedHeight){
+			class_name += " parallax--fixed-height";
+		} else {
+			class_name += " parallax--flexible-height";
 		}
 
 		var style = {};
@@ -67,8 +69,10 @@ export default class Parallax extends React.Component{
 
 		return (
 			<div className={class_name}>
-				<div className="parallax__image" style={style}></div>
-				<div className="parallax__overlay"></div>
+				<div className="parallax__layer">
+					<div className="parallax__image" style={style}></div>
+					<div className="parallax__overlay"></div>
+				</div>
 			</div>
 		);
 	}

@@ -4220,23 +4220,13 @@ select {
   z-index: 3; }
 
 .parallax {
-  overflow: hidden;
   position: absolute;
   top: 0;
-  left: -10px;
-  right: -10px;
+  left: 0;
+  right: 0;
   height: 100%;
-  max-height: 80vh;
-  transform: translateZ(-400px) scale(1.4);
-  transform-origin: top center;
-  z-index: -1;
-  background-color: #323232; }
-  .parallax__inner {
-    position: absolute;
-    top: -1px;
-    right: -1px;
-    left: -1px;
-    bottom: -1px; }
+  max-height: 60vh;
+  z-index: -1; }
   .parallax__image {
     -webkit-transition: all 0.5s ease-in-out;
     -moz-transition: all 0.5s ease-in-out;
@@ -4261,17 +4251,26 @@ select {
     height: 100%;
     background-image: linear-gradient(rgba(24, 24, 24, 0), #181818);
     z-index: 1; }
+  .parallax--flexible-height {
+    /**
+		 * We need to apply the transform on the whole parallax. I think this is because
+		 * our 'frame' is the entire <main> element, rather than a fixed-height sub-element
+		 **/
+    transform: translateZ(-400px) scale(1.4);
+    transform-origin: top center;
+    overflow: hidden; }
+  .parallax--fixed-height .parallax__image {
+    transform: translateZ(-400px) scale(1.4);
+    transform-origin: top center; }
   .parallax--blur .parallax__image {
     -webkit-filter: blur(10px);
     filter: blur(10px); }
   .parallax--loaded .parallax__image {
     opacity: 1; }
-  .light-theme .parallax {
-    background: #FFFFFF; }
-    .light-theme .parallax__image {
-      background-color: #FFFFFF; }
-    .light-theme .parallax__overlay {
-      background-image: linear-gradient(rgba(255, 255, 255, 0), white); }
+  .light-theme .parallax__stage {
+    background-color: #f4f2f0; }
+  .light-theme .parallax__overlay {
+    background-image: linear-gradient(rgba(255, 255, 255, 0), white); }
 
 @font-face {
   font-family: 'Material Icons';
@@ -6365,6 +6364,11 @@ main header {
     .artist-view .intro .liner .sub-views {
       padding-top: 25px; }
 
+.artist-view .content-wrapper {
+  background: #181818; }
+  .light-theme .artist-view .content-wrapper {
+    background: #FFFFFF; }
+
 .artist-view .body.overview .albums {
   padding-top: 30px; }
 
@@ -6387,8 +6391,6 @@ main header {
 @media (max-width: 800px) {
   .artist-view .intro {
     margin-bottom: 0; }
-    .artist-view .intro .parallax {
-      height: 60vh; }
     .artist-view .intro .liner {
       padding-left: 0;
       padding-right: 0;
@@ -6521,9 +6523,6 @@ main .album-view {
 main .playlist-view {
   padding-left: 30%;
   position: relative; }
-  main .playlist-view .parallax {
-    height: 60vh;
-    opacity: 0.5; }
   main .playlist-view .title h2 {
     padding-top: 10px; }
     main .playlist-view .title h2 a:hover {
