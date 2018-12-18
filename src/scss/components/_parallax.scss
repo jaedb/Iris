@@ -1,25 +1,13 @@
 $parallax: 'parallax';
 
 .#{$parallax} {
-	overflow: hidden;
 	position: absolute;
 	top: 0;
-	left: -10px;
-	right: -10px;
+	left: 0;
+	right: 0;
 	height: 100%;
-	max-height: 80vh;
-	transform: translateZ(-400px) scale(1.4);
-	transform-origin: top center;
+	max-height: 60vh;
 	z-index: -1;
-	background-color: lighten(colour(dark_grey), 10%);
-
-	&__inner {
-		position: absolute;
-		top: -1px;
-		right: -1px;
-		left: -1px;
-		bottom: -1px;
-	}
 
 	&__image {
 		@include animate(0.5s);
@@ -46,6 +34,26 @@ $parallax: 'parallax';
 		z-index: 1;
 	}
 
+	&--flexible-height {
+
+		/**
+		 * We need to apply the transform on the whole parallax. I think this is because
+		 * our 'frame' is the entire <main> element, rather than a fixed-height sub-element
+		 **/
+		transform: translateZ(-400px) scale(1.4);
+		transform-origin: top center;
+		overflow: hidden;
+	}
+
+	&--fixed-height {
+		.#{$parallax} {
+			&__image {
+				transform: translateZ(-400px) scale(1.4);
+				transform-origin: top center;
+			}
+		}
+	}
+
 	&--blur {
 		.#{$parallax} {
 			&__image {
@@ -63,10 +71,8 @@ $parallax: 'parallax';
 	}
 
 	.light-theme & {
-		background: colour(white);
-
-		&__image {
-			background-color: colour(white);
+		&__stage {
+			background-color: colour(faint_grey);
 		}
 
 		&__overlay {
