@@ -4,12 +4,22 @@
 	.intro {
 		position: relative;
 		padding: 90px 40px 70px;
-		z-index: 1;
+		z-index: -1;
 
 		h1 {
 			font-size: 3rem;
 			line-height: 3rem;
 			padding-bottom: 10px;
+		}
+
+		.parallax {
+			position: absolute;
+			max-height: 100%;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			z-index: 1;
 		}
 
 		&__liner {
@@ -176,7 +186,6 @@
 			}
 		}
 	}
-
 	
 	section {
 		.grid {
@@ -194,6 +203,15 @@
 					margin-right: 0;
 				}
 			}
+		}
+	}
+
+	.content-wrapper {
+		position: relative;
+		background: colour(dark_grey);
+
+		.light-theme & {
+			background: colour(white);
 		}
 	}
 

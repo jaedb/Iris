@@ -405,7 +405,7 @@ class Discover extends React.Component{
 
 		// Results not in
 		if (!this.props.recommendations || this.props.recommendations.albums_uris === undefined || this.props.recommendations.artists_uris === undefined){
-			return null;
+			return <div className="content-wrapper recommendations-results"></div>;
 		}
 
 		var tracks = [];
@@ -514,7 +514,7 @@ class Discover extends React.Component{
 			<div className="view discover-view preserve-3d">
 				<div className="intro preserve-3d">
 
-					<Parallax image="assets/backgrounds/discover.jpg" />
+					<Parallax image="assets/backgrounds/discover.jpg" fixedHeight />
 
 					<div className="intro__liner">
 						<h1>Explore new music</h1>
@@ -558,7 +558,6 @@ class Discover extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		disable_parallax: state.ui.disable_parallax,
 		theme: state.ui.theme,
 		albums: state.core.albums,
 		artists: state.core.artists,

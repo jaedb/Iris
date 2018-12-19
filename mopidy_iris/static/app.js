@@ -19820,7 +19820,7 @@ var Parallax = function (_React$Component) {
 				{ className: class_name },
 				_react2.default.createElement(
 					"div",
-					{ className: "parallax__layer" },
+					{ className: "parallax__layer preserve-3d" },
 					_react2.default.createElement("div", { className: "parallax__image", style: style }),
 					_react2.default.createElement("div", { className: "parallax__overlay" })
 				)
@@ -78279,7 +78279,7 @@ var Discover = function (_React$Component) {
 
 			// Results not in
 			if (!this.props.recommendations || this.props.recommendations.albums_uris === undefined || this.props.recommendations.artists_uris === undefined) {
-				return null;
+				return _react2.default.createElement('div', { className: 'content-wrapper recommendations-results' });
 			}
 
 			var tracks = [];
@@ -78413,7 +78413,7 @@ var Discover = function (_React$Component) {
 				_react2.default.createElement(
 					'div',
 					{ className: 'intro preserve-3d' },
-					_react2.default.createElement(_Parallax2.default, { image: 'assets/backgrounds/discover.jpg' }),
+					_react2.default.createElement(_Parallax2.default, { image: 'assets/backgrounds/discover.jpg', fixedHeight: true }),
 					_react2.default.createElement(
 						'div',
 						{ className: 'intro__liner' },
@@ -78474,7 +78474,6 @@ var Discover = function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
-		disable_parallax: state.ui.disable_parallax,
 		theme: state.ui.theme,
 		albums: state.core.albums,
 		artists: state.core.artists,

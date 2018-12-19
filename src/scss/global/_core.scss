@@ -125,6 +125,8 @@ main {
 	}
 
 	.content-wrapper {
+		@include clearfix();
+		position: relative;
 		padding: 40px 40px 20px 40px;
 	}
 

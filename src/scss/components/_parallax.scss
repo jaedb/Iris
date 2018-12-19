@@ -9,6 +9,14 @@ $parallax: 'parallax';
 	max-height: 60vh;
 	z-index: -1;
 
+	&__layer {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+	}
+
 	&__image {
 		@include animate(0.5s);
 		position: absolute;
