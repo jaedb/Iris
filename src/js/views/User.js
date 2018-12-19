@@ -90,7 +90,9 @@ class User extends React.Component{
 		return (
 			<div className="view user-view preserve-3d">
 				<div className="intro preserve-3d">
-					<Parallax image={image} theme={this.props.theme} disabled={this.props.disable_parallax} />
+
+					<Parallax image={image} fixedHeight />
+
 					<div className="liner">
 						<h1>{user.name}</h1>
 						<h2>
@@ -126,8 +128,6 @@ const mapStateToProps = (state, ownProps) => {
 	var uri = ownProps.params.uri;
 	return {
 		me: state.spotify.me,
-		theme: state.ui.theme,
-		disable_parallax: state.ui.disable_parallax,
 		load_queue: state.ui.load_queue,
 		spotify_authorized: state.spotify.authorization,
 		playlists: state.core.playlists,

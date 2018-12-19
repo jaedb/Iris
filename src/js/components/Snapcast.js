@@ -2,7 +2,6 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { hashHistory } from 'react-router'
 import Link from './Link';
 
 import VolumeControl from './Fields/VolumeControl';

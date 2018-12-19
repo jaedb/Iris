@@ -2732,7 +2732,12 @@ main {
   .light-theme main {
     background: #FFFFFF; }
   main .content-wrapper {
+    position: relative;
     padding: 40px 40px 20px 40px; }
+    main .content-wrapper::after {
+      content: '';
+      clear: both;
+      display: block; }
   main a {
     color: inherit;
     text-decoration: none;
@@ -3232,15 +3237,19 @@ input[type="radio"]:checked + .label:after {
   left: 6px;
   background: #FFFFFF; }
 
+input[type="radio"]:focus + .label:before,
+input[type="radio"]:active + .label:before {
+  background: #a3a19f; }
+
 .light-theme input[type="radio"] + .label:before {
   background: #f4f2f0; }
 
 .light-theme input[type="radio"]:checked + .label:after {
   background: #121212; }
 
-input[type="radio"]:focus + .label:before,
-input[type="radio"]:active + .label:before {
-  background: #08d58f !important; }
+.light-theme input[type="radio"]:focus + .label:before,
+.light-theme input[type="radio"]:active + .label:before {
+  background: #383734; }
 
 input[type="checkbox"] + .label:before {
   font-family: "Material Icons";
@@ -3261,13 +3270,18 @@ input[type="checkbox"] + .label:before {
 input[type="checkbox"]:checked + .label:before {
   content: '\E5CA'; }
 
+input[type="checkbox"]:focus + .label:before,
+input[type="checkbox"]:active + .label:before {
+  background: #a3a19f; }
+
 .light-theme input[type="checkbox"] + .label:before {
   background: #f4f2f0;
   color: #121212; }
 
-input[type="checkbox"]:focus + .label:before,
-input[type="checkbox"]:active + .label:before {
-  background: #08d58f !important; }
+.light-theme input[type="checkbox"]:focus + .label:before,
+.light-theme input[type="checkbox"]:active + .label:before {
+  color: #FFFFFF;
+  background: #383734; }
 
 select {
   max-width: 100%; }
@@ -3873,10 +3887,8 @@ select {
     .light-theme .list__item:not(:first-child) {
       border-top-color: rgba(128, 128, 128, 0.1); }
   :root .notouch:not(.dragging) .list__item:not(.no-click):hover {
-    background: rgba(255, 255, 255, 0.03);
-    cursor: pointer; }
-    .light-theme :root .notouch:not(.dragging) .list__item:not(.no-click):hover {
-      background: rgba(0, 0, 0, 0.03); }
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.03); }
   :root .notouch:not(.dragging) .list__item:not(.no-click):active, :root .notouch:not(.dragging) .list__item:not(.no-click):focus {
     -webkit-transition: none !important;
     -moz-transition: none !important;
@@ -3885,6 +3897,8 @@ select {
     -moz-transform: scale(0.997);
     -webkit-transform: scale(0.997);
     transform: scale(0.997); }
+  :root .light-theme.notouch:not(.dragging) .list__item:not(.no-click):hover {
+    background: rgba(0, 0, 0, 0.03); }
   .list__item .select-zone,
   .list__item .drag-zone {
     display: none; }
@@ -4222,11 +4236,25 @@ select {
 .parallax {
   position: absolute;
   top: 0;
-  left: 0;
-  right: 0;
+  left: -5px;
+  right: -5px;
   height: 100%;
-  max-height: 60vh;
-  z-index: -1; }
+  z-index: -1;
+  /**
+	 * When we transform on the z-axis, z-index becomes irrelevant
+	 * to avoid the parallax sitting on top of our content and preventing
+	 * click behavior, we make the parallax a non-interactive element
+	 *
+	 * See: https://stackoverflow.com/questions/5472802/css-z-index-lost-after-webkit-transform-translate3d;
+	 **/
+  pointer-events: none; }
+  .parallax__layer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1; }
   .parallax__image {
     -webkit-transition: all 0.5s ease-in-out;
     -moz-transition: all 0.5s ease-in-out;
@@ -4240,17 +4268,18 @@ select {
     background-repeat: no-repeat;
     background-size: cover;
     background-position: 50% 30%;
-    opacity: 0; }
+    opacity: 0;
+    z-index: 1; }
   .parallax__overlay {
     content: '';
     display: block;
     position: absolute;
-    bottom: 0;
+    bottom: -1px;
     left: 0;
     right: 0;
     height: 100%;
     background-image: linear-gradient(rgba(24, 24, 24, 0), #181818);
-    z-index: 1; }
+    z-index: 2; }
   .parallax--flexible-height {
     /**
 		 * We need to apply the transform on the whole parallax. I think this is because
@@ -6453,6 +6482,11 @@ main header {
     .user-view .intro .liner h2 {
       padding-bottom: 25px; }
 
+.user-view .content-wrapper {
+  background: #181818; }
+  .light-theme .user-view .content-wrapper {
+    background: #FFFFFF; }
+
 @media (max-width: 800px) {
   .user-view .intro .thumbnail {
     float: none;
@@ -6523,6 +6557,9 @@ main .album-view {
 main .playlist-view {
   padding-left: 30%;
   position: relative; }
+  main .playlist-view .parallax {
+    height: 60vh;
+    opacity: 0.5; }
   main .playlist-view .title h2 {
     padding-top: 10px; }
     main .playlist-view .title h2 a:hover {
@@ -6633,8 +6670,7 @@ main .track-view {
       padding: 0; } }
 
 .queue-view .parallax {
-  opacity: 0.5;
-  margin-bottom: -45vh; }
+  opacity: 0.5; }
 
 .queue-view .current-track {
   text-align: center;
@@ -6772,23 +6808,27 @@ main .track-view {
     padding-left: 0px; } }
 
 .discover-view .intro {
+  padding: 90px 40px 40px;
   position: relative;
-  padding: 90px 40px 70px;
-  z-index: 1; }
-  .discover-view .intro h1 {
-    font-size: 3rem;
-    line-height: 3rem;
-    padding-bottom: 10px; }
+  z-index: 96; }
   .discover-view .intro__liner {
     z-index: 2;
     position: relative;
     color: #FFFFFF; }
+    .discover-view .intro__liner h1 {
+      font-size: 3rem;
+      line-height: 3rem;
+      padding-bottom: 10px; }
     .discover-view .intro__liner h2 {
-      padding-bottom: 8px; }
-    .light-theme .discover-view .intro__liner {
-      color: #121212; }
+      padding-bottom: 8px;
+      color: #a3a19f; }
+    .light-theme .discover-view .intro__liner h1 {
+      color: #FFFFFF; }
+    .light-theme .discover-view .intro__liner h2 {
+      color: #FFFFFF;
+      opacity: 0.75; }
   .discover-view .intro__parameters {
-    padding-top: 50px; }
+    padding-top: 40px; }
     .discover-view .intro__parameters::after {
       content: '';
       clear: both;
@@ -6797,7 +6837,7 @@ main .track-view {
     .discover-view .intro__parameters .tunabilities {
       float: left; }
   .discover-view .intro__actions {
-    padding-top: 40px; }
+    padding-top: 20px; }
     .discover-view .intro__actions .autocomplete-field {
       width: 250px;
       display: inline-block;
@@ -6907,7 +6947,7 @@ main .track-view {
   .discover-view .intro {
     padding: 40px 20px; }
     .discover-view .intro__parameters {
-      padding-top: 20px; }
+      padding-top: 10px; }
       .discover-view .intro__parameters .seeds {
         padding-top: 20px;
         float: none; }
@@ -6921,7 +6961,7 @@ main .track-view {
       .discover-view .intro__parameters .add .add-properties {
         margin-right: 0; }
     .discover-view .intro__actions {
-      padding-top: 10px; }
+      padding-top: 0; }
       .discover-view .intro__actions .add-seed-field {
         width: 69%; }
       .discover-view .intro__actions .add-properties {

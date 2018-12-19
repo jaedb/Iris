@@ -20,6 +20,14 @@
 		}
 	}
 
+	.content-wrapper {
+		background: colour(dark_grey);
+
+		.light-theme & {
+			background: colour(white);
+		}
+	}
+
 	@include responsive($bp_medium){
 		.intro {
 

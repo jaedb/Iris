@@ -514,13 +514,11 @@ class Discover extends React.Component{
 			<div className="view discover-view preserve-3d">
 				<div className="intro preserve-3d">
 
-					<Parallax image="assets/backgrounds/discover.jpg" fixedHeight />
+					<Parallax image="assets/backgrounds/discover.jpg" />
 
 					<div className="intro__liner">
 						<h1>Explore new music</h1>
-						<h2 className="mid_grey-text">
-							Add seeds and musical properties below to build your sound
-						</h2>
+						<h2>Add seeds and musical properties below to build your sound</h2>
 						<div className="intro__parameters">
 
 							{this.renderSeeds()}

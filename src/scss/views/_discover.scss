@@ -2,43 +2,41 @@
 .discover-view {
 	
 	.intro {
+		padding: 90px 40px 40px;
 		position: relative;
-		padding: 90px 40px 70px;
-		z-index: -1;
-
-		h1 {
-			font-size: 3rem;
-			line-height: 3rem;
-			padding-bottom: 10px;
-		}
-
-		.parallax {
-			position: absolute;
-			max-height: 100%;
-			top: 0;
-			right: 0;
-			bottom: 0;
-			left: 0;
-			z-index: 1;
-		}
+		z-index: 96;
 
 		&__liner {
 			z-index: 2;
 			position: relative;
 			color: colour(white);
 
+			h1 {
+				font-size: 3rem;
+				line-height: 3rem;
+				padding-bottom: 10px;
+			}
+
 			h2 {
 				padding-bottom: 8px;
+				color: colour(mid_grey);
 			}
 
 			.light-theme & {
-				color: colour(darkest_grey);
+				h1 {
+					color: colour(white);
+				}
+
+				h2 {
+					color: colour(white);
+					opacity: 0.75;
+				}
 			}
 		}
 
 		&__parameters {
 			@include clearfix();
-			padding-top: 50px;
+			padding-top: 40px;
 
 			.seeds,
 			.tunabilities {
@@ -47,7 +45,7 @@
 		}
 
 		&__actions {
-			padding-top: 40px;
+			padding-top: 20px;
 
 			.autocomplete-field {
 				width: 250px;
@@ -206,22 +204,13 @@
 		}
 	}
 
-	.content-wrapper {
-		position: relative;
-		background: colour(dark_grey);
-
-		.light-theme & {
-			background: colour(white);
-		}
-	}
-
 	@include responsive($bp_medium){
 		
 		.intro {
 			padding: 40px 20px;
 
 			&__parameters {
-				padding-top: 20px;
+				padding-top: 10px;
 
 				.seeds {
 					padding-top: 20px;
@@ -249,7 +238,7 @@
 			}
 
 			&__actions {
-				padding-top: 10px;
+				padding-top: 0;
 
 				.add-seed-field {
 					width: 69%;

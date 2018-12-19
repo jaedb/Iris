@@ -3,6 +3,11 @@ main .playlist-view {
 	padding-left: 30%;
 	position: relative;
 
+	.parallax {
+		height: 60vh;
+		opacity: 0.5;
+	}
+
 	.title {
 		h2 {
 			padding-top: 10px;

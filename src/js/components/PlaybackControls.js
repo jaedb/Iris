@@ -1,9 +1,10 @@
 
-import React, { PropTypes } from 'react'
-import { connect } from 'react-redux'
-import Link from './Link'
-import { bindActionCreators } from 'redux'
+import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { hashHistory } from 'react-router';
 
+import Link from './Link';
 import ProgressSlider from './Fields/ProgressSlider'
 import VolumeControl from './Fields/VolumeControl'
 import MuteControl from './Fields/MuteControl'
@@ -122,12 +123,7 @@ class PlaybackControls extends React.Component{
 		if (this.start_position.x + tap_distance_threshold > end_position.x &&
 			this.start_position.x - tap_distance_threshold < end_position.x){
 
-			// We received a touchend within 300ms ago, so handle as double-tap
-			if ((timestamp - this.end_time) > 0 && (timestamp - this.end_time) <= 300){
-				e.preventDefault();
-				console.log('double tap >> go to track');
-				return false;
-			}
+			hashHistory.push(global.baseURL+'queue');
 		} else {
 
 			// Swipe to the left = previous track
