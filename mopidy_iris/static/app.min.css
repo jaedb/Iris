@@ -6670,7 +6670,8 @@ main .track-view {
       padding: 0; } }
 
 .queue-view .parallax {
-  opacity: 0.5; }
+  opacity: 0.5;
+  height: 60vh; }
 
 .queue-view .current-track {
   text-align: center;

@@ -135,7 +135,7 @@ class LibraryPlaylists extends React.Component{
 						className="playlists"
 						link_prefix={global.baseURL+"playlist/"} />
 					<LazyLoadListener 
-						loadKey={this.state.limit}
+						loadKey={total_playlists > this.state.limit ? this.state.limit : total_playlists}
 						loading={this.state.limit < total_playlists} 
 						loadMore={() => this.setState({limit: this.state.limit + this.state.per_page})}
 					/>
@@ -148,7 +148,7 @@ class LibraryPlaylists extends React.Component{
 						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						playlists={playlists} />
 					<LazyLoadListener 
-						loadKey={this.state.limit}
+						loadKey={total_playlists > this.state.limit ? this.state.limit : total_playlists}
 						loading={this.state.limit < total_playlists}
 						loadMore={() => this.setState({limit: this.state.limit + this.state.per_page})}
 					/>
