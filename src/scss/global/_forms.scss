@@ -98,6 +98,11 @@ input[type="radio"]{
 		background: colour(white);
 	}
 
+	&:focus + .label:before,
+	&:active + .label:before {
+		background: colour(mid_grey);
+	}
+
 	.light-theme & {
 		& + .label:before {
 			background: colour(faint_grey);
@@ -106,11 +111,11 @@ input[type="radio"]{
 		&:checked + .label:after {
 			background: colour(darkest_grey);
 		}
-	}
 
-	&:focus + .label:before,
-	&:active + .label:before {
-		background: colour(turquoise) !important;
+		&:focus + .label:before,
+		&:active + .label:before {
+			background: colour(grey);
+		}
 	}
 }
 
@@ -136,16 +141,22 @@ input[type="checkbox"]{
 		content: '\e5ca';
 	}
 
+	&:focus + .label:before,
+	&:active + .label:before {
+		background: colour(mid_grey);
+	}
+
 	.light-theme & {
 		& + .label:before {
 			background: colour(faint_grey);
 			color: colour(darkest_grey);
 		}
-	}
 
-	&:focus + .label:before,
-	&:active + .label:before {
-		background: colour(turquoise) !important;
+		&:focus + .label:before,
+		&:active + .label:before {
+			color: colour(white);
+			background: colour(grey);
+		}
 	}
 }
 

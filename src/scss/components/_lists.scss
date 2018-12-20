@@ -44,12 +44,8 @@
 
 		:root .notouch:not(.dragging) &:not(.no-click) {
 			&:hover {
-				background: rgba(255,255,255,0.03);
 				cursor: pointer;
-
-				.light-theme & {
-					background: rgba(0,0,0,0.03);
-				}
+				background: rgba(255,255,255,0.03);
 			}
 
 			&:active,
@@ -58,6 +54,12 @@
 				-moz-transform: scale(0.997);
 				-webkit-transform: scale(0.997);
 				transform: scale(0.997);
+			}
+		}
+
+		:root .light-theme.notouch:not(.dragging) &:not(.no-click) {
+			&:hover {
+				background: rgba(0,0,0,0.03);
 			}
 		}
 

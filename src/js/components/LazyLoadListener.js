@@ -35,8 +35,10 @@ export default class LazyLoadListener extends React.Component{
 	handleScroll(e){
 		if (this.state.listening){
 
-			// At, or nearly at the bottom of the page
-		    if (this.element.scrollTop > (this.element.scrollHeight - this.element.offsetHeight - 100)){
+			var window_height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+
+			// At, or half a screen from bottom of the page
+		    if (this.element.scrollTop > (this.element.scrollHeight - this.element.offsetHeight - (window_height / 2))){
 
 				// Immediately stop listening to avoid duplicating pagination requests
 				this.setState(

@@ -93,7 +93,6 @@ class LibraryArtists extends React.Component{
 	}
 
 	loadMore(){
-		console.log('Load more');
 		this.setState({limit: this.state.limit + this.state.per_page});
 	}
 
@@ -185,7 +184,7 @@ class LibraryArtists extends React.Component{
 						className="artists"
 						link_prefix={global.baseURL+"artist/"} />
 					<LazyLoadListener 
-						loadKey={this.state.limit}
+						loadKey={total_artists > this.state.limit ? this.state.limit : total_artists}
 						showLoader={this.state.limit < total_artists}
 						loadMore={() => this.loadMore()}
 					/>
@@ -198,7 +197,7 @@ class LibraryArtists extends React.Component{
 						handleContextMenu={(e,item) => this.handleContextMenu(e,item)}
 						artists={artists} />
 					<LazyLoadListener 
-						loadKey={this.state.limit}
+						loadKey={total_artists > this.state.limit ? this.state.limit : total_artists}
 						showLoader={this.state.limit < total_artists} 
 						loadMore={() => this.loadMore()}
 					/>

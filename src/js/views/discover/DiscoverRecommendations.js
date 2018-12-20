@@ -405,7 +405,7 @@ class Discover extends React.Component{
 
 		// Results not in
 		if (!this.props.recommendations || this.props.recommendations.albums_uris === undefined || this.props.recommendations.artists_uris === undefined){
-			return null;
+			return <div className="content-wrapper recommendations-results"></div>;
 		}
 
 		var tracks = [];
@@ -518,9 +518,7 @@ class Discover extends React.Component{
 
 					<div className="intro__liner">
 						<h1>Explore new music</h1>
-						<h2 className="mid_grey-text">
-							Add seeds and musical properties below to build your sound
-						</h2>
+						<h2>Add seeds and musical properties below to build your sound</h2>
 						<div className="intro__parameters">
 
 							{this.renderSeeds()}
@@ -558,7 +556,6 @@ class Discover extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		disable_parallax: state.ui.disable_parallax,
 		theme: state.ui.theme,
 		albums: state.core.albums,
 		artists: state.core.artists,

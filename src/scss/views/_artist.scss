@@ -34,7 +34,14 @@
 				padding-top: 25px;
 			}
 		}
+	}
 
+	.content-wrapper {
+		background: colour(dark_grey);
+
+		.light-theme & {
+			background: colour(white);
+		}
 	}
 
 	.body {
@@ -73,10 +80,6 @@
 	@include responsive($bp_medium){
 		.intro {
 			margin-bottom: 0;
-
-			.parallax {
-				height: 60vh;
-			}
 
 			.liner {
 				padding-left: 0;
