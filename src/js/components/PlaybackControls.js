@@ -25,7 +25,8 @@ class PlaybackControls extends React.Component{
 		super(props)
 		this.stream = null;
 		this.state = {
-			expanded: false
+			expanded: false,
+			current_track_transition: null
 		}
 	}
 
@@ -129,14 +130,27 @@ class PlaybackControls extends React.Component{
 			// Swipe to the left = previous track
 			if (this.start_position.x < end_position.x){
 				this.props.mopidyActions.previous();
+				this.currentTrackTransition('previous');
 
 			// Swipe to the right = skip track
 			} else if (this.start_position.x > end_position.x){
 				this.props.mopidyActions.next();
+				this.currentTrackTransition('next');
 			}
 		}
 
 		this.end_time = timestamp;
+	}
+
+	currentTrackTransition(transition){
+		this.setState({current_track_transition: transition});
+
+		var self = this;
+		setTimeout(() => {
+				self.setState({current_track_transition: null})
+			},
+			100
+		);
 	}
 
 	renderPlayButton(){
@@ -183,7 +197,7 @@ class PlaybackControls extends React.Component{
 				{this.props.next_track && this.props.next_track.images ? <Thumbnail className="hide" size="large" images={this.props.next_track.images} /> : null}
 				
 				<div 
-					className={"current-track"+(this.props.current_track_transition ? " current-track--transition current-track--transition-"+this.props.current_track_transition : "")}
+					className={"current-track"+(this.state.current_track_transition ? " current-track--transition current-track--transition-"+this.state.current_track_transition : "")}
 					onTouchStart={e => this.handleTouchStart(e)}
 					onTouchEnd={e => this.handleTouchEnd(e)}>
 						<Link className="thumbnail-wrapper" to={global.baseURL+'kiosk-mode'}>
@@ -275,7 +289,6 @@ const mapStateToProps = (state, ownProps) => {
 		random: state.mopidy.random,
 		volume: state.mopidy.volume,
 		mute: state.mopidy.mute,
-		current_track_transition: state.ui.current_track_transition,
 		sidebar_open: state.ui.sidebar_open,
 		slim_mode: state.ui.slim_mode
 	}
