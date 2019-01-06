@@ -45,6 +45,14 @@ html {
 
 	.light-theme {
 		color: colour(darkest_grey);
+	}	
+
+	@include resolution(2){
+		font-size: 15px;
+	}
+
+	@include resolution(3){
+		font-size: 16px;
 	}
 }
 
@@ -81,6 +89,10 @@ main {
 	overflow-y: scroll;
 	overflow-x: hidden;
 	overscroll-behavior: contain;
+
+	@include resolution(2){
+		bottom: 56px;
+	}
 
 	/**
 	 * iOS drops smooth-scrolling on divs, so we need to manually re-set it

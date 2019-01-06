@@ -225,7 +225,7 @@
 			height: 90%;
 			text-align: center;
 
-			.background {
+			.thumbnail.background {
 				position: absolute;
 				top: -5vh;
 				right: -5vw;
@@ -235,7 +235,7 @@
 				opacity: 0.2;
 				max-width: none;
 
-				.image {
+				.thumbnail__image {
 					@include blur(100px);
 					width: 110vw;
 					padding-bottom: 110vh;

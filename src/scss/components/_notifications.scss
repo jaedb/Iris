@@ -184,5 +184,9 @@
 			bottom: 20px;
 			right: 40px;
 		}
+
+		@include resolution(2){
+			bottom: 68px;
+		}
 	}
 }

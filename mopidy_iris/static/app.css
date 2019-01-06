@@ -2636,8 +2636,12 @@
  * Produces most album/playlist/artist grids
  **/
 /** 
- * Responsive rules
- * Creates @media wrappers
+ * Resolution-based responsive rules
+ * Creates @media wrappers based on pixel density
+ **/
+/** 
+ * Viewport-based responsive rules
+ * Creates @media wrappers based on screen dimensions
  **/
 @font-face {
   font-family: 'Overpass';
@@ -2677,6 +2681,14 @@ html {
   body .light-theme,
   html .light-theme {
     color: #121212; }
+  @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+    body,
+    html {
+      font-size: 15px; } }
+  @media only screen and (-webkit-min-device-pixel-ratio: 3), only screen and (min--moz-device-pixel-ratio: 3), only screen and (-o-min-device-pixel-ratio: 3), only screen and (min-device-pixel-ratio: 3), only screen and (min-resolution: 288dpi), only screen and (min-resolution: 3dppx) {
+    body,
+    html {
+      font-size: 16px; } }
 
 body {
   transform: translateZ(0px);
@@ -2709,6 +2721,9 @@ main {
 	 **/
   -webkit-overflow-scrolling: touch;
   /* All children between <main> and the parallax need this to work in Firefox */ }
+  @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+    main {
+      bottom: 56px; } }
   .notouch main::-webkit-scrollbar {
     width: 8px;
     height: 8px; }
@@ -3967,7 +3982,7 @@ select {
           left: 16px; } }
     .list__item__column__item--name {
       padding-bottom: 2px;
-      font-size: 15px; }
+      font-size: 1.1em; }
     .list__item__column__item--details {
       padding: 0;
       margin: 0;
@@ -4035,8 +4050,6 @@ select {
     float: none; }
   .list__item__column--middle {
     display: none; }
-  .list__item__column__item--name {
-    font-size: 14px; }
   .list__item__column__item--source {
     display: none !important; }
   .list__item__column__item--added .by {
@@ -4477,15 +4490,30 @@ select {
     width: 220px;
     font-size: 14px;
     color: #FFFFFF;
-    text-decoration: none;
+    text-decoration: none; }
+
+@keyframes slide_left {
+  0% {
     transform: translateX(0px); }
+  99% {
+    transform: translateX(-15px); }
+  100% {
+    transform: translateX(0px); } }
+
+@keyframes slide_right {
+  0% {
+    transform: translateX(0px); }
+  99% {
+    transform: translateX(15px); }
+  100% {
+    transform: translateX(0px); } }
     @media (max-width: 800px) {
       .playback-controls .current-track--transition {
         opacity: 0; }
         .playback-controls .current-track--transition-previous {
-          transform: translateX(15px); }
+          animation: slide_right 0.1s; }
         .playback-controls .current-track--transition-next {
-          transform: translateX(-15px); } }
+          animation: slide_left 0.1s; } }
     .light-theme .playback-controls .current-track {
       color: #121212; }
     .playback-controls .current-track .thumbnail {
@@ -4608,7 +4636,7 @@ select {
       width: 135px;
       text-align: center; }
       .playback-controls section.playback .control.play {
-        font-size: 30px;
+        font-size: 2rem;
         margin-bottom: -8px; }
     .playback-controls section.progress {
       bottom: 10px;
@@ -4659,7 +4687,7 @@ select {
       left: 80px;
       right: 80px;
       text-align: center;
-      font-size: 12px;
+      font-size: 0.9rem;
       color: #FFFFFF !important; }
       .playback-controls .current-track .title {
         padding-top: 0; }
@@ -4682,7 +4710,12 @@ select {
       display: none; }
     .playback-controls section.triggers {
       display: block;
-      right: 10px; }
+      right: 10px; } }
+  @media only screen and (max-width: 800px) and (-webkit-min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min--moz-device-pixel-ratio: 2), only screen and (max-width: 800px) and (-o-min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min-resolution: 192dpi), only screen and (max-width: 800px) and (min-resolution: 2dppx) {
+    .playback-controls section.triggers {
+      font-size: 1.3rem;
+      bottom: 4px; } }
+  @media (max-width: 800px) {
       .playback-controls section.triggers .sidebar-toggle.open {
         opacity: 1 !important; }
         .playback-controls section.triggers .sidebar-toggle.open:after {
@@ -4710,12 +4743,28 @@ select {
         display: block;
         right: 100px;
         left: 10px;
-        bottom: 88px; }
+        bottom: 88px; } }
+    @media only screen and (max-width: 800px) and (-webkit-min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min--moz-device-pixel-ratio: 2), only screen and (max-width: 800px) and (-o-min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min-resolution: 192dpi), only screen and (max-width: 800px) and (min-resolution: 2dppx) {
+      .playback-controls--expanded section.volume {
+        right: 115px; }
+        .playback-controls--expanded section.volume .slider__wrapper {
+          bottom: 9px; } }
+  @media (max-width: 800px) {
       .playback-controls--expanded section.progress {
         display: block;
         bottom: 55px;
         left: -15px;
         right: -15px; } }
+
+@media only screen and (max-width: 800px) and (-webkit-min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min--moz-device-pixel-ratio: 2), only screen and (max-width: 800px) and (-o-min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min-resolution: 192dpi), only screen and (max-width: 800px) and (min-resolution: 2dppx) {
+  .playback-controls {
+    height: 56px; }
+    .playback-controls--expanded {
+      height: 142px; }
+    .playback-controls .control {
+      padding: 14px 8px; }
+    .playback-controls .current-track {
+      bottom: 10px; } }
 
 .output-control {
   position: relative; }
@@ -5577,6 +5626,9 @@ main header {
       .notifications .loading {
         bottom: 20px;
         right: 40px; } }
+  @media only screen and (max-width: 800px) and (-webkit-min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min--moz-device-pixel-ratio: 2), only screen and (max-width: 800px) and (-o-min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min-resolution: 192dpi), only screen and (max-width: 800px) and (min-resolution: 2dppx) {
+    .notifications {
+      bottom: 68px; } }
 
 .dropdown-field {
   -webkit-touch-callout: none;
@@ -7224,7 +7276,7 @@ main .track-view {
       width: 90%;
       height: 90%;
       text-align: center; }
-      .modal--kiosk-mode .content .background {
+      .modal--kiosk-mode .content .thumbnail.background {
         position: absolute;
         top: -5vh;
         right: -5vw;
@@ -7233,7 +7285,7 @@ main .track-view {
         width: auto;
         opacity: 0.2;
         max-width: none; }
-        .modal--kiosk-mode .content .background .image {
+        .modal--kiosk-mode .content .thumbnail.background .thumbnail__image {
           -webkit-filter: blur(100px);
           filter: blur(100px);
           width: 110vw;
