@@ -25,7 +25,6 @@ export default class extends React.Component{
 			<Link 
 				onClick={e => this.handleClick(e)}
 				className={this.props.className ? this.props.className : null}
-				activeClassName={this.props.activeClassName}
 				to={this.props.to}>
 					{this.props.children}
 			</Link>

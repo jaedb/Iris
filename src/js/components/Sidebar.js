@@ -18,10 +18,10 @@ class Sidebar extends React.Component{
 	}
 
 	linkClassName(link){
-		if (this.props.location.pathname.startsWith('/'+link)){
-			return 'active'
+		if (window.location.pathname.startsWith('/'+link)){
+			return 'active';
 		} else {
-			return null
+			return null;
 		}
 	}
 

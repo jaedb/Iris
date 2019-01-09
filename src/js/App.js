@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import { createStore, bindActionCreators } from 'redux';
-import { BrowserRouter, Route, Link } from "react-router-dom";
+import { BrowserRouter, Route, Switch, Link } from "react-router-dom";
 import { connect } from 'react-redux';
 import ReactGA from 'react-ga';
 
@@ -13,6 +13,40 @@ import Dragger from './components/Dragger';
 import Notifications from './components/Notifications';
 import DebugInfo from './components/DebugInfo';
 import ErrorBoundary from './components/ErrorBoundary';
+
+import Album from './views/Album';
+import Artist from './views/Artist';
+import Playlist from './views/Playlist';
+import User from './views/User';
+import Track from './views/Track';
+import Queue from './views/Queue';
+import QueueHistory from './views/QueueHistory';
+import Debug from './views/Debug';
+import Search from './views/Search';
+import Settings from './views/Settings';
+
+import DiscoverRecommendations from './views/discover/DiscoverRecommendations';
+import DiscoverFeatured from './views/discover/DiscoverFeatured';
+import DiscoverCategories from './views/discover/DiscoverCategories';
+import DiscoverCategory from './views/discover/DiscoverCategory';
+import DiscoverNewReleases from './views/discover/DiscoverNewReleases';
+
+import LibraryArtists from './views/library/LibraryArtists';
+import LibraryAlbums from './views/library/LibraryAlbums';
+import LibraryTracks from './views/library/LibraryTracks';
+import LibraryPlaylists from './views/library/LibraryPlaylists';
+import LibraryBrowse from './views/library/LibraryBrowse';
+
+import EditPlaylist from './views/modals/EditPlaylist';
+import CreatePlaylist from './views/modals/CreatePlaylist';
+import EditRadio from './views/modals/EditRadio';
+import AddToQueue from './views/modals/AddToQueue';
+import InitialSetup from './views/modals/InitialSetup';
+import KioskMode from './views/modals/KioskMode';
+import ShareConfiguration from './views/modals/ShareConfiguration';
+import AddToPlaylist from './views/modals/AddToPlaylist';
+import ImageZoom from './views/modals/ImageZoom';
+import EditCommand from './views/modals/EditCommand';
 
 import * as helpers from './helpers';
 import * as coreActions from './services/core/actions';
@@ -68,32 +102,6 @@ class App extends React.Component{
 		this.props.pusherActions.connect();
 		this.props.coreActions.getBroadcasts();
 
-		// when we navigate to a new route
-		hashHistory.listen(location => {
-			
-	    	// Log our pageview
-			if (this.props.allow_reporting){
-				ReactGA.set({ page: window.location.hash });
-				ReactGA.pageview(window.location.hash);
-			}
-
-			// Scroll to top of <main>
-			// This doesn't know the difference between forward or backward navigation
-			// so isn't quite a right fit
-			//document.getElementById('main').scrollTo(0, 0);
-
-			// Hide our sidebar
-			this.props.uiActions.toggleSidebar(false);
-
-			// Unselect any tracks
-			this.props.uiActions.setSelectedTracks([]);
-
-			// Close context menu
-			if (this.props.context_menu){
-				this.props.uiActions.hideContextMenu();
-			}
-		});
-
 		// Check our slim_mode
 		this.handleWindowResize(null);
 
@@ -128,6 +136,35 @@ class App extends React.Component{
 		if (!this.props.initial_setup_complete){
 			this.props.history.push(global.baseURL+'initial-setup');
 		}
+	}
+
+	componentDidUpdate(prevProps){
+
+		// When we have navigated to a new route
+		if (this.props.location !== prevProps.location){
+			
+	    	// Log our pageview
+			if (this.props.allow_reporting){
+				ReactGA.set({ page: window.location });
+				ReactGA.pageview(window.location);
+			}
+
+			// Scroll to top of <main>
+			// This doesn't know the difference between forward or backward navigation
+			// so isn't quite a right fit
+			//document.getElementById('main').scrollTo(0, 0);
+
+			// Hide our sidebar
+			this.props.uiActions.toggleSidebar(false);
+
+			// Unselect any tracks
+			this.props.uiActions.setSelectedTracks([]);
+
+			// Close context menu
+			if (this.props.context_menu){
+				this.props.uiActions.hideContextMenu();
+			}
+		};
 	}
 
 	shouldTriggerShortcut(e){
@@ -298,7 +335,7 @@ class App extends React.Component{
 
 			case 70: // F
 				if ((e.ctrlKey || e.metaKey) && e.shiftKey){
-					this.props.history.push(global.baseURL+'modal/kiosk-mode');
+					window.history.push(global.baseURL+'modal/kiosk-mode');
 				}
 				break;
 		}
@@ -334,9 +371,47 @@ class App extends React.Component{
 			        <Sidebar />		        
 			        <PlaybackControls />
 			        <main id="main" className="smooth-scroll">
-						<ErrorBoundary>
-				      		{this.props.children}
-		        		</ErrorBoundary>
+						<Switch>
+							<ErrorBoundary>
+								<Route exact path="/" component={Queue} />
+								 
+								<Route path="/initial-setup" component={InitialSetup} />
+								<Route path="/kiosk-mode" component={KioskMode} />
+								<Route path="/add-to-playlist/:uris" component={AddToPlaylist} />
+								<Route path="/image-zoom" component={ImageZoom} />
+								<Route path="/share-configuration" component={ShareConfiguration} />
+								<Route path="/edit-command/:id?" component={EditCommand} />
+
+								<Route path="/queue" component={Queue} />
+								<Route path="/queue/history" component={QueueHistory} />
+								<Route path="/queue/radio" component={EditRadio} />
+								<Route path="/queue/add-uri" component={AddToQueue} />
+								<Route path="/settings/debug" component={Debug} />
+								<Route path="/settings/service/:sub_view?" component={Settings} />
+								
+								<Route path="/search/:type/:term?" component={Search} />
+								<Route path="/album/:uri" component={Album} />
+								<Route path="/artist/:uri/:sub_view?" component={Artist} />
+								<Route path="/playlist/create" component={CreatePlaylist} />
+								<Route path="/playlist/:uri" component={Playlist} />
+								<Route path="/playlist/:uri/edit" component={EditPlaylist} />
+								<Route path="/user/:uri" component={User} />
+								<Route path="/track/:uri" component={Track} />
+					
+								<Route path="/discover/recommendations/:seeds?" component={DiscoverRecommendations} />
+								<Route path="/discover/featured" component={DiscoverFeatured} />
+								<Route path="/discover/categories" component={DiscoverCategories} />
+								<Route path="/discover/categories/:id" component={DiscoverCategory} />
+								<Route path="/discover/new-releases" component={DiscoverNewReleases} />
+
+								<Route path="/library/artists" component={LibraryArtists} />
+								<Route path="/library/albums" component={LibraryAlbums} />
+								<Route path="/library/tracks" component={LibraryTracks} />
+								<Route path="/library/playlists" component={LibraryPlaylists} />
+								<Route path="/library/browse/:uri?" component={LibraryBrowse} />
+
+			        		</ErrorBoundary>
+		        		</Switch>
 			        </main>
 		        </div>
 
