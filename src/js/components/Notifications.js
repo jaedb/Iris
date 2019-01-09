@@ -1,6 +1,6 @@
 
 import React, { PropTypes } from 'react';
-import { hashHistory } from 'react-router'
+
 import Link from './Link';
 import Icon from './Icon';
 

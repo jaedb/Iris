@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { createStore, bindActionCreators } from 'redux'
-import { hashHistory } from 'react-router'
+
 
 import ArtistSentence from './ArtistSentence'
 import Dater from './Dater'
@@ -26,7 +26,7 @@ class List extends React.Component{
 		// make sure we haven't clicked a nested link (ie Artist name)
 		if (e.target.tagName.toLowerCase() !== 'a'){
 			e.preventDefault();
-			hashHistory.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(uri));
+			this.props.history.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(uri));
 			helpers.scrollTo();
 		}
 	}
@@ -36,7 +36,7 @@ class List extends React.Component{
 		// make sure we haven't clicked a nested link (ie Artist name)
 		if (e.target.tagName.toLowerCase() !== 'a'){
 			e.preventDefault();
-			hashHistory.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(uri));
+			this.props.history.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(uri));
 			helpers.scrollTo();
 		}
 	}

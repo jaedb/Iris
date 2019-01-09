@@ -1,7 +1,7 @@
 
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { hashHistory } from 'react-router'
+
 import { bindActionCreators } from 'redux'
 
 import Header from '../components/Header'
@@ -52,7 +52,7 @@ class Debug extends React.Component{
 	render(){
 
 		var options = (
-			<a className="button button--default button--no-hover" onClick={e => hashHistory.push(global.baseURL+'settings')}>
+			<a className="button button--default button--no-hover" onClick={e => this.props.history.push(global.baseURL+'settings')}>
 				<Icon name="keyboard_backspace" />Back
 			</a>
 		)

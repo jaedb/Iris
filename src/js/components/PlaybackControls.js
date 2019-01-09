@@ -2,7 +2,6 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { hashHistory } from 'react-router';
 
 import Link from './Link';
 import ProgressSlider from './Fields/ProgressSlider'
@@ -124,7 +123,7 @@ class PlaybackControls extends React.Component{
 		if (this.start_position.x + tap_distance_threshold > end_position.x &&
 			this.start_position.x - tap_distance_threshold < end_position.x){
 
-			hashHistory.push(global.baseURL+'queue');
+			this.props.history.push(global.baseURL+'queue');
 		} else {
 
 			// Swipe to the left = previous track

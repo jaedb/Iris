@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { hashHistory } from 'react-router'
+
 import ReactGA from 'react-ga'
 
 import Link from '../components/Link';
@@ -37,7 +37,7 @@ class Playlist extends React.Component{
 		// We accept the old format, and redirect to the new one
 		if (uri.includes("spotify:user:")){
 			uri = uri.replace(/spotify:user:([^:]*?):/i, "spotify:");
-			hashHistory.push(global.baseURL+'playlist/'+encodeURIComponent(uri));
+			this.props.history.push(global.baseURL+'playlist/'+encodeURIComponent(uri));
 		}
 	}
 

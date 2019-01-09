@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { hashHistory } from 'react-router'
+
 import Link from '../../components/Link'
 import ReactGA from 'react-ga';
 
@@ -61,7 +61,7 @@ class InitialSetup extends React.Component{
 
 			// Safe to just close modal
 			} else {
-				hashHistory.push(global.baseURL);
+				this.props.history.push(global.baseURL);
 			}
 		}, 200);
 

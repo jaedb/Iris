@@ -1,7 +1,7 @@
 
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { hashHistory } from 'react-router'
+
 import { createStore, bindActionCreators } from 'redux'
 
 import * as helpers from '../../helpers'
@@ -24,19 +24,19 @@ class SearchForm extends React.Component{
 		switch (helpers.uriType(this.props.term)){
 
 			case 'album':
-				hashHistory.push(global.baseURL+'album/'+encodeURIComponent(this.props.term))
+				this.props.history.push(global.baseURL+'album/'+encodeURIComponent(this.props.term))
 				break
 
 			case 'artist':
-				hashHistory.push(global.baseURL+'artist/'+encodeURIComponent(this.props.term))
+				this.props.history.push(global.baseURL+'artist/'+encodeURIComponent(this.props.term))
 				break
 
 			case 'playlist':
-				hashHistory.push(global.baseURL+'playlist/'+encodeURIComponent(this.props.term))
+				this.props.history.push(global.baseURL+'playlist/'+encodeURIComponent(this.props.term))
 				break
 
 			case 'track':
-				hashHistory.push(global.baseURL+'track/'+encodeURIComponent(this.props.term))
+				this.props.history.push(global.baseURL+'track/'+encodeURIComponent(this.props.term))
 				break
 
 			default:

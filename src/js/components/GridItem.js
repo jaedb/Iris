@@ -1,7 +1,6 @@
 
-import React, { PropTypes } from 'react'
-import ReactDOM from 'react-dom'
-import { Router, Link, hashHistory } from 'react-router'
+import React, { PropTypes } from 'react';
+import ReactDOM from 'react-dom';
 
 import * as helpers from '../helpers'
 import Icon from './Icon'

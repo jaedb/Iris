@@ -1,8 +1,8 @@
 
-import React, { PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { hashHistory, Link } from 'react-router'
-import { bindActionCreators } from 'redux'
+import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { Link } from 'react-router-dom';
 
 import ConfirmationButton from '../components/Fields/ConfirmationButton'
 import PusherConnectionList from '../components/PusherConnectionList'
@@ -194,7 +194,7 @@ class Settings extends React.Component {
 
 		var options = (
 			<span>
-				<a className="button button--default button--no-hover" onClick={e => hashHistory.push(global.baseURL+'settings/debug')}>
+				<a className="button button--default button--no-hover" onClick={e => this.props.history.push(global.baseURL+'settings/debug')}>
 					<Icon name="code" />Debug
 				</a>
 				<a className="button button--default button--no-hover" href="https://github.com/jaedb/Iris/wiki" target="_blank">

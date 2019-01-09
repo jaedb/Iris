@@ -1,5 +1,5 @@
 
-import { hashHistory } from 'react-router'
+
 
 import React, { PropTypes } from 'react'
 import GridItem from './GridItem'
@@ -26,7 +26,7 @@ export default class CategoryGrid extends React.Component{
 								key={category.id}
 								type="category"
 								item={category}
-								onClick={e => {hashHistory.push(global.baseURL+'discover/categories/'+encodeURIComponent(category.id))}}
+								onClick={e => {this.props.history.push(global.baseURL+'discover/categories/'+encodeURIComponent(category.id))}}
 							/>
 						)
 					})

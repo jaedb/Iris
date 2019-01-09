@@ -1,16 +1,15 @@
 
-import React, { PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import { withRouter } from 'react-router'
+import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 import Link from './Link';
-import Icon from './Icon'
-import Dropzones from './Fields/Dropzones'
-import Thumbnail from './Thumbnail'
+import Icon from './Icon';
+import Dropzones from './Fields/Dropzones';
+import Thumbnail from './Thumbnail';
 
-import * as uiActions from '../services/ui/actions'
-import * as mopidyActions from '../services/mopidy/actions'
+import * as uiActions from '../services/ui/actions';
+import * as mopidyActions from '../services/mopidy/actions';
 
 class Sidebar extends React.Component{
 
@@ -136,5 +135,4 @@ const mapDispatchToProps = (dispatch) => {
 	}
 }
 
-// We wrap our Sidebar with the Router, and then to the redux store
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Sidebar))
+export default connect(mapStateToProps, mapDispatchToProps)(Sidebar)

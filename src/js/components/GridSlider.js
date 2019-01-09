@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { createStore, bindActionCreators } from 'redux'
-import { hashHistory } from 'react-router'
+
 import Link from './Link'
 
 import ArtistSentence from './ArtistSentence'
@@ -24,7 +24,7 @@ class GridSlider extends React.Component{
 
 	handleClick(e,link){
 		if (e.target.tagName.toLowerCase() !== 'a'){
-			hashHistory.push(link)
+			this.props.history.push(link)
 		}
 	}
 

@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import { createStore, bindActionCreators } from 'redux';
-import { hashHistory, Link } from 'react-router';
+import { BrowserRouter, Route, Link } from "react-router-dom";
 import { connect } from 'react-redux';
 import ReactGA from 'react-ga';
 
@@ -117,7 +117,7 @@ class App extends React.Component{
 				// Allow 100ms for the action above to complete before we re-route
 				setTimeout(
 					() => {
-						hashHistory.push(global.baseURL);
+						this.props.history.push(global.baseURL);
 					},
 					100
 				);
@@ -126,7 +126,7 @@ class App extends React.Component{
 
 		// show initial setup if required
 		if (!this.props.initial_setup_complete){
-			hashHistory.push(global.baseURL+'initial-setup');
+			this.props.history.push(global.baseURL+'initial-setup');
 		}
 	}
 
@@ -298,7 +298,7 @@ class App extends React.Component{
 
 			case 70: // F
 				if ((e.ctrlKey || e.metaKey) && e.shiftKey){
-					hashHistory.push(global.baseURL+'modal/kiosk-mode');
+					this.props.history.push(global.baseURL+'modal/kiosk-mode');
 				}
 				break;
 		}

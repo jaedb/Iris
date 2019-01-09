@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { hashHistory } from 'react-router'
+
 import Link from '../../components/Link';
 
 import Header from '../../components/Header'
@@ -122,7 +122,7 @@ class LibraryBrowse extends React.Component{
 									key={subdirectory.uri}
 									type="category"
 									item={subdirectory}
-									onClick={e => {hashHistory.push(global.baseURL+'library/browse/'+encodeURIComponent(subdirectory.uri))}}
+									onClick={e => {this.props.history.push(global.baseURL+'library/browse/'+encodeURIComponent(subdirectory.uri))}}
 								/>
 							);
 						})
@@ -284,7 +284,7 @@ class LibraryBrowse extends React.Component{
 												item={item} 
 												key={index}
 												type="category"
-												onClick={e => hashHistory.push(item.link)}
+												onClick={e => this.props.history.push(item.link)}
 											/>
 										)
 									}
