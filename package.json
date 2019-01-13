@@ -10,6 +10,7 @@
   },
   "main": "app.js",
   "dependencies": {
+    "history": "^4.7.2",
     "jquery": "^3",
     "mopidy": "^0.5"
   },

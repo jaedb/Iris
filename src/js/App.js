@@ -142,11 +142,11 @@ class App extends React.Component{
 
 		// When we have navigated to a new route
 		if (this.props.location !== prevProps.location){
-			
+
 	    	// Log our pageview
 			if (this.props.allow_reporting){
-				ReactGA.set({ page: window.location });
-				ReactGA.pageview(window.location);
+				ReactGA.set({ page: this.props.location.pathname });
+				ReactGA.pageview(this.props.location.pathname);
 			}
 
 			// Scroll to top of <main>
@@ -368,51 +368,62 @@ class App extends React.Component{
 			<div className={className}>
 		
 				<div className="body">
-			        <Sidebar />		        
-			        <PlaybackControls />
-			        <main id="main" className="smooth-scroll">
-						<Switch>
-							<ErrorBoundary>
-								<Route exact path="/" component={Queue} />
-								 
-								<Route path="/initial-setup" component={InitialSetup} />
-								<Route path="/kiosk-mode" component={KioskMode} />
-								<Route path="/add-to-playlist/:uris" component={AddToPlaylist} />
-								<Route path="/image-zoom" component={ImageZoom} />
-								<Route path="/share-configuration" component={ShareConfiguration} />
-								<Route path="/edit-command/:id?" component={EditCommand} />
 
-								<Route path="/queue" component={Queue} />
-								<Route path="/queue/history" component={QueueHistory} />
-								<Route path="/queue/radio" component={EditRadio} />
-								<Route path="/queue/add-uri" component={AddToQueue} />
-								<Route path="/settings/debug" component={Debug} />
-								<Route path="/settings/service/:sub_view?" component={Settings} />
-								
-								<Route path="/search/:type/:term?" component={Search} />
-								<Route path="/album/:uri" component={Album} />
-								<Route path="/artist/:uri/:sub_view?" component={Artist} />
-								<Route path="/playlist/create" component={CreatePlaylist} />
-								<Route path="/playlist/:uri" component={Playlist} />
-								<Route path="/playlist/:uri/edit" component={EditPlaylist} />
-								<Route path="/user/:uri" component={User} />
-								<Route path="/track/:uri" component={Track} />
-					
-								<Route path="/discover/recommendations/:seeds?" component={DiscoverRecommendations} />
-								<Route path="/discover/featured" component={DiscoverFeatured} />
-								<Route path="/discover/categories" component={DiscoverCategories} />
-								<Route path="/discover/categories/:id" component={DiscoverCategory} />
-								<Route path="/discover/new-releases" component={DiscoverNewReleases} />
+					<Switch>
+						<Route path="/initial-setup" component={InitialSetup} />
+						<Route path="/kiosk-mode" component={KioskMode} />
+						<Route path="/add-to-playlist/:uris" component={AddToPlaylist} />
+						<Route path="/image-zoom" component={ImageZoom} />
+						<Route path="/share-configuration" component={ShareConfiguration} />
+						<Route path="/edit-command/:id?" component={EditCommand} />
+						
+						<Route path="/queue/radio" component={EditRadio} />
+						<Route path="/queue/add-uri" component={AddToQueue} />
+						<Route path="/playlist/create" component={CreatePlaylist} />
+						<Route path="/playlist/:uri/edit" component={EditPlaylist} />
 
-								<Route path="/library/artists" component={LibraryArtists} />
-								<Route path="/library/albums" component={LibraryAlbums} />
-								<Route path="/library/tracks" component={LibraryTracks} />
-								<Route path="/library/playlists" component={LibraryPlaylists} />
-								<Route path="/library/browse/:uri?" component={LibraryBrowse} />
+						<Route>
+							<div>
+								<Sidebar />		        
+						        <PlaybackControls />
+						        <main id="main" className="smooth-scroll">
+									<Switch>
+										<Route exact path="/" component={Queue} />
 
-			        		</ErrorBoundary>
-		        		</Switch>
-			        </main>
+										<Route path="/queue" component={Queue} />
+										<Route path="/queue/history" component={QueueHistory} />
+										<Route path="/settings/debug" component={Debug} />
+										<Route path="/settings/service/:sub_view?" component={Settings} />
+										
+										<Route path="/search/:type/:term?" component={Search} />
+										<Route path="/album/:uri" component={Album} />
+										<Route path="/artist/:uri/:sub_view?" component={Artist} />
+										<Route path="/playlist/:uri" component={Playlist} />
+										<Route path="/user/:uri" component={User} />
+										<Route path="/track/:uri" component={Track} />
+							
+										<Route path="/discover/recommendations/:seeds?" component={DiscoverRecommendations} />
+										<Route path="/discover/featured" component={DiscoverFeatured} />
+										<Route path="/discover/categories" component={DiscoverCategories} />
+										<Route path="/discover/categories/:id" component={DiscoverCategory} />
+										<Route path="/discover/new-releases" component={DiscoverNewReleases} />
+
+										<Route path="/library/artists" component={LibraryArtists} />
+										<Route path="/library/albums" component={LibraryAlbums} />
+										<Route path="/library/tracks" component={LibraryTracks} />
+										<Route path="/library/playlists" component={LibraryPlaylists} />
+										<Route path="/library/browse/:uri?" component={LibraryBrowse} />
+
+										<Route>
+											<h1>I'm lost</h1>
+										</Route>
+
+					        		</Switch>
+						        </main>
+					        </div>
+						</Route>
+					</Switch>
+			        
 		        </div>
 
 		        <ContextMenu />

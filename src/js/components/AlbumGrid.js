@@ -3,7 +3,7 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { createStore, bindActionCreators } from 'redux'
 
-
+import history from './history';
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
 import GridItem from './GridItem'
@@ -44,7 +44,7 @@ class AlbumGrid extends React.Component{
 									type="album"
 									item={album}
 									show_source_icon={this.props.show_source_icon}
-									onClick={e => {this.props.history.push(global.baseURL+'album/'+encodeURIComponent(album.uri))}}
+									onClick={e => {history.push(global.baseURL+'album/'+encodeURIComponent(album.uri))}}
 									onContextMenu={e => this.handleContextMenu(e,album)}
 								/>
 							)}

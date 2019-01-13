@@ -386,7 +386,7 @@ class TrackList extends React.Component{
 
 
 	render(){
-		if (!this.props.tracks || Object.prototype.toString.call(this.props.tracks) !== '[object Array]' ){
+		if (!this.props.tracks || Object.prototype.toString.call(this.props.tracks) !== '[object Array]'){
 			return null;
 		}
 
@@ -449,4 +449,6 @@ const mapDispatchToProps = (dispatch) => {
 	}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(TrackList)
+export default TrackList
+//export default connect(mapStateToProps, mapDispatchToProps)(TrackList)
+

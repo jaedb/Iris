@@ -3,6 +3,8 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
+//import { Link } from 'react-router-dom';
+
 import Link from './Link';
 import Icon from './Icon';
 import Dropzones from './Fields/Dropzones';
