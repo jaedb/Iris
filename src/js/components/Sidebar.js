@@ -2,8 +2,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
-//import { Link } from 'react-router-dom';
+import { withRouter } from 'react-router';
 
 import Link from './Link';
 import Icon from './Icon';
@@ -20,7 +19,7 @@ class Sidebar extends React.Component{
 	}
 
 	linkClassName(link){
-		if (window.location.pathname.startsWith('/'+link)){
+		if (this.props.location.pathname.startsWith('/'+link)){
 			return 'active';
 		} else {
 			return null;
@@ -137,4 +136,4 @@ const mapDispatchToProps = (dispatch) => {
 	}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Sidebar)
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Sidebar));

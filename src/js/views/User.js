@@ -25,14 +25,14 @@ class User extends React.Component{
 
 	componentDidMount(){
 		this.setWindowTitle();
-		this.props.coreActions.loadUser(this.props.params.uri);
-		this.props.coreActions.loadUserPlaylists(this.props.params.uri);
+		this.props.coreActions.loadUser(this.props.match.params.uri);
+		this.props.coreActions.loadUserPlaylists(this.props.match.params.uri);
 	}
 
 	componentWillReceiveProps(nextProps){
-		if (nextProps.params.uri != this.props.params.uri){
-			this.props.coreActions.loadUser(nextProps.params.uri);
-			this.props.coreActions.loadUserPlaylists(this.props.params.uri);
+		if (nextProps.match.params.uri != this.props.match.params.uri){
+			this.props.coreActions.loadUser(nextProps.match.params.uri);
+			this.props.coreActions.loadUserPlaylists(this.props.match.params.uri);
 		}
 
 		if (!this.props.user && nextProps.user){
@@ -53,19 +53,19 @@ class User extends React.Component{
 			this.props.user.playlists_more,
 			{
 				parent_type: 'user',
-				parent_key: this.props.params.uri,
+				parent_key: this.props.match.params.uri,
 				records_type: 'playlist'
 			}
 		);
 	}
 
 	isMe(){
-		let userid = helpers.getFromUri('userid',this.props.params.uri);
+		let userid = helpers.getFromUri('userid',this.props.match.params.uri);
 		return (this.props.me && this.props.me.id && this.props.me.id == userid);
 	}
 
 	render(){
-		var user_id = helpers.getFromUri('userid',this.props.params.uri);
+		var user_id = helpers.getFromUri('userid',this.props.match.params.uri);
 
 		if (!this.props.user){
 			if (helpers.isLoading(this.props.load_queue,['spotify_users/'+user_id,'spotify_users/'+user_id+'/playlists/?'])){
@@ -125,7 +125,7 @@ class User extends React.Component{
 }
 
 const mapStateToProps = (state, ownProps) => {
-	var uri = ownProps.params.uri;
+	var uri = ownProps.match.params.uri;
 	return {
 		me: state.spotify.me,
 		load_queue: state.ui.load_queue,

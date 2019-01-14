@@ -33,17 +33,17 @@ class Artist extends React.Component{
 
 	componentDidMount(){
 		this.setWindowTitle();
-		this.props.coreActions.loadArtist(this.props.params.uri);
+		this.props.coreActions.loadArtist(this.props.match.params.uri);
 	}
 
 	componentWillReceiveProps(nextProps){
 
-		if (nextProps.params.uri != this.props.params.uri){
-			this.props.coreActions.loadArtist(nextProps.params.uri);
+		if (nextProps.match.params.uri != this.props.match.params.uri){
+			this.props.coreActions.loadArtist(nextProps.match.params.uri);
 
 		} else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
-			if (helpers.uriSource(this.props.params.uri ) != 'spotify'){
-				this.props.coreActions.loadArtist(nextProps.params.uri);
+			if (helpers.uriSource(this.props.match.params.uri ) != 'spotify'){
+				this.props.coreActions.loadArtist(nextProps.match.params.uri);
 			}
 		}
 
@@ -51,7 +51,7 @@ class Artist extends React.Component{
 			this.setWindowTitle(nextProps.artist);
 		}
 
-		if (this.props.params.uri !== nextProps.params.uri && nextProps.artist){
+		if (this.props.match.params.uri !== nextProps.match.params.uri && nextProps.artist){
 			this.setWindowTitle(nextProps.artist);
 		}
 	}
@@ -69,7 +69,7 @@ class Artist extends React.Component{
 			e: e,
 			context: 'artist',
 			items: [this.props.artist],
-			uris: [this.props.params.uri]
+			uris: [this.props.match.params.uri]
 		}
 		this.props.uiActions.showContextMenu(data);
 	}
@@ -79,15 +79,15 @@ class Artist extends React.Component{
 			this.props.artist.albums_more,
 			{
 				parent_type: 'artist',
-				parent_key: this.props.params.uri,
+				parent_key: this.props.match.params.uri,
 				records_type: 'album'
 			}
 		);
 	}
 
 	inLibrary(){
-		var library = helpers.uriSource(this.props.params.uri)+'_library_artists'
-		return (this.props[library] && this.props[library].indexOf(this.props.params.uri) > -1)
+		var library = helpers.uriSource(this.props.match.params.uri)+'_library_artists'
+		return (this.props[library] && this.props[library].indexOf(this.props.match.params.uri) > -1)
 	}
 
 	setSort(value){
@@ -108,15 +108,15 @@ class Artist extends React.Component{
 	renderSubViewMenu(){
 		return (
 			<div className="sub-views" id="sub-views-menu">
-				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri} scrollTo="sub-views-menu"><h4>Overview</h4></Link>
-				{this.props.artist.related_artists_uris ? <Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri+'/related-artists'} scrollTo="sub-views-menu"><h4>Related artists</h4></Link> : null}
-				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.params.uri+'/about'} scrollTo="sub-views-menu"><h4>About</h4></Link>
+				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.match.params.uri} scrollTo="sub-views-menu"><h4>Overview</h4></Link>
+				{this.props.artist.related_artists_uris ? <Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.match.params.uri+'/related-artists'} scrollTo="sub-views-menu"><h4>Related artists</h4></Link> : null}
+				<Link className="option" activeClassName="active" to={global.baseURL+'artist/'+this.props.match.params.uri+'/about'} scrollTo="sub-views-menu"><h4>About</h4></Link>
 			</div>
 		)
 	}
 
 	renderBody(){
-		var scheme = helpers.uriSource(this.props.params.uri);
+		var scheme = helpers.uriSource(this.props.match.params.uri);
 		var artist = helpers.collate(
 			this.props.artist, 
 			{
@@ -275,10 +275,10 @@ class Artist extends React.Component{
 	}
 
 	render(){
-		var scheme = helpers.uriSource(this.props.params.uri);
+		var scheme = helpers.uriSource(this.props.match.params.uri);
 
 		if (!this.props.artist){
-			if (helpers.isLoading(this.props.load_queue,['spotify_artists/'+helpers.getFromUri('artistid',this.props.params.uri), 'lastfm_method=artist.getInfo'])){
+			if (helpers.isLoading(this.props.load_queue,['spotify_artists/'+helpers.getFromUri('artistid',this.props.match.params.uri), 'lastfm_method=artist.getInfo'])){
 				return (
 					<div className="body-loader loading">
 						<div className="loader"></div>
@@ -313,7 +313,7 @@ class Artist extends React.Component{
 						<h1>{this.props.artist ? this.props.artist.name : null}</h1>
 						<div className="actions">
 							<button className="button button--primary" onClick={e => this.props.mopidyActions.playURIs(uris_to_play, this.props.artist.uri)}>Play</button>
-							{is_spotify ? <FollowButton uri={this.props.params.uri} removeText="Remove from library" addText="Add to library" is_following={this.inLibrary()} /> : null}
+							{is_spotify ? <FollowButton uri={this.props.match.params.uri} removeText="Remove from library" addText="Add to library" is_following={this.inLibrary()} /> : null}
 							<ContextMenuTrigger className="white" onTrigger={e => this.handleContextMenu(e)} />
 						</div>
 						{ this.renderSubViewMenu() }
@@ -335,7 +335,7 @@ class Artist extends React.Component{
  **/
 
 const mapStateToProps = (state, ownProps) => {
-	var uri = ownProps.params.uri;
+	var uri = ownProps.match.params.uri;
 	return {
 		theme: state.ui.theme,
 		slim_mode: state.ui.slim_mode,

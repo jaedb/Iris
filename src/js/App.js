@@ -393,6 +393,7 @@ class App extends React.Component{
 										<Route path="/queue" component={Queue} />
 										<Route path="/queue/history" component={QueueHistory} />
 										<Route path="/settings/debug" component={Debug} />
+										<Route path="/settings" component={Settings} />
 										<Route path="/settings/service/:sub_view?" component={Settings} />
 										
 										<Route path="/search/:type/:term?" component={Search} />

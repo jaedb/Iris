@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Link } from 'react-router-dom';
+import { Route, Link } from 'react-router-dom';
 
 import ConfirmationButton from '../components/Fields/ConfirmationButton'
 import PusherConnectionList from '../components/PusherConnectionList'
@@ -265,7 +265,7 @@ class Settings extends React.Component {
 					</form>
 
 					<h4 className="underline">Services<a name="services"></a></h4>
-					<Services active={this.props.params.sub_view} />
+					<Route path="/service" component={Services} />
 
 					<h4 className="underline">Interface<a name="interface"></a></h4>
 

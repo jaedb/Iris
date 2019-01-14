@@ -1,9 +1,9 @@
 
-import React, { PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
+import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
-import ReactGA from 'react-ga'
+import ReactGA from 'react-ga';
 
 import Link from '../components/Link';
 import TrackList from '../components/TrackList'
@@ -31,7 +31,7 @@ class Playlist extends React.Component{
 	}
 
 	componentWillMount(){
-		var uri = this.props.params.uri;
+		var uri = this.props.match.params.uri;
 
 		// Spotify upgraded their playlists URI to remove user component (Sept 2018)
 		// We accept the old format, and redirect to the new one
@@ -43,15 +43,15 @@ class Playlist extends React.Component{
 
 	componentDidMount(){
 		this.setWindowTitle();
-		this.props.coreActions.loadPlaylist(this.props.params.uri);
+		this.props.coreActions.loadPlaylist(this.props.match.params.uri);
 	}
 
 	componentWillReceiveProps(nextProps){
-		if (nextProps.params.uri != this.props.params.uri){
-			this.props.coreActions.loadPlaylist(nextProps.params.uri);
+		if (nextProps.match.params.uri != this.props.match.params.uri){
+			this.props.coreActions.loadPlaylist(nextProps.match.params.uri);
 		} else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
-			if (helpers.uriSource(this.props.params.uri) != 'spotify'){
-				this.props.coreActions.loadPlaylist(nextProps.params.uri);
+			if (helpers.uriSource(this.props.match.params.uri) != 'spotify'){
+				this.props.coreActions.loadPlaylist(nextProps.match.params.uri);
 			}
 		}
 
@@ -59,7 +59,7 @@ class Playlist extends React.Component{
 			this.setWindowTitle(nextProps.playlist);
 		}
 
-		if (this.props.params.uri !== nextProps.params.uri && nextProps.playlist){
+		if (this.props.match.params.uri !== nextProps.match.params.uri && nextProps.playlist){
 			this.setWindowTitle(nextProps.playlist);
 		}
 	}
@@ -88,7 +88,7 @@ class Playlist extends React.Component{
 			e: e,
 			context: (this.props.playlist.can_edit ? 'editable-playlist' : 'playlist'),
 			items: [this.props.playlist],
-			uris: [this.props.params.uri]
+			uris: [this.props.match.params.uri]
 		}
 		this.props.uiActions.showContextMenu(data)
 	}
@@ -126,8 +126,8 @@ class Playlist extends React.Component{
 	}
 
 	inLibrary(){
-		var library = helpers.uriSource(this.props.params.uri)+'_library_playlists';
-		return (this.props[library] && this.props[library].indexOf(this.props.params.uri) > -1);
+		var library = helpers.uriSource(this.props.match.params.uri)+'_library_playlists';
+		return (this.props[library] && this.props[library].indexOf(this.props.match.params.uri) > -1);
 	}
 
 	renderActions(){
@@ -137,7 +137,7 @@ class Playlist extends React.Component{
 				return (
 					<div className="actions">
 						<button className="button button--primary" onClick={ e => this.play() }>Play</button>
-						<Link className="button button--default" to={global.baseURL+'playlist/'+encodeURIComponent(this.props.params.uri)+'/edit'}>Edit</Link>
+						<Link className="button button--default" to={global.baseURL+'playlist/'+encodeURIComponent(this.props.match.params.uri)+'/edit'}>Edit</Link>
 						<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 					</div>
 				)
@@ -147,7 +147,7 @@ class Playlist extends React.Component{
 					return (
 						<div className="actions">
 							<button className="button button--primary" onClick={ e => this.play() }>Play</button>
-							<Link className="button button--default" to={global.baseURL+'playlist/'+encodeURIComponent(this.props.params.uri)+'/edit'}>Edit</Link>
+							<Link className="button button--default" to={global.baseURL+'playlist/'+encodeURIComponent(this.props.match.params.uri)+'/edit'}>Edit</Link>
 							<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 						</div>
 					)
@@ -155,7 +155,7 @@ class Playlist extends React.Component{
 				return (
 					<div className="actions">
 						<button className="button button--primary" onClick={ e => this.play() }>Play</button>
-						<FollowButton uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" is_following={this.inLibrary()} />
+						<FollowButton uri={this.props.match.params.uri} addText="Add to library" removeText="Remove from library" is_following={this.inLibrary()} />
 						<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 					</div>
 				)
@@ -171,8 +171,8 @@ class Playlist extends React.Component{
 	}
 
 	render(){
-		var scheme = helpers.uriSource(this.props.params.uri);
-		var playlist_id = helpers.getFromUri('playlistid',this.props.params.uri);
+		var scheme = helpers.uriSource(this.props.match.params.uri);
+		var playlist_id = helpers.getFromUri('playlistid',this.props.match.params.uri);
 		
 		if (!this.props.playlist){
 			if (helpers.isLoading(this.props.load_queue,['spotify_playlists/'+playlist_id+'?'])){
@@ -239,15 +239,8 @@ class Playlist extends React.Component{
 	}
 }
 
-
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- **/
-
 const mapStateToProps = (state, ownProps) => {
-	var uri = ownProps.params.uri;
+	var uri = ownProps.match.params.uri;
 	return {
 		allow_reporting: state.ui.allow_reporting,
 		slim_mode: state.ui.slim_mode,

@@ -38,7 +38,7 @@ class LibraryBrowse extends React.Component{
 		}
 
 		// our uri changes
-		if (nextProps.params.uri != this.props.params.uri){
+		if (nextProps.match.params.uri != this.props.match.params.uri){
 			this.loadDirectory(nextProps);
 		}
 	}
@@ -46,8 +46,8 @@ class LibraryBrowse extends React.Component{
 	loadDirectory(props = this.props){
 		if (props.mopidy_connected){
 			var uri = null
-			if (props.params.uri !== undefined){
-				uri = props.params.uri;
+			if (props.match.params.uri !== undefined){
+				uri = props.match.params.uri;
 			}
 			this.props.mopidyActions.getDirectory(uri);
 		}
@@ -55,7 +55,7 @@ class LibraryBrowse extends React.Component{
 
 	playAll(e, tracks){
 		var tracks_uris = helpers.arrayOf('uri',tracks);
-		this.props.mopidyActions.playURIs(tracks_uris, "iris:browse:"+this.props.params.uri);
+		this.props.mopidyActions.playURIs(tracks_uris, "iris:browse:"+this.props.match.params.uri);
 		this.props.uiActions.hideContextMenu();
 	}
 
@@ -66,8 +66,8 @@ class LibraryBrowse extends React.Component{
 
 	renderBreadcrumbs(){
 
-		if (this.props.params.uri){
-			var parent_uri = this.props.params.uri;
+		if (this.props.match.params.uri){
+			var parent_uri = this.props.match.params.uri;
 		} else {
 			return null;
 		}
@@ -134,7 +134,7 @@ class LibraryBrowse extends React.Component{
 
 	renderDirectory(directory){
 		var title = 'Browse';
-		var uri_exploded = this.props.params.uri.split(':');
+		var uri_exploded = this.props.match.params.uri.split(':');
 		if (uri_exploded.length > 0){
 			title = uri_exploded[0];
 			title = title.charAt(0).toUpperCase() + title.slice(1);
@@ -201,7 +201,7 @@ class LibraryBrowse extends React.Component{
 
 						{tracks ? <TrackList 
 								tracks={this.props.directory.tracks}
-								uri={"iris:browse:"+this.props.params.uri}
+								uri={"iris:browse:"+this.props.match.params.uri}
 								className="library-local-track-list"
 							/> : null }
 
@@ -298,7 +298,7 @@ class LibraryBrowse extends React.Component{
 	}
 
 	render(){
-		if (this.props.params.uri !== undefined && this.props.params.uri){
+		if (this.props.match.params.uri !== undefined && this.props.match.params.uri){
 			return this.renderDirectory();
 		} else {
 			return this.renderIndex();

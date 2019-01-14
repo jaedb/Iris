@@ -12,7 +12,8 @@
   "dependencies": {
     "history": "^4.7.2",
     "jquery": "^3",
-    "mopidy": "^0.5"
+    "mopidy": "^0.5",
+    "react-router": "^4.3.1"
   },
   "devDependencies": {
     "babel-core": "^6",

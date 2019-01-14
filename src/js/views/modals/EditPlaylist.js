@@ -39,16 +39,16 @@ class EditPlaylist extends React.Component{
 				collaborative: (this.props.playlist.collaborative == true)
 			});
 		} else {
-			switch (helpers.uriSource(this.props.params.uri)){
+			switch (helpers.uriSource(this.props.match.params.uri)){
 
 				case 'spotify':
-					this.props.spotifyActions.getPlaylist(this.props.params.uri);
-					this.props.spotifyActions.following(this.props.params.uri);
+					this.props.spotifyActions.getPlaylist(this.props.match.params.uri);
+					this.props.spotifyActions.following(this.props.match.params.uri);
 					break
 
 				default:
 					if (props.mopidy_connected){
-						this.props.mopidyActions.getPlaylist(this.props.params.uri);
+						this.props.mopidyActions.getPlaylist(this.props.match.params.uri);
 					}
 					break
 			}
@@ -74,7 +74,7 @@ class EditPlaylist extends React.Component{
 			return false
 		} else {
 			this.props.coreActions.savePlaylist(
-				this.props.params.uri, 
+				this.props.match.params.uri, 
 				this.state.name, 
 				this.state.description, 
 				this.state.public, 
@@ -103,7 +103,7 @@ class EditPlaylist extends React.Component{
 	}
 
 	renderFields(){
-		switch (helpers.uriSource(this.props.params.uri)){
+		switch (helpers.uriSource(this.props.match.params.uri)){
 
 			case 'spotify':
 				return (
@@ -206,7 +206,7 @@ class EditPlaylist extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		mopidy_connected: state.mopidy.connected,
-		playlist: (state.core.playlists[ownProps.params.uri] !== undefined ? state.core.playlists[ownProps.params.uri] : null),
+		playlist: (state.core.playlists[ownProps.match.params.uri] !== undefined ? state.core.playlists[ownProps.match.params.uri] : null),
 		playlists: state.core.playlists
 	}
 }

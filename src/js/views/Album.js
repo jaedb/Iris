@@ -29,25 +29,25 @@ class Album extends React.Component{
 
 	componentDidMount(){
 		this.setWindowTitle();
-		this.props.coreActions.loadAlbum(this.props.params.uri);
+		this.props.coreActions.loadAlbum(this.props.match.params.uri);
 	}
 
 	handleContextMenu(e){
 		e.preventDefault()
-		var data = { uris: [this.props.params.uri] }
+		var data = { uris: [this.props.match.params.uri] }
 		this.props.uiActions.showContextMenu(e, data, 'album', 'click' )
 	}
 
 	componentWillReceiveProps(nextProps){
 
 		// if our URI has changed, fetch new album
-		if (nextProps.params.uri != this.props.params.uri){
-			this.props.coreActions.loadAlbum(nextProps.params.uri);
+		if (nextProps.match.params.uri != this.props.match.params.uri){
+			this.props.coreActions.loadAlbum(nextProps.match.params.uri);
 
 		// if mopidy has just connected AND we're a local album, go get
 		} else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
-			if (helpers.uriSource(nextProps.params.uri) != 'spotify'){
-				this.props.coreActions.loadAlbum(nextProps.params.uri);
+			if (helpers.uriSource(nextProps.match.params.uri) != 'spotify'){
+				this.props.coreActions.loadAlbum(nextProps.match.params.uri);
 			}
 		}
 
@@ -81,7 +81,7 @@ class Album extends React.Component{
 			e: e,
 			context: 'album',
 			items: [this.props.album],
-			uris: [this.props.params.uri]
+			uris: [this.props.match.params.uri]
 		}
 		this.props.uiActions.showContextMenu(data);
 	}
@@ -98,17 +98,17 @@ class Album extends React.Component{
 	}
 
 	play(){
-		this.props.mopidyActions.playURIs([this.props.params.uri], this.props.params.uri)
+		this.props.mopidyActions.playURIs([this.props.match.params.uri], this.props.match.params.uri)
 	}
 
 	inLibrary(){
-		var library = helpers.uriSource(this.props.params.uri)+'_library_albums'
-		return (this.props[library] && this.props[library].indexOf(this.props.params.uri) > -1)
+		var library = helpers.uriSource(this.props.match.params.uri)+'_library_albums'
+		return (this.props[library] && this.props[library].indexOf(this.props.match.params.uri) > -1)
 	}
 
 	render(){
 		if (!this.props.album){
-			if (helpers.isLoading(this.props.load_queue,['spotify_albums/'+helpers.getFromUri('albumid',this.props.params.uri)])){
+			if (helpers.isLoading(this.props.load_queue,['spotify_albums/'+helpers.getFromUri('albumid',this.props.match.params.uri)])){
 				return (
 					<div className="body-loader loading">
 						<div className="loader"></div>
@@ -152,7 +152,7 @@ class Album extends React.Component{
 
 				<div className="actions">
 					<button className="button button--primary" onClick={e => this.play()}>Play</button>
-					{ helpers.uriSource(this.props.params.uri) == 'spotify' ? <FollowButton className="secondary" uri={this.props.params.uri} addText="Add to library" removeText="Remove from library" is_following={this.inLibrary()} /> : null }
+					{ helpers.uriSource(this.props.match.params.uri) == 'spotify' ? <FollowButton className="secondary" uri={this.props.match.params.uri} addText="Add to library" removeText="Remove from library" is_following={this.inLibrary()} /> : null }
 					<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 				</div>
 
@@ -171,7 +171,7 @@ class Album extends React.Component{
 }
 
 const mapStateToProps = (state, ownProps) => {
-	var uri = ownProps.params.uri;
+	var uri = ownProps.match.params.uri;
 	return {
 		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,
