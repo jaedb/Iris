@@ -361,6 +361,7 @@ const CoreMiddleware = (function(){
                 break;
 
             case 'LOAD_ALBUM':
+            console.log(action);
 
             	if (
             		!action.force_reload &&
