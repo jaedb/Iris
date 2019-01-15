@@ -58,10 +58,6 @@ import * as lastfmActions from './services/lastfm/actions';
 import * as geniusActions from './services/genius/actions';
 import * as snapcastActions from './services/snapcast/actions';
 
-
-/**
- * Root level application
- **/
 class App extends React.Component{
 
 	constructor(props){
@@ -370,6 +366,7 @@ class App extends React.Component{
 				<div className="body">
 
 					<Switch>
+
 						<Route path="/initial-setup" component={InitialSetup} />
 						<Route path="/kiosk-mode" component={KioskMode} />
 						<Route path="/add-to-playlist/:uris" component={AddToPlaylist} />
@@ -446,12 +443,6 @@ class App extends React.Component{
 		);
 	}
 }
-
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- **/
 
 const mapStateToProps = (state, ownProps) => {
 	return {

@@ -5063,7 +5063,7 @@ aside {
 .grid__item {
   display: inline-block;
   vertical-align: top;
-  border-bottom: 0;
+  border-bottom: 0 !important;
   position: relative;
   cursor: pointer; }
   .grid__item__wrapper {

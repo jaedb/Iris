@@ -18,14 +18,6 @@ class Sidebar extends React.Component{
 		super(props)
 	}
 
-	linkClassName(link){
-		if (this.props.location.pathname.startsWith('/'+link)){
-			return 'active';
-		} else {
-			return null;
-		}
-	}
-
 	render(){
 		return (
 			<aside>
@@ -33,11 +25,11 @@ class Sidebar extends React.Component{
 		        	<nav>
 
 		        		<section>
-							<Link className={this.linkClassName('queue')} to={global.baseURL+"queue"}>
+							<Link nav to={global.baseURL+"queue"}>
 								<Icon name="play_arrow" type="material" />
 								Now playing
 							</Link>
-							<Link className={this.linkClassName('search')} to={global.baseURL+"search"}>
+							<Link nav to={global.baseURL+"search"}>
 								<Icon name="search" type="material" />
 								Search
 							</Link>
@@ -45,19 +37,19 @@ class Sidebar extends React.Component{
 
 						{this.props.spotify_enabled ? <section>
 							<title>Discover</title>
-							<Link className={this.linkClassName('discover/recommendations')} to={global.baseURL+"discover/recommendations"}>
+							<Link nav to={global.baseURL+"discover/recommendations"}>
 								<Icon name="explore" type="material" />
 								Discover
 							</Link>
-							<Link className={this.linkClassName('discover/categories')} to={global.baseURL+"discover/categories"}>
+							<Link nav to={global.baseURL+"discover/categories"}>
 								<Icon name="mood" type="material" />
 								Genre / Mood
 							</Link>
-							<Link className={this.linkClassName('discover/featured')} to={global.baseURL+"discover/featured"}>
+							<Link nav to={global.baseURL+"discover/featured"}>
 								<Icon name="star" type="material" />
 								Featured playlists
 							</Link>
-							<Link className={this.linkClassName('discover/new-releases')} to={global.baseURL+"discover/new-releases"}>
+							<Link nav to={global.baseURL+"discover/new-releases"}>
 								<Icon name="new_releases" type="material" />
 								New releases
 							</Link>
@@ -65,30 +57,30 @@ class Sidebar extends React.Component{
 
 						<section>
 							<title>My Music</title>
-							<Link className={this.linkClassName('library/playlists')} to={global.baseURL+"library/playlists"}>
+							<Link nav to={global.baseURL+"library/playlists"}>
 								<Icon name="queue_music" type="material" />
 								Playlists
 							</Link>
-							<Link className={this.linkClassName('library/artists')} to={global.baseURL+"library/artists"}>
+							<Link nav to={global.baseURL+"library/artists"}>
 								<Icon name="recent_actors" type="material" />
 								Artists
 							</Link>
-							<Link className={this.linkClassName('library/albums')} to={global.baseURL+"library/albums"}>
+							<Link nav to={global.baseURL+"library/albums"}>
 								<Icon name="album" type="material" />
 								Albums
 							</Link>
-							<Link className={this.linkClassName('library/tracks')} to={global.baseURL+"library/tracks"}>
+							<Link nav to={global.baseURL+"library/tracks"}>
 								<Icon name="music_note" type="material" />
 								Tracks
 							</Link>
-							<Link className={this.linkClassName('library/browse')} to={global.baseURL+"library/browse"}>
+							<Link nav to={global.baseURL+"library/browse"}>
 								<Icon name="folder" type="material" />
 								Browse
 							</Link>
 						</section>
 
 						<section>
-							<Link className={this.linkClassName('settings')} to={global.baseURL+"settings"}>
+							<Link nav to={global.baseURL+"settings"}>
 								<Icon name="settings" type="material" />
 								Settings
 								{this.props.update_available ? <span className="status tooltip tooltip--right"><Icon name="cloud_download" className="green-text" /><span className="tooltip__content">Update available</span></span>: null}

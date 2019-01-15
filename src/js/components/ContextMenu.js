@@ -1,10 +1,10 @@
 
 import React, { PropTypes } from 'react';
-
-import Link from './Link';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { withRouter } from 'react-router';
 
+import Link from './Link';
 import TrackList from './TrackList';
 import Icon from './Icon';
 import Thumbnail from './Thumbnail';
@@ -845,4 +845,4 @@ const mapDispatchToProps = (dispatch) => {
 	}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ContextMenu)
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(ContextMenu));

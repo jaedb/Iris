@@ -1,37 +1,37 @@
 
-import React, { PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
+import React from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
-import Track from './Track'
-import ContextMenuTrigger from './ContextMenuTrigger'
+import Track from './Track';
+import ContextMenuTrigger from './ContextMenuTrigger';
 
-import * as helpers from '../helpers'
-import * as mopidyActions from '../services/mopidy/actions'
-import * as uiActions from '../services/ui/actions'
+import * as helpers from '../helpers';
+import * as mopidyActions from '../services/mopidy/actions';
+import * as uiActions from '../services/ui/actions';
 
 class TrackList extends React.Component{
 
 	constructor(props){
-		super(props)
+		super(props);
 
-		this.touch_dragging_tracks_keys = false
+		this.touch_dragging_tracks_keys = false;
 
-		this.handleKeyDown = this.handleKeyDown.bind(this)
-		this.handleTouchMove = this.handleTouchMove.bind(this)
-		this.handleTouchEnd = this.handleTouchEnd.bind(this)
+		this.handleKeyDown = this.handleKeyDown.bind(this);
+		this.handleTouchMove = this.handleTouchMove.bind(this);
+		this.handleTouchEnd = this.handleTouchEnd.bind(this);
 	}
 
 	componentWillMount(){
-		window.addEventListener("keydown", this.handleKeyDown, false)
-		window.addEventListener("touchmove", this.handleTouchMove, false)
-		window.addEventListener("touchend", this.handleTouchEnd, false)
+		window.addEventListener("keydown", this.handleKeyDown, false);
+		window.addEventListener("touchmove", this.handleTouchMove, false);
+		window.addEventListener("touchend", this.handleTouchEnd, false);
 	}
 
 	componentWillUnmount(){
-		window.removeEventListener("keydown", this.handleKeyDown, false)
-		window.removeEventListener("touchmove", this.handleTouchMove, false)
-		window.removeEventListener("touchend", this.handleTouchEnd, false)
+		window.removeEventListener("keydown", this.handleKeyDown, false);
+		window.removeEventListener("touchmove", this.handleTouchMove, false);
+		window.removeEventListener("touchend", this.handleTouchEnd, false);
 	}
 
 	handleKeyDown(e){
@@ -39,7 +39,7 @@ class TrackList extends React.Component{
 		// When we're focussed on certian elements (like form input fields), don't fire any shortcuts
 		var ignoreNodes = ['INPUT', 'TEXTAREA']
 		if (ignoreNodes.indexOf(e.target.nodeName) > -1){
-			return false
+			return false;
 		}
 
 		var tracks_keys = this.digestTracksKeys()
@@ -92,7 +92,7 @@ class TrackList extends React.Component{
 
 		this.props.uiActions.dragStart(
 			e, 
-			this.props.context, 
+			this.props.track_context, 
 			this.props.uri, 
 			selected_tracks, 
 			selected_tracks_indexes
@@ -215,7 +215,7 @@ class TrackList extends React.Component{
 
 		let data = {
 			e: e,
-			context: (this.props.context ? this.props.context+'-track' : 'track'),
+			context: (this.props.track_context ? this.props.track_context+'-track' : 'track'),
 			tracklist_uri: (this.props.uri ? this.props.uri : null),
 			items: selected_tracks_digested,
 			uris: selected_tracks_uris,
@@ -332,7 +332,7 @@ class TrackList extends React.Component{
 		key += '@@'+(track.tlid ? track.tlid : 'none')
 		key += '@@'+track.uri
 		key += '@@'+(this.props.uri ? this.props.uri : 'none')
-		key += '@@'+(this.props.context ? this.props.context : 'none')
+		key += '@@'+(this.props.track_context ? this.props.track_context : 'none')
 		return key
 	}
 
@@ -390,7 +390,7 @@ class TrackList extends React.Component{
 			return null;
 		}
 
-		var className = 'list list--tracks '+this.props.context
+		var className = 'list list--tracks '+this.props.track_context
 		if (this.props.className){
 			className += ' '+this.props.className
 		}
@@ -400,7 +400,7 @@ class TrackList extends React.Component{
 				{
 					this.props.tracks.map(
 						(track, index) => {
-							let track_key = this.buildTrackKey(track, index);
+							var track_key = this.buildTrackKey(track, index);
 							track.key = track_key;
 							return (
 								<Track
@@ -408,7 +408,7 @@ class TrackList extends React.Component{
 									key={track_key} 
 									mini_zones={this.props.slim_mode || helpers.isTouchDevice()}
 									track={track} 
-									context={this.props.context} 
+									track_context={this.props.track_context} 
 									can_sort={this.props.context == 'queue' || this.props.context == 'editable-playlist'} 
 									selected={this.props.selected_tracks.includes(track_key)} 
 									play_state={this.props.play_state} 
@@ -449,6 +449,5 @@ const mapDispatchToProps = (dispatch) => {
 	}
 }
 
-export default TrackList
-//export default connect(mapStateToProps, mapDispatchToProps)(TrackList)
+export default connect(mapStateToProps, mapDispatchToProps)(TrackList)
 

@@ -1,7 +1,7 @@
 
-import React, { PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
+import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 import Header from '../components/Header'
 import TrackList from '../components/TrackList'
@@ -171,7 +171,7 @@ class Album extends React.Component{
 }
 
 const mapStateToProps = (state, ownProps) => {
-	var uri = ownProps.match.params.uri;
+	var uri = decodeURIComponent(ownProps.match.params.uri);
 	return {
 		uri: uri,
 		slim_mode: state.ui.slim_mode,
