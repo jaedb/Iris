@@ -230,7 +230,7 @@ class Playlist extends React.Component{
 					<TrackList
 						uri={playlist.uri}
 						className="playlist-track-list"
-						context={context}
+						track_context={context}
 						tracks={playlist.tracks}
 						removeTracks={tracks_indexes => this.removeTracks(tracks_indexes)}
 						reorderTracks={(indexes, index) => this.reorderTracks(indexes, index)}

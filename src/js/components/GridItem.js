@@ -107,16 +107,26 @@ export default class GridItem extends React.Component{
 			images = this.props.item.icons;
 		}
 
+		if (this.props.link){
+			var link = this.props.link;
+		} else {
+			var link = global.baseURL+this.props.type+'/'+encodeURIComponent(item.uri);
+		}
+
 		return (
-			<Link className={"grid__item grid__item--"+this.props.type} to={global.baseURL+this.props.type+'/'+encodeURIComponent(item.uri)} onClick={e => helpers.scrollTo()} onContextMenu={e => this.handleContextMenu(e)}>
-				<Thumbnail size="medium" className="grid__item__thumbnail" images={images} />
-				<div className="grid__item__name">
-					{item.name ? item.name : <span className="opaque-text">{item.uri}</span>}
-				</div>
-				<div className="grid__item__secondary">					
-					{this.props.show_source_icon ? <Icon name={helpers.sourceIcon(item.uri)} type="fontawesome" className="source" /> : null}
-					{this.renderSecondary(item)}
-				</div>
+			<Link 
+				className={"grid__item grid__item--"+this.props.type} 
+				to={link} 
+				onClick={e => helpers.scrollTo()} 
+				onContextMenu={e => this.handleContextMenu(e)}>
+					<Thumbnail size="medium" className="grid__item__thumbnail" images={images} />
+					<div className="grid__item__name">
+						{item.name ? item.name : <span className="opaque-text">{item.uri}</span>}
+					</div>
+					<div className="grid__item__secondary">					
+						{this.props.show_source_icon ? <Icon name={helpers.sourceIcon(item.uri)} type="fontawesome" className="source" /> : null}
+						{this.renderSecondary(item)}
+					</div>
 			</Link>
 		);
 	}

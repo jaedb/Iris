@@ -36,6 +36,7 @@ import LibraryAlbums from './views/library/LibraryAlbums';
 import LibraryTracks from './views/library/LibraryTracks';
 import LibraryPlaylists from './views/library/LibraryPlaylists';
 import LibraryBrowse from './views/library/LibraryBrowse';
+import LibraryBrowseDirectory from './views/library/LibraryBrowseDirectory';
 
 import EditPlaylist from './views/modals/EditPlaylist';
 import CreatePlaylist from './views/modals/CreatePlaylist';
@@ -387,30 +388,31 @@ class App extends React.Component{
 									<Switch>
 										<Route exact path="/" component={Queue} />
 
-										<Route path="/queue" component={Queue} />
-										<Route path="/queue/history" component={QueueHistory} />
-										<Route path="/settings/debug" component={Debug} />
-										<Route path="/settings" component={Settings} />
-										<Route path="/settings/service/:sub_view?" component={Settings} />
+										<Route exact path="/queue" component={Queue} />
+										<Route exact path="/queue/history" component={QueueHistory} />
+										<Route exact path="/settings/debug" component={Debug} />
+										<Route exact path="/settings" component={Settings} />
+										<Route exact path="/settings/service/:sub_view?" component={Settings} />
 										
-										<Route path="/search/:type/:term?" component={Search} />
-										<Route path="/album/:uri" component={Album} />
-										<Route path="/artist/:uri/:sub_view?" component={Artist} />
-										<Route path="/playlist/:uri" component={Playlist} />
-										<Route path="/user/:uri" component={User} />
-										<Route path="/track/:uri" component={Track} />
+										<Route exact path="/search/(:type/:term)?" component={Search} />
+										<Route exact path="/album/:uri" component={Album} />
+										<Route exact path="/artist/:uri/:sub_view?" component={Artist} />
+										<Route exact path="/playlist/:uri" component={Playlist} />
+										<Route exact path="/user/:uri" component={User} />
+										<Route exact path="/track/:uri" component={Track} />
 							
-										<Route path="/discover/recommendations/:seeds?" component={DiscoverRecommendations} />
-										<Route path="/discover/featured" component={DiscoverFeatured} />
-										<Route path="/discover/categories" component={DiscoverCategories} />
-										<Route path="/discover/categories/:id" component={DiscoverCategory} />
-										<Route path="/discover/new-releases" component={DiscoverNewReleases} />
+										<Route exact path="/discover/recommendations/:seeds?" component={DiscoverRecommendations} />
+										<Route exact path="/discover/featured" component={DiscoverFeatured} />
+										<Route exact path="/discover/categories/:id" component={DiscoverCategory} />
+										<Route exact path="/discover/categories" component={DiscoverCategories} />
+										<Route exact path="/discover/new-releases" component={DiscoverNewReleases} />
 
-										<Route path="/library/artists" component={LibraryArtists} />
-										<Route path="/library/albums" component={LibraryAlbums} />
-										<Route path="/library/tracks" component={LibraryTracks} />
-										<Route path="/library/playlists" component={LibraryPlaylists} />
-										<Route path="/library/browse/:uri?" component={LibraryBrowse} />
+										<Route exact path="/library/artists" component={LibraryArtists} />
+										<Route exact path="/library/albums" component={LibraryAlbums} />
+										<Route exact path="/library/tracks" component={LibraryTracks} />
+										<Route exact path="/library/playlists" component={LibraryPlaylists} />
+										<Route exact path="/library/browse/:uri" component={LibraryBrowseDirectory} />
+										<Route exact path="/library/browse" component={LibraryBrowse} />
 
 										<Route>
 											<h1>I'm lost</h1>
