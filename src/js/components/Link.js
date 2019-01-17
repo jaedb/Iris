@@ -32,7 +32,7 @@ export default class extends React.Component{
 			return (
 				<NavLink 
 					onClick={e => this.handleClick(e)}
-					activeClassName="active"
+					activeClassName={this.props.activeClassName ? this.props.activeClassName : className+"--active"}
 					className={className}
 					to={this.props.to}>
 						{this.props.children}

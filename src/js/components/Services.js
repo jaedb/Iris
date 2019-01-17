@@ -297,7 +297,7 @@ class Services extends React.Component{
 		return (
 			<div className="menu" id="services-menu">
 				<div className="menu__inner">
-					<Link className={"menu-item"+(this.props.active == 'spotify' ? ' menu-item--active' : '')} to={this.props.active == 'spotify' ? global.baseURL+'settings' : global.baseURL+'settings/service/spotify'} scrollTo="services-menu">
+					<Link nav className="menu-item menu-item--spotify" activeClassName="menu-item--active" to={global.baseURL+'settings/spotify'} scrollTo="services-menu">
 						<div className="menu-item__inner">
 							{spotify_icon}
 							<div className="menu-item__title">
@@ -306,7 +306,7 @@ class Services extends React.Component{
 							{this.props.spotify.authorization ? <span className="status green-text">Authorized</span> : <span className="status mid_grey-text">Read-only</span>}
 						</div>
 					</Link>
-					<Link className={"menu-item"+(this.props.active == 'lastfm' ? ' menu-item--active' : '')} to={this.props.active == 'lastfm' ? global.baseURL+'settings' : global.baseURL+'settings/service/lastfm'} scrollTo="services-menu">
+					<Link nav className="menu-item menu-item--lastfm" activeClassName="menu-item--active" to={global.baseURL+'settings/lastfm'} scrollTo="services-menu">
 						<div className="menu-item__inner">
 							{lastfm_icon}
 							<div className="menu-item__title">
@@ -315,7 +315,7 @@ class Services extends React.Component{
 							{this.props.lastfm.authorization ? <span className="status green-text">Authorized</span> : <span className="status mid_grey-text">Read-only</span>}
 						</div>
 					</Link>
-					<Link className={"menu-item"+(this.props.active == 'genius' ? ' menu-item--active' : '')} to={this.props.active == 'genius' ? global.baseURL+'settings' : global.baseURL+'settings/service/genius'} scrollTo="services-menu">
+					<Link nav className="menu-item menu-item--genius" activeClassName="menu-item--active"  to={global.baseURL+'settings/genius'} scrollTo="services-menu">
 						<div className="menu-item__inner">
 							{genius_icon}
 							<div className="menu-item__title">
@@ -324,7 +324,7 @@ class Services extends React.Component{
 							{this.props.genius.authorization ? <span className="status green-text">Authorized</span> : <span className="status mid_grey-text">Unauthorized</span>}
 						</div>
 					</Link>
-					<Link className={"menu-item"+(this.props.active == 'snapcast' ? ' menu-item--active' : '')} to={this.props.active == 'snapcast' ? global.baseURL+'settings' : global.baseURL+'settings/service/snapcast'} scrollTo="services-menu">
+					<Link nav className="menu-item menu-item--snapcast" activeClassName="menu-item--active" to={global.baseURL+'settings/snapcast'} scrollTo="services-menu">
 						<div className="menu-item__inner">
 							<Icon className="menu-item__icon" name="devices" />
 							<div className="menu-item__title">
@@ -333,7 +333,7 @@ class Services extends React.Component{
 							{this.props.pusher.config.snapcast_enabled ? <span className="status green-text">Enabled</span> : <span className="status mid_grey-text">Disabled</span>}
 						</div>
 					</Link>
-					<Link className={"menu-item"+(this.props.active == 'icecast' ? ' menu-item--active' : '')} to={this.props.active == 'icecast' ? global.baseURL+'settings' : global.baseURL+'settings/service/icecast'} scrollTo="services-menu">
+					<Link nav className="menu-item menu-item--icecast" activeClassName="menu-item--active" to={global.baseURL+'settings/icecast'} scrollTo="services-menu">
 						<div className="menu-item__inner">
 							<Icon className="menu-item__icon" name="wifi_tethering" />
 							<div className="menu-item__title">
@@ -349,7 +349,7 @@ class Services extends React.Component{
 
 	renderService(){
 		var service = null;
-		switch (this.props.active){
+		switch (this.props.match.params.service){
 			case 'spotify':
 				service = this.renderSpotify();
 				break;

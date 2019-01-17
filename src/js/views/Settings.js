@@ -265,7 +265,8 @@ class Settings extends React.Component {
 					</form>
 
 					<h4 className="underline">Services<a name="services"></a></h4>
-					<Route path="/service" component={Services} />
+
+					<Route path="/settings/:service?" component={Services} />
 
 					<h4 className="underline">Interface<a name="interface"></a></h4>
 

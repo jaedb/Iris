@@ -51,45 +51,45 @@ class LibraryBrowse extends React.Component{
 
 				switch (subdirectory.name){
 					case 'Dirble':
-						subdirectory.icons = ['assets/backgrounds/browse-dirble.jpg']
+						subdirectory.icons = ['/assets/backgrounds/browse-dirble.jpg']
 						break
 
 					case 'Files':
-						subdirectory.icons = ['assets/backgrounds/browse-folders.jpg']
+						subdirectory.icons = ['/assets/backgrounds/browse-folders.jpg']
 						break
 
 					case 'Local media':
-						subdirectory.icons = ['assets/backgrounds/browse-folders.jpg']
+						subdirectory.icons = ['/assets/backgrounds/browse-folders.jpg']
 						break
 
 					case 'Spotify':
 					case 'Spotify Browse':
-						subdirectory.icons = ['assets/backgrounds/browse-spotify.jpg']
+						subdirectory.icons = ['/assets/backgrounds/browse-spotify.jpg']
 						break
 
 					case 'Spotify Tunigo':
 					case 'Tunigo':
-						subdirectory.icons = ['assets/backgrounds/browse-tunigo.jpg']
+						subdirectory.icons = ['/assets/backgrounds/browse-tunigo.jpg']
 						break
 
 					case 'TuneIn':
-						subdirectory.icons = ['assets/backgrounds/browse-tunein.jpg']
+						subdirectory.icons = ['/assets/backgrounds/browse-tunein.jpg']
 						break
 
 					case 'SoundCloud':
-						subdirectory.icons = ['assets/backgrounds/browse-soundcloud.jpg']
+						subdirectory.icons = ['/assets/backgrounds/browse-soundcloud.jpg']
 						break
 
 					case 'iTunes Store: Podcasts':
-						subdirectory.icons = ['assets/backgrounds/browse-itunes.jpg']
+						subdirectory.icons = ['/assets/backgrounds/browse-itunes.jpg']
 						break
 
 					case 'Soma FM':
-						subdirectory.icons = ['assets/backgrounds/browse-somafm.jpg']
+						subdirectory.icons = ['/assets/backgrounds/browse-somafm.jpg']
 						break
 
 					default:
-						subdirectory.icons = ['assets/backgrounds/browse-default.jpg']
+						subdirectory.icons = ['/assets/backgrounds/browse-default.jpg']
 				}
 
 				grid_items.push({
@@ -107,7 +107,7 @@ class LibraryBrowse extends React.Component{
 					Browse
 				</Header>
 				<section className="content-wrapper">
-					<div className="grid category-grid">
+					<div className="grid grid--tiles">
 						<ErrorBoundary>
 							{
 								grid_items.map(
