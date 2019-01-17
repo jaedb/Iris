@@ -26,11 +26,11 @@ class LibraryBrowse extends React.Component{
 	}
 
 	componentDidMount(){
-		this.loadDirectory()
+		this.loadDirectory();
+		this.props.uiActions.setWindowTitle("Browse");
 	}
 
 	componentWillReceiveProps(nextProps){
-		this.props.uiActions.setWindowTitle("Browse");
 
 		// mopidy goes online
 		if (!this.props.mopidy_connected && nextProps.mopidy_connected){
@@ -40,11 +40,7 @@ class LibraryBrowse extends React.Component{
 
 	loadDirectory(props = this.props){
 		if (props.mopidy_connected){
-			var uri = null
-			if (props.uri !== undefined){
-				uri = props.uri;
-			}
-			this.props.mopidyActions.getDirectory(uri);
+			this.props.mopidyActions.getDirectory(null);
 		}
 	}
 
@@ -120,7 +116,8 @@ class LibraryBrowse extends React.Component{
 											<GridItem 
 												item={item} 
 												key={index}
-												type="category"
+												link={item.link}
+												type="browse"
 											/>
 										)
 									}

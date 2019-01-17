@@ -411,8 +411,8 @@ class App extends React.Component{
 										<Route exact path="/library/albums" component={LibraryAlbums} />
 										<Route exact path="/library/tracks" component={LibraryTracks} />
 										<Route exact path="/library/playlists" component={LibraryPlaylists} />
-										<Route exact path="/library/browse/:uri" component={LibraryBrowseDirectory} />
 										<Route exact path="/library/browse" component={LibraryBrowse} />
+										<Route exact path="/library/browse/:uri" component={LibraryBrowseDirectory} />
 
 										<Route>
 											<h1>I'm lost</h1>

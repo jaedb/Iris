@@ -41,7 +41,7 @@ class LibraryBrowseDirectory extends React.Component{
 
 			console.log(nextProps.uri,this.props.uri);
 
-			//this.loadDirectory(nextProps);
+			this.loadDirectory(nextProps);
 		}
 	}
 
@@ -119,10 +119,11 @@ class LibraryBrowseDirectory extends React.Component{
 				<div className="grid category-grid">
 					{
 						subdirectories.map(subdirectory => {
-							return (										
+							return (
 								<GridItem
 									key={subdirectory.uri}
-									type="directory"
+									type="browse"
+									link={global.baseURL+'library/browse/'+encodeURIComponent(subdirectory.uri)}
 									item={subdirectory}
 								/>
 							);
