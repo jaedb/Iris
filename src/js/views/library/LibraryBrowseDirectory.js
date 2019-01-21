@@ -38,9 +38,6 @@ class LibraryBrowseDirectory extends React.Component{
 
 		// our uri changes
 		if (nextProps.uri && nextProps.uri !== this.props.uri){
-
-			console.log(nextProps.uri,this.props.uri);
-
 			this.loadDirectory(nextProps);
 		}
 	}
