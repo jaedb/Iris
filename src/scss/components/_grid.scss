@@ -4,7 +4,7 @@
 	&__item {
 		display: inline-block;
 		vertical-align: top;
-		border-bottom: 0;
+		border-bottom: 0 !important;
 		position: relative;
 		cursor: pointer;
 
@@ -47,7 +47,7 @@
 		}
 	}
 
-	&--categories {
+	&--tiles {
 		.grid__item {
 			position: relative;
 

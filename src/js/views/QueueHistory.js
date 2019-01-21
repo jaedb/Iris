@@ -1,7 +1,7 @@
 
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { hashHistory } from 'react-router'
+
 import { bindActionCreators } from 'redux'
 
 import TrackList from '../components/TrackList'
@@ -38,7 +38,7 @@ class QueueHistory extends React.Component{
 
 	render(){
 		var options = (
-			<a className="button button--no-hover" onClick={e => hashHistory.push(global.baseURL+'queue')}>
+			<a className="button button--no-hover" onClick={e => this.props.history.push(global.baseURL+'queue')}>
 				<Icon name="keyboard_backspace" />&nbsp;
 				Back
 			</a>
@@ -69,7 +69,7 @@ class QueueHistory extends React.Component{
 				<section className="content-wrapper">
 					<TrackList
 						className="queue-history-track-list"
-						context="history"
+						track_context="history"
 						tracks={tracks}
 						show_source_icon={true}
 					/>

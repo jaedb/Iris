@@ -1,12 +1,12 @@
 
-import React, { PropTypes } from 'react'
-import ReactDOM from 'react-dom'
-import { Router, Link, hashHistory } from 'react-router'
+import React, { PropTypes } from 'react';
+import ReactDOM from 'react-dom';
+import { Link } from 'react-router-dom';
 
-import * as helpers from '../helpers'
-import Icon from './Icon'
-import Thumbnail from './Thumbnail'
-import ArtistSentence from './ArtistSentence'
+import * as helpers from '../helpers';
+import Icon from './Icon';
+import Thumbnail from './Thumbnail';
+import ArtistSentence from './ArtistSentence';
 
 export default class GridItem extends React.Component{
 
@@ -45,10 +45,10 @@ export default class GridItem extends React.Component{
 	}
 
 	renderSecondary(item){
-		var output = ''
+		var output = '';
+		var link_to = null;
 
 		switch (helpers.uriType(item.uri)){
-
 			case 'playlist':
 				if (item.tracks_total){
 					return (
@@ -71,7 +71,7 @@ export default class GridItem extends React.Component{
 			case 'album':
 				return (
 					<span>
-						{item.artists !== undefined ? <ArtistSentence artists={item.artists} /> : null}
+						{item.artists !== undefined ? <ArtistSentence nolinks artists={item.artists} /> : null}
 					</span>
 				)
 				break
@@ -79,7 +79,7 @@ export default class GridItem extends React.Component{
 			default:
 				return (
 					<span>
-						{ item.artists !== undefined ? <ArtistSentence artists={ item.artists } /> : null }
+						{ item.artists !== undefined ? <ArtistSentence nolinks artists={ item.artists } /> : null }
 						{ item.followers !== undefined ? item.followers.toLocaleString()+' followers' : null }
 					</span>
 				)
@@ -107,17 +107,27 @@ export default class GridItem extends React.Component{
 			images = this.props.item.icons;
 		}
 
+		if (this.props.link){
+			var link = this.props.link;
+		} else {
+			var link = global.baseURL+this.props.type+'/'+encodeURIComponent(item.uri);
+		}
+
 		return (
-			<div className={"grid__item grid__item--"+this.props.type} onClick={e => this.handleClick(e)} onContextMenu={e => this.handleContextMenu(e)}>
-				<Thumbnail size="medium" className="grid__item__thumbnail" images={images} />
-				<div className="grid__item__name">
-					{item.name ? item.name : <span className="opaque-text">{item.uri}</span>}
-				</div>
-				<div className="grid__item__secondary">					
-					{this.props.show_source_icon ? <Icon name={helpers.sourceIcon(item.uri)} type="fontawesome" className="source" /> : null}
-					{this.renderSecondary(item)}
-				</div>
-			</div>
+			<Link 
+				className={"grid__item grid__item--"+this.props.type} 
+				to={link} 
+				onClick={e => helpers.scrollTo()} 
+				onContextMenu={e => this.handleContextMenu(e)}>
+					<Thumbnail size="medium" className="grid__item__thumbnail" images={images} />
+					<div className="grid__item__name">
+						{item.name ? item.name : <span className="opaque-text">{item.uri}</span>}
+					</div>
+					<div className="grid__item__secondary">					
+						{this.props.show_source_icon ? <Icon name={helpers.sourceIcon(item.uri)} type="fontawesome" className="source" /> : null}
+						{this.renderSecondary(item)}
+					</div>
+			</Link>
 		);
 	}
 }

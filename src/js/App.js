@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import { createStore, bindActionCreators } from 'redux';
-import { hashHistory, Link } from 'react-router';
+import { BrowserRouter, Route, Switch, Link } from "react-router-dom";
 import { connect } from 'react-redux';
 import ReactGA from 'react-ga';
 
@@ -14,6 +14,41 @@ import Notifications from './components/Notifications';
 import DebugInfo from './components/DebugInfo';
 import ErrorBoundary from './components/ErrorBoundary';
 
+import Album from './views/Album';
+import Artist from './views/Artist';
+import Playlist from './views/Playlist';
+import User from './views/User';
+import Track from './views/Track';
+import Queue from './views/Queue';
+import QueueHistory from './views/QueueHistory';
+import Debug from './views/Debug';
+import Search from './views/Search';
+import Settings from './views/Settings';
+
+import DiscoverRecommendations from './views/discover/DiscoverRecommendations';
+import DiscoverFeatured from './views/discover/DiscoverFeatured';
+import DiscoverCategories from './views/discover/DiscoverCategories';
+import DiscoverCategory from './views/discover/DiscoverCategory';
+import DiscoverNewReleases from './views/discover/DiscoverNewReleases';
+
+import LibraryArtists from './views/library/LibraryArtists';
+import LibraryAlbums from './views/library/LibraryAlbums';
+import LibraryTracks from './views/library/LibraryTracks';
+import LibraryPlaylists from './views/library/LibraryPlaylists';
+import LibraryBrowse from './views/library/LibraryBrowse';
+import LibraryBrowseDirectory from './views/library/LibraryBrowseDirectory';
+
+import EditPlaylist from './views/modals/EditPlaylist';
+import CreatePlaylist from './views/modals/CreatePlaylist';
+import EditRadio from './views/modals/EditRadio';
+import AddToQueue from './views/modals/AddToQueue';
+import InitialSetup from './views/modals/InitialSetup';
+import KioskMode from './views/modals/KioskMode';
+import ShareConfiguration from './views/modals/ShareConfiguration';
+import AddToPlaylist from './views/modals/AddToPlaylist';
+import ImageZoom from './views/modals/ImageZoom';
+import EditCommand from './views/modals/EditCommand';
+
 import * as helpers from './helpers';
 import * as coreActions from './services/core/actions';
 import * as uiActions from './services/ui/actions';
@@ -24,10 +59,6 @@ import * as lastfmActions from './services/lastfm/actions';
 import * as geniusActions from './services/genius/actions';
 import * as snapcastActions from './services/snapcast/actions';
 
-
-/**
- * Root level application
- **/
 class App extends React.Component{
 
 	constructor(props){
@@ -68,32 +99,6 @@ class App extends React.Component{
 		this.props.pusherActions.connect();
 		this.props.coreActions.getBroadcasts();
 
-		// when we navigate to a new route
-		hashHistory.listen(location => {
-			
-	    	// Log our pageview
-			if (this.props.allow_reporting){
-				ReactGA.set({ page: window.location.hash });
-				ReactGA.pageview(window.location.hash);
-			}
-
-			// Scroll to top of <main>
-			// This doesn't know the difference between forward or backward navigation
-			// so isn't quite a right fit
-			//document.getElementById('main').scrollTo(0, 0);
-
-			// Hide our sidebar
-			this.props.uiActions.toggleSidebar(false);
-
-			// Unselect any tracks
-			this.props.uiActions.setSelectedTracks([]);
-
-			// Close context menu
-			if (this.props.context_menu){
-				this.props.uiActions.hideContextMenu();
-			}
-		});
-
 		// Check our slim_mode
 		this.handleWindowResize(null);
 
@@ -117,7 +122,7 @@ class App extends React.Component{
 				// Allow 100ms for the action above to complete before we re-route
 				setTimeout(
 					() => {
-						hashHistory.push(global.baseURL);
+						this.props.history.push(global.baseURL);
 					},
 					100
 				);
@@ -126,8 +131,37 @@ class App extends React.Component{
 
 		// show initial setup if required
 		if (!this.props.initial_setup_complete){
-			hashHistory.push(global.baseURL+'initial-setup');
+			this.props.history.push(global.baseURL+'initial-setup');
 		}
+	}
+
+	componentDidUpdate(prevProps){
+
+		// When we have navigated to a new route
+		if (this.props.location !== prevProps.location){
+
+	    	// Log our pageview
+			if (this.props.allow_reporting){
+				ReactGA.set({ page: this.props.location.pathname });
+				ReactGA.pageview(this.props.location.pathname);
+			}
+
+			// Scroll to top of <main>
+			// This doesn't know the difference between forward or backward navigation
+			// so isn't quite a right fit
+			//document.getElementById('main').scrollTo(0, 0);
+
+			// Hide our sidebar
+			this.props.uiActions.toggleSidebar(false);
+
+			// Unselect any tracks
+			this.props.uiActions.setSelectedTracks([]);
+
+			// Close context menu
+			if (this.props.context_menu){
+				this.props.uiActions.hideContextMenu();
+			}
+		};
 	}
 
 	shouldTriggerShortcut(e){
@@ -298,7 +332,7 @@ class App extends React.Component{
 
 			case 70: // F
 				if ((e.ctrlKey || e.metaKey) && e.shiftKey){
-					hashHistory.push(global.baseURL+'modal/kiosk-mode');
+					window.history.push(global.baseURL+'modal/kiosk-mode');
 				}
 				break;
 		}
@@ -331,13 +365,64 @@ class App extends React.Component{
 			<div className={className}>
 		
 				<div className="body">
-			        <Sidebar />		        
-			        <PlaybackControls />
-			        <main id="main" className="smooth-scroll">
-						<ErrorBoundary>
-				      		{this.props.children}
-		        		</ErrorBoundary>
-			        </main>
+
+					<Switch>
+
+						<Route path="/initial-setup" component={InitialSetup} />
+						<Route path="/kiosk-mode" component={KioskMode} />
+						<Route path="/add-to-playlist/:uris" component={AddToPlaylist} />
+						<Route path="/image-zoom" component={ImageZoom} />
+						<Route path="/share-configuration" component={ShareConfiguration} />
+						<Route path="/edit-command/:id?" component={EditCommand} />
+						
+						<Route path="/queue/radio" component={EditRadio} />
+						<Route path="/queue/add-uri" component={AddToQueue} />
+						<Route path="/playlist/create" component={CreatePlaylist} />
+						<Route path="/playlist/:uri/edit" component={EditPlaylist} />
+
+						<Route>
+							<div>
+								<Sidebar />		        
+						        <PlaybackControls />
+						        <main id="main" className="smooth-scroll">
+									<Switch>
+										<Route exact path="/" component={Queue} />
+
+										<Route exact path="/queue" component={Queue} />
+										<Route exact path="/queue/history" component={QueueHistory} />
+										<Route exact path="/settings/debug" component={Debug} />
+										<Route path="/settings" component={Settings} />
+										
+										<Route exact path="/search/(:type/:term)?" component={Search} />
+										<Route exact path="/album/:uri" component={Album} />
+										<Route exact path="/artist/:uri/:sub_view?" component={Artist} />
+										<Route exact path="/playlist/:uri" component={Playlist} />
+										<Route exact path="/user/:uri" component={User} />
+										<Route exact path="/track/:uri" component={Track} />
+							
+										<Route exact path="/discover/recommendations/:seeds?" component={DiscoverRecommendations} />
+										<Route exact path="/discover/featured" component={DiscoverFeatured} />
+										<Route exact path="/discover/categories/:id" component={DiscoverCategory} />
+										<Route exact path="/discover/categories" component={DiscoverCategories} />
+										<Route exact path="/discover/new-releases" component={DiscoverNewReleases} />
+
+										<Route exact path="/library/artists" component={LibraryArtists} />
+										<Route exact path="/library/albums" component={LibraryAlbums} />
+										<Route exact path="/library/tracks" component={LibraryTracks} />
+										<Route exact path="/library/playlists" component={LibraryPlaylists} />
+										<Route exact path="/library/browse" component={LibraryBrowse} />
+										<Route exact path="/library/browse/:uri" component={LibraryBrowseDirectory} />
+
+										<Route>
+											<h1>I'm lost</h1>
+										</Route>
+
+					        		</Switch>
+						        </main>
+					        </div>
+						</Route>
+					</Switch>
+			        
 		        </div>
 
 		        <ContextMenu />
@@ -359,12 +444,6 @@ class App extends React.Component{
 		);
 	}
 }
-
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- **/
 
 const mapStateToProps = (state, ownProps) => {
 	return {

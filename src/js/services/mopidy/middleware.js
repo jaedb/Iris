@@ -2,7 +2,7 @@
 import ReactGA from 'react-ga';
 import Mopidy from 'mopidy';
 import md5 from 'md5';
-import { hashHistory } from 'react-router';
+
 import * as helpers from '../../helpers';
 
 var mopidyActions = require('./actions.js');
@@ -1672,7 +1672,7 @@ const MopidyMiddleware = (function(){
                                         key: action.key,
                                         new_key: response.uri
                                     });
-                                    hashHistory.push(global.baseURL+'playlist/'+encodeURIComponent(response.uri));
+                                    this.props.history.push(global.baseURL+'playlist/'+encodeURIComponent(response.uri));
                                 }
 
                                 store.dispatch(uiActions.createNotification({type: 'info', content: 'Playlist saved'}));

@@ -5063,7 +5063,7 @@ aside {
 .grid__item {
   display: inline-block;
   vertical-align: top;
-  border-bottom: 0;
+  border-bottom: 0 !important;
   position: relative;
   cursor: pointer; }
   .grid__item__wrapper {
@@ -5095,9 +5095,9 @@ aside {
     -webkit-transform: scale(0.98);
     transform: scale(0.98); }
 
-.grid--categories .grid__item {
+.grid--tiles .grid__item {
   position: relative; }
-  .grid--categories .grid__item__name {
+  .grid--tiles .grid__item__name {
     position: absolute;
     bottom: 15%;
     left: 0;
@@ -5109,7 +5109,7 @@ aside {
     z-index: 2; }
 
 @media (min-width: 1000px) {
-  .grid--categories .grid__item__name {
+  .grid--tiles .grid__item__name {
     font-size: 16px; } }
 
 @media (min-width: 1900px) {

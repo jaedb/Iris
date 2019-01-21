@@ -80,7 +80,7 @@ class AddToPlaylist extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
-		uris: (ownProps.params.uris ? decodeURIComponent(ownProps.params.uris).split(',') : []),
+		uris: (ownProps.match.params.uris ? decodeURIComponent(ownProps.match.params.uris).split(',') : []),
 		mopidy_connected: state.mopidy.connected,
 		mopidy_uri_schemes: state.mopidy.uri_schemes,
 		mopidy_library_playlists: state.mopidy.library_playlists,

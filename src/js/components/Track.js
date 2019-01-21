@@ -209,14 +209,14 @@ export default class Track extends React.Component{
 			)
 		}
 
-		if (this.props.context == 'history'){
+		if (this.props.track_context == 'history'){
 			var track_middle_column = (
 				<div className="list__item__column__item list__item__column__item--played_at">
 					{track.played_at ? <span><Dater type="ago" data={track.played_at} /> ago</span> : '-'}
 				</div>
 			)
 
-		} else if (this.props.context == 'queue'){
+		} else if (this.props.track_context == 'queue'){
 			if (track.added_from && track.added_by){
 				var type = (track.added_from ? helpers.uriType(track.added_from) : null);
 

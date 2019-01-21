@@ -1,30 +1,28 @@
 
-import React, { PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { hashHistory } from 'react-router'
+import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+
 import Link from '../components/Link';
-import { bindActionCreators } from 'redux'
+import Icon from '../components/Icon';
+import Parallax from '../components/Parallax';
+import TrackList from '../components/TrackList';
+import Dater from '../components/Dater';
+import ArtistSentence from '../components/ArtistSentence';
+import Thumbnail from '../components/Thumbnail';
+import Header from '../components/Header';
+import URILink from '../components/URILink';
 
-import Icon from '../components/Icon'
-import Parallax from '../components/Parallax'
-import TrackList from '../components/TrackList'
-import Track from '../components/Track'
-import Dater from '../components/Dater'
-import ArtistSentence from '../components/ArtistSentence'
-import Thumbnail from '../components/Thumbnail'
-import Header from '../components/Header'
-import URILink from '../components/URILink'
+import * as helpers from '../helpers';
+import * as uiActions from '../services/ui/actions';
+import * as pusherActions from '../services/pusher/actions';
+import * as spotifyActions from '../services/spotify/actions';
+import * as mopidyActions from '../services/mopidy/actions';
 
-import * as helpers from '../helpers'
-import * as uiActions from '../services/ui/actions'
-import * as pusherActions from '../services/pusher/actions'
-import * as spotifyActions from '../services/spotify/actions'
-import * as mopidyActions from '../services/mopidy/actions'
-
-class Queue extends React.Component{
+class Queue extends React.Component {
 
 	constructor(props){
-		super(props)
+		super(props);
 	}
 
 	componentDidMount(){
@@ -179,8 +177,8 @@ class Queue extends React.Component{
 
 					<section className="list-wrapper">
 						<TrackList
-							show_source_icon={true}
-							context="queue"
+							show_source_icon
+							track_context="queue"
 							className="queue-track-list"
 							tracks={tracks}
 							removeTracks={track_indexes => this.removeTracks(track_indexes)}
@@ -195,13 +193,6 @@ class Queue extends React.Component{
 		);
 	}
 }
-
-
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- **/
 
 const mapStateToProps = (state, ownProps) => {
 	return {

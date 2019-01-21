@@ -57,7 +57,23 @@ class Extension( ext.Extension ):
         # Add our frontend
         registry.add('frontend', IrisFrontend)
 
+##
+# Customised handler for react router URLS
+#
+# This routes all URLs to the same path, so that React can handle the path etc
+##
+class ReactRouterHandler(tornado.web.StaticFileHandler):
+    def initialize(self, path):
+        self.path = path
+        self.dirname, self.filename = os.path.split(path)
+        super(ReactRouterHandler, self).initialize(self.dirname)
 
+    def get(self, path=None, include_body=True):
+        super(ReactRouterHandler, self).get(self.path, include_body)
+
+##
+# Frontend factory
+##
 def iris_factory(config, core):
 
     path = os.path.join( os.path.dirname(__file__), 'static')
@@ -74,8 +90,10 @@ def iris_factory(config, core):
             'core': core,
             'config': config
         }),
+        (r'/([^.]*)', ReactRouterHandler, {
+            'path': path+'/index.html'
+        }),
         (r'/(.*)', tornado.web.StaticFileHandler, {
-            'path': path,
-            'default_filename': 'index.html'
+            'path': path
         }),
     ]

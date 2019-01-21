@@ -1,27 +1,27 @@
 
-import React, { PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
+import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import InputRange from 'react-input-range';
 
-import Header from '../../components/Header'
-import ArtistSentence from '../../components/ArtistSentence'
-import ArtistGrid from '../../components/ArtistGrid'
-import AlbumGrid from '../../components/AlbumGrid'
-import TrackList from '../../components/TrackList'
-import Thumbnail from '../../components/Thumbnail'
-import Parallax from '../../components/Parallax'
-import DropdownField from '../../components/Fields/DropdownField'
-import AddSeedField from '../../components/Fields/AddSeedField'
-import URILink from '../../components/URILink'
-import ContextMenuTrigger from '../../components/ContextMenuTrigger'
-import RelatedArtists from '../../components/RelatedArtists'
-import Icon from '../../components/Icon'
+import Header from '../../components/Header';
+import ArtistSentence from '../../components/ArtistSentence';
+import ArtistGrid from '../../components/ArtistGrid';
+import AlbumGrid from '../../components/AlbumGrid';
+import TrackList from '../../components/TrackList';
+import Thumbnail from '../../components/Thumbnail';
+import Parallax from '../../components/Parallax';
+import DropdownField from '../../components/Fields/DropdownField';
+import AddSeedField from '../../components/Fields/AddSeedField';
+import URILink from '../../components/URILink';
+import ContextMenuTrigger from '../../components/ContextMenuTrigger';
+import RelatedArtists from '../../components/RelatedArtists';
+import Icon from '../../components/Icon';
 
-import * as helpers from '../../helpers'
-import * as uiActions from '../../services/ui/actions'
-import * as mopidyActions from '../../services/mopidy/actions'
-import * as spotifyActions from '../../services/spotify/actions'
+import * as helpers from '../../helpers';
+import * as uiActions from '../../services/ui/actions';
+import * as mopidyActions from '../../services/mopidy/actions';
+import * as spotifyActions from '../../services/spotify/actions';
 
 class Discover extends React.Component{
 
@@ -153,16 +153,16 @@ class Discover extends React.Component{
 		this.props.uiActions.setWindowTitle("Discover");
 
 		// We have seeds provided in the URL
-		if (this.props.params.seeds){
-			this.handleURLSeeds(this.props.params.seeds);
+		if (this.props.match.params.seeds){
+			this.handleURLSeeds(this.props.match.params.seeds);
 		} 
 	}
 
 	componentWillReceiveProps(newProps, newState){
 
 		// New seeds via URL
-		if (newProps.params.seeds != this.props.params.seeds){
-			this.handleURLSeeds(newProps.params.seeds)
+		if (newProps.match.params.seeds != this.props.match.params.seeds){
+			this.handleURLSeeds(newProps.match.params.seeds)
 		}
 	}
 
@@ -198,7 +198,7 @@ class Discover extends React.Component{
 		this.props.uiActions.showContextMenu(data);
 	}
 
-	handleURLSeeds(seeds_string = this.props.params.seeds){
+	handleURLSeeds(seeds_string = this.props.match.params.seeds){
 
 		// Rejoin if we've had to uri-encode these as strings
 		// We'd need to do this if our URL has been encoded so the whole URL can become

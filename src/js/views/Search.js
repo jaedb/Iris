@@ -1,7 +1,7 @@
 
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { hashHistory } from 'react-router'
+
 import Link from '../components/Link';
 import { bindActionCreators } from 'redux'
 
@@ -52,7 +52,7 @@ class Search extends React.Component{
 	componentWillReceiveProps(nextProps){
 
 		// Query changed
-		if (nextProps.params.term !== this.props.params.term || nextProps.params.type !== this.props.params.type){
+		if (nextProps.term !== this.props.term || nextProps.type !== this.props.type){
 			this.digestUri(nextProps);
 		}
 
@@ -69,13 +69,13 @@ class Search extends React.Component{
 	// Digest the URI query property
 	// Triggered when the URL changes
 	digestUri(props = this.props){
-		if (props.params && props.params.type && props.params.term){
+		if (props.params && props.type && props.term){
 			this.setState({
-				type: props.params.type,
-				term: props.params.term
+				type: props.type,
+				term: props.term
 			});
 
-			this.search(props.params.type, props.params.term);
+			this.search(props.type, props.term);
 		}
 	}
 
@@ -429,6 +429,8 @@ class Search extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 	return {
+		type: ownProps.match.params.type,
+		term: ownProps.match.params.term,
 		mopidy_connected: state.mopidy.connected,
 		albums: (state.core.albums ? state.core.albums : []),
 		artists: (state.core.artists ? state.core.artists : []),

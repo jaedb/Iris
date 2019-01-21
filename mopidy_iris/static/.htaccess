@@ -1,0 +1,15 @@
+<IfModule mod_rewrite.c>
+	
+	RewriteEngine On
+
+	# Remove /iris/ from all requests (except /ws) to accommodate the
+	# ./mopidy/{extension} webserver format
+	RewriteCond %{REQUEST_URI} !^/ws/
+	RewriteRule ^iris/(.*)$ /$1 [NC,L]
+
+	# Rewrite all non-file URLs to our React index.html
+	# This is essential for React Router to handle page refreshers
+	RewriteCond %{REQUEST_URI} ^(.*)$
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule .* index.html [L]
+</IfModule>

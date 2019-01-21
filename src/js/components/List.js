@@ -1,19 +1,19 @@
 
-import React, { PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { createStore, bindActionCreators } from 'redux'
-import { hashHistory } from 'react-router'
+import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { createStore, bindActionCreators } from 'redux';
+import { withRouter } from 'react-router';
 
-import ArtistSentence from './ArtistSentence'
-import Dater from './Dater'
-import URILink from './URILink'
-import ContextMenuTrigger from './ContextMenuTrigger'
-import Icon from './Icon'
-import Thumbnail from './Thumbnail'
-import Popularity from './Popularity'
+import ArtistSentence from './ArtistSentence';
+import Dater from './Dater';
+import URILink from './URILink';
+import ContextMenuTrigger from './ContextMenuTrigger';
+import Icon from './Icon';
+import Thumbnail from './Thumbnail';
+import Popularity from './Popularity';
 
-import * as helpers from '../helpers'
-import * as uiActions from '../services/ui/actions'
+import * as helpers from '../helpers';
+import * as uiActions from '../services/ui/actions';
 
 class List extends React.Component{
 
@@ -26,7 +26,7 @@ class List extends React.Component{
 		// make sure we haven't clicked a nested link (ie Artist name)
 		if (e.target.tagName.toLowerCase() !== 'a'){
 			e.preventDefault();
-			hashHistory.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(uri));
+			this.props.history.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(uri));
 			helpers.scrollTo();
 		}
 	}
@@ -36,7 +36,7 @@ class List extends React.Component{
 		// make sure we haven't clicked a nested link (ie Artist name)
 		if (e.target.tagName.toLowerCase() !== 'a'){
 			e.preventDefault();
-			hashHistory.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(uri));
+			this.props.history.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(uri));
 			helpers.scrollTo();
 		}
 	}
@@ -182,4 +182,4 @@ const mapDispatchToProps = (dispatch) => {
 	}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(List)
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(List));

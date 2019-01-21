@@ -24,7 +24,7 @@ class DiscoverCategory extends React.Component{
 	}
 
 	componentWillReceiveProps(nextProps){
-		if (nextProps.params.id != this.props.params.id){
+		if (nextProps.match.params.id != this.props.match.params.id){
 			this.loadCategory();
 		}
 
@@ -43,11 +43,11 @@ class DiscoverCategory extends React.Component{
 
 	loadCategory(){
 		if (!this.props.category){
-			this.props.spotifyActions.getCategory(this.props.params.id);			
+			this.props.spotifyActions.getCategory(this.props.match.params.id);			
 		}
 
 		if (!this.props.category.playlists_uris){
-			this.props.spotifyActions.getCategoryPlaylists(this.props.params.id);			
+			this.props.spotifyActions.getCategoryPlaylists(this.props.match.params.id);			
 		}
 	}
 
@@ -57,7 +57,7 @@ class DiscoverCategory extends React.Component{
 			null,
 			{
 				type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED_MORE',
-				uri: 'category:'+this.props.params.id
+				uri: 'category:'+this.props.match.params.id
 			}
 		);
 	}
@@ -104,18 +104,11 @@ class DiscoverCategory extends React.Component{
 	}
 }
 
-
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- **/
-
 const mapStateToProps = (state, ownProps) => {
 	return {
 		load_queue: state.ui.load_queue,
 		playlists: state.core.playlists,
-		category: (state.spotify.categories && state.spotify.categories['category:'+ownProps.params.id] !== undefined ? state.spotify.categories['category:'+ownProps.params.id] : false )
+		category: (state.spotify.categories && state.spotify.categories['category:'+ownProps.match.params.id] !== undefined ? state.spotify.categories['category:'+ownProps.match.params.id] : false )
 	}
 }
 

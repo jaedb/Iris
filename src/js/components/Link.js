@@ -1,6 +1,6 @@
 
 import React from 'react';
-import {Link} from 'react-router';
+import { Link, NavLink } from 'react-router-dom';
 
 import * as helpers from '../helpers';
 
@@ -21,14 +21,32 @@ export default class extends React.Component{
 	}
 
 	render(){
-		return (
-			<Link 
-				onClick={e => this.handleClick(e)}
-				className={this.props.className ? this.props.className : null}
-				activeClassName={this.props.activeClassName}
-				to={this.props.to}>
-					{this.props.children}
-			</Link>
-		);
+		var className = null;
+		if (this.props.className){
+			var className = this.props.className;
+		} else {
+			var className = "";
+		}
+
+		if (this.props.nav){
+			return (
+				<NavLink 
+					onClick={e => this.handleClick(e)}
+					activeClassName={this.props.activeClassName ? this.props.activeClassName : className+"--active"}
+					className={className}
+					to={this.props.to}>
+						{this.props.children}
+				</NavLink>
+			);
+		} else {
+			return (
+				<Link 
+					onClick={e => this.handleClick(e)}
+					className={className}
+					to={this.props.to}>
+						{this.props.children}
+				</Link>
+			);
+		}
 	}
 }

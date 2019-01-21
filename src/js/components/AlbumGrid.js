@@ -2,8 +2,8 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { createStore, bindActionCreators } from 'redux'
-import { hashHistory } from 'react-router'
 
+import history from './history';
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
 import GridItem from './GridItem'
@@ -44,7 +44,6 @@ class AlbumGrid extends React.Component{
 									type="album"
 									item={album}
 									show_source_icon={this.props.show_source_icon}
-									onClick={e => {hashHistory.push(global.baseURL+'album/'+encodeURIComponent(album.uri))}}
 									onContextMenu={e => this.handleContextMenu(e,album)}
 								/>
 							)}

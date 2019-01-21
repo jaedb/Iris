@@ -1,10 +1,10 @@
 
 import React, { PropTypes } from 'react';
-import { hashHistory } from 'react-router';
-import Link from './Link';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { withRouter } from 'react-router';
 
+import Link from './Link';
 import TrackList from './TrackList';
 import Icon from './Icon';
 import Thumbnail from './Thumbnail';
@@ -273,7 +273,7 @@ class ContextMenu extends React.Component{
 	goToRecommendations(e){
 		this.props.uiActions.hideContextMenu();
 		var uris_string = helpers.arrayOf('uri',this.props.menu.items).join(',');
-		hashHistory.push(global.baseURL +'discover/recommendations/'+ uris_string );
+		this.props.history.push(global.baseURL +'discover/recommendations/'+ uris_string );
 	}
 
 	goToArtist(e){
@@ -283,7 +283,7 @@ class ContextMenu extends React.Component{
 			this.props.uiActions.hideContextMenu();
 			
 			// note: we can only go to one artist (even if this item has multiple artists, just go to the first one)
-			hashHistory.push(global.baseURL +'artist/'+ this.props.menu.items[0].artists_uris[0]);
+			this.props.history.push(global.baseURL +'artist/'+ this.props.menu.items[0].artists_uris[0]);
 		}
 	}
 
@@ -292,7 +292,7 @@ class ContextMenu extends React.Component{
 			return null;
 		} else {
 			this.props.uiActions.hideContextMenu();
-			hashHistory.push(global.baseURL +'user/'+ this.props.menu.items[0].user_uri);
+			this.props.history.push(global.baseURL +'user/'+ this.props.menu.items[0].user_uri);
 		}
 	}
 
@@ -301,7 +301,7 @@ class ContextMenu extends React.Component{
 			return null;
 		} else {
 			this.props.uiActions.hideContextMenu();
-			hashHistory.push(global.baseURL +'track/'+ encodeURIComponent(this.props.menu.items[0].uri));
+			this.props.history.push(global.baseURL +'track/'+ encodeURIComponent(this.props.menu.items[0].uri));
 		}
 	}
 
@@ -845,4 +845,4 @@ const mapDispatchToProps = (dispatch) => {
 	}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ContextMenu)
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(ContextMenu));
