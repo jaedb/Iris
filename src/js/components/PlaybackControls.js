@@ -123,7 +123,7 @@ class PlaybackControls extends React.Component{
 		if (this.start_position.x + tap_distance_threshold > end_position.x &&
 			this.start_position.x - tap_distance_threshold < end_position.x){
 
-			this.props.history.push(global.baseURL+'queue');
+			this.props.history.push('/queue');
 		} else {
 
 			// Swipe to the left = previous track
@@ -199,7 +199,7 @@ class PlaybackControls extends React.Component{
 					className={"current-track"+(this.state.current_track_transition ? " current-track--transition current-track--transition-"+this.state.current_track_transition : "")}
 					onTouchStart={e => this.handleTouchStart(e)}
 					onTouchEnd={e => this.handleTouchEnd(e)}>
-						<Link className="thumbnail-wrapper" to={global.baseURL+'kiosk-mode'}>
+						<Link className="thumbnail-wrapper" to={'/kiosk-mode'}>
 							<Thumbnail size="small" images={images} />
 						</Link>
 						<div className="title">

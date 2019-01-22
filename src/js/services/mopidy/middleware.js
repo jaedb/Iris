@@ -1672,7 +1672,7 @@ const MopidyMiddleware = (function(){
                                         key: action.key,
                                         new_key: response.uri
                                     });
-                                    this.props.history.push(global.baseURL+'playlist/'+encodeURIComponent(response.uri));
+                                    this.props.history.push('/playlist/'+encodeURIComponent(response.uri));
                                 }
 
                                 store.dispatch(uiActions.createNotification({type: 'info', content: 'Playlist saved'}));

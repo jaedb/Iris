@@ -61,7 +61,7 @@ class Thumbnail extends React.Component{
 		
 		var zoom_icon = null;
 		if (this.props.canZoom && image){
-			zoom_icon = <Link className="thumbnail__zoom" to={global.baseURL+'image-zoom?url='+image}><Icon name="search" /></Link>;
+			zoom_icon = <Link className="thumbnail__zoom" to={'/image-zoom?url='+image}><Icon name="search" /></Link>;
 		}
 
 		return (

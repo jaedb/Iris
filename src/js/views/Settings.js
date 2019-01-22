@@ -178,7 +178,7 @@ class Settings extends React.Component {
 	    							</div>
 	    						</div>
 	    						<div className="commands-setup__item__actions">
-	    							<Link className="commands-setup__item__edit-button action" to={global.baseURL+'edit-command/'+command.id}>
+	    							<Link className="commands-setup__item__edit-button action" to={'/edit-command/'+command.id}>
 	    								<Icon name="edit" />
 	    							</Link>
 		    					</div>
@@ -194,7 +194,7 @@ class Settings extends React.Component {
 
 		var options = (
 			<span>
-				<a className="button button--default button--no-hover" onClick={e => this.props.history.push(global.baseURL+'settings/debug')}>
+				<a className="button button--default button--no-hover" onClick={e => this.props.history.push('/settings/debug')}>
 					<Icon name="code" />Debug
 				</a>
 				<a className="button button--default button--no-hover" href="https://github.com/jaedb/Iris/wiki" target="_blank">
@@ -362,7 +362,7 @@ class Settings extends React.Component {
 						</div>
 						<div className="input">
 			        		{this.renderCommands()}
-			        		<Link to={global.baseURL+'edit-command'} className="button button--default">Add new</Link>
+			        		<Link to={'/edit-command'} className="button button--default">Add new</Link>
 			        	</div>
 			        </div>
 
@@ -418,7 +418,7 @@ class Settings extends React.Component {
 					
 					<div className="field">
 						<button className="button button--default" onClick={e => this.props.pusherActions.localScan()}>Run local scan</button>
-				        <Link className="button button--default" to={global.baseURL+"share-configuration"}>Share configuration</Link>
+				        <Link className="button button--default" to={"/share-configuration"}>Share configuration</Link>
 			        </div>
 					
 					<div className="field">

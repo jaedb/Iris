@@ -226,7 +226,7 @@ class Track extends React.Component{
 
 					<h1>{track.name}</h1>
 					<h2 className="mid_grey-text">
-						{track.album && track.album.uri ? <Link to={global.baseURL+'album/'+track.album.uri}>{track.album.name}</Link> : null}
+						{track.album && track.album.uri ? <Link to={'/album/'+track.album.uri}>{track.album.name}</Link> : null}
 						{track.album && !track.album.uri ? track.album.name : null}
 						{!track.album ? "Unknown album" : null}
 						&nbsp;by <ArtistSentence artists={track.artists} />
@@ -252,7 +252,7 @@ class Track extends React.Component{
 					<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 				</div>
 
-				{!this.props.genius_authorized ? <p className="no-results">Want track lyrics? Authorize Genius under <Link to={global.baseURL+"settings/service/genius"} scrollTo="services-menu">Settings</Link>.</p> : null}
+				{!this.props.genius_authorized ? <p className="no-results">Want track lyrics? Authorize Genius under <Link to={"/settings/service/genius"} scrollTo="services-menu">Settings</Link>.</p> : null}
 				{this.props.genius_authorized ? this.renderLyricsSelector() : null}
 				{this.props.genius_authorized ? this.renderLyrics() : null}
 

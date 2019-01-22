@@ -133,7 +133,7 @@ class LibraryPlaylists extends React.Component{
 						details={['owner','tracks_total']}
 						right_column={['source']}
 						className="playlists"
-						link_prefix={global.baseURL+"playlist/"} />
+						link_prefix={"/playlist/"} />
 					<LazyLoadListener 
 						loadKey={total_playlists > this.state.limit ? this.state.limit : total_playlists}
 						loading={this.state.limit < total_playlists} 
@@ -242,7 +242,7 @@ class LibraryPlaylists extends React.Component{
 					options={source_options}
 					handleChange={value => {this.props.uiActions.set({ library_playlists_source: value}); this.props.uiActions.hideContextMenu() }}
 				/>
-				<Link className="button button--no-hover" to={global.baseURL+'playlist/create'}>
+				<Link className="button button--no-hover" to={'/playlist/create'}>
 					<Icon name="add_box" />New
 				</Link>
 			</span>

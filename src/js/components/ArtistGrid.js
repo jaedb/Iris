@@ -52,7 +52,7 @@ class ArtistGrid extends React.Component{
 										type="artist"
 										item={helpers.collate(artist, {albums: this.props.albums})}
 										show_source_icon={this.props.show_source_icon}
-										onClick={e => {this.props.history.push(global.baseURL+'artist/'+encodeURIComponent(artist.uri))}}
+										onClick={e => {this.props.history.push('/artist/'+encodeURIComponent(artist.uri))}}
 										lastfmActions={this.props.lastfmActions}
 										onContextMenu={e => this.handleContextMenu(e,artist)}
 										onMount={() => this.itemMounted(artist)}

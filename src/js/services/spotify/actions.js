@@ -1510,9 +1510,9 @@ export function getPlaylist(uri){
                 var description = null
                 if (response.description){
                     description = response.description
-                    description = description.split('<a href="spotify:artist:').join('<a href="#'+global.baseURL+'artist/spotify:artist:')
-                    description = description.split('<a href="spotify:album:').join('<a href="#'+global.baseURL+'album/spotify:album:')
-                    description = description.split('<a href="spotify:user:').join('<a href="#'+global.baseURL+'user/spotify:user:')
+                    description = description.split('<a href="spotify:artist:').join('<a href="#'+'/artist/spotify:artist:')
+                    description = description.split('<a href="spotify:album:').join('<a href="#'+'/album/spotify:album:')
+                    description = description.split('<a href="spotify:user:').join('<a href="#'+'/user/spotify:user:')
                 }
 
                 var tracks = helpers.formatTracks(response.tracks.items);

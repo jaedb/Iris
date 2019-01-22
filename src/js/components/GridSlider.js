@@ -73,7 +73,7 @@ class GridSlider extends React.Component{
 										return (
 											<div className="grid-item" 
 												key={index} 
-												onClick={ (e) => this.handleClick(e,global.baseURL+'album/'+album.uri) }
+												onClick={ (e) => this.handleClick(e,'/album/'+album.uri) }
 												onContextMenu={e => this.handleContextMenu(e,album)}>
 													<Thumbnail size="medium" images={album.images} />
 													<div className="name">{ album.name }</div>

@@ -220,7 +220,7 @@ class LibraryAlbums extends React.Component{
 						details={['artists','tracks_uris.length']}
 						right_column={['added_at']}
 						className="albums"
-						link_prefix={global.baseURL+"album/"} />
+						link_prefix={"/album/"} />
 					<LazyLoadListener
 						loadKey={total_albums > this.state.limit ? this.state.limit : total_albums}
 						showLoader={this.state.limit < total_albums}

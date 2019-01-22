@@ -182,7 +182,7 @@ class LibraryArtists extends React.Component{
 						details={['followers']}
 						middle_column={['source']}
 						className="artists"
-						link_prefix={global.baseURL+"artist/"} />
+						link_prefix={"/artist/"} />
 					<LazyLoadListener 
 						loadKey={total_artists > this.state.limit ? this.state.limit : total_artists}
 						showLoader={this.state.limit < total_artists}

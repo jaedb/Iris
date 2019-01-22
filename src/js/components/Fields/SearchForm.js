@@ -24,19 +24,19 @@ class SearchForm extends React.Component{
 		switch (helpers.uriType(this.props.term)){
 
 			case 'album':
-				this.props.history.push(global.baseURL+'album/'+encodeURIComponent(this.props.term))
+				this.props.history.push('/album/'+encodeURIComponent(this.props.term))
 				break
 
 			case 'artist':
-				this.props.history.push(global.baseURL+'artist/'+encodeURIComponent(this.props.term))
+				this.props.history.push('/artist/'+encodeURIComponent(this.props.term))
 				break
 
 			case 'playlist':
-				this.props.history.push(global.baseURL+'playlist/'+encodeURIComponent(this.props.term))
+				this.props.history.push('/playlist/'+encodeURIComponent(this.props.term))
 				break
 
 			case 'track':
-				this.props.history.push(global.baseURL+'track/'+encodeURIComponent(this.props.term))
+				this.props.history.push('/track/'+encodeURIComponent(this.props.term))
 				break
 
 			default:

@@ -23,36 +23,36 @@ export default class URILink extends React.Component{
 
 		switch (this.props.type){			
 			case 'playlist':
-				to = global.baseURL+'playlist/'+uri;
+				to = '/playlist/'+uri;
 				break;
 			
 			case 'artist':
-				to = global.baseURL+'artist/'+uri;
+				to = '/artist/'+uri;
 				break;
 
 			case 'album':
-				to = global.baseURL+'album/'+uri;
+				to = '/album/'+uri;
 				break;
 
 			case 'track':
-				to = global.baseURL+'track/'+uri;
+				to = '/track/'+uri;
 				break;
 
 			case 'user':
-				to = global.baseURL+'user/'+uri;
+				to = '/user/'+uri;
 				break;
 
 			case 'browse':
-				to = global.baseURL+'library/browse/'+uri;
+				to = '/library/browse/'+uri;
 				break;
 
 			case 'recommendations':
-				to = global.baseURL+'discover/recommendations/'+uri;
+				to = '/discover/recommendations/'+uri;
 				break;
 
 			case 'search':
 				var exploded = uri.split('%3A');
-				to = global.baseURL+'search/'+exploded[1]+'/'+exploded[2];
+				to = '/search/'+exploded[1]+'/'+exploded[2];
 				break;
 
 			default:

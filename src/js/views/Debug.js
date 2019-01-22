@@ -52,7 +52,7 @@ class Debug extends React.Component{
 	render(){
 
 		var options = (
-			<a className="button button--default button--no-hover" onClick={e => this.props.history.push(global.baseURL+'settings')}>
+			<a className="button button--default button--no-hover" onClick={e => this.props.history.push('/settings')}>
 				<Icon name="keyboard_backspace" />Back
 			</a>
 		)

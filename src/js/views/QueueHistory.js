@@ -38,7 +38,7 @@ class QueueHistory extends React.Component{
 
 	render(){
 		var options = (
-			<a className="button button--no-hover" onClick={e => this.props.history.push(global.baseURL+'queue')}>
+			<a className="button button--no-hover" onClick={e => this.props.history.push('/queue')}>
 				<Icon name="keyboard_backspace" />&nbsp;
 				Back
 			</a>

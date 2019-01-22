@@ -44,7 +44,7 @@ class PlaylistGrid extends React.Component{
 								type="playlist"
 								item={playlist}
 								show_source_icon={this.props.show_source_icon}
-								onClick={e => {this.props.history.push(global.baseURL+'playlist/'+encodeURIComponent(playlist.uri))}}
+								onClick={e => {this.props.history.push('/playlist/'+encodeURIComponent(playlist.uri))}}
 								onContextMenu={e => this.handleContextMenu(e,playlist)}
 							/>
 						)}

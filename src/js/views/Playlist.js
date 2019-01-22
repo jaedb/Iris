@@ -37,7 +37,7 @@ class Playlist extends React.Component{
 		// We accept the old format, and redirect to the new one
 		if (uri.includes("spotify:user:")){
 			uri = uri.replace(/spotify:user:([^:]*?):/i, "spotify:");
-			this.props.history.push(global.baseURL+'playlist/'+encodeURIComponent(uri));
+			this.props.history.push('/playlist/'+encodeURIComponent(uri));
 		}
 	}
 
@@ -137,7 +137,7 @@ class Playlist extends React.Component{
 				return (
 					<div className="actions">
 						<button className="button button--primary" onClick={ e => this.play() }>Play</button>
-						<Link className="button button--default" to={global.baseURL+'playlist/'+encodeURIComponent(this.props.uri)+'/edit'}>Edit</Link>
+						<Link className="button button--default" to={'/playlist/'+encodeURIComponent(this.props.uri)+'/edit'}>Edit</Link>
 						<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 					</div>
 				)
@@ -147,7 +147,7 @@ class Playlist extends React.Component{
 					return (
 						<div className="actions">
 							<button className="button button--primary" onClick={ e => this.play() }>Play</button>
-							<Link className="button button--default" to={global.baseURL+'playlist/'+encodeURIComponent(this.props.uri)+'/edit'}>Edit</Link>
+							<Link className="button button--default" to={'/playlist/'+encodeURIComponent(this.props.uri)+'/edit'}>Edit</Link>
 							<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 						</div>
 					)

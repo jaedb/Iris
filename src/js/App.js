@@ -131,7 +131,7 @@ class App extends React.Component{
 
 		// show initial setup if required
 		if (!this.props.initial_setup_complete){
-			this.props.history.push(global.baseURL+'initial-setup');
+			this.props.history.push('/initial-setup');
 		}
 	}
 
@@ -332,7 +332,7 @@ class App extends React.Component{
 
 			case 70: // F
 				if ((e.ctrlKey || e.metaKey) && e.shiftKey){
-					window.history.push(global.baseURL+'modal/kiosk-mode');
+					window.history.push('/modal/kiosk-mode');
 				}
 				break;
 		}

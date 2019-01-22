@@ -108,7 +108,7 @@ class LibraryBrowseDirectory extends React.Component{
 					nocontext
 					rows={subdirectories}
 					className="library-local-directory-list"
-					link_prefix={global.baseURL+'library/browse/'}
+					link_prefix={'/library/browse/'}
 				/>
 			);
 		} else {
@@ -120,7 +120,7 @@ class LibraryBrowseDirectory extends React.Component{
 								<GridItem
 									key={subdirectory.uri}
 									type="browse"
-									link={global.baseURL+'library/browse/'+encodeURIComponent(subdirectory.uri)}
+									link={'/library/browse/'+encodeURIComponent(subdirectory.uri)}
 									item={subdirectory}
 								/>
 							);
