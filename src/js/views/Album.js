@@ -3,6 +3,7 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
+import ErrorMessage from '../components/ErrorMessage';
 import Header from '../components/Header'
 import TrackList from '../components/TrackList'
 import Thumbnail from '../components/Thumbnail'
@@ -115,7 +116,11 @@ class Album extends React.Component{
 					</div>
 				)
 			} else {
-				return null;
+				return (
+					<ErrorMessage type="not-found" title="Not found">
+						<p>Could not find album with URI "{this.props.uri}"</p>
+					</ErrorMessage>
+				);
 			}
 		}
 

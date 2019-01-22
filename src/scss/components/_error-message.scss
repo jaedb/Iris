@@ -1,0 +1,23 @@
+
+.error-message {
+	padding: 40px 40px 40px 80px;
+	position: relative;
+
+	&__icon {
+		position: absolute;
+		top: 40px;
+		left: 40px;
+		font-size: 2rem;
+		color: colour(red);
+	}
+	
+	&__title {
+		color: colour(red);
+		padding: 4px 0 10px 0 !important;
+		margin: 0;
+	}
+
+	&__trace {
+		padding: 10px;
+	}
+}

@@ -1,14 +1,15 @@
 
-import React, { PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import Link from '../../components/Link'
-import ReactGA from 'react-ga'
+import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import ReactGA from 'react-ga';
 
 import Modal from './Modal';
+import Link from '../../components/Link';
 import Icon from '../../components/Icon';
 import ColourField from '../../components/Fields/ColourField';
 import IconField from '../../components/Fields/IconField';
+
 import * as pusherActions from '../../services/pusher/actions';
 import * as uiActions from '../../services/ui/actions';
 import * as helpers from '../../helpers';
@@ -176,6 +177,7 @@ class EditCommand extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	var id = ownProps.params.id;
 	return {
+		id: id,
 		command: (id && state.pusher.commands && state.pusher.commands[id] !== undefined ? state.pusher.commands[id] : null)
 	}
 }

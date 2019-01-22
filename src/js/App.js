@@ -13,6 +13,7 @@ import Dragger from './components/Dragger';
 import Notifications from './components/Notifications';
 import DebugInfo from './components/DebugInfo';
 import ErrorBoundary from './components/ErrorBoundary';
+import ErrorMessage from './components/ErrorMessage';
 
 import Album from './views/Album';
 import Artist from './views/Artist';
@@ -414,7 +415,9 @@ class App extends React.Component{
 										<Route exact path="/library/browse/:uri" component={LibraryBrowseDirectory} />
 
 										<Route>
-											<h1>I'm lost</h1>
+											<ErrorMessage type="not-found" title="Not found">
+												<p>Oops, that link could not be found</p>
+											</ErrorMessage>
 										</Route>
 
 					        		</Switch>

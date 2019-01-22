@@ -190,7 +190,7 @@ class EditRadio extends React.Component{
 								return (
 									<div className="list__item" key={seed.uri}>
 										{seed.unresolved ? <span className="mid_grey-text">{seed.uri}</span> : <span>{seed.name}</span> }
-										{!seed.unresolved ? <span className="mid_grey-text">&nbsp;({seed.type})</span> : null}
+										{!seed.unresolved ? <span className="mid_grey-text">&nbsp;({helpers.uriType(seed.uri)})</span> : null}
 										<span className="button discrete remove-uri no-hover" onClick={e => this.removeSeed(seed.uri)}>
 											<Icon name="delete" />Remove
 										</span>

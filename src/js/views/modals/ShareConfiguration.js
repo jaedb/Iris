@@ -100,11 +100,10 @@ class ShareConfiguration extends React.Component {
 										onChange={e => this.toggleRecipient(connection.connection_id)}
 									/>
 									<span className="label">
-										{ connection.username }
-										&nbsp;
-										<span className="mid_grey-text">
+										<div className="title">{ connection.username }</div>
+										<div className="description mid_grey-text">
 											({ connection.ip })
-										</span>
+										</div>
 									</span>
 								</label>
 							);
@@ -123,7 +122,7 @@ class ShareConfiguration extends React.Component {
 		}
 
 		return (
-			<Modal className="modal--share-authorization">
+			<Modal className="modal--share-configuration">
 				<h1>Share configuration</h1>
 				<form onSubmit={e => this.handleSubmit(e)}>
 					<div className="field checkbox white">
@@ -141,7 +140,7 @@ class ShareConfiguration extends React.Component {
 									checked={ this.state.ui }
 									onChange={ e => this.setState({ ui: !this.state.ui })} />
 								<span className="label">
-									UI customisation (theme, sorting, filters)
+									<span className="title">UI customisation (theme, sorting, filters)</span>
 								</span>
 							</label>
 
@@ -152,7 +151,8 @@ class ShareConfiguration extends React.Component {
 									checked={this.state.spotify}
 									onChange={ e => this.setState({ spotify: !this.state.spotify })} />
 								<span className="label">
-									Spotify authorization <span className="mid_grey-text">&nbsp;Logged in as {this.props.spotify_me.name}</span>
+									<div className="title">Spotify authorization</div>
+									<div className="description mid_grey-text">Logged in as {this.props.spotify_me.name}</div>
 								</span>
 							</label> : null}
 
@@ -163,7 +163,8 @@ class ShareConfiguration extends React.Component {
 									checked={this.state.lastfm}
 									onChange={ e => this.setState({ lastfm: !this.state.lastfm })} />
 								<span className="label">
-									LastFM authorization <span className="mid_grey-text">&nbsp;Logged in as {this.props.lastfm_me.name}</span>
+									<div className="title">LastFM authorization</div>
+									<div className="description mid_grey-text">Logged in as {this.props.lastfm_me.name}</div>
 								</span>
 							</label> : null}
 
@@ -174,7 +175,8 @@ class ShareConfiguration extends React.Component {
 									checked={this.state.genius}
 									onChange={ e => this.setState({ genius: !this.state.genius })} />
 								<span className="label">
-									Genius authorization <span className="mid_grey-text">&nbsp;Logged in as {this.props.genius_me.name}</span>
+									<div className="title">Genius authorization</div>
+									<div className="description mid_grey-text">Logged in as {this.props.genius_me.name}</div>
 								</span>
 							</label> : null}
 						</div>

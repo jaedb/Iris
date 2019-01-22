@@ -3,19 +3,20 @@ import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
-import Thumbnail from '../components/Thumbnail'
-import PlaylistGrid from '../components/PlaylistGrid'
-import FollowButton from '../components/Fields/FollowButton'
-import LazyLoadListener from '../components/LazyLoadListener'
-import Parallax from '../components/Parallax'
-import ContextMenuTrigger from '../components/ContextMenuTrigger'
-import Icon from '../components/Icon'
+import ErrorMessage from '../components/ErrorMessage';
+import Thumbnail from '../components/Thumbnail';
+import PlaylistGrid from '../components/PlaylistGrid';
+import FollowButton from '../components/Fields/FollowButton';
+import LazyLoadListener from '../components/LazyLoadListener';
+import Parallax from '../components/Parallax';
+import ContextMenuTrigger from '../components/ContextMenuTrigger';
+import Icon from '../components/Icon';
 
-import * as helpers from '../helpers'
-import * as coreActions from '../services/core/actions'
-import * as uiActions from '../services/ui/actions'
-import * as mopidyActions from '../services/mopidy/actions'
-import * as spotifyActions from '../services/spotify/actions'
+import * as helpers from '../helpers';
+import * as coreActions from '../services/core/actions';
+import * as uiActions from '../services/ui/actions';
+import * as mopidyActions from '../services/mopidy/actions';
+import * as spotifyActions from '../services/spotify/actions';
 
 class User extends React.Component{
 
@@ -75,7 +76,11 @@ class User extends React.Component{
 					</div>
 				)
 			} else {
-				return null;
+				return (
+					<ErrorMessage type="not-found" title="Not found">
+						<p>Could not find user with URI "{this.props.uri}"</p>
+					</ErrorMessage>
+				);
 			}
 		}
 

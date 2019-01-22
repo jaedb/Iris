@@ -22,7 +22,7 @@ class ImageZoom extends React.Component{
 	render(){
 		return (
 			<Modal className="modal--image-zoom">			
-				<img src={this.props.location.query.url} />
+				<img src={this.props.location.search.replace("?url=","")} />
 			</Modal>
 		)
 	}

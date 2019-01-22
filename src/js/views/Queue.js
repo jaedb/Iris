@@ -71,7 +71,7 @@ class Queue extends React.Component {
 		if (!image){
 			return (
 				<span className={this.props.radio_enabled ? 'artwork radio-enabled' : 'artwork'}>
-					{this.props.radio_enabled ? <img className="radio-overlay" src="assets/radio-overlay.png" /> : null}
+					{this.props.radio_enabled ? <img className="radio-overlay" src="/iris/assets/radio-overlay.png" /> : null}
 					<Thumbnail circle={this.props.radio_enabled} />
 				</span>
 			)
@@ -86,7 +86,7 @@ class Queue extends React.Component {
 				className={this.props.radio_enabled ? 'artwork radio-enabled' : 'artwork'}
 				type="album" 
 				uri={uri}>
-					{this.props.radio_enabled ? <img className="radio-overlay" src="assets/radio-overlay.png" /> : null}
+					{this.props.radio_enabled ? <img className="radio-overlay" src="/iris/assets/radio-overlay.png" /> : null}
 					<Thumbnail image={image} circle={this.props.radio_enabled} />
 			</URILink>
 		)

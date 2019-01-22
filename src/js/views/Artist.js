@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux';
 import { Redirect } from 'react-router';
 import { Route, Switch } from 'react-router-dom';
 
+import ErrorMessage from '../components/ErrorMessage';
 import Link from '../components/Link';
 import LazyLoadListener from '../components/LazyLoadListener'
 import Header from '../components/Header'
@@ -286,7 +287,11 @@ class Artist extends React.Component{
 					</div>
 				)
 			} else {
-				return null;
+				return (
+					<ErrorMessage type="not-found" title="Not found">
+						<p>Could not find artist with URI "{this.props.uri}"</p>
+					</ErrorMessage>
+				);
 			}
 		}
 

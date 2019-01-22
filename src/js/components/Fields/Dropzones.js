@@ -1,8 +1,8 @@
 
-import React, { PropTypes } from 'react'
-import { connect } from 'react-redux'
-
-import { bindActionCreators } from 'redux'
+import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { withRouter } from 'react-router';
 
 import Dropzone from './Dropzone'
 
@@ -93,4 +93,4 @@ const mapDispatchToProps = (dispatch) => {
 	}
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Dropzones)
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Dropzones));

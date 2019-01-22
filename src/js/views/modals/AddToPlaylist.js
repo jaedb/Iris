@@ -62,8 +62,8 @@ class AddToPlaylist extends React.Component{
 							return (
 								<div className="list__item" key={playlist.uri} onClick={ () => this.playlistSelected(playlist.uri) }>
 									<Thumbnail images={playlist.images} size="small" />
-									<h3 className="name">{ playlist.name }</h3>
-									<ul className="details">
+									<h4 className="list__item__name">{ playlist.name }</h4>
+									<ul className="list__item__details details">
 										<li><Icon type="fontawesome" className="source" name={helpers.sourceIcon(playlist.uri)} /></li>
 										<li>{ playlist.tracks_total ? <span className="mid_grey-text">&nbsp;{ playlist.tracks_total } tracks</span> : null }</li>
 									</ul>

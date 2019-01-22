@@ -1,5 +1,6 @@
 
 import React from 'react';
+import ErrorMessage from './ErrorMessage';
 
 export default class ErrorBoundary extends React.Component {
 
@@ -24,16 +25,9 @@ export default class ErrorBoundary extends React.Component {
 	render() {
 		if (this.state.hasError){
 			return (
-				<div className="error-boundary">
-
-					<h4 className="error-boundary__title">
-						<i className="icon icon--material">error</i>
-						{this.state.error ? this.state.error.toString() : "Unknown error"}	
-					</h4>
-
-					{this.state.info ? <pre className="error-boundary__trace">{this.state.info.componentStack}</pre> : null}
-
-				</div>
+				<ErrorMessage type="error-boundary">
+					{this.state.info ? <pre className="error-message__trace">{this.state.info.componentStack}</pre> : null}
+				</ErrorMessage>
 			);
 		}
 		return this.props.children;

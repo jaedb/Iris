@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import Link from '../components/Link';
 import { bindActionCreators } from 'redux'
 
+import ErrorMessage from '../components/ErrorMessage';
 import Header from '../components/Header'
 import TrackList from '../components/TrackList'
 import Thumbnail from '../components/Thumbnail'
@@ -181,7 +182,11 @@ class Track extends React.Component{
 				</div>
 			)
 		} else {
-			return null;
+			return (
+				<ErrorMessage type="not-found" title="Not found">
+					<p>Could not find track with URI "{this.props.uri}"</p>
+				</ErrorMessage>
+			);
 		}
 	}
 

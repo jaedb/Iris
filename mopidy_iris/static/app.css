@@ -6408,17 +6408,20 @@ main header {
           border-color: #08d58f;
           opacity: 1; }
 
-.error-boundary {
-  padding: 20px; }
-  .error-boundary__title {
+.error-message {
+  padding: 40px 40px 40px 80px;
+  position: relative; }
+  .error-message__icon {
+    position: absolute;
+    top: 40px;
+    left: 40px;
+    font-size: 2rem;
+    color: #cf2d2d; }
+  .error-message__title {
     color: #cf2d2d;
-    padding: 10px;
+    padding: 4px 0 10px 0 !important;
     margin: 0; }
-    .error-boundary__title .icon {
-      font-size: 1em;
-      padding-right: 10px;
-      vertical-align: middle; }
-  .error-boundary__trace {
+  .error-message__trace {
     padding: 10px; }
 
 .artist-view .body-loader:not(.lazy-loader) {
@@ -6750,10 +6753,11 @@ main .track-view {
       z-index: 2; }
   .queue-view .current-track .title {
     font-size: 18px;
-    padding-top: 20px;
+    padding-top: 30px;
     position: relative;
     z-index: 2; }
   .queue-view .current-track .artist-sentence {
+    padding-top: 10px;
     display: block;
     font-size: 18px;
     opacity: 0.5;
@@ -7117,9 +7121,14 @@ main .track-view {
   animation-duration: 0.2s;
   animation-timing-function: linear;
   animation-iteration-count: 1;
-  position: relative;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   background: #0d0d0d;
   overflow-y: auto;
+  overflow-x: hidden;
   min-height: 100%; }
 
 @keyframes fadein {
@@ -7157,9 +7166,9 @@ main .track-view {
     .modal .actions button {
       margin: 0 3px; }
   .modal .content {
-    padding: 80px 25%;
+    padding: 80px 20%;
     margin: 0 auto;
-    width: 50%;
+    width: 60%;
     color: #FFFFFF; }
     .modal .content h1 {
       padding-bottom: 20px;
@@ -7238,24 +7247,28 @@ main .track-view {
     .modal .content .list.playlists {
       padding-top: 40px; }
       .modal .content .list.playlists .list__item {
-        margin: 0 0 20px 0;
-        padding: 5px;
+        margin: 5px 0;
+        padding: 10px;
         cursor: pointer; }
         .modal .content .list.playlists .list__item:before {
           display: none; }
         .modal .content .list.playlists .list__item .thumbnail {
-          float: left;
-          margin-right: 20px; }
+          float: left; }
+        .modal .content .list.playlists .list__item__name, .modal .content .list.playlists .list__item__details {
+          padding-left: 70px; }
+        .modal .content .list.playlists .list__item__name {
+          padding-top: 0;
+          margin-bottom: 5px; }
         .modal .content .list.playlists .list__item .source {
           position: static;
           top: auto;
           left: auto; }
-    .modal .content .list.small .list__item {
-      width: 49%;
-      float: left;
-      font-size: inherit; }
-      .modal .content .list.small .list__item:nth-child(2n) {
-        margin-left: 2%; }
+    .modal .content .list.small {
+      display: flex;
+      flex-wrap: wrap; }
+      .modal .content .list.small .list__item {
+        width: 50%;
+        font-size: inherit; }
   .modal--image-zoom .content {
     text-align: center;
     padding: 100px 5%;
@@ -7268,6 +7281,10 @@ main .track-view {
     margin-top: 50px; }
     .modal--edit-radio form .field input[type="text"] {
       padding-right: 80px; }
+  .modal--share-configuration .field.checkbox .label .title {
+    font-size: 1.2rem; }
+  .modal--share-configuration .field.checkbox .label .description {
+    padding-top: 4px; }
   .modal--kiosk-mode {
     background: #000000;
     overflow: hidden; }
@@ -7326,6 +7343,8 @@ main .track-view {
         padding-top: 50px;
         width: 60vw;
         max-width: 60vh; }
+        .modal--kiosk-mode .content .progress-wrapper .slider__track {
+          background: rgba(128, 128, 128, 0.25); }
   @media (max-width: 800px) {
     .modal .controls {
       top: 0;
