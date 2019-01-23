@@ -95,14 +95,13 @@ class EditCommand extends React.Component{
 			"stop",
 			"shuffle",
 			"snooze",
-			"volume_down",
 			"volume_off",
+			"volume_down",
 			"volume_up",
 			"arrow_left",
 			"arrow_drop_up",
 			"arrow_right",
 			"arrow_drop_down",
-			"volume_up",
 			"done",
 			"done_all",
 			"add",
@@ -175,7 +174,7 @@ class EditCommand extends React.Component{
 }
 
 const mapStateToProps = (state, ownProps) => {
-	var id = ownProps.params.id;
+	var id = ownProps.match.params.id;
 	return {
 		id: id,
 		command: (id && state.pusher.commands && state.pusher.commands[id] !== undefined ? state.pusher.commands[id] : null)

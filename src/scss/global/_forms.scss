@@ -441,6 +441,10 @@ select {
 			display: inline-block;
 			opacity: 1;
 		}
+
+		a {
+			color: inherit;
+		}
 	}
 
 	&.radio,

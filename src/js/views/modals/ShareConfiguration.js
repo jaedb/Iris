@@ -123,7 +123,10 @@ class ShareConfiguration extends React.Component {
 
 		return (
 			<Modal className="modal--share-configuration">
+			
 				<h1>Share configuration</h1>
+				<h2>Push your authorizations and interface settings to another, connected user</h2>
+
 				<form onSubmit={e => this.handleSubmit(e)}>
 					<div className="field checkbox white">
 						<div className="name">Recipients</div>

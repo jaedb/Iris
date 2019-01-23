@@ -246,12 +246,17 @@ class Artist extends React.Component{
 
 		var thumbnails = [];
 		if (artist.images && artist.images.length > 0){
-			for (var i = 0; i < artist.images.length; i++){
-				thumbnails.push(
-					<div className="tile thumbnail-wrapper" key={i}>
-						<Thumbnail size="huge" canZoom images={artist.images[i]} />
-					</div>
-				);
+			for (var images of artist.images){
+
+				// Capture potential 'null' images
+				// TODO: Prevent these from existing in the first place
+				if (images.huge){
+					thumbnails.push(
+						<div className="tile thumbnail-wrapper" key={images.huge}>
+							<Thumbnail size="huge" canZoom images={images} />
+						</div>
+					);
+				}
 			}
 		}
 
@@ -325,9 +330,10 @@ class Artist extends React.Component{
 						<div className="sub-views" id="sub-views-menu">
 							<Link 
 								nav
+								exact={true}
 								className="option"
 								activeClassName="active"
-								to={'/artist/'+this.props.uri+'/overview'}
+								to={'/artist/'+encodeURIComponent(this.props.uri)}
 								scrollTo="sub-views-menu">
 									<h4>Overview</h4>
 							</Link>
@@ -335,7 +341,7 @@ class Artist extends React.Component{
 								nav
 								className="option"
 								activeClassName="active"
-								to={'/artist/'+this.props.uri+'/related-artists'}
+								to={'/artist/'+encodeURIComponent(this.props.uri)+'/related-artists'}
 								scrollTo="sub-views-menu">
 									<h4>Related artists</h4>
 							</Link> : null}
@@ -343,7 +349,7 @@ class Artist extends React.Component{
 								nav
 								className="option"
 								activeClassName="active"
-								to={'/artist/'+this.props.uri+'/about'}
+								to={'/artist/'+encodeURIComponent(this.props.uri)+'/about'}
 								scrollTo="sub-views-menu">
 									<h4>About</h4>
 							</Link>
@@ -358,10 +364,7 @@ class Artist extends React.Component{
 						<Route exact path="/artist/:id/about">
 							{this.renderAbout()}
 						</Route>
-						<Route exact path="/artist/:id/overview">
-							{this.renderOverview()}
-						</Route>
-						<Route>
+						<Route exact path="/artist/:id">
 							{this.renderOverview()}
 						</Route>
 					</Switch>

@@ -130,7 +130,7 @@ class List extends React.Component{
 										{this.props.thumbnail ? <Thumbnail className="list__item__column__item list__item__column__item--thumbnail" images={(row.images ? row.images : null)} size="small" /> : null}
 
 										<div className="list__item__column__item list__item__column__item--name">
-											{this.renderValue(row, 'name')}
+											{row.name !== undefined ? this.renderValue(row, 'name') : <span className="grey-text">{row.uri}</span>}
 										</div>
 
 										{this.props.details ?<ul className="list__item__column__item list__item__column__item--details details">

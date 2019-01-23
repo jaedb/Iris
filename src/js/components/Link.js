@@ -31,6 +31,7 @@ export default class extends React.Component{
 		if (this.props.nav){
 			return (
 				<NavLink 
+					exact={this.props.exact !== undefined ? this.props.exact : false}
 					onClick={e => this.handleClick(e)}
 					activeClassName={this.props.activeClassName ? this.props.activeClassName : className+"--active"}
 					className={className}

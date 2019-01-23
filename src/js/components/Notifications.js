@@ -73,7 +73,7 @@ export default class Notifications extends React.Component{
 											<p>Do you want to import this?</p>
 										</div>
 										<br />
-										<a className="button" onClick={e => this.importConfiguration(notification.key, notification.configuration)}>Import</a>
+										<a className="button button--default" onClick={e => this.importConfiguration(notification.key, notification.configuration)}>Import</a>
 									</div>
 								)
 

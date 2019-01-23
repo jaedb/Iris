@@ -34,7 +34,7 @@ class Track extends React.Component{
 	}
 
 	componentDidMount(){
-		this.props.coreActions.loadTrack(this.props.match.params.uri);
+		this.props.coreActions.loadTrack(this.props.uri);
 
 		// We already have the track in our index, so it won't fire componentWillReceiveProps
 		if (this.props.track){
@@ -48,15 +48,15 @@ class Track extends React.Component{
 
 	handleContextMenu(e){
 		e.preventDefault()
-		var data = { uris: [this.props.match.params.uri] }
+		var data = { uris: [this.props.uri] }
 		this.props.uiActions.showContextMenu(e, data, 'track', 'click' )
 	}
 
 	componentWillReceiveProps(nextProps){
 
 		// if our URI has changed, fetch new track
-		if (nextProps.match.params.uri != this.props.match.params.uri){
-			this.props.coreActions.loadTrack(nextProps.match.params.uri);
+		if (nextProps.uri != this.props.uri){
+			this.props.coreActions.loadTrack(nextProps.uri);
 
 			if (nextProps.genius_authorized && nextProps.tracks.artists){
 				this.props.geniusActions.findTrackLyrics(nextProps.track);
@@ -64,8 +64,8 @@ class Track extends React.Component{
 
 		// if mopidy has just connected AND we're not a Spotify track, go get
 		} else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
-			if (helpers.uriSource(this.props.match.params.uri) != 'spotify'){
-				this.props.coreActions.loadTrack(nextProps.match.params.uri);
+			if (helpers.uriSource(this.props.uri) != 'spotify'){
+				this.props.coreActions.loadTrack(nextProps.uri);
 			}
 		}
 
@@ -110,13 +110,13 @@ class Track extends React.Component{
 			e: e,
 			context: 'track',
 			items: [this.props.track],
-			uris: [this.props.match.params.uri]
+			uris: [this.props.uri]
 		}
 		this.props.uiActions.showContextMenu(data)
 	}
 
 	play(){
-		this.props.mopidyActions.playURIs([this.props.match.params.uri], this.props.match.params.uri)
+		this.props.mopidyActions.playURIs([this.props.uri], this.props.uri)
 	}
 
 	renderLyricsSelector(){
@@ -191,7 +191,7 @@ class Track extends React.Component{
 	}
 
 	render(){
-		if (helpers.isLoading(this.props.load_queue,['spotify_track/'+helpers.getFromUri('trackid',this.props.match.params.uri)])){
+		if (helpers.isLoading(this.props.load_queue,['spotify_track/'+helpers.getFromUri('trackid',this.props.uri)])){
 			return (
 				<div className="body-loader loading">
 					<div className="loader"></div>
@@ -238,7 +238,7 @@ class Track extends React.Component{
 					</h2>
 
 					<ul className="details">
-						{!this.props.slim_mode ? <li><Icon type="fontawesome" name={helpers.sourceIcon(this.props.match.params.uri)} /></li> : null}
+						{!this.props.slim_mode ? <li><Icon type="fontawesome" name={helpers.sourceIcon(this.props.uri)} /></li> : null}
 						{track.date ? <li><Dater type="date" data={track.date} /></li> : null}
 						{track.explicit ? <li><span className="flag dark">EXPLICIT</span></li> : null}
 						<li>
@@ -253,7 +253,7 @@ class Track extends React.Component{
 
 				<div className="actions">
 					<button className="button button--primary" onClick={e => this.play()}>Play</button>
-					<LastfmLoveButton uri={this.props.match.params.uri} artist={(this.props.track.artists ? this.props.track.artists[0].name : null)} track={this.props.track.name} addText="Love" removeText="Unlove" is_loved={this.props.track.userloved} />
+					<LastfmLoveButton uri={this.props.uri} artist={(this.props.track.artists ? this.props.track.artists[0].name : null)} track={this.props.track.name} addText="Love" removeText="Unlove" is_loved={this.props.track.userloved} />
 					<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 				</div>
 
@@ -266,16 +266,10 @@ class Track extends React.Component{
 	}
 }
 
-
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- **/
-
 const mapStateToProps = (state, ownProps) => {
-	var uri = ownProps.match.params.uri;
+	var uri = decodeURIComponent(ownProps.match.params.uri);
 	return {
+		uri: uri,
 		slim_mode: state.ui.slim_mode,
 		load_queue: state.ui.load_queue,
 		track: (state.core.tracks && state.core.tracks[uri] !== undefined ? state.core.tracks[uri] : false),

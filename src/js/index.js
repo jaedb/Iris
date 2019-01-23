@@ -18,7 +18,7 @@ global.baseURL = '/';
 
 ReactDOM.render(
 	<Provider store={store}>
-		<BrowserRouter>
+		<BrowserRouter basename="/iris">
 			<Route path="/" component={App} />
 		</BrowserRouter>
 	</Provider>,
