@@ -236,19 +236,19 @@ $bp_shallow: 650px;
 
 @mixin responsive($max_width: null, $min_width: null, $max_height: null, $min_height: null){
 	@if $max_width and $max_height {
-		@media(max-width: $max_width ), (max-height: $max_height){ 
+		@media(max-width: $max_width - 1), (max-height: $max_height - 1){ 
 			@content;
 		}
 	}@else if $max_width and $min_width {
-		@media(max-width: $max_width ) and (min-width: $min_width){ 
+		@media(max-width: $max_width - 1) and (min-width: $min_width){ 
 			@content;
 		}
 	}@else if $max_width {
-		@media(max-width: $max_width){ 
+		@media(max-width: $max_width - 1){ 
 			@content;
 		}
 	}@else if $max_height {
-		@media(max-height: $max_height){ 
+		@media(max-height: $max_height - 1){ 
 			@content;
 		}
 	}@else if $min_width {
