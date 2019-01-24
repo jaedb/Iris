@@ -123,7 +123,7 @@ class App extends React.Component{
 				// Allow 100ms for the action above to complete before we re-route
 				setTimeout(
 					() => {
-						this.props.history.push(global.baseURL);
+						this.props.history.push('/');
 					},
 					100
 				);

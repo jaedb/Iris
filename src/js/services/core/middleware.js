@@ -361,8 +361,6 @@ const CoreMiddleware = (function(){
                 break;
 
             case 'LOAD_ALBUM':
-            console.log(action);
-
             	if (
             		!action.force_reload &&
             		store.getState().core.albums[action.uri] && 
@@ -391,7 +389,6 @@ const CoreMiddleware = (function(){
                 break;
 
             case 'LOAD_ARTIST':
-
             	if (
             		!action.force_reload &&
             		store.getState().core.artists[action.uri] && 
@@ -421,7 +418,6 @@ const CoreMiddleware = (function(){
                 break;
 
             case 'LOAD_PLAYLIST':
-
             	if (
             		!action.force_reload &&
             		store.getState().core.playlists[action.uri] && 

@@ -110,7 +110,7 @@ export default class GridItem extends React.Component{
 		if (this.props.link){
 			var link = this.props.link;
 		} else {
-			var link = global.baseURL+this.props.type+'/'+encodeURIComponent(item.uri);
+			var link = '/'+this.props.type+'/'+encodeURIComponent(item.uri);
 		}
 
 		return (

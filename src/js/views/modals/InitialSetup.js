@@ -35,6 +35,7 @@ class InitialSetup extends React.Component{
 
 	handleSubmit(e){
 		e.preventDefault();
+
 		var self = this;
 
 		// Force local username change, even if remote connection absent/failed
@@ -52,18 +53,19 @@ class InitialSetup extends React.Component{
 		this.setState({saving: true});
 
 		// Wait a jiffy to allow changes to apply to store
-		setTimeout(function(){
+		setTimeout(() => {
 
-			// We've changed a connection setting, so need to reload
-			if (self.state.host !== self.props.host || self.state.port !== self.props.port){
+				// We've changed a connection setting, so need to reload
+				if (self.state.host !== self.props.host || self.state.port !== self.props.port){
+					window.location = '/';
 
-				window.location = global.baseURL;
-
-			// Safe to just close modal
-			} else {
-				this.props.history.push(global.baseURL);
-			}
-		}, 200);
+				// Safe to just close modal
+				} else {
+					self.props.history.push('/');
+				}
+			},
+			200
+		);
 
 		return false;
 	}
