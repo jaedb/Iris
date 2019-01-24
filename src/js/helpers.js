@@ -502,6 +502,8 @@ export let formatPlaylist = function(data){
 		'snapshot_id',
 		'provider',
 		'type',
+		'collaborative',
+		'public',
 		'name',
 		'description',
 		'images',

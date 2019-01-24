@@ -727,7 +727,7 @@ var formatArtist = exports.formatArtist = function formatArtist(data) {
  **/
 var formatPlaylist = exports.formatPlaylist = function formatPlaylist(data) {
 	var playlist = {};
-	var fields = ['uri', 'snapshot_id', 'provider', 'type', 'name', 'description', 'images', 'popularity', 'followers', 'added_at', 'last_modified_date', 'can_edit', 'owner', 'user_uri', 'tracks_uris', 'tracks_total', 'tracks_more'];
+	var fields = ['uri', 'snapshot_id', 'provider', 'type', 'collaborative', 'public', 'name', 'description', 'images', 'popularity', 'followers', 'added_at', 'last_modified_date', 'can_edit', 'owner', 'user_uri', 'tracks_uris', 'tracks_total', 'tracks_more'];
 
 	// Loop fields and import from data
 	var _iteratorNormalCompletion9 = true;
@@ -19360,16 +19360,21 @@ var Dater = function (_React$Component) {
 						}
 					}
 					return this.durationSentence(duration);
-					break;
 
 				case 'length':
 					return this.durationTime(this.props.data);
-					break;
 
 				case 'date':
-					var date = new Date(this.props.data);
-					return date.getDate() + '/' + date.getMonth() + '/' + date.getFullYear();
-					break;
+
+					// A four-character date indicates just a year (rather than a full date)
+					if (this.props.data.length == 4) {
+						return this.props.data;
+
+						// Digest as a date string
+					} else {
+						var date = new Date(this.props.data);
+						return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
+					}
 
 				case 'ago':
 					var date = new Date(this.props.data);
@@ -19388,8 +19393,7 @@ var Dater = function (_React$Component) {
 						return hours + " hours";
 					} else {
 						return days + " days";
-					}
-					break;
+					};
 
 				default:
 					return null;
@@ -90788,7 +90792,7 @@ var InitialSetup = function (_React$Component) {
 		var _this = _possibleConstructorReturn(this, (InitialSetup.__proto__ || Object.getPrototypeOf(InitialSetup)).call(this, props));
 
 		_this.state = {
-			username: _this.props.username,
+			username: _this.props.username ? _this.props.username : 'Anonymous',
 			allow_reporting: _this.props.allow_reporting,
 			host: _this.props.host,
 			port: _this.props.port
@@ -90979,7 +90983,7 @@ var InitialSetup = function (_React$Component) {
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
 		allow_reporting: state.ui.allow_reporting,
-		username: state.pusher && state.pusher.username ? state.pusher.username : 'Anonymous',
+		username: state.pusher && state.pusher.username ? state.pusher.username : null,
 		host: state.mopidy.host,
 		port: state.mopidy.port
 	};

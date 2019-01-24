@@ -74,17 +74,22 @@ export default class Dater extends React.Component{
 						duration += parseInt(tracks[i].duration);
 					}
 				}
-				return this.durationSentence(duration)
-				break
+				return this.durationSentence(duration);
 
 			case 'length':
-				return this.durationTime(this.props.data)
-				break
+				return this.durationTime(this.props.data);
 
 			case 'date':
-				var date = new Date(this.props.data)
-				return date.getDate()+'/'+date.getMonth()+'/'+date.getFullYear()
-				break
+
+				// A four-character date indicates just a year (rather than a full date)
+				if (this.props.data.length == 4){
+					return this.props.data;
+
+				// Digest as a date string
+				} else {
+					var date = new Date(this.props.data);
+					return date.getDate()+'/'+(date.getMonth()+1)+'/'+date.getFullYear();
+				}
 
 			case 'ago':
 				var date = new Date(this.props.data)
@@ -103,11 +108,10 @@ export default class Dater extends React.Component{
 				    return hours + " hours";
 				} else {
 				    return days + " days"
-				}
-				break
+				};
 
 			default:
-				return null
+				return null;
 		}
 	}
 
@@ -115,7 +119,7 @@ export default class Dater extends React.Component{
 		if (!this.props.data){
 			return null;
 		} else {
-			return <span className="dater">{ this.calculate() }</span>
+			return <span className="dater">{ this.calculate() }</span>;
 		}
 	}
 }

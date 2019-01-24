@@ -22,7 +22,7 @@ class InitialSetup extends React.Component{
 		super(props);
 
 		this.state = {
-			username: this.props.username,
+			username: (this.props.username ? this.props.username : 'Anonymous'),
 			allow_reporting: this.props.allow_reporting,
 			host: this.props.host,
 			port: this.props.port
@@ -141,7 +141,7 @@ class InitialSetup extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		allow_reporting: state.ui.allow_reporting,
-		username: (state.pusher && state.pusher.username ? state.pusher.username : 'Anonymous'),
+		username: (state.pusher && state.pusher.username ? state.pusher.username : null),
 		host: state.mopidy.host,
 		port: state.mopidy.port
 	}
