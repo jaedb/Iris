@@ -75475,11 +75475,11 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
+var _redux = __webpack_require__(2);
+
 var _Link = __webpack_require__(9);
 
 var _Link2 = _interopRequireDefault(_Link);
-
-var _redux = __webpack_require__(2);
 
 var _ErrorMessage = __webpack_require__(34);
 
@@ -75918,7 +75918,7 @@ var Track = function (_React$Component) {
 					'Want track lyrics? Authorize Genius under ',
 					_react2.default.createElement(
 						_Link2.default,
-						{ to: "/settings/service/genius", scrollTo: 'services-menu' },
+						{ to: '/settings/genius', scrollTo: 'services-menu' },
 						'Settings'
 					),
 					'.'
