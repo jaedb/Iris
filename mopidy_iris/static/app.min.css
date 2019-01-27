@@ -2695,7 +2695,7 @@ body {
   transform-style: preserve-3d; }
   body.touch-dragging, body.no-scrollbars {
     overflow-y: hidden; }
-  @media (max-width: 800px) {
+  @media (max-width: 799px) {
     body.context-menu-open {
       overflow-y: hidden; } }
 
@@ -2765,7 +2765,7 @@ main {
     font-size: 18px;
     line-height: 1.5em;
     white-space: pre-wrap; }
-  @media (max-width: 800px) {
+  @media (max-width: 799px) {
     main {
       left: 0; }
       main .content-wrapper {
@@ -2880,7 +2880,7 @@ button.placeholder {
   width: auto;
   margin: 25px 40px;
   height: 10px; }
-  @media (max-width: 800px) {
+  @media (max-width: 799px) {
     .list-wrapper .placeholder {
       margin-left: 20px;
       margin-right: 20px; } }
@@ -3086,7 +3086,7 @@ footer {
     background: #cf2d2d;
     color: #FFFFFF; }
 
-@media (max-width: 800px) {
+@media (max-width: 799px) {
   h1 {
     font-size: 2rem;
     line-height: 2rem; }
@@ -3464,7 +3464,7 @@ select {
     background: transparent; }
     .button--disabled:before, .button[disabled]:before, .button[disabled="disabled"]:before {
       opacity: 0.15; }
-  @media (max-width: 800px) {
+  @media (max-width: 799px) {
     .button {
       margin-right: 10px;
       padding-left: 20px;
@@ -3573,7 +3573,7 @@ select {
   .light-theme .field .description {
     color: rgba(0, 0, 0, 0.6); }
 
-@media (max-width: 800px) {
+@media (max-width: 799px) {
   .field .name {
     float: none;
     width: auto;
@@ -3584,7 +3584,7 @@ select {
     .field .input .text {
       padding: 0 20px 0 0; } }
 
-@media (max-width: 800px) {
+@media (max-width: 799px) {
   body.context-menu-open .body {
     -webkit-filter: blur(10px);
     filter: blur(10px); } }
@@ -3691,7 +3691,7 @@ select {
           bottom: 0; }
       .context-menu__title {
         display: none; } }
-  @media (max-width: 800px) {
+  @media (max-width: 799px) {
     .context-menu {
       animation-delay: 0;
       -webkit-animation-fill-mode: forwards;
@@ -3861,7 +3861,7 @@ select {
   h4 .context-menu-trigger,
   h4 .context-menu-trigger:active {
     margin: -8px 0 0 10px; }
-  @media (max-width: 800px) {
+  @media (max-width: 799px) {
     .context-menu-trigger {
       padding: 12px; } }
 
@@ -3943,7 +3943,7 @@ select {
     .list__item--playing .list__item__column__item--name .icon {
       padding-left: 5px;
       font-size: 12px; }
-      @media (max-width: 800px) {
+      @media (max-width: 799px) {
         .list__item--playing .list__item__column__item--name .icon {
           display: none; } }
   .list__item--has-drag-zone {
@@ -3979,7 +3979,7 @@ select {
       position: absolute;
       top: 12px;
       left: 12px; }
-      @media (max-width: 800px) {
+      @media (max-width: 799px) {
         .list__item__column__item--thumbnail, .list__item__column__item--thumbnail.thumbnail {
           left: 16px; } }
     .list__item__column__item--name {
@@ -4038,7 +4038,7 @@ select {
         margin-top: -8px;
         pointer-events: none; }
 
-@media (max-width: 800px) {
+@media (max-width: 799px) {
   :root .notouch:not(.dragging) .list__item:not(.no-click):active, :root .notouch:not(.dragging) .list__item:not(.no-click):focus {
     -webkit-transition: none !important;
     -moz-transition: none !important;
@@ -4509,7 +4509,7 @@ select {
     transform: translateX(15px); }
   100% {
     transform: translateX(0px); } }
-    @media (max-width: 800px) {
+    @media (max-width: 799px) {
       .playback-controls .current-track--transition {
         opacity: 0; }
         .playback-controls .current-track--transition-previous {
@@ -4681,7 +4681,7 @@ select {
         left: 30px; }
     .playback-controls section.triggers {
       display: none; }
-  @media (max-width: 800px) {
+  @media (max-width: 799px) {
     .playback-controls .current-track {
       width: auto;
       bottom: auto;
@@ -4713,11 +4713,11 @@ select {
     .playback-controls section.triggers {
       display: block;
       right: 10px; } }
-  @media only screen and (max-width: 800px) and (-webkit-min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min--moz-device-pixel-ratio: 2), only screen and (max-width: 800px) and (-o-min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min-resolution: 192dpi), only screen and (max-width: 800px) and (min-resolution: 2dppx) {
+  @media only screen and (max-width: 799px) and (-webkit-min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min--moz-device-pixel-ratio: 2), only screen and (max-width: 799px) and (-o-min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min-resolution: 192dpi), only screen and (max-width: 799px) and (min-resolution: 2dppx) {
     .playback-controls section.triggers {
       font-size: 1.3rem;
       bottom: 4px; } }
-  @media (max-width: 800px) {
+  @media (max-width: 799px) {
       .playback-controls section.triggers .sidebar-toggle.open {
         opacity: 1 !important; }
         .playback-controls section.triggers .sidebar-toggle.open:after {
@@ -4746,19 +4746,19 @@ select {
         right: 100px;
         left: 10px;
         bottom: 88px; } }
-    @media only screen and (max-width: 800px) and (-webkit-min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min--moz-device-pixel-ratio: 2), only screen and (max-width: 800px) and (-o-min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min-resolution: 192dpi), only screen and (max-width: 800px) and (min-resolution: 2dppx) {
+    @media only screen and (max-width: 799px) and (-webkit-min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min--moz-device-pixel-ratio: 2), only screen and (max-width: 799px) and (-o-min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min-resolution: 192dpi), only screen and (max-width: 799px) and (min-resolution: 2dppx) {
       .playback-controls--expanded section.volume {
         right: 115px; }
         .playback-controls--expanded section.volume .slider__wrapper {
           bottom: 9px; } }
-  @media (max-width: 800px) {
+  @media (max-width: 799px) {
       .playback-controls--expanded section.progress {
         display: block;
         bottom: 55px;
         left: -15px;
         right: -15px; } }
 
-@media only screen and (max-width: 800px) and (-webkit-min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min--moz-device-pixel-ratio: 2), only screen and (max-width: 800px) and (-o-min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min-resolution: 192dpi), only screen and (max-width: 800px) and (min-resolution: 2dppx) {
+@media only screen and (max-width: 799px) and (-webkit-min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min--moz-device-pixel-ratio: 2), only screen and (max-width: 799px) and (-o-min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min-resolution: 192dpi), only screen and (max-width: 799px) and (min-resolution: 2dppx) {
   .playback-controls {
     height: 56px; }
     .playback-controls--expanded {
@@ -4865,7 +4865,7 @@ select {
         animation-duration: 0.2s;
         animation-timing-function: ease-out;
         animation-iteration-count: 1; }
-  @media (max-width: 800px) {
+  @media (max-width: 799px) {
     .output-control {
       position: absolute;
       top: -10px;
@@ -5034,7 +5034,7 @@ aside {
     z-index: 99; }
     .light-theme aside .close {
       color: #121212; }
-  @media (max-width: 800px) {
+  @media (max-width: 799px) {
     aside {
       -webkit-transition: all 0.15s ease-in-out;
       -moz-transition: all 0.15s ease-in-out;
@@ -5144,7 +5144,7 @@ aside {
   .grid:not(.grid--mini)\--single-row .grid-item:nth-child(1n+6) {
     display: none; } }
 
-@media (max-width: 1900px) and (min-width: 1200px) {
+@media (max-width: 1899px) and (min-width: 1200px) {
   .grid--mini .grid__item {
     width: 48%;
     box-sizing: border-box;
@@ -5325,7 +5325,7 @@ aside {
           display: block; }
       .tiles.artist-stats .tile:nth-child(2n-1) {
         margin-left: 0; } }
-  @media (max-width: 800px) {
+  @media (max-width: 799px) {
     .tiles.artist-stats {
       padding-bottom: 20px; }
       .tiles.artist-stats .tile {
@@ -5340,7 +5340,7 @@ aside {
             display: block; }
         .tiles.artist-stats .tile:nth-child(3n-2) {
           margin-left: 0; } }
-  @media (max-width: 350px) {
+  @media (max-width: 349px) {
     .tiles.artist-stats .tile .text {
       font-size: 14px; }
       .tiles.artist-stats .tile .text .icon {
@@ -5389,10 +5389,10 @@ aside {
       .grid-slider-wrapper .grid-slider .liner .grid-item {
         width: 4%;
         margin: 0 0.5% !important; }
-  @media (max-width: 800px) {
+  @media (max-width: 799px) {
     .grid-slider-wrapper .grid-slider {
       height: 23vw; } }
-  @media (max-width: 500px) {
+  @media (max-width: 499px) {
     .grid-slider-wrapper .grid-slider {
       height: 40vw; }
       .grid-slider-wrapper .grid-slider .liner {
@@ -5451,7 +5451,7 @@ main header {
     left: 0;
     width: 100%;
     z-index: 98; }
-  @media (max-width: 800px) {
+  @media (max-width: 799px) {
     main header {
       padding: 10px 10px 10px 0;
       margin-bottom: -10px; }
@@ -5619,7 +5619,7 @@ main header {
       background: #f16f19; }
     .notifications .loading.low {
       background: #47af2a; }
-  @media (max-width: 800px) {
+  @media (max-width: 799px) {
     .notifications {
       bottom: 60px;
       left: 10px;
@@ -5628,7 +5628,7 @@ main header {
       .notifications .loading {
         bottom: 20px;
         right: 40px; } }
-  @media only screen and (max-width: 800px) and (-webkit-min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min--moz-device-pixel-ratio: 2), only screen and (max-width: 800px) and (-o-min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min-resolution: 192dpi), only screen and (max-width: 800px) and (min-resolution: 2dppx) {
+  @media only screen and (max-width: 799px) and (-webkit-min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min--moz-device-pixel-ratio: 2), only screen and (max-width: 799px) and (-o-min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min-resolution: 192dpi), only screen and (max-width: 799px) and (min-resolution: 2dppx) {
     .notifications {
       bottom: 68px; } }
 
@@ -5941,7 +5941,7 @@ main header {
     .light-theme .sub-views .option:not(.active):hover {
       border-color: rgba(0, 0, 0, 0.2); }
 
-@media (max-width: 800px) {
+@media (max-width: 799px) {
   .sub-views .option {
     margin-right: 15px; } }
 
@@ -6102,7 +6102,7 @@ main header {
   .light-theme .services .service {
     background: #ebe8e4; }
 
-@media (max-width: 800px) {
+@media (max-width: 799px) {
   .services {
     margin-left: -20px;
     margin-right: -20px; }
@@ -6216,7 +6216,7 @@ main header {
       .snapcast__client__latency .latency-control .slider__track__progress--negative:after {
         right: auto;
         left: -1px; }
-  @media (max-width: 800px) {
+  @media (max-width: 799px) {
     .snapcast__client {
       padding-left: 0 !important;
       padding-right: 0 !important;
@@ -6469,12 +6469,12 @@ main header {
   .artist-view .body.about .biography .biography-text {
     overflow-wrap: break-word; }
 
-@media (max-width: 1000px) {
+@media (max-width: 999px) {
   .artist-view .intro .liner h1 {
     font-size: 4rem;
     line-height: 4rem; } }
 
-@media (max-width: 800px) {
+@media (max-width: 799px) {
   .artist-view .intro {
     margin-bottom: 0; }
     .artist-view .intro .liner {
@@ -6544,7 +6544,7 @@ main header {
   .light-theme .user-view .content-wrapper {
     background: #FFFFFF; }
 
-@media (max-width: 800px) {
+@media (max-width: 799px) {
   .user-view .intro .thumbnail {
     float: none;
     margin: 0 auto 20px; }
@@ -6582,7 +6582,7 @@ main .album-view {
     main .album-view .parallax {
       height: 30vh;
       opacity: 0.25; } }
-  @media (max-width: 800px) {
+  @media (max-width: 799px) {
     main .album-view {
       padding-top: 0;
       padding-left: 10px; }
@@ -6638,7 +6638,7 @@ main .playlist-view {
     main .playlist-view .parallax {
       height: 30vh;
       opacity: 0.25; } }
-  @media (max-width: 800px) {
+  @media (max-width: 799px) {
     main .playlist-view {
       padding-top: 0;
       padding-left: 10px; }
@@ -6699,7 +6699,7 @@ main .track-view {
       white-space: normal; }
   main .track-view .lyrics-selector {
     padding-bottom: 20px; }
-  @media (max-width: 800px) {
+  @media (max-width: 799px) {
     main .track-view {
       padding-top: 0;
       padding-left: 10px; }
@@ -6722,7 +6722,7 @@ main .track-view {
           content: '';
           clear: both;
           display: block; } }
-  @media (max-width: 500px) {
+  @media (max-width: 499px) {
     main .track-view .actions {
       padding: 0; } }
 
@@ -6765,7 +6765,7 @@ main .track-view {
     opacity: 0.5;
     position: relative;
     z-index: 2; }
-  @media (max-width: 800px) {
+  @media (max-width: 799px) {
     .queue-view .current-track {
       padding-bottom: 20px; }
       .queue-view .current-track .artwork {
@@ -6807,11 +6807,11 @@ main .track-view {
     .search-view .search-result-sections section .button {
       margin-top: 10px; }
 
-@media (max-width: 1900px) {
+@media (max-width: 1899px) {
   .search-view .search-result-sections .grid__item:nth-child(1n+5) {
     display: none; } }
 
-@media (max-width: 800px) {
+@media (max-width: 799px) {
   .search-view .search-form {
     top: 10px;
     left: 40px;
@@ -6842,14 +6842,14 @@ main .track-view {
   .library-albums-view .albums-detail-subview > .album .track-list {
     padding-left: 260px; }
 
-@media (max-width: 1000px) {
+@media (max-width: 999px) {
   .library-albums-view .albums-detail-subview > .album .thumbnail {
     max-width: 160px; }
   .library-albums-view .albums-detail-subview > .album .detail,
   .library-albums-view .albums-detail-subview > .album .track-list {
     padding-left: 160px; } }
 
-@media (max-width: 600px) {
+@media (max-width: 599px) {
   .library-albums-view .albums-detail-subview {
     padding: 20px 0; }
   .library-albums-view .albums-detail-subview > .album .thumbnail {
@@ -7002,7 +7002,7 @@ main .track-view {
 .discover-view section.tracks .pull-right button {
   margin-right: 0; }
 
-@media (max-width: 800px) {
+@media (max-width: 799px) {
   .discover-view .intro {
     padding: 40px 20px; }
     .discover-view .intro__parameters {
@@ -7043,7 +7043,7 @@ main .track-view {
     height: 30vh;
     opacity: 0.5; }
 
-@media (max-width: 800px) {
+@media (max-width: 799px) {
   .discover-featured-view .intro,
   .discover-new-releases-view .intro {
     padding-top: 50px; } }
@@ -7095,7 +7095,7 @@ main .track-view {
 .settings-view .field.pusher-connections .connection.me {
   color: #08d58f; }
 
-@media (max-width: 800px) {
+@media (max-width: 799px) {
   .settings-view .content-wrapper {
     padding-bottom: 60px; }
   .settings-view .field.pusher-connections .connection .col {
@@ -7111,7 +7111,7 @@ main .track-view {
 .debugger-view section {
   padding: 40px; }
 
-@media (max-width: 800px) {
+@media (max-width: 799px) {
   .debugger-view section {
     padding: 20px; } }
 
@@ -7219,7 +7219,7 @@ main .track-view {
         .modal .content .add-uri:hover.remove-uri,
         .modal .content .remove-uri:hover.remove-uri {
           color: #cf2d2d; }
-    @media (max-width: 800px) {
+    @media (max-width: 799px) {
       .modal .content .add-uri {
         top: 36px; } }
     .modal .content .list::after {
@@ -7347,7 +7347,7 @@ main .track-view {
         max-width: 60vh; }
         .modal--kiosk-mode .content .progress-wrapper .slider__track {
           background: rgba(128, 128, 128, 0.25); }
-  @media (max-width: 800px) {
+  @media (max-width: 799px) {
     .modal .controls {
       top: 0;
       right: 0; }
