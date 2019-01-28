@@ -31,7 +31,7 @@
     "style-loader": "^0.13.2",
     "url-loader": "^0.5.9",
     "fs-copy-file": "2.1.2",
-    "md5": "2.2.1",
+    "js-sha256": "^0.9.0",
     "node-sass": "^4",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
