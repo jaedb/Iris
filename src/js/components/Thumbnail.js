@@ -66,7 +66,7 @@ class Thumbnail extends React.Component{
 
 		return (
 			<div className={class_name}>
-				<div className="thumbnail__image" style={{backgroundImage: 'url("'+(image ? image : require('../../assets/no-image.svg'))+'")'}}></div>
+				<div className="thumbnail__image" style={{backgroundImage: 'url("'+(image ? image : '/iris/assets/no-image.svg')+'")'}}></div>
 				{zoom_icon}
 			</div>
 		);

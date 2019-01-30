@@ -1,6 +1,6 @@
 
 import ReactGA from 'react-ga';
-import md5 from 'md5';
+import { sha256 } from 'js-sha256';
 
 var helpers = require('./../../helpers');
 var coreActions = require('../core/actions');
@@ -9,10 +9,6 @@ var uiActions = require('../ui/actions');
 var pusherActions = require('../pusher/actions');
 
 const SpotifyMiddleware = (function(){
-
-    /**
-     * The actual middleware inteceptor
-     **/
     return store => next => action => {
         var spotify = store.getState().spotify;
 
@@ -33,7 +29,7 @@ const SpotifyMiddleware = (function(){
                 if (store.getState().ui.allow_reporting){
 	                var hashed_username = null
 	                if (store.getState().spotify.me){
-	                    hashed_username = md5(store.getState().spotify.me);
+	                    hashed_username = sha256(store.getState().spotify.me);
 		                ReactGA.set({userId: hashed_username});
 	                }
 	                ReactGA.event({ category: 'Spotify', action: 'Authorization revoked', label: hashed_username});
@@ -470,7 +466,7 @@ const SpotifyMiddleware = (function(){
                 }
 
                 if (store.getState().ui.allow_reporting){
-	                var hashed_username = md5(me.id);
+	                var hashed_username = sha256(me.id);
 	                ReactGA.set({userId: hashed_username});
 	                ReactGA.event({category: 'Spotify', action: 'Authorization verified', label: hashed_username});
 	            }

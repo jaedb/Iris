@@ -294,7 +294,7 @@ class Artist extends React.Component{
 			} else {
 				return (
 					<ErrorMessage type="not-found" title="Not found">
-						<p>Could not find artist with URI "{this.props.uri}"</p>
+						<p>Could not find artist with URI "{encodeURIComponent(this.props.uri)}"</p>
 					</ErrorMessage>
 				);
 			}

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import * as helpers from '../helpers';
 
@@ -20,34 +20,35 @@ export default class extends React.Component{
 		}
 	}
 
+	isLinkActive(link){
+		return this.props.history.location.pathname.startsWith(link);
+	}
+
 	render(){
-		var className = null;
+		var className = "";
 		if (this.props.className){
-			var className = this.props.className;
-		} else {
-			var className = "";
+			className += this.props.className;
 		}
 
-		if (this.props.nav){
-			return (
-				<NavLink 
-					exact={this.props.exact !== undefined ? this.props.exact : false}
-					onClick={e => this.handleClick(e)}
-					activeClassName={this.props.activeClassName ? this.props.activeClassName : className+"--active"}
-					className={className}
-					to={this.props.to}>
-						{this.props.children}
-				</NavLink>
-			);
-		} else {
-			return (
-				<Link 
-					onClick={e => this.handleClick(e)}
-					className={className}
-					to={this.props.to}>
-						{this.props.children}
-				</Link>
-			);
+		// We have an active detector method
+		// This is used almost solely by the Sidebar navigation
+		if (this.props.history !== undefined){
+			if (this.isLinkActive(this.props.to)){
+				if (this.props.activeClassName){
+					className += " "+this.props.activeClassName;
+				} else {
+					className += " active";
+				}
+			}
 		}
+
+		return (
+			<Link 
+				onClick={e => this.handleClick(e)}
+				className={className}
+				to={this.props.to}>
+					{this.props.children}
+			</Link>
+		);
 	}
 }

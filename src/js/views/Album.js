@@ -118,7 +118,7 @@ class Album extends React.Component{
 			} else {
 				return (
 					<ErrorMessage type="not-found" title="Not found">
-						<p>Could not find album with URI "{this.props.uri}"</p>
+						<p>Could not find album with URI "{encodeURIComponent(this.props.uri)}"</p>
 					</ErrorMessage>
 				);
 			}

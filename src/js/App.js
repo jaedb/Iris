@@ -384,7 +384,7 @@ class App extends React.Component{
 						<Route>
 							<div>
 								<Sidebar />		        
-						        <PlaybackControls />
+						        <PlaybackControls history={this.props.history} />
 						        <main id="main" className="smooth-scroll">
 									<Switch>
 										<Route exact path="/" component={Queue} />

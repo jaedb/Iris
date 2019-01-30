@@ -22,12 +22,10 @@ export default class Icon extends React.Component{
 
 		switch (this.props.type){
 			case 'svg':	
-				var src = require('../../assets/icons/'+this.props.name+'.svg');
-				return <img className={className} src={src} onClick={e => this.handleClick(e)} />;
+				return <img className={className} src={'/iris/assets/icons/'+this.props.name+'.svg'} onClick={e => this.handleClick(e)} />;
 
 			case 'gif':	
-				var src = require('../../assets/icons/'+this.props.name+'.gif');
-				return <img className={className} src={src} onClick={e => this.handleClick(e)} />;
+				return <img className={className} src={'/iris/assets/icons/'+this.props.name+'.gif'} onClick={e => this.handleClick(e)} />;
 
 			case 'fontawesome':	
 				return <FontAwesome className={className} type="fontawesome" name={this.props.name} onClick={e => this.handleClick(e)} />;

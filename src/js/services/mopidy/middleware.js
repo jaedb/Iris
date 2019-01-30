@@ -1,7 +1,7 @@
 
 import ReactGA from 'react-ga';
 import Mopidy from 'mopidy';
-import md5 from 'md5';
+import { sha256 } from 'js-sha256';
 
 import * as helpers from '../../helpers';
 
@@ -244,7 +244,7 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_CONNECTED':
                 if (store.getState().ui.allow_reporting){
-                    var hashed_hostname = md5(window.location.hostname);
+                    var hashed_hostname = sha256(window.location.hostname);
 	                ReactGA.event({ category: 'Mopidy', action: 'Connected', label: hashed_hostname });
 	            }
                 store.dispatch(uiActions.createNotification({content: 'Mopidy connected'}));
