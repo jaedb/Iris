@@ -123,6 +123,8 @@ class PlaybackControls extends React.Component{
 		if (this.start_position.x + tap_distance_threshold > end_position.x &&
 			this.start_position.x - tap_distance_threshold < end_position.x){
 
+			// Scroll to top (without smooth_scroll)
+			helpers.scrollTo(null, false);
 			this.props.history.push('/queue');
 		} else {
 
@@ -262,13 +264,6 @@ class PlaybackControls extends React.Component{
 		);
 	}
 }
-
-
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- **/
 
 const mapStateToProps = (state, ownProps) => {
 	return {

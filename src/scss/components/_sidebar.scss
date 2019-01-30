@@ -1,5 +1,5 @@
 
-aside{
+.sidebar {
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -18,7 +18,7 @@ aside{
 		border-right: none;
 	}
 
-	.liner {
+	&__liner {
 		overflow-y: auto;
 		position: absolute;
 		top: 0;
@@ -30,26 +30,13 @@ aside{
 		overflow-y: auto;
 	}
 
-	.branding {
-		height: 50px;
-		margin-top: 30px;
-		opacity: 0.2;
-
-		background: {
-			image: url('../assets/app-icon.svg');
-			position: 50% 50%;
-			repeat: no-repeat;
-			size: contain;
-		}
-	}
-
-	nav {
+	&__menu {
 		z-index: 2;
 		position: relative;
 		padding-top: 20px;
 		line-height: 1em;
 
-		a {
+		&__item {
 			@include gradient_overlay(3px);
 			font-family: "Overpass";
 			font-weight: 600;
@@ -83,7 +70,7 @@ aside{
 				}
 			}
 
-			&.active {
+			&--active {
 				background: colour(turquoise);
 				color: colour(white);
 
@@ -115,10 +102,10 @@ aside{
 			}
 		}
 
-		section {
+		&__section {
 			padding-bottom: 25px;
 
-			title {
+			&__title {
 				display: block;
 				padding: 0 26px 5px 26px;
 				font-size: 12px;
@@ -159,7 +146,7 @@ aside{
 			transform: translate(-220px, 0);
 		}
 
-		.liner {
+		&__liner {
 			bottom: 0 !important;
 			padding-bottom: 30px;
 		}
@@ -172,11 +159,11 @@ aside{
 			display: block;
 		}
 
-		nav {
-			section {
+		&__menu {
+			&__section {
 				padding-bottom: 10px;
 
-				title {
+				&__title {
 					padding-bottom: 2px;
 				}
 			}

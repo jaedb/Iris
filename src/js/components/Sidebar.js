@@ -20,67 +20,67 @@ class Sidebar extends React.Component{
 
 	render(){
 		return (
-			<aside>
-				<div className="liner">
-		        	<nav>
+			<aside className="sidebar">
+				<div className="sidebar__liner">
+		        	<nav className="sidebar__menu">
 
-		        		<section>
-							<Link nav to={"/queue"}>
+		        		<section className="sidebar__menu__section">
+							<Link to={"/queue"} history={this.props.history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
 								<Icon name="play_arrow" type="material" />
 								Now playing
 							</Link>
-							<Link nav to={"/search"}>
+							<Link to={"/search"} history={this.props.history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
 								<Icon name="search" type="material" />
 								Search
 							</Link>
 						</section>
 
-						{this.props.spotify_enabled ? <section>
-							<title>Discover</title>
-							<Link nav to={"/discover/recommendations"}>
+						{this.props.spotify_enabled ? <section className="sidebar__menu__section">
+							<title className="sidebar__menu__section__title">Discover</title>
+							<Link to={"/discover/recommendations"} history={this.props.history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
 								<Icon name="explore" type="material" />
 								Discover
 							</Link>
-							<Link nav to={"/discover/categories"}>
+							<Link to={"/discover/categories"} history={this.props.history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
 								<Icon name="mood" type="material" />
 								Genre / Mood
 							</Link>
-							<Link nav to={"/discover/featured"}>
+							<Link to={"/discover/featured"} history={this.props.history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
 								<Icon name="star" type="material" />
 								Featured playlists
 							</Link>
-							<Link nav to={"/discover/new-releases"}>
+							<Link to={"/discover/new-releases"} history={this.props.history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
 								<Icon name="new_releases" type="material" />
 								New releases
 							</Link>
 						</section> : null}
 
-						<section>
-							<title>My Music</title>
-							<Link nav to={"/library/playlists"}>
+						<section className="sidebar__menu__section">
+							<title className="sidebar__menu__section__title">My Music</title>
+							<Link to={"/library/playlists"} history={this.props.history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
 								<Icon name="queue_music" type="material" />
 								Playlists
 							</Link>
-							<Link nav to={"/library/artists"}>
+							<Link to={"/library/artists"} history={this.props.history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
 								<Icon name="recent_actors" type="material" />
 								Artists
 							</Link>
-							<Link nav to={"/library/albums"}>
+							<Link to={"/library/albums"} history={this.props.history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
 								<Icon name="album" type="material" />
 								Albums
 							</Link>
-							<Link nav to={"/library/tracks"}>
+							<Link to={"/library/tracks"} history={this.props.history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
 								<Icon name="music_note" type="material" />
 								Tracks
 							</Link>
-							<Link nav to={"/library/browse"}>
+							<Link to={"/library/browse"} history={this.props.history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
 								<Icon name="folder" type="material" />
 								Browse
 							</Link>
 						</section>
 
-						<section>
-							<Link nav to={"/settings"}>
+						<section className="sidebar__menu__section">
+							<Link to={"/settings"} history={this.props.history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
 								<Icon name="settings" type="material" />
 								Settings
 								{this.props.update_available ? <span className="status tooltip tooltip--right"><Icon name="cloud_download" className="green-text" /><span className="tooltip__content">Update available</span></span>: null}

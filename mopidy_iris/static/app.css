@@ -4911,7 +4911,7 @@ select {
         .output-control__item__mute.control {
           color: #FFFFFF; } }
 
-aside {
+.sidebar {
   position: fixed;
   top: 0;
   left: 0;
@@ -4924,10 +4924,10 @@ aside {
   color: #FFFFFF;
   box-sizing: border-box;
   transform-style: preserve-3d; }
-  .light-theme aside {
+  .light-theme .sidebar {
     background: #f8f7f6;
     border-right: none; }
-  aside .liner {
+  .sidebar__liner {
     overflow-y: auto;
     position: absolute;
     top: 0;
@@ -4937,20 +4937,12 @@ aside {
     box-sizing: border-box;
     z-index: 2;
     overflow-y: auto; }
-  aside .branding {
-    height: 50px;
-    margin-top: 30px;
-    opacity: 0.2;
-    background-image: url(data:image/svg+xml;base64,PHN2ZyBpZD0iMTkyYjFkZGMtYjU4Yy00NTEwLWE3M2MtMGZjMmE5NWVmMjEyIiBkYXRhLW5hbWU9IkxheWVyIDEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDE5MiAxOTIiPjx0aXRsZT5hcHAtaWNvbjwvdGl0bGU+PHBhdGggZD0iTTgxLjUsMTI5LjIzLDI2LjMzLDE4My4xNFY4Ljg2TDgxLjUsNjIuNzdabTAtMTIwLjM3VjM1LjE5bDYyLjcsNjAuMThMODEuNSwxNTYuODF2MjUuMDhsOTAuMjgtODYuNTJaIiBzdHlsZT0iZmlsbDojMDhkNThmIi8+PC9zdmc+);
-    background-position: 50% 50%;
-    background-repeat: no-repeat;
-    background-size: contain; }
-  aside nav {
+  .sidebar__menu {
     z-index: 2;
     position: relative;
     padding-top: 20px;
     line-height: 1em; }
-    aside nav a {
+    .sidebar__menu__item {
       position: relative;
       border-radius: 3px;
       font-family: "Overpass";
@@ -4962,7 +4954,7 @@ aside {
       padding: 13px 10px 10px;
       margin: 0 18px;
       border-radius: 3px; }
-      aside nav a:before {
+      .sidebar__menu__item:before {
         -webkit-transition: all 0.2s ease-in-out;
         -moz-transition: all 0.2s ease-in-out;
         -o-transition: all 0.2s ease-in-out;
@@ -4982,48 +4974,48 @@ aside {
         background: -moz-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
         background: -o-linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black);
         background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.75), black); }
-      .light-theme aside nav a {
+      .light-theme .sidebar__menu__item {
         color: #121212;
         font-weight: 600; }
-      aside nav a .icon {
+      .sidebar__menu__item .icon {
         padding-right: 8px;
         vertical-align: top;
         margin-top: -1px;
         font-size: 14px; }
-      aside nav a .status {
+      .sidebar__menu__item .status {
         margin-left: 5px;
         float: right; }
-        aside nav a .status .icon {
+        .sidebar__menu__item .status .icon {
           padding-right: 0;
           padding-left: 8px; }
-      aside nav a.active {
+      .sidebar__menu__item--active {
         background: #08d58f;
         color: #FFFFFF; }
-        aside nav a.active .status .icon {
+        .sidebar__menu__item--active .status .icon {
           color: #FFFFFF !important; }
-        aside nav a.active:before {
+        .sidebar__menu__item--active:before {
           opacity: 0.15; }
-      aside nav a[disabled] {
+      .sidebar__menu__item[disabled] {
         opacity: 0.3;
         cursor: not-allowed; }
-      aside nav a:hover:not([disabled]):before {
+      .sidebar__menu__item:hover:not([disabled]):before {
         opacity: 0.15; }
-      aside nav a:active {
+      .sidebar__menu__item:active {
         -webkit-transition: none !important;
         -moz-transition: none !important;
         -o-transition: none !important;
         transition: none !important;
         transform: translate(1px, 1px); }
-    aside nav section {
+    .sidebar__menu__section {
       padding-bottom: 25px; }
-      aside nav section title {
+      .sidebar__menu__section__title {
         display: block;
         padding: 0 26px 5px 26px;
         font-size: 12px;
         text-transform: uppercase;
         opacity: 0.5;
         color: #a3a19f; }
-  aside .close {
+  .sidebar .close {
     display: none;
     position: absolute;
     bottom: 4px;
@@ -5032,10 +5024,10 @@ aside {
     display: inline-block;
     opacity: 0.5;
     z-index: 99; }
-    .light-theme aside .close {
+    .light-theme .sidebar .close {
       color: #121212; }
   @media (max-width: 799px) {
-    aside {
+    .sidebar {
       -webkit-transition: all 0.15s ease-in-out;
       -moz-transition: all 0.15s ease-in-out;
       -o-transition: all 0.15s ease-in-out;
@@ -5046,20 +5038,20 @@ aside {
       padding-bottom: 0;
       position: fixed;
       z-index: 100; }
-      .sidebar-open aside {
+      .sidebar-open .sidebar {
         -ms-transform: translate(-220px, 0);
         -webkit-transform: translate(-220px, 0);
         transform: translate(-220px, 0); }
-      aside .liner {
+      .sidebar__liner {
         bottom: 0 !important;
         padding-bottom: 30px; }
-      aside .thumbnail {
+      .sidebar .thumbnail {
         display: none; }
-      aside .close {
+      .sidebar .close {
         display: block; }
-      aside nav section {
+      .sidebar__menu__section {
         padding-bottom: 10px; }
-        aside nav section title {
+        .sidebar__menu__section__title {
           padding-bottom: 2px; } }
 
 .grid__item {

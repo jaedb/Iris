@@ -5625,42 +5625,42 @@ var _class = function (_React$Component) {
 			}
 		}
 	}, {
+		key: 'isLinkActive',
+		value: function isLinkActive(link) {
+			return this.props.history.location.pathname.startsWith(link);
+		}
+	}, {
 		key: 'render',
 		value: function render() {
 			var _this2 = this;
 
-			var className = null;
+			var className = "";
 			if (this.props.className) {
-				var className = this.props.className;
-			} else {
-				var className = "";
+				className += this.props.className;
 			}
 
-			if (this.props.nav) {
-				return _react2.default.createElement(
-					_reactRouterDom.NavLink,
-					{
-						exact: this.props.exact !== undefined ? this.props.exact : false,
-						onClick: function onClick(e) {
-							return _this2.handleClick(e);
-						},
-						activeClassName: this.props.activeClassName ? this.props.activeClassName : className + "--active",
-						className: className,
-						to: this.props.to },
-					this.props.children
-				);
-			} else {
-				return _react2.default.createElement(
-					_reactRouterDom.Link,
-					{
-						onClick: function onClick(e) {
-							return _this2.handleClick(e);
-						},
-						className: className,
-						to: this.props.to },
-					this.props.children
-				);
+			// We have an active detector method
+			// This is used almost solely by the Sidebar navigation
+			if (this.props.history !== undefined) {
+				if (this.isLinkActive(this.props.to)) {
+					if (this.props.activeClassName) {
+						className += " " + this.props.activeClassName;
+					} else {
+						className += " active";
+					}
+				}
 			}
+
+			return _react2.default.createElement(
+				_reactRouterDom.Link,
+				{
+					onClick: function onClick(e) {
+						return _this2.handleClick(e);
+					},
+					className: className,
+					to: this.props.to },
+				this.props.children
+			);
 		}
 	}]);
 
@@ -66717,7 +66717,7 @@ var App = function (_React$Component) {
 								'div',
 								null,
 								_react2.default.createElement(_Sidebar2.default, null),
-								_react2.default.createElement(_PlaybackControls2.default, null),
+								_react2.default.createElement(_PlaybackControls2.default, { history: this.props.history }),
 								_react2.default.createElement(
 									'main',
 									{ id: 'main', className: 'smooth-scroll' },
@@ -66898,107 +66898,107 @@ var Sidebar = function (_React$Component) {
 
 			return _react2.default.createElement(
 				'aside',
-				null,
+				{ className: 'sidebar' },
 				_react2.default.createElement(
 					'div',
-					{ className: 'liner' },
+					{ className: 'sidebar__liner' },
 					_react2.default.createElement(
 						'nav',
-						null,
+						{ className: 'sidebar__menu' },
 						_react2.default.createElement(
 							'section',
-							null,
+							{ className: 'sidebar__menu__section' },
 							_react2.default.createElement(
 								_Link2.default,
-								{ nav: true, to: "/queue" },
+								{ to: "/queue", history: this.props.history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
 								_react2.default.createElement(_Icon2.default, { name: 'play_arrow', type: 'material' }),
 								'Now playing'
 							),
 							_react2.default.createElement(
 								_Link2.default,
-								{ nav: true, to: "/search" },
+								{ to: "/search", history: this.props.history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
 								_react2.default.createElement(_Icon2.default, { name: 'search', type: 'material' }),
 								'Search'
 							)
 						),
 						this.props.spotify_enabled ? _react2.default.createElement(
 							'section',
-							null,
+							{ className: 'sidebar__menu__section' },
 							_react2.default.createElement(
 								'title',
-								null,
+								{ className: 'sidebar__menu__section__title' },
 								'Discover'
 							),
 							_react2.default.createElement(
 								_Link2.default,
-								{ nav: true, to: "/discover/recommendations" },
+								{ to: "/discover/recommendations", history: this.props.history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
 								_react2.default.createElement(_Icon2.default, { name: 'explore', type: 'material' }),
 								'Discover'
 							),
 							_react2.default.createElement(
 								_Link2.default,
-								{ nav: true, to: "/discover/categories" },
+								{ to: "/discover/categories", history: this.props.history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
 								_react2.default.createElement(_Icon2.default, { name: 'mood', type: 'material' }),
 								'Genre / Mood'
 							),
 							_react2.default.createElement(
 								_Link2.default,
-								{ nav: true, to: "/discover/featured" },
+								{ to: "/discover/featured", history: this.props.history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
 								_react2.default.createElement(_Icon2.default, { name: 'star', type: 'material' }),
 								'Featured playlists'
 							),
 							_react2.default.createElement(
 								_Link2.default,
-								{ nav: true, to: "/discover/new-releases" },
+								{ to: "/discover/new-releases", history: this.props.history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
 								_react2.default.createElement(_Icon2.default, { name: 'new_releases', type: 'material' }),
 								'New releases'
 							)
 						) : null,
 						_react2.default.createElement(
 							'section',
-							null,
+							{ className: 'sidebar__menu__section' },
 							_react2.default.createElement(
 								'title',
-								null,
+								{ className: 'sidebar__menu__section__title' },
 								'My Music'
 							),
 							_react2.default.createElement(
 								_Link2.default,
-								{ nav: true, to: "/library/playlists" },
+								{ to: "/library/playlists", history: this.props.history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
 								_react2.default.createElement(_Icon2.default, { name: 'queue_music', type: 'material' }),
 								'Playlists'
 							),
 							_react2.default.createElement(
 								_Link2.default,
-								{ nav: true, to: "/library/artists" },
+								{ to: "/library/artists", history: this.props.history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
 								_react2.default.createElement(_Icon2.default, { name: 'recent_actors', type: 'material' }),
 								'Artists'
 							),
 							_react2.default.createElement(
 								_Link2.default,
-								{ nav: true, to: "/library/albums" },
+								{ to: "/library/albums", history: this.props.history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
 								_react2.default.createElement(_Icon2.default, { name: 'album', type: 'material' }),
 								'Albums'
 							),
 							_react2.default.createElement(
 								_Link2.default,
-								{ nav: true, to: "/library/tracks" },
+								{ to: "/library/tracks", history: this.props.history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
 								_react2.default.createElement(_Icon2.default, { name: 'music_note', type: 'material' }),
 								'Tracks'
 							),
 							_react2.default.createElement(
 								_Link2.default,
-								{ nav: true, to: "/library/browse" },
+								{ to: "/library/browse", history: this.props.history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
 								_react2.default.createElement(_Icon2.default, { name: 'folder', type: 'material' }),
 								'Browse'
 							)
 						),
 						_react2.default.createElement(
 							'section',
-							null,
+							{ className: 'sidebar__menu__section' },
 							_react2.default.createElement(
 								_Link2.default,
-								{ nav: true, to: "/settings" },
+								{ to: "/settings", history: this.props.history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
 								_react2.default.createElement(_Icon2.default, { name: 'settings', type: 'material' }),
 								'Settings',
 								this.props.update_available ? _react2.default.createElement(
@@ -69877,6 +69877,8 @@ var PlaybackControls = function (_React$Component) {
 			// this event as a 'tap'
 			if (this.start_position.x + tap_distance_threshold > end_position.x && this.start_position.x - tap_distance_threshold < end_position.x) {
 
+				// Scroll to top (without smooth_scroll)
+				helpers.scrollTo(null, false);
 				this.props.history.push('/queue');
 			} else {
 
@@ -70161,12 +70163,6 @@ var PlaybackControls = function (_React$Component) {
 
 	return PlaybackControls;
 }(_react2.default.Component);
-
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- **/
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
@@ -81977,7 +81973,7 @@ var Services = function (_React$Component) {
 					{ className: 'menu__inner' },
 					_react2.default.createElement(
 						_Link2.default,
-						{ nav: true, className: 'menu-item menu-item--spotify', activeClassName: 'menu-item--active', to: '/settings/spotify', scrollTo: 'services-menu' },
+						{ history: this.props.history, className: 'menu-item menu-item--spotify', activeClassName: 'menu-item--active', to: '/settings/spotify', scrollTo: 'services-menu' },
 						_react2.default.createElement(
 							'div',
 							{ className: 'menu-item__inner' },
@@ -82000,7 +81996,7 @@ var Services = function (_React$Component) {
 					),
 					_react2.default.createElement(
 						_Link2.default,
-						{ nav: true, className: 'menu-item menu-item--lastfm', activeClassName: 'menu-item--active', to: '/settings/lastfm', scrollTo: 'services-menu' },
+						{ history: this.props.history, className: 'menu-item menu-item--lastfm', activeClassName: 'menu-item--active', to: '/settings/lastfm', scrollTo: 'services-menu' },
 						_react2.default.createElement(
 							'div',
 							{ className: 'menu-item__inner' },
@@ -82023,7 +82019,7 @@ var Services = function (_React$Component) {
 					),
 					_react2.default.createElement(
 						_Link2.default,
-						{ nav: true, className: 'menu-item menu-item--genius', activeClassName: 'menu-item--active', to: '/settings/genius', scrollTo: 'services-menu' },
+						{ history: this.props.history, className: 'menu-item menu-item--genius', activeClassName: 'menu-item--active', to: '/settings/genius', scrollTo: 'services-menu' },
 						_react2.default.createElement(
 							'div',
 							{ className: 'menu-item__inner' },
@@ -82046,7 +82042,7 @@ var Services = function (_React$Component) {
 					),
 					_react2.default.createElement(
 						_Link2.default,
-						{ nav: true, className: 'menu-item menu-item--snapcast', activeClassName: 'menu-item--active', to: '/settings/snapcast', scrollTo: 'services-menu' },
+						{ history: this.props.history, className: 'menu-item menu-item--snapcast', activeClassName: 'menu-item--active', to: '/settings/snapcast', scrollTo: 'services-menu' },
 						_react2.default.createElement(
 							'div',
 							{ className: 'menu-item__inner' },
@@ -82069,7 +82065,7 @@ var Services = function (_React$Component) {
 					),
 					_react2.default.createElement(
 						_Link2.default,
-						{ nav: true, className: 'menu-item menu-item--icecast', activeClassName: 'menu-item--active', to: '/settings/icecast', scrollTo: 'services-menu' },
+						{ history: this.props.history, className: 'menu-item menu-item--icecast', activeClassName: 'menu-item--active', to: '/settings/icecast', scrollTo: 'services-menu' },
 						_react2.default.createElement(
 							'div',
 							{ className: 'menu-item__inner' },
