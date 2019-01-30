@@ -696,8 +696,14 @@ const CoreMiddleware = (function(){
                             }
                     }
 
+                    // Already have this playlist partially in our index
                     if (playlists_index[playlist.uri]){
                         playlist = Object.assign({}, playlists_index[playlist.uri], playlist);
+
+                        // Setup placeholder tracks_uris
+                        if (playlist.tracks_uris === undefined){
+                            playlist.tracks_uris = [];
+                        }
                     }
 
                     // Load our tracks

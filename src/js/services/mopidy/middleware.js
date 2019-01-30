@@ -1546,7 +1546,7 @@ const MopidyMiddleware = (function(){
                                 is_completely_loaded: true,
                                 provider: 'mopidy',
                                 tracks: (response.tracks ? response.tracks : []),
-                                tracks_total: (response.tracks ? response.tracks.length : [])
+                                tracks_total: (response.tracks ? response.tracks.length : 0)
                             }
                         )
 

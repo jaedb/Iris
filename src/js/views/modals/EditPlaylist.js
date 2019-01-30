@@ -204,7 +204,12 @@ class EditPlaylist extends React.Component{
 }
 
 const mapStateToProps = (state, ownProps) => {
+
+	// Decode the URI, and then re-encode all the spaces
+	// This is needed as Mopidy encodes spaces in playlist URIs (but not other characters)
 	var uri = decodeURIComponent(ownProps.match.params.uri);
+	uri = uri.replace(/\s/g, '%20');
+	
 	return {
 		uri: uri,
 		mopidy_connected: state.mopidy.connected,

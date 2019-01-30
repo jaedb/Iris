@@ -57691,8 +57691,14 @@ var CoreMiddleware = function () {
                                         }
                                 }
 
+                                // Already have this playlist partially in our index
                                 if (playlists_index[playlist.uri]) {
                                     playlist = Object.assign({}, playlists_index[playlist.uri], playlist);
+
+                                    // Setup placeholder tracks_uris
+                                    if (playlist.tracks_uris === undefined) {
+                                        playlist.tracks_uris = [];
+                                    }
                                 }
 
                                 // Load our tracks
@@ -61079,7 +61085,7 @@ var MopidyMiddleware = function () {
                                 is_completely_loaded: true,
                                 provider: 'mopidy',
                                 tracks: response.tracks ? response.tracks : [],
-                                tracks_total: response.tracks ? response.tracks.length : []
+                                tracks_total: response.tracks ? response.tracks.length : 0
                             });
 
                             // tracks? get the full track objects
@@ -74981,8 +74987,10 @@ var Playlist = function (_React$Component) {
 						_react2.default.createElement(
 							'li',
 							null,
-							playlist.tracks_total ? playlist.tracks_total : playlist.tracks ? playlist.tracks.length : '0',
-							' tracks,\xA0',
+							playlist.tracks_total ? playlist.tracks_total : '0',
+							' tracks',
+							playlist.tracks_total && playlist.tracks_total > 0 ? ',' : null,
+							'\xA0',
 							_react2.default.createElement(_Dater2.default, { type: 'total-time', data: playlist.tracks })
 						),
 						!this.props.slim_mode && playlist.followers !== undefined ? _react2.default.createElement(
@@ -75040,7 +75048,12 @@ var Playlist = function (_React$Component) {
 }(_react2.default.Component);
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
+
+	// Decode the URI, and then re-encode all the spaces
+	// This is needed as Mopidy encodes spaces in playlist URIs (but not other characters)
 	var uri = decodeURIComponent(ownProps.match.params.uri);
+	uri = uri.replace(/\s/g, '%20');
+
 	return {
 		uri: uri,
 		allow_reporting: state.ui.allow_reporting,
@@ -89627,7 +89640,12 @@ var EditPlaylist = function (_React$Component) {
 }(_react2.default.Component);
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
+
+	// Decode the URI, and then re-encode all the spaces
+	// This is needed as Mopidy encodes spaces in playlist URIs (but not other characters)
 	var uri = decodeURIComponent(ownProps.match.params.uri);
+	uri = uri.replace(/\s/g, '%20');
+
 	return {
 		uri: uri,
 		mopidy_connected: state.mopidy.connected,
