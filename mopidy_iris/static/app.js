@@ -73217,7 +73217,7 @@ var Album = function (_React$Component) {
 							'p',
 							null,
 							'Could not find album with URI "',
-							this.props.uri,
+							encodeURIComponent(this.props.uri),
 							'"'
 						)
 					);
@@ -73844,7 +73844,7 @@ var Artist = function (_React$Component) {
 							'p',
 							null,
 							'Could not find artist with URI "',
-							this.props.uri,
+							encodeURIComponent(this.props.uri),
 							'"'
 						)
 					);
@@ -74915,7 +74915,7 @@ var Playlist = function (_React$Component) {
 							'p',
 							null,
 							'Could not find playlist with URI "',
-							this.props.uri,
+							encodeURIComponent(this.props.uri),
 							'"'
 						)
 					);
@@ -75147,15 +75147,15 @@ var User = function (_React$Component) {
 		key: 'componentDidMount',
 		value: function componentDidMount() {
 			this.setWindowTitle();
-			this.props.coreActions.loadUser(this.props.match.params.uri);
-			this.props.coreActions.loadUserPlaylists(this.props.match.params.uri);
+			this.props.coreActions.loadUser(this.props.uri);
+			this.props.coreActions.loadUserPlaylists(this.props.uri);
 		}
 	}, {
 		key: 'componentWillReceiveProps',
 		value: function componentWillReceiveProps(nextProps) {
-			if (nextProps.match.params.uri != this.props.match.params.uri) {
-				this.props.coreActions.loadUser(nextProps.match.params.uri);
-				this.props.coreActions.loadUserPlaylists(this.props.match.params.uri);
+			if (nextProps.uri != this.props.uri) {
+				this.props.coreActions.loadUser(nextProps.uri);
+				this.props.coreActions.loadUserPlaylists(this.props.uri);
 			}
 
 			if (!this.props.user && nextProps.user) {
@@ -75178,14 +75178,14 @@ var User = function (_React$Component) {
 		value: function loadMore() {
 			this.props.spotifyActions.getMore(this.props.user.playlists_more, {
 				parent_type: 'user',
-				parent_key: this.props.match.params.uri,
+				parent_key: this.props.uri,
 				records_type: 'playlist'
 			});
 		}
 	}, {
 		key: 'isMe',
 		value: function isMe() {
-			var userid = helpers.getFromUri('userid', this.props.match.params.uri);
+			var userid = helpers.getFromUri('userid', this.props.uri);
 			return this.props.me && this.props.me.id && this.props.me.id == userid;
 		}
 	}, {
@@ -75193,7 +75193,7 @@ var User = function (_React$Component) {
 		value: function render() {
 			var _this2 = this;
 
-			var user_id = helpers.getFromUri('userid', this.props.match.params.uri);
+			var user_id = helpers.getFromUri('userid', this.props.uri);
 
 			if (!this.props.user) {
 				if (helpers.isLoading(this.props.load_queue, ['spotify_users/' + user_id, 'spotify_users/' + user_id + '/playlists/?'])) {
@@ -75210,7 +75210,7 @@ var User = function (_React$Component) {
 							'p',
 							null,
 							'Could not find user with URI "',
-							this.props.uri,
+							encodeURIComponent(this.props.uri),
 							'"'
 						)
 					);
@@ -75305,8 +75305,9 @@ var User = function (_React$Component) {
 }(_react2.default.Component);
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
-	var uri = ownProps.match.params.uri;
+	var uri = decodeURIComponent(ownProps.match.params.uri);
 	return {
+		uri: uri,
 		me: state.spotify.me,
 		load_queue: state.ui.load_queue,
 		spotify_authorized: state.spotify.authorization,
@@ -75640,7 +75641,7 @@ var Track = function (_React$Component) {
 						'p',
 						null,
 						'Could not find track with URI "',
-						this.props.uri,
+						encodeURIComponent(this.props.uri),
 						'"'
 					)
 				);

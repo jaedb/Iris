@@ -184,7 +184,7 @@ class Track extends React.Component{
 		} else {
 			return (
 				<ErrorMessage type="not-found" title="Not found">
-					<p>Could not find track with URI "{this.props.uri}"</p>
+					<p>Could not find track with URI "{encodeURIComponent(this.props.uri)}"</p>
 				</ErrorMessage>
 			);
 		}

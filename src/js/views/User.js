@@ -26,14 +26,14 @@ class User extends React.Component{
 
 	componentDidMount(){
 		this.setWindowTitle();
-		this.props.coreActions.loadUser(this.props.match.params.uri);
-		this.props.coreActions.loadUserPlaylists(this.props.match.params.uri);
+		this.props.coreActions.loadUser(this.props.uri);
+		this.props.coreActions.loadUserPlaylists(this.props.uri);
 	}
 
 	componentWillReceiveProps(nextProps){
-		if (nextProps.match.params.uri != this.props.match.params.uri){
-			this.props.coreActions.loadUser(nextProps.match.params.uri);
-			this.props.coreActions.loadUserPlaylists(this.props.match.params.uri);
+		if (nextProps.uri != this.props.uri){
+			this.props.coreActions.loadUser(nextProps.uri);
+			this.props.coreActions.loadUserPlaylists(this.props.uri);
 		}
 
 		if (!this.props.user && nextProps.user){
@@ -54,19 +54,19 @@ class User extends React.Component{
 			this.props.user.playlists_more,
 			{
 				parent_type: 'user',
-				parent_key: this.props.match.params.uri,
+				parent_key: this.props.uri,
 				records_type: 'playlist'
 			}
 		);
 	}
 
 	isMe(){
-		let userid = helpers.getFromUri('userid',this.props.match.params.uri);
+		let userid = helpers.getFromUri('userid',this.props.uri);
 		return (this.props.me && this.props.me.id && this.props.me.id == userid);
 	}
 
 	render(){
-		var user_id = helpers.getFromUri('userid',this.props.match.params.uri);
+		var user_id = helpers.getFromUri('userid',this.props.uri);
 
 		if (!this.props.user){
 			if (helpers.isLoading(this.props.load_queue,['spotify_users/'+user_id,'spotify_users/'+user_id+'/playlists/?'])){
@@ -78,7 +78,7 @@ class User extends React.Component{
 			} else {
 				return (
 					<ErrorMessage type="not-found" title="Not found">
-						<p>Could not find user with URI "{this.props.uri}"</p>
+						<p>Could not find user with URI "{encodeURIComponent(this.props.uri)}"</p>
 					</ErrorMessage>
 				);
 			}
@@ -130,8 +130,9 @@ class User extends React.Component{
 }
 
 const mapStateToProps = (state, ownProps) => {
-	var uri = ownProps.match.params.uri;
+	var uri = decodeURIComponent(ownProps.match.params.uri);
 	return {
+		uri: uri,
 		me: state.spotify.me,
 		load_queue: state.ui.load_queue,
 		spotify_authorized: state.spotify.authorization,
