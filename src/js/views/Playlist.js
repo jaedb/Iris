@@ -47,6 +47,12 @@ class Playlist extends React.Component{
 	}
 
 	componentWillReceiveProps(nextProps){
+
+		// Follow a URI moved_to instruction
+		if (this.props.playlist && nextProps.playlist && this.props.playlist.moved_to != nextProps.playlist.moved_to){
+			this.props.history.push('/playlist/'+encodeURIComponent(nextProps.playlist.moved_to));
+		}
+
 		if (nextProps.uri != this.props.uri){
 			this.props.coreActions.loadPlaylist(nextProps.uri);
 		} else if (!this.props.mopidy_connected && nextProps.mopidy_connected){

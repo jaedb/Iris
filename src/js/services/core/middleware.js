@@ -233,24 +233,6 @@ const CoreMiddleware = (function(){
              * Playlist manipulation
              **/
 
-            case 'PLAYLIST_KEY_UPDATED':
-                var playlists = Object.assign({}, core.playlists);
-
-                if (playlists[action.key] === undefined){
-                    dispatch(coreActions.handleException("Cannot change key of playlist not in index"));
-                }
-
-                // Delete our old playlist by key, and add by new key
-                var playlist = Object.assign({}, playlists[action.key]);
-                delete playlists[action.key];
-                playlists[action.new_key] = playlist;
-
-                store.dispatch({
-                    type: 'UPDATE_PLAYLISTS_INDEX',
-                    playlists: playlists
-                });
-                break;
-
             case 'PLAYLIST_TRACKS':
                 var tracks = helpers.formatTracks(action.tracks);
                 action.tracks_uris = helpers.arrayOf('uri', tracks);

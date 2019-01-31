@@ -1655,29 +1655,38 @@ const MopidyMiddleware = (function(){
                 break
 
             case 'MOPIDY_SAVE_PLAYLIST':
-                var uri = action.key;
+
+                // Even though we have the full playlist in our index, our "playlists.save" request
+                // requires a Mopidy playlist object (with updates)
                 request(socket, store, 'playlists.lookup', { uri: action.key })
                     .then(response => {
-                        var playlist = Object.assign({}, response, { name: action.name })
-                        request(socket, store, 'playlists.save', { playlist: playlist })
+
+                        var mopidy_playlist = Object.assign({}, response, { name: action.name });
+
+                        request(socket, store, 'playlists.save', { playlist: mopidy_playlist })
                             .then(response => {
 
-                                store.dispatch(coreActions.playlistLoaded(playlist));
+                            	// Overwrite our playlist with the response to our save
+                            	// This is essential to get the updated URI from Mopidy
+                            	var playlist = Object.assign(
+                            		{}, 
+                            		store.getState().core.playlists[action.key], 
+                            		{
+                            			uri: response.uri,
+                            			name: response.name
+                            		}
+                            	);
 
-                                // When we rename a playlist, the URI also changes to reflect the name change
-                                // We need to update our index, as well as redirect our current page URL
-                                if (action.key != response.uri){
-                                    store.dispatch({
-                                        type: 'PLAYLIST_KEY_UPDATED',
-                                        key: action.key,
-                                        new_key: response.uri
-                                    });
+                                // When we rename a playlist, the URI also changes to reflect the name change.
+                                // We need to update our index, as well as redirect our current page URL.
+                                if (action.key !== playlist.uri){
 
-                                	console.log("Updated playlist key");
-                                    // TODO: Somehow need to push new URL. This is only needed to prevent issues
-                                    // when the user refreshes their browser (as the URI is now old)
-                                    // history.push('/playlist/'+encodeURIComponent(response.uri));
+                                	// Remove old playlist (by old key/uri) from index
+                                	// By providing the new key, the old playlist gets replaced with a redirector object
+                                    store.dispatch(coreActions.removeFromIndex('playlists', action.key, playlist.uri));
                                 }
+
+                                store.dispatch(coreActions.playlistLoaded(playlist));
 
                                 store.dispatch(uiActions.createNotification({type: 'info', content: 'Playlist saved'}));
                             })

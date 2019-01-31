@@ -213,6 +213,15 @@ export function loadedMore(parent_type, parent_key, records_type, records_data){
     }
 }
 
+export function removeFromIndex(index_name, key, new_key = null){
+    return { 
+        type: 'REMOVE_FROM_INDEX',
+        index_name: index_name,
+        key: key,
+        new_key: new_key
+    }
+}
+
 
 
 /**

@@ -5704,6 +5704,7 @@ exports.userLoaded = userLoaded;
 exports.usersLoaded = usersLoaded;
 exports.userPlaylistsLoaded = userPlaylistsLoaded;
 exports.loadedMore = loadedMore;
+exports.removeFromIndex = removeFromIndex;
 exports.reorderPlaylistTracks = reorderPlaylistTracks;
 exports.savePlaylist = savePlaylist;
 exports.createPlaylist = createPlaylist;
@@ -5940,6 +5941,17 @@ function loadedMore(parent_type, parent_key, records_type, records_data) {
         parent_key: parent_key,
         records_type: records_type,
         records_data: records_data
+    };
+}
+
+function removeFromIndex(index_name, key) {
+    var new_key = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+
+    return {
+        type: 'REMOVE_FROM_INDEX',
+        index_name: index_name,
+        key: key,
+        new_key: new_key
     };
 }
 
@@ -55556,6 +55568,29 @@ function reducer() {
             return Object.assign({}, core, { users: users });
 
         /**
+         * Remove an item from an index
+         **/
+
+        case 'REMOVE_FROM_INDEX':
+            var index = Object.assign({}, core[action.index_name]);
+
+            // We have a new key to redirect to
+            if (action.new_key) {
+                index[action.key] = {
+                    moved_to: action.new_key
+
+                    // No redirection, so just a clean delete
+                };
+            } else {
+                delete index[action.key];
+            }
+
+            var updated_core = {};
+            updated_core[action.index_name] = index;
+
+            return Object.assign({}, core, updated_core);
+
+        /**
          * Playlists
          **/
 
@@ -57117,24 +57152,6 @@ var CoreMiddleware = function () {
                     /**
                      * Playlist manipulation
                      **/
-
-                    case 'PLAYLIST_KEY_UPDATED':
-                        var playlists = Object.assign({}, core.playlists);
-
-                        if (playlists[action.key] === undefined) {
-                            dispatch(coreActions.handleException("Cannot change key of playlist not in index"));
-                        }
-
-                        // Delete our old playlist by key, and add by new key
-                        var playlist = Object.assign({}, playlists[action.key]);
-                        delete playlists[action.key];
-                        playlists[action.new_key] = playlist;
-
-                        store.dispatch({
-                            type: 'UPDATE_PLAYLISTS_INDEX',
-                            playlists: playlists
-                        });
-                        break;
 
                     case 'PLAYLIST_TRACKS':
                         var tracks = helpers.formatTracks(action.tracks);
@@ -61173,27 +61190,32 @@ var MopidyMiddleware = function () {
                         break;
 
                     case 'MOPIDY_SAVE_PLAYLIST':
-                        var uri = action.key;
+
+                        // Even though we have the full playlist in our index, our "playlists.save" request
+                        // requires a Mopidy playlist object (with updates)
                         request(socket, store, 'playlists.lookup', { uri: action.key }).then(function (response) {
-                            var playlist = Object.assign({}, response, { name: action.name });
-                            request(socket, store, 'playlists.save', { playlist: playlist }).then(function (response) {
+
+                            var mopidy_playlist = Object.assign({}, response, { name: action.name });
+
+                            request(socket, store, 'playlists.save', { playlist: mopidy_playlist }).then(function (response) {
+
+                                // Overwrite our playlist with the response to our save
+                                // This is essential to get the updated URI from Mopidy
+                                var playlist = Object.assign({}, store.getState().core.playlists[action.key], {
+                                    uri: response.uri,
+                                    name: response.name
+                                });
+
+                                // When we rename a playlist, the URI also changes to reflect the name change.
+                                // We need to update our index, as well as redirect our current page URL.
+                                if (action.key !== playlist.uri) {
+
+                                    // Remove old playlist (by old key/uri) from index
+                                    // By providing the new key, the old playlist gets replaced with a redirector object
+                                    store.dispatch(coreActions.removeFromIndex('playlists', action.key, playlist.uri));
+                                }
 
                                 store.dispatch(coreActions.playlistLoaded(playlist));
-
-                                // When we rename a playlist, the URI also changes to reflect the name change
-                                // We need to update our index, as well as redirect our current page URL
-                                if (action.key != response.uri) {
-                                    store.dispatch({
-                                        type: 'PLAYLIST_KEY_UPDATED',
-                                        key: action.key,
-                                        new_key: response.uri
-                                    });
-
-                                    console.log("Updated playlist key");
-                                    // TODO: Somehow need to push new URL. This is only needed to prevent issues
-                                    // when the user refreshes their browser (as the URI is now old)
-                                    // history.push('/playlist/'+encodeURIComponent(response.uri));
-                                }
 
                                 store.dispatch(uiActions.createNotification({ type: 'info', content: 'Playlist saved' }));
                             });
@@ -74724,6 +74746,12 @@ var Playlist = function (_React$Component) {
 	}, {
 		key: 'componentWillReceiveProps',
 		value: function componentWillReceiveProps(nextProps) {
+
+			// Follow a URI moved_to instruction
+			if (this.props.playlist && nextProps.playlist && this.props.playlist.moved_to != nextProps.playlist.moved_to) {
+				this.props.history.push('/playlist/' + encodeURIComponent(nextProps.playlist.moved_to));
+			}
+
 			if (nextProps.uri != this.props.uri) {
 				this.props.coreActions.loadPlaylist(nextProps.uri);
 			} else if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
