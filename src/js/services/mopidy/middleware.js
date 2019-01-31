@@ -1666,13 +1666,17 @@ const MopidyMiddleware = (function(){
 
                                 // When we rename a playlist, the URI also changes to reflect the name change
                                 // We need to update our index, as well as redirect our current page URL
-                                if (action.key != response.key){
+                                if (action.key != response.uri){
                                     store.dispatch({
                                         type: 'PLAYLIST_KEY_UPDATED',
                                         key: action.key,
                                         new_key: response.uri
                                     });
-                                    this.props.history.push('/playlist/'+encodeURIComponent(response.uri));
+
+                                	console.log("Updated playlist key");
+                                    // TODO: Somehow need to push new URL. This is only needed to prevent issues
+                                    // when the user refreshes their browser (as the URI is now old)
+                                    // history.push('/playlist/'+encodeURIComponent(response.uri));
                                 }
 
                                 store.dispatch(uiActions.createNotification({type: 'info', content: 'Playlist saved'}));
