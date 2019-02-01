@@ -205,6 +205,19 @@ var setStorage = exports.setStorage = function setStorage(key, value) {
 };
 
 /**
+ * Check if an image URL is cached or not
+ * Useful for bypassing load animations for cached assets (eg parallax)
+ *
+ * @param url String
+ * @return Boolean
+ **/
+var isCached = exports.isCached = function isCached(url) {
+	var image = new Image();
+	image.src = url;
+	return image.complete;
+};
+
+/**
  * Digest an array of Mopidy image objects into a universal format. We also re-write
  * image URLs to be absolute to the mopidy server (required for proxy setups).
  *
@@ -5588,7 +5601,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouterDom = __webpack_require__(32);
+var _reactRouterDom = __webpack_require__(28);
 
 var _helpers = __webpack_require__(1);
 
@@ -5627,7 +5640,11 @@ var _class = function (_React$Component) {
 	}, {
 		key: 'isLinkActive',
 		value: function isLinkActive(link) {
-			return this.props.history.location.pathname.startsWith(link);
+			if (this.props.exact) {
+				return this.props.history.location.pathname === link;
+			} else {
+				return this.props.history.location.pathname.startsWith(link);
+			}
 		}
 	}, {
 		key: 'render',
@@ -19646,6 +19663,69 @@ exports.default = DropdownField;
 
 /***/ }),
 /* 28 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__BrowserRouter__ = __webpack_require__(150);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "BrowserRouter", function() { return __WEBPACK_IMPORTED_MODULE_0__BrowserRouter__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__HashRouter__ = __webpack_require__(157);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "HashRouter", function() { return __WEBPACK_IMPORTED_MODULE_1__HashRouter__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Link__ = __webpack_require__(94);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Link", function() { return __WEBPACK_IMPORTED_MODULE_2__Link__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__MemoryRouter__ = __webpack_require__(158);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "MemoryRouter", function() { return __WEBPACK_IMPORTED_MODULE_3__MemoryRouter__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__NavLink__ = __webpack_require__(160);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "NavLink", function() { return __WEBPACK_IMPORTED_MODULE_4__NavLink__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Prompt__ = __webpack_require__(162);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Prompt", function() { return __WEBPACK_IMPORTED_MODULE_5__Prompt__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Redirect__ = __webpack_require__(164);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Redirect", function() { return __WEBPACK_IMPORTED_MODULE_6__Redirect__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__Route__ = __webpack_require__(95);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Route", function() { return __WEBPACK_IMPORTED_MODULE_7__Route__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__Router__ = __webpack_require__(66);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Router", function() { return __WEBPACK_IMPORTED_MODULE_8__Router__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__StaticRouter__ = __webpack_require__(166);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "StaticRouter", function() { return __WEBPACK_IMPORTED_MODULE_9__StaticRouter__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__Switch__ = __webpack_require__(168);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Switch", function() { return __WEBPACK_IMPORTED_MODULE_10__Switch__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__generatePath__ = __webpack_require__(170);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "generatePath", function() { return __WEBPACK_IMPORTED_MODULE_11__generatePath__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__matchPath__ = __webpack_require__(171);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "matchPath", function() { return __WEBPACK_IMPORTED_MODULE_12__matchPath__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__withRouter__ = __webpack_require__(172);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "withRouter", function() { return __WEBPACK_IMPORTED_MODULE_13__withRouter__["a"]; });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/***/ }),
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19715,7 +19795,7 @@ module.exports = warning;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6)))
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(process) {/**
@@ -19750,7 +19830,7 @@ if (process.env.NODE_ENV !== 'production') {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(6)))
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19765,6 +19845,12 @@ var _createClass = function () { function defineProperties(target, props) { for 
 var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
+
+var _helpers = __webpack_require__(1);
+
+var helpers = _interopRequireWildcard(_helpers);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -19790,32 +19876,29 @@ var Parallax = function (_React$Component) {
 	}
 
 	_createClass(Parallax, [{
-		key: "componentWillMount",
+		key: 'componentWillMount',
 		value: function componentWillMount() {
 			if (this.props.image) {
 				this.loadImage(this.props.image);
 			}
 		}
 	}, {
-		key: "componentWillReceiveProps",
+		key: 'componentWillReceiveProps',
 		value: function componentWillReceiveProps(nextProps) {
 			if (nextProps.image != this.state.url) {
 				this.loadImage(nextProps.image);
 			}
 		}
 	}, {
-		key: "loadImage",
+		key: 'loadImage',
 		value: function loadImage(url) {
-
-			// Reset our image to nothing
-			// This is needed when navigating to new view, but not unmounting the current components
-			// ie one artist to another
-			this.setState({
-				loaded: false,
-				url: null
-			});
-
 			if (url && url !== "") {
+
+				this.setState({
+					loaded: helpers.isCached(url),
+					url: url
+				});
+
 				var self = this;
 				var imageObject = new Image();
 				imageObject.src = url;
@@ -19826,10 +19909,17 @@ var Parallax = function (_React$Component) {
 						url: url
 					});
 				};
+
+				// No Image, so reset it
+			} else {
+				this.setState({
+					loaded: false,
+					url: null
+				});
 			}
 		}
 	}, {
-		key: "render",
+		key: 'render',
 		value: function render() {
 			var class_name = "parallax preserve-3d";
 			if (this.props.blur) {
@@ -19850,13 +19940,13 @@ var Parallax = function (_React$Component) {
 			}
 
 			return _react2.default.createElement(
-				"div",
+				'div',
 				{ className: class_name },
 				_react2.default.createElement(
-					"div",
-					{ className: "parallax__layer preserve-3d" },
-					_react2.default.createElement("div", { className: "parallax__image", style: style }),
-					_react2.default.createElement("div", { className: "parallax__overlay" })
+					'div',
+					{ className: 'parallax__layer preserve-3d' },
+					_react2.default.createElement('div', { className: 'parallax__image', style: style }),
+					_react2.default.createElement('div', { className: 'parallax__overlay' })
 				)
 			);
 		}
@@ -19868,7 +19958,7 @@ var Parallax = function (_React$Component) {
 exports.default = Parallax;
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19962,69 +20052,6 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 
 	return to;
 };
-
-
-/***/ }),
-/* 32 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__BrowserRouter__ = __webpack_require__(150);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "BrowserRouter", function() { return __WEBPACK_IMPORTED_MODULE_0__BrowserRouter__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__HashRouter__ = __webpack_require__(157);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "HashRouter", function() { return __WEBPACK_IMPORTED_MODULE_1__HashRouter__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Link__ = __webpack_require__(94);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Link", function() { return __WEBPACK_IMPORTED_MODULE_2__Link__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__MemoryRouter__ = __webpack_require__(158);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "MemoryRouter", function() { return __WEBPACK_IMPORTED_MODULE_3__MemoryRouter__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__NavLink__ = __webpack_require__(160);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "NavLink", function() { return __WEBPACK_IMPORTED_MODULE_4__NavLink__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Prompt__ = __webpack_require__(162);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Prompt", function() { return __WEBPACK_IMPORTED_MODULE_5__Prompt__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Redirect__ = __webpack_require__(164);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Redirect", function() { return __WEBPACK_IMPORTED_MODULE_6__Redirect__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__Route__ = __webpack_require__(95);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Route", function() { return __WEBPACK_IMPORTED_MODULE_7__Route__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__Router__ = __webpack_require__(66);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Router", function() { return __WEBPACK_IMPORTED_MODULE_8__Router__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__StaticRouter__ = __webpack_require__(166);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "StaticRouter", function() { return __WEBPACK_IMPORTED_MODULE_9__StaticRouter__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__Switch__ = __webpack_require__(168);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Switch", function() { return __WEBPACK_IMPORTED_MODULE_10__Switch__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__generatePath__ = __webpack_require__(170);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "generatePath", function() { return __WEBPACK_IMPORTED_MODULE_11__generatePath__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__matchPath__ = __webpack_require__(171);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "matchPath", function() { return __WEBPACK_IMPORTED_MODULE_12__matchPath__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__withRouter__ = __webpack_require__(172);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "withRouter", function() { return __WEBPACK_IMPORTED_MODULE_13__withRouter__["a"]; });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 /***/ }),
@@ -20907,7 +20934,7 @@ var _reactDom = __webpack_require__(50);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _reactRouterDom = __webpack_require__(32);
+var _reactRouterDom = __webpack_require__(28);
 
 var _helpers = __webpack_require__(1);
 
@@ -23118,7 +23145,7 @@ var createTransitionManager = function createTransitionManager() {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_invariant__);
@@ -23777,7 +23804,7 @@ var createTransitionManager = function createTransitionManager() {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_invariant__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types__ = __webpack_require__(30);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_prop_types__);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -25030,7 +25057,7 @@ Link.contextTypes = {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_invariant__);
@@ -26101,7 +26128,7 @@ var generatePath = function generatePath() {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_invariant__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types__ = __webpack_require__(30);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_prop_types__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__matchPath__ = __webpack_require__(80);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -27096,7 +27123,7 @@ var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(2);
 
-var _reactRouterDom = __webpack_require__(32);
+var _reactRouterDom = __webpack_require__(28);
 
 var _bootstrap = __webpack_require__(175);
 
@@ -27137,7 +27164,7 @@ _reactDom2.default.render(_react2.default.createElement(
  * LICENSE file in the root directory of this source tree.
  */
 
-var k=__webpack_require__(31),n="function"===typeof Symbol&&Symbol.for,p=n?Symbol.for("react.element"):60103,q=n?Symbol.for("react.portal"):60106,r=n?Symbol.for("react.fragment"):60107,t=n?Symbol.for("react.strict_mode"):60108,u=n?Symbol.for("react.profiler"):60114,v=n?Symbol.for("react.provider"):60109,w=n?Symbol.for("react.context"):60110,x=n?Symbol.for("react.concurrent_mode"):60111,y=n?Symbol.for("react.forward_ref"):60112,z=n?Symbol.for("react.suspense"):60113,A=n?Symbol.for("react.memo"):
+var k=__webpack_require__(32),n="function"===typeof Symbol&&Symbol.for,p=n?Symbol.for("react.element"):60103,q=n?Symbol.for("react.portal"):60106,r=n?Symbol.for("react.fragment"):60107,t=n?Symbol.for("react.strict_mode"):60108,u=n?Symbol.for("react.profiler"):60114,v=n?Symbol.for("react.provider"):60109,w=n?Symbol.for("react.context"):60110,x=n?Symbol.for("react.concurrent_mode"):60111,y=n?Symbol.for("react.forward_ref"):60112,z=n?Symbol.for("react.suspense"):60113,A=n?Symbol.for("react.memo"):
 60115,B=n?Symbol.for("react.lazy"):60116,C="function"===typeof Symbol&&Symbol.iterator;function aa(a,b,e,c,d,g,h,f){if(!a){a=void 0;if(void 0===b)a=Error("Minified exception occurred; use the non-minified dev environment for the full error message and additional helpful warnings.");else{var l=[e,c,d,g,h,f],m=0;a=Error(b.replace(/%s/g,function(){return l[m++]}));a.name="Invariant Violation"}a.framesToPop=1;throw a;}}
 function D(a){for(var b=arguments.length-1,e="https://reactjs.org/docs/error-decoder.html?invariant="+a,c=0;c<b;c++)e+="&args[]="+encodeURIComponent(arguments[c+1]);aa(!1,"Minified React error #"+a+"; visit %s for the full message or use the non-minified dev environment for full errors and additional helpful warnings. ",e)}var E={isMounted:function(){return!1},enqueueForceUpdate:function(){},enqueueReplaceState:function(){},enqueueSetState:function(){}},F={};
 function G(a,b,e){this.props=a;this.context=b;this.refs=F;this.updater=e||E}G.prototype.isReactComponent={};G.prototype.setState=function(a,b){"object"!==typeof a&&"function"!==typeof a&&null!=a?D("85"):void 0;this.updater.enqueueSetState(this,a,b,"setState")};G.prototype.forceUpdate=function(a){this.updater.enqueueForceUpdate(this,a,"forceUpdate")};function H(){}H.prototype=G.prototype;function I(a,b,e){this.props=a;this.context=b;this.refs=F;this.updater=e||E}var J=I.prototype=new H;
@@ -27176,7 +27203,7 @@ if (process.env.NODE_ENV !== "production") {
   (function() {
 'use strict';
 
-var _assign = __webpack_require__(31);
+var _assign = __webpack_require__(32);
 var checkPropTypes = __webpack_require__(118);
 
 // TODO: this is special because it gets imported during build.
@@ -29180,7 +29207,7 @@ module.exports = ReactPropTypesSecret;
 /*
  Modernizr 3.0.0pre (Custom Build) | MIT
 */
-var aa=__webpack_require__(0),n=__webpack_require__(31),ba=__webpack_require__(86);function ca(a,b,c,d,e,f,g,h){if(!a){a=void 0;if(void 0===b)a=Error("Minified exception occurred; use the non-minified dev environment for the full error message and additional helpful warnings.");else{var k=[c,d,e,f,g,h],l=0;a=Error(b.replace(/%s/g,function(){return k[l++]}));a.name="Invariant Violation"}a.framesToPop=1;throw a;}}
+var aa=__webpack_require__(0),n=__webpack_require__(32),ba=__webpack_require__(86);function ca(a,b,c,d,e,f,g,h){if(!a){a=void 0;if(void 0===b)a=Error("Minified exception occurred; use the non-minified dev environment for the full error message and additional helpful warnings.");else{var k=[c,d,e,f,g,h],l=0;a=Error(b.replace(/%s/g,function(){return k[l++]}));a.name="Invariant Violation"}a.framesToPop=1;throw a;}}
 function t(a){for(var b=arguments.length-1,c="https://reactjs.org/docs/error-decoder.html?invariant="+a,d=0;d<b;d++)c+="&args[]="+encodeURIComponent(arguments[d+1]);ca(!1,"Minified React error #"+a+"; visit %s for the full message or use the non-minified dev environment for full errors and additional helpful warnings. ",c)}aa?void 0:t("227");function da(a,b,c,d,e,f,g,h,k){var l=Array.prototype.slice.call(arguments,3);try{b.apply(c,l)}catch(m){this.onError(m)}}
 var ea=!1,fa=null,ha=!1,ia=null,ja={onError:function(a){ea=!0;fa=a}};function ka(a,b,c,d,e,f,g,h,k){ea=!1;fa=null;da.apply(ja,arguments)}function la(a,b,c,d,e,f,g,h,k){ka.apply(this,arguments);if(ea){if(ea){var l=fa;ea=!1;fa=null}else t("198"),l=void 0;ha||(ha=!0,ia=l)}}var ma=null,na={};
 function oa(){if(ma)for(var a in na){var b=na[a],c=ma.indexOf(a);-1<c?void 0:t("96",a);if(!pa[c]){b.extractEvents?void 0:t("97",a);pa[c]=b;c=b.eventTypes;for(var d in c){var e=void 0;var f=c[d],g=b,h=d;qa.hasOwnProperty(h)?t("99",h):void 0;qa[h]=f;var k=f.phasedRegistrationNames;if(k){for(e in k)k.hasOwnProperty(e)&&ra(k[e],g,h);e=!0}else f.registrationName?(ra(f.registrationName,g,h),e=!0):e=!1;e?void 0:t("98",d,a)}}}}
@@ -30182,7 +30209,7 @@ if (process.env.NODE_ENV !== "production") {
 'use strict';
 
 var React = __webpack_require__(0);
-var _assign = __webpack_require__(31);
+var _assign = __webpack_require__(32);
 var checkPropTypes = __webpack_require__(124);
 var scheduler = __webpack_require__(86);
 var tracing = __webpack_require__(126);
@@ -50987,7 +51014,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 
 
-var assign = __webpack_require__(31);
+var assign = __webpack_require__(32);
 
 var ReactPropTypesSecret = __webpack_require__(58);
 var checkPropTypes = __webpack_require__(132);
@@ -52604,7 +52631,7 @@ function verifySubselectors(mapStateToProps, mapDispatchToProps, mergeProps, dis
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react__);
@@ -52679,7 +52706,7 @@ BrowserRouter.propTypes = {
 
 
 
-var assign = __webpack_require__(31);
+var assign = __webpack_require__(32);
 
 var ReactPropTypesSecret = __webpack_require__(62);
 var checkPropTypes = __webpack_require__(152);
@@ -54191,7 +54218,7 @@ var createMemoryHistory = function createMemoryHistory() {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react__);
@@ -54267,7 +54294,7 @@ HashRouter.propTypes = {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react__);
@@ -54545,7 +54572,7 @@ Prompt.contextTypes = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_warning__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_warning__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_invariant__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_invariant__);
@@ -54681,7 +54708,7 @@ Redirect.contextTypes = {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_invariant__);
@@ -54862,7 +54889,7 @@ StaticRouter.childContextTypes = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_warning__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_warning__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_invariant__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_invariant__);
@@ -56164,8 +56191,8 @@ function reducer() {
             var library_playlists = [];
             if (mopidy.library_playlists) {
                 library_playlists = Object.assign([], mopidy.library_playlists);
-                library_playlists.push(action.key);
             }
+            library_playlists.push(action.key);
             return Object.assign({}, mopidy, { library_playlists: library_playlists });
 
         case 'MOPIDY_LIBRARY_PLAYLIST_DELETED':
@@ -61265,13 +61292,10 @@ var MopidyMiddleware = function () {
                     case 'MOPIDY_CREATE_PLAYLIST':
                         request(socket, store, 'playlists.create', { name: action.name, uri_scheme: action.scheme }).then(function (response) {
                             store.dispatch(uiActions.createNotification({ type: 'info', content: 'Created playlist' }));
-
                             store.dispatch(coreActions.playlistLoaded(response));
-
                             store.dispatch({
                                 type: 'MOPIDY_LIBRARY_PLAYLIST_CREATED',
-                                key: action.uri,
-                                playlist: response
+                                key: response.uri
                             });
                         });
                         break;
@@ -61279,6 +61303,7 @@ var MopidyMiddleware = function () {
                     case 'MOPIDY_DELETE_PLAYLIST':
                         request(socket, store, 'playlists.delete', { uri: action.uri }).then(function (response) {
                             store.dispatch(uiActions.createNotification({ content: 'Deleted playlist' }));
+                            store.dispatch(coreActions.removeFromIndex('playlists', action.uri));
                             store.dispatch({
                                 type: 'MOPIDY_LIBRARY_PLAYLIST_DELETED',
                                 key: action.uri
@@ -66185,7 +66210,7 @@ var _reactDom2 = _interopRequireDefault(_reactDom);
 
 var _redux = __webpack_require__(2);
 
-var _reactRouterDom = __webpack_require__(32);
+var _reactRouterDom = __webpack_require__(28);
 
 var _reactRedux = __webpack_require__(4);
 
@@ -66761,7 +66786,7 @@ var App = function (_React$Component) {
 										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/queue/history', component: _QueueHistory2.default }),
 										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/settings/debug', component: _Debug2.default }),
 										_react2.default.createElement(_reactRouterDom.Route, { path: '/settings', component: _Settings2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/search/(:type/:term)?', component: _Search2.default }),
+										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/search/:type?/:term?', component: _Search2.default }),
 										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/album/:uri', component: _Album2.default }),
 										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/artist/:uri/:sub_view?', component: _Artist2.default }),
 										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/playlist/:uri', component: _Playlist2.default }),
@@ -67119,7 +67144,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types__ = __webpack_require__(30);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_prop_types__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_history__ = __webpack_require__(76);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Router__ = __webpack_require__(79);
@@ -67190,7 +67215,7 @@ MemoryRouter.propTypes = {
 
 
 
-var assign = __webpack_require__(31);
+var assign = __webpack_require__(32);
 
 var ReactPropTypesSecret = __webpack_require__(75);
 var checkPropTypes = __webpack_require__(229);
@@ -68704,7 +68729,7 @@ var createMemoryHistory = function createMemoryHistory() {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(30);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_invariant__ = __webpack_require__(40);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_invariant__);
@@ -68795,7 +68820,7 @@ Prompt.contextTypes = {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(30);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_warning__ = __webpack_require__(38);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_warning__);
@@ -68928,7 +68953,7 @@ Redirect.contextTypes = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_invariant__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types__ = __webpack_require__(30);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_prop_types__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_history__ = __webpack_require__(76);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Router__ = __webpack_require__(79);
@@ -69090,7 +69115,7 @@ StaticRouter.childContextTypes = {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(30);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_warning__ = __webpack_require__(38);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_warning__);
@@ -69182,7 +69207,7 @@ Switch.propTypes = {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types__ = __webpack_require__(30);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_prop_types___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_prop_types__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_hoist_non_react_statics__ = __webpack_require__(239);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_hoist_non_react_statics___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_hoist_non_react_statics__);
@@ -73072,7 +73097,7 @@ var _Thumbnail = __webpack_require__(11);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
-var _Parallax = __webpack_require__(30);
+var _Parallax = __webpack_require__(31);
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
 
@@ -73397,7 +73422,7 @@ var _redux = __webpack_require__(2);
 
 var _reactRouter = __webpack_require__(44);
 
-var _reactRouterDom = __webpack_require__(32);
+var _reactRouterDom = __webpack_require__(28);
 
 var _ErrorMessage = __webpack_require__(34);
 
@@ -73427,7 +73452,7 @@ var _Thumbnail = __webpack_require__(11);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
-var _Parallax = __webpack_require__(30);
+var _Parallax = __webpack_require__(31);
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
 
@@ -73933,10 +73958,10 @@ var Artist = function (_React$Component) {
 							_react2.default.createElement(
 								_Link2.default,
 								{
-									nav: true,
 									exact: true,
-									className: 'option',
-									activeClassName: 'active',
+									history: this.props.history,
+									activeClassName: 'sub-views__option--active',
+									className: 'sub-views__option',
 									to: '/artist/' + encodeURIComponent(this.props.uri),
 									scrollTo: 'sub-views-menu' },
 								_react2.default.createElement(
@@ -73948,9 +73973,10 @@ var Artist = function (_React$Component) {
 							this.props.artist.related_artists_uris ? _react2.default.createElement(
 								_Link2.default,
 								{
-									nav: true,
-									className: 'option',
-									activeClassName: 'active',
+									exact: true,
+									history: this.props.history,
+									activeClassName: 'sub-views__option--active',
+									className: 'sub-views__option',
 									to: '/artist/' + encodeURIComponent(this.props.uri) + '/related-artists',
 									scrollTo: 'sub-views-menu' },
 								_react2.default.createElement(
@@ -73962,9 +73988,10 @@ var Artist = function (_React$Component) {
 							_react2.default.createElement(
 								_Link2.default,
 								{
-									nav: true,
-									className: 'option',
-									activeClassName: 'active',
+									exact: true,
+									history: this.props.history,
+									activeClassName: 'sub-views__option--active',
+									className: 'sub-views__option',
 									to: '/artist/' + encodeURIComponent(this.props.uri) + '/about',
 									scrollTo: 'sub-views-menu' },
 								_react2.default.createElement(
@@ -74650,7 +74677,7 @@ var _Thumbnail = __webpack_require__(11);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
-var _Parallax = __webpack_require__(30);
+var _Parallax = __webpack_require__(31);
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
 
@@ -75137,7 +75164,7 @@ var _LazyLoadListener = __webpack_require__(22);
 
 var _LazyLoadListener2 = _interopRequireDefault(_LazyLoadListener);
 
-var _Parallax = __webpack_require__(30);
+var _Parallax = __webpack_require__(31);
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
 
@@ -76037,7 +76064,7 @@ var _Icon = __webpack_require__(5);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _Parallax = __webpack_require__(30);
+var _Parallax = __webpack_require__(31);
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
 
@@ -77078,11 +77105,13 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(4);
 
+var _redux = __webpack_require__(2);
+
+var _reactRouterDom = __webpack_require__(28);
+
 var _Link = __webpack_require__(9);
 
 var _Link2 = _interopRequireDefault(_Link);
-
-var _redux = __webpack_require__(2);
 
 var _Header = __webpack_require__(13);
 
@@ -77216,7 +77245,7 @@ var Search = function (_React$Component) {
 		value: function digestUri() {
 			var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props;
 
-			if (props.params && props.type && props.term) {
+			if (props.type && props.term) {
 				this.setState({
 					type: props.type,
 					term: props.term
@@ -77268,10 +77297,275 @@ var Search = function (_React$Component) {
 			this.props.uiActions.set(data);
 		}
 	}, {
-		key: 'renderResults',
-		value: function renderResults() {
+		key: 'renderArtists',
+		value: function renderArtists(artists, spotify_search_enabled) {
 			var _this2 = this;
 
+			return _react2.default.createElement(
+				'div',
+				null,
+				_react2.default.createElement(
+					'h4',
+					null,
+					_react2.default.createElement(
+						_URILink2.default,
+						{ type: 'search', uri: "search:all:" + this.state.term },
+						'Search'
+					),
+					'\xA0 ',
+					_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
+					'\xA0 Artists'
+				),
+				_react2.default.createElement(
+					'section',
+					{ className: 'grid-wrapper' },
+					_react2.default.createElement(_ArtistGrid2.default, { artists: artists, show_source_icon: true }),
+					_react2.default.createElement(_LazyLoadListener2.default, { enabled: this.props['artists_more'] && spotify_search_enabled, loadMore: function loadMore() {
+							return _this2.loadMore('artists');
+						} })
+				)
+			);
+		}
+	}, {
+		key: 'renderAlbums',
+		value: function renderAlbums(albums, spotify_search_enabled) {
+			var _this3 = this;
+
+			return _react2.default.createElement(
+				'div',
+				null,
+				_react2.default.createElement(
+					'h4',
+					null,
+					_react2.default.createElement(
+						_URILink2.default,
+						{ type: 'search', uri: "search:all:" + this.state.term },
+						'Search'
+					),
+					'\xA0 ',
+					_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
+					'\xA0 Albums'
+				),
+				_react2.default.createElement(
+					'section',
+					{ className: 'grid-wrapper' },
+					_react2.default.createElement(_AlbumGrid2.default, { albums: albums, show_source_icon: true }),
+					_react2.default.createElement(_LazyLoadListener2.default, { enabled: this.props['albums_more'] && spotify_search_enabled, loadMore: function loadMore() {
+							return _this3.loadMore('albums');
+						} })
+				)
+			);
+		}
+	}, {
+		key: 'renderPlaylists',
+		value: function renderPlaylists(playlists, spotify_search_enabled) {
+			var _this4 = this;
+
+			return _react2.default.createElement(
+				'div',
+				null,
+				_react2.default.createElement(
+					'h4',
+					null,
+					_react2.default.createElement(
+						_URILink2.default,
+						{ type: 'search', uri: "search:all:" + this.state.term },
+						'Search'
+					),
+					'\xA0 ',
+					_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
+					'\xA0 Playlists'
+				),
+				_react2.default.createElement(
+					'section',
+					{ className: 'grid-wrapper' },
+					_react2.default.createElement(_PlaylistGrid2.default, { playlists: playlists, show_source_icon: true }),
+					_react2.default.createElement(_LazyLoadListener2.default, { enabled: this.props['playlists_more'] && spotify_search_enabled, loadMore: function loadMore() {
+							return _this4.loadMore('playlists');
+						} })
+				)
+			);
+		}
+	}, {
+		key: 'renderTracks',
+		value: function renderTracks(tracks, spotify_search_enabled) {
+			var _this5 = this;
+
+			return _react2.default.createElement(
+				'div',
+				null,
+				_react2.default.createElement(
+					'h4',
+					null,
+					_react2.default.createElement(
+						_URILink2.default,
+						{ type: 'search', uri: "search:all:" + this.state.term },
+						'Search'
+					),
+					'\xA0 ',
+					_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
+					'\xA0 Tracks'
+				),
+				_react2.default.createElement(
+					'section',
+					{ className: 'list-wrapper' },
+					_react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: 'iris:search:' + this.state.type + ':' + this.state.term, show_source_icon: true }),
+					_react2.default.createElement(_LazyLoadListener2.default, { enabled: this.props['tracks_more'] && spotify_search_enabled, loadMore: function loadMore() {
+							return _this5.loadMore('tracks');
+						} })
+				)
+			);
+		}
+	}, {
+		key: 'renderAll',
+		value: function renderAll(artists, albums, playlists, tracks, spotify_search_enabled) {
+			var _this6 = this;
+
+			if (artists.length > 0) {
+				var artists_section = _react2.default.createElement(
+					'section',
+					null,
+					_react2.default.createElement(
+						'div',
+						{ className: 'inner' },
+						_react2.default.createElement(
+							_URILink2.default,
+							{ type: 'search', uri: "search:artist:" + this.state.term },
+							_react2.default.createElement(
+								'h4',
+								null,
+								'Artists'
+							)
+						),
+						_react2.default.createElement(_ArtistGrid2.default, { mini: true, show_source_icon: true, artists: artists.slice(0, 6) }),
+						artists.length >= 6 ? _react2.default.createElement(
+							_URILink2.default,
+							{ type: 'search', uri: "search:artist:" + this.state.term, className: 'button button--default' },
+							'All artists (',
+							artists.length,
+							')'
+						) : null
+					)
+				);
+			} else {
+				var artists_section = null;
+			}
+
+			if (albums.length > 0) {
+				var albums_section = _react2.default.createElement(
+					'section',
+					null,
+					_react2.default.createElement(
+						'div',
+						{ className: 'inner' },
+						_react2.default.createElement(
+							_URILink2.default,
+							{ type: 'search', uri: "search:album:" + this.state.term },
+							_react2.default.createElement(
+								'h4',
+								null,
+								'Albums'
+							)
+						),
+						_react2.default.createElement(_AlbumGrid2.default, { mini: true, show_source_icon: true, albums: albums.slice(0, 6) }),
+						albums.length >= 6 ? _react2.default.createElement(
+							_URILink2.default,
+							{ type: 'search', uri: "search:album:" + this.state.term, className: 'button button--default' },
+							'All albums (',
+							albums.length,
+							')'
+						) : null
+					)
+				);
+			} else {
+				var albums_section = null;
+			}
+
+			if (playlists.length > 0) {
+				var playlists_section = _react2.default.createElement(
+					'section',
+					null,
+					_react2.default.createElement(
+						'div',
+						{ className: 'inner' },
+						_react2.default.createElement(
+							_URILink2.default,
+							{ type: 'search', uri: "search:playlist:" + this.state.term },
+							_react2.default.createElement(
+								'h4',
+								null,
+								'Playlists'
+							)
+						),
+						_react2.default.createElement(_PlaylistGrid2.default, { mini: true, show_source_icon: true, playlists: playlists.slice(0, 6) }),
+						playlists.length >= 6 ? _react2.default.createElement(
+							_URILink2.default,
+							{ type: 'search', uri: "search:playlist:" + this.state.term, className: 'button button--default' },
+							'All playlists (',
+							playlists.length,
+							')'
+						) : null
+					)
+				);
+			} else {
+				var playlists_section = null;
+			}
+
+			if (tracks.length > 0) {
+				var tracks_section = _react2.default.createElement(
+					'section',
+					{ className: 'list-wrapper' },
+					_react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: 'iris:search:' + this.state.type + ':' + this.state.term, show_source_icon: true }),
+					_react2.default.createElement(_LazyLoadListener2.default, { loading: this.props['tracks_more'] && spotify_search_enabled, loadMore: function loadMore() {
+							return _this6.loadMore('tracks');
+						} })
+				);
+			} else {
+				var tracks_section = null;
+			}
+
+			return _react2.default.createElement(
+				'div',
+				null,
+				_react2.default.createElement(
+					'div',
+					{ className: 'search-result-sections cf' },
+					artists_section,
+					albums_section,
+					playlists_section
+				),
+				tracks_section
+			);
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var _this7 = this;
+
+			var sort_options = [{
+				value: 'followers',
+				label: 'Popularity'
+			}, {
+				value: 'name',
+				label: 'Name'
+			}, {
+				value: 'artists.name',
+				label: 'Artist'
+			}, {
+				value: 'duration',
+				label: 'Duration'
+			}, {
+				value: 'uri',
+				label: 'Source'
+			}];
+
+			var provider_options = [];
+			for (var i = 0; i < this.props.uri_schemes.length; i++) {
+				provider_options.push({
+					value: this.props.uri_schemes[i],
+					label: helpers.titleCase(this.props.uri_schemes[i].replace(':', '').replace('+', ' '))
+				});
+			}
 			var spotify_search_enabled = this.props.search_settings && this.props.search_settings.spotify;
 
 			var sort = this.props.sort;
@@ -77327,295 +77621,9 @@ var Search = function (_React$Component) {
 
 			tracks = helpers.sortItems(tracks, sort == 'followers' ? 'popularity' : sort, sort_reverse, sort_map);
 
-			switch (this.state.type) {
-
-				case 'artist':
-					return _react2.default.createElement(
-						'div',
-						null,
-						_react2.default.createElement(
-							'h4',
-							null,
-							_react2.default.createElement(
-								_URILink2.default,
-								{ type: 'search', uri: "search:all:" + this.state.term },
-								'Search'
-							),
-							'\xA0 ',
-							_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
-							'\xA0 Artists'
-						),
-						_react2.default.createElement(
-							'section',
-							{ className: 'grid-wrapper' },
-							_react2.default.createElement(_ArtistGrid2.default, { artists: artists, show_source_icon: true }),
-							_react2.default.createElement(_LazyLoadListener2.default, { enabled: this.props['artists_more'] && spotify_search_enabled, loadMore: function loadMore() {
-									return _this2.loadMore('artists');
-								} })
-						)
-					);
-					break;
-
-				case 'album':
-					return _react2.default.createElement(
-						'div',
-						null,
-						_react2.default.createElement(
-							'h4',
-							null,
-							_react2.default.createElement(
-								_URILink2.default,
-								{ type: 'search', uri: "search:all:" + this.state.term },
-								'Search'
-							),
-							'\xA0 ',
-							_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
-							'\xA0 Albums'
-						),
-						_react2.default.createElement(
-							'section',
-							{ className: 'grid-wrapper' },
-							_react2.default.createElement(_AlbumGrid2.default, { albums: albums, show_source_icon: true }),
-							_react2.default.createElement(_LazyLoadListener2.default, { enabled: this.props['albums_more'] && spotify_search_enabled, loadMore: function loadMore() {
-									return _this2.loadMore('albums');
-								} })
-						)
-					);
-					break;
-
-				case 'playlist':
-					return _react2.default.createElement(
-						'div',
-						null,
-						_react2.default.createElement(
-							'h4',
-							null,
-							_react2.default.createElement(
-								_URILink2.default,
-								{ type: 'search', uri: "search:all:" + this.state.term },
-								'Search'
-							),
-							'\xA0 ',
-							_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
-							'\xA0 Playlists'
-						),
-						_react2.default.createElement(
-							'section',
-							{ className: 'grid-wrapper' },
-							_react2.default.createElement(_PlaylistGrid2.default, { playlists: playlists, show_source_icon: true }),
-							_react2.default.createElement(_LazyLoadListener2.default, { enabled: this.props['playlists_more'] && spotify_search_enabled, loadMore: function loadMore() {
-									return _this2.loadMore('playlists');
-								} })
-						)
-					);
-					break;
-
-				case 'track':
-					return _react2.default.createElement(
-						'div',
-						null,
-						_react2.default.createElement(
-							'h4',
-							null,
-							_react2.default.createElement(
-								_URILink2.default,
-								{ type: 'search', uri: "search:all:" + this.state.term },
-								'Search'
-							),
-							'\xA0 ',
-							_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
-							'\xA0 Tracks'
-						),
-						_react2.default.createElement(
-							'section',
-							{ className: 'list-wrapper' },
-							_react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: 'iris:search:' + this.state.type + ':' + this.state.term, show_source_icon: true }),
-							_react2.default.createElement(_LazyLoadListener2.default, { enabled: this.props['tracks_more'] && spotify_search_enabled, loadMore: function loadMore() {
-									return _this2.loadMore('tracks');
-								} })
-						)
-					);
-					break;
-
-				case 'all':
-				default:
-
-					if (artists.length > 0) {
-						var artists_section = _react2.default.createElement(
-							'section',
-							null,
-							_react2.default.createElement(
-								'div',
-								{ className: 'inner' },
-								_react2.default.createElement(
-									_URILink2.default,
-									{ type: 'search', uri: "search:artist:" + this.state.term },
-									_react2.default.createElement(
-										'h4',
-										null,
-										'Artists'
-									)
-								),
-								_react2.default.createElement(_ArtistGrid2.default, { mini: true, show_source_icon: true, artists: artists.slice(0, 6) }),
-								artists.length >= 6 ? _react2.default.createElement(
-									_URILink2.default,
-									{ type: 'search', uri: "search:artist:" + this.state.term, className: 'button button--default' },
-									'All artists (',
-									artists.length,
-									')'
-								) : null
-							)
-						);
-					} else {
-						var artists_section = null;
-					}
-
-					if (albums.length > 0) {
-						var albums_section = _react2.default.createElement(
-							'section',
-							null,
-							_react2.default.createElement(
-								'div',
-								{ className: 'inner' },
-								_react2.default.createElement(
-									_URILink2.default,
-									{ type: 'search', uri: "search:album:" + this.state.term },
-									_react2.default.createElement(
-										'h4',
-										null,
-										'Albums'
-									)
-								),
-								_react2.default.createElement(_AlbumGrid2.default, { mini: true, show_source_icon: true, albums: albums.slice(0, 6) }),
-								albums.length >= 6 ? _react2.default.createElement(
-									_URILink2.default,
-									{ type: 'search', uri: "search:album:" + this.state.term, className: 'button button--default' },
-									'All albums (',
-									albums.length,
-									')'
-								) : null
-							)
-						);
-					} else {
-						var albums_section = null;
-					}
-
-					if (playlists.length > 0) {
-						var playlists_section = _react2.default.createElement(
-							'section',
-							null,
-							_react2.default.createElement(
-								'div',
-								{ className: 'inner' },
-								_react2.default.createElement(
-									_URILink2.default,
-									{ type: 'search', uri: "search:playlist:" + this.state.term },
-									_react2.default.createElement(
-										'h4',
-										null,
-										'Playlists'
-									)
-								),
-								_react2.default.createElement(_PlaylistGrid2.default, { mini: true, show_source_icon: true, playlists: playlists.slice(0, 6) }),
-								playlists.length >= 6 ? _react2.default.createElement(
-									_URILink2.default,
-									{ type: 'search', uri: "search:playlist:" + this.state.term, className: 'button button--default' },
-									'All playlists (',
-									playlists.length,
-									')'
-								) : null
-							)
-						);
-					} else {
-						var playlists_section = null;
-					}
-
-					if (tracks.length > 0) {
-						var tracks_section = _react2.default.createElement(
-							'section',
-							{ className: 'list-wrapper' },
-							_react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: 'iris:search:' + this.state.type + ':' + this.state.term, show_source_icon: true }),
-							_react2.default.createElement(_LazyLoadListener2.default, { loading: this.props['tracks_more'] && spotify_search_enabled, loadMore: function loadMore() {
-									return _this2.loadMore('tracks');
-								} })
-						);
-					} else {
-						var tracks_section = null;
-					}
-
-					return _react2.default.createElement(
-						'div',
-						null,
-						_react2.default.createElement(
-							'div',
-							{ className: 'search-result-sections cf' },
-							artists_section,
-							albums_section,
-							playlists_section
-						),
-						tracks_section
-					);
-			}
-		}
-	}, {
-		key: 'render',
-		value: function render() {
-			var _this3 = this;
-
-			var type_options = [{
-				value: 'all',
-				label: 'All'
-			}, {
-				value: 'artist',
-				label: 'Artist'
-			}, {
-				value: 'album',
-				label: 'Album'
-			}, {
-				value: 'playlist',
-				label: 'Playlist'
-			}, {
-				value: 'track',
-				label: 'Track'
-			}];
-
-			var sort_options = [{
-				value: 'followers',
-				label: 'Popularity'
-			}, {
-				value: 'name',
-				label: 'Name'
-			}, {
-				value: 'artists.name',
-				label: 'Artist'
-			}, {
-				value: 'duration',
-				label: 'Duration'
-			}, {
-				value: 'uri',
-				label: 'Source'
-			}];
-
-			var provider_options = [];
-			for (var i = 0; i < this.props.uri_schemes.length; i++) {
-				provider_options.push({
-					value: this.props.uri_schemes[i],
-					label: helpers.titleCase(this.props.uri_schemes[i].replace(':', '').replace('+', ' '))
-				});
-			}
-
 			var options = _react2.default.createElement(
 				'span',
 				null,
-				_react2.default.createElement(_DropdownField2.default, {
-					icon: 'category',
-					name: 'Type',
-					value: this.state.type,
-					options: type_options,
-					handleChange: function handleChange(value) {
-						_this3.setState({ type: value });_this3.search(value, _this3.state.term);
-					}
-				}),
 				_react2.default.createElement(_DropdownField2.default, {
 					icon: 'sort',
 					name: 'Sort',
@@ -77623,7 +77631,7 @@ var Search = function (_React$Component) {
 					options: sort_options,
 					selected_icon: this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down',
 					handleChange: function handleChange(value) {
-						_this3.setSort(value);_this3.props.uiActions.hideContextMenu();
+						_this7.setSort(value);_this7.props.uiActions.hideContextMenu();
 					}
 				}),
 				_react2.default.createElement(_DropdownField2.default, {
@@ -77632,7 +77640,7 @@ var Search = function (_React$Component) {
 					value: this.props.uri_schemes_search_enabled,
 					options: provider_options,
 					handleChange: function handleChange(value) {
-						_this3.props.uiActions.set({ uri_schemes_search_enabled: value });_this3.props.uiActions.hideContextMenu();
+						_this7.props.uiActions.set({ uri_schemes_search_enabled: value });_this7.props.uiActions.hideContextMenu();
 					}
 				})
 			);
@@ -77648,16 +77656,44 @@ var Search = function (_React$Component) {
 				_react2.default.createElement(_SearchForm2.default, {
 					term: this.state.term,
 					onBlur: function onBlur(term) {
-						return _this3.setState({ term: term });
+						return _this7.setState({ term: term });
 					},
 					onSubmit: function onSubmit(term) {
-						return _this3.search(_this3.state.type, term);
+						return _this7.search(_this7.state.type, term);
 					}
 				}),
 				_react2.default.createElement(
 					'div',
 					{ className: 'content-wrapper' },
-					this.renderResults()
+					_react2.default.createElement(
+						_reactRouterDom.Switch,
+						null,
+						_react2.default.createElement(
+							_reactRouterDom.Route,
+							{ path: '/search/artist/:term' },
+							this.renderArtists(artists, spotify_search_enabled)
+						),
+						_react2.default.createElement(
+							_reactRouterDom.Route,
+							{ path: '/search/album/:term' },
+							this.renderAlbums(albums, spotify_search_enabled)
+						),
+						_react2.default.createElement(
+							_reactRouterDom.Route,
+							{ path: '/search/playlist/:term' },
+							this.renderPlaylists(playlists, spotify_search_enabled)
+						),
+						_react2.default.createElement(
+							_reactRouterDom.Route,
+							{ path: '/search/track/:term' },
+							this.renderTracks(tracks, spotify_search_enabled)
+						),
+						_react2.default.createElement(
+							_reactRouterDom.Route,
+							{ path: '/search' },
+							this.renderAll(artists, albums, playlists, tracks, spotify_search_enabled)
+						)
+					)
 				)
 			);
 		}
@@ -77842,7 +77878,7 @@ var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(2);
 
-var _reactRouterDom = __webpack_require__(32);
+var _reactRouterDom = __webpack_require__(28);
 
 var _ConfirmationButton = __webpack_require__(111);
 
@@ -83175,7 +83211,7 @@ var _Thumbnail = __webpack_require__(11);
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
-var _Parallax = __webpack_require__(30);
+var _Parallax = __webpack_require__(31);
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
 
@@ -86273,7 +86309,7 @@ var _Icon = __webpack_require__(5);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _Parallax = __webpack_require__(30);
+var _Parallax = __webpack_require__(31);
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
 
@@ -86896,7 +86932,7 @@ var _AlbumGrid = __webpack_require__(47);
 
 var _AlbumGrid2 = _interopRequireDefault(_AlbumGrid);
 
-var _Parallax = __webpack_require__(30);
+var _Parallax = __webpack_require__(31);
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
 
@@ -88748,7 +88784,7 @@ var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(2);
 
-var _reactRouterDom = __webpack_require__(32);
+var _reactRouterDom = __webpack_require__(28);
 
 var _Link = __webpack_require__(9);
 

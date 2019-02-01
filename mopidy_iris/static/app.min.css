@@ -3967,6 +3967,8 @@ select {
   .list__item--has-details .list__item__column--name {
     padding-top: 14px;
     padding-bottom: 10px; }
+  .list__item--directory .list__item__column {
+    padding: 18px 0 10px; }
   .list__item__column {
     padding: 24px 0 16px; }
     .list__item__column--right {
@@ -5909,7 +5911,7 @@ main header {
         background: #32b5f2;
         color: #FFFFFF; }
 
-.sub-views .option {
+.sub-views__option {
   font-family: "Overpass";
   letter-spacing: -0.04em;
   font-weight: 600;
@@ -5918,23 +5920,23 @@ main header {
   margin-right: 25px;
   font-size: 15px;
   font-weight: 500;
-  border-bottom: 3px solid transparent;
+  border-bottom: 3px solid transparent !important;
   cursor: pointer; }
-  .light-theme .sub-views .option {
+  .light-theme .sub-views__option {
     color: #121212; }
-  .sub-views .option h4 {
+  .sub-views__option h4 {
     margin: 8px 0 4px; }
-  .sub-views .option.active {
-    border-color: #FFFFFF; }
-    .light-theme .sub-views .option.active {
+  .sub-views__option--active {
+    border-color: #FFFFFF !important; }
+    .light-theme .sub-views__option--active {
       border-color: #121212; }
-  .sub-views .option:not(.active):hover {
-    border-color: rgba(255, 255, 255, 0.2); }
-    .light-theme .sub-views .option:not(.active):hover {
+  .sub-views__option:not(.sub-views__option--active):hover {
+    border-color: rgba(255, 255, 255, 0.2) !important; }
+    .light-theme .sub-views__option:not(.sub-views__option--active):hover {
       border-color: rgba(0, 0, 0, 0.2); }
 
 @media (max-width: 799px) {
-  .sub-views .option {
+  .sub-views__option {
     margin-right: 15px; } }
 
 .debug-info {
@@ -6767,7 +6769,7 @@ main .track-view {
   position: absolute;
   top: 30px;
   left: 90px;
-  right: 330px; }
+  right: 270px; }
   .search-view .search-form input {
     font-family: "Overpass";
     letter-spacing: -0.04em;

@@ -1,6 +1,8 @@
 
 import React, { PropTypes } from 'react'
 
+import * as helpers from '../helpers';
+
 export default class Parallax extends React.Component{
 
 	constructor(props){
@@ -25,16 +27,13 @@ export default class Parallax extends React.Component{
 	}
 
 	loadImage(url){
-
-		// Reset our image to nothing
-		// This is needed when navigating to new view, but not unmounting the current components
-		// ie one artist to another
-		this.setState({
-			loaded: false,
-			url: null
-		});
-
 		if (url && url !== ""){
+
+			this.setState({
+				loaded: helpers.isCached(url),
+				url: url
+			});
+
 			var self = this;
 			var imageObject = new Image();
 			imageObject.src = url;
@@ -45,6 +44,13 @@ export default class Parallax extends React.Component{
 					url: url
 				});
 			}
+
+		// No Image, so reset it
+		} else {
+			this.setState({
+				loaded: false,
+				url: null
+			});
 		}
 	}
 

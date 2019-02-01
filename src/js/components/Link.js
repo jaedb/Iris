@@ -21,7 +21,11 @@ export default class extends React.Component{
 	}
 
 	isLinkActive(link){
-		return this.props.history.location.pathname.startsWith(link);
+		if (this.props.exact){
+			return this.props.history.location.pathname === link;
+		} else {
+			return this.props.history.location.pathname.startsWith(link);
+		}
 	}
 
 	render(){

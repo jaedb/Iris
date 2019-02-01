@@ -144,18 +144,18 @@ export default function reducer(mopidy = {}, action){
             return Object.assign({}, mopidy, { library_playlists_loaded_all: true })
 
         case 'MOPIDY_LIBRARY_PLAYLIST_CREATED':
-            var library_playlists = []
+            var library_playlists = [];
             if (mopidy.library_playlists){
-                library_playlists = Object.assign([], mopidy.library_playlists)
-                library_playlists.push(action.key)
+                library_playlists = Object.assign([], mopidy.library_playlists);
             }
+            library_playlists.push(action.key);
             return Object.assign({}, mopidy, { library_playlists: library_playlists })
 
         case 'MOPIDY_LIBRARY_PLAYLIST_DELETED':
             var library_playlists = []
             if (mopidy.library_playlists){
-                library_playlists = Object.assign([], mopidy.library_playlists)
-                library_playlists.splice(library_playlists.indexOf(action.uri), 1)
+                library_playlists = Object.assign([], mopidy.library_playlists);
+                library_playlists.splice(library_playlists.indexOf(action.uri), 1);
             }
             return Object.assign({}, mopidy, { library_playlists: library_playlists })
 

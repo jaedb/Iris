@@ -1738,14 +1738,11 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_CREATE_PLAYLIST':
                 request(socket, store, 'playlists.create', { name: action.name, uri_scheme: action.scheme })
                     .then(response => {
-                        store.dispatch(uiActions.createNotification({type: 'info', content: 'Created playlist'}))
-
+                        store.dispatch(uiActions.createNotification({type: 'info', content: 'Created playlist'}));
                         store.dispatch(coreActions.playlistLoaded(response));
-
                         store.dispatch({
                             type: 'MOPIDY_LIBRARY_PLAYLIST_CREATED',
-                            key: action.uri,
-                            playlist: response
+                            key: response.uri
                         })
                     });
                 break
@@ -1753,11 +1750,12 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_DELETE_PLAYLIST':
                 request(socket, store, 'playlists.delete', { uri: action.uri })
                     .then(response => {
-                        store.dispatch(uiActions.createNotification({content: 'Deleted playlist'}))
+                        store.dispatch(uiActions.createNotification({content: 'Deleted playlist'}));
+                        store.dispatch(coreActions.removeFromIndex('playlists', action.uri));
                         store.dispatch({
                             type: 'MOPIDY_LIBRARY_PLAYLIST_DELETED',
                             key: action.uri
-                        })
+                        });
                     });
                 break
 

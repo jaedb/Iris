@@ -329,26 +329,28 @@ class Artist extends React.Component{
 						</div>
 						<div className="sub-views" id="sub-views-menu">
 							<Link 
-								nav
-								exact={true}
-								className="option"
-								activeClassName="active"
+								exact
+								history={this.props.history} 
+								activeClassName="sub-views__option--active"
+								className="sub-views__option"
 								to={'/artist/'+encodeURIComponent(this.props.uri)}
 								scrollTo="sub-views-menu">
 									<h4>Overview</h4>
 							</Link>
 							{this.props.artist.related_artists_uris ? <Link
-								nav
-								className="option"
-								activeClassName="active"
+								exact
+								history={this.props.history} 
+								activeClassName="sub-views__option--active"
+								className="sub-views__option"
 								to={'/artist/'+encodeURIComponent(this.props.uri)+'/related-artists'}
 								scrollTo="sub-views-menu">
 									<h4>Related artists</h4>
 							</Link> : null}
 							<Link
-								nav
-								className="option"
-								activeClassName="active"
+								exact
+								history={this.props.history} 
+								activeClassName="sub-views__option--active"
+								className="sub-views__option"
 								to={'/artist/'+encodeURIComponent(this.props.uri)+'/about'}
 								scrollTo="sub-views-menu">
 									<h4>About</h4>

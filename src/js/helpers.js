@@ -116,6 +116,20 @@ export let setStorage = function(key, value, replace = false){
 }
 
 
+/**
+ * Check if an image URL is cached or not
+ * Useful for bypassing load animations for cached assets (eg parallax)
+ *
+ * @param url String
+ * @return Boolean
+ **/
+export let isCached = function(url){
+    var image = new Image();
+    image.src = url;
+    return image.complete;
+}
+
+
 
 /**
  * Digest an array of Mopidy image objects into a universal format. We also re-write
