@@ -2066,7 +2066,7 @@ const MopidyMiddleware = (function(){
                             {
                                 is_mopidy: true,
                                 albums_uris: helpers.arrayOf('uri',albums),
-                                tracks: response.slice(0,10)
+                                tracks: response
                             }
                         );
                         store.dispatch(coreActions.artistLoaded(artist));
