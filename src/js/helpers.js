@@ -248,8 +248,12 @@ export let formatImages = function(data){
 		for (var i = 0; i < data.length; i++){
 			let image = data[i]
 
+			// Already-formatted
+			if (image.formatted){
+				return image;
+
 			// Mopidy image object
-			if (image.__model__ && image.__model__ == 'Image'){
+			} else if (image.__model__ && image.__model__ == 'Image'){
 
 				if (image.width < 400){
 					sizes.small = image.url;
@@ -318,7 +322,13 @@ export let formatImages = function(data){
 	}
 	if (!sizes.large) sizes.large = sizes.medium;
 	if (!sizes.huge) sizes.huge = sizes.large;
-	
+
+	// No sizes = no images => return nothing
+	if (!sizes.huge && !sizes.large && !sizes.medium && !sizes.small){
+		console.error(data);
+		return null;
+	}
+
 	return sizes;
 }
 
@@ -451,7 +461,6 @@ export let formatArtist = function(data){
 		'mbid',
 		'name',
 		'type',
-		'images',
 		'popularity',
 		'followers',
 		'listeners',
@@ -475,8 +484,8 @@ export let formatArtist = function(data){
 		}
 	}
 
-	if (data.images){
-		artist.images = [formatImages(artist.images)];
+	if (data.images && data.images.length > 0){
+		artist.images = [formatImages(data.images)];
 	}
 
 	if (data.followers && data.followers.total !== undefined){

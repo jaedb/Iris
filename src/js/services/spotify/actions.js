@@ -84,7 +84,11 @@ const request = (dispatch, getState, endpoint, method = 'GET', data = false) => 
                         )
                 },
                 error => {
-                    reject(error)
+                    dispatch(coreActions.handleException(
+                        error.error
+                    ));
+
+                    reject(error);
                 }
             );
         }
@@ -166,7 +170,7 @@ function refreshToken(dispatch, getState){
                             type: 'SPOTIFY_TOKEN_REFRESHED',
                             data: response
                         })
-                        resolve(response)
+                        resolve(response);
                     },
                     (xhr, status, error) => {
                         dispatch(uiActions.stopLoading(loader_key));
