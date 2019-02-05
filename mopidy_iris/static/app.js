@@ -5764,9 +5764,15 @@ function getBroadcasts() {
     return function (dispatch, getState) {
         var config = {
             method: 'GET',
-            timeout: 15000,
-            url: 'https://gist.githubusercontent.com/jaedb/b677dccf80daf3ccb2ef12e96e495677/raw'
-        };
+            timeout: 15000
+
+            // Fetch the "iris_broadcasts.json" file from Gist (or "_test" for test mode)
+        };if (getState().ui.test_mode) {
+            config.url = 'https://gist.githubusercontent.com/jaedb/cb3a5ee6909632abb2e0fe66d4c8c311/raw';
+        } else {
+            config.url = 'https://gist.githubusercontent.com/jaedb/b677dccf80daf3ccb2ef12e96e495677/raw';
+        }
+
         $.ajax(config).then(function (response) {
             dispatch({
                 type: 'BROADCASTS_LOADED',
@@ -59050,10 +59056,23 @@ var UIMiddleware = function () {
 
                             if (!suppressed_broadcasts.includes(broadcast.key)) {
                                 if (broadcast.message) {
+                                    var content = broadcast.message;
+
+                                    // Digest raw content and drop in links where appropriate
+                                    if (broadcast.links) {
+                                        for (var link_name in broadcast.links) {
+                                            if (broadcast.links.hasOwnProperty(link_name)) {
+                                                var link = broadcast.links[link_name];
+                                                var link_markup = '<a href="' + link.url + '"' + (link.new_window ? ' target="_blank" ' : '') + '>' + link.text + '</a>';
+                                                content = content.replace('$' + link_name, link_markup);
+                                            }
+                                        }
+                                    }
+
                                     var data = {
                                         key: broadcast.key ? broadcast.key : null,
                                         title: broadcast.title ? broadcast.title : null,
-                                        content: broadcast.message,
+                                        content: content,
                                         type: 'broadcast',
                                         sticky: true
                                     };

@@ -180,10 +180,23 @@ const UIMiddleware = (function(){
 
                     if (!suppressed_broadcasts.includes(broadcast.key)){
                         if (broadcast.message){
+                        	var content = broadcast.message;
+
+                        	// Digest raw content and drop in links where appropriate
+                        	if (broadcast.links){
+                        		for (var link_name in broadcast.links){
+        							if (broadcast.links.hasOwnProperty(link_name)){
+        								var link = broadcast.links[link_name];
+        								var link_markup = '<a href="'+link.url+'"'+(link.new_window ? ' target="_blank" ' : '')+'>'+link.text+'</a>';
+	                        			content = content.replace('$'+link_name, link_markup);
+	                        		}
+                        		}
+                        	}
+
                             var data = {
                                 key: (broadcast.key ? broadcast.key : null),
                                 title: (broadcast.title ? broadcast.title : null),
-                                content: broadcast.message,
+                                content: content,
                                 type: 'broadcast',
                                 sticky: true
                             }
