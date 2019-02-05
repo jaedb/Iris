@@ -20,16 +20,16 @@
 		border-radius: 3px;
 		font-size: 15px;
 		
-		h4 {
+		&__title {
 			padding-top: 0;
 		}
 
-		p a {
-			text-decoration: none;
+		&__actions {
+			padding-top: 5px;
 			
-			&:not(.button) {
-				color: inherit;
-				border-bottom: 1px dotted colour(black);
+			&__item {
+				margin-bottom: 0;
+				margin-top: 5px;
 			}
 		}
 
@@ -37,14 +37,14 @@
 			padding: 4px 0 4px 20px;
 		}
 
-		p.description {
+		&__description {
 			font-size: 14px;
 			opacity: 0.5;
 			padding-top: 5px;
 			line-height: 1.1em;
 		}
 
-		.close-button {
+		&__close-button {
 			position: absolute;
 			top: 4px;
 			right: 0;

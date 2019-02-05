@@ -3343,7 +3343,8 @@ select {
   border: 0 !important;
   cursor: pointer;
   letter-spacing: -0.01rem;
-  text-align: center; }
+  text-align: center;
+  text-decoration: none; }
   .button .icon {
     padding-right: 8px; }
   .button:not(.button--no-hover) {
@@ -5496,21 +5497,21 @@ main header {
   100% {
     opacity: 1;
     transform: translateY(0px); } }
-    .notifications .notification h4 {
+    .notifications .notification__title {
       padding-top: 0; }
-    .notifications .notification p a {
-      text-decoration: none; }
-      .notifications .notification p a:not(.button) {
-        color: inherit;
-        border-bottom: 1px dotted #000000; }
+    .notifications .notification__actions {
+      padding-top: 5px; }
+      .notifications .notification__actions__item {
+        margin-bottom: 0;
+        margin-top: 5px; }
     .notifications .notification ul {
       padding: 4px 0 4px 20px; }
-    .notifications .notification p.description {
+    .notifications .notification__description {
       font-size: 14px;
       opacity: 0.5;
       padding-top: 5px;
       line-height: 1.1em; }
-    .notifications .notification .close-button {
+    .notifications .notification__close-button {
       position: absolute;
       top: 4px;
       right: 0;
@@ -5518,7 +5519,7 @@ main header {
       padding: 14px;
       cursor: pointer;
       opacity: 0.5; }
-      .notifications .notification .close-button:hover {
+      .notifications .notification__close-button:hover {
         opacity: 1; }
     .notifications .notification--good {
       background: #47af2a; }
