@@ -73,7 +73,7 @@ export default class Notifications extends React.Component{
 											<p>Do you want to import this?</p>
 										</div>
 										<div className="notification__actions">
-											<a className="notification__actions__item button button--secondary" onClick={e => this.importConfiguration(notification.key, notification.configuration)}>Import</a>
+											<a className="notification__actions__item button button--default" onClick={e => this.importConfiguration(notification.key, notification.configuration)}>Import</a>
 										</div>
 									</div>
 								)
@@ -114,7 +114,7 @@ export default class Notifications extends React.Component{
 							</div>
 						</div>
 						{process.message}
-						<Icon name="close" className="close-button" onClick={e => {this.props.uiActions.cancelProcess(process.key)}} />
+						<Icon name="close" className="notification__close-button" onClick={e => {this.props.uiActions.cancelProcess(process.key)}} />
 					</div>
 				)
 

@@ -18748,7 +18748,7 @@ var TrackList = function (_React$Component) {
 						mini_zones: _this2.props.slim_mode || helpers.isTouchDevice(),
 						track: track,
 						track_context: _this2.props.track_context,
-						can_sort: _this2.props.context == 'queue' || _this2.props.context == 'editable-playlist',
+						can_sort: _this2.props.track_context == 'queue' || _this2.props.track_context == 'editable-playlist',
 						selected: _this2.props.selected_tracks.includes(track_key),
 						play_state: _this2.props.play_state,
 						dragger: _this2.props.dragger,
@@ -72688,7 +72688,7 @@ var Notifications = function (_React$Component) {
 									{ className: 'notification__actions' },
 									_react2.default.createElement(
 										'a',
-										{ className: 'notification__actions__item button button--secondary', onClick: function onClick(e) {
+										{ className: 'notification__actions__item button button--default', onClick: function onClick(e) {
 												return _this2.importConfiguration(notification.key, notification.configuration);
 											} },
 										'Import'
@@ -72759,7 +72759,7 @@ var Notifications = function (_React$Component) {
 							)
 						),
 						process.message,
-						_react2.default.createElement(_Icon2.default, { name: 'close', className: 'close-button', onClick: function onClick(e) {
+						_react2.default.createElement(_Icon2.default, { name: 'close', className: 'notification__close-button', onClick: function onClick(e) {
 								_this3.props.uiActions.cancelProcess(process.key);
 							} })
 					);

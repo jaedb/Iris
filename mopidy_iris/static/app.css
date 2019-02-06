@@ -3397,6 +3397,14 @@ select {
     color: #FFFFFF; }
     .button--primary:active {
       background: #06a46e; }
+  .button--darken {
+    background: rgba(0, 0, 0, 0.8);
+    color: #FFFFFF; }
+    .button--darken:active {
+      background: rgba(0, 0, 0, 0); }
+  .button--lighten {
+    background: rgba(255, 255, 255, 0.8);
+    color: #121212; }
   .button--secondary {
     background: #32b5f2;
     color: #FFFFFF; }

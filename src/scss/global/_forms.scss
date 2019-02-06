@@ -259,6 +259,20 @@ select {
 		}
 	}
 
+	&--darken {
+		background: rgba(0,0,0,0.8);
+		color: colour(white);
+
+		&:active {
+			background: rgba(0,0,0,0);
+		}
+	}
+
+	&--lighten {
+		background: rgba(255,255,255,0.8);
+		color: colour(darkest_grey);
+	}
+
 	&--secondary {
 		background: colour(blue);
 		color: colour(white);
