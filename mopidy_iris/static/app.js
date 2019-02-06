@@ -408,12 +408,6 @@ var formatImages = exports.formatImages = function formatImages(data) {
 	if (!sizes.large) sizes.large = sizes.medium;
 	if (!sizes.huge) sizes.huge = sizes.large;
 
-	// No sizes = no images => return nothing
-	if (!sizes.huge && !sizes.large && !sizes.medium && !sizes.small) {
-		console.error(data);
-		return null;
-	}
-
 	return sizes;
 };
 
