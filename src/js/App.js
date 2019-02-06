@@ -394,7 +394,7 @@ class App extends React.Component{
 										<Route exact path="/settings/debug" component={Debug} />
 										<Route path="/settings" component={Settings} />
 										
-										<Route exact path="/search/(:type/:term)?" component={Search} />
+										<Route exact path="/search/:type?/:term?" component={Search} />
 										<Route exact path="/album/:uri" component={Album} />
 										<Route exact path="/artist/:uri/:sub_view?" component={Artist} />
 										<Route exact path="/playlist/:uri" component={Playlist} />

@@ -31,7 +31,7 @@ import * as spotifyActions from '../services/spotify/actions'
 class Artist extends React.Component{
 
 	constructor(props){
-		super(props)
+		super(props);
 	}
 
 	componentDidMount(){
@@ -175,7 +175,7 @@ class Artist extends React.Component{
 				<div className={"top-tracks col col--w"+(artist.related_artists && artist.related_artists.length > 0 ? "70" : "100")}>
 					{artist.tracks ? <h4>Top tracks</h4> : null}
 					<div className="list-wrapper">
-						<TrackList className="artist-track-list" uri={artist.uri} tracks={artist.tracks} />
+						<TrackList className="artist-track-list" uri={artist.uri} tracks={artist.tracks ? artist.tracks.splice(0,10) : []} />
 						<LazyLoadListener showLoader={is_loading_tracks} />
 					</div>
 				</div>
@@ -217,6 +217,31 @@ class Artist extends React.Component{
 				</div> : null}
 			</div>
 		);
+	}
+
+	renderTracks(){
+		var artist = helpers.collate(
+			this.props.artist, 
+			{
+				artists: this.props.artists,
+				tracks: this.props.tracks
+			}
+		);
+
+		if (!artist.tracks_uris || (artist.tracks_uris && !artist.tracks) || (artist.tracks_uris.length !== artist.tracks.length)){
+			var is_loading_tracks = true;
+		} else {
+			var is_loading_tracks = false;
+		}
+
+		return (
+			<div className="body related-artists">
+				<section className="list-wrapper no-top-padding">
+					<TrackList className="artist-track-list" uri={artist.uri} tracks={artist.tracks} />
+					<LazyLoadListener showLoader={is_loading_tracks} />
+				</section>
+			</div>
+		)
 	}
 
 	renderRelatedArtists(){
@@ -329,26 +354,37 @@ class Artist extends React.Component{
 						</div>
 						<div className="sub-views" id="sub-views-menu">
 							<Link 
-								nav
-								exact={true}
-								className="option"
-								activeClassName="active"
+								exact
+								history={this.props.history} 
+								activeClassName="sub-views__option--active"
+								className="sub-views__option"
 								to={'/artist/'+encodeURIComponent(this.props.uri)}
 								scrollTo="sub-views-menu">
 									<h4>Overview</h4>
 							</Link>
+							{this.props.artist.tracks_uris && this.props.artist.tracks_uris.length > 10 ? <Link
+								exact
+								history={this.props.history} 
+								activeClassName="sub-views__option--active"
+								className="sub-views__option"
+								to={'/artist/'+encodeURIComponent(this.props.uri)+'/tracks'}
+								scrollTo="sub-views-menu">
+									<h4>Tracks</h4>
+							</Link> : null}
 							{this.props.artist.related_artists_uris ? <Link
-								nav
-								className="option"
-								activeClassName="active"
+								exact
+								history={this.props.history} 
+								activeClassName="sub-views__option--active"
+								className="sub-views__option"
 								to={'/artist/'+encodeURIComponent(this.props.uri)+'/related-artists'}
 								scrollTo="sub-views-menu">
 									<h4>Related artists</h4>
 							</Link> : null}
 							<Link
-								nav
-								className="option"
-								activeClassName="active"
+								exact
+								history={this.props.history} 
+								activeClassName="sub-views__option--active"
+								className="sub-views__option"
 								to={'/artist/'+encodeURIComponent(this.props.uri)+'/about'}
 								scrollTo="sub-views-menu">
 									<h4>About</h4>
@@ -360,6 +396,9 @@ class Artist extends React.Component{
 					<Switch>
 						<Route exact path="/artist/:id/related-artists">
 							{this.renderRelatedArtists()}
+						</Route>
+						<Route exact path="/artist/:id/tracks">
+							{this.renderTracks()}
 						</Route>
 						<Route exact path="/artist/:id/about">
 							{this.renderAbout()}

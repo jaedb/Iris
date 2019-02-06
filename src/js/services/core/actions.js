@@ -7,9 +7,16 @@ export function getBroadcasts(){
     return (dispatch, getState) => {
         var config = {
             method: 'GET',
-            timeout: 15000,
-            url: 'https://gist.githubusercontent.com/jaedb/b677dccf80daf3ccb2ef12e96e495677/raw'
+            timeout: 15000
         }
+
+        // Fetch the "iris_broadcasts.json" file from Gist (or "_test" for test mode)
+        if (getState().ui.test_mode){
+        	config.url = 'https://gist.githubusercontent.com/jaedb/cb3a5ee6909632abb2e0fe66d4c8c311/raw'
+        } else {
+        	config.url = 'https://gist.githubusercontent.com/jaedb/b677dccf80daf3ccb2ef12e96e495677/raw'
+        }
+
         $.ajax(config).then(
                 response => {
                     dispatch({
@@ -210,6 +217,15 @@ export function loadedMore(parent_type, parent_key, records_type, records_data){
         parent_key: parent_key,
         records_type: records_type,
         records_data: records_data
+    }
+}
+
+export function removeFromIndex(index_name, key, new_key = null){
+    return { 
+        type: 'REMOVE_FROM_INDEX',
+        index_name: index_name,
+        key: key,
+        new_key: new_key
     }
 }
 

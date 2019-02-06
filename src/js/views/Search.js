@@ -1,10 +1,10 @@
 
-import React, { PropTypes } from 'react'
-import { connect } from 'react-redux'
+import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { Switch, Route } from 'react-router-dom';
 
 import Link from '../components/Link';
-import { bindActionCreators } from 'redux'
-
 import Header from '../components/Header'
 import Icon from '../components/Icon'
 import DropdownField from '../components/Fields/DropdownField'
@@ -69,7 +69,7 @@ class Search extends React.Component{
 	// Digest the URI query property
 	// Triggered when the URL changes
 	digestUri(props = this.props){
-		if (props.params && props.type && props.term){
+		if (props.type && props.term){
 			this.setState({
 				type: props.type,
 				term: props.term
@@ -114,7 +114,187 @@ class Search extends React.Component{
 		this.props.uiActions.set(data)
 	}
 
-	renderResults(){
+	renderArtists(artists, spotify_search_enabled){	
+		return (
+			<div>
+				<h4>
+					<URILink type="search" uri={"search:all:"+this.state.term}>
+						Search
+					</URILink>
+					&nbsp; <Icon type="fontawesome" name="angle-right" />&nbsp;
+					Artists
+				</h4>
+				<section className="grid-wrapper">
+					<ArtistGrid artists={artists} show_source_icon />
+					<LazyLoadListener enabled={this.props['artists_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('artists') }/>
+				</section>
+			</div>
+		);
+	}
+
+	renderAlbums(albums, spotify_search_enabled){	
+		return (
+			<div>
+				<h4>
+					<URILink type="search" uri={"search:all:"+this.state.term}>
+						Search
+					</URILink>
+					&nbsp; <Icon type="fontawesome" name="angle-right" />&nbsp;
+					Albums
+				</h4>
+				<section className="grid-wrapper">
+					<AlbumGrid albums={albums} show_source_icon />
+					<LazyLoadListener enabled={this.props['albums_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('albums') }/>
+				</section>
+			</div>
+		);
+	}
+
+	renderPlaylists(playlists, spotify_search_enabled){	
+		return (
+			<div>
+				<h4>
+					<URILink type="search" uri={"search:all:"+this.state.term}>
+						Search
+					</URILink>
+					&nbsp; <Icon type="fontawesome" name="angle-right" />&nbsp;
+					Playlists
+				</h4>
+				<section className="grid-wrapper">
+					<PlaylistGrid playlists={playlists} show_source_icon />
+					<LazyLoadListener enabled={this.props['playlists_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('playlists') }/>
+				</section>
+			</div>
+		);
+	}
+
+	renderTracks(tracks, spotify_search_enabled){	
+		return (
+			<div>
+				<h4>
+					<URILink type="search" uri={"search:all:"+this.state.term}>
+						Search
+					</URILink>
+					&nbsp; <Icon type="fontawesome" name="angle-right" />&nbsp;
+					Tracks
+				</h4>
+				<section className="list-wrapper">
+					<TrackList tracks={tracks} uri={'iris:search:'+this.state.type+':'+this.state.term} show_source_icon />
+					<LazyLoadListener enabled={this.props['tracks_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('tracks') }/>
+				</section>
+			</div>
+		);
+	}
+
+	renderAll(artists, albums, playlists, tracks, spotify_search_enabled){		
+		if (artists.length > 0){
+			var artists_section = (					
+				<section>
+					<div className="inner">								
+						<URILink type="search" uri={"search:artist:"+this.state.term}>
+							<h4>Artists</h4>
+						</URILink>
+						<ArtistGrid mini show_source_icon artists={artists.slice(0,6)} />
+						{artists.length >= 6 ? <URILink type="search" uri={"search:artist:"+this.state.term} className="button button--default">
+							All artists ({artists.length})
+						</URILink> : null}
+					</div>
+				</section>
+			)
+		} else {
+			var artists_section = null;
+		}
+
+		if (albums.length > 0){
+			var albums_section = (					
+				<section>
+					<div className="inner">						
+						<URILink type="search" uri={"search:album:"+this.state.term}>
+							<h4>Albums</h4>
+						</URILink>
+						<AlbumGrid mini show_source_icon albums={albums.slice(0,6)} />
+						{albums.length >= 6 ? <URILink type="search" uri={"search:album:"+this.state.term} className="button button--default">
+							All albums ({albums.length})
+						</URILink> : null}
+					</div>
+				</section>
+			)
+		} else {
+			var albums_section = null;
+		}
+	
+		if (playlists.length > 0){
+			var playlists_section = (					
+				<section>
+					<div className="inner">						
+						<URILink type="search" uri={"search:playlist:"+this.state.term}>
+							<h4>Playlists</h4>
+						</URILink>
+						<PlaylistGrid mini show_source_icon playlists={playlists.slice(0,6)} />
+						{playlists.length >= 6 ? <URILink type="search" uri={"search:playlist:"+this.state.term} className="button button--default">
+							All playlists ({playlists.length})
+						</URILink> : null}
+					</div>
+				</section>
+			)
+		} else {
+			var playlists_section = null;
+		}
+
+		if (tracks.length > 0){
+			var tracks_section = (
+				<section className="list-wrapper">
+					<TrackList tracks={tracks} uri={'iris:search:'+this.state.type+':'+this.state.term} show_source_icon />
+					<LazyLoadListener loading={this.props['tracks_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('tracks') }/>
+				</section>
+			)
+		} else {
+			var tracks_section = null;
+		}
+
+		return (
+			<div>
+				<div className="search-result-sections cf">
+					{artists_section}
+					{albums_section}
+					{playlists_section}
+				</div>
+				{tracks_section}
+			</div>
+		)
+	}
+
+	render(){
+		var sort_options = [
+			{
+				value: 'followers',
+				label: 'Popularity'
+			},
+			{
+				value: 'name',
+				label: 'Name'
+			},
+			{
+				value: 'artists.name',
+				label: 'Artist'
+			},
+			{
+				value: 'duration',
+				label: 'Duration'
+			},
+			{
+				value: 'uri',
+				label: 'Source'
+			}
+		];
+
+		var provider_options = [];
+		for (var i = 0; i < this.props.uri_schemes.length; i++){
+			provider_options.push({
+				value: this.props.uri_schemes[i],
+				label: helpers.titleCase(this.props.uri_schemes[i].replace(':','').replace('+',' '))
+			});
+		}
 		var spotify_search_enabled = (this.props.search_settings && this.props.search_settings.spotify);
 
 		var sort = this.props.sort;
@@ -169,226 +349,9 @@ class Search extends React.Component{
 		}
 
 		tracks = helpers.sortItems(tracks, (sort == 'followers' ? 'popularity' : sort), sort_reverse, sort_map);
-		
-		switch (this.state.type){
-
-			case 'artist':
-				return (
-					<div>
-						<h4>
-							<URILink type="search" uri={"search:all:"+this.state.term}>
-								Search
-							</URILink>
-							&nbsp; <Icon type="fontawesome" name="angle-right" />&nbsp;
-							Artists
-						</h4>
-						<section className="grid-wrapper">
-							<ArtistGrid artists={artists} show_source_icon />
-							<LazyLoadListener enabled={this.props['artists_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('artists') }/>
-						</section>
-					</div>
-				)
-				break;
-
-			case 'album':
-				return (
-					<div>
-						<h4>
-							<URILink type="search" uri={"search:all:"+this.state.term}>
-								Search
-							</URILink>
-							&nbsp; <Icon type="fontawesome" name="angle-right" />&nbsp;
-							Albums
-						</h4>
-						<section className="grid-wrapper">
-							<AlbumGrid albums={albums} show_source_icon />
-							<LazyLoadListener enabled={this.props['albums_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('albums') }/>
-						</section>
-					</div>
-				)
-				break;
-
-			case 'playlist':
-				return (
-					<div>
-						<h4>
-							<URILink type="search" uri={"search:all:"+this.state.term}>
-								Search
-							</URILink>
-							&nbsp; <Icon type="fontawesome" name="angle-right" />&nbsp;
-							Playlists
-						</h4>
-						<section className="grid-wrapper">
-							<PlaylistGrid playlists={playlists} show_source_icon />
-							<LazyLoadListener enabled={this.props['playlists_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('playlists') }/>
-						</section>
-					</div>
-				)
-				break;
-
-			case 'track':
-				return (
-					<div>
-						<h4>
-							<URILink type="search" uri={"search:all:"+this.state.term}>
-								Search
-							</URILink>
-							&nbsp; <Icon type="fontawesome" name="angle-right" />&nbsp;
-							Tracks
-						</h4>
-						<section className="list-wrapper">
-							<TrackList tracks={tracks} uri={'iris:search:'+this.state.type+':'+this.state.term} show_source_icon />
-							<LazyLoadListener enabled={this.props['tracks_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('tracks') }/>
-						</section>
-					</div>
-				)
-				break;
-
-			case 'all':
-			default:
-			
-				if (artists.length > 0){
-					var artists_section = (					
-						<section>
-							<div className="inner">								
-								<URILink type="search" uri={"search:artist:"+this.state.term}>
-									<h4>Artists</h4>
-								</URILink>
-								<ArtistGrid mini show_source_icon artists={artists.slice(0,6)} />
-								{artists.length >= 6 ? <URILink type="search" uri={"search:artist:"+this.state.term} className="button button--default">
-									All artists ({artists.length})
-								</URILink> : null}
-							</div>
-						</section>
-					)
-				} else {
-					var artists_section = null;
-				}
-
-				if (albums.length > 0){
-					var albums_section = (					
-						<section>
-							<div className="inner">						
-								<URILink type="search" uri={"search:album:"+this.state.term}>
-									<h4>Albums</h4>
-								</URILink>
-								<AlbumGrid mini show_source_icon albums={albums.slice(0,6)} />
-								{albums.length >= 6 ? <URILink type="search" uri={"search:album:"+this.state.term} className="button button--default">
-									All albums ({albums.length})
-								</URILink> : null}
-							</div>
-						</section>
-					)
-				} else {
-					var albums_section = null;
-				}
-			
-				if (playlists.length > 0){
-					var playlists_section = (					
-						<section>
-							<div className="inner">						
-								<URILink type="search" uri={"search:playlist:"+this.state.term}>
-									<h4>Playlists</h4>
-								</URILink>
-								<PlaylistGrid mini show_source_icon playlists={playlists.slice(0,6)} />
-								{playlists.length >= 6 ? <URILink type="search" uri={"search:playlist:"+this.state.term} className="button button--default">
-									All playlists ({playlists.length})
-								</URILink> : null}
-							</div>
-						</section>
-					)
-				} else {
-					var playlists_section = null;
-				}
-
-				if (tracks.length > 0){
-					var tracks_section = (
-						<section className="list-wrapper">
-							<TrackList tracks={tracks} uri={'iris:search:'+this.state.type+':'+this.state.term} show_source_icon />
-							<LazyLoadListener loading={this.props['tracks_more'] && spotify_search_enabled} loadMore={ () => this.loadMore('tracks') }/>
-						</section>
-					)
-				} else {
-					var tracks_section = null;
-				}
-
-				return (
-					<div>
-						<div className="search-result-sections cf">
-							{artists_section}
-							{albums_section}
-							{playlists_section}
-						</div>
-						{tracks_section}
-					</div>
-				)
-		}
-	}
-
-	render(){
-		var type_options = [
-			{
-				value: 'all',
-				label: 'All'
-			},
-			{
-				value: 'artist',
-				label: 'Artist'
-			},
-			{
-				value: 'album',
-				label: 'Album'
-			},
-			{
-				value: 'playlist',
-				label: 'Playlist'
-			},
-			{
-				value: 'track',
-				label: 'Track'
-			}
-		];
-
-		var sort_options = [
-			{
-				value: 'followers',
-				label: 'Popularity'
-			},
-			{
-				value: 'name',
-				label: 'Name'
-			},
-			{
-				value: 'artists.name',
-				label: 'Artist'
-			},
-			{
-				value: 'duration',
-				label: 'Duration'
-			},
-			{
-				value: 'uri',
-				label: 'Source'
-			}
-		];
-
-		var provider_options = [];
-		for (var i = 0; i < this.props.uri_schemes.length; i++){
-			provider_options.push({
-				value: this.props.uri_schemes[i],
-				label: helpers.titleCase(this.props.uri_schemes[i].replace(':','').replace('+',' '))
-			});
-		}
 
 		var options = (
 			<span>
-				<DropdownField 
-					icon="category" 
-					name="Type" 
-					value={this.state.type} 
-					options={type_options} 
-					handleChange={value => {this.setState({type: value}); this.search(value, this.state.term)}}
-				/>
 				<DropdownField 
 					icon="sort" 
 					name="Sort" 
@@ -420,7 +383,29 @@ class Search extends React.Component{
 				/>
 
 				<div className="content-wrapper">
-					{ this.renderResults() }
+					<Switch>
+
+						<Route path="/search/artist/:term">
+							{this.renderArtists(artists, spotify_search_enabled)}
+						</Route>
+
+						<Route path="/search/album/:term">
+							{this.renderAlbums(albums, spotify_search_enabled)}
+						</Route>
+
+						<Route path="/search/playlist/:term">
+							{this.renderPlaylists(playlists, spotify_search_enabled)}
+						</Route>
+
+						<Route path="/search/track/:term">
+							{this.renderTracks(tracks, spotify_search_enabled)}
+						</Route>
+
+						<Route path="/search">
+							{this.renderAll(artists, albums, playlists, tracks, spotify_search_enabled)}
+						</Route>
+
+					</Switch>
 				</div>
 			</div>
 		);

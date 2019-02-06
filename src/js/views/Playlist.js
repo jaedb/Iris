@@ -47,6 +47,12 @@ class Playlist extends React.Component{
 	}
 
 	componentWillReceiveProps(nextProps){
+
+		// Follow a URI moved_to instruction
+		if (this.props.playlist && nextProps.playlist && this.props.playlist.moved_to != nextProps.playlist.moved_to){
+			this.props.history.push('/playlist/'+encodeURIComponent(nextProps.playlist.moved_to));
+		}
+
 		if (nextProps.uri != this.props.uri){
 			this.props.coreActions.loadPlaylist(nextProps.uri);
 		} else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
@@ -219,7 +225,7 @@ class Playlist extends React.Component{
 					<ul className="details">
 						{!this.props.slim_mode ? <li><Icon type="fontawesome" name={helpers.sourceIcon(playlist.uri)} /></li> : null }
 						<li>
-							{playlist.tracks_total ? playlist.tracks_total : (playlist.tracks ? playlist.tracks.length : '0')} tracks,&nbsp;
+							{playlist.tracks_total ? playlist.tracks_total : '0'} tracks{playlist.tracks_total && playlist.tracks_total > 0 ? ',' : null}&nbsp;
 							<Dater type="total-time" data={playlist.tracks} />
 						</li>
 						{!this.props.slim_mode && playlist.followers !== undefined ? <li>{playlist.followers.toLocaleString()} followers</li> : null }
@@ -251,7 +257,12 @@ class Playlist extends React.Component{
 }
 
 const mapStateToProps = (state, ownProps) => {
+
+	// Decode the URI, and then re-encode all the spaces
+	// This is needed as Mopidy encodes spaces in playlist URIs (but not other characters)
 	var uri = decodeURIComponent(ownProps.match.params.uri);
+	uri = uri.replace(/\s/g, '%20');
+
 	return {
 		uri: uri,
 		allow_reporting: state.ui.allow_reporting,

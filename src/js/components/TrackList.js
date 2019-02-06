@@ -409,7 +409,7 @@ class TrackList extends React.Component{
 									mini_zones={this.props.slim_mode || helpers.isTouchDevice()}
 									track={track} 
 									track_context={this.props.track_context} 
-									can_sort={this.props.context == 'queue' || this.props.context == 'editable-playlist'} 
+									can_sort={this.props.track_context == 'queue' || this.props.track_context == 'editable-playlist'} 
 									selected={this.props.selected_tracks.includes(track_key)} 
 									play_state={this.props.play_state} 
 									dragger={this.props.dragger} 

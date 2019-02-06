@@ -59,10 +59,10 @@ export default class Notifications extends React.Component{
 							case 'share-configuration-received':
 								return (
 									<div className={"notification notification--info"} key={notification.key} data-key={notification.key} data-duration={notification.duration}>
-										<Icon name="close" className="close-button" onClick={ e => this.props.uiActions.removeNotification(notification.key, true) } />
+										<Icon name="close" className="notification__close-button" onClick={ e => this.props.uiActions.removeNotification(notification.key, true) } />
 										
-										<h4>Configuration shared</h4>
-										<div className="content">
+										<h4 className="notification__title">Configuration shared</h4>
+										<div className="notification__content">
 											<p>Another user has shared their configuration with you. This includes:</p>
 											<ul>
 												{notification.configuration.ui ? <li>User interface</li> : null}
@@ -72,18 +72,22 @@ export default class Notifications extends React.Component{
 											</ul>
 											<p>Do you want to import this?</p>
 										</div>
-										<br />
-										<a className="button button--default" onClick={e => this.importConfiguration(notification.key, notification.configuration)}>Import</a>
+										<div className="notification__actions">
+											<a className="notification__actions__item button button--default" onClick={e => this.importConfiguration(notification.key, notification.configuration)}>Import</a>
+										</div>
 									</div>
 								)
 
 							default:
 								return (
 									<div className={"notification notification--"+notification.type+(notification.closing ? ' closing' : '')} key={notification.key} data-key={notification.key} data-duration={notification.duration}>
-										<Icon name="close" className="close-button" onClick={ e => this.props.uiActions.removeNotification(notification.key, true) } />
-										{notification.title ? <h4>{notification.title}</h4> : null}
-										{notification.content ? <p className="content" dangerouslySetInnerHTML={{__html: notification.content}}></p> : null}
-										{notification.description ? <p className="description" dangerouslySetInnerHTML={{__html: notification.description}}></p> : null }
+										<Icon name="close" className="notification__close-button" onClick={ e => this.props.uiActions.removeNotification(notification.key, true) } />
+										{notification.title ? <h4 className="notification__title">{notification.title}</h4> : null}
+										{notification.content ? <div className="notification__content">{notification.content}</div> : null}
+										{notification.description ? <div className="notification__description">{notification.description}</div> : null }
+										{notification.links ? <div className="notification__actions">{notification.links.map((link, i) => {
+											return <a className="notification__actions__item button button--secondary" href={link.url} target={link.new_window ? "_blank" : "self"} key={i}>{link.text}</a>
+										})}</div> : null }
 									</div>
 								)
 						}
@@ -110,7 +114,7 @@ export default class Notifications extends React.Component{
 							</div>
 						</div>
 						{process.message}
-						<Icon name="close" className="close-button" onClick={e => {this.props.uiActions.cancelProcess(process.key)}} />
+						<Icon name="close" className="notification__close-button" onClick={e => {this.props.uiActions.cancelProcess(process.key)}} />
 					</div>
 				)
 

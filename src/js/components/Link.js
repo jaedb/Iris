@@ -21,7 +21,18 @@ export default class extends React.Component{
 	}
 
 	isLinkActive(link){
-		return this.props.history.location.pathname.startsWith(link);
+
+		// Decode both links
+		// This handles issues where one link is encoded and the other isn't,
+		// but they're otherwise identical
+		link = decodeURIComponent(link);
+		var current_link = decodeURIComponent(this.props.history.location.pathname);
+
+		if (this.props.exact){
+			return current_link === link;
+		} else {
+			return current_link.startsWith(link);
+		}
 	}
 
 	render(){

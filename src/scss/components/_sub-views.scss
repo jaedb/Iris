@@ -1,13 +1,13 @@
 
 .sub-views {
-	.option {
+	&__option {
 		@include feature_font();
 		color: colour(white);
 		display: inline-block;
 		margin-right: 25px;
 		font-size: 15px;
 		font-weight: 500;
-		border-bottom: 3px solid transparent;
+		border-bottom: 3px solid transparent !important;
 		cursor: pointer;
 
 		.light-theme & {
@@ -18,16 +18,16 @@
 			margin: 8px 0 4px;
 		}
 
-		&.active {
-			border-color: colour(white);
+		&--active {
+			border-color: colour(white) !important;
 
 			.light-theme & {
 				border-color: colour(darkest_grey)
 			}
 		}
 
-		&:not(.active):hover {
-			border-color: rgba(255,255,255,0.2);
+		&:not(.sub-views__option--active):hover {
+			border-color: rgba(255,255,255,0.2) !important;
 
 			.light-theme & {
 				border-color: rgba(0,0,0,0.2);
@@ -36,7 +36,7 @@
 	}
 
 	@include responsive($bp_medium){
-		.option {
+		&__option {
 			margin-right: 15px;
 		}
 	}

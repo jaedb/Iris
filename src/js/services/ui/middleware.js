@@ -183,7 +183,8 @@ const UIMiddleware = (function(){
                             var data = {
                                 key: (broadcast.key ? broadcast.key : null),
                                 title: (broadcast.title ? broadcast.title : null),
-                                content: broadcast.message,
+                                content: (broadcast.message ? broadcast.message : null),
+                                links: (broadcast.links ? broadcast.links : null),
                                 type: 'broadcast',
                                 sticky: true
                             }
