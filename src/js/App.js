@@ -356,6 +356,9 @@ class App extends React.Component{
 		if (this.props.slim_mode){
 			className += ' slim-mode';
 		}
+		if (this.props.smooth_scrolling_enabled){
+			className += ' smooth-scrolling-enabled';
+		}
 		if (helpers.isTouchDevice()){
 			className += ' touch';
 		} else {
@@ -451,6 +454,7 @@ class App extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		theme: state.ui.theme,
+		smooth_scrolling_enabled: state.ui.smooth_scrolling_enabled,
 		shortkeys_enabled: state.ui.shortkeys_enabled,
 		allow_reporting: state.ui.allow_reporting,
 		touch_dragging: state.ui.touch_dragging,

@@ -377,6 +377,7 @@ class Search extends React.Component{
 				</Header>
 
 				<SearchForm 
+					history={this.props.history}
 					term={this.state.term}
 					onBlur={term => this.setState({term: term})}
 					onSubmit={term => this.search(this.state.type, term)}

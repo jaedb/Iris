@@ -2699,7 +2699,8 @@ body {
     body.context-menu-open {
       overflow-y: hidden; } }
 
-.smooth-scroll {
+.smooth-scroll.smooth-scrolling-enabled,
+.smooth-scrolling-enabled .smooth-scroll {
   scroll-behavior: smooth; }
 
 main {
@@ -2828,6 +2829,9 @@ h4 {
     padding-top: 40px; }
   h4 .dropdown-field {
     margin-left: 10px; }
+  h4 .button {
+    margin-left: 10px;
+    margin-bottom: -6px; }
 
 h5 {
   font-size: 1rem;
@@ -3445,9 +3449,12 @@ select {
       background: #000000;
       opacity: 0.25; }
   .button--discrete {
-    border: transparent; }
-    .button--discrete[disabled], .button--discrete[disabled="disabled"] {
-      border-color: #cecac4 !important; }
+    background: transparent;
+    color: #FFFFFF; }
+    .light-theme .button--discrete {
+      color: #121212; }
+    .button--discrete:before {
+      display: none; }
   .button--working {
     position: relative;
     cursor: wait !important;

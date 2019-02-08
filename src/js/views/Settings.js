@@ -320,6 +320,16 @@ class Settings extends React.Component {
 									Enable shortkeys
 								</span>
 							</label>
+							<label>
+								<input 
+									type="checkbox"
+									name="smooth_scrolling_enabled"
+									checked={ this.props.ui.smooth_scrolling_enabled }
+									onChange={ e => this.props.uiActions.set({ smooth_scrolling_enabled: !this.props.ui.smooth_scrolling_enabled })} />
+								<span className="label">
+									Enable smooth scrolling
+								</span>
+							</label>
 						</div>
 					</div>
 

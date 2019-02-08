@@ -337,11 +337,15 @@ select {
 	}
 
 	&--discrete {
-		border: transparent;
+		background: transparent;
+		color: colour(white);
 
-		&[disabled],
-		&[disabled="disabled"] {
-			border-color: colour(light_grey) !important;
+		.light-theme & {
+			color: colour(darkest_grey);
+		}
+
+		&:before {
+			display: none;
 		}
 	}
 

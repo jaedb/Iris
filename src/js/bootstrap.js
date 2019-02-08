@@ -25,7 +25,6 @@ import googleMiddleware from './services/google/middleware';
 import snapcastMiddleware from './services/snapcast/middleware';
 import localstorageMiddleware from './services/localstorage/middleware';
 
-// set application defaults
 var initialState = {
 	core: {
 		outputs: [],
@@ -43,8 +42,8 @@ var initialState = {
 	},
 	ui: {
 		theme: 'dark',
+		smooth_scrolling_enabled: true,
 		shortkeys_enabled: true,
-		disable_parallax: false,
 		allow_reporting: true,
 		window_focus: true,
 		slim_mode: false,
@@ -70,7 +69,7 @@ var initialState = {
 		username: null,
 		connections: {},
 		version: {
-			current: '0.0.0'
+			current: null
 		},
 		config: {}
 	},

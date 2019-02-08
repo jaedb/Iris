@@ -204,6 +204,9 @@ class Artist extends React.Component{
 							options={filter_options}
 							handleChange={value => {this.setFilter(value); this.props.uiActions.hideContextMenu() }}
 						/>
+						{this.props.sort || this.props.filter ? <a className="button button--discrete button--small" onClick={e => {this.setFilter(null); this.setSort(null);}}>
+							<Icon name="clear" />Reset
+						</a> : null}
 					</h4>
 
 					<section className="grid-wrapper no-top-padding">
