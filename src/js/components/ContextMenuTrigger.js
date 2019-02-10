@@ -1,5 +1,5 @@
 
-import React, { PropTypes } from 'react'
+import React from 'react'
 import Icon from './Icon'
 
 export default class ContextMenuTrigger extends React.Component{

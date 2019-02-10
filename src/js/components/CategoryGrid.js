@@ -1,7 +1,7 @@
 
 
 
-import React, { PropTypes } from 'react'
+import React from 'react'
 import GridItem from './GridItem'
 
 export default class CategoryGrid extends React.Component{

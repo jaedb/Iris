@@ -1,5 +1,5 @@
 
-import React, { PropTypes } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
@@ -257,7 +257,7 @@ class Track extends React.Component{
 					<ContextMenuTrigger onTrigger={e => this.handleContextMenu(e)} />
 				</div>
 
-				{!this.props.genius_authorized ? <p className="no-results">Want track lyrics? Authorize Genius under <Link to="/settings/genius" scrollTo="services-menu">Settings</Link>.</p> : null}
+				{!this.props.genius_authorized ? <p className="no-results">Want track lyrics? Authorize Genius under <Link to="/settings/genius" scrollTo="#services-menu">Settings</Link>.</p> : null}
 				{this.props.genius_authorized ? this.renderLyricsSelector() : null}
 				{this.props.genius_authorized ? this.renderLyrics() : null}
 

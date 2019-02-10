@@ -1,5 +1,5 @@
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Redirect } from 'react-router';
@@ -182,7 +182,7 @@ class Artist extends React.Component{
 
 				<div className="col col--w5"></div>
 
-				{artist.related_artists && artist.related_artists.length > 0 ? <div className="col col--w25 related-artists"><h4>Related artists</h4><div className="list-wrapper"><RelatedArtists artists={artist.related_artists.slice(0,6)} /></div><Link to={'/artist/'+encodeURIComponent(this.props.uri)+'/related-artists'} scrollTo="sub-views-menu" className="button button--default">All related artists</Link></div> : null}
+				{artist.related_artists && artist.related_artists.length > 0 ? <div className="col col--w25 related-artists"><h4>Related artists</h4><div className="list-wrapper"><RelatedArtists artists={artist.related_artists.slice(0,6)} /></div><Link to={'/artist/'+encodeURIComponent(this.props.uri)+'/related-artists'} scrollTo="#sub-views-menu" className="button button--default">All related artists</Link></div> : null}
 
 				<div className="cf"></div>
 
@@ -362,7 +362,7 @@ class Artist extends React.Component{
 								activeClassName="sub-views__option--active"
 								className="sub-views__option"
 								to={'/artist/'+encodeURIComponent(this.props.uri)}
-								scrollTo="sub-views-menu">
+								scrollTo="#sub-views-menu">
 									<h4>Overview</h4>
 							</Link>
 							{this.props.artist.tracks_uris && this.props.artist.tracks_uris.length > 10 ? <Link
@@ -371,7 +371,7 @@ class Artist extends React.Component{
 								activeClassName="sub-views__option--active"
 								className="sub-views__option"
 								to={'/artist/'+encodeURIComponent(this.props.uri)+'/tracks'}
-								scrollTo="sub-views-menu">
+								scrollTo="#sub-views-menu">
 									<h4>Tracks</h4>
 							</Link> : null}
 							{this.props.artist.related_artists_uris ? <Link
@@ -380,7 +380,7 @@ class Artist extends React.Component{
 								activeClassName="sub-views__option--active"
 								className="sub-views__option"
 								to={'/artist/'+encodeURIComponent(this.props.uri)+'/related-artists'}
-								scrollTo="sub-views-menu">
+								scrollTo="#sub-views-menu">
 									<h4>Related artists</h4>
 							</Link> : null}
 							<Link
@@ -389,7 +389,7 @@ class Artist extends React.Component{
 								activeClassName="sub-views__option--active"
 								className="sub-views__option"
 								to={'/artist/'+encodeURIComponent(this.props.uri)+'/about'}
-								scrollTo="sub-views-menu">
+								scrollTo="#sub-views-menu">
 									<h4>About</h4>
 							</Link>
 						</div>

@@ -1,5 +1,5 @@
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import { createStore, bindActionCreators } from 'redux';
 import { BrowserRouter, Route, Switch, Link } from "react-router-dom";
@@ -147,10 +147,13 @@ class App extends React.Component{
 				ReactGA.pageview(this.props.location.pathname);
 			}
 
-			// Scroll to top of <main>
-			// This doesn't know the difference between forward or backward navigation
-			// so isn't quite a right fit
-			//document.getElementById('main').scrollTo(0, 0);
+			// If the location has a "scroll_position" state variable, scroll to it.
+			// This is invisibly injected to the history by the Link component when navigating, so 
+			// hitting back in the browser allows us to restore the position
+			var location_state = (this.props.location.state ? this.props.location.state : {});
+			if (location_state.scroll_position){
+				helpers.scrollTo(parseInt(location_state.scroll_position), false);
+			}
 
 			// Hide our sidebar
 			this.props.uiActions.toggleSidebar(false);

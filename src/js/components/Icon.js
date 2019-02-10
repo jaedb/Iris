@@ -1,5 +1,5 @@
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 import FontAwesome from 'react-fontawesome';
 
 export default class Icon extends React.Component{

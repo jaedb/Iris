@@ -1,5 +1,5 @@
 
-import React, { PropTypes } from 'react'
+import React from 'react'
 
 import Icon from './Icon';
 import ContextMenuTrigger from './ContextMenuTrigger';

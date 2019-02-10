@@ -1,21 +1,21 @@
 
-import React, { PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
+import React from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+
 import Link from '../../components/Link';
+import Header from '../../components/Header';
+import Icon from '../../components/Icon';
+import AlbumGrid from '../../components/AlbumGrid';
+import Parallax from '../../components/Parallax';
+import Thumbnail from '../../components/Thumbnail';
+import ArtistSentence from '../../components/ArtistSentence';
+import LazyLoadListener from '../../components/LazyLoadListener';
 
-import Header from '../../components/Header'
-import Icon from '../../components/Icon'
-import AlbumGrid from '../../components/AlbumGrid'
-import Parallax from '../../components/Parallax'
-import Thumbnail from '../../components/Thumbnail'
-import ArtistSentence from '../../components/ArtistSentence'
-import LazyLoadListener from '../../components/LazyLoadListener'
-
-import * as helpers from '../../helpers'
-import * as uiActions from '../../services/ui/actions'
-import * as mopidyActions from '../../services/mopidy/actions'
-import * as spotifyActions from '../../services/spotify/actions'
+import * as helpers from '../../helpers';
+import * as uiActions from '../../services/ui/actions';
+import * as mopidyActions from '../../services/mopidy/actions';
+import * as spotifyActions from '../../services/spotify/actions';
 
 class DiscoverNewReleases extends React.Component{
 
@@ -141,9 +141,9 @@ const mapStateToProps = (state, ownProps) => {
 		load_queue: state.ui.load_queue,
 		artists: state.core.artists,
 		albums: state.core.albums,
-		new_releases: state.spotify.new_releases,
-		new_releases_more: state.spotify.new_releases_more,
-		new_releases_total: state.spotify.new_releases_total
+		new_releases: (state.spotify.new_releases ? state.spotify.new_releases : null),
+		new_releases_more: (state.spotify.new_releases_more ? state.spotify.new_releases_more : null),
+		new_releases_total: (state.spotify.new_releases_total ? state.spotify.new_releases_total : null)
 	}
 }
 

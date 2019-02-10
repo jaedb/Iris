@@ -1438,12 +1438,13 @@ export let titleCase = function(string){
 /**
  * Scroll to the top of the page
  * Our 'content' is housed in the <main> DOM element
+ * We make sure the target supports scrolling before we attempt it
+ * Safari and IE Edge, well, don't.
  *
  * @param target String (element ID, optional)
  * @param smooth_scroll Boolean (optional)
  **/
 export let scrollTo = function(target = null, smooth_scroll = false){
-
 	var main = document.getElementById('main');
 
 	// Remove our smooth-scroll class
@@ -1451,18 +1452,34 @@ export let scrollTo = function(target = null, smooth_scroll = false){
 		main.classList.remove("smooth-scroll");
 	}
 
-	// And now scroll to it
-	// We make sure the target supports scrolling before we attempt it
-	// Safari and IE Edge, well, don't.
-	if (target){
-		var element = document.getElementById(target);
-		if (typeof element.scrollIntoView === "function"){
+	// Target is a number, so treat as pixel position
+	if (target && Number.isInteger(target)){
+		if (typeof main.scrollTo === "function"){
+			main.scrollTop = target;
+		}
+
+
+	// Target is a string representing a DOM element by class/id
+	} else if (target){
+
+		var element = null;
+
+		if (target.charAt(0) == '#'){
+			element = document.getElementById(target);
+		} else if (target.charAt(0) == '.'){
+			element = document.getElementsByClassName(target);
+			if (element.length > 0){
+				element = element[0];
+			}
+		} else {
+			console.error("Invalid target type '"+target+"'. Must start with '#' or '.'.");
+		}
+
+		if (element && typeof element.scrollIntoView === "function"){
 			element.scrollIntoView();
 		}
 	} else {
-		if (typeof main.scrollTo === "function"){
-			main.scrollTo(0, 0);
-		}
+		main.scrollTop = 0;
 	}
 
 	// Now reinstate smooth scroll
@@ -1497,4 +1514,3 @@ export let upgradeSpotifyPlaylistUris = function(uris){
 export let upgradeSpotifyPlaylistUri = function(uri){
 	return upgradeSpotifyPlaylistUris([uri])[0];
 }
-

@@ -1,5 +1,5 @@
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import ReactGA from 'react-ga';
@@ -50,7 +50,7 @@ class EditCommand extends React.Component{
 		// A bit hacky, but wait for a moment to allow the back navigation
 		// and then scroll down to our commands list
 		setTimeout(() => {
-				helpers.scrollTo("commands-setup");
+				helpers.scrollTo("#commands-setup");
 			},
 			10
 		);
@@ -65,7 +65,7 @@ class EditCommand extends React.Component{
 		// A bit hacky, but wait for a moment to allow the back navigation
 		// and then scroll down to our commands list
 		setTimeout(() => {
-				helpers.scrollTo("commands-setup");
+				helpers.scrollTo("#commands-setup");
 			},
 			10
 		);
