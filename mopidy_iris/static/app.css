@@ -4516,24 +4516,32 @@ select {
   0% {
     transform: translateX(0px); }
   99% {
-    transform: translateX(-15px); }
+    transform: translateX(-15px);
+    opacity: 0; }
   100% {
-    transform: translateX(0px); } }
+    transform: translateX(0px);
+    opacity: 0; } }
 
 @keyframes slide_right {
   0% {
     transform: translateX(0px); }
   99% {
-    transform: translateX(15px); }
+    transform: translateX(15px);
+    opacity: 0; }
   100% {
-    transform: translateX(0px); } }
-    @media (max-width: 799px) {
-      .playback-controls .current-track--transition {
-        opacity: 0; }
-        .playback-controls .current-track--transition-previous {
-          animation: slide_right 0.1s; }
-        .playback-controls .current-track--transition-next {
-          animation: slide_left 0.1s; } }
+    transform: translateX(0px);
+    opacity: 0; } }
+    .playback-controls .current-track__transition {
+      background: #3e3e3e; }
+      @media (max-width: 799px) {
+        .playback-controls .current-track__transition {
+          opacity: 1; }
+          .playback-controls .current-track__transition--previous {
+            animation: slide_right 0.1s; }
+          .playback-controls .current-track__transition--next {
+            animation: slide_left 0.1s; } }
+    .playback-controls .current-track--transitioning {
+      opacity: 0; }
     .light-theme .playback-controls .current-track {
       color: #121212; }
     .playback-controls .current-track .thumbnail {

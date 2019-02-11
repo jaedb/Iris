@@ -21,28 +21,34 @@
 
 		@keyframes slide_left {
 			0% { transform: translateX(0px); }
-			99% { transform: translateX(-15px); }
-			100% { transform: translateX(0px); }
+			99% { transform: translateX(-15px); opacity: 0; }
+			100% { transform: translateX(0px); opacity: 0; }
 		}
 
 		@keyframes slide_right {
 			0% { transform: translateX(0px); }
-			99% { transform: translateX(15px); }
-			100% { transform: translateX(0px); }
+			99% { transform: translateX(15px); opacity: 0; }
+			100% { transform: translateX(0px); opacity: 0; }
 		}
 
-		&--transition {
+		&__transition {
+			background: lighten(colour(dark_grey), 15%);
+			
 			@include responsive($bp_medium){
-				opacity: 0;
-				
-				&-previous {
+				opacity: 1;
+
+				&--previous {
 					animation: slide_right 0.1s;
 				}
 
-				&-next {
+				&--next {
 					animation: slide_left 0.1s;
 				}
 			}
+		}
+
+		&--transitioning {
+			opacity: 0;
 		}
 
 		.light-theme & {

@@ -390,7 +390,7 @@ const MopidyMiddleware = (function(){
                             'notification',
                             {
                                 notification: {
-                                    content: store.getState().pusher.username +' skipped <em>'+store.getState().core.current_track.name+'</em>',
+                                    content: store.getState().pusher.username +' skipped "'+store.getState().core.current_track.name+'"',
                                     icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
                                 }
                             }

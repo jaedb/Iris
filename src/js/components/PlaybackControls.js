@@ -25,7 +25,8 @@ class PlaybackControls extends React.Component{
 		this.stream = null;
 		this.state = {
 			expanded: false,
-			current_track_transition: null
+			transition_track: null,
+			transition_direction: null
 		}
 	}
 
@@ -130,27 +131,33 @@ class PlaybackControls extends React.Component{
 
 			// Swipe to the left = previous track
 			if (this.start_position.x < end_position.x){
+				this.setTransition('previous');
 				this.props.mopidyActions.previous();
-				this.currentTrackTransition('previous');
 
 			// Swipe to the right = skip track
 			} else if (this.start_position.x > end_position.x){
+				this.setTransition('next');
 				this.props.mopidyActions.next();
-				this.currentTrackTransition('next');
 			}
 		}
 
 		this.end_time = timestamp;
 	}
 
-	currentTrackTransition(transition){
-		this.setState({current_track_transition: transition});
+	setTransition(direction){
+		this.setState({
+			transition_track: this.props.current_track,
+			transition_direction: direction
+		});
 
 		var self = this;
 		setTimeout(() => {
-				self.setState({current_track_transition: null})
+				this.setState({
+					transition_track: null,
+					transition_direction: null
+				});
 			},
-			100
+			150
 		);
 	}
 
@@ -197,18 +204,28 @@ class PlaybackControls extends React.Component{
 
 				{this.props.next_track && this.props.next_track.images ? <Thumbnail className="hide" size="large" images={this.props.next_track.images} /> : null}
 				
+				{this.state.transition_track && this.state.transition_direction ? <div 
+					className={"current-track current-track__transition current-track__transition--"+this.state.transition_direction}>
+						<div className="title">
+							{this.state.transition_track.name}
+						</div>
+						<div className="artist">
+							<ArtistSentence artists={this.state.transition_track.artists} nolinks={true} />
+						</div>
+					</div> : null}
+				
 				<div 
-					className={"current-track"+(this.state.current_track_transition ? " current-track--transition current-track--transition-"+this.state.current_track_transition : "")}
+					className={this.state.transition_track && this.state.transition_direction ? "current-track current-track--transitioning" : "current-track"}
 					onTouchStart={e => this.handleTouchStart(e)}
 					onTouchEnd={e => this.handleTouchEnd(e)}>
 						<Link className="thumbnail-wrapper" to={'/kiosk-mode'}>
 							<Thumbnail size="small" images={images} />
 						</Link>
 						<div className="title">
-							{ this.props.current_track ? this.props.current_track.name : <span>-</span> }
+							{this.props.current_track ? this.props.current_track.name : <span>-</span>}
 						</div>
 						<div className="artist">
-							{this.props.current_track ? <ArtistSentence artists={ this.props.current_track.artists } nolinks={this.props.slim_mode} /> : <ArtistSentence />}
+							{this.props.current_track ? <ArtistSentence artists={this.props.current_track.artists} nolinks={this.props.slim_mode} /> : <ArtistSentence />}
 						</div>
 				</div>
 

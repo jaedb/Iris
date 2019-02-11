@@ -1465,9 +1465,9 @@ export let scrollTo = function(target = null, smooth_scroll = false){
 		var element = null;
 
 		if (target.charAt(0) == '#'){
-			element = document.getElementById(target);
+			element = document.getElementById(target.substring(1));
 		} else if (target.charAt(0) == '.'){
-			element = document.getElementsByClassName(target);
+			element = document.getElementsByClassName(target.substring(1));
 			if (element.length > 0){
 				element = element[0];
 			}
