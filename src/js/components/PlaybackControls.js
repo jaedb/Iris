@@ -25,6 +25,7 @@ class PlaybackControls extends React.Component{
 		this.stream = null;
 		this.state = {
 			expanded: false,
+			current_track: null,
 			transition_track: null,
 			transition_direction: null
 		}
@@ -90,6 +91,16 @@ class PlaybackControls extends React.Component{
 				this.stream = null;
 			}
 		}
+
+		if ((!this.props.current_track && nextProps.current_track) || (this.props.current_track && !nextProps.current_track)){
+			console.log("One was null, the other wasn't", {old: this.props.current_track, next: nextProps.current_track});
+			this.setState({current_track: nextProps.current_track});
+		}
+
+		if (this.props.current_track && nextProps.current_track && this.props.current_track.uri !== nextProps.current_track.uri){
+			console.log("URI different", {old: this.props.current_track.uri, next: nextProps.current_track.uri});
+			this.setState({current_track: nextProps.current_track});
+		}
 	}
 
 	handleTouchStart(e){
@@ -146,7 +157,8 @@ class PlaybackControls extends React.Component{
 
 	setTransition(direction){
 		this.setState({
-			transition_track: this.props.current_track,
+			current_track: null,
+			transition_track: this.state.current_track,
 			transition_direction: direction
 		});
 
@@ -157,7 +169,7 @@ class PlaybackControls extends React.Component{
 					transition_direction: null
 				});
 			},
-			150
+			200
 		);
 	}
 
@@ -195,8 +207,8 @@ class PlaybackControls extends React.Component{
 
 	render(){
 		var images = false
-		if (this.props.current_track && this.props.current_track.images){
-			images = this.props.current_track.images
+		if (this.state.current_track && this.state.current_track.images){
+			images = this.state.current_track.images
 		}
 
 		return (
@@ -222,10 +234,10 @@ class PlaybackControls extends React.Component{
 							<Thumbnail size="small" images={images} />
 						</Link>
 						<div className="title">
-							{this.props.current_track ? this.props.current_track.name : <span>-</span>}
+							{this.state.current_track ? this.state.current_track.name : <span>-</span>}
 						</div>
 						<div className="artist">
-							{this.props.current_track ? <ArtistSentence artists={this.props.current_track.artists} nolinks={this.props.slim_mode} /> : <ArtistSentence />}
+							{this.state.current_track ? <ArtistSentence artists={this.state.current_track.artists} nolinks={this.props.slim_mode} /> : <ArtistSentence />}
 						</div>
 				</div>
 
@@ -252,7 +264,7 @@ class PlaybackControls extends React.Component{
 				<section className="progress">
 					<ProgressSlider />
 					<span className="current">{ this.props.time_position ? <Dater type="length" data={this.props.time_position} /> : '-' }</span>
-					<span className="total">{ this.props.current_track ? <Dater type="length" data={this.props.current_track.duration} /> : '-' }</span>
+					<span className="total">{ this.state.current_track ? <Dater type="length" data={this.state.current_track.duration} /> : '-' }</span>
 				</section>
 
 				<section className="volume">

@@ -69887,6 +69887,7 @@ var PlaybackControls = function (_React$Component) {
 		_this.stream = null;
 		_this.state = {
 			expanded: false,
+			current_track: null,
 			transition_track: null,
 			transition_direction: null
 		};
@@ -69959,6 +69960,16 @@ var PlaybackControls = function (_React$Component) {
 					this.stream = null;
 				}
 			}
+
+			if (!this.props.current_track && nextProps.current_track || this.props.current_track && !nextProps.current_track) {
+				console.log("One was null, the other wasn't", { old: this.props.current_track, next: nextProps.current_track });
+				this.setState({ current_track: nextProps.current_track });
+			}
+
+			if (this.props.current_track && nextProps.current_track && this.props.current_track.uri !== nextProps.current_track.uri) {
+				console.log("URI different", { old: this.props.current_track.uri, next: nextProps.current_track.uri });
+				this.setState({ current_track: nextProps.current_track });
+			}
 		}
 	}, {
 		key: 'handleTouchStart',
@@ -70018,7 +70029,8 @@ var PlaybackControls = function (_React$Component) {
 			var _this2 = this;
 
 			this.setState({
-				transition_track: this.props.current_track,
+				current_track: null,
+				transition_track: this.state.current_track,
 				transition_direction: direction
 			});
 
@@ -70028,7 +70040,7 @@ var PlaybackControls = function (_React$Component) {
 					transition_track: null,
 					transition_direction: null
 				});
-			}, 150);
+			}, 200);
 		}
 	}, {
 		key: 'renderPlayButton',
@@ -70158,8 +70170,8 @@ var PlaybackControls = function (_React$Component) {
 			var _this7 = this;
 
 			var images = false;
-			if (this.props.current_track && this.props.current_track.images) {
-				images = this.props.current_track.images;
+			if (this.state.current_track && this.state.current_track.images) {
+				images = this.state.current_track.images;
 			}
 
 			return _react2.default.createElement(
@@ -70199,7 +70211,7 @@ var PlaybackControls = function (_React$Component) {
 					_react2.default.createElement(
 						'div',
 						{ className: 'title' },
-						this.props.current_track ? this.props.current_track.name : _react2.default.createElement(
+						this.state.current_track ? this.state.current_track.name : _react2.default.createElement(
 							'span',
 							null,
 							'-'
@@ -70208,7 +70220,7 @@ var PlaybackControls = function (_React$Component) {
 					_react2.default.createElement(
 						'div',
 						{ className: 'artist' },
-						this.props.current_track ? _react2.default.createElement(_ArtistSentence2.default, { artists: this.props.current_track.artists, nolinks: this.props.slim_mode }) : _react2.default.createElement(_ArtistSentence2.default, null)
+						this.state.current_track ? _react2.default.createElement(_ArtistSentence2.default, { artists: this.state.current_track.artists, nolinks: this.props.slim_mode }) : _react2.default.createElement(_ArtistSentence2.default, null)
 					)
 				),
 				_react2.default.createElement(
@@ -70257,7 +70269,7 @@ var PlaybackControls = function (_React$Component) {
 					_react2.default.createElement(
 						'span',
 						{ className: 'total' },
-						this.props.current_track ? _react2.default.createElement(_Dater2.default, { type: 'length', data: this.props.current_track.duration }) : '-'
+						this.state.current_track ? _react2.default.createElement(_Dater2.default, { type: 'length', data: this.state.current_track.duration }) : '-'
 					)
 				),
 				_react2.default.createElement(
