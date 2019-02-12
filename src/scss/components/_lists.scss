@@ -16,10 +16,6 @@
 		padding: 0 20px;
 		border-radius: 3px;
 
-		&:not(.no-click){
-			cursor: pointer;
-		}
-
 		&:before {
 			pointer-events: none;
 			content: '';
@@ -42,7 +38,9 @@
 			}
 		}
 
-		:root .notouch:not(.dragging) &:not(.no-click) {
+		:root .notouch:not(.dragging) &:not(.list__item--no-interaction){
+			cursor: pointer;
+			
 			&:hover {
 				cursor: pointer;
 				background: rgba(255,255,255,0.03);
@@ -57,7 +55,7 @@
 			}
 		}
 
-		:root .light-theme.notouch:not(.dragging) &:not(.no-click) {
+		:root .light-theme.notouch:not(.dragging) &:not(.no-click) &:not(.list__item--no-interaction) {
 			&:hover {
 				background: rgba(0,0,0,0.03);
 			}

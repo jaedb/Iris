@@ -92,14 +92,24 @@ class PlaybackControls extends React.Component{
 			}
 		}
 
+		// Started a track or changed to no track
 		if ((!this.props.current_track && nextProps.current_track) || (this.props.current_track && !nextProps.current_track)){
-			console.log("One was null, the other wasn't", {old: this.props.current_track, next: nextProps.current_track});
 			this.setState({current_track: nextProps.current_track});
 		}
 
+		// Direct swap-out of a track (with no 'null' intermediate state)
+		// This is precautionary and I've never been able to trigger it, but it's a good safety
 		if (this.props.current_track && nextProps.current_track && this.props.current_track.uri !== nextProps.current_track.uri){
-			console.log("URI different", {old: this.props.current_track.uri, next: nextProps.current_track.uri});
 			this.setState({current_track: nextProps.current_track});
+		}
+
+		// Images have just loaded
+		// A bit niggly to have to deeply check this...
+		if (this.props.current_track && nextProps.current_track){
+
+			if ((this.props.current_track.images && !nextProps.current_track.images) || (!this.props.current_track.images && nextProps.current_track.images)){
+				this.setState({current_track: nextProps.current_track});
+			}
 		}
 	}
 

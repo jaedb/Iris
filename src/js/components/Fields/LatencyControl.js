@@ -6,8 +6,7 @@ import * as helpers from '../../helpers';
 export default class LatencyControl extends React.Component{
 
 	constructor(props){
-		super(props);
-		
+		super(props);		
 		this.handleChange = helpers.throttle(this.handleChange.bind(this), 100);
 	}
 
@@ -28,7 +27,7 @@ export default class LatencyControl extends React.Component{
 			var width = percentage;
 			var negative = false;
 
-			if (width > 50) width = 50;
+			if (width > (this.props.max / 2)) width = this.props.max / 2;
 
 		// Negative value
 		// We reverse it to a positive for easier maths and style rules
@@ -43,7 +42,7 @@ export default class LatencyControl extends React.Component{
 			var negative = true;
 
 			if (left < 0) left = 0;
-			if (width > 50) width = 50;
+			if (width > (this.props.max / 2)) width = this.props.max / 2;
 		}
 
 		return (
@@ -52,8 +51,8 @@ export default class LatencyControl extends React.Component{
 					<div className="slider slider--latency">
 						<input 
 							type="range" 
-							min="-100" 
-							max="100" 
+							min={-(this.props.max)}
+							max={this.props.max} 
 							className="slider__input"
 							value={this.props.value}
 							onChange={e => this.handleChange(parseInt(e.target.value))}

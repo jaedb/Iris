@@ -105,7 +105,7 @@ class Services extends React.Component{
 		return (
 			<div>
 				{not_installed}
-				<div className="field">
+				<label className="field">
 					<div className="name">Country</div>
 					<div className="input">
 						<input
@@ -118,8 +118,8 @@ class Services extends React.Component{
 							An <a href="http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">ISO 3166-1 alpha-2</a> country code (eg <em>NZ</em>)
 						</div>
 					</div>
-				</div>
-				<div className="field">
+				</label>
+				<label className="field">
 					<div className="name">Locale</div>
 					<div className="input">
 						<input
@@ -132,7 +132,7 @@ class Services extends React.Component{
 							Lowercase <a href="http://en.wikipedia.org/wiki/ISO_639" target="_blank">ISO 639 language code</a> and an uppercase <a href="http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">ISO 3166-1 alpha-2 country code</a>, joined by an underscore (eg <em>en_NZ</em>)
 						</div>
 					</div>
-				</div>
+				</label>
 
 				<div className="field current-user">
 					<div className="name">Current user</div>
@@ -258,7 +258,7 @@ class Services extends React.Component{
 						</label>
 					</div>
 				</div>
-				<div className="field">
+				<label className="field">
 					<div className="name">Location</div>
 					<div className="input">
 						<input
@@ -269,7 +269,7 @@ class Services extends React.Component{
 							The full URL to your stream endpoint
 						</div>
 					</div>
-				</div>
+				</label>
 			</div>
 		);
 	}
