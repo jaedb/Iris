@@ -4526,14 +4526,29 @@ select {
   100% {
     transform: translateX(15px);
     opacity: 0; } }
+
+@keyframes fadeout {
+  0% {
+    opacity: 1; }
+  100% {
+    opacity: 0.1; } }
     .playback-controls .current-track__transition {
       z-index: 2;
       background: #3e3e3e; }
+      .playback-controls .current-track__transition .title,
+      .playback-controls .current-track__transition .artist {
+        background: orange;
+        animation-name: fadeout;
+        animation-duration: 0.2s;
+        transform: none !important; }
       @media (max-width: 799px) {
-        .playback-controls .current-track__transition--previous {
-          animation: slide_right 0.2s; }
-        .playback-controls .current-track__transition--next {
-          animation: slide_left 0.2s; } }
+        .playback-controls .current-track__transition {
+          animation-duration: 0.4s;
+          animation-timing-function: ease-out; }
+          .playback-controls .current-track__transition--previous {
+            animation-name: slide_right; }
+          .playback-controls .current-track__transition--next {
+            animation-name: slide_left; } }
     .light-theme .playback-controls .current-track {
       color: #121212; }
     .playback-controls .current-track .thumbnail {

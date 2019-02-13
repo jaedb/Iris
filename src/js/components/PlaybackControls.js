@@ -179,7 +179,7 @@ class PlaybackControls extends React.Component{
 					transition_direction: null
 				});
 			},
-			200
+			400
 		);
 	}
 

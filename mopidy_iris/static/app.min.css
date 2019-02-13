@@ -4528,12 +4528,32 @@ select {
     opacity: 0; } }
     .playback-controls .current-track__transition {
       z-index: 2;
-      background: #3e3e3e; }
+      background: #3e3e3e;
+      animation-duration: 0.4s;
+      animation-timing-function: ease-out; }
+      .playback-controls .current-track__transition .title,
+      .playback-controls .current-track__transition .artist {
+        opacity: 1;
+        animation-delay: 0.2s;
+        -webkit-animation-fill-mode: forwards;
+        animation-fill-mode: forwards;
+        animation-name: fadeout;
+        animation-duration: 0.2s;
+        animation-timing-function: linear;
+        animation-iteration-count: 1; }
+
+@keyframes fadeout {
+  0% {
+    opacity: 1;
+    transform: translateY(0px); }
+  100% {
+    opacity: 0;
+    transform: translateY(0px); } }
       @media (max-width: 799px) {
         .playback-controls .current-track__transition--previous {
-          animation: slide_right 0.2s; }
+          animation-name: slide_right; }
         .playback-controls .current-track__transition--next {
-          animation: slide_left 0.2s; } }
+          animation-name: slide_left; } }
     .light-theme .playback-controls .current-track {
       color: #121212; }
     .playback-controls .current-track .thumbnail {
