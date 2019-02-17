@@ -69976,8 +69976,8 @@ var PlaybackControls = function (_React$Component) {
 			// A bit niggly to have to deeply check this...
 			if (this.props.current_track && nextProps.current_track) {
 
-				if (this.props.current_track.images && !nextProps.current_track.images || !this.props.current_track.images && nextProps.current_track.images) {
-					this.setState({ current_track: nextProps.current_track });
+				if (this.props.current_track.images && !nextProps.current_track.images || !this.props.current_track.images && nextProps.current_track.images || this.props.current_track.images.length != nextProps.current_track.images.length) {
+					//this.setState({current_track: nextProps.current_track});
 				}
 			}
 		}
@@ -70044,13 +70044,15 @@ var PlaybackControls = function (_React$Component) {
 				transition_direction: direction
 			});
 
+			// Allow time for the animation to complete, then remove
+			// the transitioning track from state
 			var self = this;
 			setTimeout(function () {
 				_this2.setState({
 					transition_track: null,
 					transition_direction: null
 				});
-			}, 400);
+			}, 300);
 		}
 	}, {
 		key: 'renderPlayButton',
@@ -70194,13 +70196,17 @@ var PlaybackControls = function (_React$Component) {
 						className: "current-track current-track__transition current-track__transition--" + this.state.transition_direction },
 					_react2.default.createElement(
 						'div',
-						{ className: 'title' },
-						this.state.transition_track.name
-					),
-					_react2.default.createElement(
-						'div',
-						{ className: 'artist' },
-						_react2.default.createElement(_ArtistSentence2.default, { artists: this.state.transition_track.artists, nolinks: true })
+						{ className: 'text' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'title' },
+							this.state.transition_track.name
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'artist' },
+							_react2.default.createElement(_ArtistSentence2.default, { artists: this.state.transition_track.artists, nolinks: true })
+						)
 					)
 				) : null,
 				_react2.default.createElement(
@@ -70220,17 +70226,21 @@ var PlaybackControls = function (_React$Component) {
 					),
 					_react2.default.createElement(
 						'div',
-						{ className: 'title' },
-						this.state.current_track ? this.state.current_track.name : _react2.default.createElement(
-							'span',
-							null,
-							'-'
+						{ className: 'text' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'title' },
+							this.state.current_track ? this.state.current_track.name : _react2.default.createElement(
+								'span',
+								null,
+								'-'
+							)
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'artist' },
+							this.state.current_track ? _react2.default.createElement(_ArtistSentence2.default, { artists: this.state.current_track.artists, nolinks: this.props.slim_mode }) : _react2.default.createElement(_ArtistSentence2.default, null)
 						)
-					),
-					_react2.default.createElement(
-						'div',
-						{ className: 'artist' },
-						this.state.current_track ? _react2.default.createElement(_ArtistSentence2.default, { artists: this.state.current_track.artists, nolinks: this.props.slim_mode }) : _react2.default.createElement(_ArtistSentence2.default, null)
 					)
 				),
 				_react2.default.createElement(

@@ -11,7 +11,6 @@
 	transform-style: preserve-3d;
 
 	.current-track {
-		@include animate(0.1s);
 		position: absolute;
 		bottom: 50px;
 		width: 220px;
@@ -21,38 +20,38 @@
 		text-decoration: none;
 
 		@keyframes slide_left {
-			0% { transform: translateX(0px); opacity: 1; }
-			100% { transform: translateX(-15px); opacity: 0; }
+			0% {
+				transform: translateX(0px);
+				opacity: 1;
+			}
+			100% {
+				transform: translateX(-15px);
+				opacity: 0;
+			}
 		}
 
 		@keyframes slide_right {
-			0% { transform: translateX(0px); opacity: 1; }
-			100% { transform: translateX(15px); opacity: 0; }
-		}
-
-		@keyframes fadeout {
-		    0% {
-		    	opacity: 1;
-		    }
-		    100% {
-		    	opacity: 0.1;
-		    }
+			0% {
+				transform: translateX(0px);
+				opacity: 1;
+			}
+			100% {
+				transform: translateX(15px);
+				opacity: 0;
+			}
 		}
 
 		&__transition {
 			z-index: 2;
 			background: lighten(colour(dark_grey), 15%);
 
-			.title,
-			.artist {
-				background: orange;
-				animation-name: fadeout;
-				animation-duration: 0.2s;
-				transform: none !important;
+			.text {
+				@include animate(0.15s);
+				opacity: 0;
 			}
 
 			@include responsive($bp_medium){
-				animation-duration: 0.4s;
+				animation-duration: 0.25s;
 				animation-timing-function: ease-out;
 
 				&--previous {
@@ -113,6 +112,10 @@
 					opacity: 1;
 				}
 			}
+		}
+
+		.text {
+			opacity: 1;
 		}
 
 		.title {

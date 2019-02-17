@@ -4499,10 +4499,6 @@ select {
   color: #FFFFFF;
   transform-style: preserve-3d; }
   .playback-controls .current-track {
-    -webkit-transition: all 0.1s ease-in-out;
-    -moz-transition: all 0.1s ease-in-out;
-    -o-transition: all 0.1s ease-in-out;
-    transition: all 0.1s ease-in-out;
     position: absolute;
     bottom: 50px;
     width: 220px;
@@ -4528,32 +4524,21 @@ select {
     opacity: 0; } }
     .playback-controls .current-track__transition {
       z-index: 2;
-      background: #3e3e3e;
-      animation-duration: 0.4s;
-      animation-timing-function: ease-out; }
-      .playback-controls .current-track__transition .title,
-      .playback-controls .current-track__transition .artist {
-        opacity: 1;
-        animation-delay: 0.2s;
-        -webkit-animation-fill-mode: forwards;
-        animation-fill-mode: forwards;
-        animation-name: fadeout;
-        animation-duration: 0.2s;
-        animation-timing-function: linear;
-        animation-iteration-count: 1; }
-
-@keyframes fadeout {
-  0% {
-    opacity: 1;
-    transform: translateY(0px); }
-  100% {
-    opacity: 0;
-    transform: translateY(0px); } }
+      background: #3e3e3e; }
+      .playback-controls .current-track__transition .text {
+        -webkit-transition: all 0.15s ease-in-out;
+        -moz-transition: all 0.15s ease-in-out;
+        -o-transition: all 0.15s ease-in-out;
+        transition: all 0.15s ease-in-out;
+        opacity: 0; }
       @media (max-width: 799px) {
-        .playback-controls .current-track__transition--previous {
-          animation-name: slide_right; }
-        .playback-controls .current-track__transition--next {
-          animation-name: slide_left; } }
+        .playback-controls .current-track__transition {
+          animation-duration: 0.25s;
+          animation-timing-function: ease-out; }
+          .playback-controls .current-track__transition--previous {
+            animation-name: slide_right; }
+          .playback-controls .current-track__transition--next {
+            animation-name: slide_left; } }
     .light-theme .playback-controls .current-track {
       color: #121212; }
     .playback-controls .current-track .thumbnail {
@@ -4597,6 +4582,8 @@ select {
         z-index: 2; }
       .playback-controls .current-track .thumbnail:hover:after, .playback-controls .current-track .thumbnail:hover:before {
         opacity: 1; }
+    .playback-controls .current-track .text {
+      opacity: 1; }
     .playback-controls .current-track .title {
       padding-top: 20px;
       white-space: nowrap;

@@ -172,6 +172,8 @@ class PlaybackControls extends React.Component{
 			transition_direction: direction
 		});
 
+		// Allow time for the animation to complete, then remove
+		// the transitioning track from state
 		var self = this;
 		setTimeout(() => {
 				this.setState({
@@ -179,7 +181,7 @@ class PlaybackControls extends React.Component{
 					transition_direction: null
 				});
 			},
-			400
+			300
 		);
 	}
 
@@ -228,11 +230,13 @@ class PlaybackControls extends React.Component{
 				
 				{this.state.transition_track && this.state.transition_direction ? <div 
 					className={"current-track current-track__transition current-track__transition--"+this.state.transition_direction}>
-						<div className="title">
-							{this.state.transition_track.name}
-						</div>
-						<div className="artist">
-							<ArtistSentence artists={this.state.transition_track.artists} nolinks={true} />
+						<div className="text">
+							<div className="title">
+								{this.state.transition_track.name}
+							</div>
+							<div className="artist">
+								<ArtistSentence artists={this.state.transition_track.artists} nolinks={true} />
+							</div>
 						</div>
 					</div> : null}
 				
@@ -243,11 +247,13 @@ class PlaybackControls extends React.Component{
 						<Link className="thumbnail-wrapper" to={'/kiosk-mode'}>
 							<Thumbnail size="small" images={images} />
 						</Link>
-						<div className="title">
-							{this.state.current_track ? this.state.current_track.name : <span>-</span>}
-						</div>
-						<div className="artist">
-							{this.state.current_track ? <ArtistSentence artists={this.state.current_track.artists} nolinks={this.props.slim_mode} /> : <ArtistSentence />}
+						<div className="text">
+							<div className="title">
+								{this.state.current_track ? this.state.current_track.name : <span>-</span>}
+							</div>
+							<div className="artist">
+								{this.state.current_track ? <ArtistSentence artists={this.state.current_track.artists} nolinks={this.props.slim_mode} /> : <ArtistSentence />}
+							</div>
 						</div>
 				</div>
 

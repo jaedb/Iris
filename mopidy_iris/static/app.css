@@ -4499,10 +4499,6 @@ select {
   color: #FFFFFF;
   transform-style: preserve-3d; }
   .playback-controls .current-track {
-    -webkit-transition: all 0.1s ease-in-out;
-    -moz-transition: all 0.1s ease-in-out;
-    -o-transition: all 0.1s ease-in-out;
-    transition: all 0.1s ease-in-out;
     position: absolute;
     bottom: 50px;
     width: 220px;
@@ -4526,24 +4522,18 @@ select {
   100% {
     transform: translateX(15px);
     opacity: 0; } }
-
-@keyframes fadeout {
-  0% {
-    opacity: 1; }
-  100% {
-    opacity: 0.1; } }
     .playback-controls .current-track__transition {
       z-index: 2;
       background: #3e3e3e; }
-      .playback-controls .current-track__transition .title,
-      .playback-controls .current-track__transition .artist {
-        background: orange;
-        animation-name: fadeout;
-        animation-duration: 0.2s;
-        transform: none !important; }
+      .playback-controls .current-track__transition .text {
+        -webkit-transition: all 0.15s ease-in-out;
+        -moz-transition: all 0.15s ease-in-out;
+        -o-transition: all 0.15s ease-in-out;
+        transition: all 0.15s ease-in-out;
+        opacity: 0; }
       @media (max-width: 799px) {
         .playback-controls .current-track__transition {
-          animation-duration: 0.4s;
+          animation-duration: 0.25s;
           animation-timing-function: ease-out; }
           .playback-controls .current-track__transition--previous {
             animation-name: slide_right; }
@@ -4592,6 +4582,8 @@ select {
         z-index: 2; }
       .playback-controls .current-track .thumbnail:hover:after, .playback-controls .current-track .thumbnail:hover:before {
         opacity: 1; }
+    .playback-controls .current-track .text {
+      opacity: 1; }
     .playback-controls .current-track .title {
       padding-top: 20px;
       white-space: nowrap;
