@@ -69976,8 +69976,8 @@ var PlaybackControls = function (_React$Component) {
 			// A bit niggly to have to deeply check this...
 			if (this.props.current_track && nextProps.current_track) {
 
-				if (this.props.current_track.images && !nextProps.current_track.images || !this.props.current_track.images && nextProps.current_track.images || this.props.current_track.images.length != nextProps.current_track.images.length) {
-					//this.setState({current_track: nextProps.current_track});
+				if (this.props.current_track.images && !nextProps.current_track.images || !this.props.current_track.images && nextProps.current_track.images) {
+					this.setState({ current_track: nextProps.current_track });
 				}
 			}
 		}
@@ -70052,7 +70052,7 @@ var PlaybackControls = function (_React$Component) {
 					transition_track: null,
 					transition_direction: null
 				});
-			}, 300);
+			}, 250);
 		}
 	}, {
 		key: 'renderPlayButton',
