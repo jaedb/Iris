@@ -227,7 +227,7 @@ class LibraryPlaylists extends React.Component{
 				label: 'Owner'
 			},
 			{
-				value: 'tracks.total',
+				value: 'tracks_total',
 				label: 'Tracks'
 			},
 			{

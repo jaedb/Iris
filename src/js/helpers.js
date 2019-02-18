@@ -1272,6 +1272,8 @@ export let sortItems = function (array, property, reverse = false, sort_map = nu
 			// Otherwise continue looping to the end of the split property
 			value = value[property_element];
 		}
+
+		return value;
 	}
 
 	function compare(a,b){

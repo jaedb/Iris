@@ -272,7 +272,7 @@ class LibraryArtists extends React.Component{
 			},
 			{
 				label: 'Followers',
-				value: 'followers.total'
+				value: 'followers'
 			},
 			{
 				label: 'Popularity',
