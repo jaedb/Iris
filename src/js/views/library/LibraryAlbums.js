@@ -211,28 +211,6 @@ class LibraryAlbums extends React.Component{
 		albums = albums.slice(0, this.state.limit);
 
 		if (this.props.view == 'list'){
-			var columns = [
-				{
-					label: 'Name',
-					name: 'name'
-				},
-				{
-					label: 'Artists',
-					name: 'artists'
-				},
-				{
-					label: 'Added',
-					name: 'added_at'
-				},
-				{
-					label: 'Tracks',
-					name: 'tracks_total'
-				},
-				{
-					label: 'Source',
-					name: 'source'
-				}
-			]
 			return (
 				<section className="content-wrapper">
 					<List 
@@ -313,7 +291,7 @@ class LibraryAlbums extends React.Component{
 				label: 'Name'
 			},
 			{
-				value: 'artists',
+				value: 'artists.first.name',
 				label: 'Artist'
 			},
 			{
@@ -321,11 +299,11 @@ class LibraryAlbums extends React.Component{
 				label: 'Added'
 			},
 			{
-				value: 'tracks_total',
+				value: 'tracks_uris.length',
 				label: 'Tracks'
 			},
 			{
-				value: 'source',
+				value: 'uri',
 				label: 'Source'
 			}
 		]

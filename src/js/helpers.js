@@ -1247,29 +1247,37 @@ export let sortItems = function (array, property, reverse = false, sort_map = nu
 		return [];
 	}
 
+	function get_value(value){
+		var split = property.split('.');
+		for (var property_element of split){
+
+			// Apply sort on a property of the first item of an array
+			if (property_element == 'first' && Array.isArray(value) && value.length > 0){
+				value = value[0];
+				continue;
+
+			// Just need the length of an array
+			} else if (property_element == 'length'){
+				if (Array.isArray(value)){
+					return value.length;
+				} else {
+					return 0;
+				}
+
+			// No value here
+			} else if (typeof(value[property_element]) === 'undefined'){
+				return null;
+			}
+			
+			// Otherwise continue looping to the end of the split property
+			value = value[property_element];
+		}
+	}
+
 	function compare(a,b){
 
-		var a_value = a;
-		var a_property_split = property.split('.');
-		for (var i = 0; i < a_property_split.length; i++){
-			if (typeof(a_value[a_property_split[i]]) === 'undefined'){
-				a_value = null;
-				break;
-			} else {
-				a_value = a_value[a_property_split[i]];
-			}
-		}
-
-		var b_value = b;
-		var b_property_split = property.split('.');
-		for (var i = 0; i < b_property_split.length; i++){
-			if (typeof(b_value[b_property_split[i]]) === 'undefined'){
-				b_value = null;
-				break;
-			} else {
-				b_value = b_value[b_property_split[i]];
-			}
-		}
+		var a_value = get_value(a);
+		var b_value = get_value(b);
 
 		// Sorting by URI as a reference for sorting by uri source (first component of URI)
 		if (property == 'uri'){

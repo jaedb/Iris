@@ -1682,29 +1682,58 @@ var sortItems = exports.sortItems = function sortItems(array, property) {
 		return [];
 	}
 
+	function get_value(value) {
+		var split = property.split('.');
+		var _iteratorNormalCompletion22 = true;
+		var _didIteratorError22 = false;
+		var _iteratorError22 = undefined;
+
+		try {
+			for (var _iterator22 = split[Symbol.iterator](), _step22; !(_iteratorNormalCompletion22 = (_step22 = _iterator22.next()).done); _iteratorNormalCompletion22 = true) {
+				var property_element = _step22.value;
+
+
+				// Apply sort on a property of the first item of an array
+				if (property_element == 'first' && Array.isArray(value) && value.length > 0) {
+					value = value[0];
+					continue;
+
+					// Just need the length of an array
+				} else if (property_element == 'length') {
+					if (Array.isArray(value)) {
+						return value.length;
+					} else {
+						return 0;
+					}
+
+					// No value here
+				} else if (typeof value[property_element] === 'undefined') {
+					return null;
+				}
+
+				// Otherwise continue looping to the end of the split property
+				value = value[property_element];
+			}
+		} catch (err) {
+			_didIteratorError22 = true;
+			_iteratorError22 = err;
+		} finally {
+			try {
+				if (!_iteratorNormalCompletion22 && _iterator22.return) {
+					_iterator22.return();
+				}
+			} finally {
+				if (_didIteratorError22) {
+					throw _iteratorError22;
+				}
+			}
+		}
+	}
+
 	function compare(a, b) {
 
-		var a_value = a;
-		var a_property_split = property.split('.');
-		for (var i = 0; i < a_property_split.length; i++) {
-			if (typeof a_value[a_property_split[i]] === 'undefined') {
-				a_value = null;
-				break;
-			} else {
-				a_value = a_value[a_property_split[i]];
-			}
-		}
-
-		var b_value = b;
-		var b_property_split = property.split('.');
-		for (var i = 0; i < b_property_split.length; i++) {
-			if (typeof b_value[b_property_split[i]] === 'undefined') {
-				b_value = null;
-				break;
-			} else {
-				b_value = b_value[b_property_split[i]];
-			}
-		}
+		var a_value = get_value(a);
+		var b_value = get_value(b);
 
 		// Sorting by URI as a reference for sorting by uri source (first component of URI)
 		if (property == 'uri') {
@@ -1934,13 +1963,13 @@ var scrollTo = exports.scrollTo = function scrollTo() {
 var upgradeSpotifyPlaylistUris = exports.upgradeSpotifyPlaylistUris = function upgradeSpotifyPlaylistUris(uris) {
 	var upgraded = [];
 
-	var _iteratorNormalCompletion22 = true;
-	var _didIteratorError22 = false;
-	var _iteratorError22 = undefined;
+	var _iteratorNormalCompletion23 = true;
+	var _didIteratorError23 = false;
+	var _iteratorError23 = undefined;
 
 	try {
-		for (var _iterator22 = uris[Symbol.iterator](), _step22; !(_iteratorNormalCompletion22 = (_step22 = _iterator22.next()).done); _iteratorNormalCompletion22 = true) {
-			var uri = _step22.value;
+		for (var _iterator23 = uris[Symbol.iterator](), _step23; !(_iteratorNormalCompletion23 = (_step23 = _iterator23.next()).done); _iteratorNormalCompletion23 = true) {
+			var uri = _step23.value;
 
 			if (uri.includes("spotify:user:")) {
 				uri = uri.replace(/spotify:user:([^:]*?):/i, "spotify:");
@@ -1948,16 +1977,16 @@ var upgradeSpotifyPlaylistUris = exports.upgradeSpotifyPlaylistUris = function u
 			upgraded.push(uri);
 		}
 	} catch (err) {
-		_didIteratorError22 = true;
-		_iteratorError22 = err;
+		_didIteratorError23 = true;
+		_iteratorError23 = err;
 	} finally {
 		try {
-			if (!_iteratorNormalCompletion22 && _iterator22.return) {
-				_iterator22.return();
+			if (!_iteratorNormalCompletion23 && _iterator23.return) {
+				_iterator23.return();
 			}
 		} finally {
-			if (_didIteratorError22) {
-				throw _iteratorError22;
+			if (_didIteratorError23) {
+				throw _iteratorError23;
 			}
 		}
 	}
@@ -88218,22 +88247,6 @@ var LibraryAlbums = function (_React$Component) {
 			albums = albums.slice(0, this.state.limit);
 
 			if (this.props.view == 'list') {
-				var columns = [{
-					label: 'Name',
-					name: 'name'
-				}, {
-					label: 'Artists',
-					name: 'artists'
-				}, {
-					label: 'Added',
-					name: 'added_at'
-				}, {
-					label: 'Tracks',
-					name: 'tracks_total'
-				}, {
-					label: 'Source',
-					name: 'source'
-				}];
 				return _react2.default.createElement(
 					'section',
 					{ className: 'content-wrapper' },
@@ -88316,16 +88329,16 @@ var LibraryAlbums = function (_React$Component) {
 				value: 'name',
 				label: 'Name'
 			}, {
-				value: 'artists',
+				value: 'artists.first.name',
 				label: 'Artist'
 			}, {
 				value: 'added_at',
 				label: 'Added'
 			}, {
-				value: 'tracks_total',
+				value: 'tracks_uris.length',
 				label: 'Tracks'
 			}, {
-				value: 'source',
+				value: 'uri',
 				label: 'Source'
 			}];
 
