@@ -57,6 +57,6 @@ class IrisSystemThread(Thread):
 
         # Some kind of failure, so we can't run any commands this way
         if exitCode > 0:
-            raise Exception("Password-less access to "+path+"/system.sh was refused. Check your /etc/sudoers file.")
+            raise Exception("Password-less access to "+self.path+"/system.sh was refused. Check your /etc/sudoers file.")
         else:
             return True
