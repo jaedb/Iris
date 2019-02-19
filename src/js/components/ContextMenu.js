@@ -630,6 +630,14 @@ class ContextMenu extends React.Component{
 			</div>
 		)
 
+		var edit_playlist = (
+			<div className="context-menu__item">
+				<Link className="context-menu__item__link" to={'/playlist/'+context.item.uri+'/edit'}>
+					<span className="context-menu__item__label">Edit</span>
+				</Link>
+			</div>
+		)
+
 		var delete_playlist = (
 			<div className="context-menu__item">
 				<a className="context-menu__item__link" onClick={e => this.deletePlaylist(e)}>
@@ -687,22 +695,11 @@ class ContextMenu extends React.Component{
 						<div className="context-menu__divider" />
 						{context.source == 'spotify' ? go_to_user : null}
 						{copy_uris}
-					</div>
-				)
-				break
-
-			case 'editable-playlist':
-				return (
-					<div>
-						{play_playlist}
-						{shuffle_play_playlist}
-						{this.canBeInLibrary() ? <div className="context-menu__divider" /> : null}
-						{this.canBeInLibrary() ? toggle_in_library : null}
-						<div className="context-menu__divider" />
-						{context.source == 'spotify' ? go_to_user : null}
-						{copy_uris}
-						<div className="context-menu__divider" />
-						{delete_playlist}
+						{context.items_count == 1 && context.item.can_edit ? <div>
+								<div className="context-menu__divider" />
+								{edit_playlist}
+								{delete_playlist}
+							</div> : null}
 					</div>
 				)
 				break

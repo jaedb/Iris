@@ -250,6 +250,7 @@ const SpotifyMiddleware = (function(){
                         playlist,
                         {
                             uri: playlist.uri.replace(/spotify:user:([^:]*?):/i, "spotify:"),
+                            can_edit: (store.getState().spotify.me && store.getState().spotify.me.id == playlist.owner.id),
                             source: 'spotify',
                             in_library: true,    // assumed because we asked for library items
                             tracks_total: playlist.tracks.total

@@ -3643,7 +3643,8 @@ select {
       padding: 9px 12px 8px;
       box-sizing: border-box;
       position: relative;
-      color: #FFFFFF; }
+      color: #FFFFFF;
+      text-decoration: none; }
       .context-menu__item__link:before {
         -webkit-transition: all 0.2s ease-in-out;
         -moz-transition: all 0.2s ease-in-out;
