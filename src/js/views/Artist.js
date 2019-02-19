@@ -136,11 +136,11 @@ class Artist extends React.Component{
 				label: 'Name'
 			},
 			{
-				value: 'date',
+				value: 'release_date',
 				label: 'Date'
 			},
 			{
-				value: 'tracks_total',
+				value: 'tracks_uris.length',
 				label: 'Tracks'
 			}
 		];
