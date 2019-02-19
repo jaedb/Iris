@@ -1247,29 +1247,39 @@ export let sortItems = function (array, property, reverse = false, sort_map = nu
 		return [];
 	}
 
+	function get_value(value){
+		var split = property.split('.');
+		for (var property_element of split){
+
+			// Apply sort on a property of the first item of an array
+			if (property_element == 'first' && Array.isArray(value) && value.length > 0){
+				value = value[0];
+				continue;
+
+			// Just need the length of an array
+			} else if (property_element == 'length'){
+				if (Array.isArray(value)){
+					return value.length;
+				} else {
+					return 0;
+				}
+
+			// No value here
+			} else if (typeof(value[property_element]) === 'undefined'){
+				return null;
+			}
+			
+			// Otherwise continue looping to the end of the split property
+			value = value[property_element];
+		}
+
+		return value;
+	}
+
 	function compare(a,b){
 
-		var a_value = a;
-		var a_property_split = property.split('.');
-		for (var i = 0; i < a_property_split.length; i++){
-			if (typeof(a_value[a_property_split[i]]) === 'undefined'){
-				a_value = null;
-				break;
-			} else {
-				a_value = a_value[a_property_split[i]];
-			}
-		}
-
-		var b_value = b;
-		var b_property_split = property.split('.');
-		for (var i = 0; i < b_property_split.length; i++){
-			if (typeof(b_value[b_property_split[i]]) === 'undefined'){
-				b_value = null;
-				break;
-			} else {
-				b_value = b_value[b_property_split[i]];
-			}
-		}
+		var a_value = get_value(a);
+		var b_value = get_value(b);
 
 		// Sorting by URI as a reference for sorting by uri source (first component of URI)
 		if (property == 'uri'){
@@ -1438,12 +1448,13 @@ export let titleCase = function(string){
 /**
  * Scroll to the top of the page
  * Our 'content' is housed in the <main> DOM element
+ * We make sure the target supports scrolling before we attempt it
+ * Safari and IE Edge, well, don't.
  *
  * @param target String (element ID, optional)
  * @param smooth_scroll Boolean (optional)
  **/
 export let scrollTo = function(target = null, smooth_scroll = false){
-
 	var main = document.getElementById('main');
 
 	// Remove our smooth-scroll class
@@ -1451,18 +1462,34 @@ export let scrollTo = function(target = null, smooth_scroll = false){
 		main.classList.remove("smooth-scroll");
 	}
 
-	// And now scroll to it
-	// We make sure the target supports scrolling before we attempt it
-	// Safari and IE Edge, well, don't.
-	if (target){
-		var element = document.getElementById(target);
-		if (typeof element.scrollIntoView === "function"){
+	// Target is a number, so treat as pixel position
+	if (target && Number.isInteger(target)){
+		if (typeof main.scrollTo === "function"){
+			main.scrollTop = target;
+		}
+
+
+	// Target is a string representing a DOM element by class/id
+	} else if (target){
+
+		var element = null;
+
+		if (target.charAt(0) == '#'){
+			element = document.getElementById(target.substring(1));
+		} else if (target.charAt(0) == '.'){
+			element = document.getElementsByClassName(target.substring(1));
+			if (element.length > 0){
+				element = element[0];
+			}
+		} else {
+			console.error("Invalid target type '"+target+"'. Must start with '#' or '.'.");
+		}
+
+		if (element && typeof element.scrollIntoView === "function"){
 			element.scrollIntoView();
 		}
 	} else {
-		if (typeof main.scrollTo === "function"){
-			main.scrollTo(0, 0);
-		}
+		main.scrollTop = 0;
 	}
 
 	// Now reinstate smooth scroll
@@ -1497,4 +1524,3 @@ export let upgradeSpotifyPlaylistUris = function(uris){
 export let upgradeSpotifyPlaylistUri = function(uri){
 	return upgradeSpotifyPlaylistUris([uri])[0];
 }
-

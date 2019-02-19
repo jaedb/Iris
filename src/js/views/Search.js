@@ -1,5 +1,5 @@
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Switch, Route } from 'react-router-dom';
@@ -377,6 +377,7 @@ class Search extends React.Component{
 				</Header>
 
 				<SearchForm 
+					history={this.props.history}
 					term={this.state.term}
 					onBlur={term => this.setState({term: term})}
 					onSubmit={term => this.search(this.state.type, term)}

@@ -1,5 +1,5 @@
 
-import React, { PropTypes } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import Link from '../../components/Link';
@@ -27,6 +27,17 @@ class LibraryPlaylists extends React.Component{
 			filter: '',
 			limit: 50,
 			per_page: 50
+		}
+	}
+
+	componentWillMount(){
+
+		// Before we mount, restore any limit defined in our location state
+		var state = (this.props.location.state ? this.props.location.state : {});
+		if (state.limit){
+			this.setState({
+				limit: state.limit
+			});
 		}
 	}
 
@@ -74,6 +85,17 @@ class LibraryPlaylists extends React.Component{
 			items: [item]
 		}
 		this.props.uiActions.showContextMenu(data)
+	}
+
+	loadMore(){
+		var new_limit = this.state.limit + this.state.per_page;
+
+		this.setState({limit: new_limit});
+
+		// Set our pagination to location state
+		var state = (this.props.location && this.props.location.state ? this.props.location.state : {});
+		state.limit = new_limit;
+		this.props.history.replace({state: state});
 	}
 
 	setSort(value){
@@ -137,7 +159,7 @@ class LibraryPlaylists extends React.Component{
 					<LazyLoadListener 
 						loadKey={total_playlists > this.state.limit ? this.state.limit : total_playlists}
 						loading={this.state.limit < total_playlists} 
-						loadMore={() => this.setState({limit: this.state.limit + this.state.per_page})}
+						loadMore={() => this.loadMore()}
 					/>
 				</section>
 			)
@@ -150,7 +172,7 @@ class LibraryPlaylists extends React.Component{
 					<LazyLoadListener 
 						loadKey={total_playlists > this.state.limit ? this.state.limit : total_playlists}
 						loading={this.state.limit < total_playlists}
-						loadMore={() => this.setState({limit: this.state.limit + this.state.per_page})}
+						loadMore={() => this.loadMore()}
 					/>
 				</section>				
 			)
@@ -205,7 +227,7 @@ class LibraryPlaylists extends React.Component{
 				label: 'Owner'
 			},
 			{
-				value: 'tracks.total',
+				value: 'tracks_total',
 				label: 'Tracks'
 			},
 			{
@@ -259,13 +281,6 @@ class LibraryPlaylists extends React.Component{
 		)
 	}
 }
-
-
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- **/
 
 const mapStateToProps = (state, ownProps) => {
 	return {

@@ -73,7 +73,10 @@ body {
 }
 
 .smooth-scroll {
-	scroll-behavior: smooth;
+	&.smooth-scrolling-enabled,
+	.smooth-scrolling-enabled & {
+		scroll-behavior: smooth;
+	}
 }
 
 main {
@@ -246,6 +249,11 @@ h4 {
 
 	.dropdown-field {
 		margin-left: 10px;
+	}
+
+	.button {
+		margin-left: 10px;
+		margin-bottom: -6px;
 	}
 }
 

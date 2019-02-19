@@ -1,5 +1,5 @@
 
-import React, { PropTypes } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 
 import { bindActionCreators } from 'redux'
@@ -126,7 +126,7 @@ class Debug extends React.Component{
 					</form>
 
 					<h4 className="underline">Spotify</h4>
-					<div className="field">
+					<label className="field">
 						<div className="name">Access token</div>
 						<div className="input">
 							<input
@@ -134,11 +134,11 @@ class Debug extends React.Component{
 								onChange={e => this.props.spotifyActions.authorizationGranted({access_token: e.target.value})}
 								value={this.state.access_token} />
 						</div>
-					</div>
+					</label>
 
 					<h4 className="underline">Mopidy</h4>
 					<form onSubmit={(e) => this.callMopidy(e)}>
-						<div className="field">
+						<label className="field">
 							<div className="name">Call</div>
 							<div className="input">
 								<input 
@@ -146,8 +146,8 @@ class Debug extends React.Component{
 									onChange={ e => this.setState({ mopidy_call: e.target.value })} 
 									value={ this.state.mopidy_call } />
 							</div>
-						</div>
-						<div className="field">
+						</label>
+						<label className="field">
 							<div className="name">Data</div>
 							<div className="input">
 								<textarea 
@@ -155,7 +155,7 @@ class Debug extends React.Component{
 									value={ this.state.mopidy_data }>
 								</textarea>
 							</div>
-						</div>
+						</label>
 						<div className="field">
 							<div className="name"></div>
 							<div className="input">
@@ -166,7 +166,7 @@ class Debug extends React.Component{
 
 					<h4 className="underline">Pusher</h4>
 					<form onSubmit={(e) => this.callPusher(e)}>
-						<div className="field">
+						<label className="field">
 							<div className="name">Examples</div>
 							<div className="input">
 								<select onChange={ e => this.setState({ pusher_data: e.target.value })}>
@@ -183,8 +183,8 @@ class Debug extends React.Component{
 									<option value='{"method":"perform_upgrade"}'>Perform upgrade (beta)</option>
 								</select>
 							</div>
-						</div>
-						<div className="field">
+						</label>
+						<label className="field">
 							<div className="name">Data</div>
 							<div className="input">
 								<textarea 
@@ -192,7 +192,7 @@ class Debug extends React.Component{
 									value={ this.state.pusher_data }>
 								</textarea>
 							</div>
-						</div>
+						</label>
 						<div className="field">
 							<div className="name"></div>
 							<div className="input">
@@ -211,13 +211,6 @@ class Debug extends React.Component{
 		);
 	}
 }
-
-
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- **/
 
 const mapStateToProps = (state, ownProps) => {
 	return {

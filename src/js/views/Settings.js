@@ -1,5 +1,5 @@
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Route, Link } from 'react-router-dom';
@@ -167,7 +167,7 @@ class Settings extends React.Component {
 				{
 	    			commands.map(command => {
 	    				return (
-	    					<div className="list__item commands-setup__item no-click" key={command.id}>
+	    					<div className="list__item commands-setup__item list__item--no-interaction" key={command.id}>
 	    						<div className="col col--w90">
 	    							<div className="commands__item commands__item--interactive" onClick={e => this.props.pusherActions.sendCommand(command.id, true)}>
 										<Icon className="commands__item__icon" name={command.icon} />
@@ -223,7 +223,7 @@ class Settings extends React.Component {
 						</div>
 					</div>
 
-					<div className="field">
+					<label className="field">
 						<div className="name">Username</div>
 						<div className="input">
 							<input 
@@ -236,10 +236,10 @@ class Settings extends React.Component {
 								A non-unique string used to identify this client (no special characters)
 							</div>
 						</div>
-					</div>
+					</label>
 
 					<form onSubmit={(e) => this.setConfig(e)}>
-						<div className="field">
+						<label className="field">
 							<div className="name">Host</div>
 							<div className="input">
 								<input 
@@ -249,8 +249,8 @@ class Settings extends React.Component {
 									onBlur={e => this.setState({input_in_focus: null})} 
 									value={ this.state.mopidy_host } />
 							</div>
-						</div>
-						<div className="field">
+						</label>
+						<label className="field">
 							<div className="name">Port</div>
 							<div className="input">
 								<input 
@@ -260,7 +260,7 @@ class Settings extends React.Component {
 									onBlur={e => this.setState({input_in_focus: null})} 
 									value={ this.state.mopidy_port } />
 							</div>
-						</div>
+						</label>
 						{this.renderApplyButton()}
 					</form>
 
@@ -318,6 +318,16 @@ class Settings extends React.Component {
 									onChange={ e => this.props.uiActions.set({ shortkeys_enabled: !this.props.ui.shortkeys_enabled })} />
 								<span className="label">
 									Enable shortkeys
+								</span>
+							</label>
+							<label>
+								<input 
+									type="checkbox"
+									name="smooth_scrolling_enabled"
+									checked={ this.props.ui.smooth_scrolling_enabled }
+									onChange={ e => this.props.uiActions.set({ smooth_scrolling_enabled: !this.props.ui.smooth_scrolling_enabled })} />
+								<span className="label">
+									Enable smooth scrolling
 								</span>
 							</label>
 						</div>
@@ -383,7 +393,7 @@ class Settings extends React.Component {
 						</div>
 					</div>
 
-					<div className="field">
+					<label className="field">
 						<div className="name">Album library URI</div>
 						<div className="input">
 							<input 
@@ -396,7 +406,7 @@ class Settings extends React.Component {
 								URI used for collecting library albums
 							</div>
 						</div>
-					</div>
+					</label>
 
 					<div className="field pusher-connections">
 						<div className="name">Connections</div>

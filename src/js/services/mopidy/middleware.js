@@ -390,7 +390,7 @@ const MopidyMiddleware = (function(){
                             'notification',
                             {
                                 notification: {
-                                    content: store.getState().pusher.username +' skipped <em>'+store.getState().core.current_track.name+'</em>',
+                                    content: store.getState().pusher.username +' skipped "'+store.getState().core.current_track.name+'"',
                                     icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false)
                                 }
                             }
@@ -1514,7 +1514,7 @@ const MopidyMiddleware = (function(){
                         for (var i = 0; i < playlist_uris_filtered.length; i++){
                             request(socket, store, 'playlists.lookup', { uri: playlist_uris_filtered[i] })
                                 .then(response => {
-                                    var source = helpers.uriSource(response.uri)
+                                    var source = helpers.uriSource(response.uri);
                                     var playlist = Object.assign(
                                         {},
                                         {
@@ -1522,7 +1522,7 @@ const MopidyMiddleware = (function(){
                                             name: response.name,
                                             uri: response.uri,
                                             source: source,
-                                            is_mopidy: true,
+                                			provider: 'mopidy',
                                             last_modified: response.last_modified,
                                             tracks_total: (response.tracks ? response.tracks.length : 0 )
                                         }
@@ -1582,9 +1582,9 @@ const MopidyMiddleware = (function(){
                                     var trackReferences = tracks.filter(getByURI);
 
                                     // there could be multiple instances of this track, so accommodate this
-                                    for(var j = 0; j < trackReferences.length; j++){
-                                        var key = tracks.indexOf(trackReferences[j] );
-                                        tracks[ key ] = track;
+                                    for (var j = 0; j < trackReferences.length; j++){
+                                        var key = tracks.indexOf(trackReferences[j]);
+                                        tracks[key] = track;
                                     }
                                 }
                             }
@@ -2064,7 +2064,7 @@ const MopidyMiddleware = (function(){
                             {},
                             (response ? response[0].artists[0] : {}),
                             {
-                                is_mopidy: true,
+                                provider: 'mopidy',
                                 albums_uris: helpers.arrayOf('uri',albums),
                                 tracks: response
                             }
@@ -2096,7 +2096,7 @@ const MopidyMiddleware = (function(){
                                     {},
                                     (response ? response[uri][0].artists[0] : {}),
                                     {
-                                        is_mopidy: true
+                                		provider: 'mopidy'
                                     }
                                 );
                                 artists.push(artist);

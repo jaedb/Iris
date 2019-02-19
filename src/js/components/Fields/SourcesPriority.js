@@ -1,5 +1,5 @@
 
-import React, { PropTypes } from 'react'
+import React from 'react'
 import Sortable from 'react-sortablejs';
 import Icon from '../Icon'
 import * as helpers from '../../helpers'

@@ -1,5 +1,5 @@
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import ReactGA from 'react-ga';
@@ -92,7 +92,7 @@ class Playlist extends React.Component{
 	handleContextMenu(e){
 		var data = {
 			e: e,
-			context: (this.props.playlist.can_edit ? 'editable-playlist' : 'playlist'),
+			context: 'playlist',
 			items: [this.props.playlist],
 			uris: [this.props.uri]
 		}

@@ -1,9 +1,9 @@
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
-import { Link } from 'react-router-dom';
 
 import * as helpers from '../helpers';
+import Link from './Link';
 import Icon from './Icon';
 import Thumbnail from './Thumbnail';
 import ArtistSentence from './ArtistSentence';
@@ -23,18 +23,7 @@ export default class GridItem extends React.Component{
 		}
 	}
 
-	handleClick(e){
-		if (this.props.onClick && e.target.tagName.toLowerCase() !== 'a'){
-
-			// Scroll to the top
-			helpers.scrollTo();
-
-			// And then trigger the click event
-			this.props.onClick(e);
-		}
-	}
-
-	handleContextMenu(e){
+	onContextMenu(e){
 		if (this.props.onContextMenu){
 			this.props.onContextMenu(e)
 		}
@@ -118,7 +107,7 @@ export default class GridItem extends React.Component{
 				className={"grid__item grid__item--"+this.props.type} 
 				to={link} 
 				onClick={e => helpers.scrollTo()} 
-				onContextMenu={e => this.handleContextMenu(e)}>
+				onContextMenu={e => this.onContextMenu(e)}>
 					<Thumbnail size="medium" className="grid__item__thumbnail" images={images} />
 					<div className="grid__item__name">
 						{item.name ? item.name : <span className="opaque-text">{item.uri}</span>}

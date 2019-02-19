@@ -1,5 +1,5 @@
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Link from '../../components/Link';
@@ -27,6 +27,17 @@ class LibraryArtists extends React.Component{
 			filter: '',
 			limit: 50,
 			per_page: 50
+		}
+	}
+
+	componentWillMount(){
+
+		// Before we mount, restore any limit defined in our location state
+		var state = (this.props.location.state ? this.props.location.state : {});
+		if (state.limit){
+			this.setState({
+				limit: state.limit
+			});
 		}
 	}
 
@@ -93,7 +104,14 @@ class LibraryArtists extends React.Component{
 	}
 
 	loadMore(){
-		this.setState({limit: this.state.limit + this.state.per_page});
+		var new_limit = this.state.limit + this.state.per_page;
+
+		this.setState({limit: new_limit});
+
+		// Set our pagination to location state
+		var state = (this.props.location && this.props.location.state ? this.props.location.state : {});
+		state.limit = new_limit;
+		this.props.history.replace({state: state});
 	}
 
 	setSort(value){
@@ -254,7 +272,7 @@ class LibraryArtists extends React.Component{
 			},
 			{
 				label: 'Followers',
-				value: 'followers.total'
+				value: 'followers'
 			},
 			{
 				label: 'Popularity',

@@ -1,5 +1,5 @@
 
-import React, { PropTypes } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 import Link from './Link'
 import { bindActionCreators } from 'redux'
@@ -105,7 +105,7 @@ class Services extends React.Component{
 		return (
 			<div>
 				{not_installed}
-				<div className="field">
+				<label className="field">
 					<div className="name">Country</div>
 					<div className="input">
 						<input
@@ -118,8 +118,8 @@ class Services extends React.Component{
 							An <a href="http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">ISO 3166-1 alpha-2</a> country code (eg <em>NZ</em>)
 						</div>
 					</div>
-				</div>
-				<div className="field">
+				</label>
+				<label className="field">
 					<div className="name">Locale</div>
 					<div className="input">
 						<input
@@ -132,7 +132,7 @@ class Services extends React.Component{
 							Lowercase <a href="http://en.wikipedia.org/wiki/ISO_639" target="_blank">ISO 639 language code</a> and an uppercase <a href="http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">ISO 3166-1 alpha-2 country code</a>, joined by an underscore (eg <em>en_NZ</em>)
 						</div>
 					</div>
-				</div>
+				</label>
 
 				<div className="field current-user">
 					<div className="name">Current user</div>
@@ -258,7 +258,7 @@ class Services extends React.Component{
 						</label>
 					</div>
 				</div>
-				<div className="field">
+				<label className="field">
 					<div className="name">Location</div>
 					<div className="input">
 						<input
@@ -269,7 +269,7 @@ class Services extends React.Component{
 							The full URL to your stream endpoint
 						</div>
 					</div>
-				</div>
+				</label>
 			</div>
 		);
 	}
@@ -297,7 +297,7 @@ class Services extends React.Component{
 		return (
 			<div className="menu" id="services-menu">
 				<div className="menu__inner">
-					<Link history={this.props.history} className="menu-item menu-item--spotify" activeClassName="menu-item--active" to={'/settings/spotify'} scrollTo="services-menu">
+					<Link history={this.props.history} className="menu-item menu-item--spotify" activeClassName="menu-item--active" to={'/settings/spotify'} scrollTo="#services-menu">
 						<div className="menu-item__inner">
 							{spotify_icon}
 							<div className="menu-item__title">
@@ -306,7 +306,7 @@ class Services extends React.Component{
 							{this.props.spotify.authorization ? <span className="status green-text">Authorized</span> : <span className="status mid_grey-text">Read-only</span>}
 						</div>
 					</Link>
-					<Link history={this.props.history} className="menu-item menu-item--lastfm" activeClassName="menu-item--active" to={'/settings/lastfm'} scrollTo="services-menu">
+					<Link history={this.props.history} className="menu-item menu-item--lastfm" activeClassName="menu-item--active" to={'/settings/lastfm'} scrollTo="#services-menu">
 						<div className="menu-item__inner">
 							{lastfm_icon}
 							<div className="menu-item__title">
@@ -315,7 +315,7 @@ class Services extends React.Component{
 							{this.props.lastfm.authorization ? <span className="status green-text">Authorized</span> : <span className="status mid_grey-text">Read-only</span>}
 						</div>
 					</Link>
-					<Link history={this.props.history} className="menu-item menu-item--genius" activeClassName="menu-item--active"  to={'/settings/genius'} scrollTo="services-menu">
+					<Link history={this.props.history} className="menu-item menu-item--genius" activeClassName="menu-item--active"  to={'/settings/genius'} scrollTo="#services-menu">
 						<div className="menu-item__inner">
 							{genius_icon}
 							<div className="menu-item__title">
@@ -324,7 +324,7 @@ class Services extends React.Component{
 							{this.props.genius.authorization ? <span className="status green-text">Authorized</span> : <span className="status mid_grey-text">Unauthorized</span>}
 						</div>
 					</Link>
-					<Link history={this.props.history} className="menu-item menu-item--snapcast" activeClassName="menu-item--active" to={'/settings/snapcast'} scrollTo="services-menu">
+					<Link history={this.props.history} className="menu-item menu-item--snapcast" activeClassName="menu-item--active" to={'/settings/snapcast'} scrollTo="#services-menu">
 						<div className="menu-item__inner">
 							<Icon className="menu-item__icon" name="devices" />
 							<div className="menu-item__title">
@@ -333,7 +333,7 @@ class Services extends React.Component{
 							{this.props.pusher.config.snapcast_enabled ? <span className="status green-text">Enabled</span> : <span className="status mid_grey-text">Disabled</span>}
 						</div>
 					</Link>
-					<Link history={this.props.history} className="menu-item menu-item--icecast" activeClassName="menu-item--active" to={'/settings/icecast'} scrollTo="services-menu">
+					<Link history={this.props.history} className="menu-item menu-item--icecast" activeClassName="menu-item--active" to={'/settings/icecast'} scrollTo="#services-menu">
 						<div className="menu-item__inner">
 							<Icon className="menu-item__icon" name="wifi_tethering" />
 							<div className="menu-item__title">

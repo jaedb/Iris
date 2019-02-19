@@ -1,5 +1,5 @@
 
-import React, { PropTypes } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 
 import { createStore, bindActionCreators } from 'redux'
@@ -18,25 +18,25 @@ class SearchForm extends React.Component{
 	}
 
 	handleSubmit(e){
-		e.preventDefault()
+		e.preventDefault();
 
 		// check for uri type matching
-		switch (helpers.uriType(this.props.term)){
+		switch (helpers.uriType(this.state.term)){
 
 			case 'album':
-				this.props.history.push('/album/'+encodeURIComponent(this.props.term))
+				this.props.history.push('/album/'+encodeURIComponent(this.state.term))
 				break
 
 			case 'artist':
-				this.props.history.push('/artist/'+encodeURIComponent(this.props.term))
+				this.props.history.push('/artist/'+encodeURIComponent(this.state.term))
 				break
 
 			case 'playlist':
-				this.props.history.push('/playlist/'+encodeURIComponent(this.props.term))
+				this.props.history.push('/playlist/'+encodeURIComponent(this.state.term))
 				break
 
 			case 'track':
-				this.props.history.push('/track/'+encodeURIComponent(this.props.term))
+				this.props.history.push('/track/'+encodeURIComponent(this.state.term))
 				break
 
 			default:

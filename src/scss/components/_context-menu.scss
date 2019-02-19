@@ -62,6 +62,7 @@
 			box-sizing: border-box;
 			position: relative;
 			color: colour(white);
+			text-decoration: none;
 
 			.notouch &:hover {
 				&:before {

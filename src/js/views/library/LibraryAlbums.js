@@ -1,5 +1,5 @@
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Link from '../../components/Link';
@@ -31,6 +31,17 @@ class LibraryAlbums extends React.Component{
 			filter: '',
 			limit: 50,
 			per_page: 50
+		}
+	}
+
+	componentWillMount(){
+
+		// Before we mount, restore any limit defined in our location state
+		var state = (this.props.location.state ? this.props.location.state : {});
+		if (state.limit){
+			this.setState({
+				limit: state.limit
+			});
 		}
 	}
 
@@ -113,6 +124,17 @@ class LibraryAlbums extends React.Component{
 		return uris
 	}
 
+	loadMore(){
+		var new_limit = this.state.limit + this.state.per_page;
+
+		this.setState({limit: new_limit});
+
+		// Set our pagination to location state
+		var state = (this.props.location && this.props.location.state ? this.props.location.state : {});
+		state.limit = new_limit;
+		this.props.history.replace({state: state});
+	}
+
 	setSort(value){
 		var reverse = false
 		if (this.props.sort == value ) reverse = !this.props.sort_reverse
@@ -189,28 +211,6 @@ class LibraryAlbums extends React.Component{
 		albums = albums.slice(0, this.state.limit);
 
 		if (this.props.view == 'list'){
-			var columns = [
-				{
-					label: 'Name',
-					name: 'name'
-				},
-				{
-					label: 'Artists',
-					name: 'artists'
-				},
-				{
-					label: 'Added',
-					name: 'added_at'
-				},
-				{
-					label: 'Tracks',
-					name: 'tracks_total'
-				},
-				{
-					label: 'Source',
-					name: 'source'
-				}
-			]
 			return (
 				<section className="content-wrapper">
 					<List 
@@ -224,7 +224,7 @@ class LibraryAlbums extends React.Component{
 					<LazyLoadListener
 						loadKey={total_albums > this.state.limit ? this.state.limit : total_albums}
 						showLoader={this.state.limit < total_albums}
-						loadMore={() => this.setState({limit: this.state.limit + this.state.per_page})}
+						loadMore={() => this.loadMore()}
 					/>
 				</section>
 			)
@@ -237,7 +237,7 @@ class LibraryAlbums extends React.Component{
 					<LazyLoadListener
 						loadKey={total_albums > this.state.limit ? this.state.limit : total_albums}
 						showLoader={this.state.limit < total_albums}
-						loadMore={() => this.setState({limit: this.state.limit + this.state.per_page})}
+						loadMore={() => this.loadMore()}
 					/>
 				</section>
 			)
@@ -291,7 +291,7 @@ class LibraryAlbums extends React.Component{
 				label: 'Name'
 			},
 			{
-				value: 'artists',
+				value: 'artists.first.name',
 				label: 'Artist'
 			},
 			{
@@ -299,11 +299,11 @@ class LibraryAlbums extends React.Component{
 				label: 'Added'
 			},
 			{
-				value: 'tracks_total',
+				value: 'tracks_uris.length',
 				label: 'Tracks'
 			},
 			{
-				value: 'source',
+				value: 'uri',
 				label: 'Source'
 			}
 		]

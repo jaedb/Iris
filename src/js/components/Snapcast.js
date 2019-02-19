@@ -1,5 +1,5 @@
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Link from './Link';
@@ -80,7 +80,7 @@ class Snapcast extends React.Component{
 			<div className="list snapcast__clients">
 				{
 					clients.map(client => {
-						var class_name = "list__item snapcast__client";
+						var class_name = "list__item list__item--no-interaction snapcast__client";
 						if (client.connected){
 							class_name += " snapcast__client--connected";
 						} else {
@@ -98,7 +98,7 @@ class Snapcast extends React.Component{
 										</div>
 									</div>
 									<div className="snapcast__client__details">
-										<div className="field">
+										<label className="field">
 											<div className="name">
 												Name
 											</div>
@@ -108,8 +108,8 @@ class Snapcast extends React.Component{
 													value={client.name}
 												/>
 											</div>
-										</div>
-										<div className="field dropdown">
+										</label>
+										<label className="field dropdown">
 											<div className="name">
 												Group
 											</div>
@@ -129,7 +129,7 @@ class Snapcast extends React.Component{
 													</option>
 												</select>
 											</div>
-										</div>
+										</label>
 										<div className="snapcast__client__volume field">
 											<div className="name">
 												Volume
@@ -153,7 +153,7 @@ class Snapcast extends React.Component{
 											</div>
 											<div className="input">
 												<LatencyControl 
-													max="100"
+													max="150"
 													value={client.latency}
 													onChange={value => this.props.snapcastActions.setClientLatency(client.id, parseInt(value))}
 												/>
