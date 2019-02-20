@@ -1,26 +1,19 @@
 
-import React from 'react'
-import { connect } from 'react-redux'
-import { createStore, bindActionCreators } from 'redux'
+import React from 'react';
+import { connect } from 'react-redux';
+import { createStore, bindActionCreators } from 'redux';
 
+import Thumbnail from './Thumbnail';
+import GridItem from './GridItem';
 
-import Thumbnail from './Thumbnail'
-import GridItem from './GridItem'
-
-import * as helpers from '../helpers'
-import * as uiActions from '../services/ui/actions'
-import * as lastfmActions from '../services/lastfm/actions'
+import * as helpers from '../helpers';
+import * as uiActions from '../services/ui/actions';
+import * as lastfmActions from '../services/lastfm/actions';
 
 class ArtistGrid extends React.Component{
 
 	constructor(props){
 		super(props);
-	}
-
-	itemMounted(item){
-		if (!item.images){
-			this.props.lastfmActions.getArtist(item.uri, item.name);
-		}
 	}
 
 	handleContextMenu(e,item){
@@ -44,18 +37,17 @@ class ArtistGrid extends React.Component{
 			return (
 				<div className={className}>
 					{
-						this.props.artists.map(
-							(artist, index) => {
+						this.props.artists.map(item => {
+								var artist = helpers.collate(item, {albums: this.props.albums});
 								return (
 									<GridItem
 										key={artist.uri}
 										type="artist"
-										item={helpers.collate(artist, {albums: this.props.albums})}
+										item={artist}
 										show_source_icon={this.props.show_source_icon}
 										onClick={e => {this.props.history.push('/artist/'+encodeURIComponent(artist.uri))}}
 										lastfmActions={this.props.lastfmActions}
 										onContextMenu={e => this.handleContextMenu(e,artist)}
-										onMount={() => this.itemMounted(artist)}
 									/>
 								)
 							}

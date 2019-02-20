@@ -259,7 +259,7 @@ export function getArtist(uri, artist, mbid = false){
     }
 }
 
-export function getAlbum(artist, album, mbid = false){
+export function getAlbum(uri, artist, album, mbid = false){
     return (dispatch, getState) => {
         if (mbid){
             var params = 'method=album.getInfo&mbid='+mbid;
@@ -272,7 +272,23 @@ export function getAlbum(artist, album, mbid = false){
             .then(
                 response => {
                     if (response.album){
-                        dispatch(coreActions.albumLoaded(response.album));
+                    	var album = {
+                            uri: uri,
+                            images: response.album.image,
+                            listeners: response.album.listeners,
+                            play_count: response.album.playcount,
+                            mbid: response.album.mbid
+                        };
+
+                        if (response.album.wiki){
+                            album.wiki = response.album.wiki.content;
+
+	                        if (response.album.wiki.published){
+	                            album.wiki_publish_date = response.album.wiki.published;
+	                        }
+                        }
+
+                        dispatch(coreActions.albumLoaded(album));
                     }
                 }
             );

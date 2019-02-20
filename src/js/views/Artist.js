@@ -94,14 +94,16 @@ class Artist extends React.Component{
 	}
 
 	setSort(value){
-		var reverse = false
-		if (this.props.sort == value ) reverse = !this.props.sort_reverse
+		var reverse = false;
+		if (value !== null && this.props.sort == value){
+			reverse = !this.props.sort_reverse;
+		}
 
 		var data = {
 			artist_albums_sort_reverse: reverse,
 			artist_albums_sort: value
 		}
-		this.props.uiActions.set(data)
+		this.props.uiActions.set(data);
 	}
 
 	setFilter(value){

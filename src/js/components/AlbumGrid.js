@@ -1,12 +1,13 @@
 
-import React from 'react'
-import { connect } from 'react-redux'
-import { createStore, bindActionCreators } from 'redux'
+import React from 'react';
+import { connect } from 'react-redux';
+import { createStore, bindActionCreators } from 'redux';
 
-import history from './history';
-import * as helpers from '../helpers'
-import * as uiActions from '../services/ui/actions'
-import GridItem from './GridItem'
+import * as helpers from '../helpers';
+import * as uiActions from '../services/ui/actions';
+import * as lastfmActions from '../services/lastfm/actions';
+
+import GridItem from './GridItem';
 
 class AlbumGrid extends React.Component{
 
@@ -43,6 +44,7 @@ class AlbumGrid extends React.Component{
 									key={album.uri}
 									type="album"
 									item={album}
+									lastfmActions={this.props.lastfmActions}
 									show_source_icon={this.props.show_source_icon}
 									onContextMenu={e => this.handleContextMenu(e,album)}
 								/>
@@ -64,7 +66,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
-		uiActions: bindActionCreators(uiActions, dispatch)
+		uiActions: bindActionCreators(uiActions, dispatch),
+		lastfmActions: bindActionCreators(lastfmActions, dispatch)
 	}
 }
 
