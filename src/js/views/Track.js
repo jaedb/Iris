@@ -1,31 +1,31 @@
 
-import React from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
+import React from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 import Link from '../components/Link';
 import ErrorMessage from '../components/ErrorMessage';
-import Header from '../components/Header'
-import TrackList from '../components/TrackList'
-import Thumbnail from '../components/Thumbnail'
-import ArtistSentence from '../components/ArtistSentence'
-import ArtistGrid from '../components/ArtistGrid'
-import FollowButton from '../components/Fields/FollowButton'
-import LastfmLoveButton from '../components/Fields/LastfmLoveButton'
-import Dater from '../components/Dater'
-import LazyLoadListener from '../components/LazyLoadListener'
-import ContextMenuTrigger from '../components/ContextMenuTrigger'
-import URILink from '../components/URILink'
-import Icon from '../components/Icon'
-import Popularity from '../components/Popularity'
+import Header from '../components/Header';
+import TrackList from '../components/TrackList';
+import Thumbnail from '../components/Thumbnail';
+import ArtistSentence from '../components/ArtistSentence';
+import ArtistGrid from '../components/ArtistGrid';
+import FollowButton from '../components/Fields/FollowButton';
+import LastfmLoveButton from '../components/Fields/LastfmLoveButton';
+import Dater from '../components/Dater';
+import LazyLoadListener from '../components/LazyLoadListener';
+import ContextMenuTrigger from '../components/ContextMenuTrigger';
+import URILink from '../components/URILink';
+import Icon from '../components/Icon';
+import Popularity from '../components/Popularity';
 
-import * as helpers from '../helpers'
-import * as coreActions from '../services/core/actions'
-import * as uiActions from '../services/ui/actions'
-import * as mopidyActions from '../services/mopidy/actions'
-import * as spotifyActions from '../services/spotify/actions'
-import * as lastfmActions from '../services/lastfm/actions'
-import * as geniusActions from '../services/genius/actions'
+import * as helpers from '../helpers';
+import * as coreActions from '../services/core/actions';
+import * as uiActions from '../services/ui/actions';
+import * as mopidyActions from '../services/mopidy/actions';
+import * as spotifyActions from '../services/spotify/actions';
+import * as lastfmActions from '../services/lastfm/actions';
+import * as geniusActions from '../services/genius/actions';
 
 class Track extends React.Component{
 

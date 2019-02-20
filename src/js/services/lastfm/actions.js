@@ -272,20 +272,24 @@ export function getAlbum(uri, artist, album, mbid = false){
             .then(
                 response => {
                     if (response.album){
+
+                        var existing_album = getState().core.albums[uri];
+
                     	var album = {
                             uri: uri,
                             images: response.album.image,
                             listeners: response.album.listeners,
                             play_count: response.album.playcount,
-                            mbid: response.album.mbid
+                            mbid: response.album.mbid,
+                            wiki: (response.album.wiki ? response.album.wiki.content : null),
+                            wiki_publish_date: (response.album.wiki ? response.album.wiki.published : null),
                         };
 
-                        if (response.album.wiki){
-                            album.wiki = response.album.wiki.content;
-
-	                        if (response.album.wiki.published){
-	                            album.wiki_publish_date = response.album.wiki.published;
-	                        }
+                        // If we've already got some of this album and it has images aready, don't use our ones. 
+                        // In *most* cases this existing image will be perfectly suffice. This prevents an ugly 
+                        // flicker when the existing image is replaced by the LastFM one
+                        if (existing_album && existing_album.images){
+                            delete album.images;
                         }
 
                         dispatch(coreActions.albumLoaded(album));

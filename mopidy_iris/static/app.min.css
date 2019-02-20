@@ -2831,7 +2831,7 @@ h4 {
     margin-left: 10px; }
   h4 .button {
     margin-left: 10px;
-    margin-bottom: -6px; }
+    margin-bottom: -1px; }
 
 h5 {
   font-size: 1rem;
@@ -6596,6 +6596,8 @@ main .album-view {
     box-sizing: border-box; }
     main .album-view .thumbnail-wrapper .thumbnail {
       max-width: 100%; }
+  main .album-view .wiki {
+    padding-top: 40px; }
   @media (min-width: 800px) {
     main .album-view .parallax {
       height: 30vh;
