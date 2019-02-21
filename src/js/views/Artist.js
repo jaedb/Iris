@@ -9,6 +9,7 @@ import ErrorMessage from '../components/ErrorMessage';
 import Link from '../components/Link';
 import LazyLoadListener from '../components/LazyLoadListener'
 import Header from '../components/Header'
+import NiceNumber from '../components/NiceNumber';
 import TrackList from '../components/TrackList'
 import AlbumGrid from '../components/AlbumGrid'
 import Thumbnail from '../components/Thumbnail'
@@ -94,14 +95,16 @@ class Artist extends React.Component{
 	}
 
 	setSort(value){
-		var reverse = false
-		if (this.props.sort == value ) reverse = !this.props.sort_reverse
+		var reverse = false;
+		if (value !== null && this.props.sort == value){
+			reverse = !this.props.sort_reverse;
+		}
 
 		var data = {
 			artist_albums_sort_reverse: reverse,
 			artist_albums_sort: value
 		}
-		this.props.uiActions.set(data)
+		this.props.uiActions.set(data);
 	}
 
 	setFilter(value){
@@ -293,9 +296,9 @@ class Artist extends React.Component{
 
 				<div className="col col--w40 tiles artist-stats">
 					{thumbnails}
-					{artist.followers ? <div className="tile"><span className="content"><Icon type="fontawesome" name="users" />{artist.followers.toLocaleString()} followers</span></div> : null}
+					{artist.followers ? <div className="tile"><span className="content"><Icon type="fontawesome" name="users" /><NiceNumber value={artist.followers} /> followers</span></div> : null}
 					{artist.popularity ? <div className="tile"><span className="content"><Icon type="fontawesome" name="fire" />{artist.popularity }% popularity</span></div> : null}
-					{artist.listeners ? <div className="tile"><span className="content"><Icon type="fontawesome" name="headphones" />{ artist.listeners.toLocaleString() } listeners</span></div> : null }
+					{artist.listeners ? <div className="tile"><span className="content"><Icon type="fontawesome" name="headphones" /><NiceNumber value={artist.listeners} /> listeners</span></div> : null }
 				</div>
 
 				<div className="col col--w60 biography">

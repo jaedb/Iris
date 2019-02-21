@@ -4,23 +4,25 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import ErrorMessage from '../components/ErrorMessage';
-import Header from '../components/Header'
-import TrackList from '../components/TrackList'
-import Thumbnail from '../components/Thumbnail'
-import Parallax from '../components/Parallax'
-import ArtistSentence from '../components/ArtistSentence'
-import ArtistGrid from '../components/ArtistGrid'
-import FollowButton from '../components/Fields/FollowButton'
-import Dater from '../components/Dater'
-import LazyLoadListener from '../components/LazyLoadListener'
-import ContextMenuTrigger from '../components/ContextMenuTrigger'
-import Icon from '../components/Icon'
+import Header from '../components/Header';
+import TrackList from '../components/TrackList';
+import Thumbnail from '../components/Thumbnail';
+import Parallax from '../components/Parallax';
+import ArtistSentence from '../components/ArtistSentence';
+import ArtistGrid from '../components/ArtistGrid';
+import FollowButton from '../components/Fields/FollowButton';
+import NiceNumber from '../components/NiceNumber';
+import Dater from '../components/Dater';
+import LazyLoadListener from '../components/LazyLoadListener';
+import ContextMenuTrigger from '../components/ContextMenuTrigger';
+import Icon from '../components/Icon';
 
-import * as helpers from '../helpers'
-import * as coreActions from '../services/core/actions'
-import * as uiActions from '../services/ui/actions'
-import * as mopidyActions from '../services/mopidy/actions'
-import * as spotifyActions from '../services/spotify/actions'
+import * as helpers from '../helpers';
+import * as coreActions from '../services/core/actions';
+import * as uiActions from '../services/ui/actions';
+import * as mopidyActions from '../services/mopidy/actions';
+import * as spotifyActions from '../services/spotify/actions';
+import * as lastfmActions from '../services/lastfm/actions';
 
 class Album extends React.Component{
 
@@ -31,6 +33,13 @@ class Album extends React.Component{
 	componentDidMount(){
 		this.setWindowTitle();
 		this.props.coreActions.loadAlbum(this.props.uri);
+
+		// We already have the album in our index, so it won't fire componentWillReceiveProps
+		if (this.props.album){
+			if (this.props.album.artists && this.props.album.wiki === undefined){
+				this.props.lastfmActions.getAlbum(this.props.album.uri, this.props.album.artists[0].name, this.props.album.name);
+			}
+		}
 	}
 
 	handleContextMenu(e){
@@ -49,6 +58,13 @@ class Album extends React.Component{
 		} else if (!this.props.mopidy_connected && nextProps.mopidy_connected){
 			if (helpers.uriSource(nextProps.uri) != 'spotify'){
 				this.props.coreActions.loadAlbum(nextProps.uri);
+			}
+		}
+
+		// We have just received our full album or our album artists
+		if ((!this.props.album && nextProps.album) || (!this.props.album.artists && nextProps.album.artists)){
+			if (this.props.album.wiki === undefined){
+				this.props.lastfmActions.getAlbum(nextProps.album.uri, nextProps.album.artists[0].name, nextProps.album.name);
 			}
 		}
 
@@ -146,12 +162,13 @@ class Album extends React.Component{
 					<h1>{album.name}</h1>
 
 					<ul className="details">
-						{!this.props.slim_mode ? <li><Icon type="fontawesome" name={helpers.sourceIcon(album.uri )} /></li> : null}
+						{!this.props.slim_mode ? <li className="source"><Icon type="fontawesome" name={helpers.sourceIcon(album.uri )} /></li> : null}
 						{album.artists && album.artists.length > 0 ? <li><ArtistSentence artists={album.artists} /></li> : null}
 						{album.release_date ? <li><Dater type="date" data={album.release_date} /></li> : null}
-						{!this.props.slim_mode ? <li>
-							{album.tracks ? <span>{album.tracks.length} tracks, <Dater type="total-time" data={album.tracks} /></span> : '0 tracks, 0 mins' }
-						</li> : null }
+						{album.tracks ? <li>{album.tracks.length} tracks</li> : null}
+						{!this.props.slim_mode && album.tracks ? <li><Dater type="total-time" data={album.tracks} /></li> : null}
+						{!this.props.slim_mode && album.play_count ? <li><NiceNumber value={album.play_count} /> plays</li> : null}
+						{!this.props.slim_mode && album.listeners ? <li><NiceNumber value={album.listeners} /> listeners</li> : null}
 					</ul>
 				</div>
 
@@ -169,6 +186,14 @@ class Album extends React.Component{
 						loadMore={() => this.loadMore()}
 					/>
 				</section>
+
+				{album.wiki ? <section className="wiki">
+					<h4 className="wiki__title">About</h4>
+					<div className="wiki__text">
+						<p>{album.wiki}</p><br />
+						<div className="mid_grey-text">Published: { album.wiki_publish_date }</div>
+					</div>
+				</section> : null}
 
 			</div>
 		)
@@ -197,7 +222,8 @@ const mapDispatchToProps = (dispatch) => {
 		coreActions: bindActionCreators(coreActions, dispatch),
 		uiActions: bindActionCreators(uiActions, dispatch),
 		mopidyActions: bindActionCreators(mopidyActions, dispatch),
-		spotifyActions: bindActionCreators(spotifyActions, dispatch)
+		spotifyActions: bindActionCreators(spotifyActions, dispatch),
+		lastfmActions: bindActionCreators(lastfmActions, dispatch)
 	}
 }
 

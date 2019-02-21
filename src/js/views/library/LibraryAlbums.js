@@ -171,10 +171,9 @@ class LibraryAlbums extends React.Component{
 				}
 
 				if (this.props.albums.hasOwnProperty(uri)){
-					album = this.props.albums[uri]
+					albums.push(this.props.albums[uri]);
 				}
 
-				albums.push(album)
 			}
 		}
 

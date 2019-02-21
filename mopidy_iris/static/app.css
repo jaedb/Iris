@@ -2831,7 +2831,7 @@ h4 {
     margin-left: 10px; }
   h4 .button {
     margin-left: 10px;
-    margin-bottom: -6px; }
+    margin-bottom: -1px; }
 
 h5 {
   font-size: 1rem;
@@ -3028,9 +3028,11 @@ footer {
   opacity: 0.5; }
   .details li {
     display: inline-block; }
-    .details li:not(:first-child) {
+    .details li.source {
+      padding-right: 10px; }
+    .details li:not(.source):not(:first-child) ~ li {
       padding-left: 14px; }
-      .details li:not(:first-child):before {
+      .details li:not(.source):not(:first-child) ~ li:before {
         content: '\2022' !important;
         display: inline-block;
         margin-left: -8px;
@@ -6596,6 +6598,8 @@ main .album-view {
     box-sizing: border-box; }
     main .album-view .thumbnail-wrapper .thumbnail {
       max-width: 100%; }
+  main .album-view .wiki {
+    padding-top: 40px; }
   @media (min-width: 800px) {
     main .album-view .parallax {
       height: 30vh;
