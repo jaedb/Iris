@@ -9,6 +9,7 @@ import Link from '../components/Link';
 import TrackList from '../components/TrackList'
 import Thumbnail from '../components/Thumbnail'
 import Parallax from '../components/Parallax'
+import NiceNumber from '../components/NiceNumber';
 import Dater from '../components/Dater'
 import ConfirmationButton from '../components/Fields/ConfirmationButton'
 import LazyLoadListener from '../components/LazyLoadListener'
@@ -223,14 +224,12 @@ class Playlist extends React.Component{
 					{playlist.description ? <h2 className="description mid_grey-text" dangerouslySetInnerHTML={{__html: playlist.description}}></h2> : null }
 
 					<ul className="details">
-						{!this.props.slim_mode ? <li><Icon type="fontawesome" name={helpers.sourceIcon(playlist.uri)} /></li> : null }
-						<li>
-							{playlist.tracks_total ? playlist.tracks_total : '0'} tracks{playlist.tracks_total && playlist.tracks_total > 0 ? ',' : null}&nbsp;
-							<Dater type="total-time" data={playlist.tracks} />
-						</li>
-						{!this.props.slim_mode && playlist.followers !== undefined ? <li>{playlist.followers.toLocaleString()} followers</li> : null }
-						{!this.props.slim_mode && playlist.last_modified_date ? <li>Edited <Dater type="ago" data={playlist.last_modified_date} /></li> : null }
+						{!this.props.slim_mode ? <li className="source"><Icon type="fontawesome" name={helpers.sourceIcon(playlist.uri)} /></li> : null }
 						{playlist.user_uri ? <li><URILink type="user" uri={playlist.user_uri}>{playlist.user ? playlist.user.name : helpers.getFromUri('userid',playlist.user_uri)}</URILink></li> : null }
+						{playlist.tracks ? <li>{playlist.tracks_total ? playlist.tracks_total : '0'} tracks</li> : null }
+						{!this.props.slim_mode && playlist.tracks ? <li><Dater type="total-time" data={playlist.tracks} /></li> : null }
+						{!this.props.slim_mode && playlist.followers !== undefined ? <li><NiceNumber value={playlist.followers} /> followers</li> : null }
+						{!this.props.slim_mode && playlist.last_modified_date ? <li>Edited <Dater type="ago" data={playlist.last_modified_date} /></li> : null }
 					</ul>
 				</div>
 

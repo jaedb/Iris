@@ -1906,9 +1906,6 @@ const MopidyMiddleware = (function(){
 
                         var album = Object.assign(
                             {},
-                            { 
-                            	images: []
-                            },
                             response[0].album,
                             {
                                 source: 'local',
@@ -1921,13 +1918,13 @@ const MopidyMiddleware = (function(){
                         store.dispatch(coreActions.albumLoaded(album));
                         store.dispatch(coreActions.artistsLoaded(artists));
 
-                         // load artwork from LastFM
-                        if (album.images.length <= 0){
+                        // load artwork from LastFM
+                        if (!response[0].album.images){
                             var mbid = helpers.getFromUri('mbid',album.uri);
                             if (mbid){
-                                store.dispatch(lastfmActions.getAlbum(false, false, mbid));
-                            } else {
-                                store.dispatch(lastfmActions.getAlbum(album.artists[0].name, album.name));
+                                store.dispatch(lastfmActions.getAlbum(album.uri, false, false, mbid));
+                            } else if (artists && artists.length > 0){
+                                store.dispatch(lastfmActions.getAlbum(album.uri, artists[0].name, album.name));
                             }
                         }
 

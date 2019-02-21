@@ -39,6 +39,10 @@ main .album-view {
 		}
 	}
 
+	.wiki {
+		padding-top: 40px;
+	}
+
 	@include responsive(null, $bp_medium){
 		.parallax {
 			height: 30vh;

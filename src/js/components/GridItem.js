@@ -15,11 +15,27 @@ export default class GridItem extends React.Component{
 	}
 
 	componentDidMount(){
+		if (this.props.item){
+			var item = this.props.item;
+		} else {
+			return;
+		}
 
-		// A mount callback allows us to run checks on render
-		// We use this for loading artwork, but only when it's displayed
-		if (this.props.onMount){
-			this.props.onMount();
+		// If the item that has just been mounted doesn't have images,
+		// try fetching them from LastFM
+		if (!item.images && this.props.lastfmActions){
+			switch (helpers.uriType(item.uri)){
+
+				case 'artist':
+					this.props.lastfmActions.getArtist(item.uri, item.name);
+					break;
+
+				case 'album':
+					if (item.artists && item.artists.length > 0){
+						this.props.lastfmActions.getAlbum(item.uri, item.artists[0].name, item.name, (item.mbid ? item.mbid : null));
+					}
+					break;
+			}
 		}
 	}
 
@@ -78,14 +94,16 @@ export default class GridItem extends React.Component{
 	}
 
 	render(){
-		if (!this.props.item) return null
+		if (!this.props.item){
+			return null;
+		}
 
 		var item = this.props.item;
 		if (item.album !== undefined){
 			item.album.added_at = item.added_at;
 			item = item.album;
 		}
-		var images = null
+		var images = null;
 		if (this.props.item.images){
 			if (Array.isArray(this.props.item.images)){
 				images = this.props.item.images[0];

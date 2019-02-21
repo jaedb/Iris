@@ -9,6 +9,7 @@ import ErrorMessage from '../components/ErrorMessage';
 import Link from '../components/Link';
 import LazyLoadListener from '../components/LazyLoadListener'
 import Header from '../components/Header'
+import NiceNumber from '../components/NiceNumber';
 import TrackList from '../components/TrackList'
 import AlbumGrid from '../components/AlbumGrid'
 import Thumbnail from '../components/Thumbnail'
@@ -94,14 +95,16 @@ class Artist extends React.Component{
 	}
 
 	setSort(value){
-		var reverse = false
-		if (this.props.sort == value ) reverse = !this.props.sort_reverse
+		var reverse = false;
+		if (value !== null && this.props.sort == value){
+			reverse = !this.props.sort_reverse;
+		}
 
 		var data = {
 			artist_albums_sort_reverse: reverse,
 			artist_albums_sort: value
 		}
-		this.props.uiActions.set(data)
+		this.props.uiActions.set(data);
 	}
 
 	setFilter(value){
@@ -136,11 +139,11 @@ class Artist extends React.Component{
 				label: 'Name'
 			},
 			{
-				value: 'date',
+				value: 'release_date',
 				label: 'Date'
 			},
 			{
-				value: 'tracks_total',
+				value: 'tracks_uris.length',
 				label: 'Tracks'
 			}
 		];
