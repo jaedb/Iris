@@ -429,7 +429,11 @@ footer {
 	li {
 		display: inline-block;
 
-		&:not(:first-child){
+		&.source {
+			padding-right: 10px;
+		}
+
+		&:not(.source):not(:first-child) ~ li {
 			@include bullet();
 		}
 	}

@@ -278,8 +278,8 @@ export function getAlbum(uri, artist, album, mbid = false){
                     	var album = {
                             uri: uri,
                             images: response.album.image,
-                            listeners: response.album.listeners,
-                            play_count: response.album.playcount,
+                            listeners: parseInt(response.album.listeners),
+                            play_count: parseInt(response.album.playcount),
                             mbid: response.album.mbid,
                             wiki: (response.album.wiki ? response.album.wiki.content : null),
                             wiki_publish_date: (response.album.wiki ? response.album.wiki.published : null),

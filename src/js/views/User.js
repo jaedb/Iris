@@ -9,6 +9,7 @@ import PlaylistGrid from '../components/PlaylistGrid';
 import FollowButton from '../components/Fields/FollowButton';
 import LazyLoadListener from '../components/LazyLoadListener';
 import Parallax from '../components/Parallax';
+import NiceNumber from '../components/NiceNumber';
 import ContextMenuTrigger from '../components/ContextMenuTrigger';
 import Icon from '../components/Icon';
 
@@ -102,8 +103,9 @@ class User extends React.Component{
 						<h1>{user.name}</h1>
 						<h2>
 							<ul className="details">
-								{user.playlists_total ? <li>{user.playlists_total ? user.playlists_total.toLocaleString() : 0} playlists</li> : null}
-								{user.followers ? <li>{user.followers.toLocaleString()} followers</li> : null}
+								{!this.props.slim_mode ? <li className="source"><Icon type="fontawesome" name={helpers.sourceIcon(user.uri )} /></li> : null}
+								{user.playlists_total ? <li><NiceNumber value={user.playlists_total} /> playlists</li> : null}
+								{user.followers ? <li><NiceNumber value={user.followers} /> followers</li> : null}
 								{this.isMe() ? <li><span className="blue-text">You</span></li> : null}
 							</ul>
 						</h2>

@@ -3028,9 +3028,11 @@ footer {
   opacity: 0.5; }
   .details li {
     display: inline-block; }
-    .details li:not(:first-child) {
+    .details li.source {
+      padding-right: 10px; }
+    .details li:not(.source):not(:first-child) ~ li {
       padding-left: 14px; }
-      .details li:not(:first-child):before {
+      .details li:not(.source):not(:first-child) ~ li:before {
         content: '\2022' !important;
         display: inline-block;
         margin-left: -8px;

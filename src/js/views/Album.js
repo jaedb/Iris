@@ -11,6 +11,7 @@ import Parallax from '../components/Parallax';
 import ArtistSentence from '../components/ArtistSentence';
 import ArtistGrid from '../components/ArtistGrid';
 import FollowButton from '../components/Fields/FollowButton';
+import NiceNumber from '../components/NiceNumber';
 import Dater from '../components/Dater';
 import LazyLoadListener from '../components/LazyLoadListener';
 import ContextMenuTrigger from '../components/ContextMenuTrigger';
@@ -161,12 +162,13 @@ class Album extends React.Component{
 					<h1>{album.name}</h1>
 
 					<ul className="details">
-						{!this.props.slim_mode ? <li><Icon type="fontawesome" name={helpers.sourceIcon(album.uri )} /></li> : null}
+						{!this.props.slim_mode ? <li className="source"><Icon type="fontawesome" name={helpers.sourceIcon(album.uri )} /></li> : null}
 						{album.artists && album.artists.length > 0 ? <li><ArtistSentence artists={album.artists} /></li> : null}
 						{album.release_date ? <li><Dater type="date" data={album.release_date} /></li> : null}
-						{!this.props.slim_mode ? <li>
-							{album.tracks ? <span>{album.tracks.length} tracks, <Dater type="total-time" data={album.tracks} /></span> : '0 tracks, 0 mins' }
-						</li> : null }
+						{album.tracks ? <li>{album.tracks.length} tracks</li> : null}
+						{!this.props.slim_mode && album.tracks ? <li><Dater type="total-time" data={album.tracks} /></li> : null}
+						{!this.props.slim_mode && album.play_count ? <li><NiceNumber value={album.play_count} /> plays</li> : null}
+						{!this.props.slim_mode && album.listeners ? <li><NiceNumber value={album.listeners} /> listeners</li> : null}
 					</ul>
 				</div>
 
