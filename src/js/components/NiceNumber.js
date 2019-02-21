@@ -16,9 +16,9 @@ export default class NiceNumber extends React.Component{
 			formatted = Math.round( formatted * 10 ) / 10;
 			formatted = formatted+'m';
 
-		// > 100 thousand
-		} else if (formatted > 100000){
-			formatted = formatted / 100000;
+		// > 1 thousand
+		} else if (formatted > 1000){
+			formatted = formatted / 1000;
 			formatted = Math.round( formatted * 10 ) / 10;
 			formatted = formatted+'k';
 
@@ -30,10 +30,6 @@ export default class NiceNumber extends React.Component{
 	}
 
 	render(){
-		if (!this.props.value){
-			return null;
-		} else {
-			return <span className="counter">{this.format()}</span>;
-		}
+		return <span className="counter">{this.format()}</span>;
 	}
 }
