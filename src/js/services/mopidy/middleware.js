@@ -2057,24 +2057,43 @@ const MopidyMiddleware = (function(){
                             store.dispatch(coreActions.albumsLoaded(albums));
                         }
 
-                        var artist = Object.assign(
-                            {},
-                            (response ? response[0].artists[0] : {}),
-                            {
-                                provider: 'mopidy',
-                                albums_uris: helpers.arrayOf('uri',albums),
-                                tracks: response
+                        var artists = [];
+                        for (var i = 0; i < response.length; i++){
+                            for (var j = 0; j < response[i].album.artists.length; j++){
+				artists.push(Object.assign(
+                                    {},
+                                    (response ? response[i].album.artists[j] : {}),
+                                    {
+                                        provider: 'mopidy',
+                                        albums_uris: helpers.arrayOf('uri',albums),
+                                        tracks: response
+                                    }
+                                ));
                             }
-                        );
-                        store.dispatch(coreActions.artistLoaded(artist));
+                            for (var j = 0; j < response[i].artists.length; j++){
+                                artists.push(Object.assign(
+                                    {},
+                                    (response ? response[i].artists[j] : {}),
+                                    {
+                                        provider: 'mopidy',
+                                        albums_uris: helpers.arrayOf('uri',albums),
+                                        tracks: response
+                                    }
+                                ));
+                            }
+                        }
 
-                        // load artwork from LastFM
-                        var existing_artist = store.getState().core.artists[artist.uri];
-                        if (existing_artist && !existing_artist.images){
-                            if (artist.musicbrainz_id){
-                                store.dispatch(lastfmActions.getArtist(artist.uri, false, artist.musicbrainz_id));
-                            } else {
-                                store.dispatch(lastfmActions.getArtist(artist.uri, artist.name));
+                        for (var i = 0; i < artists.length; i++){
+                            store.dispatch(coreActions.artistLoaded(artists[i]));
+
+                            // load artwork from LastFM
+                            var existing_artist = store.getState().core.artists[artists[i].uri];
+                            if (existing_artist && !existing_artist.images){
+                                if (artists[i].musicbrainz_id){
+                                   store.dispatch(lastfmActions.getArtist(artists[i].uri, false, artists[i].musicbrainz_id));
+                               } else {
+                                   store.dispatch(lastfmActions.getArtist(artists[i].uri, artists[i].name));
+                                }
                             }
                         }
                     })
