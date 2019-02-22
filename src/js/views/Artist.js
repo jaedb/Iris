@@ -296,9 +296,9 @@ class Artist extends React.Component{
 
 				<div className="col col--w40 tiles artist-stats">
 					{thumbnails}
-					{artist.followers ? <div className="tile"><span className="content"><Icon type="fontawesome" name="users" /><NiceNumber value={artist.followers} /> followers</span></div> : null}
+					{artist.followers ? <div className="tile"><span className="content"><Icon type="fontawesome" name="users" />{artist.followers.toLocaleString()} followers</span></div> : null}
 					{artist.popularity ? <div className="tile"><span className="content"><Icon type="fontawesome" name="fire" />{artist.popularity }% popularity</span></div> : null}
-					{artist.listeners ? <div className="tile"><span className="content"><Icon type="fontawesome" name="headphones" /><NiceNumber value={artist.listeners} /> listeners</span></div> : null }
+					{artist.listeners ? <div className="tile"><span className="content"><Icon type="fontawesome" name="headphones" />{ artist.listeners.toLocaleString() } listeners</span></div> : null }
 				</div>
 
 				<div className="col col--w60 biography">

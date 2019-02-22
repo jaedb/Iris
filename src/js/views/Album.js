@@ -63,7 +63,7 @@ class Album extends React.Component{
 
 		// We have just received our full album or our album artists
 		if ((!this.props.album && nextProps.album) || (!this.props.album.artists && nextProps.album.artists)){
-			if (this.props.album.wiki === undefined){
+			if (nextProps.album.wiki === undefined && nextProps.artists.length > 0){
 				this.props.lastfmActions.getAlbum(nextProps.album.uri, nextProps.album.artists[0].name, nextProps.album.name);
 			}
 		}

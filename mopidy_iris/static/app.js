@@ -21620,33 +21620,9 @@ var _redux = __webpack_require__(2);
 
 var _reactRouter = __webpack_require__(39);
 
-var _ArtistSentence = __webpack_require__(20);
+var _ListItem = __webpack_require__(339);
 
-var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
-
-var _Dater = __webpack_require__(24);
-
-var _Dater2 = _interopRequireDefault(_Dater);
-
-var _URILink = __webpack_require__(18);
-
-var _URILink2 = _interopRequireDefault(_URILink);
-
-var _ContextMenuTrigger = __webpack_require__(22);
-
-var _ContextMenuTrigger2 = _interopRequireDefault(_ContextMenuTrigger);
-
-var _Icon = __webpack_require__(5);
-
-var _Icon2 = _interopRequireDefault(_Icon);
-
-var _Thumbnail = __webpack_require__(11);
-
-var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
-
-var _Popularity = __webpack_require__(81);
-
-var _Popularity2 = _interopRequireDefault(_Popularity);
+var _ListItem2 = _interopRequireDefault(_ListItem);
 
 var _helpers = __webpack_require__(1);
 
@@ -21655,6 +21631,10 @@ var helpers = _interopRequireWildcard(_helpers);
 var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
+
+var _actions2 = __webpack_require__(17);
+
+var lastfmActions = _interopRequireWildcard(_actions2);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -21676,88 +21656,12 @@ var List = function (_React$Component) {
 	}
 
 	_createClass(List, [{
-		key: 'handleClick',
-		value: function handleClick(e, uri) {
-
-			// make sure we haven't clicked a nested link (ie Artist name)
-			if (e.target.tagName.toLowerCase() !== 'a') {
-				e.preventDefault();
-				this.props.history.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(uri));
-				helpers.scrollTo();
-			}
-		}
-	}, {
-		key: 'handleMouseDown',
-		value: function handleMouseDown(e, uri) {
-
-			// make sure we haven't clicked a nested link (ie Artist name)
-			if (e.target.tagName.toLowerCase() !== 'a') {
-				e.preventDefault();
-				this.props.history.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(uri));
-				helpers.scrollTo();
-			}
-		}
-	}, {
 		key: 'handleContextMenu',
 		value: function handleContextMenu(e, item) {
 			if (this.props.handleContextMenu) {
 				e.preventDefault();
 				this.props.handleContextMenu(e, item);
 			}
-		}
-	}, {
-		key: 'renderValue',
-		value: function renderValue(row, key_string) {
-			var key = key_string.split('.');
-			var value = row;
-
-			for (var i = 0; i < key.length; i++) {
-				if (value[key[i]] === undefined) {
-					return null;
-				} else if (typeof value[key[i]] === 'string' && value[key[i]].replace(' ', '') == '') {
-					return null;
-				} else {
-					value = value[key[i]];
-				}
-			}
-
-			if (key_string === 'tracks_total' || key_string === 'tracks_uris.length') return _react2.default.createElement(
-				'span',
-				null,
-				value,
-				' tracks'
-			);
-			if (key_string === 'followers') return _react2.default.createElement(
-				'span',
-				null,
-				value.toLocaleString(),
-				' followers'
-			);
-			if (key_string === 'added_at') return _react2.default.createElement(
-				'span',
-				null,
-				'Added ',
-				_react2.default.createElement(_Dater2.default, { type: 'ago', data: value }),
-				' ago'
-			);
-			if (key_string === 'owner') return _react2.default.createElement(
-				_URILink2.default,
-				{ type: 'user', uri: value.uri },
-				value.id
-			);
-			if (key_string === 'popularity') return _react2.default.createElement(_Popularity2.default, { full: true, popularity: value });
-			if (key[0] === 'artists') return _react2.default.createElement(_ArtistSentence2.default, { artists: value });
-			if (value === true) return _react2.default.createElement(_Icon2.default, { name: 'check' });
-			if (typeof value === 'number') return _react2.default.createElement(
-				'span',
-				null,
-				value.toLocaleString()
-			);
-			return _react2.default.createElement(
-				'span',
-				null,
-				value
-			);
 		}
 	}, {
 		key: 'render',
@@ -21774,93 +21678,19 @@ var List = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: className },
-				this.props.rows.map(function (row, row_index) {
-
-					var class_name = 'list__item';
-					if (row.type) {
-						class_name += ' list__item--' + row.type;
-					}
-
-					if (_this2.props.middle_column) {
-						class_name += " list__item--has-middle-column";
-					}
-
-					if (_this2.props.thumbnail) {
-						class_name += " list__item--has-thumbnail";
-					}
-
-					if (_this2.props.details) {
-						class_name += " list__item--has-details";
-					}
-
-					return _react2.default.createElement(
-						'div',
-						{
-							className: class_name,
-							key: row_index,
-							onClick: function onClick(e) {
-								return _this2.handleClick(e, row.uri);
-							},
-							onContextMenu: function onContextMenu(e) {
-								return _this2.handleContextMenu(e, row);
-							} },
-						_react2.default.createElement(
-							'div',
-							{ className: 'list__item__column list__item__column--right' },
-							_this2.props.right_column ? _this2.props.right_column.map(function (item, index) {
-								return _react2.default.createElement(
-									'span',
-									{ className: 'list__item__column__item list__item__column__item--' + item.replace('.', '_'), key: index },
-									_this2.renderValue(row, item)
-								);
-							}) : null,
-							_this2.props.nocontext ? null : _react2.default.createElement(_ContextMenuTrigger2.default, { className: 'list__item__column__item list__item__column__item--context-menu-trigger subtle', onTrigger: function onTrigger(e) {
-									return _this2.handleContextMenu(e, row);
-								} })
-						),
-						_react2.default.createElement(
-							'div',
-							{ className: 'list__item__column list__item__column--name' },
-							_this2.props.thumbnail ? _react2.default.createElement(_Thumbnail2.default, { className: 'list__item__column__item list__item__column__item--thumbnail', images: row.images ? row.images : null, size: 'small' }) : null,
-							_react2.default.createElement(
-								'div',
-								{ className: 'list__item__column__item list__item__column__item--name' },
-								row.name !== undefined ? _this2.renderValue(row, 'name') : _react2.default.createElement(
-									'span',
-									{ className: 'grey-text' },
-									row.uri
-								)
-							),
-							_this2.props.details ? _react2.default.createElement(
-								'ul',
-								{ className: 'list__item__column__item list__item__column__item--details details' },
-								_this2.props.details.map(function (item, index) {
-									var value = _this2.renderValue(row, item);
-
-									if (!value) {
-										return null;
-									}
-
-									return _react2.default.createElement(
-										'li',
-										{ className: 'details__item details__item--' + item.replace('.', '_'), key: index },
-										value
-									);
-								})
-							) : null
-						),
-						_this2.props.middle_column ? _react2.default.createElement(
-							'div',
-							{ className: 'list__item__column list__item__column--middle' },
-							_this2.props.middle_column ? _this2.props.middle_column.map(function (item, index) {
-								return _react2.default.createElement(
-									'span',
-									{ className: 'list__item__column__item list__item__column__item--' + item.replace('.', '_'), key: index },
-									_this2.renderValue(row, item)
-								);
-							}) : null
-						) : null
-					);
+				this.props.rows.map(function (item, index) {
+					return _react2.default.createElement(_ListItem2.default, {
+						key: index,
+						item: item,
+						lastfmActions: _this2.props.lastfmActions,
+						history: _this2.props.history,
+						link_prefix: _this2.props.link_prefix,
+						handleContextMenu: function handleContextMenu(e) {
+							return _this2.props.handleContextMenu(e, item);
+						},
+						thumbnail: _this2.props.thumbnail,
+						details: _this2.props.details
+					});
 				})
 			);
 		}
@@ -21875,7 +21705,8 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 	return {
-		uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch)
+		uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
+		lastfmActions: (0, _redux.bindActionCreators)(lastfmActions, dispatch)
 	};
 };
 
@@ -23123,9 +22954,9 @@ var NiceNumber = function (_React$Component) {
 				formatted = Math.round(formatted * 10) / 10;
 				formatted = formatted + 'm';
 
-				// > 100 thousand
-			} else if (formatted > 100000) {
-				formatted = formatted / 100000;
+				// > 1 thousand
+			} else if (formatted > 1000) {
+				formatted = formatted / 1000;
 				formatted = Math.round(formatted * 10) / 10;
 				formatted = formatted + 'k';
 			} else {
@@ -23137,15 +22968,11 @@ var NiceNumber = function (_React$Component) {
 	}, {
 		key: 'render',
 		value: function render() {
-			if (!this.props.value) {
-				return null;
-			} else {
-				return _react2.default.createElement(
-					'span',
-					{ className: 'counter' },
-					this.format()
-				);
-			}
+			return _react2.default.createElement(
+				'span',
+				{ className: 'counter' },
+				this.format()
+			);
 		}
 	}]);
 
@@ -75626,7 +75453,7 @@ var Album = function (_React$Component) {
 
 			// We have just received our full album or our album artists
 			if (!this.props.album && nextProps.album || !this.props.album.artists && nextProps.album.artists) {
-				if (this.props.album.wiki === undefined) {
+				if (nextProps.album.wiki === undefined && nextProps.artists.length > 0) {
 					this.props.lastfmActions.getAlbum(nextProps.album.uri, nextProps.album.artists[0].name, nextProps.album.name);
 				}
 			}
@@ -76328,7 +76155,7 @@ var Artist = function (_React$Component) {
 							'span',
 							{ className: 'content' },
 							_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'users' }),
-							_react2.default.createElement(_NiceNumber2.default, { value: artist.followers }),
+							artist.followers.toLocaleString(),
 							' followers'
 						)
 					) : null,
@@ -76350,7 +76177,7 @@ var Artist = function (_React$Component) {
 							'span',
 							{ className: 'content' },
 							_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'headphones' }),
-							_react2.default.createElement(_NiceNumber2.default, { value: artist.listeners }),
+							artist.listeners.toLocaleString(),
 							' listeners'
 						)
 					) : null
@@ -94306,6 +94133,309 @@ exports.default = ColourField;
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 316 */,
+/* 317 */,
+/* 318 */,
+/* 319 */,
+/* 320 */,
+/* 321 */,
+/* 322 */,
+/* 323 */,
+/* 324 */,
+/* 325 */,
+/* 326 */,
+/* 327 */,
+/* 328 */,
+/* 329 */,
+/* 330 */,
+/* 331 */,
+/* 332 */,
+/* 333 */,
+/* 334 */,
+/* 335 */,
+/* 336 */,
+/* 337 */,
+/* 338 */,
+/* 339 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _ArtistSentence = __webpack_require__(21);
+
+var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
+
+var _Dater = __webpack_require__(26);
+
+var _Dater2 = _interopRequireDefault(_Dater);
+
+var _URILink = __webpack_require__(18);
+
+var _URILink2 = _interopRequireDefault(_URILink);
+
+var _ContextMenuTrigger = __webpack_require__(23);
+
+var _ContextMenuTrigger2 = _interopRequireDefault(_ContextMenuTrigger);
+
+var _Icon = __webpack_require__(5);
+
+var _Icon2 = _interopRequireDefault(_Icon);
+
+var _Thumbnail = __webpack_require__(11);
+
+var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
+
+var _Popularity = __webpack_require__(81);
+
+var _Popularity2 = _interopRequireDefault(_Popularity);
+
+var _helpers = __webpack_require__(1);
+
+var helpers = _interopRequireWildcard(_helpers);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var ListItem = function (_React$Component) {
+	_inherits(ListItem, _React$Component);
+
+	function ListItem(props) {
+		_classCallCheck(this, ListItem);
+
+		return _possibleConstructorReturn(this, (ListItem.__proto__ || Object.getPrototypeOf(ListItem)).call(this, props));
+	}
+
+	_createClass(ListItem, [{
+		key: 'componentDidMount',
+		value: function componentDidMount() {
+			if (this.props.item) {
+				var item = this.props.item;
+			} else {
+				return;
+			}
+
+			// If the item that has just been mounted doesn't have images,
+			// try fetching them from LastFM
+			if (!item.images && this.props.lastfmActions) {
+				switch (helpers.uriType(item.uri)) {
+
+					case 'artist':
+						this.props.lastfmActions.getArtist(item.uri, item.name);
+						break;
+
+					case 'album':
+						if (item.artists && item.artists.length > 0) {
+							this.props.lastfmActions.getAlbum(item.uri, item.artists[0].name, item.name, item.mbid ? item.mbid : null);
+						}
+						break;
+				}
+			}
+		}
+	}, {
+		key: 'handleClick',
+		value: function handleClick(e) {
+
+			// make sure we haven't clicked a nested link (ie Artist name)
+			if (e.target.tagName.toLowerCase() !== 'a') {
+				e.preventDefault();
+				this.props.history.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(this.props.item.uri));
+				helpers.scrollTo();
+			}
+		}
+	}, {
+		key: 'handleMouseDown',
+		value: function handleMouseDown(e) {
+
+			// make sure we haven't clicked a nested link (ie Artist name)
+			if (e.target.tagName.toLowerCase() !== 'a') {
+				e.preventDefault();
+				this.props.history.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(this.props.item.uri));
+				helpers.scrollTo();
+			}
+		}
+	}, {
+		key: 'handleContextMenu',
+		value: function handleContextMenu(e) {
+			if (this.props.handleContextMenu) {
+				e.preventDefault();
+				this.props.handleContextMenu(e, this.props.item);
+			}
+		}
+	}, {
+		key: 'renderValue',
+		value: function renderValue(key_string) {
+			var key = key_string.split('.');
+			var value = Object.assign(this.props.item);
+
+			for (var i = 0; i < key.length; i++) {
+				if (value[key[i]] === undefined) {
+					return null;
+				} else if (typeof value[key[i]] === 'string' && value[key[i]].replace(' ', '') == '') {
+					return null;
+				} else {
+					value = value[key[i]];
+				}
+			}
+
+			if (key_string === 'tracks_total' || key_string === 'tracks_uris.length') return _react2.default.createElement(
+				'span',
+				null,
+				value,
+				' tracks'
+			);
+			if (key_string === 'followers') return _react2.default.createElement(
+				'span',
+				null,
+				value.toLocaleString(),
+				' followers'
+			);
+			if (key_string === 'added_at') return _react2.default.createElement(
+				'span',
+				null,
+				'Added ',
+				_react2.default.createElement(_Dater2.default, { type: 'ago', data: value }),
+				' ago'
+			);
+			if (key_string === 'owner') return _react2.default.createElement(
+				_URILink2.default,
+				{ type: 'user', uri: value.uri },
+				value.id
+			);
+			if (key_string === 'popularity') return _react2.default.createElement(_Popularity2.default, { full: true, popularity: value });
+			if (key[0] === 'artists') return _react2.default.createElement(_ArtistSentence2.default, { artists: value });
+			if (value === true) return _react2.default.createElement(_Icon2.default, { name: 'check' });
+			if (typeof value === 'number') return _react2.default.createElement(
+				'span',
+				null,
+				value.toLocaleString()
+			);
+			return _react2.default.createElement(
+				'span',
+				null,
+				value
+			);
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var _this2 = this;
+
+			var item = this.props.item;
+			if (!item) {
+				return null;
+			}
+
+			var class_name = 'list__item';
+			if (item.type) {
+				class_name += ' list__item--' + item.type;
+			}
+
+			if (this.props.middle_column) {
+				class_name += " list__item--has-middle-column";
+			}
+
+			if (this.props.thumbnail) {
+				class_name += " list__item--has-thumbnail";
+			}
+
+			if (this.props.details) {
+				class_name += " list__item--has-details";
+			}
+
+			return _react2.default.createElement(
+				'div',
+				{
+					className: class_name,
+					onClick: function onClick(e) {
+						return _this2.handleClick(e);
+					},
+					onContextMenu: function onContextMenu(e) {
+						return _this2.handleContextMenu(e);
+					} },
+				_react2.default.createElement(
+					'div',
+					{ className: 'list__item__column list__item__column--right' },
+					this.props.right_column ? this.props.right_column.map(function (column, index) {
+						return _react2.default.createElement(
+							'span',
+							{ className: 'list__item__column__item list__item__column__item--' + column.replace('.', '_'), key: index },
+							_this2.renderValue(column, item)
+						);
+					}) : null,
+					this.props.nocontext ? null : _react2.default.createElement(_ContextMenuTrigger2.default, { className: 'list__item__column__item list__item__column__item--context-menu-trigger subtle', onTrigger: function onTrigger(e) {
+							return _this2.handleContextMenu(e);
+						} })
+				),
+				_react2.default.createElement(
+					'div',
+					{ className: 'list__item__column list__item__column--name' },
+					this.props.thumbnail ? _react2.default.createElement(_Thumbnail2.default, { className: 'list__item__column__item list__item__column__item--thumbnail', images: item.images ? item.images : null, size: 'small' }) : null,
+					_react2.default.createElement(
+						'div',
+						{ className: 'list__item__column__item list__item__column__item--name' },
+						item.name !== undefined ? this.renderValue('name') : _react2.default.createElement(
+							'span',
+							{ className: 'grey-text' },
+							item.uri
+						)
+					),
+					this.props.details ? _react2.default.createElement(
+						'ul',
+						{ className: 'list__item__column__item list__item__column__item--details details' },
+						this.props.details.map(function (detail, index) {
+							var value = _this2.renderValue(detail);
+
+							if (!value) {
+								return null;
+							}
+
+							return _react2.default.createElement(
+								'li',
+								{ className: 'details__item details__item--' + detail.replace('.', '_'), key: index },
+								value
+							);
+						})
+					) : null
+				),
+				this.props.middle_column ? _react2.default.createElement(
+					'div',
+					{ className: 'list__item__column list__item__column--middle' },
+					this.props.middle_column ? this.props.middle_column.map(function (column, index) {
+						return _react2.default.createElement(
+							'span',
+							{ className: 'list__item__column__item list__item__column__item--' + column.replace('.', '_'), key: index },
+							_this2.renderValue(column)
+						);
+					}) : null
+				) : null
+			);
+		}
+	}]);
+
+	return ListItem;
+}(_react2.default.Component);
+
+exports.default = ListItem;
 
 /***/ })
 /******/ ]);
