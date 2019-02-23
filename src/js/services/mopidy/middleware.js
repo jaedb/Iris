@@ -2059,27 +2059,31 @@ const MopidyMiddleware = (function(){
 
                         var artists = [];
                         for (var i = 0; i < response.length; i++){
-                            for (var j = 0; j < response[i].album.artists.length; j++){
-				artists.push(Object.assign(
-                                    {},
-                                    (response ? response[i].album.artists[j] : {}),
-                                    {
-                                        provider: 'mopidy',
-                                        albums_uris: helpers.arrayOf('uri',albums),
-                                        tracks: response
-                                    }
-                                ));
+                            if (response[i].album.artists) {
+                                for (var j = 0; j < response[i].album.artists.length; j++){
+                                    artists.push(Object.assign(
+                                        {},
+                                        (response ? response[i].album.artists[j] : {}),
+                                        {
+                                            provider: 'mopidy',
+                                            albums_uris: helpers.arrayOf('uri',albums),
+                                            tracks: response
+                                        }
+                                    ));
+                                }
                             }
-                            for (var j = 0; j < response[i].artists.length; j++){
-                                artists.push(Object.assign(
-                                    {},
-                                    (response ? response[i].artists[j] : {}),
-                                    {
-                                        provider: 'mopidy',
-                                        albums_uris: helpers.arrayOf('uri',albums),
-                                        tracks: response
-                                    }
-                                ));
+                            if (response[i].artists) {
+                                for (var j = 0; j < response[i].artists.length; j++){
+                                    artists.push(Object.assign(
+                                        {},
+                                        (response ? response[i].artists[j] : {}),
+                                        {
+                                            provider: 'mopidy',
+                                            albums_uris: helpers.arrayOf('uri',albums),
+                                            tracks: response
+                                        }
+                                    ));
+                                }
                             }
                         }
 
