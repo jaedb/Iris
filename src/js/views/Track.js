@@ -36,6 +36,8 @@ class Track extends React.Component{
 	componentDidMount(){
 		this.props.coreActions.loadTrack(this.props.uri);
 
+		console.log("Loading",this.props.uri);
+
 		// We already have the track in our index, so it won't fire componentWillReceiveProps
 		if (this.props.track){
 			this.setWindowTitle(this.props.track);
@@ -238,7 +240,7 @@ class Track extends React.Component{
 					</h2>
 
 					<ul className="details">
-						{!this.props.slim_mode ? <li><Icon type="fontawesome" name={helpers.sourceIcon(this.props.uri)} /></li> : null}
+						{!this.props.slim_mode ? <li className="source"><Icon type="fontawesome" name={helpers.sourceIcon(this.props.uri)} /></li> : null}
 						{track.date ? <li><Dater type="date" data={track.date} /></li> : null}
 						{track.explicit ? <li><span className="flag dark">EXPLICIT</span></li> : null}
 						<li>
@@ -267,7 +269,27 @@ class Track extends React.Component{
 }
 
 const mapStateToProps = (state, ownProps) => {
+	/*
 	var uri = decodeURIComponent(ownProps.match.params.uri);
+
+	// Mopidy replaces spaces but doesn't properly encode URIs to be URL-friendly. So we
+	// need to just replace spaces.
+	uri = uri.replace(/\s/g, '%20');
+	uri = uri.replace(/,/g, '%2C');
+	*/
+
+	var raw = decodeURIComponent(ownProps.match.params.uri);
+
+	var uri = '';
+	uri += helpers.uriSource(raw)+':';
+	uri += helpers.uriType(raw)+':';
+	var uri_id = helpers.getFromUri('trackid', raw);
+	uri_id = encodeURIComponent(uri_id);
+	uri_id = uri_id.replace(/%2F/g, '/');
+	uri += uri_id;
+
+	console.log(raw, uri);
+
 	return {
 		uri: uri,
 		slim_mode: state.ui.slim_mode,

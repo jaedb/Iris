@@ -1107,14 +1107,26 @@ export let uriType = function(uri){
 
 
 /**
- * Convert a raw URI into a object index-friendly format. Primarily used for loading local playlists
- * @param $uri = string
- * @return string
+ * Build a link to an asset. Using the URI type we can ascertain where we need
+ * to direct the user (eg /track/local:track:1235.mp3)
+ *
+ * @param $uri = String
+ * @return String
  **/
-export let indexFriendlyUri = function (uri){
-	var output = encodeURI(uri)
-	output = output.replace("'",'%27')
-	return output
+export let buildLink = function (uri){
+
+	// Start the link with the URI type
+	var link = "/"+uriType(uri)+"/";
+
+	// Remove any forward slashes. These interfere with encoding as they're
+	// technically a valid URL component.
+	//uri = uri.replace('/','%2F');
+	uri = encodeURIComponent(uri);
+	link += uri;
+
+	console.log(link);
+
+	return link;
 }
 
 

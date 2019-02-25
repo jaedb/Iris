@@ -1518,14 +1518,26 @@ var uriType = exports.uriType = function uriType(uri) {
 };
 
 /**
- * Convert a raw URI into a object index-friendly format. Primarily used for loading local playlists
- * @param $uri = string
- * @return string
+ * Build a link to an asset. Using the URI type we can ascertain where we need
+ * to direct the user (eg /track/local:track:1235.mp3)
+ *
+ * @param $uri = String
+ * @return String
  **/
-var indexFriendlyUri = exports.indexFriendlyUri = function indexFriendlyUri(uri) {
-	var output = encodeURI(uri);
-	output = output.replace("'", '%27');
-	return output;
+var buildLink = exports.buildLink = function buildLink(uri) {
+
+	// Start the link with the URI type
+	var link = "/" + uriType(uri) + "/";
+
+	// Remove any forward slashes. These interfere with encoding as they're
+	// technically a valid URL component.
+	//uri = uri.replace('/','%2F');
+	uri = encodeURIComponent(uri);
+	link += uri;
+
+	console.log(link);
+
+	return link;
 };
 
 /**
@@ -4101,7 +4113,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 var coreActions = __webpack_require__(10);
 var uiActions = __webpack_require__(3);
 var mopidyActions = __webpack_require__(7);
-var lastfmActions = __webpack_require__(17);
+var lastfmActions = __webpack_require__(16);
 var helpers = __webpack_require__(1);
 
 /**
@@ -5770,7 +5782,7 @@ function getLibraryAlbumsProcessor(data) {
         });
     };
 }
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
 
 /***/ }),
 /* 10 */
@@ -6214,7 +6226,7 @@ function getLibraryArtists() {
         type: 'GET_LIBRARY_ARTISTS'
     };
 }
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
 
 /***/ }),
 /* 11 */
@@ -7420,6 +7432,431 @@ module.exports = function() {
 
 /***/ }),
 /* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function($) {
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.set = set;
+exports.authorizationGranted = authorizationGranted;
+exports.revokeAuthorization = revokeAuthorization;
+exports.importAuthorization = importAuthorization;
+exports.getMe = getMe;
+exports.getTrack = getTrack;
+exports.getArtist = getArtist;
+exports.getAlbum = getAlbum;
+exports.getImages = getImages;
+exports.loveTrack = loveTrack;
+exports.unloveTrack = unloveTrack;
+exports.scrobble = scrobble;
+
+var coreActions = __webpack_require__(10);
+var uiActions = __webpack_require__(3);
+var helpers = __webpack_require__(1);
+
+function set(data) {
+    return {
+        type: 'LASTFM_SET',
+        data: data
+    };
+}
+
+/**
+ * Send an ajax request to the LastFM API
+ *
+ * @param dispatch = obj
+ * @param getState = obj
+ * @param params = string, the url params to send
+ * @params signed = boolean, whether we've got a signed request with baked-in api_key
+ **/
+var sendRequest = function sendRequest(dispatch, getState, params) {
+    var signed = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+
+    return new Promise(function (resolve, reject) {
+
+        var loader_key = helpers.generateGuid();
+        var method = params.substring(params.indexOf("method=") + 7, params.length);
+        method = method.substring(0, method.indexOf("&"));
+
+        dispatch(uiActions.startLoading(loader_key, 'lastfm_' + method));
+
+        var config = {
+            method: 'GET',
+            cache: true,
+            timeout: 30000,
+            url: 'https://ws.audioscrobbler.com/2.0/?format=json&' + params
+
+            // Signed requests don't need our api_key as the proxy has it's own
+        };if (!signed) {
+            config.url += '&api_key=4320a3ef51c9b3d69de552ac083c55e3';
+        } else {
+            config.method = 'POST';
+        }
+
+        $.ajax(config).then(function (response) {
+            dispatch(uiActions.stopLoading(loader_key));
+            if (response.error) {
+                reject({
+                    config: config,
+                    error: response
+                });
+            } else {
+                resolve(response);
+            }
+        }, function (xhr, status, error) {
+            dispatch(uiActions.stopLoading(loader_key));
+
+            // Snatch a more meaningful error
+            var description = null;
+            if (xhr.responseJSON.message) {
+                description = xhr.responseJSON.message;
+            }
+
+            reject({
+                config: config,
+                error: error,
+                description: description,
+                status: status,
+                xhr: xhr
+            });
+        });
+    });
+};
+
+/**
+ * Send a SIGNED ajax request to the LastFM API
+ *
+ * @param dispatch = obj
+ * @param getState = obj
+ * @param params = string, the url params to send
+ * @param signed = boolean
+ **/
+var sendSignedRequest = function sendSignedRequest(dispatch, getState, params) {
+    return new Promise(function (resolve, reject) {
+
+        // Not authorized
+        if (!getState().lastfm.authorization) {
+            reject({
+                params: params,
+                error: "No active LastFM authorization (session)"
+            });
+        }
+
+        var loader_key = helpers.generateGuid();
+        var method = params.substring(params.indexOf("method=") + 7, params.length);
+        method = method.substring(0, method.indexOf("&"));
+
+        dispatch(uiActions.startLoading(loader_key, 'lastfm_' + method));
+
+        params += "&sk=" + getState().lastfm.authorization.key;
+
+        var config = {
+            method: 'GET',
+            cache: false,
+            timeout: 30000,
+            url: getState().lastfm.authorization_url + "?action=sign_request&" + params
+
+            // Get our server proxy to sign our request
+        };$.ajax(config).then(function (response) {
+            dispatch(uiActions.stopLoading(loader_key));
+
+            // Now we have signed params, we can make the actual request
+            sendRequest(dispatch, getState, response.params, true).then(function (response) {
+                resolve(response);
+            }, function (error) {
+                reject(error);
+            });
+        }, function (xhr, status, error) {
+            dispatch(uiActions.stopLoading(loader_key));
+            reject(error);
+        });
+    });
+};
+
+/**
+ * Handle authorization process
+ **/
+
+function authorizationGranted(data) {
+    data.session.expiry = new Date().getTime() + 3600;
+    return {
+        type: 'LASTFM_AUTHORIZATION_GRANTED',
+        data: data
+    };
+}
+
+function revokeAuthorization() {
+    return {
+        type: 'LASTFM_AUTHORIZATION_REVOKED'
+    };
+}
+
+function importAuthorization(authorization) {
+    return {
+        type: 'LASTFM_IMPORT_AUTHORIZATION',
+        authorization: authorization
+    };
+}
+
+/**
+ * Non-signed requests
+ **/
+
+function getMe() {
+    return function (dispatch, getState) {
+        var params = 'method=user.getInfo&user=' + getState().lastfm.authorization.name;
+        sendRequest(dispatch, getState, params).then(function (response) {
+            if (response.user) {
+                dispatch({
+                    type: 'LASTFM_ME_LOADED',
+                    me: response.user
+                });
+            }
+        });
+    };
+}
+
+function getTrack(uri) {
+    return function (dispatch, getState) {
+        if (getState().core.tracks[uri] !== undefined) {
+            var track = getState().core.tracks[uri];
+            if (!track.artists) {
+                dispatch(coreActions.handleException("Could not get LastFM track", {}, "Track has no artists"));
+                return;
+            }
+        } else {
+            dispatch(coreActions.handleException("Could not get LastFM track", {}, "Could not find track in index"));
+            return;
+        }
+
+        var track_name = track.name;
+        var artist_name = encodeURIComponent(track.artists[0].name);
+        var params = 'method=track.getInfo&track=' + track_name + '&artist=' + artist_name;
+        if (getState().lastfm.authorization) {
+            params += '&username=' + getState().lastfm.authorization.name;
+        }
+        sendRequest(dispatch, getState, params).then(function (response) {
+            if (response.track) {
+                var merged_track = Object.assign({}, {
+                    uri: track.uri
+                }, response.track, track);
+                dispatch(coreActions.trackLoaded(merged_track));
+            }
+        });
+    };
+}
+
+function getArtist(uri, artist) {
+    var mbid = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+
+    return function (dispatch, getState) {
+        if (mbid) {
+            var params = 'method=artist.getInfo&mbid=' + mbid;
+        } else {
+            artist = artist.replace("&", "and");
+            artist = encodeURIComponent(artist);
+            var params = 'method=artist.getInfo&artist=' + artist;
+        }
+        sendRequest(dispatch, getState, params).then(function (response) {
+            if (response.artist) {
+                var artist = {
+                    uri: uri,
+                    images: response.artist.image,
+                    mbid: response.artist.mbid,
+                    biography: response.artist.bio.content,
+                    biography_publish_date: response.artist.bio.published,
+                    biography_link: response.artist.bio.links.link.href,
+                    listeners: parseInt(response.artist.stats.listeners)
+                };
+
+                dispatch(coreActions.artistLoaded(artist));
+            }
+        });
+    };
+}
+
+function getAlbum(uri, artist, album) {
+    var mbid = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+
+    return function (dispatch, getState) {
+        if (mbid) {
+            var params = 'method=album.getInfo&mbid=' + mbid;
+        } else {
+            artist = encodeURIComponent(artist);
+            album = encodeURIComponent(album);
+            var params = 'method=album.getInfo&album=' + album + '&artist=' + artist;
+        }
+        sendRequest(dispatch, getState, params).then(function (response) {
+            if (response.album) {
+
+                var existing_album = getState().core.albums[uri];
+
+                var album = {
+                    uri: uri,
+                    images: response.album.image,
+                    listeners: parseInt(response.album.listeners),
+                    play_count: parseInt(response.album.playcount),
+                    mbid: response.album.mbid,
+                    wiki: response.album.wiki ? response.album.wiki.content : null,
+                    wiki_publish_date: response.album.wiki ? response.album.wiki.published : null
+                };
+
+                // If we've already got some of this album and it has images aready, don't use our ones. 
+                // In *most* cases this existing image will be perfectly suffice. This prevents an ugly 
+                // flicker when the existing image is replaced by the LastFM one
+                if (existing_album && existing_album.images) {
+                    delete album.images;
+                }
+
+                dispatch(coreActions.albumLoaded(album));
+            }
+        });
+    };
+}
+
+function getImages(context, uri) {
+    return function (dispatch, getState) {
+
+        var record = getState().core[context][uri];
+        if (record) {
+            switch (context) {
+
+                case "tracks":
+
+                    if (record.mbid) {
+                        var params = 'method=album.getInfo&mbid=' + record.mbid;
+                    } else if (record.artists && record.artists.length > 0 && record.album) {
+                        var artist = encodeURIComponent(record.artists[0].name);
+                        var album = encodeURIComponent(record.album.name);
+                        var params = 'method=album.getInfo&album=' + album + '&artist=' + artist;
+                    }
+
+                    if (params) {
+                        sendRequest(dispatch, getState, params).then(function (response) {
+                            if (response.album) {
+                                record = Object.assign({}, record, { images: response.album.image });
+                                dispatch(coreActions.trackLoaded(record));
+                                dispatch(coreActions.albumLoaded(response.album));
+                            }
+                        });
+                    }
+                    break;
+
+                case "albums":
+
+                    if (record.mbid) {
+                        var params = 'method=album.getInfo&mbid=' + record.mbid;
+                    } else if (record.artists && record.artists.length > 0) {
+                        var artist = encodeURIComponent(record.artists[0].name);
+                        var album = encodeURIComponent(record.name);
+                        var params = 'method=album.getInfo&album=' + album + '&artist=' + artist;
+                    }
+
+                    if (params) {
+                        sendRequest(dispatch, getState, params).then(function (response) {
+                            if (response.album) {
+                                record = Object.assign({}, record, { images: response.album.image });
+                                dispatch(coreActions.albumLoaded(record));
+                            }
+                        });
+                    }
+                    break;
+            }
+        }
+    };
+}
+
+/**
+ * Signed requests
+ **/
+
+function loveTrack(uri) {
+    return function (dispatch, getState) {
+        if (getState().core.tracks[uri] !== undefined) {
+            var track = getState().core.tracks[uri];
+            if (!track.artists) {
+                dispatch(coreActions.handleException("Could not love LastFM track", track, "Track has no artists"));
+                return;
+            }
+        } else {
+            dispatch(coreActions.handleException("Could not love LastFM track", track, "Could not find track in index"));
+            return;
+        }
+
+        var artist = encodeURIComponent(track.artists[0].name);
+        var params = 'method=track.love&track=' + track.name + '&artist=' + artist;
+        sendSignedRequest(dispatch, getState, params).then(function (response) {
+            track = Object.assign({}, track, {
+                userloved: true
+            });
+            dispatch({
+                type: 'TRACKS_LOADED',
+                tracks: [track]
+            });
+        });
+    };
+}
+
+function unloveTrack(uri) {
+    return function (dispatch, getState) {
+        if (getState().core.tracks[uri] !== undefined) {
+            var track = getState().core.tracks[uri];
+            if (!track.artists) {
+                dispatch(coreActions.handleException("Could not unlove LastFM track", track, "Track has no artists"));
+                return;
+            }
+        } else {
+            dispatch(coreActions.handleException("Could not unlove LastFM track", track, "Could not find track in index"));
+            return;
+        }
+
+        var artist = encodeURIComponent(track.artists[0].name);
+        var params = 'method=track.unlove&track=' + track.name + '&artist=' + artist;
+        sendSignedRequest(dispatch, getState, params).then(function (response) {
+            track = Object.assign({}, track, {
+                userloved: false
+            });
+            dispatch({
+                type: 'TRACKS_LOADED',
+                tracks: [track]
+            });
+        });
+    };
+}
+
+/**
+ * TODO: Currently scrobbling client-side would result in duplicated scrobbles
+ * if the user was authorized across multiple connections. Ideally this would
+ * be handled server-side. Mopidy-Scrobbler currently achieves this.
+ **/
+function scrobble(track) {
+    return function (dispatch, getState) {
+        var track_name = track.name;
+        var artist_name = "Unknown";
+        if (track.artists) {
+            artist_name = track.artists[0].name;
+        }
+        var artist_name = encodeURIComponent(artist_name);
+
+        var params = 'method=track.scrobble';
+        params += '&track=' + track_name + '&artist=' + artist_name;
+        params += '&timestamp=' + Math.floor(Date.now() / 1000);
+
+        sendSignedRequest(dispatch, getState, params).then(function (response) {
+            console.log("Scrobbled", response);
+        }, function (error) {
+            dispatch(coreActions.handleException('Could not scrobble LastFM track', error, error.description ? error.description : null));
+        });
+    };
+}
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
+
+/***/ }),
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -17790,431 +18227,6 @@ return jQuery;
 
 
 /***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function($) {
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.set = set;
-exports.authorizationGranted = authorizationGranted;
-exports.revokeAuthorization = revokeAuthorization;
-exports.importAuthorization = importAuthorization;
-exports.getMe = getMe;
-exports.getTrack = getTrack;
-exports.getArtist = getArtist;
-exports.getAlbum = getAlbum;
-exports.getImages = getImages;
-exports.loveTrack = loveTrack;
-exports.unloveTrack = unloveTrack;
-exports.scrobble = scrobble;
-
-var coreActions = __webpack_require__(10);
-var uiActions = __webpack_require__(3);
-var helpers = __webpack_require__(1);
-
-function set(data) {
-    return {
-        type: 'LASTFM_SET',
-        data: data
-    };
-}
-
-/**
- * Send an ajax request to the LastFM API
- *
- * @param dispatch = obj
- * @param getState = obj
- * @param params = string, the url params to send
- * @params signed = boolean, whether we've got a signed request with baked-in api_key
- **/
-var sendRequest = function sendRequest(dispatch, getState, params) {
-    var signed = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-
-    return new Promise(function (resolve, reject) {
-
-        var loader_key = helpers.generateGuid();
-        var method = params.substring(params.indexOf("method=") + 7, params.length);
-        method = method.substring(0, method.indexOf("&"));
-
-        dispatch(uiActions.startLoading(loader_key, 'lastfm_' + method));
-
-        var config = {
-            method: 'GET',
-            cache: true,
-            timeout: 30000,
-            url: 'https://ws.audioscrobbler.com/2.0/?format=json&' + params
-
-            // Signed requests don't need our api_key as the proxy has it's own
-        };if (!signed) {
-            config.url += '&api_key=4320a3ef51c9b3d69de552ac083c55e3';
-        } else {
-            config.method = 'POST';
-        }
-
-        $.ajax(config).then(function (response) {
-            dispatch(uiActions.stopLoading(loader_key));
-            if (response.error) {
-                reject({
-                    config: config,
-                    error: response
-                });
-            } else {
-                resolve(response);
-            }
-        }, function (xhr, status, error) {
-            dispatch(uiActions.stopLoading(loader_key));
-
-            // Snatch a more meaningful error
-            var description = null;
-            if (xhr.responseJSON.message) {
-                description = xhr.responseJSON.message;
-            }
-
-            reject({
-                config: config,
-                error: error,
-                description: description,
-                status: status,
-                xhr: xhr
-            });
-        });
-    });
-};
-
-/**
- * Send a SIGNED ajax request to the LastFM API
- *
- * @param dispatch = obj
- * @param getState = obj
- * @param params = string, the url params to send
- * @param signed = boolean
- **/
-var sendSignedRequest = function sendSignedRequest(dispatch, getState, params) {
-    return new Promise(function (resolve, reject) {
-
-        // Not authorized
-        if (!getState().lastfm.authorization) {
-            reject({
-                params: params,
-                error: "No active LastFM authorization (session)"
-            });
-        }
-
-        var loader_key = helpers.generateGuid();
-        var method = params.substring(params.indexOf("method=") + 7, params.length);
-        method = method.substring(0, method.indexOf("&"));
-
-        dispatch(uiActions.startLoading(loader_key, 'lastfm_' + method));
-
-        params += "&sk=" + getState().lastfm.authorization.key;
-
-        var config = {
-            method: 'GET',
-            cache: false,
-            timeout: 30000,
-            url: getState().lastfm.authorization_url + "?action=sign_request&" + params
-
-            // Get our server proxy to sign our request
-        };$.ajax(config).then(function (response) {
-            dispatch(uiActions.stopLoading(loader_key));
-
-            // Now we have signed params, we can make the actual request
-            sendRequest(dispatch, getState, response.params, true).then(function (response) {
-                resolve(response);
-            }, function (error) {
-                reject(error);
-            });
-        }, function (xhr, status, error) {
-            dispatch(uiActions.stopLoading(loader_key));
-            reject(error);
-        });
-    });
-};
-
-/**
- * Handle authorization process
- **/
-
-function authorizationGranted(data) {
-    data.session.expiry = new Date().getTime() + 3600;
-    return {
-        type: 'LASTFM_AUTHORIZATION_GRANTED',
-        data: data
-    };
-}
-
-function revokeAuthorization() {
-    return {
-        type: 'LASTFM_AUTHORIZATION_REVOKED'
-    };
-}
-
-function importAuthorization(authorization) {
-    return {
-        type: 'LASTFM_IMPORT_AUTHORIZATION',
-        authorization: authorization
-    };
-}
-
-/**
- * Non-signed requests
- **/
-
-function getMe() {
-    return function (dispatch, getState) {
-        var params = 'method=user.getInfo&user=' + getState().lastfm.authorization.name;
-        sendRequest(dispatch, getState, params).then(function (response) {
-            if (response.user) {
-                dispatch({
-                    type: 'LASTFM_ME_LOADED',
-                    me: response.user
-                });
-            }
-        });
-    };
-}
-
-function getTrack(uri) {
-    return function (dispatch, getState) {
-        if (getState().core.tracks[uri] !== undefined) {
-            var track = getState().core.tracks[uri];
-            if (!track.artists) {
-                dispatch(coreActions.handleException("Could not get LastFM track", {}, "Track has no artists"));
-                return;
-            }
-        } else {
-            dispatch(coreActions.handleException("Could not get LastFM track", {}, "Could not find track in index"));
-            return;
-        }
-
-        var track_name = track.name;
-        var artist_name = encodeURIComponent(track.artists[0].name);
-        var params = 'method=track.getInfo&track=' + track_name + '&artist=' + artist_name;
-        if (getState().lastfm.authorization) {
-            params += '&username=' + getState().lastfm.authorization.name;
-        }
-        sendRequest(dispatch, getState, params).then(function (response) {
-            if (response.track) {
-                var merged_track = Object.assign({}, {
-                    uri: track.uri
-                }, response.track, track);
-                dispatch(coreActions.trackLoaded(merged_track));
-            }
-        });
-    };
-}
-
-function getArtist(uri, artist) {
-    var mbid = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-
-
-    return function (dispatch, getState) {
-        if (mbid) {
-            var params = 'method=artist.getInfo&mbid=' + mbid;
-        } else {
-            artist = artist.replace("&", "and");
-            artist = encodeURIComponent(artist);
-            var params = 'method=artist.getInfo&artist=' + artist;
-        }
-        sendRequest(dispatch, getState, params).then(function (response) {
-            if (response.artist) {
-                var artist = {
-                    uri: uri,
-                    images: response.artist.image,
-                    mbid: response.artist.mbid,
-                    biography: response.artist.bio.content,
-                    biography_publish_date: response.artist.bio.published,
-                    biography_link: response.artist.bio.links.link.href,
-                    listeners: parseInt(response.artist.stats.listeners)
-                };
-
-                dispatch(coreActions.artistLoaded(artist));
-            }
-        });
-    };
-}
-
-function getAlbum(uri, artist, album) {
-    var mbid = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-
-    return function (dispatch, getState) {
-        if (mbid) {
-            var params = 'method=album.getInfo&mbid=' + mbid;
-        } else {
-            artist = encodeURIComponent(artist);
-            album = encodeURIComponent(album);
-            var params = 'method=album.getInfo&album=' + album + '&artist=' + artist;
-        }
-        sendRequest(dispatch, getState, params).then(function (response) {
-            if (response.album) {
-
-                var existing_album = getState().core.albums[uri];
-
-                var album = {
-                    uri: uri,
-                    images: response.album.image,
-                    listeners: parseInt(response.album.listeners),
-                    play_count: parseInt(response.album.playcount),
-                    mbid: response.album.mbid,
-                    wiki: response.album.wiki ? response.album.wiki.content : null,
-                    wiki_publish_date: response.album.wiki ? response.album.wiki.published : null
-                };
-
-                // If we've already got some of this album and it has images aready, don't use our ones. 
-                // In *most* cases this existing image will be perfectly suffice. This prevents an ugly 
-                // flicker when the existing image is replaced by the LastFM one
-                if (existing_album && existing_album.images) {
-                    delete album.images;
-                }
-
-                dispatch(coreActions.albumLoaded(album));
-            }
-        });
-    };
-}
-
-function getImages(context, uri) {
-    return function (dispatch, getState) {
-
-        var record = getState().core[context][uri];
-        if (record) {
-            switch (context) {
-
-                case "tracks":
-
-                    if (record.mbid) {
-                        var params = 'method=album.getInfo&mbid=' + record.mbid;
-                    } else if (record.artists && record.artists.length > 0 && record.album) {
-                        var artist = encodeURIComponent(record.artists[0].name);
-                        var album = encodeURIComponent(record.album.name);
-                        var params = 'method=album.getInfo&album=' + album + '&artist=' + artist;
-                    }
-
-                    if (params) {
-                        sendRequest(dispatch, getState, params).then(function (response) {
-                            if (response.album) {
-                                record = Object.assign({}, record, { images: response.album.image });
-                                dispatch(coreActions.trackLoaded(record));
-                                dispatch(coreActions.albumLoaded(response.album));
-                            }
-                        });
-                    }
-                    break;
-
-                case "albums":
-
-                    if (record.mbid) {
-                        var params = 'method=album.getInfo&mbid=' + record.mbid;
-                    } else if (record.artists && record.artists.length > 0) {
-                        var artist = encodeURIComponent(record.artists[0].name);
-                        var album = encodeURIComponent(record.name);
-                        var params = 'method=album.getInfo&album=' + album + '&artist=' + artist;
-                    }
-
-                    if (params) {
-                        sendRequest(dispatch, getState, params).then(function (response) {
-                            if (response.album) {
-                                record = Object.assign({}, record, { images: response.album.image });
-                                dispatch(coreActions.albumLoaded(record));
-                            }
-                        });
-                    }
-                    break;
-            }
-        }
-    };
-}
-
-/**
- * Signed requests
- **/
-
-function loveTrack(uri) {
-    return function (dispatch, getState) {
-        if (getState().core.tracks[uri] !== undefined) {
-            var track = getState().core.tracks[uri];
-            if (!track.artists) {
-                dispatch(coreActions.handleException("Could not love LastFM track", track, "Track has no artists"));
-                return;
-            }
-        } else {
-            dispatch(coreActions.handleException("Could not love LastFM track", track, "Could not find track in index"));
-            return;
-        }
-
-        var artist = encodeURIComponent(track.artists[0].name);
-        var params = 'method=track.love&track=' + track.name + '&artist=' + artist;
-        sendSignedRequest(dispatch, getState, params).then(function (response) {
-            track = Object.assign({}, track, {
-                userloved: true
-            });
-            dispatch({
-                type: 'TRACKS_LOADED',
-                tracks: [track]
-            });
-        });
-    };
-}
-
-function unloveTrack(uri) {
-    return function (dispatch, getState) {
-        if (getState().core.tracks[uri] !== undefined) {
-            var track = getState().core.tracks[uri];
-            if (!track.artists) {
-                dispatch(coreActions.handleException("Could not unlove LastFM track", track, "Track has no artists"));
-                return;
-            }
-        } else {
-            dispatch(coreActions.handleException("Could not unlove LastFM track", track, "Could not find track in index"));
-            return;
-        }
-
-        var artist = encodeURIComponent(track.artists[0].name);
-        var params = 'method=track.unlove&track=' + track.name + '&artist=' + artist;
-        sendSignedRequest(dispatch, getState, params).then(function (response) {
-            track = Object.assign({}, track, {
-                userloved: false
-            });
-            dispatch({
-                type: 'TRACKS_LOADED',
-                tracks: [track]
-            });
-        });
-    };
-}
-
-/**
- * TODO: Currently scrobbling client-side would result in duplicated scrobbles
- * if the user was authorized across multiple connections. Ideally this would
- * be handled server-side. Mopidy-Scrobbler currently achieves this.
- **/
-function scrobble(track) {
-    return function (dispatch, getState) {
-        var track_name = track.name;
-        var artist_name = "Unknown";
-        if (track.artists) {
-            artist_name = track.artists[0].name;
-        }
-        var artist_name = encodeURIComponent(artist_name);
-
-        var params = 'method=track.scrobble';
-        params += '&track=' + track_name + '&artist=' + artist_name;
-        params += '&timestamp=' + Math.floor(Date.now() / 1000);
-
-        sendSignedRequest(dispatch, getState, params).then(function (response) {
-            console.log("Scrobbled", response);
-        }, function (error) {
-            dispatch(coreActions.handleException('Could not scrobble LastFM track', error, error.description ? error.description : null));
-        });
-    };
-}
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)))
-
-/***/ }),
 /* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18891,7 +18903,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(TrackList);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
 
 /***/ }),
 /* 20 */
@@ -19326,7 +19338,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Modal);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
 
 /***/ }),
 /* 25 */
@@ -19771,7 +19783,7 @@ var DropdownField = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = DropdownField;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
 
 /***/ }),
 /* 28 */
@@ -20525,7 +20537,7 @@ function findTrackLyrics(track) {
         });
     };
 }
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
 
 /***/ }),
 /* 37 */
@@ -20906,7 +20918,7 @@ var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(17);
+var _actions2 = __webpack_require__(16);
 
 var lastfmActions = _interopRequireWildcard(_actions2);
 
@@ -21504,7 +21516,7 @@ var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(17);
+var _actions2 = __webpack_require__(16);
 
 var lastfmActions = _interopRequireWildcard(_actions2);
 
@@ -21731,7 +21743,7 @@ var _redux = __webpack_require__(2);
 
 var _reactRouter = __webpack_require__(38);
 
-var _ListItem = __webpack_require__(339);
+var _ListItem = __webpack_require__(298);
 
 var _ListItem2 = _interopRequireDefault(_ListItem);
 
@@ -21743,7 +21755,7 @@ var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(17);
+var _actions2 = __webpack_require__(16);
 
 var lastfmActions = _interopRequireWildcard(_actions2);
 
@@ -26838,7 +26850,7 @@ var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(17);
+var _actions2 = __webpack_require__(16);
 
 var lastfmActions = _interopRequireWildcard(_actions2);
 
@@ -27085,7 +27097,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 ;
 ;
 
-__webpack_require__(315);
+__webpack_require__(316);
 
 _reactDom2.default.render(_react2.default.createElement(
 	_reactRedux.Provider,
@@ -56903,7 +56915,7 @@ var uiActions = __webpack_require__(3);
 var pusherActions = __webpack_require__(12);
 var mopidyActions = __webpack_require__(7);
 var spotifyActions = __webpack_require__(9);
-var lastfmActions = __webpack_require__(17);
+var lastfmActions = __webpack_require__(16);
 var helpers = __webpack_require__(1);
 
 var CoreMiddleware = function () {
@@ -59047,7 +59059,7 @@ var UIMiddleware = function () {
 }();
 
 exports.default = UIMiddleware;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
 
 /***/ }),
 /* 199 */
@@ -59071,7 +59083,7 @@ var coreActions = __webpack_require__(10);
 var uiActions = __webpack_require__(3);
 var mopidyActions = __webpack_require__(7);
 var pusherActions = __webpack_require__(12);
-var lastfmActions = __webpack_require__(17);
+var lastfmActions = __webpack_require__(16);
 var geniusActions = __webpack_require__(36);
 var spotifyActions = __webpack_require__(9);
 var snapcastActions = __webpack_require__(37);
@@ -59732,7 +59744,7 @@ var PusherMiddleware = function () {
 }();
 
 exports.default = PusherMiddleware;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
 
 /***/ }),
 /* 200 */
@@ -59771,7 +59783,7 @@ var uiActions = __webpack_require__(3);
 var spotifyActions = __webpack_require__(9);
 var pusherActions = __webpack_require__(12);
 var googleActions = __webpack_require__(73);
-var lastfmActions = __webpack_require__(17);
+var lastfmActions = __webpack_require__(16);
 
 var MopidyMiddleware = function () {
     var _this = this;
@@ -64641,7 +64653,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var helpers = __webpack_require__(1);
 var coreActions = __webpack_require__(10);
-var lastfmActions = __webpack_require__(17);
+var lastfmActions = __webpack_require__(16);
 
 var LastfmMiddleware = function () {
 
@@ -66260,63 +66272,63 @@ var _LibraryArtists = __webpack_require__(297);
 
 var _LibraryArtists2 = _interopRequireDefault(_LibraryArtists);
 
-var _LibraryAlbums = __webpack_require__(298);
+var _LibraryAlbums = __webpack_require__(299);
 
 var _LibraryAlbums2 = _interopRequireDefault(_LibraryAlbums);
 
-var _LibraryTracks = __webpack_require__(299);
+var _LibraryTracks = __webpack_require__(300);
 
 var _LibraryTracks2 = _interopRequireDefault(_LibraryTracks);
 
-var _LibraryPlaylists = __webpack_require__(300);
+var _LibraryPlaylists = __webpack_require__(301);
 
 var _LibraryPlaylists2 = _interopRequireDefault(_LibraryPlaylists);
 
-var _LibraryBrowse = __webpack_require__(301);
+var _LibraryBrowse = __webpack_require__(302);
 
 var _LibraryBrowse2 = _interopRequireDefault(_LibraryBrowse);
 
-var _LibraryBrowseDirectory = __webpack_require__(302);
+var _LibraryBrowseDirectory = __webpack_require__(303);
 
 var _LibraryBrowseDirectory2 = _interopRequireDefault(_LibraryBrowseDirectory);
 
-var _EditPlaylist = __webpack_require__(303);
+var _EditPlaylist = __webpack_require__(304);
 
 var _EditPlaylist2 = _interopRequireDefault(_EditPlaylist);
 
-var _CreatePlaylist = __webpack_require__(304);
+var _CreatePlaylist = __webpack_require__(305);
 
 var _CreatePlaylist2 = _interopRequireDefault(_CreatePlaylist);
 
-var _EditRadio = __webpack_require__(305);
+var _EditRadio = __webpack_require__(306);
 
 var _EditRadio2 = _interopRequireDefault(_EditRadio);
 
-var _AddToQueue = __webpack_require__(306);
+var _AddToQueue = __webpack_require__(307);
 
 var _AddToQueue2 = _interopRequireDefault(_AddToQueue);
 
-var _InitialSetup = __webpack_require__(307);
+var _InitialSetup = __webpack_require__(308);
 
 var _InitialSetup2 = _interopRequireDefault(_InitialSetup);
 
-var _KioskMode = __webpack_require__(308);
+var _KioskMode = __webpack_require__(309);
 
 var _KioskMode2 = _interopRequireDefault(_KioskMode);
 
-var _ShareConfiguration = __webpack_require__(309);
+var _ShareConfiguration = __webpack_require__(310);
 
 var _ShareConfiguration2 = _interopRequireDefault(_ShareConfiguration);
 
-var _AddToPlaylist = __webpack_require__(310);
+var _AddToPlaylist = __webpack_require__(311);
 
 var _AddToPlaylist2 = _interopRequireDefault(_AddToPlaylist);
 
-var _ImageZoom = __webpack_require__(311);
+var _ImageZoom = __webpack_require__(312);
 
 var _ImageZoom2 = _interopRequireDefault(_ImageZoom);
 
-var _EditCommand = __webpack_require__(312);
+var _EditCommand = __webpack_require__(313);
 
 var _EditCommand2 = _interopRequireDefault(_EditCommand);
 
@@ -66344,7 +66356,7 @@ var _actions5 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions5);
 
-var _actions6 = __webpack_require__(17);
+var _actions6 = __webpack_require__(16);
 
 var lastfmActions = _interopRequireWildcard(_actions6);
 
@@ -70262,7 +70274,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(PlaybackControls);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
 
 /***/ }),
 /* 245 */
@@ -70602,7 +70614,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(OutputControl);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
 
 /***/ }),
 /* 246 */
@@ -70751,7 +70763,7 @@ var _actions4 = __webpack_require__(7);
 
 var mopidyActions = _interopRequireWildcard(_actions4);
 
-var _actions5 = __webpack_require__(17);
+var _actions5 = __webpack_require__(16);
 
 var lastfmActions = _interopRequireWildcard(_actions5);
 
@@ -71076,7 +71088,7 @@ var ContextMenu = function (_React$Component) {
 				this.props.uiActions.hideContextMenu();
 
 				// note: we can only go to one artist (even if this item has multiple artists, just go to the first one)
-				this.props.history.push('/artist/' + this.props.menu.items[0].artists_uris[0]);
+				this.props.history.push(helpers.buildLink(this.props.menu.items[0].artists_uris[0]));
 			}
 		}
 	}, {
@@ -71086,7 +71098,7 @@ var ContextMenu = function (_React$Component) {
 				return null;
 			} else {
 				this.props.uiActions.hideContextMenu();
-				this.props.history.push('/user/' + this.props.menu.items[0].user_uri);
+				this.props.history.push(helpers.buildLink(this.props.menu.items[0].user_uri));
 			}
 		}
 	}, {
@@ -71096,7 +71108,7 @@ var ContextMenu = function (_React$Component) {
 				return null;
 			} else {
 				this.props.uiActions.hideContextMenu();
-				this.props.history.push('/track/' + encodeURIComponent(this.props.menu.items[0].uri));
+				this.props.history.push(helpers.buildLink(this.props.menu.items[0].uri));
 			}
 		}
 	}, {
@@ -71893,7 +71905,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)((0, _reactRouter.withRouter)(ContextMenu));
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
 
 /***/ }),
 /* 248 */
@@ -72364,7 +72376,7 @@ var Track = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = Track;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
 
 /***/ }),
 /* 249 */
@@ -73189,7 +73201,7 @@ var _actions4 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions4);
 
-var _actions5 = __webpack_require__(17);
+var _actions5 = __webpack_require__(16);
 
 var lastfmActions = _interopRequireWildcard(_actions5);
 
@@ -73600,7 +73612,7 @@ var _actions4 = __webpack_require__(12);
 
 var pusherActions = _interopRequireWildcard(_actions4);
 
-var _actions5 = __webpack_require__(17);
+var _actions5 = __webpack_require__(16);
 
 var lastfmActions = _interopRequireWildcard(_actions5);
 
@@ -75100,7 +75112,7 @@ var _actions4 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions4);
 
-var _actions5 = __webpack_require__(17);
+var _actions5 = __webpack_require__(16);
 
 var lastfmActions = _interopRequireWildcard(_actions5);
 
@@ -75131,6 +75143,8 @@ var Track = function (_React$Component) {
 		key: 'componentDidMount',
 		value: function componentDidMount() {
 			this.props.coreActions.loadTrack(this.props.uri);
+
+			console.log("Loading", this.props.uri);
 
 			// We already have the track in our index, so it won't fire componentWillReceiveProps
 			if (this.props.track) {
@@ -75389,7 +75403,7 @@ var Track = function (_React$Component) {
 						{ className: 'details' },
 						!this.props.slim_mode ? _react2.default.createElement(
 							'li',
-							null,
+							{ className: 'source' },
 							_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(this.props.uri) })
 						) : null,
 						track.date ? _react2.default.createElement(
@@ -75476,7 +75490,27 @@ var Track = function (_React$Component) {
 }(_react2.default.Component);
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
-	var uri = decodeURIComponent(ownProps.match.params.uri);
+	/*
+ var uri = decodeURIComponent(ownProps.match.params.uri);
+ 
+ // Mopidy replaces spaces but doesn't properly encode URIs to be URL-friendly. So we
+ // need to just replace spaces.
+ uri = uri.replace(/\s/g, '%20');
+ uri = uri.replace(/,/g, '%2C');
+ */
+
+	var raw = decodeURIComponent(ownProps.match.params.uri);
+
+	var uri = '';
+	uri += helpers.uriSource(raw) + ':';
+	uri += helpers.uriType(raw) + ':';
+	var uri_id = helpers.getFromUri('trackid', raw);
+	uri_id = encodeURIComponent(uri_id);
+	uri_id = uri_id.replace(/%2F/g, '/');
+	uri += uri_id;
+
+	console.log(raw, uri);
+
 	return {
 		uri: uri,
 		slim_mode: state.ui.slim_mode,
@@ -75540,7 +75574,7 @@ var _actions = __webpack_require__(3);
 
 var uiActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(17);
+var _actions2 = __webpack_require__(16);
 
 var lastfmActions = _interopRequireWildcard(_actions2);
 
@@ -77327,7 +77361,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Search);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
 
 /***/ }),
 /* 262 */
@@ -77528,7 +77562,7 @@ var _actions4 = __webpack_require__(7);
 
 var mopidyActions = _interopRequireWildcard(_actions4);
 
-var _actions5 = __webpack_require__(17);
+var _actions5 = __webpack_require__(16);
 
 var lastfmActions = _interopRequireWildcard(_actions5);
 
@@ -81100,7 +81134,7 @@ exports.default = Sortable;
 	return Sortable;
 });
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
 
 /***/ }),
 /* 269 */
@@ -81175,7 +81209,7 @@ var _actions5 = __webpack_require__(9);
 
 var spotifyActions = _interopRequireWildcard(_actions5);
 
-var _actions6 = __webpack_require__(17);
+var _actions6 = __webpack_require__(16);
 
 var lastfmActions = _interopRequireWildcard(_actions6);
 
@@ -85882,7 +85916,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(AddSeedField);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
 
 /***/ }),
 /* 292 */
@@ -87281,6 +87315,286 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _ArtistSentence = __webpack_require__(21);
+
+var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
+
+var _Dater = __webpack_require__(26);
+
+var _Dater2 = _interopRequireDefault(_Dater);
+
+var _URILink = __webpack_require__(18);
+
+var _URILink2 = _interopRequireDefault(_URILink);
+
+var _ContextMenuTrigger = __webpack_require__(23);
+
+var _ContextMenuTrigger2 = _interopRequireDefault(_ContextMenuTrigger);
+
+var _Icon = __webpack_require__(5);
+
+var _Icon2 = _interopRequireDefault(_Icon);
+
+var _Thumbnail = __webpack_require__(11);
+
+var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
+
+var _Popularity = __webpack_require__(81);
+
+var _Popularity2 = _interopRequireDefault(_Popularity);
+
+var _helpers = __webpack_require__(1);
+
+var helpers = _interopRequireWildcard(_helpers);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var ListItem = function (_React$Component) {
+	_inherits(ListItem, _React$Component);
+
+	function ListItem(props) {
+		_classCallCheck(this, ListItem);
+
+		return _possibleConstructorReturn(this, (ListItem.__proto__ || Object.getPrototypeOf(ListItem)).call(this, props));
+	}
+
+	_createClass(ListItem, [{
+		key: 'componentDidMount',
+		value: function componentDidMount() {
+			if (this.props.item) {
+				var item = this.props.item;
+			} else {
+				return;
+			}
+
+			// If the item that has just been mounted doesn't have images,
+			// try fetching them from LastFM
+			if (!item.images && this.props.lastfmActions) {
+				switch (helpers.uriType(item.uri)) {
+
+					case 'artist':
+						this.props.lastfmActions.getArtist(item.uri, item.name);
+						break;
+
+					case 'album':
+						if (item.artists && item.artists.length > 0) {
+							this.props.lastfmActions.getAlbum(item.uri, item.artists[0].name, item.name, item.mbid ? item.mbid : null);
+						}
+						break;
+				}
+			}
+		}
+	}, {
+		key: 'handleClick',
+		value: function handleClick(e) {
+
+			// make sure we haven't clicked a nested link (ie Artist name)
+			if (e.target.tagName.toLowerCase() !== 'a') {
+				e.preventDefault();
+				this.props.history.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(this.props.item.uri));
+				helpers.scrollTo();
+			}
+		}
+	}, {
+		key: 'handleMouseDown',
+		value: function handleMouseDown(e) {
+
+			// make sure we haven't clicked a nested link (ie Artist name)
+			if (e.target.tagName.toLowerCase() !== 'a') {
+				e.preventDefault();
+				this.props.history.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(this.props.item.uri));
+				helpers.scrollTo();
+			}
+		}
+	}, {
+		key: 'handleContextMenu',
+		value: function handleContextMenu(e) {
+			if (this.props.handleContextMenu) {
+				e.preventDefault();
+				this.props.handleContextMenu(e, this.props.item);
+			}
+		}
+	}, {
+		key: 'renderValue',
+		value: function renderValue(key_string) {
+			var key = key_string.split('.');
+			var value = Object.assign(this.props.item);
+
+			for (var i = 0; i < key.length; i++) {
+				if (value[key[i]] === undefined) {
+					return null;
+				} else if (typeof value[key[i]] === 'string' && value[key[i]].replace(' ', '') == '') {
+					return null;
+				} else {
+					value = value[key[i]];
+				}
+			}
+
+			if (key_string === 'tracks_total' || key_string === 'tracks_uris.length') return _react2.default.createElement(
+				'span',
+				null,
+				value,
+				' tracks'
+			);
+			if (key_string === 'followers') return _react2.default.createElement(
+				'span',
+				null,
+				value.toLocaleString(),
+				' followers'
+			);
+			if (key_string === 'added_at') return _react2.default.createElement(
+				'span',
+				null,
+				'Added ',
+				_react2.default.createElement(_Dater2.default, { type: 'ago', data: value }),
+				' ago'
+			);
+			if (key_string === 'owner') return _react2.default.createElement(
+				_URILink2.default,
+				{ type: 'user', uri: value.uri },
+				value.id
+			);
+			if (key_string === 'popularity') return _react2.default.createElement(_Popularity2.default, { full: true, popularity: value });
+			if (key[0] === 'artists') return _react2.default.createElement(_ArtistSentence2.default, { artists: value });
+			if (value === true) return _react2.default.createElement(_Icon2.default, { name: 'check' });
+			if (typeof value === 'number') return _react2.default.createElement(
+				'span',
+				null,
+				value.toLocaleString()
+			);
+			return _react2.default.createElement(
+				'span',
+				null,
+				value
+			);
+		}
+	}, {
+		key: 'render',
+		value: function render() {
+			var _this2 = this;
+
+			var item = this.props.item;
+			if (!item) {
+				return null;
+			}
+
+			var class_name = 'list__item';
+			if (item.type) {
+				class_name += ' list__item--' + item.type;
+			}
+
+			if (this.props.middle_column) {
+				class_name += " list__item--has-middle-column";
+			}
+
+			if (this.props.thumbnail) {
+				class_name += " list__item--has-thumbnail";
+			}
+
+			if (this.props.details) {
+				class_name += " list__item--has-details";
+			}
+
+			return _react2.default.createElement(
+				'div',
+				{
+					className: class_name,
+					onClick: function onClick(e) {
+						return _this2.handleClick(e);
+					},
+					onContextMenu: function onContextMenu(e) {
+						return _this2.handleContextMenu(e);
+					} },
+				_react2.default.createElement(
+					'div',
+					{ className: 'list__item__column list__item__column--right' },
+					this.props.right_column ? this.props.right_column.map(function (column, index) {
+						return _react2.default.createElement(
+							'span',
+							{ className: 'list__item__column__item list__item__column__item--' + column.replace('.', '_'), key: index },
+							_this2.renderValue(column, item)
+						);
+					}) : null,
+					this.props.nocontext ? null : _react2.default.createElement(_ContextMenuTrigger2.default, { className: 'list__item__column__item list__item__column__item--context-menu-trigger subtle', onTrigger: function onTrigger(e) {
+							return _this2.handleContextMenu(e);
+						} })
+				),
+				_react2.default.createElement(
+					'div',
+					{ className: 'list__item__column list__item__column--name' },
+					this.props.thumbnail ? _react2.default.createElement(_Thumbnail2.default, { className: 'list__item__column__item list__item__column__item--thumbnail', images: item.images ? item.images : null, size: 'small' }) : null,
+					_react2.default.createElement(
+						'div',
+						{ className: 'list__item__column__item list__item__column__item--name' },
+						item.name !== undefined ? this.renderValue('name') : _react2.default.createElement(
+							'span',
+							{ className: 'grey-text' },
+							item.uri
+						)
+					),
+					this.props.details ? _react2.default.createElement(
+						'ul',
+						{ className: 'list__item__column__item list__item__column__item--details details' },
+						this.props.details.map(function (detail, index) {
+							var value = _this2.renderValue(detail);
+
+							if (!value) {
+								return null;
+							}
+
+							return _react2.default.createElement(
+								'li',
+								{ className: 'details__item details__item--' + detail.replace('.', '_'), key: index },
+								value
+							);
+						})
+					) : null
+				),
+				this.props.middle_column ? _react2.default.createElement(
+					'div',
+					{ className: 'list__item__column list__item__column--middle' },
+					this.props.middle_column ? this.props.middle_column.map(function (column, index) {
+						return _react2.default.createElement(
+							'span',
+							{ className: 'list__item__column__item list__item__column__item--' + column.replace('.', '_'), key: index },
+							_this2.renderValue(column)
+						);
+					}) : null
+				) : null
+			);
+		}
+	}]);
+
+	return ListItem;
+}(_react2.default.Component);
+
+exports.default = ListItem;
+
+/***/ }),
+/* 299 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
 var _reactRedux = __webpack_require__(4);
 
 var _redux = __webpack_require__(2);
@@ -87819,7 +88133,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(LibraryAlbums);
 
 /***/ }),
-/* 299 */
+/* 300 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -88013,7 +88327,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(LibraryTracks);
 
 /***/ }),
-/* 300 */
+/* 301 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -88419,7 +88733,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(LibraryPlaylists);
 
 /***/ }),
-/* 301 */
+/* 302 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -88666,7 +88980,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(LibraryBrowse);
 
 /***/ }),
-/* 302 */
+/* 303 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -88997,7 +89311,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(LibraryBrowseDirectory);
 
 /***/ }),
-/* 303 */
+/* 304 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -89372,7 +89686,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(EditPlaylist);
 
 /***/ }),
-/* 304 */
+/* 305 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -89688,7 +90002,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(CreatePlaylist);
 
 /***/ }),
-/* 305 */
+/* 306 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -90102,7 +90416,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(EditRadio);
 
 /***/ }),
-/* 306 */
+/* 307 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -90320,7 +90634,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(AddToQueue);
 
 /***/ }),
-/* 307 */
+/* 308 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -90612,7 +90926,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(InitialSetup);
 
 /***/ }),
-/* 308 */
+/* 309 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -90800,7 +91114,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(KioskMode);
 
 /***/ }),
-/* 309 */
+/* 310 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -91192,7 +91506,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(ShareConfiguration);
 
 /***/ }),
-/* 310 */
+/* 311 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -91407,7 +91721,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(AddToPlaylist);
 
 /***/ }),
-/* 311 */
+/* 312 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -91494,7 +91808,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(ImageZoom);
 
 /***/ }),
-/* 312 */
+/* 313 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -91530,11 +91844,11 @@ var _Icon = __webpack_require__(5);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _ColourField = __webpack_require__(313);
+var _ColourField = __webpack_require__(314);
 
 var _ColourField2 = _interopRequireDefault(_ColourField);
 
-var _IconField = __webpack_require__(314);
+var _IconField = __webpack_require__(315);
 
 var _IconField2 = _interopRequireDefault(_IconField);
 
@@ -91758,7 +92072,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(EditCommand);
 
 /***/ }),
-/* 313 */
+/* 314 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -91837,7 +92151,7 @@ var ColourField = function (_React$Component) {
 exports.default = ColourField;
 
 /***/ }),
-/* 314 */
+/* 315 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -91913,313 +92227,10 @@ var ColourField = function (_React$Component) {
 exports.default = ColourField;
 
 /***/ }),
-/* 315 */
+/* 316 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 316 */,
-/* 317 */,
-/* 318 */,
-/* 319 */,
-/* 320 */,
-/* 321 */,
-/* 322 */,
-/* 323 */,
-/* 324 */,
-/* 325 */,
-/* 326 */,
-/* 327 */,
-/* 328 */,
-/* 329 */,
-/* 330 */,
-/* 331 */,
-/* 332 */,
-/* 333 */,
-/* 334 */,
-/* 335 */,
-/* 336 */,
-/* 337 */,
-/* 338 */,
-/* 339 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _ArtistSentence = __webpack_require__(21);
-
-var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
-
-var _Dater = __webpack_require__(26);
-
-var _Dater2 = _interopRequireDefault(_Dater);
-
-var _URILink = __webpack_require__(18);
-
-var _URILink2 = _interopRequireDefault(_URILink);
-
-var _ContextMenuTrigger = __webpack_require__(23);
-
-var _ContextMenuTrigger2 = _interopRequireDefault(_ContextMenuTrigger);
-
-var _Icon = __webpack_require__(5);
-
-var _Icon2 = _interopRequireDefault(_Icon);
-
-var _Thumbnail = __webpack_require__(11);
-
-var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
-
-var _Popularity = __webpack_require__(81);
-
-var _Popularity2 = _interopRequireDefault(_Popularity);
-
-var _helpers = __webpack_require__(1);
-
-var helpers = _interopRequireWildcard(_helpers);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var ListItem = function (_React$Component) {
-	_inherits(ListItem, _React$Component);
-
-	function ListItem(props) {
-		_classCallCheck(this, ListItem);
-
-		return _possibleConstructorReturn(this, (ListItem.__proto__ || Object.getPrototypeOf(ListItem)).call(this, props));
-	}
-
-	_createClass(ListItem, [{
-		key: 'componentDidMount',
-		value: function componentDidMount() {
-			if (this.props.item) {
-				var item = this.props.item;
-			} else {
-				return;
-			}
-
-			// If the item that has just been mounted doesn't have images,
-			// try fetching them from LastFM
-			if (!item.images && this.props.lastfmActions) {
-				switch (helpers.uriType(item.uri)) {
-
-					case 'artist':
-						this.props.lastfmActions.getArtist(item.uri, item.name);
-						break;
-
-					case 'album':
-						if (item.artists && item.artists.length > 0) {
-							this.props.lastfmActions.getAlbum(item.uri, item.artists[0].name, item.name, item.mbid ? item.mbid : null);
-						}
-						break;
-				}
-			}
-		}
-	}, {
-		key: 'handleClick',
-		value: function handleClick(e) {
-
-			// make sure we haven't clicked a nested link (ie Artist name)
-			if (e.target.tagName.toLowerCase() !== 'a') {
-				e.preventDefault();
-				this.props.history.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(this.props.item.uri));
-				helpers.scrollTo();
-			}
-		}
-	}, {
-		key: 'handleMouseDown',
-		value: function handleMouseDown(e) {
-
-			// make sure we haven't clicked a nested link (ie Artist name)
-			if (e.target.tagName.toLowerCase() !== 'a') {
-				e.preventDefault();
-				this.props.history.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(this.props.item.uri));
-				helpers.scrollTo();
-			}
-		}
-	}, {
-		key: 'handleContextMenu',
-		value: function handleContextMenu(e) {
-			if (this.props.handleContextMenu) {
-				e.preventDefault();
-				this.props.handleContextMenu(e, this.props.item);
-			}
-		}
-	}, {
-		key: 'renderValue',
-		value: function renderValue(key_string) {
-			var key = key_string.split('.');
-			var value = Object.assign(this.props.item);
-
-			for (var i = 0; i < key.length; i++) {
-				if (value[key[i]] === undefined) {
-					return null;
-				} else if (typeof value[key[i]] === 'string' && value[key[i]].replace(' ', '') == '') {
-					return null;
-				} else {
-					value = value[key[i]];
-				}
-			}
-
-			if (key_string === 'tracks_total' || key_string === 'tracks_uris.length') return _react2.default.createElement(
-				'span',
-				null,
-				value,
-				' tracks'
-			);
-			if (key_string === 'followers') return _react2.default.createElement(
-				'span',
-				null,
-				value.toLocaleString(),
-				' followers'
-			);
-			if (key_string === 'added_at') return _react2.default.createElement(
-				'span',
-				null,
-				'Added ',
-				_react2.default.createElement(_Dater2.default, { type: 'ago', data: value }),
-				' ago'
-			);
-			if (key_string === 'owner') return _react2.default.createElement(
-				_URILink2.default,
-				{ type: 'user', uri: value.uri },
-				value.id
-			);
-			if (key_string === 'popularity') return _react2.default.createElement(_Popularity2.default, { full: true, popularity: value });
-			if (key[0] === 'artists') return _react2.default.createElement(_ArtistSentence2.default, { artists: value });
-			if (value === true) return _react2.default.createElement(_Icon2.default, { name: 'check' });
-			if (typeof value === 'number') return _react2.default.createElement(
-				'span',
-				null,
-				value.toLocaleString()
-			);
-			return _react2.default.createElement(
-				'span',
-				null,
-				value
-			);
-		}
-	}, {
-		key: 'render',
-		value: function render() {
-			var _this2 = this;
-
-			var item = this.props.item;
-			if (!item) {
-				return null;
-			}
-
-			var class_name = 'list__item';
-			if (item.type) {
-				class_name += ' list__item--' + item.type;
-			}
-
-			if (this.props.middle_column) {
-				class_name += " list__item--has-middle-column";
-			}
-
-			if (this.props.thumbnail) {
-				class_name += " list__item--has-thumbnail";
-			}
-
-			if (this.props.details) {
-				class_name += " list__item--has-details";
-			}
-
-			return _react2.default.createElement(
-				'div',
-				{
-					className: class_name,
-					onClick: function onClick(e) {
-						return _this2.handleClick(e);
-					},
-					onContextMenu: function onContextMenu(e) {
-						return _this2.handleContextMenu(e);
-					} },
-				_react2.default.createElement(
-					'div',
-					{ className: 'list__item__column list__item__column--right' },
-					this.props.right_column ? this.props.right_column.map(function (column, index) {
-						return _react2.default.createElement(
-							'span',
-							{ className: 'list__item__column__item list__item__column__item--' + column.replace('.', '_'), key: index },
-							_this2.renderValue(column, item)
-						);
-					}) : null,
-					this.props.nocontext ? null : _react2.default.createElement(_ContextMenuTrigger2.default, { className: 'list__item__column__item list__item__column__item--context-menu-trigger subtle', onTrigger: function onTrigger(e) {
-							return _this2.handleContextMenu(e);
-						} })
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'list__item__column list__item__column--name' },
-					this.props.thumbnail ? _react2.default.createElement(_Thumbnail2.default, { className: 'list__item__column__item list__item__column__item--thumbnail', images: item.images ? item.images : null, size: 'small' }) : null,
-					_react2.default.createElement(
-						'div',
-						{ className: 'list__item__column__item list__item__column__item--name' },
-						item.name !== undefined ? this.renderValue('name') : _react2.default.createElement(
-							'span',
-							{ className: 'grey-text' },
-							item.uri
-						)
-					),
-					this.props.details ? _react2.default.createElement(
-						'ul',
-						{ className: 'list__item__column__item list__item__column__item--details details' },
-						this.props.details.map(function (detail, index) {
-							var value = _this2.renderValue(detail);
-
-							if (!value) {
-								return null;
-							}
-
-							return _react2.default.createElement(
-								'li',
-								{ className: 'details__item details__item--' + detail.replace('.', '_'), key: index },
-								value
-							);
-						})
-					) : null
-				),
-				this.props.middle_column ? _react2.default.createElement(
-					'div',
-					{ className: 'list__item__column list__item__column--middle' },
-					this.props.middle_column ? this.props.middle_column.map(function (column, index) {
-						return _react2.default.createElement(
-							'span',
-							{ className: 'list__item__column__item list__item__column__item--' + column.replace('.', '_'), key: index },
-							_this2.renderValue(column)
-						);
-					}) : null
-				) : null
-			);
-		}
-	}]);
-
-	return ListItem;
-}(_react2.default.Component);
-
-exports.default = ListItem;
 
 /***/ })
 /******/ ]);

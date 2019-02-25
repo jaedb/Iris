@@ -283,7 +283,7 @@ class ContextMenu extends React.Component{
 			this.props.uiActions.hideContextMenu();
 			
 			// note: we can only go to one artist (even if this item has multiple artists, just go to the first one)
-			this.props.history.push('/artist/'+ this.props.menu.items[0].artists_uris[0]);
+			this.props.history.push(helpers.buildLink(this.props.menu.items[0].artists_uris[0]));
 		}
 	}
 
@@ -292,7 +292,7 @@ class ContextMenu extends React.Component{
 			return null;
 		} else {
 			this.props.uiActions.hideContextMenu();
-			this.props.history.push('/user/'+ this.props.menu.items[0].user_uri);
+			this.props.history.push(helpers.buildLink(this.props.menu.items[0].user_uri));
 		}
 	}
 
@@ -301,7 +301,7 @@ class ContextMenu extends React.Component{
 			return null;
 		} else {
 			this.props.uiActions.hideContextMenu();
-			this.props.history.push('/track/'+ encodeURIComponent(this.props.menu.items[0].uri));
+			this.props.history.push(helpers.buildLink(this.props.menu.items[0].uri));
 		}
 	}
 
