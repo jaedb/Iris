@@ -36,8 +36,6 @@ class Track extends React.Component{
 	componentDidMount(){
 		this.props.coreActions.loadTrack(this.props.uri);
 
-		console.log("Loading",this.props.uri);
-
 		// We already have the track in our index, so it won't fire componentWillReceiveProps
 		if (this.props.track){
 			this.setWindowTitle(this.props.track);
@@ -268,27 +266,33 @@ class Track extends React.Component{
 	}
 }
 
+/**
+ * Rebuild a track URI with some ugly-ass handling of encoding.
+ *
+ * Basically the ID part of a Mopidy URI needs to be encoded, but the rest of the URI can't be.
+ * This means we need to break down the URI (decoded) and then reconstruct with an encoded ID
+ * because the URI is passed to us from a URL.
+ *
+ * @param uri String
+ * @return String
+ **/
+const rebuildUri = (uri) => {
+	var rebuilt_uri = helpers.uriSource(uri)+':'+helpers.uriType(uri)+':';
+
+	// Escape unreserved characters (RFC 3986)
+	// https://stackoverflow.com/questions/18251399/why-doesnt-encodeuricomponent-encode-single-quotes-apostrophes
+	var id = helpers.getFromUri('trackid', uri);
+	id = encodeURIComponent(id).replace(/[!'()*]/g, escape);
+
+	// Reinstate slashes for the Mopidy-Local structure
+	id = id.replace(/%2F/g, '/');
+
+	return rebuilt_uri+id;
+}
+
 const mapStateToProps = (state, ownProps) => {
-	/*
 	var uri = decodeURIComponent(ownProps.match.params.uri);
-
-	// Mopidy replaces spaces but doesn't properly encode URIs to be URL-friendly. So we
-	// need to just replace spaces.
-	uri = uri.replace(/\s/g, '%20');
-	uri = uri.replace(/,/g, '%2C');
-	*/
-
-	var raw = decodeURIComponent(ownProps.match.params.uri);
-
-	var uri = '';
-	uri += helpers.uriSource(raw)+':';
-	uri += helpers.uriType(raw)+':';
-	var uri_id = helpers.getFromUri('trackid', raw);
-	uri_id = encodeURIComponent(uri_id);
-	uri_id = uri_id.replace(/%2F/g, '/');
-	uri += uri_id;
-
-	console.log(raw, uri);
+	uri = rebuildUri(uri);
 
 	return {
 		uri: uri,
