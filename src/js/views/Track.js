@@ -270,8 +270,9 @@ class Track extends React.Component{
  * Rebuild a track URI with some ugly-ass handling of encoding.
  *
  * Basically the ID part of a Mopidy URI needs to be encoded, but the rest of the URI can't be.
- * This means we need to break down the URI (decoded) and then reconstruct with an encoded ID
- * because the URI is passed to us from a URL.
+ * This means we need to break down the URI (decoded) and then reconstruct with an encoded ID.
+ * This is all required because he URI is passed to us *from* a URL which has been encoded for
+ * obvious reasons.
  *
  * @param uri String
  * @return String
@@ -293,6 +294,8 @@ const rebuildUri = (uri) => {
 const mapStateToProps = (state, ownProps) => {
 	var uri = decodeURIComponent(ownProps.match.params.uri);
 	uri = rebuildUri(uri);
+
+	console.log(uri);
 
 	return {
 		uri: uri,

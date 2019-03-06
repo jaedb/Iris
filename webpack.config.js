@@ -17,7 +17,7 @@ const config = {
 	
 	output: {
 		path: path.resolve(__dirname, 'mopidy_iris/static'),
-		filename: 'app.js'
+		filename: 'app/app.js'
 	},
 	
 	module: {
@@ -30,7 +30,6 @@ const config = {
 				use: 'expose-loader?jQuery!expose?$'
 			},
 			{
-				// JSX
 				test: /\.js$/,
 				exclude: [
         			/node_modules/,
@@ -51,8 +50,10 @@ const config = {
 				test: /\.scss$/,
 				use: ExtractTextPlugin.extract({
 					fallback: 'style-loader',
-					//resolve-url-loader may be chained before sass-loader if necessary
-					use: ['css-loader', 'sass-loader']
+					use: [
+						'css-loader', 
+						'sass-loader'
+					]
 				})
 			},
 			{
@@ -84,7 +85,7 @@ const config = {
 if (isDev){
 	
 	// set compiled css location
-	config.plugins.push( new ExtractTextPlugin("app.css") );
+	config.plugins.push( new ExtractTextPlugin("app/app.css") );
 	
 	// we want source maps
 	config.devtool = 'source-map';
@@ -96,7 +97,7 @@ if (isDev){
 } else {
 	
 	// set our final output filename
-	config.output.filename = 'app.min.js';
+	config.output.filename = 'app/app.min.js';
 	
 	// re-iterate our production value as a string (for ReactJS building)
 	config.plugins.push(
@@ -114,14 +115,18 @@ if (isDev){
 			use: {
 				loader: 'webpack-strip',
 				options: {
-					strip: ['console.log', 'console.info', 'debug']
+					strip: [
+						'console.log',
+						'console.info',
+						'debug'
+					]
 				}
 			}
 		}
 	);
 	
 	// set compiled css location
-	config.plugins.push( new ExtractTextPlugin("app.min.css") );
+	config.plugins.push( new ExtractTextPlugin("app/app.min.css") );
 	
 	// uglify our js
 	config.devtool = 'sourcemap';

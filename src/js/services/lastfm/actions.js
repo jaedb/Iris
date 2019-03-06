@@ -59,7 +59,7 @@ var sendRequest = (dispatch, getState, params, signed = false) => {
 
                     // Snatch a more meaningful error
                     var description = null;
-                    if (xhr.responseJSON.message){
+                    if (xhr && xhr.responseJSON && xhr.responseJSON.message){
                         description = xhr.responseJSON.message;
                     }
 

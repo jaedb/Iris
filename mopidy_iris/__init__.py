@@ -79,21 +79,47 @@ def iris_factory(config, core):
     path = os.path.join( os.path.dirname(__file__), 'static')
     
     return [
-        (r"/images/(.*)", tornado.web.StaticFileHandler, {
-            'path': config['local-images']['image_dir']
-        }),
-        (r'/http/([^/]*)', handlers.HttpHandler, {
-            'core': core,
-            'config': config
-        }),
-        (r'/ws/?', handlers.WebsocketHandler, { 
-            'core': core,
-            'config': config
-        }),
-        (r'/([^.]*)', ReactRouterHandler, {
-            'path': path+'/index.html'
-        }),
-        (r'/(.*)', tornado.web.StaticFileHandler, {
-            'path': path
-        }),
+        (
+            r"/images/(.*)", 
+            tornado.web.StaticFileHandler,
+            {
+                'path': config['local-images']['image_dir']
+            }
+        ),
+        (
+            r'/http/([^/]*)',
+            handlers.HttpHandler, 
+            {
+                'core': core,
+                'config': config
+            }
+        ),
+        (
+            r'/ws/?',
+            handlers.WebsocketHandler,
+            { 
+                'core': core,
+                'config': config
+            }
+        ),
+        (
+            r'/assets/(.*)',
+            tornado.web.StaticFileHandler,
+            {
+                'path': path+'/assets'
+            }
+        ),
+        (
+            r'/app/(.*)',
+            tornado.web.StaticFileHandler,
+            {
+                'path': path+'/app'
+            }
+        ),
+        (
+            r'/(.*)',
+            ReactRouterHandler, {
+                'path': path+'/index.html'
+            }
+        ),
     ]

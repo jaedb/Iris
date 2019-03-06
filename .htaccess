@@ -1,0 +1,14 @@
+RewriteBase /
+
+# Rewrite our application folders
+RewriteRule ^iris/app/(.*) app/$1 [L]
+RewriteRule ^iris/assets/(.*) assets/$1 [L]
+
+# stuff to let through (ignore)
+RewriteCond %{REQUEST_URI} "/app/" [OR]
+RewriteCond %{REQUEST_URI} "/assets/"
+RewriteRule (.*) $1 [L]
+
+# Rewrite everything else to our ReactJS app
+# This allows nice URLS and React-Router will do the rest
+RewriteRule ^ index.html [L]

@@ -1116,15 +1116,14 @@ export let uriType = function(uri){
 export let buildLink = function (uri){
 
 	// Start the link with the URI type
-	var link = "/"+uriType(uri)+"/";
+	var type = uriType(uri);
+	var link = "/"+type+"/";
 
-	// Remove any forward slashes. These interfere with encoding as they're
-	// technically a valid URL component.
-	//uri = uri.replace('/','%2F');
+	// Encode the whole URI as though it's a component. This makes it URL friendly for 
+	// all Mopidy backends (some use URIs like local:track:http://rss.com/stuff.mp3) which
+	// is never going to work nicely.
 	uri = encodeURIComponent(uri);
 	link += uri;
-
-	console.log(link);
 
 	return link;
 }
