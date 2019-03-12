@@ -4653,6 +4653,10 @@ select {
     .playback-controls .control .icon {
       font-size: 0.9em;
       margin-bottom: 0; }
+    @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+      .playback-controls .control {
+        padding-left: 5px;
+        padding-right: 5px; } }
     .playback-controls .control--active {
       color: #08d58f !important; }
     .playback-controls .control:hover {
