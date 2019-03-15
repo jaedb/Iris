@@ -2030,7 +2030,10 @@ const MopidyMiddleware = (function(){
             case 'MOPIDY_GET_ARTIST':
                 request(socket, store, 'library.lookup', action.data )
                     .then(response => {
-                        if (response.length <= 0) return
+
+                        if (response.length <= 0){
+                        	return;
+                        }
 
                         var albums = [];
                         for (var i = 0; i < response.length; i++){
@@ -2057,15 +2060,13 @@ const MopidyMiddleware = (function(){
                             store.dispatch(coreActions.albumsLoaded(albums));
                         }
 
-                        var artist = Object.assign(
-                            {},
-                            (response ? response[0].artists[0] : {}),
-                            {
-                                provider: 'mopidy',
-                                albums_uris: helpers.arrayOf('uri',albums),
-                                tracks: response
-                            }
-                        );
+                        var artist = {
+                        	uri: action.data.uri,
+                            provider: 'mopidy',
+                            albums_uris: helpers.arrayOf('uri',albums),
+                            tracks: response
+                        }
+
                         store.dispatch(coreActions.artistLoaded(artist));
 
                         // load artwork from LastFM
