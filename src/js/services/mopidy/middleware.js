@@ -2028,7 +2028,7 @@ const MopidyMiddleware = (function(){
              **/
 
             case 'MOPIDY_GET_ARTIST':
-                request(socket, store, 'library.lookup', action.data )
+                request(socket, store, 'library.lookup', action.data)
                     .then(response => {
 
                         if (response.length <= 0){
@@ -2060,12 +2060,25 @@ const MopidyMiddleware = (function(){
                             store.dispatch(coreActions.albumsLoaded(albums));
                         }
 
+                        // Start with an empty artist object                        
                         var artist = {
                         	uri: action.data.uri,
-                            provider: 'mopidy',
-                            albums_uris: helpers.arrayOf('uri',albums),
-                            tracks: response
+                        	provider: 'mopidy'
+                        };
+
+                        // Get the artist object from the track. This is a bit ugly because it's a simplified 
+                        // (Mopidy) artist object but gives us enough to fetch their name and artwork.
+                        for (var raw_artist of response[0].artists){
+
+                        	// We're only interested in the artist we asked for
+                        	if (raw_artist.uri === artist.uri){
+                        		artist = Object.assign({}, raw_artist);
+                        	}
                         }
+
+                        // Add our tracks and albums
+                        artist.albums_uris = helpers.arrayOf('uri',albums),
+                        artist.tracks = response;
 
                         store.dispatch(coreActions.artistLoaded(artist));
 

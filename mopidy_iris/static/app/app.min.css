@@ -3030,9 +3030,9 @@ footer {
     display: inline-block; }
     .details li.source {
       padding-right: 10px; }
-    .details li:not(.source):not(:first-child) ~ li {
+    .details li:not(.source) ~ li {
       padding-left: 14px; }
-      .details li:not(.source):not(:first-child) ~ li:before {
+      .details li:not(.source) ~ li:before {
         content: '\2022' !important;
         display: inline-block;
         margin-left: -8px;
@@ -4653,6 +4653,10 @@ select {
     .playback-controls .control .icon {
       font-size: 0.9em;
       margin-bottom: 0; }
+    @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+      .playback-controls .control {
+        padding-left: 5px;
+        padding-right: 5px; } }
     .playback-controls .control--active {
       color: #08d58f !important; }
     .playback-controls .control:hover {
