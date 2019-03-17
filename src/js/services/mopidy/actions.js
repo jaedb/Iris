@@ -255,7 +255,7 @@ export function changeTrack(tlid){
 	}
 }
 
-export function playURIs(uris, from_uri = null){
+export function playURIs(uris, from_uri = null, shuffle = false){
 	return {
 		type: 'MOPIDY_PLAY_URIS',
 		uris: uris,
@@ -277,14 +277,6 @@ export function enqueueURIs(uris, from_uri = null, next = false, at_position = n
 export function enqueueURIsBatchDone(){
 	return {
 		type: 'MOPIDY_ENQUEUE_URIS_BATCH_DONE'
-	}
-}
-
-export function playPlaylist(uri, shuffle = false){
-	return {
-		type: 'MOPIDY_PLAY_PLAYLIST',
-		uri: uri,
-		shuffle: shuffle
 	}
 }
 

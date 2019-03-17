@@ -218,6 +218,15 @@ class ContextMenu extends React.Component{
 
 	playPlaylist(e){
 		this.props.uiActions.hideContextMenu();
+
+		// THis is the ideal setup: one action to play whatever type
+		// then the action detects playlist vs album vs artist vs track etc and 
+		// loads as is required... then enqueue works the same
+		this.props.mopidyActions.playURIs(this.props.menu.uris[0], this.props.menu.uris[0]);
+	}
+
+	enqueuePlaylist(e){
+		this.props.uiActions.hideContextMenu();
 		this.props.mopidyActions.playPlaylist(this.props.menu.uris[0]);
 	}
 
