@@ -232,6 +232,48 @@ export function removeFromIndex(index_name, key, new_key = null){
 
 
 /**
+ * Playing of assetse
+ **/
+
+/**
+ * Play one or many URIs
+ *
+ * @param uri = String (when playing just one URI, eg playlist)
+ * @param uris = Array (when playing several URIs, eg tracks)
+ * @param origin = String (URI from which these URIs came)
+ * @param shuffle = Boolean (shuffle the order of URIs)
+ **/
+export function playURIs(uri = null, uris = [], origin = null, shuffle = false){
+    return {
+        type: 'PLAY_URIS',
+        uri: uri,
+        uris: uris,
+        origin: origin,
+        shuffle: shuffle
+    }
+}
+
+/**
+ * Enqueue one or many URIs
+ *
+ * @param uris = Array
+ * @param position = Int (position in track_list in which to insert these URIs)
+ * @param origin = String (URI from which these URIs came)
+ * @param shuffle = Boolean (shuffle the order of URIs)
+ **/
+export function enqueueURIs(uris = [], position = null, origin = null, shuffle = false){
+    return {
+        type: 'ENQUEUE_URIS',
+        position: position,
+        uris: uris,
+        origin: origin,
+        shuffle: shuffle
+    }
+}
+
+
+
+/**
  * Playlist manipulation
  **/
 
