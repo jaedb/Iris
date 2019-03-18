@@ -650,13 +650,13 @@ const MopidyMiddleware = (function(){
                     // Spotify-provied playlists need to be handled by the Spotify service
                     // We only need to load them if we haven't already got all the tracks
                     if (playlist.provider == 'spotify' && playlist.tracks_total == playlist.tracks_uris.length){
-                        store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri, action.shuffle, 'enqueue'));
+                        store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri, action.shuffle, 'enqueue', action.play_next));
                         break;
                     }
 
                 // It's a Spotify playlist that we haven't loaded yet, so Spotify HTTP API needs to go get it
                 } else if (helpers.uriSource(action.uri) == 'spotify' && store.getState().spotify.enabled){
-                    store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri, action.shuffle, 'enqueue'));
+                    store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri, action.shuffle, 'enqueue', action.play_next));
                     break
                 }
 
