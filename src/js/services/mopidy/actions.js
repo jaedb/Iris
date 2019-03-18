@@ -255,28 +255,15 @@ export function changeTrack(tlid){
 	}
 }
 
-export function playURIs(uris, from_uri = null, shuffle = false){
+/**
+ * Playing assets
+ **/
+
+export function playURIs(uris = [], from_uri = null, shuffle = false){
 	return {
 		type: 'MOPIDY_PLAY_URIS',
 		uris: uris,
 		from_uri: from_uri
-	}
-}
-
-export function enqueueURIs(uris, from_uri = null, next = false, at_position = null, offset = 0){
-	return {
-		type: 'MOPIDY_ENQUEUE_URIS',
-		uris: uris,
-		at_position: at_position,
-		next: next,
-		from_uri: from_uri,
-		offset: offset
-	}
-}
-
-export function enqueueURIsBatchDone(){
-	return {
-		type: 'MOPIDY_ENQUEUE_URIS_BATCH_DONE'
 	}
 }
 
@@ -286,6 +273,53 @@ export function playAlbum(uri){
 		uri: uri
 	}
 }
+
+export function playPlaylist(uri){
+	return {
+		type: 'MOPIDY_PLAY_PLAYLIST',
+		uri: uri
+	}
+}
+
+export function enqueueURIs(uris = [], from_uri = null, play_next = false, at_position = null, offset = 0){
+	return {
+		type: 'MOPIDY_ENQUEUE_URIS',
+		uris: uris,
+		from_uri: from_uri,
+		at_position: at_position,
+		play_next: play_next,
+		offset: offset
+	}
+}
+
+export function enqueueAlbum(uri, next = false, at_position = null){
+	return {
+		type: 'MOPIDY_ENQUEUE_ALBUM',
+		uri: uri,
+		next: next,
+		at_position: at_position
+	}
+}
+
+export function enqueuePlaylist(uri, play_next = false, at_position = null){
+	return {
+		type: 'MOPIDY_ENQUEUE_PLAYLIST',
+		uri: uri,
+		play_next: play_next,
+		at_position: at_position
+	}
+}
+
+export function enqueueURIsBatchDone(){
+	return {
+		type: 'MOPIDY_ENQUEUE_URIS_BATCH_DONE'
+	}
+}
+
+
+/**
+ * Playlist maniopulation
+ **/
 
 export function removeTracks(tlids){
 	return {
