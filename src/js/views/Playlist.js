@@ -101,7 +101,7 @@ class Playlist extends React.Component{
 	}
 
 	play(){
-        this.props.mopidyActions.playPlaylist(this.props.playlist.uri)
+        this.props.mopidyActions.playPlaylist(this.props.playlist.uri);
 	}
 
 	follow(){

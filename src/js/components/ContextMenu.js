@@ -221,6 +221,11 @@ class ContextMenu extends React.Component{
 		this.props.mopidyActions.playPlaylist(this.props.menu.uris[0]);
 	}
 
+	enqueuePlaylist(e, play_next = false){
+		this.props.uiActions.hideContextMenu();
+		this.props.mopidyActions.enqueuePlaylist(this.props.menu.uris[0], play_next);
+	}
+
 	shufflePlayPlaylist(e){
 		this.props.uiActions.hideContextMenu();
 		this.props.mopidyActions.playPlaylist(this.props.menu.uris[0], true);
@@ -231,9 +236,9 @@ class ContextMenu extends React.Component{
 		this.props.spotifyActions.playArtistTopTracks(this.props.menu.uris[0]);
 	}
 
-	addToQueue(e, next = false){
+	addToQueue(e, play_next = false){
 		this.props.uiActions.hideContextMenu();
-		this.props.mopidyActions.enqueueURIs(this.props.menu.uris, this.props.menu.tracklist_uri, next);
+		this.props.mopidyActions.enqueueURIs(this.props.menu.uris, this.props.menu.tracklist_uri, play_next);
 	}
 
 	addTracksToPlaylist(e, playlist_uri){
@@ -507,6 +512,22 @@ class ContextMenu extends React.Component{
 			</div>
 		)
 
+		var add_playlist_to_queue = (
+			<div className="context-menu__item">
+				<a className="context-menu__item__link" onClick={e => this.enqueuePlaylist(e)}>
+					<span className="context-menu__item__label">Add to queue</span>
+				</a>
+			</div>
+		)
+
+		var play_playlist_next = (
+			<div className="context-menu__item">
+				<a className="context-menu__item__link" onClick={e => this.enqueuePlaylist(e, true)}>
+					<span className="context-menu__item__label">Play next</span>
+				</a>
+			</div>
+		)
+
 		var add_to_playlist = (
 			<div className="context-menu__item context-menu__item--has-submenu">
 				<a className="context-menu__item__link" onClick={e => this.setSubmenu('add-to-playlist')}>
@@ -689,7 +710,9 @@ class ContextMenu extends React.Component{
 				return (
 					<div>
 						{play_playlist}
+						{play_playlist_next}
 						{shuffle_play_playlist}
+						{add_playlist_to_queue}
 						{this.canBeInLibrary() ? <div className="context-menu__divider" /> : null}
 						{this.canBeInLibrary() ? toggle_in_library : null}
 						<div className="context-menu__divider" />

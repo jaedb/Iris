@@ -1634,32 +1634,36 @@ export function getLibraryTracksAndPlayProcessor(data){
  * Recursively get .next until we have all tracks
  **/
 
-export function getPlaylistTracksAndPlay(uri, shuffle){
+export function getAllPlaylistTracks(uri, shuffle = false, callback_action = null, play_next = false, at_position = null, offset = 0){
     return (dispatch, getState) => {
         dispatch(uiActions.startProcess(
-            'SPOTIFY_GET_PLAYLIST_TRACKS_AND_PLAY_PROCESSOR',
+            'SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR',
             'Loading playlist tracks', 
             {
                 uri: uri,
                 next: 'playlists/'+ helpers.getFromUri('playlistid',uri) +'/tracks?market='+getState().spotify.country,
-                shuffle: shuffle
+                shuffle: shuffle,
+                play_next: play_next,
+                at_position: at_position,
+                offset: offset,
+                callback_action: callback_action
             }
         ))
     }
 }
 
-export function getPlaylistTracksAndPlayProcessor(data){
+export function getAllPlaylistTracksProcessor(data){
     return (dispatch, getState) => {
         request(dispatch, getState, data.next)
             .then(
                 response => {
 
                     // Check to see if we've been cancelled
-                    if (getState().ui.processes['SPOTIFY_GET_PLAYLIST_TRACKS_AND_PLAY_PROCESSOR'] !== undefined){
-                        var processor = getState().ui.processes['SPOTIFY_GET_PLAYLIST_TRACKS_AND_PLAY_PROCESSOR']
+                    if (getState().ui.processes['SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR'] !== undefined){
+                        var processor = getState().ui.processes['SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR']
 
                         if (processor.status == 'cancelling'){
-                            dispatch(uiActions.processCancelled('SPOTIFY_GET_PLAYLIST_TRACKS_AND_PLAY_PROCESSOR'))
+                            dispatch(uiActions.processCancelled('SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR'))
                             return false
                         }
                     }
@@ -1679,31 +1683,45 @@ export function getPlaylistTracksAndPlayProcessor(data){
                     // We got a next link, so we've got more work to be done
                     if (response.next){
                         dispatch(uiActions.updateProcess(
-                            'SPOTIFY_GET_PLAYLIST_TRACKS_AND_PLAY_PROCESSOR', 
+                            'SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR', 
                             'Loading '+(response.total-uris.length)+' playlist tracks', 
-                            {
-                                next: response.next,
-                                total: response.total,
-                                remaining: response.total - uris.length,
-                                shuffle: data.shuffle
-                            }
-                        ))
+                            Object.assign(
+                            	{},
+                            	data,
+                            	{
+	                                next: response.next,
+	                                total: response.total,
+	                                remaining: response.total - uris.length
+	                            }
+                            )
+                        ));
                         dispatch(uiActions.runProcess(
-                            'SPOTIFY_GET_PLAYLIST_TRACKS_AND_PLAY_PROCESSOR', 
-                            {
-                                next: response.next,
-                                uris: uris,
-                                shuffle: data.shuffle
-                            }
-                        ))
+                            'SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR', 
+                            Object.assign(
+                            	{},
+                            	data,
+                            	{
+	                                next: response.next,
+                                	uris: uris,
+	                            }
+                            )
+                        ));
                     } else {
 
                     	if (data.shuffle){
                     		uris = helpers.shuffle(uris);
                     	}
 
-                        dispatch(mopidyActions.playURIs(uris, data.uri))
-                        dispatch(uiActions.processFinishing('SPOTIFY_GET_PLAYLIST_TRACKS_AND_PLAY_PROCESSOR'))
+                    	// We don't bother "finishing", we just want it "finished" immediately
+                    	// This bypasses the fade transition for a more smooth transition between two
+                    	// processes that flow together
+                        dispatch(uiActions.processFinished('SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR'));
+
+                    	if (data.callback_action == 'enqueue'){
+                        	dispatch(mopidyActions.enqueueURIs(uris, data.uri, data.play_next, data.at_position, data.offset));
+                    	} else {
+                        	dispatch(mopidyActions.playURIs(uris, data.uri));
+                    	}
                     }
                 },
                 error => {

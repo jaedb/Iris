@@ -597,31 +597,26 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_PLAY_PLAYLIST':
 
-                // Clear tracklist (if set)
-                if (store.getState().ui.clear_tracklist_on_play){
-                    store.dispatch(mopidyActions.clearTracklist())
-                }
+                var playlist = store.getState().core.playlists[action.uri];
 
-                // playlist already in index
-                if (store.getState().core.playlists.hasOwnProperty(action.uri)){
+                // We have the playlist loaded already, and we've got at least 1 track to start playing
+                if (playlist && playlist.tracks_uris && playlist.tracks_uris.length > 0){
 
                     // Spotify-provied playlists need to be handled by the Spotify service
-                    if (store.getState().core.playlists[action.uri].provider == 'spotify'){
-                        store.dispatch(spotifyActions.getPlaylistTracksAndPlay(action.uri, action.shuffle))
-                        break
+                    // We only need to load them if we haven't already got all the tracks
+                    if (playlist.provider == 'spotify' && playlist.tracks_total != playlist.tracks_uris.length){
+                        store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri, action.shuffle, 'play'));
+                        break;
                     }
 
-                // it's a spotify playlist that we haven't loaded
-                // we need to fetch via HTTP API to avoid timeout
+                // It's a Spotify playlist that we haven't loaded yet, so Spotify HTTP API needs to go get it
                 } else if (helpers.uriSource(action.uri) == 'spotify' && store.getState().spotify.enabled){
-                    store.dispatch(spotifyActions.getPlaylistTracksAndPlay(action.uri, action.shuffle))
+                    store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri, action.shuffle, 'play'));
                     break
-
-                // Not in index, and Spotify HTTP not enabled, so just play it as-is
                 }
 
-                // fetch the playlist tracks via backend
-                // add each track by URI
+                // Not in index, and Spotify HTTP not enabled, so just play it as-is
+                // Fetch the playlist tracks via backend and add each track by URI
                 request(socket, store, 'playlists.lookup', {uri: action.uri})
                     .then(
                         response => {
@@ -633,6 +628,50 @@ const MopidyMiddleware = (function(){
                                 	tracks_uris = helpers.shuffle(tracks_uris);
                                 }
                                 store.dispatch(mopidyActions.playURIs(tracks_uris, action.uri))
+                            }
+                        },
+                        error => {
+                            store.dispatch(coreActions.handleException(
+                                "Mopidy: "+(error.message ? error.message : "Lookup failed"),
+                                error
+                            ));
+                        }
+                    );
+                break;
+
+            case 'MOPIDY_ENQUEUE_PLAYLIST':
+
+                var playlist = store.getState().core.playlists[action.uri];
+
+                // We have the playlist loaded already, and we've got at least 1 track to start playing
+                if (playlist && playlist.tracks_uris && playlist.tracks_uris.length > 0){
+
+                    // Spotify-provied playlists need to be handled by the Spotify service
+                    // We only need to load them if we haven't already got all the tracks
+                    if (playlist.provider == 'spotify' && playlist.tracks_total != playlist.tracks_uris.length){
+                        store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri, action.shuffle, 'enqueue', action.play_next));
+                        break;
+                    }
+
+                // It's a Spotify playlist that we haven't loaded yet, so Spotify HTTP API needs to go get it
+                } else if (helpers.uriSource(action.uri) == 'spotify' && store.getState().spotify.enabled){
+                    store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri, action.shuffle, 'enqueue', action.play_next));
+                    break
+                }
+
+                // Not in index, and Spotify HTTP not enabled, so just play it as-is
+                // Fetch the playlist tracks via backend and add each track by URI
+                request(socket, store, 'playlists.lookup', {uri: action.uri})
+                    .then(
+                        response => {
+                            if (response.tracks === undefined){
+                                store.dispatch(uiActions.createNotification({content: 'Failed to load playlist tracks', type: 'bad'}));
+                            } else {
+                                var tracks_uris = helpers.arrayOf('uri',response.tracks);
+                                if (action.shuffle){
+                                	tracks_uris = helpers.shuffle(tracks_uris);
+                                }
+                                store.dispatch(mopidyActions.enqueueURIs(tracks_uris, action.uri, action.play_next, action.at_position, action.offset))
                             }
                         },
                         error => {
@@ -669,15 +708,15 @@ const MopidyMiddleware = (function(){
                     batches.push({
                         uris: uris.splice(0,batch_size),
                         at_position: action.at_position,
-                        next: action.next,
+                        play_next: action.play_next,
                         offset: action.offset + (batch_size * batches.length),
                         from_uri: action.from_uri
                     })
                 }
 
                 // pass this modified action to the reducer (and other middleware)
-                action.batches = batches
-                next(action)
+                action.batches = batches;
+                next(action);
 
                 // start our processor
                 store.dispatch(uiActions.startProcess(
@@ -703,7 +742,7 @@ const MopidyMiddleware = (function(){
                 // make sure we have some uris in the queue
                 } else if (action.data.batches && action.data.batches.length > 0){
 
-                    var batches = Object.assign([],action.data.batches)
+                    var batches = Object.assign([], action.data.batches)
                     var batch = batches[0]
                     var total_uris = 0
                     for (var i = 0; i < batches.length; i++){
@@ -740,7 +779,7 @@ const MopidyMiddleware = (function(){
                 var params = {uris: batch.uris}
 
                 // Play this batch next
-                if (batch.next){
+                if (batch.play_next){
 
                     // Make sure we're playing something first
                     if (current_track_index > -1){
