@@ -640,7 +640,6 @@ const MopidyMiddleware = (function(){
                 break;
 
             case 'MOPIDY_ENQUEUE_PLAYLIST':
-            	console.log(action);
 
                 var playlist = store.getState().core.playlists[action.uri];
 

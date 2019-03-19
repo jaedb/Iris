@@ -37,6 +37,10 @@ class PlaybackControls extends React.Component{
 			// Bust our cache, and by consequence, play our stream
 			this.props.coreActions.cachebustHttpStream();
 		}
+
+		if (this.props.current_track){			
+			this.setState({current_track: this.props.current_track});
+		}
 	}
 
 	playStream(props = this.props){
