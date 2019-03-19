@@ -604,7 +604,7 @@ const MopidyMiddleware = (function(){
 
                     // Spotify-provied playlists need to be handled by the Spotify service
                     // We only need to load them if we haven't already got all the tracks
-                    if (playlist.provider == 'spotify' && playlist.tracks_total == playlist.tracks_uris.length){
+                    if (playlist.provider == 'spotify' && playlist.tracks_total != playlist.tracks_uris.length){
                         store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri, action.shuffle, 'play'));
                         break;
                     }
@@ -649,7 +649,7 @@ const MopidyMiddleware = (function(){
 
                     // Spotify-provied playlists need to be handled by the Spotify service
                     // We only need to load them if we haven't already got all the tracks
-                    if (playlist.provider == 'spotify' && playlist.tracks_total == playlist.tracks_uris.length){
+                    if (playlist.provider == 'spotify' && playlist.tracks_total != playlist.tracks_uris.length){
                         store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri, action.shuffle, 'enqueue', action.play_next));
                         break;
                     }

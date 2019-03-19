@@ -1712,12 +1712,16 @@ export function getAllPlaylistTracksProcessor(data){
                     		uris = helpers.shuffle(uris);
                     	}
 
+                    	// We don't bother "finishing", we just want it "finished" immediately
+                    	// This bypasses the fade transition for a more smooth transition between two
+                    	// processes that flow together
+                        dispatch(uiActions.processFinished('SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR'));
+
                     	if (data.callback_action == 'enqueue'){
                         	dispatch(mopidyActions.enqueueURIs(uris, data.uri, data.play_next, data.at_position, data.offset));
                     	} else {
                         	dispatch(mopidyActions.playURIs(uris, data.uri));
                     	}
-                        dispatch(uiActions.processFinishing('SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR'))
                     }
                 },
                 error => {
