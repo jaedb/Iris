@@ -16,7 +16,10 @@
     "react-router": "^4.3.1"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.4.0",
+    "@babel/preset-react": "^7.0.0",
     "babel-core": "^6",
+    "babel-jest": "^24.5.0",
     "babel-loader": "^7.1.5",
     "babel-preset-es2015": "^6",
     "babel-preset-react": "^6",
@@ -24,10 +27,13 @@
     "babel-preset-stage-2": "^6",
     "copy-dir": "^0.3.0",
     "css-loader": "^0.28.11",
+    "enzyme": "^3.9.0",
+    "enzyme-adapter-react-16": "^1.11.2",
     "expose-loader": "0.7.3",
     "extract-text-webpack-plugin": "^3.0.2",
     "file-loader": "^0.11.2",
     "fs-copy-file": "2.1.2",
+    "jest": "^24.5.0",
     "js-sha256": "^0.9.0",
     "node-sass": "^4.11.0",
     "react": "^16.8.1",
@@ -38,6 +44,7 @@
     "react-redux": "^6",
     "react-router-dom": "^4",
     "react-sortablejs": "^1.5.0",
+    "react-test-renderer": "^16.8.4",
     "redux": "^4",
     "redux-thunk": "^2.3.0",
     "sass-loader": "^6",
@@ -48,9 +55,16 @@
     "webpack-strip": "0.1.0"
   },
   "scripts": {
+    "test": "jest",
     "build": "node build_tools/build.js",
     "dev": "node build_tools/build.js && NODE_ENV=development webpack --watch",
     "prod": "node build_tools/build.js && NODE_ENV=development webpack && NODE_ENV=production webpack --watch",
     "release": "node build_tools/build.js && NODE_ENV=development webpack && NODE_ENV=production webpack && python setup.py sdist upload -r pypi && build_tools/release.sh"
+  },
+  "jest": {
+    "verbose": true,
+    "setupFilesAfterEnv": [
+    	"./tests/setup.js"
+    ]
   }
 }

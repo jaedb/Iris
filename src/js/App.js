@@ -60,7 +60,7 @@ import * as lastfmActions from './services/lastfm/actions';
 import * as geniusActions from './services/genius/actions';
 import * as snapcastActions from './services/snapcast/actions';
 
-class App extends React.Component{
+export class App extends React.Component{
 
 	constructor(props){
 		super(props);

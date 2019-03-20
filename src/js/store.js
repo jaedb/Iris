@@ -109,8 +109,6 @@ initialState.genius = Object.assign({}, initialState.genius, helpers.getStorage(
 initialState.google = Object.assign({}, initialState.google, helpers.getStorage('google'));
 initialState.snapcast = Object.assign({}, initialState.snapcast, helpers.getStorage('snapcast'));
 
-console.log('Bootstrapping', initialState);
-
 var reducers = combineReducers({
     core,
     ui,
