@@ -951,6 +951,49 @@ export let uriSource = function(uri){
     var exploded = uri.split(':');
     return exploded[0]
 }
+/**
+ * Identify what kind of asset a URI is (playlist, album, etc)
+ *
+ * @param uri = string
+ * @return string
+ **/
+export let uriType = function(uri){
+	if (!uri) return null;
+
+    var exploded = uri.split(':')
+
+    if (exploded[0] == 'm3u'){
+    	return 'playlist'
+    }
+
+    if (exploded[0] == 'iris'){
+    	switch (exploded[1]){
+	    	case 'search':
+	    	case 'discover':
+	    	case 'browse':
+	    		return exploded[1];
+	    		break;
+	    }
+    }
+
+    switch (exploded[1]){
+    	case 'track':
+    	case 'artist':
+    	case 'album':
+    	case 'playlist':
+    	case 'genre':
+    		return exploded[1]
+    		break
+
+    	case 'user':
+    		if (exploded.length > 3 && exploded[3] == 'playlist'){
+    			return 'playlist'
+    		}
+    		return exploded[1]
+    		break
+    }
+}
+
 
 export let sourceIcon = function(uri,source = null){
 	if (uri) source = uriSource(uri)
@@ -1062,49 +1105,6 @@ export let getFromUri = function(element, uri = ""){
     return null
 }
 
-/**
- * Identify what kind of asset a URI is (playlist, album, etc)
- *
- * @param uri = string
- * @return string
- **/
-export let uriType = function(uri){
-	if (!uri) return null;
-
-    var exploded = uri.split(':')
-
-    if (exploded[0] == 'm3u'){
-    	return 'playlist'
-    }
-
-    if (exploded[0] == 'iris'){
-    	switch (exploded[1]){
-	    	case 'search':
-	    	case 'discover':
-	    	case 'browse':
-	    		return exploded[1];
-	    		break;
-	    }
-    }
-
-    switch (exploded[1]){
-    	case 'track':
-    	case 'artist':
-    	case 'album':
-    	case 'playlist':
-    	case 'genre':
-    		return exploded[1]
-    		break
-
-    	case 'user':
-    		if (exploded.length > 3 && exploded[3] == 'playlist'){
-    			return 'playlist'
-    		}
-    		return exploded[1]
-    		break
-    }
-}
-
 
 /**
  * Build a link to an asset. Using the URI type we can ascertain where we need
@@ -1139,7 +1139,11 @@ export let buildLink = function (uri){
 export let arrayOf = function(property, items){
 	let array = [];
 	for (var item of items){
-		array.push(item[property]);
+
+		// Make sure the property is defined
+		if (item[property] !== undefined && item[property] != null){
+			array.push(item[property]);
+		}
 	}
 	return array;
 }

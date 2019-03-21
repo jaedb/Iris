@@ -1361,6 +1361,48 @@ var uriSource = exports.uriSource = function uriSource(uri) {
 	var exploded = uri.split(':');
 	return exploded[0];
 };
+/**
+ * Identify what kind of asset a URI is (playlist, album, etc)
+ *
+ * @param uri = string
+ * @return string
+ **/
+var uriType = exports.uriType = function uriType(uri) {
+	if (!uri) return null;
+
+	var exploded = uri.split(':');
+
+	if (exploded[0] == 'm3u') {
+		return 'playlist';
+	}
+
+	if (exploded[0] == 'iris') {
+		switch (exploded[1]) {
+			case 'search':
+			case 'discover':
+			case 'browse':
+				return exploded[1];
+				break;
+		}
+	}
+
+	switch (exploded[1]) {
+		case 'track':
+		case 'artist':
+		case 'album':
+		case 'playlist':
+		case 'genre':
+			return exploded[1];
+			break;
+
+		case 'user':
+			if (exploded.length > 3 && exploded[3] == 'playlist') {
+				return 'playlist';
+			}
+			return exploded[1];
+			break;
+	}
+};
 
 var sourceIcon = exports.sourceIcon = function sourceIcon(uri) {
 	var source = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
@@ -1475,49 +1517,6 @@ var getFromUri = exports.getFromUri = function getFromUri(element) {
 };
 
 /**
- * Identify what kind of asset a URI is (playlist, album, etc)
- *
- * @param uri = string
- * @return string
- **/
-var uriType = exports.uriType = function uriType(uri) {
-	if (!uri) return null;
-
-	var exploded = uri.split(':');
-
-	if (exploded[0] == 'm3u') {
-		return 'playlist';
-	}
-
-	if (exploded[0] == 'iris') {
-		switch (exploded[1]) {
-			case 'search':
-			case 'discover':
-			case 'browse':
-				return exploded[1];
-				break;
-		}
-	}
-
-	switch (exploded[1]) {
-		case 'track':
-		case 'artist':
-		case 'album':
-		case 'playlist':
-		case 'genre':
-			return exploded[1];
-			break;
-
-		case 'user':
-			if (exploded.length > 3 && exploded[3] == 'playlist') {
-				return 'playlist';
-			}
-			return exploded[1];
-			break;
-	}
-};
-
-/**
  * Build a link to an asset. Using the URI type we can ascertain where we need
  * to direct the user (eg /track/local:track:1235.mp3)
  *
@@ -1556,7 +1555,11 @@ var arrayOf = exports.arrayOf = function arrayOf(property, items) {
 		for (var _iterator21 = items[Symbol.iterator](), _step21; !(_iteratorNormalCompletion21 = (_step21 = _iterator21.next()).done); _iteratorNormalCompletion21 = true) {
 			var item = _step21.value;
 
-			array.push(item[property]);
+
+			// Make sure the property is defined
+			if (item[property] !== undefined && item[property] != null) {
+				array.push(item[property]);
+			}
 		}
 	} catch (err) {
 		_didIteratorError21 = true;
@@ -19604,13 +19607,18 @@ var Dater = function (_React$Component) {
 		value: function render() {
 			if (!this.props.data) {
 				return null;
-			} else {
-				return _react2.default.createElement(
-					'span',
-					{ className: 'dater' },
-					this.calculate()
-				);
 			}
+
+			var calculation = this.calculate();
+			if (!calculation) {
+				return null;
+			}
+
+			return _react2.default.createElement(
+				'span',
+				{ className: 'dater' },
+				calculation
+			);
 		}
 	}]);
 
@@ -21165,7 +21173,7 @@ var GridItem = function (_React$Component) {
 					if (item.tracks_total) {
 						return _react2.default.createElement(
 							'span',
-							null,
+							{ className: 'grid__item__secondary__content' },
 							item.tracks_total,
 							' tracks'
 						);
@@ -21175,8 +21183,8 @@ var GridItem = function (_React$Component) {
 				case 'artist':
 					return _react2.default.createElement(
 						'span',
-						null,
-						item.followers !== undefined ? item.followers.toLocaleString() + ' followers' : null,
+						{ className: 'grid__item__secondary__content' },
+						item.followers !== undefined ? item.followers.toLocaleString() + ' followers ' : null,
 						item.albums_uris !== undefined ? item.albums_uris.length + ' albums' : null
 					);
 					break;
@@ -21184,7 +21192,7 @@ var GridItem = function (_React$Component) {
 				case 'album':
 					return _react2.default.createElement(
 						'span',
-						null,
+						{ className: 'grid__item__secondary__content' },
 						item.artists !== undefined ? _react2.default.createElement(_ArtistSentence2.default, { nolinks: true, artists: item.artists }) : null
 					);
 					break;
@@ -21192,7 +21200,7 @@ var GridItem = function (_React$Component) {
 				default:
 					return _react2.default.createElement(
 						'span',
-						null,
+						{ className: 'grid__item__secondary__content' },
 						item.artists !== undefined ? _react2.default.createElement(_ArtistSentence2.default, { nolinks: true, artists: item.artists }) : null,
 						item.followers !== undefined ? item.followers.toLocaleString() + ' followers' : null
 					);
@@ -56352,6 +56360,7 @@ module.exports = hoistNonReactStatics;
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
+exports.state = undefined;
 
 var _redux = __webpack_require__(2);
 
@@ -56443,7 +56452,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-var initialState = {
+var state = exports.state = {
 	core: {
 		outputs: [],
 		queue: [],
@@ -56517,15 +56526,15 @@ var initialState = {
 };
 
 // load all our stored values from LocalStorage
-initialState.core = Object.assign({}, initialState.core, helpers.getStorage('core'));
-initialState.ui = Object.assign({}, initialState.ui, helpers.getStorage('ui'));
-initialState.mopidy = Object.assign({}, initialState.mopidy, helpers.getStorage('mopidy'));
-initialState.pusher = Object.assign({}, initialState.pusher, helpers.getStorage('pusher'));
-initialState.spotify = Object.assign({}, initialState.spotify, helpers.getStorage('spotify'));
-initialState.lastfm = Object.assign({}, initialState.lastfm, helpers.getStorage('lastfm'));
-initialState.genius = Object.assign({}, initialState.genius, helpers.getStorage('genius'));
-initialState.google = Object.assign({}, initialState.google, helpers.getStorage('google'));
-initialState.snapcast = Object.assign({}, initialState.snapcast, helpers.getStorage('snapcast'));
+state.core = Object.assign({}, state.core, helpers.getStorage('core'));
+state.ui = Object.assign({}, state.ui, helpers.getStorage('ui'));
+state.mopidy = Object.assign({}, state.mopidy, helpers.getStorage('mopidy'));
+state.pusher = Object.assign({}, state.pusher, helpers.getStorage('pusher'));
+state.spotify = Object.assign({}, state.spotify, helpers.getStorage('spotify'));
+state.lastfm = Object.assign({}, state.lastfm, helpers.getStorage('lastfm'));
+state.genius = Object.assign({}, state.genius, helpers.getStorage('genius'));
+state.google = Object.assign({}, state.google, helpers.getStorage('google'));
+state.snapcast = Object.assign({}, state.snapcast, helpers.getStorage('snapcast'));
 
 var reducers = (0, _redux.combineReducers)({
 	core: _reducer2.default,
@@ -56539,7 +56548,7 @@ var reducers = (0, _redux.combineReducers)({
 	snapcast: _reducer14.default
 });
 
-exports.default = (0, _redux.createStore)(reducers, initialState, (0, _redux.applyMiddleware)(_reduxThunk2.default, _middleware20.default, _middleware2.default, _middleware4.default, _middleware8.default, _middleware6.default, _middleware14.default, _middleware10.default, _middleware12.default, _middleware16.default, _middleware18.default));
+exports.default = (0, _redux.createStore)(reducers, state, (0, _redux.applyMiddleware)(_reduxThunk2.default, _middleware20.default, _middleware2.default, _middleware4.default, _middleware8.default, _middleware6.default, _middleware14.default, _middleware10.default, _middleware12.default, _middleware16.default, _middleware18.default));
 
 /***/ }),
 /* 176 */

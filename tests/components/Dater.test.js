@@ -9,6 +9,28 @@ import Dater from '../../src/js/components/Dater';
 
 describe('<Dater />', () => {
 
+	it('should render null when given invalid props', () => {
+
+		// Invalid type
+		const dom_1 = shallow(<Dater type="invalid-type" data={100000} />);
+		expect(dom_1.type()).toEqual(null);
+
+		// Missing type
+		const dom_2 = shallow(<Dater data={100000} />);
+		expect(dom_2.type()).toEqual(null);
+
+		// Invalid data
+		var data = {
+			invalid_object: "value"
+		};
+		const dom_3 = shallow(<Dater type="total-time" data={data} />);
+		expect(dom_3.type()).toEqual(null);
+
+		// Missing data
+		const dom_4 = shallow(<Dater type="ago" />);
+		expect(dom_4.type()).toEqual(null);
+	});
+
 	it('should handle milliseconds', () => {
 		const dom = shallow(<Dater type="length" data={30000} />);
 		expect(dom.text()).toEqual('0:30');
@@ -49,19 +71,17 @@ describe('<Dater />', () => {
 	});
 
 	it('should handle total time', () => {
-		var data = {
-			tracks: [
-				{
-					duration: 5 * 60000
-				},
-				{
-					duration: 5 * 60000
-				},
-				{
-					duration: 5 * 60000
-				}
-			]
-		}
+		var data = [
+			{
+				duration: 5 * 60000
+			},
+			{
+				duration: 5 * 60000
+			},
+			{
+				duration: 5 * 60000
+			}
+		];
 		const dom = shallow(<Dater type="total-time" data={data} />);
 		expect(dom.text()).toEqual('15 mins');
 	});

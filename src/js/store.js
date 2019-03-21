@@ -25,7 +25,7 @@ import googleMiddleware from './services/google/middleware';
 import snapcastMiddleware from './services/snapcast/middleware';
 import localstorageMiddleware from './services/localstorage/middleware';
 
-var initialState = {
+export const state = {
 	core: {
 		outputs: [],
 		queue: [],
@@ -99,15 +99,15 @@ var initialState = {
 };
 
 // load all our stored values from LocalStorage
-initialState.core = Object.assign({}, initialState.core, helpers.getStorage('core'));
-initialState.ui = Object.assign({}, initialState.ui, helpers.getStorage('ui'));
-initialState.mopidy = Object.assign({}, initialState.mopidy, helpers.getStorage('mopidy'));
-initialState.pusher = Object.assign({}, initialState.pusher, helpers.getStorage('pusher'));
-initialState.spotify = Object.assign({}, initialState.spotify, helpers.getStorage('spotify'));
-initialState.lastfm = Object.assign({}, initialState.lastfm, helpers.getStorage('lastfm'));
-initialState.genius = Object.assign({}, initialState.genius, helpers.getStorage('genius'));
-initialState.google = Object.assign({}, initialState.google, helpers.getStorage('google'));
-initialState.snapcast = Object.assign({}, initialState.snapcast, helpers.getStorage('snapcast'));
+state.core = Object.assign({}, state.core, helpers.getStorage('core'));
+state.ui = Object.assign({}, state.ui, helpers.getStorage('ui'));
+state.mopidy = Object.assign({}, state.mopidy, helpers.getStorage('mopidy'));
+state.pusher = Object.assign({}, state.pusher, helpers.getStorage('pusher'));
+state.spotify = Object.assign({}, state.spotify, helpers.getStorage('spotify'));
+state.lastfm = Object.assign({}, state.lastfm, helpers.getStorage('lastfm'));
+state.genius = Object.assign({}, state.genius, helpers.getStorage('genius'));
+state.google = Object.assign({}, state.google, helpers.getStorage('google'));
+state.snapcast = Object.assign({}, state.snapcast, helpers.getStorage('snapcast'));
 
 var reducers = combineReducers({
     core,
@@ -123,7 +123,7 @@ var reducers = combineReducers({
 
 export default createStore(
 	reducers, 
-	initialState, 
+	state, 
 	applyMiddleware(
 		thunk, 
 		localstorageMiddleware, 
