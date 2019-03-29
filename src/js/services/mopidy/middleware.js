@@ -596,15 +596,19 @@ const MopidyMiddleware = (function(){
              **/
 
             case 'MOPIDY_PLAY_PLAYLIST':
-
                 var playlist = store.getState().core.playlists[action.uri];
 
                 // We have the playlist loaded already, and we've got at least 1 track to start playing
                 if (playlist && playlist.tracks_uris && playlist.tracks_uris.length > 0){
 
-                    // Spotify-provied playlists need to be handled by the Spotify service
-                    // We only need to load them if we haven't already got all the tracks
-                    if (playlist.provider == 'spotify' && playlist.tracks_total != playlist.tracks_uris.length){
+                    // We've got all of the tracks, so just play those; no further action required
+                    if (playlist.tracks_total == playlist.tracks_uris.length){
+                        store.dispatch(mopidyActions.playURIs(playlist.tracks_uris, action.uri));
+                        break;
+                    }
+
+                    // Spotify-provided playlists need to be handled by the Spotify service
+                    if (playlist.provider == 'spotify'){
                         store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri, action.shuffle, 'play'));
                         break;
                     }
@@ -620,7 +624,7 @@ const MopidyMiddleware = (function(){
                 request(socket, store, 'playlists.lookup', {uri: action.uri})
                     .then(
                         response => {
-                            if (response.tracks === undefined){
+                            if (!response || response.tracks === undefined || !response.tracks){
                                 store.dispatch(uiActions.createNotification({content: 'Failed to load playlist tracks', type: 'bad'}));
                             } else {
                                 var tracks_uris = helpers.arrayOf('uri',response.tracks);

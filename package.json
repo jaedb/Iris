@@ -64,7 +64,7 @@
   "jest": {
     "verbose": true,
     "setupFilesAfterEnv": [
-    	"./tests/setup.js"
+      "./tests/setup.js"
     ]
   }
 }
