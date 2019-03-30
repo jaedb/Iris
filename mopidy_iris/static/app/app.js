@@ -58487,9 +58487,18 @@ var MopidyMiddleware = function () {
                         // We have the playlist loaded already, and we've got at least 1 track to start playing
                         if (playlist && playlist.tracks_uris && playlist.tracks_uris.length > 0) {
 
-                            // Spotify-provied playlists need to be handled by the Spotify service
-                            // We only need to load them if we haven't already got all the tracks
-                            if (playlist.provider == 'spotify' && playlist.tracks_total != playlist.tracks_uris.length) {
+                            // We've got all of the tracks, so just play those; no further action required
+                            if (playlist.tracks_total == playlist.tracks_uris.length) {
+                                var tracks_uris = Object.assign([], playlist.tracks_uris);
+                                if (action.shuffle) {
+                                    tracks_uris = helpers.shuffle(tracks_uris);
+                                }
+                                store.dispatch(mopidyActions.enqueueURIs(tracks_uris, action.uri, action.play_next, action.at_position, action.offset));
+                                break;
+                            }
+
+                            // Spotify-provided playlists need to be handled by the Spotify service
+                            if (playlist.provider == 'spotify') {
                                 store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri, action.shuffle, 'enqueue', action.play_next));
                                 break;
                             }
