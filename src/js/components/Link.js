@@ -62,6 +62,10 @@ class CustomLink extends React.Component{
 			className += this.props.className;
 		}
 
+		if (!this.props.to){
+			return <span className={className}>{this.props.children}</span>;
+		}
+
 		// We have an active detector method
 		// This is used almost solely by the Sidebar navigation
 		if (this.props.history !== undefined){

@@ -24,7 +24,7 @@ import * as mopidyActions from '../services/mopidy/actions';
 import * as spotifyActions from '../services/spotify/actions';
 import * as lastfmActions from '../services/lastfm/actions';
 
-class Album extends React.Component{
+export class Album extends React.Component{
 
 	constructor(props){
 		super(props);

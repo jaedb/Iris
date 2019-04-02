@@ -5,10 +5,10 @@ import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import { BrowserRouter, Route, IndexRoute } from "react-router-dom";
 
-import store from './bootstrap.js';
-require('../scss/app.scss');
-
+import store from './store';
 import App from './App';
+
+require('../scss/app.scss');
 
 ReactDOM.render(
 	<Provider store={store}>

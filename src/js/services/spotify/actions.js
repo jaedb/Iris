@@ -1671,8 +1671,10 @@ export function getAllPlaylistTracksProcessor(data){
                     // Add on our new batch of loaded tracks
                     var uris = []
                     var new_uris = []
-                    for (var i = 0; i < response.items.length; i++){
-                        new_uris.push(response.items[i].track.uri)
+                    for (var item of response.items){
+                    	if (item.track){
+	                        new_uris.push(item.track.uri);
+	                    }
                     }
                     if (data.uris){
                         uris = [...data.uris, ...new_uris];
