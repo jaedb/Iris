@@ -238,7 +238,7 @@ class Track extends React.Component{
 					</h2>
 
 					<ul className="details">
-						{!this.props.slim_mode ? <li><Icon type="fontawesome" name={helpers.sourceIcon(this.props.uri)} /></li> : null}
+						{!this.props.slim_mode ? <li className="source"><Icon type="fontawesome" name={helpers.sourceIcon(this.props.uri)} /></li> : null}
 						{track.date ? <li><Dater type="date" data={track.date} /></li> : null}
 						{track.explicit ? <li><span className="flag dark">EXPLICIT</span></li> : null}
 						<li>
@@ -266,8 +266,37 @@ class Track extends React.Component{
 	}
 }
 
+/**
+ * Rebuild a track URI with some ugly-ass handling of encoding.
+ *
+ * Basically the ID part of a Mopidy URI needs to be encoded, but the rest of the URI can't be.
+ * This means we need to break down the URI (decoded) and then reconstruct with an encoded ID.
+ * This is all required because he URI is passed to us *from* a URL which has been encoded for
+ * obvious reasons.
+ *
+ * @param uri String
+ * @return String
+ **/
+const rebuildUri = (uri) => {
+	var rebuilt_uri = helpers.uriSource(uri)+':'+helpers.uriType(uri)+':';
+
+	// Escape unreserved characters (RFC 3986)
+	// https://stackoverflow.com/questions/18251399/why-doesnt-encodeuricomponent-encode-single-quotes-apostrophes
+	var id = helpers.getFromUri('trackid', uri);
+	id = encodeURIComponent(id).replace(/[!'()*]/g, escape);
+
+	// Reinstate slashes for the Mopidy-Local structure
+	id = id.replace(/%2F/g, '/');
+
+	return rebuilt_uri+id;
+}
+
 const mapStateToProps = (state, ownProps) => {
 	var uri = decodeURIComponent(ownProps.match.params.uri);
+	uri = rebuildUri(uri);
+
+	console.log(uri);
+
 	return {
 		uri: uri,
 		slim_mode: state.ui.slim_mode,

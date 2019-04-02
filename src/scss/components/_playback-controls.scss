@@ -155,6 +155,11 @@
 			margin-bottom: 0;
 		}
 
+		@include resolution(2){
+			padding-left: 5px;
+			padding-right: 5px;
+		}
+
 		&--active {
 			color: colour(turquoise) !important;
 		}

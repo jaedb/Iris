@@ -433,7 +433,7 @@ footer {
 			padding-right: 10px;
 		}
 
-		&:not(.source):not(:first-child) ~ li {
+		&:not(.source) ~ li {
 			@include bullet();
 		}
 	}

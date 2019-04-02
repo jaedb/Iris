@@ -17,6 +17,10 @@ version = version.replace(/\r?\n?/g, '').trim();
 var build = Math.floor(Date.now() / 1000);
 console.log('Building version '+version+' ('+build+')');
 
+if (!fs.existsSync('mopidy_iris/static/app/')){
+	fs.mkdirSync('mopidy_iris/static/app/');
+}
+
 copyfile('src/service-worker.js', 'mopidy_iris/static/service-worker.js', function(error){
 	if (error){
 		console.log('Build failed, could not copy service-worker.js', error);
@@ -25,7 +29,7 @@ copyfile('src/service-worker.js', 'mopidy_iris/static/service-worker.js', functi
 	console.log('Copied service-worker.js');
 });
 
-copyfile('src/manifest.json', 'mopidy_iris/static/manifest.json', function(error){
+copyfile('src/manifest.json', 'mopidy_iris/static/app/manifest.json', function(error){
 	if (error){
 		console.log('Build failed, could not copy manifest.json', error);
 		return false;

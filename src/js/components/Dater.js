@@ -13,7 +13,7 @@ export default class Dater extends React.Component{
 	 * @param milliseconds int
 	 * @return string (HH:mm:ss)
 	 **/
-	durationTime(milliseconds = false){
+	durationTime(milliseconds = null){
 		if (!milliseconds ) return null
 
 		var string = '';
@@ -47,7 +47,7 @@ export default class Dater extends React.Component{
 	 * @param milliseconds int
 	 * @return string (eg 2+ hours)
 	 **/
-	durationSentence(milliseconds = false){
+	durationSentence(milliseconds = null){
 		if (!milliseconds ) return null
 
 		var string = '';
@@ -118,8 +118,13 @@ export default class Dater extends React.Component{
 	render(){
 		if (!this.props.data){
 			return null;
-		} else {
-			return <span className="dater">{ this.calculate() }</span>;
 		}
+
+		var calculation = this.calculate();
+		if (!calculation){
+			return null;
+		}
+		
+		return <span className="dater">{calculation}</span>;
 	}
 }

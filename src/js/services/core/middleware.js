@@ -176,21 +176,6 @@ const CoreMiddleware = (function(){
 
                 break
 
-            case 'PLAYLIST_TRACKS_ADDED':
-                store.dispatch(uiActions.createNotification({type: 'info', content: 'Added '+action.tracks_uris.length+' tracks to playlist'}))
-                switch(helpers.uriSource(action.key)){
-
-                    case 'spotify':
-                        store.dispatch(spotifyActions.getPlaylist(action.key));
-                        break
-
-                    case 'm3u':
-                        if (store.getState().mopidy.connected ) store.dispatch(mopidyActions.getPlaylist(action.key));
-                        break
-                }
-                next(action)
-                break
-
             // Get assets from all of our providers
             case 'GET_LIBRARY_PLAYLISTS':
                 if (store.getState().spotify.connected){
@@ -244,6 +229,21 @@ const CoreMiddleware = (function(){
 
                 next(action);
                 break;
+
+            case 'PLAYLIST_TRACKS_ADDED':
+                store.dispatch(uiActions.createNotification({type: 'info', content: 'Added '+action.tracks_uris.length+' tracks to playlist'}))
+                switch(helpers.uriSource(action.key)){
+
+                    case 'spotify':
+                        store.dispatch(spotifyActions.getPlaylist(action.key));
+                        break
+
+                    case 'm3u':
+                        if (store.getState().mopidy.connected ) store.dispatch(mopidyActions.getPlaylist(action.key));
+                        break
+                }
+                next(action)
+                break
 
             case 'PLAYLIST_TRACKS_REORDERED':
                 var playlists = Object.assign({}, core.playlists);

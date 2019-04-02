@@ -57,7 +57,7 @@ export default class GridItem extends React.Component{
 			case 'playlist':
 				if (item.tracks_total){
 					return (
-						<span>
+						<span className="grid__item__secondary__content">
 							{item.tracks_total} tracks
 						</span>
 					);
@@ -66,8 +66,8 @@ export default class GridItem extends React.Component{
 
 			case 'artist':
 				return (
-					<span>
-						{item.followers !== undefined ? item.followers.toLocaleString()+' followers' : null}
+					<span className="grid__item__secondary__content">
+						{item.followers !== undefined ? item.followers.toLocaleString()+' followers ' : null}
 						{item.albums_uris !== undefined ? item.albums_uris.length+' albums' : null}
 					</span>
 				)
@@ -75,7 +75,7 @@ export default class GridItem extends React.Component{
 
 			case 'album':
 				return (
-					<span>
+					<span className="grid__item__secondary__content">
 						{item.artists !== undefined ? <ArtistSentence nolinks artists={item.artists} /> : null}
 					</span>
 				)
@@ -83,7 +83,7 @@ export default class GridItem extends React.Component{
 
 			default:
 				return (
-					<span>
+					<span className="grid__item__secondary__content">
 						{ item.artists !== undefined ? <ArtistSentence nolinks artists={ item.artists } /> : null }
 						{ item.followers !== undefined ? item.followers.toLocaleString()+' followers' : null }
 					</span>

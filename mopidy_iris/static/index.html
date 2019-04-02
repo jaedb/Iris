@@ -7,7 +7,7 @@
 	<meta content="width=device-width, initial-scale=1" name="viewport" />
 	<meta name="viewport" content="width=device-width" />
 
-	<link rel="manifest" href="/iris/manifest.json" />
+	<link rel="manifest" href="/iris/app/manifest.json" />
 
 	<!-- App setup -->
 	<meta name="apple-mobile-web-app-capable" content="yes" />
@@ -85,7 +85,7 @@
 
 <script type="text/javascript">
 	if ('serviceWorker' in navigator){
-		navigator.serviceWorker.register('/iris/service-worker.js')
+		navigator.serviceWorker.register('/iris/app/service-worker.js')
 			.then(function(registration){
 				console.log('Service worker registered');
 			}).catch(function(error){
@@ -98,7 +98,7 @@
 
 	// Release details
 	// These are automatically injected to built HTML
-	var build = "1550726971";
+	var build = "1554233587";
 	var version = "3.33.0";
 
 	// Construct the script tag
@@ -120,13 +120,13 @@
 
 	// Test mode, use un-minified code
     if (test_mode){
-	    css.href = '/iris/app.css?v='+build;
-	    js.src = '/iris/app.js?v='+build;
+	    css.href = '/iris/app/app.css?v='+build;
+	    js.src = '/iris/app/app.js?v='+build;
 
     // Production-grade, minified app
     } else {
-	    css.href = '/iris/app.min.css?v='+build;
-	    js.src = '/iris/app.min.js?v='+build;
+	    css.href = '/iris/app/app.min.css?v='+build;
+	    js.src = '/iris/app/app.min.js?v='+build;
     }
 
 	// And finally inject our CSS/JS tags
