@@ -58447,7 +58447,7 @@ var MopidyMiddleware = function () {
 
                             // We've got all of the tracks, so just play those; no further action required
                             if (playlist.tracks_total == playlist.tracks_uris.length) {
-                                store.dispatch(mopidyActions.playURIs(playlist.tracks_uris, action.uri));
+                                store.dispatch(mopidyActions.playURIs(playlist.tracks_uris, action.uri, action.shuffle));
                                 break;
                             }
 
