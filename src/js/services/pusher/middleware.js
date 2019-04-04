@@ -157,7 +157,7 @@ const PusherMiddleware = (function(){
                         break;
                     case 'test_error':
                         store.dispatch(uiActions.processFinished('test'));
-                        store.dispatch(uiActions.createNotification({type: 'bad', content: 'Test failed'}));
+                        store.dispatch(uiActions.createNotification({type: 'bad', content: message.params.message, description: message.params.description}));
                         break;
                 }
 

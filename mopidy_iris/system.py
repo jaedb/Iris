@@ -19,7 +19,7 @@ class IrisSystemThread(Thread):
         logger.info("Running system action: "+self.action)
 
         try:
-            self.check_system_access()
+            self.can_run()
         except Exception, e:
             logger.error(e)
 
@@ -30,10 +30,10 @@ class IrisSystemThread(Thread):
 
             if self.callback:
                 self.callback(False, error)
-            
+            return
 
         # Run the actual task (this is the process-blocking instruction)
-        output = subprocess.check_output(["sudo "+self.path+"/system.sh "+self.action], shell=True)
+        output = subprocess.check_output(["sudo -n "+self.path+"/system.sh "+self.action], shell=True)
 
         # And then, when complete, return to our callback
         if self.callback:
@@ -48,15 +48,13 @@ class IrisSystemThread(Thread):
     #
     # @return boolean or exception
     ##
-    def check_system_access(self, *args, **kwargs):
+    def can_run(self, *args, **kwargs):
 
         # Attempt an empty call to our system file
-        process = subprocess.Popen("sudo -n "+self.path+"/system.sh", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-        result, error = process.communicate()
-        exitCode = process.wait()
-
-        # Some kind of failure, so we can't run any commands this way
-        if exitCode > 0:
-            raise Exception("Password-less access to "+self.path+"/system.sh was refused. Check your /etc/sudoers file.")
-        else:
+        # If this fails, we can't run any commands this way
+        try:
+            subprocess.check_output("sudo -n "+self.path+"/system.sh", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             return True
+        except Exception, e:
+            raise Exception("Password-less access to "+self.path+"/system.sh was refused. Check your /etc/sudoers file.")
+            return False
