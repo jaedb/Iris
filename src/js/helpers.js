@@ -1271,9 +1271,13 @@ export let sortItems = function (array, property, reverse = false, sort_map = nu
 		for (var property_element of split){
 
 			// Apply sort on a property of the first item of an array
-			if (property_element == 'first' && Array.isArray(value) && value.length > 0){
-				value = value[0];
-				continue;
+			if (property_element == 'first'){
+				if (Array.isArray(value) && value.length > 0){
+					value = value[0];
+					continue;
+				} else {
+					return null;
+				}
 
 			// Just need the length of an array
 			} else if (property_element == 'length'){
@@ -1323,7 +1327,9 @@ export let sortItems = function (array, property, reverse = false, sort_map = nu
 
 		// Alphabetic sorting
 		} else if (typeof(a_value) === 'string'){
-			if (!a_value || !b_value ) return 0;
+			if (a_value && !b_value ) return -1;
+			if (!a_value && b_value ) return 1;
+			if (!a_value && !b_value ) return 0;
 			if (a_value.toLowerCase() > b_value.toLowerCase()) return 1;
 			if (a_value.toLowerCase() < b_value.toLowerCase()) return -1;
 			return 0

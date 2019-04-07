@@ -178,7 +178,6 @@ class Playlist extends React.Component{
 	}
 
 	render(){
-		var scheme = helpers.uriSource(this.props.uri);
 		var playlist_id = helpers.getFromUri('playlistid',this.props.uri);
 		
 		if (!this.props.playlist){
@@ -204,7 +203,7 @@ class Playlist extends React.Component{
 			context = 'editable-playlist';
 		}
 
-		if (!playlist.tracks_uris || (playlist.tracks_uris && !playlist.tracks) || (playlist.tracks_uris.length !== playlist.tracks.length)){
+		if (playlist.tracks_total !== 0 && (!playlist.tracks_uris || (playlist.tracks_uris && !playlist.tracks) || (playlist.tracks_uris.length !== playlist.tracks.length))){
 			var is_loading_tracks = true;
 		} else {
 			var is_loading_tracks = false;
@@ -226,8 +225,8 @@ class Playlist extends React.Component{
 					<ul className="details">
 						{!this.props.slim_mode ? <li className="source"><Icon type="fontawesome" name={helpers.sourceIcon(playlist.uri)} /></li> : null }
 						{playlist.user_uri ? <li><URILink type="user" uri={playlist.user_uri}>{playlist.user ? playlist.user.name : helpers.getFromUri('userid',playlist.user_uri)}</URILink></li> : null }
-						{playlist.tracks ? <li>{playlist.tracks_total ? playlist.tracks_total : '0'} tracks</li> : null }
-						{!this.props.slim_mode && playlist.tracks ? <li><Dater type="total-time" data={playlist.tracks} /></li> : null }
+						<li>{playlist.tracks_total ? playlist.tracks_total : '0'} tracks</li>
+						{!this.props.slim_mode && playlist.tracks && playlist.tracks_total > 0 ? <li><Dater type="total-time" data={playlist.tracks} /></li> : null }
 						{!this.props.slim_mode && playlist.followers !== undefined ? <li><NiceNumber value={playlist.followers} /> followers</li> : null }
 						{!this.props.slim_mode && playlist.last_modified_date ? <li>Edited <Dater type="ago" data={playlist.last_modified_date} /></li> : null }
 					</ul>
@@ -257,10 +256,16 @@ class Playlist extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 
-	// Decode the URI, and then re-encode all the spaces
-	// This is needed as Mopidy encodes spaces in playlist URIs (but not other characters)
+	// Decode the URI, and then re-encode selected characters
+	// This is needed as Mopidy encodes *some* characters in playlist URIs (but not other characters)
+	// We need to retain ":" because this a reserved URI separator
 	var uri = decodeURIComponent(ownProps.match.params.uri);
-	uri = uri.replace(/\s/g, '%20');
+	uri = uri.replace(/\s/g, '%20');	// space
+	uri = uri.replace(/\[/g, '%5B');	// [
+	uri = uri.replace(/\]/g, '%5D');	// ]
+	uri = uri.replace(/\(/g, '%28');	// (
+	uri = uri.replace(/\)/g, '%29');	// )
+	uri = uri.replace(/\#/g, '%23');	// #
 
 	return {
 		uri: uri,

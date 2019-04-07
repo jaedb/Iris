@@ -56,6 +56,8 @@ class EditPlaylist extends React.Component{
 	}
 
 	componentWillReceiveProps(nextProps){
+
+		// Playlist just loaded
 		if (!this.props.playlist && nextProps.playlist){
 			this.setState({
 				name: nextProps.playlist.name,
@@ -63,6 +65,10 @@ class EditPlaylist extends React.Component{
 				public: (nextProps.playlist.public == true),
 				collaborative: (nextProps.playlist.collaborative == true)
 			});
+
+		// Mopidy just connected, and we don't have the playlist yet
+		} else if (this.props.mopidy_connected != nextProps.mopidy_connected && !nextProps.playlist){
+			this.props.mopidyActions.getPlaylist(this.props.uri);
 		}
 	}
 
@@ -205,10 +211,16 @@ class EditPlaylist extends React.Component{
 
 const mapStateToProps = (state, ownProps) => {
 
-	// Decode the URI, and then re-encode all the spaces
-	// This is needed as Mopidy encodes spaces in playlist URIs (but not other characters)
+	// Decode the URI, and then re-encode selected characters
+	// This is needed as Mopidy encodes *some* characters in playlist URIs (but not other characters)
+	// We need to retain ":" because this a reserved URI separator
 	var uri = decodeURIComponent(ownProps.match.params.uri);
-	uri = uri.replace(/\s/g, '%20');
+	uri = uri.replace(/\s/g, '%20');	// space
+	uri = uri.replace(/\[/g, '%5B');	// [
+	uri = uri.replace(/\]/g, '%5D');	// ]
+	uri = uri.replace(/\(/g, '%28');	// (
+	uri = uri.replace(/\)/g, '%29');	// )
+	uri = uri.replace(/\#/g, '%23');	// #
 	
 	return {
 		uri: uri,

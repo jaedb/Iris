@@ -126,7 +126,7 @@ const PusherMiddleware = (function(){
                         break;
                     case 'local_scan_error':
                         store.dispatch(uiActions.processFinished('local_scan'));
-                        store.dispatch(uiActions.createNotification({key: 'local_scan', type: 'bad', content: 'Local scan failed'}));
+                        store.dispatch(uiActions.createNotification({type: 'bad', content: message.params.message, description: message.params.description}));
                         break;
 
                     // Upgrade
@@ -138,13 +138,17 @@ const PusherMiddleware = (function(){
                         break;
                     case 'upgrade_error':
                         store.dispatch(uiActions.processFinished('upgrade'));
-                        store.dispatch(uiActions.createNotification({type: 'bad', content: 'Upgrade failed'}));
+                        store.dispatch(uiActions.createNotification({type: 'bad', content: message.params.message, description: message.params.description}));
                         break;
 
                     // Restart
                     case 'restart_started':
                         store.dispatch(uiActions.processFinished('upgrade'));
                         store.dispatch(uiActions.createNotification({type: 'info', content: 'Restarting server...'}));
+                        break;
+                    case 'restart_error':
+                        store.dispatch(uiActions.processFinished('upgrade'));
+                        store.dispatch(uiActions.createNotification({type: 'bad', content: message.params.message, description: message.params.description}));
                         break;
 
                     // Test
