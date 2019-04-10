@@ -22,7 +22,7 @@ elif [[ $1 = "test" ]]; then
 	TEST="$(echo 'Hello, this is your bash speaking. I was sleeping for 3 seconds.')"
 	echo -e "${TEST}"
 
-else;
+else
 	echo -e "Unsupported system task"
 fi
 
