@@ -8,8 +8,10 @@ jobs:
       - run:
           name: install python dependencies
           command: |
+            npm install
+            npm run prod
             pip install -e .
-  deploy:
+  test:
     docker:
       - image: circleci/python:2.7
     steps:
@@ -17,7 +19,12 @@ jobs:
       - run:
           name: install python dependencies
           command: |
-            pip install -e .
+            npm run test
+  deploy:
+    docker:
+      - image: circleci/python:2.7
+    steps:
+      - checkout
       - run:
           name: init .pypirc
           command: |
@@ -30,15 +37,21 @@ jobs:
             python setup.py sdist
 workflows:
   version: 2
-  build_and_deploy:
+  build_test_and_deploy:
     jobs:
       - build:
           filters:
             tags:
               only: /.*/
-      - deploy:
+      - test:
           requires:
             - build
+          filters:
+            tags:
+              only: /.*/
+      - deploy:
+          requires:
+            - test
           filters:
             branches:
               only: master
