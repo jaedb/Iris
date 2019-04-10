@@ -109,6 +109,7 @@ class LibraryBrowseDirectory extends React.Component{
 					rows={subdirectories}
 					className="library-local-directory-list"
 					link_prefix={'/library/browse/'}
+					nocontext={true}
 				/>
 			);
 		} else {
@@ -122,6 +123,7 @@ class LibraryBrowseDirectory extends React.Component{
 									type="browse"
 									link={'/library/browse/'+encodeURIComponent(subdirectory.uri)}
 									item={subdirectory}
+									nocontext={true}
 								/>
 							);
 						})
@@ -212,7 +214,19 @@ class LibraryBrowseDirectory extends React.Component{
 }
 
 const mapStateToProps = (state, ownProps) => {
+
+	// Decode the URI, and then re-encode selected characters
+	// This is needed as Mopidy encodes *some* characters in URIs (but not other characters)
+	// We need to retain ":" because this a reserved URI separator
 	var uri = decodeURIComponent(ownProps.match.params.uri);
+	uri = uri.replace(/\s/g, '%20');	// space
+	uri = uri.replace(/&/g, '%26');		// &
+	uri = uri.replace(/\[/g, '%5B');	// [
+	uri = uri.replace(/\]/g, '%5D');	// ]
+	uri = uri.replace(/\(/g, '%28');	// (
+	uri = uri.replace(/\)/g, '%29');	// )
+	uri = uri.replace(/\#/g, '%23');	// #
+
 	return {
 		uri: uri,
 		load_queue: state.ui.load_queue,

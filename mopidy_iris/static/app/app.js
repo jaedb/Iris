@@ -22453,10 +22453,11 @@ var List = function (_React$Component) {
 						history: _this2.props.history,
 						link_prefix: _this2.props.link_prefix,
 						handleContextMenu: function handleContextMenu(e) {
-							return _this2.props.handleContextMenu(e, item);
+							return _this2.handleContextMenu(e, item);
 						},
 						thumbnail: _this2.props.thumbnail,
-						details: _this2.props.details
+						details: _this2.props.details,
+						nocontext: _this2.props.nocontext
 					});
 				})
 			);
@@ -85326,6 +85327,8 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -85438,12 +85441,12 @@ var LibraryBrowseDirectory = function (_React$Component) {
 		key: 'renderSubdirectories',
 		value: function renderSubdirectories(subdirectories) {
 			if (this.props.view == 'list') {
-				return _react2.default.createElement(_List2.default, {
+				return _react2.default.createElement(_List2.default, _defineProperty({
 					nocontext: true,
 					rows: subdirectories,
 					className: 'library-local-directory-list',
 					link_prefix: '/library/browse/'
-				});
+				}, 'nocontext', true));
 			} else {
 				return _react2.default.createElement(
 					'div',
@@ -85453,7 +85456,8 @@ var LibraryBrowseDirectory = function (_React$Component) {
 							key: subdirectory.uri,
 							type: 'browse',
 							link: '/library/browse/' + encodeURIComponent(subdirectory.uri),
-							item: subdirectory
+							item: subdirectory,
+							nocontext: true
 						});
 					})
 				);
@@ -85560,7 +85564,19 @@ var LibraryBrowseDirectory = function (_React$Component) {
 }(_react2.default.Component);
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
+
+	// Decode the URI, and then re-encode selected characters
+	// This is needed as Mopidy encodes *some* characters in URIs (but not other characters)
+	// We need to retain ":" because this a reserved URI separator
 	var uri = decodeURIComponent(ownProps.match.params.uri);
+	uri = uri.replace(/\s/g, '%20'); // space
+	uri = uri.replace(/&/g, '%26'); // &
+	uri = uri.replace(/\[/g, '%5B'); // [
+	uri = uri.replace(/\]/g, '%5D'); // ]
+	uri = uri.replace(/\(/g, '%28'); // (
+	uri = uri.replace(/\)/g, '%29'); // )
+	uri = uri.replace(/\#/g, '%23'); // #
+
 	return {
 		uri: uri,
 		load_queue: state.ui.load_queue,

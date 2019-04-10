@@ -42,9 +42,10 @@ class List extends React.Component{
 								lastfmActions={this.props.lastfmActions}
 								history={this.props.history}
 								link_prefix={this.props.link_prefix}
-								handleContextMenu={e => this.props.handleContextMenu(e, item)}
+								handleContextMenu={e => this.handleContextMenu(e, item)}
 								thumbnail={this.props.thumbnail}
 								details={this.props.details}
+								nocontext={this.props.nocontext}
 							/>
 						);
 					})
