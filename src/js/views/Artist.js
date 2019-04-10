@@ -8,8 +8,6 @@ import { Route, Switch } from 'react-router-dom';
 import ErrorMessage from '../components/ErrorMessage';
 import Link from '../components/Link';
 import LazyLoadListener from '../components/LazyLoadListener'
-import Header from '../components/Header'
-import NiceNumber from '../components/NiceNumber';
 import TrackList from '../components/TrackList'
 import AlbumGrid from '../components/AlbumGrid'
 import Thumbnail from '../components/Thumbnail'
