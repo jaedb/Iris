@@ -5,32 +5,19 @@ jobs:
       - image: circleci/python:2.7
     steps:
       - checkout
-
-      - restore_cache:
-          key: v1-dependency-cache-{{ checksum "setup.py" }}
-
       - run:
           name: install python dependencies
           command: |
             pip install -e .
-
-      - store_artifacts:
-          path: htmlcov/
-
   deploy:
     docker:
       - image: circleci/python:2.7
     steps:
       - checkout
-
-      - restore_cache:
-          key: v1-dependency-cache-{{ checksum "setup.py" }}
-
       - run:
           name: install python dependencies
           command: |
             pip install -e .
-
       - run:
           name: init .pypirc
           command: |
