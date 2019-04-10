@@ -1,14 +1,12 @@
 
-import React from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
+import React from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
-import VolumeControl from './VolumeControl'
-import MuteControl from './MuteControl'
-import SnapcastPowerButton from './SnapcastPowerButton'
-import Icon from '../Icon'
+import VolumeControl from './VolumeControl';
+import MuteControl from './MuteControl';
+import Icon from '../Icon';
 
-import * as helpers from '../../helpers';
 import * as coreActions from '../../services/core/actions';
 import * as pusherActions from '../../services/pusher/actions';
 import * as snapcastActions from '../../services/snapcast/actions';
