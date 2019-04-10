@@ -1,6 +1,5 @@
 
 import React from 'react';
-import ReactDOM from 'react-dom';
 
 import * as helpers from '../helpers';
 import Link from './Link';

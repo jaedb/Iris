@@ -1,47 +1,34 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import FontAwesome from 'react-fontawesome';
 
-export default class Icon extends React.Component{
-
-	constructor(props){
-		super(props);
+export default memo((props) => {
+	if (!props.name || props.name === ""){
+		return null;
 	}
 
-	handleClick(e){
-		if (this.props.onClick){
-			this.props.onClick(e);
-		}
+	let className = "icon icon--"+(props.type ? props.type : 'material');
+	if (props.className){
+		className += ' '+props.className;
 	}
 
-	render(){
-		if (!this.props.name || this.props.name === ""){
-			return null;
-		}
+	switch (props.type){
+		case 'svg':	
+			return <img className={className} src={'/iris/assets/icons/'+props.name+'.svg'} onClick={e => (props.handleClick ? props.handleClick(e) : null)} />;
 
-		var className = "icon icon--"+(this.props.type ? this.props.type : 'material');
-		if (this.props.className){
-			className += ' '+this.props.className;
-		}
+		case 'gif':	
+			return <img className={className} src={'/iris/assets/icons/'+props.name+'.gif'} onClick={e => (props.handleClick ? props.handleClick(e) : null)} />;
 
-		switch (this.props.type){
-			case 'svg':	
-				return <img className={className} src={'/iris/assets/icons/'+this.props.name+'.svg'} onClick={e => this.handleClick(e)} />;
+		case 'fontawesome':	
+			return <FontAwesome className={className} type="fontawesome" name={props.name} onClick={e => (props.handleClick ? props.handleClick(e) : null)} />;
 
-			case 'gif':	
-				return <img className={className} src={'/iris/assets/icons/'+this.props.name+'.gif'} onClick={e => this.handleClick(e)} />;
+		case 'css':
+			switch (props.name){
+				case 'playing':
+					return <i className={className + " icon--playing"}><span></span><span></span><span></span></i>
+			}
 
-			case 'fontawesome':	
-				return <FontAwesome className={className} type="fontawesome" name={this.props.name} onClick={e => this.handleClick(e)} />;
-
-			case 'css':
-				switch (this.props.name){
-					case 'playing':
-						return <i className={className + " icon--playing"}><span></span><span></span><span></span></i>
-				}
-
-			default:
-				return <i className={className} onClick={e => this.handleClick(e)}>{this.props.name}</i>;
-		}
+		default:
+			return <i className={className} onClick={e => (props.handleClick ? props.handleClick(e) : null)}>{props.name}</i>;
 	}
-}
+});

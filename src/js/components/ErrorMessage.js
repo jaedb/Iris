@@ -1,28 +1,21 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 
-export default class ErrorMessage extends React.Component {
+export default memo((props) => {
+	return (
+		<div className={"error-message"+(props.type ? " error-message--"+props.type : "")}>
+			
+			<i className="error-message__icon icon icon--material">error</i>
 
-	constructor(props) {
-		super(props);
-	}
+			<h4 className="error-message__title">
+				{props.title ? props.title : "Unknown error"}	
+			</h4>
 
-	render() {
-		return (
-			<div className={"error-message"+(this.props.type ? " error-message--"+this.props.type : "")}>
-				
-				<i className="error-message__icon icon icon--material">error</i>
-
-				<h4 className="error-message__title">
-					{this.props.title ? this.props.title : "Unknown error"}	
-				</h4>
-
-				<div className="error-message__content">
-					{this.props.children}
-				</div>
-
+			<div className="error-message__content">
+				{props.children}
 			</div>
-		);
-	}
-}
+
+		</div>
+	);
+});
 
