@@ -350,13 +350,6 @@ class LibraryAlbums extends React.Component{
 	}
 }
 
-
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- **/
-
 const mapStateToProps = (state, ownProps) => {
 	return {
 		mopidy_connected: state.mopidy.connected,
