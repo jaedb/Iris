@@ -17,10 +17,13 @@ elif [[ $1 = "local_scan" ]]; then
 
 elif [[ $1 = "test" ]]; then
 
-	sleep 10
+	sleep 3
 
-	TEST="$(echo 'Hello, this is your bash speaking. I was sleeping for 10 seconds.')"
+	TEST="$(echo 'Hello, this is your bash speaking. I was sleeping for 3 seconds.')"
 	echo -e "${TEST}"
+
+else;
+	echo -e "Unsupported system task"
 fi
 
 exit 0

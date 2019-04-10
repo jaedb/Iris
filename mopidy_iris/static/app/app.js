@@ -1708,9 +1708,13 @@ var sortItems = exports.sortItems = function sortItems(array, property) {
 
 
 				// Apply sort on a property of the first item of an array
-				if (property_element == 'first' && Array.isArray(value) && value.length > 0) {
-					value = value[0];
-					continue;
+				if (property_element == 'first') {
+					if (Array.isArray(value) && value.length > 0) {
+						value = value[0];
+						continue;
+					} else {
+						return null;
+					}
 
 					// Just need the length of an array
 				} else if (property_element == 'length') {
@@ -1760,32 +1764,33 @@ var sortItems = exports.sortItems = function sortItems(array, property) {
 		// Map sorting
 		// Use the index of the string as a sorting mechanism
 		if (sort_map) {
-
 			var a_index = sort_map.indexOf(a_value + ':');
 			var b_index = sort_map.indexOf(b_value + ':');
 			if (a_index < b_index) return 1;
 			if (a_index > b_index) return -1;
 
 			// Boolean sorting
-		} else if (typeof a_value === 'boolean') {
+		} else if (typeof a_value == 'boolean' && typeof b_value == 'boolean') {
 			if (a_value && !b_value) return -1;
 			if (!a_value && b_value) return 1;
 			return 0;
 
-			// Alphabetic sorting
-		} else if (typeof a_value === 'string') {
-			if (!a_value || !b_value) return 0;
-			if (a_value.toLowerCase() > b_value.toLowerCase()) return 1;
-			if (a_value.toLowerCase() < b_value.toLowerCase()) return -1;
-			return 0;
-
 			// Numeric sorting
-		} else {
+		} else if (typeof a_value == 'number' && typeof b_value == 'number') {
 			if (a_value == null && b_value == null) return 0;
 			if (a_value == null) return -1;
 			if (b_value == null) return 1;
 			if (parseInt(a_value) > parseInt(b_value)) return 1;
 			if (parseInt(a_value) < parseInt(b_value)) return -1;
+			return 0;
+
+			// Alphabetic sorting
+		} else {
+			if (a_value && !b_value) return -1;
+			if (!a_value && b_value) return 1;
+			if (!a_value && !b_value) return 0;
+			if (a_value.toLowerCase() > b_value.toLowerCase()) return 1;
+			if (a_value.toLowerCase() < b_value.toLowerCase()) return -1;
 			return 0;
 		}
 	}
@@ -3087,6 +3092,10 @@ var Icon = function (_React$Component) {
 		key: 'render',
 		value: function render() {
 			var _this2 = this;
+
+			if (!this.props.name || this.props.name === "") {
+				return null;
+			}
 
 			var className = "icon icon--" + (this.props.type ? this.props.type : 'material');
 			if (this.props.className) {
@@ -7848,9 +7857,8 @@ function getImages(context, uri) {
                     if (params) {
                         sendRequest(dispatch, getState, params).then(function (response) {
                             if (response.album) {
-                                record = Object.assign({}, record, { images: response.album.image });
-                                dispatch(coreActions.trackLoaded(record));
-                                dispatch(coreActions.albumLoaded(response.album));
+                                var images = helpers.formatImages(response.album.image);
+                                dispatch(coreActions.trackLoaded({ uri: uri, images: images }));
                             }
                         });
                     }
@@ -57344,7 +57352,7 @@ var PusherMiddleware = function () {
                         break;
                     case 'local_scan_error':
                         store.dispatch(uiActions.processFinished('local_scan'));
-                        store.dispatch(uiActions.createNotification({ key: 'local_scan', type: 'bad', content: 'Local scan failed' }));
+                        store.dispatch(uiActions.createNotification({ type: 'bad', content: message.params.message, description: message.params.description }));
                         break;
 
                     // Upgrade
@@ -57356,13 +57364,17 @@ var PusherMiddleware = function () {
                         break;
                     case 'upgrade_error':
                         store.dispatch(uiActions.processFinished('upgrade'));
-                        store.dispatch(uiActions.createNotification({ type: 'bad', content: 'Upgrade failed' }));
+                        store.dispatch(uiActions.createNotification({ type: 'bad', content: message.params.message, description: message.params.description }));
                         break;
 
                     // Restart
                     case 'restart_started':
                         store.dispatch(uiActions.processFinished('upgrade'));
                         store.dispatch(uiActions.createNotification({ type: 'info', content: 'Restarting server...' }));
+                        break;
+                    case 'restart_error':
+                        store.dispatch(uiActions.processFinished('upgrade'));
+                        store.dispatch(uiActions.createNotification({ type: 'bad', content: message.params.message, description: message.params.description }));
                         break;
 
                     // Test
@@ -57375,7 +57387,7 @@ var PusherMiddleware = function () {
                         break;
                     case 'test_error':
                         store.dispatch(uiActions.processFinished('test'));
-                        store.dispatch(uiActions.createNotification({ type: 'bad', content: 'Test failed' }));
+                        store.dispatch(uiActions.createNotification({ type: 'bad', content: message.params.message, description: message.params.description }));
                         break;
                 }
 
@@ -64731,10 +64743,10 @@ var App = exports.App = function (_React$Component) {
 	}, {
 		key: 'shouldTriggerShortcut',
 		value: function shouldTriggerShortcut(e) {
-
 			if (!this.props.shortkeys_enabled) {
 				return false;
 			}
+			var keyCode = e.keyCode || e.which;
 
 			// When we're focussed on certian elements, don't fire any shortcuts
 			// Typically form inputs
@@ -64743,23 +64755,20 @@ var App = exports.App = function (_React$Component) {
 				return false;
 			}
 
-			// Listen for standalone key codes
-			var keyCodes = [27, 32, 191];
-			if (keyCodes.indexOf(e.keyCode) > -1) {
+			var hotkeys = [27, 32, 191];
+			if (hotkeys.indexOf(keyCode) > -1) {
 				e.preventDefault();
 				return true;
 			}
 
-			// Listen for key codes that require ctrl to be held		
-			var keyCodesWithCtrl = [37, 38, 39, 40];
-			if ((e.ctrlKey || e.metaKey) && keyCodesWithCtrl.indexOf(e.keyCode) > -1) {
+			var hokeys_with_alt = [37, 38, 39, 40];
+			if (e.altKey && hokeys_with_alt.indexOf(keyCode) > -1) {
 				e.preventDefault();
 				return true;
 			}
 
-			// Listen for key codes that require ctrl to be held		
-			var keyCodesWithCtrlShift = [70];
-			if ((e.ctrlKey || e.metaKey) && e.shiftKey && keyCodesWithCtrlShift.indexOf(e.keyCode) > -1) {
+			var hokeys_with_alt_and_shift = [70];
+			if (e.altKey && e.shiftKey && hokeys_with_alt_and_shift.indexOf(keyCode) > -1) {
 				e.preventDefault();
 				return true;
 			}
@@ -64815,7 +64824,7 @@ var App = exports.App = function (_React$Component) {
 				return;
 			}
 
-			switch (e.keyCode) {
+			switch (e.keyCode || e.which) {
 
 				case 32:
 					// spacebar
@@ -64840,10 +64849,10 @@ var App = exports.App = function (_React$Component) {
 
 				case 40:
 					// down
-					if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
+					if (e.altKey && e.shiftKey) {
 						this.props.mopidyActions.setMute(true);
 						this.props.uiActions.createNotification({ content: 'volume-off', type: 'shortcut', key: 'shortcut', duration: 1 });
-					} else if (e.ctrlKey) {
+					} else if (e.altKey) {
 						var volume = this.props.volume;
 						if (volume !== 'false') {
 							volume -= 5;
@@ -64861,13 +64870,13 @@ var App = exports.App = function (_React$Component) {
 
 				case 38:
 					// up
-					if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
+					if (e.altKey && e.shiftKey) {
 						this.props.mopidyActions.setVolume(100);
 						if (this.props.mute) {
 							this.props.mopidyActions.setMute(false);
 						}
 						this.props.uiActions.createNotification({ content: 'volume-up', type: 'shortcut', key: 'shortcut', duration: 1 });
-					} else if (e.ctrlKey || e.metaKey) {
+					} else if (e.altKey) {
 						var volume = this.props.volume;
 						if (volume !== 'false') {
 							volume += 5;
@@ -64885,14 +64894,14 @@ var App = exports.App = function (_React$Component) {
 
 				case 37:
 					// left
-					if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
+					if (e.altKey && e.shiftKey) {
 						var new_position = this.props.play_time_position - 30000;
 						if (new_position < 0) {
 							new_position = 0;;
 						}
-						this.props.mopidyActions.seek(new_position);
+						this.props.mopidyActions.setTimePosition(new_position);
 						this.props.uiActions.createNotification({ content: 'fast-backward', type: 'shortcut', key: 'shortcut', duration: 1 });
-					} else if (e.ctrlKey || e.metaKey) {
+					} else if (e.altKey) {
 						this.props.mopidyActions.previous();
 						this.props.uiActions.createNotification({ content: 'step-backward', type: 'shortcut', key: 'shortcut', duration: 1 });
 					}
@@ -64900,10 +64909,10 @@ var App = exports.App = function (_React$Component) {
 
 				case 39:
 					// right
-					if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
-						this.props.mopidyActions.seek(this.props.play_time_position + 30000);
+					if (e.altKey && e.shiftKey) {
+						this.props.mopidyActions.setTimePosition(this.props.play_time_position + 30000);
 						this.props.uiActions.createNotification({ content: 'fast-forward', type: 'shortcut', key: 'shortcut', duration: 1 });
-					} else if (e.ctrlKey || e.metaKey) {
+					} else if (e.altKey) {
 						this.props.mopidyActions.next();
 						this.props.uiActions.createNotification({ content: 'step-forward', type: 'shortcut', key: 'shortcut', duration: 1 });
 					}
@@ -64911,8 +64920,8 @@ var App = exports.App = function (_React$Component) {
 
 				case 70:
 					// F
-					if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
-						window.history.push('/modal/kiosk-mode');
+					if (e.altKey && e.shiftKey) {
+						this.props.history.push('/kiosk-mode');
 					}
 					break;
 			}
@@ -70655,7 +70664,6 @@ var Playlist = function (_React$Component) {
 		value: function render() {
 			var _this3 = this;
 
-			var scheme = helpers.uriSource(this.props.uri);
 			var playlist_id = helpers.getFromUri('playlistid', this.props.uri);
 
 			if (!this.props.playlist) {
@@ -70687,7 +70695,7 @@ var Playlist = function (_React$Component) {
 				context = 'editable-playlist';
 			}
 
-			if (!playlist.tracks_uris || playlist.tracks_uris && !playlist.tracks || playlist.tracks_uris.length !== playlist.tracks.length) {
+			if (playlist.tracks_total !== 0 && (!playlist.tracks_uris || playlist.tracks_uris && !playlist.tracks || playlist.tracks_uris.length !== playlist.tracks.length)) {
 				var is_loading_tracks = true;
 			} else {
 				var is_loading_tracks = false;
@@ -70728,13 +70736,13 @@ var Playlist = function (_React$Component) {
 								playlist.user ? playlist.user.name : helpers.getFromUri('userid', playlist.user_uri)
 							)
 						) : null,
-						playlist.tracks ? _react2.default.createElement(
+						_react2.default.createElement(
 							'li',
 							null,
 							playlist.tracks_total ? playlist.tracks_total : '0',
 							' tracks'
-						) : null,
-						!this.props.slim_mode && playlist.tracks ? _react2.default.createElement(
+						),
+						!this.props.slim_mode && playlist.tracks && playlist.tracks_total > 0 ? _react2.default.createElement(
 							'li',
 							null,
 							_react2.default.createElement(_Dater2.default, { type: 'total-time', data: playlist.tracks })
@@ -70786,10 +70794,16 @@ var Playlist = function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 
-	// Decode the URI, and then re-encode all the spaces
-	// This is needed as Mopidy encodes spaces in playlist URIs (but not other characters)
+	// Decode the URI, and then re-encode selected characters
+	// This is needed as Mopidy encodes *some* characters in playlist URIs (but not other characters)
+	// We need to retain ":" because this a reserved URI separator
 	var uri = decodeURIComponent(ownProps.match.params.uri);
-	uri = uri.replace(/\s/g, '%20');
+	uri = uri.replace(/\s/g, '%20'); // space
+	uri = uri.replace(/\[/g, '%5B'); // [
+	uri = uri.replace(/\]/g, '%5D'); // ]
+	uri = uri.replace(/\(/g, '%28'); // (
+	uri = uri.replace(/\)/g, '%29'); // )
+	uri = uri.replace(/\#/g, '%23'); // #
 
 	return {
 		uri: uri,
@@ -83725,7 +83739,7 @@ var ListItem = function (_React$Component) {
 				value.id
 			);
 			if (key_string === 'popularity') return _react2.default.createElement(_Popularity2.default, { full: true, popularity: value });
-			if (key[0] === 'artists') return _react2.default.createElement(_ArtistSentence2.default, { artists: value });
+			if (key_string === 'artists') return _react2.default.createElement(_ArtistSentence2.default, { artists: value });
 			if (value === true) return _react2.default.createElement(_Icon2.default, { name: 'check' });
 			if (typeof value === 'number') return _react2.default.createElement(
 				'span',
@@ -84354,12 +84368,6 @@ var LibraryAlbums = function (_React$Component) {
 
 	return LibraryAlbums;
 }(_react2.default.Component);
-
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- **/
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
@@ -85690,6 +85698,8 @@ var EditPlaylist = function (_React$Component) {
 	}, {
 		key: 'componentWillReceiveProps',
 		value: function componentWillReceiveProps(nextProps) {
+
+			// Playlist just loaded
 			if (!this.props.playlist && nextProps.playlist) {
 				this.setState({
 					name: nextProps.playlist.name,
@@ -85697,6 +85707,10 @@ var EditPlaylist = function (_React$Component) {
 					public: nextProps.playlist.public == true,
 					collaborative: nextProps.playlist.collaborative == true
 				});
+
+				// Mopidy just connected, and we don't have the playlist yet
+			} else if (this.props.mopidy_connected != nextProps.mopidy_connected && !nextProps.playlist) {
+				this.props.mopidyActions.getPlaylist(this.props.uri);
 			}
 		}
 	}, {
@@ -85923,10 +85937,16 @@ var EditPlaylist = function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 
-	// Decode the URI, and then re-encode all the spaces
-	// This is needed as Mopidy encodes spaces in playlist URIs (but not other characters)
+	// Decode the URI, and then re-encode selected characters
+	// This is needed as Mopidy encodes *some* characters in playlist URIs (but not other characters)
+	// We need to retain ":" because this a reserved URI separator
 	var uri = decodeURIComponent(ownProps.match.params.uri);
-	uri = uri.replace(/\s/g, '%20');
+	uri = uri.replace(/\s/g, '%20'); // space
+	uri = uri.replace(/\[/g, '%5B'); // [
+	uri = uri.replace(/\]/g, '%5D'); // ]
+	uri = uri.replace(/\(/g, '%28'); // (
+	uri = uri.replace(/\)/g, '%29'); // )
+	uri = uri.replace(/\#/g, '%23'); // #
 
 	return {
 		uri: uri,

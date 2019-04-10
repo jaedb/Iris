@@ -15,6 +15,10 @@ export default class Icon extends React.Component{
 	}
 
 	render(){
+		if (!this.props.name || this.props.name === ""){
+			return null;
+		}
+
 		var className = "icon icon--"+(this.props.type ? this.props.type : 'material');
 		if (this.props.className){
 			className += ' '+this.props.className;

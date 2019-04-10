@@ -322,9 +322,8 @@ export function getImages(context, uri){
                             .then(
                                 response => {
                                     if (response.album){
-                                        record = Object.assign({}, record, {images: response.album.image});
-                                        dispatch(coreActions.trackLoaded(record));
-                                        dispatch(coreActions.albumLoaded(response.album));
+                                        let images = helpers.formatImages(response.album.image);
+                                        dispatch(coreActions.trackLoaded({uri: uri, images: images}));
                                     }
                                 }
                             );

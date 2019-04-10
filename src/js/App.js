@@ -169,10 +169,10 @@ export class App extends React.Component{
 	}
 
 	shouldTriggerShortcut(e){
-
 		if (!this.props.shortkeys_enabled){
 			return false;
 		}
+		let keyCode = e.keyCode || e.which;
 
 		// When we're focussed on certian elements, don't fire any shortcuts
 		// Typically form inputs
@@ -181,23 +181,20 @@ export class App extends React.Component{
 			return false;
 		}
 
-		// Listen for standalone key codes
-		let keyCodes = [27,32,191];
-		if (keyCodes.indexOf(e.keyCode) > -1){
+		let hotkeys = [27,32,191];
+		if (hotkeys.indexOf(keyCode) > -1){
 			e.preventDefault();
 			return true;
 		}
-
-		// Listen for key codes that require ctrl to be held		
-		let keyCodesWithCtrl = [37,38,39,40];
-		if ((e.ctrlKey || e.metaKey) && keyCodesWithCtrl.indexOf(e.keyCode) > -1){
+	
+		let hokeys_with_alt = [37,38,39,40];
+		if (e.altKey && hokeys_with_alt.indexOf(keyCode) > -1){
 			e.preventDefault();
 			return true;
 		}
-
-		// Listen for key codes that require ctrl to be held		
-		let keyCodesWithCtrlShift = [70];
-		if ((e.ctrlKey || e.metaKey) && e.shiftKey && keyCodesWithCtrlShift.indexOf(e.keyCode) > -1){
+		
+		let hokeys_with_alt_and_shift = [70];
+		if (e.altKey && e.shiftKey && hokeys_with_alt_and_shift.indexOf(keyCode) > -1){
 			e.preventDefault();
 			return true;
 		}
@@ -241,12 +238,12 @@ export class App extends React.Component{
 		this.shouldTriggerShortcut(e)
 	}
 
-	handleKeyUp(e){
+	handleKeyUp(e){		
 		if (!this.shouldTriggerShortcut(e)){
 			return
 		}
 
-		switch(e.keyCode){
+		switch(e.keyCode || e.which){
 
 			case 32: // spacebar
 				if (e.ctrlKey || e.metaKey){
@@ -268,10 +265,10 @@ export class App extends React.Component{
 				break;
 
 			case 40: // down
-				if ((e.ctrlKey || e.metaKey) && e.shiftKey){
+				if (e.altKey && e.shiftKey){
 					this.props.mopidyActions.setMute(true);
 					this.props.uiActions.createNotification({content: 'volume-off', type: 'shortcut', key: 'shortcut', duration: 1});
-				} else if (e.ctrlKey){
+				} else if (e.altKey){
 					var volume = this.props.volume;
 					if (volume !== 'false'){
 						volume -= 5;
@@ -288,13 +285,13 @@ export class App extends React.Component{
 				break;
 
 			case 38: // up
-				if ((e.ctrlKey || e.metaKey) && e.shiftKey){
+				if (e.altKey && e.shiftKey){
 					this.props.mopidyActions.setVolume(100)
 					if (this.props.mute){
 						this.props.mopidyActions.setMute(false);
 					}
 					this.props.uiActions.createNotification({content: 'volume-up', type: 'shortcut', key: 'shortcut', duration: 1});
-				} else if (e.ctrlKey || e.metaKey){
+				} else if (e.altKey){
 					var volume = this.props.volume
 					if (volume !== 'false'){
 						volume += 5;
@@ -311,32 +308,32 @@ export class App extends React.Component{
 				break;
 
 			case 37: // left
-				if ((e.ctrlKey || e.metaKey) && e.shiftKey){
+				if (e.altKey && e.shiftKey){
 					var new_position = this.props.play_time_position - 30000;
 					if (new_position < 0){
 						new_position = 0;;
 					}
-					this.props.mopidyActions.seek(new_position);
+					this.props.mopidyActions.setTimePosition(new_position);
 					this.props.uiActions.createNotification({content: 'fast-backward', type: 'shortcut', key: 'shortcut', duration: 1});
-				} else if (e.ctrlKey || e.metaKey){
+				} else if (e.altKey){
 					this.props.mopidyActions.previous();
 					this.props.uiActions.createNotification({content: 'step-backward', type: 'shortcut', key: 'shortcut', duration: 1});
 				}
 				break;
 
 			case 39: // right
-				if ((e.ctrlKey || e.metaKey) && e.shiftKey){
-					this.props.mopidyActions.seek(this.props.play_time_position + 30000);
+				if (e.altKey && e.shiftKey){
+					this.props.mopidyActions.setTimePosition(this.props.play_time_position + 30000);
 					this.props.uiActions.createNotification({content: 'fast-forward', type: 'shortcut', key: 'shortcut', duration: 1});
-				} else if (e.ctrlKey || e.metaKey){
+				} else if (e.altKey){
 					this.props.mopidyActions.next();
 					this.props.uiActions.createNotification({content: 'step-forward', type: 'shortcut', key: 'shortcut', duration: 1});
 				}
 				break;
 
 			case 70: // F
-				if ((e.ctrlKey || e.metaKey) && e.shiftKey){
-					window.history.push('/modal/kiosk-mode');
+				if (e.altKey && e.shiftKey){
+					this.props.history.push('/kiosk-mode');
 				}
 				break;
 		}

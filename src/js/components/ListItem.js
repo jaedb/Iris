@@ -88,7 +88,7 @@ export default class ListItem extends React.Component{
 		if (key_string === 'added_at') return <span>Added <Dater type="ago" data={value} /> ago</span>
 		if (key_string === 'owner') return <URILink type="user" uri={value.uri}>{value.id}</URILink>
 		if (key_string === 'popularity') return <Popularity full popularity={value} />
-		if (key[0] === 'artists') return <ArtistSentence artists={value} />
+		if (key_string === 'artists') return <ArtistSentence artists={value} />
 		if (value === true) return <Icon name="check" />
 		if (typeof(value) === 'number') return <span>{value.toLocaleString()}</span>
 		return <span>{value}</span>
