@@ -2,20 +2,32 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:2.7
+      - image: nikolaik/python-nodejs:python2.7-nodejs11
     steps:
       - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          - v1-dependencies-
       - run:
           name: install python dependencies
           command: |
             npm install
             npm run prod
             pip install -e .
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
   test:
     docker:
-      - image: circleci/python:2.7
+      - image: nikolaik/python-nodejs:python2.7-nodejs11
     steps:
       - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          - v1-dependencies-
       - run:
           name: install python dependencies
           command: |
@@ -25,6 +37,10 @@ jobs:
       - image: circleci/python:2.7
     steps:
       - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+          - v1-dependencies-
       - run:
           name: init .pypirc
           command: |
