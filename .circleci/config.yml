@@ -10,11 +10,14 @@ jobs:
           - v1-dependencies-{{ checksum "package.json" }}
           - v1-dependencies-
       - run:
+          name: install js dependencies
+          command: npm install
+      - run:
+          name: build js code
+          command: npm run build
+      - run:
           name: install python dependencies
-          command: |
-            npm install
-            npm run prod
-            pip install -e .
+          command: pip install -e .
       - save_cache:
           paths:
             - node_modules
