@@ -70,18 +70,18 @@ workflows:
     jobs:
       - build:
           filters:
-            branches:
-              only: develop
+            tags:
+              only: /.*/
       - test:
           requires:
             - build
           filters:
-            branches:
-              only: develop
+            tags:
+              only: /.*/
       - deploy:
           requires:
             - build
             - test
           filters:
-            branches:
-              only: master
+            tags:
+              only: /.*/
