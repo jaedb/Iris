@@ -10,13 +10,13 @@ jobs:
           - v1-dependencies-{{ checksum "package.json" }}
           - v1-dependencies-
       - run:
-          name: install js dependencies
+          name: Install npm dependencies
           command: npm install
       - run:
-          name: build js code
+          name: Build code
           command: npm run build
       - run:
-          name: install python dependencies
+          name: Install python dependencies
           command: pip install -e .
       - save_cache:
           paths:
@@ -32,9 +32,8 @@ jobs:
           - v1-dependencies-{{ checksum "package.json" }}
           - v1-dependencies-
       - run:
-          name: install python dependencies
-          command: |
-            npm run test
+          name: Run tests
+          command: npm run test
   deploy:
     docker:
       - image: circleci/python:2.7
@@ -45,31 +44,29 @@ jobs:
           - v1-dependencies-{{ checksum "package.json" }}
           - v1-dependencies-
       - run:
-          name: init .pypirc
+          name: Prepare .pypirc
           command: |
             echo -e "[pypi]" >> ~/.pypirc
             echo -e "username = jaedb" >> ~/.pypirc
             echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
       - run:
-          name: create packages
-          command: |
-            python setup.py sdist
+          name: Create and distribute package to pypi
+          command: python setup.py sdist upload -r pypi
 workflows:
   version: 2
-  build_test_and_deploy:
+  build:
     jobs:
-      - build:
-          filters:
-            tags:
-              only: /.*/
       - test:
           requires:
             - build
           filters:
-            tags:
-              only: /.*/
+            branches:
+              only: develop
+  release:
+    jobs:
       - deploy:
           requires:
+            - build
             - test
           filters:
             branches:
