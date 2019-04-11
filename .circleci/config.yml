@@ -8,7 +8,6 @@ jobs:
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "package.json" }}
-          - v1-dependencies-
       - run:
           name: Install npm dependencies
           command: npm install
@@ -21,23 +20,16 @@ jobs:
       - save_cache:
           paths:
             - node_modules
+            - mopidy_iris
           key: v1-dependencies-{{ checksum "package.json" }}
   test:
     docker:
       - image: nikolaik/python-nodejs:python2.7-nodejs11
     steps:
       - checkout
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          - v1-dependencies-
       - run:
           name: Run tests
           command: npm run test
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
   deploy:
     docker:
       - image: nikolaik/python-nodejs:python2.7-nodejs11
@@ -46,7 +38,6 @@ jobs:
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "package.json" }}
-          - v1-dependencies-
       - run:
           name: Prepare .pypirc
           command: |
