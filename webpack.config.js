@@ -2,24 +2,18 @@
 const isDev = process.env.NODE_ENV !== "production";
 const path = require('path');
 const webpack = require('webpack');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-
-const node_dir = path.resolve(__dirname, 'node_modules');
-const output_dir = path.resolve(__dirname, 'mopidy_iris/static');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const config = {
-	
+	mode: process.env.NODE_ENV,
 	context: path.resolve(__dirname),
-
 	entry: {
 		js: './src/js/index'
 	},
-	
 	output: {
-		path: path.resolve(__dirname, 'mopidy_iris/static'),
-		filename: 'app/app.js'
+		path: path.resolve(__dirname, 'mopidy_iris/static/app'),
+		filename: 'app'+(isDev ? '' : '.min')+'.js'
 	},
-	
 	module: {
 		rules: [
 			{
@@ -27,56 +21,84 @@ const config = {
         		exclude: [
         			/node_modules/
         		],
-				use: 'expose-loader?jQuery!expose?$'
+				use: [
+					'expose-loader?jQuery!expose?$'
+				]
 			},
 			{
 				test: /\.js$/,
-				exclude: [
-        			/node_modules/,
-					'index.js',
-				],
-				use: {
-					loader: 'babel-loader',
-					options: {
-						presets: [
-							'react',
-							'es2015',
-							'stage-2'
-						]
+				exclude: /node_modules/,
+				use: [
+					{
+						loader: 'babel-loader',
+						options: {
+							presets: [
+								'react',
+								'es2015',
+								'stage-2'
+							]
+						}
 					}
-				}
+				]
 			},
 			{
 				test: /\.scss$/,
-				use: ExtractTextPlugin.extract({
-					fallback: 'style-loader',
-					use: [
-						'css-loader', 
-						'sass-loader'
-					]
-				})
+				use: [
+					{
+						loader: MiniCssExtractPlugin.loader,
+						options: {
+							publicPath: './',
+							hmr: process.env.NODE_ENV === 'development',
+						}
+					},
+					'css-loader',
+					'sass-loader',
+				]
 			},
 			{
 				// load external resources (ie Google fonts)
 				test: /.(gif|png|woff(2)?|eot|ttf|svg)(\?[a-z0-9=\.]+)?$/,
-				use: { 
-					loader: 'url-loader',
-					options: {
-						name: '[name].[ext]?[hash]',
-						limit: 100000
+				use: [
+					{ 
+						loader: 'url-loader',
+						options: {
+							name: '[name].[ext]?[hash]',
+							limit: 100000
+						}
 					}
-				}
-			}
+				]
+			},
+			(isDev ? {} : {
+				test: /\.(js)$/,
+				use: [
+					{
+						loader: 'webpack-strip',
+						options: {
+							strip: [
+								'console.log',
+								'console.info',
+								'debug'
+							]
+						}
+					}
+				]
+			})
 		]
 	},
-	
 	plugins: [
 		new webpack.ProvidePlugin({
 		    $: "jquery",
 		    jQuery: "jquery",
 		    "window.jQuery": "jquery"
-		})
-	]
+		}),
+		new MiniCssExtractPlugin({
+			filename: 'app'+(isDev ? '' : '.min')+'.css',
+		}),
+	],
+	watchOptions: {
+		poll: true
+	},
+	devtool: (isDev ? 'source-map': false)
 };
 
 /**
@@ -84,20 +106,10 @@ const config = {
  **/
 if (isDev){
 	
-	// set compiled css location
-	config.plugins.push( new ExtractTextPlugin("app/app.css") );
-	
-	// we want source maps
-	config.devtool = 'source-map';
-	
-	
 /**
  * Production-only configuration values
  **/
 } else {
-	
-	// set our final output filename
-	config.output.filename = 'app/app.min.js';
 	
 	// re-iterate our production value as a string (for ReactJS building)
 	config.plugins.push(
@@ -105,36 +117,6 @@ if (isDev){
 			'process.env':{
 				'NODE_ENV': JSON.stringify('production')
 			}
-		})
-	);
-	
-	// remove all debug and console code
-	config.module.rules.push(
-		{ 
-			test: /\.(js)$/,
-			use: {
-				loader: 'webpack-strip',
-				options: {
-					strip: [
-						'console.log',
-						'console.info',
-						'debug'
-					]
-				}
-			}
-		}
-	);
-	
-	// set compiled css location
-	config.plugins.push( new ExtractTextPlugin("app/app.min.css") );
-	
-	// uglify our js
-	config.devtool = 'sourcemap';
-	config.plugins.push(
-		new webpack.optimize.UglifyJsPlugin({
-			compress: true,
-			mangle: false,
-			sourceMap: true
 		})
 	);
 }
