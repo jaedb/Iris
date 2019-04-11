@@ -27,6 +27,9 @@ jobs:
       - image: nikolaik/python-nodejs:python2.7-nodejs11
     steps:
       - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
       - run:
           name: Run tests
           command: npm run test
