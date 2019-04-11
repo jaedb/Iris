@@ -56,6 +56,10 @@ workflows:
   version: 2
   build:
     jobs:
+      - build:
+          filters:
+            branches:
+              only: develop
       - test:
           requires:
             - build
@@ -64,6 +68,16 @@ workflows:
               only: develop
   release:
     jobs:
+      - build:
+          filters:
+            branches:
+              only: develop
+      - test:
+          requires:
+            - build
+          filters:
+            branches:
+              only: develop
       - deploy:
           requires:
             - build
