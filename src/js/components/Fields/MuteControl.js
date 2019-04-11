@@ -1,30 +1,22 @@
 
-import React from 'react';
-
+import React, { memo } from 'react';
 import Icon from '../Icon';
-import * as helpers from '../../helpers';
 
-export default class MuteControl extends React.Component{
-
-	constructor(props){
-		super(props);
+export default memo((props) => {
+	
+	if (props.mute){
+		return (
+			<a className={"control mute-control "+(props.noTooltip ? "" : "tooltip ")+(props.className ? props.className : "")} onClick={() => props.onMuteChange(false)}>
+				<Icon className="red-text" name="volume_off" />
+				{props.noTooltip ? null : <span className="tooltip__content">Unmute</span>}
+			</a>
+		)
+	} else {
+		return (
+			<a className={"control mute-control "+(props.noTooltip ? "" : "tooltip ")+(props.className ? props.className : "")} onClick={() => props.onMuteChange(true)}>
+				<Icon className="muted" name="volume_mute" />
+				{props.noTooltip ? null : <span className="tooltip__content">Mute</span>}
+			</a>
+		)
 	}
-
-	render(){
-		if (this.props.mute){
-			return (
-				<a className={"control mute-control "+(this.props.noTooltip ? "" : "tooltip ")+(this.props.className ? this.props.className : "")} onClick={() => this.props.onMuteChange(false)}>
-					<Icon className="red-text" name="volume_off" />
-					{this.props.noTooltip ? null : <span className="tooltip__content">Unmute</span>}
-				</a>
-			)
-		} else {
-			return (
-				<a className={"control mute-control "+(this.props.noTooltip ? "" : "tooltip ")+(this.props.className ? this.props.className : "")} onClick={() => this.props.onMuteChange(true)}>
-					<Icon className="muted" name="volume_mute" />
-					{this.props.noTooltip ? null : <span className="tooltip__content">Mute</span>}
-				</a>
-			)
-		}
-	}
-}
+});

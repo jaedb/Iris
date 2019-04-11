@@ -56,9 +56,8 @@
   },
   "scripts": {
     "test": "jest",
-    "build": "node build_tools/build.js",
     "dev": "node build_tools/build.js && NODE_ENV=development webpack --watch",
-    "prod": "node build_tools/build.js && NODE_ENV=development webpack && NODE_ENV=production webpack --watch",
+    "build": "node build_tools/build.js && NODE_ENV=development webpack && NODE_ENV=production webpack",
     "release": "node build_tools/build.js && NODE_ENV=development webpack && NODE_ENV=production webpack && python setup.py sdist upload -r pypi && build_tools/release.sh"
   },
   "jest": {
