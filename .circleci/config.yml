@@ -34,9 +34,13 @@ jobs:
       - run:
           name: Run tests
           command: npm run test
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
   deploy:
     docker:
-      - image: circleci/python:2.7
+      - image: nikolaik/python-nodejs:python2.7-nodejs11
     steps:
       - checkout
       - restore_cache:
