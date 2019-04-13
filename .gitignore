@@ -8,3 +8,4 @@ Thumbs.db
 *.pyc
 npm-debug.log
 *sublime*
+.DS_Store
