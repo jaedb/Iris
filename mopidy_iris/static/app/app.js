@@ -3077,17 +3077,17 @@ exports.default = (0, _react.memo)(function (props) {
 	switch (props.type) {
 		case 'svg':
 			return _react2.default.createElement('img', { className: className, src: '/iris/assets/icons/' + props.name + '.svg', onClick: function onClick(e) {
-					return props.handleClick ? props.handleClick(e) : null;
+					return props.onClick ? props.onClick(e) : null;
 				} });
 
 		case 'gif':
 			return _react2.default.createElement('img', { className: className, src: '/iris/assets/icons/' + props.name + '.gif', onClick: function onClick(e) {
-					return props.handleClick ? props.handleClick(e) : null;
+					return props.onClick ? props.onClick(e) : null;
 				} });
 
 		case 'fontawesome':
 			return _react2.default.createElement(_reactFontawesome2.default, { className: className, type: 'fontawesome', name: props.name, onClick: function onClick(e) {
-					return props.handleClick ? props.handleClick(e) : null;
+					return props.onClick ? props.onClick(e) : null;
 				} });
 
 		case 'css':
@@ -3106,7 +3106,7 @@ exports.default = (0, _react.memo)(function (props) {
 			return _react2.default.createElement(
 				'i',
 				{ className: className, onClick: function onClick(e) {
-						return props.handleClick ? props.handleClick(e) : null;
+						return props.onClick ? props.onClick(e) : null;
 					} },
 				props.name
 			);

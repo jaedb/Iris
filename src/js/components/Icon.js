@@ -14,13 +14,13 @@ export default memo((props) => {
 
 	switch (props.type){
 		case 'svg':	
-			return <img className={className} src={'/iris/assets/icons/'+props.name+'.svg'} onClick={e => (props.handleClick ? props.handleClick(e) : null)} />;
+			return <img className={className} src={'/iris/assets/icons/'+props.name+'.svg'} onClick={e => (props.onClick ? props.onClick(e) : null)} />;
 
 		case 'gif':	
-			return <img className={className} src={'/iris/assets/icons/'+props.name+'.gif'} onClick={e => (props.handleClick ? props.handleClick(e) : null)} />;
+			return <img className={className} src={'/iris/assets/icons/'+props.name+'.gif'} onClick={e => (props.onClick ? props.onClick(e) : null)} />;
 
 		case 'fontawesome':	
-			return <FontAwesome className={className} type="fontawesome" name={props.name} onClick={e => (props.handleClick ? props.handleClick(e) : null)} />;
+			return <FontAwesome className={className} type="fontawesome" name={props.name} onClick={e => (props.onClick ? props.onClick(e) : null)} />;
 
 		case 'css':
 			switch (props.name){
@@ -29,6 +29,6 @@ export default memo((props) => {
 			}
 
 		default:
-			return <i className={className} onClick={e => (props.handleClick ? props.handleClick(e) : null)}>{props.name}</i>;
+			return <i className={className} onClick={e => (props.onClick ? props.onClick(e) : null)}>{props.name}</i>;
 	}
 });
