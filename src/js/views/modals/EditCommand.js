@@ -9,6 +9,7 @@ import Link from '../../components/Link';
 import Icon from '../../components/Icon';
 import ColourField from '../../components/Fields/ColourField';
 import IconField from '../../components/Fields/IconField';
+import TextField from '../../components/Fields/TextField';
 
 import * as pusherActions from '../../services/pusher/actions';
 import * as uiActions from '../../services/ui/actions';
@@ -21,8 +22,11 @@ class EditCommand extends React.Component{
 		this.state = {
 			id: helpers.generateGuid(),
 			icon: 'power_settings_new',
+			name: '',
 			colour: '',
-			command: '{"url":"https://'+window.location.hostname+'/broadlink/sendCommand/power/"}'
+			url: "https://"+window.location.hostname+"/broadlink/sendCommand/power/",
+			method: 'GET',
+			post_data: ""
 		}
 	}
 
@@ -38,12 +42,7 @@ class EditCommand extends React.Component{
 	handleSubmit(e){		
 		e.preventDefault();	
 
-		this.props.pusherActions.setCommand({
-			id: this.state.id,
-			icon: this.state.icon,
-			colour: this.state.colour,
-			command: this.state.command
-		});
+		this.props.pusherActions.setCommand(this.state);
 
 		window.history.back();
 
@@ -121,6 +120,19 @@ class EditCommand extends React.Component{
 				<h1>{this.props.command ? "Edit" : "Create"} command</h1>
 				<form onSubmit={(e) => this.handleSubmit(e)}>
 
+					<div className="field textarea white">
+						<div className="name">
+							Name
+						</div>
+						<div className="input">
+							<TextField 
+								name="name"
+								value={this.state.name}
+								onChange={value => this.setState({ name: value })}
+							/>
+						</div>
+					</div>
+
 					<div className="field radio white">
 						<div className="name">
 							Colour
@@ -148,19 +160,55 @@ class EditCommand extends React.Component{
 
 					<div className="field textarea white">
 						<div className="name">
-							Command
+							URL
+						</div>
+						<div className="input">
+							<TextField 
+								name="url"
+								value={this.state.url}
+								onChange={value => this.setState({ url: value })}
+							/>
+						</div>
+					</div>
+
+					<div className="field radio white">
+						<div className="name">
+							Method
+						</div>
+						<div className="input">
+							<label>
+								<input 
+									type="radio"
+									name="method"
+									value="GET"
+									checked={ this.state.method == 'GET' }
+									onChange={ e => this.setState({ method: e.target.value })} />
+								<span className="label">GET</span>
+							</label>
+							<label>
+								<input 
+									type="radio"
+									name="method"
+									value="POST"
+									checked={ this.state.method == 'POST' }
+									onChange={ e => this.setState({ method: e.target.value })} />
+								<span className="label">POST</span>
+							</label>
+						</div>
+					</div>
+
+					{this.state.method == 'POST' && <div className="field textarea white">
+						<div className="name">
+							Data
 						</div>
 						<div className="input">
 							<textarea 
 								name="command"
-								value={this.state.command}
-								onChange={ e => this.setState({ command: e.target.value })}>
+								value={this.state.post_data}
+								onChange={ e => this.setState({ post_data: e.target.value })}>
 							</textarea>
-							<div className="description">
-								Ajax request settings. See <a href="http://api.jquery.com/jquery.ajax/" target="_blank" noopener="true"><code>jquery.ajax</code> documentation</a>.
-							</div>
 						</div>
-					</div>
+					</div>}
 
 					<div className="actions centered-text">
 						{this.props.command ? <button type="button" className="button button--destructive button--large" onClick={e => this.handleDelete(e)}>Delete</button> : null}

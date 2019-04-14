@@ -504,38 +504,28 @@ const PusherMiddleware = (function(){
                 next(action);
                 break
 
-            case 'PUSHER_SEND_COMMAND':
+            case 'PUSHER_RUN_COMMAND':
                 var command = Object.assign({}, pusher.commands[action.id]);
                 var notification_key = 'command_'+action.id;
-            	
+                
             	if (action.notify){
-                    store.dispatch(uiActions.startProcess(notification_key, 'Sending command'));
+                    store.dispatch(uiActions.startProcess(notification_key, 'Running command'));
                 }
-
-				try {
-					var ajax_settings = JSON.parse(command.command);
-				} catch(error){
-                    store.dispatch(uiActions.createNotification({key: notification_key, type: 'bad', content: 'Command failed', description: error}));
-                    break;
-				}
-
-                // Handle success and failure
-                ajax_settings.success = function(response){
-                	console.log("Command sent, response was:",response);
-
-                	if (action.notify){
+                
+                request(store, 'run_command', {id: action.id})
+                    .then(response => {
 	                	store.dispatch(uiActions.processFinished(notification_key));
-                    	store.dispatch(uiActions.createNotification({key: notification_key, type: 'info', content: 'Command sent'}));
-	                }
-                }
-                ajax_settings.error = function(xhr, status, error){
-                    console.error("Command failed, response was:",xhr,error);
-	                store.dispatch(uiActions.processFinished(notification_key));
-                    store.dispatch(uiActions.createNotification({key: notification_key, type: 'bad', content: 'Command failed', description: xhr.status+": "+error}));
-                }
-
-                // Actually send the request
-                $.ajax(ajax_settings);
+                        if (action.notify){
+                            store.dispatch(uiActions.createNotification({key: notification_key, type: 'info', content: 'Command sent'}));
+                        }
+                    },
+                    error => {
+	                	store.dispatch(uiActions.processFinished(notification_key));
+                        store.dispatch(coreActions.handleException(
+                            'Could not run command',
+                            error
+                        ));
+                    })
 
                 break
 
@@ -553,7 +543,7 @@ const PusherMiddleware = (function(){
                                 radio: response.radio
                             });
                         },
-                        error => {                            
+                        error => {
                             store.dispatch(coreActions.handleException(
                                 'Could not load radio',
                                 error

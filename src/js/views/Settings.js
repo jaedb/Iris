@@ -169,12 +169,12 @@ class Settings extends React.Component {
 	    				return (
 	    					<div className="list__item commands-setup__item list__item--no-interaction" key={command.id}>
 	    						<div className="col col--w90">
-	    							<div className="commands__item commands__item--interactive" onClick={e => this.props.pusherActions.sendCommand(command.id, true)}>
+	    							<div className="commands__item commands__item--interactive" onClick={e => this.props.pusherActions.runCommand(command.id, true)}>
 										<Icon className="commands__item__icon" name={command.icon} />
 										<span className={command.colour+'-background commands__item__background'}></span>
 	    							</div>
 	    							<div className="commands-setup__item__url commands__item__url">
-	    								{command.command && command.command.url ? command.command.url : "-"}
+	    								{command.name ? command.name : <span className="grey-text">{command.url}</span>}
 	    							</div>
 	    						</div>
 	    						<div className="commands-setup__item__actions">

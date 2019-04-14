@@ -5753,6 +5753,12 @@ function handleException(message) {
     var description = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
     var show_notification = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
 
+    if (!message && data.message) {
+        message = data.message;
+    }
+    if (!description && data.description) {
+        description = data.description;
+    }
     return {
         type: 'HANDLE_EXCEPTION',
         message: message,
@@ -6442,7 +6448,7 @@ exports.addQueueMetadata = addQueueMetadata;
 exports.getCommands = getCommands;
 exports.setCommand = setCommand;
 exports.removeCommand = removeCommand;
-exports.sendCommand = sendCommand;
+exports.runCommand = runCommand;
 exports.commandsUpdated = commandsUpdated;
 
 /**
@@ -6679,11 +6685,11 @@ function removeCommand(id) {
 	};
 }
 
-function sendCommand(id) {
+function runCommand(id) {
 	var notify = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
 	return {
-		type: 'PUSHER_SEND_COMMAND',
+		type: 'PUSHER_RUN_COMMAND',
 		id: id,
 		notify: notify
 	};
@@ -56860,7 +56866,7 @@ exports.default = UIMiddleware;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {
+
 
 Object.defineProperty(exports, "__esModule", {
     value: true
@@ -57293,38 +57299,23 @@ var PusherMiddleware = function () {
                         next(action);
                         break;
 
-                    case 'PUSHER_SEND_COMMAND':
+                    case 'PUSHER_RUN_COMMAND':
                         var command = Object.assign({}, pusher.commands[action.id]);
                         var notification_key = 'command_' + action.id;
 
                         if (action.notify) {
-                            store.dispatch(uiActions.startProcess(notification_key, 'Sending command'));
+                            store.dispatch(uiActions.startProcess(notification_key, 'Running command'));
                         }
 
-                        try {
-                            var ajax_settings = JSON.parse(command.command);
-                        } catch (error) {
-                            store.dispatch(uiActions.createNotification({ key: notification_key, type: 'bad', content: 'Command failed', description: error }));
-                            break;
-                        }
-
-                        // Handle success and failure
-                        ajax_settings.success = function (response) {
-                            console.log("Command sent, response was:", response);
-
+                        request(store, 'run_command', { id: action.id }).then(function (response) {
+                            store.dispatch(uiActions.processFinished(notification_key));
                             if (action.notify) {
-                                store.dispatch(uiActions.processFinished(notification_key));
                                 store.dispatch(uiActions.createNotification({ key: notification_key, type: 'info', content: 'Command sent' }));
                             }
-                        };
-                        ajax_settings.error = function (xhr, status, error) {
-                            console.error("Command failed, response was:", xhr, error);
+                        }, function (error) {
                             store.dispatch(uiActions.processFinished(notification_key));
-                            store.dispatch(uiActions.createNotification({ key: notification_key, type: 'bad', content: 'Command failed', description: xhr.status + ": " + error }));
-                        };
-
-                        // Actually send the request
-                        $.ajax(ajax_settings);
+                            store.dispatch(coreActions.handleException('Could not run command', error));
+                        });
 
                         break;
 
@@ -57542,7 +57533,6 @@ var PusherMiddleware = function () {
 }();
 
 exports.default = PusherMiddleware;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(18)))
 
 /***/ }),
 /* 161 */
@@ -66198,7 +66188,7 @@ var OutputControl = function (_React$Component) {
 									key: command.id,
 									className: 'commands__item commands__item--interactive',
 									onClick: function onClick(e) {
-										return _this2.props.pusherActions.sendCommand(command.id);
+										return _this2.props.pusherActions.runCommand(command.id);
 									} },
 								_react2.default.createElement(_Icon2.default, { className: 'commands__item__icon', name: command.icon }),
 								_react2.default.createElement('span', { className: command.colour + '-background commands__item__background' })
@@ -73410,7 +73400,7 @@ var Settings = function (_React$Component) {
 							_react2.default.createElement(
 								'div',
 								{ className: 'commands__item commands__item--interactive', onClick: function onClick(e) {
-										return _this2.props.pusherActions.sendCommand(command.id, true);
+										return _this2.props.pusherActions.runCommand(command.id, true);
 									} },
 								_react2.default.createElement(_Icon2.default, { className: 'commands__item__icon', name: command.icon }),
 								_react2.default.createElement('span', { className: command.colour + '-background commands__item__background' })
@@ -73418,7 +73408,11 @@ var Settings = function (_React$Component) {
 							_react2.default.createElement(
 								'div',
 								{ className: 'commands-setup__item__url commands__item__url' },
-								command.command && command.command.url ? command.command.url : "-"
+								command.name ? command.name : _react2.default.createElement(
+									'span',
+									{ className: 'grey-text' },
+									command.url
+								)
 							)
 						),
 						_react2.default.createElement(
@@ -87665,6 +87659,10 @@ var _IconField = __webpack_require__(262);
 
 var _IconField2 = _interopRequireDefault(_IconField);
 
+var _TextField = __webpack_require__(220);
+
+var _TextField2 = _interopRequireDefault(_TextField);
+
 var _actions = __webpack_require__(13);
 
 var pusherActions = _interopRequireWildcard(_actions);
@@ -87698,8 +87696,11 @@ var EditCommand = function (_React$Component) {
 		_this.state = {
 			id: helpers.generateGuid(),
 			icon: 'power_settings_new',
+			name: '',
 			colour: '',
-			command: '{"url":"https://' + window.location.hostname + '/broadlink/sendCommand/power/"}'
+			url: "https://" + window.location.hostname + "/broadlink/sendCommand/power/",
+			method: 'GET',
+			post_data: ""
 		};
 		return _this;
 	}
@@ -87719,12 +87720,7 @@ var EditCommand = function (_React$Component) {
 		value: function handleSubmit(e) {
 			e.preventDefault();
 
-			this.props.pusherActions.setCommand({
-				id: this.state.id,
-				icon: this.state.icon,
-				colour: this.state.colour,
-				command: this.state.command
-			});
+			this.props.pusherActions.setCommand(this.state);
 
 			window.history.back();
 
@@ -87771,6 +87767,26 @@ var EditCommand = function (_React$Component) {
 						} },
 					_react2.default.createElement(
 						'div',
+						{ className: 'field textarea white' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'name' },
+							'Name'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							_react2.default.createElement(_TextField2.default, {
+								name: 'name',
+								value: this.state.name,
+								onChange: function onChange(value) {
+									return _this2.setState({ name: value });
+								}
+							})
+						)
+					),
+					_react2.default.createElement(
+						'div',
 						{ className: 'field radio white' },
 						_react2.default.createElement(
 							'div',
@@ -87814,33 +87830,84 @@ var EditCommand = function (_React$Component) {
 						_react2.default.createElement(
 							'div',
 							{ className: 'name' },
-							'Command'
+							'URL'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							_react2.default.createElement(_TextField2.default, {
+								name: 'url',
+								value: this.state.url,
+								onChange: function onChange(value) {
+									return _this2.setState({ url: value });
+								}
+							})
+						)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'field radio white' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'name' },
+							'Method'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							_react2.default.createElement(
+								'label',
+								null,
+								_react2.default.createElement('input', {
+									type: 'radio',
+									name: 'method',
+									value: 'GET',
+									checked: this.state.method == 'GET',
+									onChange: function onChange(e) {
+										return _this2.setState({ method: e.target.value });
+									} }),
+								_react2.default.createElement(
+									'span',
+									{ className: 'label' },
+									'GET'
+								)
+							),
+							_react2.default.createElement(
+								'label',
+								null,
+								_react2.default.createElement('input', {
+									type: 'radio',
+									name: 'method',
+									value: 'POST',
+									checked: this.state.method == 'POST',
+									onChange: function onChange(e) {
+										return _this2.setState({ method: e.target.value });
+									} }),
+								_react2.default.createElement(
+									'span',
+									{ className: 'label' },
+									'POST'
+								)
+							)
+						)
+					),
+					this.state.method == 'POST' && _react2.default.createElement(
+						'div',
+						{ className: 'field textarea white' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'name' },
+							'Data'
 						),
 						_react2.default.createElement(
 							'div',
 							{ className: 'input' },
 							_react2.default.createElement('textarea', {
 								name: 'command',
-								value: this.state.command,
+								value: this.state.post_data,
 								onChange: function onChange(e) {
-									return _this2.setState({ command: e.target.value });
-								} }),
-							_react2.default.createElement(
-								'div',
-								{ className: 'description' },
-								'Ajax request settings. See ',
-								_react2.default.createElement(
-									'a',
-									{ href: 'http://api.jquery.com/jquery.ajax/', target: '_blank', noopener: 'true' },
-									_react2.default.createElement(
-										'code',
-										null,
-										'jquery.ajax'
-									),
-									' documentation'
-								),
-								'.'
-							)
+									return _this2.setState({ post_data: e.target.value });
+								} })
 						)
 					),
 					_react2.default.createElement(

@@ -147,7 +147,7 @@ class OutputControl extends React.Component{
 									<div 
 										key={command.id}
 										className="commands__item commands__item--interactive"
-										onClick={e => this.props.pusherActions.sendCommand(command.id)}>
+										onClick={e => this.props.pusherActions.runCommand(command.id)}>
 											<Icon className="commands__item__icon" name={command.icon} />
 											<span className={command.colour+'-background commands__item__background'}></span>
 									</div>

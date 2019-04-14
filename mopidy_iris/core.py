@@ -850,6 +850,74 @@ class IrisCore(pykka.ThreadingActor):
         else:
             return response
 
+    def run_command(self, *args, **kwargs):
+        callback = kwargs.get('callback', False)
+        data = kwargs.get('data', {})
+        error = False
+
+        if str(data['id']) not in self.commands:
+            error = {
+                'message': 'Command failed',
+                'description': 'Could not find command by ID "'+str(data['id'])+'"'
+            }
+        else:
+            command = self.commands[str(data['id'])]
+
+            if "method" not in command:
+                error = {
+                    'message': 'Command failed',
+                    'description': 'Missing required property "method"'
+                }
+            if "url" not in command:
+                error = {
+                    'message': 'Command failed',
+                    'description': 'Missing required property "url"'
+                }
+
+        if error:
+            if (callback):
+                callback(False, error)
+                return
+            else:
+                return error
+
+        # Construct the request
+        http_client = tornado.httpclient.HTTPClient()
+        if (command['method'] == 'POST'):
+            request = tornado.httpclient.HTTPRequest(command['url'], connect_timeout=5, method='POST', body=json.dumps(command['post_data']), validate_cert=False)
+        else:
+            request = tornado.httpclient.HTTPRequest(command['url'], connect_timeout=5, validate_cert=False)
+        
+        # Make the request, and handle any request errors
+        try:
+            command_response = http_client.fetch(request)
+        except Exception as e:
+            error = {
+                'message': 'Command failed',
+                'description': str(e)
+            }
+            if (callback):
+                callback(False, error)
+                return
+            else:
+                return error
+
+        # Attempt to parse JSON
+        try:
+            command_response_body = json.loads(command_response.body)
+        except:
+            command_response_body = command_response.body
+
+        # Finally, return the result
+        response = {
+            'message': 'Command run',
+            'response': command_response_body
+        }
+        if (callback):
+            callback(response)
+            return
+        else:
+            return response
 
     ##
     # Spotify authentication

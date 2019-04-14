@@ -223,9 +223,9 @@ export function removeCommand(id){
     }
 }
 
-export function sendCommand(id, notify = false){
+export function runCommand(id, notify = false){
     return {
-        type: 'PUSHER_SEND_COMMAND',
+        type: 'PUSHER_RUN_COMMAND',
         id: id,
         notify: notify
     }
