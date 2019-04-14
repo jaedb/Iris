@@ -187,7 +187,7 @@ class OutputControl extends React.Component{
 		} else {
 			
 			// No customisable outputs
-			if (!this.props.http_streaming_enabled && !this.props.snapcast_enabled){
+			if (!this.props.http_streaming_enabled && !this.props.snapcast_enabled && !this.props.pusher_commands){
 				return (
 					<span className="output-control disabled">
 						<a className="control speakers"><Icon name="speaker" /></a>
