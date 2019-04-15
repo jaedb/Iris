@@ -2460,6 +2460,15 @@
 .mid_grey-background {
   background-color: #a3a19f !important; }
 
+.soft_grey-text {
+  color: #51504e !important; }
+
+.soft_grey-border {
+  border-color: #51504e !important; }
+
+.soft_grey-background {
+  background-color: #51504e !important; }
+
 .grey-text {
   color: #383734 !important; }
 
@@ -2790,7 +2799,7 @@ h1 {
   font-size: 3.4rem;
   line-height: 3.4rem; }
   .light-theme h1 {
-    color: #181818; }
+    color: #383734; }
 
 h2 {
   font-family: "Overpass";
@@ -5023,6 +5032,8 @@ select {
       .sidebar__menu__item--active {
         background: #08d58f;
         color: #FFFFFF; }
+        .light-theme .sidebar__menu__item--active {
+          color: #FFFFFF; }
         .sidebar__menu__item--active .status .icon {
           color: #FFFFFF !important; }
         .sidebar__menu__item--active:before {
@@ -6907,11 +6918,6 @@ main .track-view {
     .discover-view .intro__liner h2 {
       padding-bottom: 8px;
       color: #a3a19f; }
-    .light-theme .discover-view .intro__liner h1 {
-      color: #FFFFFF; }
-    .light-theme .discover-view .intro__liner h2 {
-      color: #FFFFFF;
-      opacity: 0.75; }
   .discover-view .intro__parameters {
     padding-top: 40px; }
     .discover-view .intro__parameters::after {

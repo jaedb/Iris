@@ -212,7 +212,7 @@ class Playlist extends React.Component{
 		return (
 			<div className="view playlist-view content-wrapper preserve-3d">
 
-				<Parallax image={playlist.images ? playlist.images.huge : null} blur />
+				{this.props.theme == 'dark' && <Parallax image={playlist.images ? playlist.images.huge : null} blur />}
 				
 				<div className="thumbnail-wrapper">
 					<Thumbnail size="large" canZoom images={playlist.images} />
@@ -271,6 +271,7 @@ const mapStateToProps = (state, ownProps) => {
 		uri: uri,
 		allow_reporting: state.ui.allow_reporting,
 		slim_mode: state.ui.slim_mode,
+		theme: state.ui.theme,
 		load_queue: state.ui.load_queue,
 		users: state.core.users,
 		tracks: state.core.tracks,

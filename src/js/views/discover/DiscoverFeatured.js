@@ -101,7 +101,7 @@ class DiscoverFeatured extends React.Component{
 					<Icon name="star" type="material" />
 					Featured playlists
 				</Header>
-				{this.renderIntro(first_playlist)}
+				{this.renderIntro(this.props.theme == 'dark' ? first_playlist : null)}
 				<section className="content-wrapper grid-wrapper">
 					{playlists ? <PlaylistGrid playlists={playlists} /> : null }
 				</section>

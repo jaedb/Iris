@@ -164,7 +164,7 @@ class Queue extends React.Component {
 					<Icon name="play_arrow" type="material" />
 					Now playing
 				</Header>
-				<Parallax blur image={current_track_image} />
+				{this.props.theme == 'dark' && <Parallax blur image={current_track_image} />}
 				<div className="content-wrapper">
 				
 					<div className="current-track">
