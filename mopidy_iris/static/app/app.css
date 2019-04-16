@@ -2731,9 +2731,6 @@ main {
 	 **/
   -webkit-overflow-scrolling: touch;
   /* All children between <main> and the parallax need this to work in Firefox */ }
-  @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
-    main {
-      bottom: 56px; } }
   .notouch main::-webkit-scrollbar {
     width: 8px;
     height: 8px; }
@@ -5966,21 +5963,11 @@ main header {
       color: #121212; }
     .sources-priority-field .source:hover {
       background: rgba(255, 255, 255, 0.2); }
-    .sources-priority-field .source:focus, .sources-priority-field .source:active {
-      -webkit-transition: none !important;
-      -moz-transition: none !important;
-      -o-transition: none !important;
-      transition: none !important;
-      background: #32b5f2;
-      color: #FFFFFF; }
     .light-theme .sources-priority-field .source {
       background: #f4f2f0;
       color: inherit; }
       .light-theme .sources-priority-field .source:hover {
         background: #ebe8e4; }
-      .light-theme .sources-priority-field .source:focus, .light-theme .sources-priority-field .source:active {
-        background: #32b5f2;
-        color: #FFFFFF; }
 
 .sub-views__option {
   font-family: "Overpass";
@@ -6386,7 +6373,7 @@ main header {
   margin-right: 6px;
   z-index: 1; }
   .commands__item__icon {
-    padding-top: 6px;
+    padding-top: 7px;
     padding-right: 0 !important;
     font-size: 12px; }
   .commands__item__background {
@@ -6496,6 +6483,9 @@ main header {
     margin: 0; }
   .error-message__trace {
     padding: 10px; }
+
+.sortable-ghost {
+  opacity: 0.15; }
 
 .artist-view .body-loader:not(.lazy-loader) {
   padding: 15vh 0; }
