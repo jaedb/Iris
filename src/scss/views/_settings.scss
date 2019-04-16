@@ -39,17 +39,24 @@
 			position: relative;
 			padding-top: 10px;
 			padding-bottom: 10px;
+			vertical-align: top;
 
 			.commands__item {
-				float: left;
-				margin-bottom: -5px;
+				display: inline-block;
+				margin: 0;
+			}
+
+			&__drag-handle {
+				cursor: move;
+				padding-right: 0.5em;
 			}
 
 			&__url {
 				@include one_line_text();
 				max-width: 100%;
-				padding-top: 5px;
 				padding-left: 10px;
+				display: inline-block;
+				margin-bottom: -5px;
 			}
 
 			&__actions {

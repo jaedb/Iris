@@ -30,6 +30,16 @@
 			opacity: 1;
 		}
 
+		&--small {
+			width: 20px;
+			height: 20px;
+
+			.commands__item__icon {
+				padding-top: 5px;
+				font-size: 10px;
+			}
+		}
+
 		&--large {
 			width: 32px;
 			height: 32px;

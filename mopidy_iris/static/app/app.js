@@ -74287,6 +74287,9 @@ var SourcesPriority = function (_React$Component) {
 			return _react2.default.createElement(
 				_reactSortablejs2.default,
 				{
+					options: {
+						animation: 150
+					},
 					className: className,
 					onChange: function onChange(order, sortable, e) {
 						_this2.handleSort(order);
@@ -88135,7 +88138,13 @@ var Commands = function (_React$Component) {
 
             return _react2.default.createElement(
                 _reactSortablejs2.default,
-                { className: 'list commands-setup', onChange: function onChange(order, sortable, e) {
+                {
+                    options: {
+                        handle: ".commands-setup__item__drag-handle",
+                        animation: 150
+                    },
+                    className: 'list commands-setup',
+                    onChange: function onChange(order, sortable, e) {
                         _this2.onChange(order);
                     } },
                 commands.map(function (command) {
@@ -88145,11 +88154,10 @@ var Commands = function (_React$Component) {
                         _react2.default.createElement(
                             'div',
                             { className: 'col col--w90' },
+                            _react2.default.createElement(_Icon2.default, { className: 'commands-setup__item__drag-handle', name: 'drag_indicator' }),
                             _react2.default.createElement(
                                 'div',
-                                { className: 'commands__item commands__item--interactive', onClick: function onClick(e) {
-                                        return _this2.props.runCommand(command.id, true);
-                                    } },
+                                { className: 'commands__item commands__item--small' },
                                 _react2.default.createElement(_Icon2.default, { className: 'commands__item__icon', name: command.icon }),
                                 _react2.default.createElement('span', { className: command.colour + '-background commands__item__background' })
                             ),
@@ -88166,6 +88174,13 @@ var Commands = function (_React$Component) {
                         _react2.default.createElement(
                             'div',
                             { className: 'commands-setup__item__actions' },
+                            _react2.default.createElement(
+                                'a',
+                                { className: 'commands-setup__item__run-button action', onClick: function onClick(e) {
+                                        return _this2.props.runCommand(command.id, true);
+                                    } },
+                                _react2.default.createElement(_Icon2.default, { name: 'play_arrow' })
+                            ),
                             _react2.default.createElement(
                                 _Link2.default,
                                 { className: 'commands-setup__item__edit-button action', to: '/edit-command/' + command.id },

@@ -45,13 +45,20 @@ export default class Commands extends React.Component{
         }
 
 		return (
-			<Sortable className="list commands-setup" onChange={(order, sortable, e) => {this.onChange(order)}}>
+            <Sortable 
+                options={{
+                    handle: ".commands-setup__item__drag-handle",
+                    animation: 150
+                }}
+                className="list commands-setup" 
+                onChange={(order, sortable, e) => {this.onChange(order)}}>
                 {
                     commands.map(command => {
                         return (
                             <div className="list__item commands-setup__item list__item--no-interaction" key={command.id} data-id={command.id}>
                                 <div className="col col--w90">
-                                    <div className="commands__item commands__item--interactive" onClick={e => this.props.runCommand(command.id, true)}>
+                                    <Icon className="commands-setup__item__drag-handle" name="drag_indicator" />
+                                    <div className="commands__item commands__item--small">
                                         <Icon className="commands__item__icon" name={command.icon} />
                                         <span className={command.colour+'-background commands__item__background'}></span>
                                     </div>
@@ -60,6 +67,9 @@ export default class Commands extends React.Component{
                                     </div>
                                 </div>
                                 <div className="commands-setup__item__actions">
+                                    <a className="commands-setup__item__run-button action" onClick={e => this.props.runCommand(command.id, true)}>
+                                        <Icon name="play_arrow" />
+                                    </a>
                                     <Link className="commands-setup__item__edit-button action" to={'/edit-command/'+command.id}>
                                         <Icon name="edit" />
                                     </Link>

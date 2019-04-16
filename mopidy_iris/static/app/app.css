@@ -3332,6 +3332,39 @@ select {
   .text-button.destructive {
     color: #cf2d2d; }
 
+.action {
+  position: relative;
+  cursor: pointer; }
+
+@keyframes click_feedback {
+  0% {
+    top: 50%;
+    left: 0;
+    width: 100%;
+    padding-bottom: 100%;
+    opacity: 1; }
+  100% {
+    top: 25%;
+    left: -25%;
+    width: 150%;
+    padding-bottom: 150%;
+    opacity: 0; } }
+  .action:after {
+    content: '';
+    display: block;
+    position: absolute;
+    background: rgba(255, 255, 255, 0.5);
+    z-index: 1;
+    opacity: 0;
+    border-radius: 50%;
+    margin-top: -50%;
+    pointer-events: none; }
+  .action:focus:after, .action:active:after {
+    animation-name: click_feedback;
+    animation-duration: 0.2s;
+    animation-timing-function: ease-out;
+    animation-iteration-count: 1; }
+
 .button {
   -webkit-transition: all 0.2s ease-in-out;
   -moz-transition: all 0.2s ease-in-out;
@@ -3510,8 +3543,6 @@ select {
     content: '';
     clear: both;
     display: block; }
-  .field .icon {
-    padding-right: 0.32em; }
   .field > .name {
     display: block;
     padding-top: 10px;
@@ -4372,7 +4403,6 @@ select {
     direction: ltr;
     vertical-align: bottom;
     font-size: 1.3em;
-    margin-bottom: 0.1em;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     -moz-osx-font-smoothing: grayscale;
@@ -6370,6 +6400,12 @@ main header {
     z-index: -1;
     border-radius: 50%;
     opacity: 1; }
+  .commands__item--small {
+    width: 20px;
+    height: 20px; }
+    .commands__item--small .commands__item__icon {
+      padding-top: 5px;
+      font-size: 10px; }
   .commands__item--large {
     width: 32px;
     height: 32px; }
@@ -7106,17 +7142,22 @@ main .track-view {
   .settings-view .commands-setup__item {
     position: relative;
     padding-top: 10px;
-    padding-bottom: 10px; }
+    padding-bottom: 10px;
+    vertical-align: top; }
     .settings-view .commands-setup__item .commands__item {
-      float: left;
-      margin-bottom: -5px; }
+      display: inline-block;
+      margin: 0; }
+    .settings-view .commands-setup__item__drag-handle {
+      cursor: move;
+      padding-right: 0.5em; }
     .settings-view .commands-setup__item__url {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       max-width: 100%;
-      padding-top: 5px;
-      padding-left: 10px; }
+      padding-left: 10px;
+      display: inline-block;
+      margin-bottom: -5px; }
     .settings-view .commands-setup__item__actions {
       position: absolute;
       top: 16px;
