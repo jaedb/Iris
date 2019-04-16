@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux';
 import VolumeControl from './VolumeControl';
 import MuteControl from './MuteControl';
 import Icon from '../Icon';
+import * as helpers from '../../helpers';
 
 import * as coreActions from '../../services/core/actions';
 import * as pusherActions from '../../services/pusher/actions';
@@ -136,6 +137,8 @@ class OutputControl extends React.Component{
 					commands_items.push(this.props.pusher_commands[key]);
 				}
 			}
+        
+			commands_items = helpers.sortItems(commands_items, 'sort_order');
 
 			if (commands_items.length > 0){
 				has_outputs = true;

@@ -216,6 +216,13 @@ export function setCommand(command){
     }
 }
 
+export function setCommands(commands){
+    return {
+        type: 'PUSHER_SET_COMMANDS',
+        commands: commands
+    }
+}
+
 export function removeCommand(id){
     return {
         type: 'PUSHER_REMOVE_COMMAND',

@@ -459,19 +459,23 @@ const PusherMiddleware = (function(){
                 break
 
             case 'PUSHER_SET_COMMAND':
-                var commands_index = Object.assign({}, pusher.commands);
+                var commands = Object.assign({}, pusher.commands);
 
-                if (commands_index[action.command.id]){
-                    var command = Object.assign({}, commands_index[action.command.id], action.command);
+                if (commands[action.command.id]){
+                    var command = Object.assign({}, commands[action.command.id], action.command);
                 } else {
                     var command = action.command;
                 }
-                commands_index[action.command.id] = command;
+                commands[action.command.id] = command;
 
-                request(store, 'set_commands', {commands: commands_index})
+                store.dispatch(pusherActions.setCommands(commands));
+                break
+
+            case 'PUSHER_SET_COMMANDS':
+                request(store, 'set_commands', {commands: action.commands})
                     .then(
                         response => {
-                			// No action required, the change will be broadcast
+                            // No action required, the change will be broadcast
                         },
                         error => {                            
                             store.dispatch(coreActions.handleException(

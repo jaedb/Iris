@@ -4,22 +4,21 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Route, Link } from 'react-router-dom';
 
-import ConfirmationButton from '../components/Fields/ConfirmationButton'
-import PusherConnectionList from '../components/PusherConnectionList'
-import SourcesPriority from '../components/Fields/SourcesPriority'
-import Header from '../components/Header'
-import Icon from '../components/Icon'
-import Thumbnail from '../components/Thumbnail'
-import URILink from '../components/URILink'
-import Services from '../components/Services'
+import ConfirmationButton from '../components/Fields/ConfirmationButton';
+import PusherConnectionList from '../components/PusherConnectionList';
+import SourcesPriority from '../components/Fields/SourcesPriority';
+import Commands from '../components/Fields/Commands';
+import Header from '../components/Header';
+import Icon from '../components/Icon';
+import Services from '../components/Services';
 
-import * as helpers from '../helpers'
-import * as coreActions from '../services/core/actions'
-import * as uiActions from '../services/ui/actions'
-import * as pusherActions from '../services/pusher/actions'
-import * as mopidyActions from '../services/mopidy/actions'
-import * as lastfmActions from '../services/lastfm/actions'
-import * as spotifyActions from '../services/spotify/actions'
+import * as helpers from '../helpers';
+import * as coreActions from '../services/core/actions';
+import * as uiActions from '../services/ui/actions';
+import * as pusherActions from '../services/pusher/actions';
+import * as mopidyActions from '../services/mopidy/actions';
+import * as lastfmActions from '../services/lastfm/actions';
+import * as spotifyActions from '../services/spotify/actions';
 
 class Settings extends React.Component {
 
@@ -139,54 +138,6 @@ class Settings extends React.Component {
 			<span className={colour+'-text'}>
 				<Icon className={className} name={icon} />{status}
 			</span>
-		);
-	}
-
-	renderCommands(){
-		var commands = [];
-		if (this.props.pusher.commands){
-			for (var id in this.props.pusher.commands){
-				if (this.props.pusher.commands.hasOwnProperty(id)){
-					var command = Object.assign({}, this.props.pusher.commands[id]);
-					try {
-						command.command = JSON.parse(command.command);
-					} catch(error){
-						command.command = null;
-					}
-					commands.push(command);
-				}
-			}
-		}
-
-		if (commands.length <= 0){
-			return null;
-		}
-
-		return (
-			<div className="list commands-setup">
-				{
-	    			commands.map(command => {
-	    				return (
-	    					<div className="list__item commands-setup__item list__item--no-interaction" key={command.id}>
-	    						<div className="col col--w90">
-	    							<div className="commands__item commands__item--interactive" onClick={e => this.props.pusherActions.runCommand(command.id, true)}>
-										<Icon className="commands__item__icon" name={command.icon} />
-										<span className={command.colour+'-background commands__item__background'}></span>
-	    							</div>
-	    							<div className="commands-setup__item__url commands__item__url">
-	    								{command.name ? command.name : <span className="grey-text">{command.url}</span>}
-	    							</div>
-	    						</div>
-	    						<div className="commands-setup__item__actions">
-	    							<Link className="commands-setup__item__edit-button action" to={'/edit-command/'+command.id}>
-	    								<Icon name="edit" />
-	    							</Link>
-		    					</div>
-	    					</div>
-	    				);
-	    			})
-	    		}
-			</div>
 		);
 	}
 
@@ -371,7 +322,11 @@ class Settings extends React.Component {
 							Commands
 						</div>
 						<div className="input">
-			        		{this.renderCommands()}
+			        		<Commands
+								commands={this.props.pusher.commands}
+								runCommand={(id, notify) => this.props.pusherActions.runCommand(id, notify)}
+								onChange={commands => this.props.pusherActions.setCommands(commands)}
+							/>
 			        		<Link to={'/edit-command'} className="button button--default">Add new</Link>
 			        	</div>
 			        </div>

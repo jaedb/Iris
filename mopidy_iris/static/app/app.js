@@ -6447,6 +6447,7 @@ exports.queueMetadataChanged = queueMetadataChanged;
 exports.addQueueMetadata = addQueueMetadata;
 exports.getCommands = getCommands;
 exports.setCommand = setCommand;
+exports.setCommands = setCommands;
 exports.removeCommand = removeCommand;
 exports.runCommand = runCommand;
 exports.commandsUpdated = commandsUpdated;
@@ -6675,6 +6676,13 @@ function setCommand(command) {
 	return {
 		type: 'PUSHER_SET_COMMAND',
 		command: command
+	};
+}
+
+function setCommands(commands) {
+	return {
+		type: 'PUSHER_SET_COMMANDS',
+		commands: commands
 	};
 }
 
@@ -57361,16 +57369,20 @@ var PusherMiddleware = function () {
                         break;
 
                     case 'PUSHER_SET_COMMAND':
-                        var commands_index = Object.assign({}, pusher.commands);
+                        var commands = Object.assign({}, pusher.commands);
 
-                        if (commands_index[action.command.id]) {
-                            var command = Object.assign({}, commands_index[action.command.id], action.command);
+                        if (commands[action.command.id]) {
+                            var command = Object.assign({}, commands[action.command.id], action.command);
                         } else {
                             var command = action.command;
                         }
-                        commands_index[action.command.id] = command;
+                        commands[action.command.id] = command;
 
-                        request(store, 'set_commands', { commands: commands_index }).then(function (response) {
+                        store.dispatch(pusherActions.setCommands(commands));
+                        break;
+
+                    case 'PUSHER_SET_COMMANDS':
+                        request(store, 'set_commands', { commands: action.commands }).then(function (response) {
                             // No action required, the change will be broadcast
                         }, function (error) {
                             store.dispatch(coreActions.handleException('Could not set commands', error));
@@ -66087,6 +66099,10 @@ var _Icon = __webpack_require__(5);
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
+var _helpers = __webpack_require__(1);
+
+var helpers = _interopRequireWildcard(_helpers);
+
 var _actions = __webpack_require__(9);
 
 var coreActions = _interopRequireWildcard(_actions);
@@ -66268,6 +66284,8 @@ var OutputControl = function (_React$Component) {
 						commands_items.push(this.props.pusher_commands[key]);
 					}
 				}
+
+				commands_items = helpers.sortItems(commands_items, 'sort_order');
 
 				if (commands_items.length > 0) {
 					has_outputs = true;
@@ -73259,6 +73277,10 @@ var _SourcesPriority = __webpack_require__(213);
 
 var _SourcesPriority2 = _interopRequireDefault(_SourcesPriority);
 
+var _Commands = __webpack_require__(283);
+
+var _Commands2 = _interopRequireDefault(_Commands);
+
 var _Header = __webpack_require__(15);
 
 var _Header2 = _interopRequireDefault(_Header);
@@ -73266,14 +73288,6 @@ var _Header2 = _interopRequireDefault(_Header);
 var _Icon = __webpack_require__(5);
 
 var _Icon2 = _interopRequireDefault(_Icon);
-
-var _Thumbnail = __webpack_require__(11);
-
-var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
-
-var _URILink = __webpack_require__(19);
-
-var _URILink2 = _interopRequireDefault(_URILink);
 
 var _Services = __webpack_require__(217);
 
@@ -73459,74 +73473,9 @@ var Settings = function (_React$Component) {
 			);
 		}
 	}, {
-		key: 'renderCommands',
-		value: function renderCommands() {
-			var _this2 = this;
-
-			var commands = [];
-			if (this.props.pusher.commands) {
-				for (var id in this.props.pusher.commands) {
-					if (this.props.pusher.commands.hasOwnProperty(id)) {
-						var command = Object.assign({}, this.props.pusher.commands[id]);
-						try {
-							command.command = JSON.parse(command.command);
-						} catch (error) {
-							command.command = null;
-						}
-						commands.push(command);
-					}
-				}
-			}
-
-			if (commands.length <= 0) {
-				return null;
-			}
-
-			return _react2.default.createElement(
-				'div',
-				{ className: 'list commands-setup' },
-				commands.map(function (command) {
-					return _react2.default.createElement(
-						'div',
-						{ className: 'list__item commands-setup__item list__item--no-interaction', key: command.id },
-						_react2.default.createElement(
-							'div',
-							{ className: 'col col--w90' },
-							_react2.default.createElement(
-								'div',
-								{ className: 'commands__item commands__item--interactive', onClick: function onClick(e) {
-										return _this2.props.pusherActions.runCommand(command.id, true);
-									} },
-								_react2.default.createElement(_Icon2.default, { className: 'commands__item__icon', name: command.icon }),
-								_react2.default.createElement('span', { className: command.colour + '-background commands__item__background' })
-							),
-							_react2.default.createElement(
-								'div',
-								{ className: 'commands-setup__item__url commands__item__url' },
-								command.name ? command.name : _react2.default.createElement(
-									'span',
-									{ className: 'grey-text' },
-									command.url
-								)
-							)
-						),
-						_react2.default.createElement(
-							'div',
-							{ className: 'commands-setup__item__actions' },
-							_react2.default.createElement(
-								_reactRouterDom.Link,
-								{ className: 'commands-setup__item__edit-button action', to: '/edit-command/' + command.id },
-								_react2.default.createElement(_Icon2.default, { name: 'edit' })
-							)
-						)
-					);
-				})
-			);
-		}
-	}, {
 		key: 'render',
 		value: function render() {
-			var _this3 = this;
+			var _this2 = this;
 
 			var options = _react2.default.createElement(
 				'span',
@@ -73534,7 +73483,7 @@ var Settings = function (_React$Component) {
 				_react2.default.createElement(
 					'a',
 					{ className: 'button button--default button--no-hover', onClick: function onClick(e) {
-							return _this3.props.history.push('/settings/debug');
+							return _this2.props.history.push('/settings/debug');
 						} },
 					_react2.default.createElement(_Icon2.default, { name: 'code' }),
 					'Debug'
@@ -73597,13 +73546,13 @@ var Settings = function (_React$Component) {
 							_react2.default.createElement('input', {
 								type: 'text',
 								onChange: function onChange(e) {
-									return _this3.handleUsernameChange(e.target.value);
+									return _this2.handleUsernameChange(e.target.value);
 								},
 								onFocus: function onFocus(e) {
-									return _this3.setState({ input_in_focus: 'pusher_username' });
+									return _this2.setState({ input_in_focus: 'pusher_username' });
 								},
 								onBlur: function onBlur(e) {
-									return _this3.handleUsernameBlur(e);
+									return _this2.handleUsernameBlur(e);
 								},
 								value: this.state.pusher_username }),
 							_react2.default.createElement(
@@ -73616,7 +73565,7 @@ var Settings = function (_React$Component) {
 					_react2.default.createElement(
 						'form',
 						{ onSubmit: function onSubmit(e) {
-								return _this3.setConfig(e);
+								return _this2.setConfig(e);
 							} },
 						_react2.default.createElement(
 							'label',
@@ -73632,13 +73581,13 @@ var Settings = function (_React$Component) {
 								_react2.default.createElement('input', {
 									type: 'text',
 									onChange: function onChange(e) {
-										return _this3.setState({ mopidy_host: e.target.value });
+										return _this2.setState({ mopidy_host: e.target.value });
 									},
 									onFocus: function onFocus(e) {
-										return _this3.setState({ input_in_focus: 'mopidy_host' });
+										return _this2.setState({ input_in_focus: 'mopidy_host' });
 									},
 									onBlur: function onBlur(e) {
-										return _this3.setState({ input_in_focus: null });
+										return _this2.setState({ input_in_focus: null });
 									},
 									value: this.state.mopidy_host })
 							)
@@ -73657,13 +73606,13 @@ var Settings = function (_React$Component) {
 								_react2.default.createElement('input', {
 									type: 'text',
 									onChange: function onChange(e) {
-										return _this3.setState({ mopidy_port: e.target.value });
+										return _this2.setState({ mopidy_port: e.target.value });
 									},
 									onFocus: function onFocus(e) {
-										return _this3.setState({ input_in_focus: 'mopidy_port' });
+										return _this2.setState({ input_in_focus: 'mopidy_port' });
 									},
 									onBlur: function onBlur(e) {
-										return _this3.setState({ input_in_focus: null });
+										return _this2.setState({ input_in_focus: null });
 									},
 									value: this.state.mopidy_port })
 							)
@@ -73703,7 +73652,7 @@ var Settings = function (_React$Component) {
 									value: 'dark',
 									checked: this.props.ui.theme == 'dark',
 									onChange: function onChange(e) {
-										return _this3.props.uiActions.set({ theme: e.target.value });
+										return _this2.props.uiActions.set({ theme: e.target.value });
 									} }),
 								_react2.default.createElement(
 									'span',
@@ -73720,7 +73669,7 @@ var Settings = function (_React$Component) {
 									value: 'light',
 									checked: this.props.ui.theme == 'light',
 									onChange: function onChange(e) {
-										return _this3.props.uiActions.set({ theme: e.target.value });
+										return _this2.props.uiActions.set({ theme: e.target.value });
 									} }),
 								_react2.default.createElement(
 									'span',
@@ -73749,7 +73698,7 @@ var Settings = function (_React$Component) {
 									name: 'log_actions',
 									checked: this.props.ui.clear_tracklist_on_play,
 									onChange: function onChange(e) {
-										return _this3.props.uiActions.set({ clear_tracklist_on_play: !_this3.props.ui.clear_tracklist_on_play });
+										return _this2.props.uiActions.set({ clear_tracklist_on_play: !_this2.props.ui.clear_tracklist_on_play });
 									} }),
 								_react2.default.createElement(
 									'span',
@@ -73770,7 +73719,7 @@ var Settings = function (_React$Component) {
 									name: 'shortkeys_enabled',
 									checked: this.props.ui.shortkeys_enabled,
 									onChange: function onChange(e) {
-										return _this3.props.uiActions.set({ shortkeys_enabled: !_this3.props.ui.shortkeys_enabled });
+										return _this2.props.uiActions.set({ shortkeys_enabled: !_this2.props.ui.shortkeys_enabled });
 									} }),
 								_react2.default.createElement(
 									'span',
@@ -73786,7 +73735,7 @@ var Settings = function (_React$Component) {
 									name: 'smooth_scrolling_enabled',
 									checked: this.props.ui.smooth_scrolling_enabled,
 									onChange: function onChange(e) {
-										return _this3.props.uiActions.set({ smooth_scrolling_enabled: !_this3.props.ui.smooth_scrolling_enabled });
+										return _this2.props.uiActions.set({ smooth_scrolling_enabled: !_this2.props.ui.smooth_scrolling_enabled });
 									} }),
 								_react2.default.createElement(
 									'span',
@@ -73838,7 +73787,7 @@ var Settings = function (_React$Component) {
 									name: 'allow_reporting',
 									checked: this.props.ui.allow_reporting,
 									onChange: function onChange(e) {
-										return _this3.props.uiActions.set({ allow_reporting: !_this3.props.ui.allow_reporting });
+										return _this2.props.uiActions.set({ allow_reporting: !_this2.props.ui.allow_reporting });
 									} }),
 								_react2.default.createElement(
 									'span',
@@ -73870,7 +73819,15 @@ var Settings = function (_React$Component) {
 						_react2.default.createElement(
 							'div',
 							{ className: 'input' },
-							this.renderCommands(),
+							_react2.default.createElement(_Commands2.default, {
+								commands: this.props.pusher.commands,
+								runCommand: function runCommand(id, notify) {
+									return _this2.props.pusherActions.runCommand(id, notify);
+								},
+								onChange: function onChange(commands) {
+									return _this2.props.pusherActions.setCommands(commands);
+								}
+							}),
 							_react2.default.createElement(
 								_reactRouterDom.Link,
 								{ to: '/edit-command', className: 'button button--default' },
@@ -73899,10 +73856,10 @@ var Settings = function (_React$Component) {
 								type: 'text',
 								value: this.state.mopidy_library_artists_uri,
 								onChange: function onChange(e) {
-									return _this3.setState({ mopidy_library_artists_uri: e.target.value });
+									return _this2.setState({ mopidy_library_artists_uri: e.target.value });
 								},
 								onBlur: function onBlur(e) {
-									return _this3.handleBlur('mopidy', 'library_artists_uri', e.target.value);
+									return _this2.handleBlur('mopidy', 'library_artists_uri', e.target.value);
 								}
 							}),
 							_react2.default.createElement(
@@ -73927,10 +73884,10 @@ var Settings = function (_React$Component) {
 								type: 'text',
 								value: this.state.mopidy_library_albums_uri,
 								onChange: function onChange(e) {
-									return _this3.setState({ mopidy_library_albums_uri: e.target.value });
+									return _this2.setState({ mopidy_library_albums_uri: e.target.value });
 								},
 								onBlur: function onBlur(e) {
-									return _this3.handleBlur('mopidy', 'library_albums_uri', e.target.value);
+									return _this2.handleBlur('mopidy', 'library_albums_uri', e.target.value);
 								}
 							}),
 							_react2.default.createElement(
@@ -73994,7 +73951,7 @@ var Settings = function (_React$Component) {
 						_react2.default.createElement(
 							'button',
 							{ className: 'button button--default', onClick: function onClick(e) {
-									return _this3.props.pusherActions.localScan();
+									return _this2.props.pusherActions.localScan();
 								} },
 							'Run local scan'
 						),
@@ -74010,7 +73967,7 @@ var Settings = function (_React$Component) {
 						this.props.pusher.version.upgrade_available ? _react2.default.createElement(
 							'button',
 							{ className: 'button button--secondary', onClick: function onClick(e) {
-									return _this3.props.pusherActions.upgrade();
+									return _this2.props.pusherActions.upgrade();
 								} },
 							'Upgrade to ',
 							this.props.pusher.version.latest
@@ -74018,12 +73975,12 @@ var Settings = function (_React$Component) {
 						_react2.default.createElement(
 							'button',
 							{ className: "button button--destructive" + (this.props.mopidy.restarting ? ' button--working' : ''), onClick: function onClick(e) {
-									return _this3.props.pusherActions.restart();
+									return _this2.props.pusherActions.restart();
 								} },
 							'Restart server'
 						),
 						_react2.default.createElement(_ConfirmationButton2.default, { className: 'button--destructive', content: 'Reset all settings', confirmingContent: 'Are you sure?', onConfirm: function onConfirm() {
-								return _this3.resetAllSettings();
+								return _this2.resetAllSettings();
 							} })
 					),
 					_react2.default.createElement(
@@ -88042,6 +87999,189 @@ exports.default = (0, _react.memo)(function (props) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 264 */,
+/* 265 */,
+/* 266 */,
+/* 267 */,
+/* 268 */,
+/* 269 */,
+/* 270 */,
+/* 271 */,
+/* 272 */,
+/* 273 */,
+/* 274 */,
+/* 275 */,
+/* 276 */,
+/* 277 */,
+/* 278 */,
+/* 279 */,
+/* 280 */,
+/* 281 */,
+/* 282 */,
+/* 283 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactSortablejs = __webpack_require__(214);
+
+var _reactSortablejs2 = _interopRequireDefault(_reactSortablejs);
+
+var _Icon = __webpack_require__(5);
+
+var _Icon2 = _interopRequireDefault(_Icon);
+
+var _Link = __webpack_require__(7);
+
+var _Link2 = _interopRequireDefault(_Link);
+
+var _helpers = __webpack_require__(1);
+
+var helpers = _interopRequireWildcard(_helpers);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Commands = function (_React$Component) {
+    _inherits(Commands, _React$Component);
+
+    function Commands(props) {
+        _classCallCheck(this, Commands);
+
+        return _possibleConstructorReturn(this, (Commands.__proto__ || Object.getPrototypeOf(Commands)).call(this, props));
+    }
+
+    _createClass(Commands, [{
+        key: 'onChange',
+        value: function onChange(order) {
+            var commands = {};
+            for (var i = 0; i <= order.length; i++) {
+                var command = this.props.commands[order[i]];
+                if (command) {
+                    commands[command.id] = _extends({}, command, { sort_order: i });
+                }
+            }
+
+            this.props.onChange(commands);
+        }
+    }, {
+        key: 'commands',
+        value: function commands() {
+            var commands = [];
+
+            if (this.props.commands) {
+                var _iteratorNormalCompletion = true;
+                var _didIteratorError = false;
+                var _iteratorError = undefined;
+
+                try {
+                    for (var _iterator = Object.keys(this.props.commands)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                        var key = _step.value;
+
+                        commands.push(_extends({}, this.props.commands[key]));
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return) {
+                            _iterator.return();
+                        }
+                    } finally {
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+            }
+
+            commands = helpers.sortItems(commands, 'sort_order');
+
+            return commands;
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var _this2 = this;
+
+            var commands = this.commands();
+
+            if (!commands) {
+                return null;
+            }
+
+            return _react2.default.createElement(
+                _reactSortablejs2.default,
+                { className: 'list commands-setup', onChange: function onChange(order, sortable, e) {
+                        _this2.onChange(order);
+                    } },
+                commands.map(function (command) {
+                    return _react2.default.createElement(
+                        'div',
+                        { className: 'list__item commands-setup__item list__item--no-interaction', key: command.id, 'data-id': command.id },
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'col col--w90' },
+                            _react2.default.createElement(
+                                'div',
+                                { className: 'commands__item commands__item--interactive', onClick: function onClick(e) {
+                                        return _this2.props.runCommand(command.id, true);
+                                    } },
+                                _react2.default.createElement(_Icon2.default, { className: 'commands__item__icon', name: command.icon }),
+                                _react2.default.createElement('span', { className: command.colour + '-background commands__item__background' })
+                            ),
+                            _react2.default.createElement(
+                                'div',
+                                { className: 'commands-setup__item__url commands__item__url' },
+                                command.name ? command.name : _react2.default.createElement(
+                                    'span',
+                                    { className: 'grey-text' },
+                                    command.url
+                                )
+                            )
+                        ),
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'commands-setup__item__actions' },
+                            _react2.default.createElement(
+                                _Link2.default,
+                                { className: 'commands-setup__item__edit-button action', to: '/edit-command/' + command.id },
+                                _react2.default.createElement(_Icon2.default, { name: 'edit' })
+                            )
+                        )
+                    );
+                })
+            );
+        }
+    }]);
+
+    return Commands;
+}(_react2.default.Component);
+
+exports.default = Commands;
 
 /***/ })
 /******/ ]);
