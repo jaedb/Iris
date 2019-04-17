@@ -151,7 +151,7 @@ export class Album extends React.Component{
 		return (
 			<div className="view album-view content-wrapper preserve-3d">
 
-				<Parallax image={album.images ? album.images.huge : null} blur />
+				{this.props.theme == 'dark' && <Parallax image={album.images ? album.images.huge : null} blur />}
 
 				<div className="thumbnail-wrapper">
 					<Thumbnail size="large" canZoom images={album.images} />
@@ -205,6 +205,7 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		uri: uri,
 		slim_mode: state.ui.slim_mode,
+		theme: state.ui.theme,
 		load_queue: state.ui.load_queue,
 		tracks: state.core.tracks,
 		artists: state.core.artists,

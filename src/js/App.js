@@ -1,8 +1,7 @@
 
 import React from 'react';
-import ReactDOM from 'react-dom';
-import { createStore, bindActionCreators } from 'redux';
-import { BrowserRouter, Route, Switch, Link } from "react-router-dom";
+import { bindActionCreators } from 'redux';
+import { Route, Switch } from "react-router-dom";
 import { connect } from 'react-redux';
 import ReactGA from 'react-ga';
 
@@ -11,8 +10,9 @@ import PlaybackControls from './components/PlaybackControls';
 import ContextMenu from './components/ContextMenu';
 import Dragger from './components/Dragger';
 import Notifications from './components/Notifications';
-import DebugInfo from './components/DebugInfo';
-import ErrorBoundary from './components/ErrorBoundary';
+import ResizeListener from './components/ResizeListener';
+import Hotkeys from './components/Hotkeys';
+import DebugInfo from './components/DebugInfo'; 
 import ErrorMessage from './components/ErrorMessage';
 
 import Album from './views/Album';
@@ -64,26 +64,17 @@ export class App extends React.Component{
 
 	constructor(props){
 		super(props);
-		this.handleKeyUp = this.handleKeyUp.bind(this);
-		this.handleKeyDown = this.handleKeyDown.bind(this);
-		this.handleWindowResize = this.handleWindowResize.bind(this);
 		this.handleInstallPrompt = this.handleInstallPrompt.bind(this);
 		this.handleFocusAndBlur = this.handleFocusAndBlur.bind(this);
 	}
 
 	componentWillMount(){
-		window.addEventListener("keyup", this.handleKeyUp, false);
-		window.addEventListener("keydown", this.handleKeyDown, false);
-		window.addEventListener("resize", this.handleWindowResize, false);
 		window.addEventListener("beforeinstallprompt", this.handleInstallPrompt, false);
 		window.addEventListener("focus", this.handleFocusAndBlur, false);
 		window.addEventListener("blur", this.handleFocusAndBlur, false);
 	}
 
 	componentWillUnmount(){
-		window.removeEventListener("keyup", this.handleKeyUp, false);
-		window.removeEventListener("keydown", this.handleKeyDown, false);
-		window.removeEventListener("resize", this.handleWindowResize, false);
 		window.removeEventListener("beforeinstallprompt", this.handleInstallPrompt, false);
 		window.removeEventListener("focus", this.handleFocusAndBlur, false);
 		window.removeEventListener("blur", this.handleFocusAndBlur, false);
@@ -99,9 +90,6 @@ export class App extends React.Component{
 		this.props.mopidyActions.connect();
 		this.props.pusherActions.connect();
 		this.props.coreActions.getBroadcasts();
-
-		// Check our slim_mode
-		this.handleWindowResize(null);
 
 		// Check for url-parsed configuration values
 		var url_vars = this.props.location.query;
@@ -168,38 +156,6 @@ export class App extends React.Component{
 		};
 	}
 
-	shouldTriggerShortcut(e){
-		if (!this.props.shortkeys_enabled){
-			return false;
-		}
-		let keyCode = e.keyCode || e.which;
-
-		// When we're focussed on certian elements, don't fire any shortcuts
-		// Typically form inputs
-		var ignoreNodes = ['INPUT', 'TEXTAREA'];
-		if (ignoreNodes.indexOf(e.target.nodeName) > -1){
-			return false;
-		}
-
-		let hotkeys = [27,32,191];
-		if (hotkeys.indexOf(keyCode) > -1){
-			e.preventDefault();
-			return true;
-		}
-	
-		let hokeys_with_alt = [37,38,39,40];
-		if (e.altKey && hokeys_with_alt.indexOf(keyCode) > -1){
-			e.preventDefault();
-			return true;
-		}
-		
-		let hokeys_with_alt_and_shift = [70];
-		if (e.altKey && e.shiftKey && hokeys_with_alt_and_shift.indexOf(keyCode) > -1){
-			e.preventDefault();
-			return true;
-		}
-	}
-
 	/**
 	 * Using Visibility API, detect whether the browser is in focus or not
 	 *
@@ -217,126 +173,6 @@ export class App extends React.Component{
 		e.preventDefault();
 		console.log("Install prompt detected");
 		this.props.uiActions.installPrompt(e);
-	}
-
-	handleWindowResize(e){
-		var width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
-		var height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
-
-		if (width <= 800){
-			if (!this.props.slim_mode){
-				this.props.uiActions.setSlimMode(true)
-			}
-		} else {
-			if (this.props.slim_mode){
-				this.props.uiActions.setSlimMode(false)
-			}
-		}
-	}
-
-	handleKeyDown(e){
-		this.shouldTriggerShortcut(e)
-	}
-
-	handleKeyUp(e){		
-		if (!this.shouldTriggerShortcut(e)){
-			return
-		}
-
-		switch(e.keyCode || e.which){
-
-			case 32: // spacebar
-				if (e.ctrlKey || e.metaKey){
-					this.props.mopidyActions.stop();
-					this.props.uiActions.createNotification({content: 'stop', type: 'shortcut', key: 'shortcut', duration: 1});
-				} else if (this.props.play_state == 'playing'){
-					this.props.mopidyActions.pause();
-					this.props.uiActions.createNotification({content: 'pause', type: 'shortcut', key: 'shortcut', duration: 1});
-				} else {
-					this.props.mopidyActions.play();
-					this.props.uiActions.createNotification({content: 'play', type: 'shortcut', key: 'shortcut', duration: 1});
-				}
-				break;
-
-			case 27: // esc
-				if (this.props.dragger && this.props.dragger.dragging){
-					this.props.uiActions.dragEnd();
-				}
-				break;
-
-			case 40: // down
-				if (e.altKey && e.shiftKey){
-					this.props.mopidyActions.setMute(true);
-					this.props.uiActions.createNotification({content: 'volume-off', type: 'shortcut', key: 'shortcut', duration: 1});
-				} else if (e.altKey){
-					var volume = this.props.volume;
-					if (volume !== 'false'){
-						volume -= 5;
-						if (volume < 0){
-							volume = 0;
-						}
-						this.props.mopidyActions.setVolume(volume);
-						if (this.props.mute){
-							this.props.mopidyActions.setMute(false);
-						}
-					this.props.uiActions.createNotification({content: 'volume-down', type: 'shortcut', key: 'shortcut', duration: 1});
-					}
-				}
-				break;
-
-			case 38: // up
-				if (e.altKey && e.shiftKey){
-					this.props.mopidyActions.setVolume(100)
-					if (this.props.mute){
-						this.props.mopidyActions.setMute(false);
-					}
-					this.props.uiActions.createNotification({content: 'volume-up', type: 'shortcut', key: 'shortcut', duration: 1});
-				} else if (e.altKey){
-					var volume = this.props.volume
-					if (volume !== 'false'){
-						volume += 5;
-						if (volume > 100){
-							volume = 100
-						}
-						this.props.mopidyActions.setVolume(volume);
-						if (this.props.mute){
-							this.props.mopidyActions.setMute(false);
-						}
-					this.props.uiActions.createNotification({content: 'volume-up', type: 'shortcut', key: 'shortcut', duration: 1});
-					}
-				}
-				break;
-
-			case 37: // left
-				if (e.altKey && e.shiftKey){
-					var new_position = this.props.play_time_position - 30000;
-					if (new_position < 0){
-						new_position = 0;;
-					}
-					this.props.mopidyActions.setTimePosition(new_position);
-					this.props.uiActions.createNotification({content: 'fast-backward', type: 'shortcut', key: 'shortcut', duration: 1});
-				} else if (e.altKey){
-					this.props.mopidyActions.previous();
-					this.props.uiActions.createNotification({content: 'step-backward', type: 'shortcut', key: 'shortcut', duration: 1});
-				}
-				break;
-
-			case 39: // right
-				if (e.altKey && e.shiftKey){
-					this.props.mopidyActions.setTimePosition(this.props.play_time_position + 30000);
-					this.props.uiActions.createNotification({content: 'fast-forward', type: 'shortcut', key: 'shortcut', duration: 1});
-				} else if (e.altKey){
-					this.props.mopidyActions.next();
-					this.props.uiActions.createNotification({content: 'step-forward', type: 'shortcut', key: 'shortcut', duration: 1});
-				}
-				break;
-
-			case 70: // F
-				if (e.altKey && e.shiftKey){
-					this.props.history.push('/kiosk-mode');
-				}
-				break;
-		}
 	}
 
 	render(){
@@ -386,7 +222,7 @@ export class App extends React.Component{
 
 						<Route>
 							<div>
-								<Sidebar />		        
+								<Sidebar />   
 						        <PlaybackControls history={this.props.history} />
 						        <main id="main" className="smooth-scroll">
 									<Switch>
@@ -431,6 +267,20 @@ export class App extends React.Component{
 			        
 		        </div>
 
+				<ResizeListener 
+					uiActions={this.props.uiActions}
+					slim_mode={this.props.slim_mode}
+				/>
+				{this.props.hotkeys_enabled && <Hotkeys 
+					mopidyActions={this.props.mopidyActions}
+					uiActions={this.props.uiActions}
+					volume={this.props.volume}
+					mute={this.props.mute}
+					play_state={this.props.play_state}
+					play_time_position={this.props.play_time_position}
+					history={this.props.history}
+					dragging={this.props.dragger && this.props.dragger.dragging}
+				/>} 
 		        <ContextMenu />
 		        <Dragger />
 		        <Notifications 
@@ -455,7 +305,7 @@ const mapStateToProps = (state, ownProps) => {
 	return {
 		theme: state.ui.theme,
 		smooth_scrolling_enabled: state.ui.smooth_scrolling_enabled,
-		shortkeys_enabled: state.ui.shortkeys_enabled,
+		hotkeys_enabled: state.ui.hotkeys_enabled,
 		allow_reporting: state.ui.allow_reporting,
 		touch_dragging: state.ui.touch_dragging,
 		initial_setup_complete: state.ui.initial_setup_complete,

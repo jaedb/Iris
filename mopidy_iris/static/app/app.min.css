@@ -2461,6 +2461,15 @@
 .mid_grey-background {
   background-color: #a3a19f !important; }
 
+.soft_grey-text {
+  color: #51504e !important; }
+
+.soft_grey-border {
+  border-color: #51504e !important; }
+
+.soft_grey-background {
+  background-color: #51504e !important; }
+
 .grey-text {
   color: #383734 !important; }
 
@@ -2723,9 +2732,6 @@ main {
 	 **/
   -webkit-overflow-scrolling: touch;
   /* All children between <main> and the parallax need this to work in Firefox */ }
-  @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
-    main {
-      bottom: 56px; } }
   .notouch main::-webkit-scrollbar {
     width: 8px;
     height: 8px; }
@@ -2791,7 +2797,7 @@ h1 {
   font-size: 3.4rem;
   line-height: 3.4rem; }
   .light-theme h1 {
-    color: #181818; }
+    color: #383734; }
 
 h2 {
   font-family: "Overpass";
@@ -3324,6 +3330,39 @@ select {
   .text-button.destructive {
     color: #cf2d2d; }
 
+.action {
+  position: relative;
+  cursor: pointer; }
+
+@keyframes click_feedback {
+  0% {
+    top: 50%;
+    left: 0;
+    width: 100%;
+    padding-bottom: 100%;
+    opacity: 1; }
+  100% {
+    top: 25%;
+    left: -25%;
+    width: 150%;
+    padding-bottom: 150%;
+    opacity: 0; } }
+  .action:after {
+    content: '';
+    display: block;
+    position: absolute;
+    background: rgba(255, 255, 255, 0.5);
+    z-index: 1;
+    opacity: 0;
+    border-radius: 50%;
+    margin-top: -50%;
+    pointer-events: none; }
+  .action:focus:after, .action:active:after {
+    animation-name: click_feedback;
+    animation-duration: 0.2s;
+    animation-timing-function: ease-out;
+    animation-iteration-count: 1; }
+
 .button {
   -webkit-transition: all 0.2s ease-in-out;
   -moz-transition: all 0.2s ease-in-out;
@@ -3502,8 +3541,6 @@ select {
     content: '';
     clear: both;
     display: block; }
-  .field .icon {
-    padding-right: 0.32em; }
   .field > .name {
     display: block;
     padding-top: 10px;
@@ -4364,7 +4401,6 @@ select {
     direction: ltr;
     vertical-align: bottom;
     font-size: 1.3em;
-    margin-bottom: 0.1em;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     -moz-osx-font-smoothing: grayscale;
@@ -5024,6 +5060,8 @@ select {
       .sidebar__menu__item--active {
         background: #08d58f;
         color: #FFFFFF; }
+        .light-theme .sidebar__menu__item--active {
+          color: #FFFFFF; }
         .sidebar__menu__item--active .status .icon {
           color: #FFFFFF !important; }
         .sidebar__menu__item--active:before {
@@ -5926,21 +5964,11 @@ main header {
       color: #121212; }
     .sources-priority-field .source:hover {
       background: rgba(255, 255, 255, 0.2); }
-    .sources-priority-field .source:focus, .sources-priority-field .source:active {
-      -webkit-transition: none !important;
-      -moz-transition: none !important;
-      -o-transition: none !important;
-      transition: none !important;
-      background: #32b5f2;
-      color: #FFFFFF; }
     .light-theme .sources-priority-field .source {
       background: #f4f2f0;
       color: inherit; }
       .light-theme .sources-priority-field .source:hover {
         background: #ebe8e4; }
-      .light-theme .sources-priority-field .source:focus, .light-theme .sources-priority-field .source:active {
-        background: #32b5f2;
-        color: #FFFFFF; }
 
 .sub-views__option {
   font-family: "Overpass";
@@ -6346,7 +6374,7 @@ main header {
   margin-right: 6px;
   z-index: 1; }
   .commands__item__icon {
-    padding-top: 6px;
+    padding-top: 7px;
     padding-right: 0 !important;
     font-size: 12px; }
   .commands__item__background {
@@ -6360,6 +6388,12 @@ main header {
     z-index: -1;
     border-radius: 50%;
     opacity: 1; }
+  .commands__item--small {
+    width: 20px;
+    height: 20px; }
+    .commands__item--small .commands__item__icon {
+      padding-top: 5px;
+      font-size: 10px; }
   .commands__item--large {
     width: 32px;
     height: 32px; }
@@ -6450,6 +6484,9 @@ main header {
     margin: 0; }
   .error-message__trace {
     padding: 10px; }
+
+.sortable-ghost {
+  opacity: 0.15; }
 
 .artist-view .body-loader:not(.lazy-loader) {
   padding: 15vh 0; }
@@ -6908,11 +6945,6 @@ main .track-view {
     .discover-view .intro__liner h2 {
       padding-bottom: 8px;
       color: #a3a19f; }
-    .light-theme .discover-view .intro__liner h1 {
-      color: #FFFFFF; }
-    .light-theme .discover-view .intro__liner h2 {
-      color: #FFFFFF;
-      opacity: 0.75; }
   .discover-view .intro__parameters {
     padding-top: 40px; }
     .discover-view .intro__parameters::after {
@@ -7101,17 +7133,22 @@ main .track-view {
   .settings-view .commands-setup__item {
     position: relative;
     padding-top: 10px;
-    padding-bottom: 10px; }
+    padding-bottom: 10px;
+    vertical-align: top; }
     .settings-view .commands-setup__item .commands__item {
-      float: left;
-      margin-bottom: -5px; }
+      display: inline-block;
+      margin: 0; }
+    .settings-view .commands-setup__item__drag-handle {
+      cursor: move;
+      padding-right: 0.5em; }
     .settings-view .commands-setup__item__url {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       max-width: 100%;
-      padding-top: 5px;
-      padding-left: 10px; }
+      padding-left: 10px;
+      display: inline-block;
+      margin-bottom: -5px; }
     .settings-view .commands-setup__item__actions {
       position: absolute;
       top: 16px;

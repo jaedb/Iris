@@ -216,6 +216,13 @@ export function setCommand(command){
     }
 }
 
+export function setCommands(commands){
+    return {
+        type: 'PUSHER_SET_COMMANDS',
+        commands: commands
+    }
+}
+
 export function removeCommand(id){
     return {
         type: 'PUSHER_REMOVE_COMMAND',
@@ -223,9 +230,9 @@ export function removeCommand(id){
     }
 }
 
-export function sendCommand(id, notify = false){
+export function runCommand(id, notify = false){
     return {
-        type: 'PUSHER_SEND_COMMAND',
+        type: 'PUSHER_RUN_COMMAND',
         id: id,
         notify: notify
     }

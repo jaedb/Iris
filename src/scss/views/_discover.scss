@@ -21,17 +21,6 @@
 				padding-bottom: 8px;
 				color: colour(mid_grey);
 			}
-
-			.light-theme & {
-				h1 {
-					color: colour(white);
-				}
-
-				h2 {
-					color: colour(white);
-					opacity: 0.75;
-				}
-			}
 		}
 
 		&__parameters {

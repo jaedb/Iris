@@ -101,25 +101,5 @@ const config = {
 	devtool: (isDev ? 'source-map': false)
 };
 
-/**
- * Development-only configuration values
- **/
-if (isDev){
-	
-/**
- * Production-only configuration values
- **/
-} else {
-	
-	// re-iterate our production value as a string (for ReactJS building)
-	config.plugins.push(
-		new webpack.DefinePlugin({
-			'process.env':{
-				'NODE_ENV': JSON.stringify('production')
-			}
-		})
-	);
-}
-
 // now export our collated config object
 module.exports = config;

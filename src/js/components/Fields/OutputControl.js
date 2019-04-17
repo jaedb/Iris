@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux';
 import VolumeControl from './VolumeControl';
 import MuteControl from './MuteControl';
 import Icon from '../Icon';
+import * as helpers from '../../helpers';
 
 import * as coreActions from '../../services/core/actions';
 import * as pusherActions from '../../services/pusher/actions';
@@ -136,6 +137,8 @@ class OutputControl extends React.Component{
 					commands_items.push(this.props.pusher_commands[key]);
 				}
 			}
+        
+			commands_items = helpers.sortItems(commands_items, 'sort_order');
 
 			if (commands_items.length > 0){
 				has_outputs = true;
@@ -147,7 +150,7 @@ class OutputControl extends React.Component{
 									<div 
 										key={command.id}
 										className="commands__item commands__item--interactive"
-										onClick={e => this.props.pusherActions.sendCommand(command.id)}>
+										onClick={e => this.props.pusherActions.runCommand(command.id)}>
 											<Icon className="commands__item__icon" name={command.icon} />
 											<span className={command.colour+'-background commands__item__background'}></span>
 									</div>
@@ -187,7 +190,7 @@ class OutputControl extends React.Component{
 		} else {
 			
 			// No customisable outputs
-			if (!this.props.http_streaming_enabled && !this.props.snapcast_enabled){
+			if (!this.props.http_streaming_enabled && !this.props.snapcast_enabled && !this.props.pusher_commands){
 				return (
 					<span className="output-control disabled">
 						<a className="control speakers"><Icon name="speaker" /></a>

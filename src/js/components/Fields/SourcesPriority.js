@@ -35,6 +35,9 @@ export default class SourcesPriority extends React.Component{
 
 		return (
 			<Sortable
+				options={{
+					animation: 150
+				}}
 				className={className}
 				onChange={(order, sortable, e) => {
 					this.handleSort(order)

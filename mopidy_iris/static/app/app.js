@@ -51724,10 +51724,6 @@ var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactDom = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
-
-var _reactDom2 = _interopRequireDefault(_reactDom);
-
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
 var _reactRouterDom = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
@@ -51758,13 +51754,17 @@ var _Notifications = __webpack_require__(/*! ./components/Notifications */ "./sr
 
 var _Notifications2 = _interopRequireDefault(_Notifications);
 
+var _ResizeListener = __webpack_require__(/*! ./components/ResizeListener */ "./src/js/components/ResizeListener.js");
+
+var _ResizeListener2 = _interopRequireDefault(_ResizeListener);
+
+var _Hotkeys = __webpack_require__(/*! ./components/Hotkeys */ "./src/js/components/Hotkeys.js");
+
+var _Hotkeys2 = _interopRequireDefault(_Hotkeys);
+
 var _DebugInfo = __webpack_require__(/*! ./components/DebugInfo */ "./src/js/components/DebugInfo.js");
 
 var _DebugInfo2 = _interopRequireDefault(_DebugInfo);
-
-var _ErrorBoundary = __webpack_require__(/*! ./components/ErrorBoundary */ "./src/js/components/ErrorBoundary.js");
-
-var _ErrorBoundary2 = _interopRequireDefault(_ErrorBoundary);
 
 var _ErrorMessage = __webpack_require__(/*! ./components/ErrorMessage */ "./src/js/components/ErrorMessage.js");
 
@@ -51950,9 +51950,6 @@ var App = exports.App = function (_React$Component) {
 
 		var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
-		_this.handleKeyUp = _this.handleKeyUp.bind(_this);
-		_this.handleKeyDown = _this.handleKeyDown.bind(_this);
-		_this.handleWindowResize = _this.handleWindowResize.bind(_this);
 		_this.handleInstallPrompt = _this.handleInstallPrompt.bind(_this);
 		_this.handleFocusAndBlur = _this.handleFocusAndBlur.bind(_this);
 		return _this;
@@ -51961,9 +51958,6 @@ var App = exports.App = function (_React$Component) {
 	_createClass(App, [{
 		key: 'componentWillMount',
 		value: function componentWillMount() {
-			window.addEventListener("keyup", this.handleKeyUp, false);
-			window.addEventListener("keydown", this.handleKeyDown, false);
-			window.addEventListener("resize", this.handleWindowResize, false);
 			window.addEventListener("beforeinstallprompt", this.handleInstallPrompt, false);
 			window.addEventListener("focus", this.handleFocusAndBlur, false);
 			window.addEventListener("blur", this.handleFocusAndBlur, false);
@@ -51971,9 +51965,6 @@ var App = exports.App = function (_React$Component) {
 	}, {
 		key: 'componentWillUnmount',
 		value: function componentWillUnmount() {
-			window.removeEventListener("keyup", this.handleKeyUp, false);
-			window.removeEventListener("keydown", this.handleKeyDown, false);
-			window.removeEventListener("resize", this.handleWindowResize, false);
 			window.removeEventListener("beforeinstallprompt", this.handleInstallPrompt, false);
 			window.removeEventListener("focus", this.handleFocusAndBlur, false);
 			window.removeEventListener("blur", this.handleFocusAndBlur, false);
@@ -51991,9 +51982,6 @@ var App = exports.App = function (_React$Component) {
 			this.props.mopidyActions.connect();
 			this.props.pusherActions.connect();
 			this.props.coreActions.getBroadcasts();
-
-			// Check our slim_mode
-			this.handleWindowResize(null);
 
 			// Check for url-parsed configuration values
 			var url_vars = this.props.location.query;
@@ -52057,39 +52045,6 @@ var App = exports.App = function (_React$Component) {
 				}
 			};
 		}
-	}, {
-		key: 'shouldTriggerShortcut',
-		value: function shouldTriggerShortcut(e) {
-			if (!this.props.shortkeys_enabled) {
-				return false;
-			}
-			var keyCode = e.keyCode || e.which;
-
-			// When we're focussed on certian elements, don't fire any shortcuts
-			// Typically form inputs
-			var ignoreNodes = ['INPUT', 'TEXTAREA'];
-			if (ignoreNodes.indexOf(e.target.nodeName) > -1) {
-				return false;
-			}
-
-			var hotkeys = [27, 32, 191];
-			if (hotkeys.indexOf(keyCode) > -1) {
-				e.preventDefault();
-				return true;
-			}
-
-			var hokeys_with_alt = [37, 38, 39, 40];
-			if (e.altKey && hokeys_with_alt.indexOf(keyCode) > -1) {
-				e.preventDefault();
-				return true;
-			}
-
-			var hokeys_with_alt_and_shift = [70];
-			if (e.altKey && e.shiftKey && hokeys_with_alt_and_shift.indexOf(keyCode) > -1) {
-				e.preventDefault();
-				return true;
-			}
-		}
 
 		/**
    * Using Visibility API, detect whether the browser is in focus or not
@@ -52112,136 +52067,6 @@ var App = exports.App = function (_React$Component) {
 			e.preventDefault();
 			console.log("Install prompt detected");
 			this.props.uiActions.installPrompt(e);
-		}
-	}, {
-		key: 'handleWindowResize',
-		value: function handleWindowResize(e) {
-			var width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-			var height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-
-			if (width <= 800) {
-				if (!this.props.slim_mode) {
-					this.props.uiActions.setSlimMode(true);
-				}
-			} else {
-				if (this.props.slim_mode) {
-					this.props.uiActions.setSlimMode(false);
-				}
-			}
-		}
-	}, {
-		key: 'handleKeyDown',
-		value: function handleKeyDown(e) {
-			this.shouldTriggerShortcut(e);
-		}
-	}, {
-		key: 'handleKeyUp',
-		value: function handleKeyUp(e) {
-			if (!this.shouldTriggerShortcut(e)) {
-				return;
-			}
-
-			switch (e.keyCode || e.which) {
-
-				case 32:
-					// spacebar
-					if (e.ctrlKey || e.metaKey) {
-						this.props.mopidyActions.stop();
-						this.props.uiActions.createNotification({ content: 'stop', type: 'shortcut', key: 'shortcut', duration: 1 });
-					} else if (this.props.play_state == 'playing') {
-						this.props.mopidyActions.pause();
-						this.props.uiActions.createNotification({ content: 'pause', type: 'shortcut', key: 'shortcut', duration: 1 });
-					} else {
-						this.props.mopidyActions.play();
-						this.props.uiActions.createNotification({ content: 'play', type: 'shortcut', key: 'shortcut', duration: 1 });
-					}
-					break;
-
-				case 27:
-					// esc
-					if (this.props.dragger && this.props.dragger.dragging) {
-						this.props.uiActions.dragEnd();
-					}
-					break;
-
-				case 40:
-					// down
-					if (e.altKey && e.shiftKey) {
-						this.props.mopidyActions.setMute(true);
-						this.props.uiActions.createNotification({ content: 'volume-off', type: 'shortcut', key: 'shortcut', duration: 1 });
-					} else if (e.altKey) {
-						var volume = this.props.volume;
-						if (volume !== 'false') {
-							volume -= 5;
-							if (volume < 0) {
-								volume = 0;
-							}
-							this.props.mopidyActions.setVolume(volume);
-							if (this.props.mute) {
-								this.props.mopidyActions.setMute(false);
-							}
-							this.props.uiActions.createNotification({ content: 'volume-down', type: 'shortcut', key: 'shortcut', duration: 1 });
-						}
-					}
-					break;
-
-				case 38:
-					// up
-					if (e.altKey && e.shiftKey) {
-						this.props.mopidyActions.setVolume(100);
-						if (this.props.mute) {
-							this.props.mopidyActions.setMute(false);
-						}
-						this.props.uiActions.createNotification({ content: 'volume-up', type: 'shortcut', key: 'shortcut', duration: 1 });
-					} else if (e.altKey) {
-						var volume = this.props.volume;
-						if (volume !== 'false') {
-							volume += 5;
-							if (volume > 100) {
-								volume = 100;
-							}
-							this.props.mopidyActions.setVolume(volume);
-							if (this.props.mute) {
-								this.props.mopidyActions.setMute(false);
-							}
-							this.props.uiActions.createNotification({ content: 'volume-up', type: 'shortcut', key: 'shortcut', duration: 1 });
-						}
-					}
-					break;
-
-				case 37:
-					// left
-					if (e.altKey && e.shiftKey) {
-						var new_position = this.props.play_time_position - 30000;
-						if (new_position < 0) {
-							new_position = 0;;
-						}
-						this.props.mopidyActions.setTimePosition(new_position);
-						this.props.uiActions.createNotification({ content: 'fast-backward', type: 'shortcut', key: 'shortcut', duration: 1 });
-					} else if (e.altKey) {
-						this.props.mopidyActions.previous();
-						this.props.uiActions.createNotification({ content: 'step-backward', type: 'shortcut', key: 'shortcut', duration: 1 });
-					}
-					break;
-
-				case 39:
-					// right
-					if (e.altKey && e.shiftKey) {
-						this.props.mopidyActions.setTimePosition(this.props.play_time_position + 30000);
-						this.props.uiActions.createNotification({ content: 'fast-forward', type: 'shortcut', key: 'shortcut', duration: 1 });
-					} else if (e.altKey) {
-						this.props.mopidyActions.next();
-						this.props.uiActions.createNotification({ content: 'step-forward', type: 'shortcut', key: 'shortcut', duration: 1 });
-					}
-					break;
-
-				case 70:
-					// F
-					if (e.altKey && e.shiftKey) {
-						this.props.history.push('/kiosk-mode');
-					}
-					break;
-			}
 		}
 	}, {
 		key: 'render',
@@ -52345,6 +52170,20 @@ var App = exports.App = function (_React$Component) {
 						)
 					)
 				),
+				_react2.default.createElement(_ResizeListener2.default, {
+					uiActions: this.props.uiActions,
+					slim_mode: this.props.slim_mode
+				}),
+				this.props.hotkeys_enabled && _react2.default.createElement(_Hotkeys2.default, {
+					mopidyActions: this.props.mopidyActions,
+					uiActions: this.props.uiActions,
+					volume: this.props.volume,
+					mute: this.props.mute,
+					play_state: this.props.play_state,
+					play_time_position: this.props.play_time_position,
+					history: this.props.history,
+					dragging: this.props.dragger && this.props.dragger.dragging
+				}),
 				_react2.default.createElement(_ContextMenu2.default, null),
 				_react2.default.createElement(_Dragger2.default, null),
 				_react2.default.createElement(_Notifications2.default, {
@@ -52369,7 +52208,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
 		theme: state.ui.theme,
 		smooth_scrolling_enabled: state.ui.smooth_scrolling_enabled,
-		shortkeys_enabled: state.ui.shortkeys_enabled,
+		hotkeys_enabled: state.ui.hotkeys_enabled,
 		allow_reporting: state.ui.allow_reporting,
 		touch_dragging: state.ui.touch_dragging,
 		initial_setup_complete: state.ui.initial_setup_complete,
@@ -54263,10 +54102,6 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
 
-var _Link = __webpack_require__(/*! ./Link */ "./src/js/components/Link.js");
-
-var _Link2 = _interopRequireDefault(_Link);
-
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
 var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
@@ -55076,6 +54911,187 @@ exports.default = (0, _react.memo)(function (props) {
 		})
 	);
 });
+
+/***/ }),
+
+/***/ "./src/js/components/Fields/Commands.js":
+/*!**********************************************!*\
+  !*** ./src/js/components/Fields/Commands.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactSortablejs = __webpack_require__(/*! react-sortablejs */ "./node_modules/react-sortablejs/lib/index.js");
+
+var _reactSortablejs2 = _interopRequireDefault(_reactSortablejs);
+
+var _Icon = __webpack_require__(/*! ../Icon */ "./src/js/components/Icon.js");
+
+var _Icon2 = _interopRequireDefault(_Icon);
+
+var _Link = __webpack_require__(/*! ../Link */ "./src/js/components/Link.js");
+
+var _Link2 = _interopRequireDefault(_Link);
+
+var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
+
+var helpers = _interopRequireWildcard(_helpers);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Commands = function (_React$Component) {
+    _inherits(Commands, _React$Component);
+
+    function Commands(props) {
+        _classCallCheck(this, Commands);
+
+        return _possibleConstructorReturn(this, (Commands.__proto__ || Object.getPrototypeOf(Commands)).call(this, props));
+    }
+
+    _createClass(Commands, [{
+        key: 'onChange',
+        value: function onChange(order) {
+            var commands = {};
+            for (var i = 0; i <= order.length; i++) {
+                var command = this.props.commands[order[i]];
+                if (command) {
+                    commands[command.id] = _extends({}, command, { sort_order: i });
+                }
+            }
+
+            this.props.onChange(commands);
+        }
+    }, {
+        key: 'commands',
+        value: function commands() {
+            var commands = [];
+
+            if (this.props.commands) {
+                var _iteratorNormalCompletion = true;
+                var _didIteratorError = false;
+                var _iteratorError = undefined;
+
+                try {
+                    for (var _iterator = Object.keys(this.props.commands)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                        var key = _step.value;
+
+                        commands.push(_extends({}, this.props.commands[key]));
+                    }
+                } catch (err) {
+                    _didIteratorError = true;
+                    _iteratorError = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion && _iterator.return) {
+                            _iterator.return();
+                        }
+                    } finally {
+                        if (_didIteratorError) {
+                            throw _iteratorError;
+                        }
+                    }
+                }
+            }
+
+            commands = helpers.sortItems(commands, 'sort_order');
+
+            return commands;
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var _this2 = this;
+
+            var commands = this.commands();
+
+            if (!commands) {
+                return null;
+            }
+
+            return _react2.default.createElement(
+                _reactSortablejs2.default,
+                {
+                    options: {
+                        handle: ".commands-setup__item__drag-handle",
+                        animation: 150
+                    },
+                    className: 'list commands-setup',
+                    onChange: function onChange(order, sortable, e) {
+                        _this2.onChange(order);
+                    } },
+                commands.map(function (command) {
+                    return _react2.default.createElement(
+                        'div',
+                        { className: 'list__item commands-setup__item list__item--no-interaction', key: command.id, 'data-id': command.id },
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'col col--w90' },
+                            _react2.default.createElement(_Icon2.default, { className: 'commands-setup__item__drag-handle', name: 'drag_indicator' }),
+                            _react2.default.createElement(
+                                'div',
+                                { className: 'commands-setup__item__command-item commands__item commands__item--small' },
+                                _react2.default.createElement(_Icon2.default, { className: 'commands__item__icon', name: command.icon }),
+                                _react2.default.createElement('span', { className: command.colour + '-background commands__item__background' })
+                            ),
+                            _react2.default.createElement(
+                                'div',
+                                { className: 'commands-setup__item__url commands__item__url' },
+                                command.name ? command.name : _react2.default.createElement(
+                                    'span',
+                                    { className: 'grey-text' },
+                                    command.url
+                                )
+                            )
+                        ),
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'commands-setup__item__actions' },
+                            _react2.default.createElement(
+                                'a',
+                                { className: 'commands-setup__item__run-button action', onClick: function onClick(e) {
+                                        return _this2.props.runCommand(command.id, true);
+                                    } },
+                                _react2.default.createElement(_Icon2.default, { name: 'play_arrow' })
+                            ),
+                            _react2.default.createElement(
+                                _Link2.default,
+                                { className: 'commands-setup__item__edit-button action', to: '/edit-command/' + command.id },
+                                _react2.default.createElement(_Icon2.default, { name: 'edit' })
+                            )
+                        )
+                    );
+                })
+            );
+        }
+    }]);
+
+    return Commands;
+}(_react2.default.Component);
+
+exports.default = Commands;
 
 /***/ }),
 
@@ -56733,6 +56749,10 @@ var _Icon = __webpack_require__(/*! ../Icon */ "./src/js/components/Icon.js");
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
+var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
+
+var helpers = _interopRequireWildcard(_helpers);
+
 var _actions = __webpack_require__(/*! ../../services/core/actions */ "./src/js/services/core/actions.js");
 
 var coreActions = _interopRequireWildcard(_actions);
@@ -56915,6 +56935,8 @@ var OutputControl = function (_React$Component) {
 					}
 				}
 
+				commands_items = helpers.sortItems(commands_items, 'sort_order');
+
 				if (commands_items.length > 0) {
 					has_outputs = true;
 					commands = _react2.default.createElement(
@@ -56927,7 +56949,7 @@ var OutputControl = function (_React$Component) {
 									key: command.id,
 									className: 'commands__item commands__item--interactive',
 									onClick: function onClick(e) {
-										return _this2.props.pusherActions.sendCommand(command.id);
+										return _this2.props.pusherActions.runCommand(command.id);
 									} },
 								_react2.default.createElement(_Icon2.default, { className: 'commands__item__icon', name: command.icon }),
 								_react2.default.createElement('span', { className: command.colour + '-background commands__item__background' })
@@ -56978,7 +57000,7 @@ var OutputControl = function (_React$Component) {
 			} else {
 
 				// No customisable outputs
-				if (!this.props.http_streaming_enabled && !this.props.snapcast_enabled) {
+				if (!this.props.http_streaming_enabled && !this.props.snapcast_enabled && !this.props.pusher_commands) {
 					return _react2.default.createElement(
 						'span',
 						{ className: 'output-control disabled' },
@@ -57368,6 +57390,9 @@ var SourcesPriority = function (_React$Component) {
 			return _react2.default.createElement(
 				_reactSortablejs2.default,
 				{
+					options: {
+						animation: 150
+					},
 					className: className,
 					onChange: function onChange(order, sortable, e) {
 						_this2.handleSort(order);
@@ -58116,6 +58141,195 @@ exports.default = Header;
 
 /***/ }),
 
+/***/ "./src/js/components/Hotkeys.js":
+/*!**************************************!*\
+  !*** ./src/js/components/Hotkeys.js ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Hotkeys = function (_React$Component) {
+    _inherits(Hotkeys, _React$Component);
+
+    function Hotkeys(props) {
+        _classCallCheck(this, Hotkeys);
+
+        var _this = _possibleConstructorReturn(this, (Hotkeys.__proto__ || Object.getPrototypeOf(Hotkeys)).call(this, props));
+
+        _this.handleKeyDown = _this.handleKeyDown.bind(_this);
+        return _this;
+    }
+
+    _createClass(Hotkeys, [{
+        key: "componentWillMount",
+        value: function componentWillMount() {
+            window.addEventListener("keydown", this.handleKeyDown, false);
+        }
+    }, {
+        key: "componentWillUnmount",
+        value: function componentWillUnmount() {
+            window.removeEventListener("keydown", this.handleKeyDown, false);
+        }
+    }, {
+        key: "handleKeyDown",
+        value: function handleKeyDown(e) {
+
+            // When we're focussed on certian elements, don't fire any shortcuts
+            // Typically form inputs
+            var ignoreNodes = ['INPUT', 'TEXTAREA'];
+            if (ignoreNodes.indexOf(e.target.nodeName) > -1) {
+                return;
+            }
+
+            // Ignore when there are any key modifiers. This enables us to avoid interfering
+            // with browser- and OS-default functions.
+            if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) {
+                return;
+            }
+
+            switch (e.key.toLowerCase()) {
+
+                case " ":
+                    if (this.props.play_state == 'playing') {
+                        this.props.mopidyActions.pause();
+                        this.props.uiActions.createNotification({ content: 'pause', type: 'shortcut' });
+                    } else {
+                        this.props.mopidyActions.play();
+                        this.props.uiActions.createNotification({ content: 'play_arrow', type: 'shortcut' });
+                    }
+                    break;
+
+                case "escape":
+                    if (this.props.dragging) {
+                        this.props.uiActions.dragEnd();
+                    } else if (this.props.modal) {
+                        window.history.back();
+                    }
+                    break;
+
+                case "s":
+                    this.props.history.push('/search');
+                    break;
+
+                case "c":
+                    this.props.history.push('/queue');
+                    break;
+
+                case "k":
+                    this.props.history.push('/kiosk-mode');
+                    break;
+
+                case ",":
+                    window.history.back();
+                    break;
+
+                case ".":
+                    window.history.forward();
+                    break;
+
+                case "l":
+                    var volume = this.props.volume;
+                    if (volume !== 'false') {
+                        volume += 5;
+                        if (volume > 100) {
+                            volume = 100;
+                        }
+                        this.props.mopidyActions.setVolume(volume);
+                        if (this.props.mute) {
+                            this.props.mopidyActions.setMute(false);
+                        }
+                        this.props.uiActions.createNotification({ content: 'volume_up', type: 'shortcut' });
+                    }
+                    break;
+
+                case "q":
+                    var volume = this.props.volume;
+                    if (volume !== 'false') {
+                        volume -= 5;
+                        if (volume < 0) {
+                            volume = 0;
+                        }
+                        this.props.mopidyActions.setVolume(volume);
+                        if (this.props.mute) {
+                            this.props.mopidyActions.setMute(false);
+                        }
+                    }
+                    this.props.uiActions.createNotification({ content: 'volume_down', type: 'shortcut' });
+                    break;
+
+                case "m":
+                    if (this.props.mute) {
+                        this.props.mopidyActions.setMute(false);
+                        this.props.uiActions.createNotification({ content: 'volume_up', type: 'shortcut' });
+                    } else {
+                        this.props.mopidyActions.setMute(true);
+                        this.props.uiActions.createNotification({ content: 'volume_off', type: 'shortcut' });
+                    }
+                    break;
+
+                case "r":
+                    var new_position = this.props.play_time_position - 30000;
+                    if (new_position < 0) {
+                        new_position = 0;;
+                    }
+                    this.props.mopidyActions.setTimePosition(new_position);
+                    this.props.uiActions.createNotification({ content: 'fast_rewind', type: 'shortcut' });
+                    break;
+
+                case "f":
+                    this.props.mopidyActions.setTimePosition(this.props.play_time_position + 30000);
+                    this.props.uiActions.createNotification({ content: 'fast_forward', type: 'shortcut' });
+                    break;
+
+                case "p":
+                    this.props.mopidyActions.previous();
+                    this.props.uiActions.createNotification({ content: 'skip_previous', type: 'shortcut' });
+                    break;
+
+                case "n":
+                    this.props.mopidyActions.next();
+                    this.props.uiActions.createNotification({ content: 'skip_next', type: 'shortcut' });
+                    break;
+            }
+
+            e.preventDefault();
+            return false;
+        }
+    }, {
+        key: "render",
+        value: function render() {
+            return null;
+        }
+    }]);
+
+    return Hotkeys;
+}(_react2.default.Component);
+
+exports.default = Hotkeys;
+
+/***/ }),
+
 /***/ "./src/js/components/Icon.js":
 /*!***********************************!*\
   !*** ./src/js/components/Icon.js ***!
@@ -58153,17 +58367,17 @@ exports.default = (0, _react.memo)(function (props) {
 	switch (props.type) {
 		case 'svg':
 			return _react2.default.createElement('img', { className: className, src: '/iris/assets/icons/' + props.name + '.svg', onClick: function onClick(e) {
-					return props.handleClick ? props.handleClick(e) : null;
+					return props.onClick ? props.onClick(e) : null;
 				} });
 
 		case 'gif':
 			return _react2.default.createElement('img', { className: className, src: '/iris/assets/icons/' + props.name + '.gif', onClick: function onClick(e) {
-					return props.handleClick ? props.handleClick(e) : null;
+					return props.onClick ? props.onClick(e) : null;
 				} });
 
 		case 'fontawesome':
 			return _react2.default.createElement(_reactFontawesome2.default, { className: className, type: 'fontawesome', name: props.name, onClick: function onClick(e) {
-					return props.handleClick ? props.handleClick(e) : null;
+					return props.onClick ? props.onClick(e) : null;
 				} });
 
 		case 'css':
@@ -58182,7 +58396,7 @@ exports.default = (0, _react.memo)(function (props) {
 			return _react2.default.createElement(
 				'i',
 				{ className: className, onClick: function onClick(e) {
-						return props.handleClick ? props.handleClick(e) : null;
+						return props.onClick ? props.onClick(e) : null;
 					} },
 				props.name
 			);
@@ -58992,7 +59206,7 @@ var Notifications = function (_React$Component) {
 							return _react2.default.createElement(
 								'div',
 								{ className: "notification notification--shortcut" + (notification.closing ? ' closing' : ''), key: notification.key, 'data-duration': notification.duration },
-								_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: notification.content })
+								_react2.default.createElement(_Icon2.default, { name: notification.content })
 							);
 
 						case 'share-configuration-received':
@@ -60318,6 +60532,42 @@ exports.default = (0, _react.memo)(function (props) {
 		})
 	);
 });
+
+/***/ }),
+
+/***/ "./src/js/components/ResizeListener.js":
+/*!*********************************************!*\
+  !*** ./src/js/components/ResizeListener.js ***!
+  \*********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+exports.default = function (props) {
+	window.addEventListener("resize", handleWindowResize, false);
+
+	var handleWindowResize = function handleWindowResize(e) {
+		var width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+
+		if (width <= 800) {
+			if (!props.slim_mode) {
+				props.uiActions.setSlimMode(true);
+			}
+		} else {
+			if (props.slim_mode) {
+				props.uiActions.setSlimMode(false);
+			}
+		}
+	};
+
+	return null;
+};
 
 /***/ }),
 
@@ -65190,6 +65440,12 @@ function handleException(message) {
     var description = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
     var show_notification = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
 
+    if (!message && data.message) {
+        message = data.message;
+    }
+    if (!description && data.description) {
+        description = data.description;
+    }
     return {
         type: 'HANDLE_EXCEPTION',
         message: message,
@@ -71453,8 +71709,9 @@ exports.queueMetadataChanged = queueMetadataChanged;
 exports.addQueueMetadata = addQueueMetadata;
 exports.getCommands = getCommands;
 exports.setCommand = setCommand;
+exports.setCommands = setCommands;
 exports.removeCommand = removeCommand;
-exports.sendCommand = sendCommand;
+exports.runCommand = runCommand;
 exports.commandsUpdated = commandsUpdated;
 
 /**
@@ -71684,6 +71941,13 @@ function setCommand(command) {
 	};
 }
 
+function setCommands(commands) {
+	return {
+		type: 'PUSHER_SET_COMMANDS',
+		commands: commands
+	};
+}
+
 function removeCommand(id) {
 	return {
 		type: 'PUSHER_REMOVE_COMMAND',
@@ -71691,11 +71955,11 @@ function removeCommand(id) {
 	};
 }
 
-function sendCommand(id) {
+function runCommand(id) {
 	var notify = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
 	return {
-		type: 'PUSHER_SEND_COMMAND',
+		type: 'PUSHER_RUN_COMMAND',
 		id: id,
 		notify: notify
 	};
@@ -71718,7 +71982,7 @@ function commandsUpdated(commands) {
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {
+
 
 Object.defineProperty(exports, "__esModule", {
     value: true
@@ -72120,16 +72384,20 @@ var PusherMiddleware = function () {
                         break;
 
                     case 'PUSHER_SET_COMMAND':
-                        var commands_index = Object.assign({}, pusher.commands);
+                        var commands = Object.assign({}, pusher.commands);
 
-                        if (commands_index[action.command.id]) {
-                            var command = Object.assign({}, commands_index[action.command.id], action.command);
+                        if (commands[action.command.id]) {
+                            var command = Object.assign({}, commands[action.command.id], action.command);
                         } else {
                             var command = action.command;
                         }
-                        commands_index[action.command.id] = command;
+                        commands[action.command.id] = command;
 
-                        request(store, 'set_commands', { commands: commands_index }).then(function (response) {
+                        store.dispatch(pusherActions.setCommands(commands));
+                        break;
+
+                    case 'PUSHER_SET_COMMANDS':
+                        request(store, 'set_commands', { commands: action.commands }).then(function (response) {
                             // No action required, the change will be broadcast
                         }, function (error) {
                             store.dispatch(coreActions.handleException('Could not set commands', error));
@@ -72151,38 +72419,23 @@ var PusherMiddleware = function () {
                         next(action);
                         break;
 
-                    case 'PUSHER_SEND_COMMAND':
+                    case 'PUSHER_RUN_COMMAND':
                         var command = Object.assign({}, pusher.commands[action.id]);
                         var notification_key = 'command_' + action.id;
 
                         if (action.notify) {
-                            store.dispatch(uiActions.startProcess(notification_key, 'Sending command'));
+                            store.dispatch(uiActions.startProcess(notification_key, 'Running command'));
                         }
 
-                        try {
-                            var ajax_settings = JSON.parse(command.command);
-                        } catch (error) {
-                            store.dispatch(uiActions.createNotification({ key: notification_key, type: 'bad', content: 'Command failed', description: error }));
-                            break;
-                        }
-
-                        // Handle success and failure
-                        ajax_settings.success = function (response) {
-                            console.log("Command sent, response was:", response);
-
+                        request(store, 'run_command', { id: action.id }).then(function (response) {
+                            store.dispatch(uiActions.processFinished(notification_key));
                             if (action.notify) {
-                                store.dispatch(uiActions.processFinished(notification_key));
                                 store.dispatch(uiActions.createNotification({ key: notification_key, type: 'info', content: 'Command sent' }));
                             }
-                        };
-                        ajax_settings.error = function (xhr, status, error) {
-                            console.error("Command failed, response was:", xhr, error);
+                        }, function (error) {
                             store.dispatch(uiActions.processFinished(notification_key));
-                            store.dispatch(uiActions.createNotification({ key: notification_key, type: 'bad', content: 'Command failed', description: xhr.status + ": " + error }));
-                        };
-
-                        // Actually send the request
-                        $.ajax(ajax_settings);
+                            store.dispatch(coreActions.handleException('Could not run command', error));
+                        });
 
                         break;
 
@@ -72400,7 +72653,6 @@ var PusherMiddleware = function () {
 }();
 
 exports.default = PusherMiddleware;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
 
 /***/ }),
 
@@ -76187,6 +76439,11 @@ function createNotification(data) {
         data.content = data.message;
     }
 
+    // Shortcut notifications are short and sweet
+    if (data.type == 'shortcut') {
+        data.duration = 0.4;
+    }
+
     return {
         type: 'CREATE_NOTIFICATION',
         notification: Object.assign({
@@ -76817,7 +77074,6 @@ function reducer() {
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.state = undefined;
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
@@ -76860,6 +77116,10 @@ var _reducer16 = _interopRequireDefault(_reducer15);
 var _reducer17 = __webpack_require__(/*! ./services/genius/reducer */ "./src/js/services/genius/reducer.js");
 
 var _reducer18 = _interopRequireDefault(_reducer17);
+
+var _storeMigration = __webpack_require__(/*! ./storeMigration */ "./src/js/storeMigration.js");
+
+var _storeMigration2 = _interopRequireDefault(_storeMigration);
 
 var _reduxThunk = __webpack_require__(/*! redux-thunk */ "./node_modules/redux-thunk/es/index.js");
 
@@ -76909,7 +77169,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-var state = exports.state = {
+var state = {
 	core: {
 		outputs: [],
 		queue: [],
@@ -76927,7 +77187,7 @@ var state = exports.state = {
 	ui: {
 		theme: 'dark',
 		smooth_scrolling_enabled: true,
-		shortkeys_enabled: true,
+		hotkeys_enabled: true,
 		allow_reporting: true,
 		window_focus: true,
 		slim_mode: false,
@@ -76993,6 +77253,9 @@ state.genius = Object.assign({}, state.genius, helpers.getStorage('genius'));
 state.google = Object.assign({}, state.google, helpers.getStorage('google'));
 state.snapcast = Object.assign({}, state.snapcast, helpers.getStorage('snapcast'));
 
+// Run any migrations
+state = (0, _storeMigration2.default)(state);
+
 var reducers = (0, _redux.combineReducers)({
 	core: _reducer2.default,
 	ui: _reducer4.default,
@@ -77006,6 +77269,31 @@ var reducers = (0, _redux.combineReducers)({
 });
 
 exports.default = (0, _redux.createStore)(reducers, state, (0, _redux.applyMiddleware)(_reduxThunk2.default, _middleware20.default, _middleware2.default, _middleware4.default, _middleware8.default, _middleware6.default, _middleware14.default, _middleware10.default, _middleware12.default, _middleware16.default, _middleware18.default));
+
+/***/ }),
+
+/***/ "./src/js/storeMigration.js":
+/*!**********************************!*\
+  !*** ./src/js/storeMigration.js ***!
+  \**********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+exports.default = function (state) {
+
+    // Changed at 3.36
+    if (state.ui.shortkeys_enabled !== undefined) {
+        state.ui.hotkeys_enabled = state.ui.shortkeys_enabled;
+    }
+    return state;
+};
 
 /***/ }),
 
@@ -77267,7 +77555,7 @@ var Album = exports.Album = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: 'view album-view content-wrapper preserve-3d' },
-				_react2.default.createElement(_Parallax2.default, { image: album.images ? album.images.huge : null, blur: true }),
+				this.props.theme == 'dark' && _react2.default.createElement(_Parallax2.default, { image: album.images ? album.images.huge : null, blur: true }),
 				_react2.default.createElement(
 					'div',
 					{ className: 'thumbnail-wrapper' },
@@ -77388,6 +77676,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
 		uri: uri,
 		slim_mode: state.ui.slim_mode,
+		theme: state.ui.theme,
 		load_queue: state.ui.load_queue,
 		tracks: state.core.tracks,
 		artists: state.core.artists,
@@ -79046,7 +79335,7 @@ var Playlist = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: 'view playlist-view content-wrapper preserve-3d' },
-				_react2.default.createElement(_Parallax2.default, { image: playlist.images ? playlist.images.huge : null, blur: true }),
+				this.props.theme == 'dark' && _react2.default.createElement(_Parallax2.default, { image: playlist.images ? playlist.images.huge : null, blur: true }),
 				_react2.default.createElement(
 					'div',
 					{ className: 'thumbnail-wrapper' },
@@ -79151,6 +79440,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		uri: uri,
 		allow_reporting: state.ui.allow_reporting,
 		slim_mode: state.ui.slim_mode,
+		theme: state.ui.theme,
 		load_queue: state.ui.load_queue,
 		users: state.core.users,
 		tracks: state.core.tracks,
@@ -79446,7 +79736,7 @@ var Queue = function (_React$Component) {
 					_react2.default.createElement(_Icon2.default, { name: 'play_arrow', type: 'material' }),
 					'Now playing'
 				),
-				_react2.default.createElement(_Parallax2.default, { blur: true, image: current_track_image }),
+				this.props.theme == 'dark' && _react2.default.createElement(_Parallax2.default, { blur: true, image: current_track_image }),
 				_react2.default.createElement(
 					'div',
 					{ className: 'content-wrapper' },
@@ -80392,6 +80682,10 @@ var _SourcesPriority = __webpack_require__(/*! ../components/Fields/SourcesPrior
 
 var _SourcesPriority2 = _interopRequireDefault(_SourcesPriority);
 
+var _Commands = __webpack_require__(/*! ../components/Fields/Commands */ "./src/js/components/Fields/Commands.js");
+
+var _Commands2 = _interopRequireDefault(_Commands);
+
 var _Header = __webpack_require__(/*! ../components/Header */ "./src/js/components/Header.js");
 
 var _Header2 = _interopRequireDefault(_Header);
@@ -80399,14 +80693,6 @@ var _Header2 = _interopRequireDefault(_Header);
 var _Icon = __webpack_require__(/*! ../components/Icon */ "./src/js/components/Icon.js");
 
 var _Icon2 = _interopRequireDefault(_Icon);
-
-var _Thumbnail = __webpack_require__(/*! ../components/Thumbnail */ "./src/js/components/Thumbnail.js");
-
-var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
-
-var _URILink = __webpack_require__(/*! ../components/URILink */ "./src/js/components/URILink.js");
-
-var _URILink2 = _interopRequireDefault(_URILink);
 
 var _Services = __webpack_require__(/*! ../components/Services */ "./src/js/components/Services.js");
 
@@ -80592,70 +80878,9 @@ var Settings = function (_React$Component) {
 			);
 		}
 	}, {
-		key: 'renderCommands',
-		value: function renderCommands() {
-			var _this2 = this;
-
-			var commands = [];
-			if (this.props.pusher.commands) {
-				for (var id in this.props.pusher.commands) {
-					if (this.props.pusher.commands.hasOwnProperty(id)) {
-						var command = Object.assign({}, this.props.pusher.commands[id]);
-						try {
-							command.command = JSON.parse(command.command);
-						} catch (error) {
-							command.command = null;
-						}
-						commands.push(command);
-					}
-				}
-			}
-
-			if (commands.length <= 0) {
-				return null;
-			}
-
-			return _react2.default.createElement(
-				'div',
-				{ className: 'list commands-setup' },
-				commands.map(function (command) {
-					return _react2.default.createElement(
-						'div',
-						{ className: 'list__item commands-setup__item list__item--no-interaction', key: command.id },
-						_react2.default.createElement(
-							'div',
-							{ className: 'col col--w90' },
-							_react2.default.createElement(
-								'div',
-								{ className: 'commands__item commands__item--interactive', onClick: function onClick(e) {
-										return _this2.props.pusherActions.sendCommand(command.id, true);
-									} },
-								_react2.default.createElement(_Icon2.default, { className: 'commands__item__icon', name: command.icon }),
-								_react2.default.createElement('span', { className: command.colour + '-background commands__item__background' })
-							),
-							_react2.default.createElement(
-								'div',
-								{ className: 'commands-setup__item__url commands__item__url' },
-								command.command && command.command.url ? command.command.url : "-"
-							)
-						),
-						_react2.default.createElement(
-							'div',
-							{ className: 'commands-setup__item__actions' },
-							_react2.default.createElement(
-								_reactRouterDom.Link,
-								{ className: 'commands-setup__item__edit-button action', to: '/edit-command/' + command.id },
-								_react2.default.createElement(_Icon2.default, { name: 'edit' })
-							)
-						)
-					);
-				})
-			);
-		}
-	}, {
 		key: 'render',
 		value: function render() {
-			var _this3 = this;
+			var _this2 = this;
 
 			var options = _react2.default.createElement(
 				'span',
@@ -80663,7 +80888,7 @@ var Settings = function (_React$Component) {
 				_react2.default.createElement(
 					'a',
 					{ className: 'button button--default button--no-hover', onClick: function onClick(e) {
-							return _this3.props.history.push('/settings/debug');
+							return _this2.props.history.push('/settings/debug');
 						} },
 					_react2.default.createElement(_Icon2.default, { name: 'code' }),
 					'Debug'
@@ -80726,13 +80951,13 @@ var Settings = function (_React$Component) {
 							_react2.default.createElement('input', {
 								type: 'text',
 								onChange: function onChange(e) {
-									return _this3.handleUsernameChange(e.target.value);
+									return _this2.handleUsernameChange(e.target.value);
 								},
 								onFocus: function onFocus(e) {
-									return _this3.setState({ input_in_focus: 'pusher_username' });
+									return _this2.setState({ input_in_focus: 'pusher_username' });
 								},
 								onBlur: function onBlur(e) {
-									return _this3.handleUsernameBlur(e);
+									return _this2.handleUsernameBlur(e);
 								},
 								value: this.state.pusher_username }),
 							_react2.default.createElement(
@@ -80745,7 +80970,7 @@ var Settings = function (_React$Component) {
 					_react2.default.createElement(
 						'form',
 						{ onSubmit: function onSubmit(e) {
-								return _this3.setConfig(e);
+								return _this2.setConfig(e);
 							} },
 						_react2.default.createElement(
 							'label',
@@ -80761,13 +80986,13 @@ var Settings = function (_React$Component) {
 								_react2.default.createElement('input', {
 									type: 'text',
 									onChange: function onChange(e) {
-										return _this3.setState({ mopidy_host: e.target.value });
+										return _this2.setState({ mopidy_host: e.target.value });
 									},
 									onFocus: function onFocus(e) {
-										return _this3.setState({ input_in_focus: 'mopidy_host' });
+										return _this2.setState({ input_in_focus: 'mopidy_host' });
 									},
 									onBlur: function onBlur(e) {
-										return _this3.setState({ input_in_focus: null });
+										return _this2.setState({ input_in_focus: null });
 									},
 									value: this.state.mopidy_host })
 							)
@@ -80786,13 +81011,13 @@ var Settings = function (_React$Component) {
 								_react2.default.createElement('input', {
 									type: 'text',
 									onChange: function onChange(e) {
-										return _this3.setState({ mopidy_port: e.target.value });
+										return _this2.setState({ mopidy_port: e.target.value });
 									},
 									onFocus: function onFocus(e) {
-										return _this3.setState({ input_in_focus: 'mopidy_port' });
+										return _this2.setState({ input_in_focus: 'mopidy_port' });
 									},
 									onBlur: function onBlur(e) {
-										return _this3.setState({ input_in_focus: null });
+										return _this2.setState({ input_in_focus: null });
 									},
 									value: this.state.mopidy_port })
 							)
@@ -80832,7 +81057,7 @@ var Settings = function (_React$Component) {
 									value: 'dark',
 									checked: this.props.ui.theme == 'dark',
 									onChange: function onChange(e) {
-										return _this3.props.uiActions.set({ theme: e.target.value });
+										return _this2.props.uiActions.set({ theme: e.target.value });
 									} }),
 								_react2.default.createElement(
 									'span',
@@ -80849,7 +81074,7 @@ var Settings = function (_React$Component) {
 									value: 'light',
 									checked: this.props.ui.theme == 'light',
 									onChange: function onChange(e) {
-										return _this3.props.uiActions.set({ theme: e.target.value });
+										return _this2.props.uiActions.set({ theme: e.target.value });
 									} }),
 								_react2.default.createElement(
 									'span',
@@ -80878,7 +81103,7 @@ var Settings = function (_React$Component) {
 									name: 'log_actions',
 									checked: this.props.ui.clear_tracklist_on_play,
 									onChange: function onChange(e) {
-										return _this3.props.uiActions.set({ clear_tracklist_on_play: !_this3.props.ui.clear_tracklist_on_play });
+										return _this2.props.uiActions.set({ clear_tracklist_on_play: !_this2.props.ui.clear_tracklist_on_play });
 									} }),
 								_react2.default.createElement(
 									'span',
@@ -80899,7 +81124,7 @@ var Settings = function (_React$Component) {
 									name: 'shortkeys_enabled',
 									checked: this.props.ui.shortkeys_enabled,
 									onChange: function onChange(e) {
-										return _this3.props.uiActions.set({ shortkeys_enabled: !_this3.props.ui.shortkeys_enabled });
+										return _this2.props.uiActions.set({ shortkeys_enabled: !_this2.props.ui.shortkeys_enabled });
 									} }),
 								_react2.default.createElement(
 									'span',
@@ -80915,7 +81140,7 @@ var Settings = function (_React$Component) {
 									name: 'smooth_scrolling_enabled',
 									checked: this.props.ui.smooth_scrolling_enabled,
 									onChange: function onChange(e) {
-										return _this3.props.uiActions.set({ smooth_scrolling_enabled: !_this3.props.ui.smooth_scrolling_enabled });
+										return _this2.props.uiActions.set({ smooth_scrolling_enabled: !_this2.props.ui.smooth_scrolling_enabled });
 									} }),
 								_react2.default.createElement(
 									'span',
@@ -80967,7 +81192,7 @@ var Settings = function (_React$Component) {
 									name: 'allow_reporting',
 									checked: this.props.ui.allow_reporting,
 									onChange: function onChange(e) {
-										return _this3.props.uiActions.set({ allow_reporting: !_this3.props.ui.allow_reporting });
+										return _this2.props.uiActions.set({ allow_reporting: !_this2.props.ui.allow_reporting });
 									} }),
 								_react2.default.createElement(
 									'span',
@@ -80999,7 +81224,15 @@ var Settings = function (_React$Component) {
 						_react2.default.createElement(
 							'div',
 							{ className: 'input' },
-							this.renderCommands(),
+							_react2.default.createElement(_Commands2.default, {
+								commands: this.props.pusher.commands,
+								runCommand: function runCommand(id, notify) {
+									return _this2.props.pusherActions.runCommand(id, notify);
+								},
+								onChange: function onChange(commands) {
+									return _this2.props.pusherActions.setCommands(commands);
+								}
+							}),
 							_react2.default.createElement(
 								_reactRouterDom.Link,
 								{ to: '/edit-command', className: 'button button--default' },
@@ -81028,10 +81261,10 @@ var Settings = function (_React$Component) {
 								type: 'text',
 								value: this.state.mopidy_library_artists_uri,
 								onChange: function onChange(e) {
-									return _this3.setState({ mopidy_library_artists_uri: e.target.value });
+									return _this2.setState({ mopidy_library_artists_uri: e.target.value });
 								},
 								onBlur: function onBlur(e) {
-									return _this3.handleBlur('mopidy', 'library_artists_uri', e.target.value);
+									return _this2.handleBlur('mopidy', 'library_artists_uri', e.target.value);
 								}
 							}),
 							_react2.default.createElement(
@@ -81056,10 +81289,10 @@ var Settings = function (_React$Component) {
 								type: 'text',
 								value: this.state.mopidy_library_albums_uri,
 								onChange: function onChange(e) {
-									return _this3.setState({ mopidy_library_albums_uri: e.target.value });
+									return _this2.setState({ mopidy_library_albums_uri: e.target.value });
 								},
 								onBlur: function onBlur(e) {
-									return _this3.handleBlur('mopidy', 'library_albums_uri', e.target.value);
+									return _this2.handleBlur('mopidy', 'library_albums_uri', e.target.value);
 								}
 							}),
 							_react2.default.createElement(
@@ -81123,7 +81356,7 @@ var Settings = function (_React$Component) {
 						_react2.default.createElement(
 							'button',
 							{ className: 'button button--default', onClick: function onClick(e) {
-									return _this3.props.pusherActions.localScan();
+									return _this2.props.pusherActions.localScan();
 								} },
 							'Run local scan'
 						),
@@ -81139,7 +81372,7 @@ var Settings = function (_React$Component) {
 						this.props.pusher.version.upgrade_available ? _react2.default.createElement(
 							'button',
 							{ className: 'button button--secondary', onClick: function onClick(e) {
-									return _this3.props.pusherActions.upgrade();
+									return _this2.props.pusherActions.upgrade();
 								} },
 							'Upgrade to ',
 							this.props.pusher.version.latest
@@ -81147,12 +81380,12 @@ var Settings = function (_React$Component) {
 						_react2.default.createElement(
 							'button',
 							{ className: "button button--destructive" + (this.props.mopidy.restarting ? ' button--working' : ''), onClick: function onClick(e) {
-									return _this3.props.pusherActions.restart();
+									return _this2.props.pusherActions.restart();
 								} },
 							'Restart server'
 						),
 						_react2.default.createElement(_ConfirmationButton2.default, { className: 'button--destructive', content: 'Reset all settings', confirmingContent: 'Are you sure?', onConfirm: function onConfirm() {
-								return _this3.resetAllSettings();
+								return _this2.resetAllSettings();
 							} })
 					),
 					_react2.default.createElement(
@@ -82606,7 +82839,7 @@ var DiscoverFeatured = function (_React$Component) {
 					_react2.default.createElement(_Icon2.default, { name: 'star', type: 'material' }),
 					'Featured playlists'
 				),
-				this.renderIntro(first_playlist),
+				this.renderIntro(this.props.theme == 'dark' ? first_playlist : null),
 				_react2.default.createElement(
 					'section',
 					{ className: 'content-wrapper grid-wrapper' },
@@ -82860,7 +83093,7 @@ var DiscoverNewReleases = function (_React$Component) {
 					_react2.default.createElement(_Icon2.default, { name: 'new_releases', type: 'material' }),
 					'New releases'
 				),
-				this.renderIntro(first_album),
+				this.renderIntro(this.props.theme == 'dark' ? first_album : null),
 				_react2.default.createElement(
 					'section',
 					{ className: 'content-wrapper grid-wrapper' },
@@ -82879,12 +83112,6 @@ var DiscoverNewReleases = function (_React$Component) {
 
 	return DiscoverNewReleases;
 }(_react2.default.Component);
-
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- **/
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
@@ -83574,7 +83801,7 @@ var Discover = function (_React$Component) {
 				_react2.default.createElement(
 					'div',
 					{ className: 'intro preserve-3d' },
-					_react2.default.createElement(_Parallax2.default, { image: '/iris/assets/backgrounds/discover.jpg' }),
+					this.props.theme == 'dark' && _react2.default.createElement(_Parallax2.default, { image: '/iris/assets/backgrounds/discover.jpg' }),
 					_react2.default.createElement(
 						'div',
 						{ className: 'intro__liner' },
@@ -83626,12 +83853,6 @@ var Discover = function (_React$Component) {
 
 	return Discover;
 }(_react2.default.Component);
-
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- **/
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
@@ -86734,6 +86955,10 @@ var _IconField = __webpack_require__(/*! ../../components/Fields/IconField */ ".
 
 var _IconField2 = _interopRequireDefault(_IconField);
 
+var _TextField = __webpack_require__(/*! ../../components/Fields/TextField */ "./src/js/components/Fields/TextField.js");
+
+var _TextField2 = _interopRequireDefault(_TextField);
+
 var _actions = __webpack_require__(/*! ../../services/pusher/actions */ "./src/js/services/pusher/actions.js");
 
 var pusherActions = _interopRequireWildcard(_actions);
@@ -86767,8 +86992,11 @@ var EditCommand = function (_React$Component) {
 		_this.state = {
 			id: helpers.generateGuid(),
 			icon: 'power_settings_new',
+			name: '',
 			colour: '',
-			command: '{"url":"https://' + window.location.hostname + '/broadlink/sendCommand/power/"}'
+			url: "https://" + window.location.hostname + "/broadlink/sendCommand/power/",
+			method: 'GET',
+			post_data: ""
 		};
 		return _this;
 	}
@@ -86788,12 +87016,7 @@ var EditCommand = function (_React$Component) {
 		value: function handleSubmit(e) {
 			e.preventDefault();
 
-			this.props.pusherActions.setCommand({
-				id: this.state.id,
-				icon: this.state.icon,
-				colour: this.state.colour,
-				command: this.state.command
-			});
+			this.props.pusherActions.setCommand(this.state);
 
 			window.history.back();
 
@@ -86840,6 +87063,26 @@ var EditCommand = function (_React$Component) {
 						} },
 					_react2.default.createElement(
 						'div',
+						{ className: 'field textarea white' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'name' },
+							'Name'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							_react2.default.createElement(_TextField2.default, {
+								name: 'name',
+								value: this.state.name,
+								onChange: function onChange(value) {
+									return _this2.setState({ name: value });
+								}
+							})
+						)
+					),
+					_react2.default.createElement(
+						'div',
 						{ className: 'field radio white' },
 						_react2.default.createElement(
 							'div',
@@ -86883,33 +87126,84 @@ var EditCommand = function (_React$Component) {
 						_react2.default.createElement(
 							'div',
 							{ className: 'name' },
-							'Command'
+							'URL'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							_react2.default.createElement(_TextField2.default, {
+								name: 'url',
+								value: this.state.url,
+								onChange: function onChange(value) {
+									return _this2.setState({ url: value });
+								}
+							})
+						)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'field radio white' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'name' },
+							'Method'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							_react2.default.createElement(
+								'label',
+								null,
+								_react2.default.createElement('input', {
+									type: 'radio',
+									name: 'method',
+									value: 'GET',
+									checked: this.state.method == 'GET',
+									onChange: function onChange(e) {
+										return _this2.setState({ method: e.target.value });
+									} }),
+								_react2.default.createElement(
+									'span',
+									{ className: 'label' },
+									'GET'
+								)
+							),
+							_react2.default.createElement(
+								'label',
+								null,
+								_react2.default.createElement('input', {
+									type: 'radio',
+									name: 'method',
+									value: 'POST',
+									checked: this.state.method == 'POST',
+									onChange: function onChange(e) {
+										return _this2.setState({ method: e.target.value });
+									} }),
+								_react2.default.createElement(
+									'span',
+									{ className: 'label' },
+									'POST'
+								)
+							)
+						)
+					),
+					this.state.method == 'POST' && _react2.default.createElement(
+						'div',
+						{ className: 'field textarea white' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'name' },
+							'Data'
 						),
 						_react2.default.createElement(
 							'div',
 							{ className: 'input' },
 							_react2.default.createElement('textarea', {
 								name: 'command',
-								value: this.state.command,
+								value: this.state.post_data,
 								onChange: function onChange(e) {
-									return _this2.setState({ command: e.target.value });
-								} }),
-							_react2.default.createElement(
-								'div',
-								{ className: 'description' },
-								'Ajax request settings. See ',
-								_react2.default.createElement(
-									'a',
-									{ href: 'http://api.jquery.com/jquery.ajax/', target: '_blank', noopener: 'true' },
-									_react2.default.createElement(
-										'code',
-										null,
-										'jquery.ajax'
-									),
-									' documentation'
-								),
-								'.'
-							)
+									return _this2.setState({ post_data: e.target.value });
+								} })
 						)
 					),
 					_react2.default.createElement(
@@ -88396,31 +88690,18 @@ var Modal = function (_React$Component) {
 	function Modal(props) {
 		_classCallCheck(this, Modal);
 
-		var _this = _possibleConstructorReturn(this, (Modal.__proto__ || Object.getPrototypeOf(Modal)).call(this, props));
-
-		_this.handleKeyUp = _this.handleKeyUp.bind(_this);
-		return _this;
+		return _possibleConstructorReturn(this, (Modal.__proto__ || Object.getPrototypeOf(Modal)).call(this, props));
 	}
 
 	_createClass(Modal, [{
 		key: 'componentWillMount',
 		value: function componentWillMount() {
 			$('body').addClass('modal-open');
-			window.addEventListener("keyup", this.handleKeyUp, false);
 		}
 	}, {
 		key: 'componentWillUnmount',
 		value: function componentWillUnmount() {
 			$('body').removeClass('modal-open');
-			window.removeEventListener("keyup", this.handleKeyUp, false);
-		}
-	}, {
-		key: 'handleKeyUp',
-		value: function handleKeyUp(e) {
-			if (this.props.shortkeys_enabled && e.keyCode == 27) {
-				// esc
-				window.history.back();
-			}
 		}
 	}, {
 		key: 'render',

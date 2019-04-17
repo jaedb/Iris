@@ -1,8 +1,7 @@
 
 import React from 'react'
 import { connect } from 'react-redux'
-import Link from './Link'
-import { createStore, bindActionCreators } from 'redux'
+import { bindActionCreators } from 'redux'
 
 import * as helpers from '../helpers'
 import * as uiActions from '../services/ui/actions'
