@@ -58,7 +58,7 @@ export default class Commands extends React.Component{
                             <div className="list__item commands-setup__item list__item--no-interaction" key={command.id} data-id={command.id}>
                                 <div className="col col--w90">
                                     <Icon className="commands-setup__item__drag-handle" name="drag_indicator" />
-                                    <div className="commands__item commands__item--small">
+                                    <div className="commands-setup__item__command-item commands__item commands__item--small">
                                         <Icon className="commands__item__icon" name={command.icon} />
                                         <span className={command.colour+'-background commands__item__background'}></span>
                                     </div>

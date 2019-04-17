@@ -13,6 +13,8 @@ import snapcast from './services/snapcast/reducer';
 import google from './services/google/reducer';
 import genius from './services/genius/reducer';
 
+import storeMigration from './storeMigration';
+
 import thunk from 'redux-thunk';
 import coreMiddleware from './services/core/middleware';
 import uiMiddleware from './services/ui/middleware';
@@ -25,7 +27,7 @@ import googleMiddleware from './services/google/middleware';
 import snapcastMiddleware from './services/snapcast/middleware';
 import localstorageMiddleware from './services/localstorage/middleware';
 
-export const state = {
+let state = {
 	core: {
 		outputs: [],
 		queue: [],
@@ -43,7 +45,7 @@ export const state = {
 	ui: {
 		theme: 'dark',
 		smooth_scrolling_enabled: true,
-		shortkeys_enabled: true,
+		hotkeys_enabled: true,
 		allow_reporting: true,
 		window_focus: true,
 		slim_mode: false,
@@ -109,7 +111,10 @@ state.genius = Object.assign({}, state.genius, helpers.getStorage('genius'));
 state.google = Object.assign({}, state.google, helpers.getStorage('google'));
 state.snapcast = Object.assign({}, state.snapcast, helpers.getStorage('snapcast'));
 
-var reducers = combineReducers({
+// Run any migrations
+state = storeMigration(state);
+
+const reducers = combineReducers({
     core,
     ui,
     pusher,

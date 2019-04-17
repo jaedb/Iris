@@ -52,7 +52,7 @@ export default class Notifications extends React.Component{
 							case 'shortcut':
 								return (
 									<div className={"notification notification--shortcut"+(notification.closing ? ' closing' : '')} key={notification.key} data-duration={notification.duration}>
-										<Icon type="fontawesome" name={notification.content} />
+										<Icon name={notification.content} />
 									</div>
 								)
 

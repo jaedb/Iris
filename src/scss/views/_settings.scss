@@ -37,8 +37,8 @@
 		
 		&__item {
 			position: relative;
-			padding-top: 10px;
-			padding-bottom: 10px;
+			padding-top: 15px;
+			padding-bottom: 15px;
 			vertical-align: top;
 
 			.commands__item {
@@ -49,6 +49,12 @@
 			&__drag-handle {
 				cursor: move;
 				padding-right: 0.5em;
+			}
+
+			&__drag-handle,
+			&__command-item {
+				float: left;
+				display: block;
 			}
 
 			&__url {
