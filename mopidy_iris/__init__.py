@@ -110,10 +110,10 @@ def iris_factory(config, core):
             }
         ),
         (
-            r'/app/(.*)',
+            r'/((.*)(?:css|js|json|map)$)',
             tornado.web.StaticFileHandler,
             {
-                'path': path+'/app'
+                'path': path
             }
         ),
         (

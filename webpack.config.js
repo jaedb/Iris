@@ -11,7 +11,7 @@ const config = {
 		js: './src/js/index'
 	},
 	output: {
-		path: path.resolve(__dirname, 'mopidy_iris/static/app'),
+		path: path.resolve(__dirname, 'mopidy_iris/static'),
 		filename: 'app'+(isDev ? '' : '.min')+'.js'
 	},
 	module: {
