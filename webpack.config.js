@@ -62,7 +62,7 @@ const config = {
 					{ 
 						loader: 'url-loader',
 						options: {
-							name: '[name].[ext]?[hash]',
+							name: 'assets/fonts/[name].[ext]?[hash]',
 							limit: 100000
 						}
 					}
