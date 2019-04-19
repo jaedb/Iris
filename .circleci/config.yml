@@ -61,29 +61,29 @@ workflows:
       - build:
           filters:
             branches:
-              only: develop
+              only: deploy/test
       - test:
           requires:
             - build
           filters:
             branches:
-              only: develop
+              only: deploy/test
   build_test_and_deploy:
     jobs:
       - build:
           filters:
             branches:
-              only: master
+              only: deploy/release
       - test:
           requires:
             - build
           filters:
             branches:
-              only: master
+              only: deploy/release
       - deploy:
           requires:
             - build
             - test
           filters:
             branches:
-              only: master
+              only: deploy/release
