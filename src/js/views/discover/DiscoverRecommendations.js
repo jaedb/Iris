@@ -514,7 +514,7 @@ class Discover extends React.Component{
 			<div className="view discover-view preserve-3d">
 				<div className="intro preserve-3d">
 
-					<Parallax image="/iris/assets/backgrounds/discover.jpg" />
+					{this.props.theme == 'dark' && <Parallax image="/iris/assets/backgrounds/discover.jpg" />}
 
 					<div className="intro__liner">
 						<h1>Explore new music</h1>
@@ -546,13 +546,6 @@ class Discover extends React.Component{
 		)
 	}
 }
-
-
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- **/
 
 const mapStateToProps = (state, ownProps) => {
 	return {

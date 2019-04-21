@@ -28,25 +28,12 @@
 			background: rgba(255,255,255,0.2);
 		}
 
-		&:focus,
-		&:active {
-			@include noanimate();
-			background: colour(blue);
-			color: colour(white);
-		}
-
 		.light-theme & {
 			background: colour(faint_grey);
 			color: inherit;
 
 			&:hover {
 				background: darken(colour(faint_grey), 4%);
-			}
-
-			&:focus,
-			&:active {
-				background: colour(blue);
-				color: colour(white);
 			}
 		}
 	}

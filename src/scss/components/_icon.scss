@@ -3,12 +3,12 @@
     font-family: 'Material Icons';
     font-style: normal;
     font-weight: 400;;
-    src: url(/iris/assets/fonts/MaterialIcons-Regular.eot); /* For IE6-8 */
+    src: url("../assets/fonts/MaterialIcons-Regular.eot"); /* For IE6-8 */
     src: local('Material Icons'),
       local('MaterialIcons-Regular'),
-      url(/iris/assets/fonts/MaterialIcons-Regular.woff2) format('woff2'),
-      url(/iris/assets/fonts/MaterialIcons-Regular.woff) format('woff'),
-      url(/iris/assets/fonts/MaterialIcons-Regular.ttf) format('truetype');
+      url("../assets/fonts/MaterialIcons-Regular.woff2") format('woff2'),
+      url("../assets/fonts/MaterialIcons-Regular.woff") format('woff'),
+      url("../assets/fonts/MaterialIcons-Regular.ttf") format('truetype');
 }
 
 .icon {
@@ -25,9 +25,9 @@
 	    word-wrap: normal;
 	    white-space: nowrap;
 	    direction: ltr;
-	    vertical-align: bottom;
+		vertical-align: top;
+		margin: -1px 0;
 	    font-size: 1.3em;
-	    margin-bottom: 0.1em;
 	    -webkit-font-smoothing: antialiased;
 	    text-rendering: optimizeLegibility;
 	    -moz-osx-font-smoothing: grayscale;

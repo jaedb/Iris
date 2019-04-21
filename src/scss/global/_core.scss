@@ -93,10 +93,6 @@ main {
 	overflow-x: hidden;
 	overscroll-behavior: contain;
 
-	@include resolution(2){
-		bottom: 56px;
-	}
-
 	/**
 	 * iOS drops smooth-scrolling on divs, so we need to manually re-set it
 	 * NOTE: This breaks parallax effects on iOS
@@ -195,7 +191,7 @@ h1 {
 	line-height: 3.4rem;
 
 	.light-theme & {
-		color: colour(dark_grey);
+		color: colour(grey);
 	}
 }
 

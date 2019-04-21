@@ -12,7 +12,7 @@
 		z-index: 1;
 
 		&__icon {
-			padding-top: 6px;
+			padding-top: 7px;
 			padding-right: 0 !important;
 			font-size: 12px;
 		}
@@ -28,6 +28,16 @@
 			z-index: -1;
 			border-radius: 50%;
 			opacity: 1;
+		}
+
+		&--small {
+			width: 20px;
+			height: 20px;
+
+			.commands__item__icon {
+				padding-top: 5px;
+				font-size: 10px;
+			}
 		}
 
 		&--large {

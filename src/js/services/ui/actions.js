@@ -172,7 +172,12 @@ export function createNotification(data){
 	// Allow 'message' as an alias of our content
 	if (data.message){
 		data.content = data.message;
-	}
+    }
+    
+    // Shortcut notifications are short and sweet
+    if (data.type == 'shortcut'){
+        data.duration = 0.4;
+    }
 
     return { 
         type: 'CREATE_NOTIFICATION',

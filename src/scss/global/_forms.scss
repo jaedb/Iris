@@ -188,6 +188,11 @@ select {
 	}
 }
 
+.action {
+	@include click_feedback();
+	cursor: pointer;
+}
+
 .button {
 	@include animate();
 	@include feature_font();
@@ -209,6 +214,7 @@ select {
 
 	.icon {
 		padding-right: 8px;
+		margin: -2px 0;
 	}
 
 	&:not(.button--no-hover){
@@ -396,10 +402,6 @@ select {
 	@include noselect();
 	display: block;
 	padding-bottom: 12px;
-
-	.icon {
-		padding-right: 0.32em;
-	}
 
 	& > .name {
 		display: block;

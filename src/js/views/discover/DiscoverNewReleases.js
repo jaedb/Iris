@@ -114,7 +114,7 @@ class DiscoverNewReleases extends React.Component{
 					<Icon name="new_releases" type="material" />
 					New releases
 				</Header>
-				{this.renderIntro(first_album)}
+				{this.renderIntro(this.props.theme == 'dark' ? first_album : null)}
 				<section className="content-wrapper grid-wrapper">
 					<AlbumGrid albums={albums} />
 				</section>
@@ -127,13 +127,6 @@ class DiscoverNewReleases extends React.Component{
 		);
 	}
 }
-
-
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- **/
 
 const mapStateToProps = (state, ownProps) => {
 	return {

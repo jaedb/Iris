@@ -10,23 +10,14 @@ class Modal extends React.Component{
 
 	constructor(props){
 		super(props);
-		this.handleKeyUp = this.handleKeyUp.bind(this);
 	}
 
 	componentWillMount(){
 		$('body').addClass('modal-open');
-		window.addEventListener("keyup", this.handleKeyUp, false);
 	}
 
 	componentWillUnmount(){
 		$('body').removeClass('modal-open');
-		window.removeEventListener("keyup", this.handleKeyUp, false);
-	}
-
-	handleKeyUp(e){
-		if (this.props.shortkeys_enabled && e.keyCode == 27){ // esc
-			window.history.back();
-		}
 	}
 
 	render(){
