@@ -32,8 +32,8 @@ RUN set -ex \
         Mopidy-YouTube \
         pyopenssl \
         youtube-dl \
- # Clone Iris from repo and install in development (for hot-loading)
- #&& git clone https://github.com/jaedb/Iris.git /var/lib/mopidy/iris \
+ # Clone Iris from current directory and install in development mode.
+ # This allows a binding at "/iris" to map to your local folder for development.
  && cd /iris \
  && python setup.py develop \
  && cd / \
