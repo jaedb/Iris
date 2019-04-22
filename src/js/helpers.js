@@ -147,22 +147,25 @@ export let toJSON = function(data){
 /**
  * Set the app's favicon to a specific image.
  * 
- * @param file String
- * @return Boolean 
+ * @param filename String
  */
-export let setFavicon = function(favicon){
-	console.log(favicon);
-	let link = document.createElement('link'),
-	oldLink = document.getElementById('favicon');
-	link.id = 'favicon';
-	link.rel = 'shortcut icon';
-	link.href = "/iris/assets/"+favicon;
+export let setFavicon = function(filename){
+	let links = document.getElementsByClassName('favicon');
+	for (let link of links){
 
-	if (oldLink) {
-		document.head.removeChild(oldLink);
+		// Construct new <links>
+		let new_link = document.createElement('link');
+		new_link.className = link.className;
+		new_link.rel = link.rel;
+		new_link.href = "/iris/assets/"+filename;
+		if (link.type){
+			new_link.type = link.type;
+		} 
+
+		// Remove the old one and add the new one
+		document.head.removeChild(link);
+		document.head.appendChild(new_link);
 	}
-
-	document.head.appendChild(link);
 }
 
 

@@ -136,7 +136,7 @@ class Settings extends React.Component {
 
 		return (
 			<span className={colour+'-text'}>
-				<Icon className={className} name={icon} />{status}
+				<Icon className={className} name={icon} /> {status}
 			</span>
 		);
 	}

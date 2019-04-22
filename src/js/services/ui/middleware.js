@@ -35,16 +35,6 @@ const UIMiddleware = (function(){
                     var play_state = store.getState().mopidy.play_state;
                 }
 
-                if (play_state == 'playing'){
-                    helpers.setFavicon('favicon.png');
-                } else {
-                    helpers.setFavicon('favicon_paused.png');
-                }
-
-                if (!store.getState().mopidy.connected){
-                    helpers.setFavicon('favicon_error.png');
-                }
-
                 if (action.title){
                     var title = action.title;
                 } else {

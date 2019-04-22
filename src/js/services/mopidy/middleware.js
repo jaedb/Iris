@@ -259,6 +259,7 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_DISCONNECTED':
                 store.dispatch(uiActions.createNotification({type: 'bad', content: 'Mopidy disconnected'}));
+                helpers.setFavicon('favicon_error.png');
                 break;
 
             case 'MOPIDY_DEBUG':
@@ -312,6 +313,12 @@ const MopidyMiddleware = (function(){
 
             case 'MOPIDY_PLAY_STATE':
                 store.dispatch(uiActions.setWindowTitle(null, action.play_state));
+
+                if (action.play_state == 'playing'){
+                    helpers.setFavicon('favicon.png');
+                } else {
+                    helpers.setFavicon('favicon_paused.png');
+                }
                 next(action);
                 break
 
