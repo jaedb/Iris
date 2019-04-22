@@ -3556,6 +3556,8 @@ select {
     .field > .input .text {
       display: block;
       padding: 10px 14px 10px 0; }
+    .field > .input .icon {
+      margin-bottom: -3px; }
   .field .label .tooltip {
     left: -4px; }
   .field.sub-field {
