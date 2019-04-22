@@ -252,7 +252,7 @@ const PusherMiddleware = (function(){
                     });
                 };
 
-                socket.onclose = () => {
+                socket.onclose = (e) => {
                     store.dispatch({
                         type: 'PUSHER_DISCONNECTED'
                     })
@@ -261,6 +261,23 @@ const PusherMiddleware = (function(){
                     setTimeout(() => {
                         store.dispatch(pusherActions.connect())
                     }, 5000);
+
+                    if (e.code !== 3001) {
+                        store.dispatch(coreActions.handleException(
+                            'Pusher websocket connection error',
+                            e
+                        ));
+                    };
+                };
+
+                socket.onerror = (e) => {
+                    if (socket.readyState == 1) {
+                        store.dispatch(coreActions.handleException(
+                            'Pusher websocket error',
+                            e,
+                            e.type
+                        ));
+                    }
                 };
 
                 socket.onmessage = (message) => {
