@@ -117,6 +117,34 @@ export let setStorage = function(key, value, replace = false){
 
 
 /**
+ * Convert a string to JSON, after we've checked whether it needs
+ * conversion or not.
+ *
+ * @param data String or Object
+ * @return Object
+ **/
+export let toJSON = function(data){
+
+	// Parse it
+	try {
+		let json = JSON.parse(data);
+		return json;
+
+	// Could not parse string
+	} catch (e){
+		
+		// Check if it's JSON already
+		if (data.constructor === {}.constructor){
+			return data;
+		} else {
+			console.error("Could not convert non-JSON", string);
+		}
+	}
+    return {};
+}
+
+
+/**
  * Check if an image URL is cached or not
  * Useful for bypassing load animations for cached assets (eg parallax)
  *

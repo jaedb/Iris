@@ -1,10 +1,9 @@
 
 import React from 'react'
 import { connect } from 'react-redux'
-import { createStore, bindActionCreators } from 'redux'
-import ReactGA from 'react-ga'
+import { bindActionCreators } from 'redux';
 
-import Thumbnail from '../Thumbnail'
+import * as helpers from '../../helpers';
 
 import * as uiActions from '../../services/ui/actions'
 import * as spotifyActions from '../../services/spotify/actions'
@@ -17,28 +16,25 @@ class SpotifyAuthenticationFrame extends React.Component{
 		this.state = {
 			authorizing: false
 		}
+
+		this.handleMessage = this.handleMessage.bind(this);
 	}
 
 	componentDidMount(){
-		let self = this;
-
-		// Listen for incoming messages from the authorization popup
-		window.addEventListener('message', function(event){
-			try {
-				var data = JSON.parse(event.data);
-			} catch (e){
-				console.error("Failed to parse JSON", e, event);
-				return;
-			}
-
-			// Only digest messages relevant to us
-			if (data.origin == 'auth_spotify'){
-				self.handleMessage(event, data);
-			}
-		}, false);
+		window.addEventListener('message', this.handleMessage, false);
 	}
 
-	handleMessage(event, data){
+	componentWillUnmount(){
+		window.removeEventListener("message", this.handleMessage, false);
+	}
+
+	handleMessage(event){
+		let data = helpers.toJSON(event.data);
+
+		// Only digest messages relevant to us
+		if (data.origin != 'auth_spotify'){
+			return;
+		}
 				
 		// Only allow incoming data from our authorized authenticator proxy
 		var authorization_domain = this.props.authorization_url.substring(0,this.props.authorization_url.indexOf('/',8))
@@ -109,17 +105,17 @@ class SpotifyAuthenticationFrame extends React.Component{
 	render(){
 		if (this.state.authorizing){
 			return (
-				<button className="button button--working">
+				<a className="button button--working">
 					Authorizing...
-				</button>
+				</a>
 			)
 		} else if (this.props.authorized){
 			return (
-				<button className="button button--destructive" onClick={() => this.props.spotifyActions.revokeAuthorization()}>Log out</button>
+				<a className="button button--destructive" onClick={e => this.props.spotifyActions.revokeAuthorization()}>Log out</a>
 			)
 		} else {
 			return (
-				<button className="button button--primary" onClick={() => this.startAuthorization()}>Log in</button>
+				<a className="button button--primary" onClick={e => this.startAuthorization()}>Log in</a>
 			)
 		}
 	}

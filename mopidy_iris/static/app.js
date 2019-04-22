@@ -55991,13 +55991,9 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _reactGa = __webpack_require__(/*! react-ga */ "./node_modules/react-ga/dist/esm/index.js");
+var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
 
-var _reactGa2 = _interopRequireDefault(_reactGa);
-
-var _Thumbnail = __webpack_require__(/*! ../Thumbnail */ "./src/js/components/Thumbnail.js");
-
-var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
+var helpers = _interopRequireWildcard(_helpers);
 
 var _actions = __webpack_require__(/*! ../../services/ui/actions */ "./src/js/services/ui/actions.js");
 
@@ -56028,32 +56024,30 @@ var GeniusAuthenticationFrame = function (_React$Component) {
 		_this.state = {
 			authorizing: false
 		};
+
+		_this.handleMessage = _this.handleMessage.bind(_this);
 		return _this;
 	}
 
 	_createClass(GeniusAuthenticationFrame, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
-			var self = this;
-
-			// Listen for incoming messages from the authorization popup
-			window.addEventListener('message', function (event) {
-				try {
-					var data = JSON.parse(event.data);
-				} catch (e) {
-					console.error("Failed to parse JSON", e, event);
-					return;
-				}
-
-				// Only digest messages relevant to us
-				if (data.origin == 'auth_genius') {
-					self.handleMessage(event, data);
-				}
-			}, false);
+			window.addEventListener('message', this.handleMessage, false);
+		}
+	}, {
+		key: 'componentWillUnmount',
+		value: function componentWillUnmount() {
+			window.removeEventListener("message", this.handleMessage, false);
 		}
 	}, {
 		key: 'handleMessage',
-		value: function handleMessage(event, data) {
+		value: function handleMessage(event) {
+			var data = helpers.toJSON(event.data);
+
+			// Only digest messages relevant to us
+			if (data.origin != 'auth_genius') {
+				return;
+			}
 
 			// Only allow incoming data from our authorized authenticator proxy
 			var authorization_domain = this.props.authorization_url.substring(0, this.props.authorization_url.indexOf('/', 8));
@@ -56113,22 +56107,22 @@ var GeniusAuthenticationFrame = function (_React$Component) {
 
 			if (this.state.authorizing) {
 				return _react2.default.createElement(
-					'button',
+					'a',
 					{ className: 'button button--working' },
 					'Authorizing...'
 				);
 			} else if (this.props.authorized) {
 				return _react2.default.createElement(
-					'button',
-					{ className: 'button button--destructive', onClick: function onClick() {
+					'a',
+					{ className: 'button button--destructive', onClick: function onClick(e) {
 							return _this2.props.geniusActions.revokeAuthorization();
 						} },
 					'Log out'
 				);
 			} else {
 				return _react2.default.createElement(
-					'button',
-					{ className: 'button button--primary', onClick: function onClick() {
+					'a',
+					{ className: 'button button--primary', onClick: function onClick(e) {
 							return _this2.startAuthorization();
 						} },
 					'Log in'
@@ -56231,13 +56225,9 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _reactGa = __webpack_require__(/*! react-ga */ "./node_modules/react-ga/dist/esm/index.js");
+var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
 
-var _reactGa2 = _interopRequireDefault(_reactGa);
-
-var _Thumbnail = __webpack_require__(/*! ../Thumbnail */ "./src/js/components/Thumbnail.js");
-
-var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
+var helpers = _interopRequireWildcard(_helpers);
 
 var _actions = __webpack_require__(/*! ../../services/ui/actions */ "./src/js/services/ui/actions.js");
 
@@ -56268,32 +56258,30 @@ var LastfmAuthenticationFrame = function (_React$Component) {
 		_this.state = {
 			authorizing: false
 		};
+
+		_this.handleMessage = _this.handleMessage.bind(_this);
 		return _this;
 	}
 
 	_createClass(LastfmAuthenticationFrame, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
-			var self = this;
-
-			// Listen for incoming messages from the authorization popup
-			window.addEventListener('message', function (event) {
-				try {
-					var data = JSON.parse(event.data);
-				} catch (e) {
-					console.error("Failed to parse JSON", e, event);
-					return;
-				}
-
-				// Only digest messages relevant to us
-				if (data.origin == 'auth_lastfm') {
-					self.handleMessage(event, data);
-				}
-			}, false);
+			window.addEventListener('message', this.handleMessage, false);
+		}
+	}, {
+		key: 'componentWillUnmount',
+		value: function componentWillUnmount() {
+			window.removeEventListener("message", this.handleMessage, false);
 		}
 	}, {
 		key: 'handleMessage',
-		value: function handleMessage(event, data) {
+		value: function handleMessage(event) {
+			var data = helpers.toJSON(event.data);
+
+			// Only digest messages relevant to us
+			if (data.origin != 'auth_lastfm') {
+				return;
+			}
 
 			// Only allow incoming data from our authorized authenticator proxy
 			var authorization_domain = this.props.authorization_url.substring(0, this.props.authorization_url.indexOf('/', 8));
@@ -56353,22 +56341,22 @@ var LastfmAuthenticationFrame = function (_React$Component) {
 
 			if (this.state.authorizing) {
 				return _react2.default.createElement(
-					'button',
+					'a',
 					{ className: 'button button--working' },
 					'Authorizing...'
 				);
 			} else if (this.props.authorization) {
 				return _react2.default.createElement(
-					'button',
-					{ className: 'button button--destructive', onClick: function onClick() {
+					'a',
+					{ className: 'button button--destructive', onClick: function onClick(e) {
 							return _this2.props.lastfmActions.revokeAuthorization();
 						} },
 					'Log out'
 				);
 			} else {
 				return _react2.default.createElement(
-					'button',
-					{ className: 'button button--primary', onClick: function onClick() {
+					'a',
+					{ className: 'button button--primary', onClick: function onClick(e) {
 							return _this2.startAuthorization();
 						} },
 					'Log in'
@@ -57442,13 +57430,9 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _reactGa = __webpack_require__(/*! react-ga */ "./node_modules/react-ga/dist/esm/index.js");
+var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
 
-var _reactGa2 = _interopRequireDefault(_reactGa);
-
-var _Thumbnail = __webpack_require__(/*! ../Thumbnail */ "./src/js/components/Thumbnail.js");
-
-var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
+var helpers = _interopRequireWildcard(_helpers);
 
 var _actions = __webpack_require__(/*! ../../services/ui/actions */ "./src/js/services/ui/actions.js");
 
@@ -57479,32 +57463,30 @@ var SpotifyAuthenticationFrame = function (_React$Component) {
 		_this.state = {
 			authorizing: false
 		};
+
+		_this.handleMessage = _this.handleMessage.bind(_this);
 		return _this;
 	}
 
 	_createClass(SpotifyAuthenticationFrame, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
-			var self = this;
-
-			// Listen for incoming messages from the authorization popup
-			window.addEventListener('message', function (event) {
-				try {
-					var data = JSON.parse(event.data);
-				} catch (e) {
-					console.error("Failed to parse JSON", e, event);
-					return;
-				}
-
-				// Only digest messages relevant to us
-				if (data.origin == 'auth_spotify') {
-					self.handleMessage(event, data);
-				}
-			}, false);
+			window.addEventListener('message', this.handleMessage, false);
+		}
+	}, {
+		key: 'componentWillUnmount',
+		value: function componentWillUnmount() {
+			window.removeEventListener("message", this.handleMessage, false);
 		}
 	}, {
 		key: 'handleMessage',
-		value: function handleMessage(event, data) {
+		value: function handleMessage(event) {
+			var data = helpers.toJSON(event.data);
+
+			// Only digest messages relevant to us
+			if (data.origin != 'auth_spotify') {
+				return;
+			}
 
 			// Only allow incoming data from our authorized authenticator proxy
 			var authorization_domain = this.props.authorization_url.substring(0, this.props.authorization_url.indexOf('/', 8));
@@ -57565,22 +57547,22 @@ var SpotifyAuthenticationFrame = function (_React$Component) {
 
 			if (this.state.authorizing) {
 				return _react2.default.createElement(
-					'button',
+					'a',
 					{ className: 'button button--working' },
 					'Authorizing...'
 				);
 			} else if (this.props.authorized) {
 				return _react2.default.createElement(
-					'button',
-					{ className: 'button button--destructive', onClick: function onClick() {
+					'a',
+					{ className: 'button button--destructive', onClick: function onClick(e) {
 							return _this2.props.spotifyActions.revokeAuthorization();
 						} },
 					'Log out'
 				);
 			} else {
 				return _react2.default.createElement(
-					'button',
-					{ className: 'button button--primary', onClick: function onClick() {
+					'a',
+					{ className: 'button button--primary', onClick: function onClick(e) {
 							return _this2.startAuthorization();
 						} },
 					'Log in'
@@ -63465,6 +63447,33 @@ var setStorage = exports.setStorage = function setStorage(key, value) {
 		console.warn("localStorage not available. '" + key + "'' will not perist when you close your browser.");
 		return;
 	}
+};
+
+/**
+ * Convert a string to JSON, after we've checked whether it needs
+ * conversion or not.
+ *
+ * @param data String or Object
+ * @return Object
+ **/
+var toJSON = exports.toJSON = function toJSON(data) {
+
+	// Parse it
+	try {
+		var json = JSON.parse(data);
+		return json;
+
+		// Could not parse string
+	} catch (e) {
+
+		// Check if it's JSON already
+		if (data.constructor === {}.constructor) {
+			return data;
+		} else {
+			console.error("Could not convert non-JSON", string);
+		}
+	}
+	return {};
 };
 
 /**
@@ -75372,12 +75381,7 @@ var SpotifyMiddleware = function () {
 
                     case 'SPOTIFY_AUTHORIZATION_REVOKED':
                         if (store.getState().ui.allow_reporting) {
-                            var hashed_username = null;
-                            if (store.getState().spotify.me) {
-                                hashed_username = (0, _jsSha.sha256)(store.getState().spotify.me);
-                                _reactGa2.default.set({ userId: hashed_username });
-                            }
-                            _reactGa2.default.event({ category: 'Spotify', action: 'Authorization revoked', label: hashed_username });
+                            _reactGa2.default.event({ category: 'Spotify', action: 'Authorization revoked' });
                         }
 
                         next(action);
