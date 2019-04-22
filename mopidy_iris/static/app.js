@@ -65305,13 +65305,11 @@ var _reactDom2 = _interopRequireDefault(_reactDom);
 
 var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
 
-var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
-
 var _reactRouterDom = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
 
-var _store = __webpack_require__(/*! ./store */ "./src/js/store.js");
+var _index = __webpack_require__(/*! ./store/index */ "./src/js/store/index.js");
 
-var _store2 = _interopRequireDefault(_store);
+var _index2 = _interopRequireDefault(_index);
 
 var _App = __webpack_require__(/*! ./App */ "./src/js/App.js");
 
@@ -65327,7 +65325,7 @@ __webpack_require__(/*! ../scss/app.scss */ "./src/scss/app.scss");
 
 _reactDom2.default.render(_react2.default.createElement(
 	_reactRedux.Provider,
-	{ store: _store2.default },
+	{ store: _index2.default },
 	_react2.default.createElement(
 		_reactRouterDom.BrowserRouter,
 		{ basename: '/iris' },
@@ -77061,10 +77059,10 @@ function reducer() {
 
 /***/ }),
 
-/***/ "./src/js/store.js":
-/*!*************************!*\
-  !*** ./src/js/store.js ***!
-  \*************************/
+/***/ "./src/js/store/index.js":
+/*!*******************************!*\
+  !*** ./src/js/store/index.js ***!
+  \*******************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -77077,91 +77075,91 @@ Object.defineProperty(exports, "__esModule", {
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _helpers = __webpack_require__(/*! ./helpers */ "./src/js/helpers.js");
+var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _reducer = __webpack_require__(/*! ./services/core/reducer */ "./src/js/services/core/reducer.js");
+var _reducer = __webpack_require__(/*! ../services/core/reducer */ "./src/js/services/core/reducer.js");
 
 var _reducer2 = _interopRequireDefault(_reducer);
 
-var _reducer3 = __webpack_require__(/*! ./services/ui/reducer */ "./src/js/services/ui/reducer.js");
+var _reducer3 = __webpack_require__(/*! ../services/ui/reducer */ "./src/js/services/ui/reducer.js");
 
 var _reducer4 = _interopRequireDefault(_reducer3);
 
-var _reducer5 = __webpack_require__(/*! ./services/pusher/reducer */ "./src/js/services/pusher/reducer.js");
+var _reducer5 = __webpack_require__(/*! ../services/pusher/reducer */ "./src/js/services/pusher/reducer.js");
 
 var _reducer6 = _interopRequireDefault(_reducer5);
 
-var _reducer7 = __webpack_require__(/*! ./services/mopidy/reducer */ "./src/js/services/mopidy/reducer.js");
+var _reducer7 = __webpack_require__(/*! ../services/mopidy/reducer */ "./src/js/services/mopidy/reducer.js");
 
 var _reducer8 = _interopRequireDefault(_reducer7);
 
-var _reducer9 = __webpack_require__(/*! ./services/lastfm/reducer */ "./src/js/services/lastfm/reducer.js");
+var _reducer9 = __webpack_require__(/*! ../services/lastfm/reducer */ "./src/js/services/lastfm/reducer.js");
 
 var _reducer10 = _interopRequireDefault(_reducer9);
 
-var _reducer11 = __webpack_require__(/*! ./services/spotify/reducer */ "./src/js/services/spotify/reducer.js");
+var _reducer11 = __webpack_require__(/*! ../services/spotify/reducer */ "./src/js/services/spotify/reducer.js");
 
 var _reducer12 = _interopRequireDefault(_reducer11);
 
-var _reducer13 = __webpack_require__(/*! ./services/snapcast/reducer */ "./src/js/services/snapcast/reducer.js");
+var _reducer13 = __webpack_require__(/*! ../services/snapcast/reducer */ "./src/js/services/snapcast/reducer.js");
 
 var _reducer14 = _interopRequireDefault(_reducer13);
 
-var _reducer15 = __webpack_require__(/*! ./services/google/reducer */ "./src/js/services/google/reducer.js");
+var _reducer15 = __webpack_require__(/*! ../services/google/reducer */ "./src/js/services/google/reducer.js");
 
 var _reducer16 = _interopRequireDefault(_reducer15);
 
-var _reducer17 = __webpack_require__(/*! ./services/genius/reducer */ "./src/js/services/genius/reducer.js");
+var _reducer17 = __webpack_require__(/*! ../services/genius/reducer */ "./src/js/services/genius/reducer.js");
 
 var _reducer18 = _interopRequireDefault(_reducer17);
 
-var _storeMigration = __webpack_require__(/*! ./storeMigration */ "./src/js/storeMigration.js");
+var _migration = __webpack_require__(/*! ./migration */ "./src/js/store/migration.js");
 
-var _storeMigration2 = _interopRequireDefault(_storeMigration);
+var _migration2 = _interopRequireDefault(_migration);
 
 var _reduxThunk = __webpack_require__(/*! redux-thunk */ "./node_modules/redux-thunk/es/index.js");
 
 var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 
-var _middleware = __webpack_require__(/*! ./services/core/middleware */ "./src/js/services/core/middleware.js");
+var _middleware = __webpack_require__(/*! ../services/core/middleware */ "./src/js/services/core/middleware.js");
 
 var _middleware2 = _interopRequireDefault(_middleware);
 
-var _middleware3 = __webpack_require__(/*! ./services/ui/middleware */ "./src/js/services/ui/middleware.js");
+var _middleware3 = __webpack_require__(/*! ../services/ui/middleware */ "./src/js/services/ui/middleware.js");
 
 var _middleware4 = _interopRequireDefault(_middleware3);
 
-var _middleware5 = __webpack_require__(/*! ./services/pusher/middleware */ "./src/js/services/pusher/middleware.js");
+var _middleware5 = __webpack_require__(/*! ../services/pusher/middleware */ "./src/js/services/pusher/middleware.js");
 
 var _middleware6 = _interopRequireDefault(_middleware5);
 
-var _middleware7 = __webpack_require__(/*! ./services/mopidy/middleware */ "./src/js/services/mopidy/middleware.js");
+var _middleware7 = __webpack_require__(/*! ../services/mopidy/middleware */ "./src/js/services/mopidy/middleware.js");
 
 var _middleware8 = _interopRequireDefault(_middleware7);
 
-var _middleware9 = __webpack_require__(/*! ./services/lastfm/middleware */ "./src/js/services/lastfm/middleware.js");
+var _middleware9 = __webpack_require__(/*! ../services/lastfm/middleware */ "./src/js/services/lastfm/middleware.js");
 
 var _middleware10 = _interopRequireDefault(_middleware9);
 
-var _middleware11 = __webpack_require__(/*! ./services/genius/middleware */ "./src/js/services/genius/middleware.js");
+var _middleware11 = __webpack_require__(/*! ../services/genius/middleware */ "./src/js/services/genius/middleware.js");
 
 var _middleware12 = _interopRequireDefault(_middleware11);
 
-var _middleware13 = __webpack_require__(/*! ./services/spotify/middleware */ "./src/js/services/spotify/middleware.js");
+var _middleware13 = __webpack_require__(/*! ../services/spotify/middleware */ "./src/js/services/spotify/middleware.js");
 
 var _middleware14 = _interopRequireDefault(_middleware13);
 
-var _middleware15 = __webpack_require__(/*! ./services/google/middleware */ "./src/js/services/google/middleware.js");
+var _middleware15 = __webpack_require__(/*! ../services/google/middleware */ "./src/js/services/google/middleware.js");
 
 var _middleware16 = _interopRequireDefault(_middleware15);
 
-var _middleware17 = __webpack_require__(/*! ./services/snapcast/middleware */ "./src/js/services/snapcast/middleware.js");
+var _middleware17 = __webpack_require__(/*! ../services/snapcast/middleware */ "./src/js/services/snapcast/middleware.js");
 
 var _middleware18 = _interopRequireDefault(_middleware17);
 
-var _middleware19 = __webpack_require__(/*! ./services/localstorage/middleware */ "./src/js/services/localstorage/middleware.js");
+var _middleware19 = __webpack_require__(/*! ../services/localstorage/middleware */ "./src/js/services/localstorage/middleware.js");
 
 var _middleware20 = _interopRequireDefault(_middleware19);
 
@@ -77254,7 +77252,7 @@ state.google = Object.assign({}, state.google, helpers.getStorage('google'));
 state.snapcast = Object.assign({}, state.snapcast, helpers.getStorage('snapcast'));
 
 // Run any migrations
-state = (0, _storeMigration2.default)(state);
+state = (0, _migration2.default)(state);
 
 var reducers = (0, _redux.combineReducers)({
 	core: _reducer2.default,
@@ -77272,10 +77270,10 @@ exports.default = (0, _redux.createStore)(reducers, state, (0, _redux.applyMiddl
 
 /***/ }),
 
-/***/ "./src/js/storeMigration.js":
-/*!**********************************!*\
-  !*** ./src/js/storeMigration.js ***!
-  \**********************************/
+/***/ "./src/js/store/migration.js":
+/*!***********************************!*\
+  !*** ./src/js/store/migration.js ***!
+  \***********************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -77287,8 +77285,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 exports.default = function (state) {
-
-    // Changed at 3.36
     if (state.ui.shortkeys_enabled !== undefined) {
         state.ui.hotkeys_enabled = state.ui.shortkeys_enabled;
     }
