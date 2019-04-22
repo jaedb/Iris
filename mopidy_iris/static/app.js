@@ -55991,13 +55991,9 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _reactGa = __webpack_require__(/*! react-ga */ "./node_modules/react-ga/dist/esm/index.js");
+var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
 
-var _reactGa2 = _interopRequireDefault(_reactGa);
-
-var _Thumbnail = __webpack_require__(/*! ../Thumbnail */ "./src/js/components/Thumbnail.js");
-
-var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
+var helpers = _interopRequireWildcard(_helpers);
 
 var _actions = __webpack_require__(/*! ../../services/ui/actions */ "./src/js/services/ui/actions.js");
 
@@ -56028,32 +56024,30 @@ var GeniusAuthenticationFrame = function (_React$Component) {
 		_this.state = {
 			authorizing: false
 		};
+
+		_this.handleMessage = _this.handleMessage.bind(_this);
 		return _this;
 	}
 
 	_createClass(GeniusAuthenticationFrame, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
-			var self = this;
-
-			// Listen for incoming messages from the authorization popup
-			window.addEventListener('message', function (event) {
-				try {
-					var data = JSON.parse(event.data);
-				} catch (e) {
-					console.error("Failed to parse JSON", e, event);
-					return;
-				}
-
-				// Only digest messages relevant to us
-				if (data.origin == 'auth_genius') {
-					self.handleMessage(event, data);
-				}
-			}, false);
+			window.addEventListener('message', this.handleMessage, false);
+		}
+	}, {
+		key: 'componentWillUnmount',
+		value: function componentWillUnmount() {
+			window.removeEventListener("message", this.handleMessage, false);
 		}
 	}, {
 		key: 'handleMessage',
-		value: function handleMessage(event, data) {
+		value: function handleMessage(event) {
+			var data = helpers.toJSON(event.data);
+
+			// Only digest messages relevant to us
+			if (data.origin != 'auth_genius') {
+				return;
+			}
 
 			// Only allow incoming data from our authorized authenticator proxy
 			var authorization_domain = this.props.authorization_url.substring(0, this.props.authorization_url.indexOf('/', 8));
@@ -56113,22 +56107,22 @@ var GeniusAuthenticationFrame = function (_React$Component) {
 
 			if (this.state.authorizing) {
 				return _react2.default.createElement(
-					'button',
+					'a',
 					{ className: 'button button--working' },
 					'Authorizing...'
 				);
 			} else if (this.props.authorized) {
 				return _react2.default.createElement(
-					'button',
-					{ className: 'button button--destructive', onClick: function onClick() {
+					'a',
+					{ className: 'button button--destructive', onClick: function onClick(e) {
 							return _this2.props.geniusActions.revokeAuthorization();
 						} },
 					'Log out'
 				);
 			} else {
 				return _react2.default.createElement(
-					'button',
-					{ className: 'button button--primary', onClick: function onClick() {
+					'a',
+					{ className: 'button button--primary', onClick: function onClick(e) {
 							return _this2.startAuthorization();
 						} },
 					'Log in'
@@ -56231,13 +56225,9 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _reactGa = __webpack_require__(/*! react-ga */ "./node_modules/react-ga/dist/esm/index.js");
+var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
 
-var _reactGa2 = _interopRequireDefault(_reactGa);
-
-var _Thumbnail = __webpack_require__(/*! ../Thumbnail */ "./src/js/components/Thumbnail.js");
-
-var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
+var helpers = _interopRequireWildcard(_helpers);
 
 var _actions = __webpack_require__(/*! ../../services/ui/actions */ "./src/js/services/ui/actions.js");
 
@@ -56268,32 +56258,30 @@ var LastfmAuthenticationFrame = function (_React$Component) {
 		_this.state = {
 			authorizing: false
 		};
+
+		_this.handleMessage = _this.handleMessage.bind(_this);
 		return _this;
 	}
 
 	_createClass(LastfmAuthenticationFrame, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
-			var self = this;
-
-			// Listen for incoming messages from the authorization popup
-			window.addEventListener('message', function (event) {
-				try {
-					var data = JSON.parse(event.data);
-				} catch (e) {
-					console.error("Failed to parse JSON", e, event);
-					return;
-				}
-
-				// Only digest messages relevant to us
-				if (data.origin == 'auth_lastfm') {
-					self.handleMessage(event, data);
-				}
-			}, false);
+			window.addEventListener('message', this.handleMessage, false);
+		}
+	}, {
+		key: 'componentWillUnmount',
+		value: function componentWillUnmount() {
+			window.removeEventListener("message", this.handleMessage, false);
 		}
 	}, {
 		key: 'handleMessage',
-		value: function handleMessage(event, data) {
+		value: function handleMessage(event) {
+			var data = helpers.toJSON(event.data);
+
+			// Only digest messages relevant to us
+			if (data.origin != 'auth_lastfm') {
+				return;
+			}
 
 			// Only allow incoming data from our authorized authenticator proxy
 			var authorization_domain = this.props.authorization_url.substring(0, this.props.authorization_url.indexOf('/', 8));
@@ -56353,22 +56341,22 @@ var LastfmAuthenticationFrame = function (_React$Component) {
 
 			if (this.state.authorizing) {
 				return _react2.default.createElement(
-					'button',
+					'a',
 					{ className: 'button button--working' },
 					'Authorizing...'
 				);
 			} else if (this.props.authorization) {
 				return _react2.default.createElement(
-					'button',
-					{ className: 'button button--destructive', onClick: function onClick() {
+					'a',
+					{ className: 'button button--destructive', onClick: function onClick(e) {
 							return _this2.props.lastfmActions.revokeAuthorization();
 						} },
 					'Log out'
 				);
 			} else {
 				return _react2.default.createElement(
-					'button',
-					{ className: 'button button--primary', onClick: function onClick() {
+					'a',
+					{ className: 'button button--primary', onClick: function onClick(e) {
 							return _this2.startAuthorization();
 						} },
 					'Log in'
@@ -57442,13 +57430,9 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _reactGa = __webpack_require__(/*! react-ga */ "./node_modules/react-ga/dist/esm/index.js");
+var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
 
-var _reactGa2 = _interopRequireDefault(_reactGa);
-
-var _Thumbnail = __webpack_require__(/*! ../Thumbnail */ "./src/js/components/Thumbnail.js");
-
-var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
+var helpers = _interopRequireWildcard(_helpers);
 
 var _actions = __webpack_require__(/*! ../../services/ui/actions */ "./src/js/services/ui/actions.js");
 
@@ -57479,32 +57463,30 @@ var SpotifyAuthenticationFrame = function (_React$Component) {
 		_this.state = {
 			authorizing: false
 		};
+
+		_this.handleMessage = _this.handleMessage.bind(_this);
 		return _this;
 	}
 
 	_createClass(SpotifyAuthenticationFrame, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
-			var self = this;
-
-			// Listen for incoming messages from the authorization popup
-			window.addEventListener('message', function (event) {
-				try {
-					var data = JSON.parse(event.data);
-				} catch (e) {
-					console.error("Failed to parse JSON", e, event);
-					return;
-				}
-
-				// Only digest messages relevant to us
-				if (data.origin == 'auth_spotify') {
-					self.handleMessage(event, data);
-				}
-			}, false);
+			window.addEventListener('message', this.handleMessage, false);
+		}
+	}, {
+		key: 'componentWillUnmount',
+		value: function componentWillUnmount() {
+			window.removeEventListener("message", this.handleMessage, false);
 		}
 	}, {
 		key: 'handleMessage',
-		value: function handleMessage(event, data) {
+		value: function handleMessage(event) {
+			var data = helpers.toJSON(event.data);
+
+			// Only digest messages relevant to us
+			if (data.origin != 'auth_spotify') {
+				return;
+			}
 
 			// Only allow incoming data from our authorized authenticator proxy
 			var authorization_domain = this.props.authorization_url.substring(0, this.props.authorization_url.indexOf('/', 8));
@@ -57565,22 +57547,22 @@ var SpotifyAuthenticationFrame = function (_React$Component) {
 
 			if (this.state.authorizing) {
 				return _react2.default.createElement(
-					'button',
+					'a',
 					{ className: 'button button--working' },
 					'Authorizing...'
 				);
 			} else if (this.props.authorized) {
 				return _react2.default.createElement(
-					'button',
-					{ className: 'button button--destructive', onClick: function onClick() {
+					'a',
+					{ className: 'button button--destructive', onClick: function onClick(e) {
 							return _this2.props.spotifyActions.revokeAuthorization();
 						} },
 					'Log out'
 				);
 			} else {
 				return _react2.default.createElement(
-					'button',
-					{ className: 'button button--primary', onClick: function onClick() {
+					'a',
+					{ className: 'button button--primary', onClick: function onClick(e) {
 							return _this2.startAuthorization();
 						} },
 					'Log in'
@@ -63468,6 +63450,78 @@ var setStorage = exports.setStorage = function setStorage(key, value) {
 };
 
 /**
+ * Convert a string to JSON, after we've checked whether it needs
+ * conversion or not.
+ *
+ * @param data String or Object
+ * @return Object
+ **/
+var toJSON = exports.toJSON = function toJSON(data) {
+
+	// Parse it
+	try {
+		var json = JSON.parse(data);
+		return json;
+
+		// Could not parse string
+	} catch (e) {
+
+		// Check if it's JSON already
+		if (data.constructor === {}.constructor) {
+			return data;
+		} else {
+			console.error("Could not convert non-JSON", string);
+		}
+	}
+	return {};
+};
+
+/**
+ * Set the app's favicon to a specific image.
+ * 
+ * @param filename String
+ */
+var setFavicon = exports.setFavicon = function setFavicon(filename) {
+	var links = document.getElementsByClassName('favicon');
+	var _iteratorNormalCompletion = true;
+	var _didIteratorError = false;
+	var _iteratorError = undefined;
+
+	try {
+		for (var _iterator = links[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+			var link = _step.value;
+
+
+			// Construct new <links>
+			var new_link = document.createElement('link');
+			new_link.className = link.className;
+			new_link.rel = link.rel;
+			new_link.href = "/iris/assets/" + filename;
+			if (link.type) {
+				new_link.type = link.type;
+			}
+
+			// Remove the old one and add the new one
+			document.head.removeChild(link);
+			document.head.appendChild(new_link);
+		}
+	} catch (err) {
+		_didIteratorError = true;
+		_iteratorError = err;
+	} finally {
+		try {
+			if (!_iteratorNormalCompletion && _iterator.return) {
+				_iterator.return();
+			}
+		} finally {
+			if (_didIteratorError) {
+				throw _iteratorError;
+			}
+		}
+	}
+};
+
+/**
  * Check if an image URL is cached or not
  * Useful for bypassing load animations for cached assets (eg parallax)
  *
@@ -63686,29 +63740,29 @@ var formatSimpleObject = exports.formatSimpleObject = function formatSimpleObjec
 	var simple_object = {};
 	var fields = ['uri', 'name'];
 
-	var _iteratorNormalCompletion = true;
-	var _didIteratorError = false;
-	var _iteratorError = undefined;
+	var _iteratorNormalCompletion2 = true;
+	var _didIteratorError2 = false;
+	var _iteratorError2 = undefined;
 
 	try {
-		for (var _iterator = fields[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-			var field = _step.value;
+		for (var _iterator2 = fields[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+			var field = _step2.value;
 
 			if (data.hasOwnProperty(field)) {
 				simple_object[field] = data[field];
 			}
 		}
 	} catch (err) {
-		_didIteratorError = true;
-		_iteratorError = err;
+		_didIteratorError2 = true;
+		_iteratorError2 = err;
 	} finally {
 		try {
-			if (!_iteratorNormalCompletion && _iterator.return) {
-				_iterator.return();
+			if (!_iteratorNormalCompletion2 && _iterator2.return) {
+				_iterator2.return();
 			}
 		} finally {
-			if (_didIteratorError) {
-				throw _iteratorError;
+			if (_didIteratorError2) {
+				throw _iteratorError2;
 			}
 		}
 	}
@@ -63726,37 +63780,6 @@ var formatTracks = exports.formatTracks = function formatTracks() {
 	var records = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
 	var formatted = [];
-	var _iteratorNormalCompletion2 = true;
-	var _didIteratorError2 = false;
-	var _iteratorError2 = undefined;
-
-	try {
-		for (var _iterator2 = records[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-			var record = _step2.value;
-
-			formatted.push(formatTrack(record));
-		}
-	} catch (err) {
-		_didIteratorError2 = true;
-		_iteratorError2 = err;
-	} finally {
-		try {
-			if (!_iteratorNormalCompletion2 && _iterator2.return) {
-				_iterator2.return();
-			}
-		} finally {
-			if (_didIteratorError2) {
-				throw _iteratorError2;
-			}
-		}
-	}
-
-	return formatted;
-};
-var formatAlbums = exports.formatAlbums = function formatAlbums() {
-	var records = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-
-	var formatted = [];
 	var _iteratorNormalCompletion3 = true;
 	var _didIteratorError3 = false;
 	var _iteratorError3 = undefined;
@@ -63765,7 +63788,7 @@ var formatAlbums = exports.formatAlbums = function formatAlbums() {
 		for (var _iterator3 = records[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
 			var record = _step3.value;
 
-			formatted.push(formatAlbum(record));
+			formatted.push(formatTrack(record));
 		}
 	} catch (err) {
 		_didIteratorError3 = true;
@@ -63784,7 +63807,7 @@ var formatAlbums = exports.formatAlbums = function formatAlbums() {
 
 	return formatted;
 };
-var formatArtists = exports.formatArtists = function formatArtists() {
+var formatAlbums = exports.formatAlbums = function formatAlbums() {
 	var records = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
 	var formatted = [];
@@ -63796,7 +63819,7 @@ var formatArtists = exports.formatArtists = function formatArtists() {
 		for (var _iterator4 = records[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
 			var record = _step4.value;
 
-			formatted.push(formatArtist(record));
+			formatted.push(formatAlbum(record));
 		}
 	} catch (err) {
 		_didIteratorError4 = true;
@@ -63815,7 +63838,7 @@ var formatArtists = exports.formatArtists = function formatArtists() {
 
 	return formatted;
 };
-var formatPlaylists = exports.formatPlaylists = function formatPlaylists() {
+var formatArtists = exports.formatArtists = function formatArtists() {
 	var records = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
 	var formatted = [];
@@ -63827,7 +63850,7 @@ var formatPlaylists = exports.formatPlaylists = function formatPlaylists() {
 		for (var _iterator5 = records[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
 			var record = _step5.value;
 
-			formatted.push(formatTrack(record));
+			formatted.push(formatArtist(record));
 		}
 	} catch (err) {
 		_didIteratorError5 = true;
@@ -63846,7 +63869,7 @@ var formatPlaylists = exports.formatPlaylists = function formatPlaylists() {
 
 	return formatted;
 };
-var formatUsers = exports.formatUsers = function formatUsers() {
+var formatPlaylists = exports.formatPlaylists = function formatPlaylists() {
 	var records = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
 	var formatted = [];
@@ -63858,7 +63881,7 @@ var formatUsers = exports.formatUsers = function formatUsers() {
 		for (var _iterator6 = records[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
 			var record = _step6.value;
 
-			formatted.push(formatUser(record));
+			formatted.push(formatTrack(record));
 		}
 	} catch (err) {
 		_didIteratorError6 = true;
@@ -63871,6 +63894,37 @@ var formatUsers = exports.formatUsers = function formatUsers() {
 		} finally {
 			if (_didIteratorError6) {
 				throw _iteratorError6;
+			}
+		}
+	}
+
+	return formatted;
+};
+var formatUsers = exports.formatUsers = function formatUsers() {
+	var records = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+	var formatted = [];
+	var _iteratorNormalCompletion7 = true;
+	var _didIteratorError7 = false;
+	var _iteratorError7 = undefined;
+
+	try {
+		for (var _iterator7 = records[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+			var record = _step7.value;
+
+			formatted.push(formatUser(record));
+		}
+	} catch (err) {
+		_didIteratorError7 = true;
+		_iteratorError7 = err;
+	} finally {
+		try {
+			if (!_iteratorNormalCompletion7 && _iterator7.return) {
+				_iterator7.return();
+			}
+		} finally {
+			if (_didIteratorError7) {
+				throw _iteratorError7;
 			}
 		}
 	}
@@ -63890,29 +63944,29 @@ var formatAlbum = exports.formatAlbum = function formatAlbum(data) {
 	];
 
 	// Loop fields and import from data
-	var _iteratorNormalCompletion7 = true;
-	var _didIteratorError7 = false;
-	var _iteratorError7 = undefined;
+	var _iteratorNormalCompletion8 = true;
+	var _didIteratorError8 = false;
+	var _iteratorError8 = undefined;
 
 	try {
-		for (var _iterator7 = fields[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-			var field = _step7.value;
+		for (var _iterator8 = fields[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+			var field = _step8.value;
 
 			if (data.hasOwnProperty(field)) {
 				album[field] = data[field];
 			}
 		}
 	} catch (err) {
-		_didIteratorError7 = true;
-		_iteratorError7 = err;
+		_didIteratorError8 = true;
+		_iteratorError8 = err;
 	} finally {
 		try {
-			if (!_iteratorNormalCompletion7 && _iterator7.return) {
-				_iterator7.return();
+			if (!_iteratorNormalCompletion8 && _iterator8.return) {
+				_iterator8.return();
 			}
 		} finally {
-			if (_didIteratorError7) {
-				throw _iteratorError7;
+			if (_didIteratorError8) {
+				throw _iteratorError8;
 			}
 		}
 	}
@@ -63945,29 +63999,29 @@ var formatArtist = exports.formatArtist = function formatArtist(data) {
 	var fields = ['uri', 'provider', 'mbid', 'name', 'type', 'popularity', 'followers', 'listeners', 'added_at', 'biography', 'biography_link', 'biography_publish_date', 'related_artists_uris', 'albums_uris', 'albums_total', 'albums_more', 'tracks_uris', 'tracks_total', 'tracks_more'];
 
 	// Loop fields and import from data
-	var _iteratorNormalCompletion8 = true;
-	var _didIteratorError8 = false;
-	var _iteratorError8 = undefined;
+	var _iteratorNormalCompletion9 = true;
+	var _didIteratorError9 = false;
+	var _iteratorError9 = undefined;
 
 	try {
-		for (var _iterator8 = fields[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
-			var field = _step8.value;
+		for (var _iterator9 = fields[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+			var field = _step9.value;
 
 			if (data.hasOwnProperty(field)) {
 				artist[field] = data[field];
 			}
 		}
 	} catch (err) {
-		_didIteratorError8 = true;
-		_iteratorError8 = err;
+		_didIteratorError9 = true;
+		_iteratorError9 = err;
 	} finally {
 		try {
-			if (!_iteratorNormalCompletion8 && _iterator8.return) {
-				_iterator8.return();
+			if (!_iteratorNormalCompletion9 && _iterator9.return) {
+				_iterator9.return();
 			}
 		} finally {
-			if (_didIteratorError8) {
-				throw _iteratorError8;
+			if (_didIteratorError9) {
+				throw _iteratorError9;
 			}
 		}
 	}
@@ -64010,29 +64064,29 @@ var formatPlaylist = exports.formatPlaylist = function formatPlaylist(data) {
 	var fields = ['uri', 'snapshot_id', 'provider', 'type', 'collaborative', 'public', 'name', 'description', 'images', 'popularity', 'followers', 'added_at', 'last_modified_date', 'can_edit', 'owner', 'user_uri', 'tracks_uris', 'tracks_total', 'tracks_more'];
 
 	// Loop fields and import from data
-	var _iteratorNormalCompletion9 = true;
-	var _didIteratorError9 = false;
-	var _iteratorError9 = undefined;
+	var _iteratorNormalCompletion10 = true;
+	var _didIteratorError10 = false;
+	var _iteratorError10 = undefined;
 
 	try {
-		for (var _iterator9 = fields[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
-			var field = _step9.value;
+		for (var _iterator10 = fields[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
+			var field = _step10.value;
 
 			if (data.hasOwnProperty(field)) {
 				playlist[field] = data[field];
 			}
 		}
 	} catch (err) {
-		_didIteratorError9 = true;
-		_iteratorError9 = err;
+		_didIteratorError10 = true;
+		_iteratorError10 = err;
 	} finally {
 		try {
-			if (!_iteratorNormalCompletion9 && _iterator9.return) {
-				_iterator9.return();
+			if (!_iteratorNormalCompletion10 && _iterator10.return) {
+				_iterator10.return();
 			}
 		} finally {
-			if (_didIteratorError9) {
-				throw _iteratorError9;
+			if (_didIteratorError10) {
+				throw _iteratorError10;
 			}
 		}
 	}
@@ -64079,29 +64133,29 @@ var formatUser = exports.formatUser = function formatUser(data) {
 	var fields = ['id', 'uri', 'provider', 'name', 'images', 'followers', 'playlists_uris', 'playlists_total', 'playlists_more'];
 
 	// Loop fields and import from data
-	var _iteratorNormalCompletion10 = true;
-	var _didIteratorError10 = false;
-	var _iteratorError10 = undefined;
+	var _iteratorNormalCompletion11 = true;
+	var _didIteratorError11 = false;
+	var _iteratorError11 = undefined;
 
 	try {
-		for (var _iterator10 = fields[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
-			var field = _step10.value;
+		for (var _iterator11 = fields[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
+			var field = _step11.value;
 
 			if (data.hasOwnProperty(field)) {
 				user[field] = data[field];
 			}
 		}
 	} catch (err) {
-		_didIteratorError10 = true;
-		_iteratorError10 = err;
+		_didIteratorError11 = true;
+		_iteratorError11 = err;
 	} finally {
 		try {
-			if (!_iteratorNormalCompletion10 && _iterator10.return) {
-				_iterator10.return();
+			if (!_iteratorNormalCompletion11 && _iterator11.return) {
+				_iterator11.return();
 			}
 		} finally {
-			if (_didIteratorError10) {
-				throw _iteratorError10;
+			if (_didIteratorError11) {
+				throw _iteratorError11;
 			}
 		}
 	}
@@ -64164,29 +64218,29 @@ var formatTrack = exports.formatTrack = function formatTrack(data) {
 	}
 
 	// Loop fields and import from data
-	var _iteratorNormalCompletion11 = true;
-	var _didIteratorError11 = false;
-	var _iteratorError11 = undefined;
+	var _iteratorNormalCompletion12 = true;
+	var _didIteratorError12 = false;
+	var _iteratorError12 = undefined;
 
 	try {
-		for (var _iterator11 = fields[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
-			var field = _step11.value;
+		for (var _iterator12 = fields[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
+			var field = _step12.value;
 
 			if (data.hasOwnProperty(field)) {
 				track[field] = data[field];
 			}
 		}
 	} catch (err) {
-		_didIteratorError11 = true;
-		_iteratorError11 = err;
+		_didIteratorError12 = true;
+		_iteratorError12 = err;
 	} finally {
 		try {
-			if (!_iteratorNormalCompletion11 && _iterator11.return) {
-				_iterator11.return();
+			if (!_iteratorNormalCompletion12 && _iterator12.return) {
+				_iterator12.return();
 			}
 		} finally {
-			if (_didIteratorError11) {
-				throw _iteratorError11;
+			if (_didIteratorError12) {
+				throw _iteratorError12;
 			}
 		}
 	}
@@ -64242,29 +64296,29 @@ var formatClient = exports.formatClient = function formatClient(data) {
 	var client = {};
 	var fields = ['id', 'connected', 'name', 'host_name', 'volume', 'mute', 'latency', 'power_on_command', 'power_off_command'];
 
-	var _iteratorNormalCompletion12 = true;
-	var _didIteratorError12 = false;
-	var _iteratorError12 = undefined;
+	var _iteratorNormalCompletion13 = true;
+	var _didIteratorError13 = false;
+	var _iteratorError13 = undefined;
 
 	try {
-		for (var _iterator12 = fields[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
-			var field = _step12.value;
+		for (var _iterator13 = fields[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
+			var field = _step13.value;
 
 			if (data.hasOwnProperty(field)) {
 				client[field] = data[field];
 			}
 		}
 	} catch (err) {
-		_didIteratorError12 = true;
-		_iteratorError12 = err;
+		_didIteratorError13 = true;
+		_iteratorError13 = err;
 	} finally {
 		try {
-			if (!_iteratorNormalCompletion12 && _iterator12.return) {
-				_iterator12.return();
+			if (!_iteratorNormalCompletion13 && _iterator13.return) {
+				_iterator13.return();
 			}
 		} finally {
-			if (_didIteratorError12) {
-				throw _iteratorError12;
+			if (_didIteratorError13) {
+				throw _iteratorError13;
 			}
 		}
 	}
@@ -64305,29 +64359,29 @@ var formatGroup = exports.formatGroup = function formatGroup(data) {
 	var group = {};
 	var fields = ['id', 'name', 'mute', 'stream_id', 'clients_ids'];
 
-	var _iteratorNormalCompletion13 = true;
-	var _didIteratorError13 = false;
-	var _iteratorError13 = undefined;
+	var _iteratorNormalCompletion14 = true;
+	var _didIteratorError14 = false;
+	var _iteratorError14 = undefined;
 
 	try {
-		for (var _iterator13 = fields[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
-			var field = _step13.value;
+		for (var _iterator14 = fields[Symbol.iterator](), _step14; !(_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done); _iteratorNormalCompletion14 = true) {
+			var field = _step14.value;
 
 			if (data.hasOwnProperty(field)) {
 				group[field] = data[field];
 			}
 		}
 	} catch (err) {
-		_didIteratorError13 = true;
-		_iteratorError13 = err;
+		_didIteratorError14 = true;
+		_iteratorError14 = err;
 	} finally {
 		try {
-			if (!_iteratorNormalCompletion13 && _iterator13.return) {
-				_iterator13.return();
+			if (!_iteratorNormalCompletion14 && _iterator14.return) {
+				_iterator14.return();
 			}
 		} finally {
-			if (_didIteratorError13) {
-				throw _iteratorError13;
+			if (_didIteratorError14) {
+				throw _iteratorError14;
 			}
 		}
 	}
@@ -64373,44 +64427,16 @@ var collate = exports.collate = function collate(obj) {
 
 	if (indexes.artists) {
 		if (obj.artists_uris) {
-			var _iteratorNormalCompletion14 = true;
-			var _didIteratorError14 = false;
-			var _iteratorError14 = undefined;
-
-			try {
-				for (var _iterator14 = obj.artists_uris[Symbol.iterator](), _step14; !(_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done); _iteratorNormalCompletion14 = true) {
-					var uri = _step14.value;
-
-					if (indexes.artists[uri]) {
-						obj.artists.push(indexes.artists[uri]);
-					}
-				}
-			} catch (err) {
-				_didIteratorError14 = true;
-				_iteratorError14 = err;
-			} finally {
-				try {
-					if (!_iteratorNormalCompletion14 && _iterator14.return) {
-						_iterator14.return();
-					}
-				} finally {
-					if (_didIteratorError14) {
-						throw _iteratorError14;
-					}
-				}
-			}
-		}
-		if (obj.related_artists_uris) {
 			var _iteratorNormalCompletion15 = true;
 			var _didIteratorError15 = false;
 			var _iteratorError15 = undefined;
 
 			try {
-				for (var _iterator15 = obj.related_artists_uris[Symbol.iterator](), _step15; !(_iteratorNormalCompletion15 = (_step15 = _iterator15.next()).done); _iteratorNormalCompletion15 = true) {
+				for (var _iterator15 = obj.artists_uris[Symbol.iterator](), _step15; !(_iteratorNormalCompletion15 = (_step15 = _iterator15.next()).done); _iteratorNormalCompletion15 = true) {
 					var uri = _step15.value;
 
 					if (indexes.artists[uri]) {
-						obj.related_artists.push(indexes.artists[uri]);
+						obj.artists.push(indexes.artists[uri]);
 					}
 				}
 			} catch (err) {
@@ -64428,25 +64454,17 @@ var collate = exports.collate = function collate(obj) {
 				}
 			}
 		}
-		if (obj.artist_uri) {
-			if (indexes.artists[obj.artist_uri]) {
-				obj.artist = indexes.artists[obj.artist_uri];
-			}
-		}
-	}
-
-	if (indexes.albums) {
-		if (obj.albums_uris) {
+		if (obj.related_artists_uris) {
 			var _iteratorNormalCompletion16 = true;
 			var _didIteratorError16 = false;
 			var _iteratorError16 = undefined;
 
 			try {
-				for (var _iterator16 = obj.albums_uris[Symbol.iterator](), _step16; !(_iteratorNormalCompletion16 = (_step16 = _iterator16.next()).done); _iteratorNormalCompletion16 = true) {
+				for (var _iterator16 = obj.related_artists_uris[Symbol.iterator](), _step16; !(_iteratorNormalCompletion16 = (_step16 = _iterator16.next()).done); _iteratorNormalCompletion16 = true) {
 					var uri = _step16.value;
 
-					if (indexes.albums[uri]) {
-						obj.albums.push(indexes.albums[uri]);
+					if (indexes.artists[uri]) {
+						obj.related_artists.push(indexes.artists[uri]);
 					}
 				}
 			} catch (err) {
@@ -64464,25 +64482,25 @@ var collate = exports.collate = function collate(obj) {
 				}
 			}
 		}
-		if (obj.album_uri) {
-			if (indexes.albums[obj.album_uri]) {
-				obj.album = indexes.albums[obj.album_uri];
+		if (obj.artist_uri) {
+			if (indexes.artists[obj.artist_uri]) {
+				obj.artist = indexes.artists[obj.artist_uri];
 			}
 		}
 	}
 
-	if (indexes.tracks) {
-		if (obj.tracks_uris) {
+	if (indexes.albums) {
+		if (obj.albums_uris) {
 			var _iteratorNormalCompletion17 = true;
 			var _didIteratorError17 = false;
 			var _iteratorError17 = undefined;
 
 			try {
-				for (var _iterator17 = obj.tracks_uris[Symbol.iterator](), _step17; !(_iteratorNormalCompletion17 = (_step17 = _iterator17.next()).done); _iteratorNormalCompletion17 = true) {
+				for (var _iterator17 = obj.albums_uris[Symbol.iterator](), _step17; !(_iteratorNormalCompletion17 = (_step17 = _iterator17.next()).done); _iteratorNormalCompletion17 = true) {
 					var uri = _step17.value;
 
-					if (indexes.tracks[uri]) {
-						obj.tracks.push(indexes.tracks[uri]);
+					if (indexes.albums[uri]) {
+						obj.albums.push(indexes.albums[uri]);
 					}
 				}
 			} catch (err) {
@@ -64500,25 +64518,25 @@ var collate = exports.collate = function collate(obj) {
 				}
 			}
 		}
-		if (obj.track_uri) {
-			if (indexes.tracks[obj.track_uri]) {
-				obj.track = indexes.tracks[obj.track_uri];
+		if (obj.album_uri) {
+			if (indexes.albums[obj.album_uri]) {
+				obj.album = indexes.albums[obj.album_uri];
 			}
 		}
 	}
 
-	if (indexes.users) {
-		if (obj.users_uris) {
+	if (indexes.tracks) {
+		if (obj.tracks_uris) {
 			var _iteratorNormalCompletion18 = true;
 			var _didIteratorError18 = false;
 			var _iteratorError18 = undefined;
 
 			try {
-				for (var _iterator18 = obj.users_uris[Symbol.iterator](), _step18; !(_iteratorNormalCompletion18 = (_step18 = _iterator18.next()).done); _iteratorNormalCompletion18 = true) {
+				for (var _iterator18 = obj.tracks_uris[Symbol.iterator](), _step18; !(_iteratorNormalCompletion18 = (_step18 = _iterator18.next()).done); _iteratorNormalCompletion18 = true) {
 					var uri = _step18.value;
 
-					if (indexes.users[uri]) {
-						obj.users.push(indexes.users[uri]);
+					if (indexes.tracks[uri]) {
+						obj.tracks.push(indexes.tracks[uri]);
 					}
 				}
 			} catch (err) {
@@ -64536,25 +64554,25 @@ var collate = exports.collate = function collate(obj) {
 				}
 			}
 		}
-		if (obj.user_uri) {
-			if (indexes.users[obj.user_uri]) {
-				obj.user = indexes.users[obj.user_uri];
+		if (obj.track_uri) {
+			if (indexes.tracks[obj.track_uri]) {
+				obj.track = indexes.tracks[obj.track_uri];
 			}
 		}
 	}
 
-	if (indexes.playlists) {
-		if (obj.playlists_uris) {
+	if (indexes.users) {
+		if (obj.users_uris) {
 			var _iteratorNormalCompletion19 = true;
 			var _didIteratorError19 = false;
 			var _iteratorError19 = undefined;
 
 			try {
-				for (var _iterator19 = obj.playlists_uris[Symbol.iterator](), _step19; !(_iteratorNormalCompletion19 = (_step19 = _iterator19.next()).done); _iteratorNormalCompletion19 = true) {
+				for (var _iterator19 = obj.users_uris[Symbol.iterator](), _step19; !(_iteratorNormalCompletion19 = (_step19 = _iterator19.next()).done); _iteratorNormalCompletion19 = true) {
 					var uri = _step19.value;
 
-					if (indexes.playlists[uri]) {
-						obj.playlists.push(indexes.playlists[uri]);
+					if (indexes.users[uri]) {
+						obj.users.push(indexes.users[uri]);
 					}
 				}
 			} catch (err) {
@@ -64572,25 +64590,25 @@ var collate = exports.collate = function collate(obj) {
 				}
 			}
 		}
-		if (obj.playlist_uri) {
-			if (indexes.playlists[obj.playlist_uri]) {
-				obj.playlist = indexes.playlists[obj.playlist_uri];
+		if (obj.user_uri) {
+			if (indexes.users[obj.user_uri]) {
+				obj.user = indexes.users[obj.user_uri];
 			}
 		}
 	}
 
-	if (indexes.clients) {
-		if (obj.clients_ids) {
+	if (indexes.playlists) {
+		if (obj.playlists_uris) {
 			var _iteratorNormalCompletion20 = true;
 			var _didIteratorError20 = false;
 			var _iteratorError20 = undefined;
 
 			try {
-				for (var _iterator20 = obj.clients_ids[Symbol.iterator](), _step20; !(_iteratorNormalCompletion20 = (_step20 = _iterator20.next()).done); _iteratorNormalCompletion20 = true) {
-					var id = _step20.value;
+				for (var _iterator20 = obj.playlists_uris[Symbol.iterator](), _step20; !(_iteratorNormalCompletion20 = (_step20 = _iterator20.next()).done); _iteratorNormalCompletion20 = true) {
+					var uri = _step20.value;
 
-					if (indexes.clients[id]) {
-						obj.clients.push(indexes.clients[id]);
+					if (indexes.playlists[uri]) {
+						obj.playlists.push(indexes.playlists[uri]);
 					}
 				}
 			} catch (err) {
@@ -64604,6 +64622,42 @@ var collate = exports.collate = function collate(obj) {
 				} finally {
 					if (_didIteratorError20) {
 						throw _iteratorError20;
+					}
+				}
+			}
+		}
+		if (obj.playlist_uri) {
+			if (indexes.playlists[obj.playlist_uri]) {
+				obj.playlist = indexes.playlists[obj.playlist_uri];
+			}
+		}
+	}
+
+	if (indexes.clients) {
+		if (obj.clients_ids) {
+			var _iteratorNormalCompletion21 = true;
+			var _didIteratorError21 = false;
+			var _iteratorError21 = undefined;
+
+			try {
+				for (var _iterator21 = obj.clients_ids[Symbol.iterator](), _step21; !(_iteratorNormalCompletion21 = (_step21 = _iterator21.next()).done); _iteratorNormalCompletion21 = true) {
+					var id = _step21.value;
+
+					if (indexes.clients[id]) {
+						obj.clients.push(indexes.clients[id]);
+					}
+				}
+			} catch (err) {
+				_didIteratorError21 = true;
+				_iteratorError21 = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion21 && _iterator21.return) {
+						_iterator21.return();
+					}
+				} finally {
+					if (_didIteratorError21) {
+						throw _iteratorError21;
 					}
 				}
 			}
@@ -64810,13 +64864,13 @@ var buildLink = exports.buildLink = function buildLink(uri) {
  **/
 var arrayOf = exports.arrayOf = function arrayOf(property, items) {
 	var array = [];
-	var _iteratorNormalCompletion21 = true;
-	var _didIteratorError21 = false;
-	var _iteratorError21 = undefined;
+	var _iteratorNormalCompletion22 = true;
+	var _didIteratorError22 = false;
+	var _iteratorError22 = undefined;
 
 	try {
-		for (var _iterator21 = items[Symbol.iterator](), _step21; !(_iteratorNormalCompletion21 = (_step21 = _iterator21.next()).done); _iteratorNormalCompletion21 = true) {
-			var item = _step21.value;
+		for (var _iterator22 = items[Symbol.iterator](), _step22; !(_iteratorNormalCompletion22 = (_step22 = _iterator22.next()).done); _iteratorNormalCompletion22 = true) {
+			var item = _step22.value;
 
 
 			// Make sure the property is defined
@@ -64825,16 +64879,16 @@ var arrayOf = exports.arrayOf = function arrayOf(property, items) {
 			}
 		}
 	} catch (err) {
-		_didIteratorError21 = true;
-		_iteratorError21 = err;
+		_didIteratorError22 = true;
+		_iteratorError22 = err;
 	} finally {
 		try {
-			if (!_iteratorNormalCompletion21 && _iterator21.return) {
-				_iterator21.return();
+			if (!_iteratorNormalCompletion22 && _iterator22.return) {
+				_iterator22.return();
 			}
 		} finally {
-			if (_didIteratorError21) {
-				throw _iteratorError21;
+			if (_didIteratorError22) {
+				throw _iteratorError22;
 			}
 		}
 	}
@@ -64961,13 +65015,13 @@ var sortItems = exports.sortItems = function sortItems(array, property) {
 
 	function get_value(value) {
 		var split = property.split('.');
-		var _iteratorNormalCompletion22 = true;
-		var _didIteratorError22 = false;
-		var _iteratorError22 = undefined;
+		var _iteratorNormalCompletion23 = true;
+		var _didIteratorError23 = false;
+		var _iteratorError23 = undefined;
 
 		try {
-			for (var _iterator22 = split[Symbol.iterator](), _step22; !(_iteratorNormalCompletion22 = (_step22 = _iterator22.next()).done); _iteratorNormalCompletion22 = true) {
-				var property_element = _step22.value;
+			for (var _iterator23 = split[Symbol.iterator](), _step23; !(_iteratorNormalCompletion23 = (_step23 = _iterator23.next()).done); _iteratorNormalCompletion23 = true) {
+				var property_element = _step23.value;
 
 
 				// Apply sort on a property of the first item of an array
@@ -64996,16 +65050,16 @@ var sortItems = exports.sortItems = function sortItems(array, property) {
 				value = value[property_element];
 			}
 		} catch (err) {
-			_didIteratorError22 = true;
-			_iteratorError22 = err;
+			_didIteratorError23 = true;
+			_iteratorError23 = err;
 		} finally {
 			try {
-				if (!_iteratorNormalCompletion22 && _iterator22.return) {
-					_iterator22.return();
+				if (!_iteratorNormalCompletion23 && _iterator23.return) {
+					_iterator23.return();
 				}
 			} finally {
-				if (_didIteratorError22) {
-					throw _iteratorError22;
+				if (_didIteratorError23) {
+					throw _iteratorError23;
 				}
 			}
 		}
@@ -65247,13 +65301,13 @@ var scrollTo = exports.scrollTo = function scrollTo() {
 var upgradeSpotifyPlaylistUris = exports.upgradeSpotifyPlaylistUris = function upgradeSpotifyPlaylistUris(uris) {
 	var upgraded = [];
 
-	var _iteratorNormalCompletion23 = true;
-	var _didIteratorError23 = false;
-	var _iteratorError23 = undefined;
+	var _iteratorNormalCompletion24 = true;
+	var _didIteratorError24 = false;
+	var _iteratorError24 = undefined;
 
 	try {
-		for (var _iterator23 = uris[Symbol.iterator](), _step23; !(_iteratorNormalCompletion23 = (_step23 = _iterator23.next()).done); _iteratorNormalCompletion23 = true) {
-			var uri = _step23.value;
+		for (var _iterator24 = uris[Symbol.iterator](), _step24; !(_iteratorNormalCompletion24 = (_step24 = _iterator24.next()).done); _iteratorNormalCompletion24 = true) {
+			var uri = _step24.value;
 
 			if (uri.includes("spotify:user:")) {
 				uri = uri.replace(/spotify:user:([^:]*?):/i, "spotify:");
@@ -65261,16 +65315,16 @@ var upgradeSpotifyPlaylistUris = exports.upgradeSpotifyPlaylistUris = function u
 			upgraded.push(uri);
 		}
 	} catch (err) {
-		_didIteratorError23 = true;
-		_iteratorError23 = err;
+		_didIteratorError24 = true;
+		_iteratorError24 = err;
 	} finally {
 		try {
-			if (!_iteratorNormalCompletion23 && _iterator23.return) {
-				_iterator23.return();
+			if (!_iteratorNormalCompletion24 && _iterator24.return) {
+				_iterator24.return();
 			}
 		} finally {
-			if (_didIteratorError23) {
-				throw _iteratorError23;
+			if (_didIteratorError24) {
+				throw _iteratorError24;
 			}
 		}
 	}
@@ -69498,6 +69552,7 @@ var MopidyMiddleware = function () {
 
                     case 'MOPIDY_DISCONNECTED':
                         store.dispatch(uiActions.createNotification({ type: 'bad', content: 'Mopidy disconnected' }));
+                        helpers.setFavicon('favicon_error.png');
                         break;
 
                     case 'MOPIDY_DEBUG':
@@ -69541,6 +69596,12 @@ var MopidyMiddleware = function () {
 
                     case 'MOPIDY_PLAY_STATE':
                         store.dispatch(uiActions.setWindowTitle(null, action.play_state));
+
+                        if (action.play_state == 'playing') {
+                            helpers.setFavicon('favicon.png');
+                        } else {
+                            helpers.setFavicon('favicon_paused.png');
+                        }
                         next(action);
                         break;
 
@@ -72234,7 +72295,7 @@ var PusherMiddleware = function () {
                             });
                         };
 
-                        socket.onclose = function () {
+                        socket.onclose = function (e) {
                             store.dispatch({
                                 type: 'PUSHER_DISCONNECTED'
                             });
@@ -72243,6 +72304,12 @@ var PusherMiddleware = function () {
                             setTimeout(function () {
                                 store.dispatch(pusherActions.connect());
                             }, 5000);
+                        };
+
+                        socket.onerror = function (e) {
+                            if (socket.readyState == 1) {
+                                store.dispatch(coreActions.handleException('Pusher websocket error', e, e.type));
+                            }
                         };
 
                         socket.onmessage = function (message) {
@@ -75362,12 +75429,7 @@ var SpotifyMiddleware = function () {
 
                     case 'SPOTIFY_AUTHORIZATION_REVOKED':
                         if (store.getState().ui.allow_reporting) {
-                            var hashed_username = null;
-                            if (store.getState().spotify.me) {
-                                hashed_username = (0, _jsSha.sha256)(store.getState().spotify.me);
-                                _reactGa2.default.set({ userId: hashed_username });
-                            }
-                            _reactGa2.default.event({ category: 'Spotify', action: 'Authorization revoked', label: hashed_username });
+                            _reactGa2.default.event({ category: 'Spotify', action: 'Authorization revoked' });
                         }
 
                         next(action);
@@ -76584,11 +76646,16 @@ var _reactGa = __webpack_require__(/*! react-ga */ "./node_modules/react-ga/dist
 
 var _reactGa2 = _interopRequireDefault(_reactGa);
 
+var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
+
+var helpers = _interopRequireWildcard(_helpers);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var uiActions = __webpack_require__(/*! ./actions.js */ "./src/js/services/ui/actions.js");
 var mopidyActions = __webpack_require__(/*! ../mopidy/actions.js */ "./src/js/services/mopidy/actions.js");
-var helpers = __webpack_require__(/*! ../../helpers.js */ "./src/js/helpers.js");
 
 var UIMiddleware = function () {
 
@@ -76620,12 +76687,6 @@ var UIMiddleware = function () {
                             var play_state = action.play_state;
                         } else {
                             var play_state = store.getState().mopidy.play_state;
-                        }
-
-                        if (play_state == 'playing') {
-                            window_title = '\u25B6';
-                        } else {
-                            window_title = '\u25A0';
                         }
 
                         if (action.title) {
@@ -80870,6 +80931,7 @@ var Settings = function (_React$Component) {
 				'span',
 				{ className: colour + '-text' },
 				_react2.default.createElement(_Icon2.default, { className: className, name: icon }),
+				' ',
 				status
 			);
 		}

@@ -27,12 +27,7 @@ const SpotifyMiddleware = (function(){
 
             case 'SPOTIFY_AUTHORIZATION_REVOKED':
                 if (store.getState().ui.allow_reporting){
-	                var hashed_username = null
-	                if (store.getState().spotify.me){
-	                    hashed_username = sha256(store.getState().spotify.me);
-		                ReactGA.set({userId: hashed_username});
-	                }
-	                ReactGA.event({ category: 'Spotify', action: 'Authorization revoked', label: hashed_username});
+	                ReactGA.event({ category: 'Spotify', action: 'Authorization revoked'});
 	            }
 
                 next(action);

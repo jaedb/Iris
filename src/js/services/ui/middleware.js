@@ -1,9 +1,9 @@
 
-import ReactGA from 'react-ga'
+import ReactGA from 'react-ga';
+import * as helpers from '../../helpers';
 
 var uiActions = require('./actions.js')
 var mopidyActions = require('../mopidy/actions.js')
-var helpers = require('../../helpers.js')
 
 const UIMiddleware = (function(){
 
@@ -33,12 +33,6 @@ const UIMiddleware = (function(){
                     var play_state = action.play_state;
                 } else {
                     var play_state = store.getState().mopidy.play_state;
-                }
-
-                if (play_state == 'playing'){
-                    window_title = '\u25B6';
-                } else {
-                    window_title = '\u25A0';
                 }
 
                 if (action.title){

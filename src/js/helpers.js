@@ -117,6 +117,59 @@ export let setStorage = function(key, value, replace = false){
 
 
 /**
+ * Convert a string to JSON, after we've checked whether it needs
+ * conversion or not.
+ *
+ * @param data String or Object
+ * @return Object
+ **/
+export let toJSON = function(data){
+
+	// Parse it
+	try {
+		let json = JSON.parse(data);
+		return json;
+
+	// Could not parse string
+	} catch (e){
+		
+		// Check if it's JSON already
+		if (data.constructor === {}.constructor){
+			return data;
+		} else {
+			console.error("Could not convert non-JSON", string);
+		}
+	}
+    return {};
+}
+
+
+/**
+ * Set the app's favicon to a specific image.
+ * 
+ * @param filename String
+ */
+export let setFavicon = function(filename){
+	let links = document.getElementsByClassName('favicon');
+	for (let link of links){
+
+		// Construct new <links>
+		let new_link = document.createElement('link');
+		new_link.className = link.className;
+		new_link.rel = link.rel;
+		new_link.href = "/iris/assets/"+filename;
+		if (link.type){
+			new_link.type = link.type;
+		} 
+
+		// Remove the old one and add the new one
+		document.head.removeChild(link);
+		document.head.appendChild(new_link);
+	}
+}
+
+
+/**
  * Check if an image URL is cached or not
  * Useful for bypassing load animations for cached assets (eg parallax)
  *
