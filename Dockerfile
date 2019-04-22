@@ -15,7 +15,6 @@ RUN set -ex \
         gstreamer1.0-alsa \
         gstreamer1.0-plugins-bad \
         python-crypto \
-        git \
  && curl -L https://apt.mopidy.com/mopidy.gpg | apt-key add - \
  && curl -L https://apt.mopidy.com/mopidy.list -o /etc/apt/sources.list.d/mopidy.list \
  && apt-get update \
@@ -26,10 +25,7 @@ RUN set -ex \
  && curl -L https://bootstrap.pypa.io/get-pip.py | python - \
  && pip install -U six pyasn1 requests[security] cryptography \
  && pip install \
-        Mopidy-Moped \
         Mopidy-GMusic \
-        Mopidy-Pandora \
-        Mopidy-YouTube \
         pyopenssl \
         youtube-dl \
  # Clone Iris from current directory and install in development mode.
