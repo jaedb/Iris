@@ -1,9 +1,9 @@
 
-import ReactGA from 'react-ga'
+import ReactGA from 'react-ga';
+import * as helpers from '../../helpers';
 
 var uiActions = require('./actions.js')
 var mopidyActions = require('../mopidy/actions.js')
-var helpers = require('../../helpers.js')
 
 const UIMiddleware = (function(){
 
@@ -36,9 +36,13 @@ const UIMiddleware = (function(){
                 }
 
                 if (play_state == 'playing'){
-                    window_title = '\u25B6';
+                    helpers.setFavicon('favicon.png');
                 } else {
-                    window_title = '\u25A0';
+                    helpers.setFavicon('favicon_paused.png');
+                }
+
+                if (!store.getState().mopidy.connected){
+                    helpers.setFavicon('favicon_error.png');
                 }
 
                 if (action.title){

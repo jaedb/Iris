@@ -63477,6 +63477,27 @@ var toJSON = exports.toJSON = function toJSON(data) {
 };
 
 /**
+ * Set the app's favicon to a specific image.
+ * 
+ * @param file String
+ * @return Boolean 
+ */
+var setFavicon = exports.setFavicon = function setFavicon(favicon) {
+	console.log(favicon);
+	var link = document.createElement('link'),
+	    oldLink = document.getElementById('favicon');
+	link.id = 'favicon';
+	link.rel = 'shortcut icon';
+	link.href = "/iris/assets/" + favicon;
+
+	if (oldLink) {
+		document.head.removeChild(oldLink);
+	}
+
+	document.head.appendChild(link);
+};
+
+/**
  * Check if an image URL is cached or not
  * Useful for bypassing load animations for cached assets (eg parallax)
  *
@@ -72252,10 +72273,6 @@ var PusherMiddleware = function () {
                             setTimeout(function () {
                                 store.dispatch(pusherActions.connect());
                             }, 5000);
-
-                            if (e.code !== 3001) {
-                                store.dispatch(coreActions.handleException('Pusher websocket connection error', e));
-                            };
                         };
 
                         socket.onerror = function (e) {
@@ -76598,11 +76615,16 @@ var _reactGa = __webpack_require__(/*! react-ga */ "./node_modules/react-ga/dist
 
 var _reactGa2 = _interopRequireDefault(_reactGa);
 
+var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
+
+var helpers = _interopRequireWildcard(_helpers);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var uiActions = __webpack_require__(/*! ./actions.js */ "./src/js/services/ui/actions.js");
 var mopidyActions = __webpack_require__(/*! ../mopidy/actions.js */ "./src/js/services/mopidy/actions.js");
-var helpers = __webpack_require__(/*! ../../helpers.js */ "./src/js/helpers.js");
 
 var UIMiddleware = function () {
 
@@ -76637,9 +76659,13 @@ var UIMiddleware = function () {
                         }
 
                         if (play_state == 'playing') {
-                            window_title = '\u25B6';
+                            helpers.setFavicon('favicon.png');
                         } else {
-                            window_title = '\u25A0';
+                            helpers.setFavicon('favicon_paused.png');
+                        }
+
+                        if (!store.getState().mopidy.connected) {
+                            helpers.setFavicon('favicon_error.png');
                         }
 
                         if (action.title) {

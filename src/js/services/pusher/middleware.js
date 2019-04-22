@@ -261,13 +261,6 @@ const PusherMiddleware = (function(){
                     setTimeout(() => {
                         store.dispatch(pusherActions.connect())
                     }, 5000);
-
-                    if (e.code !== 3001) {
-                        store.dispatch(coreActions.handleException(
-                            'Pusher websocket connection error',
-                            e
-                        ));
-                    };
                 };
 
                 socket.onerror = (e) => {

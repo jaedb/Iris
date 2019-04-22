@@ -145,6 +145,28 @@ export let toJSON = function(data){
 
 
 /**
+ * Set the app's favicon to a specific image.
+ * 
+ * @param file String
+ * @return Boolean 
+ */
+export let setFavicon = function(favicon){
+	console.log(favicon);
+	let link = document.createElement('link'),
+	oldLink = document.getElementById('favicon');
+	link.id = 'favicon';
+	link.rel = 'shortcut icon';
+	link.href = "/iris/assets/"+favicon;
+
+	if (oldLink) {
+		document.head.removeChild(oldLink);
+	}
+
+	document.head.appendChild(link);
+}
+
+
+/**
  * Check if an image URL is cached or not
  * Useful for bypassing load animations for cached assets (eg parallax)
  *
