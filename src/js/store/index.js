@@ -1,31 +1,31 @@
 
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 
-import * as helpers from './helpers';
+import * as helpers from '../helpers';
 
-import core from './services/core/reducer';
-import ui from './services/ui/reducer';
-import pusher from './services/pusher/reducer';
-import mopidy from './services/mopidy/reducer';
-import lastfm from './services/lastfm/reducer';
-import spotify from './services/spotify/reducer';
-import snapcast from './services/snapcast/reducer';
-import google from './services/google/reducer';
-import genius from './services/genius/reducer';
+import core from '../services/core/reducer';
+import ui from '../services/ui/reducer';
+import pusher from '../services/pusher/reducer';
+import mopidy from '../services/mopidy/reducer';
+import lastfm from '../services/lastfm/reducer';
+import spotify from '../services/spotify/reducer';
+import snapcast from '../services/snapcast/reducer';
+import google from '../services/google/reducer';
+import genius from '../services/genius/reducer';
 
-import storeMigration from './storeMigration';
+import migration from './migration';
 
 import thunk from 'redux-thunk';
-import coreMiddleware from './services/core/middleware';
-import uiMiddleware from './services/ui/middleware';
-import pusherMiddleware from './services/pusher/middleware';
-import mopidyMiddleware from './services/mopidy/middleware';
-import lastfmMiddleware from './services/lastfm/middleware';
-import geniusMiddleware from './services/genius/middleware';
-import spotifyMiddleware from './services/spotify/middleware';
-import googleMiddleware from './services/google/middleware';
-import snapcastMiddleware from './services/snapcast/middleware';
-import localstorageMiddleware from './services/localstorage/middleware';
+import coreMiddleware from '../services/core/middleware';
+import uiMiddleware from '../services/ui/middleware';
+import pusherMiddleware from '../services/pusher/middleware';
+import mopidyMiddleware from '../services/mopidy/middleware';
+import lastfmMiddleware from '../services/lastfm/middleware';
+import geniusMiddleware from '../services/genius/middleware';
+import spotifyMiddleware from '../services/spotify/middleware';
+import googleMiddleware from '../services/google/middleware';
+import snapcastMiddleware from '../services/snapcast/middleware';
+import localstorageMiddleware from '../services/localstorage/middleware';
 
 let state = {
 	core: {
@@ -112,7 +112,7 @@ state.google = Object.assign({}, state.google, helpers.getStorage('google'));
 state.snapcast = Object.assign({}, state.snapcast, helpers.getStorage('snapcast'));
 
 // Run any migrations
-state = storeMigration(state);
+state = migration(state);
 
 const reducers = combineReducers({
     core,
