@@ -44,13 +44,13 @@ RUN set -ex \
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ~/.cache
 
 # Start helper script.
-COPY entrypoint.sh /entrypoint.sh
+COPY docker/entrypoint.sh /entrypoint.sh
 
 # Default configuration.
-COPY mopidy.conf /config/mopidy.conf
+COPY docker/mopidy.conf /config/mopidy.conf
 
 # Copy the pulse-client configuratrion.
-COPY pulse-client.conf /etc/pulse/client.conf
+COPY docker/pulse-client.conf /etc/pulse/client.conf
 
 # Allows any user to run mopidy, but runs by default as a randomly generated UID/GID.
 ENV HOME=/var/lib/mopidy

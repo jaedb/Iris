@@ -72234,7 +72234,7 @@ var PusherMiddleware = function () {
                             });
                         };
 
-                        socket.onclose = function () {
+                        socket.onclose = function (e) {
                             store.dispatch({
                                 type: 'PUSHER_DISCONNECTED'
                             });
@@ -72243,6 +72243,16 @@ var PusherMiddleware = function () {
                             setTimeout(function () {
                                 store.dispatch(pusherActions.connect());
                             }, 5000);
+
+                            if (e.code !== 3001) {
+                                store.dispatch(coreActions.handleException('Pusher websocket connection error', e));
+                            };
+                        };
+
+                        socket.onerror = function (e) {
+                            if (socket.readyState == 1) {
+                                store.dispatch(coreActions.handleException('Pusher websocket error', e, e.type));
+                            }
                         };
 
                         socket.onmessage = function (message) {
