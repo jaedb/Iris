@@ -306,23 +306,21 @@ class IrisCore(pykka.ThreadingActor):
             return response
 
     def add_connection(self, *args, **kwargs):
-        connection_id = kwargs.get('connection_id', None)
         connection = kwargs.get('connection', None)
         client = kwargs.get('client', None)
 
-        new_connection = {
+        self.connections[client['connection_id']] = {
             'client': client,
-            'connection_id': connection_id,
+            'id': client['connection_id'],
             'connection': connection
         }
-        self.connections[connection_id] = new_connection
 
         self.send_message(data={
-            'recipient': connection_id,
-            'method': 'connection_added',
+            'recipient': client['connection_id'],
+            'method': 'connection_established',
             'params': {
                 'connection': {
-                    'connection_id': connection_id,
+                    'connection_id': client['connection_id'],
                     'client_id': client['client_id'],
                     'username': client['username'],
                     'ip': client['ip']

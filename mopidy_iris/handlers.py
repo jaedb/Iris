@@ -32,33 +32,23 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
             return protocols['client_id']
 
     def open(self):
-    
-        # decode our connection protocol value (which is a payload of id/name from javascript)
-        protocolElements = mem.iris.digest_protocol(self.request.headers.get('Sec-Websocket-Protocol', []))
 
-        connection_id = protocolElements['connection_id']
-        client_id = protocolElements['client_id']
-        self.connection_id = connection_id
-        username = protocolElements['username']
-        created = datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S')
-
-        # get our IP
-        # if it's local, then check for proxy origin
+        # Get the client's IP. If it's local, then use it's proxy origin
         ip = self.request.remote_ip
         if (ip == '127.0.0.1' and hasattr(self.request.headers,'X-Forwarded-For')):
             ip = self.request.headers['X-Forwarded-For']
 
-        # construct our client object, and add to our list of connections
+        # Construct our initial client object, and add to our list of connections
         client = {
-            'client_id': client_id,
-            'connection_id': connection_id,
-            'username': username,
+            'connection_id': mem.iris.generateGuid(),
+            'client_id': mem.iris.generateGuid(),
             'ip': ip,
-            'created': created
+            'created': datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S')
         }
 
-        # add to connections
-        mem.iris.add_connection(connection_id=connection_id, connection=self, client=client)
+        self.connection_id = client['connection_id']
+
+        mem.iris.add_connection(connection=self, client=client)
  
 
     def on_message(self, message):

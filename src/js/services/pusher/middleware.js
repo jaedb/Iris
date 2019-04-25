@@ -75,6 +75,9 @@ const PusherMiddleware = (function(){
             } else {
 
                 switch (message.method){
+                    case 'connection_extablished':
+                        store.dispatch(pusherActions.setUsername(store.getState().pusher.username));
+                        break;
                     case 'connection_added':
                         store.dispatch(pusherActions.connectionAdded(message.params.connection));
                         break;
@@ -228,27 +231,14 @@ const PusherMiddleware = (function(){
                 store.dispatch({type: 'PUSHER_CONNECTING'});
 
                 var state = store.getState();
-                var connection = {
-                    client_id: helpers.generateGuid(),
-                    connection_id: helpers.generateGuid(),
-                    username: 'Anonymous'
-                }
-                if (state.pusher.username){
-                    connection.username = state.pusher.username;
-                }
-                connection.username = connection.username.replace(/\W/g, '');
                 
                 socket = new WebSocket(
-                    'ws'+(window.location.protocol === 'https:' ? 's' : '')+'://'+state.mopidy.host+':'+state.mopidy.port+'/iris/ws/',
-                    [ connection.client_id, connection.connection_id, connection.username ]
+                    'ws'+(window.location.protocol === 'https:' ? 's' : '')+'://'+state.mopidy.host+':'+state.mopidy.port+'/iris/ws/'
                 );
 
                 socket.onopen = () => {
                     store.dispatch({
-                        type: 'PUSHER_CONNECTED',
-                        connection_id: connection.connection_id,
-                        client_id: connection.client_id,
-                        username: connection.username
+                        type: 'PUSHER_CONNECTED'
                     });
                 };
 
