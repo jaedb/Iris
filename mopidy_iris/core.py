@@ -306,29 +306,14 @@ class IrisCore(pykka.ThreadingActor):
             return response
 
     def add_connection(self, *args, **kwargs):
-        connection_id = kwargs.get('connection_id', None)
         connection = kwargs.get('connection', None)
         client = kwargs.get('client', None)
 
-        new_connection = {
+        self.connections[client['connection_id']] = {
             'client': client,
-            'connection_id': connection_id,
+            'connection_id': client['connection_id'],
             'connection': connection
         }
-        self.connections[connection_id] = new_connection
-
-        self.send_message(data={
-            'recipient': connection_id,
-            'method': 'connection_added',
-            'params': {
-                'connection': {
-                    'connection_id': connection_id,
-                    'client_id': client['client_id'],
-                    'username': client['username'],
-                    'ip': client['ip']
-                }
-            }
-        })
 
         self.broadcast(data={
             'method': 'connection_added',
@@ -336,6 +321,40 @@ class IrisCore(pykka.ThreadingActor):
                 'connection': client
             }
         })
+
+    def update_connection(self, *args, **kwargs):
+        callback = kwargs.get('callback', None)
+        data = kwargs.get('data', {})
+        connection_id = data['connection_id']
+
+        if connection_id in self.connections:
+            self.connections[connection_id]['client']['username'] = data['username']
+            self.connections[connection_id]['client']['client_id'] = data['client_id']
+            self.broadcast(data={
+                'method': "connection_changed",
+                'params': {
+                    'connection': self.connections[connection_id]['client']
+                }
+            })
+            response = {
+                'connection': self.connections[connection_id]['client']
+            }
+            if (callback):
+                callback(response)
+            else:
+                return response
+
+        else:
+            error = 'Connection "'+data['connection_id']+'" not found'
+            logger.error(error)
+
+            error = {
+                'message': error
+            }
+            if (callback):
+                callback(False, error)
+            else:
+                return error
 
     def remove_connection(self, connection_id):
         if connection_id in self.connections:

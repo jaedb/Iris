@@ -68,7 +68,8 @@ let state = {
 	},
 	pusher: {
 		connected: false,
-		username: null,
+		username: helpers.generateGuid(),
+		client_id: helpers.generateGuid(),
 		connections: {},
 		version: {
 			current: null

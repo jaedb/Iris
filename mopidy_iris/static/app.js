@@ -68464,7 +68464,7 @@ var localstorageMiddleware = function () {
                         });
                         break;
 
-                    case 'PUSHER_USERNAME_CHANGED':
+                    case 'PUSHER_SET_USERNAME':
                         helpers.setStorage('pusher', {
                             username: action.username
                         });
@@ -71748,6 +71748,7 @@ exports.restart = restart;
 exports.localScan = localScan;
 exports.getConnections = getConnections;
 exports.connectionAdded = connectionAdded;
+exports.updateConnection = updateConnection;
 exports.connectionChanged = connectionChanged;
 exports.connectionRemoved = connectionRemoved;
 exports.request = request;
@@ -71772,11 +71773,6 @@ exports.setCommands = setCommands;
 exports.removeCommand = removeCommand;
 exports.runCommand = runCommand;
 exports.commandsUpdated = commandsUpdated;
-
-/**
- * Actions and Action Creators
- **/
-
 function setPort(port) {
 	return {
 		type: 'PUSHER_SET_PORT',
@@ -71839,6 +71835,13 @@ function getConnections() {
 function connectionAdded(connection) {
 	return {
 		type: 'PUSHER_CONNECTION_ADDED',
+		connection: connection
+	};
+}
+
+function updateConnection(connection) {
+	return {
+		type: 'PUSHER_UPDATE_CONNECTION',
 		connection: connection
 	};
 }
@@ -72046,6 +72049,8 @@ function commandsUpdated(commands) {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _reactGa = __webpack_require__(/*! react-ga */ "./node_modules/react-ga/dist/esm/index.js");
 
@@ -72274,24 +72279,12 @@ var PusherMiddleware = function () {
                         store.dispatch({ type: 'PUSHER_CONNECTING' });
 
                         var state = store.getState();
-                        var connection = {
-                            client_id: helpers.generateGuid(),
-                            connection_id: helpers.generateGuid(),
-                            username: 'Anonymous'
-                        };
-                        if (state.pusher.username) {
-                            connection.username = state.pusher.username;
-                        }
-                        connection.username = connection.username.replace(/\W/g, '');
 
-                        socket = new WebSocket('ws' + (window.location.protocol === 'https:' ? 's' : '') + '://' + state.mopidy.host + ':' + state.mopidy.port + '/iris/ws/', [connection.client_id, connection.connection_id, connection.username]);
+                        socket = new WebSocket('ws' + (window.location.protocol === 'https:' ? 's' : '') + '://' + state.mopidy.host + ':' + state.mopidy.port + '/iris/ws/');
 
                         socket.onopen = function () {
                             store.dispatch({
-                                type: 'PUSHER_CONNECTED',
-                                connection_id: connection.connection_id,
-                                client_id: connection.client_id,
-                                username: connection.username
+                                type: 'PUSHER_CONNECTED'
                             });
                         };
 
@@ -72324,6 +72317,7 @@ var PusherMiddleware = function () {
                             _reactGa2.default.event({ category: 'Pusher', action: 'Connected', label: action.username });
                         }
 
+                        store.dispatch(pusherActions.updateConnection());
                         store.dispatch(pusherActions.getConfig());
                         store.dispatch(pusherActions.getRadio());
                         store.dispatch(pusherActions.getCommands());
@@ -72364,6 +72358,29 @@ var PusherMiddleware = function () {
                         request(store, 'broadcast', action.data);
                         break;
 
+                    case 'PUSHER_SET_USERNAME':
+                        store.dispatch(pusherActions.updateConnection({ username: action.username }));
+                        next(action);
+                        break;
+
+                    case 'PUSHER_UPDATE_CONNECTION':
+
+                        // Our action can provide new values during a state update (eg the field was just changed)
+                        // but by default we refer to our existing state
+                        var connection = _extends({
+                            username: store.getState().pusher.username,
+                            client_id: store.getState().pusher.client_id
+                        }, action.connection ? action.connection : {});
+
+                        request(store, 'update_connection', connection).then(function (response) {
+                            response.type = 'PUSHER_CONNECTION_UPDATED';
+                            store.dispatch(response);
+                        }, function (error) {
+                            store.dispatch(coreActions.handleException('Could not update connection', error));
+                        });
+                        next(action);
+                        break;
+
                     case 'PUSHER_GET_QUEUE_METADATA':
                         request(store, 'get_queue_metadata').then(function (response) {
                             response.type = 'PUSHER_QUEUE_METADATA';
@@ -72379,24 +72396,6 @@ var PusherMiddleware = function () {
                             added_from: action.from_uri,
                             added_by: pusher.username
                         });
-                        break;
-
-                    case 'PUSHER_SET_USERNAME':
-                        request(store, 'set_username', { username: action.username }).then(function (response) {
-                            response.type = 'PUSHER_USERNAME_CHANGED';
-                            store.dispatch(response);
-                        }, function (error) {
-                            store.dispatch(coreActions.handleException('Could not set username', error));
-
-                            // Forced change to local state, even if server-end failed
-                            // Useful for changing when not yet connected (ie Initial setup on
-                            // non-standard ports, etc)
-                            if (action.force) {
-                                response.type = 'PUSHER_USERNAME_CHANGED';
-                                store.dispatch(response);
-                            }
-                        });
-                        return next(action);
                         break;
 
                     case 'PUSHER_GET_VERSION':
@@ -72760,7 +72759,7 @@ function reducer() {
         case 'PUSHER_SET_PORT':
             return Object.assign({}, pusher, { port: action.port });
 
-        case 'PUSHER_USERNAME_CHANGED':
+        case 'PUSHER_SET_USERNAME':
             return Object.assign({}, pusher, { username: action.username });
 
         case 'PUSHER_CONNECTIONS':
@@ -72775,6 +72774,13 @@ function reducer() {
             var connections = Object.assign({}, pusher.connections);
             connections[action.connection.connection_id] = action.connection;
             return Object.assign({}, pusher, { connections: connections });
+
+        case 'PUSHER_CONNECTION_UPDATED':
+            return Object.assign({}, pusher, {
+                username: action.connection.username,
+                client_id: action.connection.client_id,
+                connection_id: action.connection.connection_id
+            });
 
         case 'PUSHER_CONNECTION_REMOVED':
             var connections = Object.assign({}, pusher.connections);
@@ -77269,7 +77275,8 @@ var state = {
 	},
 	pusher: {
 		connected: false,
-		username: null,
+		username: helpers.generateGuid(),
+		client_id: helpers.generateGuid(),
 		connections: {},
 		version: {
 			current: null
@@ -88234,29 +88241,9 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _Link = __webpack_require__(/*! ../../components/Link */ "./src/js/components/Link.js");
-
-var _Link2 = _interopRequireDefault(_Link);
-
-var _reactGa = __webpack_require__(/*! react-ga */ "./node_modules/react-ga/dist/esm/index.js");
-
-var _reactGa2 = _interopRequireDefault(_reactGa);
-
 var _Modal = __webpack_require__(/*! ./Modal */ "./src/js/views/modals/Modal.js");
 
 var _Modal2 = _interopRequireDefault(_Modal);
-
-var _Icon = __webpack_require__(/*! ../../components/Icon */ "./src/js/components/Icon.js");
-
-var _Icon2 = _interopRequireDefault(_Icon);
-
-var _SpotifyAuthenticationFrame = __webpack_require__(/*! ../../components/Fields/SpotifyAuthenticationFrame */ "./src/js/components/Fields/SpotifyAuthenticationFrame.js");
-
-var _SpotifyAuthenticationFrame2 = _interopRequireDefault(_SpotifyAuthenticationFrame);
-
-var _LastfmAuthenticationFrame = __webpack_require__(/*! ../../components/Fields/LastfmAuthenticationFrame */ "./src/js/components/Fields/LastfmAuthenticationFrame.js");
-
-var _LastfmAuthenticationFrame2 = _interopRequireDefault(_LastfmAuthenticationFrame);
 
 var _actions = __webpack_require__(/*! ../../services/core/actions */ "./src/js/services/core/actions.js");
 
@@ -88297,7 +88284,7 @@ var InitialSetup = function (_React$Component) {
 		var _this = _possibleConstructorReturn(this, (InitialSetup.__proto__ || Object.getPrototypeOf(InitialSetup)).call(this, props));
 
 		_this.state = {
-			username: _this.props.username ? _this.props.username : 'Anonymous',
+			username: _this.props.username,
 			allow_reporting: _this.props.allow_reporting,
 			host: _this.props.host,
 			port: _this.props.port
@@ -88314,16 +88301,18 @@ var InitialSetup = function (_React$Component) {
 		key: 'handleSubmit',
 		value: function handleSubmit(e) {
 			e.preventDefault();
-
 			var self = this;
 
-			// Force local username change, even if remote connection absent/failed
-			this.props.pusherActions.setUsername(this.state.username, true);
+			// Only if we've changed the username do we set it
+			if (this.props.username !== this.state.username) {
+				this.props.pusherActions.setUsername(this.state.username);
+			}
 
 			this.props.uiActions.set({
 				initial_setup_complete: true,
 				allow_reporting: this.state.allow_reporting
 			});
+
 			this.props.mopidyActions.set({
 				host: this.state.host,
 				port: this.state.port
