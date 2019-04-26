@@ -1,8 +1,4 @@
 
-/**
- * Actions and Action Creators
- **/
-
 export function setPort(port){
 	return {
 		type: 'PUSHER_SET_PORT',
@@ -63,6 +59,13 @@ export function getConnections(){
 export function connectionAdded(connection){
 	return {
 		type: 'PUSHER_CONNECTION_ADDED',
+		connection: connection
+	}
+}
+
+export function updateConnection(connection){
+	return {
+		type: 'PUSHER_UPDATE_CONNECTION',
 		connection: connection
 	}
 }

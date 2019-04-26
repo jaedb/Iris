@@ -3,13 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import Link from '../../components/Link'
-import ReactGA from 'react-ga';
-
 import Modal from './Modal';
-import Icon from '../../components/Icon';
-import SpotifyAuthenticationFrame from '../../components/Fields/SpotifyAuthenticationFrame';
-import LastfmAuthenticationFrame from '../../components/Fields/LastfmAuthenticationFrame';
 
 import * as coreActions from '../../services/core/actions';
 import * as uiActions from '../../services/ui/actions';
@@ -22,7 +16,7 @@ class InitialSetup extends React.Component{
 		super(props);
 
 		this.state = {
-			username: (this.props.username ? this.props.username : 'Anonymous'),
+			username: this.props.username,
 			allow_reporting: this.props.allow_reporting,
 			host: this.props.host,
 			port: this.props.port
@@ -35,16 +29,18 @@ class InitialSetup extends React.Component{
 
 	handleSubmit(e){
 		e.preventDefault();
-
 		var self = this;
 
-		// Force local username change, even if remote connection absent/failed
-		this.props.pusherActions.setUsername(this.state.username, true);
+		// Only if we've changed the username do we set it
+		if (this.props.username !== this.state.username){
+			this.props.pusherActions.setUsername(this.state.username);
+		}
 
 		this.props.uiActions.set({
 			initial_setup_complete: true,
 			allow_reporting: this.state.allow_reporting
 		});
+
 		this.props.mopidyActions.set({
 			host: this.state.host,
 			port: this.state.port

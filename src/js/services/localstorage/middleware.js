@@ -49,7 +49,7 @@ const localstorageMiddleware = (function(){
                 );
                 break;
 
-            case 'PUSHER_USERNAME_CHANGED':
+            case 'PUSHER_SET_USERNAME':
                 helpers.setStorage(
                     'pusher',
                     {
