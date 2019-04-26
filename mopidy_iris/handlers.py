@@ -41,12 +41,11 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
         # Construct our initial client object, and add to our list of connections
         client = {
             'connection_id': mem.iris.generateGuid(),
-            'client_id': mem.iris.generateGuid(),
             'ip': ip,
             'created': datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S')
         }
 
-        self.connection_id = client['connection_id']
+        self.connection_id = client['connection_id']    
 
         mem.iris.add_connection(connection=self, client=client)
  

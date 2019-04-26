@@ -75,9 +75,6 @@ const PusherMiddleware = (function(){
             } else {
 
                 switch (message.method){
-                    case 'connection_extablished':
-                        store.dispatch(pusherActions.setUsername(store.getState().pusher.username));
-                        break;
                     case 'connection_added':
                         store.dispatch(pusherActions.connectionAdded(message.params.connection));
                         break;
@@ -275,6 +272,7 @@ const PusherMiddleware = (function(){
 	                ReactGA.event({ category: 'Pusher', action: 'Connected', label: action.username});
 	            }
 
+                store.dispatch(pusherActions.updateConnection());
                 store.dispatch(pusherActions.getConfig());
                 store.dispatch(pusherActions.getRadio());
                 store.dispatch(pusherActions.getCommands());
@@ -334,6 +332,37 @@ const PusherMiddleware = (function(){
                 request(store, 'broadcast', action.data)
                 break
 
+            case 'PUSHER_SET_USERNAME':
+                store.dispatch(pusherActions.updateConnection({username: action.username}));
+                next(action);
+                break;
+
+            case 'PUSHER_UPDATE_CONNECTION':
+
+                // Our action can provide new values during a state update (eg the field was just changed)
+                // but by default we refer to our existing state
+                let connection = {
+                    username: store.getState().pusher.username,
+                    client_id: store.getState().pusher.client_id,
+                    ...(action.connection ? action.connection : {})
+                }
+                
+                request(store, 'update_connection', connection)
+                    .then(
+                        response => {
+                            response.type = 'PUSHER_CONNECTION_UPDATED'
+                            store.dispatch(response)
+                        },
+                        error => {                            
+                            store.dispatch(coreActions.handleException(
+                                'Could not update connection',
+                                error
+                            ));
+                        }
+                    );
+                next(action);
+                break;
+
             case 'PUSHER_GET_QUEUE_METADATA':
                 request(store, 'get_queue_metadata')
                     .then(
@@ -356,31 +385,6 @@ const PusherMiddleware = (function(){
                     added_from: action.from_uri,
                     added_by: pusher.username
                 })
-                break;
-
-            case 'PUSHER_SET_USERNAME':
-                request(store, 'set_username', {username: action.username})
-                    .then(
-                        response => {
-                            response.type = 'PUSHER_USERNAME_CHANGED'
-                            store.dispatch(response)
-                        },
-                        error => {                            
-                            store.dispatch(coreActions.handleException(
-                                'Could not set username',
-                                error
-                            ));
-
-                            // Forced change to local state, even if server-end failed
-                            // Useful for changing when not yet connected (ie Initial setup on
-                            // non-standard ports, etc)
-                            if (action.force){                                
-                                response.type = 'PUSHER_USERNAME_CHANGED'
-                                store.dispatch(response)
-                            }
-                        }
-                    );
-                return next(action);
                 break;
 
             case 'PUSHER_GET_VERSION':

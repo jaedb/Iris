@@ -25,6 +25,8 @@ RUN set -ex \
  && curl -L https://bootstrap.pypa.io/get-pip.py | python - \
  && pip install -U six pyasn1 requests[security] cryptography \
  && pip install \
+        Mopidy-Local-Images \
+        Mopidy-Local-SQLite \
         Mopidy-GMusic \
         pyopenssl \
         youtube-dl \

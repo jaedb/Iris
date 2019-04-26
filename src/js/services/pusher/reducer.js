@@ -21,7 +21,7 @@ export default function reducer(pusher = {}, action){
         case 'PUSHER_SET_PORT':
             return Object.assign({}, pusher, { port: action.port });
 
-        case 'PUSHER_USERNAME_CHANGED':
+        case 'PUSHER_SET_USERNAME':
             return Object.assign({}, pusher, { username: action.username });
 
         case 'PUSHER_CONNECTIONS':
@@ -36,6 +36,13 @@ export default function reducer(pusher = {}, action){
             var connections = Object.assign({}, pusher.connections)
             connections[action.connection.connection_id] = action.connection;
             return Object.assign({}, pusher, { connections: connections });
+
+        case 'PUSHER_CONNECTION_UPDATED':
+            return Object.assign({}, pusher, { 
+                username: action.connection.username,
+                client_id: action.connection.client_id,
+                connection_id: action.connection.connection_id
+            });
 
         case 'PUSHER_CONNECTION_REMOVED':
             var connections = Object.assign({}, pusher.connections)
