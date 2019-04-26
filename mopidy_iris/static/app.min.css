@@ -3389,7 +3389,7 @@ select {
   text-decoration: none; }
   .button .icon {
     padding-right: 8px;
-    margin: -2px 0; }
+    margin: 0; }
   .button:not(.button--no-hover) {
     position: relative;
     border-radius: 3px; }
@@ -4391,7 +4391,6 @@ select {
     font-family: 'Material Icons';
     font-weight: normal;
     font-style: normal;
-    display: inline-block;
     line-height: 1;
     text-transform: none;
     letter-spacing: normal;
@@ -4399,7 +4398,6 @@ select {
     white-space: nowrap;
     direction: ltr;
     vertical-align: top;
-    margin: -1px 0;
     font-size: 1.3em;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
@@ -6111,7 +6109,8 @@ main header {
     font-size: 40px;
     height: 40px;
     margin-top: 10px;
-    margin-bottom: 15px; }
+    margin-bottom: 15px;
+    display: inline-block; }
     .services .menu .menu-item__icon.icon--svg {
       opacity: 0.8; }
       .light-theme .services .menu .menu-item__icon.icon--svg {
@@ -6373,7 +6372,8 @@ main header {
   .commands__item__icon {
     padding-top: 7px;
     padding-right: 0 !important;
-    font-size: 12px; }
+    font-size: 12px;
+    display: inline-block; }
   .commands__item__background {
     display: block;
     position: absolute;
