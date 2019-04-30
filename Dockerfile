@@ -37,7 +37,13 @@ RUN set -ex \
  && cd / \
  && mkdir -p /var/lib/mopidy/.config \
  && ln -s /config /var/lib/mopidy/.config/mopidy \
-    # Clean-up
+# Install Snapcast
+# This is the most reliable way to get audio out of a Docker instance.
+ && curl -L https://github.com/badaix/snapcast/releases/download/v0.15.0/snapserver_0.15.0_amd64.deb -o snapserver.deb \
+ && dpkg -i snapserver.deb \
+ && touch /etc/default/snapserver \
+ && apt-get -f install \
+# Clean-up
  && apt-get purge --auto-remove -y \
         curl \
         gcc \
@@ -66,7 +72,7 @@ USER mopidy
 
 VOLUME ["/var/lib/mopidy/local", "/var/lib/mopidy/media"]
 
-EXPOSE 6600 6680 5555/udp
+EXPOSE 6600 6680 1705 5555/udp
 
 ENTRYPOINT ["/usr/bin/dumb-init", "/entrypoint.sh"]
 CMD ["/usr/bin/mopidy"]
