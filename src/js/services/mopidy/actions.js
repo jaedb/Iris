@@ -274,10 +274,11 @@ export function playAlbum(uri){
 	}
 }
 
-export function playPlaylist(uri){
+export function playPlaylist(uri, shuffle = false){
 	return {
 		type: 'MOPIDY_PLAY_PLAYLIST',
-		uri: uri
+		uri: uri,
+		shuffle: shuffle
 	}
 }
 
