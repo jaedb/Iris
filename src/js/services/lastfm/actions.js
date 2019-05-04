@@ -177,6 +177,12 @@ export function getMe(){
                             me: response.user
                         });
                     }
+                },
+                error => {
+                    dispatch(coreActions.handleException(
+                        "Could not get your LastFM profile",
+                        error
+                    ));
                 }
             )
     }
@@ -223,6 +229,9 @@ export function getTrack(uri){
                         );
                         dispatch(coreActions.trackLoaded(merged_track));
                     }
+                },
+                error => {
+                    console.info("LastFM: No results for track '"+track_name+"' by '"+artist_name+"'");
                 }
             )
     }
@@ -254,6 +263,9 @@ export function getArtist(uri, artist, mbid = false){
 
                         dispatch(coreActions.artistLoaded(artist));
                     }
+                },
+                error => {
+                    console.info("LastFM: No results for artist '"+artist+"'");
                 }
             )
     }
@@ -294,6 +306,9 @@ export function getAlbum(uri, artist, album, mbid = false){
 
                         dispatch(coreActions.albumLoaded(album));
                     }
+                },
+                error => {
+                    console.info("LastFM: No results for album '"+album+"'");
                 }
             );
     }

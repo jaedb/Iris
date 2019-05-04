@@ -58190,6 +58190,7 @@ var Hotkeys = function (_React$Component) {
                 return;
             }
 
+            var prevent = false;
             switch (e.key.toLowerCase()) {
 
                 case " ":
@@ -58200,6 +58201,7 @@ var Hotkeys = function (_React$Component) {
                         this.props.mopidyActions.play();
                         this.props.uiActions.createNotification({ content: 'play_arrow', type: 'shortcut' });
                     }
+                    prevent = true;
                     break;
 
                 case "escape":
@@ -58208,26 +58210,32 @@ var Hotkeys = function (_React$Component) {
                     } else if (this.props.modal) {
                         window.history.back();
                     }
+                    prevent = true;
                     break;
 
                 case "s":
                     this.props.history.push('/search');
+                    prevent = true;
                     break;
 
                 case "c":
                     this.props.history.push('/queue');
+                    prevent = true;
                     break;
 
                 case "k":
                     this.props.history.push('/kiosk-mode');
+                    prevent = true;
                     break;
 
                 case ",":
                     window.history.back();
+                    prevent = true;
                     break;
 
                 case ".":
                     window.history.forward();
+                    prevent = true;
                     break;
 
                 case "l":
@@ -58243,6 +58251,7 @@ var Hotkeys = function (_React$Component) {
                         }
                         this.props.uiActions.createNotification({ content: 'volume_up', type: 'shortcut' });
                     }
+                    prevent = true;
                     break;
 
                 case "q":
@@ -58258,6 +58267,7 @@ var Hotkeys = function (_React$Component) {
                         }
                     }
                     this.props.uiActions.createNotification({ content: 'volume_down', type: 'shortcut' });
+                    prevent = true;
                     break;
 
                 case "m":
@@ -58268,6 +58278,7 @@ var Hotkeys = function (_React$Component) {
                         this.props.mopidyActions.setMute(true);
                         this.props.uiActions.createNotification({ content: 'volume_off', type: 'shortcut' });
                     }
+                    prevent = true;
                     break;
 
                 case "r":
@@ -58277,26 +58288,32 @@ var Hotkeys = function (_React$Component) {
                     }
                     this.props.mopidyActions.setTimePosition(new_position);
                     this.props.uiActions.createNotification({ content: 'fast_rewind', type: 'shortcut' });
+                    prevent = true;
                     break;
 
                 case "f":
                     this.props.mopidyActions.setTimePosition(this.props.play_time_position + 30000);
                     this.props.uiActions.createNotification({ content: 'fast_forward', type: 'shortcut' });
+                    prevent = true;
                     break;
 
                 case "p":
                     this.props.mopidyActions.previous();
                     this.props.uiActions.createNotification({ content: 'skip_previous', type: 'shortcut' });
+                    prevent = true;
                     break;
 
                 case "n":
                     this.props.mopidyActions.next();
                     this.props.uiActions.createNotification({ content: 'skip_next', type: 'shortcut' });
+                    prevent = true;
                     break;
             }
 
-            e.preventDefault();
-            return false;
+            if (prevent) {
+                e.preventDefault();
+                return false;
+            }
         }
     }, {
         key: "render",
@@ -62752,45 +62769,50 @@ var TrackList = function (_React$Component) {
 		key: 'handleKeyDown',
 		value: function handleKeyDown(e) {
 
-			// When we're focussed on certian elements (like form input fields), don't fire any shortcuts
+			// When we're focussed on certian elements, don't fire any shortcuts
+			// Typically form inputs
 			var ignoreNodes = ['INPUT', 'TEXTAREA'];
 			if (ignoreNodes.indexOf(e.target.nodeName) > -1) {
-				return false;
+				return;
+			}
+
+			// Ignore when there are any key modifiers. This enables us to avoid interfering
+			// with browser- and OS-default functions.
+			if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) {
+				return;
 			}
 
 			var tracks_keys = this.digestTracksKeys();
 
-			switch (e.keyCode) {
-				case 13:
-					// enter
+			var prevent = false;
+			switch (e.key.toLowerCase()) {
+				case "enter":
 					if (tracks_keys && tracks_keys.length > 0) {
 						this.playTracks();
 					}
+					prevent = true;
 					break;
 
-				case 46:
-					// delete
+				case "d":
 					if (tracks_keys && tracks_keys.length > 0) {
 						this.removeTracks();
 					}
+					prevent = true;
 					break;
 
-				case 65:
-					// a
-					if (e.ctrlKey || e.metaKey) {
-
-						e.preventDefault();
-
-						// Select all our tracks
-						var all_tracks = [];
-						for (var i = 0; i < this.props.tracks.length; i++) {
-							all_tracks.push(this.buildTrackKey(this.props.tracks[i], i));
-						}
-						this.props.uiActions.setSelectedTracks(all_tracks);
-
-						return false;
+				case "a":
+					var all_tracks = [];
+					for (var i = 0; i < this.props.tracks.length; i++) {
+						all_tracks.push(this.buildTrackKey(this.props.tracks[i], i));
 					}
+					this.props.uiActions.setSelectedTracks(all_tracks);
+					prevent = true;
 					break;
+			}
+
+			if (prevent) {
+				e.preventDefault();
+				return false;
 			}
 		}
 	}, {
@@ -65494,9 +65516,13 @@ function handleException(message) {
 
     if (!message && data.message) {
         message = data.message;
+    } else if (!message && data.error.message) {
+        message = data.error.message;
     }
     if (!description && data.description) {
         description = data.description;
+    } else if (!description && data.error.description) {
+        description = data.error.description;
     }
     return {
         type: 'HANDLE_EXCEPTION',
@@ -68046,6 +68072,8 @@ function getMe() {
                     me: response.user
                 });
             }
+        }, function (error) {
+            dispatch(coreActions.handleException("Could not get your LastFM profile", error));
         });
     };
 }
@@ -68076,6 +68104,8 @@ function getTrack(uri) {
                 }, response.track, track);
                 dispatch(coreActions.trackLoaded(merged_track));
             }
+        }, function (error) {
+            console.info("LastFM: No results for track '" + track_name + "' by '" + artist_name + "'");
         });
     };
 }
@@ -68106,6 +68136,8 @@ function getArtist(uri, artist) {
 
                 dispatch(coreActions.artistLoaded(artist));
             }
+        }, function (error) {
+            console.info("LastFM: No results for artist '" + artist + "'");
         });
     };
 }
@@ -68145,6 +68177,8 @@ function getAlbum(uri, artist, album) {
 
                 dispatch(coreActions.albumLoaded(album));
             }
+        }, function (error) {
+            console.info("LastFM: No results for album '" + album + "'");
         });
     };
 }
@@ -69023,9 +69057,12 @@ function playAlbum(uri) {
 }
 
 function playPlaylist(uri) {
+	var shuffle = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
 	return {
 		type: 'MOPIDY_PLAY_PLAYLIST',
-		uri: uri
+		uri: uri,
+		shuffle: shuffle
 	};
 }
 

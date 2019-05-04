@@ -3329,6 +3329,7 @@ select {
 
 .action {
   position: relative;
+  display: inline-block;
   cursor: pointer; }
 
 @keyframes click_feedback {
@@ -4655,7 +4656,8 @@ select {
     vertical-align: bottom;
     opacity: 0.8; }
     .playback-controls .control:not(.sidebar-toggle) {
-      position: relative; }
+      position: relative;
+      display: inline-block; }
 
 @keyframes click_feedback {
   0% {
@@ -4899,6 +4901,7 @@ select {
       padding-left: 25px; }
     .output-control__item__mute.control {
       position: relative;
+      display: inline-block;
       padding: 2px;
       color: #000000;
       float: left;
@@ -6399,6 +6402,7 @@ main header {
       font-size: 16px; }
   .commands__item--interactive {
     position: relative;
+    display: inline-block;
     cursor: pointer; }
 
 @keyframes click_feedback {
