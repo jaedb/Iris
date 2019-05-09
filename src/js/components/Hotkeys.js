@@ -19,7 +19,7 @@ export default class Hotkeys extends React.Component {
 
 		// When we're focussed on certian elements, don't fire any shortcuts
 		// Typically form inputs
-		let ignoreNodes = ['INPUT', 'TEXTAREA'];
+		let ignoreNodes = ['INPUT', 'TEXTAREA', 'BUTTON'];
 		if (ignoreNodes.indexOf(e.target.nodeName) > -1){
 			return;
         }
@@ -33,7 +33,7 @@ export default class Hotkeys extends React.Component {
         let prevent = false;
 		switch(e.key.toLowerCase()){
 
-			case " ":
+			case "p":
 				if (this.props.play_state == 'playing'){
 					this.props.mopidyActions.pause();
 					this.props.uiActions.createNotification({content: 'pause', type: 'shortcut'});
@@ -47,10 +47,11 @@ export default class Hotkeys extends React.Component {
 			case "escape":
 				if (this.props.dragging){
 					this.props.uiActions.dragEnd();
+                    prevent = true;
 				} else if (this.props.modal){
 			        window.history.back();
+                    prevent = true;
                 }
-                prevent = true;
                 break;
 
 			case "s":
@@ -78,7 +79,7 @@ export default class Hotkeys extends React.Component {
                 prevent = true;
                 break;
             
-            case "l":
+            case "=":
                 var volume = this.props.volume
                 if (volume !== 'false'){
                     volume += 5;
@@ -94,7 +95,7 @@ export default class Hotkeys extends React.Component {
                 prevent = true;
                 break;
 
-            case "q":
+            case "-":
                 var volume = this.props.volume;
                 if (volume !== 'false'){
                     volume -= 5;
@@ -110,7 +111,7 @@ export default class Hotkeys extends React.Component {
                 prevent = true;
 				break;
 
-            case "m":
+            case "0":
                 if (this.props.mute){
                     this.props.mopidyActions.setMute(false);
                     this.props.uiActions.createNotification({content: 'volume_up', type: 'shortcut'});
@@ -121,7 +122,7 @@ export default class Hotkeys extends React.Component {
                 prevent = true;
                 break;
 
-			case "r":
+			case ";":
                 var new_position = this.props.play_time_position - 30000;
                 if (new_position < 0){
                     new_position = 0;;
@@ -131,19 +132,19 @@ export default class Hotkeys extends React.Component {
                 prevent = true;
                 break;
 
-			case "f":
+			case "'":
                 this.props.mopidyActions.setTimePosition(this.props.play_time_position + 30000);
                 this.props.uiActions.createNotification({content: 'fast_forward', type: 'shortcut'});
                 prevent = true;
                 break;
             
-            case "p":
+            case "[":
                 this.props.mopidyActions.previous();
                 this.props.uiActions.createNotification({content: 'skip_previous', type: 'shortcut'});
                 prevent = true;
                 break;
 
-            case "n":
+            case "]":
                 this.props.mopidyActions.next();
                 this.props.uiActions.createNotification({content: 'skip_next', type: 'shortcut'});
                 prevent = true;

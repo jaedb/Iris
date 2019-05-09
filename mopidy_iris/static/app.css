@@ -3355,7 +3355,7 @@ select {
     border-radius: 50%;
     margin-top: -50%;
     pointer-events: none; }
-  .action:focus:after, .action:active:after {
+  .action:active:after {
     animation-name: click_feedback;
     animation-duration: 0.2s;
     animation-timing-function: ease-out;
@@ -4483,6 +4483,12 @@ select {
     .slider__input::-ms-thumb {
       width: 1px;
       border: 0; }
+    .slider__input:focus + .slider__track .slider__track__progress:after {
+      width: 12px;
+      height: 12px;
+      top: -4px;
+      right: -6px;
+      background: #1af6ab; }
   .slider__track {
     position: absolute;
     background: rgba(0, 0, 0, 0.2);
@@ -4649,12 +4655,26 @@ select {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    position: relative;
+    display: inline-block;
     color: #FFFFFF;
     cursor: pointer;
     padding: 10px 6px;
     display: inline-block;
     vertical-align: bottom;
-    opacity: 0.8; }
+    opacity: 0.8;
+    background: none; }
+    .playback-controls .control:focus:before {
+      content: '';
+      display: inline-block;
+      width: 100%;
+      padding-bottom: 100%;
+      position: absolute;
+      top: 50%;
+      left: 0px;
+      margin-top: -50%;
+      border-radius: 50%;
+      background: rgba(128, 128, 128, 0.25); }
     .playback-controls .control:not(.sidebar-toggle) {
       position: relative;
       display: inline-block; }
@@ -4682,13 +4702,13 @@ select {
         border-radius: 50%;
         margin-top: -50%;
         pointer-events: none; }
-      .playback-controls .control:not(.sidebar-toggle):focus:after, .playback-controls .control:not(.sidebar-toggle):active:after {
+      .playback-controls .control:not(.sidebar-toggle):active:after {
         animation-name: click_feedback;
         animation-duration: 0.2s;
         animation-timing-function: ease-out;
         animation-iteration-count: 1; }
     .playback-controls .control .icon {
-      font-size: 0.9em;
+      font-size: 0.8rem;
       margin-bottom: 0; }
     @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
       .playback-controls .control {
@@ -4696,7 +4716,7 @@ select {
         padding-right: 5px; } }
     .playback-controls .control--active {
       color: #08d58f !important; }
-    .playback-controls .control:hover {
+    .playback-controls .control:hover, .playback-controls .control:focus {
       opacity: 1; }
   .playback-controls section {
     position: absolute;
@@ -4707,8 +4727,9 @@ select {
       width: 135px;
       text-align: center; }
       .playback-controls section.playback .control.play {
-        font-size: 2rem;
-        margin-bottom: -6px; }
+        margin-bottom: -8px; }
+        .playback-controls section.playback .control.play .icon {
+          font-size: 2rem; }
     .playback-controls section.progress {
       bottom: 10px;
       left: 130px;
@@ -4739,13 +4760,12 @@ select {
       width: 100px;
       text-align: center; }
     .playback-controls section.volume {
-      bottom: 6px;
       right: 20px;
       width: 150px;
       font-size: 18px; }
       .playback-controls section.volume .slider__wrapper {
         position: absolute;
-        bottom: 6px;
+        bottom: 4px;
         right: 0;
         left: 30px; }
     .playback-controls section.triggers {
@@ -4930,7 +4950,7 @@ select {
         border-radius: 50%;
         margin-top: -50%;
         pointer-events: none; }
-      .output-control__item__mute.control:focus:after, .output-control__item__mute.control:active:after {
+      .output-control__item__mute.control:active:after {
         animation-name: click_feedback;
         animation-duration: 0.2s;
         animation-timing-function: ease-out;
@@ -5070,6 +5090,8 @@ select {
         cursor: not-allowed; }
       .sidebar__menu__item:hover:not([disabled]):before {
         opacity: 0.15; }
+      .sidebar__menu__item:focus:not([disabled]):not(.sidebar__menu__item--active) {
+        background: rgba(128, 128, 128, 0.25); }
       .sidebar__menu__item:active {
         -webkit-transition: none !important;
         -moz-transition: none !important;
@@ -6428,7 +6450,7 @@ main header {
       border-radius: 50%;
       margin-top: -50%;
       pointer-events: none; }
-    .commands__item--interactive:focus:after, .commands__item--interactive:active:after {
+    .commands__item--interactive:active:after {
       animation-name: click_feedback;
       animation-duration: 0.2s;
       animation-timing-function: ease-out;

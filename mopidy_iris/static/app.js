@@ -52122,10 +52122,10 @@ var App = exports.App = function (_React$Component) {
 								'div',
 								null,
 								_react2.default.createElement(_Sidebar2.default, null),
-								_react2.default.createElement(_PlaybackControls2.default, { history: this.props.history }),
+								_react2.default.createElement(_PlaybackControls2.default, { history: this.props.history, tabIndex: '2' }),
 								_react2.default.createElement(
 									'main',
-									{ id: 'main', className: 'smooth-scroll' },
+									{ id: 'main', className: 'smooth-scroll', tabIndex: '1' },
 									_react2.default.createElement(
 										_reactRouterDom.Switch,
 										null,
@@ -56672,7 +56672,7 @@ exports.default = (0, _react.memo)(function (props) {
 
 	if (props.mute) {
 		return _react2.default.createElement(
-			'a',
+			'button',
 			{ className: "control mute-control " + (props.noTooltip ? "" : "tooltip ") + (props.className ? props.className : ""), onClick: function onClick() {
 					return props.onMuteChange(false);
 				} },
@@ -56685,7 +56685,7 @@ exports.default = (0, _react.memo)(function (props) {
 		);
 	} else {
 		return _react2.default.createElement(
-			'a',
+			'button',
 			{ className: "control mute-control " + (props.noTooltip ? "" : "tooltip ") + (props.className ? props.className : ""), onClick: function onClick() {
 					return props.onMuteChange(true);
 				} },
@@ -56977,7 +56977,7 @@ var OutputControl = function (_React$Component) {
 					'span',
 					{ className: 'output-control' },
 					_react2.default.createElement(
-						'a',
+						'button',
 						{ className: 'control speakers active', onClick: function onClick(e) {
 								return _this3.setExpanded();
 							} },
@@ -56993,7 +56993,7 @@ var OutputControl = function (_React$Component) {
 						'span',
 						{ className: 'output-control disabled' },
 						_react2.default.createElement(
-							'a',
+							'button',
 							{ className: 'control speakers' },
 							_react2.default.createElement(_Icon2.default, { name: 'speaker' })
 						)
@@ -57003,7 +57003,7 @@ var OutputControl = function (_React$Component) {
 						'span',
 						{ className: 'output-control' },
 						_react2.default.createElement(
-							'a',
+							'button',
 							{ className: 'control speakers', onClick: function onClick(e) {
 									return _this3.setExpanded();
 								} },
@@ -57120,19 +57120,19 @@ var ProgressSlider = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: "slider slider--playback-progress slider--" + this.props.play_state },
+				_react2.default.createElement('input', {
+					type: 'range',
+					min: '0',
+					max: '100',
+					value: percent,
+					className: 'slider__input',
+					onChange: function onChange(e) {
+						return _this2.handleChange(parseInt(e.target.value));
+					}
+				}),
 				_react2.default.createElement(
 					'div',
 					{ className: 'slider__track' },
-					_react2.default.createElement('input', {
-						type: 'range',
-						min: '0',
-						max: '100',
-						value: percent,
-						className: 'slider__input',
-						onChange: function onChange(e) {
-							return _this2.handleChange(parseInt(e.target.value));
-						}
-					}),
 					_react2.default.createElement('div', { className: 'slider__track__progress', style: { width: percent + '%' } })
 				)
 			);
@@ -58179,7 +58179,7 @@ var Hotkeys = function (_React$Component) {
 
             // When we're focussed on certian elements, don't fire any shortcuts
             // Typically form inputs
-            var ignoreNodes = ['INPUT', 'TEXTAREA'];
+            var ignoreNodes = ['INPUT', 'TEXTAREA', 'BUTTON'];
             if (ignoreNodes.indexOf(e.target.nodeName) > -1) {
                 return;
             }
@@ -58193,7 +58193,7 @@ var Hotkeys = function (_React$Component) {
             var prevent = false;
             switch (e.key.toLowerCase()) {
 
-                case " ":
+                case "p":
                     if (this.props.play_state == 'playing') {
                         this.props.mopidyActions.pause();
                         this.props.uiActions.createNotification({ content: 'pause', type: 'shortcut' });
@@ -58207,10 +58207,11 @@ var Hotkeys = function (_React$Component) {
                 case "escape":
                     if (this.props.dragging) {
                         this.props.uiActions.dragEnd();
+                        prevent = true;
                     } else if (this.props.modal) {
                         window.history.back();
+                        prevent = true;
                     }
-                    prevent = true;
                     break;
 
                 case "s":
@@ -58238,7 +58239,7 @@ var Hotkeys = function (_React$Component) {
                     prevent = true;
                     break;
 
-                case "l":
+                case "=":
                     var volume = this.props.volume;
                     if (volume !== 'false') {
                         volume += 5;
@@ -58254,7 +58255,7 @@ var Hotkeys = function (_React$Component) {
                     prevent = true;
                     break;
 
-                case "q":
+                case "-":
                     var volume = this.props.volume;
                     if (volume !== 'false') {
                         volume -= 5;
@@ -58270,7 +58271,7 @@ var Hotkeys = function (_React$Component) {
                     prevent = true;
                     break;
 
-                case "m":
+                case "0":
                     if (this.props.mute) {
                         this.props.mopidyActions.setMute(false);
                         this.props.uiActions.createNotification({ content: 'volume_up', type: 'shortcut' });
@@ -58281,7 +58282,7 @@ var Hotkeys = function (_React$Component) {
                     prevent = true;
                     break;
 
-                case "r":
+                case ";":
                     var new_position = this.props.play_time_position - 30000;
                     if (new_position < 0) {
                         new_position = 0;;
@@ -58291,19 +58292,19 @@ var Hotkeys = function (_React$Component) {
                     prevent = true;
                     break;
 
-                case "f":
+                case "'":
                     this.props.mopidyActions.setTimePosition(this.props.play_time_position + 30000);
                     this.props.uiActions.createNotification({ content: 'fast_forward', type: 'shortcut' });
                     prevent = true;
                     break;
 
-                case "p":
+                case "[":
                     this.props.mopidyActions.previous();
                     this.props.uiActions.createNotification({ content: 'skip_previous', type: 'shortcut' });
                     prevent = true;
                     break;
 
-                case "n":
+                case "]":
                     this.props.mopidyActions.next();
                     this.props.uiActions.createNotification({ content: 'skip_next', type: 'shortcut' });
                     prevent = true;
@@ -59834,7 +59835,7 @@ var PlaybackControls = function (_React$Component) {
 			var _this3 = this;
 
 			var button = _react2.default.createElement(
-				'a',
+				'button',
 				{ className: 'control play', onClick: function onClick() {
 						return _this3.props.mopidyActions.play();
 					} },
@@ -59842,7 +59843,7 @@ var PlaybackControls = function (_React$Component) {
 			);
 			if (this.props.play_state == 'playing') {
 				button = _react2.default.createElement(
-					'a',
+					'button',
 					{ className: 'control play', onClick: function onClick() {
 							return _this3.props.mopidyActions.pause();
 						} },
@@ -59857,7 +59858,7 @@ var PlaybackControls = function (_React$Component) {
 			var _this4 = this;
 
 			var button = _react2.default.createElement(
-				'a',
+				'button',
 				{ className: 'control tooltip', onClick: function onClick() {
 						return _this4.props.mopidyActions.setConsume(true);
 					} },
@@ -59870,7 +59871,7 @@ var PlaybackControls = function (_React$Component) {
 			);
 			if (this.props.consume) {
 				button = _react2.default.createElement(
-					'a',
+					'button',
 					{ className: 'control control--active tooltip', onClick: function onClick() {
 							return _this4.props.mopidyActions.setConsume(false);
 						} },
@@ -59890,7 +59891,7 @@ var PlaybackControls = function (_React$Component) {
 			var _this5 = this;
 
 			var button = _react2.default.createElement(
-				'a',
+				'button',
 				{ className: 'control tooltip', onClick: function onClick() {
 						return _this5.props.mopidyActions.setRandom(true);
 					} },
@@ -59903,7 +59904,7 @@ var PlaybackControls = function (_React$Component) {
 			);
 			if (this.props.random) {
 				button = _react2.default.createElement(
-					'a',
+					'button',
 					{ className: 'control control--active tooltip', onClick: function onClick() {
 							return _this5.props.mopidyActions.setRandom(false);
 						} },
@@ -59923,7 +59924,7 @@ var PlaybackControls = function (_React$Component) {
 			var _this6 = this;
 
 			var button = _react2.default.createElement(
-				'a',
+				'button',
 				{ className: 'control tooltip', onClick: function onClick() {
 						return _this6.props.mopidyActions.setRepeat(true);
 					} },
@@ -59936,7 +59937,7 @@ var PlaybackControls = function (_React$Component) {
 			);
 			if (this.props.repeat) {
 				button = _react2.default.createElement(
-					'a',
+					'button',
 					{ className: 'control control--active tooltip', onClick: function onClick() {
 							return _this6.props.mopidyActions.setRepeat(false);
 						} },
@@ -60021,7 +60022,7 @@ var PlaybackControls = function (_React$Component) {
 					'section',
 					{ className: 'playback' },
 					_react2.default.createElement(
-						'a',
+						'button',
 						{ className: 'control previous', onClick: function onClick() {
 								return _this7.props.mopidyActions.previous();
 							} },
@@ -60029,27 +60030,19 @@ var PlaybackControls = function (_React$Component) {
 					),
 					this.renderPlayButton(),
 					_react2.default.createElement(
-						'a',
+						'button',
 						{ className: 'control stop', onClick: function onClick() {
 								return _this7.props.mopidyActions.stop();
 							} },
 						_react2.default.createElement(_Icon2.default, { name: 'stop', type: 'material' })
 					),
 					_react2.default.createElement(
-						'a',
+						'button',
 						{ className: 'control next', onClick: function onClick() {
 								return _this7.props.mopidyActions.next();
 							} },
 						_react2.default.createElement(_Icon2.default, { name: 'skip_next', type: 'material' })
 					)
-				),
-				_react2.default.createElement(
-					'section',
-					{ className: 'settings' },
-					this.renderConsumeButton(),
-					this.renderRandomButton(),
-					this.renderRepeatButton(),
-					_react2.default.createElement(_OutputControl2.default, { force_expanded: this.state.expanded })
 				),
 				_react2.default.createElement(
 					'section',
@@ -60065,6 +60058,14 @@ var PlaybackControls = function (_React$Component) {
 						{ className: 'total' },
 						this.state.current_track ? _react2.default.createElement(_Dater2.default, { type: 'length', data: this.state.current_track.duration }) : '-'
 					)
+				),
+				_react2.default.createElement(
+					'section',
+					{ className: 'settings' },
+					this.renderConsumeButton(),
+					this.renderRandomButton(),
+					this.renderRepeatButton(),
+					_react2.default.createElement(_OutputControl2.default, { force_expanded: this.state.expanded })
 				),
 				_react2.default.createElement(
 					'section',
@@ -60088,14 +60089,14 @@ var PlaybackControls = function (_React$Component) {
 					'section',
 					{ className: 'triggers' },
 					_react2.default.createElement(
-						'a',
+						'button',
 						{ className: 'control expanded-controls', onClick: function onClick(e) {
 								return _this7.setState({ expanded: !_this7.state.expanded });
 							} },
 						this.state.expanded ? _react2.default.createElement(_Icon2.default, { name: 'expand_more', type: 'material' }) : _react2.default.createElement(_Icon2.default, { name: 'expand_less', type: 'material' })
 					),
 					_react2.default.createElement(
-						'a',
+						'button',
 						{ className: "control sidebar-toggle" + (this.props.sidebar_open ? ' open' : ''), onClick: function onClick(e) {
 								return _this7.props.uiActions.toggleSidebar();
 							} },
@@ -80787,6 +80788,10 @@ var _Commands = __webpack_require__(/*! ../components/Fields/Commands */ "./src/
 
 var _Commands2 = _interopRequireDefault(_Commands);
 
+var _TextField = __webpack_require__(/*! ../components/Fields/TextField */ "./src/js/components/Fields/TextField.js");
+
+var _TextField2 = _interopRequireDefault(_TextField);
+
 var _Header = __webpack_require__(/*! ../components/Header */ "./src/js/components/Header.js");
 
 var _Header2 = _interopRequireDefault(_Header);
@@ -80917,17 +80922,6 @@ var Settings = function (_React$Component) {
 			}
 		}
 	}, {
-		key: 'handleUsernameChange',
-		value: function handleUsernameChange(username) {
-			this.setState({ pusher_username: username.replace(/\W/g, '') });
-		}
-	}, {
-		key: 'handleUsernameBlur',
-		value: function handleUsernameBlur(e) {
-			this.setState({ input_in_focus: null });
-			this.props.pusherActions.setUsername(this.state.pusher_username);
-		}
-	}, {
 		key: 'renderApplyButton',
 		value: function renderApplyButton() {
 			if (this.props.mopidy.host == this.state.mopidy_host && this.props.mopidy.port == this.state.mopidy_port) {
@@ -81050,18 +81044,11 @@ var Settings = function (_React$Component) {
 						_react2.default.createElement(
 							'div',
 							{ className: 'input' },
-							_react2.default.createElement('input', {
-								type: 'text',
-								onChange: function onChange(e) {
-									return _this2.handleUsernameChange(e.target.value);
+							_react2.default.createElement(_TextField2.default, {
+								onChange: function onChange(value) {
+									return _this2.props.pusherActions.setUsername(value.replace(/\W/g, ''));
 								},
-								onFocus: function onFocus(e) {
-									return _this2.setState({ input_in_focus: 'pusher_username' });
-								},
-								onBlur: function onBlur(e) {
-									return _this2.handleUsernameBlur(e);
-								},
-								value: this.state.pusher_username }),
+								value: this.props.pusher.username }),
 							_react2.default.createElement(
 								'div',
 								{ className: 'description' },
@@ -81223,15 +81210,15 @@ var Settings = function (_React$Component) {
 								null,
 								_react2.default.createElement('input', {
 									type: 'checkbox',
-									name: 'shortkeys_enabled',
-									checked: this.props.ui.shortkeys_enabled,
+									name: 'hotkeys_enabled',
+									checked: this.props.ui.hotkeys_enabled,
 									onChange: function onChange(e) {
-										return _this2.props.uiActions.set({ shortkeys_enabled: !_this2.props.ui.shortkeys_enabled });
+										return _this2.props.uiActions.set({ hotkeys_enabled: !_this2.props.ui.hotkeys_enabled });
 									} }),
 								_react2.default.createElement(
 									'span',
 									{ className: 'label' },
-									'Enable shortkeys'
+									'Enable hotkeys'
 								)
 							),
 							_react2.default.createElement(

@@ -8,6 +8,7 @@ import ConfirmationButton from '../components/Fields/ConfirmationButton';
 import PusherConnectionList from '../components/PusherConnectionList';
 import SourcesPriority from '../components/Fields/SourcesPriority';
 import Commands from '../components/Fields/Commands';
+import TextField from '../components/Fields/TextField';
 import Header from '../components/Header';
 import Icon from '../components/Icon';
 import Services from '../components/Services';
@@ -89,15 +90,6 @@ class Settings extends React.Component {
 		}
 	}
 
-	handleUsernameChange(username){
-		this.setState({pusher_username: username.replace(/\W/g, '')})
-	}
-
-	handleUsernameBlur(e){
-		this.setState({input_in_focus: null})
-		this.props.pusherActions.setUsername(this.state.pusher_username)
-	}
-
 	renderApplyButton(){
 		if (this.props.mopidy.host == this.state.mopidy_host && 
 			this.props.mopidy.port == this.state.mopidy_port){
@@ -177,12 +169,9 @@ class Settings extends React.Component {
 					<label className="field">
 						<div className="name">Username</div>
 						<div className="input">
-							<input 
-								type="text"
-								onChange={e => this.handleUsernameChange(e.target.value)} 
-								onFocus={e => this.setState({input_in_focus: 'pusher_username'})}
-								onBlur={e => this.handleUsernameBlur(e)}
-								value={this.state.pusher_username } />
+							<TextField 
+								onChange={value => this.props.pusherActions.setUsername(value.replace(/\W/g, ''))}
+								value={this.props.pusher.username } />
 							<div className="description">
 								A non-unique string used to identify this client (no special characters)
 							</div>
@@ -264,11 +253,11 @@ class Settings extends React.Component {
 							<label>
 								<input 
 									type="checkbox"
-									name="shortkeys_enabled"
-									checked={ this.props.ui.shortkeys_enabled }
-									onChange={ e => this.props.uiActions.set({ shortkeys_enabled: !this.props.ui.shortkeys_enabled })} />
+									name="hotkeys_enabled"
+									checked={ this.props.ui.hotkeys_enabled }
+									onChange={ e => this.props.uiActions.set({ hotkeys_enabled: !this.props.ui.hotkeys_enabled })} />
 								<span className="label">
-									Enable shortkeys
+									Enable hotkeys
 								</span>
 							</label>
 							<label>
