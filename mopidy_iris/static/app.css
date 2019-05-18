@@ -7220,7 +7220,8 @@ main .track-view {
   background: #0d0d0d;
   overflow-y: auto;
   overflow-x: hidden;
-  min-height: 100%; }
+  min-height: 100%;
+  z-index: 98; }
 
 @keyframes fadein {
   0% {

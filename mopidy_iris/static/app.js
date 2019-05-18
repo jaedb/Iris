@@ -52333,8 +52333,7 @@ var AlbumGrid = function (_React$Component) {
 				return _react2.default.createElement(
 					'div',
 					{ className: className },
-					this.props.albums.map(function (item) {
-						var album = helpers.collate(item, { artists: _this2.props.artists });
+					this.props.albums.map(function (album) {
 						return _react2.default.createElement(_GridItem2.default, {
 							key: album.uri,
 							type: 'album',
@@ -58193,7 +58192,7 @@ var Hotkeys = function (_React$Component) {
             var prevent = false;
             switch (e.key.toLowerCase()) {
 
-                case "p":
+                case " ":
                     if (this.props.play_state == 'playing') {
                         this.props.mopidyActions.pause();
                         this.props.uiActions.createNotification({ content: 'pause', type: 'shortcut' });
@@ -58219,7 +58218,7 @@ var Hotkeys = function (_React$Component) {
                     prevent = true;
                     break;
 
-                case "c":
+                case "q":
                     this.props.history.push('/queue');
                     prevent = true;
                     break;
@@ -84323,6 +84322,11 @@ var LibraryAlbums = function (_React$Component) {
 				}
 			}
 
+			// Collate each album into it's full object (including nested artists)
+			for (var i = 0; i < albums.length; i++) {
+				albums[i] = helpers.collate(albums[i], { artists: this.props.artists });
+			}
+
 			if (this.props.sort) {
 				albums = helpers.sortItems(albums, this.props.sort, this.props.sort_reverse);
 			}
@@ -84492,6 +84496,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		mopidy_connected: state.mopidy.connected,
 		mopidy_uri_schemes: state.mopidy.uri_schemes,
 		load_queue: state.ui.load_queue,
+		artists: state.core.artists,
 		albums: state.core.albums,
 		mopidy_library_albums: state.mopidy.library_albums,
 		mopidy_library_albums_status: state.ui.processes.MOPIDY_LIBRARY_ALBUMS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_ALBUMS_PROCESSOR.status : null,

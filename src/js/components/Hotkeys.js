@@ -33,7 +33,7 @@ export default class Hotkeys extends React.Component {
         let prevent = false;
 		switch(e.key.toLowerCase()){
 
-			case "p":
+			case " ":
 				if (this.props.play_state == 'playing'){
 					this.props.mopidyActions.pause();
 					this.props.uiActions.createNotification({content: 'pause', type: 'shortcut'});
@@ -59,7 +59,7 @@ export default class Hotkeys extends React.Component {
                 prevent = true;
                 break;
 
-            case "c":
+            case "q":
                 this.props.history.push('/queue');
                 prevent = true;
                 break;
