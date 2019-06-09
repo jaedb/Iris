@@ -183,7 +183,7 @@ class OutputControl extends React.Component{
 		if (this.state.expanded){
 			return (
 				<span className="output-control">
-					<a className="control speakers active" onClick={e => this.setExpanded()}><Icon name="speaker" /></a>
+					<button className="control speakers active" onClick={e => this.setExpanded()}><Icon name="speaker" /></button>
 					{this.renderOutputs()}
 				</span>
 			);
@@ -193,13 +193,13 @@ class OutputControl extends React.Component{
 			if (!this.props.http_streaming_enabled && !this.props.snapcast_enabled && !this.props.pusher_commands){
 				return (
 					<span className="output-control disabled">
-						<a className="control speakers"><Icon name="speaker" /></a>
+						<button className="control speakers"><Icon name="speaker" /></button>
 					</span>
 				);
 			} else {
 				return (
 					<span className="output-control">
-						<a className="control speakers" onClick={e => this.setExpanded()}><Icon name="speaker" /></a>
+						<button className="control speakers" onClick={e => this.setExpanded()}><Icon name="speaker" /></button>
 					</span>
 				);
 			}

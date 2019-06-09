@@ -129,6 +129,7 @@ $bp_shallow: 650px;
 
 @mixin click_feedback($colour: rgba(255,255,255,0.5), $duration: 0.2s, $easing: ease-out){
 	position: relative;
+	display: inline-block;
 
 	@keyframes click_feedback {
 	    0% {
@@ -159,13 +160,32 @@ $bp_shallow: 650px;
 		pointer-events: none;
 	}
 
-	&:focus,
 	&:active {
 		&:after {
 		    animation-name: click_feedback;
 		    animation-duration: $duration;
 		    animation-timing-function: $easing;
 		    animation-iteration-count: 1;
+		}
+	}
+}
+
+@mixin focusable(){
+	position: relative;
+	display: inline-block;
+
+	&:focus {
+		&:before {
+			content: '';
+			display: inline-block;
+			width: 100%;
+			padding-bottom: 100%;
+			position: absolute;
+			top: 50%;
+			left: 0px;
+			margin-top: -50%;
+			border-radius: 50%;
+			background: rgba(128,128,128,0.25);
 		}
 	}
 }

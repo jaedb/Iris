@@ -147,7 +147,7 @@ class LibraryAlbums extends React.Component{
 	}
 
 	renderView(){
-		var albums = []
+		var albums = [];
 
 		// Spotify library items
 		if (this.props.spotify_library_albums && (this.props.source == 'all' || this.props.source == 'spotify')){
@@ -195,6 +195,11 @@ class LibraryAlbums extends React.Component{
 
 				albums.push(album);
 			}
+		}
+
+		// Collate each album into it's full object (including nested artists)
+		for (let i = 0; i < albums.length; i++) {
+			albums[i] = helpers.collate(albums[i], {artists: this.props.artists});
 		}
 
 		if (this.props.sort){
@@ -355,6 +360,7 @@ const mapStateToProps = (state, ownProps) => {
 		mopidy_connected: state.mopidy.connected,
 		mopidy_uri_schemes: state.mopidy.uri_schemes,
 		load_queue: state.ui.load_queue,
+		artists: state.core.artists,
 		albums: state.core.albums,
 		mopidy_library_albums: state.mopidy.library_albums,
 		mopidy_library_albums_status: (state.ui.processes.MOPIDY_LIBRARY_ALBUMS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_ALBUMS_PROCESSOR.status : null),

@@ -98,6 +98,10 @@
 				}
 			}
 
+			&:focus:not([disabled]):not(.sidebar__menu__item--active){
+				background: rgba(128,128,128,0.25);
+			}
+
 			&:active {
 				@include noanimate();
 				transform: translate(1px,1px);

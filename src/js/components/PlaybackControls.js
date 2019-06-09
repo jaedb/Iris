@@ -190,33 +190,33 @@ class PlaybackControls extends React.Component{
 	}
 
 	renderPlayButton(){
-		var button = <a className="control play" onClick={() => this.props.mopidyActions.play()}><Icon name="play_circle_filled" type="material" /></a>
+		var button = <button className="control play" onClick={() => this.props.mopidyActions.play()}><Icon name="play_circle_filled" type="material" /></button>
 		if (this.props.play_state == 'playing'){
-			button = <a className="control play" onClick={() => this.props.mopidyActions.pause()}><Icon name="pause_circle_filled" type="material" /></a>
+			button = <button className="control play" onClick={() => this.props.mopidyActions.pause()}><Icon name="pause_circle_filled" type="material" /></button>
 		}
 		return button;
 	}
 
 	renderConsumeButton(){
-		var button = <a className="control tooltip" onClick={() => this.props.mopidyActions.setConsume(true)}><Icon name="restaurant" type="material" /><span className="tooltip__content">Consume</span></a>
+		var button = <button className="control tooltip" onClick={() => this.props.mopidyActions.setConsume(true)}><Icon name="restaurant" type="material" /><span className="tooltip__content">Consume</span></button>
 		if (this.props.consume){
-			button = <a className="control control--active tooltip" onClick={() => this.props.mopidyActions.setConsume(false)}><Icon name="restaurant" type="material" /><span className="tooltip__content">Consume</span></a>
+			button = <button className="control control--active tooltip" onClick={() => this.props.mopidyActions.setConsume(false)}><Icon name="restaurant" type="material" /><span className="tooltip__content">Consume</span></button>
 		}
 		return button;
 	}
 
 	renderRandomButton(){
-		var button = <a className="control tooltip" onClick={() => this.props.mopidyActions.setRandom(true)}><Icon name="shuffle" type="material" /><span className="tooltip__content">Shuffle</span></a>
+		var button = <button className="control tooltip" onClick={() => this.props.mopidyActions.setRandom(true)}><Icon name="shuffle" type="material" /><span className="tooltip__content">Shuffle</span></button>
 		if (this.props.random){
-			button = <a className="control control--active tooltip" onClick={() => this.props.mopidyActions.setRandom(false)}><Icon name="shuffle" type="material" /><span className="tooltip__content">Shuffle</span></a>
+			button = <button className="control control--active tooltip" onClick={() => this.props.mopidyActions.setRandom(false)}><Icon name="shuffle" type="material" /><span className="tooltip__content">Shuffle</span></button>
 		}
 		return button;
 	}
 
 	renderRepeatButton(){
-		var button = <a className="control tooltip" onClick={() => this.props.mopidyActions.setRepeat(true)}><Icon name="repeat" /><span className="tooltip__content">Repeat</span></a>
+		var button = <button className="control tooltip" onClick={() => this.props.mopidyActions.setRepeat(true)}><Icon name="repeat" /><span className="tooltip__content">Repeat</span></button>
 		if (this.props.repeat){
-			button = <a className="control control--active tooltip" onClick={() => this.props.mopidyActions.setRepeat(false)}><Icon name="repeat" /><span className="tooltip__content">Repeat</span></a>
+			button = <button className="control control--active tooltip" onClick={() => this.props.mopidyActions.setRepeat(false)}><Icon name="repeat" /><span className="tooltip__content">Repeat</span></button>
 		}
 		return button;
 	}
@@ -262,16 +262,22 @@ class PlaybackControls extends React.Component{
 				</div>
 
 				<section className="playback">
-					<a className="control previous" onClick={() => this.props.mopidyActions.previous()}>
+					<button className="control previous" onClick={() => this.props.mopidyActions.previous()}>
 						<Icon name="skip_previous" type="material" />
-					</a>
+					</button>
 					{ this.renderPlayButton() }
-					<a className="control stop" onClick={() => this.props.mopidyActions.stop()}>
+					<button className="control stop" onClick={() => this.props.mopidyActions.stop()}>
 						<Icon name="stop" type="material" />
-					</a>
-					<a className="control next" onClick={() => this.props.mopidyActions.next()}>
+					</button>
+					<button className="control next" onClick={() => this.props.mopidyActions.next()}>
 						<Icon name="skip_next" type="material" />
-					</a>
+					</button>
+				</section>
+
+				<section className="progress">
+					<ProgressSlider />
+					<span className="current">{ this.props.time_position ? <Dater type="length" data={this.props.time_position} /> : '-' }</span>
+					<span className="total">{ this.state.current_track ? <Dater type="length" data={this.state.current_track.duration} /> : '-' }</span>
 				</section>
 
 				<section className="settings">
@@ -279,12 +285,6 @@ class PlaybackControls extends React.Component{
 					{this.renderRandomButton()}
 					{this.renderRepeatButton()}
 					<OutputControl force_expanded={this.state.expanded} />
-				</section>
-
-				<section className="progress">
-					<ProgressSlider />
-					<span className="current">{ this.props.time_position ? <Dater type="length" data={this.props.time_position} /> : '-' }</span>
-					<span className="total">{ this.state.current_track ? <Dater type="length" data={this.state.current_track.duration} /> : '-' }</span>
 				</section>
 
 				<section className="volume">
@@ -301,12 +301,12 @@ class PlaybackControls extends React.Component{
 				</section>
 
 				<section className="triggers">
-					<a className="control expanded-controls" onClick={e => this.setState({expanded: !this.state.expanded})}>
+					<button className="control expanded-controls" onClick={e => this.setState({expanded: !this.state.expanded})}>
 						{this.state.expanded ? <Icon name="expand_more" type="material" /> : <Icon name="expand_less" type="material" />}
-					</a>
-					<a className={"control sidebar-toggle"+(this.props.sidebar_open ? ' open' : '')} onClick={e => this.props.uiActions.toggleSidebar()}>
+					</button>
+					<button className={"control sidebar-toggle"+(this.props.sidebar_open ? ' open' : '')} onClick={e => this.props.uiActions.toggleSidebar()}>
 						<Icon className="open" name="menu" type="material" />
-					</a>
+					</button>
 				</section>
 				
 			</div>

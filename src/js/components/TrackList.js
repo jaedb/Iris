@@ -36,43 +36,53 @@ class TrackList extends React.Component{
 
 	handleKeyDown(e){
 
-		// When we're focussed on certian elements (like form input fields), don't fire any shortcuts
-		var ignoreNodes = ['INPUT', 'TEXTAREA']
+		// When we're focussed on certian elements, don't fire any shortcuts
+		// Typically form inputs
+		let ignoreNodes = ['INPUT', 'TEXTAREA'];
 		if (ignoreNodes.indexOf(e.target.nodeName) > -1){
-			return false;
-		}
+			return;
+        }
+
+        // Ignore when there are any key modifiers. This enables us to avoid interfering
+        // with browser- and OS-default functions.
+        if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey){
+            return;
+        }
 
 		var tracks_keys = this.digestTracksKeys()
 
-		switch(e.keyCode){			
-			case 13: // enter
+
+        let prevent = false;
+		switch(e.key.toLowerCase()){		
+			case "enter":
 				if (tracks_keys && tracks_keys.length > 0){
 					this.playTracks();
 				}
+				prevent = true;
 				break;
 			
-			case 46: // delete
+			case "backspace":
+			case "delete":
 				if (tracks_keys && tracks_keys.length > 0){
 					this.removeTracks();
 				}
+				prevent = true;
 				break;
 			
-			case 65: // a
-				if ((e.ctrlKey || e.metaKey)){
-
-					e.preventDefault();
-
-					// Select all our tracks
-					var all_tracks = []
-					for (var i = 0; i < this.props.tracks.length; i++){
-						all_tracks.push(this.buildTrackKey(this.props.tracks[i], i))
-					}
-					this.props.uiActions.setSelectedTracks(all_tracks)
-
-					return false
+			case "a":
+				var all_tracks = []
+				for (var i = 0; i < this.props.tracks.length; i++){
+					all_tracks.push(this.buildTrackKey(this.props.tracks[i], i))
 				}
+				this.props.uiActions.setSelectedTracks(all_tracks);
+				prevent = true;
 				break;
 		}
+        
+        if (prevent){
+            e.preventDefault();
+            return false;
+        }
 	}
 
 	handleDrag(e,track_key){
@@ -307,15 +317,17 @@ class TrackList extends React.Component{
 	}
 
 	removeTracks(){
+		let selected_tracks = this.digestTracksKeys();
 		
-		// Our parent handles removal
+		// Our parent has a handler for this
 		if (this.props.removeTracks !== undefined){
-			let selected_tracks = this.digestTracksKeys()
-			let selected_tracks_indexes = helpers.arrayOf('index',selected_tracks)
-			return this.props.removeTracks(selected_tracks_indexes)
-		}
+			let selected_tracks_indexes = helpers.arrayOf('index',selected_tracks);
+			return this.props.removeTracks(selected_tracks_indexes);
 
-		// By default, do nothing
+		// No handler? We can't really do anything then, so notify user
+		} else {
+			this.props.uiActions.createNotification({content: 'Cannot delete '+(selected_tracks.length > 1 ? 'these tracks' : 'this track'), type: 'bad'});
+		}
 	}
 
 

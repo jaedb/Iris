@@ -139,19 +139,21 @@
 	.control {
 		@include animate();
 		@include noselect();
+		@include focusable();
 		color: colour(white);
 		cursor: pointer;
 		padding: 10px 6px;
 		display: inline-block;
 		vertical-align: bottom;
 		opacity: 0.8;
+		background: none;
 
 		&:not(.sidebar-toggle){
 			@include click_feedback();
 		}
 
 		.icon {
-			font-size: 0.9em;
+			font-size: 0.8rem;
 			margin-bottom: 0;
 		}
 
@@ -164,7 +166,8 @@
 			color: colour(turquoise) !important;
 		}
 
-		&:hover {
+		&:hover,
+		&:focus {
 			opacity: 1;
 		}
 	}
@@ -181,8 +184,11 @@
 
 			.control {
 				&.play {
-					font-size: 2rem;
-					margin-bottom: -6px;
+					margin-bottom: -8px;
+
+					.icon {
+						font-size: 2rem;
+					}
 				}
 			}
 		}
@@ -227,14 +233,13 @@
 		}
 
 		&.volume {
-			bottom: 6px;
 			right: 20px;
 			width: 150px;
 			font-size: 18px;
 
 			.slider__wrapper {
 				position: absolute;
-				bottom: 6px;
+				bottom: 4px;
 				right: 0;
 				left: 30px;
 			}
