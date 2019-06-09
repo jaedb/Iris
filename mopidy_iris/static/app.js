@@ -57857,7 +57857,7 @@ var GridItem = function (_React$Component) {
 				switch (helpers.uriType(item.uri)) {
 
 					case 'artist':
-						this.props.lastfmActions.getArtist(item.uri, item.name);
+						//this.props.lastfmActions.getArtist(item.uri, item.name);
 						break;
 
 					case 'album':
@@ -58869,7 +58869,7 @@ var ListItem = function (_React$Component) {
 				switch (helpers.uriType(item.uri)) {
 
 					case 'artist':
-						this.props.lastfmActions.getArtist(item.uri, item.name);
+						//this.props.lastfmActions.getArtist(item.uri, item.name);
 						break;
 
 					case 'album':
@@ -62793,7 +62793,8 @@ var TrackList = function (_React$Component) {
 					prevent = true;
 					break;
 
-				case "d":
+				case "backspace":
+				case "delete":
 					if (tracks_keys && tracks_keys.length > 0) {
 						this.removeTracks();
 					}
@@ -63061,15 +63062,17 @@ var TrackList = function (_React$Component) {
 	}, {
 		key: 'removeTracks',
 		value: function removeTracks() {
+			var selected_tracks = this.digestTracksKeys();
 
-			// Our parent handles removal
+			// Our parent has a handler for this
 			if (this.props.removeTracks !== undefined) {
-				var selected_tracks = this.digestTracksKeys();
 				var selected_tracks_indexes = helpers.arrayOf('index', selected_tracks);
 				return this.props.removeTracks(selected_tracks_indexes);
-			}
 
-			// By default, do nothing
+				// No handler? We can't really do anything then, so notify user
+			} else {
+				this.props.uiActions.createNotification({ content: 'Cannot delete ' + (selected_tracks.length > 1 ? 'these tracks' : 'this track'), type: 'bad' });
+			}
 		}
 
 		/**
@@ -65521,7 +65524,7 @@ function handleException(message) {
     }
     if (!description && data.description) {
         description = data.description;
-    } else if (!description && data.error.description) {
+    } else if (!description && data.error && data.error.description) {
         description = data.error.description;
     }
     return {
@@ -68126,7 +68129,7 @@ function getArtist(uri, artist) {
             if (response.artist) {
                 var artist = {
                     uri: uri,
-                    images: response.artist.image,
+                    //images: response.artist.image,
                     mbid: response.artist.mbid,
                     biography: response.artist.bio.content,
                     biography_publish_date: response.artist.bio.published,
@@ -71255,9 +71258,11 @@ var MopidyMiddleware = function () {
 
                             store.dispatch(coreActions.artistLoaded(artist));
 
-                            // load artwork from LastFM
+                            // Load supprting information from LastFM
+                            // Note: This excludes artwork as this was removed from their API
+                            // in May 2019
                             var existing_artist = store.getState().core.artists[artist.uri];
-                            if (existing_artist && !existing_artist.images) {
+                            if (existing_artist && !existing_artist.biography) {
                                 if (artist.musicbrainz_id) {
                                     store.dispatch(lastfmActions.getArtist(artist.uri, false, artist.musicbrainz_id));
                                 } else {

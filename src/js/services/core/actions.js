@@ -60,7 +60,7 @@ export function handleException(message, data = {}, description = null, show_not
     }
     if (!description && data.description){
         description = data.description;
-    } else if (!description && data.error.description){
+    } else if (!description && data.error && data.error.description){
         description = data.error.description;
     }
     return {

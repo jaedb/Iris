@@ -61,7 +61,8 @@ class TrackList extends React.Component{
 				prevent = true;
 				break;
 			
-			case "d":
+			case "backspace":
+			case "delete":
 				if (tracks_keys && tracks_keys.length > 0){
 					this.removeTracks();
 				}
@@ -316,15 +317,17 @@ class TrackList extends React.Component{
 	}
 
 	removeTracks(){
+		let selected_tracks = this.digestTracksKeys();
 		
-		// Our parent handles removal
+		// Our parent has a handler for this
 		if (this.props.removeTracks !== undefined){
-			let selected_tracks = this.digestTracksKeys()
-			let selected_tracks_indexes = helpers.arrayOf('index',selected_tracks)
-			return this.props.removeTracks(selected_tracks_indexes)
-		}
+			let selected_tracks_indexes = helpers.arrayOf('index',selected_tracks);
+			return this.props.removeTracks(selected_tracks_indexes);
 
-		// By default, do nothing
+		// No handler? We can't really do anything then, so notify user
+		} else {
+			this.props.uiActions.createNotification({content: 'Cannot delete '+(selected_tracks.length > 1 ? 'these tracks' : 'this track'), type: 'bad'});
+		}
 	}
 
 

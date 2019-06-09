@@ -26,7 +26,7 @@ export default class GridItem extends React.Component{
 			switch (helpers.uriType(item.uri)){
 
 				case 'artist':
-					this.props.lastfmActions.getArtist(item.uri, item.name);
+					//this.props.lastfmActions.getArtist(item.uri, item.name);
 					break;
 
 				case 'album':

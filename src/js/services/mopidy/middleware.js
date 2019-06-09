@@ -2141,9 +2141,11 @@ const MopidyMiddleware = (function(){
 
                         store.dispatch(coreActions.artistLoaded(artist));
 
-                        // load artwork from LastFM
+                        // Load supprting information from LastFM
+                        // Note: This excludes artwork as this was removed from their API
+                        // in May 2019
                         var existing_artist = store.getState().core.artists[artist.uri];
-                        if (existing_artist && !existing_artist.images){
+                        if (existing_artist && !existing_artist.biography){
                             if (artist.musicbrainz_id){
                                 store.dispatch(lastfmActions.getArtist(artist.uri, false, artist.musicbrainz_id));
                             } else {

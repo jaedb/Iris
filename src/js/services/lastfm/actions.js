@@ -253,7 +253,7 @@ export function getArtist(uri, artist, mbid = false){
                     if (response.artist){
                     	var artist = {
                             uri: uri,
-                            images: response.artist.image,
+                            //images: response.artist.image,
                             mbid: response.artist.mbid,
                             biography: response.artist.bio.content,
                             biography_publish_date: response.artist.bio.published,
