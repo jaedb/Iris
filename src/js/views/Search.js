@@ -45,8 +45,8 @@ class Search extends React.Component{
 	}
 
 	componentWillUnmount(){
-		this.props.mopidyActions.clearSearchResults();
-		this.props.spotifyActions.clearSearchResults();
+		//this.props.mopidyActions.clearSearchResults();
+		//this.props.spotifyActions.clearSearchResults();
 	}
 
 	componentWillReceiveProps(nextProps){
@@ -83,10 +83,10 @@ class Search extends React.Component{
 
 		this.props.uiActions.setWindowTitle("Search: "+term);
 
-		this.props.mopidyActions.clearSearchResults();
-		this.props.spotifyActions.clearSearchResults();
-
 		if (type && term){
+
+			this.props.mopidyActions.clearSearchResults();
+			this.props.spotifyActions.clearSearchResults();
 
 			if (provider == 'mopidy' || (this.props.mopidy_connected && this.props.uri_schemes_search_enabled)){
 				this.props.mopidyActions.getSearchResults(type, term)
@@ -380,7 +380,8 @@ class Search extends React.Component{
 					history={this.props.history}
 					term={this.state.term}
 					onBlur={term => this.setState({term: term})}
-					onSubmit={term => this.search(this.state.type, term)}
+					onSubmit={term => this.props.history.push(`/search/${this.state.type}/${term}`)}
+					//onSubmit={term => this.search(this.state.type, term)}
 				/>
 
 				<div className="content-wrapper">

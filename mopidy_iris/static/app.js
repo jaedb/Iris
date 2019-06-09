@@ -80485,8 +80485,8 @@ var Search = function (_React$Component) {
 	}, {
 		key: 'componentWillUnmount',
 		value: function componentWillUnmount() {
-			this.props.mopidyActions.clearSearchResults();
-			this.props.spotifyActions.clearSearchResults();
+			//this.props.mopidyActions.clearSearchResults();
+			//this.props.spotifyActions.clearSearchResults();
 		}
 	}, {
 		key: 'componentWillReceiveProps',
@@ -80534,10 +80534,10 @@ var Search = function (_React$Component) {
 
 			this.props.uiActions.setWindowTitle("Search: " + term);
 
-			this.props.mopidyActions.clearSearchResults();
-			this.props.spotifyActions.clearSearchResults();
-
 			if (type && term) {
+
+				this.props.mopidyActions.clearSearchResults();
+				this.props.spotifyActions.clearSearchResults();
 
 				if (provider == 'mopidy' || this.props.mopidy_connected && this.props.uri_schemes_search_enabled) {
 					this.props.mopidyActions.getSearchResults(type, term);
@@ -80930,8 +80930,9 @@ var Search = function (_React$Component) {
 						return _this7.setState({ term: term });
 					},
 					onSubmit: function onSubmit(term) {
-						return _this7.search(_this7.state.type, term);
+						return _this7.props.history.push('/search/' + _this7.state.type + '/' + term);
 					}
+					//onSubmit={term => this.search(this.state.type, term)}
 				}),
 				_react2.default.createElement(
 					'div',
