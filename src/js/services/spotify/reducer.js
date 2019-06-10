@@ -334,6 +334,8 @@ export default function reducer(spotify = {}, action){
                 var search_results = {}
             }
 
+            search_results.query = action.query;
+
             if (search_results.results){
                 search_results[action.context] = [...search_results[action.context], ...action.results]
             } else {

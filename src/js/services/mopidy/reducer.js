@@ -193,15 +193,17 @@ export default function reducer(mopidy = {}, action){
 
             // Fetch or create our container
             if (mopidy.search_results){
-                var search_results = Object.assign({}, mopidy.search_results)
+                var search_results = Object.assign({}, mopidy.search_results);
             } else {
-                var search_results = {}
+                var search_results = {};
             }
 
+            search_results.query = action.query;
+
             if (search_results[action.context]){
-                search_results[action.context] = [...search_results[action.context], ...action.results]
+                search_results[action.context] = [...search_results[action.context], ...action.results];
             } else {
-                search_results[action.context] = action.results
+                search_results[action.context] = action.results;
             }
 
             return Object.assign({}, mopidy, { search_results: search_results });

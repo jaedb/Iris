@@ -70524,6 +70524,7 @@ var MopidyMiddleware = function () {
                                         // and plug in their URIs
                                         store.dispatch({
                                             type: 'MOPIDY_SEARCH_RESULTS_LOADED',
+                                            query: action.data.query,
                                             context: action.data.context,
                                             results: albums_uris
                                         });
@@ -70593,6 +70594,7 @@ var MopidyMiddleware = function () {
                                         // and plug in their URIs
                                         store.dispatch({
                                             type: 'MOPIDY_SEARCH_RESULTS_LOADED',
+                                            query: action.data.query,
                                             context: action.data.context,
                                             results: artists_uris
                                         });
@@ -70640,6 +70642,7 @@ var MopidyMiddleware = function () {
                                         // and plug in their URIs
                                         store.dispatch({
                                             type: 'MOPIDY_SEARCH_RESULTS_LOADED',
+                                            query: action.data.query,
                                             context: action.data.context,
                                             results: playlists_uris
                                         });
@@ -70679,6 +70682,7 @@ var MopidyMiddleware = function () {
 
                                         store.dispatch({
                                             type: 'MOPIDY_SEARCH_RESULTS_LOADED',
+                                            query: action.data.query,
                                             context: action.data.context,
                                             results: helpers.formatTracks(tracks)
                                         });
@@ -70713,6 +70717,7 @@ var MopidyMiddleware = function () {
 
                                             store.dispatch({
                                                 type: 'MOPIDY_SEARCH_RESULTS_LOADED',
+                                                query: action.data.query,
                                                 context: 'tracks',
                                                 results: helpers.formatTracks(tracks)
                                             });
@@ -70763,6 +70768,7 @@ var MopidyMiddleware = function () {
                                             // and plug in their URIs
                                             store.dispatch({
                                                 type: 'MOPIDY_SEARCH_RESULTS_LOADED',
+                                                query: action.data.query,
                                                 context: 'albums',
                                                 results: albums_uris
                                             });
@@ -70822,6 +70828,7 @@ var MopidyMiddleware = function () {
                                             // and plug in their URIs
                                             store.dispatch({
                                                 type: 'MOPIDY_SEARCH_RESULTS_LOADED',
+                                                query: action.data.query,
                                                 context: 'artists',
                                                 results: artists_uris
                                             });
@@ -70867,6 +70874,7 @@ var MopidyMiddleware = function () {
                                                 // and plug in their URIs
                                                 store.dispatch({
                                                     type: 'MOPIDY_SEARCH_RESULTS_LOADED',
+                                                    query: action.data.query,
                                                     context: 'playlists',
                                                     results: playlists_uris
                                                 });
@@ -72007,6 +72015,8 @@ function reducer() {
             } else {
                 var search_results = {};
             }
+
+            search_results.query = action.query;
 
             if (search_results[action.context]) {
                 search_results[action.context] = [].concat(_toConsumableArray(search_results[action.context]), _toConsumableArray(action.results));
@@ -74442,6 +74452,7 @@ function getSearchResults(type, query) {
                 dispatch({
                     type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
                     context: 'tracks',
+                    query: query,
                     results: helpers.formatTracks(response.tracks.items),
                     more: response.tracks.next
                 });
@@ -74455,6 +74466,7 @@ function getSearchResults(type, query) {
                 dispatch({
                     type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
                     context: 'artists',
+                    query: query,
                     results: helpers.arrayOf('uri', response.artists.items),
                     more: response.artists.next
                 });
@@ -74468,6 +74480,7 @@ function getSearchResults(type, query) {
                 dispatch({
                     type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
                     context: 'albums',
+                    query: query,
                     results: helpers.arrayOf('uri', response.albums.items),
                     more: response.albums.next
                 });
@@ -74511,6 +74524,7 @@ function getSearchResults(type, query) {
                 dispatch({
                     type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
                     context: 'playlists',
+                    query: query,
                     results: helpers.arrayOf('uri', playlists),
                     more: response.playlists.next
                 });
@@ -76548,6 +76562,8 @@ function reducer() {
             } else {
                 var search_results = {};
             }
+
+            search_results.query = action.query;
 
             if (search_results.results) {
                 search_results[action.context] = [].concat(_toConsumableArray(search_results[action.context]), _toConsumableArray(action.results));
@@ -80483,12 +80499,6 @@ var Search = function (_React$Component) {
 			this.digestUri();
 		}
 	}, {
-		key: 'componentWillUnmount',
-		value: function componentWillUnmount() {
-			//this.props.mopidyActions.clearSearchResults();
-			//this.props.spotifyActions.clearSearchResults();
-		}
-	}, {
 		key: 'componentWillReceiveProps',
 		value: function componentWillReceiveProps(nextProps) {
 
@@ -80506,6 +80516,22 @@ var Search = function (_React$Component) {
 				}
 			}
 		}
+	}, {
+		key: 'handleSubmit',
+		value: function handleSubmit(term) {
+			var _this2 = this;
+
+			this.setState({ term: term }, function () {
+				// Unchanged term, so this is a forced re-search
+				// Often the other search parameters have changed instead, but we can't
+				// push a URL change when the term hasn't changed
+				if (_this2.props.term == term) {
+					_this2.search();
+				} else {
+					_this2.props.history.push('/search/' + _this2.state.type + '/' + term);
+				}
+			});
+		}
 
 		// Digest the URI query property
 		// Triggered when the URL changes
@@ -80522,6 +80548,9 @@ var Search = function (_React$Component) {
 				});
 
 				this.search(props.type, props.term);
+			} else if (!props.term || props.term == '') {
+				this.props.spotifyActions.clearSearchResults();
+				this.props.mopidyActions.clearSearchResults();
 			}
 		}
 	}, {
@@ -80536,15 +80565,18 @@ var Search = function (_React$Component) {
 
 			if (type && term) {
 
-				this.props.mopidyActions.clearSearchResults();
-				this.props.spotifyActions.clearSearchResults();
-
 				if (provider == 'mopidy' || this.props.mopidy_connected && this.props.uri_schemes_search_enabled) {
-					this.props.mopidyActions.getSearchResults(type, term);
+					if (this.props.mopidy_search_results.query === undefined || this.props.mopidy_search_results.query != term) {
+						this.props.mopidyActions.clearSearchResults();
+						this.props.mopidyActions.getSearchResults(type, term);
+					}
 				}
 
 				if (provider == 'spotify' || this.props.mopidy_connected && this.props.uri_schemes_search_enabled && this.props.uri_schemes_search_enabled.includes('spotify:')) {
-					this.props.spotifyActions.getSearchResults(type, term);
+					if (this.props.spotify_search_results.query === undefined || this.props.spotify_search_results.query != term) {
+						this.props.spotifyActions.clearSearchResults();
+						this.props.spotifyActions.getSearchResults(type, term);
+					}
 				}
 			}
 		}
@@ -80569,7 +80601,7 @@ var Search = function (_React$Component) {
 	}, {
 		key: 'renderArtists',
 		value: function renderArtists(artists, spotify_search_enabled) {
-			var _this2 = this;
+			var _this3 = this;
 
 			return _react2.default.createElement(
 				'div',
@@ -80591,7 +80623,7 @@ var Search = function (_React$Component) {
 					{ className: 'grid-wrapper' },
 					_react2.default.createElement(_ArtistGrid2.default, { artists: artists, show_source_icon: true }),
 					_react2.default.createElement(_LazyLoadListener2.default, { enabled: this.props['artists_more'] && spotify_search_enabled, loadMore: function loadMore() {
-							return _this2.loadMore('artists');
+							return _this3.loadMore('artists');
 						} })
 				)
 			);
@@ -80599,7 +80631,7 @@ var Search = function (_React$Component) {
 	}, {
 		key: 'renderAlbums',
 		value: function renderAlbums(albums, spotify_search_enabled) {
-			var _this3 = this;
+			var _this4 = this;
 
 			return _react2.default.createElement(
 				'div',
@@ -80621,7 +80653,7 @@ var Search = function (_React$Component) {
 					{ className: 'grid-wrapper' },
 					_react2.default.createElement(_AlbumGrid2.default, { albums: albums, show_source_icon: true }),
 					_react2.default.createElement(_LazyLoadListener2.default, { enabled: this.props['albums_more'] && spotify_search_enabled, loadMore: function loadMore() {
-							return _this3.loadMore('albums');
+							return _this4.loadMore('albums');
 						} })
 				)
 			);
@@ -80629,7 +80661,7 @@ var Search = function (_React$Component) {
 	}, {
 		key: 'renderPlaylists',
 		value: function renderPlaylists(playlists, spotify_search_enabled) {
-			var _this4 = this;
+			var _this5 = this;
 
 			return _react2.default.createElement(
 				'div',
@@ -80651,7 +80683,7 @@ var Search = function (_React$Component) {
 					{ className: 'grid-wrapper' },
 					_react2.default.createElement(_PlaylistGrid2.default, { playlists: playlists, show_source_icon: true }),
 					_react2.default.createElement(_LazyLoadListener2.default, { enabled: this.props['playlists_more'] && spotify_search_enabled, loadMore: function loadMore() {
-							return _this4.loadMore('playlists');
+							return _this5.loadMore('playlists');
 						} })
 				)
 			);
@@ -80659,7 +80691,7 @@ var Search = function (_React$Component) {
 	}, {
 		key: 'renderTracks',
 		value: function renderTracks(tracks, spotify_search_enabled) {
-			var _this5 = this;
+			var _this6 = this;
 
 			return _react2.default.createElement(
 				'div',
@@ -80681,7 +80713,7 @@ var Search = function (_React$Component) {
 					{ className: 'list-wrapper' },
 					_react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: 'iris:search:' + this.state.type + ':' + this.state.term, show_source_icon: true }),
 					_react2.default.createElement(_LazyLoadListener2.default, { enabled: this.props['tracks_more'] && spotify_search_enabled, loadMore: function loadMore() {
-							return _this5.loadMore('tracks');
+							return _this6.loadMore('tracks');
 						} })
 				)
 			);
@@ -80689,7 +80721,7 @@ var Search = function (_React$Component) {
 	}, {
 		key: 'renderAll',
 		value: function renderAll(artists, albums, playlists, tracks, spotify_search_enabled) {
-			var _this6 = this;
+			var _this7 = this;
 
 			if (artists.length > 0) {
 				var artists_section = _react2.default.createElement(
@@ -80787,7 +80819,7 @@ var Search = function (_React$Component) {
 					{ className: 'list-wrapper' },
 					_react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: 'iris:search:' + this.state.type + ':' + this.state.term, show_source_icon: true }),
 					_react2.default.createElement(_LazyLoadListener2.default, { loading: this.props['tracks_more'] && spotify_search_enabled, loadMore: function loadMore() {
-							return _this6.loadMore('tracks');
+							return _this7.loadMore('tracks');
 						} })
 				);
 			} else {
@@ -80810,7 +80842,7 @@ var Search = function (_React$Component) {
 	}, {
 		key: 'render',
 		value: function render() {
-			var _this7 = this;
+			var _this8 = this;
 
 			var sort_options = [{
 				value: 'followers',
@@ -80901,7 +80933,7 @@ var Search = function (_React$Component) {
 					options: sort_options,
 					selected_icon: this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down',
 					handleChange: function handleChange(value) {
-						_this7.setSort(value);_this7.props.uiActions.hideContextMenu();
+						_this8.setSort(value);_this8.props.uiActions.hideContextMenu();
 					}
 				}),
 				_react2.default.createElement(_DropdownField2.default, {
@@ -80910,7 +80942,7 @@ var Search = function (_React$Component) {
 					value: this.props.uri_schemes_search_enabled,
 					options: provider_options,
 					handleChange: function handleChange(value) {
-						_this7.props.uiActions.set({ uri_schemes_search_enabled: value });_this7.props.uiActions.hideContextMenu();
+						_this8.props.uiActions.set({ uri_schemes_search_enabled: value });_this8.props.uiActions.hideContextMenu();
 					}
 				})
 			);
@@ -80925,14 +80957,11 @@ var Search = function (_React$Component) {
 				),
 				_react2.default.createElement(_SearchForm2.default, {
 					history: this.props.history,
-					term: this.state.term,
-					onBlur: function onBlur(term) {
-						return _this7.setState({ term: term });
-					},
-					onSubmit: function onSubmit(term) {
-						return _this7.props.history.push('/search/' + _this7.state.type + '/' + term);
+					term: this.state.term
+					//onBlur={term => this.setState({term: term})}
+					, onSubmit: function onSubmit(term) {
+						return _this8.handleSubmit(term);
 					}
-					//onSubmit={term => this.search(this.state.type, term)}
 				}),
 				_react2.default.createElement(
 					'div',
