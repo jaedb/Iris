@@ -57529,7 +57529,7 @@ var SearchForm = function (_React$Component) {
 							return _this2.setState({ term: e.target.value });
 						},
 						onBlur: function onBlur(e) {
-							return _this2.props.onBlur(_this2.state.term);
+							return _this2.props.onBlur !== undefined ? _this2.props.onBlur(_this2.state.term) : null;
 						},
 						value: this.state.term
 					})
@@ -80957,9 +80957,8 @@ var Search = function (_React$Component) {
 				),
 				_react2.default.createElement(_SearchForm2.default, {
 					history: this.props.history,
-					term: this.state.term
-					//onBlur={term => this.setState({term: term})}
-					, onSubmit: function onSubmit(term) {
+					term: this.state.term,
+					onSubmit: function onSubmit(term) {
 						return _this8.handleSubmit(term);
 					}
 				}),

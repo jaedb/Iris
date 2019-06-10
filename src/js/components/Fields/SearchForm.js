@@ -55,7 +55,7 @@ class SearchForm extends React.Component{
 						type="text"
 						placeholder={this.props.term ? this.props.term : "Search..."}
 						onChange={e => this.setState({term: e.target.value})}
-						onBlur={e => this.props.onBlur(this.state.term)}
+						onBlur={e => (this.props.onBlur !== undefined ? this.props.onBlur(this.state.term) : null)}
 						value={ this.state.term }
 					/>
 					</label>
