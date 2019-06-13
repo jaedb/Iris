@@ -177,6 +177,9 @@ export class App extends React.Component{
 
 	render(){
 		var className = this.props.theme+'-theme';
+		if (this.props.wide_scrollbar_enabled){
+			className += ' wide-scrollbar';
+		}
 		if (this.props.dragger && this.props.dragger.active){
 			className += ' dragging';
 		}
@@ -222,7 +225,7 @@ export class App extends React.Component{
 
 						<Route>
 							<div>
-								<Sidebar />   
+								<Sidebar tabIndex="3" />   
 						        <PlaybackControls history={this.props.history} tabIndex="2"/>
 						        <main id="main" className="smooth-scroll" tabIndex="1">
 									<Switch>
@@ -304,6 +307,7 @@ export class App extends React.Component{
 const mapStateToProps = (state, ownProps) => {
 	return {
 		theme: state.ui.theme,
+		wide_scrollbar_enabled: state.ui.wide_scrollbar_enabled,
 		smooth_scrolling_enabled: state.ui.smooth_scrolling_enabled,
 		hotkeys_enabled: state.ui.hotkeys_enabled,
 		allow_reporting: state.ui.allow_reporting,

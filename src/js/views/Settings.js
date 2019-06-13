@@ -270,6 +270,16 @@ class Settings extends React.Component {
 									Enable smooth scrolling
 								</span>
 							</label>
+							<label>
+								<input 
+									type="checkbox"
+									name="wide_scrollbar_enabled"
+									checked={ this.props.ui.wide_scrollbar_enabled }
+									onChange={ e => this.props.uiActions.set({ wide_scrollbar_enabled: !this.props.ui.wide_scrollbar_enabled })} />
+								<span className="label">
+									Use wide scrollbars
+								</span>
+							</label>
 						</div>
 					</div>
 

@@ -2732,6 +2732,8 @@ main {
 	 **/
   -webkit-overflow-scrolling: touch;
   /* All children between <main> and the parallax need this to work in Firefox */ }
+  .notouch.wide-scrollbar main::-webkit-scrollbar {
+    width: 18px; }
   .notouch main::-webkit-scrollbar {
     width: 8px;
     height: 8px; }

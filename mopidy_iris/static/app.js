@@ -52328,6 +52328,9 @@ var App = exports.App = function (_React$Component) {
 		key: 'render',
 		value: function render() {
 			var className = this.props.theme + '-theme';
+			if (this.props.wide_scrollbar_enabled) {
+				className += ' wide-scrollbar';
+			}
 			if (this.props.dragger && this.props.dragger.active) {
 				className += ' dragging';
 			}
@@ -52377,7 +52380,7 @@ var App = exports.App = function (_React$Component) {
 							_react2.default.createElement(
 								'div',
 								null,
-								_react2.default.createElement(_Sidebar2.default, null),
+								_react2.default.createElement(_Sidebar2.default, { tabIndex: '3' }),
 								_react2.default.createElement(_PlaybackControls2.default, { history: this.props.history, tabIndex: '2' }),
 								_react2.default.createElement(
 									'main',
@@ -52463,6 +52466,7 @@ var App = exports.App = function (_React$Component) {
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
 		theme: state.ui.theme,
+		wide_scrollbar_enabled: state.ui.wide_scrollbar_enabled,
 		smooth_scrolling_enabled: state.ui.smooth_scrolling_enabled,
 		hotkeys_enabled: state.ui.hotkeys_enabled,
 		allow_reporting: state.ui.allow_reporting,
@@ -58449,6 +58453,9 @@ var Hotkeys = function (_React$Component) {
             switch (e.key.toLowerCase()) {
 
                 case " ":
+                case "p":
+                    // Super-useful once you get used to it. This negates the issue where interactive elements
+                    // are in focus (ie slider) and <space> is reserved for that field's interactivity.
                     if (this.props.play_state == 'playing') {
                         this.props.mopidyActions.pause();
                         this.props.uiActions.createNotification({ content: 'pause', type: 'shortcut' });
@@ -81524,6 +81531,22 @@ var Settings = function (_React$Component) {
 									'span',
 									{ className: 'label' },
 									'Enable smooth scrolling'
+								)
+							),
+							_react2.default.createElement(
+								'label',
+								null,
+								_react2.default.createElement('input', {
+									type: 'checkbox',
+									name: 'wide_scrollbar_enabled',
+									checked: this.props.ui.wide_scrollbar_enabled,
+									onChange: function onChange(e) {
+										return _this2.props.uiActions.set({ wide_scrollbar_enabled: !_this2.props.ui.wide_scrollbar_enabled });
+									} }),
+								_react2.default.createElement(
+									'span',
+									{ className: 'label' },
+									'Use wide scrollbars'
 								)
 							)
 						)

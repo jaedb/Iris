@@ -99,6 +99,12 @@ main {
 	 **/
 	-webkit-overflow-scrolling: touch;
 
+	.notouch.wide-scrollbar & {
+		&::-webkit-scrollbar{
+			width: 18px;
+		}
+	}
+
 	.notouch & {
 		&::-webkit-scrollbar{
 			width: 8px;
