@@ -43,7 +43,7 @@ class Settings extends React.Component {
 		var changed = false
 		var state = this.state
 		
-		if (nextProps.pusher.username != this.state.pusher_username && this.state.input_in_focus != 'pusher_username'){
+		if (nextProps.pusher.username && nextProps.pusher.username != this.state.pusher_username && this.state.input_in_focus != 'pusher_username'){
 			state.pusher_username = nextProps.pusher.username
 			changed = true
 		}
@@ -171,7 +171,8 @@ class Settings extends React.Component {
 						<div className="input">
 							<TextField 
 								onChange={value => this.props.pusherActions.setUsername(value.replace(/\W/g, ''))}
-								value={this.props.pusher.username } />
+								value={ this.state.pusher_username }
+							/>
 							<div className="description">
 								A non-unique string used to identify this client (no special characters)
 							</div>

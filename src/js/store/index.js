@@ -47,6 +47,7 @@ let state = {
 		smooth_scrolling_enabled: true,
 		hotkeys_enabled: true,
 		allow_reporting: true,
+		wide_scrollbar_enabled: false,
 		window_focus: true,
 		slim_mode: false,
 		selected_tracks: [],

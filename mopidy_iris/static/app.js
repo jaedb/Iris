@@ -77575,6 +77575,7 @@ var state = {
 		smooth_scrolling_enabled: true,
 		hotkeys_enabled: true,
 		allow_reporting: true,
+		wide_scrollbar_enabled: false,
 		window_focus: true,
 		slim_mode: false,
 		selected_tracks: [],
@@ -81168,7 +81169,7 @@ var Settings = function (_React$Component) {
 			var changed = false;
 			var state = this.state;
 
-			if (nextProps.pusher.username != this.state.pusher_username && this.state.input_in_focus != 'pusher_username') {
+			if (nextProps.pusher.username && nextProps.pusher.username != this.state.pusher_username && this.state.input_in_focus != 'pusher_username') {
 				state.pusher_username = nextProps.pusher.username;
 				changed = true;
 			}
@@ -81344,7 +81345,8 @@ var Settings = function (_React$Component) {
 								onChange: function onChange(value) {
 									return _this2.props.pusherActions.setUsername(value.replace(/\W/g, ''));
 								},
-								value: this.props.pusher.username }),
+								value: this.state.pusher_username
+							}),
 							_react2.default.createElement(
 								'div',
 								{ className: 'description' },
