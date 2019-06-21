@@ -44,11 +44,6 @@ class Search extends React.Component{
 		this.digestUri();
 	}
 
-	componentWillUnmount(){
-		this.props.mopidyActions.clearSearchResults();
-		this.props.spotifyActions.clearSearchResults();
-	}
-
 	componentWillReceiveProps(nextProps){
 
 		// Query changed
@@ -66,6 +61,22 @@ class Search extends React.Component{
 		}
 	}
 
+	handleSubmit(term){
+		this.setState(
+			{term: term}, () =>
+			{
+				// Unchanged term, so this is a forced re-search
+				// Often the other search parameters have changed instead, but we can't
+				// push a URL change when the term hasn't changed
+				if (this.props.term == term){
+					this.search();
+				} else {
+					this.props.history.push(`/search/${this.state.type}/${term}`);
+				}
+			}
+		);
+	}
+
 	// Digest the URI query property
 	// Triggered when the URL changes
 	digestUri(props = this.props){
@@ -76,6 +87,9 @@ class Search extends React.Component{
 			});
 
 			this.search(props.type, props.term);
+		} else if (!props.term || props.term == ''){
+			this.props.spotifyActions.clearSearchResults();
+			this.props.mopidyActions.clearSearchResults();
 		}
 	}
 
@@ -83,17 +97,20 @@ class Search extends React.Component{
 
 		this.props.uiActions.setWindowTitle("Search: "+term);
 
-		this.props.mopidyActions.clearSearchResults();
-		this.props.spotifyActions.clearSearchResults();
-
 		if (type && term){
 
 			if (provider == 'mopidy' || (this.props.mopidy_connected && this.props.uri_schemes_search_enabled)){
-				this.props.mopidyActions.getSearchResults(type, term)
+				if (this.props.mopidy_search_results.query === undefined || this.props.mopidy_search_results.query != term){
+					this.props.mopidyActions.clearSearchResults();
+					this.props.mopidyActions.getSearchResults(type, term);
+				}
 			}
 
 			if (provider == 'spotify' || (this.props.mopidy_connected && this.props.uri_schemes_search_enabled && this.props.uri_schemes_search_enabled.includes('spotify:'))){
-				this.props.spotifyActions.getSearchResults(type, term)
+				if (this.props.spotify_search_results.query === undefined || this.props.spotify_search_results.query != term){
+					this.props.spotifyActions.clearSearchResults();
+					this.props.spotifyActions.getSearchResults(type, term);
+				}
 			}
 		}
 	}
@@ -379,8 +396,7 @@ class Search extends React.Component{
 				<SearchForm 
 					history={this.props.history}
 					term={this.state.term}
-					onBlur={term => this.setState({term: term})}
-					onSubmit={term => this.search(this.state.type, term)}
+					onSubmit={term => this.handleSubmit(term)}
 				/>
 
 				<div className="content-wrapper">

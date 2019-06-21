@@ -384,7 +384,7 @@ const SpotifyMiddleware = (function(){
                 store.dispatch({ 
                     type: 'SPOTIFY_CLEAR_SEARCH_RESULTS'
                 });
-                next(action)
+                next(action);
                 break
 
             case 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_TRACKS':

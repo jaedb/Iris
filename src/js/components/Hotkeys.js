@@ -34,6 +34,8 @@ export default class Hotkeys extends React.Component {
 		switch(e.key.toLowerCase()){
 
 			case " ":
+            case "p":   // Super-useful once you get used to it. This negates the issue where interactive elements
+                        // are in focus (ie slider) and <space> is reserved for that field's interactivity.
 				if (this.props.play_state == 'playing'){
 					this.props.mopidyActions.pause();
 					this.props.uiActions.createNotification({content: 'pause', type: 'shortcut'});

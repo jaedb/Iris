@@ -1020,7 +1020,7 @@ const MopidyMiddleware = (function(){
                     {
                         remaining: action.data.uri_schemes.length
                     }
-                ))
+                ));
 
                 switch (action.data.context){
 
@@ -1080,6 +1080,7 @@ const MopidyMiddleware = (function(){
                                         // and plug in their URIs
                                         store.dispatch({
                                             type: 'MOPIDY_SEARCH_RESULTS_LOADED',
+                                            query: action.data.query,
                                             context: action.data.context,
                                             results: albums_uris
                                         })
@@ -1162,6 +1163,7 @@ const MopidyMiddleware = (function(){
                                         // and plug in their URIs
                                         store.dispatch({
                                             type: 'MOPIDY_SEARCH_RESULTS_LOADED',
+                                            query: action.data.query,
                                             context: action.data.context,
                                             results: artists_uris
                                         })
@@ -1219,6 +1221,7 @@ const MopidyMiddleware = (function(){
                                         // and plug in their URIs
                                         store.dispatch({
                                             type: 'MOPIDY_SEARCH_RESULTS_LOADED',
+                                            query: action.data.query,
                                             context: action.data.context,
                                             results: playlists_uris
                                         })
@@ -1271,6 +1274,7 @@ const MopidyMiddleware = (function(){
 
                                         store.dispatch({
                                             type: 'MOPIDY_SEARCH_RESULTS_LOADED',
+                                            query: action.data.query,
                                             context: action.data.context,
                                             results: helpers.formatTracks(tracks)
                                         });
@@ -1316,6 +1320,7 @@ const MopidyMiddleware = (function(){
 
                                             store.dispatch({
                                                 type: 'MOPIDY_SEARCH_RESULTS_LOADED',
+                                                query: action.data.query,
                                                 context: 'tracks',
                                                 results: helpers.formatTracks(tracks)
                                             });
@@ -1377,6 +1382,7 @@ const MopidyMiddleware = (function(){
                                             // and plug in their URIs
                                             store.dispatch({
                                                 type: 'MOPIDY_SEARCH_RESULTS_LOADED',
+                                                query: action.data.query,
                                                 context: 'albums',
                                                 results: albums_uris
                                             })
@@ -1447,6 +1453,7 @@ const MopidyMiddleware = (function(){
                                             // and plug in their URIs
                                             store.dispatch({
                                                 type: 'MOPIDY_SEARCH_RESULTS_LOADED',
+                                                query: action.data.query,
                                                 context: 'artists',
                                                 results: artists_uris
                                             })
@@ -1503,6 +1510,7 @@ const MopidyMiddleware = (function(){
                                                 // and plug in their URIs
                                                 store.dispatch({
                                                     type: 'MOPIDY_SEARCH_RESULTS_LOADED',
+                                                    query: action.data.query,
                                                     context: 'playlists',
                                                     results: playlists_uris
                                                 })

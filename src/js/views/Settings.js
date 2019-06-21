@@ -43,7 +43,7 @@ class Settings extends React.Component {
 		var changed = false
 		var state = this.state
 		
-		if (nextProps.pusher.username != this.state.pusher_username && this.state.input_in_focus != 'pusher_username'){
+		if (nextProps.pusher.username && nextProps.pusher.username != this.state.pusher_username && this.state.input_in_focus != 'pusher_username'){
 			state.pusher_username = nextProps.pusher.username
 			changed = true
 		}
@@ -171,7 +171,8 @@ class Settings extends React.Component {
 						<div className="input">
 							<TextField 
 								onChange={value => this.props.pusherActions.setUsername(value.replace(/\W/g, ''))}
-								value={this.props.pusher.username } />
+								value={ this.state.pusher_username }
+							/>
 							<div className="description">
 								A non-unique string used to identify this client (no special characters)
 							</div>
@@ -268,6 +269,16 @@ class Settings extends React.Component {
 									onChange={ e => this.props.uiActions.set({ smooth_scrolling_enabled: !this.props.ui.smooth_scrolling_enabled })} />
 								<span className="label">
 									Enable smooth scrolling
+								</span>
+							</label>
+							<label>
+								<input 
+									type="checkbox"
+									name="wide_scrollbar_enabled"
+									checked={ this.props.ui.wide_scrollbar_enabled }
+									onChange={ e => this.props.uiActions.set({ wide_scrollbar_enabled: !this.props.ui.wide_scrollbar_enabled })} />
+								<span className="label">
+									Use wide scrollbars
 								</span>
 							</label>
 						</div>

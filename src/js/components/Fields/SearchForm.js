@@ -1,8 +1,6 @@
-
 import React from 'react'
 import { connect } from 'react-redux'
-
-import { createStore, bindActionCreators } from 'redux'
+import { bindActionCreators } from 'redux'
 
 import * as helpers from '../../helpers'
 import * as uiActions from '../../services/ui/actions'
@@ -13,8 +11,26 @@ class SearchForm extends React.Component{
 		super(props);
 
 		this.state = {
-			term: this.props.term
+			term: this.props.term,
+			pristine: true,
 		}
+	}
+
+	componentWillReceiveProps(nextProps) {
+		if (this.state.pristine && this.state.term == "" && this.state.term !== nextProps.term) {
+			this.setState({term: nextProps.term, pristine: false});
+		}
+	}
+
+	handleBlur(e) {
+		this.setState({pristine: false});
+		if (this.props.onBlur) {
+			this.props.onBlur(this.state.term);
+		}
+	}
+
+	handleFocus(e) {
+		this.setState({pristine: false});
 	}
 
 	handleSubmit(e){
@@ -51,12 +67,13 @@ class SearchForm extends React.Component{
 		return (
 			<form className="search-form" onSubmit={e => this.handleSubmit(e)}>
 				<label>
-					<input					
+					<input
 						type="text"
-						placeholder={this.props.term ? this.props.term : "Search..."}
-						onChange={e => this.setState({term: e.target.value})}
-						onBlur={e => this.props.onBlur(this.state.term)}
-						value={ this.state.term }
+						placeholder="Search..."
+						onChange={e => this.setState({term: e.target.value, pristine: false})}
+						onBlur={e => this.handleBlur}
+						onFocus={e => this.handleFocus}
+						value={this.state.term}
 					/>
 					</label>
 			</form>

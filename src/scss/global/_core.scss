@@ -99,6 +99,12 @@ main {
 	 **/
 	-webkit-overflow-scrolling: touch;
 
+	.notouch.wide-scrollbar & {
+		&::-webkit-scrollbar{
+			width: 18px;
+		}
+	}
+
 	.notouch & {
 		&::-webkit-scrollbar{
 			width: 8px;
@@ -189,6 +195,7 @@ h1 {
 	font-weight: 700;
 	font-size: 3.4rem;
 	line-height: 3.4rem;
+	letter-spacing: -0.15rem;
 
 	.light-theme & {
 		color: colour(grey);
@@ -200,6 +207,7 @@ h2 {
 	font-weight: 400;
 	font-size: 2rem;
 	line-height: 2.2rem;
+	letter-spacing: -0.08rem;
 
 	a {
 		color: inherit;

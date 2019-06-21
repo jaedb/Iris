@@ -581,6 +581,7 @@ export function getSearchResults(type, query, limit = 50, offset = 0){
                         dispatch({
                             type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
                             context: 'tracks',
+                            query: query,
                             results: helpers.formatTracks(response.tracks.items),
                             more: response.tracks.next,
                         });
@@ -594,6 +595,7 @@ export function getSearchResults(type, query, limit = 50, offset = 0){
                         dispatch({
                             type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
                             context: 'artists',
+                            query: query,
                             results: helpers.arrayOf('uri',response.artists.items),
                             more: response.artists.next,
                         });
@@ -607,6 +609,7 @@ export function getSearchResults(type, query, limit = 50, offset = 0){
                         dispatch({
                             type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
                             context: 'albums',
+                            query: query,
                             results: helpers.arrayOf('uri',response.albums.items),
                             more: response.albums.next,
                         });
@@ -632,6 +635,7 @@ export function getSearchResults(type, query, limit = 50, offset = 0){
                         dispatch({
                             type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
                             context: 'playlists',
+                            query: query,
                             results: helpers.arrayOf('uri',playlists),
                             more: response.playlists.next
                         });

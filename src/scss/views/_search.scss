@@ -17,11 +17,12 @@
 			background: transparent;
 			border-bottom: 2px solid colour(grey);
 			border-radius: 0;
+			letter-spacing: -0.15rem;
 
 			/* handle Safari's ridiculous non-vertical centering */
 			&:not(:root:root){
-				height: 4rem;
-				margin-top: -1rem;
+				height: 4.6rem;
+				margin-top: -0.5rem;
 			}
 
 			&:focus,
