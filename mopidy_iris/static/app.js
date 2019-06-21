@@ -57477,12 +57477,33 @@ var SearchForm = function (_React$Component) {
 		var _this = _possibleConstructorReturn(this, (SearchForm.__proto__ || Object.getPrototypeOf(SearchForm)).call(this, props));
 
 		_this.state = {
-			term: _this.props.term
+			term: _this.props.term,
+			pristine: true
 		};
 		return _this;
 	}
 
 	_createClass(SearchForm, [{
+		key: 'componentWillReceiveProps',
+		value: function componentWillReceiveProps(nextProps) {
+			if (this.state.pristine && this.state.term == "" && this.state.term !== nextProps.term) {
+				this.setState({ term: nextProps.term, pristine: false });
+			}
+		}
+	}, {
+		key: 'handleBlur',
+		value: function handleBlur(e) {
+			this.setState({ pristine: false });
+			if (this.props.onBlur) {
+				this.props.onBlur(this.state.term);
+			}
+		}
+	}, {
+		key: 'handleFocus',
+		value: function handleFocus(e) {
+			this.setState({ pristine: false });
+		}
+	}, {
 		key: 'handleSubmit',
 		value: function handleSubmit(e) {
 			e.preventDefault();
@@ -57528,12 +57549,15 @@ var SearchForm = function (_React$Component) {
 					null,
 					_react2.default.createElement('input', {
 						type: 'text',
-						placeholder: this.props.term ? this.props.term : "Search...",
+						placeholder: 'Search...',
 						onChange: function onChange(e) {
-							return _this2.setState({ term: e.target.value });
+							return _this2.setState({ term: e.target.value, pristine: false });
 						},
 						onBlur: function onBlur(e) {
-							return _this2.props.onBlur !== undefined ? _this2.props.onBlur(_this2.state.term) : null;
+							return _this2.handleBlur;
+						},
+						onFocus: function onFocus(e) {
+							return _this2.handleFocus;
 						},
 						value: this.state.term
 					})
