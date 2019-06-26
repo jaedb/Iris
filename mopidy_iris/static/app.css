@@ -7027,20 +7027,24 @@ main .track-view {
     float: left;
     width: 44px;
     border: 0 !important; }
+  .discover-view .seeds .seed .label .text {
+    opacity: 0.5;
+    font-size: 12px;
+    text-transform: uppercase; }
   .discover-view .seeds .seed .label .remove {
     -webkit-transition: all 0.2s ease-in-out;
     -moz-transition: all 0.2s ease-in-out;
     -o-transition: all 0.2s ease-in-out;
     transition: all 0.2s ease-in-out;
     cursor: pointer;
-    font-size: 10px;
-    padding: 4px;
-    margin-left: 4px; }
+    font-size: 14px;
+    padding: 2px;
+    margin-left: 4px;
+    vertical-align: middle; }
     .discover-view .seeds .seed .label .remove:hover {
       color: #cf2d2d; }
   .discover-view .seeds .seed .name {
-    font-size: 16px;
-    padding-top: 3px; }
+    font-size: 16px; }
   .discover-view .seeds .seed.has-thumbnail .label,
   .discover-view .seeds .seed.has-thumbnail .name {
     padding-left: 52px; }

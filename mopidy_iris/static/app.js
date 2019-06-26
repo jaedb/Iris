@@ -60279,10 +60279,11 @@ var PlaybackControls = function (_React$Component) {
 						},
 						onTouchEnd: function onTouchEnd(e) {
 							return _this7.handleTouchEnd(e);
-						} },
+						},
+						tabIndex: '-1' },
 					_react2.default.createElement(
 						_Link2.default,
-						{ className: 'thumbnail-wrapper', to: '/kiosk-mode' },
+						{ className: 'thumbnail-wrapper', to: '/kiosk-mode', tabIndex: '-1' },
 						_react2.default.createElement(_Thumbnail2.default, { size: 'small', images: images })
 					),
 					_react2.default.createElement(
@@ -79936,6 +79937,10 @@ var _URILink = __webpack_require__(/*! ../components/URILink */ "./src/js/compon
 
 var _URILink2 = _interopRequireDefault(_URILink);
 
+var _LazyLoadListener = __webpack_require__(/*! ../components/LazyLoadListener */ "./src/js/components/LazyLoadListener.js");
+
+var _LazyLoadListener2 = _interopRequireDefault(_LazyLoadListener);
+
 var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
 
 var helpers = _interopRequireWildcard(_helpers);
@@ -79972,13 +79977,43 @@ var Queue = function (_React$Component) {
 	function Queue(props) {
 		_classCallCheck(this, Queue);
 
-		return _possibleConstructorReturn(this, (Queue.__proto__ || Object.getPrototypeOf(Queue)).call(this, props));
+		var _this = _possibleConstructorReturn(this, (Queue.__proto__ || Object.getPrototypeOf(Queue)).call(this, props));
+
+		_this.state = {
+			limit: 50,
+			per_page: 50
+		};
+		return _this;
 	}
 
 	_createClass(Queue, [{
+		key: 'componentWillMount',
+		value: function componentWillMount() {
+
+			// Before we mount, restore any limit defined in our location state
+			var state = this.props.location.state ? this.props.location.state : {};
+			if (state.limit) {
+				this.setState({
+					limit: state.limit
+				});
+			}
+		}
+	}, {
 		key: 'componentDidMount',
 		value: function componentDidMount() {
 			this.props.uiActions.setWindowTitle("Now playing");
+		}
+	}, {
+		key: 'loadMore',
+		value: function loadMore() {
+			var new_limit = this.state.limit + this.state.per_page;
+
+			this.setState({ limit: new_limit });
+
+			// Set our pagination to location state
+			var state = this.props.location && this.props.location.state ? this.props.location.state : {};
+			state.limit = new_limit;
+			this.props.history.replace({ state: state });
 		}
 	}, {
 		key: 'removeTracks',
@@ -80066,31 +80101,56 @@ var Queue = function (_React$Component) {
 			var current_track = null;
 			var tracks = [];
 
-			if (this.props.queue && this.props.tracks) {
-				for (var i = 0; i < this.props.queue.length; i++) {
-					var track = this.props.queue[i];
+			// Apply our lazy-load-rendering
+			var total_queue_tracks = this.props.queue.length;
+			var queue_tracks = this.props.queue.slice(0, this.state.limit);
 
-					// If we have the track in our index, merge it in.
-					// We prioritise queue track over index track as queue has unique data, like which track
-					// is playing and tlids.
-					if (this.props.tracks.hasOwnProperty(track.uri)) {
-						track = Object.assign({}, this.props.tracks[track.uri], track, {
-							playing: this.props.current_track && this.props.current_track.tlid == track.tlid
-						});
+			if (queue_tracks && this.props.tracks) {
+				var _iteratorNormalCompletion = true;
+				var _didIteratorError = false;
+				var _iteratorError = undefined;
+
+				try {
+					for (var _iterator = queue_tracks[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+						var queue_track = _step.value;
+
+						var track = Object.assign({}, queue_track);
+
+						// If we have the track in our index, merge it in.
+						// We prioritise queue track over index track as queue has unique data, like which track
+						// is playing and tlids.
+						if (this.props.tracks.hasOwnProperty(track.uri)) {
+							track = Object.assign({}, this.props.tracks[track.uri], track, {
+								playing: this.props.current_track && this.props.current_track.tlid == track.tlid
+							});
+						}
+
+						// Now merge in our queue metadata
+						if (this.props.queue_metadata["tlid_" + track.tlid] !== undefined) {
+							track = Object.assign({}, track, this.props.queue_metadata["tlid_" + track.tlid]);
+						}
+
+						// Siphon off this track if it's a full representation of our current track (by tlid)
+						if (this.props.current_track && this.props.current_track.uri == track.uri) {
+							current_track = track;
+						}
+
+						// Now add our compiled track for our tracklist
+						tracks.push(track);
 					}
-
-					// Now merge in our queue metadata
-					if (this.props.queue_metadata["tlid_" + track.tlid] !== undefined) {
-						track = Object.assign({}, track, this.props.queue_metadata["tlid_" + track.tlid]);
+				} catch (err) {
+					_didIteratorError = true;
+					_iteratorError = err;
+				} finally {
+					try {
+						if (!_iteratorNormalCompletion && _iterator.return) {
+							_iterator.return();
+						}
+					} finally {
+						if (_didIteratorError) {
+							throw _iteratorError;
+						}
 					}
-
-					// Siphon off this track if it's a full representation of our current track (by tlid)
-					if (this.props.current_track && this.props.current_track.uri == track.uri) {
-						current_track = track;
-					}
-
-					// Now add our compiled track for our tracklist
-					tracks.push(track);
 				}
 			}
 
@@ -80190,7 +80250,14 @@ var Queue = function (_React$Component) {
 								return _this2.reorderTracks(indexes, index);
 							}
 						})
-					)
+					),
+					_react2.default.createElement(_LazyLoadListener2.default, {
+						loadKey: total_queue_tracks > this.state.limit ? this.state.limit : total_queue_tracks,
+						showLoader: this.state.limit < total_queue_tracks,
+						loadMore: function loadMore() {
+							return _this2.loadMore();
+						}
+					})
 				)
 			);
 		}
@@ -83998,7 +84065,11 @@ var Discover = function (_React$Component) {
 						_react2.default.createElement(
 							'div',
 							{ className: 'label' },
-							helpers.titleCase(type),
+							_react2.default.createElement(
+								'span',
+								{ className: 'text' },
+								helpers.titleCase(type)
+							),
 							_react2.default.createElement(_Icon2.default, { name: 'close', className: 'remove', onClick: function onClick() {
 									return _this2.removeSeed(index);
 								} })
@@ -84331,10 +84402,6 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _Link = __webpack_require__(/*! ../../components/Link */ "./src/js/components/Link.js");
-
-var _Link2 = _interopRequireDefault(_Link);
-
 var _AlbumGrid = __webpack_require__(/*! ../../components/AlbumGrid */ "./src/js/components/AlbumGrid.js");
 
 var _AlbumGrid2 = _interopRequireDefault(_AlbumGrid);
@@ -84346,18 +84413,6 @@ var _List2 = _interopRequireDefault(_List);
 var _Header = __webpack_require__(/*! ../../components/Header */ "./src/js/components/Header.js");
 
 var _Header2 = _interopRequireDefault(_Header);
-
-var _Thumbnail = __webpack_require__(/*! ../../components/Thumbnail */ "./src/js/components/Thumbnail.js");
-
-var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
-
-var _TrackList = __webpack_require__(/*! ../../components/TrackList */ "./src/js/components/TrackList.js");
-
-var _TrackList2 = _interopRequireDefault(_TrackList);
-
-var _ArtistSentence = __webpack_require__(/*! ../../components/ArtistSentence */ "./src/js/components/ArtistSentence.js");
-
-var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
 
 var _DropdownField = __webpack_require__(/*! ../../components/Fields/DropdownField */ "./src/js/components/Fields/DropdownField.js");
 
@@ -84691,7 +84746,8 @@ var LibraryAlbums = function (_React$Component) {
 						details: ['artists', 'tracks_uris.length'],
 						right_column: ['added_at'],
 						className: 'albums',
-						link_prefix: "/album/" }),
+						link_prefix: "/album/"
+					}),
 					_react2.default.createElement(_LazyLoadListener2.default, {
 						loadKey: total_albums > this.state.limit ? this.state.limit : total_albums,
 						showLoader: this.state.limit < total_albums,

@@ -2,14 +2,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import Link from '../../components/Link';
 
 import AlbumGrid from '../../components/AlbumGrid';
 import List from '../../components/List';
 import Header from '../../components/Header';
-import Thumbnail from '../../components/Thumbnail';
-import TrackList from '../../components/TrackList';
-import ArtistSentence from '../../components/ArtistSentence';
 import DropdownField from '../../components/Fields/DropdownField';
 import FilterField from '../../components/Fields/FilterField';
 import LazyLoadListener from '../../components/LazyLoadListener';
@@ -25,7 +21,7 @@ import * as spotifyActions from '../../services/spotify/actions';
 class LibraryAlbums extends React.Component{
 
 	constructor(props){
-		super(props)
+		super(props);
 
 		this.state = {
 			filter: '',
@@ -224,7 +220,8 @@ class LibraryAlbums extends React.Component{
 						details={['artists','tracks_uris.length']}
 						right_column={['added_at']}
 						className="albums"
-						link_prefix={"/album/"} />
+						link_prefix={"/album/"}
+					/>
 					<LazyLoadListener
 						loadKey={total_albums > this.state.limit ? this.state.limit : total_albums}
 						showLoader={this.state.limit < total_albums}

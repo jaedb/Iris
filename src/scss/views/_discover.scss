@@ -107,12 +107,19 @@
 			}
 
 			.label {
+				.text {
+					opacity: 0.5;
+					font-size: 12px;
+					text-transform: uppercase;
+				}
+
 				.remove {
 					@include animate();
 					cursor: pointer;
-					font-size: 10px;
-					padding: 4px;
+					font-size: 14px;
+					padding: 2px;
 					margin-left: 4px;
+					vertical-align: middle;
 
 					&:hover {
 						color: colour(red);
@@ -122,7 +129,6 @@
 
 			.name {
 				font-size: 16px;
-				padding-top: 3px;
 			}
 
 			&.has-thumbnail {

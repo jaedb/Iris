@@ -323,7 +323,7 @@ class Discover extends React.Component{
 							<div className={"seed"+(seed.images ? " has-thumbnail" : "")} key={seed.uri}>
 								{images ? <URILink className="thumbnail-wrapper" type={type} uri={seed.uri}><Thumbnail images={images} circle={seed.type == "artist"} size="small" /></URILink> : null}
 								<div className="label">
-									{helpers.titleCase(type)}
+									<span className="text">{helpers.titleCase(type)}</span>
 									<Icon name="close" className="remove" onClick={() => this.removeSeed(index)} />
 								</div>
 								<div className="name">{seed.name}</div>

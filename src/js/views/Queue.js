@@ -12,6 +12,7 @@ import ArtistSentence from '../components/ArtistSentence';
 import Thumbnail from '../components/Thumbnail';
 import Header from '../components/Header';
 import URILink from '../components/URILink';
+import LazyLoadListener from '../components/LazyLoadListener';
 
 import * as helpers from '../helpers';
 import * as uiActions from '../services/ui/actions';
@@ -23,10 +24,37 @@ class Queue extends React.Component {
 
 	constructor(props){
 		super(props);
+
+		this.state = {
+			limit: 50,
+			per_page: 50
+		}
+	}
+
+	componentWillMount(){
+
+		// Before we mount, restore any limit defined in our location state
+		var state = (this.props.location.state ? this.props.location.state : {});
+		if (state.limit){
+			this.setState({
+				limit: state.limit
+			});
+		}
 	}
 
 	componentDidMount(){
 		this.props.uiActions.setWindowTitle("Now playing");
+	}
+
+	loadMore(){
+		var new_limit = this.state.limit + this.state.per_page;
+
+		this.setState({limit: new_limit});
+
+		// Set our pagination to location state
+		var state = (this.props.location && this.props.location.state ? this.props.location.state : {});
+		state.limit = new_limit;
+		this.props.history.replace({state: state});
 	}
 
 	removeTracks(track_indexes){
@@ -96,9 +124,13 @@ class Queue extends React.Component {
 		var current_track = null;
 		var tracks = [];
 
-		if (this.props.queue && this.props.tracks){
-			for (var i = 0; i < this.props.queue.length; i++){
-				var track = this.props.queue[i];
+		// Apply our lazy-load-rendering
+		let total_queue_tracks = this.props.queue.length;
+		let queue_tracks = this.props.queue.slice(0, this.state.limit);
+
+		if (queue_tracks && this.props.tracks){
+			for (let queue_track of queue_tracks){
+				let track = Object.assign({}, queue_track);
 
 				// If we have the track in our index, merge it in.
 				// We prioritise queue track over index track as queue has unique data, like which track
@@ -187,6 +219,12 @@ class Queue extends React.Component {
 							reorderTracks={(indexes, index) => this.reorderTracks(indexes, index)}
 						/>
 					</section>
+
+					<LazyLoadListener
+						loadKey={total_queue_tracks > this.state.limit ? this.state.limit : total_queue_tracks}
+						showLoader={this.state.limit < total_queue_tracks}
+						loadMore={() => this.loadMore()}
+					/>
 				
 				</div>
 			</div>

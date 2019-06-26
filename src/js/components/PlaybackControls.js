@@ -247,8 +247,9 @@ class PlaybackControls extends React.Component{
 				<div 
 					className={this.state.transition_track && this.state.transition_direction ? "current-track current-track--transitioning" : "current-track"}
 					onTouchStart={e => this.handleTouchStart(e)}
-					onTouchEnd={e => this.handleTouchEnd(e)}>
-						<Link className="thumbnail-wrapper" to={'/kiosk-mode'}>
+					onTouchEnd={e => this.handleTouchEnd(e)}
+					tabIndex="-1">
+						<Link className="thumbnail-wrapper" to={'/kiosk-mode'} tabIndex="-1">
 							<Thumbnail size="small" images={images} />
 						</Link>
 						<div className="text">
