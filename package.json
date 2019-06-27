@@ -12,6 +12,7 @@
   "dependencies": {
     "history": "^4.7.2",
     "jquery": "^3.4.1",
+    "logrocket": "^1.0.1",
     "mopidy": "^0.5",
     "react-router": "^4.3.1"
   },
