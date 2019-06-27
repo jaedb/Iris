@@ -1,10 +1,17 @@
 
 import React from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
-import Link from './Link';
+import * as uiActions from '../services/ui/actions';
+import * as spotifyActions from '../services/spotify/actions';
+import * as lastfmActions from '../services/lastfm/actions';
+import * as geniusActions from '../services/genius/actions';
+import * as snapcastActions from '../services/snapcast/actions';
+
 import Icon from './Icon';
 
-export default class Notifications extends React.Component{
+class Notifications extends React.Component{
 
 	constructor(props){
 		super(props)
@@ -193,3 +200,23 @@ export default class Notifications extends React.Component{
 		)
 	}
 }
+
+const mapStateToProps = (state, ownProps) => {
+	return {
+		broadcasts: (state.ui.broadcasts ? state.ui.broadcasts : []),
+		notifications: (state.ui.notifications ? state.ui.notifications : []),
+		processes: (state.ui.processes ? state.ui.processes : {}),
+	};
+}
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		uiActions: bindActionCreators(uiActions, dispatch),
+		spotifyActions: bindActionCreators(spotifyActions, dispatch),
+		geniusActions: bindActionCreators(geniusActions, dispatch),
+		lastfmActions: bindActionCreators(lastfmActions, dispatch),
+		snapcastActions: bindActionCreators(snapcastActions, dispatch),
+	}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Notifications)

@@ -1,6 +1,11 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
-export default class Hotkeys extends React.Component {
+import * as uiActions from '../services/ui/actions';
+import * as mopidyActions from '../services/mopidy/actions';
+
+class Hotkeys extends React.Component {
     
 	constructor(props){
 		super(props);
@@ -163,3 +168,22 @@ export default class Hotkeys extends React.Component {
         return null;
     }
 }
+
+const mapStateToProps = (state, ownProps) => {
+	return {
+		volume: (state.mopidy.volume ? state.mopidy.volume : false),
+		mute: state.mopidy.mute,
+		play_state: state.mopidy.play_state,
+		play_time_position: parseInt(state.mopidy.time_position),
+        dragging: state.ui.dragger && state.ui.dragger.dragging,
+	};
+}
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		uiActions: bindActionCreators(uiActions, dispatch),
+		mopidyActions: bindActionCreators(mopidyActions, dispatch),
+	}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Hotkeys)

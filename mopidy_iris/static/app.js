@@ -52331,7 +52331,7 @@ var App = exports.App = function (_React$Component) {
 			if (this.props.wide_scrollbar_enabled) {
 				className += ' wide-scrollbar';
 			}
-			if (this.props.dragger && this.props.dragger.active) {
+			if (this.props.dragging) {
 				className += ' dragging';
 			}
 			if (this.props.sidebar_open) {
@@ -52433,28 +52433,10 @@ var App = exports.App = function (_React$Component) {
 					uiActions: this.props.uiActions,
 					slim_mode: this.props.slim_mode
 				}),
-				this.props.hotkeys_enabled && _react2.default.createElement(_Hotkeys2.default, {
-					mopidyActions: this.props.mopidyActions,
-					uiActions: this.props.uiActions,
-					volume: this.props.volume,
-					mute: this.props.mute,
-					play_state: this.props.play_state,
-					play_time_position: this.props.play_time_position,
-					history: this.props.history,
-					dragging: this.props.dragger && this.props.dragger.dragging
-				}),
+				this.props.hotkeys_enabled && _react2.default.createElement(_Hotkeys2.default, null),
 				_react2.default.createElement(_ContextMenu2.default, null),
 				_react2.default.createElement(_Dragger2.default, null),
-				_react2.default.createElement(_Notifications2.default, {
-					uiActions: this.props.uiActions,
-					spotifyActions: this.props.spotifyActions,
-					geniusActions: this.props.geniusActions,
-					lastfmActions: this.props.lastfmActions,
-					snapcastActions: this.props.snapcastActions,
-					notifications: this.props.notifications,
-					processes: this.props.processes,
-					broadcasts: this.props.broadcasts
-				}),
+				_react2.default.createElement(_Notifications2.default, null),
 				this.props.debug_info ? _react2.default.createElement(_DebugInfo2.default, null) : null
 			);
 		}
@@ -52473,18 +52455,10 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		touch_dragging: state.ui.touch_dragging,
 		initial_setup_complete: state.ui.initial_setup_complete,
 		slim_mode: state.ui.slim_mode,
-		broadcasts: state.ui.broadcasts ? state.ui.broadcasts : [],
-		volume: state.mopidy.volume ? state.mopidy.volume : false,
-		notifications: state.ui.notifications ? state.ui.notifications : [],
-		processes: state.ui.processes ? state.ui.processes : {},
-		load_queue: state.ui.load_queue ? state.ui.load_queue : {},
 		mopidy_connected: state.mopidy.connected,
 		spotify_authorized: state.spotify.authorization,
-		play_state: state.mopidy.play_state,
-		play_time_position: parseInt(state.mopidy.time_position),
-		mute: state.mopidy.mute,
 		sidebar_open: state.ui.sidebar_open,
-		dragger: state.ui.dragger,
+		dragging: state.ui.dragger && state.ui.dragger.active,
 		context_menu: state.ui.context_menu,
 		debug_info: state.ui.debug_info
 	};
@@ -58426,6 +58400,20 @@ var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
+var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+
+var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
+
+var _actions = __webpack_require__(/*! ../services/ui/actions */ "./src/js/services/ui/actions.js");
+
+var uiActions = _interopRequireWildcard(_actions);
+
+var _actions2 = __webpack_require__(/*! ../services/mopidy/actions */ "./src/js/services/mopidy/actions.js");
+
+var mopidyActions = _interopRequireWildcard(_actions2);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -58447,17 +58435,17 @@ var Hotkeys = function (_React$Component) {
     }
 
     _createClass(Hotkeys, [{
-        key: "componentWillMount",
+        key: 'componentWillMount',
         value: function componentWillMount() {
             window.addEventListener("keydown", this.handleKeyDown, false);
         }
     }, {
-        key: "componentWillUnmount",
+        key: 'componentWillUnmount',
         value: function componentWillUnmount() {
             window.removeEventListener("keydown", this.handleKeyDown, false);
         }
     }, {
-        key: "handleKeyDown",
+        key: 'handleKeyDown',
         value: function handleKeyDown(e) {
 
             // When we're focussed on certian elements, don't fire any shortcuts
@@ -58603,7 +58591,7 @@ var Hotkeys = function (_React$Component) {
             }
         }
     }, {
-        key: "render",
+        key: 'render',
         value: function render() {
             return null;
         }
@@ -58612,7 +58600,24 @@ var Hotkeys = function (_React$Component) {
     return Hotkeys;
 }(_react2.default.Component);
 
-exports.default = Hotkeys;
+var mapStateToProps = function mapStateToProps(state, ownProps) {
+    return {
+        volume: state.mopidy.volume ? state.mopidy.volume : false,
+        mute: state.mopidy.mute,
+        play_state: state.mopidy.play_state,
+        play_time_position: parseInt(state.mopidy.time_position),
+        dragging: state.ui.dragger && state.ui.dragger.dragging
+    };
+};
+
+var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+    return {
+        uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
+        mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch)
+    };
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Hotkeys);
 
 /***/ }),
 
@@ -59419,13 +59424,35 @@ var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Link = __webpack_require__(/*! ./Link */ "./src/js/components/Link.js");
+var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
 
-var _Link2 = _interopRequireDefault(_Link);
+var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
+
+var _actions = __webpack_require__(/*! ../services/ui/actions */ "./src/js/services/ui/actions.js");
+
+var uiActions = _interopRequireWildcard(_actions);
+
+var _actions2 = __webpack_require__(/*! ../services/spotify/actions */ "./src/js/services/spotify/actions.js");
+
+var spotifyActions = _interopRequireWildcard(_actions2);
+
+var _actions3 = __webpack_require__(/*! ../services/lastfm/actions */ "./src/js/services/lastfm/actions.js");
+
+var lastfmActions = _interopRequireWildcard(_actions3);
+
+var _actions4 = __webpack_require__(/*! ../services/genius/actions */ "./src/js/services/genius/actions.js");
+
+var geniusActions = _interopRequireWildcard(_actions4);
+
+var _actions5 = __webpack_require__(/*! ../services/snapcast/actions */ "./src/js/services/snapcast/actions.js");
+
+var snapcastActions = _interopRequireWildcard(_actions5);
 
 var _Icon = __webpack_require__(/*! ./Icon */ "./src/js/components/Icon.js");
 
 var _Icon2 = _interopRequireDefault(_Icon);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -59710,7 +59737,25 @@ var Notifications = function (_React$Component) {
 	return Notifications;
 }(_react2.default.Component);
 
-exports.default = Notifications;
+var mapStateToProps = function mapStateToProps(state, ownProps) {
+	return {
+		broadcasts: state.ui.broadcasts ? state.ui.broadcasts : [],
+		notifications: state.ui.notifications ? state.ui.notifications : [],
+		processes: state.ui.processes ? state.ui.processes : {}
+	};
+};
+
+var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+	return {
+		uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
+		spotifyActions: (0, _redux.bindActionCreators)(spotifyActions, dispatch),
+		geniusActions: (0, _redux.bindActionCreators)(geniusActions, dispatch),
+		lastfmActions: (0, _redux.bindActionCreators)(lastfmActions, dispatch),
+		snapcastActions: (0, _redux.bindActionCreators)(snapcastActions, dispatch)
+	};
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Notifications);
 
 /***/ }),
 
@@ -80002,6 +80047,16 @@ var Queue = function (_React$Component) {
 		key: 'componentDidMount',
 		value: function componentDidMount() {
 			this.props.uiActions.setWindowTitle("Now playing");
+		}
+	}, {
+		key: 'componentWillReceiveProps',
+		value: function componentWillReceiveProps(nextProps) {
+			console.log(nextProps);
+		}
+	}, {
+		key: 'shouldComponentUpdate',
+		value: function shouldComponentUpdate(nextProps) {
+			return nextProps !== this.props;
 		}
 	}, {
 		key: 'loadMore',

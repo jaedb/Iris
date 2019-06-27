@@ -180,7 +180,7 @@ export class App extends React.Component{
 		if (this.props.wide_scrollbar_enabled){
 			className += ' wide-scrollbar';
 		}
-		if (this.props.dragger && this.props.dragger.active){
+		if (this.props.dragging){
 			className += ' dragging';
 		}
 		if (this.props.sidebar_open){
@@ -274,28 +274,10 @@ export class App extends React.Component{
 					uiActions={this.props.uiActions}
 					slim_mode={this.props.slim_mode}
 				/>
-				{this.props.hotkeys_enabled && <Hotkeys 
-					mopidyActions={this.props.mopidyActions}
-					uiActions={this.props.uiActions}
-					volume={this.props.volume}
-					mute={this.props.mute}
-					play_state={this.props.play_state}
-					play_time_position={this.props.play_time_position}
-					history={this.props.history}
-					dragging={this.props.dragger && this.props.dragger.dragging}
-				/>} 
+				{this.props.hotkeys_enabled && <Hotkeys />} 
 		        <ContextMenu />
 		        <Dragger />
-		        <Notifications 
-		        	uiActions={this.props.uiActions} 
-		        	spotifyActions={this.props.spotifyActions} 
-		        	geniusActions={this.props.geniusActions} 
-		        	lastfmActions={this.props.lastfmActions} 
-		        	snapcastActions={this.props.snapcastActions} 
-		        	notifications={this.props.notifications} 
-		        	processes={this.props.processes}
-		        	broadcasts={this.props.broadcasts}
-		        />
+		        <Notifications />
 
 		        {this.props.debug_info ? <DebugInfo /> : null}
 
@@ -314,18 +296,10 @@ const mapStateToProps = (state, ownProps) => {
 		touch_dragging: state.ui.touch_dragging,
 		initial_setup_complete: state.ui.initial_setup_complete,
 		slim_mode: state.ui.slim_mode,
-		broadcasts: (state.ui.broadcasts ? state.ui.broadcasts : []),
-		volume: (state.mopidy.volume ? state.mopidy.volume : false),
-		notifications: (state.ui.notifications ? state.ui.notifications : []),
-		processes: (state.ui.processes ? state.ui.processes : {}),
-		load_queue: (state.ui.load_queue ? state.ui.load_queue : {}),
 		mopidy_connected: state.mopidy.connected,
 		spotify_authorized: state.spotify.authorization,
-		play_state: state.mopidy.play_state,
-		play_time_position: parseInt(state.mopidy.time_position),
-		mute: state.mopidy.mute,
 		sidebar_open: state.ui.sidebar_open,
-		dragger: state.ui.dragger,
+		dragging: (state.ui.dragger && state.ui.dragger.active),
 		context_menu: state.ui.context_menu,
 		debug_info: state.ui.debug_info
 	}

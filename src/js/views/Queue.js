@@ -46,6 +46,14 @@ class Queue extends React.Component {
 		this.props.uiActions.setWindowTitle("Now playing");
 	}
 
+	componentWillReceiveProps(nextProps) {
+		console.log(nextProps);
+	}
+
+	shouldComponentUpdate(nextProps) {
+		return (nextProps !== this.props);
+	}
+
 	loadMore(){
 		var new_limit = this.state.limit + this.state.per_page;
 
