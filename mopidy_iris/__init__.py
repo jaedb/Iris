@@ -40,6 +40,7 @@ class Extension( ext.Extension ):
         schema['snapcast_enabled'] = config.Boolean()
         schema['snapcast_host'] = config.String()
         schema['snapcast_port'] = config.Integer()
+        schema['snapcast_buffer_size'] = config.Integer()
         return schema
 
     def setup(self, registry):

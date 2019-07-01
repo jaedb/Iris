@@ -46,6 +46,7 @@ class IrisSnapcast(object):
 
         self.connect()
         self.listen = True
+        buffer_size = int(self.config['iris']['snapcast_buffer_size'])
 
         logger.info("Established Snapcast listener")
         broadcast(data={'method':'snapcast_connected'})
@@ -67,9 +68,8 @@ class IrisSnapcast(object):
 
                 # Rread and print the available data on any of the read list
                 for socket in readlist:
-
-                    # Allow a relatively large buffer size to handle large JSON payloads
-                    message = socket.recv(8192)
+                    
+                    message = socket.recv(buffer_size)
 
                     try:
                         message = json.loads(message)
