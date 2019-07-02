@@ -288,16 +288,6 @@ export default class Track extends React.Component{
 					onContextMenu={e => this.props.handleContextMenu(e)}
 					onTouchStart={e => this.handleTouchStart(e)}
 					onTouchEnd={e => this.handleTouchEnd(e)}>
-						<div className="list__item__column list__item__column--right">
-							{drag_zone}
-							<span className="list__item__column__item list__item__column__item--duration">
-								{track.duration ? <Dater type="length" data={track.duration} /> : '-'}
-							</span>
-							{this.props.show_source_icon ? <span className="list__item__column__item list__item__column__item--source">
-									<Icon type="fontawesome" name={helpers.sourceIcon(track.uri)} fixedWidth />
-								</span> : null}
-							<ContextMenuTrigger className="list__item__column__item--context-menu-trigger subtle" onTrigger={e => this.props.handleContextMenu(e)} />
-						</div>
 						<div className="list__item__column list__item__column--name">
 							<div className="list__item__column__item--name">
 								{track.name ? track.name : <span className="mid_grey-text">{track.uri}</span>}
@@ -309,6 +299,16 @@ export default class Track extends React.Component{
 							</ul> : null}
 						</div>
 						{track_middle_column ? <div className="list__item__column list__item__column--middle">{track_middle_column}</div> : null}
+						<div className="list__item__column list__item__column--right">
+							{drag_zone}
+							<span className="list__item__column__item list__item__column__item--duration">
+								{track.duration ? <Dater type="length" data={track.duration} /> : '-'}
+							</span>
+							{this.props.show_source_icon ? <span className="list__item__column__item list__item__column__item--source">
+									<Icon type="fontawesome" name={helpers.sourceIcon(track.uri)} fixedWidth />
+								</span> : null}
+							<ContextMenuTrigger className="list__item__column__item--context-menu-trigger subtle" onTrigger={e => this.props.handleContextMenu(e)} />
+						</div>
 				</div>
 			</ErrorBoundary>
 		);

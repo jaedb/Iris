@@ -59293,7 +59293,7 @@ var ListItem = function (_React$Component) {
 					onContextMenu: function onContextMenu(e) {
 						return _this2.handleContextMenu(e);
 					} },
-				_react2.default.createElement(
+				this.props.right_column && !this.props.nocontext && _react2.default.createElement(
 					'div',
 					{ className: 'list__item__column list__item__column--right' },
 					this.props.right_column ? this.props.right_column.map(function (column, index) {
@@ -62956,24 +62956,6 @@ var Track = function (_React$Component) {
 						} },
 					_react2.default.createElement(
 						'div',
-						{ className: 'list__item__column list__item__column--right' },
-						drag_zone,
-						_react2.default.createElement(
-							'span',
-							{ className: 'list__item__column__item list__item__column__item--duration' },
-							track.duration ? _react2.default.createElement(_Dater2.default, { type: 'length', data: track.duration }) : '-'
-						),
-						this.props.show_source_icon ? _react2.default.createElement(
-							'span',
-							{ className: 'list__item__column__item list__item__column__item--source' },
-							_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(track.uri), fixedWidth: true })
-						) : null,
-						_react2.default.createElement(_ContextMenuTrigger2.default, { className: 'list__item__column__item--context-menu-trigger subtle', onTrigger: function onTrigger(e) {
-								return _this2.props.handleContextMenu(e);
-							} })
-					),
-					_react2.default.createElement(
-						'div',
 						{ className: 'list__item__column list__item__column--name' },
 						_react2.default.createElement(
 							'div',
@@ -63000,7 +62982,25 @@ var Track = function (_React$Component) {
 						'div',
 						{ className: 'list__item__column list__item__column--middle' },
 						track_middle_column
-					) : null
+					) : null,
+					_react2.default.createElement(
+						'div',
+						{ className: 'list__item__column list__item__column--right' },
+						drag_zone,
+						_react2.default.createElement(
+							'span',
+							{ className: 'list__item__column__item list__item__column__item--duration' },
+							track.duration ? _react2.default.createElement(_Dater2.default, { type: 'length', data: track.duration }) : '-'
+						),
+						this.props.show_source_icon ? _react2.default.createElement(
+							'span',
+							{ className: 'list__item__column__item list__item__column__item--source' },
+							_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(track.uri), fixedWidth: true })
+						) : null,
+						_react2.default.createElement(_ContextMenuTrigger2.default, { className: 'list__item__column__item--context-menu-trigger subtle', onTrigger: function onTrigger(e) {
+								return _this2.props.handleContextMenu(e);
+							} })
+					)
 				)
 			);
 		}
