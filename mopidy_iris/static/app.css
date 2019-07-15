@@ -4029,7 +4029,7 @@ select {
   .list__item__column {
     align-items: center; }
     .list__item__column:first-child {
-      min-width: 40%; }
+      min-width: 60%; }
     .list__item__column--middle {
       display: flex;
       margin-left: auto; }
@@ -7427,7 +7427,8 @@ main .track-view {
           left: 0;
           right: 0;
           text-align: center;
-          opacity: 0; }
+          opacity: 0;
+          z-index: 2; }
         .modal--kiosk-mode .content .artwork:hover .icon {
           opacity: 0.75; }
       .modal--kiosk-mode .content .current-track {

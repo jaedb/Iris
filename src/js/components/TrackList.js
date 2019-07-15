@@ -123,7 +123,6 @@ class TrackList extends React.Component{
 	}
 
 	handleTouchDrag(e,track_key){
-		let selected_tracks = []
 
 		// Drag initiated on a selected track
 		if (this.props.selected_tracks.includes(track_key)){
@@ -131,7 +130,7 @@ class TrackList extends React.Component{
 			// They're all dragging
 			this.touch_dragging_tracks_keys = this.props.selected_tracks
 
-		// Not already selected
+		// Not already selected, so just dragging the one track
 		} else {
 			this.touch_dragging_tracks_keys = [track_key]
 			this.props.uiActions.setSelectedTracks([track_key])
@@ -154,7 +153,7 @@ class TrackList extends React.Component{
 	        e.returnValue = false;
 	        e.cancelBubble = true;
             e.preventDefault();
-            e.stopPropagation();
+			e.stopPropagation();
 	        return false;
 		}
 	}

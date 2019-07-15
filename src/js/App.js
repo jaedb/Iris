@@ -176,7 +176,7 @@ export class App extends React.Component{
 	}
 
 	render(){
-		var className = this.props.theme+'-theme';
+		let className = this.props.theme+'-theme';
 		if (this.props.wide_scrollbar_enabled){
 			className += ' wide-scrollbar';
 		}
@@ -188,6 +188,7 @@ export class App extends React.Component{
 		}
 		if (this.props.touch_dragging){
 			className += ' touch-dragging';
+			console.log("TOUCH DRAGGING")
 		}
 		if (this.props.context_menu){
 			className += ' context-menu-open';

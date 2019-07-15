@@ -52339,6 +52339,7 @@ var App = exports.App = function (_React$Component) {
 			}
 			if (this.props.touch_dragging) {
 				className += ' touch-dragging';
+				console.log("TOUCH DRAGGING");
 			}
 			if (this.props.context_menu) {
 				className += ' context-menu-open';
@@ -63185,7 +63186,6 @@ var TrackList = function (_React$Component) {
 	}, {
 		key: 'handleTouchDrag',
 		value: function handleTouchDrag(e, track_key) {
-			var selected_tracks = [];
 
 			// Drag initiated on a selected track
 			if (this.props.selected_tracks.includes(track_key)) {
@@ -63193,7 +63193,7 @@ var TrackList = function (_React$Component) {
 				// They're all dragging
 				this.touch_dragging_tracks_keys = this.props.selected_tracks;
 
-				// Not already selected
+				// Not already selected, so just dragging the one track
 			} else {
 				this.touch_dragging_tracks_keys = [track_key];
 				this.props.uiActions.setSelectedTracks([track_key]);
@@ -80047,11 +80047,6 @@ var Queue = function (_React$Component) {
 		key: 'componentDidMount',
 		value: function componentDidMount() {
 			this.props.uiActions.setWindowTitle("Now playing");
-		}
-	}, {
-		key: 'componentWillReceiveProps',
-		value: function componentWillReceiveProps(nextProps) {
-			console.log(nextProps);
 		}
 	}, {
 		key: 'shouldComponentUpdate',
