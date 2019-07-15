@@ -88355,19 +88355,24 @@ var EditRadio = function (_React$Component) {
 				return;
 			}
 
+			this.setState({ error_message: null });
+
 			var seeds = Object.assign([], this.state.seeds);
 			var uris = this.state.uri.split(',');
+
+			if (uris.length >= 5) {
+				uris = uris.slice(0, 5);
+				this.setState({ error_message: 'More than 5 seeds provided, ignoring rest' });
+			}
 
 			for (var i = 0; i < uris.length; i++) {
 				if (helpers.uriSource(uris[i]) !== 'spotify') {
 					this.setState({ error_message: 'Non-Spotify URIs not supported' });
 					return;
-				}
-				if (seeds.indexOf(uris[i]) > -1) {
+				} else if (seeds.indexOf(uris[i]) > -1) {
 					this.setState({ error_message: 'URI already added' });
 				} else {
 					seeds.push(uris[i]);
-					this.setState({ error_message: null });
 				}
 
 				// Resolve
@@ -88405,7 +88410,7 @@ var EditRadio = function (_React$Component) {
 			var seeds = [];
 
 			if (this.state.seeds) {
-				for (var i = 0; i < this.state.seeds.length; i++) {
+				for (var i = 0; i < this.state.seeds.length && i < 5; i++) {
 					var uri = this.state.seeds[i];
 					if (uri) {
 						if (helpers.uriType(uri) == 'artist') {

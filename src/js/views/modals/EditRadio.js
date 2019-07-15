@@ -50,9 +50,9 @@ class EditRadio extends React.Component{
 	handleStart(e){
 		e.preventDefault();
 
-		var valid_seeds = true;
-		var seeds = this.mapSeeds();
-		for (var i = 0; i < seeds.length; i++){
+		let valid_seeds = true;
+		let seeds = this.mapSeeds();
+		for (let i = 0; i < seeds.length; i++){
 			if (seeds[i].unresolved !== undefined){
 				valid_seeds = false;
 				continue;
@@ -101,19 +101,24 @@ class EditRadio extends React.Component{
 			return;
 		}
 
+		this.setState({error_message: null});
+
 		var seeds = Object.assign([],this.state.seeds);
 		var uris = this.state.uri.split(',');
+
+		if (uris.length >= 5) {
+			uris = uris.slice(0, 5);
+			this.setState({error_message: 'More than 5 seeds provided, ignoring rest'});
+		}
 
 		for (var i = 0; i < uris.length; i++){
 			if (helpers.uriSource(uris[i]) !== 'spotify'){
 				this.setState({error_message: 'Non-Spotify URIs not supported'});
 				return;
-			}
-			if (seeds.indexOf(uris[i]) > -1){
+			} else if (seeds.indexOf(uris[i]) > -1){
 				this.setState({error_message: 'URI already added'});
 			} else {
 				seeds.push(uris[i]);
-				this.setState({error_message: null});
 			}		
 
 			// Resolve
@@ -149,7 +154,7 @@ class EditRadio extends React.Component{
 		var seeds = []
 
 		if (this.state.seeds){
-			for (var i = 0; i < this.state.seeds.length; i++){
+			for (var i = 0; i < this.state.seeds.length && i < 5; i++){
 				var uri = this.state.seeds[i]
 				if (uri){
 					if (helpers.uriType(uri) == 'artist'){
