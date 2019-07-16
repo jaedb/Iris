@@ -748,7 +748,7 @@ class IrisCore(pykka.ThreadingActor):
 
 
     def check_for_radio_update( self ):
-        tracklistLength = self.core.tracklist.length.get()
+        tracklistLength = self.core.tracklist.get_length().get()
         if (tracklistLength < 3 and self.radio['enabled'] == 1):
 
             # Grab our loaded tracks
