@@ -52381,7 +52381,7 @@ var App = exports.App = function (_React$Component) {
 							_react2.default.createElement(
 								'div',
 								null,
-								_react2.default.createElement(_Sidebar2.default, { tabIndex: '3' }),
+								_react2.default.createElement(_Sidebar2.default, { location: this.props.location, history: this.props.history, tabIndex: '3' }),
 								_react2.default.createElement(_PlaybackControls2.default, { history: this.props.history, tabIndex: '2' }),
 								_react2.default.createElement(
 									'main',
@@ -61883,12 +61883,6 @@ var Sidebar = function (_React$Component) {
 
 	return Sidebar;
 }(_react2.default.Component);
-
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- **/
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {

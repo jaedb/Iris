@@ -15,7 +15,7 @@ import * as mopidyActions from '../services/mopidy/actions';
 class Sidebar extends React.Component{
 
 	constructor(props){
-		super(props)
+		super(props);
 	}
 
 	render(){
@@ -101,13 +101,6 @@ class Sidebar extends React.Component{
 		);
 	}
 }
-
-
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- **/
 
 const mapStateToProps = (state, ownProps) => {
 	return {

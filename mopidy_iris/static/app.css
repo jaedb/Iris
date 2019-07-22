@@ -4029,7 +4029,7 @@ select {
   .list__item__column {
     align-items: center; }
     .list__item__column:first-child {
-      min-width: 60%; }
+      width: 60%; }
     .list__item__column--middle {
       display: flex;
       margin-left: auto; }
