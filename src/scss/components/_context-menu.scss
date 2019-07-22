@@ -36,7 +36,8 @@
 					&__label {
 						.icon {
 							margin-bottom: 0.4em;
-							padding-right: 6px;
+							padding-right: 10px;
+							vertical-align: baseline;
 						}
 					}
 				}
@@ -80,8 +81,9 @@
 
 				&.submenu-icon {
 					display: inline-block;
-					float: right;
 					padding-top: 4px;
+					margin-left: 10px;
+					vertical-align: baseline
 				}
 			}
 		}

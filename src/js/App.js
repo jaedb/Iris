@@ -226,8 +226,10 @@ export class App extends React.Component{
 
 						<Route>
 							<div>
+								
 								<Sidebar location={this.props.location} history={this.props.history} tabIndex="3" />   
-						        <PlaybackControls history={this.props.history} tabIndex="2"/>
+						        <PlaybackControls history={this.props.history} slim_mode={this.props.slim_mode} tabIndex="2"/>
+
 						        <main id="main" className="smooth-scroll" tabIndex="1">
 									<Switch>
 										<Route exact path="/" component={Queue} />

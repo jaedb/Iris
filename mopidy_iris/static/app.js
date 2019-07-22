@@ -52382,7 +52382,7 @@ var App = exports.App = function (_React$Component) {
 								'div',
 								null,
 								_react2.default.createElement(_Sidebar2.default, { location: this.props.location, history: this.props.history, tabIndex: '3' }),
-								_react2.default.createElement(_PlaybackControls2.default, { history: this.props.history, tabIndex: '2' }),
+								_react2.default.createElement(_PlaybackControls2.default, { history: this.props.history, slim_mode: this.props.slim_mode, tabIndex: '2' }),
 								_react2.default.createElement(
 									'main',
 									{ id: 'main', className: 'smooth-scroll', tabIndex: '1' },
@@ -60139,6 +60139,7 @@ var PlaybackControls = function (_React$Component) {
 			}
 
 			this.end_time = timestamp;
+			e.preventDefault();
 		}
 	}, {
 		key: 'setTransition',
@@ -60347,7 +60348,7 @@ var PlaybackControls = function (_React$Component) {
 						_react2.default.createElement(
 							'div',
 							{ className: 'artist' },
-							this.state.current_track ? _react2.default.createElement(_ArtistSentence2.default, { artists: this.state.current_track.artists, nolinks: this.props.slim_mode }) : _react2.default.createElement(_ArtistSentence2.default, null)
+							this.state.current_track ? _react2.default.createElement(_ArtistSentence2.default, { artists: this.state.current_track.artists }) : _react2.default.createElement(_ArtistSentence2.default, null)
 						)
 					)
 				),

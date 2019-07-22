@@ -3671,7 +3671,8 @@ select {
           color: #a3a19f; }
         .context-menu__section--submenu .context-menu__item__label .icon {
           margin-bottom: 0.4em;
-          padding-right: 6px; }
+          padding-right: 10px;
+          vertical-align: baseline; }
     .context-menu__section--items {
       opacity: 1;
       position: relative;
@@ -3718,8 +3719,9 @@ select {
         font-size: 12px; }
         .context-menu__item__link .icon.submenu-icon {
           display: inline-block;
-          float: right;
-          padding-top: 4px; }
+          padding-top: 4px;
+          margin-left: 10px;
+          vertical-align: baseline; }
   .context-menu__divider {
     height: 1px;
     padding: 0;
@@ -4864,7 +4866,7 @@ select {
     cursor: not-allowed; }
   .output-control__items {
     position: absolute;
-    bottom: 40px;
+    bottom: 38px;
     right: -150px;
     width: 300px;
     background: #FFFFFF;

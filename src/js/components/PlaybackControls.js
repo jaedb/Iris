@@ -167,6 +167,7 @@ class PlaybackControls extends React.Component{
 		}
 
 		this.end_time = timestamp;
+		e.preventDefault();
 	}
 
 	setTransition(direction){
@@ -257,7 +258,7 @@ class PlaybackControls extends React.Component{
 								{this.state.current_track ? this.state.current_track.name : <span>-</span>}
 							</div>
 							<div className="artist">
-								{this.state.current_track ? <ArtistSentence artists={this.state.current_track.artists} nolinks={this.props.slim_mode} /> : <ArtistSentence />}
+								{this.state.current_track ? <ArtistSentence artists={this.state.current_track.artists} /> : <ArtistSentence />}
 							</div>
 						</div>
 				</div>
