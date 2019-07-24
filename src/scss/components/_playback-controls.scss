@@ -6,8 +6,8 @@
 	right: 0;
 	left: 0;
 	height: 50px;
-	background: lighten(colour(dark_grey), 15%);
-	color: colour(white);
+	background: colour(white);
+	color: colour(darkest_grey);
 	transform-style: preserve-3d;
 
 	.current-track {
@@ -43,7 +43,7 @@
 
 		&__transition {
 			z-index: 2;
-			background: lighten(colour(dark_grey), 15%);
+			background: lighten(colour(white), 15%);
 
 			.text {
 				@include animate(0.15s);
@@ -62,10 +62,6 @@
 					animation-name: slide_left;
 				}
 			}
-		}
-
-		.light-theme & {
-			color: colour(darkest_grey);
 		}
 
 		.thumbnail {
@@ -140,7 +136,7 @@
 		@include animate();
 		@include noselect();
 		@include focusable();
-		color: colour(white);
+		color: colour(darkest_grey);
 		cursor: pointer;
 		padding: 10px 6px;
 		display: inline-block;
@@ -260,7 +256,7 @@
 			right: 80px;
 			text-align: center;
 			font-size: 0.9rem;
-			color: colour(white) !important;
+			color: colour(darkest_grey) !important;
 
 			.title {
 				padding-top: 0;

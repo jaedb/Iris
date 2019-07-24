@@ -4542,8 +4542,8 @@ select {
   right: 0;
   left: 0;
   height: 50px;
-  background: #3e3e3e;
-  color: #FFFFFF;
+  background: #FFFFFF;
+  color: #121212;
   transform-style: preserve-3d; }
   .playback-controls .current-track {
     position: absolute;
@@ -4571,7 +4571,7 @@ select {
     opacity: 0; } }
     .playback-controls .current-track__transition {
       z-index: 2;
-      background: #3e3e3e; }
+      background: white; }
       .playback-controls .current-track__transition .text {
         -webkit-transition: all 0.15s ease-in-out;
         -moz-transition: all 0.15s ease-in-out;
@@ -4586,8 +4586,6 @@ select {
             animation-name: slide_right; }
           .playback-controls .current-track__transition--next {
             animation-name: slide_left; } }
-    .light-theme .playback-controls .current-track {
-      color: #121212; }
     .playback-controls .current-track .thumbnail {
       float: left;
       margin: 12px;
@@ -4659,7 +4657,7 @@ select {
     user-select: none;
     position: relative;
     display: inline-block;
-    color: #FFFFFF;
+    color: #121212;
     cursor: pointer;
     padding: 10px 6px;
     display: inline-block;
@@ -4781,7 +4779,7 @@ select {
       right: 80px;
       text-align: center;
       font-size: 0.9rem;
-      color: #FFFFFF !important; }
+      color: #121212 !important; }
       .playback-controls .current-track .title {
         padding-top: 0; }
       .playback-controls .current-track .thumbnail {
