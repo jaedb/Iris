@@ -135,13 +135,11 @@
 	.control {
 		@include animate();
 		@include noselect();
-		@include focusable();
 		color: colour(darkest_grey);
 		cursor: pointer;
-		padding: 10px 6px;
+		padding: 12px 8px;
 		display: inline-block;
 		vertical-align: bottom;
-		opacity: 0.8;
 		background: none;
 
 		&:not(.sidebar-toggle){
@@ -149,13 +147,8 @@
 		}
 
 		.icon {
-			font-size: 0.8rem;
+			font-size: 0.9rem;
 			margin-bottom: 0;
-		}
-
-		@include resolution(2){
-			padding-left: 5px;
-			padding-right: 5px;
 		}
 
 		&--active {
@@ -170,29 +163,34 @@
 
 	section {
 		position: absolute;
-		bottom: 8px;
+		bottom: 5px;
 
 		&.playback {
-			bottom: 7px;
-			left: 10px;
-			width: 135px;
+			bottom: 2px;
+			left: 0;
+			width: 220px;
 			text-align: center;
 
 			.control {
+				.icon {
+					font-size: 1.3rem;
+				}
+
 				&.play {
-					margin-bottom: -8px;
+					margin-bottom: -0.8rem;
+					color: colour(turquoise);
 
 					.icon {
-						font-size: 2rem;
+						font-size: 3rem;
 					}
 				}
 			}
 		}
 
 		&.progress {
-			bottom: 10px;
-			left: 130px;
-			right: 260px;
+			bottom: 8px;
+			left: 220px;
+			right: 25rem;
 			padding-left: 20px;
 			padding-right: 20px;
 			color: colour(mid_grey);
@@ -223,19 +221,19 @@
 		}
 
 		&.settings {
-			right: 170px;
-			width: 100px;
+			right: 14rem;
+			width: 10rem;
 			text-align: center;
 		}
 
 		&.volume {
-			right: 20px;
-			width: 150px;
+			right: 2rem;
+			width: 10rem;
 			font-size: 18px;
 
 			.slider__wrapper {
 				position: absolute;
-				bottom: 4px;
+				bottom: 6px;
 				right: 0;
 				left: 30px;
 			}

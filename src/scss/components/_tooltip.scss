@@ -21,6 +21,7 @@ $module: 'tooltip';
 		z-index: 97;
 		white-space: nowrap;
 		text-align: left;
+		box-shadow: 1px 1px 6px rgba(0,0,0,0.4);
 
 		&:first-letter {
 			text-transform: uppercase;

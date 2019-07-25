@@ -4655,26 +4655,12 @@ select {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    position: relative;
-    display: inline-block;
     color: #121212;
     cursor: pointer;
-    padding: 10px 6px;
+    padding: 12px 8px;
     display: inline-block;
     vertical-align: bottom;
-    opacity: 0.8;
     background: none; }
-    .playback-controls .control:focus:before {
-      content: '';
-      display: inline-block;
-      width: 100%;
-      padding-bottom: 100%;
-      position: absolute;
-      top: 50%;
-      left: 0px;
-      margin-top: -50%;
-      border-radius: 50%;
-      background: rgba(128, 128, 128, 0.25); }
     .playback-controls .control:not(.sidebar-toggle) {
       position: relative;
       display: inline-block; }
@@ -4708,32 +4694,31 @@ select {
         animation-timing-function: ease-out;
         animation-iteration-count: 1; }
     .playback-controls .control .icon {
-      font-size: 0.8rem;
+      font-size: 0.9rem;
       margin-bottom: 0; }
-    @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
-      .playback-controls .control {
-        padding-left: 5px;
-        padding-right: 5px; } }
     .playback-controls .control--active {
       color: #08d58f !important; }
     .playback-controls .control:hover, .playback-controls .control:focus {
       opacity: 1; }
   .playback-controls section {
     position: absolute;
-    bottom: 8px; }
+    bottom: 5px; }
     .playback-controls section.playback {
-      bottom: 7px;
-      left: 10px;
-      width: 135px;
+      bottom: 2px;
+      left: 0;
+      width: 220px;
       text-align: center; }
+      .playback-controls section.playback .control .icon {
+        font-size: 1.3rem; }
       .playback-controls section.playback .control.play {
-        margin-bottom: -8px; }
+        margin-bottom: -0.8rem;
+        color: #08d58f; }
         .playback-controls section.playback .control.play .icon {
-          font-size: 2rem; }
+          font-size: 3rem; }
     .playback-controls section.progress {
-      bottom: 10px;
-      left: 130px;
-      right: 260px;
+      bottom: 8px;
+      left: 220px;
+      right: 25rem;
       padding-left: 20px;
       padding-right: 20px;
       color: #a3a19f; }
@@ -4756,16 +4741,16 @@ select {
         right: 0;
         width: 50px; }
     .playback-controls section.settings {
-      right: 170px;
-      width: 100px;
+      right: 14rem;
+      width: 10rem;
       text-align: center; }
     .playback-controls section.volume {
-      right: 20px;
-      width: 150px;
+      right: 2rem;
+      width: 10rem;
       font-size: 18px; }
       .playback-controls section.volume .slider__wrapper {
         position: absolute;
-        bottom: 4px;
+        bottom: 6px;
         right: 0;
         left: 30px; }
     .playback-controls section.triggers {
@@ -6057,7 +6042,8 @@ main header {
     font-size: 11px;
     z-index: 97;
     white-space: nowrap;
-    text-align: left; }
+    text-align: left;
+    box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.4); }
     .tooltip__content:first-letter {
       text-transform: uppercase; }
     .tooltip__content:after {

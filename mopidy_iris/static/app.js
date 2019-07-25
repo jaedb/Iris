@@ -60360,22 +60360,15 @@ var PlaybackControls = function (_React$Component) {
 						{ className: 'control previous', onClick: function onClick() {
 								return _this7.props.mopidyActions.previous();
 							} },
-						_react2.default.createElement(_Icon2.default, { name: 'skip_previous', type: 'material' })
+						_react2.default.createElement(_Icon2.default, { name: 'navigate_before', type: 'material' })
 					),
 					this.renderPlayButton(),
-					_react2.default.createElement(
-						'button',
-						{ className: 'control stop', onClick: function onClick() {
-								return _this7.props.mopidyActions.stop();
-							} },
-						_react2.default.createElement(_Icon2.default, { name: 'stop', type: 'material' })
-					),
 					_react2.default.createElement(
 						'button',
 						{ className: 'control next', onClick: function onClick() {
 								return _this7.props.mopidyActions.next();
 							} },
-						_react2.default.createElement(_Icon2.default, { name: 'skip_next', type: 'material' })
+						_react2.default.createElement(_Icon2.default, { name: 'navigate_next', type: 'material' })
 					)
 				),
 				_react2.default.createElement(

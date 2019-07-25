@@ -265,14 +265,11 @@ class PlaybackControls extends React.Component{
 
 				<section className="playback">
 					<button className="control previous" onClick={() => this.props.mopidyActions.previous()}>
-						<Icon name="skip_previous" type="material" />
+						<Icon name="navigate_before" type="material" />
 					</button>
 					{ this.renderPlayButton() }
-					<button className="control stop" onClick={() => this.props.mopidyActions.stop()}>
-						<Icon name="stop" type="material" />
-					</button>
 					<button className="control next" onClick={() => this.props.mopidyActions.next()}>
-						<Icon name="skip_next" type="material" />
+						<Icon name="navigate_next" type="material" />
 					</button>
 				</section>
 
