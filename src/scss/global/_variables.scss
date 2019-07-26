@@ -127,7 +127,7 @@ $bp_shallow: 650px;
     animation-iteration-count: 1;
 }
 
-@mixin click_feedback($colour: rgba(255,255,255,0.5), $duration: 0.2s, $easing: ease-out){
+@mixin click_feedback($colour: rgba(128,128,128,0.5), $duration: 0.2s, $easing: ease-out){
 	position: relative;
 	display: inline-block;
 

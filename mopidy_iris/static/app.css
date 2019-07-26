@@ -3353,7 +3353,7 @@ select {
     content: '';
     display: block;
     position: absolute;
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(128, 128, 128, 0.5);
     z-index: 1;
     opacity: 0;
     border-radius: 50%;
@@ -4655,15 +4655,14 @@ select {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    position: relative;
+    display: inline-block;
     color: #121212;
     cursor: pointer;
     padding: 12px 8px;
     display: inline-block;
     vertical-align: bottom;
     background: none; }
-    .playback-controls .control:not(.sidebar-toggle) {
-      position: relative;
-      display: inline-block; }
 
 @keyframes click_feedback {
   0% {
@@ -4678,21 +4677,21 @@ select {
     width: 150%;
     padding-bottom: 150%;
     opacity: 0; } }
-      .playback-controls .control:not(.sidebar-toggle):after {
-        content: '';
-        display: block;
-        position: absolute;
-        background: rgba(255, 255, 255, 0.5);
-        z-index: 1;
-        opacity: 0;
-        border-radius: 50%;
-        margin-top: -50%;
-        pointer-events: none; }
-      .playback-controls .control:not(.sidebar-toggle):active:after {
-        animation-name: click_feedback;
-        animation-duration: 0.2s;
-        animation-timing-function: ease-out;
-        animation-iteration-count: 1; }
+    .playback-controls .control:after {
+      content: '';
+      display: block;
+      position: absolute;
+      background: rgba(128, 128, 128, 0.5);
+      z-index: 1;
+      opacity: 0;
+      border-radius: 50%;
+      margin-top: -50%;
+      pointer-events: none; }
+    .playback-controls .control:active:after {
+      animation-name: click_feedback;
+      animation-duration: 0.2s;
+      animation-timing-function: ease-out;
+      animation-iteration-count: 1; }
     .playback-controls .control .icon {
       font-size: 0.9rem;
       margin-bottom: 0; }
@@ -4759,13 +4758,15 @@ select {
     .playback-controls .current-track {
       width: auto;
       bottom: auto;
-      bottom: 8px;
+      bottom: 0.65rem;
       left: 80px;
       right: 80px;
       text-align: center;
       font-size: 0.9rem;
+      line-height: 1.2em;
       color: #121212 !important; }
-      .playback-controls .current-track .title {
+      .playback-controls .current-track .title,
+      .playback-controls .current-track .artist {
         padding-top: 0; }
       .playback-controls .current-track .thumbnail {
         display: none; }
@@ -4774,6 +4775,8 @@ select {
       width: 40px; }
       .playback-controls section.playback .control.play {
         margin-bottom: -8px; }
+        .playback-controls section.playback .control.play .icon {
+          font-size: 2.6rem; }
       .playback-controls section.playback .control.previous, .playback-controls section.playback .control.next {
         display: none; }
       .playback-controls section.playback .control.stop {
@@ -4794,7 +4797,7 @@ select {
   @media (max-width: 799px) {
       .playback-controls section.triggers .sidebar-toggle.open {
         opacity: 1 !important; }
-        .playback-controls section.triggers .sidebar-toggle.open:after {
+        .playback-controls section.triggers .sidebar-toggle.open:before {
           background: rgba(0, 0, 0, 0.8);
           content: '';
           display: block;
@@ -4838,9 +4841,7 @@ select {
     .playback-controls--expanded {
       height: 142px; }
     .playback-controls .control {
-      padding: 14px 8px; }
-    .playback-controls .current-track {
-      bottom: 10px; } }
+      padding: 14px 8px; } }
 
 .output-control {
   position: relative; }

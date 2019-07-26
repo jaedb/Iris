@@ -54452,6 +54452,22 @@ var DebugInfo = function (_React$Component) {
 					'div',
 					{ className: 'debug-info-section' },
 					_react2.default.createElement(
+						'div',
+						{ className: 'debug-info-item' },
+						'Version: ',
+						version
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'debug-info-item' },
+						'Build: ',
+						build
+					)
+				),
+				_react2.default.createElement(
+					'div',
+					{ className: 'debug-info-section' },
+					_react2.default.createElement(
 						'h5',
 						null,
 						'Indexes'

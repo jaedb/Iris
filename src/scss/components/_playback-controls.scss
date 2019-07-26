@@ -135,16 +135,13 @@
 	.control {
 		@include animate();
 		@include noselect();
+		@include click_feedback();
 		color: colour(darkest_grey);
 		cursor: pointer;
 		padding: 12px 8px;
 		display: inline-block;
 		vertical-align: bottom;
 		background: none;
-
-		&:not(.sidebar-toggle){
-			@include click_feedback();
-		}
 
 		.icon {
 			font-size: 0.9rem;
@@ -249,14 +246,16 @@
 		.current-track {
 			width: auto;
 			bottom: auto;
-			bottom: 8px;
+			bottom: 0.65rem;
 			left: 80px;
 			right: 80px;
 			text-align: center;
 			font-size: 0.9rem;
+			line-height: 1.2em;
 			color: colour(darkest_grey) !important;
 
-			.title {
+			.title,
+			.artist {
 				padding-top: 0;
 			}
 
@@ -274,6 +273,10 @@
 				.control {
 					&.play {
 						margin-bottom: -8px;
+
+						.icon {
+							font-size: 2.6rem;
+						}
 					}
 
 					&.previous,
@@ -311,7 +314,7 @@
 				.sidebar-toggle.open {
 					opacity: 1 !important;
 
-					&:after {
+					&:before {
 						background: rgba(0,0,0,0.8);
 						content: '';
 						display: block;
@@ -374,10 +377,6 @@
 
 			.control {
 				padding: 14px 8px;
-			}
-
-			.current-track {
-				bottom: 10px;
 			}
 		}
 	}
