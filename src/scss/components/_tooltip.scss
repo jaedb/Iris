@@ -42,11 +42,10 @@ $module: 'tooltip';
 		}
 
 		.light-theme & {
-			background: colour(grey);
-			color: colour(white);
+			background: darken(colour(faint_grey), 5%);
 
 			&:after {
-				background: colour(grey);
+				background: darken(colour(faint_grey), 5%);
 			}
 		}
 	}

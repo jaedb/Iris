@@ -4957,7 +4957,6 @@ select {
         left: 0;
         width: auto;
         padding: 0;
-        background: #454545;
         border-radius: 0;
         box-shadow: none;
         max-height: 50vh;
@@ -5559,7 +5558,7 @@ main header {
     position: relative;
     padding: 18px 40px 16px 22px;
     margin: 10px 0 0 0;
-    background: #232220;
+    background: #32b5f2;
     color: #FFFFFF;
     pointer-events: all;
     border-radius: 3px;
@@ -5601,8 +5600,6 @@ main header {
     .notifications .notification--broadcast {
       background: #FFF39C;
       color: #000000; }
-    .notifications .notification--info {
-      background: #32b5f2; }
     .notifications .notification--warning {
       background: #f16f19; }
     .notifications .notification--bad {
@@ -6060,10 +6057,9 @@ main header {
       bottom: -3px;
       left: 9px; }
     .light-theme .tooltip__content {
-      background: #383734;
-      color: #FFFFFF; }
+      background: #e9e5e1; }
       .light-theme .tooltip__content:after {
-        background: #383734; }
+        background: #e9e5e1; }
   .touch .tooltip:not(.touchable) .tooltip__content {
     display: none; }
   .tooltip:hover .tooltip__content {
