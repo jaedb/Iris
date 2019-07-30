@@ -4501,6 +4501,10 @@ select {
     left: 0;
     margin-top: -3px; }
     .slider__track__progress {
+      -webkit-transition: all 0.2s linear;
+      -moz-transition: all 0.2s linear;
+      -o-transition: all 0.2s linear;
+      transition: all 0.2s linear;
       position: absolute;
       background: #08d58f;
       pointer-events: none;
@@ -5558,7 +5562,7 @@ main header {
     position: relative;
     padding: 18px 40px 16px 22px;
     margin: 10px 0 0 0;
-    background: #32b5f2;
+    background: #51504e;
     color: #FFFFFF;
     pointer-events: all;
     border-radius: 3px;
@@ -5621,8 +5625,7 @@ main header {
     .notifications .notification--process {
       position: relative;
       padding-right: 18px;
-      padding-left: 50px;
-      background: #32b5f2; }
+      padding-left: 50px; }
       .notifications .notification--process.cancelling {
         color: rgba(255, 255, 255, 0.5); }
       .notifications .notification--process .loader {

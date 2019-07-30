@@ -14,7 +14,7 @@
 		position: relative;
 		padding: 18px 40px 16px 22px;
 		margin: 10px 0 0 0;
-		background: colour(blue);
+		background: colour(soft_grey);
 		color: colour(white);
 		pointer-events: all; 
 		border-radius: 3px;
@@ -97,7 +97,6 @@
 			position: relative;
 			padding-right: 18px;
 			padding-left: 50px;
-			background: colour(blue);
 
 			&.cancelling {
 				color: rgba(255,255,255,0.5);
