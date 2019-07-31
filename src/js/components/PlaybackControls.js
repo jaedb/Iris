@@ -264,10 +264,10 @@ class PlaybackControls extends React.Component{
 				</div>
 
 				<section className="playback">
+					{ this.renderPlayButton() }
 					<button className="control previous" onClick={() => this.props.mopidyActions.previous()}>
 						<Icon name="navigate_before" type="material" />
 					</button>
-					{ this.renderPlayButton() }
 					<button className="control next" onClick={() => this.props.mopidyActions.next()}>
 						<Icon name="navigate_next" type="material" />
 					</button>

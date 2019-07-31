@@ -60371,6 +60371,7 @@ var PlaybackControls = function (_React$Component) {
 				_react2.default.createElement(
 					'section',
 					{ className: 'playback' },
+					this.renderPlayButton(),
 					_react2.default.createElement(
 						'button',
 						{ className: 'control previous', onClick: function onClick() {
@@ -60378,7 +60379,6 @@ var PlaybackControls = function (_React$Component) {
 							} },
 						_react2.default.createElement(_Icon2.default, { name: 'navigate_before', type: 'material' })
 					),
-					this.renderPlayButton(),
 					_react2.default.createElement(
 						'button',
 						{ className: 'control next', onClick: function onClick() {
