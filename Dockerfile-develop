@@ -41,6 +41,8 @@ RUN set -ex \
  && cd / \
  && mkdir -p /var/lib/mopidy/.config \
  && ln -s /config /var/lib/mopidy/.config/mopidy \
+ # Allow mopidy user to run system commands (restart, local scan, etc)
+ && echo "mopidy ALL=NOPASSWD: /iris/mopidy_iris/system.sh" >> /etc/sudoers \
 # Install Snapcast
 # This is the most reliable way to get audio out of a Docker instance.
  && curl -L https://github.com/badaix/snapcast/releases/download/v0.15.0/snapserver_0.15.0_amd64.deb -o snapserver.deb \

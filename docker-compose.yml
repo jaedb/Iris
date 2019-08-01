@@ -1,0 +1,11 @@
+version: '3'
+services:
+  mopidy:
+    image: jaedb/iris
+    build: 
+      context: ./
+    ports:
+      - 6681:6680
+    volumes:
+      - ./:/iris
+      - /Users/james/Sites/music:/var/lib/mopidy/media
