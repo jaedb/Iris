@@ -71,6 +71,10 @@
 			margin: 8px;
 			margin-right: 12px;
 
+			&__image {
+				background-color: colour(faint_grey);
+			}
+
 			&:before {
 				@include animate();
 				display: block;

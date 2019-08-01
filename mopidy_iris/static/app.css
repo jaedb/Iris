@@ -4596,6 +4596,8 @@ select {
       width: 44px;
       margin: 8px;
       margin-right: 12px; }
+      .playback-controls .current-track .thumbnail__image {
+        background-color: #f4f2f0; }
       .playback-controls .current-track .thumbnail:before {
         -webkit-transition: all 0.2s ease-in-out;
         -moz-transition: all 0.2s ease-in-out;
@@ -5545,7 +5547,7 @@ main header {
 
 .notifications {
   position: fixed;
-  bottom: 65px;
+  bottom: 75px;
   right: 15px;
   z-index: 97;
   pointer-events: none;
