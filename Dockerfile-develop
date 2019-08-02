@@ -75,9 +75,9 @@ RUN set -ex \
 # Runs as mopidy user by default.
 USER mopidy
 
-VOLUME ["/var/lib/mopidy/local", "/var/lib/mopidy/media"]
+VOLUME ["/var/lib/mopidy/local", "/var/lib/mopidy/media", "/var/lib/snapserver"]
 
-EXPOSE 6600 6680 5555/udp
+EXPOSE 6600 6680 1704 1705 5555/udp
 
 ENTRYPOINT ["/usr/bin/dumb-init", "/entrypoint.sh"]
 CMD ["/usr/bin/mopidy"]

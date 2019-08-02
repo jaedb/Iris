@@ -7,3 +7,4 @@ then
 fi
 
 exec "$@"
+exec "service snapserver start"
