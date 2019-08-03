@@ -5,7 +5,9 @@ services:
     build: 
       context: ./
     ports:
-      - 6681:6680
+      - 6680:6680
+      - 1704:1704
+      - 1705:1705
     volumes:
       - ./:/iris
-      - /Users/james/Sites/music:/var/lib/mopidy/media
+      - /mnt/Music:/var/lib/mopidy/media
