@@ -2717,7 +2717,7 @@ main {
   position: fixed;
   top: 0;
   left: 220px;
-  bottom: 50px;
+  bottom: 60px;
   right: 0;
   perspective: 1000px;
   perspective-origin: top;
@@ -3353,7 +3353,7 @@ select {
     content: '';
     display: block;
     position: absolute;
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(128, 128, 128, 0.5);
     z-index: 1;
     opacity: 0;
     border-radius: 50%;
@@ -4501,6 +4501,10 @@ select {
     left: 0;
     margin-top: -3px; }
     .slider__track__progress {
+      -webkit-transition: all 0.2s linear;
+      -moz-transition: all 0.2s linear;
+      -o-transition: all 0.2s linear;
+      transition: all 0.2s linear;
       position: absolute;
       background: #08d58f;
       pointer-events: none;
@@ -4541,17 +4545,17 @@ select {
   bottom: 0;
   right: 0;
   left: 0;
-  height: 50px;
-  background: #3e3e3e;
-  color: #FFFFFF;
-  transform-style: preserve-3d; }
+  height: 60px;
+  background: #FFFFFF;
+  color: #121212;
+  transform-style: preserve-3d;
+  border-left: 230px solid #FFFFFF; }
   .playback-controls .current-track {
     position: absolute;
-    bottom: 50px;
+    bottom: 0;
     width: 220px;
+    left: -230px;
     z-index: 1;
-    font-size: 14px;
-    color: #FFFFFF;
     text-decoration: none; }
 
 @keyframes slide_left {
@@ -4571,7 +4575,7 @@ select {
     opacity: 0; } }
     .playback-controls .current-track__transition {
       z-index: 2;
-      background: #3e3e3e; }
+      background: white; }
       .playback-controls .current-track__transition .text {
         -webkit-transition: all 0.15s ease-in-out;
         -moz-transition: all 0.15s ease-in-out;
@@ -4586,12 +4590,14 @@ select {
             animation-name: slide_right; }
           .playback-controls .current-track__transition--next {
             animation-name: slide_left; } }
-    .light-theme .playback-controls .current-track {
-      color: #121212; }
     .playback-controls .current-track .thumbnail {
       float: left;
-      margin: 12px;
-      cursor: pointer; }
+      cursor: pointer;
+      width: 44px;
+      margin: 8px;
+      margin-right: 12px; }
+      .playback-controls .current-track .thumbnail__image {
+        background-color: #f4f2f0; }
       .playback-controls .current-track .thumbnail:before {
         -webkit-transition: all 0.2s ease-in-out;
         -moz-transition: all 0.2s ease-in-out;
@@ -4630,22 +4636,24 @@ select {
       .playback-controls .current-track .thumbnail:hover:after, .playback-controls .current-track .thumbnail:hover:before {
         opacity: 1; }
     .playback-controls .current-track .text {
-      opacity: 1; }
-    .playback-controls .current-track .title {
-      padding-top: 20px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis; }
-    .playback-controls .current-track .artist-sentence {
-      opacity: 0.5;
-      display: block;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis; }
-      .playback-controls .current-track .artist-sentence .artist {
-        color: inherit;
-        text-decoration: none;
-        border-bottom: 1px dotted transparent; }
+      opacity: 1;
+      line-height: 1.1rem;
+      font-size: 0.9rem;
+      padding-top: 1.05rem; }
+      .playback-controls .current-track .text .title {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis; }
+      .playback-controls .current-track .text .artist-sentence {
+        opacity: 0.5;
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis; }
+        .playback-controls .current-track .text .artist-sentence .artist {
+          color: inherit;
+          text-decoration: none;
+          border-bottom: 1px dotted transparent; }
   .playback-controls .control {
     -webkit-transition: all 0.2s ease-in-out;
     -moz-transition: all 0.2s ease-in-out;
@@ -4659,27 +4667,12 @@ select {
     user-select: none;
     position: relative;
     display: inline-block;
-    color: #FFFFFF;
+    color: #121212;
     cursor: pointer;
-    padding: 10px 6px;
+    padding: 12px 8px;
     display: inline-block;
     vertical-align: bottom;
-    opacity: 0.8;
     background: none; }
-    .playback-controls .control:focus:before {
-      content: '';
-      display: inline-block;
-      width: 100%;
-      padding-bottom: 100%;
-      position: absolute;
-      top: 50%;
-      left: 0px;
-      margin-top: -50%;
-      border-radius: 50%;
-      background: rgba(128, 128, 128, 0.25); }
-    .playback-controls .control:not(.sidebar-toggle) {
-      position: relative;
-      display: inline-block; }
 
 @keyframes click_feedback {
   0% {
@@ -4694,48 +4687,49 @@ select {
     width: 150%;
     padding-bottom: 150%;
     opacity: 0; } }
-      .playback-controls .control:not(.sidebar-toggle):after {
-        content: '';
-        display: block;
-        position: absolute;
-        background: rgba(255, 255, 255, 0.5);
-        z-index: 1;
-        opacity: 0;
-        border-radius: 50%;
-        margin-top: -50%;
-        pointer-events: none; }
-      .playback-controls .control:not(.sidebar-toggle):active:after {
-        animation-name: click_feedback;
-        animation-duration: 0.2s;
-        animation-timing-function: ease-out;
-        animation-iteration-count: 1; }
+    .playback-controls .control:after {
+      content: '';
+      display: block;
+      position: absolute;
+      background: rgba(128, 128, 128, 0.5);
+      z-index: 1;
+      opacity: 0;
+      border-radius: 50%;
+      margin-top: -50%;
+      pointer-events: none; }
+    .playback-controls .control:active:after {
+      animation-name: click_feedback;
+      animation-duration: 0.2s;
+      animation-timing-function: ease-out;
+      animation-iteration-count: 1; }
     .playback-controls .control .icon {
-      font-size: 0.8rem;
+      font-size: 0.9rem;
       margin-bottom: 0; }
-    @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
-      .playback-controls .control {
-        padding-left: 5px;
-        padding-right: 5px; } }
     .playback-controls .control--active {
       color: #08d58f !important; }
     .playback-controls .control:hover, .playback-controls .control:focus {
       opacity: 1; }
   .playback-controls section {
     position: absolute;
-    bottom: 8px; }
+    bottom: 10px; }
     .playback-controls section.playback {
       bottom: 7px;
-      left: 10px;
-      width: 135px;
-      text-align: center; }
-      .playback-controls section.playback .control.play {
-        margin-bottom: -8px; }
-        .playback-controls section.playback .control.play .icon {
-          font-size: 2rem; }
+      left: 0;
+      width: 10rem; }
+      .playback-controls section.playback .control {
+        padding-left: 4px;
+        padding-right: 4px; }
+        .playback-controls section.playback .control .icon {
+          font-size: 1.3rem; }
+        .playback-controls section.playback .control.play {
+          margin-bottom: -0.8rem;
+          color: #08d58f; }
+          .playback-controls section.playback .control.play .icon {
+            font-size: 3rem; }
     .playback-controls section.progress {
-      bottom: 10px;
-      left: 130px;
-      right: 260px;
+      bottom: 13px;
+      left: 10rem;
+      right: 25rem;
       padding-left: 20px;
       padding-right: 20px;
       color: #a3a19f; }
@@ -4758,106 +4752,103 @@ select {
         right: 0;
         width: 50px; }
     .playback-controls section.settings {
-      right: 170px;
-      width: 100px;
+      right: 14rem;
+      width: 10rem;
       text-align: center; }
     .playback-controls section.volume {
-      right: 20px;
-      width: 150px;
+      right: 2rem;
+      width: 10rem;
       font-size: 18px; }
       .playback-controls section.volume .slider__wrapper {
         position: absolute;
-        bottom: 4px;
+        bottom: 6px;
         right: 0;
         left: 30px; }
     .playback-controls section.triggers {
       display: none; }
   @media (max-width: 799px) {
-    .playback-controls .current-track {
-      width: auto;
-      bottom: auto;
-      bottom: 8px;
-      left: 80px;
-      right: 80px;
-      text-align: center;
-      font-size: 0.9rem;
-      color: #FFFFFF !important; }
-      .playback-controls .current-track .title {
-        padding-top: 0; }
-      .playback-controls .current-track .thumbnail {
-        display: none; }
-    .playback-controls section.playback {
-      left: 0;
-      width: 40px; }
-      .playback-controls section.playback .control.play {
-        margin-bottom: -8px; }
-      .playback-controls section.playback .control.previous, .playback-controls section.playback .control.next {
-        display: none; }
-      .playback-controls section.playback .control.stop {
-        display: none; }
-    .playback-controls section.settings {
-      display: none; }
-    .playback-controls section.volume {
-      display: none; }
-    .playback-controls section.progress {
-      display: none; }
-    .playback-controls section.triggers {
-      display: block;
-      right: 10px; } }
-  @media only screen and (max-width: 799px) and (-webkit-min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min--moz-device-pixel-ratio: 2), only screen and (max-width: 799px) and (-o-min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min-resolution: 192dpi), only screen and (max-width: 799px) and (min-resolution: 2dppx) {
-    .playback-controls section.triggers {
-      font-size: 1.3rem;
-      bottom: 4px; } }
-  @media (max-width: 799px) {
-      .playback-controls section.triggers .sidebar-toggle.open {
-        opacity: 1 !important; }
-        .playback-controls section.triggers .sidebar-toggle.open:after {
-          background: rgba(0, 0, 0, 0.8);
-          content: '';
-          display: block;
-          position: fixed;
-          bottom: 0;
-          right: 0;
-          width: 100vw;
-          height: 100vh;
-          z-index: 99; }
-    .playback-controls--expanded {
-      height: 135px;
-      max-height: 100%; }
-      .playback-controls--expanded section.settings {
-        display: block;
-        right: 0;
-        bottom: 90px;
-        padding-right: 10px;
-        text-align: right;
-        width: 100px; }
-      .playback-controls--expanded section.volume {
+    .playback-controls {
+      border-left: none; }
+      .playback-controls .current-track {
         width: auto;
+        bottom: 0.65rem;
+        left: 80px;
+        right: 80px;
+        text-align: center;
+        font-size: 0.9rem;
+        line-height: 1.2em;
+        color: #121212 !important;
+        margin: auto; }
+        .playback-controls .current-track .title,
+        .playback-controls .current-track .artist {
+          padding-top: 0; }
+        .playback-controls .current-track .thumbnail {
+          display: none; }
+      .playback-controls section.playback {
+        left: 0;
+        width: 40px; }
+        .playback-controls section.playback .control.play {
+          margin-bottom: -1rem; }
+        .playback-controls section.playback .control.previous, .playback-controls section.playback .control.next {
+          display: none; }
+        .playback-controls section.playback .control.stop {
+          display: none; }
+      .playback-controls section.settings {
+        display: none; }
+      .playback-controls section.volume {
+        display: none; }
+      .playback-controls section.progress {
+        display: none; }
+      .playback-controls section.triggers {
         display: block;
-        right: 100px;
-        left: 10px;
-        bottom: 88px; } }
+        right: 10px; } }
     @media only screen and (max-width: 799px) and (-webkit-min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min--moz-device-pixel-ratio: 2), only screen and (max-width: 799px) and (-o-min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min-resolution: 192dpi), only screen and (max-width: 799px) and (min-resolution: 2dppx) {
-      .playback-controls--expanded section.volume {
-        right: 115px; }
-        .playback-controls--expanded section.volume .slider__wrapper {
-          bottom: 9px; } }
+      .playback-controls section.triggers {
+        font-size: 1.3rem;
+        bottom: 4px; } }
   @media (max-width: 799px) {
-      .playback-controls--expanded section.progress {
-        display: block;
-        bottom: 55px;
-        left: -15px;
-        right: -15px; } }
-
-@media only screen and (max-width: 799px) and (-webkit-min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min--moz-device-pixel-ratio: 2), only screen and (max-width: 799px) and (-o-min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min-resolution: 192dpi), only screen and (max-width: 799px) and (min-resolution: 2dppx) {
-  .playback-controls {
-    height: 56px; }
-    .playback-controls--expanded {
-      height: 142px; }
+        .playback-controls section.triggers .sidebar-toggle.open {
+          opacity: 1 !important; }
+          .playback-controls section.triggers .sidebar-toggle.open:before {
+            background: rgba(0, 0, 0, 0.8);
+            content: '';
+            display: block;
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 99; }
+      .playback-controls--expanded {
+        height: 140px;
+        max-height: 100%; }
+        .playback-controls--expanded section.settings {
+          display: block;
+          right: 0;
+          bottom: 90px;
+          padding-right: 10px;
+          text-align: right;
+          width: 100px; }
+        .playback-controls--expanded section.volume {
+          width: auto;
+          display: block;
+          right: 100px;
+          left: 10px;
+          bottom: 88px; } }
+      @media only screen and (max-width: 799px) and (-webkit-min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min--moz-device-pixel-ratio: 2), only screen and (max-width: 799px) and (-o-min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min-resolution: 192dpi), only screen and (max-width: 799px) and (min-resolution: 2dppx) {
+        .playback-controls--expanded section.volume {
+          right: 115px; }
+          .playback-controls--expanded section.volume .slider__wrapper {
+            bottom: 9px; } }
+  @media (max-width: 799px) {
+        .playback-controls--expanded section.progress {
+          display: block;
+          bottom: 55px;
+          left: -15px;
+          right: -15px; } }
+  @media only screen and (max-width: 799px) and (-webkit-min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min--moz-device-pixel-ratio: 2), only screen and (max-width: 799px) and (-o-min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min-resolution: 192dpi), only screen and (max-width: 799px) and (min-resolution: 2dppx) {
     .playback-controls .control {
-      padding: 14px 8px; }
-    .playback-controls .current-track {
-      bottom: 10px; } }
+      padding: 14px 8px; } }
 
 .output-control {
   position: relative; }
@@ -4973,7 +4964,6 @@ select {
         left: 0;
         width: auto;
         padding: 0;
-        background: #454545;
         border-radius: 0;
         box-shadow: none;
         max-height: 50vh;
@@ -5025,7 +5015,6 @@ select {
     top: 0;
     left: 0;
     right: 0;
-    bottom: 120px;
     box-sizing: border-box;
     z-index: 2;
     overflow-y: auto; }
@@ -5558,7 +5547,7 @@ main header {
 
 .notifications {
   position: fixed;
-  bottom: 65px;
+  bottom: 75px;
   right: 15px;
   z-index: 97;
   pointer-events: none;
@@ -5575,7 +5564,7 @@ main header {
     position: relative;
     padding: 18px 40px 16px 22px;
     margin: 10px 0 0 0;
-    background: #232220;
+    background: #51504e;
     color: #FFFFFF;
     pointer-events: all;
     border-radius: 3px;
@@ -5617,8 +5606,6 @@ main header {
     .notifications .notification--broadcast {
       background: #FFF39C;
       color: #000000; }
-    .notifications .notification--info {
-      background: #32b5f2; }
     .notifications .notification--warning {
       background: #f16f19; }
     .notifications .notification--bad {
@@ -5640,8 +5627,7 @@ main header {
     .notifications .notification--process {
       position: relative;
       padding-right: 18px;
-      padding-left: 50px;
-      background: #32b5f2; }
+      padding-left: 50px; }
       .notifications .notification--process.cancelling {
         color: rgba(255, 255, 255, 0.5); }
       .notifications .notification--process .loader {
@@ -6059,7 +6045,8 @@ main header {
     font-size: 11px;
     z-index: 97;
     white-space: nowrap;
-    text-align: left; }
+    text-align: left;
+    box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.4); }
     .tooltip__content:first-letter {
       text-transform: uppercase; }
     .tooltip__content:after {
@@ -6075,10 +6062,9 @@ main header {
       bottom: -3px;
       left: 9px; }
     .light-theme .tooltip__content {
-      background: #383734;
-      color: #FFFFFF; }
+      background: #e9e5e1; }
       .light-theme .tooltip__content:after {
-        background: #383734; }
+        background: #e9e5e1; }
   .touch .tooltip:not(.touchable) .tooltip__content {
     display: none; }
   .tooltip:hover .tooltip__content {
