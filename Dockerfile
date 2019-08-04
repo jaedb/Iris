@@ -1,55 +1,66 @@
 FROM debian:stretch-slim
 
+# Copy the current codebase
+COPY . /iris
+
 RUN set -ex \
-    # Official Mopidy install for Debian/Ubuntu along with some extensions
-    # (see https://docs.mopidy.com/en/latest/installation/debian/ )
+# Official Mopidy install for Debian/Ubuntu along with some extensions
+# (see https://docs.mopidy.com/en/latest/installation/debian/ )
  && apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-        curl \
-        dumb-init \
-        gcc \
-        gnupg \
-        gstreamer1.0-alsa \
-        gstreamer1.0-plugins-bad \
-        python-crypto \
-        python-pykka \
+       curl \
+       dumb-init \
+       gcc \
+       gnupg \
+       gstreamer1.0-alsa \
+       gstreamer1.0-plugins-bad \
+       python-crypto \
+       python-pykka \
  && curl -L https://apt.mopidy.com/mopidy.gpg | apt-key add - \
  && curl -L https://apt.mopidy.com/mopidy.list -o /etc/apt/sources.list.d/mopidy.list \
  && apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-        mopidy \
-        mopidy-soundcloud \
-        mopidy-spotify \
+       mopidy \
+       mopidy-soundcloud \
+       mopidy-spotify \
  && curl -L https://bootstrap.pypa.io/get-pip.py | python - \
  && pip install -U six pyasn1 requests[security] cryptography \
  && pip install \
-        Mopidy-Iris \
-        Mopidy-Moped \
-        Mopidy-GMusic \
-        Mopidy-Pandora \
-        Mopidy-YouTube \
-        pyopenssl \
-        youtube-dl \
- && mkdir -p /var/lib/mopidy/.config \
- && ln -s /config /var/lib/mopidy/.config/mopidy \
+       Mopidy-Local-Images \
+       Mopidy-Local-SQLite \
+       Mopidy-Moped \
+       Mopidy-GMusic \
+       Mopidy-Pandora \
+       Mopidy-YouTube \
+       pyopenssl \
+       youtube-dl \
 # Install Snapcast
 # This is the most reliable way to get audio out of a Docker instance.
  && curl -L https://github.com/badaix/snapcast/releases/download/v0.15.0/snapserver_0.15.0_amd64.deb -o snapserver.deb \
  && dpkg -i snapserver.deb \
  && touch /etc/default/snapserver \
  && apt-get -f install \
-    # Clean-up
+# Clean-up
  && apt-get purge --auto-remove -y \
-        curl \
-        gcc \
+       curl \
+       gcc \
  && apt-get clean \
- && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ~/.cache
+ && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ~/.cache \
+
+# Clone Iris from current directory and install in development mode.
+# This allows a binding at "/iris" to map to your local folder for development.
+ && cd /iris \
+ && python setup.py develop \
+ && mkdir -p /var/lib/mopidy/.config \
+ && ln -s /config /var/lib/mopidy/.config/mopidy \
+ # Allow mopidy user to run system commands (restart, local scan, etc)
+ && echo "mopidy ALL=NOPASSWD: /iris/mopidy_iris/system.sh" >> /etc/sudoers
 
 # Start helper script.
 COPY docker/entrypoint.sh /entrypoint.sh
 
 # Default configuration.
-COPY docker/mopidy.conf /config/mopidy.conf
+COPY docker/mopidy.sample.conf /config/mopidy.conf
 
 # Copy the pulse-client configuratrion.
 COPY docker/pulse-client.conf /etc/pulse/client.conf
@@ -64,7 +75,7 @@ RUN set -ex \
 # Runs as mopidy user by default.
 USER mopidy
 
-VOLUME ["/var/lib/mopidy/local", "/var/lib/mopidy/media"]
+VOLUME ["/var/lib/mopidy/local", "/var/lib/mopidy/media", "/var/lib/snapserver", "/iris"]
 
 EXPOSE 6600 6680 1704 1705 5555/udp
 

@@ -5,9 +5,10 @@ services:
     build: 
       context: ./
     ports:
-      - 6680:6680
+      - 6681:6680
       - 1704:1704
       - 1705:1705
     volumes:
-      - ./:/iris
+      - /home/user/Docker/iris:/iris
+      - /home/user/Docker/iris/docker/mopidy.conf:/config/mopidy.conf
       - /mnt/Music:/var/lib/mopidy/media
