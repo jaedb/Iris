@@ -5562,13 +5562,13 @@ main header {
     animation-iteration-count: 1;
     display: block;
     position: relative;
-    padding: 18px 40px 16px 22px;
-    margin: 10px 0 0 0;
+    padding: 1rem 2rem 1rem 1.2rem;
+    margin: 0.5rem;
     background: #51504e;
     color: #FFFFFF;
     pointer-events: all;
     border-radius: 3px;
-    font-size: 15px; }
+    font-size: 1rem; }
 
 @keyframes fadein {
   0% {
@@ -5592,13 +5592,47 @@ main header {
       padding-top: 5px;
       line-height: 1.1em; }
     .notifications .notification__close-button {
+      -webkit-transition: all 0.2s ease-in-out;
+      -moz-transition: all 0.2s ease-in-out;
+      -o-transition: all 0.2s ease-in-out;
+      transition: all 0.2s ease-in-out;
+      position: relative;
+      display: inline-block;
       position: absolute;
-      top: 4px;
-      right: 0;
-      font-size: 12px;
-      padding: 14px;
-      cursor: pointer;
-      opacity: 0.5; }
+      top: 0.6rem;
+      right: 0.4rem;
+      padding: 0.6rem;
+      opacity: 0.5;
+      cursor: pointer; }
+
+@keyframes click_feedback {
+  0% {
+    top: 50%;
+    left: 0;
+    width: 100%;
+    padding-bottom: 100%;
+    opacity: 1; }
+  100% {
+    top: 25%;
+    left: -25%;
+    width: 150%;
+    padding-bottom: 150%;
+    opacity: 0; } }
+      .notifications .notification__close-button:after {
+        content: '';
+        display: block;
+        position: absolute;
+        background: rgba(128, 128, 128, 0.5);
+        z-index: 1;
+        opacity: 0;
+        border-radius: 50%;
+        margin-top: -50%;
+        pointer-events: none; }
+      .notifications .notification__close-button:active:after {
+        animation-name: click_feedback;
+        animation-duration: 0.2s;
+        animation-timing-function: ease-out;
+        animation-iteration-count: 1; }
       .notifications .notification__close-button:hover {
         opacity: 1; }
     .notifications .notification--good {

@@ -12,13 +12,13 @@
 		@include fadein();
 		display: block;
 		position: relative;
-		padding: 18px 40px 16px 22px;
-		margin: 10px 0 0 0;
+		padding: 1rem 2rem 1rem 1.2rem;
+		margin: 0.5rem;
 		background: colour(soft_grey);
 		color: colour(white);
 		pointer-events: all; 
 		border-radius: 3px;
-		font-size: 15px;
+		font-size: 1rem;
 		
 		&__title {
 			padding-top: 0;
@@ -45,13 +45,14 @@
 		}
 
 		&__close-button {
+			@include animate();
+			@include click_feedback();
 			position: absolute;
-			top: 4px;
-			right: 0;
-			font-size: 12px;
-			padding: 14px;
-			cursor: pointer;
+			top: 0.6rem;
+			right: 0.4rem;
+			padding: 0.6rem;
 			opacity: 0.5;
+			cursor: pointer;
 
 			&:hover {
 				opacity: 1;
