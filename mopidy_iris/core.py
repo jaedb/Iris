@@ -904,14 +904,14 @@ class IrisCore(pykka.ThreadingActor):
         http_client = tornado.httpclient.HTTPClient()
         # Build headers dict if additional headers are given
         headers = None
-        if "additional_headers" in command:
-            d = command["additional_headers"].split("\n")
-            lines = list(filter(lambda x: x.find(":") > 0, d))
-            fields = [(x.split(":", 1)[0].strip().lower(), x.split(":", 1)[1].strip()) for x in lines]
+        if 'additional_headers' in command:
+            d = command['additional_headers'].split('\n')
+            lines = list(filter(lambda x: x.find(':') > 0, d))
+            fields = [(x.split(':', 1)[0].strip().lower(), x.split(':', 1)[1].strip()) for x in lines]
             headers = dict(fields)
 
         if (command['method'] == 'POST'):
-            if "content-type" in headers and headers["content-type"].lower() != "application/json":
+            if 'content-type' in headers and headers['content-type'].lower() != 'application/json':
                 post_data = command['post_data']
             else:
                 post_data = json.dumps(command['post_data'])
