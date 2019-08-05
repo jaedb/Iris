@@ -10,11 +10,17 @@
 	color: colour(darkest_grey);
 	transform-style: preserve-3d;
 	border-left: 230px solid colour(white);
+	box-shadow: 0 -1px 8px rgba(0,0,0,0.1);
+
+	.light-theme & {
+		background: colour(faint_grey);
+		border-left-color: colour(faint_grey);
+	}
 
 	.current-track {
 		position: absolute;
 		bottom: 0;
-		width: 220px;
+		width: 210px;
 		left: -230px;
 		z-index: 1;
 		text-decoration: none;
@@ -144,7 +150,6 @@
 		@include animate();
 		@include noselect();
 		@include click_feedback();
-		color: colour(darkest_grey);
 		cursor: pointer;
 		padding: 12px 8px;
 		display: inline-block;
@@ -262,7 +267,6 @@
 			text-align: center;
 			font-size: 0.9rem;
 			line-height: 1.2em;
-			color: colour(darkest_grey) !important;
 			margin: auto;
 
 			.title,

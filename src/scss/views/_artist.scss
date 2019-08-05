@@ -18,15 +18,15 @@
 				padding-bottom: 25px;
 				font-size: 5rem;
 				line-height: 5rem;
+
+				.light-theme & {
+					color: colour(white);
+				}
 			}
 
 			.actions {
 				.context-menu-trigger {
 					color: colour(white);
-
-					.light-theme & {
-						color: colour(darkest_grey);
-					}
 				}
 			}
 

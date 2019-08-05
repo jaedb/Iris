@@ -3983,7 +3983,7 @@ select {
       -moz-transform: scale(0.997);
       -webkit-transform: scale(0.997);
       transform: scale(0.997); }
-  :root .light-theme.notouch:not(.dragging) .list__item:not(.no-click) .list__item:not(.list__item--no-interaction):hover {
+  :root .light-theme.notouch:not(.dragging) .list__item:not(.list__item--no-interaction):hover {
     background: rgba(0, 0, 0, 0.03); }
   .list__item .select-zone,
   .list__item .drag-zone {
@@ -4002,6 +4002,8 @@ select {
     word-break: break-all; }
   .list__item--selected {
     background: rgba(125, 125, 125, 0.15) !important; }
+    .light-theme .list__item--selected {
+      background: rgba(255, 239, 61, 0.35) !important; }
   .list__item--playing .list__item__column__item--name {
     color: #08d58f; }
     .list__item--playing .list__item__column__item--name .icon {
@@ -4373,7 +4375,7 @@ select {
   .light-theme .parallax__stage {
     background-color: #f4f2f0; }
   .light-theme .parallax__overlay {
-    background-image: linear-gradient(rgba(255, 255, 255, 0), white); }
+    opacity: 0.5; }
 
 @font-face {
   font-family: 'Material Icons';
@@ -4549,11 +4551,15 @@ select {
   background: #FFFFFF;
   color: #121212;
   transform-style: preserve-3d;
-  border-left: 230px solid #FFFFFF; }
+  border-left: 230px solid #FFFFFF;
+  box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.1); }
+  .light-theme .playback-controls {
+    background: #f4f2f0;
+    border-left-color: #f4f2f0; }
   .playback-controls .current-track {
     position: absolute;
     bottom: 0;
-    width: 220px;
+    width: 210px;
     left: -230px;
     z-index: 1;
     text-decoration: none; }
@@ -4667,7 +4673,6 @@ select {
     user-select: none;
     position: relative;
     display: inline-block;
-    color: #121212;
     cursor: pointer;
     padding: 12px 8px;
     display: inline-block;
@@ -4777,7 +4782,6 @@ select {
         text-align: center;
         font-size: 0.9rem;
         line-height: 1.2em;
-        color: #121212 !important;
         margin: auto; }
         .playback-controls .current-track .title,
         .playback-controls .current-track .artist {
@@ -5001,14 +5005,12 @@ select {
   z-index: 96;
   width: 220px;
   overflow: hidden;
-  background: #121212;
-  border-right: 1px solid #1d1d1d;
   color: #FFFFFF;
   box-sizing: border-box;
-  transform-style: preserve-3d; }
+  transform-style: preserve-3d;
+  background: #181818; }
   .light-theme .sidebar {
-    background: #f8f7f6;
-    border-right: none; }
+    background: #FFFFFF; }
   .sidebar__liner {
     overflow-y: auto;
     position: absolute;
@@ -5562,13 +5564,13 @@ main header {
     animation-iteration-count: 1;
     display: block;
     position: relative;
-    padding: 1rem 2rem 1rem 1.2rem;
+    padding: 0.9rem 1rem;
     margin: 0.5rem;
     background: #51504e;
     color: #FFFFFF;
     pointer-events: all;
     border-radius: 3px;
-    font-size: 1rem; }
+    font-size: 0.9rem; }
 
 @keyframes fadein {
   0% {
@@ -5586,11 +5588,14 @@ main header {
         margin-top: 5px; }
     .notifications .notification ul {
       padding: 4px 0 4px 20px; }
+    .notifications .notification__content {
+      padding-right: 2rem; }
     .notifications .notification__description {
-      font-size: 14px;
+      font-size: 0.85rem;
       opacity: 0.5;
       padding-top: 5px;
-      line-height: 1.1em; }
+      line-height: 1.1em;
+      word-break: break-word; }
     .notifications .notification__close-button {
       -webkit-transition: all 0.2s ease-in-out;
       -moz-transition: all 0.2s ease-in-out;
@@ -5599,7 +5604,7 @@ main header {
       position: relative;
       display: inline-block;
       position: absolute;
-      top: 0.6rem;
+      top: 0.45rem;
       right: 0.4rem;
       padding: 0.6rem;
       opacity: 0.5;
@@ -6023,8 +6028,6 @@ main header {
   font-weight: 500;
   border-bottom: 3px solid transparent !important;
   cursor: pointer; }
-  .light-theme .sub-views__option {
-    color: #121212; }
   .sub-views__option h4 {
     margin: 8px 0 4px; }
   .sub-views__option--active {
@@ -6550,10 +6553,10 @@ main header {
       padding-bottom: 25px;
       font-size: 5rem;
       line-height: 5rem; }
+      .light-theme .artist-view .intro .liner h1 {
+        color: #FFFFFF; }
     .artist-view .intro .liner .actions .context-menu-trigger {
       color: #FFFFFF; }
-      .light-theme .artist-view .intro .liner .actions .context-menu-trigger {
-        color: #121212; }
     .artist-view .intro .liner .sub-views {
       padding-top: 25px; }
 

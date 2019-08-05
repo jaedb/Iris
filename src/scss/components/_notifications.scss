@@ -12,13 +12,13 @@
 		@include fadein();
 		display: block;
 		position: relative;
-		padding: 1rem 2rem 1rem 1.2rem;
+		padding: 0.9rem 1rem;
 		margin: 0.5rem;
 		background: colour(soft_grey);
 		color: colour(white);
 		pointer-events: all; 
 		border-radius: 3px;
-		font-size: 1rem;
+		font-size: 0.9rem;
 		
 		&__title {
 			padding-top: 0;
@@ -37,18 +37,23 @@
 			padding: 4px 0 4px 20px;
 		}
 
+		&__content {
+			padding-right: 2rem;
+		}
+
 		&__description {
-			font-size: 14px;
+			font-size: 0.85rem;
 			opacity: 0.5;
 			padding-top: 5px;
 			line-height: 1.1em;
+			word-break: break-word;
 		}
 
 		&__close-button {
 			@include animate();
 			@include click_feedback();
 			position: absolute;
-			top: 0.6rem;
+			top: 0.45rem;
 			right: 0.4rem;
 			padding: 0.6rem;
 			opacity: 0.5;

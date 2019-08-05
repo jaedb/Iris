@@ -56,7 +56,7 @@
 			}
 		}
 
-		:root .light-theme.notouch:not(.dragging) &:not(.no-click) &:not(.list__item--no-interaction) {
+		:root .light-theme.notouch:not(.dragging) &:not(.list__item--no-interaction){
 			&:hover {
 				background: rgba(0,0,0,0.03);
 			}
@@ -94,7 +94,11 @@
 		}
 
 		&--selected {
-			background: rgba(125,125,125,0.15) !important;
+			background: rgba(125, 125, 125, 0.15) !important;
+
+			.light-theme & {
+				background: rgba(255, 239, 61, 0.35) !important;
+			}
 		}
 
 		&--playing {
