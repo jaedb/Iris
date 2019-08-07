@@ -1,0 +1,13 @@
+version: '3'
+services:
+  mopidy:
+    image: jaedb/iris
+    build: 
+      context: ../
+    ports:
+      - 6681:6680
+      - 1704:1704
+      - 1705:1705
+    volumes:
+      - /home/MY_USERNAME/mopidy.conf:/config/mopidy.conf
+      - /home/MY_USERNAME/Music:/var/lib/mopidy/media
