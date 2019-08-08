@@ -2679,7 +2679,6 @@
 
 body,
 html {
-  color: #cecac4;
   font-family: "Overpass", Helvetica, Arial, sans-serif;
   font-size: 14px;
   letter-spacing: -0.02rem;
@@ -2688,9 +2687,6 @@ html {
   width: 100%;
   height: 100%;
   overflow: hidden; }
-  body .light-theme,
-  html .light-theme {
-    color: #121212; }
   @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
     body,
     html {
@@ -2713,6 +2709,16 @@ body {
 .smooth-scrolling-enabled .smooth-scroll {
   scroll-behavior: smooth; }
 
+.light-theme main,
+.light-theme .sidebar {
+  color: #121212;
+  background: #FFFFFF; }
+
+.dark-theme main,
+.dark-theme .sidebar {
+  color: #cecac4;
+  background: #181818; }
+
 main {
   position: fixed;
   top: 0;
@@ -2721,7 +2727,6 @@ main {
   right: 0;
   perspective: 1000px;
   perspective-origin: top;
-  background: #181818;
   z-index: 1;
   overflow-y: scroll;
   overflow-x: hidden;
@@ -2746,7 +2751,13 @@ main {
     transition: all 0.2s ease-in-out;
     background: #383734; }
     .notouch main::-webkit-scrollbar-thumb:hover {
-      background: #a3a19f; }
+      background: #1e1d1b; }
+  .notouch.light-theme main::-webkit-scrollbar-track {
+    background: #FFFFFF; }
+  .notouch.light-theme main::-webkit-scrollbar-thumb {
+    background: #cecac4; }
+    .notouch.light-theme main::-webkit-scrollbar-thumb:hover {
+      background: #b7b1a8; }
   .modal-open main {
     left: 0;
     bottom: 0;
@@ -2754,8 +2765,6 @@ main {
   main,
   main .preserve-3d {
     transform-style: preserve-3d; }
-  .light-theme main {
-    background: #FFFFFF; }
   main .content-wrapper {
     position: relative;
     padding: 40px 40px 20px 40px; }
@@ -2784,7 +2793,7 @@ main {
         padding: 10px 0; } }
   main pre {
     padding: 20px;
-    background: #121212;
+    background: rgba(128, 128, 128, 0.5);
     border-radius: 3px;
     color: #FFFFFF;
     white-space: pre-wrap;
@@ -5007,8 +5016,7 @@ select {
   overflow: hidden;
   color: #FFFFFF;
   box-sizing: border-box;
-  transform-style: preserve-3d;
-  background: #181818; }
+  transform-style: preserve-3d; }
   .light-theme .sidebar {
     background: #FFFFFF; }
   .sidebar__liner {
