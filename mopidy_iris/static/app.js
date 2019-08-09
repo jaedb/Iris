@@ -58243,7 +58243,7 @@ var GridItem = function (_React$Component) {
 					onContextMenu: function onContextMenu(e) {
 						return _this2.onContextMenu(e);
 					} },
-				_react2.default.createElement(_Thumbnail2.default, { size: 'medium', className: 'grid__item__thumbnail', images: images }),
+				_react2.default.createElement(_Thumbnail2.default, { glow: true, size: 'medium', className: 'grid__item__thumbnail', images: images }),
 				_react2.default.createElement(
 					'div',
 					{ className: 'grid__item__name' },
@@ -62537,6 +62537,7 @@ exports.default = (0, _react.memo)(function (props) {
 		'div',
 		{ className: class_name },
 		_react2.default.createElement('div', { className: 'thumbnail__image', style: { backgroundImage: 'url("' + (image ? image : '/iris/assets/no-image.svg') + '")' } }),
+		props.glow && image && _react2.default.createElement('div', { className: 'thumbnail__image thumbnail__image--glow', style: { backgroundImage: 'url("' + image + '")' } }),
 		zoom_icon
 	);
 });
@@ -80140,7 +80141,7 @@ var Queue = function (_React$Component) {
 			return _react2.default.createElement(
 				_URILink2.default,
 				{
-					className: this.props.radio_enabled ? 'artwork radio-enabled' : 'artwork',
+					className: 'current-track__artwork artwork ' + (this.props.radio_enabled ? 'current-track__artwork--radio-enabled' : ''),
 					type: 'album',
 					uri: uri },
 				this.props.radio_enabled ? _react2.default.createElement('img', { className: 'radio-overlay', src: '/iris/assets/radio-overlay.png' }) : null,
@@ -80251,6 +80252,60 @@ var Queue = function (_React$Component) {
 				)
 			);
 
+			var added = null;
+			if (current_track && current_track.added_from && current_track.added_by) {
+				var type = current_track.added_from ? helpers.uriType(current_track.added_from) : null;
+
+				switch (type) {
+					case "discover":
+						var link = _react2.default.createElement(
+							_URILink2.default,
+							{ type: 'recommendations', uri: helpers.getFromUri('seeds', current_track.added_from) },
+							'discover'
+						);
+						break;
+
+					case "browse":
+						var link = _react2.default.createElement(
+							_URILink2.default,
+							{ type: 'browse', uri: current_track.added_from.replace("iris:browse:", "") },
+							'browse'
+						);
+						break;
+
+					case "search":
+						var link = _react2.default.createElement(
+							_URILink2.default,
+							{ type: 'search', uri: current_track.added_from.replace("iris:", "") },
+							'search'
+						);
+						break;
+
+					default:
+						var link = _react2.default.createElement(
+							_URILink2.default,
+							{ type: type, uri: current_track.added_from },
+							type
+						);
+				}
+
+				added = _react2.default.createElement(
+					'div',
+					{ className: 'current-track__added' },
+					'Added by ',
+					current_track.added_by,
+					' from ',
+					link
+				);
+			} else if (current_track && current_track.added_by) {
+				added = _react2.default.createElement(
+					'div',
+					{ className: 'current-track__added' },
+					'Added by ',
+					current_track.added_by
+				);
+			}
+
 			return _react2.default.createElement(
 				'div',
 				{ className: 'view queue-view preserve-3d' },
@@ -80270,18 +80325,23 @@ var Queue = function (_React$Component) {
 						this.renderArtwork(current_track_image),
 						_react2.default.createElement(
 							'div',
-							{ className: 'title' },
-							current_track ? _react2.default.createElement(
-								_URILink2.default,
-								{ type: 'track', uri: current_track.uri },
-								current_track.name
-							) : _react2.default.createElement(
-								'span',
-								null,
-								'-'
-							)
-						),
-						current_track ? _react2.default.createElement(_ArtistSentence2.default, { artists: current_track.artists }) : _react2.default.createElement(_ArtistSentence2.default, null)
+							{ className: 'current-track__details' },
+							_react2.default.createElement(
+								'div',
+								{ className: 'current-track__title' },
+								current_track ? _react2.default.createElement(
+									_URILink2.default,
+									{ type: 'track', uri: current_track.uri },
+									current_track.name
+								) : _react2.default.createElement(
+									'span',
+									null,
+									'-'
+								)
+							),
+							current_track ? _react2.default.createElement(_ArtistSentence2.default, { className: 'current-track__artists', artists: current_track.artists }) : _react2.default.createElement(_ArtistSentence2.default, { className: 'current-track__artists' }),
+							added
+						)
 					),
 					_react2.default.createElement(
 						'section',

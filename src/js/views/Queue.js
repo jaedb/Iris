@@ -115,7 +115,7 @@ class Queue extends React.Component {
 		}
 		return (
 			<URILink
-				className={this.props.radio_enabled ? 'artwork radio-enabled' : 'artwork'}
+				className={`current-track__artwork artwork ${this.props.radio_enabled ? 'current-track__artwork--radio-enabled' : ''}`}
 				type="album" 
 				uri={uri}>
 					{this.props.radio_enabled ? <img className="radio-overlay" src="/iris/assets/radio-overlay.png" /> : null}
@@ -194,6 +194,41 @@ class Queue extends React.Component {
 			</span>
 		)
 
+		let added = null;
+		if (current_track && current_track.added_from && current_track.added_by){
+			var type = (current_track.added_from ? helpers.uriType(current_track.added_from) : null);
+
+			switch (type){
+				case "discover":
+					var link = <URILink type="recommendations" uri={helpers.getFromUri('seeds',current_track.added_from)}>discover</URILink>
+					break;
+
+				case "browse":
+					var link = <URILink type="browse" uri={current_track.added_from.replace("iris:browse:","")}>browse</URILink>
+					break;
+
+				case "search":
+					var link = <URILink type="search" uri={current_track.added_from.replace("iris:","")}>search</URILink>
+					break;
+
+				default:
+					var link = <URILink type={type} uri={current_track.added_from}>{type}</URILink>;
+			}
+
+			added = (
+				<div className="current-track__added">
+					Added by {current_track.added_by} from {link}
+				</div>
+			);
+
+		} else if (current_track && current_track.added_by){
+			added = (
+				<div className="current-track__added">
+					Added by {current_track.added_by}
+				</div>
+			);
+		}
+
 		return (
 			<div className="view queue-view preserve-3d">			
 				<Header options={options} uiActions={this.props.uiActions}>
@@ -205,10 +240,16 @@ class Queue extends React.Component {
 				
 					<div className="current-track">
 						{this.renderArtwork(current_track_image)}
-						<div className="title">
-							{current_track ? <URILink type="track" uri={current_track.uri}>{current_track.name}</URILink> : <span>-</span>}
+						<div className="current-track__details">
+
+							<div className="current-track__title">
+								{current_track ? <URILink type="track" uri={current_track.uri}>{current_track.name}</URILink> : <span>-</span>}
+							</div>
+
+							{current_track ? <ArtistSentence className="current-track__artists" artists={current_track.artists} /> : <ArtistSentence className="current-track__artists" />}
+
+							{added}
 						</div>
-						{current_track ? <ArtistSentence artists={current_track.artists} /> : <ArtistSentence />}
 					</div>
 
 					<section className="list-wrapper">

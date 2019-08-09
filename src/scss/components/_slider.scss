@@ -51,7 +51,6 @@
 		margin-top: -3px;
 
 		&__progress {
-			@include animate(0.2s, linear);
 			position: absolute;
 			background: colour(turquoise);
 			pointer-events: none;

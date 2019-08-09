@@ -212,6 +212,12 @@
 				bottom: 2px;
 				left: 60px;
 				right: 60px;
+
+				&__track {
+					&__progress {
+						@include animate(0.2s, linear);
+					}
+				}
 			}
 
 			.current {

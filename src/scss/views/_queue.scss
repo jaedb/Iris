@@ -6,24 +6,26 @@
 	}
 
 	.current-track {
-		text-align: center;
 		padding: 40px 0 60px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 
-		.artwork {
+		&__artwork {
 			position: relative;
-			margin: 0 auto;
-			width: 60%;
-			max-width: 60vh;
+			text-align: right;
 			display: block;
 			border: 0 !important;
 			z-index: 1;
+			width: 48%;
+			margin-right: 2%;
 
 			.thumbnail {
-				margin: 0 auto;
-				max-width: 100%;
+				width: 30vh;
+				display: inline-block;
 			}
 
-			&.radio-enabled {
+			&--radio-enabled {
 				.thumbnail {
 					box-sizing: border-box;
 				}
@@ -39,20 +41,27 @@
 			}
 		}
 
-		.title {
-			font-size: 18px;
-			padding-top: 30px;
+		&__details {
+			width: 48%;
+			margin-left: 2%;
+		}
+
+		&__title {
+			font-size: 1.4rem;
 			position: relative;
 			z-index: 2;
 		}
 
-		.artist-sentence {
-			padding-top: 10px;
+		&__artists {
 			display: block;
-			font-size: 18px;
+			font-size: 1.4rem;
 			opacity: 0.5;
 			position: relative;
 			z-index: 2;
+		}
+
+		&__added {
+			padding-top: 2rem;
 		}
 
 		@include responsive($bp_medium){

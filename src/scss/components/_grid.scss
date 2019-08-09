@@ -1,11 +1,15 @@
 
 .grid {
 
+	&, * {
+		-webkit-backface-visibility: hidden;
+	}
+
 	&__item {
-		display: inline-block;
+		position: relative !important;
+		display: inline-block !important;
 		vertical-align: top;
 		border-bottom: 0 !important;
-		position: relative;
 		cursor: pointer;
 
 		&__wrapper {
@@ -33,14 +37,22 @@
 			}
 		}
 
-		&:hover{			
+		&:hover {			
 			.thumbnail {
-				opacity: 0.75;
+				&__image {
+					transform: scale(1.01);
+
+					&--glow {
+						@include blur(20px);
+						transform: rotateX(6deg);
+					}
+				}
 			}
 		}
 
 		&:active,
 		&:focus {
+			@include noanimate();
 			-moz-transform: scale(0.98);
 			-webkit-transform: scale(0.98);
 			transform: scale(0.98);
