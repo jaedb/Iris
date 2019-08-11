@@ -1,8 +1,5 @@
 FROM debian:stretch-slim
 
-# Copy the current codebase
-COPY . /iris
-
 RUN set -ex \
 # Official Mopidy install for Debian/Ubuntu along with some extensions
 # (see https://docs.mopidy.com/en/latest/installation/debian/ )
@@ -16,6 +13,7 @@ RUN set -ex \
        gstreamer1.0-plugins-bad \
        python-crypto \
        python-pykka \
+       git \
  && curl -L https://apt.mopidy.com/mopidy.gpg | apt-key add - \
  && curl -L https://apt.mopidy.com/mopidy.list -o /etc/apt/sources.list.d/mopidy.list \
  && apt-get update \
@@ -34,11 +32,6 @@ RUN set -ex \
        Mopidy-YouTube \
        pyopenssl \
        youtube-dl \
-# Install Snapcast
-# This is the most reliable way to get audio out of a Docker instance.
- && curl -L https://github.com/badaix/snapcast/releases/download/v0.15.0/snapserver_0.15.0_amd64.deb -o snapserver.deb \
- && dpkg -i snapserver.deb \
- && touch /etc/default/snapserver \
  && apt-get -f install \
 # Clean-up
  && apt-get purge --auto-remove -y \
@@ -46,9 +39,10 @@ RUN set -ex \
        gcc \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ~/.cache \
-
-# Clone Iris from current directory and install in development mode.
-# This allows a binding at "/iris" to map to your local folder for development.
+# Clone Iris from the repository and install in development mode.
+# This allows a binding at "/iris" to map to your local folder for development, rather than
+# installing using pip.
+ && git clone https://github.com/jaedb/Iris.git /iris \
  && cd /iris \
  && python setup.py develop \
  && mkdir -p /var/lib/mopidy/.config \
@@ -60,7 +54,7 @@ RUN set -ex \
 COPY docker/entrypoint.sh /entrypoint.sh
 
 # Default configuration.
-COPY docker/mopidy.sample.conf /config/mopidy.conf
+COPY docker/mopidy.example.conf /config/mopidy.conf
 
 # Copy the pulse-client configuratrion.
 COPY docker/pulse-client.conf /etc/pulse/client.conf
@@ -69,13 +63,13 @@ COPY docker/pulse-client.conf /etc/pulse/client.conf
 ENV HOME=/var/lib/mopidy
 RUN set -ex \
  && usermod -G audio,sudo mopidy \
- && chown mopidy:audio -R $HOME /entrypoint.sh \
- && chmod go+rwx -R $HOME /entrypoint.sh
+ && chown mopidy:audio -R $HOME /entrypoint.sh /iris \
+ && chmod go+rwx -R $HOME /entrypoint.sh /iris
 
 # Runs as mopidy user by default.
-USER mopidy
+USER mopidy:audio
 
-VOLUME ["/var/lib/mopidy/local", "/var/lib/mopidy/media", "/var/lib/snapserver", "/iris"]
+VOLUME ["/var/lib/mopidy/local", "/var/lib/mopidy/local-images", "/iris"]
 
 EXPOSE 6600 6680 1704 1705 5555/udp
 

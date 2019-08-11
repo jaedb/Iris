@@ -22,12 +22,12 @@ class IrisSnapcast(object):
 
         host = str(self.config['iris']['snapcast_host'])
         port = int(self.config['iris']['snapcast_port'])
+        logger.debug("Connecting to Snapcast on "+host+":"+str(port))
 
         try:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.sock.settimeout(10)
+            self.sock.settimeout(5)
             self.sock.connect((host, port))
-            logger.debug("Snapcast connection established on "+host+":"+str(port))
 
         except socket.gaierror, e:
             raise Exception(e);
@@ -44,11 +44,16 @@ class IrisSnapcast(object):
     ##
     def listen(self, broadcast):
 
-        self.connect()
+        try:
+            self.connect()
+        except Exception, e:
+            logger.error("Could not connect to Snapcast: "+str(e))
+            return
+
         self.listen = True
         buffer_size = int(self.config['iris']['snapcast_buffer_size'])
 
-        logger.info("Established Snapcast listener")
+        logger.info("Snapcast listener established")
         broadcast(data={'method':'snapcast_connected'})
 
         messages = []

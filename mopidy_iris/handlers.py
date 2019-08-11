@@ -78,7 +78,10 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
 
             # make sure the method exists
             if hasattr(mem.iris, message['method']):
-                getattr(mem.iris, message['method'])(data=params, callback=lambda response, error=False: self.handle_result(id=id, method=message['method'], response=response, error=error))
+                try:
+                    getattr(mem.iris, message['method'])(data=params, callback=lambda response, error=False: self.handle_result(id=id, method=message['method'], response=response, error=error))
+                except Exception, e:
+                    logger.error(str(e))
 
             else:
                 self.handle_result(error={'id': id, 'code': 32601, 'message': 'Method "'+message['method']+'" does not exist'}, id=id)
@@ -153,8 +156,11 @@ class HttpHandler(tornado.web.RequestHandler):
 
         # make sure the method exists
         if hasattr(mem.iris, slug):
-            getattr(mem.iris, slug)(request=self, callback=lambda response, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
-
+            try:
+                getattr(mem.iris, slug)(request=self, callback=lambda response, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
+            except Exception, e:
+                logger.error(str(e))
+                
         else:
             self.handle_result(id=id, error={'code': 32601, 'message': "Method "+slug+" does not exist"})
             return

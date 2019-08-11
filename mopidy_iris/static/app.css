@@ -6897,7 +6897,6 @@ main .track-view {
     margin-right: 2%; }
     .queue-view .current-track__artwork .thumbnail {
       width: 30vh;
-      padding-bottom: 100%;
       display: inline-block; }
     .queue-view .current-track__artwork--radio-enabled .thumbnail {
       box-sizing: border-box; }

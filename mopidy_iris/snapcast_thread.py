@@ -20,7 +20,6 @@ class IrisSnapcastThread(Thread):
     # This thread has been started
     ##
     def run(self):
-
         self.sock = IrisSnapcast(self.config)
         self.sock.listen(self.broadcast)
 
