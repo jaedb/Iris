@@ -6,7 +6,7 @@ services:
       - 1704:1704
       - 1705:1705
     volumes:
-      - /tmp/snapfifo:/tmp/snapfifo
+      - HOST_SNAPFIFO_FILE:/tmp/snapfifo
       - ../docker/snapserver:/etc/default/snapserver
   mopidy:
     image: jaedb/iris
@@ -17,7 +17,7 @@ services:
     ports:
       - 6680:6680
     volumes:
-      - ../mopidy_iris:/iris/mopidy_iris
+      #- ../mopidy_iris:/iris/mopidy_iris (Uncomment this line to use a host-managed development build)
       - ../docker/mopidy.conf:/config/mopidy.conf
-      - MY_MUSIC_DIRECTORY:/var/lib/mopidy/media
-      - /tmp/snapfifo:/tmp/snapfifo
+      - HOST_MUSIC_DIRECTORY:/var/lib/mopidy/media
+      - HOST_SNAPFIFO_FILE:/tmp/snapfifo

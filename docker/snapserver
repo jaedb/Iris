@@ -26,4 +26,4 @@ START_SNAPSERVER=true
 
 USER_OPTS="--user snapserver:snapserver"
 
-SNAPSERVER_OPTS="-s pipe:///tmp/snapfifo.dat?name=Mopidy&sampleformat=44100:16:2"
+SNAPSERVER_OPTS="-s pipe:///tmp/snapfifo?name=Mopidy&sampleformat=44100:16:2"
