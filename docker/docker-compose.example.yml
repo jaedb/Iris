@@ -1,13 +1,23 @@
 version: '3'
 services:
+  snapserver:
+    image: currucuxu/snapcastserver
+    ports:
+      - 1704:1704
+      - 1705:1705
+    volumes:
+      - /tmp/snapfifo:/tmp/snapfifo
+      - ../docker/snapserver:/etc/default/snapserver
   mopidy:
     image: jaedb/iris
     build: 
       context: ../
+    depends_on: 
+      - snapserver
     ports:
-      - 6681:6680
-      - 1704:1704
-      - 1705:1705
+      - 6680:6680
     volumes:
-      - /home/MY_USERNAME/mopidy.conf:/config/mopidy.conf
-      - /home/MY_USERNAME/Music:/var/lib/mopidy/media
+      - ../mopidy_iris:/iris/mopidy_iris
+      - ../docker/mopidy.conf:/config/mopidy.conf
+      - MY_MUSIC_DIRECTORY:/var/lib/mopidy/media
+      - /tmp/snapfifo:/tmp/snapfifo
