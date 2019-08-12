@@ -15,6 +15,7 @@ import URILink from '../components/URILink';
 import LazyLoadListener from '../components/LazyLoadListener';
 
 import * as helpers from '../helpers';
+import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
 import * as pusherActions from '../services/pusher/actions';
 import * as spotifyActions from '../services/spotify/actions';
@@ -48,6 +49,25 @@ class Queue extends React.Component {
 
 	shouldComponentUpdate(nextProps) {
 		return (nextProps !== this.props);
+	}
+
+	componentWillReceiveProps(nextProps) {
+		const { added_from_uri } = nextProps;
+
+		if (added_from_uri && this.props.added_from_uri !== added_from_uri) {
+			const item_type = helpers.uriType(added_from_uri);
+			switch (item_type) {
+				case 'album':
+					this.props.coreActions.loadAlbum(added_from_uri);
+					break;
+				case 'artist':
+					this.props.coreActions.loadArtist(added_from_uri);
+					break;
+				case 'playlist':
+					this.props.coreActions.loadPlaylist(added_from_uri);
+					break;
+			}
+		}
 	}
 
 	loadMore(){
@@ -102,10 +122,10 @@ class Queue extends React.Component {
 	renderArtwork(image){
 		if (!image){
 			return (
-				<span className={this.props.radio_enabled ? 'artwork radio-enabled' : 'artwork'}>
+				<div className={`current-track__artwork ${this.props.radio_enabled ? 'current-track__artwork--radio-enabled' : ''}`}>
 					{this.props.radio_enabled ? <img className="radio-overlay" src="/iris/assets/radio-overlay.png" /> : null}
 					<Thumbnail circle={this.props.radio_enabled} />
-				</span>
+				</div>
 			)
 		}
 
@@ -114,60 +134,42 @@ class Queue extends React.Component {
 			uri = this.props.current_track.album.uri;
 		}
 		return (
-			<URILink
-				className={`current-track__artwork artwork ${this.props.radio_enabled ? 'current-track__artwork--radio-enabled' : ''}`}
-				type="album" 
-				uri={uri}>
-					{this.props.radio_enabled ? <img className="radio-overlay" src="/iris/assets/radio-overlay.png" /> : null}
-					<Thumbnail image={image} circle={this.props.radio_enabled} />
-			</URILink>
+			<div className={`current-track__artwork ${this.props.radio_enabled ? 'current-track__artwork--radio-enabled' : ''}`}>
+				<URILink
+					type="album" 
+					uri={uri}>
+						{this.props.radio_enabled ? <img className="radio-overlay" src="/iris/assets/radio-overlay.png" /> : null}
+						<Thumbnail image={image} circle={this.props.radio_enabled} />
+				</URILink>
+			</div>
+		)
+	}
+
+	renderAddedFrom() {
+		const { added_from_uri } = this.props;
+		if (!added_from_uri) return null;
+
+		const item_type = helpers.uriType(added_from_uri);
+		const item_library = this.props[item_type+'s'];
+		if (!item_library) return null;
+
+		const item = item_library[added_from_uri];
+		if (!item) return null;
+
+		return (
+			<div className="current-track__added-from">
+				<URILink type={item_type} uri={item.uri} className="current-track__added-from__link">
+					<Thumbnail className="current-track__added-from__thumbnail" images={item.images} size="small" circle={item_type == 'artist'} />
+					<span className="current-track__added-from__text">{item.name}</span>
+				</URILink>
+			</div>
 		)
 	}
 
 	render(){
-		var current_track = null;
-		var tracks = [];
-
-		// Apply our lazy-load-rendering
-		let total_queue_tracks = this.props.queue.length;
-		let queue_tracks = this.props.queue.slice(0, this.state.limit);
-
-		if (queue_tracks && this.props.tracks){
-			for (let queue_track of queue_tracks){
-				let track = Object.assign({}, queue_track);
-
-				// If we have the track in our index, merge it in.
-				// We prioritise queue track over index track as queue has unique data, like which track
-				// is playing and tlids.
-				if (this.props.tracks.hasOwnProperty(track.uri)){
-					track = Object.assign(
-						{},
-						this.props.tracks[track.uri],
-						track,
-						{
-							playing: (this.props.current_track && this.props.current_track.tlid == track.tlid)
-						}
-					);
-				}
-
-				// Now merge in our queue metadata
-				if (this.props.queue_metadata["tlid_"+track.tlid] !== undefined){
-					track = Object.assign(
-						{},
-						track,
-						this.props.queue_metadata["tlid_"+track.tlid]
-					);
-				}
-
-				// Siphon off this track if it's a full representation of our current track (by tlid)
-				if (this.props.current_track && this.props.current_track.uri == track.uri){
-					current_track = track;
-				}
-
-				// Now add our compiled track for our tracklist
-				tracks.push(track);
-			}
-		}
+		const { current_track, queue_tracks } = this.props;
+		const total_queue_tracks = queue_tracks.length;
+		const tracks = queue_tracks.slice(0, this.state.limit);
 
 		var current_track_image = null;
 		if (current_track && this.props.current_track_uri){
@@ -194,41 +196,6 @@ class Queue extends React.Component {
 			</span>
 		)
 
-		let added = null;
-		if (current_track && current_track.added_from && current_track.added_by){
-			var type = (current_track.added_from ? helpers.uriType(current_track.added_from) : null);
-
-			switch (type){
-				case "discover":
-					var link = <URILink type="recommendations" uri={helpers.getFromUri('seeds',current_track.added_from)}>discover</URILink>
-					break;
-
-				case "browse":
-					var link = <URILink type="browse" uri={current_track.added_from.replace("iris:browse:","")}>browse</URILink>
-					break;
-
-				case "search":
-					var link = <URILink type="search" uri={current_track.added_from.replace("iris:","")}>search</URILink>
-					break;
-
-				default:
-					var link = <URILink type={type} uri={current_track.added_from}>{type}</URILink>;
-			}
-
-			added = (
-				<div className="current-track__added">
-					Added by {current_track.added_by} from {link}
-				</div>
-			);
-
-		} else if (current_track && current_track.added_by){
-			added = (
-				<div className="current-track__added">
-					Added by {current_track.added_by}
-				</div>
-			);
-		}
-
 		return (
 			<div className="view queue-view preserve-3d">			
 				<Header options={options} uiActions={this.props.uiActions}>
@@ -248,7 +215,7 @@ class Queue extends React.Component {
 
 							{current_track ? <ArtistSentence className="current-track__artists" artists={current_track.artists} /> : <ArtistSentence className="current-track__artists" />}
 
-							{added}
+							{this.renderAddedFrom()}
 						</div>
 					</div>
 
@@ -278,24 +245,64 @@ class Queue extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
+	let current_track = state.core.current_track;	
+	let queue_tracks = [];
+
+	if (state.core.queue && state.core.tracks){
+		for (let queue_track of state.core.queue){
+			let track = Object.assign({}, queue_track);
+
+			// If we have the track in our index, merge it in.
+			// We prioritise queue track over index track as queue has unique data, like which track
+			// is playing and tlids.
+			if (state.core.tracks.hasOwnProperty(track.uri)){
+				track = Object.assign(
+					{},
+					state.core.tracks[track.uri],
+					track,
+					{
+						playing: (current_track && current_track.tlid == track.tlid)
+					}
+				);
+			}
+
+			// Now merge in our queue metadata
+			if (state.core.queue_metadata["tlid_"+track.tlid] !== undefined){
+				track = Object.assign(
+					{},
+					track,
+					state.core.queue_metadata["tlid_"+track.tlid]
+				);
+			}
+
+			// Siphon off this track if it's a full representation of our current track (by tlid)
+			if (current_track && current_track.uri == track.uri){
+				current_track = track;
+			}
+
+			// Now add our compiled track for our tracklist
+			queue_tracks.push(track);
+		}
+	}
+
 	return {
 		theme: state.ui.theme,
 		spotify_enabled: state.spotify.enabled,
 		radio: state.core.radio,
 		radio_enabled: (state.core.radio && state.core.radio.enabled ? true : false),
-		tracks: state.core.tracks,
 		artists: state.core.artists,
 		albums: state.core.albums,
-		queue: state.core.queue,
-		queue_tlids: state.core.queue_tlids,
-		queue_metadata: state.core.queue_metadata,
+		playlists: state.core.playlists,
+		queue_tracks: queue_tracks,
 		current_track_uri: state.core.current_track_uri,
-		current_track: state.core.current_track
+		current_track: current_track,
+		added_from_uri: current_track && current_track.added_from ? current_track.added_from : null
 	}
 }
 
 const mapDispatchToProps = (dispatch) => {
 	return {
+		coreActions: bindActionCreators(coreActions, dispatch),
 		uiActions: bindActionCreators(uiActions, dispatch),
 		pusherActions: bindActionCreators(pusherActions, dispatch),
 		spotifyActions: bindActionCreators(spotifyActions, dispatch),

@@ -15,10 +15,13 @@
 			position: relative;
 			text-align: right;
 			display: block;
-			border: 0 !important;
 			z-index: 1;
 			width: 48%;
 			margin-right: 2%;
+
+			a {
+				border: 0 !important;
+			}
 
 			.thumbnail {
 				width: 30vh;
@@ -60,8 +63,24 @@
 			z-index: 2;
 		}
 
-		&__added {
+		&__added-from {
 			padding-top: 2rem;
+
+			&__link {
+				display: flex;
+				align-items: center;
+				border: 0 !important;
+			}
+
+			&__text {
+				display: block;
+				padding-left: 15px;
+			}
+
+			&__thumbnail {
+				display: inline-block;
+				max-width: 30px;
+			}
 		}
 
 		@include responsive($bp_medium){

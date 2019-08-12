@@ -6891,10 +6891,11 @@ main .track-view {
     position: relative;
     text-align: right;
     display: block;
-    border: 0 !important;
     z-index: 1;
     width: 48%;
     margin-right: 2%; }
+    .queue-view .current-track__artwork a {
+      border: 0 !important; }
     .queue-view .current-track__artwork .thumbnail {
       width: 30vh;
       display: inline-block; }
@@ -6920,8 +6921,18 @@ main .track-view {
     opacity: 0.5;
     position: relative;
     z-index: 2; }
-  .queue-view .current-track__added {
+  .queue-view .current-track__added-from {
     padding-top: 2rem; }
+    .queue-view .current-track__added-from__link {
+      display: flex;
+      align-items: center;
+      border: 0 !important; }
+    .queue-view .current-track__added-from__text {
+      display: block;
+      padding-left: 15px; }
+    .queue-view .current-track__added-from__thumbnail {
+      display: inline-block;
+      max-width: 30px; }
   @media (max-width: 799px) {
     .queue-view .current-track {
       padding-bottom: 20px; }
