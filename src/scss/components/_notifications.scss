@@ -53,9 +53,9 @@
 			@include animate();
 			@include click_feedback();
 			position: absolute;
-			top: 0.45rem;
-			right: 0.4rem;
-			padding: 0.6rem;
+			top: 0;
+			right: 0;
+			padding: 0.9rem;
 			opacity: 0.5;
 			cursor: pointer;
 
@@ -112,10 +112,11 @@
 				width: 20px;
 				height: 20px;
 				position: absolute;
-				top: 16px;
-				left: 18px;
+				top: 0;
+				left: 0;
 				opacity: 1;	
 				z-index: 2;
+				margin: 0.85rem;
 
 				&:before {
 					border-color: transparent;
