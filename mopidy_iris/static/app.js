@@ -79938,7 +79938,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 
 
 Object.defineProperty(exports, "__esModule", {
-	value: true
+  value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -80026,390 +80026,418 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var Queue = function (_React$Component) {
-	_inherits(Queue, _React$Component);
+  _inherits(Queue, _React$Component);
 
-	function Queue(props) {
-		_classCallCheck(this, Queue);
+  function Queue(props) {
+    _classCallCheck(this, Queue);
 
-		var _this = _possibleConstructorReturn(this, (Queue.__proto__ || Object.getPrototypeOf(Queue)).call(this, props));
+    var _this = _possibleConstructorReturn(this, (Queue.__proto__ || Object.getPrototypeOf(Queue)).call(this, props));
 
-		_this.state = {
-			limit: 50,
-			per_page: 50
-		};
-		return _this;
-	}
+    _this.state = {
+      limit: 50,
+      per_page: 50
+    };
+    return _this;
+  }
 
-	_createClass(Queue, [{
-		key: 'componentWillMount',
-		value: function componentWillMount() {
+  _createClass(Queue, [{
+    key: "componentWillMount",
+    value: function componentWillMount() {
+      // Before we mount, restore any limit defined in our location state
+      var state = this.props.location.state ? this.props.location.state : {};
+      if (state.limit) {
+        this.setState({
+          limit: state.limit
+        });
+      }
+    }
+  }, {
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      this.props.uiActions.setWindowTitle("Now playing");
+    }
+  }, {
+    key: "shouldComponentUpdate",
+    value: function shouldComponentUpdate(nextProps) {
+      return nextProps !== this.props;
+    }
+  }, {
+    key: "componentWillReceiveProps",
+    value: function componentWillReceiveProps(nextProps) {
+      var added_from_uri = nextProps.added_from_uri;
 
-			// Before we mount, restore any limit defined in our location state
-			var state = this.props.location.state ? this.props.location.state : {};
-			if (state.limit) {
-				this.setState({
-					limit: state.limit
-				});
-			}
-		}
-	}, {
-		key: 'componentDidMount',
-		value: function componentDidMount() {
-			this.props.uiActions.setWindowTitle("Now playing");
-		}
-	}, {
-		key: 'shouldComponentUpdate',
-		value: function shouldComponentUpdate(nextProps) {
-			return nextProps !== this.props;
-		}
-	}, {
-		key: 'componentWillReceiveProps',
-		value: function componentWillReceiveProps(nextProps) {
-			var added_from_uri = nextProps.added_from_uri;
 
+      if (added_from_uri && this.props.added_from_uri !== added_from_uri) {
+        var item_type = helpers.uriType(added_from_uri);
+        switch (item_type) {
+          case "album":
+            this.props.coreActions.loadAlbum(added_from_uri);
+            break;
+          case "artist":
+            this.props.coreActions.loadArtist(added_from_uri);
+            break;
+          case "playlist":
+            this.props.coreActions.loadPlaylist(added_from_uri);
+            break;
+        }
+      }
+    }
+  }, {
+    key: "loadMore",
+    value: function loadMore() {
+      var new_limit = this.state.limit + this.state.per_page;
 
-			if (added_from_uri && this.props.added_from_uri !== added_from_uri) {
-				var item_type = helpers.uriType(added_from_uri);
-				switch (item_type) {
-					case 'album':
-						this.props.coreActions.loadAlbum(added_from_uri);
-						break;
-					case 'artist':
-						this.props.coreActions.loadArtist(added_from_uri);
-						break;
-					case 'playlist':
-						this.props.coreActions.loadPlaylist(added_from_uri);
-						break;
-				}
-			}
-		}
-	}, {
-		key: 'loadMore',
-		value: function loadMore() {
-			var new_limit = this.state.limit + this.state.per_page;
+      this.setState({ limit: new_limit });
 
-			this.setState({ limit: new_limit });
+      // Set our pagination to location state
+      var state = this.props.location && this.props.location.state ? this.props.location.state : {};
+      state.limit = new_limit;
+      this.props.history.replace({ state: state });
+    }
+  }, {
+    key: "removeTracks",
+    value: function removeTracks(track_indexes) {
+      var tlids = [];
+      for (var i = 0; i < track_indexes.length; i++) {
+        var track = this.props.queue[track_indexes[i]];
+        if (track.tlid !== undefined) {
+          tlids.push(track.tlid);
+        }
+      }
 
-			// Set our pagination to location state
-			var state = this.props.location && this.props.location.state ? this.props.location.state : {};
-			state.limit = new_limit;
-			this.props.history.replace({ state: state });
-		}
-	}, {
-		key: 'removeTracks',
-		value: function removeTracks(track_indexes) {
-			var tlids = [];
-			for (var i = 0; i < track_indexes.length; i++) {
-				var track = this.props.queue[track_indexes[i]];
-				if (track.tlid !== undefined) {
-					tlids.push(track.tlid);
-				}
-			}
+      if (tlids.length > 0) {
+        this.props.mopidyActions.removeTracks(tlids);
+      }
+    }
+  }, {
+    key: "playTrack",
+    value: function playTrack(track) {
+      this.props.mopidyActions.changeTrack(track.tlid);
+    }
+  }, {
+    key: "playTracks",
+    value: function playTracks(tracks) {
+      this.props.mopidyActions.changeTrack(tracks[0].tlid);
+    }
+  }, {
+    key: "reorderTracks",
+    value: function reorderTracks(indexes, index) {
+      this.props.mopidyActions.reorderTracklist(indexes, index);
+    }
+  }, {
+    key: "renderQueueStats",
+    value: function renderQueueStats() {
+      var total_time = 0;
 
-			if (tlids.length > 0) {
-				this.props.mopidyActions.removeTracks(tlids);
-			}
-		}
-	}, {
-		key: 'playTrack',
-		value: function playTrack(track) {
-			this.props.mopidyActions.changeTrack(track.tlid);
-		}
-	}, {
-		key: 'playTracks',
-		value: function playTracks(tracks) {
-			this.props.mopidyActions.changeTrack(tracks[0].tlid);
-		}
-	}, {
-		key: 'reorderTracks',
-		value: function reorderTracks(indexes, index) {
-			this.props.mopidyActions.reorderTracklist(indexes, index);
-		}
-	}, {
-		key: 'renderQueueStats',
-		value: function renderQueueStats() {
-			var total_time = 0;
+      return _react2.default.createElement(
+        "div",
+        { className: "queue-stats mid_grey-text" },
+        _react2.default.createElement(
+          "span",
+          null,
+          this.props.current_tracklist.length,
+          " tracks"
+        ),
+        "\xA0\xA0|\xA0\xA0",
+        this.props.current_tracklist.length > 0 ? _react2.default.createElement(_Dater2.default, { type: "total-time", data: this.props.current_tracklist }) : _react2.default.createElement(
+          "span",
+          null,
+          "0 mins"
+        )
+      );
+    }
+  }, {
+    key: "renderArtwork",
+    value: function renderArtwork(image) {
+      if (!image) {
+        return _react2.default.createElement(
+          "div",
+          {
+            className: "current-track__artwork " + (this.props.radio_enabled ? "current-track__artwork--radio-enabled" : "")
+          },
+          this.props.radio_enabled ? _react2.default.createElement("img", {
+            className: "radio-overlay",
+            src: "/iris/assets/radio-overlay.png"
+          }) : null,
+          _react2.default.createElement(_Thumbnail2.default, { circle: this.props.radio_enabled })
+        );
+      }
 
-			return _react2.default.createElement(
-				'div',
-				{ className: 'queue-stats mid_grey-text' },
-				_react2.default.createElement(
-					'span',
-					null,
-					this.props.current_tracklist.length,
-					' tracks'
-				),
-				'\xA0\xA0|\xA0\xA0',
-				this.props.current_tracklist.length > 0 ? _react2.default.createElement(_Dater2.default, { type: 'total-time', data: this.props.current_tracklist }) : _react2.default.createElement(
-					'span',
-					null,
-					'0 mins'
-				)
-			);
-		}
-	}, {
-		key: 'renderArtwork',
-		value: function renderArtwork(image) {
-			if (!image) {
-				return _react2.default.createElement(
-					'div',
-					{ className: 'current-track__artwork ' + (this.props.radio_enabled ? 'current-track__artwork--radio-enabled' : '') },
-					this.props.radio_enabled ? _react2.default.createElement('img', { className: 'radio-overlay', src: '/iris/assets/radio-overlay.png' }) : null,
-					_react2.default.createElement(_Thumbnail2.default, { circle: this.props.radio_enabled })
-				);
-			}
+      var uri = null;
+      if (this.props.current_track.album && this.props.current_track.album.uri) {
+        uri = this.props.current_track.album.uri;
+      }
+      return _react2.default.createElement(
+        "div",
+        {
+          className: "current-track__artwork " + (this.props.radio_enabled ? "current-track__artwork--radio-enabled" : "")
+        },
+        _react2.default.createElement(
+          _URILink2.default,
+          { type: "album", uri: uri },
+          this.props.radio_enabled ? _react2.default.createElement("img", {
+            className: "radio-overlay",
+            src: "/iris/assets/radio-overlay.png"
+          }) : null,
+          _react2.default.createElement(_Thumbnail2.default, { image: image, circle: this.props.radio_enabled })
+        )
+      );
+    }
+  }, {
+    key: "renderAddedFrom",
+    value: function renderAddedFrom() {
+      var added_from_uri = this.props.added_from_uri;
 
-			var uri = null;
-			if (this.props.current_track.album && this.props.current_track.album.uri) {
-				uri = this.props.current_track.album.uri;
-			}
-			return _react2.default.createElement(
-				'div',
-				{ className: 'current-track__artwork ' + (this.props.radio_enabled ? 'current-track__artwork--radio-enabled' : '') },
-				_react2.default.createElement(
-					_URILink2.default,
-					{
-						type: 'album',
-						uri: uri },
-					this.props.radio_enabled ? _react2.default.createElement('img', { className: 'radio-overlay', src: '/iris/assets/radio-overlay.png' }) : null,
-					_react2.default.createElement(_Thumbnail2.default, { image: image, circle: this.props.radio_enabled })
-				)
-			);
-		}
-	}, {
-		key: 'renderAddedFrom',
-		value: function renderAddedFrom() {
-			var added_from_uri = this.props.added_from_uri;
+      if (!added_from_uri) return null;
 
-			if (!added_from_uri) return null;
+      var item_type = helpers.uriType(added_from_uri);
+      var item_library = this.props[item_type + "s"];
+      if (!item_library) return null;
 
-			var item_type = helpers.uriType(added_from_uri);
-			var item_library = this.props[item_type + 's'];
-			if (!item_library) return null;
+      var item = item_library[added_from_uri];
+      if (!item) return null;
 
-			var item = item_library[added_from_uri];
-			if (!item) return null;
+      return _react2.default.createElement(
+        "div",
+        { className: "current-track__added-from" },
+        _react2.default.createElement(
+          _URILink2.default,
+          {
+            type: item_type,
+            uri: item.uri,
+            className: "current-track__added-from__thumbnail"
+          },
+          _react2.default.createElement(_Thumbnail2.default, {
+            images: item.images,
+            size: "small",
+            circle: item_type == "artist"
+          })
+        ),
+        _react2.default.createElement(
+          "div",
+          { className: "current-track__added-from__text" },
+          "Playing from",
+          " ",
+          _react2.default.createElement(
+            _URILink2.default,
+            { type: item_type, uri: item.uri },
+            item.name
+          )
+        )
+      );
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this2 = this;
 
-			return _react2.default.createElement(
-				'div',
-				{ className: 'current-track__added-from' },
-				_react2.default.createElement(
-					_URILink2.default,
-					{ type: item_type, uri: item.uri, className: 'current-track__added-from__link' },
-					_react2.default.createElement(_Thumbnail2.default, { className: 'current-track__added-from__thumbnail', images: item.images, size: 'small', circle: item_type == 'artist' }),
-					_react2.default.createElement(
-						'span',
-						{ className: 'current-track__added-from__text' },
-						item.name
-					)
-				)
-			);
-		}
-	}, {
-		key: 'render',
-		value: function render() {
-			var _this2 = this;
+      var _props = this.props,
+          current_track = _props.current_track,
+          queue_tracks = _props.queue_tracks;
 
-			var _props = this.props,
-			    current_track = _props.current_track,
-			    queue_tracks = _props.queue_tracks;
+      var total_queue_tracks = queue_tracks.length;
+      var tracks = queue_tracks.slice(0, this.state.limit);
 
-			var total_queue_tracks = queue_tracks.length;
-			var tracks = queue_tracks.slice(0, this.state.limit);
+      var current_track_image = null;
+      if (current_track && this.props.current_track_uri) {
+        if (current_track.images !== undefined && current_track.images) {
+          current_track_image = current_track.images.large;
+        }
+      }
 
-			var current_track_image = null;
-			if (current_track && this.props.current_track_uri) {
-				if (current_track.images !== undefined && current_track.images) {
-					current_track_image = current_track.images.large;
-				}
-			}
+      var options = _react2.default.createElement(
+        "span",
+        null,
+        this.props.spotify_enabled ? _react2.default.createElement(
+          _Link2.default,
+          { className: "button button--no-hover", to: "/queue/radio" },
+          _react2.default.createElement(_Icon2.default, { name: "radio" }),
+          "Radio",
+          this.props.radio && this.props.radio.enabled ? _react2.default.createElement(
+            "span",
+            { className: "flag blue" },
+            "On"
+          ) : null
+        ) : null,
+        _react2.default.createElement(
+          _Link2.default,
+          { className: "button button--no-hover", to: "/queue/history" },
+          _react2.default.createElement(_Icon2.default, { name: "history" }),
+          "History"
+        ),
+        _react2.default.createElement(
+          "a",
+          {
+            className: "button button--no-hover",
+            onClick: function onClick(e) {
+              _this2.props.mopidyActions.clearTracklist();
+              _this2.props.uiActions.hideContextMenu();
+            }
+          },
+          _react2.default.createElement(_Icon2.default, { name: "delete_sweep" }),
+          "Clear"
+        ),
+        _react2.default.createElement(
+          _Link2.default,
+          { className: "button button--no-hover", to: "/queue/add-uri" },
+          _react2.default.createElement(_Icon2.default, { name: "playlist_add" }),
+          "Add URI"
+        )
+      );
 
-			var options = _react2.default.createElement(
-				'span',
-				null,
-				this.props.spotify_enabled ? _react2.default.createElement(
-					_Link2.default,
-					{ className: 'button button--no-hover', to: '/queue/radio' },
-					_react2.default.createElement(_Icon2.default, { name: 'radio' }),
-					'Radio',
-					this.props.radio && this.props.radio.enabled ? _react2.default.createElement(
-						'span',
-						{ className: 'flag blue' },
-						'On'
-					) : null
-				) : null,
-				_react2.default.createElement(
-					_Link2.default,
-					{ className: 'button button--no-hover', to: '/queue/history' },
-					_react2.default.createElement(_Icon2.default, { name: 'history' }),
-					'History'
-				),
-				_react2.default.createElement(
-					'a',
-					{ className: 'button button--no-hover', onClick: function onClick(e) {
-							_this2.props.mopidyActions.clearTracklist();_this2.props.uiActions.hideContextMenu();
-						} },
-					_react2.default.createElement(_Icon2.default, { name: 'delete_sweep' }),
-					'Clear'
-				),
-				_react2.default.createElement(
-					_Link2.default,
-					{ className: 'button button--no-hover', to: '/queue/add-uri' },
-					_react2.default.createElement(_Icon2.default, { name: 'playlist_add' }),
-					'Add URI'
-				)
-			);
+      return _react2.default.createElement(
+        "div",
+        { className: "view queue-view preserve-3d" },
+        _react2.default.createElement(
+          _Header2.default,
+          { options: options, uiActions: this.props.uiActions },
+          _react2.default.createElement(_Icon2.default, { name: "play_arrow", type: "material" }),
+          "Now playing"
+        ),
+        this.props.theme == "dark" && _react2.default.createElement(_Parallax2.default, { blur: true, image: current_track_image }),
+        _react2.default.createElement(
+          "div",
+          { className: "content-wrapper" },
+          _react2.default.createElement(
+            "div",
+            { className: "current-track" },
+            this.renderArtwork(current_track_image),
+            _react2.default.createElement(
+              "div",
+              { className: "current-track__details" },
+              _react2.default.createElement(
+                "div",
+                { className: "current-track__title" },
+                current_track ? _react2.default.createElement(
+                  _URILink2.default,
+                  { type: "track", uri: current_track.uri },
+                  current_track.name
+                ) : _react2.default.createElement(
+                  "span",
+                  null,
+                  "-"
+                )
+              ),
+              current_track ? _react2.default.createElement(_ArtistSentence2.default, {
+                className: "current-track__artists",
+                artists: current_track.artists
+              }) : _react2.default.createElement(_ArtistSentence2.default, { className: "current-track__artists" }),
+              this.renderAddedFrom()
+            )
+          ),
+          _react2.default.createElement(
+            "section",
+            { className: "list-wrapper" },
+            _react2.default.createElement(_TrackList2.default, {
+              show_source_icon: true,
+              track_context: "queue",
+              className: "queue-track-list",
+              tracks: tracks,
+              removeTracks: function removeTracks(track_indexes) {
+                return _this2.removeTracks(track_indexes);
+              },
+              playTracks: function playTracks(tracks) {
+                return _this2.playTracks(tracks);
+              },
+              playTrack: function playTrack(track) {
+                return _this2.playTrack(track);
+              },
+              reorderTracks: function reorderTracks(indexes, index) {
+                return _this2.reorderTracks(indexes, index);
+              }
+            })
+          ),
+          _react2.default.createElement(_LazyLoadListener2.default, {
+            loadKey: total_queue_tracks > this.state.limit ? this.state.limit : total_queue_tracks,
+            showLoader: this.state.limit < total_queue_tracks,
+            loadMore: function loadMore() {
+              return _this2.loadMore();
+            }
+          })
+        )
+      );
+    }
+  }]);
 
-			return _react2.default.createElement(
-				'div',
-				{ className: 'view queue-view preserve-3d' },
-				_react2.default.createElement(
-					_Header2.default,
-					{ options: options, uiActions: this.props.uiActions },
-					_react2.default.createElement(_Icon2.default, { name: 'play_arrow', type: 'material' }),
-					'Now playing'
-				),
-				this.props.theme == 'dark' && _react2.default.createElement(_Parallax2.default, { blur: true, image: current_track_image }),
-				_react2.default.createElement(
-					'div',
-					{ className: 'content-wrapper' },
-					_react2.default.createElement(
-						'div',
-						{ className: 'current-track' },
-						this.renderArtwork(current_track_image),
-						_react2.default.createElement(
-							'div',
-							{ className: 'current-track__details' },
-							_react2.default.createElement(
-								'div',
-								{ className: 'current-track__title' },
-								current_track ? _react2.default.createElement(
-									_URILink2.default,
-									{ type: 'track', uri: current_track.uri },
-									current_track.name
-								) : _react2.default.createElement(
-									'span',
-									null,
-									'-'
-								)
-							),
-							current_track ? _react2.default.createElement(_ArtistSentence2.default, { className: 'current-track__artists', artists: current_track.artists }) : _react2.default.createElement(_ArtistSentence2.default, { className: 'current-track__artists' }),
-							this.renderAddedFrom()
-						)
-					),
-					_react2.default.createElement(
-						'section',
-						{ className: 'list-wrapper' },
-						_react2.default.createElement(_TrackList2.default, {
-							show_source_icon: true,
-							track_context: 'queue',
-							className: 'queue-track-list',
-							tracks: tracks,
-							removeTracks: function removeTracks(track_indexes) {
-								return _this2.removeTracks(track_indexes);
-							},
-							playTracks: function playTracks(tracks) {
-								return _this2.playTracks(tracks);
-							},
-							playTrack: function playTrack(track) {
-								return _this2.playTrack(track);
-							},
-							reorderTracks: function reorderTracks(indexes, index) {
-								return _this2.reorderTracks(indexes, index);
-							}
-						})
-					),
-					_react2.default.createElement(_LazyLoadListener2.default, {
-						loadKey: total_queue_tracks > this.state.limit ? this.state.limit : total_queue_tracks,
-						showLoader: this.state.limit < total_queue_tracks,
-						loadMore: function loadMore() {
-							return _this2.loadMore();
-						}
-					})
-				)
-			);
-		}
-	}]);
-
-	return Queue;
+  return Queue;
 }(_react2.default.Component);
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
-	var current_track = state.core.current_track;
-	var queue_tracks = [];
+  var current_track = state.core.current_track;
+  var queue_tracks = [];
 
-	if (state.core.queue && state.core.tracks) {
-		var _iteratorNormalCompletion = true;
-		var _didIteratorError = false;
-		var _iteratorError = undefined;
+  if (state.core.queue && state.core.tracks) {
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
 
-		try {
-			for (var _iterator = state.core.queue[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-				var queue_track = _step.value;
+    try {
+      for (var _iterator = state.core.queue[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        var queue_track = _step.value;
 
-				var track = Object.assign({}, queue_track);
+        var track = Object.assign({}, queue_track);
 
-				// If we have the track in our index, merge it in.
-				// We prioritise queue track over index track as queue has unique data, like which track
-				// is playing and tlids.
-				if (state.core.tracks.hasOwnProperty(track.uri)) {
-					track = Object.assign({}, state.core.tracks[track.uri], track, {
-						playing: current_track && current_track.tlid == track.tlid
-					});
-				}
+        // If we have the track in our index, merge it in.
+        // We prioritise queue track over index track as queue has unique data, like which track
+        // is playing and tlids.
+        if (state.core.tracks.hasOwnProperty(track.uri)) {
+          track = Object.assign({}, state.core.tracks[track.uri], track, {
+            playing: current_track && current_track.tlid == track.tlid
+          });
+        }
 
-				// Now merge in our queue metadata
-				if (state.core.queue_metadata["tlid_" + track.tlid] !== undefined) {
-					track = Object.assign({}, track, state.core.queue_metadata["tlid_" + track.tlid]);
-				}
+        // Now merge in our queue metadata
+        if (state.core.queue_metadata["tlid_" + track.tlid] !== undefined) {
+          track = Object.assign({}, track, state.core.queue_metadata["tlid_" + track.tlid]);
+        }
 
-				// Siphon off this track if it's a full representation of our current track (by tlid)
-				if (current_track && current_track.uri == track.uri) {
-					current_track = track;
-				}
+        // Siphon off this track if it's a full representation of our current track (by tlid)
+        if (current_track && current_track.uri == track.uri) {
+          current_track = track;
+        }
 
-				// Now add our compiled track for our tracklist
-				queue_tracks.push(track);
-			}
-		} catch (err) {
-			_didIteratorError = true;
-			_iteratorError = err;
-		} finally {
-			try {
-				if (!_iteratorNormalCompletion && _iterator.return) {
-					_iterator.return();
-				}
-			} finally {
-				if (_didIteratorError) {
-					throw _iteratorError;
-				}
-			}
-		}
-	}
+        // Now add our compiled track for our tracklist
+        queue_tracks.push(track);
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator.return) {
+          _iterator.return();
+        }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
+  }
 
-	return {
-		theme: state.ui.theme,
-		spotify_enabled: state.spotify.enabled,
-		radio: state.core.radio,
-		radio_enabled: state.core.radio && state.core.radio.enabled ? true : false,
-		artists: state.core.artists,
-		albums: state.core.albums,
-		playlists: state.core.playlists,
-		queue_tracks: queue_tracks,
-		current_track_uri: state.core.current_track_uri,
-		current_track: current_track,
-		added_from_uri: current_track && current_track.added_from ? current_track.added_from : null
-	};
+  return {
+    theme: state.ui.theme,
+    spotify_enabled: state.spotify.enabled,
+    radio: state.core.radio,
+    radio_enabled: state.core.radio && state.core.radio.enabled ? true : false,
+    artists: state.core.artists,
+    albums: state.core.albums,
+    playlists: state.core.playlists,
+    queue_tracks: queue_tracks,
+    current_track_uri: state.core.current_track_uri,
+    current_track: current_track,
+    added_from_uri: current_track && current_track.added_from ? current_track.added_from : null
+  };
 };
 
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
-	return {
-		coreActions: (0, _redux.bindActionCreators)(coreActions, dispatch),
-		uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
-		pusherActions: (0, _redux.bindActionCreators)(pusherActions, dispatch),
-		spotifyActions: (0, _redux.bindActionCreators)(spotifyActions, dispatch),
-		mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch)
-	};
+  return {
+    coreActions: (0, _redux.bindActionCreators)(coreActions, dispatch),
+    uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
+    pusherActions: (0, _redux.bindActionCreators)(pusherActions, dispatch),
+    spotifyActions: (0, _redux.bindActionCreators)(spotifyActions, dispatch),
+    mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch)
+  };
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Queue);

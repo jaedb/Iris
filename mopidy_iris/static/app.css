@@ -6922,22 +6922,34 @@ main .track-view {
     position: relative;
     z-index: 2; }
   .queue-view .current-track__added-from {
-    padding-top: 2rem; }
-    .queue-view .current-track__added-from__link {
-      display: flex;
-      align-items: center;
-      border: 0 !important; }
+    padding-top: 2rem;
+    display: flex;
+    align-items: center; }
     .queue-view .current-track__added-from__text {
+      border: 0 !important;
       display: block;
       padding-left: 15px; }
     .queue-view .current-track__added-from__thumbnail {
-      display: inline-block;
-      max-width: 30px; }
+      border: 0 !important; }
+      .queue-view .current-track__added-from__thumbnail .thumbnail {
+        width: 30px; }
   @media (max-width: 799px) {
     .queue-view .current-track {
-      padding-bottom: 20px; }
-      .queue-view .current-track .artwork {
-        width: 80%; } }
+      display: block;
+      text-align: center;
+      padding: 40px 0 20px; }
+      .queue-view .current-track__artwork {
+        width: auto;
+        margin: 0 0 20px 0;
+        text-align: center; }
+        .queue-view .current-track__artwork .thumbnail {
+          width: 90%;
+          max-width: 30vh; }
+      .queue-view .current-track__details {
+        width: auto;
+        margin: 0; }
+      .queue-view .current-track__added-from {
+        display: none; } }
 
 .search-view .search-form {
   position: absolute;

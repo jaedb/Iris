@@ -29,9 +29,7 @@ RUN set -ex \
        Mopidy-Moped \
        Mopidy-GMusic \
        Mopidy-Pandora \
-       Mopidy-YouTube \
        pyopenssl \
-       youtube-dl \
  && apt-get -f install \
 # Clean-up
  && apt-get purge --auto-remove -y \

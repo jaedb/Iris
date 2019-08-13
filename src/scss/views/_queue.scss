@@ -1,94 +1,110 @@
-
 .queue-view {
-	.parallax {
-		opacity: 0.5;
-		height: 60vh;
-	}
+  .parallax {
+    opacity: 0.5;
+    height: 60vh;
+  }
 
-	.current-track {
-		padding: 40px 0 60px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
+  .current-track {
+    padding: 40px 0 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-		&__artwork {
-			position: relative;
-			text-align: right;
-			display: block;
-			z-index: 1;
-			width: 48%;
-			margin-right: 2%;
+    &__artwork {
+      position: relative;
+      text-align: right;
+      display: block;
+      z-index: 1;
+      width: 48%;
+      margin-right: 2%;
 
-			a {
-				border: 0 !important;
-			}
+      a {
+        border: 0 !important;
+      }
 
-			.thumbnail {
-				width: 30vh;
-				display: inline-block;
-			}
+      .thumbnail {
+        width: 30vh;
+        display: inline-block;
+      }
 
-			&--radio-enabled {
-				.thumbnail {
-					box-sizing: border-box;
-				}
+      &--radio-enabled {
+        .thumbnail {
+          box-sizing: border-box;
+        }
 
-				.radio-overlay {
-					position: absolute;
-					top: -15%;
-					left: -15%;
-					width: 130%;
-					height: 130%;
-					z-index: 2;
-				}
-			}
-		}
+        .radio-overlay {
+          position: absolute;
+          top: -15%;
+          left: -15%;
+          width: 130%;
+          height: 130%;
+          z-index: 2;
+        }
+      }
+    }
 
-		&__details {
-			width: 48%;
-			margin-left: 2%;
-		}
+    &__details {
+      width: 48%;
+      margin-left: 2%;
+    }
 
-		&__title {
-			font-size: 1.4rem;
-			position: relative;
-			z-index: 2;
-		}
+    &__title {
+      font-size: 1.4rem;
+      position: relative;
+      z-index: 2;
+    }
 
-		&__artists {
-			display: block;
-			font-size: 1.4rem;
-			opacity: 0.5;
-			position: relative;
-			z-index: 2;
-		}
+    &__artists {
+      display: block;
+      font-size: 1.4rem;
+      opacity: 0.5;
+      position: relative;
+      z-index: 2;
+    }
 
-		&__added-from {
-			padding-top: 2rem;
+    &__added-from {
+      padding-top: 2rem;
+      display: flex;
+      align-items: center;
 
-			&__link {
-				display: flex;
-				align-items: center;
-				border: 0 !important;
-			}
+      &__text {
+        border: 0 !important;
+        display: block;
+        padding-left: 15px;
+      }
 
-			&__text {
-				display: block;
-				padding-left: 15px;
-			}
+      &__thumbnail {
+        border: 0 !important;
+        .thumbnail {
+          width: 30px;
+        }
+      }
+    }
 
-			&__thumbnail {
-				display: inline-block;
-				max-width: 30px;
-			}
-		}
+    @include responsive($bp_medium) {
+      display: block;
+      text-align: center;
+      padding: 40px 0 20px;
 
-		@include responsive($bp_medium){
-			padding-bottom: 20px;
-			
-			.artwork {
-				width: 80%;
-			}
-		}
-	}
+      &__artwork {
+        width: auto;
+        margin: 0 0 20px 0;
+        text-align: center;
+
+        .thumbnail {
+          width: 90%;
+          max-width: 30vh;
+        }
+      }
+
+      &__details {
+        width: auto;
+        margin: 0;
+      }
+
+      &__added-from {
+        display: none;
+      }
+    }
+  }
 }
