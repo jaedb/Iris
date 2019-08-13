@@ -4894,7 +4894,7 @@ select {
     bottom: 38px;
     right: -150px;
     width: 300px;
-    background: #FFFFFF;
+    background: #f4f2f0;
     color: #000000;
     font-size: 14px;
     font-weight: 600;
@@ -4922,12 +4922,10 @@ select {
   .output-control__item {
     padding: 12px 18px 8px;
     position: relative; }
-    .output-control__item--commands {
-      background: rgba(0, 0, 0, 0.1); }
-      .output-control__item--commands::after {
-        content: '';
-        clear: both;
-        display: block; }
+    .output-control__item--commands::after {
+      content: '';
+      clear: both;
+      display: block; }
     .output-control__item:not(:first-child) {
       border-top: 1px solid rgba(0, 0, 0, 0.05); }
     .output-control__item__actions {
@@ -5013,9 +5011,8 @@ select {
           clear: both;
           display: block; }
         .output-control__item:not(:first-child) {
-          border-color: rgba(255, 255, 255, 0.05); }
+          border-color: rgba(128, 128, 128, 0.05); }
         .output-control__item__name {
-          color: #FFFFFF;
           font-weight: 400;
           width: 30%;
           float: left;
@@ -5023,9 +5020,7 @@ select {
           padding-top: 2px; }
         .output-control__item__controls {
           width: 70%;
-          float: right; }
-        .output-control__item__mute.control {
-          color: #FFFFFF; } }
+          float: right; } }
 
 .sidebar {
   position: fixed;
@@ -5644,9 +5639,9 @@ main header {
       position: relative;
       display: inline-block;
       position: absolute;
-      top: 0.45rem;
-      right: 0.4rem;
-      padding: 0.6rem;
+      top: 0;
+      right: 0;
+      padding: 0.9rem;
       opacity: 0.5;
       cursor: pointer; }
 
@@ -5713,10 +5708,11 @@ main header {
         width: 20px;
         height: 20px;
         position: absolute;
-        top: 16px;
-        left: 18px;
+        top: 0;
+        left: 0;
         opacity: 1;
-        z-index: 2; }
+        z-index: 2;
+        margin: 0.85rem; }
         .notifications .notification--process .loader:before {
           border-color: transparent; }
         .notifications .notification--process .loader:after {

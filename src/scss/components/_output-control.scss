@@ -14,7 +14,7 @@
 		bottom: 38px;
 		right: -150px;
 		width: 300px;
-		background: colour(white);
+		background: colour(faint_grey);
 		color: colour(black);
 		font-size: 14px;
 		font-weight: 600;
@@ -51,7 +51,7 @@
 
 		&--commands {
 			@include clearfix();
-			background: rgba(0,0,0,0.1);
+			//background: rgba(0,0,0,0.1);
 		}
 
 		&:not(:first-child) {
@@ -129,11 +129,10 @@
 			padding: 10px 18px 6px;
 
 			&:not(:first-child){
-				border-color: rgba(255,255,255,0.05);
+				border-color: rgba(128,128,128,0.05);
 			}
 
 			&__name {
-				color: colour(white);
 				font-weight: 400;
 				width: 30%;
 				float: left;
@@ -144,10 +143,6 @@
 			&__controls {
 				width: 70%;
 				float: right;
-			}
-
-			&__mute.control {
-				color: colour(white);
 			}
 		}
 	}
