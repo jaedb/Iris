@@ -10,4 +10,4 @@ npm-debug.log
 *sublime*
 .DS_Store
 docker/mopidy.conf
-docker/docker-compose.yml
+docker-compose.yml
