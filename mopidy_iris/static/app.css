@@ -2461,6 +2461,15 @@
 .mid_grey-background {
   background-color: #a3a19f !important; }
 
+.middle_grey-text {
+  color: rgba(128, 128, 128, 0.5) !important; }
+
+.middle_grey-border {
+  border-color: rgba(128, 128, 128, 0.5) !important; }
+
+.middle_grey-background {
+  background-color: rgba(128, 128, 128, 0.5) !important; }
+
 .soft_grey-text {
   color: #51504e !important; }
 
@@ -2841,7 +2850,7 @@ h4 {
   font-weight: 700; }
   h4.underline {
     padding-bottom: 4px;
-    border-bottom: 1px solid #383734; }
+    border-bottom: 2px solid rgba(128, 128, 128, 0.35); }
   h4:not(:first-child) {
     padding-top: 40px; }
   h4 .dropdown-field {
@@ -3150,12 +3159,13 @@ input[type="date"],
 input[type="file"],
 select {
   padding: 10px 14px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(128, 128, 128, 0.05);
   color: #FFFFFF;
   font-family: "Overpass", Helvetica, Arial, sans-serif;
   font-size: 14px;
   border-radius: 3px;
-  letter-spacing: -0.01rem; }
+  letter-spacing: -0.01rem;
+  border: 2px solid rgba(128, 128, 128, 0.35); }
   textarea:focus, textarea:active,
   input[type="text"]:focus,
   input[type="text"]:active,
@@ -3171,7 +3181,7 @@ select {
   input[type="file"]:active,
   select:focus,
   select:active {
-    background: rgba(255, 255, 255, 0.2); }
+    border-color: #32b5f2; }
   textarea:disabled,
   input[type="text"]:disabled,
   input[type="email"]:disabled,
@@ -3201,24 +3211,7 @@ select {
   input[type="date"], .light-theme
   input[type="file"], .light-theme
   select {
-    background: #f4f2f0;
     color: #121212; }
-    .light-theme textarea:focus, .light-theme textarea:active, .light-theme
-    input[type="text"]:focus, .light-theme
-    input[type="text"]:active, .light-theme
-    input[type="email"]:focus, .light-theme
-    input[type="email"]:active, .light-theme
-    input[type="number"]:focus, .light-theme
-    input[type="number"]:active, .light-theme
-    input[type="email"]:focus, .light-theme
-    input[type="email"]:active, .light-theme
-    input[type="date"]:focus, .light-theme
-    input[type="date"]:active, .light-theme
-    input[type="file"]:focus, .light-theme
-    input[type="file"]:active, .light-theme
-    select:focus, .light-theme
-    select:active {
-      background: #eeeae7; }
   textarea::placeholder,
   input[type="text"]::placeholder,
   input[type="email"]::placeholder,
@@ -3259,51 +3252,39 @@ input[type="radio"] + .label:before {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  position: absolute;
-  background: rgba(255, 255, 255, 0.1);
-  top: 4px;
-  left: 0; }
+  border: 2px solid rgba(128, 128, 128, 0.5);
+  margin-right: 0.5rem; }
 
 input[type="radio"]:checked + .label:after {
   content: ' ';
   display: inline-block;
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   position: absolute;
-  top: 10px;
-  left: 6px;
+  left: 7px;
   background: #FFFFFF; }
 
 input[type="radio"]:focus + .label:before,
 input[type="radio"]:active + .label:before {
-  background: #a3a19f; }
-
-.light-theme input[type="radio"] + .label:before {
-  background: #f4f2f0; }
+  background: gray; }
 
 .light-theme input[type="radio"]:checked + .label:after {
   background: #121212; }
 
-.light-theme input[type="radio"]:focus + .label:before,
-.light-theme input[type="radio"]:active + .label:before {
-  background: #383734; }
-
 input[type="checkbox"] + .label:before {
   font-family: "Material Icons";
-  font-size: 14px;
+  font-size: 1.1rem;
+  line-height: 1.4rem;
   content: '';
   color: #FFFFFF;
-  background: rgba(255, 255, 255, 0.1);
-  display: inline-block;
-  padding: 0.2em;
-  height: 1.1em;
-  width: 1.1em;
-  text-align: center;
-  position: absolute;
-  top: 3px;
-  left: 0;
-  border-radius: 3px; }
+  display: inline-flex;
+  padding: 0 0.2rem;
+  height: 1.4rem;
+  width: 1rem;
+  border-radius: 3px;
+  border: 2px solid rgba(128, 128, 128, 0.5);
+  margin-right: 0.5rem; }
 
 input[type="checkbox"]:checked + .label:before {
   content: '\E5CA'; }
@@ -3313,13 +3294,7 @@ input[type="checkbox"]:active + .label:before {
   background: #a3a19f; }
 
 .light-theme input[type="checkbox"] + .label:before {
-  background: #f4f2f0;
   color: #121212; }
-
-.light-theme input[type="checkbox"]:focus + .label:before,
-.light-theme input[type="checkbox"]:active + .label:before {
-  color: #FFFFFF;
-  background: #383734; }
 
 select {
   max-width: 100%; }
@@ -3593,17 +3568,19 @@ select {
   .field.radio input[type="checkbox"], .field.checkbox input[type="radio"],
   .field.checkbox input[type="checkbox"] {
     display: none; }
-  .field.radio .input, .field.checkbox .input {
-    padding-top: 4px; }
-    .field.radio .input label:not(:last-child), .field.checkbox .input label:not(:last-child) {
-      padding-right: 14px; }
-  .field.radio .label, .field.checkbox .label {
+  .field.radio .input label, .field.checkbox .input label {
     display: inline-block;
+    padding: 0.25rem 0; }
+    .field.radio .input label:not(:last-child), .field.checkbox .input label:not(:last-child) {
+      padding-right: 1rem; }
+  .field.radio .label, .field.checkbox .label {
+    display: inline-flex;
     float: none;
     width: auto;
-    padding: 5px 5px 5px 28px;
     position: relative;
-    cursor: pointer; }
+    cursor: pointer;
+    align-items: center;
+    vertical-align: middle; }
   .field.radio--block .label,
   .field.radio--block label, .field.checkbox--block .label,
   .field.checkbox--block label {
@@ -4000,6 +3977,8 @@ select {
     .list__item .select-zone *,
     .list__item .drag-zone * {
       pointer-events: none; }
+  .list__item .drag-zone {
+    touch-action: none; }
   .list__item.field {
     padding: 0 !important; }
     .list__item.field > label {
@@ -4891,7 +4870,7 @@ select {
     cursor: not-allowed; }
   .output-control__items {
     position: absolute;
-    bottom: 38px;
+    bottom: 48px;
     right: -150px;
     width: 300px;
     background: #f4f2f0;
@@ -4907,7 +4886,7 @@ select {
       display: block;
       width: 6px;
       height: 6px;
-      background: #FFFFFF;
+      background: #f4f2f0;
       -ms-transform: rotate(45deg);
       -webkit-transform: rotate(45deg);
       transform: rotate(45deg);
@@ -4983,7 +4962,7 @@ select {
   @media (max-width: 799px) {
     .output-control {
       position: absolute;
-      top: -10px;
+      top: -8px;
       right: 0px;
       bottom: auto;
       width: 100vw; }
@@ -5990,7 +5969,8 @@ main header {
   -o-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
   width: 0;
-  padding-left: 25px; }
+  padding-left: 25px;
+  border-color: transparent; }
 
 .filter-field:not(.active) input {
   cursor: pointer;
@@ -6262,17 +6242,22 @@ main header {
 .snapcast button {
   margin-bottom: 0px; }
 
-.snapcast__group__mute-control, .snapcast__client__mute-control {
-  display: inline-block;
-  float: left;
-  padding: 8px 5px 0;
-  border: 0; }
-
-.snapcast__group__volume-control, .snapcast__client__volume-control {
-  padding: 10px 0 5px 35px;
-  display: block;
-  width: 100%;
-  box-sizing: border-box; }
+.snapcast__group, .snapcast__client {
+  display: block; }
+  .snapcast__group__mute-control, .snapcast__client__mute-control {
+    display: inline-block;
+    float: left;
+    padding: 8px 5px 0;
+    border: 0;
+    color: #FFFFFF;
+    background: transparent; }
+    .light-theme .snapcast__group__mute-control, .light-theme .snapcast__client__mute-control {
+      color: #121212; }
+  .snapcast__group__volume-control, .snapcast__client__volume-control {
+    padding: 10px 0 5px 35px;
+    display: block;
+    width: 100%;
+    box-sizing: border-box; }
 
 .snapcast__groups {
   padding-top: 10px; }
@@ -7340,7 +7325,8 @@ main .track-view {
       float: right;
       opacity: 0.5;
       cursor: pointer;
-      padding: 20px; }
+      padding: 20px;
+      color: #FFFFFF; }
       .modal .controls .control:hover {
         opacity: 1; }
       .modal .controls .control .icon {

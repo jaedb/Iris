@@ -118,7 +118,6 @@ class PlaybackControls extends React.Component{
 	}
 
 	handleTouchStart(e){
-		var target = $(e.target);
 		var timestamp = Math.floor(Date.now());
 
 		// Save touch start details
@@ -131,7 +130,6 @@ class PlaybackControls extends React.Component{
 	}
 
 	handleTouchEnd(e){
-		var target = $(e.target);
 		var timestamp = Math.floor(Date.now());
 		var tap_distance_threshold = 10;		// Max distance (px) between touchstart and touchend to qualify as a tap
 		var tap_time_threshold = 200;			// Max time (ms) between touchstart and touchend to qualify as a tap
@@ -179,7 +177,6 @@ class PlaybackControls extends React.Component{
 
 		// Allow time for the animation to complete, then remove
 		// the transitioning track from state
-		var self = this;
 		setTimeout(() => {
 				this.setState({
 					transition_track: null,

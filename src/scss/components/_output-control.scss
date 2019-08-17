@@ -11,7 +11,7 @@
 
 	&__items {
 		position: absolute;
-		bottom: 38px;
+		bottom: 48px;
 		right: -150px;
 		width: 300px;
 		background: colour(faint_grey);
@@ -28,7 +28,7 @@
 			display: block;
 			width: 6px;
 			height: 6px;
-			background: colour(white);
+			background: colour(faint_grey);
 			-ms-transform: rotate(45deg);
 			-webkit-transform: rotate(45deg);
 			transform: rotate(45deg);
@@ -94,7 +94,7 @@
 
 	@include responsive($bp_medium){
 		position: absolute;
-		top: -10px;
+		top: -8px;
 		right: 0px;
 		bottom: auto;
 		width: 100vw;

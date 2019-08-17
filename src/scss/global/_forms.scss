@@ -16,16 +16,17 @@ input[type="date"],
 input[type="file"],
 select {
 	padding: 10px 14px;
-	background: rgba(255,255,255,0.1);
+	background: rgba(128,128,128,0.05);
 	color: colour(white);
 	font-family: "Overpass", Helvetica, Arial, sans-serif;
 	font-size: 14px;
 	border-radius: 3px;
 	letter-spacing: -0.01rem;
+	border: 2px solid rgba(128,128,128,0.35);
 
 	&:focus,
 	&:active {
-		background: rgba(255,255,255,0.2);
+		border-color: colour(blue);
 	}
 
 	&:disabled {
@@ -40,13 +41,7 @@ select {
 	}
 
 	.light-theme & {
-		background: colour(faint_grey);
 		color: colour(darkest_grey);
-
-		&:focus,
-		&:active {
-			background: darken(colour(faint_grey), 3%);
-		}
 	}
 
 	&::placeholder {
@@ -80,41 +75,29 @@ input[type="radio"]{
 		width: 20px;
 		height: 20px;
 	    border-radius: 50%;
-		position: absolute;
-		background: rgba(255,255,255,0.1);
-		top: 4px;
-		left: 0;
+		border: 2px solid colour(middle_grey);
+		margin-right: 0.5rem;
 	}
 
 	&:checked + .label:after {
 		content: ' ';
 		display: inline-block;
-		width: 8px;
-		height: 8px;
+		width: 10px;
+		height: 10px;
 	    border-radius: 50%;
 		position: absolute;
-		top: 10px;
-		left: 6px;
+		left: 7px;
 		background: colour(white);
 	}
 
 	&:focus + .label:before,
 	&:active + .label:before {
-		background: colour(mid_grey);
+		background: rgba(128,128,128,1);
 	}
 
 	.light-theme & {
-		& + .label:before {
-			background: colour(faint_grey);
-		}
-
 		&:checked + .label:after {
 			background: colour(darkest_grey);
-		}
-
-		&:focus + .label:before,
-		&:active + .label:before {
-			background: colour(grey);
 		}
 	}
 }
@@ -122,19 +105,17 @@ input[type="radio"]{
 input[type="checkbox"]{
 	& + .label:before {
 		font-family: "Material Icons";
-		font-size: 14px;
+		font-size: 1.1rem;
+		line-height: 1.4rem;
 		content: '';
 		color: colour(white);
-		background: rgba(255,255,255,0.1);
-		display: inline-block;
-		padding: 0.2em;
-		height: 1.1em;
-		width: 1.1em;
-		text-align: center;
-		position: absolute;
-		top: 3px;
-		left: 0;
+		display: inline-flex;
+		padding: 0 0.2rem;
+		height: 1.4rem;
+		width: 1rem;
 		border-radius: 3px;
+		border: 2px solid colour(middle_grey);
+		margin-right: 0.5rem;
 	}
 
 	&:checked + .label:before {
@@ -148,14 +129,7 @@ input[type="checkbox"]{
 
 	.light-theme & {
 		& + .label:before {
-			background: colour(faint_grey);
 			color: colour(darkest_grey);
-		}
-
-		&:focus + .label:before,
-		&:active + .label:before {
-			color: colour(white);
-			background: colour(grey);
 		}
 	}
 }
@@ -477,20 +451,24 @@ select {
 		}
 
 		.input {
-			padding-top: 4px;
+			label {
+				display: inline-block;
+				padding: 0.25rem 0;
 
-			label:not(:last-child){
-				padding-right: 14px;
+				&:not(:last-child){
+					padding-right: 1rem;
+				}
 			}
 		}
 
 		.label {
-			display: inline-block;
+			display: inline-flex;
 			float: none;
 			width: auto;
-			padding: 5px 5px 5px 28px;
 			position: relative;
 			cursor: pointer;
+			align-items: center;
+			vertical-align: middle;
 		}
 
 		&--block {

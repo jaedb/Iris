@@ -265,7 +265,7 @@ h4 {
 
 	&.underline {
 		padding-bottom: 4px;
-		border-bottom: 1px solid colour(grey);
+		border-bottom: 2px solid rgba(128,128,128,0.35);
 	}
 
 	&:not(:first-child){

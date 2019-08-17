@@ -59992,7 +59992,7 @@ exports.default = Parallax;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {
+
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
@@ -60182,7 +60182,6 @@ var PlaybackControls = function (_React$Component) {
 	}, {
 		key: 'handleTouchStart',
 		value: function handleTouchStart(e) {
-			var target = $(e.target);
 			var timestamp = Math.floor(Date.now());
 
 			// Save touch start details
@@ -60196,7 +60195,6 @@ var PlaybackControls = function (_React$Component) {
 	}, {
 		key: 'handleTouchEnd',
 		value: function handleTouchEnd(e) {
-			var target = $(e.target);
 			var timestamp = Math.floor(Date.now());
 			var tap_distance_threshold = 10; // Max distance (px) between touchstart and touchend to qualify as a tap
 			var tap_time_threshold = 200; // Max time (ms) between touchstart and touchend to qualify as a tap
@@ -60245,7 +60243,6 @@ var PlaybackControls = function (_React$Component) {
 
 			// Allow time for the animation to complete, then remove
 			// the transitioning track from state
-			var self = this;
 			setTimeout(function () {
 				_this2.setState({
 					transition_track: null,
@@ -60560,7 +60557,6 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(PlaybackControls);
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
 
 /***/ }),
 
@@ -63266,6 +63262,8 @@ var TrackList = function (_React$Component) {
 	}, {
 		key: 'handleTouchDrag',
 		value: function handleTouchDrag(e, track_key) {
+
+			console.log("touchDragging", e, track_key);
 
 			// Drag initiated on a selected track
 			if (this.props.selected_tracks.includes(track_key)) {
@@ -80174,7 +80172,7 @@ var Queue = function (_React$Component) {
     value: function removeTracks(track_indexes) {
       var tlids = [];
       for (var i = 0; i < track_indexes.length; i++) {
-        var track = this.props.queue[track_indexes[i]];
+        var track = this.props.queue_tracks[track_indexes[i]];
         if (track.tlid !== undefined) {
           tlids.push(track.tlid);
         }

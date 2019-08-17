@@ -70,6 +70,10 @@
 				pointer-events: none;
 			}
 		}
+
+		.drag-zone {
+			touch-action: none;
+		}
 /*
 		.icon.source {
 			color: colour(mid_grey);
