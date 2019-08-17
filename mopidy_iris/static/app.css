@@ -3249,20 +3249,22 @@ input[type="number"] {
 input[type="radio"] + .label:before {
   content: ' ';
   display: inline-block;
-  width: 20px;
-  height: 20px;
+  width: 1.8rem;
+  height: 1.8rem;
   border-radius: 50%;
-  border: 2px solid rgba(128, 128, 128, 0.5);
+  background: rgba(128, 128, 128, 0.5);
   margin-right: 0.5rem; }
+  .light-theme input[type="radio"] + .label:before {
+    background: #f4f2f0; }
 
 input[type="radio"]:checked + .label:after {
   content: ' ';
   display: inline-block;
-  width: 10px;
-  height: 10px;
+  width: 0.7rem;
+  height: 0.7rem;
   border-radius: 50%;
   position: absolute;
-  left: 7px;
+  left: 0.55rem;
   background: #FFFFFF; }
 
 input[type="radio"]:focus + .label:before,
@@ -3274,17 +3276,20 @@ input[type="radio"]:active + .label:before {
 
 input[type="checkbox"] + .label:before {
   font-family: "Material Icons";
-  font-size: 1.1rem;
-  line-height: 1.4rem;
+  font-size: 1.2rem;
+  line-height: 1.6rem;
   content: '';
   color: #FFFFFF;
   display: inline-flex;
   padding: 0 0.2rem;
-  height: 1.4rem;
-  width: 1rem;
+  height: 1.6rem;
+  width: 1.2rem;
+  text-align: center;
   border-radius: 3px;
-  border: 2px solid rgba(128, 128, 128, 0.5);
+  background: rgba(128, 128, 128, 0.5);
   margin-right: 0.5rem; }
+  .light-theme input[type="checkbox"] + .label:before {
+    background: #f4f2f0; }
 
 input[type="checkbox"]:checked + .label:before {
   content: '\E5CA'; }
@@ -4814,11 +4819,14 @@ select {
         display: none; }
       .playback-controls section.triggers {
         display: block;
-        right: 10px; } }
+        right: 10px; }
+        .playback-controls section.triggers .icon {
+          font-size: 1.2rem; } }
     @media only screen and (max-width: 799px) and (-webkit-min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min--moz-device-pixel-ratio: 2), only screen and (max-width: 799px) and (-o-min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min-resolution: 192dpi), only screen and (max-width: 799px) and (min-resolution: 2dppx) {
       .playback-controls section.triggers {
-        font-size: 1.3rem;
-        bottom: 4px; } }
+        bottom: 4px; }
+        .playback-controls section.triggers .icon {
+          font-size: 1.4rem; } }
   @media (max-width: 799px) {
         .playback-controls section.triggers .sidebar-toggle.open {
           opacity: 1 !important; }

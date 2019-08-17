@@ -323,9 +323,16 @@
 				display: block;
 				right: 10px;
 
+				.icon {
+					font-size: 1.2rem;
+				}
+
 				@include resolution(2){
-					font-size: 1.3rem;
 					bottom: 4px;
+					
+					.icon {
+						font-size: 1.4rem;
+					}
 				}
 
 				.sidebar-toggle.open {
