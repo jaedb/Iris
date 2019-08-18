@@ -4788,6 +4788,8 @@ select {
   @media (max-width: 799px) {
     .playback-controls {
       border-left: none; }
+      .playback-controls--touch-enabled .control.next {
+        display: none; }
       .playback-controls .current-track {
         width: auto;
         bottom: 0.65rem;
@@ -4804,10 +4806,10 @@ select {
           display: none; }
       .playback-controls section.playback {
         left: 0;
-        width: 40px; }
+        width: 6rem; }
         .playback-controls section.playback .control.play {
           margin-bottom: -1rem; }
-        .playback-controls section.playback .control.previous, .playback-controls section.playback .control.next {
+        .playback-controls section.playback .control.previous {
           display: none; }
         .playback-controls section.playback .control.stop {
           display: none; }
@@ -5188,7 +5190,7 @@ select {
       -webkit-filter: blur(20px);
       filter: blur(20px);
       transform: rotateX(6deg); }
-  .grid__item:active, .grid__item:focus {
+  .grid__item:active .thumbnail__image, .grid__item:focus .thumbnail__image {
     -webkit-transition: none !important;
     -moz-transition: none !important;
     -o-transition: none !important;

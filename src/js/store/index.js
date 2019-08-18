@@ -46,6 +46,7 @@ let state = {
 		theme: 'dark',
 		smooth_scrolling_enabled: true,
 		hotkeys_enabled: true,
+		playback_controls_touch_enabled: true,
 		allow_reporting: true,
 		wide_scrollbar_enabled: false,
 		window_focus: true,

@@ -274,6 +274,17 @@ class Settings extends React.Component {
 							<label>
 								<input 
 									type="checkbox"
+									name="playback_controls_touch_enabled"
+									checked={ this.props.ui.playback_controls_touch_enabled }
+									onChange={ e => this.props.uiActions.set({ playback_controls_touch_enabled: !this.props.ui.playback_controls_touch_enabled })} />
+								<span className="label tooltip">
+									Enable touch events on play controls
+									<span className="tooltip__content">Allows left- and right-swipe to change tracks</span>
+								</span>
+							</label>
+							<label>
+								<input 
+									type="checkbox"
 									name="wide_scrollbar_enabled"
 									checked={ this.props.ui.wide_scrollbar_enabled }
 									onChange={ e => this.props.uiActions.set({ wide_scrollbar_enabled: !this.props.ui.wide_scrollbar_enabled })} />

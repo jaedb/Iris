@@ -220,15 +220,18 @@ class PlaybackControls extends React.Component{
 	}
 
 	render(){
+		const { next_track, touch_enabled, time_position } = this.props;
+		const { current_track, expanded } = this.state;
+
 		var images = false
-		if (this.state.current_track && this.state.current_track.images){
-			images = this.state.current_track.images
+		if (current_track && current_track.images){
+			images = current_track.images
 		}
 
 		return (
-			<div className={(this.state.expanded ? "playback-controls--expanded playback-controls" : "playback-controls")}>
+			<div className={`playback-controls${expanded ? ' playback-controls--expanded' : ''}${touch_enabled ? ' playback-controls--touch-enabled' : ''}`}>
 
-				{this.props.next_track && this.props.next_track.images ? <Thumbnail className="hide" size="large" images={this.props.next_track.images} /> : null}
+				{next_track && next_track.images ? <Thumbnail className="hide" size="large" images={next_track.images} /> : null}
 				
 				{this.state.transition_track && this.state.transition_direction ? <div 
 					className={"current-track current-track__transition current-track__transition--"+this.state.transition_direction}>
@@ -244,18 +247,18 @@ class PlaybackControls extends React.Component{
 				
 				<div 
 					className={this.state.transition_track && this.state.transition_direction ? "current-track current-track--transitioning" : "current-track"}
-					onTouchStart={e => this.handleTouchStart(e)}
-					onTouchEnd={e => this.handleTouchEnd(e)}
+					onTouchStart={e => touch_enabled && this.handleTouchStart(e)}
+					onTouchEnd={e => touch_enabled && this.handleTouchEnd(e)}
 					tabIndex="-1">
 						<Link className="thumbnail-wrapper" to={'/kiosk-mode'} tabIndex="-1">
 							<Thumbnail size="small" images={images} />
 						</Link>
 						<div className="text">
 							<div className="title">
-								{this.state.current_track ? this.state.current_track.name : <span>-</span>}
+								{current_track ? current_track.name : <span>-</span>}
 							</div>
 							<div className="artist">
-								{this.state.current_track ? <ArtistSentence artists={this.state.current_track.artists} /> : <ArtistSentence />}
+								{current_track ? <ArtistSentence artists={current_track.artists} /> : <ArtistSentence />}
 							</div>
 						</div>
 				</div>
@@ -272,8 +275,8 @@ class PlaybackControls extends React.Component{
 
 				<section className="progress">
 					<ProgressSlider />
-					<span className="current">{ this.props.time_position ? <Dater type="length" data={this.props.time_position} /> : '-' }</span>
-					<span className="total">{ this.state.current_track ? <Dater type="length" data={this.state.current_track.duration} /> : '-' }</span>
+					<span className="current">{ time_position ? <Dater type="length" data={time_position} /> : '-' }</span>
+					<span className="total">{ current_track ? <Dater type="length" data={current_track.duration} /> : '-' }</span>
 				</section>
 
 				<section className="settings">
@@ -329,7 +332,8 @@ const mapStateToProps = (state, ownProps) => {
 		volume: state.mopidy.volume,
 		mute: state.mopidy.mute,
 		sidebar_open: state.ui.sidebar_open,
-		slim_mode: state.ui.slim_mode
+		slim_mode: state.ui.slim_mode,
+		touch_enabled: state.ui.playback_controls_touch_enabled
 	}
 }
 

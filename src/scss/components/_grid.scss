@@ -37,7 +37,7 @@
 			}
 		}
 
-		&:hover {			
+		&:hover {
 			.thumbnail {
 				&__image {
 					transform: scale(1.01);
@@ -52,10 +52,14 @@
 
 		&:active,
 		&:focus {
-			@include noanimate();
-			-moz-transform: scale(0.98);
-			-webkit-transform: scale(0.98);
-			transform: scale(0.98);
+			.thumbnail {
+				&__image {
+					@include noanimate();
+					-moz-transform: scale(0.98);
+					-webkit-transform: scale(0.98);
+					transform: scale(0.98);
+				}
+			}
 		}
 	}
 

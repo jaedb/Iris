@@ -60377,15 +60377,24 @@ var PlaybackControls = function (_React$Component) {
 		value: function render() {
 			var _this7 = this;
 
+			var _props = this.props,
+			    next_track = _props.next_track,
+			    touch_enabled = _props.touch_enabled,
+			    time_position = _props.time_position;
+			var _state = this.state,
+			    current_track = _state.current_track,
+			    expanded = _state.expanded;
+
+
 			var images = false;
-			if (this.state.current_track && this.state.current_track.images) {
-				images = this.state.current_track.images;
+			if (current_track && current_track.images) {
+				images = current_track.images;
 			}
 
 			return _react2.default.createElement(
 				'div',
-				{ className: this.state.expanded ? "playback-controls--expanded playback-controls" : "playback-controls" },
-				this.props.next_track && this.props.next_track.images ? _react2.default.createElement(_Thumbnail2.default, { className: 'hide', size: 'large', images: this.props.next_track.images }) : null,
+				{ className: 'playback-controls' + (expanded ? ' playback-controls--expanded' : '') + (touch_enabled ? ' playback-controls--touch-enabled' : '') },
+				next_track && next_track.images ? _react2.default.createElement(_Thumbnail2.default, { className: 'hide', size: 'large', images: next_track.images }) : null,
 				this.state.transition_track && this.state.transition_direction ? _react2.default.createElement(
 					'div',
 					{
@@ -60410,10 +60419,10 @@ var PlaybackControls = function (_React$Component) {
 					{
 						className: this.state.transition_track && this.state.transition_direction ? "current-track current-track--transitioning" : "current-track",
 						onTouchStart: function onTouchStart(e) {
-							return _this7.handleTouchStart(e);
+							return touch_enabled && _this7.handleTouchStart(e);
 						},
 						onTouchEnd: function onTouchEnd(e) {
-							return _this7.handleTouchEnd(e);
+							return touch_enabled && _this7.handleTouchEnd(e);
 						},
 						tabIndex: '-1' },
 					_react2.default.createElement(
@@ -60427,7 +60436,7 @@ var PlaybackControls = function (_React$Component) {
 						_react2.default.createElement(
 							'div',
 							{ className: 'title' },
-							this.state.current_track ? this.state.current_track.name : _react2.default.createElement(
+							current_track ? current_track.name : _react2.default.createElement(
 								'span',
 								null,
 								'-'
@@ -60436,7 +60445,7 @@ var PlaybackControls = function (_React$Component) {
 						_react2.default.createElement(
 							'div',
 							{ className: 'artist' },
-							this.state.current_track ? _react2.default.createElement(_ArtistSentence2.default, { artists: this.state.current_track.artists }) : _react2.default.createElement(_ArtistSentence2.default, null)
+							current_track ? _react2.default.createElement(_ArtistSentence2.default, { artists: current_track.artists }) : _react2.default.createElement(_ArtistSentence2.default, null)
 						)
 					)
 				),
@@ -60466,12 +60475,12 @@ var PlaybackControls = function (_React$Component) {
 					_react2.default.createElement(
 						'span',
 						{ className: 'current' },
-						this.props.time_position ? _react2.default.createElement(_Dater2.default, { type: 'length', data: this.props.time_position }) : '-'
+						time_position ? _react2.default.createElement(_Dater2.default, { type: 'length', data: time_position }) : '-'
 					),
 					_react2.default.createElement(
 						'span',
 						{ className: 'total' },
-						this.state.current_track ? _react2.default.createElement(_Dater2.default, { type: 'length', data: this.state.current_track.duration }) : '-'
+						current_track ? _react2.default.createElement(_Dater2.default, { type: 'length', data: current_track.duration }) : '-'
 					)
 				),
 				_react2.default.createElement(
@@ -60544,7 +60553,8 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		volume: state.mopidy.volume,
 		mute: state.mopidy.mute,
 		sidebar_open: state.ui.sidebar_open,
-		slim_mode: state.ui.slim_mode
+		slim_mode: state.ui.slim_mode,
+		touch_enabled: state.ui.playback_controls_touch_enabled
 	};
 };
 
@@ -77722,6 +77732,7 @@ var state = {
 		theme: 'dark',
 		smooth_scrolling_enabled: true,
 		hotkeys_enabled: true,
+		playback_controls_touch_enabled: true,
 		allow_reporting: true,
 		wide_scrollbar_enabled: false,
 		window_focus: true,
@@ -81845,6 +81856,27 @@ var Settings = function (_React$Component) {
 									'span',
 									{ className: 'label' },
 									'Enable smooth scrolling'
+								)
+							),
+							_react2.default.createElement(
+								'label',
+								null,
+								_react2.default.createElement('input', {
+									type: 'checkbox',
+									name: 'playback_controls_touch_enabled',
+									checked: this.props.ui.playback_controls_touch_enabled,
+									onChange: function onChange(e) {
+										return _this2.props.uiActions.set({ playback_controls_touch_enabled: !_this2.props.ui.playback_controls_touch_enabled });
+									} }),
+								_react2.default.createElement(
+									'span',
+									{ className: 'label tooltip' },
+									'Enable touch events on play controls',
+									_react2.default.createElement(
+										'span',
+										{ className: 'tooltip__content' },
+										'Allows left- and right-swipe to change tracks'
+									)
 								)
 							),
 							_react2.default.createElement(

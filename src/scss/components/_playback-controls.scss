@@ -265,6 +265,10 @@
 	@include responsive($bp_medium){
 		border-left: none;
 
+		&--touch-enabled .control.next {
+			display: none;
+		}
+
 		.current-track {
 			width: auto;
 			bottom: 0.65rem;
@@ -289,15 +293,14 @@
 
 			&.playback {
 				left: 0;
-				width: 40px;
+				width: 6rem;
 
 				.control {
 					&.play {
 						margin-bottom: -1rem;
 					}
 
-					&.previous,
-					&.next {
+					&.previous {
 						display: none;
 					}
 					
