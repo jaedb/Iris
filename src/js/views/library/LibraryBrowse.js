@@ -64,6 +64,7 @@ class LibraryBrowse extends React.Component{
 
 					case 'Spotify':
 					case 'Spotify Browse':
+					case 'Spotify Web Browse':
 						subdirectory.icons = ['/iris/assets/backgrounds/browse-spotify.jpg']
 						break
 

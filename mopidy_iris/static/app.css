@@ -5028,6 +5028,7 @@ select {
     top: 0;
     left: 0;
     right: 0;
+    bottom: 60px;
     box-sizing: border-box;
     z-index: 2;
     overflow-y: auto; }
@@ -6954,6 +6955,7 @@ main .track-view {
     font-weight: 700;
     height: 4rem;
     background: transparent;
+    border: 0;
     border-bottom: 2px solid #383734;
     border-radius: 0;
     letter-spacing: -0.15rem;
