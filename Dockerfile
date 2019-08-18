@@ -26,7 +26,7 @@ RUN set -ex \
  && pip install \
        Mopidy-Local-Images \
        Mopidy-Local-SQLite \
-       Mopidy-Moped \
+       Mopidy-Spotify-Web \
        Mopidy-GMusic \
        Mopidy-Pandora \
        pyopenssl \
