@@ -1,5 +1,4 @@
-
-$bp_huge: 1900px;
+$bp_huge: 1850px;
 $bp_wide: 1000px;
 $bp_medium: 800px;
 $bp_small: 500px;
@@ -7,325 +6,359 @@ $bp_narrow: 350px;
 $bp_shallow: 650px;
 
 @mixin one_line_text {
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 @mixin clearfix {
-	&::after {
-		content: '';
-		clear: both;
-		display: block;
-	}
+  &::after {
+    content: "";
+    clear: both;
+    display: block;
+  }
 }
 
 @mixin bullet {
-	padding-left: 14px;
-	
-	&:before {
-		content: '\2022' !important;
-		display: inline-block;
-		margin-left: -8px;
-		padding-right: 6px;
-	}
+  padding-left: 14px;
+
+  &:before {
+    content: "\2022" !important;
+    display: inline-block;
+    margin-left: -8px;
+    padding-right: 6px;
+  }
 }
 
 /** 
  * General animations
  **/
 
-@mixin animate($duration: 0.2s, $easing: ease-in-out){
-	-webkit-transition: all $duration $easing;
-	   -moz-transition: all $duration $easing;
-		 -o-transition: all $duration $easing;
-		    transition: all $duration $easing; 
+@mixin animate($duration: 0.2s, $easing: ease-in-out) {
+  -webkit-transition: all $duration $easing;
+  -moz-transition: all $duration $easing;
+  -o-transition: all $duration $easing;
+  transition: all $duration $easing;
 }
 
-@mixin noanimate(){
-	-webkit-transition: none !important;
-	   -moz-transition: none !important;
-	     -o-transition: none !important;
-	        transition: none !important;
+@mixin noanimate() {
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -o-transition: none !important;
+  transition: none !important;
 }
 
 @keyframes shrink_from_right {
-    from {	width: 100%; }
-    to {	width: 0%; }
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
 }
 
-@mixin animate_timeout($duration: 0.2s){
-    animation-name: shrink_from_right;
-    animation-duration: $duration;
-    animation-timing-function: linear;
+@mixin animate_timeout($duration: 0.2s) {
+  animation-name: shrink_from_right;
+  animation-duration: $duration;
+  animation-timing-function: linear;
 }
 
 @keyframes spin {
-	from { transform: rotate(0); }
-	to {   transform: rotate(360deg); }
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-@mixin spin($duration: 0.5s){
-    animation-name: spin;
-    animation-duration: $duration;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
+@mixin spin($duration: 0.5s) {
+  animation-name: spin;
+  animation-duration: $duration;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
 }
 
 @keyframes pulse {
-    0% { opacity: 0; }
-    50% { opacity: 1; }
-    100% { opacity: 0; }
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
-@mixin pulse($duration: 0.5s){
-    animation-name: pulse;
-    animation-duration: $duration;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
+@mixin pulse($duration: 0.5s) {
+  animation-name: pulse;
+  animation-duration: $duration;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
 }
 
-@mixin fadein($duration: 0.2s, $distance: 5px, $opacity: 0, $delay: 0){
-	@keyframes fadein {
-	    0% {
-	    	opacity: $opacity;
-	    	transform: translateY($distance);
-	    }
-	    100% {
-	    	opacity: 1;
-	    	transform: translateY(0px);
-	    }
-	}
+@mixin fadein($duration: 0.2s, $distance: 5px, $opacity: 0, $delay: 0) {
+  @keyframes fadein {
+    0% {
+      opacity: $opacity;
+      transform: translateY($distance);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0px);
+    }
+  }
 
-	animation-delay: $delay;
-	-webkit-animation-fill-mode: forwards;
-	animation-fill-mode: forwards;
-    animation-name: fadein;
-    animation-duration: $duration;
-    animation-timing-function: linear;
-    animation-iteration-count: 1;
+  animation-delay: $delay;
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+  animation-name: fadein;
+  animation-duration: $duration;
+  animation-timing-function: linear;
+  animation-iteration-count: 1;
 }
 
-@mixin fadeout($duration: 0.2s, $distance: 5px, $opacity: 1, $delay: 0){
-	@keyframes fadeout {
-	    0% {
-	    	opacity: $opacity;
-	    	transform: translateY(0px);
-	    }
-	    100% {
-	    	opacity: 0;
-	    	transform: translateY($distance);
-	    }
-	}
+@mixin fadeout($duration: 0.2s, $distance: 5px, $opacity: 1, $delay: 0) {
+  @keyframes fadeout {
+    0% {
+      opacity: $opacity;
+      transform: translateY(0px);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY($distance);
+    }
+  }
 
-	animation-delay: $delay;
-	-webkit-animation-fill-mode: forwards;
-	animation-fill-mode: forwards;
-    animation-name: fadeout;
-    animation-duration: $duration;
-    animation-timing-function: linear;
-    animation-iteration-count: 1;
+  animation-delay: $delay;
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+  animation-name: fadeout;
+  animation-duration: $duration;
+  animation-timing-function: linear;
+  animation-iteration-count: 1;
 }
 
-@mixin click_feedback($colour: rgba(128,128,128,0.5), $duration: 0.2s, $easing: ease-out){
-	position: relative;
-	display: inline-block;
+@mixin click_feedback(
+  $colour: rgba(128, 128, 128, 0.5),
+  $duration: 0.2s,
+  $easing: ease-out
+) {
+  position: relative;
+  display: inline-block;
 
-	@keyframes click_feedback {
-	    0% {
-			top: 50%;
-			left: 0;
-			width: 100%;
-			padding-bottom: 100%;
-	    	opacity: 1;
-	    }
-	    100% {
-			top: 25%;
-			left: -25%;
-			width: 150%;
-			padding-bottom: 150%;
-	    	opacity: 0;
-	    }
-	}
+  @keyframes click_feedback {
+    0% {
+      top: 50%;
+      left: 0;
+      width: 100%;
+      padding-bottom: 100%;
+      opacity: 1;
+    }
+    100% {
+      top: 25%;
+      left: -25%;
+      width: 150%;
+      padding-bottom: 150%;
+      opacity: 0;
+    }
+  }
 
-	&:after {
-		content: '';
-		display: block;
-		position: absolute;
-		background: $colour;
-		z-index: 1;
-		opacity: 0;
-		border-radius: 50%;
-		margin-top: -50%;
-		pointer-events: none;
-	}
+  &:after {
+    content: "";
+    display: block;
+    position: absolute;
+    background: $colour;
+    z-index: 1;
+    opacity: 0;
+    border-radius: 50%;
+    margin-top: -50%;
+    pointer-events: none;
+  }
 
-	&:active {
-		&:after {
-		    animation-name: click_feedback;
-		    animation-duration: $duration;
-		    animation-timing-function: $easing;
-		    animation-iteration-count: 1;
-		}
-	}
+  &:active {
+    &:after {
+      animation-name: click_feedback;
+      animation-duration: $duration;
+      animation-timing-function: $easing;
+      animation-iteration-count: 1;
+    }
+  }
 }
 
-@mixin focusable(){
-	position: relative;
-	display: inline-block;
+@mixin focusable() {
+  position: relative;
+  display: inline-block;
 
-	&:focus {
-		&:before {
-			content: '';
-			display: inline-block;
-			width: 100%;
-			padding-bottom: 100%;
-			position: absolute;
-			top: 50%;
-			left: 0px;
-			margin-top: -50%;
-			border-radius: 50%;
-			background: rgba(128,128,128,0.25);
-		}
-	}
+  &:focus {
+    &:before {
+      content: "";
+      display: inline-block;
+      width: 100%;
+      padding-bottom: 100%;
+      position: absolute;
+      top: 50%;
+      left: 0px;
+      margin-top: -50%;
+      border-radius: 50%;
+      background: rgba(128, 128, 128, 0.25);
+    }
+  }
 }
 
 @keyframes slideloader {
-    0% { 
-    	left: 0%; 
-    	right: 100%; 
-    	border-radius: 3px 0 0 3px;
-    }
-    50% { 
-    	left: 0%;
-    	right: 0%;
-    	border-radius: 3px;
-    }
-    100% { 
-    	left: 100%; 
-    	right: 0%; 
-    	border-radius: 0 3px 3px 0;
-    }
+  0% {
+    left: 0%;
+    right: 100%;
+    border-radius: 3px 0 0 3px;
+  }
+  50% {
+    left: 0%;
+    right: 0%;
+    border-radius: 3px;
+  }
+  100% {
+    left: 100%;
+    right: 0%;
+    border-radius: 0 3px 3px 0;
+  }
 }
-
 
 /**
  * Grid layout
  * Produces most album/playlist/artist grids
  **/
 
-@mixin grid_item($cols, $gap: 2%, $bottom_margin: 3%){
-	width: (0% + (100 / $cols ) - ($gap * 2 ) + (($gap * 2 ) / $cols ) );
-	box-sizing: border-box;
-	margin: 0 $gap $bottom_margin;
+@mixin grid_item($cols, $gap: 2%, $bottom_margin: 3%) {
+  width: (0% + (100 / $cols) - ($gap * 2) + (($gap * 2) / $cols));
+  box-sizing: border-box;
+  margin: 0 $gap $bottom_margin;
 
-	&:nth-child(#{$cols}n-#{$cols}){
-		margin-right: 0;
-		@include clearfix;
-	}
+  &:nth-child(#{$cols}n-#{$cols}) {
+    margin-right: 0;
+    @include clearfix;
+  }
 
-	&:nth-child(#{$cols}n-#{$cols - 1}){
-		margin-left: 0;
-	}
+  &:nth-child(#{$cols}n-#{$cols - 1}) {
+    margin-left: 0;
+  }
 }
-
 
 /** 
  * Resolution-based responsive rules
  * Creates @media wrappers based on pixel density
  **/
 
-@mixin resolution($pixel_ratio: 2){
-
-	@media
-	only screen and (-webkit-min-device-pixel-ratio: $pixel_ratio),
+@mixin resolution($pixel_ratio: 2) {
+  @media only screen and (-webkit-min-device-pixel-ratio: $pixel_ratio),
 	only screen and (   min--moz-device-pixel-ratio: $pixel_ratio),
 	only screen and (     -o-min-device-pixel-ratio: $pixel_ratio/1),
 	only screen and (        min-device-pixel-ratio: $pixel_ratio),
 	only screen and (                min-resolution: #{$pixel_ratio * 96}dpi),
 	only screen and (                min-resolution: #{$pixel_ratio}dppx) {
-		@content;
-	}
+    @content;
+  }
 }
-
 
 /** 
  * Viewport-based responsive rules
  * Creates @media wrappers based on screen dimensions
  **/
 
-@mixin responsive($max_width: null, $min_width: null, $max_height: null, $min_height: null){
-	@if $max_width and $max_height {
-		@media(max-width: $max_width - 1), (max-height: $max_height - 1){ 
-			@content;
-		}
-	}@else if $max_width and $min_width {
-		@media(max-width: $max_width - 1) and (min-width: $min_width){ 
-			@content;
-		}
-	}@else if $max_width {
-		@media(max-width: $max_width - 1){ 
-			@content;
-		}
-	}@else if $max_height {
-		@media(max-height: $max_height - 1){ 
-			@content;
-		}
-	}@else if $min_width {
-		@media(min-width: $min_width){ 
-			@content;
-		}
-	}@else if $min_height {
-		@media(min-height: $min_height){ 
-			@content;
-		}
-	}
+@mixin responsive(
+  $max_width: null,
+  $min_width: null,
+  $max_height: null,
+  $min_height: null
+) {
+  @if $max_width and $max_height {
+    @media (max-width: $max_width - 1), (max-height: $max_height - 1) {
+      @content;
+    }
+  } @else if $max_width and $min_width {
+    @media (max-width: $max_width - 1) and (min-width: $min_width) {
+      @content;
+    }
+  } @else if $max_width {
+    @media (max-width: $max_width - 1) {
+      @content;
+    }
+  } @else if $max_height {
+    @media (max-height: $max_height - 1) {
+      @content;
+    }
+  } @else if $min_width {
+    @media (min-width: $min_width) {
+      @content;
+    }
+  } @else if $min_height {
+    @media (min-height: $min_height) {
+      @content;
+    }
+  }
 }
 
-@mixin blur($size: 10px){
-	-webkit-filter: blur($size);
-	filter: blur($size);
+@mixin blur($size: 10px) {
+  -webkit-filter: blur($size);
+  filter: blur($size);
 }
 
-@mixin feature_font(){
-	font-family: "Overpass";
-	font-weight: 600;
+@mixin feature_font() {
+  font-family: "Overpass";
+  font-weight: 600;
 }
 
-@mixin noselect(){
-	-webkit-touch-callout: none;
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
+@mixin noselect() {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
-@mixin invert(){
-	-webkit-filter: invert(1);
-	filter: invert(1);
+@mixin invert() {
+  -webkit-filter: invert(1);
+  filter: invert(1);
 }
 
-@mixin gradient_overlay($radius: 0, $opacity: 0){
-	position: relative;
-	border-radius: $radius;
-	
-	&:before {
-		@include animate();
-		border-radius: $radius;
-		content: '';
-		display: block;
-		position: absolute;
-		top: 0;
-		right: 0;
-		bottom: 0;
-		left: 0;
-		opacity: $opacity;
-		z-index: 9;
-		pointer-events: none;
-		background: -webkit-linear-gradient(to bottom right, rgba(255,255,255,.75), rgba(0,0,0,1));
-		background: -moz-linear-gradient(to bottom right, rgba(255,255,255,.75), rgba(0,0,0,1));
-		background: -o-linear-gradient(to bottom right, rgba(255,255,255,.75), rgba(0,0,0,1));
-		background: linear-gradient(to bottom right, rgba(255,255,255,.75), rgba(0,0,0,1));
-	}
+@mixin gradient_overlay($radius: 0, $opacity: 0) {
+  position: relative;
+  border-radius: $radius;
+
+  &:before {
+    @include animate();
+    border-radius: $radius;
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    opacity: $opacity;
+    z-index: 9;
+    pointer-events: none;
+    background: -webkit-linear-gradient(
+      to bottom right,
+      rgba(255, 255, 255, 0.75),
+      rgba(0, 0, 0, 1)
+    );
+    background: -moz-linear-gradient(
+      to bottom right,
+      rgba(255, 255, 255, 0.75),
+      rgba(0, 0, 0, 1)
+    );
+    background: -o-linear-gradient(
+      to bottom right,
+      rgba(255, 255, 255, 0.75),
+      rgba(0, 0, 0, 1)
+    );
+    background: linear-gradient(
+      to bottom right,
+      rgba(255, 255, 255, 0.75),
+      rgba(0, 0, 0, 1)
+    );
+  }
 }

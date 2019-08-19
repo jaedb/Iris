@@ -2778,7 +2778,7 @@ main {
     position: relative;
     padding: 40px 40px 20px 40px; }
     main .content-wrapper::after {
-      content: '';
+      content: "";
       clear: both;
       display: block; }
   main a {
@@ -3021,7 +3021,7 @@ button.placeholder {
   float: right; }
 
 .cf::after {
-  content: '';
+  content: "";
   clear: both;
   display: block; }
 
@@ -3059,7 +3059,7 @@ footer {
     .details li:not(.source) ~ li {
       padding-left: 14px; }
       .details li:not(.source) ~ li:before {
-        content: '\2022' !important;
+        content: "\2022" !important;
         display: inline-block;
         margin-left: -8px;
         padding-right: 6px; }
@@ -3247,7 +3247,7 @@ input[type="number"] {
     margin: 0; }
 
 input[type="radio"] + .label:before {
-  content: ' ';
+  content: " ";
   display: inline-block;
   width: 1.8rem;
   height: 1.8rem;
@@ -3258,7 +3258,7 @@ input[type="radio"] + .label:before {
     background: #f4f2f0; }
 
 input[type="radio"]:checked + .label:after {
-  content: ' ';
+  content: " ";
   display: inline-block;
   width: 0.7rem;
   height: 0.7rem;
@@ -3278,7 +3278,7 @@ input[type="checkbox"] + .label:before {
   font-family: "Material Icons";
   font-size: 1.2rem;
   line-height: 1.6rem;
-  content: '';
+  content: "";
   color: #FFFFFF;
   display: inline-flex;
   padding: 0 0.2rem;
@@ -3292,7 +3292,7 @@ input[type="checkbox"] + .label:before {
     background: #f4f2f0; }
 
 input[type="checkbox"]:checked + .label:before {
-  content: '\E5CA'; }
+  content: "\E5CA"; }
 
 input[type="checkbox"]:focus + .label:before,
 input[type="checkbox"]:active + .label:before {
@@ -3302,7 +3302,8 @@ input[type="checkbox"]:active + .label:before {
   color: #121212; }
 
 select {
-  max-width: 100%; }
+  max-width: 100%;
+  -webkit-appearance: none; }
   select option {
     background: #FFFFFF;
     color: #121212;
@@ -3339,7 +3340,7 @@ select {
     padding-bottom: 150%;
     opacity: 0; } }
   .action:after {
-    content: '';
+    content: "";
     display: block;
     position: absolute;
     background: rgba(128, 128, 128, 0.5);
@@ -3393,7 +3394,7 @@ select {
       -o-transition: all 0.2s ease-in-out;
       transition: all 0.2s ease-in-out;
       border-radius: 3px;
-      content: '';
+      content: "";
       display: block;
       position: absolute;
       top: 0;
@@ -3473,7 +3474,7 @@ select {
       animation-name: shrink_from_right;
       animation-duration: 2s;
       animation-timing-function: linear;
-      content: '';
+      content: "";
       position: absolute;
       top: 0;
       left: 0;
@@ -3497,7 +3498,7 @@ select {
       pointer-events: none;
       position: absolute;
       display: block;
-      content: '';
+      content: "";
       animation: slideloader 1s infinite linear;
       background: rgba(200, 200, 200, 0.3);
       top: 0;
@@ -3529,7 +3530,7 @@ select {
   display: block;
   padding-bottom: 12px; }
   .field::after {
-    content: '';
+    content: "";
     clear: both;
     display: block; }
   .field > .name {
@@ -3687,7 +3688,7 @@ select {
         -o-transition: all 0.2s ease-in-out;
         transition: all 0.2s ease-in-out;
         border-radius: 3px;
-        content: '';
+        content: "";
         display: block;
         position: absolute;
         top: 0;
@@ -3794,7 +3795,7 @@ select {
         color: #a3a19f;
         padding: 16px 22px; }
         .context-menu__title::after {
-          content: '';
+          content: "";
           clear: both;
           display: block; }
         .light-theme .context-menu__title {
@@ -3942,7 +3943,7 @@ select {
 			right: 40px;
 		}*/ }
   .list__item::after {
-    content: '';
+    content: "";
     clear: both;
     display: block; }
   .list__item:before {
@@ -4051,7 +4052,7 @@ select {
           .list__item__column__item--details .details__item:not(:first-child) {
             padding-left: 14px; }
             .list__item__column__item--details .details__item:not(:first-child):before {
-              content: '\2022' !important;
+              content: "\2022" !important;
               display: inline-block;
               margin-left: -8px;
               padding-right: 6px; }
@@ -4226,7 +4227,7 @@ select {
       -o-transition: all 0.2s ease-in-out;
       transition: all 0.2s ease-in-out;
       border-radius: 3px;
-      content: '';
+      content: "";
       display: block;
       position: absolute;
       top: 0;
@@ -4702,7 +4703,7 @@ select {
     padding-bottom: 150%;
     opacity: 0; } }
     .playback-controls .control:after {
-      content: '';
+      content: "";
       display: block;
       position: absolute;
       background: rgba(128, 128, 128, 0.5);
@@ -4912,7 +4913,7 @@ select {
     padding: 12px 18px 8px;
     position: relative; }
     .output-control__item--commands::after {
-      content: '';
+      content: "";
       clear: both;
       display: block; }
     .output-control__item:not(:first-child) {
@@ -4955,7 +4956,7 @@ select {
     padding-bottom: 150%;
     opacity: 0; } }
       .output-control__item__mute.control:after {
-        content: '';
+        content: "";
         display: block;
         position: absolute;
         background: rgba(0, 0, 0, 0.5);
@@ -4996,7 +4997,7 @@ select {
       .output-control__item {
         padding: 10px 18px 6px; }
         .output-control__item::after {
-          content: '';
+          content: "";
           clear: both;
           display: block; }
         .output-control__item:not(:first-child) {
@@ -5057,7 +5058,7 @@ select {
         -o-transition: all 0.2s ease-in-out;
         transition: all 0.2s ease-in-out;
         border-radius: 3px;
-        content: '';
+        content: "";
         display: block;
         position: absolute;
         top: 0;
@@ -5216,7 +5217,7 @@ select {
   .grid--tiles .grid__item__name {
     font-size: 16px; } }
 
-@media (min-width: 1900px) {
+@media (min-width: 1850px) {
   .grid--mini .grid__item {
     width: 30.66667%;
     box-sizing: border-box;
@@ -5224,7 +5225,7 @@ select {
     .grid--mini .grid__item:nth-child(3n-3) {
       margin-right: 0; }
       .grid--mini .grid__item:nth-child(3n-3)::after {
-        content: '';
+        content: "";
         clear: both;
         display: block; }
     .grid--mini .grid__item:nth-child(3n-2) {
@@ -5238,7 +5239,7 @@ select {
     .grid:not(.grid--mini) .grid__item:nth-child(5n-5) {
       margin-right: 0; }
       .grid:not(.grid--mini) .grid__item:nth-child(5n-5)::after {
-        content: '';
+        content: "";
         clear: both;
         display: block; }
     .grid:not(.grid--mini) .grid__item:nth-child(5n-4) {
@@ -5246,7 +5247,7 @@ select {
   .grid:not(.grid--mini)\--single-row .grid-item:nth-child(1n+6) {
     display: none; } }
 
-@media (max-width: 1899px) and (min-width: 1200px) {
+@media (max-width: 1849px) and (min-width: 1200px) {
   .grid--mini .grid__item {
     width: 48%;
     box-sizing: border-box;
@@ -5254,7 +5255,7 @@ select {
     .grid--mini .grid__item:nth-child(2n-2) {
       margin-right: 0; }
       .grid--mini .grid__item:nth-child(2n-2)::after {
-        content: '';
+        content: "";
         clear: both;
         display: block; }
     .grid--mini .grid__item:nth-child(2n-1) {
@@ -5268,7 +5269,7 @@ select {
     .grid:not(.grid--mini) .grid__item:nth-child(4n-4) {
       margin-right: 0; }
       .grid:not(.grid--mini) .grid__item:nth-child(4n-4)::after {
-        content: '';
+        content: "";
         clear: both;
         display: block; }
     .grid:not(.grid--mini) .grid__item:nth-child(4n-3) {
@@ -5284,7 +5285,7 @@ select {
     .grid--mini .grid__item:nth-child(2n-2) {
       margin-right: 0; }
       .grid--mini .grid__item:nth-child(2n-2)::after {
-        content: '';
+        content: "";
         clear: both;
         display: block; }
     .grid--mini .grid__item:nth-child(2n-1) {
@@ -5298,7 +5299,7 @@ select {
     .grid:not(.grid--mini) .grid__item:nth-child(4n-4) {
       margin-right: 0; }
       .grid:not(.grid--mini) .grid__item:nth-child(4n-4)::after {
-        content: '';
+        content: "";
         clear: both;
         display: block; }
     .grid:not(.grid--mini) .grid__item:nth-child(4n-3) {
@@ -5314,7 +5315,7 @@ select {
     .grid--mini .grid__item:nth-child(6n-6) {
       margin-right: 0; }
       .grid--mini .grid__item:nth-child(6n-6)::after {
-        content: '';
+        content: "";
         clear: both;
         display: block; }
     .grid--mini .grid__item:nth-child(6n-5) {
@@ -5328,7 +5329,7 @@ select {
     .grid:not(.grid--mini) .grid__item:nth-child(3n-3) {
       margin-right: 0; }
       .grid:not(.grid--mini) .grid__item:nth-child(3n-3)::after {
-        content: '';
+        content: "";
         clear: both;
         display: block; }
     .grid:not(.grid--mini) .grid__item:nth-child(3n-2) {
@@ -5344,7 +5345,7 @@ select {
     .grid--mini .grid__item:nth-child(3n-3) {
       margin-right: 0; }
       .grid--mini .grid__item:nth-child(3n-3)::after {
-        content: '';
+        content: "";
         clear: both;
         display: block; }
     .grid--mini .grid__item:nth-child(3n-2) {
@@ -5358,7 +5359,7 @@ select {
     .grid:not(.grid--mini) .grid__item:nth-child(2n-2) {
       margin-right: 0; }
       .grid:not(.grid--mini) .grid__item:nth-child(2n-2)::after {
-        content: '';
+        content: "";
         clear: both;
         display: block; }
     .grid:not(.grid--mini) .grid__item:nth-child(2n-1) {
@@ -5389,7 +5390,7 @@ select {
       font-size: 16px;
       z-index: 2; }
     .tiles .tile:last-child::after {
-      content: '';
+      content: "";
       clear: both;
       display: block; }
     .tiles .tile:before {
@@ -5422,7 +5423,7 @@ select {
       .tiles.artist-stats .tile:nth-child(2n-2) {
         margin-right: 0; }
         .tiles.artist-stats .tile:nth-child(2n-2)::after {
-          content: '';
+          content: "";
           clear: both;
           display: block; }
       .tiles.artist-stats .tile:nth-child(2n-1) {
@@ -5437,7 +5438,7 @@ select {
         .tiles.artist-stats .tile:nth-child(3n-3) {
           margin-right: 0; }
           .tiles.artist-stats .tile:nth-child(3n-3)::after {
-            content: '';
+            content: "";
             clear: both;
             display: block; }
         .tiles.artist-stats .tile:nth-child(3n-2) {
@@ -5649,7 +5650,7 @@ main header {
     padding-bottom: 150%;
     opacity: 0; } }
       .notifications .notification__close-button:after {
-        content: '';
+        content: "";
         display: block;
         position: absolute;
         background: rgba(128, 128, 128, 0.5);
@@ -6149,7 +6150,7 @@ main header {
     max-width: 200px; }
 
 .services .menu::after {
-  content: '';
+  content: "";
   clear: both;
   display: block; }
 
@@ -6285,7 +6286,7 @@ main header {
 .snapcast__client {
   padding: 0 !important; }
   .snapcast__client::after {
-    content: '';
+    content: "";
     clear: both;
     display: block; }
   .snapcast__client--expanded {
@@ -6498,7 +6499,7 @@ main header {
     padding-bottom: 150%;
     opacity: 0; } }
     .commands__item--interactive:after {
-      content: '';
+      content: "";
       display: block;
       position: absolute;
       background: rgba(0, 0, 0, 0.5);
@@ -6522,7 +6523,7 @@ main header {
     margin: 20px 0;
     padding: 0; }
     .related-artists__item::after {
-      content: '';
+      content: "";
       clear: both;
       display: block; }
     .related-artists__item__thumbnail {
@@ -6574,7 +6575,7 @@ main header {
 .artist-view .intro {
   position: relative; }
   .artist-view .intro::after {
-    content: '';
+    content: "";
     clear: both;
     display: block; }
   .artist-view .intro .liner {
@@ -6601,7 +6602,7 @@ main header {
   padding-top: 30px; }
 
 .artist-view .body.about::after {
-  content: '';
+  content: "";
   clear: both;
   display: block; }
 
@@ -6633,7 +6634,7 @@ main header {
         font-size: 3rem;
         line-height: 3rem; }
         .artist-view .intro .liner h1::after {
-          content: '';
+          content: "";
           clear: both;
           display: block; }
       .artist-view .intro .liner .actions {
@@ -6659,7 +6660,7 @@ main header {
     width: 100%;
     float: none; }
     .artist-view .body.about .col--w40::after, .artist-view .body.about .col--w60::after {
-      content: '';
+      content: "";
       clear: both;
       display: block; }
   .artist-view .body.about .biography {
@@ -6668,7 +6669,7 @@ main header {
 .user-view .intro {
   position: relative; }
   .user-view .intro::after {
-    content: '';
+    content: "";
     clear: both;
     display: block; }
   .user-view .intro .liner {
@@ -6751,7 +6752,7 @@ main .album-view {
         text-align: center;
         padding: 30px 0 20px 0; }
         main .album-view .actions::after {
-          content: '';
+          content: "";
           clear: both;
           display: block; } }
 
@@ -6807,7 +6808,7 @@ main .playlist-view {
         text-align: center;
         padding: 30px 0 20px 0; }
         main .playlist-view .actions::after {
-          content: '';
+          content: "";
           clear: both;
           display: block; } }
 
@@ -6863,7 +6864,7 @@ main .track-view {
       main .track-view .actions {
         padding: 10px 0 20px; }
         main .track-view .actions::after {
-          content: '';
+          content: "";
           clear: both;
           display: block; } }
   @media (max-width: 499px) {
@@ -6980,7 +6981,7 @@ main .track-view {
     .search-view .search-result-sections section .button {
       margin-top: 10px; }
 
-@media (max-width: 1899px) {
+@media (max-width: 1849px) {
   .search-view .search-result-sections .grid__item:nth-child(1n+5) {
     display: none; } }
 
@@ -7057,7 +7058,7 @@ main .track-view {
   .discover-view .intro__parameters {
     padding-top: 40px; }
     .discover-view .intro__parameters::after {
-      content: '';
+      content: "";
       clear: both;
       display: block; }
     .discover-view .intro__parameters .seeds,
@@ -7134,7 +7135,7 @@ main .track-view {
     color: #121212; }
 
 .discover-view .tunabilities::after {
-  content: '';
+  content: "";
   clear: both;
   display: block; }
 
@@ -7166,7 +7167,7 @@ main .track-view {
   padding-bottom: 20px; }
 
 .discover-view section.tracks h4::after {
-  content: '';
+  content: "";
   clear: both;
   display: block; }
 
@@ -7405,7 +7406,7 @@ main .track-view {
       .modal .content .add-uri {
         top: 36px; } }
     .modal .content .list::after {
-      content: '';
+      content: "";
       clear: both;
       display: block; }
     .modal .content .list__item {
