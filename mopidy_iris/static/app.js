@@ -51970,7 +51970,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 
 
 Object.defineProperty(exports, "__esModule", {
-	value: true
+  value: true
 });
 exports.App = undefined;
 
@@ -52196,286 +52196,346 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-;
-
 var App = exports.App = function (_React$Component) {
-	_inherits(App, _React$Component);
+  _inherits(App, _React$Component);
 
-	function App(props) {
-		_classCallCheck(this, App);
+  function App(props) {
+    _classCallCheck(this, App);
 
-		var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
+    var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
-		_this.handleInstallPrompt = _this.handleInstallPrompt.bind(_this);
-		_this.handleFocusAndBlur = _this.handleFocusAndBlur.bind(_this);
-		return _this;
-	}
+    _this.handleInstallPrompt = _this.handleInstallPrompt.bind(_this);
+    _this.handleFocusAndBlur = _this.handleFocusAndBlur.bind(_this);
+    return _this;
+  }
 
-	_createClass(App, [{
-		key: 'componentWillMount',
-		value: function componentWillMount() {
-			window.addEventListener("beforeinstallprompt", this.handleInstallPrompt, false);
-			window.addEventListener("focus", this.handleFocusAndBlur, false);
-			window.addEventListener("blur", this.handleFocusAndBlur, false);
-		}
-	}, {
-		key: 'componentWillUnmount',
-		value: function componentWillUnmount() {
-			window.removeEventListener("beforeinstallprompt", this.handleInstallPrompt, false);
-			window.removeEventListener("focus", this.handleFocusAndBlur, false);
-			window.removeEventListener("blur", this.handleFocusAndBlur, false);
-		}
-	}, {
-		key: 'componentDidMount',
-		value: function componentDidMount() {
-			var _this2 = this;
+  _createClass(App, [{
+    key: "componentWillMount",
+    value: function componentWillMount() {
+      window.addEventListener("beforeinstallprompt", this.handleInstallPrompt, false);
+      window.addEventListener("focus", this.handleFocusAndBlur, false);
+      window.addEventListener("blur", this.handleFocusAndBlur, false);
+    }
+  }, {
+    key: "componentWillUnmount",
+    value: function componentWillUnmount() {
+      window.removeEventListener("beforeinstallprompt", this.handleInstallPrompt, false);
+      window.removeEventListener("focus", this.handleFocusAndBlur, false);
+      window.removeEventListener("blur", this.handleFocusAndBlur, false);
+    }
+  }, {
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      var _this2 = this;
 
-			if (this.props.allow_reporting) {
-				_reactGa2.default.initialize('UA-64701652-3');
-			}
+      if (this.props.allow_reporting) {
+        _reactGa2.default.initialize("UA-64701652-3");
+      }
 
-			// Fire up our services
-			this.props.mopidyActions.connect();
-			this.props.pusherActions.connect();
-			this.props.coreActions.getBroadcasts();
+      // Fire up our services
+      this.props.mopidyActions.connect();
+      this.props.pusherActions.connect();
+      this.props.coreActions.getBroadcasts();
 
-			// Check for url-parsed configuration values
-			var url_vars = this.props.location.query;
-			if (url_vars) {
-				var has_values = false;
-				var values = {};
-				if (url_vars.host !== undefined) {
-					has_values = true;
-					values.host = url_vars.host;
-				}
-				if (url_vars.port !== undefined) {
-					has_values = true;
-					values.port = url_vars.port;
-				}
+      // Check for url-parsed configuration values
+      var url_vars = this.props.location.query;
+      if (url_vars) {
+        var has_values = false;
+        var values = {};
+        if (url_vars.host !== undefined) {
+          has_values = true;
+          values.host = url_vars.host;
+        }
+        if (url_vars.port !== undefined) {
+          has_values = true;
+          values.port = url_vars.port;
+        }
 
-				if (has_values) {
-					this.props.mopidyActions.set(values);
+        if (has_values) {
+          this.props.mopidyActions.set(values);
 
-					// Allow 100ms for the action above to complete before we re-route
-					setTimeout(function () {
-						_this2.props.history.push('/');
-					}, 100);
-				}
-			}
+          // Allow 100ms for the action above to complete before we re-route
+          setTimeout(function () {
+            _this2.props.history.push("/");
+          }, 100);
+        }
+      }
 
-			// show initial setup if required
-			if (!this.props.initial_setup_complete) {
-				this.props.history.push('/initial-setup');
-			}
-		}
-	}, {
-		key: 'componentDidUpdate',
-		value: function componentDidUpdate(prevProps) {
+      // show initial setup if required
+      if (!this.props.initial_setup_complete) {
+        this.props.history.push("/initial-setup");
+      }
+    }
+  }, {
+    key: "componentDidUpdate",
+    value: function componentDidUpdate(prevProps) {
+      // When we have navigated to a new route
+      if (this.props.location !== prevProps.location) {
+        // Log our pageview
+        if (this.props.allow_reporting) {
+          _reactGa2.default.set({ page: this.props.location.pathname });
+          _reactGa2.default.pageview(this.props.location.pathname);
+        }
 
-			// When we have navigated to a new route
-			if (this.props.location !== prevProps.location) {
+        // If the location has a "scroll_position" state variable, scroll to it.
+        // This is invisibly injected to the history by the Link component when navigating, so
+        // hitting back in the browser allows us to restore the position
+        var location_state = this.props.location.state ? this.props.location.state : {};
+        if (location_state.scroll_position) {
+          helpers.scrollTo(parseInt(location_state.scroll_position), false);
+        }
 
-				// Log our pageview
-				if (this.props.allow_reporting) {
-					_reactGa2.default.set({ page: this.props.location.pathname });
-					_reactGa2.default.pageview(this.props.location.pathname);
-				}
+        // Hide our sidebar
+        this.props.uiActions.toggleSidebar(false);
 
-				// If the location has a "scroll_position" state variable, scroll to it.
-				// This is invisibly injected to the history by the Link component when navigating, so 
-				// hitting back in the browser allows us to restore the position
-				var location_state = this.props.location.state ? this.props.location.state : {};
-				if (location_state.scroll_position) {
-					helpers.scrollTo(parseInt(location_state.scroll_position), false);
-				}
+        // Unselect any tracks
+        this.props.uiActions.setSelectedTracks([]);
 
-				// Hide our sidebar
-				this.props.uiActions.toggleSidebar(false);
+        // Close context menu
+        if (this.props.context_menu) {
+          this.props.uiActions.hideContextMenu();
+        }
+      }
+    }
 
-				// Unselect any tracks
-				this.props.uiActions.setSelectedTracks([]);
+    /**
+     * Using Visibility API, detect whether the browser is in focus or not
+     *
+     * This is used to keep background requests lean, preventing a queue of requests building up
+     * for when focus is retained. Seems most obvious on mobile devices with Chrome as it has throttled
+     * quota significantly: https://developers.google.com/web/updates/2017/03/background_tabs
+     *
+     * @param e Event
+     **/
 
-				// Close context menu
-				if (this.props.context_menu) {
-					this.props.uiActions.hideContextMenu();
-				}
-			};
-		}
+  }, {
+    key: "handleFocusAndBlur",
+    value: function handleFocusAndBlur(e) {
+      this.props.uiActions.setWindowFocus(document.hasFocus());
+    }
+  }, {
+    key: "handleInstallPrompt",
+    value: function handleInstallPrompt(e) {
+      e.preventDefault();
+      console.log("Install prompt detected");
+      this.props.uiActions.installPrompt(e);
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var className = this.props.theme + "-theme";
+      if (this.props.wide_scrollbar_enabled) {
+        className += " wide-scrollbar";
+      }
+      if (this.props.dragging) {
+        className += " dragging";
+      }
+      if (this.props.sidebar_open) {
+        className += " sidebar-open";
+      }
+      if (this.props.touch_dragging) {
+        className += " touch-dragging";
+        console.log("TOUCH DRAGGING");
+      }
+      if (this.props.context_menu) {
+        className += " context-menu-open";
+      }
+      if (this.props.slim_mode) {
+        className += " slim-mode";
+      }
+      if (this.props.smooth_scrolling_enabled) {
+        className += " smooth-scrolling-enabled";
+      }
+      if (helpers.isTouchDevice()) {
+        className += " touch";
+      } else {
+        className += " notouch";
+      }
 
-		/**
-   * Using Visibility API, detect whether the browser is in focus or not
-   *
-   * This is used to keep background requests lean, preventing a queue of requests building up
-   * for when focus is retained. Seems most obvious on mobile devices with Chrome as it has throttled
-   * quota significantly: https://developers.google.com/web/updates/2017/03/background_tabs
-   *
-   * @param e Event
-   **/
+      return _react2.default.createElement(
+        "div",
+        { className: className },
+        _react2.default.createElement(
+          "div",
+          { className: "body" },
+          _react2.default.createElement(
+            _reactRouterDom.Switch,
+            null,
+            _react2.default.createElement(_reactRouterDom.Route, { path: "/initial-setup", component: _InitialSetup2.default }),
+            _react2.default.createElement(_reactRouterDom.Route, { path: "/kiosk-mode", component: _KioskMode2.default }),
+            _react2.default.createElement(_reactRouterDom.Route, { path: "/add-to-playlist/:uris", component: _AddToPlaylist2.default }),
+            _react2.default.createElement(_reactRouterDom.Route, { path: "/image-zoom", component: _ImageZoom2.default }),
+            _react2.default.createElement(_reactRouterDom.Route, { path: "/share-configuration", component: _ShareConfiguration2.default }),
+            _react2.default.createElement(_reactRouterDom.Route, { path: "/edit-command/:id?", component: _EditCommand2.default }),
+            _react2.default.createElement(_reactRouterDom.Route, { path: "/queue/radio", component: _EditRadio2.default }),
+            _react2.default.createElement(_reactRouterDom.Route, { path: "/queue/add-uri", component: _AddToQueue2.default }),
+            _react2.default.createElement(_reactRouterDom.Route, { path: "/playlist/create", component: _CreatePlaylist2.default }),
+            _react2.default.createElement(_reactRouterDom.Route, { path: "/playlist/:uri/edit", component: _EditPlaylist2.default }),
+            _react2.default.createElement(
+              _reactRouterDom.Route,
+              null,
+              _react2.default.createElement(
+                "div",
+                null,
+                _react2.default.createElement(_Sidebar2.default, {
+                  location: this.props.location,
+                  history: this.props.history,
+                  tabIndex: "3"
+                }),
+                _react2.default.createElement(_PlaybackControls2.default, {
+                  history: this.props.history,
+                  slim_mode: this.props.slim_mode,
+                  tabIndex: "2"
+                }),
+                _react2.default.createElement(
+                  "main",
+                  { id: "main", className: "smooth-scroll", tabIndex: "1" },
+                  _react2.default.createElement(
+                    _reactRouterDom.Switch,
+                    null,
+                    _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: "/", component: _Queue2.default }),
+                    _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: "/queue", component: _Queue2.default }),
+                    _react2.default.createElement(_reactRouterDom.Route, {
+                      exact: true,
+                      path: "/queue/history",
+                      component: _QueueHistory2.default
+                    }),
+                    _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: "/settings/debug", component: _Debug2.default }),
+                    _react2.default.createElement(_reactRouterDom.Route, { path: "/settings", component: _Settings2.default }),
+                    _react2.default.createElement(_reactRouterDom.Route, {
+                      exact: true,
+                      path: "/search/:type?/:term?",
+                      component: _Search2.default
+                    }),
+                    _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: "/album/:uri", component: _Album2.default }),
+                    _react2.default.createElement(_reactRouterDom.Route, {
+                      exact: true,
+                      path: "/artist/:uri/:sub_view?",
+                      component: _Artist2.default
+                    }),
+                    _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: "/playlist/:uri", component: _Playlist2.default }),
+                    _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: "/user/:uri", component: _User2.default }),
+                    _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: "/track/:uri", component: _Track2.default }),
+                    _react2.default.createElement(_reactRouterDom.Route, {
+                      exact: true,
+                      path: "/discover/recommendations/:seeds?",
+                      component: _DiscoverRecommendations2.default
+                    }),
+                    _react2.default.createElement(_reactRouterDom.Route, {
+                      exact: true,
+                      path: "/discover/featured",
+                      component: _DiscoverFeatured2.default
+                    }),
+                    _react2.default.createElement(_reactRouterDom.Route, {
+                      exact: true,
+                      path: "/discover/categories/:id",
+                      component: _DiscoverCategory2.default
+                    }),
+                    _react2.default.createElement(_reactRouterDom.Route, {
+                      exact: true,
+                      path: "/discover/categories",
+                      component: _DiscoverCategories2.default
+                    }),
+                    _react2.default.createElement(_reactRouterDom.Route, {
+                      exact: true,
+                      path: "/discover/new-releases",
+                      component: _DiscoverNewReleases2.default
+                    }),
+                    _react2.default.createElement(_reactRouterDom.Route, {
+                      exact: true,
+                      path: "/library/artists",
+                      component: _LibraryArtists2.default
+                    }),
+                    _react2.default.createElement(_reactRouterDom.Route, {
+                      exact: true,
+                      path: "/library/albums",
+                      component: _LibraryAlbums2.default
+                    }),
+                    _react2.default.createElement(_reactRouterDom.Route, {
+                      exact: true,
+                      path: "/library/tracks",
+                      component: _LibraryTracks2.default
+                    }),
+                    _react2.default.createElement(_reactRouterDom.Route, {
+                      exact: true,
+                      path: "/library/playlists",
+                      component: _LibraryPlaylists2.default
+                    }),
+                    _react2.default.createElement(_reactRouterDom.Route, {
+                      exact: true,
+                      path: "/library/browse",
+                      component: _LibraryBrowse2.default
+                    }),
+                    _react2.default.createElement(_reactRouterDom.Route, {
+                      exact: true,
+                      path: "/library/browse/:uri",
+                      component: _LibraryBrowseDirectory2.default
+                    }),
+                    _react2.default.createElement(
+                      _reactRouterDom.Route,
+                      null,
+                      _react2.default.createElement(
+                        _ErrorMessage2.default,
+                        { type: "not-found", title: "Not found" },
+                        _react2.default.createElement(
+                          "p",
+                          null,
+                          "Oops, that link could not be found"
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        ),
+        _react2.default.createElement(_ResizeListener2.default, {
+          uiActions: this.props.uiActions,
+          slim_mode: this.props.slim_mode
+        }),
+        this.props.hotkeys_enabled && _react2.default.createElement(_Hotkeys2.default, null),
+        _react2.default.createElement(_ContextMenu2.default, null),
+        _react2.default.createElement(_Dragger2.default, null),
+        _react2.default.createElement(_Notifications2.default, null),
+        this.props.debug_info ? _react2.default.createElement(_DebugInfo2.default, null) : null
+      );
+    }
+  }]);
 
-	}, {
-		key: 'handleFocusAndBlur',
-		value: function handleFocusAndBlur(e) {
-			this.props.uiActions.setWindowFocus(document.hasFocus());
-		}
-	}, {
-		key: 'handleInstallPrompt',
-		value: function handleInstallPrompt(e) {
-			e.preventDefault();
-			console.log("Install prompt detected");
-			this.props.uiActions.installPrompt(e);
-		}
-	}, {
-		key: 'render',
-		value: function render() {
-			var className = this.props.theme + '-theme';
-			if (this.props.wide_scrollbar_enabled) {
-				className += ' wide-scrollbar';
-			}
-			if (this.props.dragging) {
-				className += ' dragging';
-			}
-			if (this.props.sidebar_open) {
-				className += ' sidebar-open';
-			}
-			if (this.props.touch_dragging) {
-				className += ' touch-dragging';
-				console.log("TOUCH DRAGGING");
-			}
-			if (this.props.context_menu) {
-				className += ' context-menu-open';
-			}
-			if (this.props.slim_mode) {
-				className += ' slim-mode';
-			}
-			if (this.props.smooth_scrolling_enabled) {
-				className += ' smooth-scrolling-enabled';
-			}
-			if (helpers.isTouchDevice()) {
-				className += ' touch';
-			} else {
-				className += ' notouch';
-			}
-
-			return _react2.default.createElement(
-				'div',
-				{ className: className },
-				_react2.default.createElement(
-					'div',
-					{ className: 'body' },
-					_react2.default.createElement(
-						_reactRouterDom.Switch,
-						null,
-						_react2.default.createElement(_reactRouterDom.Route, { path: '/initial-setup', component: _InitialSetup2.default }),
-						_react2.default.createElement(_reactRouterDom.Route, { path: '/kiosk-mode', component: _KioskMode2.default }),
-						_react2.default.createElement(_reactRouterDom.Route, { path: '/add-to-playlist/:uris', component: _AddToPlaylist2.default }),
-						_react2.default.createElement(_reactRouterDom.Route, { path: '/image-zoom', component: _ImageZoom2.default }),
-						_react2.default.createElement(_reactRouterDom.Route, { path: '/share-configuration', component: _ShareConfiguration2.default }),
-						_react2.default.createElement(_reactRouterDom.Route, { path: '/edit-command/:id?', component: _EditCommand2.default }),
-						_react2.default.createElement(_reactRouterDom.Route, { path: '/queue/radio', component: _EditRadio2.default }),
-						_react2.default.createElement(_reactRouterDom.Route, { path: '/queue/add-uri', component: _AddToQueue2.default }),
-						_react2.default.createElement(_reactRouterDom.Route, { path: '/playlist/create', component: _CreatePlaylist2.default }),
-						_react2.default.createElement(_reactRouterDom.Route, { path: '/playlist/:uri/edit', component: _EditPlaylist2.default }),
-						_react2.default.createElement(
-							_reactRouterDom.Route,
-							null,
-							_react2.default.createElement(
-								'div',
-								null,
-								_react2.default.createElement(_Sidebar2.default, { location: this.props.location, history: this.props.history, tabIndex: '3' }),
-								_react2.default.createElement(_PlaybackControls2.default, { history: this.props.history, slim_mode: this.props.slim_mode, tabIndex: '2' }),
-								_react2.default.createElement(
-									'main',
-									{ id: 'main', className: 'smooth-scroll', tabIndex: '1' },
-									_react2.default.createElement(
-										_reactRouterDom.Switch,
-										null,
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', component: _Queue2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/queue', component: _Queue2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/queue/history', component: _QueueHistory2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/settings/debug', component: _Debug2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { path: '/settings', component: _Settings2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/search/:type?/:term?', component: _Search2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/album/:uri', component: _Album2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/artist/:uri/:sub_view?', component: _Artist2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/playlist/:uri', component: _Playlist2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/user/:uri', component: _User2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/track/:uri', component: _Track2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/discover/recommendations/:seeds?', component: _DiscoverRecommendations2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/discover/featured', component: _DiscoverFeatured2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/discover/categories/:id', component: _DiscoverCategory2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/discover/categories', component: _DiscoverCategories2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/discover/new-releases', component: _DiscoverNewReleases2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/library/artists', component: _LibraryArtists2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/library/albums', component: _LibraryAlbums2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/library/tracks', component: _LibraryTracks2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/library/playlists', component: _LibraryPlaylists2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/library/browse', component: _LibraryBrowse2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/library/browse/:uri', component: _LibraryBrowseDirectory2.default }),
-										_react2.default.createElement(
-											_reactRouterDom.Route,
-											null,
-											_react2.default.createElement(
-												_ErrorMessage2.default,
-												{ type: 'not-found', title: 'Not found' },
-												_react2.default.createElement(
-													'p',
-													null,
-													'Oops, that link could not be found'
-												)
-											)
-										)
-									)
-								)
-							)
-						)
-					)
-				),
-				_react2.default.createElement(_ResizeListener2.default, {
-					uiActions: this.props.uiActions,
-					slim_mode: this.props.slim_mode
-				}),
-				this.props.hotkeys_enabled && _react2.default.createElement(_Hotkeys2.default, null),
-				_react2.default.createElement(_ContextMenu2.default, null),
-				_react2.default.createElement(_Dragger2.default, null),
-				_react2.default.createElement(_Notifications2.default, null),
-				this.props.debug_info ? _react2.default.createElement(_DebugInfo2.default, null) : null
-			);
-		}
-	}]);
-
-	return App;
+  return App;
 }(_react2.default.Component);
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
-	return {
-		theme: state.ui.theme,
-		wide_scrollbar_enabled: state.ui.wide_scrollbar_enabled,
-		smooth_scrolling_enabled: state.ui.smooth_scrolling_enabled,
-		hotkeys_enabled: state.ui.hotkeys_enabled,
-		allow_reporting: state.ui.allow_reporting,
-		touch_dragging: state.ui.touch_dragging,
-		initial_setup_complete: state.ui.initial_setup_complete,
-		slim_mode: state.ui.slim_mode,
-		mopidy_connected: state.mopidy.connected,
-		spotify_authorized: state.spotify.authorization,
-		sidebar_open: state.ui.sidebar_open,
-		dragging: state.ui.dragger && state.ui.dragger.active,
-		context_menu: state.ui.context_menu,
-		debug_info: state.ui.debug_info
-	};
+  return {
+    theme: state.ui.theme,
+    wide_scrollbar_enabled: state.ui.wide_scrollbar_enabled,
+    smooth_scrolling_enabled: state.ui.smooth_scrolling_enabled,
+    hotkeys_enabled: state.ui.hotkeys_enabled,
+    allow_reporting: state.ui.allow_reporting,
+    touch_dragging: state.ui.touch_dragging,
+    initial_setup_complete: state.ui.initial_setup_complete,
+    slim_mode: state.ui.slim_mode,
+    mopidy_connected: state.mopidy.connected,
+    spotify_authorized: state.spotify.authorization,
+    sidebar_open: state.ui.sidebar_open,
+    dragging: state.ui.dragger && state.ui.dragger.active,
+    context_menu: state.ui.context_menu,
+    debug_info: state.ui.debug_info
+  };
 };
 
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
-	return {
-		coreActions: (0, _redux.bindActionCreators)(coreActions, dispatch),
-		uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
-		pusherActions: (0, _redux.bindActionCreators)(pusherActions, dispatch),
-		mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch),
-		spotifyActions: (0, _redux.bindActionCreators)(spotifyActions, dispatch),
-		lastfmActions: (0, _redux.bindActionCreators)(lastfmActions, dispatch),
-		geniusActions: (0, _redux.bindActionCreators)(geniusActions, dispatch),
-		snapcastActions: (0, _redux.bindActionCreators)(snapcastActions, dispatch)
-	};
+  return {
+    coreActions: (0, _redux.bindActionCreators)(coreActions, dispatch),
+    uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
+    pusherActions: (0, _redux.bindActionCreators)(pusherActions, dispatch),
+    mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch),
+    spotifyActions: (0, _redux.bindActionCreators)(spotifyActions, dispatch),
+    lastfmActions: (0, _redux.bindActionCreators)(lastfmActions, dispatch),
+    geniusActions: (0, _redux.bindActionCreators)(geniusActions, dispatch),
+    snapcastActions: (0, _redux.bindActionCreators)(snapcastActions, dispatch)
+  };
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(App);
