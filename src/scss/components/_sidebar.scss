@@ -138,6 +138,14 @@
     position: fixed;
     z-index: 100;
 
+    .light-theme & {
+      background: lighten(colour(faint_grey), 2%);
+    }
+
+    .dark-theme & {
+      background: colour(darkest_grey);
+    }
+
     .sidebar-open & {
       -ms-transform: translate(-220px, 0);
       -webkit-transform: translate(-220px, 0);

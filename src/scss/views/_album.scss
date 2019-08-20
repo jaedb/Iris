@@ -43,13 +43,6 @@ main .album-view {
 		padding-top: 40px;
 	}
 
-	@include responsive(null, $bp_medium){
-		.parallax {
-			height: 30vh;
-			opacity: 0.25;
-		}
-	}
-
 	@include responsive($bp_medium){
 		padding-top: 0;
 		padding-left: 10px;

@@ -41,6 +41,7 @@ select {
 
   .light-theme & {
     color: colour(darkest_grey);
+    background: rgba(255, 255, 255, 0.75);
   }
 
   &::placeholder {
@@ -77,7 +78,7 @@ input[type="radio"] {
     margin-right: 0.5rem;
 
     .light-theme & {
-      background: colour(faint_grey);
+      background: colour(white);
     }
   }
 
@@ -121,7 +122,7 @@ input[type="checkbox"] {
     margin-right: 0.5rem;
 
     .light-theme & {
-      background: colour(faint_grey);
+      background: colour(white);
     }
   }
 

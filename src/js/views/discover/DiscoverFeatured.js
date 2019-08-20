@@ -64,7 +64,7 @@ class DiscoverFeatured extends React.Component{
 	render(){
 		if (helpers.isLoading(this.props.load_queue,['spotify_browse/featured-playlists'])){
 			return (
-				<div className="view discover-featured-view">
+				<div className="view discover-featured-view preserve-3d">
 					<Header className="overlay" uiActions={this.props.uiActions}>
 						<Icon name="star" type="material" />
 						Featured playlists
@@ -101,7 +101,7 @@ class DiscoverFeatured extends React.Component{
 					<Icon name="star" type="material" />
 					Featured playlists
 				</Header>
-				{this.renderIntro(this.props.theme == 'dark' ? first_playlist : null)}
+				{this.renderIntro(first_playlist)}
 				<section className="content-wrapper grid-wrapper">
 					{playlists ? <PlaylistGrid playlists={playlists} /> : null }
 				</section>

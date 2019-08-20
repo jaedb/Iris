@@ -178,7 +178,7 @@ export class App extends React.Component {
   }
 
   render() {
-    let className = this.props.theme + "-theme";
+    let className = this.props.theme + "-theme app-inner";
     if (this.props.wide_scrollbar_enabled) {
       className += " wide-scrollbar";
     }

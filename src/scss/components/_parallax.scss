@@ -3,7 +3,7 @@ $parallax: 'parallax';
 .#{$parallax} {
 	position: absolute;
 	top: 0;
-	left: -5px;
+	left: -225px;
 	right: -5px;
 	height: 100%;
 	z-index: -1;
@@ -83,18 +83,18 @@ $parallax: 'parallax';
 	&--loaded {
 		.#{$parallax} {
 			&__image {
-				opacity: 1;
+				opacity: 0.5;
 			}
 		}
 	}
 
 	.light-theme & {
 		&__stage {
-			background-color: colour(faint_grey);
+			background-color: lighten(colour(faint_grey), 2%);
 		}
 
 		&__overlay {
-			opacity: 0.5;
+			background-image: linear-gradient(rgba(244, 242, 240, 0), rgba(244, 242, 240, 1));
 		}
 	}
 }

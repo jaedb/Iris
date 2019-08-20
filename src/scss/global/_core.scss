@@ -73,28 +73,28 @@ body {
   }
 }
 
-.light-theme {
-  main,
-  .sidebar {
-    color: colour(darkest_grey);
-    background: colour(faint_grey);
-  }
-}
+.app-inner {
+  width: 100%;
+  height: 100%;
 
-.dark-theme {
-  main,
-  .sidebar {
-    color: colour(light_grey);
-    background: colour(dark_grey);
+  &.light-theme {
+      color: colour(darkest_grey);
+      background: lighten(colour(faint_grey), 2%);
+  }
+
+  &.dark-theme {
+      color: colour(light_grey);
+      background: colour(dark_grey);
   }
 }
 
 main {
   position: fixed;
   top: 0;
-  left: 220px;
+  left: 0;
   bottom: 60px;
   right: 0;
+  padding-left: 220px;
   perspective: 1000px;
   perspective-origin: top;
   z-index: 1;
@@ -112,6 +112,10 @@ main {
     &::-webkit-scrollbar {
       width: 18px;
     }
+  }
+
+  @include responsive($bp_medium) {
+    padding-left: 0;
   }
 
   .notouch & {

@@ -16,10 +16,6 @@
         padding-bottom: 25px;
         font-size: 5rem;
         line-height: 5rem;
-
-        .light-theme & {
-          color: colour(white);
-        }
       }
 
       .actions {
@@ -31,14 +27,6 @@
       .sub-views {
         padding-top: 25px;
       }
-    }
-  }
-
-  .content-wrapper {
-    background: colour(dark_grey);
-
-    .light-theme & {
-      background: colour(faint_grey);
     }
   }
 

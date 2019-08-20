@@ -2718,22 +2718,23 @@ body {
 .smooth-scrolling-enabled .smooth-scroll {
   scroll-behavior: smooth; }
 
-.light-theme main,
-.light-theme .sidebar {
-  color: #121212;
-  background: #f4f2f0; }
-
-.dark-theme main,
-.dark-theme .sidebar {
-  color: #cecac4;
-  background: #181818; }
+.app-inner {
+  width: 100%;
+  height: 100%; }
+  .app-inner.light-theme {
+    color: #121212;
+    background: #f8f7f6; }
+  .app-inner.dark-theme {
+    color: #cecac4;
+    background: #181818; }
 
 main {
   position: fixed;
   top: 0;
-  left: 220px;
+  left: 0;
   bottom: 60px;
   right: 0;
+  padding-left: 220px;
   perspective: 1000px;
   perspective-origin: top;
   z-index: 1;
@@ -2748,6 +2749,9 @@ main {
   /* All children between <main> and the parallax need this to work in Firefox */ }
   .notouch.wide-scrollbar main::-webkit-scrollbar {
     width: 18px; }
+  @media (max-width: 799px) {
+    main {
+      padding-left: 0; } }
   .notouch main::-webkit-scrollbar {
     width: 8px;
     height: 8px; }
@@ -3211,7 +3215,8 @@ select {
   input[type="date"], .light-theme
   input[type="file"], .light-theme
   select {
-    color: #121212; }
+    color: #121212;
+    background: rgba(255, 255, 255, 0.75); }
   textarea::placeholder,
   input[type="text"]::placeholder,
   input[type="email"]::placeholder,
@@ -3255,7 +3260,7 @@ input[type="radio"] + .label:before {
   background: rgba(128, 128, 128, 0.5);
   margin-right: 0.5rem; }
   .light-theme input[type="radio"] + .label:before {
-    background: #f4f2f0; }
+    background: #FFFFFF; }
 
 input[type="radio"]:checked + .label:after {
   content: " ";
@@ -3289,7 +3294,7 @@ input[type="checkbox"] + .label:before {
   background: rgba(128, 128, 128, 0.5);
   margin-right: 0.5rem; }
   .light-theme input[type="checkbox"] + .label:before {
-    background: #f4f2f0; }
+    background: #FFFFFF; }
 
 input[type="checkbox"]:checked + .label:before {
   content: "\E5CA"; }
@@ -4326,7 +4331,7 @@ select {
 .parallax {
   position: absolute;
   top: 0;
-  left: -5px;
+  left: -225px;
   right: -5px;
   height: 100%;
   z-index: -1;
@@ -4385,11 +4390,11 @@ select {
     -webkit-filter: blur(10px);
     filter: blur(10px); }
   .parallax--loaded .parallax__image {
-    opacity: 1; }
-  .light-theme .parallax__stage {
-    background-color: #f4f2f0; }
-  .light-theme .parallax__overlay {
     opacity: 0.5; }
+  .light-theme .parallax__stage {
+    background-color: #f8f7f6; }
+  .light-theme .parallax__overlay {
+    background-image: linear-gradient(rgba(244, 242, 240, 0), #f4f2f0); }
 
 @font-face {
   font-family: 'Material Icons';
@@ -5133,6 +5138,10 @@ select {
       padding-bottom: 0;
       position: fixed;
       z-index: 100; }
+      .light-theme .sidebar {
+        background: #f8f7f6; }
+      .dark-theme .sidebar {
+        background: #121212; }
       .sidebar-open .sidebar {
         -ms-transform: translate(-220px, 0);
         -webkit-transform: translate(-220px, 0);
@@ -6057,7 +6066,7 @@ main header {
   .sub-views__option--active {
     border-color: #FFFFFF !important; }
     .light-theme .sub-views__option--active {
-      border-color: #f4f2f0 !important; }
+      border-color: #f8f7f6 !important; }
   .sub-views__option:not(.sub-views__option--active):hover {
     border-color: rgba(255, 255, 255, 0.2) !important; }
     .light-theme .sub-views__option:not(.sub-views__option--active):hover {
@@ -6582,17 +6591,10 @@ main header {
       padding-bottom: 25px;
       font-size: 5rem;
       line-height: 5rem; }
-      .light-theme .artist-view .intro .liner h1 {
-        color: #FFFFFF; }
     .artist-view .intro .liner .actions .context-menu-trigger {
       color: #FFFFFF; }
     .artist-view .intro .liner .sub-views {
       padding-top: 25px; }
-
-.artist-view .content-wrapper {
-  background: #181818; }
-  .light-theme .artist-view .content-wrapper {
-    background: #f4f2f0; }
 
 .artist-view .body.overview .albums {
   padding-top: 30px; }
@@ -6719,10 +6721,6 @@ main .album-view {
       max-width: 100%; }
   main .album-view .wiki {
     padding-top: 40px; }
-  @media (min-width: 800px) {
-    main .album-view .parallax {
-      height: 30vh;
-      opacity: 0.25; } }
   @media (max-width: 799px) {
     main .album-view {
       padding-top: 0;
@@ -6775,10 +6773,6 @@ main .playlist-view {
     box-sizing: border-box; }
     main .playlist-view .thumbnail-wrapper .thumbnail {
       max-width: 100%; }
-  @media (min-width: 800px) {
-    main .playlist-view .parallax {
-      height: 30vh;
-      opacity: 0.25; } }
   @media (max-width: 799px) {
     main .playlist-view {
       padding-top: 0;
@@ -6866,10 +6860,6 @@ main .track-view {
   @media (max-width: 499px) {
     main .track-view .actions {
       padding: 0; } }
-
-.queue-view .parallax {
-  opacity: 0.5;
-  height: 60vh; }
 
 .queue-view .current-track {
   padding: 40px 0 60px;
@@ -7306,6 +7296,7 @@ main .track-view {
   bottom: 0;
   left: 0;
   background: #0d0d0d;
+  color: #FFFFFF;
   overflow-y: auto;
   overflow-x: hidden;
   min-height: 100%;

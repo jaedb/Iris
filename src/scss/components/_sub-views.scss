@@ -21,7 +21,7 @@
       border-color: colour(white) !important;
 
       .light-theme & {
-        border-color: colour(faint_grey) !important;
+        border-color: lighten(colour(faint_grey), 2%) !important;
       }
     }
 
