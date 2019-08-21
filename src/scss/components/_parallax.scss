@@ -48,7 +48,10 @@ $parallax: 'parallax';
 		left: 0;
 		right: 0;
 		height: 100%;
-		background-image: linear-gradient(rgba(24,24,24,0), rgba(24,24,24,1));
+		background-image: linear-gradient(
+			rgba(24,24,24,0) 0%, 
+			rgba(24,24,24,1) 95%
+		);
 		z-index: 2;
 	}
 
@@ -94,7 +97,10 @@ $parallax: 'parallax';
 		}
 
 		&__overlay {
-			background-image: linear-gradient(rgba(244, 242, 240, 0), rgba(244, 242, 240, 1));
+			background-image: linear-gradient(
+				rgba(248, 247, 246, 0) 0%,
+				rgba(248, 247, 246, 1) 95%
+			);
 		}
 	}
 }
