@@ -1,277 +1,275 @@
-
 .discover-view {
-	
-	.intro {
-		padding: 90px 40px 40px;
-		position: relative;
-		z-index: 96;
+  .intro {
+    padding: 90px 40px 40px;
+    position: relative;
+    z-index: 96;
 
-		&__liner {
-			z-index: 2;
-			position: relative;
-			color: colour(white);
+    &__liner {
+      z-index: 2;
+      position: relative;
+      color: colour(white);
 
-			h1 {
-				font-size: 3rem;
-				line-height: 3rem;
-				padding-bottom: 10px;
-			}
+      h1 {
+        font-size: 3rem;
+        line-height: 3rem;
+        padding-bottom: 10px;
+      }
 
-			h2 {
-				padding-bottom: 8px;
-				color: colour(mid_grey);
-			}
-		}
+      h2 {
+        padding-bottom: 8px;
+        color: colour(mid_grey);
+      }
+    }
 
-		&__parameters {
-			@include clearfix();
-			padding-top: 40px;
+    &__parameters {
+      @include clearfix();
+      padding-top: 40px;
 
-			.seeds,
-			.tunabilities {
-				float: left;
-			}
-		}
+      .seeds,
+      .tunabilities {
+        float: left;
+      }
+    }
 
-		&__actions {
-			padding-top: 20px;
+    &__actions {
+      padding-top: 20px;
 
-			.autocomplete-field {
-				width: 250px;
-				display: inline-block;
-				vertical-align: bottom;
-				padding: 0;
-				margin-right: 1px;
+      .autocomplete-field {
+        width: 250px;
+        display: inline-block;
+        vertical-align: bottom;
+        padding: 0;
+        margin-right: 1px;
 
-				.input {
-					float: none;
-					margin: 0 10px 10px 0;
+        .input {
+          float: none;
+          margin: 0 10px 10px 0;
 
-					input {
-						background: rgba(100,100,100,0.5);
-						color: colour(white);
-						padding: 15px 13px 10px;
-						font-size: 16px;
-						border: 1px solid transparent;
-						border-top-right-radius: 0;
-						border-bottom-right-radius: 0;
+          input {
+            background: rgba(100, 100, 100, 0.5);
+            color: colour(white);
+            padding: 15px 13px 10px;
+            font-size: 16px;
+            border: 1px solid transparent;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
 
-						&:focus,
-						&:active {
-							border-color: colour(blue);
-						}
+            &:focus,
+            &:active {
+              border-color: colour(blue);
+            }
 
-						&:not(*:root){
-							padding-top: 16px;
-							padding-bottom: 11px;
-						}
-					}
+            &:not(*:root) {
+              padding-top: 16px;
+              padding-bottom: 11px;
+            }
+          }
 
-					&:after {
-						background: colour(blue);
-					}
-				}
+          &:after {
+            background: colour(blue);
+          }
+        }
 
-				.results {
-					top: 49px;
-				}
-			}
+        .results {
+          top: 49px;
+        }
+      }
 
-			.dropdown-field {
-				.button {
-					background: rgba(100,100,100,0.5);
-					color: colour(white);
-					padding: 16px 20px 14px 20px;
-					border-top-left-radius: 0;
-					border-bottom-left-radius: 0;
-				}
+      .dropdown-field {
+        .button {
+          background: rgba(100, 100, 100, 0.5);
+          color: colour(white);
+          padding: 16px 20px 14px 20px;
+          border-top-left-radius: 0;
+          border-bottom-left-radius: 0;
+        }
 
-				.options {
-					top: 50px;
-					right: 20px;
-				}
-			}
-		}
-	}
+        .options {
+          top: 50px;
+          right: 20px;
+        }
+      }
+    }
+  }
 
-	.seeds {
-		.seed {
-			color: colour(white);			
-			padding: 0 30px 30px 0;
-			float: left;
+  .seeds {
+    .seed {
+      color: colour(white);
+      padding: 0 30px 30px 0;
+      float: left;
 
-			.thumbnail-wrapper {
-				float: left;
-				width: 44px;
-				border: 0 !important;
-			}
+      .thumbnail-wrapper {
+        float: left;
+        width: 44px;
+        border: 0 !important;
+      }
 
-			.label {
-				.remove {
-					@include animate();
-					cursor: pointer;
-					font-size: 10px;
-					padding: 4px;
-					margin-left: 4px;
+      .label {
+        .text {
+          opacity: 0.5;
+          font-size: 12px;
+          text-transform: uppercase;
+        }
 
-					&:hover {
-						color: colour(red);
-					}
-				}
-			}
+        .remove {
+          @include animate();
+          cursor: pointer;
+          font-size: 14px;
+          padding: 2px;
+          margin-left: 4px;
+          vertical-align: middle;
 
-			.name {
-				font-size: 16px;
-				padding-top: 3px;
-			}
+          &:hover {
+            color: colour(red);
+          }
+        }
+      }
 
-			&.has-thumbnail {
-				.label,
-				.name {
-					padding-left: 52px;
-				}
-			}
+      .name {
+        font-size: 16px;
+      }
 
-			.light-theme & {
-				color: colour(darkest_grey);
-			}
-		}
-	}
+      &.has-thumbnail {
+        .label,
+        .name {
+          padding-left: 52px;
+        }
+      }
 
-	.tunabilities {
-		@include clearfix();
-		
-		.tunability {
-			width: 200px;
-			float: left;
-			box-sizing: border-box;
-			padding: 0 30px 30px 0;
-			position: relative;
+      .light-theme & {
+        color: colour(darkest_grey);
+      }
+    }
+  }
 
-			.input {
-				float: none;
-				width: 100%;
-				padding-top: 4px;
-			}
+  .tunabilities {
+    @include clearfix();
 
-			.input-range {
-				.input-range__label-container {
-					display: none;
-				}
-			}
+    .tunability {
+      width: 200px;
+      float: left;
+      box-sizing: border-box;
+      padding: 0 30px 30px 0;
+      position: relative;
 
-			.remove {
-				@include animate();
-				cursor: pointer;
-				font-size: 10px;
-				padding: 4px;
-				margin-left: 4px;
+      .input {
+        float: none;
+        width: 100%;
+        padding-top: 4px;
+      }
 
-				&:hover {
-					color: colour(red);
-				}
-			}
-		}
-	}
-	
-	section {
-		.grid {
-			padding-bottom: 20px;
-		}
+      .input-range {
+        .input-range__label-container {
+          display: none;
+        }
+      }
 
-		&.tracks {
-			h4 {
-				@include clearfix();
-			}
-			
-			.pull-right {
-				.button,
-				button {
-					margin-right: 0;
-				}
-			}
-		}
-	}
+      .remove {
+        @include animate();
+        cursor: pointer;
+        font-size: 10px;
+        padding: 4px;
+        margin-left: 4px;
 
-	@include responsive($bp_medium){
-		
-		.intro {
-			padding: 40px 20px;
+        &:hover {
+          color: colour(red);
+        }
+      }
+    }
+  }
 
-			&__parameters {
-				padding-top: 10px;
+  section {
+    .grid {
+      padding-bottom: 20px;
+    }
 
-				.seeds {
-					padding-top: 20px;
-					float: none;
+    &.tracks {
+      h4 {
+        @include clearfix();
+      }
 
-					.seed {
-						float: none;
-					}
-				}
+      .pull-right {
+        .button,
+        button {
+          margin-right: 0;
+        }
+      }
+    }
+  }
 
-				.tunabilities {
-					float: none;
+  @include responsive($bp_medium) {
+    .intro {
+      padding: 40px 20px;
 
-					.tunability {
-						width: 100%;
-						float: none;
-					}
-				}
+      &__parameters {
+        padding-top: 10px;
 
-				.add {
-					.add-properties {
-						margin-right: 0;
-					}
-				}
-			}
+        .seeds {
+          padding-top: 20px;
+          float: none;
 
-			&__actions {
-				padding-top: 0;
+          .seed {
+            float: none;
+          }
+        }
 
-				.add-seed-field {
-					width: 69%;
-				}
+        .tunabilities {
+          float: none;
 
-				.add-properties {
-					width: 30%;
-					margin-right: 0;
-				}
-			}
-		}
+          .tunability {
+            width: 100%;
+            float: none;
+          }
+        }
 
-		.col {
-			&.tracks {
-				width: 100%;
-			}
+        .add {
+          .add-properties {
+            margin-right: 0;
+          }
+        }
+      }
 
-			&.others,
-			&.w5 {
-				display: none;
-			}
-		}
-	}
+      &__actions {
+        padding-top: 0;
+
+        .add-seed-field {
+          width: 69%;
+        }
+
+        .add-properties {
+          width: 30%;
+          margin-right: 0;
+        }
+      }
+    }
+
+    .col {
+      &.tracks {
+        width: 100%;
+      }
+
+      &.others,
+      &.w5 {
+        display: none;
+      }
+    }
+  }
 }
 
 .discover-featured-view,
 .discover-new-releases-view {
-	.intro {
-		position: relative;
-		padding-top: 100px;
+  .intro {
+    position: relative;
+    padding-top: 100px;
 
-		header {
-			margin-bottom: 0;
-		}
+    header {
+      margin-bottom: 0;
+    }
+  }
 
-		.parallax {
-			height: 30vh;
-			opacity: 0.5;
-		}
-	}
-
-	@include responsive($bp_medium){
-		.intro {
-			padding-top: 50px;
-		}
-	}
+  @include responsive($bp_medium) {
+    .intro {
+      padding-top: 50px;
+    }
+  }
 }

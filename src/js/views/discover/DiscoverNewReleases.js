@@ -114,7 +114,7 @@ class DiscoverNewReleases extends React.Component{
 					<Icon name="new_releases" type="material" />
 					New releases
 				</Header>
-				{this.renderIntro(this.props.theme == 'dark' ? first_album : null)}
+				{this.renderIntro(first_album)}
 				<section className="content-wrapper grid-wrapper">
 					<AlbumGrid albums={albums} />
 				</section>

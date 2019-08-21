@@ -1,91 +1,92 @@
-
 .search-view {
+  position: relative;
 
-	.search-form {
-		position: absolute;
-		top: 30px;
-		left: 90px;
-		right: 270px;
+  .search-form {
+    position: absolute;
+    top: 30px;
+    left: 90px;
+    right: 270px;
 
-		input {
-			@include feature_font();
-			padding: 6px 0 4px 0;
-			width: 100%;
-			font-size: 3rem;
-			font-weight: 700;
-			height: 4rem;
-			background: transparent;
-			border-bottom: 2px solid colour(grey);
-			border-radius: 0;
-			letter-spacing: -0.15rem;
+    input {
+      @include feature_font();
+      padding: 6px 0 4px 0;
+      width: 100%;
+      font-size: 3rem;
+      font-weight: 700;
+      height: 4rem;
+      background: transparent;
+      border: 0;
+      border-bottom: 2px solid colour(grey);
+      border-radius: 0;
+      letter-spacing: -0.15rem;
 
-			/* handle Safari's ridiculous non-vertical centering */
-			&:not(:root:root){
-				height: 4.6rem;
-				margin-top: -0.5rem;
-			}
+      /* handle Safari's ridiculous non-vertical centering */
+      &:not(:root:root) {
+        height: 4.6rem;
+        margin-top: -0.5rem;
+      }
 
-			&:focus,
-			&:active {
-				border-color: colour(turquoise);
-				background: transparent;
-			}
-		}
-	}
+      &:focus,
+      &:active {
+        border-color: colour(turquoise);
+        background: transparent;
+      }
+    }
+  }
 
-	.search-result-sections {
-		padding-bottom: 30px;
+  .search-result-sections {
+    padding-bottom: 30px;
 
-		section {
-			width: 31%;
-			float: left;
-			margin-right: 3.5%;
+    section {
+      width: 31%;
+      float: left;
+      margin-right: 3.5%;
 
-			&:last-child {
-				margin-right: 0;
-			}
+      &:last-child {
+        margin-right: 0;
+      }
 
-			.button {
-				margin-top: 10px;
-			}
-		}
-	}
+      .button {
+        margin-top: 10px;
+      }
+    }
+  }
 
-	@include responsive($bp_huge){
-		.search-result-sections {
-			.grid__item {
-				&:nth-child(1n+5){
-					display: none;
-				}
-			}
-		}
-	}
-		
-	@include responsive($bp_medium){
-		.search-form {
-			top: 10px;
-			left: 40px;
-			right: 60px;
+  @include responsive($bp_huge) {
+    .search-result-sections {
+      .grid__item {
+        &:nth-child(1n + 5) {
+          display: none;
+        }
+      }
+    }
+  }
 
-			input {
-				font-size: 1.8rem;
-				height: 2.5rem;
-			}
-		}
+  @include responsive($bp_medium) {
+    .search-form {
+      top: 10px;
+      left: 40px;
+      right: 60px;
 
-		.search-result-sections {
-			padding: 10px 10px 0;
-			
-			section {
-				width: auto;
-				float: none;
-				margin-right: 0;
-				padding-bottom: 20px;
+      input {
+        font-size: 1.8rem;
+        height: 2.5rem;
+      }
+    }
 
-				.button {
-					display: none;
-				}
-			}
-		}
-	}
+    .search-result-sections {
+      padding: 10px 10px 0;
+
+      section {
+        width: auto;
+        float: none;
+        margin-right: 0;
+        padding-bottom: 20px;
+
+        .button {
+          display: none;
+        }
+      }
+    }
+  }
 }

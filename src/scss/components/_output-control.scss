@@ -11,10 +11,10 @@
 
 	&__items {
 		position: absolute;
-		bottom: 40px;
+		bottom: 48px;
 		right: -150px;
 		width: 300px;
-		background: colour(white);
+		background: colour(faint_grey);
 		color: colour(black);
 		font-size: 14px;
 		font-weight: 600;
@@ -28,7 +28,7 @@
 			display: block;
 			width: 6px;
 			height: 6px;
-			background: colour(white);
+			background: colour(faint_grey);
 			-ms-transform: rotate(45deg);
 			-webkit-transform: rotate(45deg);
 			transform: rotate(45deg);
@@ -51,7 +51,7 @@
 
 		&--commands {
 			@include clearfix();
-			background: rgba(0,0,0,0.1);
+			//background: rgba(0,0,0,0.1);
 		}
 
 		&:not(:first-child) {
@@ -94,7 +94,7 @@
 
 	@include responsive($bp_medium){
 		position: absolute;
-		top: -10px;
+		top: -8px;
 		right: 0px;
 		bottom: auto;
 		width: 100vw;
@@ -110,7 +110,6 @@
 			left: 0;
 			width: auto;
 			padding: 0;
-			background: lighten(colour(dark_grey), 17.5%);
 			border-radius: 0;
 			box-shadow: none;
 			max-height: 50vh;
@@ -130,11 +129,10 @@
 			padding: 10px 18px 6px;
 
 			&:not(:first-child){
-				border-color: rgba(255,255,255,0.05);
+				border-color: rgba(128,128,128,0.05);
 			}
 
 			&__name {
-				color: colour(white);
 				font-weight: 400;
 				width: 30%;
 				float: left;
@@ -145,10 +143,6 @@
 			&__controls {
 				width: 70%;
 				float: right;
-			}
-
-			&__mute.control {
-				color: colour(white);
 			}
 		}
 	}

@@ -79,6 +79,15 @@ class DebugInfo extends React.Component{
 			<div className="debug-info">
 
 				<div className="debug-info-section">
+					<div className="debug-info-item">
+						Version: {version}
+					</div>
+					<div className="debug-info-item">
+						Build: {build}
+					</div>
+				</div>
+
+				<div className="debug-info-section">
 					<h5>Indexes</h5>
 					<div className="debug-info-item">
 						Albums: {this.props.core.albums ? Object.keys(this.props.core.albums).length : '0'}

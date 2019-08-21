@@ -123,20 +123,22 @@ export default class ListItem extends React.Component{
 				onClick={e => this.handleClick(e)}
 				onContextMenu={e => this.handleContextMenu(e)}>
 
-					<div className="list__item__column list__item__column--right">
-						{
-							(this.props.right_column ? this.props.right_column.map((column, index) => {
-								return (
-									<span className={'list__item__column__item list__item__column__item--'+column.replace('.','_')} key={index}>
-										{this.renderValue(column, item)}
-									</span>
-								)
-							}) : null)
-						}
+					{this.props.right_column && !this.props.nocontext && 
+						<div className="list__item__column list__item__column--right">
+							{
+								(this.props.right_column ? this.props.right_column.map((column, index) => {
+									return (
+										<span className={'list__item__column__item list__item__column__item--'+column.replace('.','_')} key={index}>
+											{this.renderValue(column, item)}
+										</span>
+									)
+								}) : null)
+							}
 
-						{this.props.nocontext ? null : <ContextMenuTrigger className="list__item__column__item list__item__column__item--context-menu-trigger subtle" onTrigger={e => this.handleContextMenu(e)} />}
+							{this.props.nocontext ? null : <ContextMenuTrigger className="list__item__column__item list__item__column__item--context-menu-trigger subtle" onTrigger={e => this.handleContextMenu(e)} />}
 
-					</div>
+						</div>
+					}
 
 					<div className="list__item__column list__item__column--name">
 

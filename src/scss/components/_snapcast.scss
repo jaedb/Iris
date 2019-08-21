@@ -7,11 +7,19 @@
 					
 	&__group,
 	&__client {
+		display: block;
+
 		&__mute-control {
 			display: inline-block;
 			float: left;
 			padding: 8px 5px 0;
 			border: 0;
+			color: colour(white);
+			background: transparent;
+
+			.light-theme & {
+				color: colour(darkest_grey);
+			}
 		}
 
 		&__volume-control {

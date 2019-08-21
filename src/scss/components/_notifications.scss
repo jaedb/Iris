@@ -2,7 +2,7 @@
 
 .notifications {
 	position: fixed;
-	bottom: 65px;
+	bottom: 75px;
 	right: 15px;
 	z-index: 97;
 	pointer-events: none;
@@ -12,13 +12,13 @@
 		@include fadein();
 		display: block;
 		position: relative;
-		padding: 18px 40px 16px 22px;
-		margin: 10px 0 0 0;
-		background: darken(colour(grey), 8%);
+		padding: 0.9rem 1rem;
+		margin: 0.5rem;
+		background: colour(soft_grey);
 		color: colour(white);
 		pointer-events: all; 
 		border-radius: 3px;
-		font-size: 15px;
+		font-size: 0.9rem;
 		
 		&__title {
 			padding-top: 0;
@@ -37,21 +37,27 @@
 			padding: 4px 0 4px 20px;
 		}
 
+		&__content {
+			padding-right: 2rem;
+		}
+
 		&__description {
-			font-size: 14px;
+			font-size: 0.85rem;
 			opacity: 0.5;
 			padding-top: 5px;
 			line-height: 1.1em;
+			word-break: break-word;
 		}
 
 		&__close-button {
+			@include animate();
+			@include click_feedback();
 			position: absolute;
-			top: 4px;
+			top: 0;
 			right: 0;
-			font-size: 12px;
-			padding: 14px;
-			cursor: pointer;
+			padding: 0.9rem;
 			opacity: 0.5;
+			cursor: pointer;
 
 			&:hover {
 				opacity: 1;
@@ -65,10 +71,6 @@
 		&--broadcast {
 			background: colour(yellow);
 			color: colour(black);
-		}
-
-		&--info {
-			background: colour(blue);
 		}
 
 		&--warning {
@@ -101,7 +103,6 @@
 			position: relative;
 			padding-right: 18px;
 			padding-left: 50px;
-			background: colour(blue);
 
 			&.cancelling {
 				color: rgba(255,255,255,0.5);
@@ -111,10 +112,11 @@
 				width: 20px;
 				height: 20px;
 				position: absolute;
-				top: 16px;
-				left: 18px;
+				top: 0;
+				left: 0;
 				opacity: 1;	
 				z-index: 2;
+				margin: 0.85rem;
 
 				&:before {
 					border-color: transparent;

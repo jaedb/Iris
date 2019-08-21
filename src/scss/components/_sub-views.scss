@@ -1,43 +1,42 @@
-
 .sub-views {
-	&__option {
-		@include feature_font();
-		color: colour(white);
-		display: inline-block;
-		margin-right: 25px;
-		font-size: 15px;
-		font-weight: 500;
-		border-bottom: 3px solid transparent !important;
-		cursor: pointer;
+  &__option {
+    @include feature_font();
+    color: colour(white);
+    display: inline-block;
+    margin-right: 25px;
+    font-size: 15px;
+    font-weight: 500;
+    border-bottom: 3px solid transparent !important;
+    cursor: pointer;
 
-		.light-theme & {
-			color: colour(darkest_grey);
-		}
+    .light-theme & {
+      color: colour(darkest_grey);
+    }
 
-		h4 {
-			margin: 8px 0 4px;
-		}
+    h4 {
+      margin: 8px 0 4px;
+    }
 
-		&--active {
-			border-color: colour(white) !important;
+    &--active {
+      border-color: colour(white) !important;
 
-			.light-theme & {
-				border-color: colour(darkest_grey)
-			}
-		}
+      .light-theme & {
+        border-color: colour(darkest_grey) !important;
+      }
+    }
 
-		&:not(.sub-views__option--active):hover {
-			border-color: rgba(255,255,255,0.2) !important;
+    &:not(.sub-views__option--active):hover {
+      border-color: rgba(255, 255, 255, 0.2) !important;
 
-			.light-theme & {
-				border-color: rgba(0,0,0,0.2);
-			}
-		}
-	}
+      .light-theme & {
+        border-color: rgba(0, 0, 0, 0.2);
+      }
+    }
+  }
 
-	@include responsive($bp_medium){
-		&__option {
-			margin-right: 15px;
-		}
-	}
+  @include responsive($bp_medium) {
+    &__option {
+      margin-right: 15px;
+    }
+  }
 }

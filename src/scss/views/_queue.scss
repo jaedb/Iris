@@ -1,66 +1,106 @@
-
 .queue-view {
-	.parallax {
-		opacity: 0.5;
-		height: 60vh;
-	}
 
-	.current-track {
-		text-align: center;
-		padding: 40px 0 60px;
+  .current-track {
+    padding: 40px 0 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-		.artwork {
-			position: relative;
-			margin: 0 auto;
-			width: 60%;
-			max-width: 60vh;
-			display: block;
-			border: 0 !important;
-			z-index: 1;
+    &__artwork {
+      position: relative;
+      text-align: right;
+      display: block;
+      z-index: 1;
+      width: 48%;
+      margin-right: 2%;
 
-			.thumbnail {
-				margin: 0 auto;
-				max-width: 100%;
-			}
+      a {
+        border: 0 !important;
+      }
 
-			&.radio-enabled {
-				.thumbnail {
-					box-sizing: border-box;
-				}
+      .thumbnail {
+        width: 30vh;
+        display: inline-block;
+      }
 
-				.radio-overlay {
-					position: absolute;
-					top: -15%;
-					left: -15%;
-					width: 130%;
-					height: 130%;
-					z-index: 2;
-				}
-			}
-		}
+      &--radio-enabled {
+        .thumbnail {
+          box-sizing: border-box;
+        }
 
-		.title {
-			font-size: 18px;
-			padding-top: 30px;
-			position: relative;
-			z-index: 2;
-		}
+        .radio-overlay {
+          position: absolute;
+          top: -15%;
+          left: -15%;
+          width: 130%;
+          height: 130%;
+          z-index: 2;
+        }
+      }
+    }
 
-		.artist-sentence {
-			padding-top: 10px;
-			display: block;
-			font-size: 18px;
-			opacity: 0.5;
-			position: relative;
-			z-index: 2;
-		}
+    &__details {
+      width: 48%;
+      margin-left: 2%;
+    }
 
-		@include responsive($bp_medium){
-			padding-bottom: 20px;
-			
-			.artwork {
-				width: 80%;
-			}
-		}
-	}
+    &__title {
+      font-size: 1.4rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    &__artists {
+      display: block;
+      font-size: 1.4rem;
+      opacity: 0.5;
+      position: relative;
+      z-index: 2;
+    }
+
+    &__added-from {
+      padding-top: 2rem;
+      display: flex;
+      align-items: center;
+
+      &__text {
+        border: 0 !important;
+        display: block;
+        padding-left: 15px;
+      }
+
+      &__thumbnail {
+        border: 0 !important;
+        .thumbnail {
+          width: 30px;
+        }
+      }
+    }
+
+    @include responsive($bp_medium) {
+      display: block;
+      text-align: center;
+      padding: 40px 0 20px;
+
+      &__artwork {
+        width: auto;
+        margin: 0 0 20px 0;
+        text-align: center;
+
+        .thumbnail {
+          width: 90%;
+          max-width: 30vh;
+        }
+      }
+
+      &__details {
+        width: auto;
+        margin: 0;
+      }
+
+      &__added-from {
+        display: none;
+      }
+    }
+  }
 }

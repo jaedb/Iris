@@ -1,562 +1,657 @@
-
 @font-face {
-    font-family: 'Overpass';
-    src: url('../assets/fonts/overpass-italic-webfont.woff2') format('woff2'),
-         url('../assets/fonts/overpass-italic-webfont.woff') format('woff');
-    font-weight: 400;
-    font-style: italic;
+  font-family: "Overpass";
+  src: url("../assets/fonts/overpass-italic-webfont.woff2") format("woff2"),
+    url("../assets/fonts/overpass-italic-webfont.woff") format("woff");
+  font-weight: 400;
+  font-style: italic;
 }
 
 @font-face {
-    font-family: 'Overpass';
-    src: url('../assets/fonts/overpass-regular-webfont.woff2') format('woff2'),
-         url('../assets/fonts/overpass-regular-webfont.woff') format('woff');
-    font-weight: 400;
-    font-style: normal;
+  font-family: "Overpass";
+  src: url("../assets/fonts/overpass-regular-webfont.woff2") format("woff2"),
+    url("../assets/fonts/overpass-regular-webfont.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
 }
 
 @font-face {
-    font-family: 'Overpass';
-    src: url('../assets/fonts/overpass-bold-webfont.woff2') format('woff2'),
-         url('../assets/fonts/overpass-bold-webfont.woff') format('woff');
-    font-weight: 600;
-    font-style: normal;
+  font-family: "Overpass";
+  src: url("../assets/fonts/overpass-bold-webfont.woff2") format("woff2"),
+    url("../assets/fonts/overpass-bold-webfont.woff") format("woff");
+  font-weight: 600;
+  font-style: normal;
 }
 
 @font-face {
-    font-family: 'Overpass';
-    src: url('../assets/fonts/overpass-extrabold-webfont.woff2') format('woff2'),
-         url('../assets/fonts/overpass-extrabold-webfont.woff') format('woff');
-    font-weight: 700;
-    font-style: normal;
+  font-family: "Overpass";
+  src: url("../assets/fonts/overpass-extrabold-webfont.woff2") format("woff2"),
+    url("../assets/fonts/overpass-extrabold-webfont.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
 }
 
 body,
 html {
-	color: colour(light_grey);
-	font-family: "Overpass", Helvetica, Arial, sans-serif;
-	font-size: 14px;
-	letter-spacing: -0.02rem;
-	touch-action: manipulation;
-	text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
-	width: 100%;
-	height: 100%;
-	overflow: hidden;
+  font-family: "Overpass", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  letter-spacing: -0.02rem;
+  touch-action: manipulation;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 
-	.light-theme {
-		color: colour(darkest_grey);
-	}	
+  @include resolution(2) {
+    font-size: 15px;
+  }
 
-	@include resolution(2){
-		font-size: 15px;
-	}
-
-	@include resolution(3){
-		font-size: 16px;
-	}
+  @include resolution(3) {
+    font-size: 16px;
+  }
 }
 
 body {
-	transform: translateZ(0px);
-	transform-style: preserve-3d;
+  transform: translateZ(0px);
+  transform-style: preserve-3d;
 
-	&.touch-dragging,
-	&.no-scrollbars {
-		overflow-y: hidden;
-	}
+  &.touch-dragging,
+  &.no-scrollbars {
+    overflow-y: hidden;
+  }
 
-	@include responsive($bp_medium){
-		&.context-menu-open {
-			overflow-y: hidden;
-		}
-	}
+  @include responsive($bp_medium) {
+    &.context-menu-open {
+      overflow-y: hidden;
+    }
+  }
 }
 
 .smooth-scroll {
-	&.smooth-scrolling-enabled,
-	.smooth-scrolling-enabled & {
-		scroll-behavior: smooth;
-	}
+  &.smooth-scrolling-enabled,
+  .smooth-scrolling-enabled & {
+    scroll-behavior: smooth;
+  }
+}
+
+.app-inner {
+  width: 100%;
+  height: 100%;
+
+  &.light-theme {
+    color: colour(darkest_grey);
+    background: lighten(colour(faint_grey), 2%);
+  }
+
+  &.dark-theme {
+    color: colour(light_grey);
+    background: colour(dark_grey);
+  }
 }
 
 main {
-	position: fixed;
-	top: 0;
-	left: 220px;
-	bottom: 50px;
-	right: 0;
-	perspective: 1000px;
-	perspective-origin: top;
-	background: colour(dark_grey);
-	z-index: 1;
-	overflow-y: scroll;
-	overflow-x: hidden;
-	overscroll-behavior: contain;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 60px;
+  right: 0;
+  padding-left: 220px;
+  perspective: 1000px;
+  perspective-origin: top;
+  z-index: 1;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
 
-	/**
+  .parallax {
+    height: 60vh;
+    opacity: 0.5;
+  }
+
+  /**
 	 * iOS drops smooth-scrolling on divs, so we need to manually re-set it
 	 * NOTE: This breaks parallax effects on iOS
 	 **/
-	-webkit-overflow-scrolling: touch;
+  -webkit-overflow-scrolling: touch;
 
-	.notouch.wide-scrollbar & {
-		&::-webkit-scrollbar{
-			width: 18px;
-		}
-	}
+  .notouch.wide-scrollbar & {
+    &::-webkit-scrollbar {
+      width: 18px;
+    }
+  }
 
-	.notouch & {
-		&::-webkit-scrollbar{
-			width: 8px;
-			height: 8px;
-		}
+  @include responsive($bp_medium) {
+    padding-left: 0;
+  }
 
-		&::-webkit-scrollbar-track {
-			background: colour(dark_grey);
-		}
+  .notouch & {
+    &::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
 
-		&::-webkit-scrollbar-thumb {
-			@include animate();
-			background: colour(grey);
+    &::-webkit-scrollbar-track {
+      background: colour(dark_grey);
+    }
 
-			&:hover {
-				background: colour(mid_grey);
-			}
-		}
-	}
+    &::-webkit-scrollbar-thumb {
+      @include animate();
+      background: colour(grey);
 
-	.modal-open & {
-		left: 0;
-		bottom: 0;
-		z-index: 999;
-	}
+      &:hover {
+        background: darken(colour(grey), 10%);
+      }
+    }
+  }
 
-	/* All children between <main> and the parallax need this to work in Firefox */
-	&,
-	& .preserve-3d {
-		transform-style: preserve-3d;
-	}
+  .notouch.light-theme & {
+    &::-webkit-scrollbar-track {
+      background: colour(white);
+    }
 
-	.light-theme & {
-		background: colour(white);
-	}
+    &::-webkit-scrollbar-thumb {
+      background: colour(light_grey);
 
-	.content-wrapper {
-		@include clearfix();
-		position: relative;
-		padding: 40px 40px 20px 40px;
-	}
+      &:hover {
+        background: darken(colour(light_grey), 10%);
+      }
+    }
+  }
 
-	a {
-		color: inherit;
-		text-decoration: none;
-		cursor: pointer;
+  .modal-open & {
+    left: 0;
+    bottom: 0;
+    z-index: 999;
+  }
 
-		&:not(.control):not(.action) {
-			border-bottom: 1px solid transparent;
+  /* All children between <main> and the parallax need this to work in Firefox */
+  &,
+  & .preserve-3d {
+    transform-style: preserve-3d;
+  }
 
-			&:hover {
-				border-color: colour(mid_grey);
-			}
-		}
-	}
+  .content-wrapper {
+    @include clearfix();
+    position: relative;
+    padding: 40px 40px 20px 40px;
+  }
 
-	p {
-		font-size: 18px;
-		line-height: 1.5em;
-		white-space: pre-wrap;
-	}
+  a {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
 
-	@include responsive($bp_medium){
-		left: 0;
+    &:not(.control):not(.action) {
+      border-bottom: 1px solid transparent;
 
-		.content-wrapper {
-			padding: 20px 10px;
-		}
+      &:hover {
+        border-color: colour(mid_grey);
+      }
+    }
+  }
 
-		section.list-wrapper {
-			padding: 10px 0;
-		}
-	}
+  p {
+    font-size: 18px;
+    line-height: 1.5em;
+    white-space: pre-wrap;
+  }
 
-	pre {
-		padding: 20px;
-		background: colour(darkest_grey);
-		border-radius: 3px;
-		color: colour(white);
-		white-space: pre-wrap;
-		word-wrap: break-word;
-	}
+  @include responsive($bp_medium) {
+    left: 0;
+
+    .content-wrapper {
+      padding: 20px 10px;
+    }
+
+    section.list-wrapper {
+      padding: 10px 0;
+    }
+  }
+
+  pre {
+    padding: 20px;
+    background: rgba(128, 128, 128, 0.5);
+    border-radius: 3px;
+    color: colour(white);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
 }
 
 h1 {
-	@include feature_font();
-	color: colour(white);
-	font-weight: 700;
-	font-size: 3.4rem;
-	line-height: 3.4rem;
-	letter-spacing: -0.15rem;
+  @include feature_font();
+  color: colour(white);
+  font-weight: 700;
+  font-size: 3.4rem;
+  line-height: 3.4rem;
+  letter-spacing: -0.15rem;
 
-	.light-theme & {
-		color: colour(grey);
-	}
+  .light-theme & {
+    color: colour(grey);
+  }
 }
 
 h2 {
-	@include feature_font();
-	font-weight: 400;
-	font-size: 2rem;
-	line-height: 2.2rem;
-	letter-spacing: -0.08rem;
+  @include feature_font();
+  font-weight: 400;
+  font-size: 2rem;
+  line-height: 2.2rem;
+  letter-spacing: -0.08rem;
 
-	a {
-		color: inherit;
-		text-decoration: none;
+  a {
+    color: inherit;
+    text-decoration: none;
 
-		&:hover {
-			border-bottom: 1px solid colour(white);
-		}
-	}
+    &:hover {
+      border-bottom: 1px solid colour(white);
+    }
+  }
 
-	&.grey-text {
-		a:hover {
-			color: colour(mid_grey) !important;
-			border-bottom: 1px solid colour(mid_grey);
-		}
-	}
+  &.grey-text {
+    a:hover {
+      color: colour(mid_grey) !important;
+      border-bottom: 1px solid colour(mid_grey);
+    }
+  }
 }
 
 h3 {
-	font-weight: 100;
-	font-size: 1.8rem;
-	line-height: 1.8rem;
+  font-weight: 100;
+  font-size: 1.8rem;
+  line-height: 1.8rem;
 
-	&.bottom-padding {
-		padding-bottom: 30px;
-	}
+  &.bottom-padding {
+    padding-bottom: 30px;
+  }
 }
 
 h4 {
-	@include feature_font();
-	font-size: 1.5rem;
-	margin-bottom: 16px;
-	font-weight: 700;
+  @include feature_font();
+  font-size: 1.5rem;
+  margin-bottom: 16px;
+  font-weight: 700;
 
-	&.underline {
-		padding-bottom: 4px;
-		border-bottom: 1px solid colour(grey);
-	}
+  &.underline {
+    padding-bottom: 4px;
+    border-bottom: 2px solid rgba(128, 128, 128, 0.35);
+  }
 
-	&:not(:first-child){
-		padding-top: 40px;
-	}
+  &:not(:first-child) {
+    padding-top: 40px;
+  }
 
-	.dropdown-field {
-		margin-left: 10px;
-	}
+  .dropdown-field {
+    margin-left: 10px;
+  }
 
-	.button {
-		margin-left: 10px;
-		margin-bottom: -1px;
-	}
+  .button {
+    margin-left: 10px;
+    margin-bottom: -1px;
+  }
 }
 
 h5 {
-	font-size: 1rem;
-	margin-bottom: 4px;
-	font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 4px;
+  font-weight: 700;
 }
 
 p {
-	a {
-		color: inherit;
+  a {
+    color: inherit;
 
-		&:hover {
-			opacity: 0.8;
-		}
-	}
+    &:hover {
+      opacity: 0.8;
+    }
+  }
 }
 
 .hide {
-	width: 0px !important;
-	height: 0px !important;
-	position: fixed !important;
-	z-index: -99 !important;
-	top: -99px !important;
-	left: -99px !important;
+  width: 0px !important;
+  height: 0px !important;
+  position: fixed !important;
+  z-index: -99 !important;
+  top: -99px !important;
+  left: -99px !important;
 }
 
 .no-results {
-	text-align: center;
-	padding: 40px;
-	color: colour(grey);
-	font-style: italic;
-	font-size: 1.2rem;
+  text-align: center;
+  padding: 40px;
+  color: colour(grey);
+  font-style: italic;
+  font-size: 1.2rem;
 }
 
 .placeholder {
-	display: inline-block;
-	height: 1.2em;
-	width: 100px;
-	max-width: 100%;
-	background: rgba(150,150,150,0.15);
-	pointer-events: none !important;
+  display: inline-block;
+  height: 1.2em;
+  width: 100px;
+  max-width: 100%;
+  background: rgba(150, 150, 150, 0.15);
+  pointer-events: none !important;
 }
 
 h1 .placeholder {
-	width: 50%;
+  width: 50%;
 }
 
 h2 .placeholder,
 h3 .placeholder,
 h4 .placeholder {
-	max-width: 50%;
-	width: 150px;
+  max-width: 50%;
+  width: 150px;
 }
 
 button.placeholder {
-	border-color: transparent;
-	height: auto;
+  border-color: transparent;
+  height: auto;
 }
 
 .list-wrapper .placeholder {
-	display: block;
-	width: auto;
-	margin: 25px 40px;
-	height: 10px;
+  display: block;
+  width: auto;
+  margin: 25px 40px;
+  height: 10px;
 
-	@include responsive($bp_medium){
-		margin-left: 20px;
-		margin-right: 20px;
-	}
+  @include responsive($bp_medium) {
+    margin-left: 20px;
+    margin-right: 20px;
+  }
 }
 
 .grid-wrapper .placeholder {
-	height: auto;
-	
-	&:after {
-		content: ' ';
-		display: block;
-		padding-bottom: 100%;
-	}
+  height: auto;
+
+  &:after {
+    content: " ";
+    display: block;
+    padding-bottom: 100%;
+  }
 }
 
 .related-artists .list-wrapper .placeholder {
-	position: relative;
-	margin: 40px 20px 50px 65px;
+  position: relative;
+  margin: 40px 20px 50px 65px;
 
-	&:after {
-		content: ' ';
-		display: block;
-		width: 50px;
-		height: 50px;
-		border-radius: 50%;
-		background: rgba(150,150,150,0.15);
-		position: absolute;
-		top: -20px;
-		left: -65px;
-	}
+  &:after {
+    content: " ";
+    display: block;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(150, 150, 150, 0.15);
+    position: absolute;
+    top: -20px;
+    left: -65px;
+  }
 }
 
-.no-top-padding {		padding-top: 0 !important; }
-.no-bottom-padding {	padding-bottom: 0 !important; }
-.no-right-padding {		padding-right: 0 !important; }
-.no-left-padding {		padding-left: 0 !important; }
-.no-top-margin {		margin-top: 0 !important; }
-.no-bottom-margin {		margin-bottom: 0 !important; }
+.no-top-padding {
+  padding-top: 0 !important;
+}
+.no-bottom-padding {
+  padding-bottom: 0 !important;
+}
+.no-right-padding {
+  padding-right: 0 !important;
+}
+.no-left-padding {
+  padding-left: 0 !important;
+}
+.no-top-margin {
+  margin-top: 0 !important;
+}
+.no-bottom-margin {
+  margin-bottom: 0 !important;
+}
 
-.top-padding {			padding-top: 20px; }
-.bottom-padding {		padding-bottom: 20px; }
-.right-padding {		padding-right: 40px; }
-.left-padding {			padding-left: 40px; }
+.top-padding {
+  padding-top: 20px;
+}
+.bottom-padding {
+  padding-bottom: 20px;
+}
+.right-padding {
+  padding-right: 40px;
+}
+.left-padding {
+  padding-left: 40px;
+}
 
 .col {
-	min-height: 1px;
-	float: left;
+  min-height: 1px;
+  float: left;
 
-	&--w5 {		width: 5%; }
-	&--w10 {		width: 10%; }
-	&--w15 {		width: 15%; }
-	&--w20 {		width: 20%; }
-	&--w25 {		width: 25%; }
-	&--w30 {		width: 30%; }
-	&--w33 {		width: 33.3334%; }
-	&--w35 {		width: 35%; }
-	&--w40 {		width: 40%; }
-	&--w45 {		width: 45%; }
-	&--w50 {		width: 50%; }
-	&--w55 {		width: 55%; }
-	&--w60 {		width: 60%; }
-	&--w65 {		width: 65%; }
-	&--w66 {		width: 66.6667%; }
-	&--w70 {		width: 70%; }
-	&--w75 {		width: 75%; }
-	&--w80 {		width: 80%; }
-	&--w85 {		width: 85%; }
-	&--w90 {		width: 90%; }
-	&--w95 {		width: 95%; }
-	&--w100 {	width: 100%; }
+  &--w5 {
+    width: 5%;
+  }
+  &--w10 {
+    width: 10%;
+  }
+  &--w15 {
+    width: 15%;
+  }
+  &--w20 {
+    width: 20%;
+  }
+  &--w25 {
+    width: 25%;
+  }
+  &--w30 {
+    width: 30%;
+  }
+  &--w33 {
+    width: 33.3334%;
+  }
+  &--w35 {
+    width: 35%;
+  }
+  &--w40 {
+    width: 40%;
+  }
+  &--w45 {
+    width: 45%;
+  }
+  &--w50 {
+    width: 50%;
+  }
+  &--w55 {
+    width: 55%;
+  }
+  &--w60 {
+    width: 60%;
+  }
+  &--w65 {
+    width: 65%;
+  }
+  &--w66 {
+    width: 66.6667%;
+  }
+  &--w70 {
+    width: 70%;
+  }
+  &--w75 {
+    width: 75%;
+  }
+  &--w80 {
+    width: 80%;
+  }
+  &--w85 {
+    width: 85%;
+  }
+  &--w90 {
+    width: 90%;
+  }
+  &--w95 {
+    width: 95%;
+  }
+  &--w100 {
+    width: 100%;
+  }
 }
 
 .pull-left {
-	float: left;
+  float: left;
 }
 
 .pull-right {
-	float: right;
+  float: right;
 }
 
 .cf {
-	@include clearfix;
+  @include clearfix;
 }
 
 .hidden {
-	display: none !important;
+  display: none !important;
 }
 
-.pulse { @include pulse(); }
-.one-liner { @include one_line_text; }
-.centred-text { text-align: center; }
+.pulse {
+  @include pulse();
+}
+.one-liner {
+  @include one_line_text;
+}
+.centred-text {
+  text-align: center;
+}
 
 footer {
-	display: block;
-	color: colour(light_grey);
-	padding-top: 50px;
-	padding-bottom: 50px;
-	text-align: center;
+  display: block;
+  color: colour(light_grey);
+  padding-top: 50px;
+  padding-bottom: 50px;
+  text-align: center;
 }
 
 .details {
-	list-style-type: none;
-	opacity: 0.5;
+  list-style-type: none;
+  opacity: 0.5;
 
-	li {
-		display: inline-block;
+  li {
+    display: inline-block;
 
-		&.source {
-			padding-right: 10px;
-		}
+    &.source {
+      padding-right: 10px;
+    }
 
-		&:not(.source) ~ li {
-			@include bullet();
-		}
-	}
+    &:not(.source) ~ li {
+      @include bullet();
+    }
+  }
 }
 
 .flag {
-	font-size: 9px;
-	font-weight: bold;
-	display: inline-block;
-	padding: 3px 5px 1px;
-	background: colour(light_grey);
-	color: colour(dark_grey);
-	border-radius: 3px;
-	vertical-align: bottom;
-	margin: 0 8px 1px;
+  font-size: 9px;
+  font-weight: bold;
+  display: inline-block;
+  padding: 3px 5px 1px;
+  background: colour(light_grey);
+  color: colour(dark_grey);
+  border-radius: 3px;
+  vertical-align: bottom;
+  margin: 0 8px 1px;
 
-	&.blue {
-		background: colour(blue);
-		color: colour(white);
-	}
+  &.blue {
+    background: colour(blue);
+    color: colour(white);
+  }
 
-	&.info {
-		background: colour(yellow);
-	}
+  &.info {
+    background: colour(yellow);
+  }
 
-	&.warning {
-		background: colour(orange);
-		color: colour(white);
-	}
+  &.warning {
+    background: colour(orange);
+    color: colour(white);
+  }
 
-	&.error,
-	&.bad {
-		background: colour(red);
-		color: colour(white);
-	}
+  &.error,
+  &.bad {
+    background: colour(red);
+    color: colour(white);
+  }
 
-	&.dark {
-		background: lighten(colour(dark_grey),10%);
-		color: colour(mid_grey);
-	}
+  &.dark {
+    background: lighten(colour(dark_grey), 10%);
+    color: colour(mid_grey);
+  }
 
-	&.large {
-		padding: 8px 10px 7px;
-		font-size: 12px;
-	}
+  &.large {
+    padding: 8px 10px 7px;
+    font-size: 12px;
+  }
 
-	h1 &,
-	h2 & {
-		line-height: 1.4em;
-		vertical-align: middle;
-	}
+  h1 &,
+  h2 & {
+    line-height: 1.4em;
+    vertical-align: middle;
+  }
 }
 
 .message {
-	padding: 10px 12px 8px;
-	background: colour(yellow);
-	color: colour(dark_grey);
-	clear: both;
-	font-size: 14px;
-	border-radius: 3px;
+  padding: 10px 12px 8px;
+  background: colour(yellow);
+  color: colour(dark_grey);
+  clear: both;
+  font-size: 14px;
+  border-radius: 3px;
 
-	&.info {
-		background: colour(yellow);
-	}
+  &.info {
+    background: colour(yellow);
+  }
 
-	&.notice {
-		background: colour(blue);
-		color: colour(white);
-	}
+  &.notice {
+    background: colour(blue);
+    color: colour(white);
+  }
 
-	&.good,
-	&.success {
-		background: colour(green);
-		color: colour(white);
-	}
+  &.good,
+  &.success {
+    background: colour(green);
+    color: colour(white);
+  }
 
-	&.warning {
-		background: colour(orange);
-		color: colour(white);
-	}
+  &.warning {
+    background: colour(orange);
+    color: colour(white);
+  }
 
-	&.error,
-	&.bad {
-		background: colour(red);
-		color: colour(white);
-	}
+  &.error,
+  &.bad {
+    background: colour(red);
+    color: colour(white);
+  }
 }
 
+@include responsive($bp_medium) {
+  h1 {
+    font-size: 2rem;
+    line-height: 2rem;
+  }
 
+  h2 {
+    font-size: 1.6rem;
+    line-height: 1.7rem;
+  }
 
-@include responsive($bp_medium){
-	
-	h1 {
-		font-size: 2rem;
-		line-height: 2rem;
-	}
-	
-	h2 {
-		font-size: 1.6rem;
-		line-height: 1.7rem;
-	}
-	
-	h3 {
-		font-size: 1.4rem;
-	}
-	
-	h4 {
-		font-size: 1.3rem;
-	}
-	
-	h5 {
-		font-size: 1.1rem;
-	}
-	
-	.right-padding {
-		padding-right: 20px;
-	}
+  h3 {
+    font-size: 1.4rem;
+  }
 
-	.left-padding {
-		padding-left: 20px;
-	}
+  h4 {
+    font-size: 1.3rem;
+  }
+
+  h5 {
+    font-size: 1.1rem;
+  }
+
+  .right-padding {
+    padding-right: 20px;
+  }
+
+  .left-padding {
+    padding-left: 20px;
+  }
 }

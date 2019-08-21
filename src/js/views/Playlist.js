@@ -212,7 +212,7 @@ class Playlist extends React.Component{
 		return (
 			<div className="view playlist-view content-wrapper preserve-3d">
 
-				{this.props.theme == 'dark' && <Parallax image={playlist.images ? playlist.images.huge : null} blur />}
+				<Parallax image={playlist.images ? playlist.images.huge : null} blur />
 				
 				<div className="thumbnail-wrapper">
 					<Thumbnail size="large" canZoom images={playlist.images} />

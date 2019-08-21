@@ -456,7 +456,7 @@ class IrisCore(pykka.ThreadingActor):
             upgrade_available = cmp( parse_version( latest_version ), parse_version( self.version ) )
             upgrade_available = ( upgrade_available == 1 )
 
-        except urllib2.HTTPError as e:
+        except (urllib2.HTTPError, urllib2.URLError) as e:
             latest_version = '0.0.0'
             upgrade_available = False
 
@@ -748,7 +748,7 @@ class IrisCore(pykka.ThreadingActor):
 
 
     def check_for_radio_update( self ):
-        tracklistLength = self.core.tracklist.length.get()
+        tracklistLength = self.core.tracklist.get_length().get()
         if (tracklistLength < 3 and self.radio['enabled'] == 1):
 
             # Grab our loaded tracks
@@ -998,7 +998,7 @@ class IrisCore(pykka.ThreadingActor):
             else:
                 return response
 
-        except urllib2.HTTPError as e:
+        except (urllib2.HTTPError, urllib2.URLError) as e:
             error = json.loads(e.read())
             error = {'message': 'Could not refresh token: '+error['error_description']}
 

@@ -16,6 +16,7 @@
 		@include animate();
 		width: 0;
 		padding-left: 25px;
+		border-color: transparent;
 	}
 
 	&:not(.active){

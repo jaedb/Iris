@@ -1,155 +1,165 @@
-
 .artist-view {
+  .body-loader:not(.lazy-loader) {
+    padding: 15vh 0;
+  }
 
-	.body-loader:not(.lazy-loader){
-		padding: 15vh 0;
-	}
+  .intro {
+    position: relative;
+    @include clearfix();
 
-	.intro {
-		position: relative;
-		@include clearfix();
+    .liner {
+      position: relative;
+      z-index: 1;
+      padding: 35vh 40px 0;
 
-		.liner {
-			position: relative;
-			z-index: 1;
-			padding: 35vh 40px 0;
+      .heading {
+        display: flex;
+        align-items: center;
 
-			h1 {
-				padding-bottom: 25px;
-				font-size: 5rem;
-				line-height: 5rem;
-			}
+        &__thumbnail {
+          width: 140px;
+          margin-right: 30px;
+        }
+      }
 
-			.actions {
-				.context-menu-trigger {
-					color: colour(white);
+      h1 {
+        padding-bottom: 25px;
+        font-size: 5rem;
+        line-height: 5rem;
+      }
 
-					.light-theme & {
-						color: colour(darkest_grey);
-					}
-				}
-			}
+      .actions {
+        .context-menu-trigger {
+          color: colour(white);
 
-			.sub-views {
-				padding-top: 25px;
-			}
-		}
-	}
+          .light-theme & {
+            color: colour(darkest_grey);
+          }
+        }
+      }
 
-	.content-wrapper {
-		background: colour(dark_grey);
+      .sub-views {
+        padding-top: 25px;
+      }
+    }
+  }
 
-		.light-theme & {
-			background: colour(white);
-		}
-	}
+  .body {
+    &.overview {
+      .albums {
+        padding-top: 30px;
+      }
+    }
 
-	.body {
+    &.about {
+      @include clearfix();
 
-		&.overview {
-			.albums {
-				padding-top: 30px;
-			}
-		}
+      .biography {
+        padding-left: 40px;
+        box-sizing: border-box;
 
-		&.about {		
-			@include clearfix();
+        .biography-text {
+          overflow-wrap: break-word;
+        }
+      }
+    }
+  }
 
-			.biography {
-				padding-left: 40px;
-				box-sizing: border-box;
+  @include responsive($bp_wide) {
+    .intro {
+      .liner {
+        .heading {
+          &__thumbnail {
+            width: 100px;
+          }
+        }
 
-				.biography-text {
-					overflow-wrap: break-word;
-				}			
-			}
-		}
-	}
+        h1 {
+          font-size: 4rem;
+          line-height: 4rem;
+        }
+      }
+    }
+  }
 
-	@include responsive($bp_wide){
-		.intro {
-			.liner {
-				h1 {
-					font-size: 4rem;
-					line-height: 4rem;
-				}
-			}
-		}
-	}
+  @include responsive($bp_medium) {
+    .parallax {
+      opacity: 0.75;
+    }
 
-	@include responsive($bp_medium){
-		.intro {
-			margin-bottom: 0;
+    .intro {
+      margin-bottom: 0;
 
-			.liner {
-				padding-left: 0;
-				padding-right: 0;
-				padding-top: 30vh;
+      .liner {
+        padding-left: 0;
+        padding-right: 0;
+        padding-top: 30vh;
 
-				.thumbnail {
-					position: static;
-					float: left;
-					margin: 0 20px 0 20px;
-					width: 30%;
-				}
+        .heading {
+          display: block;
 
-				h1 {
-					@include clearfix();
-					padding: 15vw 10px 0;
-					font-size: 3rem;
-					line-height: 3rem;
-				}
+          &__thumbnail {
+            display: none;
+          }
+        }
 
-				.actions {
-					padding: 30px 10px 0;
-				}
+        h1 {
+          @include clearfix();
+          padding: 15vw 10px 0;
+          font-size: 3rem;
+          line-height: 3rem;
+        }
 
-				.sub-views {
-					margin-left: 5px;
-					padding-top: 10px;
+        .actions {
+          padding: 30px 10px 0;
+        }
 
-					.option {
-						margin: 0 8px;
-					}
-				}
-			}
-		}
+        .sub-views {
+          margin-left: 5px;
+          padding-top: 10px;
 
-		.body {
-			&.overview {
-				.top-tracks h4 {
-					display: none;
-				}
-				.albums h4 {
-					padding: 0;
-					margin: 0 0 -30px;
-				}
-				.col--w70 {
-					width: 100%;
-				}
-				.col--w5,
-				.related-artists {
-					display: none;
-				}
-				.grid-wrapper {
-					padding-top: 40px !important;
-				}
-			}
+          .option {
+            margin: 0 8px;
+          }
+        }
+      }
+    }
 
-			&.about {
-				.col {
-					&--w40,
-					&--w60 {
-						@include clearfix();
-						width: 100%;
-						float: none;
-					}
-				}
-				
-				.biography {
-					padding-left: 0;
-				}
-			}
-		}
-	}
+    .body {
+      &.overview {
+        .top-tracks h4 {
+          display: none;
+        }
+        .albums h4 {
+          padding: 0;
+          margin: 0 0 -30px;
+        }
+        .col--w70 {
+          width: 100%;
+        }
+        .col--w5,
+        .related-artists {
+          display: none;
+        }
+        .grid-wrapper {
+          padding-top: 40px !important;
+        }
+      }
+
+      &.about {
+        .col {
+          &--w40,
+          &--w60 {
+            @include clearfix();
+            width: 100%;
+            float: none;
+          }
+        }
+
+        .biography {
+          padding-left: 0;
+        }
+      }
+    }
+  }
 }

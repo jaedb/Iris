@@ -1,391 +1,397 @@
-
 .playback-controls {
-	position: fixed;
-	z-index: 99;
-	bottom: 0;
-	right: 0;
-	left: 0;
-	height: 50px;
-	background: lighten(colour(dark_grey), 15%);
-	color: colour(white);
-	transform-style: preserve-3d;
+  position: fixed;
+  z-index: 99;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  height: 60px;
+  background: colour(white);
+  color: colour(darkest_grey);
+  transform-style: preserve-3d;
+  border-left: 230px solid colour(white);
+  box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.1);
 
-	.current-track {
-		position: absolute;
-		bottom: 50px;
-		width: 220px;
-		z-index: 1;
-		font-size: 14px;
-		color: colour(white);
-		text-decoration: none;
+  .current-track {
+    position: absolute;
+    bottom: 0;
+    width: 210px;
+    left: -230px;
+    z-index: 1;
+    text-decoration: none;
 
-		@keyframes slide_left {
-			0% {
-				transform: translateX(0px);
-				opacity: 1;
-			}
-			100% {
-				transform: translateX(-15px);
-				opacity: 0;
-			}
-		}
+    @keyframes slide_left {
+      0% {
+        transform: translateX(0px);
+        opacity: 1;
+      }
+      100% {
+        transform: translateX(-15px);
+        opacity: 0;
+      }
+    }
 
-		@keyframes slide_right {
-			0% {
-				transform: translateX(0px);
-				opacity: 1;
-			}
-			100% {
-				transform: translateX(15px);
-				opacity: 0;
-			}
-		}
+    @keyframes slide_right {
+      0% {
+        transform: translateX(0px);
+        opacity: 1;
+      }
+      100% {
+        transform: translateX(15px);
+        opacity: 0;
+      }
+    }
 
-		&__transition {
-			z-index: 2;
-			background: lighten(colour(dark_grey), 15%);
+    &__transition {
+      z-index: 2;
+      background: lighten(colour(white), 15%);
 
-			.text {
-				@include animate(0.15s);
-				opacity: 0;
-			}
+      .text {
+        @include animate(0.15s);
+        opacity: 0;
+      }
 
-			@include responsive($bp_medium){
-				animation-duration: 0.25s;
-				animation-timing-function: ease-out;
+      @include responsive($bp_medium) {
+        animation-duration: 0.25s;
+        animation-timing-function: ease-out;
 
-				&--previous {
-					animation-name: slide_right;
-				}
+        &--previous {
+          animation-name: slide_right;
+        }
 
-				&--next {
-					animation-name: slide_left;
-				}
-			}
-		}
+        &--next {
+          animation-name: slide_left;
+        }
+      }
+    }
 
-		.light-theme & {
-			color: colour(darkest_grey);
-		}
+    .thumbnail {
+      float: left;
+      cursor: pointer;
+      width: 44px;
+      margin: 8px;
+      margin-right: 12px;
 
-		.thumbnail {
-			float: left;
-			margin: 12px;
-			cursor: pointer;
+      &__image {
+        background-color: colour(faint_grey);
+      }
 
-			&:before {
-				@include animate();
-				display: block;
-				content: "\f065";
-				font-family: "FontAwesome";
-				position: absolute;
-				top: 50%;
-				left: 0;
-				bottom: 0;
-				right: 0;
-				margin-top: -9px;
-				text-align: center;
-				font-size: 18px;
-				color: colour(white);
-				z-index: 3;
-				opacity: 0;
-			}
+      &:before {
+        @include animate();
+        display: block;
+        content: "\f065";
+        font-family: "FontAwesome";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        margin-top: -9px;
+        text-align: center;
+        font-size: 18px;
+        color: colour(white);
+        z-index: 3;
+        opacity: 0;
+      }
 
-			&:after {
-				@include animate();
-				content: '';
-				display: block;
-				background: rgba(0,0,0,0.75);
-				position: absolute;
-				top: 0;
-				left: 0;
-				bottom: 0;
-				right: 0;
-				border-radius: 3px;
-				opacity: 0;
-				z-index: 2;
-			}
+      &:after {
+        @include animate();
+        content: "";
+        display: block;
+        background: rgba(0, 0, 0, 0.75);
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        border-radius: 3px;
+        opacity: 0;
+        z-index: 2;
+      }
 
-			&:hover{
-				&:after,
-				&:before {
-					opacity: 1;
-				}
-			}
-		}
+      &:hover {
+        &:after,
+        &:before {
+          opacity: 1;
+        }
+      }
+    }
 
-		.text {
-			opacity: 1;
-		}
+    .text {
+      opacity: 1;
+      line-height: 1.1rem;
+      font-size: 0.9rem;
+      padding-top: 1.05rem;
 
-		.title {
-			padding-top: 20px;
-			@include one_line_text;
-		}
+      .title {
+        @include one_line_text;
+      }
 
-		.artist-sentence {
-			opacity: 0.5;
-			display: block;
-			@include one_line_text;
+      .artist-sentence {
+        opacity: 0.5;
+        display: block;
+        @include one_line_text;
 
-			.artist {
-				color: inherit;
-				text-decoration: none;
-				border-bottom: 1px dotted transparent;
-			}
-		}
-	}
+        .artist {
+          color: inherit;
+          text-decoration: none;
+          border-bottom: 1px dotted transparent;
+        }
+      }
+    }
+  }
 
-	.control {
-		@include animate();
-		@include noselect();
-		@include focusable();
-		color: colour(white);
-		cursor: pointer;
-		padding: 10px 6px;
-		display: inline-block;
-		vertical-align: bottom;
-		opacity: 0.8;
-		background: none;
+  .control {
+    @include animate();
+    @include noselect();
+    @include click_feedback();
+    cursor: pointer;
+    padding: 12px 8px;
+    display: inline-block;
+    vertical-align: bottom;
+    background: none;
 
-		&:not(.sidebar-toggle){
-			@include click_feedback();
-		}
+    .icon {
+      font-size: 0.9rem;
+      margin-bottom: 0;
+    }
 
-		.icon {
-			font-size: 0.8rem;
-			margin-bottom: 0;
-		}
+    &--active {
+      color: colour(turquoise) !important;
+    }
 
-		@include resolution(2){
-			padding-left: 5px;
-			padding-right: 5px;
-		}
+    &:hover,
+    &:focus {
+      opacity: 1;
+    }
+  }
 
-		&--active {
-			color: colour(turquoise) !important;
-		}
+  section {
+    position: absolute;
+    bottom: 10px;
 
-		&:hover,
-		&:focus {
-			opacity: 1;
-		}
-	}
+    &.playback {
+      bottom: 7px;
+      left: 0;
+      width: 10rem;
 
-	section {
-		position: absolute;
-		bottom: 8px;
+      .control {
+        padding-left: 4px;
+        padding-right: 4px;
 
-		&.playback {
-			bottom: 7px;
-			left: 10px;
-			width: 135px;
-			text-align: center;
+        .icon {
+          font-size: 1.3rem;
+        }
 
-			.control {
-				&.play {
-					margin-bottom: -8px;
+        &.play {
+          margin-bottom: -0.8rem;
+          color: colour(turquoise);
 
-					.icon {
-						font-size: 2rem;
-					}
-				}
-			}
-		}
+          .icon {
+            font-size: 3rem;
+          }
+        }
+      }
+    }
 
-		&.progress {
-			bottom: 10px;
-			left: 130px;
-			right: 260px;
-			padding-left: 20px;
-			padding-right: 20px;
-			color: colour(mid_grey);
+    &.progress {
+      bottom: 13px;
+      left: 10rem;
+      right: 25rem;
+      padding-left: 20px;
+      padding-right: 20px;
+      color: colour(mid_grey);
 
-			.slider {
-				position: absolute;
-				bottom: 2px;
-				left: 60px;
-				right: 60px;
-			}
+      .slider {
+        position: absolute;
+        bottom: 2px;
+        left: 60px;
+        right: 60px;
 
-			.current {
-				font-size: 11px;
-				position: absolute;
-				bottom: 6px;
-				left: 0;
-				width: 50px;
-				text-align: right;
-			}
+        &__track {
+          &__progress {
+            @include animate(0.2s, linear);
+          }
+        }
+      }
 
-			.total {
-				font-size: 11px;
-				position: absolute;
-				bottom: 6px;
-				right: 0;
-				width: 50px;
-			}
-		}
+      .current {
+        font-size: 11px;
+        position: absolute;
+        bottom: 6px;
+        left: 0;
+        width: 50px;
+        text-align: right;
+      }
 
-		&.settings {
-			right: 170px;
-			width: 100px;
-			text-align: center;
-		}
+      .total {
+        font-size: 11px;
+        position: absolute;
+        bottom: 6px;
+        right: 0;
+        width: 50px;
+      }
+    }
 
-		&.volume {
-			right: 20px;
-			width: 150px;
-			font-size: 18px;
+    &.settings {
+      right: 14rem;
+      width: 10rem;
+      text-align: center;
+    }
 
-			.slider__wrapper {
-				position: absolute;
-				bottom: 4px;
-				right: 0;
-				left: 30px;
-			}
-		}
+    &.volume {
+      right: 2rem;
+      width: 10rem;
+      font-size: 18px;
 
-		&.triggers {
-			display: none;
-		}
-	}
+      .slider__wrapper {
+        position: absolute;
+        bottom: 6px;
+        right: 0;
+        left: 30px;
+      }
+    }
 
-	@include responsive($bp_medium){
+    &.triggers {
+      display: none;
+    }
+  }
 
-		.current-track {
-			width: auto;
-			bottom: auto;
-			bottom: 8px;
-			left: 80px;
-			right: 80px;
-			text-align: center;
-			font-size: 0.9rem;
-			color: colour(white) !important;
+  @include responsive($bp_medium) {
+    border-left: none;
 
-			.title {
-				padding-top: 0;
-			}
+    &--touch-enabled .control.next {
+      display: none;
+    }
 
-			.thumbnail {
-				display: none;
-			}
-		}
+    .current-track {
+      width: auto;
+      bottom: 0.65rem;
+      left: 80px;
+      right: 80px;
+      text-align: center;
+      font-size: 0.9rem;
+      line-height: 1.2em;
+      margin: auto;
 
-		section {
+      .title,
+      .artist {
+        padding-top: 0;
+      }
 
-			&.playback {
-				left: 0;
-				width: 40px;
+      .thumbnail {
+        display: none;
+      }
+    }
 
-				.control {
-					&.play {
-						margin-bottom: -8px;
-					}
+    section {
+      &.playback {
+        left: 0;
+        width: 6rem;
 
-					&.previous,
-					&.next {
-						display: none;
-					}
-					
-					&.stop {
-						display: none;
-					}
-				}
-			}
+        .control {
+          &.play {
+            margin-bottom: -1rem;
+          }
 
-			&.settings {
-				display: none;
-			}
+          &.previous {
+            display: none;
+          }
 
-			&.volume {
-				display: none;
-			}
+          &.stop {
+            display: none;
+          }
+        }
+      }
 
-			&.progress {
-				display: none;
-			}
+      &.settings {
+        display: none;
+      }
 
-			&.triggers {
-				display: block;
-				right: 10px;
+      &.volume {
+        display: none;
+      }
 
-				@include resolution(2){
-					font-size: 1.3rem;
-					bottom: 4px;
-				}
+      &.progress {
+        display: none;
+      }
 
-				.sidebar-toggle.open {
-					opacity: 1 !important;
+      &.triggers {
+        display: block;
+        right: 10px;
 
-					&:after {
-						background: rgba(0,0,0,0.8);
-						content: '';
-						display: block;
-						position: fixed;
-						bottom: 0;
-						right: 0;
-						width: 100vw;
-						height: 100vh;
-						z-index: 99;
-					}
-				}
-			}
-		}
+        .icon {
+          font-size: 1.2rem;
+        }
 
-		&--expanded {
-			height: 135px;
-			max-height: 100%;
+        @include resolution(2) {
+          bottom: 4px;
 
-			section {
-				&.settings {
-					display: block;
-					right: 0;
-					bottom: 90px;
-					padding-right: 10px;
-					text-align: right;
-					width: 100px;
-				}
+          .icon {
+            font-size: 1.4rem;
+          }
+        }
 
-				&.volume {
-					width: auto;
-					display: block;
-					right: 100px;
-					left: 10px;
-					bottom: 88px;
+        .sidebar-toggle.open {
+          opacity: 1 !important;
 
-					@include resolution(2){
-						right: 115px;
-						
-						.slider__wrapper {
-							bottom: 9px;
-						}
-					}
-				}
+          &:before {
+            background: rgba(0, 0, 0, 0.8);
+            content: "";
+            display: block;
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 99;
+          }
+        }
+      }
+    }
 
-				&.progress {
-					display: block;
-					bottom: 55px;
-					left: -15px;
-					right: -15px;
-				}
-			}
-		}
+    &--expanded {
+      height: 140px;
+      max-height: 100%;
 
-		@include resolution(2){
-			height: 56px;
+      section {
+        &.settings {
+          display: block;
+          right: 0;
+          bottom: 90px;
+          padding-right: 10px;
+          text-align: right;
+          width: 100px;
+        }
 
-			&--expanded {
-				height: 142px;
-			}
+        &.volume {
+          width: auto;
+          display: block;
+          right: 100px;
+          left: 10px;
+          bottom: 88px;
 
-			.control {
-				padding: 14px 8px;
-			}
+          @include resolution(2) {
+            right: 115px;
 
-			.current-track {
-				bottom: 10px;
-			}
-		}
-	}
+            .slider__wrapper {
+              bottom: 9px;
+            }
+          }
+        }
+
+        &.progress {
+          display: block;
+          bottom: 55px;
+          left: -15px;
+          right: -15px;
+        }
+      }
+    }
+
+    @include resolution(2) {
+      .control {
+        padding: 14px 8px;
+      }
+    }
+  }
 }
-

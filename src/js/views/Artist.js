@@ -347,14 +347,23 @@ class Artist extends React.Component{
 			<div className="view artist-view preserve-3d">
 				<div className="intro preserve-3d">
 
-					<Parallax image={image} fixedHeight />
+					<Parallax image={image} />
 
 					<div className="liner">
-						<h1>{this.props.artist ? this.props.artist.name : null}</h1>
-						<div className="actions">
-							<button className="button button--primary" onClick={e => this.props.mopidyActions.playURIs(uris_to_play, this.props.artist.uri)}>Play</button>
-							{is_spotify ? <FollowButton uri={this.props.uri} removeText="Remove from library" addText="Add to library" is_following={this.inLibrary()} /> : null}
-							<ContextMenuTrigger className="white" onTrigger={e => this.handleContextMenu(e)} />
+						<div className="heading">
+
+							<div className="heading__thumbnail">
+								<Thumbnail size="medium" circle image={image} />
+							</div>
+
+							<div className="heading__content">
+								<h1>{this.props.artist ? this.props.artist.name : null}</h1>
+								<div className="actions">
+									<button className="button button--primary" onClick={e => this.props.mopidyActions.playURIs(uris_to_play, this.props.artist.uri)}>Play</button>
+									{is_spotify ? <FollowButton uri={this.props.uri} removeText="Remove from library" addText="Add to library" is_following={this.inLibrary()} /> : null}
+									<ContextMenuTrigger className="white" onTrigger={e => this.handleContextMenu(e)} />
+								</div>
+							</div>
 						</div>
 						<div className="sub-views" id="sub-views-menu">
 							<Link 

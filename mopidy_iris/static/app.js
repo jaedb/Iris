@@ -51970,7 +51970,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/** @license MIT License (c) copyright 2010-20
 
 
 Object.defineProperty(exports, "__esModule", {
-	value: true
+  value: true
 });
 exports.App = undefined;
 
@@ -52196,311 +52196,346 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-;
-
 var App = exports.App = function (_React$Component) {
-	_inherits(App, _React$Component);
+  _inherits(App, _React$Component);
 
-	function App(props) {
-		_classCallCheck(this, App);
+  function App(props) {
+    _classCallCheck(this, App);
 
-		var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
+    var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
-		_this.handleInstallPrompt = _this.handleInstallPrompt.bind(_this);
-		_this.handleFocusAndBlur = _this.handleFocusAndBlur.bind(_this);
-		return _this;
-	}
+    _this.handleInstallPrompt = _this.handleInstallPrompt.bind(_this);
+    _this.handleFocusAndBlur = _this.handleFocusAndBlur.bind(_this);
+    return _this;
+  }
 
-	_createClass(App, [{
-		key: 'componentWillMount',
-		value: function componentWillMount() {
-			window.addEventListener("beforeinstallprompt", this.handleInstallPrompt, false);
-			window.addEventListener("focus", this.handleFocusAndBlur, false);
-			window.addEventListener("blur", this.handleFocusAndBlur, false);
-		}
-	}, {
-		key: 'componentWillUnmount',
-		value: function componentWillUnmount() {
-			window.removeEventListener("beforeinstallprompt", this.handleInstallPrompt, false);
-			window.removeEventListener("focus", this.handleFocusAndBlur, false);
-			window.removeEventListener("blur", this.handleFocusAndBlur, false);
-		}
-	}, {
-		key: 'componentDidMount',
-		value: function componentDidMount() {
-			var _this2 = this;
+  _createClass(App, [{
+    key: "componentWillMount",
+    value: function componentWillMount() {
+      window.addEventListener("beforeinstallprompt", this.handleInstallPrompt, false);
+      window.addEventListener("focus", this.handleFocusAndBlur, false);
+      window.addEventListener("blur", this.handleFocusAndBlur, false);
+    }
+  }, {
+    key: "componentWillUnmount",
+    value: function componentWillUnmount() {
+      window.removeEventListener("beforeinstallprompt", this.handleInstallPrompt, false);
+      window.removeEventListener("focus", this.handleFocusAndBlur, false);
+      window.removeEventListener("blur", this.handleFocusAndBlur, false);
+    }
+  }, {
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      var _this2 = this;
 
-			if (this.props.allow_reporting) {
-				_reactGa2.default.initialize('UA-64701652-3');
-			}
+      if (this.props.allow_reporting) {
+        _reactGa2.default.initialize("UA-64701652-3");
+      }
 
-			// Fire up our services
-			this.props.mopidyActions.connect();
-			this.props.pusherActions.connect();
-			this.props.coreActions.getBroadcasts();
+      // Fire up our services
+      this.props.mopidyActions.connect();
+      this.props.pusherActions.connect();
+      this.props.coreActions.getBroadcasts();
 
-			// Check for url-parsed configuration values
-			var url_vars = this.props.location.query;
-			if (url_vars) {
-				var has_values = false;
-				var values = {};
-				if (url_vars.host !== undefined) {
-					has_values = true;
-					values.host = url_vars.host;
-				}
-				if (url_vars.port !== undefined) {
-					has_values = true;
-					values.port = url_vars.port;
-				}
+      // Check for url-parsed configuration values
+      var url_vars = this.props.location.query;
+      if (url_vars) {
+        var has_values = false;
+        var values = {};
+        if (url_vars.host !== undefined) {
+          has_values = true;
+          values.host = url_vars.host;
+        }
+        if (url_vars.port !== undefined) {
+          has_values = true;
+          values.port = url_vars.port;
+        }
 
-				if (has_values) {
-					this.props.mopidyActions.set(values);
+        if (has_values) {
+          this.props.mopidyActions.set(values);
 
-					// Allow 100ms for the action above to complete before we re-route
-					setTimeout(function () {
-						_this2.props.history.push('/');
-					}, 100);
-				}
-			}
+          // Allow 100ms for the action above to complete before we re-route
+          setTimeout(function () {
+            _this2.props.history.push("/");
+          }, 100);
+        }
+      }
 
-			// show initial setup if required
-			if (!this.props.initial_setup_complete) {
-				this.props.history.push('/initial-setup');
-			}
-		}
-	}, {
-		key: 'componentDidUpdate',
-		value: function componentDidUpdate(prevProps) {
+      // show initial setup if required
+      if (!this.props.initial_setup_complete) {
+        this.props.history.push("/initial-setup");
+      }
+    }
+  }, {
+    key: "componentDidUpdate",
+    value: function componentDidUpdate(prevProps) {
+      // When we have navigated to a new route
+      if (this.props.location !== prevProps.location) {
+        // Log our pageview
+        if (this.props.allow_reporting) {
+          _reactGa2.default.set({ page: this.props.location.pathname });
+          _reactGa2.default.pageview(this.props.location.pathname);
+        }
 
-			// When we have navigated to a new route
-			if (this.props.location !== prevProps.location) {
+        // If the location has a "scroll_position" state variable, scroll to it.
+        // This is invisibly injected to the history by the Link component when navigating, so
+        // hitting back in the browser allows us to restore the position
+        var location_state = this.props.location.state ? this.props.location.state : {};
+        if (location_state.scroll_position) {
+          helpers.scrollTo(parseInt(location_state.scroll_position), false);
+        }
 
-				// Log our pageview
-				if (this.props.allow_reporting) {
-					_reactGa2.default.set({ page: this.props.location.pathname });
-					_reactGa2.default.pageview(this.props.location.pathname);
-				}
+        // Hide our sidebar
+        this.props.uiActions.toggleSidebar(false);
 
-				// If the location has a "scroll_position" state variable, scroll to it.
-				// This is invisibly injected to the history by the Link component when navigating, so 
-				// hitting back in the browser allows us to restore the position
-				var location_state = this.props.location.state ? this.props.location.state : {};
-				if (location_state.scroll_position) {
-					helpers.scrollTo(parseInt(location_state.scroll_position), false);
-				}
+        // Unselect any tracks
+        this.props.uiActions.setSelectedTracks([]);
 
-				// Hide our sidebar
-				this.props.uiActions.toggleSidebar(false);
+        // Close context menu
+        if (this.props.context_menu) {
+          this.props.uiActions.hideContextMenu();
+        }
+      }
+    }
 
-				// Unselect any tracks
-				this.props.uiActions.setSelectedTracks([]);
+    /**
+     * Using Visibility API, detect whether the browser is in focus or not
+     *
+     * This is used to keep background requests lean, preventing a queue of requests building up
+     * for when focus is retained. Seems most obvious on mobile devices with Chrome as it has throttled
+     * quota significantly: https://developers.google.com/web/updates/2017/03/background_tabs
+     *
+     * @param e Event
+     **/
 
-				// Close context menu
-				if (this.props.context_menu) {
-					this.props.uiActions.hideContextMenu();
-				}
-			};
-		}
+  }, {
+    key: "handleFocusAndBlur",
+    value: function handleFocusAndBlur(e) {
+      this.props.uiActions.setWindowFocus(document.hasFocus());
+    }
+  }, {
+    key: "handleInstallPrompt",
+    value: function handleInstallPrompt(e) {
+      e.preventDefault();
+      console.log("Install prompt detected");
+      this.props.uiActions.installPrompt(e);
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var className = this.props.theme + "-theme app-inner";
+      if (this.props.wide_scrollbar_enabled) {
+        className += " wide-scrollbar";
+      }
+      if (this.props.dragging) {
+        className += " dragging";
+      }
+      if (this.props.sidebar_open) {
+        className += " sidebar-open";
+      }
+      if (this.props.touch_dragging) {
+        className += " touch-dragging";
+        console.log("TOUCH DRAGGING");
+      }
+      if (this.props.context_menu) {
+        className += " context-menu-open";
+      }
+      if (this.props.slim_mode) {
+        className += " slim-mode";
+      }
+      if (this.props.smooth_scrolling_enabled) {
+        className += " smooth-scrolling-enabled";
+      }
+      if (helpers.isTouchDevice()) {
+        className += " touch";
+      } else {
+        className += " notouch";
+      }
 
-		/**
-   * Using Visibility API, detect whether the browser is in focus or not
-   *
-   * This is used to keep background requests lean, preventing a queue of requests building up
-   * for when focus is retained. Seems most obvious on mobile devices with Chrome as it has throttled
-   * quota significantly: https://developers.google.com/web/updates/2017/03/background_tabs
-   *
-   * @param e Event
-   **/
+      return _react2.default.createElement(
+        "div",
+        { className: className },
+        _react2.default.createElement(
+          "div",
+          { className: "body" },
+          _react2.default.createElement(
+            _reactRouterDom.Switch,
+            null,
+            _react2.default.createElement(_reactRouterDom.Route, { path: "/initial-setup", component: _InitialSetup2.default }),
+            _react2.default.createElement(_reactRouterDom.Route, { path: "/kiosk-mode", component: _KioskMode2.default }),
+            _react2.default.createElement(_reactRouterDom.Route, { path: "/add-to-playlist/:uris", component: _AddToPlaylist2.default }),
+            _react2.default.createElement(_reactRouterDom.Route, { path: "/image-zoom", component: _ImageZoom2.default }),
+            _react2.default.createElement(_reactRouterDom.Route, { path: "/share-configuration", component: _ShareConfiguration2.default }),
+            _react2.default.createElement(_reactRouterDom.Route, { path: "/edit-command/:id?", component: _EditCommand2.default }),
+            _react2.default.createElement(_reactRouterDom.Route, { path: "/queue/radio", component: _EditRadio2.default }),
+            _react2.default.createElement(_reactRouterDom.Route, { path: "/queue/add-uri", component: _AddToQueue2.default }),
+            _react2.default.createElement(_reactRouterDom.Route, { path: "/playlist/create", component: _CreatePlaylist2.default }),
+            _react2.default.createElement(_reactRouterDom.Route, { path: "/playlist/:uri/edit", component: _EditPlaylist2.default }),
+            _react2.default.createElement(
+              _reactRouterDom.Route,
+              null,
+              _react2.default.createElement(
+                "div",
+                null,
+                _react2.default.createElement(_Sidebar2.default, {
+                  location: this.props.location,
+                  history: this.props.history,
+                  tabIndex: "3"
+                }),
+                _react2.default.createElement(_PlaybackControls2.default, {
+                  history: this.props.history,
+                  slim_mode: this.props.slim_mode,
+                  tabIndex: "2"
+                }),
+                _react2.default.createElement(
+                  "main",
+                  { id: "main", className: "smooth-scroll", tabIndex: "1" },
+                  _react2.default.createElement(
+                    _reactRouterDom.Switch,
+                    null,
+                    _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: "/", component: _Queue2.default }),
+                    _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: "/queue", component: _Queue2.default }),
+                    _react2.default.createElement(_reactRouterDom.Route, {
+                      exact: true,
+                      path: "/queue/history",
+                      component: _QueueHistory2.default
+                    }),
+                    _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: "/settings/debug", component: _Debug2.default }),
+                    _react2.default.createElement(_reactRouterDom.Route, { path: "/settings", component: _Settings2.default }),
+                    _react2.default.createElement(_reactRouterDom.Route, {
+                      exact: true,
+                      path: "/search/:type?/:term?",
+                      component: _Search2.default
+                    }),
+                    _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: "/album/:uri", component: _Album2.default }),
+                    _react2.default.createElement(_reactRouterDom.Route, {
+                      exact: true,
+                      path: "/artist/:uri/:sub_view?",
+                      component: _Artist2.default
+                    }),
+                    _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: "/playlist/:uri", component: _Playlist2.default }),
+                    _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: "/user/:uri", component: _User2.default }),
+                    _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: "/track/:uri", component: _Track2.default }),
+                    _react2.default.createElement(_reactRouterDom.Route, {
+                      exact: true,
+                      path: "/discover/recommendations/:seeds?",
+                      component: _DiscoverRecommendations2.default
+                    }),
+                    _react2.default.createElement(_reactRouterDom.Route, {
+                      exact: true,
+                      path: "/discover/featured",
+                      component: _DiscoverFeatured2.default
+                    }),
+                    _react2.default.createElement(_reactRouterDom.Route, {
+                      exact: true,
+                      path: "/discover/categories/:id",
+                      component: _DiscoverCategory2.default
+                    }),
+                    _react2.default.createElement(_reactRouterDom.Route, {
+                      exact: true,
+                      path: "/discover/categories",
+                      component: _DiscoverCategories2.default
+                    }),
+                    _react2.default.createElement(_reactRouterDom.Route, {
+                      exact: true,
+                      path: "/discover/new-releases",
+                      component: _DiscoverNewReleases2.default
+                    }),
+                    _react2.default.createElement(_reactRouterDom.Route, {
+                      exact: true,
+                      path: "/library/artists",
+                      component: _LibraryArtists2.default
+                    }),
+                    _react2.default.createElement(_reactRouterDom.Route, {
+                      exact: true,
+                      path: "/library/albums",
+                      component: _LibraryAlbums2.default
+                    }),
+                    _react2.default.createElement(_reactRouterDom.Route, {
+                      exact: true,
+                      path: "/library/tracks",
+                      component: _LibraryTracks2.default
+                    }),
+                    _react2.default.createElement(_reactRouterDom.Route, {
+                      exact: true,
+                      path: "/library/playlists",
+                      component: _LibraryPlaylists2.default
+                    }),
+                    _react2.default.createElement(_reactRouterDom.Route, {
+                      exact: true,
+                      path: "/library/browse",
+                      component: _LibraryBrowse2.default
+                    }),
+                    _react2.default.createElement(_reactRouterDom.Route, {
+                      exact: true,
+                      path: "/library/browse/:uri",
+                      component: _LibraryBrowseDirectory2.default
+                    }),
+                    _react2.default.createElement(
+                      _reactRouterDom.Route,
+                      null,
+                      _react2.default.createElement(
+                        _ErrorMessage2.default,
+                        { type: "not-found", title: "Not found" },
+                        _react2.default.createElement(
+                          "p",
+                          null,
+                          "Oops, that link could not be found"
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        ),
+        _react2.default.createElement(_ResizeListener2.default, {
+          uiActions: this.props.uiActions,
+          slim_mode: this.props.slim_mode
+        }),
+        this.props.hotkeys_enabled && _react2.default.createElement(_Hotkeys2.default, null),
+        _react2.default.createElement(_ContextMenu2.default, null),
+        _react2.default.createElement(_Dragger2.default, null),
+        _react2.default.createElement(_Notifications2.default, null),
+        this.props.debug_info ? _react2.default.createElement(_DebugInfo2.default, null) : null
+      );
+    }
+  }]);
 
-	}, {
-		key: 'handleFocusAndBlur',
-		value: function handleFocusAndBlur(e) {
-			this.props.uiActions.setWindowFocus(document.hasFocus());
-		}
-	}, {
-		key: 'handleInstallPrompt',
-		value: function handleInstallPrompt(e) {
-			e.preventDefault();
-			console.log("Install prompt detected");
-			this.props.uiActions.installPrompt(e);
-		}
-	}, {
-		key: 'render',
-		value: function render() {
-			var className = this.props.theme + '-theme';
-			if (this.props.wide_scrollbar_enabled) {
-				className += ' wide-scrollbar';
-			}
-			if (this.props.dragger && this.props.dragger.active) {
-				className += ' dragging';
-			}
-			if (this.props.sidebar_open) {
-				className += ' sidebar-open';
-			}
-			if (this.props.touch_dragging) {
-				className += ' touch-dragging';
-			}
-			if (this.props.context_menu) {
-				className += ' context-menu-open';
-			}
-			if (this.props.slim_mode) {
-				className += ' slim-mode';
-			}
-			if (this.props.smooth_scrolling_enabled) {
-				className += ' smooth-scrolling-enabled';
-			}
-			if (helpers.isTouchDevice()) {
-				className += ' touch';
-			} else {
-				className += ' notouch';
-			}
-
-			return _react2.default.createElement(
-				'div',
-				{ className: className },
-				_react2.default.createElement(
-					'div',
-					{ className: 'body' },
-					_react2.default.createElement(
-						_reactRouterDom.Switch,
-						null,
-						_react2.default.createElement(_reactRouterDom.Route, { path: '/initial-setup', component: _InitialSetup2.default }),
-						_react2.default.createElement(_reactRouterDom.Route, { path: '/kiosk-mode', component: _KioskMode2.default }),
-						_react2.default.createElement(_reactRouterDom.Route, { path: '/add-to-playlist/:uris', component: _AddToPlaylist2.default }),
-						_react2.default.createElement(_reactRouterDom.Route, { path: '/image-zoom', component: _ImageZoom2.default }),
-						_react2.default.createElement(_reactRouterDom.Route, { path: '/share-configuration', component: _ShareConfiguration2.default }),
-						_react2.default.createElement(_reactRouterDom.Route, { path: '/edit-command/:id?', component: _EditCommand2.default }),
-						_react2.default.createElement(_reactRouterDom.Route, { path: '/queue/radio', component: _EditRadio2.default }),
-						_react2.default.createElement(_reactRouterDom.Route, { path: '/queue/add-uri', component: _AddToQueue2.default }),
-						_react2.default.createElement(_reactRouterDom.Route, { path: '/playlist/create', component: _CreatePlaylist2.default }),
-						_react2.default.createElement(_reactRouterDom.Route, { path: '/playlist/:uri/edit', component: _EditPlaylist2.default }),
-						_react2.default.createElement(
-							_reactRouterDom.Route,
-							null,
-							_react2.default.createElement(
-								'div',
-								null,
-								_react2.default.createElement(_Sidebar2.default, { tabIndex: '3' }),
-								_react2.default.createElement(_PlaybackControls2.default, { history: this.props.history, tabIndex: '2' }),
-								_react2.default.createElement(
-									'main',
-									{ id: 'main', className: 'smooth-scroll', tabIndex: '1' },
-									_react2.default.createElement(
-										_reactRouterDom.Switch,
-										null,
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', component: _Queue2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/queue', component: _Queue2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/queue/history', component: _QueueHistory2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/settings/debug', component: _Debug2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { path: '/settings', component: _Settings2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/search/:type?/:term?', component: _Search2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/album/:uri', component: _Album2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/artist/:uri/:sub_view?', component: _Artist2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/playlist/:uri', component: _Playlist2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/user/:uri', component: _User2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/track/:uri', component: _Track2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/discover/recommendations/:seeds?', component: _DiscoverRecommendations2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/discover/featured', component: _DiscoverFeatured2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/discover/categories/:id', component: _DiscoverCategory2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/discover/categories', component: _DiscoverCategories2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/discover/new-releases', component: _DiscoverNewReleases2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/library/artists', component: _LibraryArtists2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/library/albums', component: _LibraryAlbums2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/library/tracks', component: _LibraryTracks2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/library/playlists', component: _LibraryPlaylists2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/library/browse', component: _LibraryBrowse2.default }),
-										_react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/library/browse/:uri', component: _LibraryBrowseDirectory2.default }),
-										_react2.default.createElement(
-											_reactRouterDom.Route,
-											null,
-											_react2.default.createElement(
-												_ErrorMessage2.default,
-												{ type: 'not-found', title: 'Not found' },
-												_react2.default.createElement(
-													'p',
-													null,
-													'Oops, that link could not be found'
-												)
-											)
-										)
-									)
-								)
-							)
-						)
-					)
-				),
-				_react2.default.createElement(_ResizeListener2.default, {
-					uiActions: this.props.uiActions,
-					slim_mode: this.props.slim_mode
-				}),
-				this.props.hotkeys_enabled && _react2.default.createElement(_Hotkeys2.default, {
-					mopidyActions: this.props.mopidyActions,
-					uiActions: this.props.uiActions,
-					volume: this.props.volume,
-					mute: this.props.mute,
-					play_state: this.props.play_state,
-					play_time_position: this.props.play_time_position,
-					history: this.props.history,
-					dragging: this.props.dragger && this.props.dragger.dragging
-				}),
-				_react2.default.createElement(_ContextMenu2.default, null),
-				_react2.default.createElement(_Dragger2.default, null),
-				_react2.default.createElement(_Notifications2.default, {
-					uiActions: this.props.uiActions,
-					spotifyActions: this.props.spotifyActions,
-					geniusActions: this.props.geniusActions,
-					lastfmActions: this.props.lastfmActions,
-					snapcastActions: this.props.snapcastActions,
-					notifications: this.props.notifications,
-					processes: this.props.processes,
-					broadcasts: this.props.broadcasts
-				}),
-				this.props.debug_info ? _react2.default.createElement(_DebugInfo2.default, null) : null
-			);
-		}
-	}]);
-
-	return App;
+  return App;
 }(_react2.default.Component);
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
-	return {
-		theme: state.ui.theme,
-		wide_scrollbar_enabled: state.ui.wide_scrollbar_enabled,
-		smooth_scrolling_enabled: state.ui.smooth_scrolling_enabled,
-		hotkeys_enabled: state.ui.hotkeys_enabled,
-		allow_reporting: state.ui.allow_reporting,
-		touch_dragging: state.ui.touch_dragging,
-		initial_setup_complete: state.ui.initial_setup_complete,
-		slim_mode: state.ui.slim_mode,
-		broadcasts: state.ui.broadcasts ? state.ui.broadcasts : [],
-		volume: state.mopidy.volume ? state.mopidy.volume : false,
-		notifications: state.ui.notifications ? state.ui.notifications : [],
-		processes: state.ui.processes ? state.ui.processes : {},
-		load_queue: state.ui.load_queue ? state.ui.load_queue : {},
-		mopidy_connected: state.mopidy.connected,
-		spotify_authorized: state.spotify.authorization,
-		play_state: state.mopidy.play_state,
-		play_time_position: parseInt(state.mopidy.time_position),
-		mute: state.mopidy.mute,
-		sidebar_open: state.ui.sidebar_open,
-		dragger: state.ui.dragger,
-		context_menu: state.ui.context_menu,
-		debug_info: state.ui.debug_info
-	};
+  return {
+    theme: state.ui.theme,
+    wide_scrollbar_enabled: state.ui.wide_scrollbar_enabled,
+    smooth_scrolling_enabled: state.ui.smooth_scrolling_enabled,
+    hotkeys_enabled: state.ui.hotkeys_enabled,
+    allow_reporting: state.ui.allow_reporting,
+    touch_dragging: state.ui.touch_dragging,
+    initial_setup_complete: state.ui.initial_setup_complete,
+    slim_mode: state.ui.slim_mode,
+    mopidy_connected: state.mopidy.connected,
+    spotify_authorized: state.spotify.authorization,
+    sidebar_open: state.ui.sidebar_open,
+    dragging: state.ui.dragger && state.ui.dragger.active,
+    context_menu: state.ui.context_menu,
+    debug_info: state.ui.debug_info
+  };
 };
 
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
-	return {
-		coreActions: (0, _redux.bindActionCreators)(coreActions, dispatch),
-		uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
-		pusherActions: (0, _redux.bindActionCreators)(pusherActions, dispatch),
-		mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch),
-		spotifyActions: (0, _redux.bindActionCreators)(spotifyActions, dispatch),
-		lastfmActions: (0, _redux.bindActionCreators)(lastfmActions, dispatch),
-		geniusActions: (0, _redux.bindActionCreators)(geniusActions, dispatch),
-		snapcastActions: (0, _redux.bindActionCreators)(snapcastActions, dispatch)
-	};
+  return {
+    coreActions: (0, _redux.bindActionCreators)(coreActions, dispatch),
+    uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
+    pusherActions: (0, _redux.bindActionCreators)(pusherActions, dispatch),
+    mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch),
+    spotifyActions: (0, _redux.bindActionCreators)(spotifyActions, dispatch),
+    lastfmActions: (0, _redux.bindActionCreators)(lastfmActions, dispatch),
+    geniusActions: (0, _redux.bindActionCreators)(geniusActions, dispatch),
+    snapcastActions: (0, _redux.bindActionCreators)(snapcastActions, dispatch)
+  };
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(App);
@@ -54473,6 +54508,22 @@ var DebugInfo = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: 'debug-info' },
+				_react2.default.createElement(
+					'div',
+					{ className: 'debug-info-section' },
+					_react2.default.createElement(
+						'div',
+						{ className: 'debug-info-item' },
+						'Version: ',
+						version
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'debug-info-item' },
+						'Build: ',
+						build
+					)
+				),
 				_react2.default.createElement(
 					'div',
 					{ className: 'debug-info-section' },
@@ -58252,7 +58303,7 @@ var GridItem = function (_React$Component) {
 					onContextMenu: function onContextMenu(e) {
 						return _this2.onContextMenu(e);
 					} },
-				_react2.default.createElement(_Thumbnail2.default, { size: 'medium', className: 'grid__item__thumbnail', images: images }),
+				_react2.default.createElement(_Thumbnail2.default, { glow: true, size: 'medium', className: 'grid__item__thumbnail', images: images }),
 				_react2.default.createElement(
 					'div',
 					{ className: 'grid__item__name' },
@@ -58426,6 +58477,20 @@ var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
+var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+
+var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
+
+var _actions = __webpack_require__(/*! ../services/ui/actions */ "./src/js/services/ui/actions.js");
+
+var uiActions = _interopRequireWildcard(_actions);
+
+var _actions2 = __webpack_require__(/*! ../services/mopidy/actions */ "./src/js/services/mopidy/actions.js");
+
+var mopidyActions = _interopRequireWildcard(_actions2);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -58447,17 +58512,17 @@ var Hotkeys = function (_React$Component) {
     }
 
     _createClass(Hotkeys, [{
-        key: "componentWillMount",
+        key: 'componentWillMount',
         value: function componentWillMount() {
             window.addEventListener("keydown", this.handleKeyDown, false);
         }
     }, {
-        key: "componentWillUnmount",
+        key: 'componentWillUnmount',
         value: function componentWillUnmount() {
             window.removeEventListener("keydown", this.handleKeyDown, false);
         }
     }, {
-        key: "handleKeyDown",
+        key: 'handleKeyDown',
         value: function handleKeyDown(e) {
 
             // When we're focussed on certian elements, don't fire any shortcuts
@@ -58603,7 +58668,7 @@ var Hotkeys = function (_React$Component) {
             }
         }
     }, {
-        key: "render",
+        key: 'render',
         value: function render() {
             return null;
         }
@@ -58612,7 +58677,24 @@ var Hotkeys = function (_React$Component) {
     return Hotkeys;
 }(_react2.default.Component);
 
-exports.default = Hotkeys;
+var mapStateToProps = function mapStateToProps(state, ownProps) {
+    return {
+        volume: state.mopidy.volume ? state.mopidy.volume : false,
+        mute: state.mopidy.mute,
+        play_state: state.mopidy.play_state,
+        play_time_position: parseInt(state.mopidy.time_position),
+        dragging: state.ui.dragger && state.ui.dragger.dragging
+    };
+};
+
+var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+    return {
+        uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
+        mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch)
+    };
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Hotkeys);
 
 /***/ }),
 
@@ -59288,7 +59370,7 @@ var ListItem = function (_React$Component) {
 					onContextMenu: function onContextMenu(e) {
 						return _this2.handleContextMenu(e);
 					} },
-				_react2.default.createElement(
+				this.props.right_column && !this.props.nocontext && _react2.default.createElement(
 					'div',
 					{ className: 'list__item__column list__item__column--right' },
 					this.props.right_column ? this.props.right_column.map(function (column, index) {
@@ -59419,13 +59501,35 @@ var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Link = __webpack_require__(/*! ./Link */ "./src/js/components/Link.js");
+var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
 
-var _Link2 = _interopRequireDefault(_Link);
+var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
+
+var _actions = __webpack_require__(/*! ../services/ui/actions */ "./src/js/services/ui/actions.js");
+
+var uiActions = _interopRequireWildcard(_actions);
+
+var _actions2 = __webpack_require__(/*! ../services/spotify/actions */ "./src/js/services/spotify/actions.js");
+
+var spotifyActions = _interopRequireWildcard(_actions2);
+
+var _actions3 = __webpack_require__(/*! ../services/lastfm/actions */ "./src/js/services/lastfm/actions.js");
+
+var lastfmActions = _interopRequireWildcard(_actions3);
+
+var _actions4 = __webpack_require__(/*! ../services/genius/actions */ "./src/js/services/genius/actions.js");
+
+var geniusActions = _interopRequireWildcard(_actions4);
+
+var _actions5 = __webpack_require__(/*! ../services/snapcast/actions */ "./src/js/services/snapcast/actions.js");
+
+var snapcastActions = _interopRequireWildcard(_actions5);
 
 var _Icon = __webpack_require__(/*! ./Icon */ "./src/js/components/Icon.js");
 
 var _Icon2 = _interopRequireDefault(_Icon);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -59710,7 +59814,25 @@ var Notifications = function (_React$Component) {
 	return Notifications;
 }(_react2.default.Component);
 
-exports.default = Notifications;
+var mapStateToProps = function mapStateToProps(state, ownProps) {
+	return {
+		broadcasts: state.ui.broadcasts ? state.ui.broadcasts : [],
+		notifications: state.ui.notifications ? state.ui.notifications : [],
+		processes: state.ui.processes ? state.ui.processes : {}
+	};
+};
+
+var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+	return {
+		uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
+		spotifyActions: (0, _redux.bindActionCreators)(spotifyActions, dispatch),
+		geniusActions: (0, _redux.bindActionCreators)(geniusActions, dispatch),
+		lastfmActions: (0, _redux.bindActionCreators)(lastfmActions, dispatch),
+		snapcastActions: (0, _redux.bindActionCreators)(snapcastActions, dispatch)
+	};
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Notifications);
 
 /***/ }),
 
@@ -59855,7 +59977,7 @@ exports.default = Parallax;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {
+
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
@@ -60045,7 +60167,6 @@ var PlaybackControls = function (_React$Component) {
 	}, {
 		key: 'handleTouchStart',
 		value: function handleTouchStart(e) {
-			var target = $(e.target);
 			var timestamp = Math.floor(Date.now());
 
 			// Save touch start details
@@ -60059,7 +60180,6 @@ var PlaybackControls = function (_React$Component) {
 	}, {
 		key: 'handleTouchEnd',
 		value: function handleTouchEnd(e) {
-			var target = $(e.target);
 			var timestamp = Math.floor(Date.now());
 			var tap_distance_threshold = 10; // Max distance (px) between touchstart and touchend to qualify as a tap
 			var tap_time_threshold = 200; // Max time (ms) between touchstart and touchend to qualify as a tap
@@ -60093,6 +60213,7 @@ var PlaybackControls = function (_React$Component) {
 			}
 
 			this.end_time = timestamp;
+			e.preventDefault();
 		}
 	}, {
 		key: 'setTransition',
@@ -60107,7 +60228,6 @@ var PlaybackControls = function (_React$Component) {
 
 			// Allow time for the animation to complete, then remove
 			// the transitioning track from state
-			var self = this;
 			setTimeout(function () {
 				_this2.setState({
 					transition_track: null,
@@ -60242,15 +60362,24 @@ var PlaybackControls = function (_React$Component) {
 		value: function render() {
 			var _this7 = this;
 
+			var _props = this.props,
+			    next_track = _props.next_track,
+			    touch_enabled = _props.touch_enabled,
+			    time_position = _props.time_position;
+			var _state = this.state,
+			    current_track = _state.current_track,
+			    expanded = _state.expanded;
+
+
 			var images = false;
-			if (this.state.current_track && this.state.current_track.images) {
-				images = this.state.current_track.images;
+			if (current_track && current_track.images) {
+				images = current_track.images;
 			}
 
 			return _react2.default.createElement(
 				'div',
-				{ className: this.state.expanded ? "playback-controls--expanded playback-controls" : "playback-controls" },
-				this.props.next_track && this.props.next_track.images ? _react2.default.createElement(_Thumbnail2.default, { className: 'hide', size: 'large', images: this.props.next_track.images }) : null,
+				{ className: 'playback-controls' + (expanded ? ' playback-controls--expanded' : '') + (touch_enabled ? ' playback-controls--touch-enabled' : '') },
+				next_track && next_track.images ? _react2.default.createElement(_Thumbnail2.default, { className: 'hide', size: 'large', images: next_track.images }) : null,
 				this.state.transition_track && this.state.transition_direction ? _react2.default.createElement(
 					'div',
 					{
@@ -60275,14 +60404,15 @@ var PlaybackControls = function (_React$Component) {
 					{
 						className: this.state.transition_track && this.state.transition_direction ? "current-track current-track--transitioning" : "current-track",
 						onTouchStart: function onTouchStart(e) {
-							return _this7.handleTouchStart(e);
+							return touch_enabled && _this7.handleTouchStart(e);
 						},
 						onTouchEnd: function onTouchEnd(e) {
-							return _this7.handleTouchEnd(e);
-						} },
+							return touch_enabled && _this7.handleTouchEnd(e);
+						},
+						tabIndex: '-1' },
 					_react2.default.createElement(
 						_Link2.default,
-						{ className: 'thumbnail-wrapper', to: '/kiosk-mode' },
+						{ className: 'thumbnail-wrapper', to: '/kiosk-mode', tabIndex: '-1' },
 						_react2.default.createElement(_Thumbnail2.default, { size: 'small', images: images })
 					),
 					_react2.default.createElement(
@@ -60291,7 +60421,7 @@ var PlaybackControls = function (_React$Component) {
 						_react2.default.createElement(
 							'div',
 							{ className: 'title' },
-							this.state.current_track ? this.state.current_track.name : _react2.default.createElement(
+							current_track ? current_track.name : _react2.default.createElement(
 								'span',
 								null,
 								'-'
@@ -60300,7 +60430,7 @@ var PlaybackControls = function (_React$Component) {
 						_react2.default.createElement(
 							'div',
 							{ className: 'artist' },
-							this.state.current_track ? _react2.default.createElement(_ArtistSentence2.default, { artists: this.state.current_track.artists, nolinks: this.props.slim_mode }) : _react2.default.createElement(_ArtistSentence2.default, null)
+							current_track ? _react2.default.createElement(_ArtistSentence2.default, { artists: current_track.artists }) : _react2.default.createElement(_ArtistSentence2.default, null)
 						)
 					)
 				),
@@ -60312,22 +60442,15 @@ var PlaybackControls = function (_React$Component) {
 						{ className: 'control previous', onClick: function onClick() {
 								return _this7.props.mopidyActions.previous();
 							} },
-						_react2.default.createElement(_Icon2.default, { name: 'skip_previous', type: 'material' })
+						_react2.default.createElement(_Icon2.default, { name: 'navigate_before', type: 'material' })
 					),
 					this.renderPlayButton(),
-					_react2.default.createElement(
-						'button',
-						{ className: 'control stop', onClick: function onClick() {
-								return _this7.props.mopidyActions.stop();
-							} },
-						_react2.default.createElement(_Icon2.default, { name: 'stop', type: 'material' })
-					),
 					_react2.default.createElement(
 						'button',
 						{ className: 'control next', onClick: function onClick() {
 								return _this7.props.mopidyActions.next();
 							} },
-						_react2.default.createElement(_Icon2.default, { name: 'skip_next', type: 'material' })
+						_react2.default.createElement(_Icon2.default, { name: 'navigate_next', type: 'material' })
 					)
 				),
 				_react2.default.createElement(
@@ -60337,12 +60460,12 @@ var PlaybackControls = function (_React$Component) {
 					_react2.default.createElement(
 						'span',
 						{ className: 'current' },
-						this.props.time_position ? _react2.default.createElement(_Dater2.default, { type: 'length', data: this.props.time_position }) : '-'
+						time_position ? _react2.default.createElement(_Dater2.default, { type: 'length', data: time_position }) : '-'
 					),
 					_react2.default.createElement(
 						'span',
 						{ className: 'total' },
-						this.state.current_track ? _react2.default.createElement(_Dater2.default, { type: 'length', data: this.state.current_track.duration }) : '-'
+						current_track ? _react2.default.createElement(_Dater2.default, { type: 'length', data: current_track.duration }) : '-'
 					)
 				),
 				_react2.default.createElement(
@@ -60415,7 +60538,8 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 		volume: state.mopidy.volume,
 		mute: state.mopidy.mute,
 		sidebar_open: state.ui.sidebar_open,
-		slim_mode: state.ui.slim_mode
+		slim_mode: state.ui.slim_mode,
+		touch_enabled: state.ui.playback_controls_touch_enabled
 	};
 };
 
@@ -60428,7 +60552,6 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(PlaybackControls);
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
 
 /***/ }),
 
@@ -61837,12 +61960,6 @@ var Sidebar = function (_React$Component) {
 	return Sidebar;
 }(_react2.default.Component);
 
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- **/
-
 var mapStateToProps = function mapStateToProps(state, ownProps) {
 	return {
 		mopidy_connected: state.mopidy.connected,
@@ -62486,6 +62603,7 @@ exports.default = (0, _react.memo)(function (props) {
 		'div',
 		{ className: class_name },
 		_react2.default.createElement('div', { className: 'thumbnail__image', style: { backgroundImage: 'url("' + (image ? image : '/iris/assets/no-image.svg') + '")' } }),
+		props.glow && image && _react2.default.createElement('div', { className: 'thumbnail__image thumbnail__image--glow', style: { backgroundImage: 'url("' + image + '")' } }),
 		zoom_icon
 	);
 });
@@ -62910,24 +63028,6 @@ var Track = function (_React$Component) {
 						} },
 					_react2.default.createElement(
 						'div',
-						{ className: 'list__item__column list__item__column--right' },
-						drag_zone,
-						_react2.default.createElement(
-							'span',
-							{ className: 'list__item__column__item list__item__column__item--duration' },
-							track.duration ? _react2.default.createElement(_Dater2.default, { type: 'length', data: track.duration }) : '-'
-						),
-						this.props.show_source_icon ? _react2.default.createElement(
-							'span',
-							{ className: 'list__item__column__item list__item__column__item--source' },
-							_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(track.uri), fixedWidth: true })
-						) : null,
-						_react2.default.createElement(_ContextMenuTrigger2.default, { className: 'list__item__column__item--context-menu-trigger subtle', onTrigger: function onTrigger(e) {
-								return _this2.props.handleContextMenu(e);
-							} })
-					),
-					_react2.default.createElement(
-						'div',
 						{ className: 'list__item__column list__item__column--name' },
 						_react2.default.createElement(
 							'div',
@@ -62954,7 +63054,25 @@ var Track = function (_React$Component) {
 						'div',
 						{ className: 'list__item__column list__item__column--middle' },
 						track_middle_column
-					) : null
+					) : null,
+					_react2.default.createElement(
+						'div',
+						{ className: 'list__item__column list__item__column--right' },
+						drag_zone,
+						_react2.default.createElement(
+							'span',
+							{ className: 'list__item__column__item list__item__column__item--duration' },
+							track.duration ? _react2.default.createElement(_Dater2.default, { type: 'length', data: track.duration }) : '-'
+						),
+						this.props.show_source_icon ? _react2.default.createElement(
+							'span',
+							{ className: 'list__item__column__item list__item__column__item--source' },
+							_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(track.uri), fixedWidth: true })
+						) : null,
+						_react2.default.createElement(_ContextMenuTrigger2.default, { className: 'list__item__column__item--context-menu-trigger subtle', onTrigger: function onTrigger(e) {
+								return _this2.props.handleContextMenu(e);
+							} })
+					)
 				)
 			);
 		}
@@ -63139,7 +63257,8 @@ var TrackList = function (_React$Component) {
 	}, {
 		key: 'handleTouchDrag',
 		value: function handleTouchDrag(e, track_key) {
-			var selected_tracks = [];
+
+			console.log("touchDragging", e, track_key);
 
 			// Drag initiated on a selected track
 			if (this.props.selected_tracks.includes(track_key)) {
@@ -63147,7 +63266,7 @@ var TrackList = function (_React$Component) {
 				// They're all dragging
 				this.touch_dragging_tracks_keys = this.props.selected_tracks;
 
-				// Not already selected
+				// Not already selected, so just dragging the one track
 			} else {
 				this.touch_dragging_tracks_keys = [track_key];
 				this.props.uiActions.setSelectedTracks([track_key]);
@@ -77598,6 +77717,7 @@ var state = {
 		theme: 'dark',
 		smooth_scrolling_enabled: true,
 		hotkeys_enabled: true,
+		playback_controls_touch_enabled: true,
 		allow_reporting: true,
 		wide_scrollbar_enabled: false,
 		window_focus: true,
@@ -77718,7 +77838,7 @@ exports.default = function (state) {
 
 
 Object.defineProperty(exports, "__esModule", {
-	value: true
+  value: true
 });
 exports.Album = undefined;
 
@@ -77819,294 +77939,306 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var Album = exports.Album = function (_React$Component) {
-	_inherits(Album, _React$Component);
+  _inherits(Album, _React$Component);
 
-	function Album(props) {
-		_classCallCheck(this, Album);
+  function Album(props) {
+    _classCallCheck(this, Album);
 
-		return _possibleConstructorReturn(this, (Album.__proto__ || Object.getPrototypeOf(Album)).call(this, props));
-	}
+    return _possibleConstructorReturn(this, (Album.__proto__ || Object.getPrototypeOf(Album)).call(this, props));
+  }
 
-	_createClass(Album, [{
-		key: 'componentDidMount',
-		value: function componentDidMount() {
-			this.setWindowTitle();
-			this.props.coreActions.loadAlbum(this.props.uri);
+  _createClass(Album, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      this.setWindowTitle();
+      this.props.coreActions.loadAlbum(this.props.uri);
 
-			// We already have the album in our index, so it won't fire componentWillReceiveProps
-			if (this.props.album) {
-				if (this.props.album.artists && this.props.album.wiki === undefined) {
-					this.props.lastfmActions.getAlbum(this.props.album.uri, this.props.album.artists[0].name, this.props.album.name);
-				}
-			}
-		}
-	}, {
-		key: 'handleContextMenu',
-		value: function handleContextMenu(e) {
-			e.preventDefault();
-			var data = { uris: [this.props.uri] };
-			this.props.uiActions.showContextMenu(e, data, 'album', 'click');
-		}
-	}, {
-		key: 'componentWillReceiveProps',
-		value: function componentWillReceiveProps(nextProps) {
+      // We already have the album in our index, so it won't fire componentWillReceiveProps
+      if (this.props.album) {
+        if (this.props.album.artists && this.props.album.wiki === undefined) {
+          this.props.lastfmActions.getAlbum(this.props.album.uri, this.props.album.artists[0].name, this.props.album.name);
+        }
+      }
+    }
+  }, {
+    key: "handleContextMenu",
+    value: function handleContextMenu(e) {
+      e.preventDefault();
+      var data = { uris: [this.props.uri] };
+      this.props.uiActions.showContextMenu(e, data, "album", "click");
+    }
+  }, {
+    key: "componentWillReceiveProps",
+    value: function componentWillReceiveProps(nextProps) {
+      // if our URI has changed, fetch new album
+      if (nextProps.uri != this.props.uri) {
+        this.props.coreActions.loadAlbum(nextProps.uri);
 
-			// if our URI has changed, fetch new album
-			if (nextProps.uri != this.props.uri) {
-				this.props.coreActions.loadAlbum(nextProps.uri);
+        // if mopidy has just connected AND we're a local album, go get
+      } else if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
+        if (helpers.uriSource(nextProps.uri) != "spotify") {
+          this.props.coreActions.loadAlbum(nextProps.uri);
+        }
+      }
 
-				// if mopidy has just connected AND we're a local album, go get
-			} else if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
-				if (helpers.uriSource(nextProps.uri) != 'spotify') {
-					this.props.coreActions.loadAlbum(nextProps.uri);
-				}
-			}
+      // We have just received our full album or our album artists
+      if (!this.props.album && nextProps.album || !this.props.album.artists && nextProps.album.artists) {
+        if (nextProps.album.wiki === undefined && nextProps.artists.length > 0) {
+          this.props.lastfmActions.getAlbum(nextProps.album.uri, nextProps.album.artists[0].name, nextProps.album.name);
+        }
+      }
 
-			// We have just received our full album or our album artists
-			if (!this.props.album && nextProps.album || !this.props.album.artists && nextProps.album.artists) {
-				if (nextProps.album.wiki === undefined && nextProps.artists.length > 0) {
-					this.props.lastfmActions.getAlbum(nextProps.album.uri, nextProps.album.artists[0].name, nextProps.album.name);
-				}
-			}
+      if (!this.props.album && nextProps.album) {
+        this.setWindowTitle(nextProps.album);
+      }
+    }
+  }, {
+    key: "setWindowTitle",
+    value: function setWindowTitle() {
+      var album = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props.album;
 
-			if (!this.props.album && nextProps.album) {
-				this.setWindowTitle(nextProps.album);
-			}
-		}
-	}, {
-		key: 'setWindowTitle',
-		value: function setWindowTitle() {
-			var album = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props.album;
+      if (album) {
+        var artists = "";
+        if (album.artists_uris && this.props.artists) {
+          for (var i = 0; i < album.artists_uris.length; i++) {
+            var uri = album.artists_uris[i];
+            if (this.props.artists.hasOwnProperty(uri)) {
+              if (artists != "") {
+                artists += ", ";
+              }
+              artists += this.props.artists[uri].name;
+            }
+          }
+        }
+        this.props.uiActions.setWindowTitle(album.name + " by " + artists + " (album)");
+      } else {
+        this.props.uiActions.setWindowTitle("Album");
+      }
+    }
+  }, {
+    key: "handleContextMenu",
+    value: function handleContextMenu(e) {
+      var data = {
+        e: e,
+        context: "album",
+        items: [this.props.album],
+        uris: [this.props.uri]
+      };
+      this.props.uiActions.showContextMenu(data);
+    }
+  }, {
+    key: "loadMore",
+    value: function loadMore() {
+      this.props.spotifyActions.getMore(this.props.album.tracks_more, {
+        parent_type: "album",
+        parent_key: this.props.album.uri,
+        records_type: "track"
+      });
+    }
+  }, {
+    key: "play",
+    value: function play() {
+      this.props.mopidyActions.playURIs([this.props.uri], this.props.uri);
+    }
+  }, {
+    key: "inLibrary",
+    value: function inLibrary() {
+      var library = helpers.uriSource(this.props.uri) + "_library_albums";
+      return this.props[library] && this.props[library].indexOf(this.props.uri) > -1;
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this2 = this;
 
-			if (album) {
-				var artists = "";
-				if (album.artists_uris && this.props.artists) {
-					for (var i = 0; i < album.artists_uris.length; i++) {
-						var uri = album.artists_uris[i];
-						if (this.props.artists.hasOwnProperty(uri)) {
-							if (artists != "") {
-								artists += ", ";
-							}
-							artists += this.props.artists[uri].name;
-						}
-					}
-				}
-				this.props.uiActions.setWindowTitle(album.name + " by " + artists + " (album)");
-			} else {
-				this.props.uiActions.setWindowTitle("Album");
-			}
-		}
-	}, {
-		key: 'handleContextMenu',
-		value: function handleContextMenu(e) {
-			var data = {
-				e: e,
-				context: 'album',
-				items: [this.props.album],
-				uris: [this.props.uri]
-			};
-			this.props.uiActions.showContextMenu(data);
-		}
-	}, {
-		key: 'loadMore',
-		value: function loadMore() {
-			this.props.spotifyActions.getMore(this.props.album.tracks_more, {
-				parent_type: 'album',
-				parent_key: this.props.album.uri,
-				records_type: 'track'
-			});
-		}
-	}, {
-		key: 'play',
-		value: function play() {
-			this.props.mopidyActions.playURIs([this.props.uri], this.props.uri);
-		}
-	}, {
-		key: 'inLibrary',
-		value: function inLibrary() {
-			var library = helpers.uriSource(this.props.uri) + '_library_albums';
-			return this.props[library] && this.props[library].indexOf(this.props.uri) > -1;
-		}
-	}, {
-		key: 'render',
-		value: function render() {
-			var _this2 = this;
+      if (!this.props.album) {
+        if (helpers.isLoading(this.props.load_queue, ["spotify_albums/" + helpers.getFromUri("albumid", this.props.uri)])) {
+          return _react2.default.createElement(
+            "div",
+            { className: "body-loader loading" },
+            _react2.default.createElement("div", { className: "loader" })
+          );
+        } else {
+          return _react2.default.createElement(
+            _ErrorMessage2.default,
+            { type: "not-found", title: "Not found" },
+            _react2.default.createElement(
+              "p",
+              null,
+              "Could not find album with URI \"",
+              encodeURIComponent(this.props.uri),
+              "\""
+            )
+          );
+        }
+      }
 
-			if (!this.props.album) {
-				if (helpers.isLoading(this.props.load_queue, ['spotify_albums/' + helpers.getFromUri('albumid', this.props.uri)])) {
-					return _react2.default.createElement(
-						'div',
-						{ className: 'body-loader loading' },
-						_react2.default.createElement('div', { className: 'loader' })
-					);
-				} else {
-					return _react2.default.createElement(
-						_ErrorMessage2.default,
-						{ type: 'not-found', title: 'Not found' },
-						_react2.default.createElement(
-							'p',
-							null,
-							'Could not find album with URI "',
-							encodeURIComponent(this.props.uri),
-							'"'
-						)
-					);
-				}
-			}
+      var album = helpers.collate(this.props.album, {
+        tracks: this.props.tracks,
+        artists: this.props.artists
+      });
 
-			var album = helpers.collate(this.props.album, { tracks: this.props.tracks, artists: this.props.artists });
+      if (!album.tracks_uris || album.tracks_uris && !album.tracks || album.tracks_uris.length !== album.tracks.length) {
+        var is_loading_tracks = true;
+      } else {
+        var is_loading_tracks = false;
+      }
 
-			if (!album.tracks_uris || album.tracks_uris && !album.tracks || album.tracks_uris.length !== album.tracks.length) {
-				var is_loading_tracks = true;
-			} else {
-				var is_loading_tracks = false;
-			}
+      return _react2.default.createElement(
+        "div",
+        { className: "view album-view content-wrapper preserve-3d" },
+        _react2.default.createElement(_Parallax2.default, { image: album.images ? album.images.huge : null, blur: true }),
+        _react2.default.createElement(
+          "div",
+          { className: "thumbnail-wrapper" },
+          _react2.default.createElement(_Thumbnail2.default, { size: "large", canZoom: true, images: album.images })
+        ),
+        _react2.default.createElement(
+          "div",
+          { className: "title" },
+          _react2.default.createElement(
+            "h1",
+            null,
+            album.name
+          ),
+          _react2.default.createElement(
+            "ul",
+            { className: "details" },
+            !this.props.slim_mode ? _react2.default.createElement(
+              "li",
+              { className: "source" },
+              _react2.default.createElement(_Icon2.default, { type: "fontawesome", name: helpers.sourceIcon(album.uri) })
+            ) : null,
+            album.artists && album.artists.length > 0 ? _react2.default.createElement(
+              "li",
+              null,
+              _react2.default.createElement(_ArtistSentence2.default, { artists: album.artists })
+            ) : null,
+            album.release_date ? _react2.default.createElement(
+              "li",
+              null,
+              _react2.default.createElement(_Dater2.default, { type: "date", data: album.release_date })
+            ) : null,
+            album.tracks ? _react2.default.createElement(
+              "li",
+              null,
+              album.tracks.length,
+              " tracks"
+            ) : null,
+            !this.props.slim_mode && album.tracks ? _react2.default.createElement(
+              "li",
+              null,
+              _react2.default.createElement(_Dater2.default, { type: "total-time", data: album.tracks })
+            ) : null,
+            !this.props.slim_mode && album.play_count ? _react2.default.createElement(
+              "li",
+              null,
+              _react2.default.createElement(_NiceNumber2.default, { value: album.play_count }),
+              " plays"
+            ) : null,
+            !this.props.slim_mode && album.listeners ? _react2.default.createElement(
+              "li",
+              null,
+              _react2.default.createElement(_NiceNumber2.default, { value: album.listeners }),
+              " listeners"
+            ) : null
+          )
+        ),
+        _react2.default.createElement(
+          "div",
+          { className: "actions" },
+          _react2.default.createElement(
+            "button",
+            { className: "button button--primary", onClick: function onClick(e) {
+                return _this2.play();
+              } },
+            "Play"
+          ),
+          helpers.uriSource(this.props.uri) == "spotify" ? _react2.default.createElement(_FollowButton2.default, {
+            className: "secondary",
+            uri: this.props.uri,
+            addText: "Add to library",
+            removeText: "Remove from library",
+            is_following: this.inLibrary()
+          }) : null,
+          _react2.default.createElement(_ContextMenuTrigger2.default, { onTrigger: function onTrigger(e) {
+              return _this2.handleContextMenu(e);
+            } })
+        ),
+        _react2.default.createElement(
+          "section",
+          { className: "list-wrapper" },
+          _react2.default.createElement(_TrackList2.default, {
+            className: "album-track-list",
+            tracks: album.tracks,
+            uri: album.uri
+          }),
+          _react2.default.createElement(_LazyLoadListener2.default, {
+            loadKey: album.tracks_more,
+            showLoader: is_loading_tracks,
+            loadMore: function loadMore() {
+              return _this2.loadMore();
+            }
+          })
+        ),
+        album.wiki ? _react2.default.createElement(
+          "section",
+          { className: "wiki" },
+          _react2.default.createElement(
+            "h4",
+            { className: "wiki__title" },
+            "About"
+          ),
+          _react2.default.createElement(
+            "div",
+            { className: "wiki__text" },
+            _react2.default.createElement(
+              "p",
+              null,
+              album.wiki
+            ),
+            _react2.default.createElement("br", null),
+            _react2.default.createElement(
+              "div",
+              { className: "mid_grey-text" },
+              "Published: ",
+              album.wiki_publish_date
+            )
+          )
+        ) : null
+      );
+    }
+  }]);
 
-			return _react2.default.createElement(
-				'div',
-				{ className: 'view album-view content-wrapper preserve-3d' },
-				this.props.theme == 'dark' && _react2.default.createElement(_Parallax2.default, { image: album.images ? album.images.huge : null, blur: true }),
-				_react2.default.createElement(
-					'div',
-					{ className: 'thumbnail-wrapper' },
-					_react2.default.createElement(_Thumbnail2.default, { size: 'large', canZoom: true, images: album.images })
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'title' },
-					_react2.default.createElement(
-						'h1',
-						null,
-						album.name
-					),
-					_react2.default.createElement(
-						'ul',
-						{ className: 'details' },
-						!this.props.slim_mode ? _react2.default.createElement(
-							'li',
-							{ className: 'source' },
-							_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(album.uri) })
-						) : null,
-						album.artists && album.artists.length > 0 ? _react2.default.createElement(
-							'li',
-							null,
-							_react2.default.createElement(_ArtistSentence2.default, { artists: album.artists })
-						) : null,
-						album.release_date ? _react2.default.createElement(
-							'li',
-							null,
-							_react2.default.createElement(_Dater2.default, { type: 'date', data: album.release_date })
-						) : null,
-						album.tracks ? _react2.default.createElement(
-							'li',
-							null,
-							album.tracks.length,
-							' tracks'
-						) : null,
-						!this.props.slim_mode && album.tracks ? _react2.default.createElement(
-							'li',
-							null,
-							_react2.default.createElement(_Dater2.default, { type: 'total-time', data: album.tracks })
-						) : null,
-						!this.props.slim_mode && album.play_count ? _react2.default.createElement(
-							'li',
-							null,
-							_react2.default.createElement(_NiceNumber2.default, { value: album.play_count }),
-							' plays'
-						) : null,
-						!this.props.slim_mode && album.listeners ? _react2.default.createElement(
-							'li',
-							null,
-							_react2.default.createElement(_NiceNumber2.default, { value: album.listeners }),
-							' listeners'
-						) : null
-					)
-				),
-				_react2.default.createElement(
-					'div',
-					{ className: 'actions' },
-					_react2.default.createElement(
-						'button',
-						{ className: 'button button--primary', onClick: function onClick(e) {
-								return _this2.play();
-							} },
-						'Play'
-					),
-					helpers.uriSource(this.props.uri) == 'spotify' ? _react2.default.createElement(_FollowButton2.default, { className: 'secondary', uri: this.props.uri, addText: 'Add to library', removeText: 'Remove from library', is_following: this.inLibrary() }) : null,
-					_react2.default.createElement(_ContextMenuTrigger2.default, { onTrigger: function onTrigger(e) {
-							return _this2.handleContextMenu(e);
-						} })
-				),
-				_react2.default.createElement(
-					'section',
-					{ className: 'list-wrapper' },
-					_react2.default.createElement(_TrackList2.default, { className: 'album-track-list', tracks: album.tracks, uri: album.uri }),
-					_react2.default.createElement(_LazyLoadListener2.default, {
-						loadKey: album.tracks_more,
-						showLoader: is_loading_tracks,
-						loadMore: function loadMore() {
-							return _this2.loadMore();
-						}
-					})
-				),
-				album.wiki ? _react2.default.createElement(
-					'section',
-					{ className: 'wiki' },
-					_react2.default.createElement(
-						'h4',
-						{ className: 'wiki__title' },
-						'About'
-					),
-					_react2.default.createElement(
-						'div',
-						{ className: 'wiki__text' },
-						_react2.default.createElement(
-							'p',
-							null,
-							album.wiki
-						),
-						_react2.default.createElement('br', null),
-						_react2.default.createElement(
-							'div',
-							{ className: 'mid_grey-text' },
-							'Published: ',
-							album.wiki_publish_date
-						)
-					)
-				) : null
-			);
-		}
-	}]);
-
-	return Album;
+  return Album;
 }(_react2.default.Component);
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
-	var uri = decodeURIComponent(ownProps.match.params.uri);
-	return {
-		uri: uri,
-		slim_mode: state.ui.slim_mode,
-		theme: state.ui.theme,
-		load_queue: state.ui.load_queue,
-		tracks: state.core.tracks,
-		artists: state.core.artists,
-		album: state.core.albums && state.core.albums[uri] !== undefined ? state.core.albums[uri] : false,
-		albums: state.core.albums,
-		spotify_library_albums: state.spotify.library_albums,
-		local_library_albums: state.mopidy.library_albums,
-		spotify_authorized: state.spotify.authorization,
-		mopidy_connected: state.mopidy.connected
-	};
+  var uri = decodeURIComponent(ownProps.match.params.uri);
+  return {
+    uri: uri,
+    slim_mode: state.ui.slim_mode,
+    theme: state.ui.theme,
+    load_queue: state.ui.load_queue,
+    tracks: state.core.tracks,
+    artists: state.core.artists,
+    album: state.core.albums && state.core.albums[uri] !== undefined ? state.core.albums[uri] : false,
+    albums: state.core.albums,
+    spotify_library_albums: state.spotify.library_albums,
+    local_library_albums: state.mopidy.library_albums,
+    spotify_authorized: state.spotify.authorization,
+    mopidy_connected: state.mopidy.connected
+  };
 };
 
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
-	return {
-		coreActions: (0, _redux.bindActionCreators)(coreActions, dispatch),
-		uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
-		mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch),
-		spotifyActions: (0, _redux.bindActionCreators)(spotifyActions, dispatch),
-		lastfmActions: (0, _redux.bindActionCreators)(lastfmActions, dispatch)
-	};
+  return {
+    coreActions: (0, _redux.bindActionCreators)(coreActions, dispatch),
+    uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
+    mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch),
+    spotifyActions: (0, _redux.bindActionCreators)(spotifyActions, dispatch),
+    lastfmActions: (0, _redux.bindActionCreators)(lastfmActions, dispatch)
+  };
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Album);
@@ -78676,29 +78808,42 @@ var Artist = function (_React$Component) {
 				_react2.default.createElement(
 					'div',
 					{ className: 'intro preserve-3d' },
-					_react2.default.createElement(_Parallax2.default, { image: image, fixedHeight: true }),
+					_react2.default.createElement(_Parallax2.default, { image: image }),
 					_react2.default.createElement(
 						'div',
 						{ className: 'liner' },
 						_react2.default.createElement(
-							'h1',
-							null,
-							this.props.artist ? this.props.artist.name : null
-						),
-						_react2.default.createElement(
 							'div',
-							{ className: 'actions' },
+							{ className: 'heading' },
 							_react2.default.createElement(
-								'button',
-								{ className: 'button button--primary', onClick: function onClick(e) {
-										return _this3.props.mopidyActions.playURIs(uris_to_play, _this3.props.artist.uri);
-									} },
-								'Play'
+								'div',
+								{ className: 'heading__thumbnail' },
+								_react2.default.createElement(_Thumbnail2.default, { size: 'medium', circle: true, image: image })
 							),
-							is_spotify ? _react2.default.createElement(_FollowButton2.default, { uri: this.props.uri, removeText: 'Remove from library', addText: 'Add to library', is_following: this.inLibrary() }) : null,
-							_react2.default.createElement(_ContextMenuTrigger2.default, { className: 'white', onTrigger: function onTrigger(e) {
-									return _this3.handleContextMenu(e);
-								} })
+							_react2.default.createElement(
+								'div',
+								{ className: 'heading__content' },
+								_react2.default.createElement(
+									'h1',
+									null,
+									this.props.artist ? this.props.artist.name : null
+								),
+								_react2.default.createElement(
+									'div',
+									{ className: 'actions' },
+									_react2.default.createElement(
+										'button',
+										{ className: 'button button--primary', onClick: function onClick(e) {
+												return _this3.props.mopidyActions.playURIs(uris_to_play, _this3.props.artist.uri);
+											} },
+										'Play'
+									),
+									is_spotify ? _react2.default.createElement(_FollowButton2.default, { uri: this.props.uri, removeText: 'Remove from library', addText: 'Add to library', is_following: this.inLibrary() }) : null,
+									_react2.default.createElement(_ContextMenuTrigger2.default, { className: 'white', onTrigger: function onTrigger(e) {
+											return _this3.handleContextMenu(e);
+										} })
+								)
+							)
 						),
 						_react2.default.createElement(
 							'div',
@@ -79745,7 +79890,7 @@ var Playlist = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				{ className: 'view playlist-view content-wrapper preserve-3d' },
-				this.props.theme == 'dark' && _react2.default.createElement(_Parallax2.default, { image: playlist.images ? playlist.images.huge : null, blur: true }),
+				_react2.default.createElement(_Parallax2.default, { image: playlist.images ? playlist.images.huge : null, blur: true }),
 				_react2.default.createElement(
 					'div',
 					{ className: 'thumbnail-wrapper' },
@@ -79887,7 +80032,7 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 
 
 Object.defineProperty(exports, "__esModule", {
-	value: true
+  value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -79936,25 +80081,33 @@ var _URILink = __webpack_require__(/*! ../components/URILink */ "./src/js/compon
 
 var _URILink2 = _interopRequireDefault(_URILink);
 
+var _LazyLoadListener = __webpack_require__(/*! ../components/LazyLoadListener */ "./src/js/components/LazyLoadListener.js");
+
+var _LazyLoadListener2 = _interopRequireDefault(_LazyLoadListener);
+
 var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(/*! ../services/ui/actions */ "./src/js/services/ui/actions.js");
+var _actions = __webpack_require__(/*! ../services/core/actions */ "./src/js/services/core/actions.js");
 
-var uiActions = _interopRequireWildcard(_actions);
+var coreActions = _interopRequireWildcard(_actions);
 
-var _actions2 = __webpack_require__(/*! ../services/pusher/actions */ "./src/js/services/pusher/actions.js");
+var _actions2 = __webpack_require__(/*! ../services/ui/actions */ "./src/js/services/ui/actions.js");
 
-var pusherActions = _interopRequireWildcard(_actions2);
+var uiActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(/*! ../services/spotify/actions */ "./src/js/services/spotify/actions.js");
+var _actions3 = __webpack_require__(/*! ../services/pusher/actions */ "./src/js/services/pusher/actions.js");
 
-var spotifyActions = _interopRequireWildcard(_actions3);
+var pusherActions = _interopRequireWildcard(_actions3);
 
-var _actions4 = __webpack_require__(/*! ../services/mopidy/actions */ "./src/js/services/mopidy/actions.js");
+var _actions4 = __webpack_require__(/*! ../services/spotify/actions */ "./src/js/services/spotify/actions.js");
 
-var mopidyActions = _interopRequireWildcard(_actions4);
+var spotifyActions = _interopRequireWildcard(_actions4);
+
+var _actions5 = __webpack_require__(/*! ../services/mopidy/actions */ "./src/js/services/mopidy/actions.js");
+
+var mopidyActions = _interopRequireWildcard(_actions5);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -79967,262 +80120,418 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var Queue = function (_React$Component) {
-	_inherits(Queue, _React$Component);
+  _inherits(Queue, _React$Component);
 
-	function Queue(props) {
-		_classCallCheck(this, Queue);
+  function Queue(props) {
+    _classCallCheck(this, Queue);
 
-		return _possibleConstructorReturn(this, (Queue.__proto__ || Object.getPrototypeOf(Queue)).call(this, props));
-	}
+    var _this = _possibleConstructorReturn(this, (Queue.__proto__ || Object.getPrototypeOf(Queue)).call(this, props));
 
-	_createClass(Queue, [{
-		key: 'componentDidMount',
-		value: function componentDidMount() {
-			this.props.uiActions.setWindowTitle("Now playing");
-		}
-	}, {
-		key: 'removeTracks',
-		value: function removeTracks(track_indexes) {
-			var tlids = [];
-			for (var i = 0; i < track_indexes.length; i++) {
-				var track = this.props.queue[track_indexes[i]];
-				if (track.tlid !== undefined) {
-					tlids.push(track.tlid);
-				}
-			}
+    _this.state = {
+      limit: 50,
+      per_page: 50
+    };
+    return _this;
+  }
 
-			if (tlids.length > 0) {
-				this.props.mopidyActions.removeTracks(tlids);
-			}
-		}
-	}, {
-		key: 'playTrack',
-		value: function playTrack(track) {
-			this.props.mopidyActions.changeTrack(track.tlid);
-		}
-	}, {
-		key: 'playTracks',
-		value: function playTracks(tracks) {
-			this.props.mopidyActions.changeTrack(tracks[0].tlid);
-		}
-	}, {
-		key: 'reorderTracks',
-		value: function reorderTracks(indexes, index) {
-			this.props.mopidyActions.reorderTracklist(indexes, index);
-		}
-	}, {
-		key: 'renderQueueStats',
-		value: function renderQueueStats() {
-			var total_time = 0;
+  _createClass(Queue, [{
+    key: "componentWillMount",
+    value: function componentWillMount() {
+      // Before we mount, restore any limit defined in our location state
+      var state = this.props.location.state ? this.props.location.state : {};
+      if (state.limit) {
+        this.setState({
+          limit: state.limit
+        });
+      }
+    }
+  }, {
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      this.props.uiActions.setWindowTitle("Now playing");
+    }
+  }, {
+    key: "shouldComponentUpdate",
+    value: function shouldComponentUpdate(nextProps) {
+      return nextProps !== this.props;
+    }
+  }, {
+    key: "componentWillReceiveProps",
+    value: function componentWillReceiveProps(nextProps) {
+      var added_from_uri = nextProps.added_from_uri;
 
-			return _react2.default.createElement(
-				'div',
-				{ className: 'queue-stats mid_grey-text' },
-				_react2.default.createElement(
-					'span',
-					null,
-					this.props.current_tracklist.length,
-					' tracks'
-				),
-				'\xA0\xA0|\xA0\xA0',
-				this.props.current_tracklist.length > 0 ? _react2.default.createElement(_Dater2.default, { type: 'total-time', data: this.props.current_tracklist }) : _react2.default.createElement(
-					'span',
-					null,
-					'0 mins'
-				)
-			);
-		}
-	}, {
-		key: 'renderArtwork',
-		value: function renderArtwork(image) {
-			if (!image) {
-				return _react2.default.createElement(
-					'span',
-					{ className: this.props.radio_enabled ? 'artwork radio-enabled' : 'artwork' },
-					this.props.radio_enabled ? _react2.default.createElement('img', { className: 'radio-overlay', src: '/iris/assets/radio-overlay.png' }) : null,
-					_react2.default.createElement(_Thumbnail2.default, { circle: this.props.radio_enabled })
-				);
-			}
 
-			var uri = null;
-			if (this.props.current_track.album && this.props.current_track.album.uri) {
-				uri = this.props.current_track.album.uri;
-			}
-			return _react2.default.createElement(
-				_URILink2.default,
-				{
-					className: this.props.radio_enabled ? 'artwork radio-enabled' : 'artwork',
-					type: 'album',
-					uri: uri },
-				this.props.radio_enabled ? _react2.default.createElement('img', { className: 'radio-overlay', src: '/iris/assets/radio-overlay.png' }) : null,
-				_react2.default.createElement(_Thumbnail2.default, { image: image, circle: this.props.radio_enabled })
-			);
-		}
-	}, {
-		key: 'render',
-		value: function render() {
-			var _this2 = this;
+      if (added_from_uri && this.props.added_from_uri !== added_from_uri) {
+        var item_type = helpers.uriType(added_from_uri);
+        switch (item_type) {
+          case "album":
+            this.props.coreActions.loadAlbum(added_from_uri);
+            break;
+          case "artist":
+            this.props.coreActions.loadArtist(added_from_uri);
+            break;
+          case "playlist":
+            this.props.coreActions.loadPlaylist(added_from_uri);
+            break;
+        }
+      }
+    }
+  }, {
+    key: "loadMore",
+    value: function loadMore() {
+      var new_limit = this.state.limit + this.state.per_page;
 
-			var current_track = null;
-			var tracks = [];
+      this.setState({ limit: new_limit });
 
-			if (this.props.queue && this.props.tracks) {
-				for (var i = 0; i < this.props.queue.length; i++) {
-					var track = this.props.queue[i];
+      // Set our pagination to location state
+      var state = this.props.location && this.props.location.state ? this.props.location.state : {};
+      state.limit = new_limit;
+      this.props.history.replace({ state: state });
+    }
+  }, {
+    key: "removeTracks",
+    value: function removeTracks(track_indexes) {
+      var tlids = [];
+      for (var i = 0; i < track_indexes.length; i++) {
+        var track = this.props.queue_tracks[track_indexes[i]];
+        if (track.tlid !== undefined) {
+          tlids.push(track.tlid);
+        }
+      }
 
-					// If we have the track in our index, merge it in.
-					// We prioritise queue track over index track as queue has unique data, like which track
-					// is playing and tlids.
-					if (this.props.tracks.hasOwnProperty(track.uri)) {
-						track = Object.assign({}, this.props.tracks[track.uri], track, {
-							playing: this.props.current_track && this.props.current_track.tlid == track.tlid
-						});
-					}
+      if (tlids.length > 0) {
+        this.props.mopidyActions.removeTracks(tlids);
+      }
+    }
+  }, {
+    key: "playTrack",
+    value: function playTrack(track) {
+      this.props.mopidyActions.changeTrack(track.tlid);
+    }
+  }, {
+    key: "playTracks",
+    value: function playTracks(tracks) {
+      this.props.mopidyActions.changeTrack(tracks[0].tlid);
+    }
+  }, {
+    key: "reorderTracks",
+    value: function reorderTracks(indexes, index) {
+      this.props.mopidyActions.reorderTracklist(indexes, index);
+    }
+  }, {
+    key: "renderQueueStats",
+    value: function renderQueueStats() {
+      var total_time = 0;
 
-					// Now merge in our queue metadata
-					if (this.props.queue_metadata["tlid_" + track.tlid] !== undefined) {
-						track = Object.assign({}, track, this.props.queue_metadata["tlid_" + track.tlid]);
-					}
+      return _react2.default.createElement(
+        "div",
+        { className: "queue-stats mid_grey-text" },
+        _react2.default.createElement(
+          "span",
+          null,
+          this.props.current_tracklist.length,
+          " tracks"
+        ),
+        "\xA0\xA0|\xA0\xA0",
+        this.props.current_tracklist.length > 0 ? _react2.default.createElement(_Dater2.default, { type: "total-time", data: this.props.current_tracklist }) : _react2.default.createElement(
+          "span",
+          null,
+          "0 mins"
+        )
+      );
+    }
+  }, {
+    key: "renderArtwork",
+    value: function renderArtwork(image) {
+      if (!image) {
+        return _react2.default.createElement(
+          "div",
+          {
+            className: "current-track__artwork " + (this.props.radio_enabled ? "current-track__artwork--radio-enabled" : "")
+          },
+          this.props.radio_enabled ? _react2.default.createElement("img", {
+            className: "radio-overlay",
+            src: "/iris/assets/radio-overlay.png"
+          }) : null,
+          _react2.default.createElement(_Thumbnail2.default, { circle: this.props.radio_enabled })
+        );
+      }
 
-					// Siphon off this track if it's a full representation of our current track (by tlid)
-					if (this.props.current_track && this.props.current_track.uri == track.uri) {
-						current_track = track;
-					}
+      var uri = null;
+      if (this.props.current_track.album && this.props.current_track.album.uri) {
+        uri = this.props.current_track.album.uri;
+      }
+      return _react2.default.createElement(
+        "div",
+        {
+          className: "current-track__artwork " + (this.props.radio_enabled ? "current-track__artwork--radio-enabled" : "")
+        },
+        _react2.default.createElement(
+          _URILink2.default,
+          { type: "album", uri: uri },
+          this.props.radio_enabled ? _react2.default.createElement("img", {
+            className: "radio-overlay",
+            src: "/iris/assets/radio-overlay.png"
+          }) : null,
+          _react2.default.createElement(_Thumbnail2.default, { image: image, circle: this.props.radio_enabled })
+        )
+      );
+    }
+  }, {
+    key: "renderAddedFrom",
+    value: function renderAddedFrom() {
+      var added_from_uri = this.props.added_from_uri;
 
-					// Now add our compiled track for our tracklist
-					tracks.push(track);
-				}
-			}
+      if (!added_from_uri) return null;
 
-			var current_track_image = null;
-			if (current_track && this.props.current_track_uri) {
-				if (current_track.images !== undefined && current_track.images) {
-					current_track_image = current_track.images.large;
-				}
-			}
+      var item_type = helpers.uriType(added_from_uri);
+      var item_library = this.props[item_type + "s"];
+      if (!item_library) return null;
 
-			var options = _react2.default.createElement(
-				'span',
-				null,
-				this.props.spotify_enabled ? _react2.default.createElement(
-					_Link2.default,
-					{ className: 'button button--no-hover', to: '/queue/radio' },
-					_react2.default.createElement(_Icon2.default, { name: 'radio' }),
-					'Radio',
-					this.props.radio && this.props.radio.enabled ? _react2.default.createElement(
-						'span',
-						{ className: 'flag blue' },
-						'On'
-					) : null
-				) : null,
-				_react2.default.createElement(
-					_Link2.default,
-					{ className: 'button button--no-hover', to: '/queue/history' },
-					_react2.default.createElement(_Icon2.default, { name: 'history' }),
-					'History'
-				),
-				_react2.default.createElement(
-					'a',
-					{ className: 'button button--no-hover', onClick: function onClick(e) {
-							_this2.props.mopidyActions.clearTracklist();_this2.props.uiActions.hideContextMenu();
-						} },
-					_react2.default.createElement(_Icon2.default, { name: 'delete_sweep' }),
-					'Clear'
-				),
-				_react2.default.createElement(
-					_Link2.default,
-					{ className: 'button button--no-hover', to: '/queue/add-uri' },
-					_react2.default.createElement(_Icon2.default, { name: 'playlist_add' }),
-					'Add URI'
-				)
-			);
+      var item = item_library[added_from_uri];
+      if (!item) return null;
 
-			return _react2.default.createElement(
-				'div',
-				{ className: 'view queue-view preserve-3d' },
-				_react2.default.createElement(
-					_Header2.default,
-					{ options: options, uiActions: this.props.uiActions },
-					_react2.default.createElement(_Icon2.default, { name: 'play_arrow', type: 'material' }),
-					'Now playing'
-				),
-				this.props.theme == 'dark' && _react2.default.createElement(_Parallax2.default, { blur: true, image: current_track_image }),
-				_react2.default.createElement(
-					'div',
-					{ className: 'content-wrapper' },
-					_react2.default.createElement(
-						'div',
-						{ className: 'current-track' },
-						this.renderArtwork(current_track_image),
-						_react2.default.createElement(
-							'div',
-							{ className: 'title' },
-							current_track ? _react2.default.createElement(
-								_URILink2.default,
-								{ type: 'track', uri: current_track.uri },
-								current_track.name
-							) : _react2.default.createElement(
-								'span',
-								null,
-								'-'
-							)
-						),
-						current_track ? _react2.default.createElement(_ArtistSentence2.default, { artists: current_track.artists }) : _react2.default.createElement(_ArtistSentence2.default, null)
-					),
-					_react2.default.createElement(
-						'section',
-						{ className: 'list-wrapper' },
-						_react2.default.createElement(_TrackList2.default, {
-							show_source_icon: true,
-							track_context: 'queue',
-							className: 'queue-track-list',
-							tracks: tracks,
-							removeTracks: function removeTracks(track_indexes) {
-								return _this2.removeTracks(track_indexes);
-							},
-							playTracks: function playTracks(tracks) {
-								return _this2.playTracks(tracks);
-							},
-							playTrack: function playTrack(track) {
-								return _this2.playTrack(track);
-							},
-							reorderTracks: function reorderTracks(indexes, index) {
-								return _this2.reorderTracks(indexes, index);
-							}
-						})
-					)
-				)
-			);
-		}
-	}]);
+      return _react2.default.createElement(
+        "div",
+        { className: "current-track__added-from" },
+        _react2.default.createElement(
+          _URILink2.default,
+          {
+            type: item_type,
+            uri: item.uri,
+            className: "current-track__added-from__thumbnail"
+          },
+          _react2.default.createElement(_Thumbnail2.default, {
+            images: item.images,
+            size: "small",
+            circle: item_type == "artist"
+          })
+        ),
+        _react2.default.createElement(
+          "div",
+          { className: "current-track__added-from__text" },
+          "Playing from",
+          " ",
+          _react2.default.createElement(
+            _URILink2.default,
+            { type: item_type, uri: item.uri },
+            item.name
+          )
+        )
+      );
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this2 = this;
 
-	return Queue;
+      var _props = this.props,
+          current_track = _props.current_track,
+          queue_tracks = _props.queue_tracks;
+
+      var total_queue_tracks = queue_tracks.length;
+      var tracks = queue_tracks.slice(0, this.state.limit);
+
+      var current_track_image = null;
+      if (current_track && this.props.current_track_uri) {
+        if (current_track.images !== undefined && current_track.images) {
+          current_track_image = current_track.images.large;
+        }
+      }
+
+      var options = _react2.default.createElement(
+        "span",
+        null,
+        this.props.spotify_enabled ? _react2.default.createElement(
+          _Link2.default,
+          { className: "button button--no-hover", to: "/queue/radio" },
+          _react2.default.createElement(_Icon2.default, { name: "radio" }),
+          "Radio",
+          this.props.radio && this.props.radio.enabled ? _react2.default.createElement(
+            "span",
+            { className: "flag blue" },
+            "On"
+          ) : null
+        ) : null,
+        _react2.default.createElement(
+          _Link2.default,
+          { className: "button button--no-hover", to: "/queue/history" },
+          _react2.default.createElement(_Icon2.default, { name: "history" }),
+          "History"
+        ),
+        _react2.default.createElement(
+          "a",
+          {
+            className: "button button--no-hover",
+            onClick: function onClick(e) {
+              _this2.props.mopidyActions.clearTracklist();
+              _this2.props.uiActions.hideContextMenu();
+            }
+          },
+          _react2.default.createElement(_Icon2.default, { name: "delete_sweep" }),
+          "Clear"
+        ),
+        _react2.default.createElement(
+          _Link2.default,
+          { className: "button button--no-hover", to: "/queue/add-uri" },
+          _react2.default.createElement(_Icon2.default, { name: "playlist_add" }),
+          "Add URI"
+        )
+      );
+
+      return _react2.default.createElement(
+        "div",
+        { className: "view queue-view preserve-3d" },
+        _react2.default.createElement(
+          _Header2.default,
+          { options: options, uiActions: this.props.uiActions },
+          _react2.default.createElement(_Icon2.default, { name: "play_arrow", type: "material" }),
+          "Now playing"
+        ),
+        _react2.default.createElement(_Parallax2.default, { blur: true, image: current_track_image }),
+        _react2.default.createElement(
+          "div",
+          { className: "content-wrapper" },
+          _react2.default.createElement(
+            "div",
+            { className: "current-track" },
+            this.renderArtwork(current_track_image),
+            _react2.default.createElement(
+              "div",
+              { className: "current-track__details" },
+              _react2.default.createElement(
+                "div",
+                { className: "current-track__title" },
+                current_track ? _react2.default.createElement(
+                  _URILink2.default,
+                  { type: "track", uri: current_track.uri },
+                  current_track.name
+                ) : _react2.default.createElement(
+                  "span",
+                  null,
+                  "-"
+                )
+              ),
+              current_track ? _react2.default.createElement(_ArtistSentence2.default, {
+                className: "current-track__artists",
+                artists: current_track.artists
+              }) : _react2.default.createElement(_ArtistSentence2.default, { className: "current-track__artists" }),
+              this.renderAddedFrom()
+            )
+          ),
+          _react2.default.createElement(
+            "section",
+            { className: "list-wrapper" },
+            _react2.default.createElement(_TrackList2.default, {
+              show_source_icon: true,
+              track_context: "queue",
+              className: "queue-track-list",
+              tracks: tracks,
+              removeTracks: function removeTracks(track_indexes) {
+                return _this2.removeTracks(track_indexes);
+              },
+              playTracks: function playTracks(tracks) {
+                return _this2.playTracks(tracks);
+              },
+              playTrack: function playTrack(track) {
+                return _this2.playTrack(track);
+              },
+              reorderTracks: function reorderTracks(indexes, index) {
+                return _this2.reorderTracks(indexes, index);
+              }
+            })
+          ),
+          _react2.default.createElement(_LazyLoadListener2.default, {
+            loadKey: total_queue_tracks > this.state.limit ? this.state.limit : total_queue_tracks,
+            showLoader: this.state.limit < total_queue_tracks,
+            loadMore: function loadMore() {
+              return _this2.loadMore();
+            }
+          })
+        )
+      );
+    }
+  }]);
+
+  return Queue;
 }(_react2.default.Component);
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
-	return {
-		theme: state.ui.theme,
-		spotify_enabled: state.spotify.enabled,
-		radio: state.core.radio,
-		radio_enabled: state.core.radio && state.core.radio.enabled ? true : false,
-		tracks: state.core.tracks,
-		artists: state.core.artists,
-		albums: state.core.albums,
-		queue: state.core.queue,
-		queue_tlids: state.core.queue_tlids,
-		queue_metadata: state.core.queue_metadata,
-		current_track_uri: state.core.current_track_uri,
-		current_track: state.core.current_track
-	};
+  var current_track = state.core.current_track;
+  var queue_tracks = [];
+
+  if (state.core.queue && state.core.tracks) {
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
+
+    try {
+      for (var _iterator = state.core.queue[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        var queue_track = _step.value;
+
+        var track = Object.assign({}, queue_track);
+
+        // If we have the track in our index, merge it in.
+        // We prioritise queue track over index track as queue has unique data, like which track
+        // is playing and tlids.
+        if (state.core.tracks.hasOwnProperty(track.uri)) {
+          track = Object.assign({}, state.core.tracks[track.uri], track, {
+            playing: current_track && current_track.tlid == track.tlid
+          });
+        }
+
+        // Now merge in our queue metadata
+        if (state.core.queue_metadata["tlid_" + track.tlid] !== undefined) {
+          track = Object.assign({}, track, state.core.queue_metadata["tlid_" + track.tlid]);
+        }
+
+        // Siphon off this track if it's a full representation of our current track (by tlid)
+        if (current_track && current_track.uri == track.uri) {
+          current_track = track;
+        }
+
+        // Now add our compiled track for our tracklist
+        queue_tracks.push(track);
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator.return) {
+          _iterator.return();
+        }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
+  }
+
+  return {
+    theme: state.ui.theme,
+    spotify_enabled: state.spotify.enabled,
+    radio: state.core.radio,
+    radio_enabled: state.core.radio && state.core.radio.enabled ? true : false,
+    artists: state.core.artists,
+    albums: state.core.albums,
+    playlists: state.core.playlists,
+    queue_tracks: queue_tracks,
+    current_track_uri: state.core.current_track_uri,
+    current_track: current_track,
+    added_from_uri: current_track && current_track.added_from ? current_track.added_from : null
+  };
 };
 
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
-	return {
-		uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
-		pusherActions: (0, _redux.bindActionCreators)(pusherActions, dispatch),
-		spotifyActions: (0, _redux.bindActionCreators)(spotifyActions, dispatch),
-		mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch)
-	};
+  return {
+    coreActions: (0, _redux.bindActionCreators)(coreActions, dispatch),
+    uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
+    pusherActions: (0, _redux.bindActionCreators)(pusherActions, dispatch),
+    spotifyActions: (0, _redux.bindActionCreators)(spotifyActions, dispatch),
+    mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch)
+  };
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Queue);
@@ -81557,6 +81866,27 @@ var Settings = function (_React$Component) {
 									'span',
 									{ className: 'label' },
 									'Enable smooth scrolling'
+								)
+							),
+							_react2.default.createElement(
+								'label',
+								null,
+								_react2.default.createElement('input', {
+									type: 'checkbox',
+									name: 'playback_controls_touch_enabled',
+									checked: this.props.ui.playback_controls_touch_enabled,
+									onChange: function onChange(e) {
+										return _this2.props.uiActions.set({ playback_controls_touch_enabled: !_this2.props.ui.playback_controls_touch_enabled });
+									} }),
+								_react2.default.createElement(
+									'span',
+									{ className: 'label tooltip' },
+									'Enable touch events on play controls',
+									_react2.default.createElement(
+										'span',
+										{ className: 'tooltip__content' },
+										'Allows left- and right-swipe to change tracks'
+									)
 								)
 							),
 							_react2.default.createElement(
@@ -83220,7 +83550,7 @@ var DiscoverFeatured = function (_React$Component) {
 			if (helpers.isLoading(this.props.load_queue, ['spotify_browse/featured-playlists'])) {
 				return _react2.default.createElement(
 					'div',
-					{ className: 'view discover-featured-view' },
+					{ className: 'view discover-featured-view preserve-3d' },
 					_react2.default.createElement(
 						_Header2.default,
 						{ className: 'overlay', uiActions: this.props.uiActions },
@@ -83266,7 +83596,7 @@ var DiscoverFeatured = function (_React$Component) {
 					_react2.default.createElement(_Icon2.default, { name: 'star', type: 'material' }),
 					'Featured playlists'
 				),
-				this.renderIntro(this.props.theme == 'dark' ? first_playlist : null),
+				this.renderIntro(first_playlist),
 				_react2.default.createElement(
 					'section',
 					{ className: 'content-wrapper grid-wrapper' },
@@ -83520,7 +83850,7 @@ var DiscoverNewReleases = function (_React$Component) {
 					_react2.default.createElement(_Icon2.default, { name: 'new_releases', type: 'material' }),
 					'New releases'
 				),
-				this.renderIntro(this.props.theme == 'dark' ? first_album : null),
+				this.renderIntro(first_album),
 				_react2.default.createElement(
 					'section',
 					{ className: 'content-wrapper grid-wrapper' },
@@ -83998,7 +84328,11 @@ var Discover = function (_React$Component) {
 						_react2.default.createElement(
 							'div',
 							{ className: 'label' },
-							helpers.titleCase(type),
+							_react2.default.createElement(
+								'span',
+								{ className: 'text' },
+								helpers.titleCase(type)
+							),
 							_react2.default.createElement(_Icon2.default, { name: 'close', className: 'remove', onClick: function onClick() {
 									return _this2.removeSeed(index);
 								} })
@@ -84331,10 +84665,6 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _Link = __webpack_require__(/*! ../../components/Link */ "./src/js/components/Link.js");
-
-var _Link2 = _interopRequireDefault(_Link);
-
 var _AlbumGrid = __webpack_require__(/*! ../../components/AlbumGrid */ "./src/js/components/AlbumGrid.js");
 
 var _AlbumGrid2 = _interopRequireDefault(_AlbumGrid);
@@ -84346,18 +84676,6 @@ var _List2 = _interopRequireDefault(_List);
 var _Header = __webpack_require__(/*! ../../components/Header */ "./src/js/components/Header.js");
 
 var _Header2 = _interopRequireDefault(_Header);
-
-var _Thumbnail = __webpack_require__(/*! ../../components/Thumbnail */ "./src/js/components/Thumbnail.js");
-
-var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
-
-var _TrackList = __webpack_require__(/*! ../../components/TrackList */ "./src/js/components/TrackList.js");
-
-var _TrackList2 = _interopRequireDefault(_TrackList);
-
-var _ArtistSentence = __webpack_require__(/*! ../../components/ArtistSentence */ "./src/js/components/ArtistSentence.js");
-
-var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
 
 var _DropdownField = __webpack_require__(/*! ../../components/Fields/DropdownField */ "./src/js/components/Fields/DropdownField.js");
 
@@ -84691,7 +85009,8 @@ var LibraryAlbums = function (_React$Component) {
 						details: ['artists', 'tracks_uris.length'],
 						right_column: ['added_at'],
 						className: 'albums',
-						link_prefix: "/album/" }),
+						link_prefix: "/album/"
+					}),
 					_react2.default.createElement(_LazyLoadListener2.default, {
 						loadKey: total_albums > this.state.limit ? this.state.limit : total_albums,
 						showLoader: this.state.limit < total_albums,
@@ -85509,6 +85828,7 @@ var LibraryBrowse = function (_React$Component) {
 
 							case 'Spotify':
 							case 'Spotify Browse':
+							case 'Spotify Web Browse':
 								subdirectory.icons = ['/iris/assets/backgrounds/browse-spotify.jpg'];
 								break;
 
@@ -88249,19 +88569,24 @@ var EditRadio = function (_React$Component) {
 				return;
 			}
 
+			this.setState({ error_message: null });
+
 			var seeds = Object.assign([], this.state.seeds);
 			var uris = this.state.uri.split(',');
+
+			if (uris.length >= 5) {
+				uris = uris.slice(0, 5);
+				this.setState({ error_message: 'More than 5 seeds provided, ignoring rest' });
+			}
 
 			for (var i = 0; i < uris.length; i++) {
 				if (helpers.uriSource(uris[i]) !== 'spotify') {
 					this.setState({ error_message: 'Non-Spotify URIs not supported' });
 					return;
-				}
-				if (seeds.indexOf(uris[i]) > -1) {
+				} else if (seeds.indexOf(uris[i]) > -1) {
 					this.setState({ error_message: 'URI already added' });
 				} else {
 					seeds.push(uris[i]);
-					this.setState({ error_message: null });
 				}
 
 				// Resolve
@@ -88299,7 +88624,7 @@ var EditRadio = function (_React$Component) {
 			var seeds = [];
 
 			if (this.state.seeds) {
-				for (var i = 0; i < this.state.seeds.length; i++) {
+				for (var i = 0; i < this.state.seeds.length && i < 5; i++) {
 					var uri = this.state.seeds[i];
 					if (uri) {
 						if (helpers.uriType(uri) == 'artist') {

@@ -9,3 +9,5 @@ Thumbs.db
 npm-debug.log
 *sublime*
 .DS_Store
+docker/mopidy.conf
+docker-compose.yml
