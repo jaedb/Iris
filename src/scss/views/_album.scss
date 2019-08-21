@@ -1,83 +1,77 @@
-
 main .album-view {
-	padding-left: 30%;
-	position: relative;
+  padding-left: 30%;
+  position: relative;
 
-	.parallax {
-		height: 60vh;
-		opacity: 0.5;
-	}
+  .title {
+    h2 {
+      padding-top: 10px;
 
-	.title {
-		h2 {
-			padding-top: 10px;
-			
-			a:hover {
-				color: darken(colour(mid_grey), 20%);
-			}
-		}
+      a:hover {
+        color: darken(colour(mid_grey), 20%);
+      }
+    }
 
-		.details {
-			padding: 25px 0 30px;
-		}
-	}
+    .details {
+      padding: 25px 0 30px;
+    }
+  }
 
-	.actions {
-		padding-bottom: 30px;
-	}
+  .actions {
+    padding-bottom: 30px;
+  }
 
-	.thumbnail-wrapper {
-		position: absolute;
-		padding: 40px;
-		width: 30%;
-		top: 0;
-		left: 0;
-		box-sizing: border-box;
+  .thumbnail-wrapper {
+    position: absolute;
+    padding: 40px;
+    width: 30%;
+    top: 0;
+    left: 0;
+    box-sizing: border-box;
 
-		.thumbnail {
-			max-width: 100%;
-		}
-	}
+    .thumbnail {
+      max-width: 100%;
+    }
+  }
 
-	.wiki {
-		padding-top: 40px;
-	}
+  .wiki {
+    padding-top: 40px;
+  }
 
-	@include responsive($bp_medium){
-		padding-top: 0;
-		padding-left: 10px;
+  @include responsive($bp_medium) {
+    padding-top: 0;
+    padding-left: 10px;
 
-		.thumbnail-wrapper {
-			width: 300px;
-			max-width: 60%;
-			padding: 30px 0 0 0;
-			position: static;
-			margin: 0 auto;
+    .thumbnail-wrapper {
+      width: 300px;
+      max-width: 60%;
+      padding: 30px 0 0 0;
+      position: static;
+      margin: 0 auto;
 
-			.thumbnail {
-				float: none;
-				max-width: none;
-				margin: 0 0 0 0;
-			}
-		}
+      .thumbnail {
+        float: none;
+        max-width: none;
+        margin: 0 0 0 0;
+      }
+    }
 
-		.title {
-			padding: 40px 0 0 0;
-			text-align: center;
+    .title {
+      padding: 40px 0 0 0;
+      text-align: center;
 
-			.description {
-				padding-top: 10px;
-			}
+      .description {
+        padding-top: 10px;
+      }
 
-			.details {
-				padding: 5px 0;
-			}
-		}
+      .details {
+        padding: 5px 0;
+      }
+    }
 
-		.actions {
-			@include clearfix();
-			text-align: center;
-			padding: 30px 0 20px 0;
-		}
-	}
+    .actions {
+      @include clearfix();
+      text-align: center;
+      padding: 30px 0 20px 0;
+    }
+  }
 }

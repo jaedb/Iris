@@ -78,13 +78,13 @@ body {
   height: 100%;
 
   &.light-theme {
-      color: colour(darkest_grey);
-      background: lighten(colour(faint_grey), 2%);
+    color: colour(darkest_grey);
+    background: lighten(colour(faint_grey), 2%);
   }
 
   &.dark-theme {
-      color: colour(light_grey);
-      background: colour(dark_grey);
+    color: colour(light_grey);
+    background: colour(dark_grey);
   }
 }
 
@@ -101,6 +101,11 @@ main {
   overflow-y: scroll;
   overflow-x: hidden;
   overscroll-behavior: contain;
+
+  .parallax {
+    height: 60vh;
+    opacity: 0.5;
+  }
 
   /**
 	 * iOS drops smooth-scrolling on divs, so we need to manually re-set it
