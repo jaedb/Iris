@@ -2767,7 +2767,7 @@ main {
     transition: all 0.2s ease-in-out;
     background: #383734; }
     .notouch main::-webkit-scrollbar-thumb:hover {
-      background: #1e1d1b; }
+      background: #52514d; }
   .notouch.light-theme main::-webkit-scrollbar-track {
     background: #FFFFFF; }
   .notouch.light-theme main::-webkit-scrollbar-thumb {
@@ -4376,7 +4376,7 @@ select {
     left: 0;
     right: 0;
     height: 100%;
-    background-image: linear-gradient(rgba(24, 24, 24, 0), #181818);
+    background-image: linear-gradient(rgba(24, 24, 24, 0) 0%, #181818 95%);
     z-index: 2; }
   .parallax--flexible-height {
     /**
@@ -4397,7 +4397,7 @@ select {
   .light-theme .parallax__stage {
     background-color: #f8f7f6; }
   .light-theme .parallax__overlay {
-    background-image: linear-gradient(rgba(244, 242, 240, 0), #f4f2f0); }
+    background-image: linear-gradient(rgba(248, 247, 246, 0) 0%, #f8f7f6 95%); }
 
 @font-face {
   font-family: 'Material Icons';
@@ -6001,8 +6001,7 @@ main header {
 
 .filter-field.active input {
   width: 180px;
-  padding-left: 35px;
-  background: #383734; }
+  padding-left: 35px; }
 
 #context-menu .filter-field {
   display: block; }
@@ -6057,25 +6056,34 @@ main header {
 .sub-views__option {
   font-family: "Overpass";
   font-weight: 600;
+  -webkit-transition: all 0.2s ease-in-out;
+  -moz-transition: all 0.2s ease-in-out;
+  -o-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
   color: #FFFFFF;
   display: inline-block;
   margin-right: 25px;
   font-size: 15px;
   font-weight: 500;
-  border-bottom: 3px solid transparent !important;
+  border-bottom: 0;
+  padding-bottom: 3px;
   cursor: pointer; }
   .light-theme .sub-views__option {
     color: #121212; }
   .sub-views__option h4 {
     margin: 8px 0 4px; }
+  .sub-views__option--active, .sub-views__option:hover {
+    border-bottom-width: 3px !important;
+    border-bottom-style: solid;
+    padding-bottom: 0px; }
   .sub-views__option--active {
     border-color: #FFFFFF !important; }
     .light-theme .sub-views__option--active {
       border-color: #121212 !important; }
   .sub-views__option:not(.sub-views__option--active):hover {
-    border-color: rgba(255, 255, 255, 0.2) !important; }
+    border-color: #51504e !important; }
     .light-theme .sub-views__option:not(.sub-views__option--active):hover {
-      border-color: rgba(0, 0, 0, 0.2); }
+      border-color: #cecac4 !important; }
 
 @media (max-width: 799px) {
   .sub-views__option {

@@ -2767,7 +2767,7 @@ main {
     transition: all 0.2s ease-in-out;
     background: #383734; }
     .notouch main::-webkit-scrollbar-thumb:hover {
-      background: #1e1d1b; }
+      background: #52514d; }
   .notouch.light-theme main::-webkit-scrollbar-track {
     background: #FFFFFF; }
   .notouch.light-theme main::-webkit-scrollbar-thumb {

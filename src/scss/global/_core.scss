@@ -138,7 +138,7 @@ main {
       background: colour(grey);
 
       &:hover {
-        background: darken(colour(grey), 10%);
+        background: lighten(colour(grey), 10%);
       }
     }
   }
