@@ -219,15 +219,10 @@ main {
 
 h1 {
   @include feature_font();
-  color: colour(white);
   font-weight: 700;
   font-size: 3.4rem;
   line-height: 3.4rem;
   letter-spacing: -0.15rem;
-
-  .light-theme & {
-    color: colour(grey);
-  }
 }
 
 h2 {
