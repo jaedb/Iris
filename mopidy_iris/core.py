@@ -902,10 +902,22 @@ class IrisCore(pykka.ThreadingActor):
 
         # Construct the request
         http_client = tornado.httpclient.HTTPClient()
+        # Build headers dict if additional headers are given
+        headers = None
+        if 'additional_headers' in command:
+            d = command['additional_headers'].split('\n')
+            lines = list(filter(lambda x: x.find(':') > 0, d))
+            fields = [(x.split(':', 1)[0].strip().lower(), x.split(':', 1)[1].strip()) for x in lines]
+            headers = dict(fields)
+
         if (command['method'] == 'POST'):
-            request = tornado.httpclient.HTTPRequest(command['url'], connect_timeout=5, method='POST', body=json.dumps(command['post_data']), validate_cert=False)
+            if 'content-type' in headers and headers['content-type'].lower() != 'application/json':
+                post_data = command['post_data']
+            else:
+                post_data = json.dumps(command['post_data'])
+            request = tornado.httpclient.HTTPRequest(command['url'], connect_timeout=5, method='POST', body=post_data, validate_cert=False, headers=headers)
         else:
-            request = tornado.httpclient.HTTPRequest(command['url'], connect_timeout=5, validate_cert=False)
+            request = tornado.httpclient.HTTPRequest(command['url'], connect_timeout=5, validate_cert=False, headers=headers)
         
         # Make the request, and handle any request errors
         try:
