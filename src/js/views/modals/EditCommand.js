@@ -26,7 +26,8 @@ class EditCommand extends React.Component{
 			colour: '',
 			url: "https://"+window.location.hostname+"/broadlink/sendCommand/power/",
 			method: 'GET',
-			post_data: ""
+			post_data: "",
+			additional_headers: ""
 		}
 	}
 
@@ -209,6 +210,20 @@ class EditCommand extends React.Component{
 							</textarea>
 						</div>
 					</div>}
+
+                    <div className="field textarea white">
+					    <div className="name">
+							Additional Headers
+						</div>
+						<div className="input">
+							<textarea
+								name="headers"
+								value={this.state.additional_headers}
+								onChange={ e => this.setState({ additional_headers: e.target.value })}>
+							</textarea>
+						</div>
+					</div>
+
 
 					<div className="actions centered-text">
 						{this.props.command ? <button type="button" className="button button--destructive button--large" onClick={e => this.handleDelete(e)}>Delete</button> : null}

@@ -87749,7 +87749,8 @@ var EditCommand = function (_React$Component) {
 			colour: '',
 			url: "https://" + window.location.hostname + "/broadlink/sendCommand/power/",
 			method: 'GET',
-			post_data: ""
+			post_data: "",
+			additional_headers: ""
 		};
 		return _this;
 	}
@@ -87956,6 +87957,25 @@ var EditCommand = function (_React$Component) {
 								value: this.state.post_data,
 								onChange: function onChange(e) {
 									return _this2.setState({ post_data: e.target.value });
+								} })
+						)
+					),
+					_react2.default.createElement(
+						'div',
+						{ className: 'field textarea white' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'name' },
+							'Additional Headers'
+						),
+						_react2.default.createElement(
+							'div',
+							{ className: 'input' },
+							_react2.default.createElement('textarea', {
+								name: 'headers',
+								value: this.state.additional_headers,
+								onChange: function onChange(e) {
+									return _this2.setState({ additional_headers: e.target.value });
 								} })
 						)
 					),
