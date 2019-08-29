@@ -211,7 +211,7 @@ class EditCommand extends React.Component{
 						</div>
 					</div>}
 
-                    <div className="field textarea white">
+          <div className="field textarea white">
 					    <div className="name">
 							Additional Headers
 						</div>

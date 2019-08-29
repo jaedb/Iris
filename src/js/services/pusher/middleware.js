@@ -522,6 +522,7 @@ const PusherMiddleware = (function(){
                 
                 request(store, 'run_command', {id: action.id})
                     .then(response => {
+                        console.log("Command response",response);
 	                	store.dispatch(uiActions.processFinished(notification_key));
                         if (action.notify){
                             store.dispatch(uiActions.createNotification({key: notification_key, type: 'info', content: 'Command sent'}));

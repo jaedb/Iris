@@ -6441,6 +6441,8 @@ main header {
   overflow: hidden; }
   .icon-field__option--selected:after {
     background: #383734 !important; }
+    .light-theme .icon-field__option--selected:after {
+      background: rgba(128, 128, 128, 0.4) !important; }
   .icon-field__option__icon {
     position: absolute;
     top: 6px;
@@ -6457,9 +6459,9 @@ main header {
     left: 0;
     z-index: 2; }
   .icon-field__option:hover:after {
-    background: rgba(255, 255, 255, 0.15); }
+    background: rgba(128, 128, 128, 0.2); }
   .icon-field__option:active:after, .icon-field__option:focus:after {
-    background: rgba(255, 255, 255, 0.3); }
+    background: rgba(128, 128, 128, 0.5); }
 
 .commands__item {
   text-align: center;

@@ -881,7 +881,6 @@ class IrisCore(pykka.ThreadingActor):
             }
         else:
             command = self.commands[str(data['id'])]
-
             if "method" not in command:
                 error = {
                     'message': 'Command failed',
@@ -892,6 +891,8 @@ class IrisCore(pykka.ThreadingActor):
                     'message': 'Command failed',
                     'description': 'Missing required property "url"'
                 }
+
+        logger.debug("Running command "+str(command))
 
         if error:
             if (callback):
@@ -933,17 +934,22 @@ class IrisCore(pykka.ThreadingActor):
             else:
                 return error
 
-        # Attempt to parse JSON
+        # Attempt to parse body as JSON
         try:
             command_response_body = json.loads(command_response.body)
         except:
-            command_response_body = command_response.body
+            # Perhaps it requires unicode encoding?
+            try:
+                command_response_body = tornado.escape.to_unicode(command_response.body)
+            except:
+                command_response_body = ""
 
         # Finally, return the result
         response = {
             'message': 'Command run',
             'response': command_response_body
         }
+        
         if (callback):
             callback(response)
             return
