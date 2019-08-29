@@ -215,12 +215,12 @@ class Playlist extends React.Component{
 				<Parallax image={playlist.images ? playlist.images.huge : null} blur />
 				
 				<div className="thumbnail-wrapper">
-					<Thumbnail size="large" canZoom images={playlist.images} />
+					<Thumbnail size="large" glow canZoom images={playlist.images} />
 				</div>
 
 				<div className="title">
 					<h1>{playlist.name}</h1>
-					{playlist.description ? <h2 className="description mid_grey-text" dangerouslySetInnerHTML={{__html: playlist.description}}></h2> : null }
+					{playlist.description ? <h2 className="description" dangerouslySetInnerHTML={{__html: playlist.description}}></h2> : null }
 
 					<ul className="details">
 						{!this.props.slim_mode ? <li className="source"><Icon type="fontawesome" name={helpers.sourceIcon(playlist.uri)} /></li> : null }

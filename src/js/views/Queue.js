@@ -139,7 +139,7 @@ class Queue extends React.Component {
               src="/iris/assets/radio-overlay.png"
             />
           ) : null}
-          <Thumbnail circle={this.props.radio_enabled} />
+          <Thumbnail glow circle={this.props.radio_enabled} />
         </div>
       );
     }
@@ -163,7 +163,7 @@ class Queue extends React.Component {
               src="/iris/assets/radio-overlay.png"
             />
           ) : null}
-          <Thumbnail image={image} circle={this.props.radio_enabled} />
+          <Thumbnail glow image={image} circle={this.props.radio_enabled} />
         </URILink>
       </div>
     );

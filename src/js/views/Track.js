@@ -230,7 +230,7 @@ class Track extends React.Component{
 				<div className="title">
 
 					<h1>{track.name}</h1>
-					<h2 className="mid_grey-text">
+					<h2>
 						{track.album && track.album.uri ? <Link to={'/album/'+track.album.uri}>{track.album.name}</Link> : null}
 						{track.album && !track.album.uri ? track.album.name : null}
 						{!track.album ? "Unknown album" : null}

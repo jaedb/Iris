@@ -2818,13 +2818,13 @@ main {
 h1 {
   font-family: "Overpass";
   font-weight: 600;
-  color: #FFFFFF;
   font-weight: 700;
   font-size: 3.4rem;
   line-height: 3.4rem;
-  letter-spacing: -0.15rem; }
+  letter-spacing: -0.15rem;
+  color: #FFFFFF; }
   .light-theme h1 {
-    color: #383734; }
+    color: #121212; }
 
 h2 {
   font-family: "Overpass";
@@ -2832,7 +2832,8 @@ h2 {
   font-weight: 400;
   font-size: 2rem;
   line-height: 2.2rem;
-  letter-spacing: -0.08rem; }
+  letter-spacing: -0.08rem;
+  opacity: 0.5; }
   h2 a {
     color: inherit;
     text-decoration: none; }

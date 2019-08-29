@@ -176,7 +176,7 @@ export class Album extends React.Component {
         <Parallax image={album.images ? album.images.huge : null} blur />
 
         <div className="thumbnail-wrapper">
-          <Thumbnail size="large" canZoom images={album.images} />
+          <Thumbnail size="large" glow canZoom images={album.images} />
         </div>
 
         <div className="title">

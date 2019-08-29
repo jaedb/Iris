@@ -353,7 +353,7 @@ class Artist extends React.Component{
 						<div className="heading">
 
 							<div className="heading__thumbnail">
-								<Thumbnail size="medium" circle image={image} />
+								<Thumbnail size="medium" circle canZoom image={image} />
 							</div>
 
 							<div className="heading__content">

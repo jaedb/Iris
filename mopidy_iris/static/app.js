@@ -78091,7 +78091,7 @@ var Album = exports.Album = function (_React$Component) {
         _react2.default.createElement(
           "div",
           { className: "thumbnail-wrapper" },
-          _react2.default.createElement(_Thumbnail2.default, { size: "large", canZoom: true, images: album.images })
+          _react2.default.createElement(_Thumbnail2.default, { size: "large", glow: true, canZoom: true, images: album.images })
         ),
         _react2.default.createElement(
           "div",
@@ -78818,7 +78818,7 @@ var Artist = function (_React$Component) {
 							_react2.default.createElement(
 								'div',
 								{ className: 'heading__thumbnail' },
-								_react2.default.createElement(_Thumbnail2.default, { size: 'medium', circle: true, image: image })
+								_react2.default.createElement(_Thumbnail2.default, { size: 'medium', circle: true, canZoom: true, image: image })
 							),
 							_react2.default.createElement(
 								'div',
@@ -79894,7 +79894,7 @@ var Playlist = function (_React$Component) {
 				_react2.default.createElement(
 					'div',
 					{ className: 'thumbnail-wrapper' },
-					_react2.default.createElement(_Thumbnail2.default, { size: 'large', canZoom: true, images: playlist.images })
+					_react2.default.createElement(_Thumbnail2.default, { size: 'large', glow: true, canZoom: true, images: playlist.images })
 				),
 				_react2.default.createElement(
 					'div',
@@ -79904,7 +79904,7 @@ var Playlist = function (_React$Component) {
 						null,
 						playlist.name
 					),
-					playlist.description ? _react2.default.createElement('h2', { className: 'description mid_grey-text', dangerouslySetInnerHTML: { __html: playlist.description } }) : null,
+					playlist.description ? _react2.default.createElement('h2', { className: 'description', dangerouslySetInnerHTML: { __html: playlist.description } }) : null,
 					_react2.default.createElement(
 						'ul',
 						{ className: 'details' },
@@ -80253,7 +80253,7 @@ var Queue = function (_React$Component) {
             className: "radio-overlay",
             src: "/iris/assets/radio-overlay.png"
           }) : null,
-          _react2.default.createElement(_Thumbnail2.default, { circle: this.props.radio_enabled })
+          _react2.default.createElement(_Thumbnail2.default, { glow: true, circle: this.props.radio_enabled })
         );
       }
 
@@ -80273,7 +80273,7 @@ var Queue = function (_React$Component) {
             className: "radio-overlay",
             src: "/iris/assets/radio-overlay.png"
           }) : null,
-          _react2.default.createElement(_Thumbnail2.default, { image: image, circle: this.props.radio_enabled })
+          _react2.default.createElement(_Thumbnail2.default, { glow: true, image: image, circle: this.props.radio_enabled })
         )
       );
     }
@@ -82603,7 +82603,7 @@ var Track = function (_React$Component) {
 					),
 					_react2.default.createElement(
 						'h2',
-						{ className: 'mid_grey-text' },
+						null,
 						track.album && track.album.uri ? _react2.default.createElement(
 							_Link2.default,
 							{ to: '/album/' + track.album.uri },

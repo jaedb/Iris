@@ -223,6 +223,11 @@ h1 {
   font-size: 3.4rem;
   line-height: 3.4rem;
   letter-spacing: -0.15rem;
+  color: colour(white);
+
+  .light-theme & {
+    color: colour(darkest_grey);
+  }
 }
 
 h2 {
@@ -231,6 +236,8 @@ h2 {
   font-size: 2rem;
   line-height: 2.2rem;
   letter-spacing: -0.08rem;
+
+  opacity: 0.5;
 
   a {
     color: inherit;
