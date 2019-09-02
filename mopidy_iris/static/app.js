@@ -68320,6 +68320,7 @@ exports.unloveTrack = unloveTrack;
 exports.scrobble = scrobble;
 
 var coreActions = __webpack_require__(/*! ../core/actions */ "./src/js/services/core/actions.js");
+var musicbrainzActions = __webpack_require__(/*! ../musicbrainz/actions */ "./src/js/services/musicbrainz/actions.js");
 var uiActions = __webpack_require__(/*! ../ui/actions */ "./src/js/services/ui/actions.js");
 var helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
 
@@ -68544,6 +68545,7 @@ function getArtist(uri, artist) {
                 };
 
                 dispatch(coreActions.artistLoaded(artist));
+                dispatch(musicbrainzActions.getArtist(uri, artist));
             }
         }, function (error) {
             console.info("LastFM: No results for artist '" + artist + "'");
@@ -69762,6 +69764,7 @@ var spotifyActions = __webpack_require__(/*! ../spotify/actions.js */ "./src/js/
 var pusherActions = __webpack_require__(/*! ../pusher/actions.js */ "./src/js/services/pusher/actions.js");
 var googleActions = __webpack_require__(/*! ../google/actions.js */ "./src/js/services/google/actions.js");
 var lastfmActions = __webpack_require__(/*! ../lastfm/actions.js */ "./src/js/services/lastfm/actions.js");
+var musicbrainzActions = __webpack_require__(/*! ../musicbrainz/actions.js */ "./src/js/services/musicbrainz/actions.js");
 
 var MopidyMiddleware = function () {
     var _this = this;
@@ -71672,15 +71675,18 @@ var MopidyMiddleware = function () {
 
                             store.dispatch(coreActions.artistLoaded(artist));
 
-                            // Load supprting information from LastFM
-                            // Note: This excludes artwork as this was removed from their API
-                            // in May 2019
+                            // Load supprting information from LastFM and Musicbrainz
                             var existing_artist = store.getState().core.artists[artist.uri];
-                            if (existing_artist && !existing_artist.biography) {
-                                if (artist.musicbrainz_id) {
-                                    store.dispatch(lastfmActions.getArtist(artist.uri, false, artist.musicbrainz_id));
-                                } else {
-                                    store.dispatch(lastfmActions.getArtist(artist.uri, artist.name));
+                            if (existing_artist) {
+
+                                // Get biography and other stats from LastFM
+                                if (!existing_artist.biography) {
+                                    // TODO: Move this condition into lastfmActions
+                                    if (artist.musicbrainz_id) {
+                                        store.dispatch(lastfmActions.getArtist(artist.uri, false, artist.musicbrainz_id));
+                                    } else {
+                                        store.dispatch(lastfmActions.getArtist(artist.uri, artist.name));
+                                    }
                                 }
                             }
                         });
@@ -72180,6 +72186,114 @@ function reducer() {
             return mopidy;
     }
 }
+
+/***/ }),
+
+/***/ "./src/js/services/musicbrainz/actions.js":
+/*!************************************************!*\
+  !*** ./src/js/services/musicbrainz/actions.js ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function($) {
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.findArtist = findArtist;
+exports.getArtist = getArtist;
+
+var coreActions = __webpack_require__(/*! ../core/actions */ "./src/js/services/core/actions.js");
+var uiActions = __webpack_require__(/*! ../ui/actions */ "./src/js/services/ui/actions.js");
+var helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
+
+/**
+ * Send an ajax request to the LastFM API
+ *
+ * @param dispatch = obj
+ * @param endpoint = String
+ * @param params = String
+ **/
+var sendRequest = function sendRequest(dispatch, endpoint, params) {
+    return new Promise(function (resolve, reject) {
+        var loader_key = helpers.generateGuid();
+
+        dispatch(uiActions.startLoading(loader_key, ',musicbrainz_' + endpoint));
+
+        var config = {
+            method: 'GET',
+            cache: true,
+            timeout: 30000,
+            url: 'https://musicbrainz.org/ws/2/' + endpoint + '?fmt=json&' + params
+        };
+
+        $.ajax(config).then(function (response) {
+            dispatch(uiActions.stopLoading(loader_key));
+            if (response.error) {
+                reject({
+                    config: config,
+                    error: response
+                });
+            } else {
+                resolve(response);
+            }
+        }, function (xhr, status, error) {
+            dispatch(uiActions.stopLoading(loader_key));
+
+            // Snatch a more meaningful error
+            var description = null;
+            if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+                description = xhr.responseJSON.message;
+            }
+
+            reject({
+                config: config,
+                error: error,
+                description: description,
+                status: status,
+                xhr: xhr
+            });
+        });
+    });
+};
+
+function findArtist(uri, artist) {
+    return function (dispatch, getState) {
+        sendRequest(dispatch, 'artist', 'query=artist:' + artist.name).then(function (response) {
+            console.log(response);
+        }, function (error) {
+            console.info("Musicbrainz: No results for artist '" + artist.name + "'");
+        });
+    };
+}
+
+function getArtist(uri, artist) {
+
+    return function (dispatch, getState) {
+        sendRequest(dispatch, 'artist/' + artist.mbid, 'inc=url-rels').then(function (response) {
+            if (response) {
+                var image_relations = response.relations.filter(function (rel) {
+                    return rel['target-type'] === 'image';
+                });
+                var images = image_relations.map(function (ir) {
+                    return ir.url.resource;
+                });
+                var artist = {
+                    uri: uri,
+                    images: images
+                };
+                console.log(response);
+                console.log(image_relations);
+                dispatch(coreActions.artistLoaded(artist));
+            }
+        }, function (error) {
+            console.info("Musicbrainz: No results for artist '" + artist.uri + "'");
+        });
+    };
+}
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
 
 /***/ }),
 

@@ -1,8 +1,8 @@
 
 var coreActions = require('../core/actions');
+var musicbrainzActions = require('../musicbrainz/actions');
 var uiActions = require('../ui/actions');
 var helpers = require('../../helpers');
-
 
 export function set(data){
     return {
@@ -262,6 +262,7 @@ export function getArtist(uri, artist, mbid = false){
                         };
 
                         dispatch(coreActions.artistLoaded(artist));
+                        dispatch(musicbrainzActions.getArtist(uri, artist));
                     }
                 },
                 error => {

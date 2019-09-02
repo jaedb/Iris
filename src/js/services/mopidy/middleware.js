@@ -12,6 +12,7 @@ var spotifyActions = require('../spotify/actions.js');
 var pusherActions = require('../pusher/actions.js');
 var googleActions = require('../google/actions.js');
 var lastfmActions = require('../lastfm/actions.js');
+var musicbrainzActions = require('../musicbrainz/actions.js');
 
 const MopidyMiddleware = (function(){
 
@@ -2149,15 +2150,18 @@ const MopidyMiddleware = (function(){
 
                         store.dispatch(coreActions.artistLoaded(artist));
 
-                        // Load supprting information from LastFM
-                        // Note: This excludes artwork as this was removed from their API
-                        // in May 2019
+                        // Load supprting information from LastFM and Musicbrainz
                         var existing_artist = store.getState().core.artists[artist.uri];
-                        if (existing_artist && !existing_artist.biography){
-                            if (artist.musicbrainz_id){
-                                store.dispatch(lastfmActions.getArtist(artist.uri, false, artist.musicbrainz_id));
-                            } else {
-                                store.dispatch(lastfmActions.getArtist(artist.uri, artist.name));
+                        if (existing_artist) {
+
+                            // Get biography and other stats from LastFM
+                            if (!existing_artist.biography){
+                                // TODO: Move this condition into lastfmActions
+                                if (artist.musicbrainz_id){
+                                    store.dispatch(lastfmActions.getArtist(artist.uri, false, artist.musicbrainz_id));
+                                } else {
+                                    store.dispatch(lastfmActions.getArtist(artist.uri, artist.name));
+                                }
                             }
                         }
                     })
