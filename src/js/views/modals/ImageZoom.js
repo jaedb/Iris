@@ -9,33 +9,28 @@ import Thumbnail from '../../components/Thumbnail';
 import * as helpers from '../../helpers';
 import * as uiActions from '../../services/ui/actions';
 
-class ImageZoom extends React.Component{
+class ImageZoom extends React.Component {
+  constructor(props) {
+    super(props);
+  }
 
-	constructor(props){
-		super(props)
-	}
+  componentDidMount() {
+    this.props.uiActions.setWindowTitle('Zoomed image');
+  }
 
-	componentDidMount(){
-		this.props.uiActions.setWindowTitle("Zoomed image");
-	}
-
-	render(){
-		return (
-			<Modal className="modal--image-zoom">			
-				<img src={this.props.location.search.replace("?url=","")} />
-			</Modal>
-		)
-	}
+  render() {
+    return (
+      <Modal className="modal--image-zoom">
+        <img src={this.props.location.search.replace('?url=', '')} />
+      </Modal>
+    );
+  }
 }
 
-const mapStateToProps = (state) => {
-	return {}
-}
+const mapStateToProps = (state) => ({});
 
-const mapDispatchToProps = (dispatch) => {
-	return {
-		uiActions: bindActionCreators(uiActions, dispatch)
-	}
-}
+const mapDispatchToProps = (dispatch) => ({
+  uiActions: bindActionCreators(uiActions, dispatch),
+});
 
-export default connect(mapStateToProps, mapDispatchToProps)(ImageZoom)
+export default connect(mapStateToProps, mapDispatchToProps)(ImageZoom);

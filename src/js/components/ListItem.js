@@ -11,173 +11,195 @@ import Popularity from './Popularity';
 
 import * as helpers from '../helpers';
 
-export default class ListItem extends React.Component{
+export default class ListItem extends React.Component {
+  constructor(props) {
+    super(props);
+  }
 
-	constructor(props){
-		super(props);
-	}
+  componentDidMount() {
+    const { item, lastfmActions, discogsActions } = this.props;
+    if (!item) return;
 
-	componentDidMount(){
-		const { item, lastfmActions, discogsActions } = this.props;
-		if (!item) return;
+    // If the item that has just been mounted doesn't have images,
+    // try fetching them from LastFM
+    if (!item.images) {
+      switch (helpers.uriType(item.uri)) {
+        case 'artist':
+          if (discogsActions) {
+            discogsActions.getArtistImages(item.uri, item);
+          }
+          break;
 
-		// If the item that has just been mounted doesn't have images,
-		// try fetching them from LastFM
-		if (!item.images){
-			switch (helpers.uriType(item.uri)){
+        case 'album':
+          if (lastfmActions && item.artists && item.artists.length > 0) {
+            lastfmActions.getAlbum(item.uri, item.artists[0].name, item.name, (item.mbid ? item.mbid : null));
+          }
+          break;
+      }
+    }
+  }
 
-				case 'artist':
-					if (discogsActions) {
-						discogsActions.getArtistImages(item.uri, item);
-					}
-					break;
+  handleClick(e) {
+    // make sure we haven't clicked a nested link (ie Artist name)
+    if (e.target.tagName.toLowerCase() !== 'a') {
+      e.preventDefault();
+      this.props.history.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(this.props.item.uri));
+      helpers.scrollTo();
+    }
+  }
 
-				case 'album':
-					if (lastfmActions && item.artists && item.artists.length > 0){
-						lastfmActions.getAlbum(item.uri, item.artists[0].name, item.name, (item.mbid ? item.mbid : null));
-					}
-					break;
-			}
-		}
-	}
+  handleMouseDown(e) {
+    // make sure we haven't clicked a nested link (ie Artist name)
+    if (e.target.tagName.toLowerCase() !== 'a') {
+      e.preventDefault();
+      this.props.history.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(this.props.item.uri));
+      helpers.scrollTo();
+    }
+  }
 
-	handleClick(e){
+  handleContextMenu(e) {
+    if (this.props.handleContextMenu) {
+      e.preventDefault();
+      this.props.handleContextMenu(e, this.props.item);
+    }
+  }
 
-		// make sure we haven't clicked a nested link (ie Artist name)
-		if (e.target.tagName.toLowerCase() !== 'a'){
-			e.preventDefault();
-			this.props.history.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(this.props.item.uri));
-			helpers.scrollTo();
-		}
-	}
+  renderValue(key_string) {
+    const key = key_string.split('.');
+    let value = Object.assign(this.props.item);
 
-	handleMouseDown(e){
+    for (let i = 0; i < key.length; i++) {
+      if (value[key[i]] === undefined) {
+        return null;
+      } if (typeof (value[key[i]]) === 'string' && value[key[i]].replace(' ', '') == '') {
+        return null;
+      }
+      value = value[key[i]];
+    }
 
-		// make sure we haven't clicked a nested link (ie Artist name)
-		if (e.target.tagName.toLowerCase() !== 'a'){
-			e.preventDefault();
-			this.props.history.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(this.props.item.uri));
-			helpers.scrollTo();
-		}
-	}
+    if (key_string === 'tracks_total' || key_string === 'tracks_uris.length') {
+      return (
+        <span>
+          {value}
+          {' '}
+tracks
+        </span>
+      );
+    }
+    if (key_string === 'followers') {
+      return (
+        <span>
+          {value.toLocaleString()}
+          {' '}
+followers
+        </span>
+      );
+    }
+    if (key_string === 'added_at') {
+      return (
+        <span>
+Added
+          <Dater type="ago" data={value} />
+          {' '}
+ago
+        </span>
+      );
+    }
+    if (key_string === 'owner') return <URILink type="user" uri={value.uri}>{value.id}</URILink>;
+    if (key_string === 'popularity') return <Popularity full popularity={value} />;
+    if (key_string === 'artists') return <ArtistSentence artists={value} />;
+    if (value === true) return <Icon name="check" />;
+    if (typeof (value) === 'number') return <span>{value.toLocaleString()}</span>;
+    return <span>{value}</span>;
+  }
 
-	handleContextMenu(e){
-		if (this.props.handleContextMenu){
-			e.preventDefault();
-			this.props.handleContextMenu(e,this.props.item);
-		}
-	}
+  render() {
+    const { item } = this.props;
+    if (!item) {
+      return null;
+    }
 
-	renderValue(key_string){
-		var key = key_string.split('.');
-		var value = Object.assign(this.props.item);
+    let class_name = 'list__item';
+    if (item.type) {
+      class_name += ` list__item--${item.type}`;
+    }
 
-		for (var i = 0; i < key.length; i++){
-			if (value[key[i]] === undefined){
-				return null
-			} else if (typeof(value[key[i]]) === 'string' && value[key[i]].replace(' ','') == ''){
-				return null
-			} else {
-				value = value[key[i]]
-			}
-		}
+    if (this.props.middle_column) {
+      class_name += ' list__item--has-middle-column';
+    }
 
-		if (key_string === 'tracks_total' || key_string === 'tracks_uris.length') return <span>{value} tracks</span>
-		if (key_string === 'followers') return <span>{value.toLocaleString()} followers</span>
-		if (key_string === 'added_at') return <span>Added <Dater type="ago" data={value} /> ago</span>
-		if (key_string === 'owner') return <URILink type="user" uri={value.uri}>{value.id}</URILink>
-		if (key_string === 'popularity') return <Popularity full popularity={value} />
-		if (key_string === 'artists') return <ArtistSentence artists={value} />
-		if (value === true) return <Icon name="check" />
-		if (typeof(value) === 'number') return <span>{value.toLocaleString()}</span>
-		return <span>{value}</span>
-	}
+    if (this.props.thumbnail) {
+      class_name += ' list__item--has-thumbnail';
+    }
 
-	render(){
-		var item = this.props.item;
-		if (!item){
-			return null;
-		}
+    if (this.props.details) {
+      class_name += ' list__item--has-details';
+    }
 
-		var class_name = 'list__item'
-		if (item.type){
-			class_name += ' list__item--'+item.type;
-		}
+    return (
+      <div
+        className={class_name}
+        onClick={(e) => this.handleClick(e)}
+        onContextMenu={(e) => this.handleContextMenu(e)}
+      >
 
-		if (this.props.middle_column){
-			class_name += " list__item--has-middle-column";
-		}
-
-		if (this.props.thumbnail){
-			class_name += " list__item--has-thumbnail";
-		}
-
-		if (this.props.details){
-			class_name += " list__item--has-details";
-		}
-
-		return (
-			<div
-				className={class_name}
-				onClick={e => this.handleClick(e)}
-				onContextMenu={e => this.handleContextMenu(e)}>
-
-					{this.props.right_column && !this.props.nocontext && 
-						<div className="list__item__column list__item__column--right">
-							{
-								(this.props.right_column ? this.props.right_column.map((column, index) => {
-									return (
-										<span className={'list__item__column__item list__item__column__item--'+column.replace('.','_')} key={index}>
-											{this.renderValue(column, item)}
-										</span>
-									)
-								}) : null)
+        {this.props.right_column && !this.props.nocontext
+						&& (
+<div className="list__item__column list__item__column--right">
+  {
+								(this.props.right_column ? this.props.right_column.map((column, index) => (
+  <span className={`list__item__column__item list__item__column__item--${column.replace('.', '_')}`} key={index}>
+    {this.renderValue(column, item)}
+  </span>
+								)) : null)
 							}
 
-							{this.props.nocontext ? null : <ContextMenuTrigger className="list__item__column__item list__item__column__item--context-menu-trigger subtle" onTrigger={e => this.handleContextMenu(e)} />}
+  {this.props.nocontext ? null : <ContextMenuTrigger className="list__item__column__item list__item__column__item--context-menu-trigger subtle" onTrigger={(e) => this.handleContextMenu(e)} />}
 
-						</div>
-					}
+</div>
+						)}
 
-					<div className="list__item__column list__item__column--name">
+        <div className="list__item__column list__item__column--name">
 
-						{this.props.thumbnail ? <Thumbnail className="list__item__column__item list__item__column__item--thumbnail" images={(item.images ? item.images : null)} size="small" /> : null}
+          {this.props.thumbnail ? <Thumbnail className="list__item__column__item list__item__column__item--thumbnail" images={(item.images ? item.images : null)} size="small" /> : null}
 
-						<div className="list__item__column__item list__item__column__item--name">
-							{item.name !== undefined ? this.renderValue('name') : <span className="grey-text">{item.uri}</span>}
-						</div>
+          <div className="list__item__column__item list__item__column__item--name">
+            {item.name !== undefined ? this.renderValue('name') : <span className="grey-text">{item.uri}</span>}
+          </div>
 
-						{this.props.details ?<ul className="list__item__column__item list__item__column__item--details details">
-							 {
+          {this.props.details ? (
+            <ul className="list__item__column__item list__item__column__item--details details">
+              {
 							 	this.props.details.map((detail, index) => {
-									var value = this.renderValue(detail);
+							 	  const value = this.renderValue(detail);
 
-									if (!value){
-										return null;
-									}
+							 	  if (!value) {
+							 	    return null;
+							 	  }
 
-									return (
-										<li className={'details__item details__item--'+detail.replace('.','_')} key={index}>
-											{value}
-										</li>
-									)
-								})
+							 	  return (
+  <li className={`details__item details__item--${detail.replace('.', '_')}`} key={index}>
+    {value}
+  </li>
+							 	  );
+							 	})
 							}
-						</ul> : null}
-					</div>
+            </ul>
+          ) : null}
+        </div>
 
-					{this.props.middle_column ? <div className="list__item__column list__item__column--middle">
-						{
-							(this.props.middle_column ? this.props.middle_column.map((column, index) => {
-								return (
-									<span className={'list__item__column__item list__item__column__item--'+column.replace('.','_')} key={index}>
-										{this.renderValue(column)}
-									</span>
-								)
-							}) : null)
+        {this.props.middle_column ? (
+          <div className="list__item__column list__item__column--middle">
+            {
+							(this.props.middle_column ? this.props.middle_column.map((column, index) => (
+  <span className={`list__item__column__item list__item__column__item--${column.replace('.', '_')}`} key={index}>
+    {this.renderValue(column)}
+  </span>
+							)) : null)
 						}
-					</div> : null}
-			</div>
-		);
-	}
+          </div>
+        ) : null}
+      </div>
+    );
+  }
 }

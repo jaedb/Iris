@@ -1,3 +1,3 @@
 self.addEventListener('fetch', (event) => {
-	// Nothing doing!
+  // Nothing doing!
 });

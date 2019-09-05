@@ -1,39 +1,37 @@
 
-var helpers = require('./../../helpers');
-var coreActions = require('../core/actions');
-var lastfmActions = require('./actions');
+const helpers = require('./../../helpers');
+const coreActions = require('../core/actions');
+const lastfmActions = require('./actions');
 
-const LastfmMiddleware = (function(){
+const LastfmMiddleware = (function () {
+  return (store) => (next) => (action) => {
+    switch (action.type) {
+      case 'LASTFM_ME_LOADED':
+        var me = helpers.formatUser(action.me);
+        Object.assign(
+          me,
+          {
+            uri: `lastfm:user:${me.name}`,
+          },
+        );
+        store.dispatch(coreActions.userLoaded(me));
+        action.me = me;
+        next(action);
+        break;
 
-    return store => next => action => {
-        switch(action.type){
+      case 'LASTFM_IMPORT_AUTHORIZATION':
 
-            case 'LASTFM_ME_LOADED':
-                var me = helpers.formatUser(action.me);
-                Object.assign(
-                    me,
-                    {
-                        uri: "lastfm:user:"+me.name
-                    }
-                );
-                store.dispatch(coreActions.userLoaded(me));
-                action.me = me;
-                next(action);
-                break;
+        // Wait a few moments before we fetch, allowing the import to complete first
+        // TODO: Use callbacks for better code accuracy
+        setTimeout(() => { store.dispatch(lastfmActions.getMe()); }, 100);
 
-            case 'LASTFM_IMPORT_AUTHORIZATION':
+        next(action);
+        break;
 
-                // Wait a few moments before we fetch, allowing the import to complete first
-                // TODO: Use callbacks for better code accuracy
-                setTimeout(() => {store.dispatch(lastfmActions.getMe())}, 100);
-
-                next(action);
-                break;
-
-            default:
-                return next(action);
-        }
+      default:
+        return next(action);
     }
-})();
+  };
+}());
 
-export default LastfmMiddleware
+export default LastfmMiddleware;
