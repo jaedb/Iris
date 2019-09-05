@@ -1,0 +1,22 @@
+{
+  "parser": "babel-eslint",
+  "extends": [
+    "airbnb"
+  ],
+  "rules": {
+    "react/jsx-filename-extension": 0,
+    "react/no-danger": 0,
+    "no-console": 0,
+    "no-underscore-dangle": 0,
+    "react/prop-types": 0,
+    "linebreak-style": 0
+  },
+  "globals": {
+    "fetch": true
+  },
+  "env": {
+    "jest": true,
+    "browser": true,
+    "es6": true
+  }
+}
