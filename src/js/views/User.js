@@ -97,20 +97,31 @@ class User extends React.Component{
 			<div className="view user-view preserve-3d">
 				<div className="intro preserve-3d">
 
-					<Parallax image={image} fixedHeight />
+					<Parallax image={image} blur />
 
 					<div className="liner">
-						<h1>{user.name}</h1>
-						<h2>
-							<ul className="details">
-								{!this.props.slim_mode ? <li className="source"><Icon type="fontawesome" name={helpers.sourceIcon(user.uri )} /></li> : null}
-								{user.playlists_total ? <li><NiceNumber value={user.playlists_total} /> playlists</li> : null}
-								{user.followers ? <li><NiceNumber value={user.followers} /> followers</li> : null}
-								{this.isMe() ? <li><span className="blue-text">You</span></li> : null}
-							</ul>
-						</h2>
-						<div className="actions">
-							<FollowButton className="primary" uri={user.uri} addText="Follow" removeText="Unfollow" />
+						<div className="heading">
+
+							<div className="heading__thumbnail">
+								<Thumbnail size="medium" circle canZoom image={image} />
+							</div>
+
+							<div className="heading__content">
+								<h1>{user.name}</h1>
+								<div className="heading__content__details">
+									<div className="actions">
+										<FollowButton className="primary" uri={user.uri} addText="Follow" removeText="Unfollow" />
+									</div>
+									<h2>
+										<ul className="details">
+											{!this.props.slim_mode ? <li className="source"><Icon type="fontawesome" name={helpers.sourceIcon(user.uri )} /></li> : null}
+											{user.playlists_total ? <li><NiceNumber value={user.playlists_total} /> playlists</li> : null}
+											{user.followers ? <li><NiceNumber value={user.followers} /> followers</li> : null}
+											{this.isMe() ? <li><span className="blue-text">You</span></li> : null}
+										</ul>
+									</h2>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>

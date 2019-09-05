@@ -14,13 +14,19 @@ var sendRequest = (dispatch, endpoint, params) => {
     return new Promise((resolve, reject) => {
         const loader_key = helpers.generateGuid();
 
-        dispatch(uiActions.startLoading(loader_key, ',musicbrainz_'+endpoint));
+        dispatch(uiActions.startLoading(loader_key, ',discogs_'+endpoint));
+
+        let key = 'CXIwsVMAjrXIVitBWgqd';
+        let secret = 'KiEUfwKpebxRnEHlKoXnYIftJxeuqjTK';
 
         var config = {
             method: 'GET',
             cache: true,
             timeout: 30000,
-            url: 'https://musicbrainz.org/ws/2/'+endpoint+'?fmt=json&'+params
+            url: `https://api.discogs.com/${endpoint}?key=${key}&secret=${secret}&${params}`,
+            headers: {
+                'user-agent': 'Iris/1.0',
+            },
         }
 
         $.ajax(config).then(
@@ -56,40 +62,46 @@ var sendRequest = (dispatch, endpoint, params) => {
     })
 }
 
-export function findArtist(uri, artist){
-    return (dispatch, getState) => {
-        sendRequest(dispatch, 'artist', 'query=artist:'+artist.name)
-            .then(
-                response => {
-                    console.log(response);
-                },
-                error => {
-                    console.info("Musicbrainz: No results for artist '"+artist.name+"'");
+export function findArtist(name){
+    return sendRequest(dispatch, 'artists/'+artist.mbid, 'inc=url-rels')
+        .then(
+            response => {
+                if (response){
+                    const image_relations = response.relations.filter(rel => rel.type == "image");
+                    if (image_relations) {
+                        const updated_artist = {
+                            uri: uri,
+                            images: image_relations.map(relation =>
+                                relation.url.resource.replace("File:","Special:FilePath/")
+                            ),
+                        }
+                        dispatch(coreActions.artistLoaded(updated_artist));
+                    }
                 }
-            )
-    }
+            },
+            error => {
+                console.log(`Musicbrainz: No results for ${artist.mbid}`)
+            }
+        )
 }
 
-export function getArtist(uri, artist){
-
+export function getArtistImages(uri, artist){
     return (dispatch, getState) => {
-        sendRequest(dispatch, 'artist/'+artist.mbid, 'inc=url-rels')
+        sendRequest(dispatch, 'database/search', `query=${artist.name}`)
             .then(
                 response => {
                     if (response){
-                        const image_relations = response.relations.filter(rel => (rel['target-type'] === 'image'));
-                        const images = image_relations.map(ir => ir.url.resource);
-                    	var artist = {
-                            uri: uri,
-                            images: images,
-                        };
-                        console.log(response);
-                        console.log(image_relations);
-                        dispatch(coreActions.artistLoaded(artist));
+                        if (response.results && response.results[0].cover_image) {
+                            const updated_artist = {
+                                uri: uri,
+                                images: [response.results[0].cover_image],
+                            }
+                            dispatch(coreActions.artistLoaded(updated_artist));
+                        }
                     }
                 },
                 error => {
-                    console.info("Musicbrainz: No results for artist '"+artist.uri+"'");
+                    console.log(`Discogs: No results for ${artist.name}`)
                 }
             )
     }

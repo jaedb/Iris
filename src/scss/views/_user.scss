@@ -14,17 +14,23 @@
 				font-size: 4rem;
 			}
 
-			h2 {
-				padding-bottom: 25px;
-			}
-		}
-	}
+      .heading {
+        display: flex;
+        align-items: center;
 
-	.content-wrapper {
-		background: colour(dark_grey);
-
-		.light-theme & {
-			background: colour(white);
+        &__thumbnail {
+          width: 140px;
+          margin-right: 30px;
+				}
+				
+				&__content {
+					padding-top: 20px;
+					
+					&__details {
+						display: flex;
+					}
+				}
+      }
 		}
 	}
 

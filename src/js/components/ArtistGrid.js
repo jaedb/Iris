@@ -9,6 +9,7 @@ import GridItem from './GridItem';
 import * as helpers from '../helpers';
 import * as uiActions from '../services/ui/actions';
 import * as lastfmActions from '../services/lastfm/actions';
+import * as discogsActions from '../services/discogs/actions';
 
 class ArtistGrid extends React.Component{
 
@@ -46,6 +47,7 @@ class ArtistGrid extends React.Component{
 										item={artist}
 										show_source_icon={this.props.show_source_icon}
 										onClick={e => {this.props.history.push('/artist/'+encodeURIComponent(artist.uri))}}
+										discogsActions={this.props.discogsActions}
 										lastfmActions={this.props.lastfmActions}
 										onContextMenu={e => this.handleContextMenu(e,artist)}
 									/>
@@ -69,7 +71,8 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch) => {
 	return {
 		uiActions: bindActionCreators(uiActions, dispatch),
-		lastfmActions: bindActionCreators(lastfmActions, dispatch)
+		lastfmActions: bindActionCreators(lastfmActions, dispatch),
+		discogsActions: bindActionCreators(discogsActions, dispatch),
 	}
 }
 

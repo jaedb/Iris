@@ -18,24 +18,23 @@ export default class ListItem extends React.Component{
 	}
 
 	componentDidMount(){
-		if (this.props.item){
-			var item = this.props.item;
-		} else {
-			return;
-		}
+		const { item, lastfmActions, discogsActions } = this.props;
+		if (!item) return;
 
 		// If the item that has just been mounted doesn't have images,
 		// try fetching them from LastFM
-		if (!item.images && this.props.lastfmActions){
+		if (!item.images){
 			switch (helpers.uriType(item.uri)){
 
 				case 'artist':
-					//this.props.lastfmActions.getArtist(item.uri, item.name);
+					if (discogsActions) {
+						discogsActions.getArtistImages(item.uri, item);
+					}
 					break;
 
 				case 'album':
-					if (item.artists && item.artists.length > 0){
-						this.props.lastfmActions.getAlbum(item.uri, item.artists[0].name, item.name, (item.mbid ? item.mbid : null));
+					if (lastfmActions && item.artists && item.artists.length > 0){
+						lastfmActions.getAlbum(item.uri, item.artists[0].name, item.name, (item.mbid ? item.mbid : null));
 					}
 					break;
 			}

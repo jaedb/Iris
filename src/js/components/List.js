@@ -9,6 +9,7 @@ import ListItem from './ListItem';
 import * as helpers from '../helpers';
 import * as uiActions from '../services/ui/actions';
 import * as lastfmActions from '../services/lastfm/actions';
+import * as discogsActions from '../services/discogs/actions';
 
 class List extends React.Component{
 
@@ -40,6 +41,7 @@ class List extends React.Component{
 								key={index}
 								item={item}
 								lastfmActions={this.props.lastfmActions}
+								discogsActions={this.props.discogsActions}
 								history={this.props.history}
 								link_prefix={this.props.link_prefix}
 								handleContextMenu={e => this.handleContextMenu(e, item)}
@@ -62,7 +64,8 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch) => {
 	return {
 		uiActions: bindActionCreators(uiActions, dispatch),
-		lastfmActions: bindActionCreators(lastfmActions, dispatch)
+		lastfmActions: bindActionCreators(lastfmActions, dispatch),
+		discogsActions: bindActionCreators(discogsActions, dispatch),
 	}
 }
 

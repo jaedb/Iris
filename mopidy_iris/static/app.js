@@ -52710,6 +52710,10 @@ var _actions2 = __webpack_require__(/*! ../services/lastfm/actions */ "./src/js/
 
 var lastfmActions = _interopRequireWildcard(_actions2);
 
+var _actions3 = __webpack_require__(/*! ../services/discogs/actions */ "./src/js/services/discogs/actions.js");
+
+var discogsActions = _interopRequireWildcard(_actions3);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -52765,6 +52769,7 @@ var ArtistGrid = function (_React$Component) {
 							onClick: function onClick(e) {
 								_this2.props.history.push('/artist/' + encodeURIComponent(artist.uri));
 							},
+							discogsActions: _this2.props.discogsActions,
 							lastfmActions: _this2.props.lastfmActions,
 							onContextMenu: function onContextMenu(e) {
 								return _this2.handleContextMenu(e, artist);
@@ -52789,7 +52794,8 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 	return {
 		uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
-		lastfmActions: (0, _redux.bindActionCreators)(lastfmActions, dispatch)
+		lastfmActions: (0, _redux.bindActionCreators)(lastfmActions, dispatch),
+		discogsActions: (0, _redux.bindActionCreators)(discogsActions, dispatch)
 	};
 };
 
@@ -58171,33 +58177,36 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var GridItem = function (_React$Component) {
 	_inherits(GridItem, _React$Component);
 
-	function GridItem(props) {
+	function GridItem() {
 		_classCallCheck(this, GridItem);
 
-		return _possibleConstructorReturn(this, (GridItem.__proto__ || Object.getPrototypeOf(GridItem)).call(this, props));
+		return _possibleConstructorReturn(this, (GridItem.__proto__ || Object.getPrototypeOf(GridItem)).apply(this, arguments));
 	}
 
 	_createClass(GridItem, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
-			if (this.props.item) {
-				var item = this.props.item;
-			} else {
-				return;
-			}
+			var _props = this.props,
+			    discogsActions = _props.discogsActions,
+			    lastfmActions = _props.lastfmActions,
+			    item = _props.item;
+
+			if (!item) return;
 
 			// If the item that has just been mounted doesn't have images,
-			// try fetching them from LastFM
-			if (!item.images && this.props.lastfmActions) {
+			// try fetching them from LastFM or Discogs
+			if (!item.images && discogsActions) {
 				switch (helpers.uriType(item.uri)) {
 
 					case 'artist':
-						//this.props.lastfmActions.getArtist(item.uri, item.name);
+						if (discogsActions) {
+							discogsActions.getArtistImages(item.uri, item);
+						}
 						break;
 
 					case 'album':
-						if (item.artists && item.artists.length > 0) {
-							this.props.lastfmActions.getAlbum(item.uri, item.artists[0].name, item.name, item.mbid ? item.mbid : null);
+						if (lastfmActions && item.artists && item.artists.length > 0) {
+							lastfmActions.getAlbum(item.uri, item.artists[0].name, item.name, item.mbid ? item.mbid : null);
 						}
 						break;
 				}
@@ -59073,6 +59082,10 @@ var _actions2 = __webpack_require__(/*! ../services/lastfm/actions */ "./src/js/
 
 var lastfmActions = _interopRequireWildcard(_actions2);
 
+var _actions3 = __webpack_require__(/*! ../services/discogs/actions */ "./src/js/services/discogs/actions.js");
+
+var discogsActions = _interopRequireWildcard(_actions3);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -59120,6 +59133,7 @@ var List = function (_React$Component) {
 						key: index,
 						item: item,
 						lastfmActions: _this2.props.lastfmActions,
+						discogsActions: _this2.props.discogsActions,
 						history: _this2.props.history,
 						link_prefix: _this2.props.link_prefix,
 						handleContextMenu: function handleContextMenu(e) {
@@ -59144,7 +59158,8 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 	return {
 		uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
-		lastfmActions: (0, _redux.bindActionCreators)(lastfmActions, dispatch)
+		lastfmActions: (0, _redux.bindActionCreators)(lastfmActions, dispatch),
+		discogsActions: (0, _redux.bindActionCreators)(discogsActions, dispatch)
 	};
 };
 
@@ -59226,24 +59241,27 @@ var ListItem = function (_React$Component) {
 	_createClass(ListItem, [{
 		key: 'componentDidMount',
 		value: function componentDidMount() {
-			if (this.props.item) {
-				var item = this.props.item;
-			} else {
-				return;
-			}
+			var _props = this.props,
+			    item = _props.item,
+			    lastfmActions = _props.lastfmActions,
+			    discogsActions = _props.discogsActions;
+
+			if (!item) return;
 
 			// If the item that has just been mounted doesn't have images,
 			// try fetching them from LastFM
-			if (!item.images && this.props.lastfmActions) {
+			if (!item.images) {
 				switch (helpers.uriType(item.uri)) {
 
 					case 'artist':
-						//this.props.lastfmActions.getArtist(item.uri, item.name);
+						if (discogsActions) {
+							discogsActions.getArtistImages(item.uri, item);
+						}
 						break;
 
 					case 'album':
-						if (item.artists && item.artists.length > 0) {
-							this.props.lastfmActions.getAlbum(item.uri, item.artists[0].name, item.name, item.mbid ? item.mbid : null);
+						if (lastfmActions && item.artists && item.artists.length > 0) {
+							lastfmActions.getAlbum(item.uri, item.artists[0].name, item.name, item.mbid ? item.mbid : null);
 						}
 						break;
 				}
@@ -59946,7 +59964,7 @@ var Parallax = function (_React$Component) {
 
 			var style = {};
 			if (this.state.loaded && this.state.url) {
-				style = { backgroundImage: 'url(' + this.state.url + ')' };
+				style = { backgroundImage: 'url("' + this.state.url + '")' };
 			}
 
 			return _react2.default.createElement(
@@ -67667,6 +67685,124 @@ function reducer() {
 
 /***/ }),
 
+/***/ "./src/js/services/discogs/actions.js":
+/*!********************************************!*\
+  !*** ./src/js/services/discogs/actions.js ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function($) {
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.findArtist = findArtist;
+exports.getArtistImages = getArtistImages;
+
+var coreActions = __webpack_require__(/*! ../core/actions */ "./src/js/services/core/actions.js");
+var uiActions = __webpack_require__(/*! ../ui/actions */ "./src/js/services/ui/actions.js");
+var helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
+
+/**
+ * Send an ajax request to the LastFM API
+ *
+ * @param dispatch = obj
+ * @param endpoint = String
+ * @param params = String
+ **/
+var sendRequest = function sendRequest(dispatch, endpoint, params) {
+    return new Promise(function (resolve, reject) {
+        var loader_key = helpers.generateGuid();
+
+        dispatch(uiActions.startLoading(loader_key, ',discogs_' + endpoint));
+
+        var key = 'CXIwsVMAjrXIVitBWgqd';
+        var secret = 'KiEUfwKpebxRnEHlKoXnYIftJxeuqjTK';
+
+        var config = {
+            method: 'GET',
+            cache: true,
+            timeout: 30000,
+            url: 'https://api.discogs.com/' + endpoint + '?key=' + key + '&secret=' + secret + '&' + params,
+            headers: {
+                'user-agent': 'Iris/1.0'
+            }
+        };
+
+        $.ajax(config).then(function (response) {
+            dispatch(uiActions.stopLoading(loader_key));
+            if (response.error) {
+                reject({
+                    config: config,
+                    error: response
+                });
+            } else {
+                resolve(response);
+            }
+        }, function (xhr, status, error) {
+            dispatch(uiActions.stopLoading(loader_key));
+
+            // Snatch a more meaningful error
+            var description = null;
+            if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+                description = xhr.responseJSON.message;
+            }
+
+            reject({
+                config: config,
+                error: error,
+                description: description,
+                status: status,
+                xhr: xhr
+            });
+        });
+    });
+};
+
+function findArtist(name) {
+    return sendRequest(dispatch, 'artists/' + artist.mbid, 'inc=url-rels').then(function (response) {
+        if (response) {
+            var image_relations = response.relations.filter(function (rel) {
+                return rel.type == "image";
+            });
+            if (image_relations) {
+                var updated_artist = {
+                    uri: uri,
+                    images: image_relations.map(function (relation) {
+                        return relation.url.resource.replace("File:", "Special:FilePath/");
+                    })
+                };
+                dispatch(coreActions.artistLoaded(updated_artist));
+            }
+        }
+    }, function (error) {
+        console.log('Musicbrainz: No results for ' + artist.mbid);
+    });
+}
+
+function getArtistImages(uri, artist) {
+    return function (dispatch, getState) {
+        sendRequest(dispatch, 'database/search', 'query=' + artist.name).then(function (response) {
+            if (response) {
+                if (response.results && response.results[0].cover_image) {
+                    var updated_artist = {
+                        uri: uri,
+                        images: [response.results[0].cover_image]
+                    };
+                    dispatch(coreActions.artistLoaded(updated_artist));
+                }
+            }
+        }, function (error) {
+            console.log('Discogs: No results for ' + artist.name);
+        });
+    };
+}
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
+
+/***/ }),
+
 /***/ "./src/js/services/genius/actions.js":
 /*!*******************************************!*\
   !*** ./src/js/services/genius/actions.js ***!
@@ -68320,7 +68456,6 @@ exports.unloveTrack = unloveTrack;
 exports.scrobble = scrobble;
 
 var coreActions = __webpack_require__(/*! ../core/actions */ "./src/js/services/core/actions.js");
-var musicbrainzActions = __webpack_require__(/*! ../musicbrainz/actions */ "./src/js/services/musicbrainz/actions.js");
 var uiActions = __webpack_require__(/*! ../ui/actions */ "./src/js/services/ui/actions.js");
 var helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
 
@@ -68536,7 +68671,6 @@ function getArtist(uri, artist) {
             if (response.artist) {
                 var artist = {
                     uri: uri,
-                    //images: response.artist.image,
                     mbid: response.artist.mbid,
                     biography: response.artist.bio.content,
                     biography_publish_date: response.artist.bio.published,
@@ -68545,7 +68679,6 @@ function getArtist(uri, artist) {
                 };
 
                 dispatch(coreActions.artistLoaded(artist));
-                dispatch(musicbrainzActions.getArtist(uri, artist));
             }
         }, function (error) {
             console.info("LastFM: No results for artist '" + artist + "'");
@@ -69764,7 +69897,7 @@ var spotifyActions = __webpack_require__(/*! ../spotify/actions.js */ "./src/js/
 var pusherActions = __webpack_require__(/*! ../pusher/actions.js */ "./src/js/services/pusher/actions.js");
 var googleActions = __webpack_require__(/*! ../google/actions.js */ "./src/js/services/google/actions.js");
 var lastfmActions = __webpack_require__(/*! ../lastfm/actions.js */ "./src/js/services/lastfm/actions.js");
-var musicbrainzActions = __webpack_require__(/*! ../musicbrainz/actions.js */ "./src/js/services/musicbrainz/actions.js");
+var discogsActions = __webpack_require__(/*! ../discogs/actions.js */ "./src/js/services/discogs/actions.js");
 
 var MopidyMiddleware = function () {
     var _this = this;
@@ -71675,9 +71808,13 @@ var MopidyMiddleware = function () {
 
                             store.dispatch(coreActions.artistLoaded(artist));
 
-                            // Load supprting information from LastFM and Musicbrainz
+                            // Load supprting information from LastFM and Discogs
                             var existing_artist = store.getState().core.artists[artist.uri];
                             if (existing_artist) {
+
+                                if (!existing_artist.images) {
+                                    store.dispatch(discogsActions.getArtistImages(artist.uri, artist));
+                                }
 
                                 // Get biography and other stats from LastFM
                                 if (!existing_artist.biography) {
@@ -72186,114 +72323,6 @@ function reducer() {
             return mopidy;
     }
 }
-
-/***/ }),
-
-/***/ "./src/js/services/musicbrainz/actions.js":
-/*!************************************************!*\
-  !*** ./src/js/services/musicbrainz/actions.js ***!
-  \************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function($) {
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.findArtist = findArtist;
-exports.getArtist = getArtist;
-
-var coreActions = __webpack_require__(/*! ../core/actions */ "./src/js/services/core/actions.js");
-var uiActions = __webpack_require__(/*! ../ui/actions */ "./src/js/services/ui/actions.js");
-var helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-/**
- * Send an ajax request to the LastFM API
- *
- * @param dispatch = obj
- * @param endpoint = String
- * @param params = String
- **/
-var sendRequest = function sendRequest(dispatch, endpoint, params) {
-    return new Promise(function (resolve, reject) {
-        var loader_key = helpers.generateGuid();
-
-        dispatch(uiActions.startLoading(loader_key, ',musicbrainz_' + endpoint));
-
-        var config = {
-            method: 'GET',
-            cache: true,
-            timeout: 30000,
-            url: 'https://musicbrainz.org/ws/2/' + endpoint + '?fmt=json&' + params
-        };
-
-        $.ajax(config).then(function (response) {
-            dispatch(uiActions.stopLoading(loader_key));
-            if (response.error) {
-                reject({
-                    config: config,
-                    error: response
-                });
-            } else {
-                resolve(response);
-            }
-        }, function (xhr, status, error) {
-            dispatch(uiActions.stopLoading(loader_key));
-
-            // Snatch a more meaningful error
-            var description = null;
-            if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
-                description = xhr.responseJSON.message;
-            }
-
-            reject({
-                config: config,
-                error: error,
-                description: description,
-                status: status,
-                xhr: xhr
-            });
-        });
-    });
-};
-
-function findArtist(uri, artist) {
-    return function (dispatch, getState) {
-        sendRequest(dispatch, 'artist', 'query=artist:' + artist.name).then(function (response) {
-            console.log(response);
-        }, function (error) {
-            console.info("Musicbrainz: No results for artist '" + artist.name + "'");
-        });
-    };
-}
-
-function getArtist(uri, artist) {
-
-    return function (dispatch, getState) {
-        sendRequest(dispatch, 'artist/' + artist.mbid, 'inc=url-rels').then(function (response) {
-            if (response) {
-                var image_relations = response.relations.filter(function (rel) {
-                    return rel['target-type'] === 'image';
-                });
-                var images = image_relations.map(function (ir) {
-                    return ir.url.resource;
-                });
-                var artist = {
-                    uri: uri,
-                    images: images
-                };
-                console.log(response);
-                console.log(image_relations);
-                dispatch(coreActions.artistLoaded(artist));
-            }
-        }, function (error) {
-            console.info("Musicbrainz: No results for artist '" + artist.uri + "'");
-        });
-    };
-}
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
 
 /***/ }),
 
@@ -83072,53 +83101,70 @@ var User = function (_React$Component) {
 				_react2.default.createElement(
 					'div',
 					{ className: 'intro preserve-3d' },
-					_react2.default.createElement(_Parallax2.default, { image: image, fixedHeight: true }),
+					_react2.default.createElement(_Parallax2.default, { image: image, blur: true }),
 					_react2.default.createElement(
 						'div',
 						{ className: 'liner' },
 						_react2.default.createElement(
-							'h1',
-							null,
-							user.name
-						),
-						_react2.default.createElement(
-							'h2',
-							null,
-							_react2.default.createElement(
-								'ul',
-								{ className: 'details' },
-								!this.props.slim_mode ? _react2.default.createElement(
-									'li',
-									{ className: 'source' },
-									_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(user.uri) })
-								) : null,
-								user.playlists_total ? _react2.default.createElement(
-									'li',
-									null,
-									_react2.default.createElement(_NiceNumber2.default, { value: user.playlists_total }),
-									' playlists'
-								) : null,
-								user.followers ? _react2.default.createElement(
-									'li',
-									null,
-									_react2.default.createElement(_NiceNumber2.default, { value: user.followers }),
-									' followers'
-								) : null,
-								this.isMe() ? _react2.default.createElement(
-									'li',
-									null,
-									_react2.default.createElement(
-										'span',
-										{ className: 'blue-text' },
-										'You'
-									)
-								) : null
-							)
-						),
-						_react2.default.createElement(
 							'div',
-							{ className: 'actions' },
-							_react2.default.createElement(_FollowButton2.default, { className: 'primary', uri: user.uri, addText: 'Follow', removeText: 'Unfollow' })
+							{ className: 'heading' },
+							_react2.default.createElement(
+								'div',
+								{ className: 'heading__thumbnail' },
+								_react2.default.createElement(_Thumbnail2.default, { size: 'medium', circle: true, canZoom: true, image: image })
+							),
+							_react2.default.createElement(
+								'div',
+								{ className: 'heading__content' },
+								_react2.default.createElement(
+									'h1',
+									null,
+									user.name
+								),
+								_react2.default.createElement(
+									'div',
+									{ className: 'heading__content__details' },
+									_react2.default.createElement(
+										'div',
+										{ className: 'actions' },
+										_react2.default.createElement(_FollowButton2.default, { className: 'primary', uri: user.uri, addText: 'Follow', removeText: 'Unfollow' })
+									),
+									_react2.default.createElement(
+										'h2',
+										null,
+										_react2.default.createElement(
+											'ul',
+											{ className: 'details' },
+											!this.props.slim_mode ? _react2.default.createElement(
+												'li',
+												{ className: 'source' },
+												_react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(user.uri) })
+											) : null,
+											user.playlists_total ? _react2.default.createElement(
+												'li',
+												null,
+												_react2.default.createElement(_NiceNumber2.default, { value: user.playlists_total }),
+												' playlists'
+											) : null,
+											user.followers ? _react2.default.createElement(
+												'li',
+												null,
+												_react2.default.createElement(_NiceNumber2.default, { value: user.followers }),
+												' followers'
+											) : null,
+											this.isMe() ? _react2.default.createElement(
+												'li',
+												null,
+												_react2.default.createElement(
+													'span',
+													{ className: 'blue-text' },
+													'You'
+												)
+											) : null
+										)
+									)
+								)
+							)
 						)
 					)
 				),

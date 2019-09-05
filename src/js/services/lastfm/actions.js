@@ -1,6 +1,5 @@
 
 var coreActions = require('../core/actions');
-var musicbrainzActions = require('../musicbrainz/actions');
 var uiActions = require('../ui/actions');
 var helpers = require('../../helpers');
 
@@ -253,7 +252,6 @@ export function getArtist(uri, artist, mbid = false){
                     if (response.artist){
                     	var artist = {
                             uri: uri,
-                            //images: response.artist.image,
                             mbid: response.artist.mbid,
                             biography: response.artist.bio.content,
                             biography_publish_date: response.artist.bio.published,
@@ -262,7 +260,6 @@ export function getArtist(uri, artist, mbid = false){
                         };
 
                         dispatch(coreActions.artistLoaded(artist));
-                        dispatch(musicbrainzActions.getArtist(uri, artist));
                     }
                 },
                 error => {

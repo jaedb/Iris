@@ -6704,13 +6704,16 @@ main header {
     .user-view .intro .liner h1 {
       padding-bottom: 15px;
       font-size: 4rem; }
-    .user-view .intro .liner h2 {
-      padding-bottom: 25px; }
-
-.user-view .content-wrapper {
-  background: #181818; }
-  .light-theme .user-view .content-wrapper {
-    background: #FFFFFF; }
+    .user-view .intro .liner .heading {
+      display: flex;
+      align-items: center; }
+      .user-view .intro .liner .heading__thumbnail {
+        width: 140px;
+        margin-right: 30px; }
+      .user-view .intro .liner .heading__content {
+        padding-top: 20px; }
+        .user-view .intro .liner .heading__content__details {
+          display: flex; }
 
 @media (max-width: 799px) {
   .user-view .intro .thumbnail {

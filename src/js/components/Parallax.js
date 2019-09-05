@@ -70,7 +70,7 @@ export default class Parallax extends React.Component{
 
 		var style = {};
 		if (this.state.loaded && this.state.url){
-			style = {backgroundImage: 'url('+this.state.url+')'};
+			style = {backgroundImage: `url("${this.state.url}")`};
 		}
 
 		return (
