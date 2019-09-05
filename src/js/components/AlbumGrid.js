@@ -9,66 +9,58 @@ import * as lastfmActions from '../services/lastfm/actions';
 
 import GridItem from './GridItem';
 
-class AlbumGrid extends React.Component{
+class AlbumGrid extends React.Component {
+  constructor(props) {
+    super(props);
+  }
 
-	constructor(props){
-		super(props)
-	}
+  handleContextMenu(e, item) {
+    e.preventDefault();
+    const data = {
+      e,
+      context: 'album',
+      uris: [item.uri],
+      items: [item],
+      tracklist_uri: item.uri,
+    };
+    this.props.uiActions.showContextMenu(data);
+  }
 
-	handleContextMenu(e,item){
-		e.preventDefault()
-		var data = { 
-			e: e,
-			context: 'album',
-			uris: [item.uri],
-			items: [item],
-			tracklist_uri: item.uri
-		}
-		this.props.uiActions.showContextMenu(data)
-	}
+  render() {
+    if (this.props.albums) {
+      let className = 'grid grid--albums';
+      if (this.props.className) className += ` ${this.props.className}`;
+      if (this.props.single_row) className += ' grid--single-row';
+      if (this.props.mini) className += ' grid--mini';
 
-	render(){
-		if (this.props.albums){
-			var className = "grid grid--albums";
-			if (this.props.className) className += ' '+this.props.className;
-			if (this.props.single_row) className += ' grid--single-row';
-			if (this.props.mini) className += ' grid--mini';
-				
-			return (
-				<div className={className}>
-					{
-						this.props.albums.map(album => {
-							return (
-								<GridItem
-									key={album.uri}
-									type="album"
-									item={album}
-									lastfmActions={this.props.lastfmActions}
-									show_source_icon={this.props.show_source_icon}
-									onContextMenu={e => this.handleContextMenu(e,album)}
-								/>
-							)}
-						)
+      return (
+        <div className={className}>
+          {
+						this.props.albums.map((album) => (
+  <GridItem
+    key={album.uri}
+    type="album"
+    item={album}
+    lastfmActions={this.props.lastfmActions}
+    show_source_icon={this.props.show_source_icon}
+    onContextMenu={(e) => this.handleContextMenu(e, album)}
+  />
+						))
 					}
-				</div>
-			);
-		}
-		return null;
-	}
+        </div>
+      );
+    }
+    return null;
+  }
 }
 
-const mapStateToProps = (state, ownProps) => {
-	return {
-		artists: state.core.artists
-	}
-}
+const mapStateToProps = (state, ownProps) => ({
+  artists: state.core.artists,
+});
 
-const mapDispatchToProps = (dispatch) => {
-	return {
-		uiActions: bindActionCreators(uiActions, dispatch),
-		lastfmActions: bindActionCreators(lastfmActions, dispatch)
-	}
-}
+const mapDispatchToProps = (dispatch) => ({
+  uiActions: bindActionCreators(uiActions, dispatch),
+  lastfmActions: bindActionCreators(lastfmActions, dispatch),
+});
 
-export default connect(mapStateToProps, mapDispatchToProps)(AlbumGrid)
-
+export default connect(mapStateToProps, mapDispatchToProps)(AlbumGrid);
