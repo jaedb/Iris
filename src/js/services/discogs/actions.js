@@ -32,20 +32,6 @@ const sendRequest = (dispatch, getState, endpoint, params) => new Promise((resol
   function status(response) {
     dispatch(uiActions.stopLoading(loader_key));
 
-    const rate = {
-      limit: request.getResponseHeader('X-Discogs-Ratelimit'),
-      remaining: request.getResponseHeader('X-Discogs-Ratelimit-Remaining'),
-      used: request.getResponseHeader('X-Discogs-Ratelimit-Used'),
-    }
-    if (rate.remaining !== undefined && rate.remaining === 0) {
-      dispatch(uiActions.createNotification({
-        key: "discogs_rate_limit",
-        type: "bad",
-        content: "Rate limit exceeded",
-        description: `Discogs rate limit exceeded, try again in a few minutes.`
-      }));
-    }
-
     if (response.status >= 200 && response.status < 300) {
       return Promise.resolve(response)
     } else {
