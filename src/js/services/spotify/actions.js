@@ -35,7 +35,6 @@ const request = (dispatch, getState, endpoint, method = 'GET', data = false) => 
           // create our ajax request config
           const config = {
             method,
-            url,
             cached: true,
             timeout: 30000,
             headers: {
@@ -53,33 +52,37 @@ const request = (dispatch, getState, endpoint, method = 'GET', data = false) => 
             }
           }
 
-          $.ajax(config).then(
-            (response) => {
-              dispatch(uiActions.stopLoading(loader_key));
-              resolve(response);
-            },
-            (xhr, status, error) => {
-              dispatch(uiActions.stopLoading(loader_key));
+          function status(response) {
+            dispatch(uiActions.stopLoading(loader_key));
 
-              // TODO: Rate limiting
-              if (xhr.status == 429) {
-                alert('You hit the Spotify API rate limiter');
-              }
+            // TODO: Rate limiting
+            if (response.status == 429) {
+              alert('You hit the Spotify API rate limiter');
+            }
+        
+            if (response.status >= 200 && response.status < 300) {
+              return Promise.resolve(response)
+            } else {
+              return Promise.reject(new Error(response.statusText))
+            }
+          }
+
+          fetch(url, config)
+            .then(status)
+            .then(response => response.json())
+            .then(data => {
 
               // TODO: Instead of allowing request to fail before renewing the token, once refreshed
               // we should retry the original request(s)
-              if (xhr.responseJSON && xhr.responseJSON.error && xhr.responseJSON.error.message == 'The access token expired') {
+              if (data.error && data.error.message == 'The access token expired') {
                 dispatch(refreshToken(dispatch, getState));
               }
 
-              reject({
-                config,
-                xhr,
-                status,
-                error,
-              });
-            },
-          );
+              resolve(data);
+            })
+            .catch(error => {
+              reject(error);
+            });
         },
         (error) => {
           dispatch(coreActions.handleException(

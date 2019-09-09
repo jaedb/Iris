@@ -1,5 +1,4 @@
 
-import axios from 'axios';
 const coreActions = require('../core/actions');
 const uiActions = require('../ui/actions');
 const helpers = require('../../helpers');
@@ -35,7 +34,6 @@ const sendRequest = (dispatch, getState, params, signed = false) => new Promise(
   const config = {
     method: http_method,
     timeout: 30000,
-    cache: "force-cache",
   };
 
   const loader_key = helpers.generateGuid();
