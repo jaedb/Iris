@@ -1,4 +1,5 @@
 
+import axios from 'axios';
 const coreActions = require('../core/actions');
 const uiActions = require('../ui/actions');
 const helpers = require('../../helpers');
@@ -19,56 +20,46 @@ export function set(data) {
  * @params signed = boolean, whether we've got a signed request with baked-in api_key
  * */
 const sendRequest = (dispatch, getState, params, signed = false) => new Promise((resolve, reject) => {
-  const loader_key = helpers.generateGuid();
+  let url = `https://ws.audioscrobbler.com/2.0/?format=json&${params}`;
+  let http_method = 'GET';
   let method = params.substring(params.indexOf('method=') + 7, params.length);
   method = method.substring(0, method.indexOf('&'));
 
-  dispatch(uiActions.startLoading(loader_key, `lastfm_${method}`));
-
-  const config = {
-    method: 'GET',
-    cache: true,
-    timeout: 30000,
-    url: `https://ws.audioscrobbler.com/2.0/?format=json&${params}`,
-  };
-
   // Signed requests don't need our api_key as the proxy has it's own
   if (!signed) {
-    config.url += '&api_key=4320a3ef51c9b3d69de552ac083c55e3';
+    url += '&api_key=4320a3ef51c9b3d69de552ac083c55e3';
   } else {
-    config.method = 'POST';
+    http_method = 'POST';
   }
 
-  $.ajax(config).then(
-    (response) => {
-      dispatch(uiActions.stopLoading(loader_key));
-      if (response.error) {
-        reject({
-          config,
-          error: response,
-        });
-      } else {
-        resolve(response);
-      }
-    },
-    (xhr, status, error) => {
-      dispatch(uiActions.stopLoading(loader_key));
+  const config = {
+    method: http_method,
+    timeout: 30000,
+    cache: "force-cache",
+  };
 
-      // Snatch a more meaningful error
-      let description = null;
-      if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
-        description = xhr.responseJSON.message;
-      }
+  const loader_key = helpers.generateGuid();
+  dispatch(uiActions.startLoading(loader_key, `lastfm_${method}`));
 
-      reject({
-        config,
-        error,
-        description,
-        status,
-        xhr,
-      });
-    },
-  );
+  function status(response) {
+    dispatch(uiActions.stopLoading(loader_key));
+
+    if (response.status >= 200 && response.status < 300) {
+      return Promise.resolve(response)
+    } else {
+      return Promise.reject(new Error(response.statusText))
+    }
+  }
+
+  fetch(url, config)
+    .then(status)
+    .then(response => response.json())
+    .then(data => {
+      resolve(data);
+    })
+    .catch(error => {
+      reject(error);
+    });
 });
 
 /**

@@ -17,6 +17,42 @@ class Sidebar extends React.Component {
     super(props);
   }
 
+  renderStatusIcon() {
+    if (this.props.update_available) {
+      return (
+        <span className="status tooltip tooltip--right">
+          <Icon name="cloud_download" className="green-text" />
+          <span className="tooltip__content">Update available</span>
+        </span>
+      );
+    }
+
+    if (!navigator.onLine) {
+      return (
+        <span className="status tooltip tooltip--right">
+          <Icon name="wifi_off" className="red-text" />
+          <span className="tooltip__content">
+            Browser offline
+          </span>
+        </span>
+      );
+    }
+
+    if (!this.props.mopidy_connected || !this.props.pusher_connected) {
+      return (
+        <span className="status tooltip tooltip--right">
+          <Icon name="warning" className="red-text" />
+          <span className="tooltip__content">
+            {!this.props.mopidy_connected && (<span>Mopidy not connected<br /></span>)}
+            {!this.props.pusher_connected && (<span>Pusher not connected<br /></span>)}
+          </span>
+        </span>
+      );
+    }
+
+    return null;
+  }
+
   render() {
     return (
       <aside className="sidebar">
@@ -84,31 +120,7 @@ class Sidebar extends React.Component {
               <Link to="/settings" history={this.props.history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="settings" type="material" />
 								Settings
-                {this.props.update_available ? (
-                  <span className="status tooltip tooltip--right">
-                    <Icon name="cloud_download" className="green-text" />
-                    <span className="tooltip__content">Update available</span>
-                  </span>
-                ) : null}
-                {!this.props.mopidy_connected || !this.props.pusher_connected ? (
-                  <span className="status tooltip tooltip--right">
-                    <Icon name="warning" className="red-text" />
-                    <span className="tooltip__content">
-                      {!this.props.mopidy_connected ? (
-                    <span>
-Mopidy not connected
-                    <br />
-                  </span>
-                  ) : null}
-                      {!this.props.pusher_connected ? (
-                    <span>
-Pusher not connected
-                    <br />
-                  </span>
-                  ) : null}
-                    </span>
-                  </span>
-                ) : null}
+                {this.renderStatusIcon()}
               </Link>
             </section>
 

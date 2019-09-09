@@ -7,6 +7,7 @@ import Header from '../../components/Header';
 import Icon from '../../components/Icon';
 import PlaylistGrid from '../../components/PlaylistGrid';
 import LazyLoadListener from '../../components/LazyLoadListener';
+import Loader from '../../components/Loader';
 
 import * as helpers from '../../helpers';
 import * as uiActions from '../../services/ui/actions';
@@ -69,9 +70,7 @@ class DiscoverCategory extends React.Component {
             <Icon name="mood" type="material" />
             {(this.props.category ? this.props.category.name : 'Category')}
           </Header>
-          <div className="body-loader loading">
-            <div className="loader" />
-          </div>
+          <Loader body loading />
         </div>
       );
     }

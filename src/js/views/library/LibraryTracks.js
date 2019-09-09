@@ -2,8 +2,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import Link from '../../components/Link';
 
+import Loader from '../../components/Loader';
 import TrackList from '../../components/TrackList';
 import Header from '../../components/Header';
 import LazyLoadListener from '../../components/LazyLoadListener';
@@ -50,9 +50,7 @@ class LibraryTracks extends React.Component {
       return (
         <div className="view library-tracks-view">
           <Header icon="music" title="My tracks" />
-          <div className="body-loader loading">
-            <div className="loader" />
-          </div>
+          <Loader body loading />
         </div>
       );
     }

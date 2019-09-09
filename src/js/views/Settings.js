@@ -443,16 +443,26 @@ installed
           <div className="field">
             {this.props.pusher.version.upgrade_available ? (
               <button className="button button--secondary" onClick={(e) => this.props.pusherActions.upgrade()}>
-Upgrade to
-                { this.props.pusher.version.latest }
+                {`Upgrade to ${this.props.pusher.version.latest}`}
               </button>
             ) : null }
             <button className={`button button--destructive${this.props.mopidy.restarting ? ' button--working' : ''}`} onClick={(e) => this.props.pusherActions.restart()}>Restart server</button>
-            <ConfirmationButton className="button--destructive" content="Reset all settings" confirmingContent="Are you sure?" onConfirm={() => this.resetAllSettings()} />
+            <ConfirmationButton
+              className="button--destructive"
+              content="Reset all settings"
+              confirmingContent="Are you sure?"
+              onConfirm={() => this.resetAllSettings()}
+            />
+            <button
+              className="button button--destructive"
+              onClick={() => helpers.cache.clear()}
+            >
+              Clear request cache
+            </button>
           </div>
 
           <h4 className="underline">
-About
+            About
             <a name="about" />
           </h4>
 

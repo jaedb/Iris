@@ -7,7 +7,7 @@ import { withRouter } from 'react-router';
 import Link from './Link';
 import TrackList from './TrackList';
 import Icon from './Icon';
-import Thumbnail from './Thumbnail';
+import Loader from './Loader';
 import URILink from './URILink';
 
 import * as helpers from '../helpers';
@@ -402,7 +402,7 @@ added from
 
   renderSubmenu() {
     let list = null;
-    let loader = null;
+    let isLoading = false;
 
     switch (this.state.submenu) {
       case 'add-to-playlist':
@@ -415,13 +415,7 @@ added from
         playlists = helpers.sortItems(playlists, 'name');
 
         if (this.props.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR && this.props.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR.status == 'running') {
-          loader = (
-            <div className="context-menu__item">
-              <div className="context-menu__item mini-loader loading">
-                <div className="loader" />
-              </div>
-            </div>
-          );
+          isLoading = true;
         }
 
         list = <span className="context-menu__item"><span className="context-menu__item mid_grey-text">No writable playlists</span></span>;
@@ -448,7 +442,11 @@ Back
           </a>
         </div>
         {list}
-        {loader}
+        {isLoading && (
+          <div className="context-menu__item">
+            <Loader className="context-menu__item" mini loading />
+          </div>
+        )}
       </div>
     );
   }

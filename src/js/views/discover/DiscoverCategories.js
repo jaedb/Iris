@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux';
 import Header from '../../components/Header';
 import Icon from '../../components/Icon';
 import CategoryGrid from '../../components/CategoryGrid';
+import Loader from '../../components/Loader';
 
 import * as helpers from '../../helpers';
 import * as uiActions from '../../services/ui/actions';
@@ -31,9 +32,7 @@ class DiscoverCategories extends React.Component {
       return (
         <div className="view discover-categories-view">
           <Header icon="grid" title="Genre / Mood" />
-          <div className="body-loader loading">
-            <div className="loader" />
-          </div>
+          <Loader body loading />
         </div>
       );
     }

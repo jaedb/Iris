@@ -8,9 +8,7 @@ import PlaylistGrid from '../../components/PlaylistGrid';
 import Header from '../../components/Header';
 import Icon from '../../components/Icon';
 import Parallax from '../../components/Parallax';
-import Thumbnail from '../../components/Thumbnail';
-import URILink from '../../components/URILink';
-import Dater from '../../components/Dater';
+import Loader from '../../components/Loader';
 
 import * as helpers from '../../helpers';
 import * as uiActions from '../../services/ui/actions';
@@ -67,9 +65,7 @@ class DiscoverFeatured extends React.Component {
             <Icon name="star" type="material" />
 						Featured playlists
           </Header>
-          <div className="body-loader loading">
-            <div className="loader" />
-          </div>
+          <Loader body loading />
         </div>
       );
     }

@@ -10,6 +10,7 @@ import * as geniusActions from '../services/genius/actions';
 import * as snapcastActions from '../services/snapcast/actions';
 
 import Icon from './Icon';
+import Loader from './Loader';
 
 class Notifications extends React.Component {
   constructor(props) {
@@ -115,11 +116,11 @@ class Notifications extends React.Component {
       case 'running':
         return (
           <div className={`notification notification--process${process.closing ? ' closing' : ''}`} key={process.key}>
-            <div className="loader">
+            <Loader loading mini white>
               <div className="progress">
                 <div className="fill" style={{ width: `${progress}%` }} />
               </div>
-            </div>
+            </Loader>
             {process.message}
             <Icon name="close" className="notification__close-button" onClick={(e) => { this.props.uiActions.cancelProcess(process.key); }} />
           </div>

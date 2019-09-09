@@ -8,7 +8,7 @@ import TrackList from '../components/TrackList';
 import Thumbnail from '../components/Thumbnail';
 import Parallax from '../components/Parallax';
 import ArtistSentence from '../components/ArtistSentence';
-import ArtistGrid from '../components/ArtistGrid';
+import Loader from '../components/Loader';
 import FollowButton from '../components/Fields/FollowButton';
 import NiceNumber from '../components/NiceNumber';
 import Dater from '../components/Dater';
@@ -139,11 +139,7 @@ export class Album extends React.Component {
           `spotify_albums/${helpers.getFromUri('albumid', this.props.uri)}`,
         ])
       ) {
-        return (
-          <div className="body-loader loading">
-            <div className="loader" />
-          </div>
-        );
+        return <Loader body loading />;
       }
       return (
         <ErrorMessage type="not-found" title="Not found">

@@ -17,7 +17,7 @@ import LazyLoadListener from '../components/LazyLoadListener';
 import ContextMenuTrigger from '../components/ContextMenuTrigger';
 import URILink from '../components/URILink';
 import Icon from '../components/Icon';
-import Popularity from '../components/Popularity';
+import Loader from '../components/Loader';
 
 import * as helpers from '../helpers';
 import * as coreActions from '../services/core/actions';
@@ -162,9 +162,7 @@ class Track extends React.Component {
     if (helpers.isLoading(this.props.load_queue, ['genius_'])) {
       return (
         <div className="lyrics">
-          <div className="body-loader loading">
-            <div className="loader" />
-          </div>
+          <Loader body loading />
         </div>
       );
     } if (this.props.track.lyrics) {
@@ -192,11 +190,7 @@ Could not find track with URI "
 
   render() {
     if (helpers.isLoading(this.props.load_queue, [`spotify_track/${helpers.getFromUri('trackid', this.props.uri)}`])) {
-      return (
-        <div className="body-loader loading">
-          <div className="loader" />
-        </div>
-      );
+      return <Loader body loading />
     }
 
     if (!this.props.track) {

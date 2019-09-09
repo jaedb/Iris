@@ -2,7 +2,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Redirect } from 'react-router';
 import { Route, Switch } from 'react-router-dom';
 
 import ErrorMessage from '../components/ErrorMessage';
@@ -18,6 +17,7 @@ import FollowButton from '../components/Fields/FollowButton';
 import ContextMenuTrigger from '../components/ContextMenuTrigger';
 import DropdownField from '../components/Fields/DropdownField';
 import Icon from '../components/Icon';
+import Loader from '../components/Loader';
 
 import * as helpers from '../helpers';
 import * as coreActions from '../services/core/actions';
@@ -359,11 +359,7 @@ Origin:
 
     if (!this.props.artist) {
       if (helpers.isLoading(this.props.load_queue, [`spotify_artists/${helpers.getFromUri('artistid', this.props.uri)}`, 'lastfm_method=artist.getInfo'])) {
-        return (
-          <div className="body-loader loading">
-            <div className="loader" />
-          </div>
-        );
+        return <Loader body loading />;
       }
       return (
         <ErrorMessage type="not-found" title="Not found">

@@ -1,88 +1,91 @@
 
 .loader {
-	height: 120px;
-	width: 120px;
-	margin: 0 auto;
-	position: relative;
-	opacity: 0;
 
-	&:before,
-	&:after {
-		content: '';
-		display: block;
+	&__offline {
+		padding: 2rem;
+		color: colour(middle_grey);
+		text-align: center;
+		font-size: 1rem;
+
+		.icon {
+			display: block;
+			font-size: 3rem;
+			padding-bottom: 0.5rem;
+		}
+	}
+
+	&__spinner {
+		height: 120px;
+		width: 120px;
 		margin: 0 auto;
-		width: 100%;
-		height: 100%;
-		box-sizing: border-box;
-		border: {
-			radius: 100%;
-			style: solid;
-			width: 2px;
-		}
-	}
+		position: relative;
 
-	&:before {
-		position: absolute;
-		top: 0;
-		left: 0;
-		border-color: lighten(colour(dark_grey), 5%);
-
-		.light-theme & {
-			border-color: colour(faint_grey);
-		}
-	}
-	
-	&:after {
-		@include spin();
-		border-top-color: transparent;
-		border-left-color: transparent;
-		border-bottom-color: transparent;
-		border-right-color: colour(blue);
-	}
-}
-
-.body-loader {
-
-	&.loading {
-		padding: 35vh 0;
-		
-		.loader {
-			opacity: 1;
-		}
-	}
-
-	&.lazy-loader {
-
-		.loader {
-			opacity: 0;
-		}
-
-		&.loading {
-			padding: 20px;
-			height: 40px;
-
-			.loader {
-				height: 40px;
-				width: 40px;
-				opacity: 1;
+		&:before,
+		&:after {
+			content: '';
+			display: block;
+			margin: 0 auto;
+			width: 100%;
+			height: 100%;
+			box-sizing: border-box;
+			border: {
+				radius: 100%;
+				style: solid;
+				width: 2px;
 			}
 		}
-	}
-}
-
-.mini-loader {
-	.loader {
-		width: 20px;
-		height: 20px;
-		opacity: 1;
 
 		&:before {
-			border-color: darken(colour(secondary_grey), 5%);
+			position: absolute;
+			top: 0;
+			left: 0;
+			border-color: rgba(128,128,128,0.15);
+		}
+		
+		&:after {
+			@include spin();
+			border-top-color: transparent;
+			border-left-color: transparent;
+			border-bottom-color: transparent;
+			border-right-color: colour(blue);
+		}
+	}
 
-			.light-theme & {
-				border-color: colour(faint_grey);
+	&--white {
+		.loader__spinner {
+			&:before {
+				opacity: 0;
+			}
+			
+			&:after {
+				border-right-color: colour(white);
 			}
 		}
 	}
-}
 
+	&--body {
+		padding: 35vh 0;
+	}
+	
+	&--mini {
+		padding: 0;
+
+		.loader__spinner {
+			width: 20px;
+			height: 20px;
+		}
+		
+		.loader__offline {
+			display: none;
+		}
+	}
+
+	&--lazy {
+		padding: 20px;
+
+		.loader__spinner {
+			width: 40px;
+			height: 40px;
+		}
+	}
+}

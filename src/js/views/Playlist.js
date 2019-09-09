@@ -11,10 +11,9 @@ import Thumbnail from '../components/Thumbnail';
 import Parallax from '../components/Parallax';
 import NiceNumber from '../components/NiceNumber';
 import Dater from '../components/Dater';
-import ConfirmationButton from '../components/Fields/ConfirmationButton';
 import LazyLoadListener from '../components/LazyLoadListener';
 import FollowButton from '../components/Fields/FollowButton';
-import Header from '../components/Header';
+import Loader from '../components/Loader';
 import ContextMenuTrigger from '../components/ContextMenuTrigger';
 import URILink from '../components/URILink';
 import Icon from '../components/Icon';
@@ -179,11 +178,7 @@ class Playlist extends React.Component {
 
     if (!this.props.playlist) {
       if (helpers.isLoading(this.props.load_queue, [`spotify_playlists/${playlist_id}?`])) {
-        return (
-          <div className="body-loader loading">
-            <div className="loader" />
-          </div>
-        );
+        return <Loader body loading />
       }
       return (
         <ErrorMessage type="not-found" title="Not found">

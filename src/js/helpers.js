@@ -110,6 +110,32 @@ export const setStorage = function (key, value, replace = false) {
   }
 };
 
+/**
+ * Cache handlers
+ * This allows arbritrary requests to be cached by key into local storage. Typically key would be
+ * a URL, but it could also be a asset id.
+ * 
+ * Use sparingly as localStorage is limited in size! Ideally store only the request data needed,
+ * rather than the entire response data.
+ */
+export const cache = {
+  get: key => {
+    const cache = getStorage('cache', {});
+    if (cache[`"${key}"`] !== undefined) {
+      return cache[`"${key}"`];
+    }
+  },
+  set: (key, data) => {
+    let cache = getStorage('cache', {});
+    cache[`"${key}"`] = data;
+    setStorage('cache', cache);
+    return true;
+  },
+  clear: () => {
+    setStorage('cache', {}, true);
+  }
+}
+
 
 /**
  * Convert a string to JSON, after we've checked whether it needs

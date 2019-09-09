@@ -197,8 +197,7 @@ tracks
           />
         </URILink>
         <div className="current-track__added-from__text">
-          Playing from
-          {' '}
+          {`Playing from `}
           <URILink type={item_type} uri={item.uri}>
             {item.name}
           </URILink>

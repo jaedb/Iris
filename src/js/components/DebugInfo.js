@@ -131,6 +131,11 @@ class DebugInfo extends React.Component {
             {' '}
             {this.props.mopidy.enqueue_uris_batches ? this.props.mopidy.enqueue_uris_batches.length : '0'}
           </div>
+          <div className="debug-info-item">
+						Cached URLs:
+            {' '}
+            {Object.keys(helpers.getStorage('cache')).length}
+          </div>
         </div>
 
         <div className="debug-info-section">

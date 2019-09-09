@@ -10,7 +10,7 @@ import FollowButton from '../components/Fields/FollowButton';
 import LazyLoadListener from '../components/LazyLoadListener';
 import Parallax from '../components/Parallax';
 import NiceNumber from '../components/NiceNumber';
-import ContextMenuTrigger from '../components/ContextMenuTrigger';
+import Loader from '../components/Loader';
 import Icon from '../components/Icon';
 
 import * as helpers from '../helpers';
@@ -70,11 +70,7 @@ class User extends React.Component {
 
     if (!this.props.user) {
       if (helpers.isLoading(this.props.load_queue, [`spotify_users/${user_id}`, `spotify_users/${user_id}/playlists/?`])) {
-        return (
-          <div className="body-loader loading">
-            <div className="loader" />
-          </div>
-        );
+        return <Loader body loading />
       }
       return (
         <ErrorMessage type="not-found" title="Not found">

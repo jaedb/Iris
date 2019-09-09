@@ -233,8 +233,16 @@
   }
 
   &--share-configuration {
+    .checkbox-group {
+      &__item {
+        padding-bottom: 0.75rem;
+      }
+    }
+
     .field.checkbox {
       .label {
+        display: flex;
+
         .title {
           font-size: 1.2rem;
         }

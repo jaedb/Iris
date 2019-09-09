@@ -1,6 +1,7 @@
 
 import React from 'react';
 import * as helpers from '../helpers';
+import Loader from './Loader';
 
 export default class LazyLoadListener extends React.Component {
   constructor(props) {
@@ -51,9 +52,7 @@ export default class LazyLoadListener extends React.Component {
 
   render() {
     return (
-      <div className={`lazy-loader body-loader${this.props.showLoader ? ' loading' : ''}`}>
-        {this.props.showLoader ? <div className="loader" /> : null}
-      </div>
+      <Loader body lazy loading={this.props.showLoader} />
     );
   }
 }

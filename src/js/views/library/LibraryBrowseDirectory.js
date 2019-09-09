@@ -3,7 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import Link from '../../components/Link';
+import Loader from '../../components/Loader';
 import Header from '../../components/Header';
 import List from '../../components/List';
 import TrackList from '../../components/TrackList';
@@ -144,9 +144,7 @@ class LibraryBrowseDirectory extends React.Component {
       return (
         <div className="view library-local-view">
           <Header icon="music" title={title} uiActions={this.props.uiActions} />
-          <div className="body-loader loading">
-            <div className="loader" />
-          </div>
+          <Loader body loading />
         </div>
       );
     }

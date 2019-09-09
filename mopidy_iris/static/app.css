@@ -2720,7 +2720,8 @@ body {
 
 .app-inner {
   width: 100%;
-  height: 100%; }
+  height: 100%;
+  position: relative; }
   .app-inner.light-theme {
     color: #121212;
     background: #f8f7f6; }
@@ -2729,7 +2730,7 @@ body {
     background: #181818; }
 
 main {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   bottom: 60px;
@@ -2822,7 +2823,8 @@ h1 {
   font-size: 3.4rem;
   line-height: 3.4rem;
   letter-spacing: -0.15rem;
-  color: #FFFFFF; }
+  color: #FFFFFF;
+  display: flex; }
   .light-theme h1 {
     color: #121212; }
 
@@ -3377,9 +3379,9 @@ select {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  display: inline-flex;
   font-size: 14px;
   color: #000000;
-  display: inline-block;
   padding: 9px 30px 7px;
   margin: 0 20px 10px 0;
   box-sizing: border-box;
@@ -4127,13 +4129,22 @@ select {
   .list__item .context-zone {
     top: 14px; } }
 
-.loader {
+.loader__offline {
+  padding: 2rem;
+  color: rgba(128, 128, 128, 0.5);
+  text-align: center;
+  font-size: 1rem; }
+  .loader__offline .icon {
+    display: block;
+    font-size: 3rem;
+    padding-bottom: 0.5rem; }
+
+.loader__spinner {
   height: 120px;
   width: 120px;
   margin: 0 auto;
-  position: relative;
-  opacity: 0; }
-  .loader:before, .loader:after {
+  position: relative; }
+  .loader__spinner:before, .loader__spinner:after {
     content: '';
     display: block;
     margin: 0 auto;
@@ -4143,14 +4154,12 @@ select {
     border-radius: 100%;
     border-style: solid;
     border-width: 2px; }
-  .loader:before {
+  .loader__spinner:before {
     position: absolute;
     top: 0;
     left: 0;
-    border-color: #252525; }
-    .light-theme .loader:before {
-      border-color: #f4f2f0; }
-  .loader:after {
+    border-color: rgba(128, 128, 128, 0.15); }
+  .loader__spinner:after {
     animation-name: spin;
     animation-duration: 0.5s;
     animation-timing-function: linear;
@@ -4160,30 +4169,28 @@ select {
     border-bottom-color: transparent;
     border-right-color: #32b5f2; }
 
-.body-loader.loading {
-  padding: 35vh 0; }
-  .body-loader.loading .loader {
-    opacity: 1; }
-
-.body-loader.lazy-loader .loader {
+.loader--white .loader__spinner:before {
   opacity: 0; }
 
-.body-loader.lazy-loader.loading {
-  padding: 20px;
-  height: 40px; }
-  .body-loader.lazy-loader.loading .loader {
-    height: 40px;
-    width: 40px;
-    opacity: 1; }
+.loader--white .loader__spinner:after {
+  border-right-color: #FFFFFF; }
 
-.mini-loader .loader {
-  width: 20px;
-  height: 20px;
-  opacity: 1; }
-  .mini-loader .loader:before {
-    border-color: #7b7b7b; }
-    .light-theme .mini-loader .loader:before {
-      border-color: #f4f2f0; }
+.loader--body {
+  padding: 35vh 0; }
+
+.loader--mini {
+  padding: 0; }
+  .loader--mini .loader__spinner {
+    width: 20px;
+    height: 20px; }
+  .loader--mini .loader__offline {
+    display: none; }
+
+.loader--lazy {
+  padding: 20px; }
+  .loader--lazy .loader__spinner {
+    width: 40px;
+    height: 40px; }
 
 .dragging * {
   cursor: grabbing !important;
@@ -4561,7 +4568,7 @@ select {
     background: #1af6ab; }
 
 .playback-controls {
-  position: fixed;
+  position: absolute;
   z-index: 99;
   bottom: 0;
   right: 0;
@@ -5019,7 +5026,7 @@ select {
           float: right; } }
 
 .sidebar {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   bottom: 0;
@@ -5705,18 +5712,9 @@ main header {
       .notifications .notification--process.cancelling {
         color: rgba(255, 255, 255, 0.5); }
       .notifications .notification--process .loader {
-        width: 20px;
-        height: 20px;
         position: absolute;
-        top: 0;
-        left: 0;
-        opacity: 1;
-        z-index: 2;
-        margin: 0.85rem; }
-        .notifications .notification--process .loader:before {
-          border-color: transparent; }
-        .notifications .notification--process .loader:after {
-          border-right-color: #FFFFFF; }
+        top: 13px;
+        left: 13px; }
         .notifications .notification--process .loader .progress {
           position: absolute;
           top: 4px;
@@ -5791,17 +5789,19 @@ main header {
   font-family: "Overpass";
   position: relative;
   display: inline-block; }
-  .dropdown-field .label .icon {
-    padding-right: 8px; }
-  .dropdown-field .label:not(.button) {
-    -webkit-transition: all 0.2s ease-in-out;
-    -moz-transition: all 0.2s ease-in-out;
-    -o-transition: all 0.2s ease-in-out;
-    transition: all 0.2s ease-in-out;
-    padding: 14px 10px;
-    cursor: pointer; }
-    .notouch .dropdown-field .label:not(.button):hover {
-      color: #32b5f2; }
+  .dropdown-field .label {
+    display: flex; }
+    .dropdown-field .label .icon {
+      padding-right: 8px; }
+    .dropdown-field .label:not(.button) {
+      -webkit-transition: all 0.2s ease-in-out;
+      -moz-transition: all 0.2s ease-in-out;
+      -o-transition: all 0.2s ease-in-out;
+      transition: all 0.2s ease-in-out;
+      padding: 14px 10px;
+      cursor: pointer; }
+      .notouch .dropdown-field .label:not(.button):hover {
+        color: #32b5f2; }
   .dropdown-field.expanded .label:not(.button) {
     color: #32b5f2; }
   .dropdown-field.expanded .options {
@@ -7473,10 +7473,14 @@ main .track-view {
     margin-top: 50px; }
     .modal--edit-radio form .field input[type="text"] {
       padding-right: 80px; }
-  .modal--share-configuration .field.checkbox .label .title {
-    font-size: 1.2rem; }
-  .modal--share-configuration .field.checkbox .label .description {
-    padding-top: 4px; }
+  .modal--share-configuration .checkbox-group__item {
+    padding-bottom: 0.75rem; }
+  .modal--share-configuration .field.checkbox .label {
+    display: flex; }
+    .modal--share-configuration .field.checkbox .label .title {
+      font-size: 1.2rem; }
+    .modal--share-configuration .field.checkbox .label .description {
+      padding-top: 4px; }
   .modal--kiosk-mode {
     background: #000000;
     overflow: hidden; }

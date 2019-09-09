@@ -86,25 +86,27 @@ class ShareConfiguration extends React.Component {
 
     if (connections.length > 0) {
       var recipients = (
-        <div className="input">
+        <div className="input checkbox-group">
           {
 						connections.map((connection, index) => (
-  <label key={connection.connection_id}>
-    <input
-      type="checkbox"
-      name={`connection_${connection.connection_id}`}
-      checked={this.state.recipients.includes(connection.connection_id)}
-      onChange={(e) => this.toggleRecipient(connection.connection_id)}
-    />
-    <span className="label">
-      <div className="title">{ connection.username }</div>
-      <div className="description mid_grey-text">
-											(
-        { connection.ip }
-)
-      </div>
-    </span>
-  </label>
+              <div key={connection.connection_id} className="checkbox-group__item">
+                <label>
+                  <input
+                    type="checkbox"
+                    name={`connection_${connection.connection_id}`}
+                    checked={this.state.recipients.includes(connection.connection_id)}
+                    onChange={(e) => this.toggleRecipient(connection.connection_id)}
+                  />
+                  <div className="label">
+                    <div>
+                      <div className="title">{ connection.username }</div>
+                      <div className="description mid_grey-text">
+                        ({ connection.ip })
+                      </div>
+                    </div>
+                  </div>
+                </label>
+              </div>
 						))
 					}
         </div>
@@ -134,71 +136,82 @@ class ShareConfiguration extends React.Component {
           <div className="field checkbox checkbox--block">
             <div className="name">Configurations</div>
             <div className="input">
-              <label>
-                <input
-                  type="checkbox"
-                  name="interface"
-                  checked={this.state.ui}
-                  onChange={(e) => this.setState({ ui: !this.state.ui })}
-                />
-                <span className="label">
-                  <span className="title">UI customisation (theme, sorting, filters)</span>
-                </span>
-              </label>
-
-              {this.props.spotify_me && this.props.spotify_authorization ? (
+              <div className="checkbox-group__item">
                 <label>
                   <input
                     type="checkbox"
-                    name="spotify"
-                    checked={this.state.spotify}
-                    onChange={(e) => this.setState({ spotify: !this.state.spotify })}
+                    name="interface"
+                    checked={this.state.ui}
+                    onChange={(e) => this.setState({ ui: !this.state.ui })}
                   />
                   <span className="label">
-                    <div className="title">Spotify authorization</div>
-                    <div className="description mid_grey-text">
-Logged in as
-                      {this.props.spotify_me.name}
-                    </div>
+                    <span className="title">UI customisation (theme, sorting, filters)</span>
                   </span>
                 </label>
-              ) : null}
+              </div>
 
-              {this.props.lastfm_me && this.props.lastfm_authorization ? (
-                <label>
-                  <input
-                    type="checkbox"
-                    name="lastfm_authorization"
-                    checked={this.state.lastfm}
-                    onChange={(e) => this.setState({ lastfm: !this.state.lastfm })}
-                  />
-                  <span className="label">
-                    <div className="title">LastFM authorization</div>
-                    <div className="description mid_grey-text">
-Logged in as
-                      {this.props.lastfm_me.name}
+              {this.props.spotify_me && this.props.spotify_authorization && (
+                <div className="checkbox-group__item">
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="spotify"
+                      checked={this.state.spotify}
+                      onChange={(e) => this.setState({ spotify: !this.state.spotify })}
+                    />
+                    <div className="label">
+                      <div>
+                        <div className="title">Spotify authorization</div>
+                        <div className="description mid_grey-text">
+                          {`Logged in as ${this.props.spotify_me.name}`}
+                        </div>
+                      </div>
                     </div>
-                  </span>
-                </label>
-              ) : null}
+                  </label>
+                </div>
+              )}
 
-              {this.props.genius_me && this.props.genius_authorization ? (
-                <label>
-                  <input
-                    type="checkbox"
-                    name="genius_authorization"
-                    checked={this.state.genius}
-                    onChange={(e) => this.setState({ genius: !this.state.genius })}
-                  />
-                  <span className="label">
-                    <div className="title">Genius authorization</div>
-                    <div className="description mid_grey-text">
-Logged in as
-                      {this.props.genius_me.name}
+              {this.props.lastfm_me && this.props.lastfm_authorization && (
+                <div className="checkbox-group__item">
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="lastfm_authorization"
+                      checked={this.state.lastfm}
+                      onChange={(e) => this.setState({ lastfm: !this.state.lastfm })}
+                    />
+                    <div className="label">
+                      <div>
+                        <div className="title">LastFM authorization</div>
+                        <div className="description mid_grey-text">
+                          {`Logged in as ${this.props.lastfm_me.name}`}
+                        </div>
+                      </div>
                     </div>
-                  </span>
-                </label>
-              ) : null}
+                  </label>
+                </div>
+              )}
+
+              {this.props.genius_me && this.props.genius_authorization && (
+                <div className="checkbox-group__item">
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="genius_authorization"
+                      checked={this.state.genius}
+                      onChange={(e) => this.setState({ genius: !this.state.genius })}
+                    />
+                    <div className="label">
+                      <div>
+                        <div className="title">Genius authorization</div>
+                        <div className="description mid_grey-text">
+                            {`Logged in as ${this.props.genius_me.name}`}
+                        </div>
+                      </div>
+                    </div>
+                  </label>
+                </div>
+              )}
             </div>
           </div>
 

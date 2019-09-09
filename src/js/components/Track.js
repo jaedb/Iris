@@ -238,11 +238,10 @@ ago
         var track_middle_column = (
           <div className="list__item__column__item list__item__column__item--added">
             <span className="by">
-              {track.added_by}
-              {' '}
+              {`${track.added_by} `}
             </span>
             <span className="from">
-from
+              {`from `}
               {link}
             </span>
           </div>

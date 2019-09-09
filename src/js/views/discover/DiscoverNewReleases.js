@@ -8,9 +8,8 @@ import Header from '../../components/Header';
 import Icon from '../../components/Icon';
 import AlbumGrid from '../../components/AlbumGrid';
 import Parallax from '../../components/Parallax';
-import Thumbnail from '../../components/Thumbnail';
-import ArtistSentence from '../../components/ArtistSentence';
 import LazyLoadListener from '../../components/LazyLoadListener';
+import Loader from '../../components/Loader';
 
 import * as helpers from '../../helpers';
 import * as uiActions from '../../services/ui/actions';
@@ -78,9 +77,7 @@ class DiscoverNewReleases extends React.Component {
             <Icon name="new_releases" type="material" />
 						New releases
           </Header>
-          <div className="body-loader loading">
-            <div className="loader" />
-          </div>
+          <Loader body loading />
         </div>
       );
     }

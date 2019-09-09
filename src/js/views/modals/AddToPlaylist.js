@@ -3,8 +3,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import ReactGA from 'react-ga';
-import Link from '../../components/Link';
 
+import Loader from '../../components/Loader';
 import Modal from './Modal';
 import Icon from '../../components/Icon';
 import Thumbnail from '../../components/Thumbnail';
@@ -41,14 +41,7 @@ class AddToPlaylist extends React.Component {
 
     playlists = helpers.sortItems(playlists, 'name');
 
-    let loader = null;
-    if (this.props.spotify_library_playlists_status == 'running') {
-      loader = (
-        <div className="lazy-loader body-loader loading">
-          <div className="loader" />
-        </div>
-      );
-    }
+    const isLoading = this.props.spotify_library_playlists_status == 'running';
 
     return (
       <Modal className="modal--add-to-playlist">
@@ -85,7 +78,7 @@ tracks
 						))
 					}
         </div>
-        {loader}
+        {isLoading && <Loader body lazy loading />}
       </Modal>
     );
   }

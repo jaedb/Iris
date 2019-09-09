@@ -14,7 +14,7 @@ export default class GridItem extends React.Component {
 
     // If the item that has just been mounted doesn't have images,
     // try fetching them from LastFM or Discogs
-    if (!item.images && discogsActions) {
+    if (!item.images) {
       switch (helpers.uriType(item.uri)) {
         case 'artist':
           if (discogsActions) {
