@@ -1,3 +1,4 @@
+import { exception } from 'react-ga';
 
 const coreActions = require('../../services/core/actions');
 const uiActions = require('../../services/ui/actions');
@@ -13,9 +14,10 @@ const helpers = require('../../helpers');
  * @param endpoint string = the url to query (ie /albums/:uri)
  * @param method string
  * @param data mixed = request payload
+ * @param cache boolean
  * @return Promise
  * */
-const request = (dispatch, getState, endpoint, method = 'GET', data = false) => {
+const request = (dispatch, getState, endpoint, method = 'GET', data = false, cache = false) => {
   // Add reference to loader queue
   // We do this straight away so that even if we're refreshing the token, it still registers as
   // loading said endpoint
@@ -35,7 +37,6 @@ const request = (dispatch, getState, endpoint, method = 'GET', data = false) => 
           // create our ajax request config
           const config = {
             method,
-            cached: true,
             timeout: 30000,
             headers: {
               Authorization: `Bearer ${response}`,
@@ -59,9 +60,16 @@ const request = (dispatch, getState, endpoint, method = 'GET', data = false) => 
             if (response.status == 429) {
               alert('You hit the Spotify API rate limiter');
             }
-        
-            if (response.status >= 200 && response.status < 300) {
-              return Promise.resolve(response)
+
+            // Empty Response
+            if (response.status == 204) {
+              return Promise.resolve();
+
+            // Otherwise successful
+            } else if (response.status >= 200 && response.status < 400) {
+              return Promise.resolve(response.json());
+
+            // Not so successful
             } else {
               return Promise.reject(new Error(response.statusText))
             }
@@ -69,12 +77,10 @@ const request = (dispatch, getState, endpoint, method = 'GET', data = false) => 
 
           fetch(url, config)
             .then(status)
-            .then(response => response.json())
             .then(data => {
-
               // TODO: Instead of allowing request to fail before renewing the token, once refreshed
               // we should retry the original request(s)
-              if (data.error && data.error.message == 'The access token expired') {
+              if (data && data.error && data.error.message == 'The access token expired') {
                 dispatch(refreshToken(dispatch, getState));
               }
 
@@ -716,12 +722,17 @@ export function clearAutocompleteResults(field_id = null) {
 
 export function following(uri, method = 'GET') {
   return (dispatch, getState) => {
-    if (method == 'PUT') var is_following = true;
-    if (method == 'DELETE') var is_following = false;
-
     const asset_name = helpers.uriType(uri);
-    let endpoint; let
-      data;
+    let endpoint;
+    let data;
+    let is_following = null;
+
+    if (method == 'PUT') {
+      is_following = true;
+    } else if (method == 'DELETE') {
+      is_following = false;
+    }
+
     switch (asset_name) {
       case 'track':
         if (method == 'GET') {
@@ -765,8 +776,11 @@ export function following(uri, method = 'GET') {
     request(dispatch, getState, endpoint, method, data)
       .then(
         (response) => {
-          if (response) is_following = response;
-          if (typeof (is_following) === 'object') is_following = is_following[0];
+          if (response) {
+            is_following = response[0];
+          } else {
+            is_following = is_following;
+          }
 
           dispatch({
             type: `SPOTIFY_LIBRARY_${asset_name.toUpperCase()}_CHECK`,
@@ -1044,10 +1058,10 @@ export function getArtist(uri, full = false) {
     // Start with an empty object
     // As each requests completes, they'll add to this object
     const artist = {};
-
+    
     // We need our artist, obviously
     const requests = [
-      request(dispatch, getState, `artists/${helpers.getFromUri('artistid', uri)}`)
+      request(dispatch, getState, `artists/${helpers.getFromUri('artistid', uri)}`, 'GET', false, true)
         .then(
           (response) => {
             Object.assign(artist, response);

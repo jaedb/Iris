@@ -1,11 +1,13 @@
 
-const noCacheList = [
-  'jamesbarnsley.co.nz'
+const blacklist = [
+  'jamesbarnsley.co.nz',
+  'following/contains',
+  'followers/contains'
 ];
-function inNoCacheList(url) {
-  for (let item of noCacheList) {
+function inBlacklist(url) {
+  for (let item of blacklist) {
     if (url.indexOf(item) >= 0){
-      console.log(`${url} is in our no-cache list`);
+      console.info(`Ignoring cache for ${url}`);
       return true;
     }
   }
@@ -29,28 +31,32 @@ self.addEventListener('activate', function(event) {
 });
 
 self.addEventListener('fetch', event => {
+  const { request } = event;
+
   event.respondWith(
     
     // Opens Cache objects that start with 'font'.
     caches.open('iris').then(cache => {
-      return cache.match(event.request)
+      return cache.match(request)
         .then(response => {
-          
-          // Cached response exists, so just return that (unless it's in our no-cache list)
-          if (response && !inNoCacheList(event.request.url)) {
+          if (response) {
             return response;
           }
 
           // Not cached, so we make the request, return that and also save response in cache
-          return fetch(event.request)
-            .then(networkResponse => {
-              if (networkResponse.status >= 200 && networkResponse.status < 400) {
-                cache.put(event.request, networkResponse.clone());
+          return fetch(request)
+            .then(liveResponse => {
+
+              // Only cache successful GET requests
+              if (!inBlacklist(request.url) &&
+                  request.method === 'GET' &&
+                  liveResponse.status >= 200 &&
+                  liveResponse.status < 400
+                ) {
+                cache.put(request, liveResponse.clone());
               }
-              return networkResponse;
-            })
-            .catch(error => {
-              throw error;
+
+              return liveResponse;
             });
 
         // Exceptions from match() or fetch()

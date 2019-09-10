@@ -58268,7 +58268,8 @@ var GridItem = function (_React$Component) {
         switch (helpers.uriType(item.uri)) {
           case 'artist':
             if (discogsActions) {
-              discogsActions.getArtistImages(item.uri, item);
+              // TODO: See if we can remove this, and only get on demand to prevent killing quota
+              // discogsActions.getArtistImages(item.uri, item);
             }
             break;
 
@@ -67872,7 +67873,8 @@ var sendRequest = function sendRequest(dispatch, getState, endpoint, params) {
       mode: 'cors',
       headers: {
         'User-Agent': 'Iris/1.0',
-        'Authorization': 'Discogs key=' + key + ', secret=' + secret
+        'Authorization': 'Discogs key=' + key + ', secret=' + secret,
+        'X-Cache': 'true'
       }
     };
 
@@ -74295,8 +74297,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 exports.set = set;
@@ -74351,6 +74351,8 @@ exports.getLibraryArtistsProcessor = getLibraryArtistsProcessor;
 exports.getLibraryAlbums = getLibraryAlbums;
 exports.getLibraryAlbumsProcessor = getLibraryAlbumsProcessor;
 
+var _reactGa = __webpack_require__(/*! react-ga */ "./node_modules/react-ga/dist/esm/index.js");
+
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var coreActions = __webpack_require__(/*! ../../services/core/actions */ "./src/js/services/core/actions.js");
@@ -74367,11 +74369,13 @@ var helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
  * @param endpoint string = the url to query (ie /albums/:uri)
  * @param method string
  * @param data mixed = request payload
+ * @param cache boolean
  * @return Promise
  * */
 var request = function request(dispatch, getState, endpoint) {
   var method = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'GET';
   var data = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
+  var cache = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : false;
 
   // Add reference to loader queue
   // We do this straight away so that even if we're refreshing the token, it still registers as
@@ -74390,7 +74394,6 @@ var request = function request(dispatch, getState, endpoint) {
       // create our ajax request config
       var config = {
         method: method,
-        cached: true,
         timeout: 30000,
         headers: {
           Authorization: 'Bearer ' + response,
@@ -74415,20 +74418,24 @@ var request = function request(dispatch, getState, endpoint) {
           alert('You hit the Spotify API rate limiter');
         }
 
-        if (response.status >= 200 && response.status < 300) {
-          return Promise.resolve(response);
+        // Empty Response
+        if (response.status == 204) {
+          return Promise.resolve();
+
+          // Otherwise successful
+        } else if (response.status >= 200 && response.status < 400) {
+          return Promise.resolve(response.json());
+
+          // Not so successful
         } else {
           return Promise.reject(new Error(response.statusText));
         }
       }
 
-      fetch(url, config).then(status).then(function (response) {
-        return response.json();
-      }).then(function (data) {
-
+      fetch(url, config).then(status).then(function (data) {
         // TODO: Instead of allowing request to fail before renewing the token, once refreshed
         // we should retry the original request(s)
-        if (data.error && data.error.message == 'The access token expired') {
+        if (data && data.error && data.error.message == 'The access token expired') {
           dispatch(refreshToken(dispatch, getState));
         }
 
@@ -74989,11 +74996,17 @@ function following(uri) {
   var method = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'GET';
 
   return function (dispatch, getState) {
-    if (method == 'PUT') var is_following = true;
-    if (method == 'DELETE') var is_following = false;
-
     var asset_name = helpers.uriType(uri);
-    var endpoint = void 0;var data = void 0;
+    var endpoint = void 0;
+    var data = void 0;
+    var is_following = null;
+
+    if (method == 'PUT') {
+      is_following = true;
+    } else if (method == 'DELETE') {
+      is_following = false;
+    }
+
     switch (asset_name) {
       case 'track':
         if (method == 'GET') {
@@ -75035,8 +75048,11 @@ function following(uri) {
     }
 
     request(dispatch, getState, endpoint, method, data).then(function (response) {
-      if (response) is_following = response;
-      if ((typeof is_following === 'undefined' ? 'undefined' : _typeof(is_following)) === 'object') is_following = is_following[0];
+      if (response) {
+        is_following = response[0];
+      } else {
+        is_following = is_following;
+      }
 
       dispatch({
         type: 'SPOTIFY_LIBRARY_' + asset_name.toUpperCase() + '_CHECK',
@@ -75278,7 +75294,7 @@ function getArtist(uri) {
     var artist = {};
 
     // We need our artist, obviously
-    var requests = [request(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri)).then(function (response) {
+    var requests = [request(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri), 'GET', false, true).then(function (response) {
       Object.assign(artist, response);
     }, function (error) {
       dispatch(coreActions.handleException('Could not load artist', error));

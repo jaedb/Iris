@@ -7473,10 +7473,14 @@ main .track-view {
     margin-top: 50px; }
     .modal--edit-radio form .field input[type="text"] {
       padding-right: 80px; }
-  .modal--share-configuration .field.checkbox .label .title {
-    font-size: 1.2rem; }
-  .modal--share-configuration .field.checkbox .label .description {
-    padding-top: 4px; }
+  .modal--share-configuration .checkbox-group__item {
+    padding-bottom: 0.75rem; }
+  .modal--share-configuration .field.checkbox .label {
+    display: flex; }
+    .modal--share-configuration .field.checkbox .label .title {
+      font-size: 1.2rem; }
+    .modal--share-configuration .field.checkbox .label .description {
+      padding-top: 4px; }
   .modal--kiosk-mode {
     background: #000000;
     overflow: hidden; }

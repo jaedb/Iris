@@ -18,7 +18,8 @@ export default class GridItem extends React.Component {
       switch (helpers.uriType(item.uri)) {
         case 'artist':
           if (discogsActions) {
-            discogsActions.getArtistImages(item.uri, item);
+            // TODO: See if we can remove this, and only get on demand to prevent killing quota
+            // discogsActions.getArtistImages(item.uri, item);
           }
           break;
 
