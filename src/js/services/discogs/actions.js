@@ -25,8 +25,7 @@ const sendRequest = (dispatch, getState, endpoint, params) => new Promise((resol
     mode: 'cors',
     headers: {
       'User-Agent': 'Iris/1.0',
-      'Authorization': `Discogs key=${key}, secret=${secret}`,
-      'X-Cache': 'true',
+      'Authorization': `Discogs key=${key}, secret=${secret}`
     },
   };
 

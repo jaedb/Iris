@@ -9,7 +9,12 @@ import ArtistSentence from './ArtistSentence';
 
 export default class GridItem extends React.Component {
   componentDidMount() {
-    const { discogsActions, lastfmActions, item } = this.props;
+    const {
+      lastfmActions,
+      spotifyActions,
+      spotifyAvailable,
+      item,
+    } = this.props;
     if (!item) return;
 
     // If the item that has just been mounted doesn't have images,
@@ -17,9 +22,8 @@ export default class GridItem extends React.Component {
     if (!item.images) {
       switch (helpers.uriType(item.uri)) {
         case 'artist':
-          if (discogsActions) {
-            // TODO: See if we can remove this, and only get on demand to prevent killing quota
-            // discogsActions.getArtistImages(item.uri, item);
+          if (spotifyActions && spotifyAvailable) {
+            spotifyActions.getArtistImages(item);
           }
           break;
 

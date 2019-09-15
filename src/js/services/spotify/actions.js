@@ -1177,6 +1177,29 @@ export function getArtists(uris) {
   };
 }
 
+// Used to get images for non-Spotify artists
+export function getArtistImages(artist) {
+  return (dispatch, getState) => {
+    request(dispatch, getState, `search?q=${artist.name}&type=artist`)
+      .then(response => {
+          if (response.artists.items) {
+            const updatedArtist = {
+              uri: artist.uri,
+              images: response.artists.items[0].images,
+            }
+            dispatch(coreActions.artistLoaded(updatedArtist));
+          }
+        },
+        error => {
+          dispatch(coreActions.handleException(
+            'Could not load artists',
+            error,
+          ));
+        },
+      );
+  };
+}
+
 
 export function playArtistTopTracks(uri) {
   return (dispatch, getState) => {

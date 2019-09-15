@@ -52765,10 +52765,6 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _Thumbnail = __webpack_require__(/*! ./Thumbnail */ "./src/js/components/Thumbnail.js");
-
-var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
-
 var _GridItem = __webpack_require__(/*! ./GridItem */ "./src/js/components/GridItem.js");
 
 var _GridItem2 = _interopRequireDefault(_GridItem);
@@ -52785,9 +52781,9 @@ var _actions2 = __webpack_require__(/*! ../services/lastfm/actions */ "./src/js/
 
 var lastfmActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(/*! ../services/discogs/actions */ "./src/js/services/discogs/actions.js");
+var _actions3 = __webpack_require__(/*! ../services/spotify/actions */ "./src/js/services/spotify/actions.js");
 
-var discogsActions = _interopRequireWildcard(_actions3);
+var spotifyActions = _interopRequireWildcard(_actions3);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -52825,27 +52821,41 @@ var ArtistGrid = function (_React$Component) {
     value: function render() {
       var _this2 = this;
 
-      if (this.props.artists) {
+      var _props = this.props,
+          artists = _props.artists,
+          albums = _props.albums,
+          classNameProp = _props.className,
+          single_row = _props.single_row,
+          mini = _props.mini,
+          show_source_icon = _props.show_source_icon,
+          history = _props.history,
+          spotifyActions = _props.spotifyActions,
+          spotifyAvailable = _props.spotifyAvailable,
+          lastfmActions = _props.lastfmActions;
+
+
+      if (artists) {
         var className = 'grid grid--artists';
-        if (this.props.className) className += ' ' + this.props.className;
-        if (this.props.single_row) className += ' grid--single-row';
-        if (this.props.mini) className += ' grid--mini';
+        if (classNameProp) className += ' ' + classNameProp;
+        if (single_row) className += ' grid--single-row';
+        if (mini) className += ' grid--mini';
 
         return _react2.default.createElement(
           'div',
           { className: className },
-          this.props.artists.map(function (item) {
-            var artist = helpers.collate(item, { albums: _this2.props.albums });
+          artists.map(function (item) {
+            var artist = helpers.collate(item, { albums: albums });
             return _react2.default.createElement(_GridItem2.default, {
               key: artist.uri,
               type: 'artist',
               item: artist,
-              show_source_icon: _this2.props.show_source_icon,
+              show_source_icon: show_source_icon,
               onClick: function onClick(e) {
-                _this2.props.history.push('/artist/' + encodeURIComponent(artist.uri));
+                history.push('/artist/' + encodeURIComponent(artist.uri));
               },
-              discogsActions: _this2.props.discogsActions,
-              lastfmActions: _this2.props.lastfmActions,
+              lastfmActions: lastfmActions,
+              spotifyActions: spotifyActions,
+              spotifyAvailable: spotifyAvailable,
               onContextMenu: function onContextMenu(e) {
                 return _this2.handleContextMenu(e, artist);
               }
@@ -52862,7 +52872,8 @@ var ArtistGrid = function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
   return {
-    albums: state.core.albums
+    albums: state.core.albums,
+    spotifyAvailable: state.spotify.access_token !== null
   };
 };
 
@@ -52870,7 +52881,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
   return {
     uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
     lastfmActions: (0, _redux.bindActionCreators)(lastfmActions, dispatch),
-    discogsActions: (0, _redux.bindActionCreators)(discogsActions, dispatch)
+    spotifyActions: (0, _redux.bindActionCreators)(spotifyActions, dispatch)
   };
 };
 
@@ -58256,8 +58267,9 @@ var GridItem = function (_React$Component) {
     key: 'componentDidMount',
     value: function componentDidMount() {
       var _props = this.props,
-          discogsActions = _props.discogsActions,
           lastfmActions = _props.lastfmActions,
+          spotifyActions = _props.spotifyActions,
+          spotifyAvailable = _props.spotifyAvailable,
           item = _props.item;
 
       if (!item) return;
@@ -58267,9 +58279,8 @@ var GridItem = function (_React$Component) {
       if (!item.images) {
         switch (helpers.uriType(item.uri)) {
           case 'artist':
-            if (discogsActions) {
-              // TODO: See if we can remove this, and only get on demand to prevent killing quota
-              // discogsActions.getArtistImages(item.uri, item);
+            if (spotifyActions && spotifyAvailable) {
+              spotifyActions.getArtistImages(item);
             }
             break;
 
@@ -67873,8 +67884,7 @@ var sendRequest = function sendRequest(dispatch, getState, endpoint, params) {
       mode: 'cors',
       headers: {
         'User-Agent': 'Iris/1.0',
-        'Authorization': 'Discogs key=' + key + ', secret=' + secret,
-        'X-Cache': 'true'
+        'Authorization': 'Discogs key=' + key + ', secret=' + secret
       }
     };
 
@@ -71923,7 +71933,11 @@ var MopidyMiddleware = function () {
               var existing_artist = store.getState().core.artists[artist.uri];
               if (existing_artist) {
                 if (!existing_artist.images) {
-                  store.dispatch(discogsActions.getArtistImages(artist.uri, artist));
+                  if (store.getState().spotify.access_token) {
+                    store.dispatch(spotifyActions.getArtistImages(artist));
+                  } else {
+                    store.dispatch(discogsActions.getArtistImages(artist.uri, artist));
+                  }
                 }
 
                 // Get biography and other stats from LastFM
@@ -74327,6 +74341,7 @@ exports.getRecommendations = getRecommendations;
 exports.getGenres = getGenres;
 exports.getArtist = getArtist;
 exports.getArtists = getArtists;
+exports.getArtistImages = getArtistImages;
 exports.playArtistTopTracks = playArtistTopTracks;
 exports.getUser = getUser;
 exports.getUserPlaylists = getUserPlaylists;
@@ -75363,6 +75378,23 @@ function getArtists(uris) {
         artist.albums_uris = helpers.arrayOf('uri', artist.albums);
         artist.albums_more = artist.albums.next;
         dispatch(coreActions.artistLoaded(artist));
+      }
+    }, function (error) {
+      dispatch(coreActions.handleException('Could not load artists', error));
+    });
+  };
+}
+
+// Used to get images for non-Spotify artists
+function getArtistImages(artist) {
+  return function (dispatch, getState) {
+    request(dispatch, getState, 'search?q=' + artist.name + '&type=artist').then(function (response) {
+      if (response.artists.items) {
+        var updatedArtist = {
+          uri: artist.uri,
+          images: response.artists.items[0].images
+        };
+        dispatch(coreActions.artistLoaded(updatedArtist));
       }
     }, function (error) {
       dispatch(coreActions.handleException('Could not load artists', error));

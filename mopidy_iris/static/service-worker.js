@@ -1,12 +1,14 @@
 
 const blacklist = [
   'jamesbarnsley.co.nz',
-  'following/contains'
+  'following/contains',
+  'followers/contains',
+  'refresh_spotify_token'
 ];
 function inBlacklist(url) {
   for (let item of blacklist) {
     if (url.indexOf(item) >= 0){
-      console.log(`${url} is in our cache blacklist`);
+      console.info(`Ignoring cache for ${url}`);
       return true;
     }
   }

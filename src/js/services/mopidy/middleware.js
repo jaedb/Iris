@@ -2111,7 +2111,11 @@ const MopidyMiddleware = (function () {
             const existing_artist = store.getState().core.artists[artist.uri];
             if (existing_artist) {
               if (!existing_artist.images) {
-                store.dispatch(discogsActions.getArtistImages(artist.uri, artist));
+                if (store.getState().spotify.access_token) {
+                  store.dispatch(spotifyActions.getArtistImages(artist));
+                } else {
+                  store.dispatch(discogsActions.getArtistImages(artist.uri, artist));
+                }
               }
 
               // Get biography and other stats from LastFM

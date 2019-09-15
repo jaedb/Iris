@@ -3131,7 +3131,8 @@ footer {
 @media (max-width: 799px) {
   h1 {
     font-size: 2rem;
-    line-height: 2rem; }
+    line-height: 2rem;
+    display: block; }
   h2 {
     font-size: 1.6rem;
     line-height: 1.7rem; }
@@ -3383,7 +3384,7 @@ select {
   font-size: 14px;
   color: #000000;
   padding: 9px 30px 7px;
-  margin: 0 20px 10px 0;
+  margin: 5px 20px 5px 0;
   box-sizing: border-box;
   border-radius: 3px;
   vertical-align: middle;
@@ -3910,7 +3911,7 @@ select {
   padding: 14px 12px;
   cursor: pointer;
   vertical-align: top;
-  margin-top: -1px;
+  margin-top: 2px;
   position: relative;
   border-radius: 3px;
   text-align: center; }
@@ -6610,7 +6611,7 @@ main header {
         width: 140px;
         margin-right: 30px; }
     .artist-view .intro .liner h1 {
-      padding-bottom: 25px;
+      padding-bottom: 15px;
       font-size: 5rem;
       line-height: 5rem; }
     .artist-view .intro .liner .actions .context-menu-trigger {
@@ -6703,7 +6704,8 @@ main header {
     padding: 35vh 40px 0; }
     .user-view .intro .liner h1 {
       padding-bottom: 15px;
-      font-size: 4rem; }
+      font-size: 5rem;
+      line-height: 5rem; }
     .user-view .intro .liner .heading {
       display: flex;
       align-items: center; }
@@ -6713,12 +6715,24 @@ main header {
       .user-view .intro .liner .heading__content {
         padding-top: 20px; }
         .user-view .intro .liner .heading__content__details {
-          display: flex; }
+          display: flex;
+          align-items: center; }
+
+@media (max-width: 999px) {
+  .user-view .intro .liner .heading__thumbnail {
+    width: 100px; }
+  .user-view .intro .liner h1 {
+    font-size: 4rem;
+    line-height: 4rem; } }
 
 @media (max-width: 799px) {
   .user-view .intro .thumbnail {
     float: none;
     margin: 0 auto 20px; }
+  .user-view .intro .heading {
+    display: block; }
+    .user-view .intro .heading__thumbnail {
+      display: none; }
   .user-view .intro .liner {
     padding: 15vh 10px 0; }
   .user-view .intro h1 {

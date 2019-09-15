@@ -11,7 +11,8 @@
 
 			h1 {
 				padding-bottom: 15px;
-				font-size: 4rem;
+				font-size: 5rem;
+				line-height: 5rem;
 			}
 
       .heading {
@@ -28,11 +29,29 @@
 					
 					&__details {
 						display: flex;
+						align-items: center;
 					}
 				}
       }
 		}
 	}
+
+  @include responsive($bp_wide) {
+    .intro {
+      .liner {
+        .heading {
+          &__thumbnail {
+            width: 100px;
+          }
+        }
+
+        h1 {
+          font-size: 4rem;
+          line-height: 4rem;
+        }
+      }
+    }
+  }
 
 	@include responsive($bp_medium){
 		.intro {
@@ -40,6 +59,14 @@
 			.thumbnail {
 				float: none;
 				margin: 0 auto 20px;
+			}
+
+			.heading {
+				display: block;
+
+				&__thumbnail {
+					display: none;
+				}
 			}
 
 			.liner {
