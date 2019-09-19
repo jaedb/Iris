@@ -3947,6 +3947,7 @@ select {
   padding: 16px 16px 16px 20px;
   border-radius: 3px;
   justify-content: space-between;
+  align-content: center;
   /*
 		.icon.source {
 			color: colour(mid_grey);
@@ -5057,12 +5058,12 @@ select {
       border-radius: 3px;
       font-family: "Overpass";
       font-weight: 600;
-      font-size: 15px;
+      font-size: 1.05rem;
       color: #FFFFFF;
       text-decoration: none;
-      display: block;
-      padding: 13px 10px 10px;
-      margin: 0 18px;
+      display: flex;
+      padding: 0.75em 0.85em;
+      margin: 0 1.1em;
       border-radius: 3px; }
       .sidebar__menu__item:before {
         -webkit-transition: all 0.2s ease-in-out;
@@ -6905,14 +6906,15 @@ main .track-view {
   align-items: center;
   justify-content: center; }
   .queue-view .current-track__artwork {
-    position: relative;
     text-align: right;
     display: block;
     z-index: 1;
     width: 48%;
     margin-right: 2%; }
     .queue-view .current-track__artwork a {
-      border: 0 !important; }
+      border: 0 !important;
+      display: inline-block;
+      position: relative; }
     .queue-view .current-track__artwork .thumbnail {
       width: 30vh;
       display: inline-block; }
@@ -6924,7 +6926,8 @@ main .track-view {
       left: -15%;
       width: 130%;
       height: 130%;
-      z-index: 2; }
+      z-index: 2;
+      pointer-events: none; }
   .queue-view .current-track__details {
     width: 48%;
     margin-left: 2%; }
@@ -7267,16 +7270,16 @@ main .track-view {
     position: relative;
     padding-top: 15px;
     padding-bottom: 15px;
-    vertical-align: top; }
+    vertical-align: top;
+    justify-items: auto; }
     .settings-view .commands-setup__item .commands__item {
       display: inline-block;
       margin: 0; }
     .settings-view .commands-setup__item__drag-handle {
       cursor: move;
       padding-right: 0.5em; }
-    .settings-view .commands-setup__item__drag-handle, .settings-view .commands-setup__item__command-item {
-      float: left;
-      display: block; }
+    .settings-view .commands-setup__item__details {
+      display: flex; }
     .settings-view .commands-setup__item__url {
       white-space: nowrap;
       overflow: hidden;
@@ -7286,11 +7289,12 @@ main .track-view {
       display: inline-block;
       margin-bottom: -5px; }
     .settings-view .commands-setup__item__actions {
-      position: absolute;
-      top: 16px;
-      right: 0; }
+      text-align: right;
+      justify-self: right;
+      margin-left: auto; }
       .settings-view .commands-setup__item__actions .action {
-        padding: 12px 8px; }
+        padding: 12px 8px;
+        margin: -12px 0; }
 
 .settings-view .field.pusher-connections .connection.me {
   color: #08d58f; }

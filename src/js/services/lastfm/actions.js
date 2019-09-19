@@ -84,35 +84,26 @@ const sendSignedRequest = (dispatch, getState, params) => new Promise((resolve, 
   dispatch(uiActions.startLoading(loader_key, `lastfm_${method}`));
 
   params += `&sk=${getState().lastfm.authorization.key}`;
+  const url = `${getState().lastfm.authorization_url}?action=sign_request&${params}`;
 
   const config = {
     method: 'GET',
     cache: false,
     timeout: 30000,
-    url: `${getState().lastfm.authorization_url}?action=sign_request&${params}`,
   };
 
-  // Get our server proxy to sign our request
-  $.ajax(config).then(
-    (response) => {
+  fetch(url, config)
+    .then(signResponse => {
       dispatch(uiActions.stopLoading(loader_key));
 
       // Now we have signed params, we can make the actual request
-      sendRequest(dispatch, getState, response.params, true)
+      sendRequest(dispatch, getState, signResponse.params, true)
         .then(
-          (response) => {
-            resolve(response);
-          },
-          (error) => {
-            reject(error);
-          },
+          response => resolve(response),
+          error => reject(error),
         );
-    },
-    (xhr, status, error) => {
-      dispatch(uiActions.stopLoading(loader_key));
-      reject(error);
-    },
-  );
+    })
+    .catch(error => reject(error));
 });
 
 

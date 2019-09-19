@@ -47,9 +47,9 @@ const request = (dispatch, getState, endpoint, method = 'GET', data = false, cac
           // only if we've got data do we add it to the request (this prevents appending of "&false" to the URL)
           if (data) {
             if (typeof (data) === 'string') {
-              config.data = data;
+              config.body = data;
             } else {
-              config.data = JSON.stringify(data);
+              config.body = JSON.stringify(data);
             }
           }
 

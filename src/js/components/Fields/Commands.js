@@ -55,7 +55,7 @@ export default class Commands extends React.Component {
         {
                     commands.map((command) => (
                       <div className="list__item commands-setup__item list__item--no-interaction" key={command.id} data-id={command.id}>
-                        <div className="col col--w90">
+                        <div className="commands-setup__item__details">
                           <Icon className="commands-setup__item__drag-handle" name="drag_indicator" />
                           <div className="commands-setup__item__command-item commands__item commands__item--small">
                             <Icon className="commands__item__icon" name={command.icon} />

@@ -7,7 +7,6 @@
     justify-content: center;
 
     &__artwork {
-      position: relative;
       text-align: right;
       display: block;
       z-index: 1;
@@ -16,6 +15,8 @@
 
       a {
         border: 0 !important;
+        display: inline-block;
+        position: relative;
       }
 
       .thumbnail {
@@ -35,6 +36,7 @@
           width: 130%;
           height: 130%;
           z-index: 2;
+          pointer-events: none;
         }
       }
     }

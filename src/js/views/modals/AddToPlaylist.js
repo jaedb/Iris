@@ -17,66 +17,73 @@ import * as helpers from '../../helpers';
 class AddToPlaylist extends React.Component {
   constructor(props) {
     super(props);
+    const {
+      spotify_library_playlists,
+      mopidy_library_playlists,
+      mopidy_connected,
+      spotifyActions,
+      mopidyActions,
+    } = this.props;
 
-    if (!this.props.spotify_library_playlists) {
-      this.props.spotifyActions.getLibraryPlaylists();
+    if (!spotify_library_playlists) {
+      spotifyActions.getLibraryPlaylists();
     }
 
-    if (!this.props.mopidy_library_playlists && this.props.mopidy_connected) {
-      this.props.mopidyActions.getLibraryPlaylists();
+    if (!mopidy_library_playlists && mopidy_connected) {
+      mopidyActions.getLibraryPlaylists();
     }
   }
 
   playlistSelected(playlist_uri) {
-    this.props.coreActions.addTracksToPlaylist(playlist_uri, this.props.uris);
+    const { coreActions, uris } = this.props;
+    coreActions.addTracksToPlaylist(playlist_uri, uris);
     window.history.back();
   }
 
   render() {
-    if (!this.props.playlists) return <div className="empty">No editable playlists</div>;
-    let playlists = [];
-    for (const uri in this.props.playlists) {
-      if (this.props.playlists[uri].can_edit) playlists.push(this.props.playlists[uri]);
+    const { playlists, uris, spotify_library_playlists_status } = this.props;
+
+    if (!playlists) return <div className="empty">No editable playlists</div>;
+
+    let editablePlaylists = [];
+    for (let uri in playlists) {
+      if (playlists[uri].can_edit) editablePlaylists.push(playlists[uri]);
     }
 
-    playlists = helpers.sortItems(playlists, 'name');
+    editablePlaylists = helpers.sortItems(editablePlaylists, 'name');
 
-    const isLoading = this.props.spotify_library_playlists_status == 'running';
+    const isLoading = spotify_library_playlists_status === 'running';
 
     return (
       <Modal className="modal--add-to-playlist">
         <h1>Add to playlist</h1>
         <h2 className="mid_grey-text">
-Select playlist to add
-          {this.props.uris.length}
-          {' '}
-track
-          {this.props.uris.length > 1 ? 's' : null}
-          {' '}
-to
+          {`Select playlist to add ${uris.length} track ${uris.length > 1 ? 's' : ''} to`}
         </h2>
-        {playlists.length <= 0 ? <div className="no-results">No playlists available</div> : null}
+        {editablePlaylists.length <= 0 && <div className="no-results">No playlists available</div>}
         <div className="list small playlists">
-          {
-						playlists.map((playlist) => (
-  <div className="list__item" key={playlist.uri} onClick={() => this.playlistSelected(playlist.uri)}>
-    <Thumbnail images={playlist.images} size="small" />
-    <h4 className="list__item__name">{ playlist.name }</h4>
-    <ul className="list__item__details details">
-      <li><Icon type="fontawesome" className="source" name={helpers.sourceIcon(playlist.uri)} /></li>
-      <li>
-        { playlist.tracks_total ? (
-          <span className="mid_grey-text">
-            { playlist.tracks_total }
-            {' '}
-tracks
-          </span>
-        ) : null }
-      </li>
-    </ul>
-  </div>
-						))
-					}
+          {editablePlaylists.map((playlist) => (
+            <div
+              className="list__item"
+              key={playlist.uri}
+              onClick={() => this.playlistSelected(playlist.uri)}
+            >
+              <Thumbnail images={playlist.images} size="small" />
+              <h4 className="list__item__name">{ playlist.name }</h4>
+              <ul className="list__item__details details">
+                <li><Icon type="fontawesome" className="source" name={helpers.sourceIcon(playlist.uri)} /></li>
+                <li>
+                  { playlist.tracks_total ? (
+                    <span className="mid_grey-text">
+                      { playlist.tracks_total }
+                      {' '}
+            tracks
+                    </span>
+                  ) : null }
+                </li>
+              </ul>
+            </div>
+          ))}
         </div>
         {isLoading && <Loader body lazy loading />}
       </Modal>
