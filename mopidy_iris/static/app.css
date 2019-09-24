@@ -3817,9 +3817,6 @@ select {
           width: 36px;
           margin-right: 20px; }
         .context-menu__title__text {
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
           position: relative;
           z-index: 2;
           font-size: 1.2rem;

@@ -361,9 +361,7 @@ selected
           return (
             <div className="context-menu__title">
               <div className="context-menu__title__text">
-                {metadata.added_by}
-                {' '}
-added from
+                {`${metadata.added_by} added from `}
                 {link}
               </div>
             </div>

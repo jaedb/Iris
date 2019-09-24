@@ -182,7 +182,6 @@
 			}
 
 			&__text {
-				@include one_line_text();
 				position: relative;
 				z-index: 2;
 				font-size: 1.2rem;
