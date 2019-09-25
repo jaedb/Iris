@@ -632,8 +632,6 @@ class IrisCore(pykka.ThreadingActor):
             if (not added.get()):
                 logger.error("No recommendations added to queue")
 
-                print added.get()
-
                 self.radio['enabled'] = 0;
                 error = {
                     'message': 'No recommendations added to queue',
@@ -646,6 +644,12 @@ class IrisCore(pykka.ThreadingActor):
 
             # Save results (minus first batch) for later use
             self.radio['results'] = uris[3:]
+
+            # Add metadata
+            metadata = {'tlids': [], 'added_by': 'Radio'}
+            for added_tltrack in added.get():
+                metadata['tlids'].append(added_tltrack.tlid)
+            self.add_queue_metadata(data=metadata)
 
             if starting:
                 self.core.playback.play()

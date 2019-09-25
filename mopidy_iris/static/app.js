@@ -67655,6 +67655,14 @@ var Track = function (_React$Component) {
               );
               break;
 
+            case 'radio':
+              var link = _react2.default.createElement(
+                'span',
+                null,
+                'Radio'
+              );
+              break;
+
             default:
               var link = _react2.default.createElement(
                 _URILink2.default,
@@ -69849,6 +69857,7 @@ var uriType = exports.uriType = function uriType(uri) {
       case 'search':
       case 'discover':
       case 'browse':
+      case 'radio':
         return exploded[1];
         break;
     }
