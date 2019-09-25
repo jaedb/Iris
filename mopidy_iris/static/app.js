@@ -78939,28 +78939,19 @@ var request = function request(dispatch, getState, endpoint) {
         dispatch(uiActions.stopLoading(loader_key));
 
         // TODO: Rate limiting
-        if (response.status == 429) {
-          alert('You hit the Spotify API rate limiter');
+        if (response.status === 429) {
+          console.error('You hit the Spotify API rate limiter');
         }
 
-        // Empty Response
-        if (response.status == 204) {
-          return Promise.resolve();
-
-          // Otherwise successful
-        } else if (response.status >= 200 && response.status < 400) {
-          return Promise.resolve(response.json());
-
-          // Not so successful
-        } else {
-          return Promise.reject(new Error(response.statusText));
-        }
+        return response.text().then(function (text) {
+          return text ? JSON.parse(text) : {};
+        });
       }
 
       fetch(url, config).then(status).then(function (data) {
         // TODO: Instead of allowing request to fail before renewing the token, once refreshed
         // we should retry the original request(s)
-        if (data && data.error && data.error.message == 'The access token expired') {
+        if (data && data.error && data.error.message === 'The access token expired') {
           dispatch(refreshToken(dispatch, getState));
         }
 

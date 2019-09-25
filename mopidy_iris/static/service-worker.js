@@ -3,6 +3,8 @@ const blacklist = [
   'jamesbarnsley.co.nz',
   'following/contains',
   'followers/contains',
+  'me/tracks',
+  'me/albums',
   'refresh_spotify_token'
 ];
 function inBlacklist(url) {

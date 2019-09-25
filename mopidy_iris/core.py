@@ -632,6 +632,8 @@ class IrisCore(pykka.ThreadingActor):
             if (not added.get()):
                 logger.error("No recommendations added to queue")
 
+                print added.get()
+
                 self.radio['enabled'] = 0;
                 error = {
                     'message': 'No recommendations added to queue',
