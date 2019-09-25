@@ -1023,7 +1023,7 @@ export const uriType = function (uri) {
   const exploded = uri.split(':');
 
   if (exploded[0] == 'm3u') {
-    	return 'playlist';
+    return 'playlist';
   }
 
   if (exploded[0] == 'iris') {
@@ -1031,6 +1031,7 @@ export const uriType = function (uri) {
 	    	case 'search':
 	    	case 'discover':
 	    	case 'browse':
+        case 'radio':
 	    		return exploded[1];
 	    		break;
 	    }

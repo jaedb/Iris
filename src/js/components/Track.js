@@ -231,6 +231,10 @@ ago
             var link = <URILink type="search" uri={track.added_from.replace('iris:', '')}>search</URILink>;
             break;
 
+          case 'radio':
+            var link = <span>Radio</span>;
+            break;
+
           default:
             var link = <URILink type={type} uri={track.added_from}>{type}</URILink>;
         }
