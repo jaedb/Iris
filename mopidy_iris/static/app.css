@@ -6950,6 +6950,8 @@ main .track-view {
       border: 0 !important; }
       .queue-view .current-track__added-from__thumbnail .thumbnail {
         width: 30px; }
+  .queue-view .current-track__queue-details {
+    padding-top: 2rem; }
   @media (max-width: 799px) {
     .queue-view .current-track {
       display: block;

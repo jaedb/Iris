@@ -79,6 +79,10 @@
       }
     }
 
+    &__queue-details {
+      padding-top: 2rem;
+    }
+
     @include responsive($bp_medium) {
       display: block;
       text-align: center;

@@ -49,48 +49,52 @@ class Queue extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { added_from_uri } = nextProps;
+    const { added_from_uri: next_added_from_uri } = nextProps;
+    const { coreActions, added_from_uri } = this.props;
 
-    if (added_from_uri && this.props.added_from_uri !== added_from_uri) {
-      const item_type = helpers.uriType(added_from_uri);
+    if (next_added_from_uri && next_added_from_uri !== added_from_uri) {
+      const item_type = helpers.uriType(next_added_from_uri);
       switch (item_type) {
         case 'album':
-          this.props.coreActions.loadAlbum(added_from_uri);
+          coreActions.loadAlbum(next_added_from_uri);
           break;
         case 'artist':
-          this.props.coreActions.loadArtist(added_from_uri);
+          coreActions.loadArtist(next_added_from_uri);
           break;
         case 'playlist':
-          this.props.coreActions.loadPlaylist(added_from_uri);
+          coreActions.loadPlaylist(next_added_from_uri);
           break;
       }
     }
   }
 
   loadMore() {
-    const new_limit = this.state.limit + this.state.per_page;
+    const { limit, per_page } = this.state;
+    const { location } = this.props;
+    const new_limit = limit + per_page;
 
     this.setState({ limit: new_limit });
 
     // Set our pagination to location state
-    const state = this.props.location && this.props.location.state
-      ? this.props.location.state
+    const state = tlocation && location.state
+      ? location.state
       : {};
     state.limit = new_limit;
-    this.props.history.replace({ state });
+    history.replace({ state });
   }
 
   removeTracks(track_indexes) {
+    const { queue_tracks, mopidyActions } = this.props;
     const tlids = [];
     for (let i = 0; i < track_indexes.length; i++) {
-      const track = this.props.queue_tracks[track_indexes[i]];
+      const track = queue_tracks[track_indexes[i]];
       if (track.tlid !== undefined) {
         tlids.push(track.tlid);
       }
     }
 
     if (tlids.length > 0) {
-      this.props.mopidyActions.removeTracks(tlids);
+      mopidyActions.removeTracks(tlids);
     }
   }
 
@@ -107,18 +111,17 @@ class Queue extends React.Component {
   }
 
   renderQueueStats() {
+    const { current_tracklist } = this.props;
     const total_time = 0;
 
     return (
       <div className="queue-stats mid_grey-text">
         <span>
-          {this.props.current_tracklist.length}
-          {' '}
-tracks
+          {`${current_tracklist.length} tracks`}
         </span>
         &nbsp;&nbsp;|&nbsp;&nbsp;
-        {this.props.current_tracklist.length > 0 ? (
-          <Dater type="total-time" data={this.props.current_tracklist} />
+        {current_tracklist.length > 0 ? (
+          <Dater type="total-time" data={current_tracklist} />
         ) : (
           <span>0 mins</span>
         )}
@@ -127,46 +130,53 @@ tracks
   }
 
   renderArtwork(image) {
+    const {
+      radio_enabled,
+      current_track,
+    } = this.props;
+
     if (!image) {
       return (
         <div
           className={`current-track__artwork ${
-            this.props.radio_enabled
+            radio_enabled
               ? 'current-track__artwork--radio-enabled'
               : ''
           }`}
         >
-          {this.props.radio_enabled ? (
+          {radio_enabled ? (
             <img
               className="radio-overlay"
               src="/iris/assets/radio-overlay.png"
+              alt=""
             />
           ) : null}
-          <Thumbnail glow circle={this.props.radio_enabled} />
+          <Thumbnail glow circle={radio_enabled} />
         </div>
       );
     }
 
     let uri = null;
-    if (this.props.current_track.album && this.props.current_track.album.uri) {
-      uri = this.props.current_track.album.uri;
+    if (current_track.album && current_track.album.uri) {
+      uri = current_track.album.uri;
     }
     return (
       <div
         className={`current-track__artwork ${
-          this.props.radio_enabled
+          radio_enabled
             ? 'current-track__artwork--radio-enabled'
             : ''
         }`}
       >
         <URILink type="album" uri={uri}>
-          {this.props.radio_enabled ? (
+          {radio_enabled ? (
             <img
               className="radio-overlay"
               src="/iris/assets/radio-overlay.png"
+              alt=""
             />
           ) : null}
-          <Thumbnail glow image={image} circle={this.props.radio_enabled} />
+          <Thumbnail glow image={image} circle={radio_enabled} />
         </URILink>
       </div>
     );
@@ -193,11 +203,11 @@ tracks
           <Thumbnail
             images={item.images}
             size="small"
-            circle={item_type == 'artist'}
+            circle={item_type === 'artist'}
           />
         </URILink>
         <div className="current-track__added-from__text">
-          {`Playing from `}
+          {'Playing from '}
           <URILink type={item_type} uri={item.uri}>
             {item.name}
           </URILink>
@@ -208,8 +218,9 @@ tracks
 
   render() {
     const { current_track, queue_tracks } = this.props;
+    const { limit } = this.state;
     const total_queue_tracks = queue_tracks.length;
-    const tracks = queue_tracks.slice(0, this.state.limit);
+    const tracks = queue_tracks.slice(0, limit);
 
     let current_track_image = null;
     if (current_track && this.props.current_track_uri) {
@@ -233,16 +244,6 @@ tracks
           <Icon name="history" />
           History
         </Link>
-        <a
-          className="button button--no-hover"
-          onClick={(e) => {
-            this.props.mopidyActions.clearTracklist();
-            this.props.uiActions.hideContextMenu();
-          }}
-        >
-          <Icon name="delete_sweep" />
-          Clear
-        </a>
         <Link className="button button--no-hover" to="/queue/add-uri">
           <Icon name="playlist_add" />
           Add URI
@@ -281,6 +282,24 @@ tracks
               )}
 
               {this.renderAddedFrom()}
+
+              <div className="current-track__queue-details">
+                <ul className="details">
+                  <li>{`${queue_tracks.length} tracks`}</li>
+                  <li><Dater type="total-time" data={queue_tracks} /></li>
+                  <li>
+                    <a
+                      onClick={(e) => {
+                        this.props.mopidyActions.clearTracklist();
+                        this.props.uiActions.hideContextMenu();
+                      }}
+                    >
+                      <Icon name="delete_sweep" />
+                      Clear queue
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
 
@@ -299,11 +318,11 @@ tracks
 
           <LazyLoadListener
             loadKey={
-              total_queue_tracks > this.state.limit
-                ? this.state.limit
+              total_queue_tracks > limit
+                ? limit
                 : total_queue_tracks
             }
-            showLoader={this.state.limit < total_queue_tracks}
+            showLoader={limit < total_queue_tracks}
             loadMore={() => this.loadMore()}
           />
         </div>

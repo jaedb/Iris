@@ -84936,20 +84936,23 @@ var Queue = function (_React$Component) {
   }, {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(nextProps) {
-      var added_from_uri = nextProps.added_from_uri;
+      var next_added_from_uri = nextProps.added_from_uri;
+      var _props = this.props,
+          coreActions = _props.coreActions,
+          added_from_uri = _props.added_from_uri;
 
 
-      if (added_from_uri && this.props.added_from_uri !== added_from_uri) {
-        var item_type = helpers.uriType(added_from_uri);
+      if (next_added_from_uri && next_added_from_uri !== added_from_uri) {
+        var item_type = helpers.uriType(next_added_from_uri);
         switch (item_type) {
           case 'album':
-            this.props.coreActions.loadAlbum(added_from_uri);
+            coreActions.loadAlbum(next_added_from_uri);
             break;
           case 'artist':
-            this.props.coreActions.loadArtist(added_from_uri);
+            coreActions.loadArtist(next_added_from_uri);
             break;
           case 'playlist':
-            this.props.coreActions.loadPlaylist(added_from_uri);
+            coreActions.loadPlaylist(next_added_from_uri);
             break;
         }
       }
@@ -84957,28 +84960,37 @@ var Queue = function (_React$Component) {
   }, {
     key: 'loadMore',
     value: function loadMore() {
-      var new_limit = this.state.limit + this.state.per_page;
+      var _state = this.state,
+          limit = _state.limit,
+          per_page = _state.per_page;
+      var location = this.props.location;
+
+      var new_limit = limit + per_page;
 
       this.setState({ limit: new_limit });
 
       // Set our pagination to location state
-      var state = this.props.location && this.props.location.state ? this.props.location.state : {};
+      var state = tlocation && location.state ? location.state : {};
       state.limit = new_limit;
-      this.props.history.replace({ state: state });
+      history.replace({ state: state });
     }
   }, {
     key: 'removeTracks',
     value: function removeTracks(track_indexes) {
+      var _props2 = this.props,
+          queue_tracks = _props2.queue_tracks,
+          mopidyActions = _props2.mopidyActions;
+
       var tlids = [];
       for (var i = 0; i < track_indexes.length; i++) {
-        var track = this.props.queue_tracks[track_indexes[i]];
+        var track = queue_tracks[track_indexes[i]];
         if (track.tlid !== undefined) {
           tlids.push(track.tlid);
         }
       }
 
       if (tlids.length > 0) {
-        this.props.mopidyActions.removeTracks(tlids);
+        mopidyActions.removeTracks(tlids);
       }
     }
   }, {
@@ -84999,6 +85011,8 @@ var Queue = function (_React$Component) {
   }, {
     key: 'renderQueueStats',
     value: function renderQueueStats() {
+      var current_tracklist = this.props.current_tracklist;
+
       var total_time = 0;
 
       return _react2.default.createElement(
@@ -85007,12 +85021,10 @@ var Queue = function (_React$Component) {
         _react2.default.createElement(
           'span',
           null,
-          this.props.current_tracklist.length,
-          ' ',
-          'tracks'
+          current_tracklist.length + ' tracks'
         ),
         '\xA0\xA0|\xA0\xA0',
-        this.props.current_tracklist.length > 0 ? _react2.default.createElement(_Dater2.default, { type: 'total-time', data: this.props.current_tracklist }) : _react2.default.createElement(
+        current_tracklist.length > 0 ? _react2.default.createElement(_Dater2.default, { type: 'total-time', data: current_tracklist }) : _react2.default.createElement(
           'span',
           null,
           '0 mins'
@@ -85022,37 +85034,44 @@ var Queue = function (_React$Component) {
   }, {
     key: 'renderArtwork',
     value: function renderArtwork(image) {
+      var _props3 = this.props,
+          radio_enabled = _props3.radio_enabled,
+          current_track = _props3.current_track;
+
+
       if (!image) {
         return _react2.default.createElement(
           'div',
           {
-            className: 'current-track__artwork ' + (this.props.radio_enabled ? 'current-track__artwork--radio-enabled' : '')
+            className: 'current-track__artwork ' + (radio_enabled ? 'current-track__artwork--radio-enabled' : '')
           },
-          this.props.radio_enabled ? _react2.default.createElement('img', {
+          radio_enabled ? _react2.default.createElement('img', {
             className: 'radio-overlay',
-            src: '/iris/assets/radio-overlay.png'
+            src: '/iris/assets/radio-overlay.png',
+            alt: ''
           }) : null,
-          _react2.default.createElement(_Thumbnail2.default, { glow: true, circle: this.props.radio_enabled })
+          _react2.default.createElement(_Thumbnail2.default, { glow: true, circle: radio_enabled })
         );
       }
 
       var uri = null;
-      if (this.props.current_track.album && this.props.current_track.album.uri) {
-        uri = this.props.current_track.album.uri;
+      if (current_track.album && current_track.album.uri) {
+        uri = current_track.album.uri;
       }
       return _react2.default.createElement(
         'div',
         {
-          className: 'current-track__artwork ' + (this.props.radio_enabled ? 'current-track__artwork--radio-enabled' : '')
+          className: 'current-track__artwork ' + (radio_enabled ? 'current-track__artwork--radio-enabled' : '')
         },
         _react2.default.createElement(
           _URILink2.default,
           { type: 'album', uri: uri },
-          this.props.radio_enabled ? _react2.default.createElement('img', {
+          radio_enabled ? _react2.default.createElement('img', {
             className: 'radio-overlay',
-            src: '/iris/assets/radio-overlay.png'
+            src: '/iris/assets/radio-overlay.png',
+            alt: ''
           }) : null,
-          _react2.default.createElement(_Thumbnail2.default, { glow: true, image: image, circle: this.props.radio_enabled })
+          _react2.default.createElement(_Thumbnail2.default, { glow: true, image: image, circle: radio_enabled })
         )
       );
     }
@@ -85083,7 +85102,7 @@ var Queue = function (_React$Component) {
           _react2.default.createElement(_Thumbnail2.default, {
             images: item.images,
             size: 'small',
-            circle: item_type == 'artist'
+            circle: item_type === 'artist'
           })
         ),
         _react2.default.createElement(
@@ -85103,12 +85122,13 @@ var Queue = function (_React$Component) {
     value: function render() {
       var _this2 = this;
 
-      var _props = this.props,
-          current_track = _props.current_track,
-          queue_tracks = _props.queue_tracks;
+      var _props4 = this.props,
+          current_track = _props4.current_track,
+          queue_tracks = _props4.queue_tracks;
+      var limit = this.state.limit;
 
       var total_queue_tracks = queue_tracks.length;
-      var tracks = queue_tracks.slice(0, this.state.limit);
+      var tracks = queue_tracks.slice(0, limit);
 
       var current_track_image = null;
       if (current_track && this.props.current_track_uri) {
@@ -85136,18 +85156,6 @@ var Queue = function (_React$Component) {
           { className: 'button button--no-hover', to: '/queue/history' },
           _react2.default.createElement(_Icon2.default, { name: 'history' }),
           'History'
-        ),
-        _react2.default.createElement(
-          'a',
-          {
-            className: 'button button--no-hover',
-            onClick: function onClick(e) {
-              _this2.props.mopidyActions.clearTracklist();
-              _this2.props.uiActions.hideContextMenu();
-            }
-          },
-          _react2.default.createElement(_Icon2.default, { name: 'delete_sweep' }),
-          'Clear'
         ),
         _react2.default.createElement(
           _Link2.default,
@@ -85194,7 +85202,40 @@ var Queue = function (_React$Component) {
                 className: 'current-track__artists',
                 artists: current_track.artists
               }) : _react2.default.createElement(_ArtistSentence2.default, { className: 'current-track__artists' }),
-              this.renderAddedFrom()
+              this.renderAddedFrom(),
+              _react2.default.createElement(
+                'div',
+                { className: 'current-track__queue-details' },
+                _react2.default.createElement(
+                  'ul',
+                  { className: 'details' },
+                  _react2.default.createElement(
+                    'li',
+                    null,
+                    queue_tracks.length + ' tracks'
+                  ),
+                  _react2.default.createElement(
+                    'li',
+                    null,
+                    _react2.default.createElement(_Dater2.default, { type: 'total-time', data: queue_tracks })
+                  ),
+                  _react2.default.createElement(
+                    'li',
+                    null,
+                    _react2.default.createElement(
+                      'a',
+                      {
+                        onClick: function onClick(e) {
+                          _this2.props.mopidyActions.clearTracklist();
+                          _this2.props.uiActions.hideContextMenu();
+                        }
+                      },
+                      _react2.default.createElement(_Icon2.default, { name: 'delete_sweep' }),
+                      'Clear queue'
+                    )
+                  )
+                )
+              )
             )
           ),
           _react2.default.createElement(
@@ -85220,8 +85261,8 @@ var Queue = function (_React$Component) {
             })
           ),
           _react2.default.createElement(_LazyLoadListener2.default, {
-            loadKey: total_queue_tracks > this.state.limit ? this.state.limit : total_queue_tracks,
-            showLoader: this.state.limit < total_queue_tracks,
+            loadKey: total_queue_tracks > limit ? limit : total_queue_tracks,
+            showLoader: limit < total_queue_tracks,
             loadMore: function loadMore() {
               return _this2.loadMore();
             }
