@@ -69848,18 +69848,19 @@ var uriType = exports.uriType = function uriType(uri) {
 
   var exploded = uri.split(':');
 
-  if (exploded[0] == 'm3u') {
+  if (exploded[0] === 'm3u') {
     return 'playlist';
   }
 
-  if (exploded[0] == 'iris') {
+  if (exploded[0] === 'iris') {
     switch (exploded[1]) {
       case 'search':
       case 'discover':
       case 'browse':
       case 'radio':
         return exploded[1];
-        break;
+      default:
+        return null;
     }
   }
 
@@ -69870,14 +69871,13 @@ var uriType = exports.uriType = function uriType(uri) {
     case 'playlist':
     case 'genre':
       return exploded[1];
-      break;
-
     case 'user':
       if (exploded.length > 3 && exploded[3] == 'playlist') {
         return 'playlist';
       }
       return exploded[1];
-      break;
+    default:
+      return null;
   }
 };
 
@@ -69974,6 +69974,11 @@ var getFromUri = exports.getFromUri = function getFromUri(element) {
     case 'seeds':
       if (exploded[1] == 'discover') {
         return exploded[2];
+      } else if (exploded[1] === 'radio') {
+        var seeds = exploded[2].split(',');
+        return seeds.map(function (seed) {
+          return seed.replace(/_/gi, ':');
+        });
       }
       break;
 
@@ -69988,8 +69993,10 @@ var getFromUri = exports.getFromUri = function getFromUri(element) {
         return exploded[2];
       }
       break;
+
+    default:
+      return null;
   }
-  return null;
 };
 
 /**
@@ -77726,6 +77733,10 @@ var PusherMiddleware = function () {
                 type: 'PUSHER_RADIO_LOADED',
                 radio: response.radio
               });
+
+              if (response.radio.enabled) {
+                store.dispatch(spotifyActions.resolveRadioSeeds(response.radio));
+              }
             }, function (error) {
               store.dispatch(coreActions.handleException('Could not load radio', error));
             });
@@ -84954,6 +84965,8 @@ var Queue = function (_React$Component) {
           case 'playlist':
             coreActions.loadPlaylist(next_added_from_uri);
             break;
+          default:
+            break;
         }
       }
     }
@@ -85015,7 +85028,6 @@ var Queue = function (_React$Component) {
     value: function renderQueueStats() {
       var current_tracklist = this.props.current_tracklist;
 
-      var total_time = 0;
 
       return _react2.default.createElement(
         'div',
@@ -85023,7 +85035,7 @@ var Queue = function (_React$Component) {
         _react2.default.createElement(
           'span',
           null,
-          current_tracklist.length + ' tracks'
+          (current_tracklist.length || 0) + ' tracks'
         ),
         '\xA0\xA0|\xA0\xA0',
         current_tracklist.length > 0 ? _react2.default.createElement(_Dater2.default, { type: 'total-time', data: current_tracklist }) : _react2.default.createElement(
@@ -85036,23 +85048,14 @@ var Queue = function (_React$Component) {
   }, {
     key: 'renderArtwork',
     value: function renderArtwork(image) {
-      var _props4 = this.props,
-          radio_enabled = _props4.radio_enabled,
-          current_track = _props4.current_track;
+      var current_track = this.props.current_track;
 
 
       if (!image) {
         return _react2.default.createElement(
           'div',
-          {
-            className: 'current-track__artwork ' + (radio_enabled ? 'current-track__artwork--radio-enabled' : '')
-          },
-          radio_enabled ? _react2.default.createElement('img', {
-            className: 'radio-overlay',
-            src: '/iris/assets/radio-overlay.png',
-            alt: ''
-          }) : null,
-          _react2.default.createElement(_Thumbnail2.default, { glow: true, circle: radio_enabled })
+          { className: 'current-track__artwork' },
+          _react2.default.createElement(_Thumbnail2.default, { glow: true })
         );
       }
 
@@ -85062,18 +85065,11 @@ var Queue = function (_React$Component) {
       }
       return _react2.default.createElement(
         'div',
-        {
-          className: 'current-track__artwork ' + (radio_enabled ? 'current-track__artwork--radio-enabled' : '')
-        },
+        { className: 'current-track__artwork' },
         _react2.default.createElement(
           _URILink2.default,
           { type: 'album', uri: uri },
-          radio_enabled ? _react2.default.createElement('img', {
-            className: 'radio-overlay',
-            src: '/iris/assets/radio-overlay.png',
-            alt: ''
-          }) : null,
-          _react2.default.createElement(_Thumbnail2.default, { glow: true, image: image, circle: radio_enabled })
+          _react2.default.createElement(_Thumbnail2.default, { glow: true, image: image })
         )
       );
     }
@@ -85084,11 +85080,24 @@ var Queue = function (_React$Component) {
 
       if (!added_from_uri) return null;
 
-      var item_type = helpers.uriType(added_from_uri);
+      var uri_type = helpers.uriType(added_from_uri);
+      var item_uri = added_from_uri;
+      var item_type = uri_type;
+
+      // Radio nests it's seed URIs in an encoded URI format
+      if (uri_type === 'radio') {
+        var radio_seeds = helpers.getFromUri('seeds', added_from_uri);
+
+        // For now we only care about the first seed
+        // TODO: Support for multiple seeds
+        item_uri = radio_seeds[0];
+        item_type = helpers.uriType(item_uri);
+      }
+
       var item_library = this.props[item_type + 's'];
       if (!item_library) return null;
 
-      var item = item_library[added_from_uri];
+      var item = item_library[item_uri];
       if (!item) return null;
 
       return _react2.default.createElement(
@@ -85115,6 +85124,11 @@ var Queue = function (_React$Component) {
             _URILink2.default,
             { type: item_type, uri: item.uri },
             item.name
+          ),
+          uri_type === 'radio' && _react2.default.createElement(
+            'span',
+            null,
+            ' radio'
           )
         )
       );
@@ -85124,9 +85138,9 @@ var Queue = function (_React$Component) {
     value: function render() {
       var _this2 = this;
 
-      var _props5 = this.props,
-          current_track = _props5.current_track,
-          queue_tracks = _props5.queue_tracks;
+      var _props4 = this.props,
+          current_track = _props4.current_track,
+          queue_tracks = _props4.queue_tracks;
       var limit = this.state.limit;
 
       var total_queue_tracks = queue_tracks.length;
@@ -85337,6 +85351,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
     artists: state.core.artists,
     albums: state.core.albums,
     playlists: state.core.playlists,
+    tracks: state.core.tracks,
     queue_tracks: queue_tracks,
     current_track_uri: state.core.current_track_uri,
     current_track: current_track,
@@ -93394,7 +93409,6 @@ var EditRadio = function (_React$Component) {
     value: function loadRadio(radio) {
       var seeds = [].concat(_toConsumableArray(radio.seed_tracks), _toConsumableArray(radio.seed_artists), _toConsumableArray(radio.seed_genres));
       this.setState({ seeds: seeds, enabled: radio.enabled });
-      this.props.spotifyActions.resolveRadioSeeds(radio);
     }
   }, {
     key: 'handleStart',

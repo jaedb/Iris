@@ -64,6 +64,8 @@ class Queue extends React.Component {
         case 'playlist':
           coreActions.loadPlaylist(next_added_from_uri);
           break;
+        default:
+          break;
       }
     }
   }
@@ -129,28 +131,12 @@ class Queue extends React.Component {
   }
 
   renderArtwork(image) {
-    const {
-      radio_enabled,
-      current_track,
-    } = this.props;
+    const { current_track } = this.props;
 
     if (!image) {
       return (
-        <div
-          className={`current-track__artwork ${
-            radio_enabled
-              ? 'current-track__artwork--radio-enabled'
-              : ''
-          }`}
-        >
-          {radio_enabled ? (
-            <img
-              className="radio-overlay"
-              src="/iris/assets/radio-overlay.png"
-              alt=""
-            />
-          ) : null}
-          <Thumbnail glow circle={radio_enabled} />
+        <div className="current-track__artwork">
+          <Thumbnail glow />
         </div>
       );
     }
@@ -160,22 +146,9 @@ class Queue extends React.Component {
       uri = current_track.album.uri;
     }
     return (
-      <div
-        className={`current-track__artwork ${
-          radio_enabled
-            ? 'current-track__artwork--radio-enabled'
-            : ''
-        }`}
-      >
+      <div className="current-track__artwork">
         <URILink type="album" uri={uri}>
-          {radio_enabled ? (
-            <img
-              className="radio-overlay"
-              src="/iris/assets/radio-overlay.png"
-              alt=""
-            />
-          ) : null}
-          <Thumbnail glow image={image} circle={radio_enabled} />
+          <Thumbnail glow image={image} />
         </URILink>
       </div>
     );
@@ -185,11 +158,24 @@ class Queue extends React.Component {
     const { added_from_uri } = this.props;
     if (!added_from_uri) return null;
 
-    const item_type = helpers.uriType(added_from_uri);
+    const uri_type = helpers.uriType(added_from_uri);
+    let item_uri = added_from_uri;
+    let item_type = uri_type;
+
+    // Radio nests it's seed URIs in an encoded URI format
+    if (uri_type === 'radio') {
+      const radio_seeds = helpers.getFromUri('seeds', added_from_uri);
+
+      // For now we only care about the first seed
+      // TODO: Support for multiple seeds
+      item_uri = radio_seeds[0];
+      item_type = helpers.uriType(item_uri);
+    }
+
     const item_library = this.props[`${item_type}s`];
     if (!item_library) return null;
 
-    const item = item_library[added_from_uri];
+    const item = item_library[item_uri];
     if (!item) return null;
 
     return (
@@ -210,6 +196,7 @@ class Queue extends React.Component {
           <URILink type={item_type} uri={item.uri}>
             {item.name}
           </URILink>
+          {uri_type === 'radio' && <span> radio</span>}
         </div>
       </div>
     );
@@ -372,6 +359,7 @@ const mapStateToProps = (state, ownProps) => {
     artists: state.core.artists,
     albums: state.core.albums,
     playlists: state.core.playlists,
+    tracks: state.core.tracks,
     queue_tracks,
     current_track_uri: state.core.current_track_uri,
     current_track,

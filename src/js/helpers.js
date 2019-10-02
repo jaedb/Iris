@@ -1022,36 +1022,36 @@ export const uriType = function (uri) {
 
   const exploded = uri.split(':');
 
-  if (exploded[0] == 'm3u') {
+  if (exploded[0] === 'm3u') {
     return 'playlist';
   }
 
-  if (exploded[0] == 'iris') {
-    	switch (exploded[1]) {
-	    	case 'search':
-	    	case 'discover':
-	    	case 'browse':
-        case 'radio':
-	    		return exploded[1];
-	    		break;
-	    }
+  if (exploded[0] === 'iris') {
+    switch (exploded[1]) {
+      case 'search':
+      case 'discover':
+      case 'browse':
+      case 'radio':
+        return exploded[1];
+      default:
+        return null;
+    }
   }
 
   switch (exploded[1]) {
-    	case 'track':
-    	case 'artist':
-    	case 'album':
-    	case 'playlist':
-    	case 'genre':
-    		return exploded[1];
-    		break;
-
-    	case 'user':
-    		if (exploded.length > 3 && exploded[3] == 'playlist') {
-    			return 'playlist';
-    		}
-    		return exploded[1];
-    		break;
+    case 'track':
+    case 'artist':
+    case 'album':
+    case 'playlist':
+    case 'genre':
+      return exploded[1];
+    case 'user':
+      if (exploded.length > 3 && exploded[3] == 'playlist') {
+        return 'playlist';
+      }
+      return exploded[1];
+    default:
+      return null;
   }
 };
 
@@ -1094,74 +1094,79 @@ export const getFromUri = function (element, uri = '') {
   const namespace = exploded[0];
 
   switch (element) {
-    	case 'mbid':
-	        var index = exploded.indexOf('mbid');
-	        if (index > -1) return exploded[index + 1];
-	        break;
+    case 'mbid':
+        var index = exploded.indexOf('mbid');
+        if (index > -1) return exploded[index + 1];
+        break;
 
-    	case 'artistid':
-    		if (exploded[1] == 'artist') {
-    			return exploded[2];
-    		}
-    		break;
-
-    	case 'albumid':
-    		if (exploded[1] == 'album') {
-    			return exploded[2];
-    		}
-    		break;
-
-    	case 'playlistid':
-    		if (exploded[1] == 'playlist') {
-    			return exploded[2];
-    		} if (exploded[1] == 'user' && exploded[3] == 'playlist') {
-    			return exploded[4];
-    		}
-    		break;
-
-    	case 'playlistowner':
-    		if (exploded[1] == 'user' && exploded[3] == 'playlist') {
-    			return exploded[2];
-    		}
-    		break;
-
-    	case 'trackid':
-    		if (exploded[1] == 'track') {
-    			return exploded[2];
-    		}
-    		break;
-
-    	case 'userid':
-    		if (exploded[1] == 'user') {
-    			return exploded[2];
-    		}
-    		break;
-
-    	case 'genreid':
-    		if (exploded[1] == 'genre') {
-    			return exploded[2];
-    		}
-    		break;
-
-    	case 'seeds':
-    		if (exploded[1] == 'discover') {
-    			return exploded[2];
-    		}
-    		break;
-
-    	case 'searchtype':
-    		if (exploded[0] == 'search') {
-        return exploded[1];
-    		}
-    		break;
-
-    	case 'searchterm':
-    		if (exploded[0] == 'search') {
+    case 'artistid':
+      if (exploded[1] == 'artist') {
         return exploded[2];
-    		}
-    		break;
+      }
+      break;
+
+    case 'albumid':
+      if (exploded[1] == 'album') {
+        return exploded[2];
+      }
+      break;
+
+    case 'playlistid':
+      if (exploded[1] == 'playlist') {
+        return exploded[2];
+      } if (exploded[1] == 'user' && exploded[3] == 'playlist') {
+        return exploded[4];
+      }
+      break;
+
+    case 'playlistowner':
+      if (exploded[1] == 'user' && exploded[3] == 'playlist') {
+        return exploded[2];
+      }
+      break;
+
+    case 'trackid':
+      if (exploded[1] == 'track') {
+        return exploded[2];
+      }
+      break;
+
+    case 'userid':
+      if (exploded[1] == 'user') {
+        return exploded[2];
+      }
+      break;
+
+    case 'genreid':
+      if (exploded[1] == 'genre') {
+        return exploded[2];
+      }
+      break;
+
+    case 'seeds':
+      if (exploded[1] == 'discover') {
+        return exploded[2];
+      } else if (exploded[1] === 'radio') {
+        const seeds = exploded[2].split(',');
+        return seeds.map(seed => seed.replace(/_/gi,':'));
+      }
+      break;
+
+    case 'searchtype':
+      if (exploded[0] == 'search') {
+        return exploded[1];
+      }
+      break;
+
+    case 'searchterm':
+      if (exploded[0] == 'search') {
+        return exploded[2];
+      }
+      break;
+
+    default:
+      return null;
   }
-  return null;
 };
 
 

@@ -542,6 +542,10 @@ const PusherMiddleware = (function () {
                 type: 'PUSHER_RADIO_LOADED',
                 radio: response.radio,
               });
+
+              if (response.radio.enabled) {
+                store.dispatch(spotifyActions.resolveRadioSeeds(response.radio));
+              }
             },
             (error) => {
               store.dispatch(coreActions.handleException(
@@ -555,8 +559,8 @@ const PusherMiddleware = (function () {
       case 'PUSHER_START_RADIO':
       case 'PUSHER_UPDATE_RADIO':
         if (store.getState().ui.allow_reporting) {
-	                ReactGA.event({ category: 'Pusher', action: 'Start radio', label: action.uris.join() });
-	            }
+          ReactGA.event({ category: 'Pusher', action: 'Start radio', label: action.uris.join() });
+        }
 
         // start our UI process notification
         if (action.type == 'PUSHER_UPDATE_RADIO') {

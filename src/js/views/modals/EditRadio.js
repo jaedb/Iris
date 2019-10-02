@@ -43,7 +43,6 @@ class EditRadio extends React.Component {
   loadRadio(radio) {
     const seeds = [...radio.seed_tracks, ...radio.seed_artists, ...radio.seed_genres];
     this.setState({ seeds, enabled: radio.enabled });
-    this.props.spotifyActions.resolveRadioSeeds(radio);
   }
 
   handleStart(e) {
