@@ -645,11 +645,7 @@ class IrisCore(pykka.ThreadingActor):
             # Save results (minus first batch) for later use
             self.radio['results'] = uris[3:]
 
-            # Add metadata
-            metadata = {'tlids': [], 'added_by': 'Radio'}
-            for added_tltrack in added.get():
-                metadata['tlids'].append(added_tltrack.tlid)
-            self.add_queue_metadata(data=metadata)
+            self.add_radio_metadata(added)
 
             if starting:
                 self.core.playback.play()
@@ -770,8 +766,24 @@ class IrisCore(pykka.ThreadingActor):
             # Only add the next set of uris
             uris = uris[0:3]
 
-            self.core.tracklist.add(uris = uris)
+            added = self.core.tracklist.add(uris = uris)
 
+            self.add_radio_metadata(added)
+
+
+    def add_radio_metadata( self, added ):
+        seeds = ''
+        if len(self.radio['seed_artists']) > 0:
+            seeds = seeds+(','.join(self.radio['seed_artists'])).replace('spotify:artist:','spotify_artist_')
+        if len(self.radio['seed_tracks']) > 0:
+            seeds = seeds+(','.join(self.radio['seed_tracks'])).replace('spotify:track:','spotify_track_')
+        if len(self.radio['seed_genres']) > 0:
+            seeds = seeds+(','.join(self.radio['seed_genres'])).replace('spotify:genre:','spotify_genre_')
+
+        metadata = {'tlids': [], 'added_by': 'Radio', 'added_from': 'iris:radio:'+seeds}
+        for added_tltrack in added.get():
+            metadata['tlids'].append(added_tltrack.tlid)
+        self.add_queue_metadata(data=metadata)
 
 
     ##

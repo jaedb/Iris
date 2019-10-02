@@ -533,7 +533,7 @@ footer {
   opacity: 0.5;
 
   li {
-    display: inline-block;
+    display: inline-flex;
 
     &.source {
       padding-right: 10px;
@@ -541,6 +541,12 @@ footer {
 
     &:not(.source) ~ li {
       @include bullet();
+    }
+
+    .icon {
+      vertical-align: unset;
+      font-size: 0.9em;
+      margin-right: 0.25em;
     }
   }
 }

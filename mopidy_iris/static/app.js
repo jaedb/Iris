@@ -84963,23 +84963,25 @@ var Queue = function (_React$Component) {
       var _state = this.state,
           limit = _state.limit,
           per_page = _state.per_page;
-      var location = this.props.location;
+      var _props2 = this.props,
+          location = _props2.location,
+          history = _props2.history;
 
       var new_limit = limit + per_page;
 
       this.setState({ limit: new_limit });
 
       // Set our pagination to location state
-      var state = tlocation && location.state ? location.state : {};
+      var state = location && location.state ? location.state : {};
       state.limit = new_limit;
       history.replace({ state: state });
     }
   }, {
     key: 'removeTracks',
     value: function removeTracks(track_indexes) {
-      var _props2 = this.props,
-          queue_tracks = _props2.queue_tracks,
-          mopidyActions = _props2.mopidyActions;
+      var _props3 = this.props,
+          queue_tracks = _props3.queue_tracks,
+          mopidyActions = _props3.mopidyActions;
 
       var tlids = [];
       for (var i = 0; i < track_indexes.length; i++) {
@@ -85034,9 +85036,9 @@ var Queue = function (_React$Component) {
   }, {
     key: 'renderArtwork',
     value: function renderArtwork(image) {
-      var _props3 = this.props,
-          radio_enabled = _props3.radio_enabled,
-          current_track = _props3.current_track;
+      var _props4 = this.props,
+          radio_enabled = _props4.radio_enabled,
+          current_track = _props4.current_track;
 
 
       if (!image) {
@@ -85122,9 +85124,9 @@ var Queue = function (_React$Component) {
     value: function render() {
       var _this2 = this;
 
-      var _props4 = this.props,
-          current_track = _props4.current_track,
-          queue_tracks = _props4.queue_tracks;
+      var _props5 = this.props,
+          current_track = _props5.current_track,
+          queue_tracks = _props5.queue_tracks;
       var limit = this.state.limit;
 
       var total_queue_tracks = queue_tracks.length;
@@ -86335,6 +86337,53 @@ var Settings = function (_React$Component) {
       return false;
     }
   }, {
+    key: 'resetServiceWorkerAndCache',
+    value: function resetServiceWorkerAndCache() {
+      if ('serviceWorker' in navigator) {
+
+        // Hose out all our caches
+        caches.keys().then(function (cacheNames) {
+          cacheNames.forEach(function (cacheName) {
+            caches.delete(cacheName);
+          });
+        });
+
+        // Unregister all service workers
+        // This forces our SW to bugger off and a new one is registered on refresh
+        navigator.serviceWorker.getRegistrations().then(function (registrations) {
+          var _iteratorNormalCompletion = true;
+          var _didIteratorError = false;
+          var _iteratorError = undefined;
+
+          try {
+            for (var _iterator = registrations[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              var registration = _step.value;
+
+              registration.unregister();
+            }
+          } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion && _iterator.return) {
+                _iterator.return();
+              }
+            } finally {
+              if (_didIteratorError) {
+                throw _iteratorError;
+              }
+            }
+          }
+        });
+
+        window.location = '#';
+        window.location.reload(true);
+      } else {
+        this.props.coreActions.handleException('Service Worker not supported');
+      }
+    }
+  }, {
     key: 'setConfig',
     value: function setConfig(e) {
       this.setState({ input_in_focus: null });
@@ -86979,10 +87028,10 @@ var Settings = function (_React$Component) {
               {
                 className: 'button button--destructive',
                 onClick: function onClick() {
-                  return helpers.cache.clear();
+                  return _this2.resetServiceWorkerAndCache();
                 }
               },
-              'Clear request cache'
+              'Reset cache'
             )
           ),
           _react2.default.createElement(
@@ -87439,15 +87488,14 @@ var Track = function (_React$Component) {
           _react2.default.createElement(
             'h2',
             null,
-            track.album && track.album.uri ? _react2.default.createElement(
+            track.album && track.album.uri && _react2.default.createElement(
               _Link2.default,
               { to: '/album/' + track.album.uri },
               track.album.name
-            ) : null,
+            ),
             track.album && !track.album.uri ? track.album.name : null,
             !track.album ? 'Unknown album' : null,
-            '\xA0by',
-            ' ',
+            ' by ',
             _react2.default.createElement(_ArtistSentence2.default, { artists: track.artists })
           ),
           _react2.default.createElement(
@@ -87475,35 +87523,34 @@ var Track = function (_React$Component) {
             _react2.default.createElement(
               'li',
               null,
-              track.disc_number ? _react2.default.createElement(
+              track.disc_number > 0 && _react2.default.createElement(
                 'span',
                 null,
-                'Disc',
+                'Disc ',
                 track.disc_number
-              ) : null,
-              track.disc_number && track.track_number ? _react2.default.createElement(
+              ),
+              track.disc_number > 0 && track.track_number > 0 && _react2.default.createElement(
                 'span',
                 null,
-                ', '
-              ) : null,
-              track.track_number ? _react2.default.createElement(
+                ',\xA0'
+              ),
+              track.track_number && _react2.default.createElement(
                 'span',
                 null,
-                'Track',
+                'Track ',
                 track.track_number
-              ) : null
+              )
             ),
-            track.duration ? _react2.default.createElement(
+            track.duration && _react2.default.createElement(
               'li',
               null,
               _react2.default.createElement(_Dater2.default, { type: 'length', data: track.duration })
-            ) : null,
-            track.popularity ? _react2.default.createElement(
+            ),
+            track.popularity && _react2.default.createElement(
               'li',
               null,
-              track.popularity,
-              '% popularity'
-            ) : null
+              track.popularity + '% popularity'
+            )
           )
         ),
         _react2.default.createElement(
@@ -87571,8 +87618,6 @@ var rebuildUri = function rebuildUri(uri) {
 var mapStateToProps = function mapStateToProps(state, ownProps) {
   var uri = decodeURIComponent(ownProps.match.params.uri);
   uri = rebuildUri(uri);
-
-  console.log(uri);
 
   return {
     uri: uri,

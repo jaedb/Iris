@@ -3063,7 +3063,7 @@ footer {
   list-style-type: none;
   opacity: 0.5; }
   .details li {
-    display: inline-block; }
+    display: inline-flex; }
     .details li.source {
       padding-right: 10px; }
     .details li:not(.source) ~ li {
@@ -3073,6 +3073,10 @@ footer {
         display: inline-block;
         margin-left: -8px;
         padding-right: 6px; }
+    .details li .icon {
+      vertical-align: unset;
+      font-size: 0.9em;
+      margin-right: 0.25em; }
 
 .flag {
   font-size: 9px;

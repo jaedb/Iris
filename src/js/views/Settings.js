@@ -59,6 +59,33 @@ class Settings extends React.Component {
     return false;
   }
 
+  resetServiceWorkerAndCache() {
+    if ('serviceWorker' in navigator) {
+
+      // Hose out all our caches
+      caches.keys().then(function(cacheNames) {
+        cacheNames.forEach(function(cacheName) {
+          caches.delete(cacheName);
+        });
+      });
+
+      // Unregister all service workers
+      // This forces our SW to bugger off and a new one is registered on refresh
+      navigator.serviceWorker.getRegistrations().then(
+        (registrations) => {
+          for (let registration of registrations) {  
+            registration.unregister();
+          }
+        }
+      );
+
+      window.location = '#';
+      window.location.reload(true);
+    } else {
+      this.props.coreActions.handleException('Service Worker not supported');
+    }
+  }
+
   setConfig(e) {
     this.setState({ input_in_focus: null });
     e.preventDefault();
@@ -455,9 +482,9 @@ installed
             />
             <button
               className="button button--destructive"
-              onClick={() => helpers.cache.clear()}
+              onClick={() => this.resetServiceWorkerAndCache()}
             >
-              Clear request cache
+              Reset cache
             </button>
           </div>
 

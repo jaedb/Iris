@@ -228,11 +228,10 @@ Could not find track with URI "
 
           <h1>{track.name}</h1>
           <h2>
-            {track.album && track.album.uri ? <Link to={`/album/${track.album.uri}`}>{track.album.name}</Link> : null}
+            {track.album && track.album.uri && <Link to={`/album/${track.album.uri}`}>{track.album.name}</Link>}
             {track.album && !track.album.uri ? track.album.name : null}
             {!track.album ? 'Unknown album' : null}
-						&nbsp;by
-            {' '}
+            {' by '}
             <ArtistSentence artists={track.artists} />
           </h2>
 
@@ -241,27 +240,12 @@ Could not find track with URI "
             {track.date ? <li><Dater type="date" data={track.date} /></li> : null}
             {track.explicit ? <li><span className="flag dark">EXPLICIT</span></li> : null}
             <li>
-              {track.disc_number ? (
-                <span>
-Disc
-                  {track.disc_number}
-                </span>
-              ) : null}
-              {track.disc_number && track.track_number ? <span>, </span> : null}
-              {track.track_number ? (
-                <span>
-Track
-                  {track.track_number}
-                </span>
-              ) : null}
+              {track.disc_number > 0 && <span>Disc {track.disc_number}</span>}
+              {track.disc_number > 0 && track.track_number > 0 && <span>,&nbsp;</span>}
+              {track.track_number && <span>Track {track.track_number}</span>}
             </li>
-            {track.duration ? <li><Dater type="length" data={track.duration} /></li> : null}
-            {track.popularity ? (
-              <li>
-                {track.popularity}
-% popularity
-              </li>
-            ) : null}
+            {track.duration && <li><Dater type="length" data={track.duration} /></li>}
+            {track.popularity && <li>{`${track.popularity}% popularity`}</li>}
           </ul>
         </div>
 
@@ -314,8 +298,6 @@ const rebuildUri = (uri) => {
 const mapStateToProps = (state, ownProps) => {
   let uri = decodeURIComponent(ownProps.match.params.uri);
   uri = rebuildUri(uri);
-
-  console.log(uri);
 
   return {
     uri,

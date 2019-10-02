@@ -70,13 +70,13 @@ class Queue extends React.Component {
 
   loadMore() {
     const { limit, per_page } = this.state;
-    const { location } = this.props;
+    const { location, history } = this.props;
     const new_limit = limit + per_page;
 
     this.setState({ limit: new_limit });
 
     // Set our pagination to location state
-    const state = tlocation && location.state
+    const state = location && location.state
       ? location.state
       : {};
     state.limit = new_limit;
@@ -112,12 +112,11 @@ class Queue extends React.Component {
 
   renderQueueStats() {
     const { current_tracklist } = this.props;
-    const total_time = 0;
 
     return (
       <div className="queue-stats mid_grey-text">
         <span>
-          {`${current_tracklist.length} tracks`}
+          {`${current_tracklist.length || 0} tracks`}
         </span>
         &nbsp;&nbsp;|&nbsp;&nbsp;
         {current_tracklist.length > 0 ? (
