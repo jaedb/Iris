@@ -9,7 +9,7 @@ import VolumeControl from './Fields/VolumeControl';
 import MuteControl from './Fields/MuteControl';
 import OutputControl from './Fields/OutputControl';
 import Dater from './Dater';
-import ArtistSentence from './ArtistSentence';
+import LinksSentence from './LinksSentence';
 import Thumbnail from './Thumbnail';
 import Icon from './Icon';
 
@@ -263,7 +263,7 @@ class PlaybackControls extends React.Component {
                 {this.state.transition_track.name}
               </div>
               <div className="artist">
-                <ArtistSentence artists={this.state.transition_track.artists} nolinks />
+                <LinksSentence items={this.state.transition_track.artists} nolinks />
               </div>
             </div>
           </div>
@@ -283,7 +283,7 @@ class PlaybackControls extends React.Component {
               {current_track ? current_track.name : <span>-</span>}
             </div>
             <div className="artist">
-              {current_track ? <ArtistSentence artists={current_track.artists} /> : <ArtistSentence />}
+              {current_track ? <LinksSentence items={current_track.artists} /> : <LinksSentence />}
             </div>
           </div>
         </div>

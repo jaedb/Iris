@@ -126,12 +126,12 @@
         @include one_line_text;
       }
 
-      .artist-sentence {
+      .links-sentence {
         opacity: 0.5;
         display: block;
         @include one_line_text;
 
-        .artist {
+        &__item {
           color: inherit;
           text-decoration: none;
           border-bottom: 1px dotted transparent;

@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 
 
 import Link from '../Link';
-import ArtistSentence from '../ArtistSentence';
+import LinksSentence from '../LinksSentence';
 import * as helpers from '../../helpers';
 import * as coreActions from '../../services/core/actions';
 import * as uiActions from '../../services/ui/actions';
@@ -91,7 +91,7 @@ class AddSeedField extends React.Component {
     {type == 'tracks' ? (
       <span className="mid_grey-text">
         {' '}
-        <ArtistSentence artists={item.artists} nolinks />
+        <LinksSentence items={item.artists} nolinks />
       </span>
     ) : null}
   </div>

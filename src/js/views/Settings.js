@@ -448,12 +448,12 @@ Advanced
                 {' '}
 installed
                 {this.props.pusher.version.upgrade_available ? (
-                  <span className="flag dark">
+                  <span className="flag flag--dark">
                     <Icon name="cloud_download" className="blue-text" />
 &nbsp; Upgrade available
                   </span>
                 ) : (
-                  <span className="flag dark">
+                  <span className="flag flag--dark">
                     <Icon name="check" className="green-text" />
 &nbsp; Up-to-date
                   </span>

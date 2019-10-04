@@ -3088,21 +3088,21 @@ footer {
   border-radius: 3px;
   vertical-align: bottom;
   margin: 0 8px 1px; }
-  .flag.blue {
+  .flag--blue {
     background: #32b5f2;
     color: #FFFFFF; }
-  .flag.info {
+  .flag--info {
     background: #FFF39C; }
-  .flag.warning {
+  .flag--warning {
     background: #f16f19;
     color: #FFFFFF; }
-  .flag.error, .flag.bad {
+  .flag--error, .flag--bad {
     background: #cf2d2d;
     color: #FFFFFF; }
-  .flag.dark {
+  .flag--dark {
     background: #323232;
     color: #a3a19f; }
-  .flag.large {
+  .flag--large {
     padding: 8px 10px 7px;
     font-size: 12px; }
   h1 .flag,
@@ -4070,10 +4070,14 @@ select {
               display: inline-block;
               margin-left: -8px;
               padding-right: 6px; }
-      .list__item__column__item--added .from:before {
-        content: '('; }
-      .list__item__column__item--added .from:after {
-        content: ')'; }
+      .list__item__column__item--added .by {
+        opacity: 0.5; }
+        .list__item__column__item--added .by:before {
+          content: '('; }
+        .list__item__column__item--added .by:after {
+          content: ')'; }
+        .list__item__column__item--added .by--with-spacing {
+          padding-left: 0.25em; }
       .list__item__column__item--context-menu-trigger {
         font-size: 16px;
         position: relative;
@@ -4676,13 +4680,13 @@ select {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis; }
-      .playback-controls .current-track .text .artist-sentence {
+      .playback-controls .current-track .text .links-sentence {
         opacity: 0.5;
         display: block;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis; }
-        .playback-controls .current-track .text .artist-sentence .artist {
+        .playback-controls .current-track .text .links-sentence__item {
           color: inherit;
           text-decoration: none;
           border-bottom: 1px dotted transparent; }
@@ -6914,21 +6918,11 @@ main .track-view {
     margin-right: 2%; }
     .queue-view .current-track__artwork a {
       border: 0 !important;
-      display: inline-block;
+      display: block;
       position: relative; }
     .queue-view .current-track__artwork .thumbnail {
       width: 30vh;
       display: inline-block; }
-    .queue-view .current-track__artwork--radio-enabled .thumbnail {
-      box-sizing: border-box; }
-    .queue-view .current-track__artwork--radio-enabled .radio-overlay {
-      position: absolute;
-      top: -15%;
-      left: -15%;
-      width: 130%;
-      height: 130%;
-      z-index: 2;
-      pointer-events: none; }
   .queue-view .current-track__details {
     width: 48%;
     margin-left: 2%; }
@@ -7554,7 +7548,7 @@ main .track-view {
       .modal--kiosk-mode .content .current-track {
         padding-top: 80px;
         font-size: 30px; }
-        .modal--kiosk-mode .content .current-track .artist-sentence {
+        .modal--kiosk-mode .content .current-track .links-sentence {
           opacity: 0.5; }
       .modal--kiosk-mode .content .progress-wrapper {
         margin: 0 auto;

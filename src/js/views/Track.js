@@ -8,7 +8,7 @@ import ErrorMessage from '../components/ErrorMessage';
 import Header from '../components/Header';
 import TrackList from '../components/TrackList';
 import Thumbnail from '../components/Thumbnail';
-import ArtistSentence from '../components/ArtistSentence';
+import LinksSentence from '../components/LinksSentence';
 import ArtistGrid from '../components/ArtistGrid';
 import FollowButton from '../components/Fields/FollowButton';
 import LastfmLoveButton from '../components/Fields/LastfmLoveButton';
@@ -232,13 +232,13 @@ Could not find track with URI "
             {track.album && !track.album.uri ? track.album.name : null}
             {!track.album ? 'Unknown album' : null}
             {' by '}
-            <ArtistSentence artists={track.artists} />
+            <LinksSentence items={track.artists} />
           </h2>
 
           <ul className="details">
             {!this.props.slim_mode ? <li className="source"><Icon type="fontawesome" name={helpers.sourceIcon(this.props.uri)} /></li> : null}
             {track.date ? <li><Dater type="date" data={track.date} /></li> : null}
-            {track.explicit ? <li><span className="flag dark">EXPLICIT</span></li> : null}
+            {track.explicit ? <li><span className="flag flag--dark">EXPLICIT</span></li> : null}
             <li>
               {track.disc_number > 0 && <span>Disc {track.disc_number}</span>}
               {track.disc_number > 0 && track.track_number > 0 && <span>,&nbsp;</span>}

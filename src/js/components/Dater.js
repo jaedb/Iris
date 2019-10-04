@@ -43,24 +43,21 @@ const durationTime = (milliseconds = null) => {
  * @return string (eg 2+ hours)
  * */
 const durationSentence = (milliseconds = null) => {
-  if (!milliseconds) return null;
-
-  const string = '';
-  let total_hours; let total_minutes; let total_seconds; let minutes; let
-    seconds;
+  if (milliseconds === null) return null;
 
   // get total values for each
-  total_seconds = Math.floor(milliseconds / 1000);
-  total_minutes = Math.floor(milliseconds / (1000 * 60));
-  total_hours = Math.floor(milliseconds / (1000 * 60 * 60));
+  const totalSeconds = Math.floor(milliseconds / 1000);
+  const totalMinutes = Math.floor(milliseconds / (1000 * 60));
+  const totalHours = Math.floor(milliseconds / (1000 * 60 * 60));
 
-  if (total_hours > 1) return `${total_hours}+ hrs`;
-  if (total_minutes > 1) return `${total_minutes} mins`;
-  if (total_seconds) return `${total_seconds} sec`;
+  if (totalHours > 1) return `${totalHours}+ hrs`;
+  if (totalMinutes > 1) return `${totalMinutes} mins`;
+  if (totalSeconds) return `${totalSeconds} sec`;
+  return '0 mins';
 };
 
 export default memo((props) => {
-  if (!props.data) {
+  if (props.data === undefined) {
     return null;
   }
 

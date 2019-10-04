@@ -57404,90 +57404,6 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 
 /***/ }),
 
-/***/ "./src/js/components/ArtistSentence.js":
-/*!*********************************************!*\
-  !*** ./src/js/components/ArtistSentence.js ***!
-  \*********************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-		value: true
-});
-
-var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-
-var _react2 = _interopRequireDefault(_react);
-
-var _URILink = __webpack_require__(/*! ./URILink */ "./src/js/components/URILink.js");
-
-var _URILink2 = _interopRequireDefault(_URILink);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = (0, _react.memo)(function (props) {
-		if (!props.artists) {
-				return _react2.default.createElement(
-						'span',
-						{ className: props.className ? props.className + ' artist-sentence' : 'artist-sentence' },
-						'-'
-				);
-		}
-
-		return _react2.default.createElement(
-				'span',
-				{ className: props.className ? props.className + ' artist-sentence' : 'artist-sentence' },
-				props.artists.map(function (artist, index) {
-						if (!artist) {
-								return _react2.default.createElement(
-										'span',
-										null,
-										'-'
-								);
-						}
-
-						var separator = null;
-						if (index == props.artists.length - 2) {
-								separator = ' and ';
-						} else if (index < props.artists.length - 2) {
-								separator = ', ';
-						}
-
-						if (!artist.name) {
-								var content = _react2.default.createElement(
-										'span',
-										null,
-										'-'
-								);
-						} else if (!artist.uri || props.nolinks) {
-								var content = _react2.default.createElement(
-										'span',
-										null,
-										artist.name
-								);
-						} else {
-								var content = _react2.default.createElement(
-										_URILink2.default,
-										{ className: 'artist', type: 'artist', uri: artist.uri },
-										artist.name
-								);
-						}
-
-						return _react2.default.createElement(
-								'span',
-								{ key: 'index_' + artist.uri },
-								content,
-								separator
-						);
-				})
-		);
-});
-
-/***/ }),
-
 /***/ "./src/js/components/CategoryGrid.js":
 /*!*******************************************!*\
   !*** ./src/js/components/CategoryGrid.js ***!
@@ -58892,23 +58808,21 @@ var durationTime = function durationTime() {
 var durationSentence = function durationSentence() {
   var milliseconds = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 
-  if (!milliseconds) return null;
-
-  var string = '';
-  var total_hours = void 0;var total_minutes = void 0;var total_seconds = void 0;var minutes = void 0;var seconds = void 0;
+  if (milliseconds === null) return null;
 
   // get total values for each
-  total_seconds = Math.floor(milliseconds / 1000);
-  total_minutes = Math.floor(milliseconds / (1000 * 60));
-  total_hours = Math.floor(milliseconds / (1000 * 60 * 60));
+  var totalSeconds = Math.floor(milliseconds / 1000);
+  var totalMinutes = Math.floor(milliseconds / (1000 * 60));
+  var totalHours = Math.floor(milliseconds / (1000 * 60 * 60));
 
-  if (total_hours > 1) return total_hours + '+ hrs';
-  if (total_minutes > 1) return total_minutes + ' mins';
-  if (total_seconds) return total_seconds + ' sec';
+  if (totalHours > 1) return totalHours + '+ hrs';
+  if (totalMinutes > 1) return totalMinutes + ' mins';
+  if (totalSeconds) return totalSeconds + ' sec';
+  return '0 mins';
 };
 
 exports.default = (0, _react.memo)(function (props) {
-  if (!props.data) {
+  if (props.data === undefined) {
     return null;
   }
 
@@ -59582,9 +59496,9 @@ var _Link = __webpack_require__(/*! ../Link */ "./src/js/components/Link.js");
 
 var _Link2 = _interopRequireDefault(_Link);
 
-var _ArtistSentence = __webpack_require__(/*! ../ArtistSentence */ "./src/js/components/ArtistSentence.js");
+var _LinksSentence = __webpack_require__(/*! ../LinksSentence */ "./src/js/components/LinksSentence.js");
 
-var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
+var _LinksSentence2 = _interopRequireDefault(_LinksSentence);
 
 var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
 
@@ -59713,7 +59627,7 @@ var AddSeedField = function (_React$Component) {
               'span',
               { className: 'mid_grey-text' },
               ' ',
-              _react2.default.createElement(_ArtistSentence2.default, { artists: item.artists, nolinks: true })
+              _react2.default.createElement(_LinksSentence2.default, { items: item.artists, nolinks: true })
             ) : null
           );
         })
@@ -62327,7 +62241,7 @@ var SourcesPriority = function (_React$Component) {
 
           return _react2.default.createElement(
             'span',
-            { className: 'source flag grey', key: scheme, 'data-id': scheme },
+            { className: 'source flag flag--grey', key: scheme, 'data-id': scheme },
             _react2.default.createElement(_Icon2.default, { name: 'drag_indicator' }),
             name
           );
@@ -62753,9 +62667,9 @@ var _Thumbnail = __webpack_require__(/*! ./Thumbnail */ "./src/js/components/Thu
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
-var _ArtistSentence = __webpack_require__(/*! ./ArtistSentence */ "./src/js/components/ArtistSentence.js");
+var _LinksSentence = __webpack_require__(/*! ./LinksSentence */ "./src/js/components/LinksSentence.js");
 
-var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
+var _LinksSentence2 = _interopRequireDefault(_LinksSentence);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -62849,7 +62763,7 @@ var GridItem = function (_React$Component) {
           return _react2.default.createElement(
             'span',
             { className: 'grid__item__secondary__content' },
-            item.artists !== undefined ? _react2.default.createElement(_ArtistSentence2.default, { nolinks: true, artists: item.artists }) : null
+            item.artists !== undefined ? _react2.default.createElement(_LinksSentence2.default, { nolinks: true, items: item.artists }) : null
           );
           break;
 
@@ -62857,7 +62771,7 @@ var GridItem = function (_React$Component) {
           return _react2.default.createElement(
             'span',
             { className: 'grid__item__secondary__content' },
-            item.artists !== undefined ? _react2.default.createElement(_ArtistSentence2.default, { nolinks: true, artists: item.artists }) : null,
+            item.artists !== undefined ? _react2.default.createElement(_LinksSentence2.default, { nolinks: true, items: item.artists }) : null,
             item.followers !== undefined ? item.followers.toLocaleString() + ' followers' : null
           );
       }
@@ -63630,6 +63544,90 @@ exports.default = (0, _reactRouter.withRouter)(CustomLink);
 
 /***/ }),
 
+/***/ "./src/js/components/LinksSentence.js":
+/*!********************************************!*\
+  !*** ./src/js/components/LinksSentence.js ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+		value: true
+});
+
+var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _URILink = __webpack_require__(/*! ./URILink */ "./src/js/components/URILink.js");
+
+var _URILink2 = _interopRequireDefault(_URILink);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = (0, _react.memo)(function (props) {
+		if (!props.items) {
+				return _react2.default.createElement(
+						'span',
+						{ className: props.className ? props.className + ' links-sentence' : 'links-sentence' },
+						'-'
+				);
+		}
+
+		return _react2.default.createElement(
+				'span',
+				{ className: props.className ? props.className + ' links-sentence' : 'links-sentence' },
+				props.items.map(function (item, index) {
+						if (!item) {
+								return _react2.default.createElement(
+										'span',
+										null,
+										'-'
+								);
+						}
+
+						var separator = null;
+						if (index == props.items.length - 2) {
+								separator = ' and ';
+						} else if (index < props.items.length - 2) {
+								separator = ', ';
+						}
+
+						if (!item.name) {
+								var content = _react2.default.createElement(
+										'span',
+										null,
+										'-'
+								);
+						} else if (!item.uri || props.nolinks) {
+								var content = _react2.default.createElement(
+										'span',
+										null,
+										item.name
+								);
+						} else {
+								var content = _react2.default.createElement(
+										_URILink2.default,
+										{ className: 'links-sentence__item links-sentence__item--link', uri: item.uri },
+										item.name
+								);
+						}
+
+						return _react2.default.createElement(
+								'span',
+								{ key: 'index_' + item.uri },
+								content,
+								separator
+						);
+				})
+		);
+});
+
+/***/ }),
+
 /***/ "./src/js/components/List.js":
 /*!***********************************!*\
   !*** ./src/js/components/List.js ***!
@@ -63777,9 +63775,9 @@ var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
-var _ArtistSentence = __webpack_require__(/*! ./ArtistSentence */ "./src/js/components/ArtistSentence.js");
+var _LinksSentence = __webpack_require__(/*! ./LinksSentence */ "./src/js/components/LinksSentence.js");
 
-var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
+var _LinksSentence2 = _interopRequireDefault(_LinksSentence);
 
 var _Dater = __webpack_require__(/*! ./Dater */ "./src/js/components/Dater.js");
 
@@ -63933,7 +63931,7 @@ var ListItem = function (_React$Component) {
         value.id
       );
       if (key_string === 'popularity') return _react2.default.createElement(_Popularity2.default, { full: true, popularity: value });
-      if (key_string === 'artists') return _react2.default.createElement(_ArtistSentence2.default, { artists: value });
+      if (key_string === 'artists') return _react2.default.createElement(_LinksSentence2.default, { items: value });
       if (value === true) return _react2.default.createElement(_Icon2.default, { name: 'check' });
       if (typeof value === 'number') return _react2.default.createElement(
         'span',
@@ -64710,9 +64708,9 @@ var _Dater = __webpack_require__(/*! ./Dater */ "./src/js/components/Dater.js");
 
 var _Dater2 = _interopRequireDefault(_Dater);
 
-var _ArtistSentence = __webpack_require__(/*! ./ArtistSentence */ "./src/js/components/ArtistSentence.js");
+var _LinksSentence = __webpack_require__(/*! ./LinksSentence */ "./src/js/components/LinksSentence.js");
 
-var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
+var _LinksSentence2 = _interopRequireDefault(_LinksSentence);
 
 var _Thumbnail = __webpack_require__(/*! ./Thumbnail */ "./src/js/components/Thumbnail.js");
 
@@ -65083,7 +65081,7 @@ var PlaybackControls = function (_React$Component) {
             _react2.default.createElement(
               'div',
               { className: 'artist' },
-              _react2.default.createElement(_ArtistSentence2.default, { artists: this.state.transition_track.artists, nolinks: true })
+              _react2.default.createElement(_LinksSentence2.default, { items: this.state.transition_track.artists, nolinks: true })
             )
           )
         ) : null,
@@ -65119,7 +65117,7 @@ var PlaybackControls = function (_React$Component) {
             _react2.default.createElement(
               'div',
               { className: 'artist' },
-              current_track ? _react2.default.createElement(_ArtistSentence2.default, { artists: current_track.artists }) : _react2.default.createElement(_ArtistSentence2.default, null)
+              current_track ? _react2.default.createElement(_LinksSentence2.default, { items: current_track.artists }) : _react2.default.createElement(_LinksSentence2.default, null)
             )
           )
         ),
@@ -67363,9 +67361,9 @@ var _Icon = __webpack_require__(/*! ./Icon */ "./src/js/components/Icon.js");
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _ArtistSentence = __webpack_require__(/*! ./ArtistSentence */ "./src/js/components/ArtistSentence.js");
+var _LinksSentence = __webpack_require__(/*! ./LinksSentence */ "./src/js/components/LinksSentence.js");
 
-var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
+var _LinksSentence2 = _interopRequireDefault(_LinksSentence);
 
 var _Dater = __webpack_require__(/*! ./Dater */ "./src/js/components/Dater.js");
 
@@ -67588,7 +67586,7 @@ var Track = function (_React$Component) {
         track_details.push(_react2.default.createElement(
           'li',
           { className: 'details__item details__item--artists', key: 'artists' },
-          track.artists ? _react2.default.createElement(_ArtistSentence2.default, { artists: track.artists }) : '-'
+          track.artists ? _react2.default.createElement(_LinksSentence2.default, { items: track.artists }) : '-'
         ));
       }
 
@@ -67622,8 +67620,7 @@ var Track = function (_React$Component) {
             'span',
             null,
             _react2.default.createElement(_Dater2.default, { type: 'ago', data: track.played_at }),
-            ' ',
-            'ago'
+            ' ago'
           ) : '-'
         );
       } else if (this.props.track_context == 'queue') {
@@ -67635,7 +67632,7 @@ var Track = function (_React$Component) {
               var link = _react2.default.createElement(
                 _URILink2.default,
                 { type: 'recommendations', uri: helpers.getFromUri('seeds', track.added_from) },
-                'discover'
+                'Discover'
               );
               break;
 
@@ -67643,7 +67640,7 @@ var Track = function (_React$Component) {
               var link = _react2.default.createElement(
                 _URILink2.default,
                 { type: 'browse', uri: track.added_from.replace('iris:browse:', '') },
-                'browse'
+                'Browse'
               );
               break;
 
@@ -67651,7 +67648,7 @@ var Track = function (_React$Component) {
               var link = _react2.default.createElement(
                 _URILink2.default,
                 { type: 'search', uri: track.added_from.replace('iris:', '') },
-                'search'
+                'Search'
               );
               break;
 
@@ -67667,7 +67664,7 @@ var Track = function (_React$Component) {
               var link = _react2.default.createElement(
                 _URILink2.default,
                 { type: type, uri: track.added_from },
-                type
+                helpers.titleCase(type)
               );
           }
 
@@ -67676,14 +67673,13 @@ var Track = function (_React$Component) {
             { className: 'list__item__column__item list__item__column__item--added' },
             _react2.default.createElement(
               'span',
-              { className: 'by' },
-              track.added_by + ' '
+              { className: 'from' },
+              link
             ),
             _react2.default.createElement(
               'span',
-              { className: 'from' },
-              'from ',
-              link
+              { className: 'by by--with-spacing' },
+              '' + track.added_by
             )
           );
         } else if (track.added_by) {
@@ -67770,7 +67766,7 @@ var Track = function (_React$Component) {
               ),
               track.explicit ? _react2.default.createElement(
                 'span',
-                { className: 'flag dark' },
+                { className: 'flag flag--dark' },
                 'EXPLICIT'
               ) : null,
               track.playing ? _react2.default.createElement(_Icon2.default, { className: 'js--' + this.props.play_state, name: 'playing', type: 'css' }) : null
@@ -68401,17 +68397,25 @@ var _Link = __webpack_require__(/*! ./Link */ "./src/js/components/Link.js");
 
 var _Link2 = _interopRequireDefault(_Link);
 
+var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
+
+var helpers = _interopRequireWildcard(_helpers);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = (0, _react.memo)(function (props) {
   var to = null;
-  var uri = props.uri;
+  var uri = props.uri,
+      type = props.type;
 
+  var uriType = type || helpers.uriType(uri);
   if (!props.unencoded) {
     uri = encodeURIComponent(uri);
   }
 
-  switch (props.type) {
+  switch (uriType) {
     case 'playlist':
       to = '/playlist/' + uri;
       break;
@@ -82653,9 +82657,9 @@ var _Parallax = __webpack_require__(/*! ../components/Parallax */ "./src/js/comp
 
 var _Parallax2 = _interopRequireDefault(_Parallax);
 
-var _ArtistSentence = __webpack_require__(/*! ../components/ArtistSentence */ "./src/js/components/ArtistSentence.js");
+var _LinksSentence = __webpack_require__(/*! ../components/LinksSentence */ "./src/js/components/LinksSentence.js");
 
-var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
+var _LinksSentence2 = _interopRequireDefault(_LinksSentence);
 
 var _Loader = __webpack_require__(/*! ../components/Loader */ "./src/js/components/Loader.js");
 
@@ -82888,7 +82892,7 @@ var Album = exports.Album = function (_React$Component) {
             album.artists && album.artists.length > 0 ? _react2.default.createElement(
               'li',
               null,
-              _react2.default.createElement(_ArtistSentence2.default, { artists: album.artists })
+              _react2.default.createElement(_LinksSentence2.default, { items: album.artists })
             ) : null,
             album.release_date ? _react2.default.createElement(
               'li',
@@ -84854,9 +84858,9 @@ var _Dater = __webpack_require__(/*! ../components/Dater */ "./src/js/components
 
 var _Dater2 = _interopRequireDefault(_Dater);
 
-var _ArtistSentence = __webpack_require__(/*! ../components/ArtistSentence */ "./src/js/components/ArtistSentence.js");
+var _LinksSentence = __webpack_require__(/*! ../components/LinksSentence */ "./src/js/components/LinksSentence.js");
 
-var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
+var _LinksSentence2 = _interopRequireDefault(_LinksSentence);
 
 var _Thumbnail = __webpack_require__(/*! ../components/Thumbnail */ "./src/js/components/Thumbnail.js");
 
@@ -85024,28 +85028,6 @@ var Queue = function (_React$Component) {
       this.props.mopidyActions.reorderTracklist(indexes, index);
     }
   }, {
-    key: 'renderQueueStats',
-    value: function renderQueueStats() {
-      var current_tracklist = this.props.current_tracklist;
-
-
-      return _react2.default.createElement(
-        'div',
-        { className: 'queue-stats mid_grey-text' },
-        _react2.default.createElement(
-          'span',
-          null,
-          (current_tracklist.length || 0) + ' tracks'
-        ),
-        '\xA0\xA0|\xA0\xA0',
-        current_tracklist.length > 0 ? _react2.default.createElement(_Dater2.default, { type: 'total-time', data: current_tracklist }) : _react2.default.createElement(
-          'span',
-          null,
-          '0 mins'
-        )
-      );
-    }
-  }, {
     key: 'renderArtwork',
     value: function renderArtwork(image) {
       var current_track = this.props.current_track;
@@ -85068,7 +85050,7 @@ var Queue = function (_React$Component) {
         { className: 'current-track__artwork' },
         _react2.default.createElement(
           _URILink2.default,
-          { type: 'album', uri: uri },
+          { uri: uri },
           _react2.default.createElement(_Thumbnail2.default, { glow: true, image: image })
         )
       );
@@ -85081,24 +85063,48 @@ var Queue = function (_React$Component) {
       if (!added_from_uri) return null;
 
       var uri_type = helpers.uriType(added_from_uri);
-      var item_uri = added_from_uri;
-      var item_type = uri_type;
+      var items = [];
 
       // Radio nests it's seed URIs in an encoded URI format
       if (uri_type === 'radio') {
         var radio_seeds = helpers.getFromUri('seeds', added_from_uri);
 
-        // For now we only care about the first seed
-        // TODO: Support for multiple seeds
-        item_uri = radio_seeds[0];
-        item_type = helpers.uriType(item_uri);
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+          for (var _iterator = radio_seeds[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var seed = _step.value;
+
+            var item_type = helpers.uriType(seed);
+            var item_library = this.props[item_type + 's'];
+            if (item_library && item_library[seed]) {
+              items.push(item_library[seed]);
+            }
+          }
+        } catch (err) {
+          _didIteratorError = true;
+          _iteratorError = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion && _iterator.return) {
+              _iterator.return();
+            }
+          } finally {
+            if (_didIteratorError) {
+              throw _iteratorError;
+            }
+          }
+        }
+      } else {
+        var _item_library = this.props[uri_type + 's'];
+        if (_item_library && _item_library[added_from_uri]) {
+          items.push(_item_library[added_from_uri]);
+        }
       }
 
-      var item_library = this.props[item_type + 's'];
-      if (!item_library) return null;
-
-      var item = item_library[item_uri];
-      if (!item) return null;
+      if (items.length <= 0) return null;
 
       return _react2.default.createElement(
         'div',
@@ -85106,29 +85112,24 @@ var Queue = function (_React$Component) {
         _react2.default.createElement(
           _URILink2.default,
           {
-            type: item_type,
-            uri: item.uri,
+            uri: items[0].uri,
             className: 'current-track__added-from__thumbnail'
           },
           _react2.default.createElement(_Thumbnail2.default, {
-            images: item.images,
+            images: items[0].images,
             size: 'small',
-            circle: item_type === 'artist'
+            circle: helpers.uriType(items[0].uri) === 'artist'
           })
         ),
         _react2.default.createElement(
           'div',
           { className: 'current-track__added-from__text' },
           'Playing from ',
-          _react2.default.createElement(
-            _URILink2.default,
-            { type: item_type, uri: item.uri },
-            item.name
-          ),
+          _react2.default.createElement(_LinksSentence2.default, { items: items }),
           uri_type === 'radio' && _react2.default.createElement(
             'span',
-            null,
-            ' radio'
+            { className: 'flag flag--blue' },
+            'Radio'
           )
         )
       );
@@ -85156,17 +85157,12 @@ var Queue = function (_React$Component) {
       var options = _react2.default.createElement(
         'span',
         null,
-        this.props.spotify_enabled ? _react2.default.createElement(
+        this.props.spotify_enabled && _react2.default.createElement(
           _Link2.default,
           { className: 'button button--no-hover', to: '/queue/radio' },
           _react2.default.createElement(_Icon2.default, { name: 'radio' }),
-          'Radio',
-          this.props.radio && this.props.radio.enabled ? _react2.default.createElement(
-            'span',
-            { className: 'flag blue' },
-            'On'
-          ) : null
-        ) : null,
+          'Radio'
+        ),
         _react2.default.createElement(
           _Link2.default,
           { className: 'button button--no-hover', to: '/queue/history' },
@@ -85214,10 +85210,10 @@ var Queue = function (_React$Component) {
                   '-'
                 )
               ),
-              current_track ? _react2.default.createElement(_ArtistSentence2.default, {
+              current_track ? _react2.default.createElement(_LinksSentence2.default, {
                 className: 'current-track__artists',
-                artists: current_track.artists
-              }) : _react2.default.createElement(_ArtistSentence2.default, { className: 'current-track__artists' }),
+                items: current_track.artists
+              }) : _react2.default.createElement(_LinksSentence2.default, { className: 'current-track__artists' }),
               this.renderAddedFrom(),
               _react2.default.createElement(
                 'div',
@@ -85235,17 +85231,14 @@ var Queue = function (_React$Component) {
                     null,
                     _react2.default.createElement(_Dater2.default, { type: 'total-time', data: queue_tracks })
                   ),
-                  _react2.default.createElement(
+                  queue_tracks.length > 0 && _react2.default.createElement(
                     'li',
                     null,
                     _react2.default.createElement(
                       'a',
-                      {
-                        onClick: function onClick(e) {
-                          _this2.props.mopidyActions.clearTracklist();
-                          _this2.props.uiActions.hideContextMenu();
-                        }
-                      },
+                      { onClick: function onClick(e) {
+                          return _this2.props.mopidyActions.clearTracklist();
+                        } },
                       _react2.default.createElement(_Icon2.default, { name: 'delete_sweep' }),
                       'Clear queue'
                     )
@@ -85297,13 +85290,13 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
   var queue_tracks = [];
 
   if (state.core.queue && state.core.tracks) {
-    var _iteratorNormalCompletion = true;
-    var _didIteratorError = false;
-    var _iteratorError = undefined;
+    var _iteratorNormalCompletion2 = true;
+    var _didIteratorError2 = false;
+    var _iteratorError2 = undefined;
 
     try {
-      for (var _iterator = state.core.queue[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-        var queue_track = _step.value;
+      for (var _iterator2 = state.core.queue[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+        var queue_track = _step2.value;
 
         var track = _extends({}, queue_track);
 
@@ -85328,16 +85321,16 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
         queue_tracks.push(track);
       }
     } catch (err) {
-      _didIteratorError = true;
-      _iteratorError = err;
+      _didIteratorError2 = true;
+      _iteratorError2 = err;
     } finally {
       try {
-        if (!_iteratorNormalCompletion && _iterator.return) {
-          _iterator.return();
+        if (!_iteratorNormalCompletion2 && _iterator2.return) {
+          _iterator2.return();
         }
       } finally {
-        if (_didIteratorError) {
-          throw _iteratorError;
+        if (_didIteratorError2) {
+          throw _iteratorError2;
         }
       }
     }
@@ -86985,12 +86978,12 @@ var Settings = function (_React$Component) {
                 'installed',
                 this.props.pusher.version.upgrade_available ? _react2.default.createElement(
                   'span',
-                  { className: 'flag dark' },
+                  { className: 'flag flag--dark' },
                   _react2.default.createElement(_Icon2.default, { name: 'cloud_download', className: 'blue-text' }),
                   '\xA0 Upgrade available'
                 ) : _react2.default.createElement(
                   'span',
-                  { className: 'flag dark' },
+                  { className: 'flag flag--dark' },
                   _react2.default.createElement(_Icon2.default, { name: 'check', className: 'green-text' }),
                   '\xA0 Up-to-date'
                 )
@@ -87177,9 +87170,9 @@ var _Thumbnail = __webpack_require__(/*! ../components/Thumbnail */ "./src/js/co
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
-var _ArtistSentence = __webpack_require__(/*! ../components/ArtistSentence */ "./src/js/components/ArtistSentence.js");
+var _LinksSentence = __webpack_require__(/*! ../components/LinksSentence */ "./src/js/components/LinksSentence.js");
 
-var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
+var _LinksSentence2 = _interopRequireDefault(_LinksSentence);
 
 var _ArtistGrid = __webpack_require__(/*! ../components/ArtistGrid */ "./src/js/components/ArtistGrid.js");
 
@@ -87511,7 +87504,7 @@ var Track = function (_React$Component) {
             track.album && !track.album.uri ? track.album.name : null,
             !track.album ? 'Unknown album' : null,
             ' by ',
-            _react2.default.createElement(_ArtistSentence2.default, { artists: track.artists })
+            _react2.default.createElement(_LinksSentence2.default, { items: track.artists })
           ),
           _react2.default.createElement(
             'ul',
@@ -87531,7 +87524,7 @@ var Track = function (_React$Component) {
               null,
               _react2.default.createElement(
                 'span',
-                { className: 'flag dark' },
+                { className: 'flag flag--dark' },
                 'EXPLICIT'
               )
             ) : null,
@@ -88815,9 +88808,9 @@ var _Header = __webpack_require__(/*! ../../components/Header */ "./src/js/compo
 
 var _Header2 = _interopRequireDefault(_Header);
 
-var _ArtistSentence = __webpack_require__(/*! ../../components/ArtistSentence */ "./src/js/components/ArtistSentence.js");
+var _LinksSentence = __webpack_require__(/*! ../../components/LinksSentence */ "./src/js/components/LinksSentence.js");
 
-var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
+var _LinksSentence2 = _interopRequireDefault(_LinksSentence);
 
 var _ArtistGrid = __webpack_require__(/*! ../../components/ArtistGrid */ "./src/js/components/ArtistGrid.js");
 
@@ -93447,7 +93440,7 @@ var EditRadio = function (_React$Component) {
 
       if (valid_seeds) {
         this.props.pusherActions.updateRadio(this.state.seeds);
-        this.props.uiActions.closeModal();
+        window.history.back();
       } else {
         this.setState({ error_message: 'Invalid seed URI(s)' });
       }
@@ -94128,9 +94121,9 @@ var _Thumbnail = __webpack_require__(/*! ../../components/Thumbnail */ "./src/js
 
 var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 
-var _ArtistSentence = __webpack_require__(/*! ../../components/ArtistSentence */ "./src/js/components/ArtistSentence.js");
+var _LinksSentence = __webpack_require__(/*! ../../components/LinksSentence */ "./src/js/components/LinksSentence.js");
 
-var _ArtistSentence2 = _interopRequireDefault(_ArtistSentence);
+var _LinksSentence2 = _interopRequireDefault(_LinksSentence);
 
 var _Dater = __webpack_require__(/*! ../../components/Dater */ "./src/js/components/Dater.js");
 
@@ -94252,7 +94245,7 @@ var KioskMode = function (_React$Component) {
                 '-'
               )
             ),
-            this.props.current_track ? _react2.default.createElement(_ArtistSentence2.default, { nolinks: true, artists: this.props.current_track.artists }) : _react2.default.createElement(_ArtistSentence2.default, null)
+            this.props.current_track ? _react2.default.createElement(_LinksSentence2.default, { nolinks: true, items: this.props.current_track.artists }) : _react2.default.createElement(_LinksSentence2.default, null)
           ),
           _react2.default.createElement(
             'div',

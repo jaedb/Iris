@@ -217,12 +217,18 @@
 				}
 
 				&--added {
-					.from {
+					.by {
+						opacity: 0.5;
+
 						&:before {
 							content: '(';
 						}
 						&:after {
 							content: ')';
+						}
+
+						&--with-spacing {
+							padding-left: 0.25em;
 						}
 					}
 				}

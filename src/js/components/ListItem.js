@@ -1,7 +1,7 @@
 
 import React from 'react';
 
-import ArtistSentence from './ArtistSentence';
+import LinksSentence from './LinksSentence';
 import Dater from './Dater';
 import URILink from './URILink';
 import ContextMenuTrigger from './ContextMenuTrigger';
@@ -107,7 +107,7 @@ ago
     }
     if (key_string === 'owner') return <URILink type="user" uri={value.uri}>{value.id}</URILink>;
     if (key_string === 'popularity') return <Popularity full popularity={value} />;
-    if (key_string === 'artists') return <ArtistSentence artists={value} />;
+    if (key_string === 'artists') return <LinksSentence items={value} />;
     if (value === true) return <Icon name="check" />;
     if (typeof (value) === 'number') return <span>{value.toLocaleString()}</span>;
     return <span>{value}</span>;

@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import InputRange from 'react-input-range';
 
 import Header from '../../components/Header';
-import ArtistSentence from '../../components/ArtistSentence';
+import LinksSentence from '../../components/LinksSentence';
 import ArtistGrid from '../../components/ArtistGrid';
 import AlbumGrid from '../../components/AlbumGrid';
 import TrackList from '../../components/TrackList';

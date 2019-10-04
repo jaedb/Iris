@@ -5,7 +5,7 @@ import * as helpers from '../helpers';
 import Link from './Link';
 import Icon from './Icon';
 import Thumbnail from './Thumbnail';
-import ArtistSentence from './ArtistSentence';
+import LinksSentence from './LinksSentence';
 
 export default class GridItem extends React.Component {
   componentDidMount() {
@@ -75,7 +75,7 @@ tracks
       case 'album':
         return (
           <span className="grid__item__secondary__content">
-            {item.artists !== undefined ? <ArtistSentence nolinks artists={item.artists} /> : null}
+            {item.artists !== undefined ? <LinksSentence nolinks items={item.artists} /> : null}
           </span>
         );
         break;
@@ -83,7 +83,7 @@ tracks
       default:
         return (
           <span className="grid__item__secondary__content">
-            { item.artists !== undefined ? <ArtistSentence nolinks artists={item.artists} /> : null }
+            { item.artists !== undefined ? <LinksSentence nolinks items={item.artists} /> : null }
             { item.followers !== undefined ? `${item.followers.toLocaleString()} followers` : null }
           </span>
         );

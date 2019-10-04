@@ -562,32 +562,32 @@ footer {
   vertical-align: bottom;
   margin: 0 8px 1px;
 
-  &.blue {
+  &--blue {
     background: colour(blue);
     color: colour(white);
   }
 
-  &.info {
+  &--info {
     background: colour(yellow);
   }
 
-  &.warning {
+  &--warning {
     background: colour(orange);
     color: colour(white);
   }
 
-  &.error,
-  &.bad {
+  &--error,
+  &--bad {
     background: colour(red);
     color: colour(white);
   }
 
-  &.dark {
+  &--dark {
     background: lighten(colour(dark_grey), 10%);
     color: colour(mid_grey);
   }
 
-  &.large {
+  &--large {
     padding: 8px 10px 7px;
     font-size: 12px;
   }

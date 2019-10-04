@@ -6,7 +6,7 @@ import Link from '../../components/Link';
 
 import Modal from './Modal';
 import Thumbnail from '../../components/Thumbnail';
-import ArtistSentence from '../../components/ArtistSentence';
+import LinksSentence from '../../components/LinksSentence';
 import Dater from '../../components/Dater';
 import Icon from '../../components/Icon';
 import ProgressSlider from '../../components/Fields/ProgressSlider';
@@ -73,7 +73,7 @@ class KioskMode extends React.Component {
         <div className="player">
           <div className="current-track">
             <div className="title">{ this.props.current_track ? this.props.current_track.name : <span>-</span> }</div>
-            { this.props.current_track ? <ArtistSentence nolinks artists={this.props.current_track.artists} /> : <ArtistSentence /> }
+            { this.props.current_track ? <LinksSentence nolinks items={this.props.current_track.artists} /> : <LinksSentence /> }
           </div>
 
           <div className="progress-wrapper">

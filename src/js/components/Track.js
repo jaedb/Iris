@@ -3,7 +3,7 @@ import React from 'react';
 import Link from './Link';
 
 import Icon from './Icon';
-import ArtistSentence from './ArtistSentence';
+import LinksSentence from './LinksSentence';
 import Dater from './Dater';
 import URILink from './URILink';
 import ContextMenuTrigger from './ContextMenuTrigger';
@@ -183,7 +183,7 @@ export default class Track extends React.Component {
     if (track.artists) {
       track_details.push(
         <li className="details__item details__item--artists" key="artists">
-          {track.artists ? <ArtistSentence artists={track.artists} /> : '-'}
+          {track.artists ? <LinksSentence items={track.artists} /> : '-'}
         </li>,
       );
     }
@@ -208,8 +208,7 @@ export default class Track extends React.Component {
           {track.played_at ? (
             <span>
               <Dater type="ago" data={track.played_at} />
-              {' '}
-ago
+              {' ago'}
             </span>
           ) : '-'}
         </div>
@@ -220,15 +219,15 @@ ago
 
         switch (type) {
           case 'discover':
-            var link = <URILink type="recommendations" uri={helpers.getFromUri('seeds', track.added_from)}>discover</URILink>;
+            var link = <URILink type="recommendations" uri={helpers.getFromUri('seeds', track.added_from)}>Discover</URILink>;
             break;
 
           case 'browse':
-            var link = <URILink type="browse" uri={track.added_from.replace('iris:browse:', '')}>browse</URILink>;
+            var link = <URILink type="browse" uri={track.added_from.replace('iris:browse:', '')}>Browse</URILink>;
             break;
 
           case 'search':
-            var link = <URILink type="search" uri={track.added_from.replace('iris:', '')}>search</URILink>;
+            var link = <URILink type="search" uri={track.added_from.replace('iris:', '')}>Search</URILink>;
             break;
 
           case 'radio':
@@ -236,17 +235,16 @@ ago
             break;
 
           default:
-            var link = <URILink type={type} uri={track.added_from}>{type}</URILink>;
+            var link = <URILink type={type} uri={track.added_from}>{helpers.titleCase(type)}</URILink>;
         }
 
         var track_middle_column = (
           <div className="list__item__column__item list__item__column__item--added">
-            <span className="by">
-              {`${track.added_by} `}
-            </span>
             <span className="from">
-              {`from `}
               {link}
+            </span>
+            <span className="by by--with-spacing">
+              {`${track.added_by}`}
             </span>
           </div>
         );
@@ -299,7 +297,7 @@ ago
           <div className="list__item__column list__item__column--name">
             <div className="list__item__column__item--name">
               {track.name ? track.name : <span className="mid_grey-text">{track.uri}</span>}
-              {track.explicit ? <span className="flag dark">EXPLICIT</span> : null}
+              {track.explicit ? <span className="flag flag--dark">EXPLICIT</span> : null}
               {track.playing ? <Icon className={`js--${this.props.play_state}`} name="playing" type="css" /> : null}
             </div>
             {track_details ? (

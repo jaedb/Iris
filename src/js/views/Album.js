@@ -7,7 +7,7 @@ import Header from '../components/Header';
 import TrackList from '../components/TrackList';
 import Thumbnail from '../components/Thumbnail';
 import Parallax from '../components/Parallax';
-import ArtistSentence from '../components/ArtistSentence';
+import LinksSentence from '../components/LinksSentence';
 import Loader from '../components/Loader';
 import FollowButton from '../components/Fields/FollowButton';
 import NiceNumber from '../components/NiceNumber';
@@ -186,7 +186,7 @@ export class Album extends React.Component {
             ) : null}
             {album.artists && album.artists.length > 0 ? (
               <li>
-                <ArtistSentence artists={album.artists} />
+                <LinksSentence items={album.artists} />
               </li>
             ) : null}
             {album.release_date ? (

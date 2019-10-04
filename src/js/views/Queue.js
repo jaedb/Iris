@@ -7,7 +7,7 @@ import Icon from '../components/Icon';
 import Parallax from '../components/Parallax';
 import TrackList from '../components/TrackList';
 import Dater from '../components/Dater';
-import ArtistSentence from '../components/ArtistSentence';
+import LinksSentence from '../components/LinksSentence';
 import Thumbnail from '../components/Thumbnail';
 import Header from '../components/Header';
 import URILink from '../components/URILink';
@@ -112,24 +112,6 @@ class Queue extends React.Component {
     this.props.mopidyActions.reorderTracklist(indexes, index);
   }
 
-  renderQueueStats() {
-    const { current_tracklist } = this.props;
-
-    return (
-      <div className="queue-stats mid_grey-text">
-        <span>
-          {`${current_tracklist.length || 0} tracks`}
-        </span>
-        &nbsp;&nbsp;|&nbsp;&nbsp;
-        {current_tracklist.length > 0 ? (
-          <Dater type="total-time" data={current_tracklist} />
-        ) : (
-          <span>0 mins</span>
-        )}
-      </div>
-    );
-  }
-
   renderArtwork(image) {
     const { current_track } = this.props;
 
@@ -147,7 +129,7 @@ class Queue extends React.Component {
     }
     return (
       <div className="current-track__artwork">
-        <URILink type="album" uri={uri}>
+        <URILink uri={uri}>
           <Thumbnail glow image={image} />
         </URILink>
       </div>
@@ -159,44 +141,44 @@ class Queue extends React.Component {
     if (!added_from_uri) return null;
 
     const uri_type = helpers.uriType(added_from_uri);
-    let item_uri = added_from_uri;
-    let item_type = uri_type;
+    const items = [];
 
     // Radio nests it's seed URIs in an encoded URI format
     if (uri_type === 'radio') {
       const radio_seeds = helpers.getFromUri('seeds', added_from_uri);
-
-      // For now we only care about the first seed
-      // TODO: Support for multiple seeds
-      item_uri = radio_seeds[0];
-      item_type = helpers.uriType(item_uri);
+      
+      for (let seed of radio_seeds) {
+        let item_type = helpers.uriType(seed);
+        let item_library = this.props[`${item_type}s`];
+        if (item_library && item_library[seed]) {
+          items.push(item_library[seed]);
+        }
+      }
+    } else {
+      const item_library = this.props[`${uri_type}s`];
+      if (item_library && item_library[added_from_uri]) {
+        items.push(item_library[added_from_uri]);
+      }
     }
 
-    const item_library = this.props[`${item_type}s`];
-    if (!item_library) return null;
-
-    const item = item_library[item_uri];
-    if (!item) return null;
+    if (items.length <= 0) return null;
 
     return (
       <div className="current-track__added-from">
         <URILink
-          type={item_type}
-          uri={item.uri}
+          uri={items[0].uri}
           className="current-track__added-from__thumbnail"
         >
           <Thumbnail
-            images={item.images}
+            images={items[0].images}
             size="small"
-            circle={item_type === 'artist'}
+            circle={helpers.uriType(items[0].uri) === 'artist'}
           />
         </URILink>
         <div className="current-track__added-from__text">
           {'Playing from '}
-          <URILink type={item_type} uri={item.uri}>
-            {item.name}
-          </URILink>
-          {uri_type === 'radio' && <span> radio</span>}
+          <LinksSentence items={items} />
+          {uri_type === 'radio' && <span className="flag flag--blue">Radio</span>}
         </div>
       </div>
     );
@@ -217,15 +199,12 @@ class Queue extends React.Component {
 
     const options = (
       <span>
-        {this.props.spotify_enabled ? (
+        {this.props.spotify_enabled && (
           <Link className="button button--no-hover" to="/queue/radio">
             <Icon name="radio" />
             Radio
-            {this.props.radio && this.props.radio.enabled ? (
-              <span className="flag blue">On</span>
-            ) : null}
           </Link>
-        ) : null}
+        )}
         <Link className="button button--no-hover" to="/queue/history">
           <Icon name="history" />
           History
@@ -259,12 +238,12 @@ class Queue extends React.Component {
               </div>
 
               {current_track ? (
-                <ArtistSentence
+                <LinksSentence
                   className="current-track__artists"
-                  artists={current_track.artists}
+                  items={current_track.artists}
                 />
               ) : (
-                <ArtistSentence className="current-track__artists" />
+                <LinksSentence className="current-track__artists" />
               )}
 
               {this.renderAddedFrom()}
@@ -273,17 +252,14 @@ class Queue extends React.Component {
                 <ul className="details">
                   <li>{`${queue_tracks.length} tracks`}</li>
                   <li><Dater type="total-time" data={queue_tracks} /></li>
-                  <li>
-                    <a
-                      onClick={(e) => {
-                        this.props.mopidyActions.clearTracklist();
-                        this.props.uiActions.hideContextMenu();
-                      }}
-                    >
-                      <Icon name="delete_sweep" />
-                      Clear queue
-                    </a>
-                  </li>
+                  {queue_tracks.length > 0 && (
+                    <li>
+                      <a onClick={e => this.props.mopidyActions.clearTracklist()}>
+                        <Icon name="delete_sweep" />
+                        Clear queue
+                      </a>
+                    </li>
+                  )}
                 </ul>
               </div>
             </div>

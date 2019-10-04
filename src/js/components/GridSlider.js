@@ -5,7 +5,7 @@ import { createStore, bindActionCreators } from 'redux';
 
 import Link from './Link';
 
-import ArtistSentence from './ArtistSentence';
+import LinksSentence from './LinksSentence';
 import Thumbnail from './Thumbnail';
 
 import * as uiActions from '../services/ui/actions';
@@ -78,7 +78,7 @@ class GridSlider extends React.Component {
     <Thumbnail size="medium" images={album.images} />
     <div className="name">{ album.name }</div>
     <div className="secondary">
-      { album.artists ? <ArtistSentence artists={album.artists} /> : <span>-</span> }
+      { album.artists ? <LinksSentence items={album.artists} /> : <span>-</span> }
     </div>
   </div>
 								    );

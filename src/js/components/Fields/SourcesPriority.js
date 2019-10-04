@@ -47,7 +47,7 @@ export default class SourcesPriority extends React.Component {
 						  const name = helpers.titleCase(scheme.replace(':', '').replace('+', ' '));
 
 						  return (
-  <span className="source flag grey" key={scheme} data-id={scheme}>
+  <span className="source flag flag--grey" key={scheme} data-id={scheme}>
     <Icon name="drag_indicator" />
     {name}
   </span>

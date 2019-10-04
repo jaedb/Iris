@@ -1,15 +1,17 @@
 
 import React, { memo } from 'react';
 import Link from './Link';
+import * as helpers from '../helpers';
 
 export default memo((props) => {
   let to = null;
-  let { uri } = props;
+  let { uri, type } = props;
+  const uriType = type || helpers.uriType(uri);
   if (!props.unencoded) {
     uri = encodeURIComponent(uri);
   }
 
-  switch (props.type) {
+  switch (uriType) {
     case 'playlist':
       to = `/playlist/${uri}`;
       break;

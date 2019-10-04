@@ -15,29 +15,13 @@
 
       a {
         border: 0 !important;
-        display: inline-block;
+        display: block;
         position: relative;
       }
 
       .thumbnail {
         width: 30vh;
         display: inline-block;
-      }
-
-      &--radio-enabled {
-        .thumbnail {
-          box-sizing: border-box;
-        }
-
-        .radio-overlay {
-          position: absolute;
-          top: -15%;
-          left: -15%;
-          width: 130%;
-          height: 130%;
-          z-index: 2;
-          pointer-events: none;
-        }
       }
     }
 
