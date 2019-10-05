@@ -341,8 +341,8 @@ class PlaybackControls extends React.Component {
 const mapStateToProps = (state, ownProps) => ({
   snapcast_enabled: state.pusher.config.snapcast_enabled,
   http_streaming_enabled: state.core.http_streaming_enabled,
-  http_streaming_volume: (state.core.http_streaming_volume ? state.core.http_streaming_volume : 50),
-  http_streaming_mute: (state.core.http_streaming_mute ? state.core.http_streaming_mute : false),
+  http_streaming_volume: parseInt(state.core.http_streaming_volume),
+  http_streaming_mute: state.core.http_streaming_mute,
   http_streaming_url: (state.core.http_streaming_url ? state.core.http_streaming_url : null),
   http_streaming_cachebuster: state.core.http_streaming_cachebuster,
   current_track: (state.core.current_track && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null),

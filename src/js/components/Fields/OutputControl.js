@@ -111,7 +111,7 @@ class OutputControl extends React.Component {
           <div className="output-control__item__name">
 						Local browser
           </div>
-          <div className="output-control__item__details">
+          <div className="output-control__item__controls">
             <VolumeControl
               className="output-control__item__volume"
               volume={this.props.http_streaming_volume}
@@ -200,7 +200,7 @@ class OutputControl extends React.Component {
 
 const mapStateToProps = (state, ownProps) => ({
   http_streaming_enabled: state.core.http_streaming_enabled,
-  http_streaming_volume: state.core.http_streaming_volume,
+  http_streaming_volume: parseInt(state.core.http_streaming_volume),
   http_streaming_mute: state.core.http_streaming_mute,
   pusher_connected: state.pusher.connected,
   snapcast_enabled: (state.pusher.config ? state.pusher.config.snapcast_enabled : null),
