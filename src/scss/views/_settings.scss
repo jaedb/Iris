@@ -40,6 +40,7 @@
 			padding-top: 15px;
 			padding-bottom: 15px;
 			vertical-align: top;
+			justify-items: auto;
 
 			.commands__item {
 				display: inline-block;
@@ -51,10 +52,8 @@
 				padding-right: 0.5em;
 			}
 
-			&__drag-handle,
-			&__command-item {
-				float: left;
-				display: block;
+			&__details {
+				display: flex;
 			}
 
 			&__url {
@@ -66,12 +65,13 @@
 			}
 
 			&__actions {
-				position: absolute;
-				top: 16px;
-				right: 0;
+				text-align: right;
+				justify-self: right;
+				margin-left: auto;
 
 				.action {
 					padding: 12px 8px;
+					margin: -12px 0;
 				}
 			} 
 		}

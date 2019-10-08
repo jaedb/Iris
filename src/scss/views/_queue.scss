@@ -7,7 +7,6 @@
     justify-content: center;
 
     &__artwork {
-      position: relative;
       text-align: right;
       display: block;
       z-index: 1;
@@ -16,26 +15,13 @@
 
       a {
         border: 0 !important;
+        display: block;
+        position: relative;
       }
 
       .thumbnail {
         width: 30vh;
         display: inline-block;
-      }
-
-      &--radio-enabled {
-        .thumbnail {
-          box-sizing: border-box;
-        }
-
-        .radio-overlay {
-          position: absolute;
-          top: -15%;
-          left: -15%;
-          width: 130%;
-          height: 130%;
-          z-index: 2;
-        }
       }
     }
 
@@ -65,8 +51,12 @@
 
       &__text {
         border: 0 !important;
-        display: block;
+        display: flex;
         padding-left: 15px;
+
+        .links-sentence {
+          padding-left: 0.15em;
+        }
       }
 
       &__thumbnail {
@@ -75,6 +65,10 @@
           width: 30px;
         }
       }
+    }
+
+    &__queue-details {
+      padding-top: 2rem;
     }
 
     @include responsive($bp_medium) {

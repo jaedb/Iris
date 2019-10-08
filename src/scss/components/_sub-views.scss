@@ -1,12 +1,14 @@
 .sub-views {
   &__option {
     @include feature_font();
+    @include animate();
     color: colour(white);
     display: inline-block;
     margin-right: 25px;
     font-size: 15px;
     font-weight: 500;
-    border-bottom: 3px solid transparent !important;
+    border-bottom: 0;
+    padding-bottom: 3px;
     cursor: pointer;
 
     .light-theme & {
@@ -15,6 +17,13 @@
 
     h4 {
       margin: 8px 0 4px;
+    }
+
+    &--active,
+    &:hover {
+      border-bottom-width: 3px !important;
+      border-bottom-style: solid;
+      padding-bottom: 0px;
     }
 
     &--active {
@@ -26,10 +35,10 @@
     }
 
     &:not(.sub-views__option--active):hover {
-      border-color: rgba(255, 255, 255, 0.2) !important;
+      border-color: colour(soft_grey) !important;
 
       .light-theme & {
-        border-color: rgba(0, 0, 0, 0.2);
+        border-color: colour(light_grey) !important;
       }
     }
   }

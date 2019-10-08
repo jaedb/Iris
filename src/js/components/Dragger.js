@@ -1,98 +1,96 @@
 
-import React from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
+import React from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
-import * as uiActions from '../services/ui/actions'
-import * as mopidyActions from '../services/mopidy/actions'
-import * as spotifyActions from '../services/spotify/actions'
+import * as uiActions from '../services/ui/actions';
+import * as mopidyActions from '../services/mopidy/actions';
+import * as spotifyActions from '../services/spotify/actions';
 
-class Dragger extends React.Component{
+class Dragger extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleMouseMove = this.handleMouseMove.bind(this);
+    this.handleMouseUp = this.handleMouseUp.bind(this);
 
-	constructor(props){
-		super(props);
-		this.handleMouseMove = this.handleMouseMove.bind(this)
-		this.handleMouseUp = this.handleMouseUp.bind(this)
+    this.state = {
+      active: false,
+      position_x: 0,
+      position_y: 0,
+    };
+  }
 
-		this.state = {
-			active: false,
-			position_x: 0,
-			position_y: 0
-		}
-	}
+  componentDidMount() {
+    window.addEventListener('mousemove', this.handleMouseMove, false);
+    window.addEventListener('mouseup', this.handleMouseUp, false);
+  }
 
-	componentDidMount(){
-		window.addEventListener("mousemove", this.handleMouseMove, false);
-		window.addEventListener("mouseup", this.handleMouseUp, false);
-	}
+  componentWillUnmount() {
+    window.removeEventListener('mousemove', this.handleMouseMove, false);
+    window.removeEventListener('mouseup', this.handleMouseUp, false);
+  }
 
-	componentWillUnmount(){
-		window.removeEventListener("mousemove", this.handleMouseMove, false);
-		window.removeEventListener("mouseup", this.handleMouseUp, false);
-	}
+  handleMouseMove(e) {
+    if (!this.props.dragger) return null;
 
-	handleMouseMove(e){
-		if (!this.props.dragger ) return null;
+    const threshold = 10;
+    if (
+      e.clientX > this.props.dragger.start_x + threshold
+			|| e.clientX < this.props.dragger.start_x - threshold
+			|| e.clientY > this.props.dragger.start_y + threshold
+			|| e.clientY < this.props.dragger.start_y - threshold) {
+      this.setState({
+        position_x: e.clientX,
+        position_y: e.clientY,
+      });
 
-		var threshold = 10
-		if (
-			e.clientX > this.props.dragger.start_x + threshold || 
-			e.clientX < this.props.dragger.start_x - threshold || 
-			e.clientY > this.props.dragger.start_y + threshold || 
-			e.clientY < this.props.dragger.start_y - threshold){
+      const dropzones = document.getElementsByClassName('dropzone');
+      for (let i = 0; i < dropzones.length; i++) {
+        dropzones[i].classList.remove('hover');
+      }
 
-			this.setState({
-				position_x: e.clientX,
-				position_y: e.clientY
-			})
+      if (e.target.classList.contains('dropzone') && !e.target.classList.contains('hover')) {
+        e.target.className += ' hover';
+      }
 
-			var dropzones = document.getElementsByClassName('dropzone')
-			for(var i = 0; i < dropzones.length; i++){
-				dropzones[i].classList.remove('hover')
-			}
+      // if not already, activate
+      if (!this.props.dragger.active) this.props.uiActions.dragActive();
+    }
+  }
 
-			if (e.target.classList.contains('dropzone') && !e.target.classList.contains('hover')){
-				e.target.className += ' hover'
-			}
+  handleMouseUp(e) {
+    if (!this.props.dragger) return null;
+    this.props.uiActions.dragEnd(e);
+  }
 
-			// if not already, activate
-			if (!this.props.dragger.active ) this.props.uiActions.dragActive()
-		}
-	}
+  render() {
+    if (!this.props.dragger || !this.props.dragger.active) return null;
 
-	handleMouseUp(e){
-		if (!this.props.dragger ) return null;
-		this.props.uiActions.dragEnd(e )
-	}
+    const style = {
+      left: this.state.position_x,
+      top: this.state.position_y,
+    };
 
-	render(){
-		if (!this.props.dragger || !this.props.dragger.active ) return null;
-
-		var style = {
-			left: this.state.position_x,
-			top: this.state.position_y,
-		}
-
-		return (
-			<div className="dragger" style={style}>
-				Dragging { this.props.dragger.victims.length } things
-			</div>
-		);
-	}
+    return (
+      <div className="dragger" style={style}>
+				Dragging
+        {' '}
+        { this.props.dragger.victims.length }
+        {' '}
+things
+      </div>
+    );
+  }
 }
 
-const mapStateToProps = (state, ownProps) => {
-	return {
-		dragger: state.ui.dragger
-	}
-}
+const mapStateToProps = (state, ownProps) => ({
+  dragger: state.ui.dragger,
+});
 
-const mapDispatchToProps = (dispatch) => {
-	return {
-		uiActions: bindActionCreators(uiActions, dispatch),
-		spotifyActions: bindActionCreators(spotifyActions, dispatch),
-		mopidyActions: bindActionCreators(mopidyActions, dispatch)
-	}
-}
+const mapDispatchToProps = (dispatch) => ({
+  uiActions: bindActionCreators(uiActions, dispatch),
+  spotifyActions: bindActionCreators(spotifyActions, dispatch),
+  mopidyActions: bindActionCreators(mopidyActions, dispatch),
+});
 
-export default connect(mapStateToProps, mapDispatchToProps)(Dragger)
+export default connect(mapStateToProps, mapDispatchToProps)(Dragger);

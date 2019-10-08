@@ -14,6 +14,10 @@
 		&--selected {
 			&:after {
 				background: colour(grey) !important;
+
+				.light-theme & {
+					background: rgba(128,128,128,0.4) !important;
+				}
 			}
 		}
 
@@ -38,14 +42,14 @@
 
 		&:hover {
 			&:after {
-				background: rgba(255,255,255,0.15);
+				background: rgba(128,128,128,0.2);
 			}
 		}
 
 		&:active,
 		&:focus {
 			&:after {
-				background: rgba(255,255,255,0.3);
+				background: rgba(128,128,128,0.5);
 			}
 		}
 	}

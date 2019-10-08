@@ -3,55 +3,51 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import * as helpers from '../../helpers'
-import Icon from '../../components/Icon'
+import * as helpers from '../../helpers';
+import Icon from '../../components/Icon';
 
-class Modal extends React.Component{
+class Modal extends React.Component {
+  constructor(props) {
+    super(props);
+  }
 
-	constructor(props){
-		super(props);
-	}
+  componentWillMount() {
+    $('body').addClass('modal-open');
+  }
 
-	componentWillMount(){
-		$('body').addClass('modal-open');
-	}
+  componentWillUnmount() {
+    $('body').removeClass('modal-open');
+  }
 
-	componentWillUnmount(){
-		$('body').removeClass('modal-open');
-	}
+  render() {
+    let className = 'modal';
+    if (this.props.className) {
+      className += ` ${this.props.className}`;
+    }
 
-	render(){
+    return (
+      <div className={className}>
 
-		var className = "modal";
-		if (this.props.className){
-			className += " "+this.props.className;
-		}
+        <div className="controls">
+          {this.props.noclose ? null : (
+            <div className="control close" onClick={(e) => window.history.back()}>
+              <Icon name="close" className="white" />
+            </div>
+          ) }
+        </div>
 
-		return (
-			<div className={className}>
-
-				<div className="controls">
-					{this.props.noclose ? null : <div className="control close" onClick={e => window.history.back()}>
-						<Icon name="close" className="white" />
-					</div> }
-				</div>
-
-				<div className="content">
-					{this.props.children}
-				</div>
-			</div>
-		);
-	}
+        <div className="content">
+          {this.props.children}
+        </div>
+      </div>
+    );
+  }
 }
 
-const mapStateToProps = (state, ownProps) => {
-	return {
-		shortkeys_enabled: state.ui.shortkeys_enabled
-	}
-}
+const mapStateToProps = (state, ownProps) => ({
+  shortkeys_enabled: state.ui.shortkeys_enabled,
+});
 
-const mapDispatchToProps = (dispatch) => {
-	return {}
-}
+const mapDispatchToProps = (dispatch) => ({});
 
-export default connect(mapStateToProps, mapDispatchToProps)(Modal)
+export default connect(mapStateToProps, mapDispatchToProps)(Modal);

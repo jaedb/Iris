@@ -11,22 +11,47 @@
 
 			h1 {
 				padding-bottom: 15px;
-				font-size: 4rem;
+				font-size: 5rem;
+				line-height: 5rem;
 			}
 
-			h2 {
-				padding-bottom: 25px;
-			}
+      .heading {
+        display: flex;
+        align-items: center;
+
+        &__thumbnail {
+          width: 140px;
+          margin-right: 30px;
+				}
+				
+				&__content {
+					padding-top: 20px;
+					
+					&__details {
+						display: flex;
+						align-items: center;
+					}
+				}
+      }
 		}
 	}
 
-	.content-wrapper {
-		background: colour(dark_grey);
+  @include responsive($bp_wide) {
+    .intro {
+      .liner {
+        .heading {
+          &__thumbnail {
+            width: 100px;
+          }
+        }
 
-		.light-theme & {
-			background: colour(white);
-		}
-	}
+        h1 {
+          font-size: 4rem;
+          line-height: 4rem;
+        }
+      }
+    }
+  }
 
 	@include responsive($bp_medium){
 		.intro {
@@ -34,6 +59,14 @@
 			.thumbnail {
 				float: none;
 				margin: 0 auto 20px;
+			}
+
+			.heading {
+				display: block;
+
+				&__thumbnail {
+					display: none;
+				}
 			}
 
 			.liner {

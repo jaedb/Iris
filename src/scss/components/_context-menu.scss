@@ -182,7 +182,6 @@
 			}
 
 			&__text {
-				@include one_line_text();
 				position: relative;
 				z-index: 2;
 				font-size: 1.2rem;
@@ -305,7 +304,7 @@
 	padding: 14px 12px;
 	cursor: pointer;
 	vertical-align: top;
-	margin-top: -1px;
+	margin-top: 2px;
 	position: relative;
 	border-radius: 3px;
 	text-align: center;

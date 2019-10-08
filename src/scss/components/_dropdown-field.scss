@@ -8,6 +8,8 @@
 	display: inline-block;
 
 	.label {
+		display: flex;
+		
 		.icon {
 			padding-right: 8px;
 		}
@@ -141,6 +143,8 @@
 			padding: 0 0 3px 0;
 			opacity: 0.5;
 			font-size: 1rem;
+			display: block;
+			cursor: default;
 
 			&,
 			&:hover {

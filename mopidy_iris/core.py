@@ -645,6 +645,8 @@ class IrisCore(pykka.ThreadingActor):
             # Save results (minus first batch) for later use
             self.radio['results'] = uris[3:]
 
+            self.add_radio_metadata(added)
+
             if starting:
                 self.core.playback.play()
                 self.broadcast(data={
@@ -764,8 +766,26 @@ class IrisCore(pykka.ThreadingActor):
             # Only add the next set of uris
             uris = uris[0:3]
 
-            self.core.tracklist.add(uris = uris)
+            added = self.core.tracklist.add(uris = uris)
 
+            self.add_radio_metadata(added)
+
+
+    def add_radio_metadata( self, added ):
+        seeds = ''
+        if len(self.radio['seed_artists']) > 0:
+            seeds = seeds+(','.join(self.radio['seed_artists'])).replace('spotify:artist:','spotify_artist_')
+        if len(self.radio['seed_tracks']) > 0:
+            if seeds != '': seeds = seeds+','
+            seeds = seeds+(','.join(self.radio['seed_tracks'])).replace('spotify:track:','spotify_track_')
+        if len(self.radio['seed_genres']) > 0:
+            if seeds != '': seeds = seeds+','
+            seeds = seeds+(','.join(self.radio['seed_genres'])).replace('spotify:genre:','spotify_genre_')
+
+        metadata = {'tlids': [], 'added_by': 'Radio', 'added_from': 'iris:radio:'+seeds}
+        for added_tltrack in added.get():
+            metadata['tlids'].append(added_tltrack.tlid)
+        self.add_queue_metadata(data=metadata)
 
 
     ##
@@ -881,7 +901,6 @@ class IrisCore(pykka.ThreadingActor):
             }
         else:
             command = self.commands[str(data['id'])]
-
             if "method" not in command:
                 error = {
                     'message': 'Command failed',
@@ -893,6 +912,8 @@ class IrisCore(pykka.ThreadingActor):
                     'description': 'Missing required property "url"'
                 }
 
+        logger.debug("Running command "+str(command))
+
         if error:
             if (callback):
                 callback(False, error)
@@ -902,10 +923,22 @@ class IrisCore(pykka.ThreadingActor):
 
         # Construct the request
         http_client = tornado.httpclient.HTTPClient()
+        # Build headers dict if additional headers are given
+        headers = None
+        if 'additional_headers' in command:
+            d = command['additional_headers'].split('\n')
+            lines = list(filter(lambda x: x.find(':') > 0, d))
+            fields = [(x.split(':', 1)[0].strip().lower(), x.split(':', 1)[1].strip()) for x in lines]
+            headers = dict(fields)
+
         if (command['method'] == 'POST'):
-            request = tornado.httpclient.HTTPRequest(command['url'], connect_timeout=5, method='POST', body=json.dumps(command['post_data']), validate_cert=False)
+            if 'content-type' in headers and headers['content-type'].lower() != 'application/json':
+                post_data = command['post_data']
+            else:
+                post_data = json.dumps(command['post_data'])
+            request = tornado.httpclient.HTTPRequest(command['url'], connect_timeout=5, method='POST', body=post_data, validate_cert=False, headers=headers)
         else:
-            request = tornado.httpclient.HTTPRequest(command['url'], connect_timeout=5, validate_cert=False)
+            request = tornado.httpclient.HTTPRequest(command['url'], connect_timeout=5, validate_cert=False, headers=headers)
         
         # Make the request, and handle any request errors
         try:
@@ -921,17 +954,22 @@ class IrisCore(pykka.ThreadingActor):
             else:
                 return error
 
-        # Attempt to parse JSON
+        # Attempt to parse body as JSON
         try:
             command_response_body = json.loads(command_response.body)
         except:
-            command_response_body = command_response.body
+            # Perhaps it requires unicode encoding?
+            try:
+                command_response_body = tornado.escape.to_unicode(command_response.body)
+            except:
+                command_response_body = ""
 
         # Finally, return the result
         response = {
             'message': 'Command run',
             'response': command_response_body
         }
+        
         if (callback):
             callback(response)
             return

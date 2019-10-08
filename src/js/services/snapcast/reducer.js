@@ -1,51 +1,47 @@
 
-export default function reducer(snapcast = {}, action){
-    switch (action.type){
+export default function reducer(snapcast = {}, action) {
+  switch (action.type) {
+    case 'SNAPCAST_SERVER_LOADED':
+      var server = { ...action.server };
+      return { ...snapcast, server };
 
-        case 'SNAPCAST_SERVER_LOADED':
-            var server = Object.assign({}, action.server);
-            return Object.assign({}, snapcast, { server: server });
+    case 'SNAPCAST_CLIENTS_LOADED':
+      if (action.flush) {
+        var clients = {};
+      } else {
+        var clients = { ...snapcast.clients };
+      }
 
-        case 'SNAPCAST_CLIENTS_LOADED':
-            if (action.flush){
-                var clients = {};
-            } else {
-                var clients = Object.assign({}, snapcast.clients);
-            }
+      for (const client of action.clients) {
+        clients[client.id] = client;
+      }
+      return { ...snapcast, clients };
 
-            for (var client of action.clients){
-                clients[client.id] = client;
-            }
-            return Object.assign({}, snapcast, { clients: clients });
+    case 'SNAPCAST_GROUPS_LOADED':
+      if (action.flush) {
+        var groups = {};
+      } else {
+        var groups = { ...snapcast.groups };
+      }
 
-        case 'SNAPCAST_GROUPS_LOADED':
-            if (action.flush){
-                var groups = {};
-            } else {
-                var groups = Object.assign({}, snapcast.groups);
-            }
+      for (const group of action.groups) {
+        groups[group.id] = group;
+      }
+      return { ...snapcast, groups };
 
-            for (var group of action.groups){
-                groups[group.id] = group;
-            }
-            return Object.assign({}, snapcast, { groups: groups });
+    case 'SNAPCAST_STREAMS_LOADED':
+      if (action.flush) {
+        var streams = {};
+      } else {
+        var streams = { ...snapcast.streams };
+      }
 
-        case 'SNAPCAST_STREAMS_LOADED':
-            if (action.flush){
-                var streams = {};
-            } else {
-                var streams = Object.assign({}, snapcast.streams);
-            }
+      for (const stream of action.streams) {
+        streams[stream.id] = stream;
+      }
+      return { ...snapcast, streams };
 
-            for (var stream of action.streams){
-                streams[stream.id] = stream;
-            }
-            return Object.assign({}, snapcast, { streams: streams });
-
-        default:
-            return snapcast
-    }
+    default:
+      return snapcast;
+  }
 }
-
-
-

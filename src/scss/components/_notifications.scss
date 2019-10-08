@@ -1,5 +1,4 @@
 
-
 .notifications {
 	position: fixed;
 	bottom: 75px;
@@ -109,22 +108,9 @@
 			}
 
 			.loader {
-				width: 20px;
-				height: 20px;
 				position: absolute;
-				top: 0;
-				left: 0;
-				opacity: 1;	
-				z-index: 2;
-				margin: 0.85rem;
-
-				&:before {
-					border-color: transparent;
-				}
-
-				&:after {
-					border-right-color: colour(white);
-				}
+				top: 13px;
+				left: 13px;
 
 				.progress {
 					position: absolute;

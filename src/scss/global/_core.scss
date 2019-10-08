@@ -76,6 +76,7 @@ body {
 .app-inner {
   width: 100%;
   height: 100%;
+  position: relative;
 
   &.light-theme {
     color: colour(darkest_grey);
@@ -89,7 +90,7 @@ body {
 }
 
 main {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   bottom: 60px;
@@ -138,7 +139,7 @@ main {
       background: colour(grey);
 
       &:hover {
-        background: darken(colour(grey), 10%);
+        background: lighten(colour(grey), 10%);
       }
     }
   }
@@ -219,14 +220,15 @@ main {
 
 h1 {
   @include feature_font();
-  color: colour(white);
   font-weight: 700;
   font-size: 3.4rem;
   line-height: 3.4rem;
   letter-spacing: -0.15rem;
+  color: colour(white);
+  display: flex;
 
   .light-theme & {
-    color: colour(grey);
+    color: colour(darkest_grey);
   }
 }
 
@@ -236,6 +238,8 @@ h2 {
   font-size: 2rem;
   line-height: 2.2rem;
   letter-spacing: -0.08rem;
+
+  opacity: 0.5;
 
   a {
     color: inherit;
@@ -286,6 +290,7 @@ h4 {
   .button {
     margin-left: 10px;
     margin-bottom: -1px;
+    margin-top: 0;
   }
 }
 
@@ -529,7 +534,7 @@ footer {
   opacity: 0.5;
 
   li {
-    display: inline-block;
+    display: inline-flex;
 
     &.source {
       padding-right: 10px;
@@ -537,6 +542,12 @@ footer {
 
     &:not(.source) ~ li {
       @include bullet();
+    }
+
+    .icon {
+      vertical-align: unset;
+      font-size: 0.9em;
+      margin-right: 0.25em;
     }
   }
 }
@@ -552,32 +563,32 @@ footer {
   vertical-align: bottom;
   margin: 0 8px 1px;
 
-  &.blue {
+  &--blue {
     background: colour(blue);
     color: colour(white);
   }
 
-  &.info {
+  &--info {
     background: colour(yellow);
   }
 
-  &.warning {
+  &--warning {
     background: colour(orange);
     color: colour(white);
   }
 
-  &.error,
-  &.bad {
+  &--error,
+  &--bad {
     background: colour(red);
     color: colour(white);
   }
 
-  &.dark {
+  &--dark {
     background: lighten(colour(dark_grey), 10%);
     color: colour(mid_grey);
   }
 
-  &.large {
+  &--large {
     padding: 8px 10px 7px;
     font-size: 12px;
   }
@@ -628,6 +639,7 @@ footer {
   h1 {
     font-size: 2rem;
     line-height: 2rem;
+    display: block;
   }
 
   h2 {

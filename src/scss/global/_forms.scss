@@ -180,11 +180,11 @@ select {
   @include animate();
   @include feature_font();
   @include noselect();
+  display: inline-flex;
   font-size: 14px;
   color: colour(black);
-  display: inline-block;
   padding: 9px 30px 7px;
-  margin: 0 20px 10px 0;
+  margin: 5px 20px 5px 0;
   box-sizing: border-box;
   border-radius: 3px;
   vertical-align: middle;
