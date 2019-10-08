@@ -306,6 +306,7 @@ class LibraryAlbums extends React.Component {
         <FilterField
           initialValue={this.state.filter}
           handleChange={(value) => this.setState({ filter: value, limit: this.state.per_page })}
+          onSubmit={e => this.props.uiActions.hideContextMenu()}
         />
         <DropdownField
           icon="sort"

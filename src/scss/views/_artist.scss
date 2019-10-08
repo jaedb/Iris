@@ -48,6 +48,11 @@
     &.overview {
       .albums {
         padding-top: 30px;
+
+        h4 {
+          display: flex;
+          align-items: center;
+        }
       }
     }
 

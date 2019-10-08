@@ -37,6 +37,13 @@ export default class FilterField extends React.Component {
     }
   }
 
+  handleSubmit(e) {
+    const { onSubmit } = this.props;
+    if (onSubmit) onSubmit(e);
+    e.preventDefault();
+    return false;
+  }
+
   activate() {
     this.setState({ active: true });
   }
@@ -58,7 +65,7 @@ export default class FilterField extends React.Component {
   render() {
     return (
       <span className={`filter-field ${this.state.active ? 'active' : ''}`} onClick={(e) => this.activate()}>
-        <form>
+        <form onSubmit={e => this.handleSubmit(e)}>
           <input
             type="text"
             placeholder="Filter"

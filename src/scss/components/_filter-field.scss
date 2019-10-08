@@ -47,7 +47,8 @@
 		form {
 			display: block;
 			width: auto;
-			padding: 10px 18px;
+			padding: 10px 0;
+			pointer: auto;
 
 			.icon {
 				display: none;
@@ -61,7 +62,6 @@
 				font-weight: 700;
 				background: transparent !important;
 				border-bottom: 2px solid rgba(128,128,128,0.25);
-				border-radius: 0;
 
 				&:focus {
 					border-color: colour(white);

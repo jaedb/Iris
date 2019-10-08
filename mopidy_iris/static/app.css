@@ -2867,7 +2867,8 @@ h4 {
     margin-left: 10px; }
   h4 .button {
     margin-left: 10px;
-    margin-bottom: -1px; }
+    margin-bottom: -1px;
+    margin-top: 0; }
 
 h5 {
   font-size: 1rem;
@@ -5554,7 +5555,8 @@ main header {
       padding: 13px 10px;
       margin: 0;
       min-width: 0;
-      color: #cecac4; }
+      color: #cecac4;
+      vertical-align: unset; }
       main header .options .button:hover,
       main header .options button:hover {
         color: #32b5f2;
@@ -5892,7 +5894,9 @@ main header {
   #context-menu .dropdown-field .label {
     padding: 0 0 3px 0;
     opacity: 0.5;
-    font-size: 1rem; }
+    font-size: 1rem;
+    display: block;
+    cursor: default; }
     #context-menu .dropdown-field .label, #context-menu .dropdown-field .label:hover {
       color: #FFFFFF; }
       .light-theme #context-menu .dropdown-field .label, .light-theme #context-menu .dropdown-field .label:hover {
@@ -6016,7 +6020,8 @@ main header {
   #context-menu .filter-field form {
     display: block;
     width: auto;
-    padding: 10px 18px; }
+    padding: 10px 0;
+    pointer: auto; }
     #context-menu .filter-field form .icon {
       display: none; }
     #context-menu .filter-field form input {
@@ -6026,8 +6031,7 @@ main header {
       font-size: 1.2rem;
       font-weight: 700;
       background: transparent !important;
-      border-bottom: 2px solid rgba(128, 128, 128, 0.25);
-      border-radius: 0; }
+      border-bottom: 2px solid rgba(128, 128, 128, 0.25); }
       #context-menu .filter-field form input:focus {
         border-color: #FFFFFF; }
 
@@ -6629,6 +6633,9 @@ main header {
 
 .artist-view .body.overview .albums {
   padding-top: 30px; }
+  .artist-view .body.overview .albums h4 {
+    display: flex;
+    align-items: center; }
 
 .artist-view .body.about::after {
   content: "";
@@ -6942,8 +6949,10 @@ main .track-view {
     align-items: center; }
     .queue-view .current-track__added-from__text {
       border: 0 !important;
-      display: block;
+      display: flex;
       padding-left: 15px; }
+      .queue-view .current-track__added-from__text .links-sentence {
+        padding-left: 0.15em; }
     .queue-view .current-track__added-from__thumbnail {
       border: 0 !important; }
       .queue-view .current-track__added-from__thumbnail .thumbnail {

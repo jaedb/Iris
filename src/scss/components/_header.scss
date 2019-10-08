@@ -39,6 +39,7 @@ main {
 				margin: 0;
 				min-width: 0;
 				color: colour(light_grey);
+				vertical-align: unset;
 
 				&:hover {
 					color: colour(blue);

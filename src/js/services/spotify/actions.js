@@ -1171,7 +1171,7 @@ export function getArtistImages(artist) {
   return (dispatch, getState) => {
     request(dispatch, getState, `search?q=${artist.name}&type=artist`)
       .then(response => {
-          if (response.artists.items) {
+          if (response.artists.items.length > 0) {
             const updatedArtist = {
               uri: artist.uri,
               images: response.artists.items[0].images,

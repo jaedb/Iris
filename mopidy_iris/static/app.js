@@ -56100,6 +56100,15 @@ var FilterField = function (_React$Component) {
       }
     }
   }, {
+    key: 'handleSubmit',
+    value: function handleSubmit(e) {
+      var onSubmit = this.props.onSubmit;
+
+      if (onSubmit) onSubmit(e);
+      e.preventDefault();
+      return false;
+    }
+  }, {
     key: 'activate',
     value: function activate() {
       this.setState({ active: true });
@@ -56132,7 +56141,9 @@ var FilterField = function (_React$Component) {
           } },
         _react2.default.createElement(
           'form',
-          null,
+          { onSubmit: function onSubmit(e) {
+              return _this2.handleSubmit(e);
+            } },
           _react2.default.createElement('input', {
             type: 'text',
             placeholder: 'Filter',
@@ -60695,7 +60706,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
   return {
     snapcast_enabled: state.pusher.config.snapcast_enabled,
     http_streaming_enabled: state.core.http_streaming_enabled,
-    http_streaming_volume: parseInt(state.core.http_streaming_volume),
+    http_streaming_volume: state.core.http_streaming_volume >= 0 ? state.core.http_streaming_volume : 50,
     http_streaming_mute: state.core.http_streaming_mute,
     http_streaming_url: state.core.http_streaming_url ? state.core.http_streaming_url : null,
     http_streaming_cachebuster: state.core.http_streaming_cachebuster,
@@ -75399,7 +75410,7 @@ function getArtists(uris) {
 function getArtistImages(artist) {
   return function (dispatch, getState) {
     request(dispatch, getState, 'search?q=' + artist.name + '&type=artist').then(function (response) {
-      if (response.artists.items) {
+      if (response.artists.items.length > 0) {
         var updatedArtist = {
           uri: artist.uri,
           images: response.artists.items[0].images
@@ -78822,7 +78833,11 @@ var Artist = function (_React$Component) {
           _react2.default.createElement(
             'h4',
             null,
-            'Albums',
+            _react2.default.createElement(
+              'div',
+              null,
+              'Albums'
+            ),
             _react2.default.createElement(_DropdownField2.default, {
               icon: 'sort',
               name: 'Sort',
@@ -78842,14 +78857,14 @@ var Artist = function (_React$Component) {
                 _this2.setFilter(value);_this2.props.uiActions.hideContextMenu();
               }
             }),
-            this.props.sort || this.props.filter ? _react2.default.createElement(
+            (this.props.sort || this.props.filter) && _react2.default.createElement(
               'a',
               { className: 'button button--discrete button--small', onClick: function onClick(e) {
                   _this2.setFilter(null);_this2.setSort(null);
                 } },
               _react2.default.createElement(_Icon2.default, { name: 'clear' }),
               'Reset'
-            ) : null
+            )
           ),
           _react2.default.createElement(
             'section',
@@ -78958,41 +78973,46 @@ var Artist = function (_React$Component) {
           'div',
           { className: 'col col--w40 tiles artist-stats' },
           thumbnails,
-          artist.followers ? _react2.default.createElement(
+          _react2.default.createElement(
+            'div',
+            { className: 'tile' },
+            _react2.default.createElement(
+              'span',
+              { className: 'content' },
+              _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(artist.uri) }),
+              helpers.titleCase(helpers.uriSource(artist.uri)) + ' artist'
+            )
+          ),
+          artist.followers && _react2.default.createElement(
             'div',
             { className: 'tile' },
             _react2.default.createElement(
               'span',
               { className: 'content' },
               _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'users' }),
-              artist.followers.toLocaleString(),
-              ' ',
-              'followers'
+              artist.followers.toLocaleString() + ' followers'
             )
-          ) : null,
-          artist.popularity ? _react2.default.createElement(
+          ),
+          artist.popularity && _react2.default.createElement(
             'div',
             { className: 'tile' },
             _react2.default.createElement(
               'span',
               { className: 'content' },
               _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'fire' }),
-              artist.popularity,
-              '% popularity'
+              artist.popularity + ' % popularity'
             )
-          ) : null,
-          artist.listeners ? _react2.default.createElement(
+          ),
+          artist.listeners && _react2.default.createElement(
             'div',
             { className: 'tile' },
             _react2.default.createElement(
               'span',
               { className: 'content' },
               _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'headphones' }),
-              artist.listeners.toLocaleString(),
-              ' ',
-              'listeners'
+              artist.listeners.toLocaleString() + ' listeners'
             )
-          ) : null
+          )
         ),
         _react2.default.createElement(
           'div',
@@ -79000,7 +79020,8 @@ var Artist = function (_React$Component) {
           _react2.default.createElement(
             'section',
             null,
-            artist.biography ? _react2.default.createElement(
+            _react2.default.createElement('br', null),
+            artist.biography && _react2.default.createElement(
               'div',
               { className: 'biography-text' },
               _react2.default.createElement(
@@ -79012,20 +79033,19 @@ var Artist = function (_React$Component) {
               _react2.default.createElement(
                 'div',
                 { className: 'mid_grey-text' },
-                'Published:',
-                artist.biography_publish_date
+                'Published: ' + artist.biography_publish_date
               ),
               _react2.default.createElement(
                 'div',
                 { className: 'mid_grey-text' },
-                'Origin:',
+                'Origin: ',
                 _react2.default.createElement(
                   'a',
                   { href: artist.biography_link, target: '_blank' },
                   artist.biography_link
                 )
               )
-            ) : null
+            )
           )
         )
       );
@@ -79047,9 +79067,7 @@ var Artist = function (_React$Component) {
           _react2.default.createElement(
             'p',
             null,
-            'Could not find artist with URI "',
-            encodeURIComponent(this.props.uri),
-            '"'
+            'Could not find artist with URI "' + encodeURIComponent(this.props.uri) + '"'
           )
         );
       }
@@ -79130,7 +79148,7 @@ var Artist = function (_React$Component) {
                   'Overview'
                 )
               ),
-              this.props.artist.tracks_uris && this.props.artist.tracks_uris.length > 10 ? _react2.default.createElement(
+              this.props.artist.tracks_uris && this.props.artist.tracks_uris.length > 10 && _react2.default.createElement(
                 _Link2.default,
                 {
                   exact: true,
@@ -79145,8 +79163,8 @@ var Artist = function (_React$Component) {
                   null,
                   'Tracks'
                 )
-              ) : null,
-              this.props.artist.related_artists_uris ? _react2.default.createElement(
+              ),
+              this.props.artist.related_artists_uris && _react2.default.createElement(
                 _Link2.default,
                 {
                   exact: true,
@@ -79161,7 +79179,7 @@ var Artist = function (_React$Component) {
                   null,
                   'Related artists'
                 )
-              ) : null,
+              ),
               _react2.default.createElement(
                 _Link2.default,
                 {
@@ -85459,6 +85477,9 @@ var LibraryAlbums = function (_React$Component) {
           initialValue: this.state.filter,
           handleChange: function handleChange(value) {
             return _this3.setState({ filter: value, limit: _this3.state.per_page });
+          },
+          onSubmit: function onSubmit(e) {
+            return _this3.props.uiActions.hideContextMenu();
           }
         }),
         _react2.default.createElement(_DropdownField2.default, {
@@ -85950,6 +85971,9 @@ var LibraryArtists = function (_React$Component) {
           initialValue: this.state.filter,
           handleChange: function handleChange(value) {
             return _this3.setState({ filter: value, limit: _this3.state.per_page });
+          },
+          onSubmit: function onSubmit(e) {
+            return _this3.props.uiActions.hideContextMenu();
           }
         }),
         _react2.default.createElement(_DropdownField2.default, {
@@ -86949,6 +86973,9 @@ var LibraryPlaylists = function (_React$Component) {
           initialValue: this.state.filter,
           handleChange: function handleChange(value) {
             return _this3.setState({ filter: value });
+          },
+          onSubmit: function onSubmit(e) {
+            return _this3.props.uiActions.hideContextMenu();
           }
         }),
         _react2.default.createElement(_DropdownField2.default, {

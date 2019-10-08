@@ -237,6 +237,7 @@ class LibraryPlaylists extends React.Component {
         <FilterField
           initialValue={this.state.filter}
           handleChange={(value) => this.setState({ filter: value })}
+          onSubmit={e => this.props.uiActions.hideContextMenu()}
         />
         <DropdownField
           icon="sort"
@@ -262,7 +263,7 @@ class LibraryPlaylists extends React.Component {
         />
         <Link className="button button--no-hover" to="/playlist/create">
           <Icon name="add_box" />
-New
+          New
         </Link>
       </span>
     );

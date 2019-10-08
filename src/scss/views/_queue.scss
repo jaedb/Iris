@@ -51,8 +51,12 @@
 
       &__text {
         border: 0 !important;
-        display: block;
+        display: flex;
         padding-left: 15px;
+
+        .links-sentence {
+          padding-left: 0.15em;
+        }
       }
 
       &__thumbnail {

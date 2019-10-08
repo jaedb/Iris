@@ -776,8 +776,10 @@ class IrisCore(pykka.ThreadingActor):
         if len(self.radio['seed_artists']) > 0:
             seeds = seeds+(','.join(self.radio['seed_artists'])).replace('spotify:artist:','spotify_artist_')
         if len(self.radio['seed_tracks']) > 0:
+            if seeds != '': seeds = seeds+','
             seeds = seeds+(','.join(self.radio['seed_tracks'])).replace('spotify:track:','spotify_track_')
         if len(self.radio['seed_genres']) > 0:
+            if seeds != '': seeds = seeds+','
             seeds = seeds+(','.join(self.radio['seed_genres'])).replace('spotify:genre:','spotify_genre_')
 
         metadata = {'tlids': [], 'added_by': 'Radio', 'added_from': 'iris:radio:'+seeds}

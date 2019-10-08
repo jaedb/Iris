@@ -193,7 +193,7 @@ class Artist extends React.Component {
         {artist.albums ? (
           <div className="albums">
             <h4>
-						Albums
+						  <div>Albums</div>
               <DropdownField
                 icon="sort"
                 name="Sort"
@@ -209,12 +209,12 @@ class Artist extends React.Component {
                 options={filter_options}
                 handleChange={(value) => { this.setFilter(value); this.props.uiActions.hideContextMenu(); }}
               />
-              {this.props.sort || this.props.filter ? (
+              {(this.props.sort || this.props.filter) && (
                 <a className="button button--discrete button--small" onClick={(e) => { this.setFilter(null); this.setSort(null); }}>
                   <Icon name="clear" />
-Reset
+                  Reset
                 </a>
-              ) : null}
+              )}
             </h4>
 
             <section className="grid-wrapper no-top-padding">
@@ -301,53 +301,54 @@ Reset
 
         <div className="col col--w40 tiles artist-stats">
           {thumbnails}
-          {artist.followers ? (
+          <div className="tile">
+            <span className="content">
+              <Icon type="fontawesome" name={helpers.sourceIcon(artist.uri)} />
+              {`${helpers.titleCase(helpers.uriSource(artist.uri))} artist`}
+            </span>
+          </div>
+          {artist.followers && (
             <div className="tile">
               <span className="content">
                 <Icon type="fontawesome" name="users" />
-                {artist.followers.toLocaleString()}
-                {' '}
-followers
+                {`${artist.followers.toLocaleString()} followers`}
               </span>
             </div>
-          ) : null}
-          {artist.popularity ? (
+          )}
+          {artist.popularity && (
             <div className="tile">
               <span className="content">
                 <Icon type="fontawesome" name="fire" />
-                {artist.popularity }
-% popularity
+                {`${artist.popularity} % popularity`}
               </span>
             </div>
-          ) : null}
-          {artist.listeners ? (
+          )}
+          {artist.listeners && (
             <div className="tile">
               <span className="content">
                 <Icon type="fontawesome" name="headphones" />
-                { artist.listeners.toLocaleString() }
-                {' '}
-listeners
+                {`${artist.listeners.toLocaleString()} listeners`}
               </span>
             </div>
-          ) : null }
+          )}
         </div>
 
         <div className="col col--w60 biography">
           <section>
-            { artist.biography ? (
+            <br />
+            {artist.biography && (
               <div className="biography-text">
                 <p>{artist.biography}</p>
                 <br />
                 <div className="mid_grey-text">
-Published:
-                  { artist.biography_publish_date }
+                  {`Published: ${artist.biography_publish_date}`}
                 </div>
                 <div className="mid_grey-text">
-Origin:
+                  {`Origin: `}
                   <a href={artist.biography_link} target="_blank">{ artist.biography_link }</a>
                 </div>
               </div>
-            ) : null }
+            )}
           </section>
         </div>
       </div>
@@ -364,9 +365,7 @@ Origin:
       return (
         <ErrorMessage type="not-found" title="Not found">
           <p>
-Could not find artist with URI "
-            {encodeURIComponent(this.props.uri)}
-"
+            {`Could not find artist with URI "${encodeURIComponent(this.props.uri)}"`}
           </p>
         </ErrorMessage>
       );
@@ -419,7 +418,7 @@ Could not find artist with URI "
               >
                 <h4>Overview</h4>
               </Link>
-              {this.props.artist.tracks_uris && this.props.artist.tracks_uris.length > 10 ? (
+              {this.props.artist.tracks_uris && this.props.artist.tracks_uris.length > 10 && (
                 <Link
                   exact
                   history={this.props.history}
@@ -430,8 +429,8 @@ Could not find artist with URI "
                 >
                   <h4>Tracks</h4>
                 </Link>
-              ) : null}
-              {this.props.artist.related_artists_uris ? (
+              )}
+              {this.props.artist.related_artists_uris && (
                 <Link
                   exact
                   history={this.props.history}
@@ -442,7 +441,7 @@ Could not find artist with URI "
                 >
                   <h4>Related artists</h4>
                 </Link>
-              ) : null}
+              )}
               <Link
                 exact
                 history={this.props.history}
