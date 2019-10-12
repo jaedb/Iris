@@ -82,18 +82,17 @@ class LibraryBrowseDirectory extends React.Component {
 					  }
 
 					  return (
-  <span key={uri}>
-    {index > 0 ? (
-      <span>
-        <Icon type="fontawesome" name="angle-right" />
-        {' '}
-&nbsp;&nbsp;
-      </span>
-    ) : null}
-    <URILink type="browse" uri={uri}>
-      {decodeURI(uri_element)}
-    </URILink>
-  </span>
+              <span key={uri}>
+                {index > 0 && (
+                  <span>
+                    <Icon type="fontawesome" name="angle-right" />
+                    {'   '}
+                  </span>
+                )}
+                <URILink type="browse" uri={uri}>
+                  {decodeURI(uri_element)}
+                </URILink>
+              </span>
 					  );
           })}
         </h4>
@@ -118,16 +117,16 @@ class LibraryBrowseDirectory extends React.Component {
     return (
       <div className="grid category-grid">
         {
-						subdirectories.map((subdirectory) => (
-  <GridItem
-    key={subdirectory.uri}
-    type="browse"
-    link={`/library/browse/${encodeURIComponent(subdirectory.uri)}`}
-    item={subdirectory}
-    nocontext
-  />
-						))
-					}
+          subdirectories.map((subdirectory) => (
+            <GridItem
+              key={subdirectory.uri}
+              type="browse"
+              link={`/library/browse/${encodeURIComponent(subdirectory.uri)}`}
+              item={subdirectory}
+              nocontext
+            />
+          ))
+        }
       </div>
     );
   }
@@ -172,18 +171,19 @@ class LibraryBrowseDirectory extends React.Component {
           icon="visibility"
           name="View"
           value={this.props.view}
+          valueAsLabel
           options={view_options}
           handleChange={(value) => { this.props.uiActions.set({ library_directory_view: value }); this.props.uiActions.hideContextMenu(); }}
         />
-        {tracks ? (
+        {tracks && (
           <a className="button button--no-hover" onClick={(e) => { this.props.uiActions.hideContextMenu(); this.playAll(e, tracks); }}>
             <Icon name="play_circle_filled" />
-Play all
+            Play all
           </a>
-        ) : null }
+        )}
         <a className="button button--no-hover" onClick={(e) => { this.props.uiActions.hideContextMenu(); this.goBack(e); }}>
           <Icon name="keyboard_backspace" />
-Back
+          Back
         </a>
       </span>
     );
@@ -201,13 +201,13 @@ Back
 
             {subdirectories ? this.renderSubdirectories(subdirectories) : null}
 
-            {tracks ? (
+            {tracks && (
               <TrackList
                 tracks={this.props.directory.tracks}
                 uri={`iris:browse:${this.props.uri}`}
                 className="library-local-track-list"
               />
-            ) : null }
+            )}
 
           </ErrorBoundary>
         </section>
