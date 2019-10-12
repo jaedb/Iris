@@ -1,4 +1,6 @@
-FROM debian:stretch-slim
+FROM debian:buster-slim
+
+COPY . /iris
 
 RUN set -ex \
 # Official Mopidy install for Debian/Ubuntu along with some extensions
@@ -13,7 +15,9 @@ RUN set -ex \
        gstreamer1.0-plugins-bad \
        python-crypto \
        python-pykka \
+       python-tornado \
        git \
+       nano \
  && curl -L https://apt.mopidy.com/mopidy.gpg | apt-key add - \
  && curl -L https://apt.mopidy.com/mopidy.list -o /etc/apt/sources.list.d/mopidy.list \
  && apt-get update \
