@@ -1,7 +1,5 @@
 FROM debian:buster-slim
 
-COPY . /iris
-
 RUN set -ex \
 # Official Mopidy install for Debian/Ubuntu along with some extensions
 # (see https://docs.mopidy.com/en/latest/installation/debian/ )
