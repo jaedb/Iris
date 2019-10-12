@@ -16,20 +16,6 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
 
     def check_origin(self, origin):
         return True
-        
-    def select_subprotocol(self, subprotocols):
-
-        # select one of our subprotocol elements and return it. This confirms the connection has been accepted.
-        protocols = mem.iris.digest_protocol(subprotocols)
-
-        # if we've auto-generated some ids, the provided subprotocols was a string, so just return it right back
-        # this allows a connection to be completed
-        if protocols['generated']:
-            return subprotocols[0]
-            
-        # otherwise, just return one of the supplied subprotocols
-        else:
-            return protocols['client_id']
 
     def open(self):
 
