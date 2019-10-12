@@ -5537,16 +5537,18 @@ main header {
       vertical-align: bottom;
       margin-bottom: 8px;
       font-size: 0.9em; }
-  main header .options {
+  main header .header__options {
     position: absolute;
     top: 2.6rem;
     right: 40px; }
-    main header .options .context-menu-trigger {
+    main header .header__options__wrapper {
+      display: flex; }
+    main header .header__options .context-menu-trigger {
       display: none;
       font-size: 18px;
       padding: 16px 14px; }
-    main header .options .button,
-    main header .options button {
+    main header .header__options .button,
+    main header .header__options button {
       font-size: 13px;
       font-weight: 800;
       font-family: "Overpass";
@@ -5557,21 +5559,21 @@ main header {
       min-width: 0;
       color: #cecac4;
       vertical-align: unset; }
-      main header .options .button:hover,
-      main header .options button:hover {
+      main header .header__options .button:hover,
+      main header .header__options button:hover {
         color: #32b5f2;
         box-shadow: none; }
-        main header .options .button:hover:before,
-        main header .options button:hover:before {
+        main header .header__options .button:hover:before,
+        main header .header__options button:hover:before {
           display: none; }
-      .light-theme main header .options .button, .light-theme
-      main header .options button {
+      .light-theme main header .header__options .button, .light-theme
+      main header .header__options button {
         color: #121212; }
-        .light-theme main header .options .button:hover, .light-theme
-        main header .options button:hover {
+        .light-theme main header .header__options .button:hover, .light-theme
+        main header .header__options button:hover {
           color: #32b5f2; }
-        .light-theme main header .options .button:active, .light-theme
-        main header .options button:active {
+        .light-theme main header .header__options .button:active, .light-theme
+        main header .header__options button:active {
           background: transparent; }
   main header.overlay {
     position: absolute;
@@ -5590,12 +5592,12 @@ main header {
           margin-bottom: 2px;
           padding-right: 6px;
           margin-left: 10px; }
-      main header .options {
+      main header .header__options {
         top: 0;
         right: 0; }
-        main header .options .context-menu-trigger {
+        main header .header__options .context-menu-trigger {
           display: block; }
-        main header .options .items {
+        main header .header__options__wrapper {
           display: none; } }
 
 .notifications {
@@ -5798,35 +5800,37 @@ main header {
   font-family: "Overpass";
   position: relative;
   display: inline-block; }
-  .dropdown-field .label {
+  .dropdown-field__label {
     display: flex; }
-    .dropdown-field .label .icon {
+    .dropdown-field__label__name {
+      display: none; }
+    .dropdown-field__label .icon {
       padding-right: 8px; }
-    .dropdown-field .label:not(.button) {
+    .dropdown-field__label:not(.button) {
       -webkit-transition: all 0.2s ease-in-out;
       -moz-transition: all 0.2s ease-in-out;
       -o-transition: all 0.2s ease-in-out;
       transition: all 0.2s ease-in-out;
       padding: 14px 10px;
       cursor: pointer; }
-      .notouch .dropdown-field .label:not(.button):hover {
+      .notouch .dropdown-field__label:not(.button):hover {
         color: #32b5f2; }
-  .dropdown-field.expanded .label:not(.button) {
+  .dropdown-field--expanded .label:not(.button) {
     color: #32b5f2; }
-  .dropdown-field.expanded .options {
+  .dropdown-field--expanded .dropdown-field__options {
     display: block; }
-  .dropdown-field.no-status-icon .options .option {
+  .dropdown-field--no-status-icon .dropdown-field__options__item {
     padding-left: 12px; }
-  .dropdown-field.no-label .label > .text {
+  .dropdown-field--no-label .label > .text {
     display: none; }
-  .dropdown-field .options {
+  .dropdown-field__options {
     position: absolute;
     top: 46px;
     right: 10px;
     z-index: 97;
     display: none;
     box-shadow: 2px 3px 6px rgba(0, 0, 0, 0.2); }
-    .dropdown-field .options:before {
+    .dropdown-field__options:before {
       content: '';
       display: block;
       width: 6px;
@@ -5838,70 +5842,74 @@ main header {
       position: absolute;
       top: -3px;
       right: 9px; }
-      .light-theme .dropdown-field .options:before {
+      .light-theme .dropdown-field__options:before {
         background: #f4f2f0; }
-    .dropdown-field .options > .liner {
+    .dropdown-field__options__liner {
       color: #000000;
       background: #FFFFFF;
       min-width: 120px;
       max-height: 70vh;
       overflow-y: auto;
       border-radius: 3px; }
-      .light-theme .dropdown-field .options > .liner {
+      .light-theme .dropdown-field__options__liner {
         background: #f4f2f0; }
-      .dropdown-field .options > .liner .option {
+    .dropdown-field__options__item {
+      -webkit-transition: all 0.2s ease-in-out;
+      -moz-transition: all 0.2s ease-in-out;
+      -o-transition: all 0.2s ease-in-out;
+      transition: all 0.2s ease-in-out;
+      position: relative;
+      padding: 9px 12px 8px 24px;
+      cursor: pointer;
+      color: #000000; }
+      .dropdown-field__options__item:before {
         -webkit-transition: all 0.2s ease-in-out;
         -moz-transition: all 0.2s ease-in-out;
         -o-transition: all 0.2s ease-in-out;
         transition: all 0.2s ease-in-out;
-        position: relative;
-        padding: 9px 12px 8px 24px;
-        cursor: pointer;
+        content: '';
+        display: block;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0;
+        z-index: 9;
+        background: -webkit-linear-gradient(to bottom right, white, rgba(0, 0, 0, 0.5));
+        background: -moz-linear-gradient(to bottom right, white, rgba(0, 0, 0, 0.5));
+        background: -o-linear-gradient(to bottom right, white, rgba(0, 0, 0, 0.5));
+        background: linear-gradient(to bottom right, white, rgba(0, 0, 0, 0.5)); }
+      .dropdown-field__options__item .icon {
+        position: absolute;
+        top: 8px;
+        left: 6px;
+        font-size: 16px; }
+      .notouch .dropdown-field__options__item:hover {
         color: #000000; }
-        .dropdown-field .options > .liner .option:before {
-          -webkit-transition: all 0.2s ease-in-out;
-          -moz-transition: all 0.2s ease-in-out;
-          -o-transition: all 0.2s ease-in-out;
-          transition: all 0.2s ease-in-out;
-          content: '';
-          display: block;
-          position: absolute;
-          top: 0;
-          right: 0;
-          bottom: 0;
-          left: 0;
-          opacity: 0;
-          z-index: 9;
-          background: -webkit-linear-gradient(to bottom right, white, rgba(0, 0, 0, 0.5));
-          background: -moz-linear-gradient(to bottom right, white, rgba(0, 0, 0, 0.5));
-          background: -o-linear-gradient(to bottom right, white, rgba(0, 0, 0, 0.5));
-          background: linear-gradient(to bottom right, white, rgba(0, 0, 0, 0.5)); }
-        .dropdown-field .options > .liner .option .icon {
-          position: absolute;
-          top: 8px;
-          left: 6px;
-          font-size: 16px; }
-        .notouch .dropdown-field .options > .liner .option:hover {
-          color: #000000; }
-          .notouch .dropdown-field .options > .liner .option:hover:before {
-            opacity: 0.15; }
+        .notouch .dropdown-field__options__item:hover:before {
+          opacity: 0.15; }
 
 #context-menu .dropdown-field {
   padding: 16px 0;
   display: block; }
   #context-menu .dropdown-field:active, #context-menu .dropdown-field:focus {
     background: none !important; }
-  #context-menu .dropdown-field .label {
+  #context-menu .dropdown-field__label {
     padding: 0 0 3px 0;
     opacity: 0.5;
     font-size: 1rem;
     display: block;
     cursor: default; }
-    #context-menu .dropdown-field .label, #context-menu .dropdown-field .label:hover {
+    #context-menu .dropdown-field__label__value {
+      display: none; }
+    #context-menu .dropdown-field__label__name {
+      display: inline-block; }
+    #context-menu .dropdown-field__label, #context-menu .dropdown-field__label:hover {
       color: #FFFFFF; }
-      .light-theme #context-menu .dropdown-field .label, .light-theme #context-menu .dropdown-field .label:hover {
+      .light-theme #context-menu .dropdown-field__label, .light-theme #context-menu .dropdown-field__label:hover {
         color: #181818 !important; }
-  #context-menu .dropdown-field .options {
+  #context-menu .dropdown-field__options {
     display: block;
     position: static;
     background: transparent;
@@ -5910,31 +5918,31 @@ main header {
     box-shadow: none;
     font-weight: 700;
     font-size: 1.2rem; }
-    #context-menu .dropdown-field .options:before {
+    #context-menu .dropdown-field__options:before {
       display: none !important; }
-    #context-menu .dropdown-field .options > .liner {
+    #context-menu .dropdown-field__options__liner {
       background: transparent;
       color: #FFFFFF !important;
       margin: -3px -5px; }
-      .light-theme #context-menu .dropdown-field .options > .liner {
+      .light-theme #context-menu .dropdown-field__options__liner {
         color: #181818 !important; }
-      #context-menu .dropdown-field .options > .liner:before {
+      #context-menu .dropdown-field__options__liner:before {
         display: none !important; }
-      #context-menu .dropdown-field .options > .liner .option {
+    #context-menu .dropdown-field__options__item {
+      display: block;
+      padding: 3px 5px;
+      border-radius: 0;
+      color: #FFFFFF !important; }
+      .light-theme #context-menu .dropdown-field__options__item {
+        color: #181818 !important; }
+      #context-menu .dropdown-field__options__item:before {
+        display: none !important; }
+      #context-menu .dropdown-field__options__item .icon {
         display: inline-block;
-        padding: 3px 5px;
-        border-radius: 0;
-        color: #FFFFFF !important; }
-        .light-theme #context-menu .dropdown-field .options > .liner .option {
-          color: #181818 !important; }
-        #context-menu .dropdown-field .options > .liner .option:before {
-          display: none !important; }
-        #context-menu .dropdown-field .options > .liner .option .icon {
-          display: inline-block;
-          position: static;
-          padding-right: 2px;
-          padding-bottom: 3px;
-          font-size: 0.9em; }
+        position: static;
+        padding-right: 2px;
+        padding-bottom: 3px;
+        font-size: 0.9em; }
 
 .autocomplete-field {
   position: relative; }
@@ -5991,7 +5999,7 @@ main header {
 
 .filter-field .icon {
   position: absolute;
-  top: 10px;
+  top: 12px;
   left: 15px;
   pointer-events: none; }
 
@@ -6949,12 +6957,12 @@ main .track-view {
     align-items: center; }
     .queue-view .current-track__added-from__text {
       border: 0 !important;
-      display: flex;
-      padding-left: 15px; }
+      display: flex; }
       .queue-view .current-track__added-from__text .links-sentence {
         padding-left: 0.15em; }
     .queue-view .current-track__added-from__thumbnail {
-      border: 0 !important; }
+      border: 0 !important;
+      margin-right: 15px; }
       .queue-view .current-track__added-from__thumbnail .thumbnail {
         width: 30px; }
   .queue-view .current-track__queue-details {

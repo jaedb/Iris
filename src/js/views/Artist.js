@@ -180,24 +180,25 @@ class Artist extends React.Component {
 
         <div className="col col--w5" />
 
-        {artist.related_artists && artist.related_artists.length > 0 ? (
+        {artist.related_artists && artist.related_artists.length > 0 && (
           <div className="col col--w25 related-artists">
             <h4>Related artists</h4>
             <div className="list-wrapper"><RelatedArtists artists={artist.related_artists.slice(0, 6)} /></div>
             <Link to={`/artist/${encodeURIComponent(this.props.uri)}/related-artists`} scrollTo="#sub-views-menu" className="button button--default">All related artists</Link>
           </div>
-        ) : null}
+        )}
 
         <div className="cf" />
 
-        {artist.albums ? (
+        {artist.albums && (
           <div className="albums">
             <h4>
 						  <div>Albums</div>
               <DropdownField
-                icon="sort"
+                icon="swap_vert"
                 name="Sort"
                 value={this.props.sort}
+                valueAsLabel
                 options={sort_options}
                 selected_icon={this.props.sort ? (this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
                 handleChange={(value) => { this.setSort(value); this.props.uiActions.hideContextMenu(); }}
@@ -206,6 +207,7 @@ class Artist extends React.Component {
                 icon="filter_list"
                 name="Filter"
                 value={this.props.filter}
+                valueAsLabel
                 options={filter_options}
                 handleChange={(value) => { this.setFilter(value); this.props.uiActions.hideContextMenu(); }}
               />
@@ -226,7 +228,7 @@ class Artist extends React.Component {
               />
             </section>
           </div>
-        ) : null}
+        )}
       </div>
     );
   }

@@ -17,10 +17,14 @@ main {
 			}
 		}
 
-		.options {
+		.header__options {
 			position: absolute;
 			top: 2.6rem;
 			right: 40px;
+
+			&__wrapper {
+				display: flex;
+			}
 
 			.context-menu-trigger {
 				display: none;
@@ -87,7 +91,7 @@ main {
 				}
 			}
 
-			.options {
+			.header__options {
 				top: 0;
 				right: 0;
 
@@ -95,7 +99,7 @@ main {
 					display: block;
 				}
 
-				.items {
+				&__wrapper {
 					display: none;
 				}
 			}

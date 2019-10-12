@@ -1027,15 +1027,7 @@ export const uriType = function (uri) {
   }
 
   if (exploded[0] === 'iris') {
-    switch (exploded[1]) {
-      case 'search':
-      case 'discover':
-      case 'browse':
-      case 'radio':
-        return exploded[1];
-      default:
-        return null;
-    }
+    return exploded[1];
   }
 
   switch (exploded[1]) {
@@ -1153,14 +1145,14 @@ export const getFromUri = function (element, uri = '') {
       break;
 
     case 'searchtype':
-      if (exploded[0] == 'search') {
-        return exploded[1];
+      if (exploded[1] == 'search') {
+        return exploded[2];
       }
       break;
 
     case 'searchterm':
-      if (exploded[0] == 'search') {
-        return exploded[2];
+      if (exploded[1] == 'search') {
+        return exploded[3];
       }
       break;
 

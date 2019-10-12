@@ -208,7 +208,7 @@ class LibraryPlaylists extends React.Component {
     const sort_options = [
       {
         value: null,
-        label: 'Default',
+        label: 'As loaded',
       },
       {
         value: 'name',
@@ -240,9 +240,10 @@ class LibraryPlaylists extends React.Component {
           onSubmit={e => this.props.uiActions.hideContextMenu()}
         />
         <DropdownField
-          icon="sort"
+          icon="swap_vert"
           name="Sort"
           value={this.props.sort}
+          valueAsLabel
           options={sort_options}
           selected_icon={this.props.sort ? (this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
           handleChange={(value) => { this.setSort(value); this.props.uiActions.hideContextMenu(); }}
@@ -250,6 +251,7 @@ class LibraryPlaylists extends React.Component {
         <DropdownField
           icon="visibility"
           name="View"
+          valueAsLabel
           value={this.props.view}
           options={view_options}
           handleChange={(value) => { this.props.uiActions.set({ library_playlists_view: value }); this.props.uiActions.hideContextMenu(); }}
@@ -257,6 +259,7 @@ class LibraryPlaylists extends React.Component {
         <DropdownField
           icon="cloud"
           name="Source"
+          valueAsLabel
           value={this.props.source}
           options={source_options}
           handleChange={(value) => { this.props.uiActions.set({ library_playlists_source: value }); this.props.uiActions.hideContextMenu(); }}
