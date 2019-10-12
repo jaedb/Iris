@@ -126,6 +126,11 @@ class Search extends React.Component {
     this.props.uiActions.set(data);
   }
 
+  handleSourceChange(value) {
+    this.props.uiActions.set({ uri_schemes_search_enabled: value });
+    this.props.uiActions.hideContextMenu();
+  }
+
   renderArtists(artists, spotify_search_enabled) {
     return (
       <div>
@@ -134,8 +139,7 @@ class Search extends React.Component {
 						Search
           </URILink>
           <Icon type="fontawesome" name="angle-right" />
-&nbsp;
-					Artists
+          {` Artists`}
         </h4>
         <section className="grid-wrapper">
           <ArtistGrid artists={artists} show_source_icon />
@@ -150,11 +154,10 @@ class Search extends React.Component {
       <div>
         <h4>
           <URILink type="search" uri={`search:all:${this.state.term}`}>
-						Search
+						{`Search `}
           </URILink>
           <Icon type="fontawesome" name="angle-right" />
-&nbsp;
-					Albums
+          {` Albums`}
         </h4>
         <section className="grid-wrapper">
           <AlbumGrid albums={albums} show_source_icon />
@@ -169,11 +172,10 @@ class Search extends React.Component {
       <div>
         <h4>
           <URILink type="search" uri={`search:all:${this.state.term}`}>
-						Search
+						{`Search `}
           </URILink>
           <Icon type="fontawesome" name="angle-right" />
-&nbsp;
-					Playlists
+          {` Playlists`}
         </h4>
         <section className="grid-wrapper">
           <PlaylistGrid playlists={playlists} show_source_icon />
@@ -188,11 +190,10 @@ class Search extends React.Component {
       <div>
         <h4>
           <URILink type="search" uri={`search:all:${this.state.term}`}>
-						Search
+						{`Search `}
           </URILink>
           <Icon type="fontawesome" name="angle-right" />
-&nbsp;
-					Tracks
+          {` Tracks`}
         </h4>
         <section className="list-wrapper">
           <TrackList tracks={tracks} uri={`iris:search:${this.state.type}:${this.state.term}`} show_source_icon />
@@ -211,13 +212,11 @@ class Search extends React.Component {
               <h4>Artists</h4>
             </URILink>
             <ArtistGrid mini show_source_icon artists={artists.slice(0, 6)} />
-            {artists.length >= 6 ? (
+            {artists.length >= 6 && (
               <URILink type="search" uri={`search:artist:${this.state.term}`} className="button button--default">
-							All artists (
-                {artists.length}
-)
+							{`All artists (${artists.length})`}
               </URILink>
-            ) : null}
+            )}
           </div>
         </section>
       );
@@ -233,13 +232,11 @@ class Search extends React.Component {
               <h4>Albums</h4>
             </URILink>
             <AlbumGrid mini show_source_icon albums={albums.slice(0, 6)} />
-            {albums.length >= 6 ? (
+            {albums.length >= 6 && (
               <URILink type="search" uri={`search:album:${this.state.term}`} className="button button--default">
-							All albums (
-                {albums.length}
-)
+							{`All albums (${albums.length})`}
               </URILink>
-            ) : null}
+            )}
           </div>
         </section>
       );
@@ -255,13 +252,11 @@ class Search extends React.Component {
               <h4>Playlists</h4>
             </URILink>
             <PlaylistGrid mini show_source_icon playlists={playlists.slice(0, 6)} />
-            {playlists.length >= 6 ? (
+            {playlists.length >= 6 && (
               <URILink type="search" uri={`search:playlist:${this.state.term}`} className="button button--default">
-							All playlists (
-                {playlists.length}
-)
+							{`All playlists (${playlists.length})`}
               </URILink>
-            ) : null}
+            )}
           </div>
         </section>
       );
@@ -381,9 +376,10 @@ class Search extends React.Component {
     const options = (
       <span>
         <DropdownField
-          icon="sort"
+          icon="swap_vert"
           name="Sort"
           value={this.props.sort}
+          valueAsLabel
           options={sort_options}
           selected_icon={this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}
           handleChange={(value) => { this.setSort(value); this.props.uiActions.hideContextMenu(); }}
@@ -393,7 +389,12 @@ class Search extends React.Component {
           name="Sources"
           value={this.props.uri_schemes_search_enabled}
           options={provider_options}
-          handleChange={(value) => { this.props.uiActions.set({ uri_schemes_search_enabled: value }); this.props.uiActions.hideContextMenu(); }}
+          handleChange={(value) => this.handleSourceChange(value)}
+          onClose={() => {
+            this.props.spotifyActions.clearSearchResults();
+            this.props.mopidyActions.clearSearchResults();
+            this.search()
+          }}
         />
       </span>
     );

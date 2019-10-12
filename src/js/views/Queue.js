@@ -144,37 +144,50 @@ class Queue extends React.Component {
     const items = [];
 
     // Radio nests it's seed URIs in an encoded URI format
-    if (uri_type === 'radio') {
-      const radio_seeds = helpers.getFromUri('seeds', added_from_uri);
-      
-      for (let seed of radio_seeds) {
-        let item_type = helpers.uriType(seed);
-        let item_library = this.props[`${item_type}s`];
-        if (item_library && item_library[seed]) {
-          items.push(item_library[seed]);
+    switch (uri_type){
+      case 'radio':
+        const radio_seeds = helpers.getFromUri('seeds', added_from_uri);
+        
+        for (let seed of radio_seeds) {
+          let item_type = helpers.uriType(seed);
+          let item_library = this.props[`${item_type}s`];
+          if (item_library && item_library[seed]) {
+            items.push(item_library[seed]);
+          }
         }
-      }
-    } else {
-      const item_library = this.props[`${uri_type}s`];
-      if (item_library && item_library[added_from_uri]) {
-        items.push(item_library[added_from_uri]);
-      }
+        break;
+
+      case 'search':
+        items.push({
+          uri: added_from_uri,
+          name: `"${helpers.getFromUri('searchterm', added_from_uri)}" search`,
+        })
+        break;
+
+      default:
+        const item_library = this.props[`${uri_type}s`];
+        if (item_library && item_library[added_from_uri]) {
+          items.push(item_library[added_from_uri]);
+        }
+        break;
     }
 
     if (items.length <= 0) return null;
 
     return (
       <div className="current-track__added-from">
-        <URILink
-          uri={items[0].uri}
-          className="current-track__added-from__thumbnail"
-        >
-          <Thumbnail
-            images={items[0].images}
-            size="small"
-            circle={helpers.uriType(items[0].uri) === 'artist'}
-          />
-        </URILink>
+        {items[0].images && (
+          <URILink
+            uri={items[0].uri}
+            className="current-track__added-from__thumbnail"
+          >            
+            <Thumbnail
+              images={items[0].images}
+              size="small"
+              circle={helpers.uriType(items[0].uri) === 'artist'}
+            />
+          </URILink>        
+        )}
         <div className="current-track__added-from__text">
           {'Playing from '}
           <LinksSentence items={items} />
@@ -299,26 +312,31 @@ const mapStateToProps = (state, ownProps) => {
 
   if (state.core.queue && state.core.tracks) {
     for (const queue_track of state.core.queue) {
-      let track = { ...queue_track };
+      let track = {
+        ...queue_track,
+        playing: current_track && current_track.tlid == queue_track.tlid,
+      };
 
       // If we have the track in our index, merge it in.
       // We prioritise queue track over index track as queue has unique data, like which track
       // is playing and tlids.
       if (state.core.tracks.hasOwnProperty(track.uri)) {
-        track = { ...state.core.tracks[track.uri], ...track, playing: current_track && current_track.tlid == track.tlid };
+        track = {
+          ...state.core.tracks[track.uri],
+          ...track,
+        };
       }
 
       // Now merge in our queue metadata
       if (state.core.queue_metadata[`tlid_${track.tlid}`] !== undefined) {
         track = {
-
           ...track,
           ...state.core.queue_metadata[`tlid_${track.tlid}`],
         };
       }
 
-      // Siphon off this track if it's a full representation of our current track (by tlid)
-      if (current_track && current_track.uri == track.uri) {
+      // Siphon off this track if it's a full representation of our current track
+      if (track.playing) {
         current_track = track;
       }
 

@@ -55569,15 +55569,19 @@ var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
 
-var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
+var helpers = _interopRequireWildcard(_helpers);
 
 var _Icon = __webpack_require__(/*! ../Icon */ "./src/js/components/Icon.js");
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -55601,7 +55605,8 @@ var DropdownField = function (_React$Component) {
     }
 
     _this.state = {
-      expanded: false
+      expanded: false,
+      changed: false
     };
 
     _this.handleClick = _this.handleClick.bind(_this);
@@ -55624,11 +55629,14 @@ var DropdownField = function (_React$Component) {
       var expanded = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : !this.state.expanded;
 
       if (expanded) {
-        this.setState({ expanded: expanded });
+        this.setState({ expanded: expanded, changed: false });
         window.addEventListener('click', this.handleClick, false);
       } else {
         this.setState({ expanded: expanded });
         window.removeEventListener('click', this.handleClick, false);
+        if (this.props.onClose && this.state.changed) {
+          this.props.onClose();
+        }
       }
     }
   }, {
@@ -55643,6 +55651,8 @@ var DropdownField = function (_React$Component) {
     key: 'handleChange',
     value: function handleChange(value, is_selected) {
       var current_value = this.props.value;
+      this.setState({ changed: true });
+
       if (this.isMultiSelect()) {
         if (value == 'select-all') {
           var new_value = [];
@@ -55657,6 +55667,7 @@ var DropdownField = function (_React$Component) {
           current_value.push(value);
           var new_value = current_value;
         }
+        new_value = helpers.removeDuplicates(new_value);
       } else {
         var new_value = value;
 
@@ -55672,43 +55683,85 @@ var DropdownField = function (_React$Component) {
       return this.props.value instanceof Array;
     }
   }, {
+    key: 'selectedOptions',
+    value: function selectedOptions() {
+      var _props = this.props,
+          optionsProp = _props.options,
+          value = _props.value;
+
+      var selectedOptions = [];
+
+      if (optionsProp) {
+        // Value not set, default to first option
+        if (value === null || value === undefined) {
+          selectedOptions = [optionsProp[0]];
+        } else {
+          if (this.isMultiSelect()) {
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+              var _loop = function _loop() {
+                var multiSelectValue = _step.value;
+
+                selectedOptions = [].concat(_toConsumableArray(selectedOptions), _toConsumableArray(optionsProp.filter(function (option) {
+                  return option.value === multiSelectValue;
+                })));
+              };
+
+              for (var _iterator = value[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                _loop();
+              }
+            } catch (err) {
+              _didIteratorError = true;
+              _iteratorError = err;
+            } finally {
+              try {
+                if (!_iteratorNormalCompletion && _iterator.return) {
+                  _iterator.return();
+                }
+              } finally {
+                if (_didIteratorError) {
+                  throw _iteratorError;
+                }
+              }
+            }
+          } else {
+            selectedOptions = optionsProp.filter(function (option) {
+              return option.value === value;
+            });
+          }
+        }
+      }
+
+      return selectedOptions;
+    }
+  }, {
     key: 'render',
     value: function render() {
       var _this2 = this;
 
-      if (!this.props.options) {
-        return null;
-      }
+      var _props2 = this.props,
+          optionsProp = _props2.options,
+          no_status_icon = _props2.no_status_icon,
+          no_label = _props2.no_label,
+          button = _props2.button,
+          classNameProp = _props2.className,
+          name = _props2.name,
+          value = _props2.value,
+          icon = _props2.icon,
+          icon_type = _props2.icon_type,
+          selectedIconProp = _props2.selected_icon,
+          valueAsLabel = _props2.valueAsLabel;
+      var expanded = this.state.expanded;
 
-      var className = 'dropdown-field';
-      if (this.state.expanded) {
-        className += ' expanded';
-      }
-      if (this.props.no_status_icon) {
-        className += ' no-status-icon';
-      }
-      if (this.props.no_label) {
-        className += ' no-label';
-      }
-      if (this.props.button) {
-        className += ' buttonify';
-      }
-      if (this.props.className) {
-        className += ' ' + this.props.className;
-      }
-      var current_value = null;
-      if (this.props.value !== undefined) {
-        current_value = this.props.value;
-      } else if (this.props.options.length > 0) {
-        current_value = this.props.options[0].value;
-      }
 
-      var selected_icon = _react2.default.createElement(_Icon2.default, { name: 'check' });
-      if (this.props.selected_icon) {
-        selected_icon = _react2.default.createElement(_Icon2.default, { name: this.props.selected_icon });
-      }
+      if (!optionsProp) return null;
 
-      var options = Object.assign([], this.props.options);
+      var selectedOptions = this.selectedOptions();
+
+      var options = Object.assign([], optionsProp);
       if (this.isMultiSelect()) {
         options.push({
           value: 'select-all',
@@ -55717,40 +55770,60 @@ var DropdownField = function (_React$Component) {
         });
       }
 
+      var className = 'dropdown-field ' + classNameProp;
+      if (expanded) className += ' dropdown-field--expanded';
+      if (no_status_icon) className += ' dropdown-field--no-status-icon';
+      if (no_label) className += ' dropdown-field--no-label';
+      if (button) className += ' dropdown-field--buttonify';
+
+      var selected_icon = _react2.default.createElement(_Icon2.default, { name: 'check' });
+      if (selectedIconProp) {
+        selected_icon = _react2.default.createElement(_Icon2.default, { name: selectedIconProp });
+      }
+
       return _react2.default.createElement(
         'div',
         { className: className, 'data-uid': this.uid },
         _react2.default.createElement(
           'div',
-          { className: 'label' + (this.props.button ? ' button ' + this.props.button : ''), onClick: function onClick(e) {
+          { className: 'dropdown-field__label' + (button ? ' button ' + button : ''), onClick: function onClick(e) {
               return _this2.setExpanded();
             } },
-          this.props.icon ? _react2.default.createElement(_Icon2.default, { name: this.props.icon, type: this.props.icon_type ? this.props.icon_type : 'material' }) : null,
+          icon ? _react2.default.createElement(_Icon2.default, { name: icon, type: icon_type ? icon_type : 'material' }) : null,
           _react2.default.createElement(
             'span',
             { className: 'text' },
-            this.props.name,
-            this.isMultiSelect() ? ' (' + current_value.length + ')' : null
+            _react2.default.createElement(
+              'span',
+              { className: 'dropdown-field__label__value' },
+              valueAsLabel && selectedOptions.length === 1 ? selectedOptions[0].label : name
+            ),
+            _react2.default.createElement(
+              'span',
+              { className: 'dropdown-field__label__name' },
+              name
+            ),
+            this.isMultiSelect() ? ' (' + selectedOptions.length + ')' : null
           )
         ),
         _react2.default.createElement(
           'div',
-          { className: 'options' },
+          { className: 'dropdown-field__options' },
           _react2.default.createElement(
             'div',
-            { className: 'liner' },
+            { className: 'dropdown-field__options__liner' },
             options.map(function (option) {
-              if (_this2.isMultiSelect()) {
-                var is_selected = current_value.indexOf(option.value) > -1;
-              } else {
-                var is_selected = current_value === option.value;
-              }
+              var is_selected = selectedOptions.includes(option);
               return _react2.default.createElement(
                 'div',
-                { className: 'option ' + (option.className ? option.className : ''), key: option.value, onClick: function onClick(e) {
+                {
+                  className: 'dropdown-field__options__item ' + (option.className ? option.className : ''),
+                  key: option.value,
+                  onClick: function onClick(e) {
                     return _this2.handleChange(option.value, is_selected);
-                  } },
-                !_this2.props.no_status_icon && is_selected ? selected_icon : null,
+                  }
+                },
+                !no_status_icon && is_selected && selected_icon,
                 option.label
               );
             })
@@ -58434,16 +58507,12 @@ var Header = function (_React$Component) {
 
       return _react2.default.createElement(
         'div',
-        { className: 'options' },
+        { className: 'header__options' },
         this.renderContextMenuTrigger(),
         _react2.default.createElement(
-          'span',
-          { className: 'items' },
-          _react2.default.createElement(
-            'span',
-            { className: 'liner' },
-            this.props.options ? this.props.options : null
-          )
+          'div',
+          { className: 'header__options__wrapper' },
+          this.props.options || null
         )
       );
     }
@@ -63135,7 +63204,7 @@ var Track = function (_React$Component) {
             case 'browse':
               var link = _react2.default.createElement(
                 _URILink2.default,
-                { type: 'browse', uri: track.added_from.replace('iris:browse:', '') },
+                { uri: track.added_from },
                 'Browse'
               );
               break;
@@ -63143,7 +63212,7 @@ var Track = function (_React$Component) {
             case 'search':
               var link = _react2.default.createElement(
                 _URILink2.default,
-                { type: 'search', uri: track.added_from.replace('iris:', '') },
+                { uri: track.added_from },
                 'Search'
               );
               break;
@@ -63942,7 +64011,7 @@ exports.default = (0, _react.memo)(function (props) {
 
     case 'search':
       var exploded = uri.split('%3A');
-      to = '/search/' + exploded[1] + '/' + exploded[2];
+      to = '/search/' + exploded[2] + '/' + exploded[3];
       break;
 
     default:
@@ -65353,15 +65422,7 @@ var uriType = exports.uriType = function uriType(uri) {
   }
 
   if (exploded[0] === 'iris') {
-    switch (exploded[1]) {
-      case 'search':
-      case 'discover':
-      case 'browse':
-      case 'radio':
-        return exploded[1];
-      default:
-        return null;
-    }
+    return exploded[1];
   }
 
   switch (exploded[1]) {
@@ -65483,14 +65544,14 @@ var getFromUri = exports.getFromUri = function getFromUri(element) {
       break;
 
     case 'searchtype':
-      if (exploded[0] == 'search') {
-        return exploded[1];
+      if (exploded[1] == 'search') {
+        return exploded[2];
       }
       break;
 
     case 'searchterm':
-      if (exploded[0] == 'search') {
-        return exploded[2];
+      if (exploded[1] == 'search') {
+        return exploded[3];
       }
       break;
 
@@ -78807,7 +78868,7 @@ var Artist = function (_React$Component) {
           )
         ),
         _react2.default.createElement('div', { className: 'col col--w5' }),
-        artist.related_artists && artist.related_artists.length > 0 ? _react2.default.createElement(
+        artist.related_artists && artist.related_artists.length > 0 && _react2.default.createElement(
           'div',
           { className: 'col col--w25 related-artists' },
           _react2.default.createElement(
@@ -78825,9 +78886,9 @@ var Artist = function (_React$Component) {
             { to: '/artist/' + encodeURIComponent(this.props.uri) + '/related-artists', scrollTo: '#sub-views-menu', className: 'button button--default' },
             'All related artists'
           )
-        ) : null,
+        ),
         _react2.default.createElement('div', { className: 'cf' }),
-        artist.albums ? _react2.default.createElement(
+        artist.albums && _react2.default.createElement(
           'div',
           { className: 'albums' },
           _react2.default.createElement(
@@ -78839,9 +78900,10 @@ var Artist = function (_React$Component) {
               'Albums'
             ),
             _react2.default.createElement(_DropdownField2.default, {
-              icon: 'sort',
+              icon: 'swap_vert',
               name: 'Sort',
               value: this.props.sort,
+              valueAsLabel: true,
               options: sort_options,
               selected_icon: this.props.sort ? this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down' : null,
               handleChange: function handleChange(value) {
@@ -78852,6 +78914,7 @@ var Artist = function (_React$Component) {
               icon: 'filter_list',
               name: 'Filter',
               value: this.props.filter,
+              valueAsLabel: true,
               options: filter_options,
               handleChange: function handleChange(value) {
                 _this2.setFilter(value);_this2.props.uiActions.hideContextMenu();
@@ -78878,7 +78941,7 @@ var Artist = function (_React$Component) {
               }
             })
           )
-        ) : null
+        )
       );
     }
   }, {
@@ -80569,42 +80632,54 @@ var Queue = function (_React$Component) {
       var items = [];
 
       // Radio nests it's seed URIs in an encoded URI format
-      if (uri_type === 'radio') {
-        var radio_seeds = helpers.getFromUri('seeds', added_from_uri);
+      switch (uri_type) {
+        case 'radio':
+          var radio_seeds = helpers.getFromUri('seeds', added_from_uri);
 
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
+          var _iteratorNormalCompletion = true;
+          var _didIteratorError = false;
+          var _iteratorError = undefined;
 
-        try {
-          for (var _iterator = radio_seeds[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            var seed = _step.value;
-
-            var item_type = helpers.uriType(seed);
-            var item_library = this.props[item_type + 's'];
-            if (item_library && item_library[seed]) {
-              items.push(item_library[seed]);
-            }
-          }
-        } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
-        } finally {
           try {
-            if (!_iteratorNormalCompletion && _iterator.return) {
-              _iterator.return();
+            for (var _iterator = radio_seeds[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              var seed = _step.value;
+
+              var item_type = helpers.uriType(seed);
+              var _item_library = this.props[item_type + 's'];
+              if (_item_library && _item_library[seed]) {
+                items.push(_item_library[seed]);
+              }
             }
+          } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
           } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
+            try {
+              if (!_iteratorNormalCompletion && _iterator.return) {
+                _iterator.return();
+              }
+            } finally {
+              if (_didIteratorError) {
+                throw _iteratorError;
+              }
             }
           }
-        }
-      } else {
-        var _item_library = this.props[uri_type + 's'];
-        if (_item_library && _item_library[added_from_uri]) {
-          items.push(_item_library[added_from_uri]);
-        }
+
+          break;
+
+        case 'search':
+          items.push({
+            uri: added_from_uri,
+            name: '"' + helpers.getFromUri('searchterm', added_from_uri) + '" search'
+          });
+          break;
+
+        default:
+          var item_library = this.props[uri_type + 's'];
+          if (item_library && item_library[added_from_uri]) {
+            items.push(item_library[added_from_uri]);
+          }
+          break;
       }
 
       if (items.length <= 0) return null;
@@ -80612,7 +80687,7 @@ var Queue = function (_React$Component) {
       return _react2.default.createElement(
         'div',
         { className: 'current-track__added-from' },
-        _react2.default.createElement(
+        items[0].images && _react2.default.createElement(
           _URILink2.default,
           {
             uri: items[0].uri,
@@ -80801,13 +80876,15 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
       for (var _iterator2 = state.core.queue[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
         var queue_track = _step2.value;
 
-        var track = _extends({}, queue_track);
+        var track = _extends({}, queue_track, {
+          playing: current_track && current_track.tlid == queue_track.tlid
+        });
 
         // If we have the track in our index, merge it in.
         // We prioritise queue track over index track as queue has unique data, like which track
         // is playing and tlids.
         if (state.core.tracks.hasOwnProperty(track.uri)) {
-          track = _extends({}, state.core.tracks[track.uri], track, { playing: current_track && current_track.tlid == track.tlid });
+          track = _extends({}, state.core.tracks[track.uri], track);
         }
 
         // Now merge in our queue metadata
@@ -80815,8 +80892,8 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
           track = _extends({}, track, state.core.queue_metadata['tlid_' + track.tlid]);
         }
 
-        // Siphon off this track if it's a full representation of our current track (by tlid)
-        if (current_track && current_track.uri == track.uri) {
+        // Siphon off this track if it's a full representation of our current track
+        if (track.playing) {
           current_track = track;
         }
 
@@ -81270,6 +81347,12 @@ var Search = function (_React$Component) {
       this.props.uiActions.set(data);
     }
   }, {
+    key: 'handleSourceChange',
+    value: function handleSourceChange(value) {
+      this.props.uiActions.set({ uri_schemes_search_enabled: value });
+      this.props.uiActions.hideContextMenu();
+    }
+  }, {
     key: 'renderArtists',
     value: function renderArtists(artists, spotify_search_enabled) {
       var _this3 = this;
@@ -81286,7 +81369,7 @@ var Search = function (_React$Component) {
             'Search'
           ),
           _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
-          '\xA0 Artists'
+          ' Artists'
         ),
         _react2.default.createElement(
           'section',
@@ -81312,10 +81395,10 @@ var Search = function (_React$Component) {
           _react2.default.createElement(
             _URILink2.default,
             { type: 'search', uri: 'search:all:' + this.state.term },
-            'Search'
+            'Search '
           ),
           _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
-          '\xA0 Albums'
+          ' Albums'
         ),
         _react2.default.createElement(
           'section',
@@ -81341,10 +81424,10 @@ var Search = function (_React$Component) {
           _react2.default.createElement(
             _URILink2.default,
             { type: 'search', uri: 'search:all:' + this.state.term },
-            'Search'
+            'Search '
           ),
           _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
-          '\xA0 Playlists'
+          ' Playlists'
         ),
         _react2.default.createElement(
           'section',
@@ -81370,10 +81453,10 @@ var Search = function (_React$Component) {
           _react2.default.createElement(
             _URILink2.default,
             { type: 'search', uri: 'search:all:' + this.state.term },
-            'Search'
+            'Search '
           ),
           _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
-          '\xA0 Tracks'
+          ' Tracks'
         ),
         _react2.default.createElement(
           'section',
@@ -81407,13 +81490,11 @@ var Search = function (_React$Component) {
               )
             ),
             _react2.default.createElement(_ArtistGrid2.default, { mini: true, show_source_icon: true, artists: artists.slice(0, 6) }),
-            artists.length >= 6 ? _react2.default.createElement(
+            artists.length >= 6 && _react2.default.createElement(
               _URILink2.default,
               { type: 'search', uri: 'search:artist:' + this.state.term, className: 'button button--default' },
-              'All artists (',
-              artists.length,
-              ')'
-            ) : null
+              'All artists (' + artists.length + ')'
+            )
           )
         );
       } else {
@@ -81437,13 +81518,11 @@ var Search = function (_React$Component) {
               )
             ),
             _react2.default.createElement(_AlbumGrid2.default, { mini: true, show_source_icon: true, albums: albums.slice(0, 6) }),
-            albums.length >= 6 ? _react2.default.createElement(
+            albums.length >= 6 && _react2.default.createElement(
               _URILink2.default,
               { type: 'search', uri: 'search:album:' + this.state.term, className: 'button button--default' },
-              'All albums (',
-              albums.length,
-              ')'
-            ) : null
+              'All albums (' + albums.length + ')'
+            )
           )
         );
       } else {
@@ -81467,13 +81546,11 @@ var Search = function (_React$Component) {
               )
             ),
             _react2.default.createElement(_PlaylistGrid2.default, { mini: true, show_source_icon: true, playlists: playlists.slice(0, 6) }),
-            playlists.length >= 6 ? _react2.default.createElement(
+            playlists.length >= 6 && _react2.default.createElement(
               _URILink2.default,
               { type: 'search', uri: 'search:playlist:' + this.state.term, className: 'button button--default' },
-              'All playlists (',
-              playlists.length,
-              ')'
-            ) : null
+              'All playlists (' + playlists.length + ')'
+            )
           )
         );
       } else {
@@ -81595,9 +81672,10 @@ var Search = function (_React$Component) {
         'span',
         null,
         _react2.default.createElement(_DropdownField2.default, {
-          icon: 'sort',
+          icon: 'swap_vert',
           name: 'Sort',
           value: this.props.sort,
+          valueAsLabel: true,
           options: sort_options,
           selected_icon: this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down',
           handleChange: function handleChange(value) {
@@ -81610,7 +81688,12 @@ var Search = function (_React$Component) {
           value: this.props.uri_schemes_search_enabled,
           options: provider_options,
           handleChange: function handleChange(value) {
-            _this8.props.uiActions.set({ uri_schemes_search_enabled: value });_this8.props.uiActions.hideContextMenu();
+            return _this8.handleSourceChange(value);
+          },
+          onClose: function onClose() {
+            _this8.props.spotifyActions.clearSearchResults();
+            _this8.props.mopidyActions.clearSearchResults();
+            _this8.search();
           }
         })
       );
@@ -85452,7 +85535,7 @@ var LibraryAlbums = function (_React$Component) {
 
       var sort_options = [{
         value: null,
-        label: 'Default'
+        label: 'As loaded'
       }, {
         value: 'name',
         label: 'Name'
@@ -85471,8 +85554,8 @@ var LibraryAlbums = function (_React$Component) {
       }];
 
       var options = _react2.default.createElement(
-        'span',
-        null,
+        'div',
+        { className: 'header__options__wrapper' },
         _react2.default.createElement(_FilterField2.default, {
           initialValue: this.state.filter,
           handleChange: function handleChange(value) {
@@ -85483,9 +85566,10 @@ var LibraryAlbums = function (_React$Component) {
           }
         }),
         _react2.default.createElement(_DropdownField2.default, {
-          icon: 'sort',
+          icon: 'swap_vert',
           name: 'Sort',
           value: this.props.sort,
+          valueAsLabel: true,
           options: sort_options,
           selected_icon: this.props.sort ? this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down' : null,
           handleChange: function handleChange(val) {
@@ -85496,6 +85580,7 @@ var LibraryAlbums = function (_React$Component) {
           icon: 'visibility',
           name: 'View',
           value: this.props.view,
+          valueAsLabel: true,
           options: view_options,
           handleChange: function handleChange(val) {
             _this3.props.uiActions.set({ library_albums_view: val });_this3.props.uiActions.hideContextMenu();
@@ -85505,6 +85590,7 @@ var LibraryAlbums = function (_React$Component) {
           icon: 'cloud',
           name: 'Source',
           value: this.props.source,
+          valueAsLabel: true,
           options: source_options,
           handleChange: function handleChange(val) {
             _this3.props.uiActions.set({ library_albums_source: val });_this3.props.uiActions.hideContextMenu();
@@ -85951,17 +86037,17 @@ var LibraryArtists = function (_React$Component) {
       }];
 
       var sort_options = [{
-        label: 'Default',
-        value: null
+        value: null,
+        label: 'As loaded'
       }, {
-        label: 'Name',
-        value: 'name'
+        value: 'name',
+        label: 'Name'
       }, {
-        label: 'Followers',
-        value: 'followers'
+        value: 'followers',
+        label: 'Followers'
       }, {
-        label: 'Popularity',
-        value: 'popularity'
+        value: 'popularity',
+        label: 'Popularity'
       }];
 
       var options = _react2.default.createElement(
@@ -85977,9 +86063,10 @@ var LibraryArtists = function (_React$Component) {
           }
         }),
         _react2.default.createElement(_DropdownField2.default, {
-          icon: 'sort',
+          icon: 'swap_vert',
           name: 'Sort',
           value: this.props.sort,
+          valueAsLabel: true,
           options: sort_options,
           selected_icon: this.props.sort ? this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down' : null,
           handleChange: function handleChange(value) {
@@ -85990,6 +86077,7 @@ var LibraryArtists = function (_React$Component) {
           icon: 'visibility',
           name: 'View',
           value: this.props.view,
+          valueAsLabel: true,
           options: view_options,
           handleChange: function handleChange(value) {
             _this3.props.uiActions.set({ library_artists_view: value });_this3.props.uiActions.hideContextMenu();
@@ -85999,6 +86087,7 @@ var LibraryArtists = function (_React$Component) {
           icon: 'cloud',
           name: 'Source',
           value: this.props.source,
+          valueAsLabel: true,
           options: source_options,
           handleChange: function handleChange(value) {
             _this3.props.uiActions.set({ library_artists_source: value });_this3.props.uiActions.hideContextMenu();
@@ -86948,7 +87037,7 @@ var LibraryPlaylists = function (_React$Component) {
 
       var sort_options = [{
         value: null,
-        label: 'Default'
+        label: 'As loaded'
       }, {
         value: 'name',
         label: 'Name'
@@ -86979,9 +87068,10 @@ var LibraryPlaylists = function (_React$Component) {
           }
         }),
         _react2.default.createElement(_DropdownField2.default, {
-          icon: 'sort',
+          icon: 'swap_vert',
           name: 'Sort',
           value: this.props.sort,
+          valueAsLabel: true,
           options: sort_options,
           selected_icon: this.props.sort ? this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down' : null,
           handleChange: function handleChange(value) {
@@ -86991,6 +87081,7 @@ var LibraryPlaylists = function (_React$Component) {
         _react2.default.createElement(_DropdownField2.default, {
           icon: 'visibility',
           name: 'View',
+          valueAsLabel: true,
           value: this.props.view,
           options: view_options,
           handleChange: function handleChange(value) {
@@ -87000,6 +87091,7 @@ var LibraryPlaylists = function (_React$Component) {
         _react2.default.createElement(_DropdownField2.default, {
           icon: 'cloud',
           name: 'Source',
+          valueAsLabel: true,
           value: this.props.source,
           options: source_options,
           handleChange: function handleChange(value) {

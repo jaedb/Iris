@@ -42,7 +42,7 @@ export default memo((props) => {
 
     case 'search':
       var exploded = uri.split('%3A');
-      to = `/search/${exploded[1]}/${exploded[2]}`;
+      to = `/search/${exploded[2]}/${exploded[3]}`;
       break;
 
     default:

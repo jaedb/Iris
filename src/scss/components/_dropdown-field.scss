@@ -7,8 +7,12 @@
 	position: relative;
 	display: inline-block;
 
-	.label {
+	&__label {
 		display: flex;
+
+		&__name {
+			display: none;
+		}
 		
 		.icon {
 			padding-right: 8px;
@@ -25,30 +29,30 @@
 		}
 	}
 
-	&.expanded {
+	&--expanded {
 		.label:not(.button) {
 			color: colour(blue);
 		}
-		.options {
+		.dropdown-field__options {
 			display: block;
 		}
 	}
 
-	&.no-status-icon {
-		.options {
-			.option {
+	&--no-status-icon {
+		.dropdown-field__options {
+			&__item {
 				padding-left: 12px;
 			}
 		}
 	}
 
-	&.no-label {
+	&--no-label {
 		.label > .text {
 			display: none;
 		}
 	}
 
-	.options {
+	&__options {
 		position: absolute;
 		top: 46px;
 		right: 10px;
@@ -74,7 +78,7 @@
 			}
 		}
 
-		& > .liner {
+		&__liner {
 			color: colour(black);
 			background: colour(white);
 			min-width: 120px;
@@ -85,44 +89,44 @@
 			.light-theme & {
 				background: colour(faint_grey);
 			}
+		}
 
-			.option {
+		&__item {
+			@include animate();
+			position: relative;
+			padding: 9px 12px 8px 24px;
+			cursor: pointer;
+			color: colour(black);
+			
+			&:before {
 				@include animate();
-				position: relative;
-				padding: 9px 12px 8px 24px;
-				cursor: pointer;
+				content: '';
+				display: block;
+				position: absolute;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				left: 0;
+				opacity: 0;
+				z-index: 9;
+				background: -webkit-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+				background: -moz-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+				background: -o-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+				background: linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
+			}
+
+			.icon {
+				position: absolute;
+				top: 8px;
+				left: 6px;
+				font-size: 16px;
+			}
+
+			.notouch &:hover {
 				color: colour(black);
-				
+
 				&:before {
-					@include animate();
-					content: '';
-					display: block;
-					position: absolute;
-					top: 0;
-					right: 0;
-					bottom: 0;
-					left: 0;
-					opacity: 0;
-					z-index: 9;
-					background: -webkit-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
-					background: -moz-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
-					background: -o-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
-					background: linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
-				}
-
-				.icon {
-					position: absolute;
-					top: 8px;
-					left: 6px;
-					font-size: 16px;
-				}
-
-				.notouch &:hover {
-					color: colour(black);
-
-					&:before {
-						opacity: 0.15;
-					}
+					opacity: 0.15;
 				}
 			}
 		}
@@ -139,12 +143,20 @@
 			background: none !important;
 		}
 
-		.label {
+		&__label {
 			padding: 0 0 3px 0;
 			opacity: 0.5;
 			font-size: 1rem;
 			display: block;
 			cursor: default;
+
+			&__value {
+				display: none;
+			}
+
+			&__name {
+				display: inline-block;
+			}
 
 			&,
 			&:hover {
@@ -156,7 +168,7 @@
 			}
 		}
 
-		.options {
+		&__options {
 			display: block;
 			position: static;
 			background: transparent;
@@ -170,7 +182,7 @@
 				display: none !important;
 			}
 
-			& > .liner {
+			&__liner {
 				background: transparent;
 				color: colour(white) !important;
 				margin: -3px -5px;
@@ -182,28 +194,28 @@
 				&:before {
 					display: none !important;
 				}
+			}
 
-				.option {
+			&__item {
+				display: block;
+				padding: 3px 5px;
+				border-radius: 0;
+				color: colour(white) !important;
+
+				.light-theme & {
+					color: colour(dark_grey) !important;
+				}
+
+				&:before {
+					display: none !important;
+				}
+
+				.icon {
 					display: inline-block;
-					padding: 3px 5px;
-					border-radius: 0;
-					color: colour(white) !important;
-
-					.light-theme & {
-						color: colour(dark_grey) !important;
-					}
-
-					&:before {
-						display: none !important;
-					}
-
-					.icon {
-						display: inline-block;
-						position: static;
-						padding-right: 2px;
-						padding-bottom: 3px;
-						font-size: 0.9em;
-					}
+					position: static;
+					padding-right: 2px;
+					padding-bottom: 3px;
+					font-size: 0.9em;
 				}
 			}
 		}

@@ -1,7 +1,6 @@
 
 import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import * as helpers from '../../helpers';
 
 import Icon from '../Icon';
 
@@ -18,6 +17,7 @@ export default class DropdownField extends React.Component {
 
     this.state = {
       expanded: false,
+      changed: false,
     };
 
     this.handleClick = this.handleClick.bind(this);
@@ -33,11 +33,14 @@ export default class DropdownField extends React.Component {
 
   setExpanded(expanded = !this.state.expanded) {
     if (expanded) {
-      this.setState({ expanded });
+      this.setState({ expanded, changed: false, });
       window.addEventListener('click', this.handleClick, false);
     } else {
       this.setState({ expanded });
       window.removeEventListener('click', this.handleClick, false);
+      if (this.props.onClose && this.state.changed) {
+        this.props.onClose();
+      }
     }
   }
 
@@ -50,6 +53,8 @@ export default class DropdownField extends React.Component {
 
   handleChange(value, is_selected) {
     const current_value = this.props.value;
+    this.setState({ changed: true });
+    
     if (this.isMultiSelect()) {
       if (value == 'select-all') {
         var new_value = [];
@@ -64,6 +69,7 @@ export default class DropdownField extends React.Component {
         current_value.push(value);
         var new_value = current_value;
       }
+      new_value = helpers.removeDuplicates(new_value);
     } else {
       var new_value = value;
 
@@ -78,40 +84,55 @@ export default class DropdownField extends React.Component {
     return this.props.value instanceof Array;
   }
 
+  selectedOptions() {
+    const {
+      options: optionsProp,
+      value,
+    } = this.props;
+    let selectedOptions = [];
+
+    if (optionsProp) {
+      // Value not set, default to first option
+      if (value === null || value === undefined) {
+        selectedOptions = [optionsProp[0]];
+      } else {
+        if (this.isMultiSelect()) {
+          for (let multiSelectValue of value) {
+            selectedOptions = [
+              ...selectedOptions,
+              ...optionsProp.filter(option => option.value === multiSelectValue),
+            ];
+          }
+        } else {
+          selectedOptions = optionsProp.filter(option => option.value === value);
+        }
+      }
+    }
+
+    return selectedOptions;
+  }
+
   render() {
-    if (!this.props.options) {
-      return null;
-    }
+    const {
+      options: optionsProp,
+      no_status_icon,
+      no_label,
+      button,
+      className: classNameProp,
+      name,
+      value,
+      icon,
+      icon_type,
+      selected_icon: selectedIconProp,
+      valueAsLabel,
+    } = this.props;
+    const { expanded } = this.state;
 
-    let className = 'dropdown-field';
-    if (this.state.expanded) {
-      className += ' expanded';
-    }
-    if (this.props.no_status_icon) {
-      className += ' no-status-icon';
-    }
-    if (this.props.no_label) {
-      className += ' no-label';
-    }
-    if (this.props.button) {
-      className += ' buttonify';
-    }
-    if (this.props.className) {
-      className += ` ${this.props.className}`;
-    }
-    let current_value = null;
-    if (this.props.value !== undefined) {
-      current_value = this.props.value;
-    } else if (this.props.options.length > 0) {
-      current_value = this.props.options[0].value;
-    }
+    if (!optionsProp) return null;
 
-    let selected_icon = <Icon name="check" />;
-    if (this.props.selected_icon) {
-      selected_icon = <Icon name={this.props.selected_icon} />;
-    }
+    const selectedOptions = this.selectedOptions();
 
-    const options = Object.assign([], this.props.options);
+    const options = Object.assign([], optionsProp);
     if (this.isMultiSelect()) {
       options.push({
         value: 'select-all',
@@ -120,29 +141,45 @@ export default class DropdownField extends React.Component {
       });
     }
 
+    let className = `dropdown-field ${classNameProp}`;
+    if (expanded) className += ' dropdown-field--expanded';
+    if (no_status_icon)  className += ' dropdown-field--no-status-icon';
+    if (no_label) className += ' dropdown-field--no-label';
+    if (button) className += ' dropdown-field--buttonify';
+
+    let selected_icon = <Icon name="check" />;
+    if (selectedIconProp) {
+      selected_icon = <Icon name={selectedIconProp} />;
+    }
+
     return (
       <div className={className} data-uid={this.uid}>
-        <div className={`label${this.props.button ? ` button ${this.props.button}` : ''}`} onClick={(e) => this.setExpanded()}>
-          {this.props.icon ? <Icon name={this.props.icon} type={this.props.icon_type ? this.props.icon_type : 'material'} /> : null}
+        <div className={`dropdown-field__label${button ? ` button ${button}` : ''}`} onClick={(e) => this.setExpanded()}>
+          {icon ? <Icon name={icon} type={icon_type ? icon_type : 'material'} /> : null}
           <span className="text">
-            {this.props.name}
-            {this.isMultiSelect() ? ` (${current_value.length})` : null}
+            <span className="dropdown-field__label__value">
+              {valueAsLabel && selectedOptions.length === 1 ? selectedOptions[0].label : name}
+            </span>
+            <span className="dropdown-field__label__name">
+              {name}
+            </span>
+            {this.isMultiSelect() ? ` (${selectedOptions.length})` : null}
           </span>
         </div>
-        <div className="options">
-          <div className="liner">
+        <div className="dropdown-field__options">
+          <div className="dropdown-field__options__liner">
             {
 							options.map((option) => {
-							  if (this.isMultiSelect()) {
-							    var is_selected = current_value.indexOf(option.value) > -1;
-							  } else {
-							    var is_selected = current_value === option.value;
-							  }
+							  const is_selected = selectedOptions.includes(option);
 							  return (
-  <div className={`option ${option.className ? option.className : ''}`} key={option.value} onClick={(e) => this.handleChange(option.value, is_selected)}>
-    {!this.props.no_status_icon && is_selected ? selected_icon : null}
-    {option.label}
-  </div>
+                  <div
+                    className={`dropdown-field__options__item ${option.className ? option.className : ''}`}
+                    key={option.value}
+                    onClick={(e) => this.handleChange(option.value, is_selected)}
+                  >
+                    {!no_status_icon && is_selected && selected_icon}
+                    {option.label}
+                  </div>
 							  );
 							})
 						}

@@ -277,7 +277,7 @@ class LibraryAlbums extends React.Component {
     const sort_options = [
       {
         value: null,
-        label: 'Default',
+        label: 'As loaded',
       },
       {
         value: 'name',
@@ -302,16 +302,17 @@ class LibraryAlbums extends React.Component {
     ];
 
     const options = (
-      <span>
+      <div className="header__options__wrapper">
         <FilterField
           initialValue={this.state.filter}
           handleChange={(value) => this.setState({ filter: value, limit: this.state.per_page })}
           onSubmit={e => this.props.uiActions.hideContextMenu()}
         />
         <DropdownField
-          icon="sort"
+          icon="swap_vert"
           name="Sort"
           value={this.props.sort}
+          valueAsLabel
           options={sort_options}
           selected_icon={this.props.sort ? (this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
           handleChange={(val) => { this.setSort(val); this.props.uiActions.hideContextMenu(); }}
@@ -320,6 +321,7 @@ class LibraryAlbums extends React.Component {
           icon="visibility"
           name="View"
           value={this.props.view}
+          valueAsLabel
           options={view_options}
           handleChange={(val) => { this.props.uiActions.set({ library_albums_view: val }); this.props.uiActions.hideContextMenu(); }}
         />
@@ -327,10 +329,11 @@ class LibraryAlbums extends React.Component {
           icon="cloud"
           name="Source"
           value={this.props.source}
+          valueAsLabel
           options={source_options}
           handleChange={(val) => { this.props.uiActions.set({ library_albums_source: val }); this.props.uiActions.hideContextMenu(); }}
         />
-      </span>
+      </div>
     );
 
     return (

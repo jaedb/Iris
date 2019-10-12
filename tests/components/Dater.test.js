@@ -19,13 +19,6 @@ describe('<Dater />', () => {
 		const dom_2 = shallow(<Dater data={100000} />);
 		expect(dom_2.type()).toEqual(null);
 
-		// Invalid data
-		var data = {
-			invalid_object: "value"
-		};
-		const dom_3 = shallow(<Dater type="total-time" data={data} />);
-		expect(dom_3.type()).toEqual(null);
-
 		// Missing data
 		const dom_4 = shallow(<Dater type="ago" />);
 		expect(dom_4.type()).toEqual(null);

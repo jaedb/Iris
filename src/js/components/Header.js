@@ -43,13 +43,11 @@ export default class Header extends React.Component {
     }
 
     return (
-      <div className="options">
+      <div className="header__options">
         {this.renderContextMenuTrigger()}
-        <span className="items">
-          <span className="liner">
-            {this.props.options ? this.props.options : null}
-          </span>
-        </span>
+        <div className="header__options__wrapper">
+          {this.props.options || null}
+        </div>
       </div>
     );
   }

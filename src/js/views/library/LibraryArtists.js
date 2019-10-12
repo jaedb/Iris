@@ -257,20 +257,20 @@ class LibraryArtists extends React.Component {
 
     const sort_options = [
       {
-        label: 'Default',
         value: null,
+        label: 'As loaded',
       },
       {
-        label: 'Name',
         value: 'name',
+        label: 'Name',
       },
       {
-        label: 'Followers',
         value: 'followers',
+        label: 'Followers',
       },
       {
-        label: 'Popularity',
         value: 'popularity',
+        label: 'Popularity',
       },
     ];
 
@@ -282,9 +282,10 @@ class LibraryArtists extends React.Component {
           onSubmit={e => this.props.uiActions.hideContextMenu()}
         />
         <DropdownField
-          icon="sort"
+          icon="swap_vert"
           name="Sort"
           value={this.props.sort}
+          valueAsLabel
           options={sort_options}
           selected_icon={this.props.sort ? (this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
           handleChange={(value) => { this.setSort(value); this.props.uiActions.hideContextMenu(); }}
@@ -293,6 +294,7 @@ class LibraryArtists extends React.Component {
           icon="visibility"
           name="View"
           value={this.props.view}
+          valueAsLabel
           options={view_options}
           handleChange={(value) => { this.props.uiActions.set({ library_artists_view: value }); this.props.uiActions.hideContextMenu(); }}
         />
@@ -300,6 +302,7 @@ class LibraryArtists extends React.Component {
           icon="cloud"
           name="Source"
           value={this.props.source}
+          valueAsLabel
           options={source_options}
           handleChange={(value) => { this.props.uiActions.set({ library_artists_source: value }); this.props.uiActions.hideContextMenu(); }}
         />

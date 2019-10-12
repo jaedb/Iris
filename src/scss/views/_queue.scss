@@ -52,7 +52,6 @@
       &__text {
         border: 0 !important;
         display: flex;
-        padding-left: 15px;
 
         .links-sentence {
           padding-left: 0.15em;
@@ -61,6 +60,8 @@
 
       &__thumbnail {
         border: 0 !important;
+        margin-right: 15px;
+
         .thumbnail {
           width: 30px;
         }

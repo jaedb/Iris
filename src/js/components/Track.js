@@ -223,11 +223,11 @@ export default class Track extends React.Component {
             break;
 
           case 'browse':
-            var link = <URILink type="browse" uri={track.added_from.replace('iris:browse:', '')}>Browse</URILink>;
+            var link = <URILink uri={track.added_from}>Browse</URILink>;
             break;
 
           case 'search':
-            var link = <URILink type="search" uri={track.added_from.replace('iris:', '')}>Search</URILink>;
+            var link = <URILink uri={track.added_from}>Search</URILink>;
             break;
 
           case 'radio':
