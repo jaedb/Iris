@@ -86568,13 +86568,12 @@ var LibraryBrowseDirectory = function (_React$Component) {
             return _react2.default.createElement(
               'span',
               { key: uri },
-              index > 0 ? _react2.default.createElement(
+              index > 0 && _react2.default.createElement(
                 'span',
                 null,
                 _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
-                ' ',
-                '\xA0\xA0'
-              ) : null,
+                '   '
+              ),
               _react2.default.createElement(
                 _URILink2.default,
                 { type: 'browse', uri: uri },
@@ -86654,19 +86653,20 @@ var LibraryBrowseDirectory = function (_React$Component) {
           icon: 'visibility',
           name: 'View',
           value: this.props.view,
+          valueAsLabel: true,
           options: view_options,
           handleChange: function handleChange(value) {
             _this2.props.uiActions.set({ library_directory_view: value });_this2.props.uiActions.hideContextMenu();
           }
         }),
-        tracks ? _react2.default.createElement(
+        tracks && _react2.default.createElement(
           'a',
           { className: 'button button--no-hover', onClick: function onClick(e) {
               _this2.props.uiActions.hideContextMenu();_this2.playAll(e, tracks);
             } },
           _react2.default.createElement(_Icon2.default, { name: 'play_circle_filled' }),
           'Play all'
-        ) : null,
+        ),
         _react2.default.createElement(
           'a',
           { className: 'button button--no-hover', onClick: function onClick(e) {
@@ -86694,11 +86694,11 @@ var LibraryBrowseDirectory = function (_React$Component) {
             null,
             this.renderBreadcrumbs(),
             subdirectories ? this.renderSubdirectories(subdirectories) : null,
-            tracks ? _react2.default.createElement(_TrackList2.default, {
+            tracks && _react2.default.createElement(_TrackList2.default, {
               tracks: this.props.directory.tracks,
               uri: 'iris:browse:' + this.props.uri,
               className: 'library-local-track-list'
-            }) : null
+            })
           )
         )
       );
