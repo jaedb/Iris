@@ -78952,7 +78952,6 @@ exports.playArtistTopTracks = playArtistTopTracks;
 exports.getUser = getUser;
 exports.getUserPlaylists = getUserPlaylists;
 exports.getAlbum = getAlbum;
-exports.toggleAlbumInLibrary = toggleAlbumInLibrary;
 exports.createPlaylist = createPlaylist;
 exports.savePlaylist = savePlaylist;
 exports.getPlaylist = getPlaylist;
@@ -78960,7 +78959,6 @@ exports.getLibraryTracksAndPlay = getLibraryTracksAndPlay;
 exports.getLibraryTracksAndPlayProcessor = getLibraryTracksAndPlayProcessor;
 exports.getAllPlaylistTracks = getAllPlaylistTracks;
 exports.getAllPlaylistTracksProcessor = getAllPlaylistTracksProcessor;
-exports.toggleFollowingPlaylist = toggleFollowingPlaylist;
 exports.addTracksToPlaylist = addTracksToPlaylist;
 exports.deleteTracksFromPlaylist = deleteTracksFromPlaylist;
 exports.reorderPlaylistTracks = reorderPlaylistTracks;
@@ -79657,10 +79655,12 @@ function following(uri) {
           endpoint = 'playlists/' + helpers.getFromUri('playlistid', uri) + '/followers';
         }
         break;
+      default:
+        break;
     }
 
     request(dispatch, getState, endpoint, method, data).then(function (response) {
-      if (response) {
+      if (Array.isArray(response) && response.length > 0) {
         is_following = response[0];
       } else {
         is_following = is_following;
@@ -79671,6 +79671,12 @@ function following(uri) {
         key: uri,
         in_library: is_following
       });
+
+      if (method !== 'GET') {
+        dispatch(uiActions.createNotification({
+          message: is_following ? 'Added ' + asset_name + ' to library' : 'Removed ' + asset_name + ' from library'
+        }));
+      }
     }, function (error) {
       dispatch(coreActions.handleException('Could not follow/unfollow', error));
     });
@@ -80139,23 +80145,6 @@ function getAlbum(uri) {
   };
 }
 
-function toggleAlbumInLibrary(uri, method) {
-  if (method == 'PUT') var new_state = 1;
-  if (method == 'DELETE') var new_state = 0;
-
-  return function (dispatch, getState) {
-    request(dispatch, getState, 'me/albums?ids=' + helpers.getFromUri('albumid', uri), method).then(function (response) {
-      dispatch({
-        type: 'SPOTIFY_ALBUM_FOLLOWING',
-        key: uri,
-        data: new_state
-      });
-    }, function (error) {
-      dispatch(coreActions.handleException('Could not add/remove library album', error));
-    });
-  };
-}
-
 /**
  * =============================================================== PLAYLIST(S) ==========
  * ======================================================================================
@@ -80441,23 +80430,6 @@ function getAllPlaylistTracksProcessor(data) {
       }
     }, function (error) {
       dispatch(coreActions.handleException('Could not load tracks to play playlist', error));
-    });
-  };
-}
-
-function toggleFollowingPlaylist(uri, method) {
-  if (method == 'PUT') var new_state = 1;
-  if (method == 'DELETE') var new_state = 0;
-
-  return function (dispatch, getState) {
-    request(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '/followers', method).then(function (response) {
-      dispatch({
-        type: 'SPOTIFY_PLAYLIST_FOLLOWING_LOADED',
-        key: uri,
-        is_following: new_state
-      });
-    }, function (error) {
-      dispatch(coreActions.handleException('Could not add/remove library playlist', error));
     });
   };
 }

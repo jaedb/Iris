@@ -760,12 +760,14 @@ export function following(uri, method = 'GET') {
           endpoint = `playlists/${helpers.getFromUri('playlistid', uri)}/followers`;
         }
         break;
+      default:
+        break;
     }
 
     request(dispatch, getState, endpoint, method, data)
       .then(
         (response) => {
-          if (response) {
+          if (Array.isArray(response) && response.length > 0) {
             is_following = response[0];
           } else {
             is_following = is_following;
@@ -776,6 +778,14 @@ export function following(uri, method = 'GET') {
             key: uri,
             in_library: is_following,
           });
+
+          if (method !== 'GET') {
+            dispatch(uiActions.createNotification(
+              {
+                message: is_following ? `Added ${asset_name} to library` : `Removed ${asset_name} from library`,
+              }
+            ));
+          }
         },
         (error) => {
           dispatch(coreActions.handleException(
@@ -1047,7 +1057,7 @@ export function getArtist(uri, full = false) {
     // Start with an empty object
     // As each requests completes, they'll add to this object
     const artist = {};
-    
+
     // We need our artist, obviously
     const requests = [
       request(dispatch, getState, `artists/${helpers.getFromUri('artistid', uri)}`, 'GET', false, true)
@@ -1342,30 +1352,6 @@ export function getAlbum(uri) {
         (error) => {
           dispatch(coreActions.handleException(
             'Could not load album',
-            error,
-          ));
-        },
-      );
-  };
-}
-
-export function toggleAlbumInLibrary(uri, method) {
-  if (method == 'PUT') var new_state = 1;
-  if (method == 'DELETE') var new_state = 0;
-
-  return (dispatch, getState) => {
-    request(dispatch, getState, `me/albums?ids=${helpers.getFromUri('albumid', uri)}`, method)
-      .then(
-        (response) => {
-          dispatch({
-            type: 'SPOTIFY_ALBUM_FOLLOWING',
-            key: uri,
-            data: new_state,
-          });
-        },
-        (error) => {
-          dispatch(coreActions.handleException(
-            'Could not add/remove library album',
             error,
           ));
         },
@@ -1703,30 +1689,6 @@ export function getAllPlaylistTracksProcessor(data) {
         (error) => {
           dispatch(coreActions.handleException(
             'Could not load tracks to play playlist',
-            error,
-          ));
-        },
-      );
-  };
-}
-
-export function toggleFollowingPlaylist(uri, method) {
-  if (method == 'PUT') var new_state = 1;
-  if (method == 'DELETE') var new_state = 0;
-
-  return (dispatch, getState) => {
-    request(dispatch, getState, `playlists/${helpers.getFromUri('playlistid', uri)}/followers`, method)
-      .then(
-        (response) => {
-          dispatch({
-            type: 'SPOTIFY_PLAYLIST_FOLLOWING_LOADED',
-            key: uri,
-            is_following: new_state,
-          });
-        },
-        (error) => {
-          dispatch(coreActions.handleException(
-            'Could not add/remove library playlist',
             error,
           ));
         },
