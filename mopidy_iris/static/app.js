@@ -85739,9 +85739,17 @@ var Search = function (_React$Component) {
   }, {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(nextProps) {
-      // Query changed
-      if (nextProps.term !== this.props.term || nextProps.type !== this.props.type) {
-        this.digestUri(nextProps);
+      var _props = this.props,
+          type = _props.type,
+          term = _props.term;
+      var nextType = nextProps.type,
+          nextTerm = nextProps.term;
+
+      if (nextType !== type || nextTerm !== term) {
+        this.digestUri({
+          type: nextType,
+          term: nextTerm
+        });
       }
 
       // Services came online
@@ -85758,6 +85766,8 @@ var Search = function (_React$Component) {
     value: function handleSubmit(term) {
       var _this2 = this;
 
+      var encodedTerm = encodeURIComponent(term);
+
       this.setState({ term: term }, function () {
         // Unchanged term, so this is a forced re-search
         // Often the other search parameters have changed instead, but we can't
@@ -85765,7 +85775,7 @@ var Search = function (_React$Component) {
         if (_this2.props.term == term) {
           _this2.search();
         } else {
-          _this2.props.history.push('/search/' + _this2.state.type + '/' + term);
+          _this2.props.history.push('/search/' + _this2.state.type + '/' + encodedTerm);
         }
       });
     }
@@ -85844,6 +85854,7 @@ var Search = function (_React$Component) {
     value: function renderArtists(artists, spotify_search_enabled) {
       var _this3 = this;
 
+      var encodedTerm = encodeURIComponent(this.state.term);
       return _react2.default.createElement(
         'div',
         null,
@@ -85852,7 +85863,7 @@ var Search = function (_React$Component) {
           null,
           _react2.default.createElement(
             _URILink2.default,
-            { type: 'search', uri: 'search:all:' + this.state.term },
+            { type: 'search', uri: 'search:all:' + encodedTerm },
             'Search'
           ),
           _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
@@ -85873,6 +85884,7 @@ var Search = function (_React$Component) {
     value: function renderAlbums(albums, spotify_search_enabled) {
       var _this4 = this;
 
+      var encodedTerm = encodeURIComponent(this.state.term);
       return _react2.default.createElement(
         'div',
         null,
@@ -85881,7 +85893,7 @@ var Search = function (_React$Component) {
           null,
           _react2.default.createElement(
             _URILink2.default,
-            { type: 'search', uri: 'search:all:' + this.state.term },
+            { type: 'search', uri: 'search:all:' + encodedTerm },
             'Search '
           ),
           _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
@@ -85902,6 +85914,7 @@ var Search = function (_React$Component) {
     value: function renderPlaylists(playlists, spotify_search_enabled) {
       var _this5 = this;
 
+      var encodedTerm = encodeURIComponent(this.state.term);
       return _react2.default.createElement(
         'div',
         null,
@@ -85910,7 +85923,7 @@ var Search = function (_React$Component) {
           null,
           _react2.default.createElement(
             _URILink2.default,
-            { type: 'search', uri: 'search:all:' + this.state.term },
+            { type: 'search', uri: 'search:all:' + encodedTerm },
             'Search '
           ),
           _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
@@ -85931,6 +85944,7 @@ var Search = function (_React$Component) {
     value: function renderTracks(tracks, spotify_search_enabled) {
       var _this6 = this;
 
+      var encodedTerm = encodeURIComponent(this.state.term);
       return _react2.default.createElement(
         'div',
         null,
@@ -85939,7 +85953,7 @@ var Search = function (_React$Component) {
           null,
           _react2.default.createElement(
             _URILink2.default,
-            { type: 'search', uri: 'search:all:' + this.state.term },
+            { type: 'search', uri: 'search:all:' + encodedTerm },
             'Search '
           ),
           _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
@@ -85948,7 +85962,7 @@ var Search = function (_React$Component) {
         _react2.default.createElement(
           'section',
           { className: 'list-wrapper' },
-          _react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: 'iris:search:' + this.state.type + ':' + this.state.term, show_source_icon: true }),
+          _react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: 'iris:search:' + this.state.type + ':' + encodedTerm, show_source_icon: true }),
           _react2.default.createElement(_LazyLoadListener2.default, { enabled: this.props.tracks_more && spotify_search_enabled, loadMore: function loadMore() {
               return _this6.loadMore('tracks');
             } })
@@ -85960,6 +85974,7 @@ var Search = function (_React$Component) {
     value: function renderAll(artists, albums, playlists, tracks, spotify_search_enabled) {
       var _this7 = this;
 
+      var encodedTerm = encodeURIComponent(this.state.term);
       if (artists.length > 0) {
         var artists_section = _react2.default.createElement(
           'section',
@@ -85969,7 +85984,7 @@ var Search = function (_React$Component) {
             { className: 'inner' },
             _react2.default.createElement(
               _URILink2.default,
-              { type: 'search', uri: 'search:artist:' + this.state.term },
+              { type: 'search', uri: 'search:artist:' + encodedTerm },
               _react2.default.createElement(
                 'h4',
                 null,
@@ -85979,7 +85994,7 @@ var Search = function (_React$Component) {
             _react2.default.createElement(_ArtistGrid2.default, { mini: true, show_source_icon: true, artists: artists.slice(0, 6) }),
             artists.length >= 6 && _react2.default.createElement(
               _URILink2.default,
-              { type: 'search', uri: 'search:artist:' + this.state.term, className: 'button button--default' },
+              { type: 'search', uri: 'search:artist:' + encodedTerm, className: 'button button--default' },
               'All artists (' + artists.length + ')'
             )
           )
@@ -85997,7 +86012,7 @@ var Search = function (_React$Component) {
             { className: 'inner' },
             _react2.default.createElement(
               _URILink2.default,
-              { type: 'search', uri: 'search:album:' + this.state.term },
+              { type: 'search', uri: 'search:album:' + encodedTerm },
               _react2.default.createElement(
                 'h4',
                 null,
@@ -86007,7 +86022,7 @@ var Search = function (_React$Component) {
             _react2.default.createElement(_AlbumGrid2.default, { mini: true, show_source_icon: true, albums: albums.slice(0, 6) }),
             albums.length >= 6 && _react2.default.createElement(
               _URILink2.default,
-              { type: 'search', uri: 'search:album:' + this.state.term, className: 'button button--default' },
+              { type: 'search', uri: 'search:album:' + encodedTerm, className: 'button button--default' },
               'All albums (' + albums.length + ')'
             )
           )
@@ -86025,7 +86040,7 @@ var Search = function (_React$Component) {
             { className: 'inner' },
             _react2.default.createElement(
               _URILink2.default,
-              { type: 'search', uri: 'search:playlist:' + this.state.term },
+              { type: 'search', uri: 'search:playlist:' + encodedTerm },
               _react2.default.createElement(
                 'h4',
                 null,
@@ -86035,7 +86050,7 @@ var Search = function (_React$Component) {
             _react2.default.createElement(_PlaylistGrid2.default, { mini: true, show_source_icon: true, playlists: playlists.slice(0, 6) }),
             playlists.length >= 6 && _react2.default.createElement(
               _URILink2.default,
-              { type: 'search', uri: 'search:playlist:' + this.state.term, className: 'button button--default' },
+              { type: 'search', uri: 'search:playlist:' + encodedTerm, className: 'button button--default' },
               'All playlists (' + playlists.length + ')'
             )
           )
@@ -86048,7 +86063,7 @@ var Search = function (_React$Component) {
         var tracks_section = _react2.default.createElement(
           'section',
           { className: 'list-wrapper' },
-          _react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: 'iris:search:' + this.state.type + ':' + this.state.term, show_source_icon: true }),
+          _react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: 'iris:search:' + this.state.type + ':' + encodedTerm, show_source_icon: true }),
           _react2.default.createElement(_LazyLoadListener2.default, { loading: this.props.tracks_more && spotify_search_enabled, loadMore: function loadMore() {
               return _this7.loadMore('tracks');
             } })
