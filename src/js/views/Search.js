@@ -40,7 +40,10 @@ class Search extends React.Component {
 
     // Listen for a query baked-in to the URL
     // This would be the case when we've clicked from a link elsewhere
-    this.digestUri();
+    this.digestUri({
+      ...this.props,
+      term: decodeURIComponent(this.props.term),
+    });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -97,7 +100,7 @@ class Search extends React.Component {
   }
 
   search(type = this.state.type, term = this.state.term, provider) {
-    this.props.uiActions.setWindowTitle(`Search: ${term}`);
+    this.props.uiActions.setWindowTitle(`Search: ${decodeURIComponent(term)}`);
 
     if (type && term) {
       if (provider == 'mopidy' || (this.props.mopidy_connected && this.props.uri_schemes_search_enabled)) {
@@ -142,7 +145,7 @@ class Search extends React.Component {
     return (
       <div>
         <h4>
-          <URILink type="search" uri={`search:all:${encodedTerm}`}>
+          <URILink uri={`iris:search:all:${encodedTerm}`}>
 						Search
           </URILink>
           <Icon type="fontawesome" name="angle-right" />
@@ -161,7 +164,7 @@ class Search extends React.Component {
     return (
       <div>
         <h4>
-          <URILink type="search" uri={`search:all:${encodedTerm}`}>
+          <URILink uri={`iris:search:all:${encodedTerm}`}>
 						{`Search `}
           </URILink>
           <Icon type="fontawesome" name="angle-right" />
@@ -180,7 +183,7 @@ class Search extends React.Component {
     return (
       <div>
         <h4>
-          <URILink type="search" uri={`search:all:${encodedTerm}`}>
+          <URILink uri={`iris:search:all:${encodedTerm}`}>
 						{`Search `}
           </URILink>
           <Icon type="fontawesome" name="angle-right" />
@@ -199,7 +202,7 @@ class Search extends React.Component {
     return (
       <div>
         <h4>
-          <URILink type="search" uri={`search:all:${encodedTerm}`}>
+          <URILink uri={`iris:search:all:${encodedTerm}`}>
 						{`Search `}
           </URILink>
           <Icon type="fontawesome" name="angle-right" />
@@ -219,12 +222,12 @@ class Search extends React.Component {
       var artists_section = (
         <section>
           <div className="inner">
-            <URILink type="search" uri={`search:artist:${encodedTerm}`}>
+            <URILink uri={`iris:search:artist:${encodedTerm}`}>
               <h4>Artists</h4>
             </URILink>
             <ArtistGrid mini show_source_icon artists={artists.slice(0, 6)} />
             {artists.length >= 6 && (
-              <URILink type="search" uri={`search:artist:${encodedTerm}`} className="button button--default">
+              <URILink uri={`iris:search:artist:${encodedTerm}`} className="button button--default">
 							{`All artists (${artists.length})`}
               </URILink>
             )}
@@ -239,12 +242,12 @@ class Search extends React.Component {
       var albums_section = (
         <section>
           <div className="inner">
-            <URILink type="search" uri={`search:album:${encodedTerm}`}>
+            <URILink uri={`iris:search:album:${encodedTerm}`}>
               <h4>Albums</h4>
             </URILink>
             <AlbumGrid mini show_source_icon albums={albums.slice(0, 6)} />
             {albums.length >= 6 && (
-              <URILink type="search" uri={`search:album:${encodedTerm}`} className="button button--default">
+              <URILink uri={`iris:search:album:${encodedTerm}`} className="button button--default">
 							{`All albums (${albums.length})`}
               </URILink>
             )}
@@ -259,12 +262,12 @@ class Search extends React.Component {
       var playlists_section = (
         <section>
           <div className="inner">
-            <URILink type="search" uri={`search:playlist:${encodedTerm}`}>
+            <URILink uri={`iris:search:playlist:${encodedTerm}`}>
               <h4>Playlists</h4>
             </URILink>
             <PlaylistGrid mini show_source_icon playlists={playlists.slice(0, 6)} />
             {playlists.length >= 6 && (
-              <URILink type="search" uri={`search:playlist:${encodedTerm}`} className="button button--default">
+              <URILink uri={`iris:search:playlist:${encodedTerm}`} className="button button--default">
 							{`All playlists (${playlists.length})`}
               </URILink>
             )}
