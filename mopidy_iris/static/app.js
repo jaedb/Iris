@@ -74437,7 +74437,6 @@ exports.playArtistTopTracks = playArtistTopTracks;
 exports.getUser = getUser;
 exports.getUserPlaylists = getUserPlaylists;
 exports.getAlbum = getAlbum;
-exports.toggleAlbumInLibrary = toggleAlbumInLibrary;
 exports.createPlaylist = createPlaylist;
 exports.savePlaylist = savePlaylist;
 exports.getPlaylist = getPlaylist;
@@ -74445,7 +74444,6 @@ exports.getLibraryTracksAndPlay = getLibraryTracksAndPlay;
 exports.getLibraryTracksAndPlayProcessor = getLibraryTracksAndPlayProcessor;
 exports.getAllPlaylistTracks = getAllPlaylistTracks;
 exports.getAllPlaylistTracksProcessor = getAllPlaylistTracksProcessor;
-exports.toggleFollowingPlaylist = toggleFollowingPlaylist;
 exports.addTracksToPlaylist = addTracksToPlaylist;
 exports.deleteTracksFromPlaylist = deleteTracksFromPlaylist;
 exports.reorderPlaylistTracks = reorderPlaylistTracks;
@@ -75142,10 +75140,12 @@ function following(uri) {
           endpoint = 'playlists/' + helpers.getFromUri('playlistid', uri) + '/followers';
         }
         break;
+      default:
+        break;
     }
 
     request(dispatch, getState, endpoint, method, data).then(function (response) {
-      if (response) {
+      if (Array.isArray(response) && response.length > 0) {
         is_following = response[0];
       } else {
         is_following = is_following;
@@ -75156,6 +75156,12 @@ function following(uri) {
         key: uri,
         in_library: is_following
       });
+
+      if (method !== 'GET') {
+        dispatch(uiActions.createNotification({
+          message: is_following ? 'Added ' + asset_name + ' to library' : 'Removed ' + asset_name + ' from library'
+        }));
+      }
     }, function (error) {
       dispatch(coreActions.handleException('Could not follow/unfollow', error));
     });
@@ -75624,23 +75630,6 @@ function getAlbum(uri) {
   };
 }
 
-function toggleAlbumInLibrary(uri, method) {
-  if (method == 'PUT') var new_state = 1;
-  if (method == 'DELETE') var new_state = 0;
-
-  return function (dispatch, getState) {
-    request(dispatch, getState, 'me/albums?ids=' + helpers.getFromUri('albumid', uri), method).then(function (response) {
-      dispatch({
-        type: 'SPOTIFY_ALBUM_FOLLOWING',
-        key: uri,
-        data: new_state
-      });
-    }, function (error) {
-      dispatch(coreActions.handleException('Could not add/remove library album', error));
-    });
-  };
-}
-
 /**
  * =============================================================== PLAYLIST(S) ==========
  * ======================================================================================
@@ -75926,23 +75915,6 @@ function getAllPlaylistTracksProcessor(data) {
       }
     }, function (error) {
       dispatch(coreActions.handleException('Could not load tracks to play playlist', error));
-    });
-  };
-}
-
-function toggleFollowingPlaylist(uri, method) {
-  if (method == 'PUT') var new_state = 1;
-  if (method == 'DELETE') var new_state = 0;
-
-  return function (dispatch, getState) {
-    request(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '/followers', method).then(function (response) {
-      dispatch({
-        type: 'SPOTIFY_PLAYLIST_FOLLOWING_LOADED',
-        key: uri,
-        is_following: new_state
-      });
-    }, function (error) {
-      dispatch(coreActions.handleException('Could not add/remove library playlist', error));
     });
   };
 }
@@ -81134,6 +81106,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
@@ -81247,14 +81221,24 @@ var Search = function (_React$Component) {
 
       // Listen for a query baked-in to the URL
       // This would be the case when we've clicked from a link elsewhere
-      this.digestUri();
+      this.digestUri(_extends({}, this.props, {
+        term: decodeURIComponent(this.props.term)
+      }));
     }
   }, {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(nextProps) {
-      // Query changed
-      if (nextProps.term !== this.props.term || nextProps.type !== this.props.type) {
-        this.digestUri(nextProps);
+      var _props = this.props,
+          type = _props.type,
+          term = _props.term;
+      var nextType = nextProps.type,
+          nextTerm = nextProps.term;
+
+      if (nextType !== type || nextTerm !== term) {
+        this.digestUri({
+          type: nextType,
+          term: nextTerm
+        });
       }
 
       // Services came online
@@ -81271,6 +81255,8 @@ var Search = function (_React$Component) {
     value: function handleSubmit(term) {
       var _this2 = this;
 
+      var encodedTerm = encodeURIComponent(term);
+
       this.setState({ term: term }, function () {
         // Unchanged term, so this is a forced re-search
         // Often the other search parameters have changed instead, but we can't
@@ -81278,7 +81264,7 @@ var Search = function (_React$Component) {
         if (_this2.props.term == term) {
           _this2.search();
         } else {
-          _this2.props.history.push('/search/' + _this2.state.type + '/' + term);
+          _this2.props.history.push('/search/' + _this2.state.type + '/' + encodedTerm);
         }
       });
     }
@@ -81310,7 +81296,7 @@ var Search = function (_React$Component) {
       var term = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.state.term;
       var provider = arguments[2];
 
-      this.props.uiActions.setWindowTitle('Search: ' + term);
+      this.props.uiActions.setWindowTitle('Search: ' + decodeURIComponent(term));
 
       if (type && term) {
         if (provider == 'mopidy' || this.props.mopidy_connected && this.props.uri_schemes_search_enabled) {
@@ -81357,6 +81343,7 @@ var Search = function (_React$Component) {
     value: function renderArtists(artists, spotify_search_enabled) {
       var _this3 = this;
 
+      var encodedTerm = encodeURIComponent(this.state.term);
       return _react2.default.createElement(
         'div',
         null,
@@ -81365,7 +81352,7 @@ var Search = function (_React$Component) {
           null,
           _react2.default.createElement(
             _URILink2.default,
-            { type: 'search', uri: 'search:all:' + this.state.term },
+            { uri: 'iris:search:all:' + encodedTerm },
             'Search'
           ),
           _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
@@ -81386,6 +81373,7 @@ var Search = function (_React$Component) {
     value: function renderAlbums(albums, spotify_search_enabled) {
       var _this4 = this;
 
+      var encodedTerm = encodeURIComponent(this.state.term);
       return _react2.default.createElement(
         'div',
         null,
@@ -81394,7 +81382,7 @@ var Search = function (_React$Component) {
           null,
           _react2.default.createElement(
             _URILink2.default,
-            { type: 'search', uri: 'search:all:' + this.state.term },
+            { uri: 'iris:search:all:' + encodedTerm },
             'Search '
           ),
           _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
@@ -81415,6 +81403,7 @@ var Search = function (_React$Component) {
     value: function renderPlaylists(playlists, spotify_search_enabled) {
       var _this5 = this;
 
+      var encodedTerm = encodeURIComponent(this.state.term);
       return _react2.default.createElement(
         'div',
         null,
@@ -81423,7 +81412,7 @@ var Search = function (_React$Component) {
           null,
           _react2.default.createElement(
             _URILink2.default,
-            { type: 'search', uri: 'search:all:' + this.state.term },
+            { uri: 'iris:search:all:' + encodedTerm },
             'Search '
           ),
           _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
@@ -81444,6 +81433,7 @@ var Search = function (_React$Component) {
     value: function renderTracks(tracks, spotify_search_enabled) {
       var _this6 = this;
 
+      var encodedTerm = encodeURIComponent(this.state.term);
       return _react2.default.createElement(
         'div',
         null,
@@ -81452,7 +81442,7 @@ var Search = function (_React$Component) {
           null,
           _react2.default.createElement(
             _URILink2.default,
-            { type: 'search', uri: 'search:all:' + this.state.term },
+            { uri: 'iris:search:all:' + encodedTerm },
             'Search '
           ),
           _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
@@ -81461,7 +81451,7 @@ var Search = function (_React$Component) {
         _react2.default.createElement(
           'section',
           { className: 'list-wrapper' },
-          _react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: 'iris:search:' + this.state.type + ':' + this.state.term, show_source_icon: true }),
+          _react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: 'iris:search:' + this.state.type + ':' + encodedTerm, show_source_icon: true }),
           _react2.default.createElement(_LazyLoadListener2.default, { enabled: this.props.tracks_more && spotify_search_enabled, loadMore: function loadMore() {
               return _this6.loadMore('tracks');
             } })
@@ -81473,6 +81463,7 @@ var Search = function (_React$Component) {
     value: function renderAll(artists, albums, playlists, tracks, spotify_search_enabled) {
       var _this7 = this;
 
+      var encodedTerm = encodeURIComponent(this.state.term);
       if (artists.length > 0) {
         var artists_section = _react2.default.createElement(
           'section',
@@ -81482,7 +81473,7 @@ var Search = function (_React$Component) {
             { className: 'inner' },
             _react2.default.createElement(
               _URILink2.default,
-              { type: 'search', uri: 'search:artist:' + this.state.term },
+              { uri: 'iris:search:artist:' + encodedTerm },
               _react2.default.createElement(
                 'h4',
                 null,
@@ -81492,7 +81483,7 @@ var Search = function (_React$Component) {
             _react2.default.createElement(_ArtistGrid2.default, { mini: true, show_source_icon: true, artists: artists.slice(0, 6) }),
             artists.length >= 6 && _react2.default.createElement(
               _URILink2.default,
-              { type: 'search', uri: 'search:artist:' + this.state.term, className: 'button button--default' },
+              { uri: 'iris:search:artist:' + encodedTerm, className: 'button button--default' },
               'All artists (' + artists.length + ')'
             )
           )
@@ -81510,7 +81501,7 @@ var Search = function (_React$Component) {
             { className: 'inner' },
             _react2.default.createElement(
               _URILink2.default,
-              { type: 'search', uri: 'search:album:' + this.state.term },
+              { uri: 'iris:search:album:' + encodedTerm },
               _react2.default.createElement(
                 'h4',
                 null,
@@ -81520,7 +81511,7 @@ var Search = function (_React$Component) {
             _react2.default.createElement(_AlbumGrid2.default, { mini: true, show_source_icon: true, albums: albums.slice(0, 6) }),
             albums.length >= 6 && _react2.default.createElement(
               _URILink2.default,
-              { type: 'search', uri: 'search:album:' + this.state.term, className: 'button button--default' },
+              { uri: 'iris:search:album:' + encodedTerm, className: 'button button--default' },
               'All albums (' + albums.length + ')'
             )
           )
@@ -81538,7 +81529,7 @@ var Search = function (_React$Component) {
             { className: 'inner' },
             _react2.default.createElement(
               _URILink2.default,
-              { type: 'search', uri: 'search:playlist:' + this.state.term },
+              { uri: 'iris:search:playlist:' + encodedTerm },
               _react2.default.createElement(
                 'h4',
                 null,
@@ -81548,7 +81539,7 @@ var Search = function (_React$Component) {
             _react2.default.createElement(_PlaylistGrid2.default, { mini: true, show_source_icon: true, playlists: playlists.slice(0, 6) }),
             playlists.length >= 6 && _react2.default.createElement(
               _URILink2.default,
-              { type: 'search', uri: 'search:playlist:' + this.state.term, className: 'button button--default' },
+              { uri: 'iris:search:playlist:' + encodedTerm, className: 'button button--default' },
               'All playlists (' + playlists.length + ')'
             )
           )
@@ -81561,7 +81552,7 @@ var Search = function (_React$Component) {
         var tracks_section = _react2.default.createElement(
           'section',
           { className: 'list-wrapper' },
-          _react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: 'iris:search:' + this.state.type + ':' + this.state.term, show_source_icon: true }),
+          _react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: 'iris:search:' + this.state.type + ':' + encodedTerm, show_source_icon: true }),
           _react2.default.createElement(_LazyLoadListener2.default, { loading: this.props.tracks_more && spotify_search_enabled, loadMore: function loadMore() {
               return _this7.loadMore('tracks');
             } })

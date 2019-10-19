@@ -5,12 +5,12 @@ const blacklist = [
   'followers/contains',
   'me/tracks',
   'me/albums',
+  'me/following',
   'refresh_spotify_token'
 ];
 function inBlacklist(url) {
   for (let item of blacklist) {
     if (url.indexOf(item) >= 0){
-      console.info(`Ignoring cache for ${url}`);
       return true;
     }
   }
@@ -37,7 +37,7 @@ self.addEventListener('fetch', event => {
   const { request } = event;
 
   event.respondWith(
-    
+
     // Opens Cache objects that start with 'font'.
     caches.open('iris').then(cache => {
       return cache.match(request)
@@ -50,13 +50,17 @@ self.addEventListener('fetch', event => {
           return fetch(request)
             .then(liveResponse => {
 
+              const isBlacklisted = inBlacklist(request.url);
+
               // Only cache successful GET requests
-              if (!inBlacklist(request.url) &&
+              if (!isBlacklisted &&
                   request.method === 'GET' &&
                   liveResponse.status >= 200 &&
                   liveResponse.status < 400
                 ) {
                 cache.put(request, liveResponse.clone());
+              } else {
+                console.info(`Not caching ${isBlacklisted ? '(blacklisted) ' : ''}${request.method} ${request.url}`);
               }
 
               return liveResponse;

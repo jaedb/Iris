@@ -40,13 +40,20 @@ class Search extends React.Component {
 
     // Listen for a query baked-in to the URL
     // This would be the case when we've clicked from a link elsewhere
-    this.digestUri();
+    this.digestUri({
+      ...this.props,
+      term: decodeURIComponent(this.props.term),
+    });
   }
 
   componentWillReceiveProps(nextProps) {
-    // Query changed
-    if (nextProps.term !== this.props.term || nextProps.type !== this.props.type) {
-      this.digestUri(nextProps);
+    const { type, term } = this.props;
+    const { type: nextType, term: nextTerm } = nextProps;
+    if (nextType !== type || nextTerm !== term) {
+      this.digestUri({
+        type: nextType,
+        term: nextTerm,
+      });
     }
 
     // Services came online
@@ -60,6 +67,8 @@ class Search extends React.Component {
   }
 
   handleSubmit(term) {
+    const encodedTerm = encodeURIComponent(term);
+
     this.setState(
       { term }, () => {
         // Unchanged term, so this is a forced re-search
@@ -68,7 +77,7 @@ class Search extends React.Component {
         if (this.props.term == term) {
           this.search();
         } else {
-          this.props.history.push(`/search/${this.state.type}/${term}`);
+          this.props.history.push(`/search/${this.state.type}/${encodedTerm}`);
         }
       },
     );
@@ -91,7 +100,7 @@ class Search extends React.Component {
   }
 
   search(type = this.state.type, term = this.state.term, provider) {
-    this.props.uiActions.setWindowTitle(`Search: ${term}`);
+    this.props.uiActions.setWindowTitle(`Search: ${decodeURIComponent(term)}`);
 
     if (type && term) {
       if (provider == 'mopidy' || (this.props.mopidy_connected && this.props.uri_schemes_search_enabled)) {
@@ -132,10 +141,11 @@ class Search extends React.Component {
   }
 
   renderArtists(artists, spotify_search_enabled) {
+    const encodedTerm = encodeURIComponent(this.state.term);
     return (
       <div>
         <h4>
-          <URILink type="search" uri={`search:all:${this.state.term}`}>
+          <URILink uri={`iris:search:all:${encodedTerm}`}>
 						Search
           </URILink>
           <Icon type="fontawesome" name="angle-right" />
@@ -150,10 +160,11 @@ class Search extends React.Component {
   }
 
   renderAlbums(albums, spotify_search_enabled) {
+    const encodedTerm = encodeURIComponent(this.state.term);
     return (
       <div>
         <h4>
-          <URILink type="search" uri={`search:all:${this.state.term}`}>
+          <URILink uri={`iris:search:all:${encodedTerm}`}>
 						{`Search `}
           </URILink>
           <Icon type="fontawesome" name="angle-right" />
@@ -168,10 +179,11 @@ class Search extends React.Component {
   }
 
   renderPlaylists(playlists, spotify_search_enabled) {
+    const encodedTerm = encodeURIComponent(this.state.term);
     return (
       <div>
         <h4>
-          <URILink type="search" uri={`search:all:${this.state.term}`}>
+          <URILink uri={`iris:search:all:${encodedTerm}`}>
 						{`Search `}
           </URILink>
           <Icon type="fontawesome" name="angle-right" />
@@ -186,17 +198,18 @@ class Search extends React.Component {
   }
 
   renderTracks(tracks, spotify_search_enabled) {
+    const encodedTerm = encodeURIComponent(this.state.term);
     return (
       <div>
         <h4>
-          <URILink type="search" uri={`search:all:${this.state.term}`}>
+          <URILink uri={`iris:search:all:${encodedTerm}`}>
 						{`Search `}
           </URILink>
           <Icon type="fontawesome" name="angle-right" />
           {` Tracks`}
         </h4>
         <section className="list-wrapper">
-          <TrackList tracks={tracks} uri={`iris:search:${this.state.type}:${this.state.term}`} show_source_icon />
+          <TrackList tracks={tracks} uri={`iris:search:${this.state.type}:${encodedTerm}`} show_source_icon />
           <LazyLoadListener enabled={this.props.tracks_more && spotify_search_enabled} loadMore={() => this.loadMore('tracks')} />
         </section>
       </div>
@@ -204,16 +217,17 @@ class Search extends React.Component {
   }
 
   renderAll(artists, albums, playlists, tracks, spotify_search_enabled) {
+    const encodedTerm = encodeURIComponent(this.state.term);
     if (artists.length > 0) {
       var artists_section = (
         <section>
           <div className="inner">
-            <URILink type="search" uri={`search:artist:${this.state.term}`}>
+            <URILink uri={`iris:search:artist:${encodedTerm}`}>
               <h4>Artists</h4>
             </URILink>
             <ArtistGrid mini show_source_icon artists={artists.slice(0, 6)} />
             {artists.length >= 6 && (
-              <URILink type="search" uri={`search:artist:${this.state.term}`} className="button button--default">
+              <URILink uri={`iris:search:artist:${encodedTerm}`} className="button button--default">
 							{`All artists (${artists.length})`}
               </URILink>
             )}
@@ -228,12 +242,12 @@ class Search extends React.Component {
       var albums_section = (
         <section>
           <div className="inner">
-            <URILink type="search" uri={`search:album:${this.state.term}`}>
+            <URILink uri={`iris:search:album:${encodedTerm}`}>
               <h4>Albums</h4>
             </URILink>
             <AlbumGrid mini show_source_icon albums={albums.slice(0, 6)} />
             {albums.length >= 6 && (
-              <URILink type="search" uri={`search:album:${this.state.term}`} className="button button--default">
+              <URILink uri={`iris:search:album:${encodedTerm}`} className="button button--default">
 							{`All albums (${albums.length})`}
               </URILink>
             )}
@@ -248,12 +262,12 @@ class Search extends React.Component {
       var playlists_section = (
         <section>
           <div className="inner">
-            <URILink type="search" uri={`search:playlist:${this.state.term}`}>
+            <URILink uri={`iris:search:playlist:${encodedTerm}`}>
               <h4>Playlists</h4>
             </URILink>
             <PlaylistGrid mini show_source_icon playlists={playlists.slice(0, 6)} />
             {playlists.length >= 6 && (
-              <URILink type="search" uri={`search:playlist:${this.state.term}`} className="button button--default">
+              <URILink uri={`iris:search:playlist:${encodedTerm}`} className="button button--default">
 							{`All playlists (${playlists.length})`}
               </URILink>
             )}
@@ -267,7 +281,7 @@ class Search extends React.Component {
     if (tracks.length > 0) {
       var tracks_section = (
         <section className="list-wrapper">
-          <TrackList tracks={tracks} uri={`iris:search:${this.state.type}:${this.state.term}`} show_source_icon />
+          <TrackList tracks={tracks} uri={`iris:search:${this.state.type}:${encodedTerm}`} show_source_icon />
           <LazyLoadListener loading={this.props.tracks_more && spotify_search_enabled} loadMore={() => this.loadMore('tracks')} />
         </section>
       );
