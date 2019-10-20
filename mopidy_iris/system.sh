@@ -1,8 +1,15 @@
 #!/bin/bash
 
-if [[ $1 = "upgrade" ]]; then
+CURR_DIR="$(pwd)"
 
-	UPGRADE="$(pip install --upgrade mopidy-iris)"
+if [[ $1 = "upgrade" ]]; then
+	if [[ $CURR_DIR = "/iris/mopidy_iris/system.sh" ]]; then
+		echo "cd /iris && git checkout master && git pull origin master"
+		UPGRADE="$(cd /iris && git checkout master && git pull origin master)"
+	else
+		echo "pip install --upgrade mopidy-iris"
+		UPGRADE="$(pip install --upgrade mopidy-iris)"
+	fi
 	echo -e "${UPGRADE}"
 
 elif [[ $1 = "restart" ]]; then
