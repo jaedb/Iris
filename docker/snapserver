@@ -1,29 +1,107 @@
-# defaults file for snapserver
+###############################################################################
+#     ______                                                                  #
+#    / _____)                                                                 #
+#   ( (____   ____   _____  ____    ___  _____   ____  _   _  _____   ____    #
+#    \____ \ |  _ \ (____ ||  _ \  /___)| ___ | / ___)| | | || ___ | / ___)   #
+#    _____) )| | | |/ ___ || |_| ||___ || ____|| |     \ V / | ____|| |       #
+#   (______/ |_| |_|\_____||  __/ (___/ |_____)|_|      \_/  |_____)|_|       #
+#                          |_|                                                #
+#                                                                             #
+#  Snapserver config file                                                     #
+#                                                                             #
+###############################################################################
 
-# start snapserver automatically?
-START_SNAPSERVER=true
+# default values are commented
+# uncomment and edit to change them
 
-# Allowed options:
-#   -h, --help                          Produce help message
-#   -v, --version                       Show version number
-#   -p, --port arg (=1704)              Server port
-#   --controlPort arg (=1705)           Remote control port
-#   -s, --stream arg (=pipe:///tmp/snapfifo?name=default)
-#                                       URI of the PCM input stream.
-#                                       Format: TYPE://host/path?name=NAME
-#                                       [&codec=CODEC]
-#                                       [&sampleformat=SAMPLEFORMAT]
-#   --sampleformat arg (=48000:16:2)    Default sample format
-#   -c, --codec arg (=flac)             Default transport codec
-#                                       (flac|ogg|pcm)[:options]
-#                                       Type codec:? to get codec specific options
-#   --streamBuffer arg (=20)            Default stream read buffer [ms]
-#   -b, --buffer arg (=1000)            Buffer [ms]
-#   --sendToMuted                       Send audio to muted clients
-#   -d, --daemon [=arg(=0)]             Daemonize
-#                                       optional process priority [-20..19]
-#   --user arg                          the user[:group] to run snapserver as when daemonized
 
-USER_OPTS="--user snapserver:snapserver"
+# HTTP RPC ####################################################################
+#
+[http]
+# enable HTTP Json RPC (HTTP POST and websockets)
+enabled = true
 
-SNAPSERVER_OPTS="-s pipe:///tmp/snapfifo?name=Mopidy&sampleformat=48000:16:2"
+# address to listen on, can be specified multiple times
+# use "0.0.0.0" to bind to any IPv4 address or :: to bind to any IPv6 address
+# or "127.0.0.1" or "::1" to bind to localhost IPv4 or IPv6, respectively
+# use the address of a specific network interface to just listen to and accept
+# connections from that interface
+bind_to_address = 0.0.0.0
+
+# which port the server should listen to
+#port = 1780
+
+# serve a website from the doc_root location
+# doc_root =
+#
+###############################################################################
+
+
+# TCP RPC #####################################################################
+#
+[tcp]
+# enable TCP Json RPC
+#enabled = true
+
+# address to listen on, can be specified multiple times
+# use "0.0.0.0" to bind to any IPv4 address or :: to bind to any IPv6 address
+# or "127.0.0.1" or "::1" to bind to localhost IPv4 or IPv6, respectively
+# use the address of a specific network interface to just listen to and accept
+# connections from that interface
+#bind_to_address = 0.0.0.0
+
+# which port the server should listen to
+#port = 1705
+#
+###############################################################################
+
+
+# Stream settings #############################################################
+#
+[stream]
+# address to listen on, can be specified multiple times
+# use "0.0.0.0" to bind to any IPv4 address or :: to bind to any IPv6 address
+# or "127.0.0.1" or "::1" to bind to localhost IPv4 or IPv6, respectively
+# use the address of a specific network interface to just listen to and accept
+# connections from that interface
+#bind_to_address = 0.0.0.0
+
+# which port the server should listen to
+#port = 1704
+
+# stream URI of the PCM input stream, can be configured multiple times
+# Format: TYPE://host/path?name=NAME[&codec=CODEC][&sampleformat=SAMPLEFORMAT]
+#stream = pipe:///tmp/snapfifo?name=default
+stream = pipe:///tmp/snapfifo?name=Mopidy&sampleformat=48000:16:2
+
+# Default sample format
+#sampleformat = 48000:16:2
+
+# Default transport codec
+# (flac|ogg|pcm)[:options]
+# Type codec:? to get codec specific options
+#codec = flac
+
+# Default stream read buffer [ms]
+#stream_buffer = 20
+
+# Buffer [ms]
+#buffer = 1000
+
+# Send audio to muted clients
+#send_to_muted = false
+#
+###############################################################################
+
+
+# Logging options #############################################################
+#
+[logging]
+
+# enable debug logging
+#debug = false
+
+# log file name for the debug logs (debug must be enabled)
+#debug_logfile =
+#
+###############################################################################
