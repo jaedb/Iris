@@ -58606,10 +58606,10 @@ var Hotkeys = function (_React$Component) {
   }, {
     key: 'handleKeyDown',
     value: function handleKeyDown(e) {
-      // When we're focussed on certian elements, don't fire any shortcuts
-      // Typically form inputs
-      var ignoreNodes = ['INPUT', 'TEXTAREA', 'BUTTON'];
-      if (ignoreNodes.indexOf(e.target.nodeName) > -1) {
+      var key = e.key.toLowerCase();
+
+      // Ignore text input fields
+      if (e.target.nodeName === 'INPUT' && (e.target.type === 'text' || e.target.type === 'number') || e.target.nodeName === 'TEXTAREA' || e.target.nodeName === 'BUTTON' && key === ' ') {
         return;
       }
 
@@ -58620,7 +58620,7 @@ var Hotkeys = function (_React$Component) {
       }
 
       var prevent = false;
-      switch (e.key.toLowerCase()) {
+      switch (key) {
         case ' ':
         case 'p':
           // Super-useful once you get used to it. This negates the issue where interactive elements
@@ -81353,7 +81353,7 @@ var Search = function (_React$Component) {
           _react2.default.createElement(
             _URILink2.default,
             { uri: 'iris:search:all:' + encodedTerm },
-            'Search'
+            'Search '
           ),
           _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
           ' Artists'

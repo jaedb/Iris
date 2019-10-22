@@ -146,7 +146,7 @@ class Search extends React.Component {
       <div>
         <h4>
           <URILink uri={`iris:search:all:${encodedTerm}`}>
-						Search
+						{`Search `}
           </URILink>
           <Icon type="fontawesome" name="angle-right" />
           {` Artists`}
