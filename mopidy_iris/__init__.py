@@ -37,14 +37,10 @@ class Extension( ext.Extension ):
         schema['spotify_authorization_url'] = config.String()
         schema['lastfm_authorization_url'] = config.String()
         schema['genius_authorization_url'] = config.String()
-        schema['snapcast_enabled'] = config.Boolean()
-        schema['snapcast_host'] = config.String()
-        schema['snapcast_port'] = config.Integer()
-        schema['snapcast_buffer_size'] = config.Integer()
         return schema
 
     def setup(self, registry):
-        
+
         # Add web extension
         registry.add('http:app', {
             'name': self.ext_name,
@@ -78,10 +74,10 @@ class ReactRouterHandler(tornado.web.StaticFileHandler):
 def iris_factory(config, core):
 
     path = os.path.join( os.path.dirname(__file__), 'static')
-    
+
     return [
         (
-            r"/images/(.*)", 
+            r"/images/(.*)",
             tornado.web.StaticFileHandler,
             {
                 'path': config['local-images']['image_dir']
@@ -89,7 +85,7 @@ def iris_factory(config, core):
         ),
         (
             r'/http/([^/]*)',
-            handlers.HttpHandler, 
+            handlers.HttpHandler,
             {
                 'core': core,
                 'config': config
@@ -98,7 +94,7 @@ def iris_factory(config, core):
         (
             r'/ws/?',
             handlers.WebsocketHandler,
-            { 
+            {
                 'core': core,
                 'config': config
             }
