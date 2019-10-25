@@ -2,19 +2,16 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import Link from './Link';
 
 import VolumeControl from './Fields/VolumeControl';
 import MuteControl from './Fields/MuteControl';
 import LatencyControl from './Fields/LatencyControl';
 import TextField from './Fields/TextField';
-import DropdownField from './Fields/DropdownField';
 import Icon from './Icon';
 
 import * as helpers from '../helpers';
 import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
-import * as pusherActions from '../services/pusher/actions';
 import * as snapcastActions from '../services/snapcast/actions';
 
 class Snapcast extends React.Component {
@@ -27,21 +24,16 @@ class Snapcast extends React.Component {
   }
 
   componentDidMount() {
-    if (this.props.pusher_connected && this.props.snapcast_enabled) {
-      this.props.snapcastActions.getServer();
+    const { connected, actions: snapcastActions } = this.props;
+    if (this.props.connected) {
+      actions.getServer();
     }
   }
 
   componentWillReceiveProps(newProps) {
-    // Just connected
-    if (newProps.snapcast_enabled && !this.props.pusher_connected && newProps.pusher_connected) {
-      this.props.snapcastActions.getServer();
-
-      // Just enabled
-      // This is the more probable scenario as we don't know if we're enabled until pusher connects
-      // and then gets the config from the server
-    } else if (!this.props.snapcast_enabled && newProps.snapcast_enabled && newProps.pusher_connected) {
-      this.props.snapcastActions.getServer();
+    const { connected, actions: snapcastActions } = this.props;
+    if (newProps.connected && !connected) {
+      actions.getServer();
     }
   }
 
@@ -59,6 +51,10 @@ class Snapcast extends React.Component {
   }
 
   renderClientsList(group, groups) {
+    const {
+      snapcastActions: actions,
+    } = this.props;
+
     if (!this.props.show_disconnected_clients && group.clients) {
       var clients = helpers.applyFilter('connected', true, group.clients);
     } else {
@@ -101,7 +97,7 @@ class Snapcast extends React.Component {
         </div>
         <div className="input">
           <TextField
-            onChange={(value) => this.props.snapcastActions.setClientName(client.id, value)}
+            onChange={(value) => actions.setClientName(client.id, value)}
             value={client.name}
           />
         </div>
@@ -111,7 +107,7 @@ class Snapcast extends React.Component {
 												Group
         </div>
         <div className="input">
-          <select onChange={(e) => this.props.snapcastActions.setClientGroup(client.id, e.target.value)} value={group.id}>
+          <select onChange={(e) => actions.setClientGroup(client.id, e.target.value)} value={group.id}>
             {
 														groups.map((group) => (
   <option value={group.id} key={group.id}>
@@ -133,12 +129,12 @@ class Snapcast extends React.Component {
           <MuteControl
             className="snapcast__client__mute-control"
             mute={client.mute}
-            onMuteChange={(mute) => this.props.snapcastActions.setClientMute(client.id, mute)}
+            onMuteChange={(mute) => actions.setClientMute(client.id, mute)}
           />
           <VolumeControl
             className="snapcast__client__volume-control"
             volume={client.volume}
-            onVolumeChange={(percent) => this.props.snapcastActions.setClientVolume(client.id, percent)}
+            onVolumeChange={(percent) => actions.setClientVolume(client.id, percent)}
           />
         </div>
       </div>
@@ -150,12 +146,12 @@ class Snapcast extends React.Component {
           <LatencyControl
             max="150"
             value={client.latency}
-            onChange={(value) => this.props.snapcastActions.setClientLatency(client.id, parseInt(value))}
+            onChange={(value) => actions.setClientLatency(client.id, parseInt(value))}
           />
           <TextField
             className="tiny"
             type="number"
-            onChange={(value) => this.props.snapcastActions.setClientLatency(client.id, parseInt(value))}
+            onChange={(value) => actions.setClientLatency(client.id, parseInt(value))}
             value={String(client.latency)}
           />
         </div>
@@ -182,16 +178,11 @@ class Snapcast extends React.Component {
   }
 
   render() {
-    if (!this.props.snapcast_enabled) {
-      return (
-        <p className="message warning">
-To enable Snapcast, edit your
-          <code>mopidy.conf</code>
-          {' '}
-file
-        </p>
-      );
-    }
+    const {
+      enabled,
+      snapcastActions: actions,
+      uiActions,
+    } = this.props;
 
     const streams = [];
     for (var id in this.props.streams) {
@@ -211,22 +202,24 @@ file
       <div className="snapcast">
 
         <div className="field checkbox">
-          <div className="name">
-						Display
-          </div>
           <div className="input">
-            <button
-              className="button button--default button--small"
-              onClick={(e) => this.props.snapcastActions.getServer()}
-            >
-								Refresh
-            </button>
+            <label>
+              <input
+                type="checkbox"
+                name="enabled"
+                checked={enabled}
+                onChange={() => actions.setEnabled(!enabled)}
+              />
+              <span className="label">
+                Enabled
+              </span>
+            </label>
             <label>
               <input
                 type="checkbox"
                 name="show_disconnected_clients"
                 checked={this.props.show_disconnected_clients}
-                onChange={(e) => this.props.uiActions.set({ snapcast_show_disconnected_clients: !this.props.show_disconnected_clients })}
+                onChange={() => uiActions.set({ snapcast_show_disconnected_clients: !this.props.show_disconnected_clients })}
               />
               <span className="label">
 								Show disconnected clients
@@ -272,7 +265,7 @@ file
 											Stream
       </div>
       <div className="input">
-        <select onChange={(e) => this.props.snapcastActions.setGroupStream(group.id, e.target.value)} value={group.stream_id}>
+        <select onChange={(e) => actions.setGroupStream(group.id, e.target.value)} value={group.stream_id}>
           {
 													streams.map((stream) => (
   <option value={stream.id} key={stream.id}>
@@ -295,12 +288,12 @@ file
         <MuteControl
           className="snapcast__group__mute-control"
           mute={group.muted}
-          onMuteChange={(mute) => this.props.snapcastActions.setGroupMute(group.id, mute)}
+          onMuteChange={(mute) => actions.setGroupMute(group.id, mute)}
         />
         <VolumeControl
           className="snapcast__group__volume-control"
           volume={group_volume}
-          onVolumeChange={(percent, old_percent) => this.props.snapcastActions.setGroupVolume(group.id, percent, old_percent)}
+          onVolumeChange={(percent, old_percent) => actions.setGroupVolume(group.id, percent, old_percent)}
         />
       </div>
     </div>
@@ -323,9 +316,13 @@ file
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  snapcast_enabled: state.pusher.config.snapcast_enabled,
-  pusher_connected: state.pusher.connected,
-  show_disconnected_clients: (state.ui.snapcast_show_disconnected_clients !== undefined ? state.ui.snapcast_show_disconnected_clients : false),
+  enabled: state.snapcast.enabled,
+  connected: state.snapcast.connected,
+  show_disconnected_clients: (
+    state.ui.snapcast_show_disconnected_clients !== undefined
+      ? state.ui.snapcast_show_disconnected_clients
+      : false
+  ),
   streams: (state.snapcast.streams ? state.snapcast.streams : null),
   groups: (state.snapcast.groups ? state.snapcast.groups : null),
   clients: (state.snapcast.clients ? state.snapcast.clients : null),
@@ -335,7 +332,6 @@ const mapDispatchToProps = (dispatch) => ({
   coreActions: bindActionCreators(coreActions, dispatch),
   uiActions: bindActionCreators(uiActions, dispatch),
   snapcastActions: bindActionCreators(snapcastActions, dispatch),
-  pusherActions: bindActionCreators(pusherActions, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Snapcast);

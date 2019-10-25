@@ -8,22 +8,157 @@ const pusherActions = require('../pusher/actions');
 const snapcastActions = require('./actions');
 
 const SnapcastMiddleware = (function () {
-  // A snapcast request is an alias of the Pusher request
-  const request = (store, params = null, response_callback = null, error_callback = null) => {
-    store.dispatch(
-        	pusherActions.request(
-        		'snapcast',
-        		params,
-        		response_callback,
-        		error_callback,
-        	),
-    );
+  let socket = null;
+
+  // requests pending
+  const deferredRequests = [];
+
+  // handle all manner of socket messages
+  const handleMessage = (ws, store, message) => {
+    if (store.getState().ui.log_snapcast) {
+      console.log('Snapcast log (incoming)', message);
+    }
+
+    // Pull our ID. JSON-RPC nests the ID under the error object,
+    // so make sure we handle that.
+    // TODO: Use this as our measure of a successful response vs error
+    let id = null;
+    if (message.id) {
+      id = message.id;
+    } else if (message.error && message.error.id) {
+      id = message.error.id;
+    }
+
+    // Response with request_id
+    if (id) {
+      // Response matches a pending request
+      if (deferredRequests[id] !== undefined) {
+        store.dispatch(uiActions.stopLoading(id));
+
+        // Response is an error
+        if (message.error !== undefined) {
+          deferredRequests[id].reject(message.error);
+
+          // Successful response
+        } else {
+          deferredRequests[id].resolve(message.result);
+        }
+
+        // Hmm, the response doesn't appear to be for us?
+      } else {
+        store.dispatch(coreActions.handleException(
+          'Snapcast: Response received with no matching request',
+          message,
+        ));
+      }
+
+      // General broadcast received
+    } else {
+      // Broadcast of an error
+      if (message.error !== undefined) {
+        store.dispatch(coreActions.handleException(
+          `Snapcast: ${message.error.message}`,
+          message,
+          (message.error.data !== undefined && message.error.data.description !== undefined ? message.error.data.description : null),
+        ));
+      } else {
+        switch (message.method) {
+          case 'connection_added':
+            store.dispatch(pusherActions.connectionAdded(message.params.connection));
+            break;
+        }
+      }
+    }
   };
+
+  const request = (store, method, params = null) => new Promise((resolve, reject) => {
+    const id = helpers.generateGuid();
+    const message = {
+      jsonrpc: '2.0',
+      id,
+      method,
+    };
+    if (params) {
+      message.params = params;
+    }
+
+    if (store.getState().ui.log_pusher) {
+      console.log('Snapcast log (outgoing)', message);
+    }
+
+    socket.send(JSON.stringify(message));
+
+    store.dispatch(uiActions.startLoading(id, `snapcast_${method}`));
+
+    // Start our 30 second timeout
+    const timeout = setTimeout(
+      () => {
+        store.dispatch(uiActions.stopLoading(id));
+        reject({
+          id,
+          code: 32300,
+          message: 'Request timed out',
+        });
+      },
+      30000,
+    );
+
+    // add query to our deferred responses
+    deferredRequests[id] = {
+      resolve,
+      reject,
+    };
+  });
 
   return (store) => (next) => (action) => {
     const { snapcast } = store.getState();
 
     switch (action.type) {
+
+      case 'SNAPCAST_CONNECT':
+        if (socket != null) {
+          socket.close();
+        }
+
+        store.dispatch({ type: 'SNAPCAST_CONNECTING' });
+        var state = store.getState();
+
+        socket = new Mopidy({
+          webSocketUrl: `ws${window.location.protocol === 'https:' ? 's' : ''}://${state.snapcast.host}:${state.snapcast.port}/jsonrpc/`,
+          callingConvention: 'by-position-or-by-name',
+        });
+
+        socket.on((type, data) => handleMessage(socket, store, type, data));
+        break;
+
+      case 'SNAPCAST_CONNECTED':
+        if (store.getState().ui.allow_reporting) {
+          const hashed_hostname = sha256(window.location.hostname);
+          ReactGA.event({ category: 'Snapcast', action: 'Connected', label: hashed_hostname });
+        }
+        store.dispatch(uiActions.createNotification({ content: 'Snapcast connected' }));
+        next(action);
+        break;
+
+      case 'SNAPCAST_DISCONNECT':
+        if (socket != null) socket.close();
+        socket = null;
+        store.dispatch({ type: 'SNAPCAST_DISCONNECTED' });
+        break;
+
+      case 'SNAPCAST_DISCONNECTED':
+        store.dispatch(uiActions.createNotification({ type: 'bad', content: 'Snapcast disconnected' }));
+        helpers.setFavicon('favicon_error.png');
+        break;
+
+      case 'SNAPCAST_DEBUG':
+        request(socket, store, action.call, action.value)
+          .then((response) => {
+            store.dispatch({ type: 'DEBUG', response });
+          });
+        break;
+
+
       case 'SNAPCAST_GET_SERVER':
         request(
 	                store,

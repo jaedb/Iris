@@ -117,6 +117,15 @@ Back
                   />
                   <span className="label">Log Pusher</span>
                 </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    name="log_pusher"
+                    checked={this.props.log_snapcast}
+                    onChange={(e) => this.props.uiActions.set({ log_snapcast: !this.props.log_snapcast })}
+                  />
+                  <span className="label">Log Snapcast</span>
+                </label>
               </div>
             </div>
             <div className="field">
@@ -224,6 +233,7 @@ const mapStateToProps = (state, ownProps) => ({
   log_actions: (state.ui.log_actions ? state.ui.log_actions : false),
   log_pusher: (state.ui.log_pusher ? state.ui.log_pusher : false),
   log_mopidy: (state.ui.log_mopidy ? state.ui.log_mopidy : false),
+  log_snapcast: (state.ui.log_snapcast ? state.ui.log_snapcast : false),
   test_mode: (state.ui.test_mode ? state.ui.test_mode : false),
   debug_info: (state.ui.debug_info ? state.ui.debug_info : false),
   debug_response: state.ui.debug_response,

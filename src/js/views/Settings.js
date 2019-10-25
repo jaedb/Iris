@@ -73,7 +73,7 @@ class Settings extends React.Component {
       // This forces our SW to bugger off and a new one is registered on refresh
       navigator.serviceWorker.getRegistrations().then(
         (registrations) => {
-          for (let registration of registrations) {  
+          for (let registration of registrations) {
             registration.unregister();
           }
         }
@@ -445,17 +445,16 @@ Advanced
             <div className="input">
               <span className="text">
                 {this.props.pusher.version.current}
-                {' '}
-installed
+                {' installed'}
                 {this.props.pusher.version.upgrade_available ? (
                   <span className="flag flag--dark">
                     <Icon name="cloud_download" className="blue-text" />
-&nbsp; Upgrade available
+                    {'  Upgrade available'}
                   </span>
                 ) : (
                   <span className="flag flag--dark">
                     <Icon name="check" className="green-text" />
-&nbsp; Up-to-date
+                    {'  Up-to-date'}
                   </span>
                 )}
               </span>

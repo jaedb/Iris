@@ -1,9 +1,12 @@
 
 export default function reducer(snapcast = {}, action) {
+  console.log(action);
   switch (action.type) {
+    case 'SNAPCAST_SET_ENABLED':
+      return { ...snapcast, enabled: action.enabled };
+
     case 'SNAPCAST_SERVER_LOADED':
-      var server = { ...action.server };
-      return { ...snapcast, server };
+      return { ...snapcast, server: action.server };
 
     case 'SNAPCAST_CLIENTS_LOADED':
       if (action.flush) {

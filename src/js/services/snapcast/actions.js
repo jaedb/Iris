@@ -1,4 +1,23 @@
 
+export function setEnabled(enabled) {
+  return {
+    type: 'SNAPCAST_SET_ENABLED',
+    enabled,
+  };
+}
+
+export function connect() {
+  return {
+    type: 'SNAPCAST_CONNECT',
+  };
+}
+
+export function disconnect() {
+  return {
+    type: 'SNAPCAST_DISCONNECT',
+  };
+}
+
 export function getServer() {
   return {
     type: 'SNAPCAST_GET_SERVER',
