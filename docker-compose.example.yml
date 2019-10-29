@@ -4,6 +4,7 @@ services:
     image: jaedb/snapserver
     ports:
       - 1704:1704
+      - 1705:1705
       - 1780:1780
     volumes:
       - HOST_SNAPCAST_TEMP:/tmp
@@ -15,6 +16,7 @@ services:
     depends_on:
       - snapserver
     ports:
+      - 6600:6600
       - 6680:6680
     volumes:
       #- ./mopidy_iris:/iris/mopidy_iris (Uncomment this line to use a host-managed development build)
