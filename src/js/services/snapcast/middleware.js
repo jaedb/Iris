@@ -1,5 +1,6 @@
 
 import ReactGA from 'react-ga';
+import { sha256 } from 'js-sha256';
 
 const helpers = require('../../helpers');
 const coreActions = require('../core/actions');
@@ -63,8 +64,66 @@ const SnapcastMiddleware = (function () {
         ));
       } else {
         switch (message.method) {
-          case 'connection_added':
-            store.dispatch(pusherActions.connectionAdded(message.params.connection));
+          case 'Client.OnConnect':
+            store.dispatch(snapcastActions.clientLoaded(
+              {
+                id: message.params.client.id,
+                name: message.params.client.name,
+                volume: message.params.client.config.volume.percent,
+                mute: message.params.client.config.volume.muted,
+                connected: message.params.client.connected,
+              },
+            ));
+            break;
+
+          case 'Client.OnDisconnect':
+            store.dispatch(snapcastActions.clientLoaded(
+              {
+                id: message.params.client.id,
+                connected: message.params.client.connected,
+              },
+            ));
+            break;
+
+          case 'Client.OnVolumeChanged':
+            store.dispatch(snapcastActions.clientLoaded(
+              {
+                id: message.params.id,
+                mute: message.params.volume.muted,
+                volume: message.params.volume.percent,
+              },
+            ));
+            break;
+
+          case 'Client.OnLatencyChanged':
+            store.dispatch(snapcastActions.clientLoaded(
+              {
+                id: message.params.id,
+                latency: message.params.latency,
+              },
+            ));
+            break;
+
+          case 'Client.OnNameChanged':
+            store.dispatch(snapcastActions.clientLoaded(
+              {
+                id: message.params.id,
+                name: message.params.name,
+              },
+            ));
+            break;
+
+          case 'Group.OnMute':
+            store.dispatch(snapcastActions.groupLoaded(
+              {
+                id: message.params.id,
+                mute: message.params.mute,
+              },
+            ));
+            break;
+
+          case 'Server.OnUpdate':
+            store.dispatch(snapcastActions.serverLoaded(message.param));
             break;
         }
       }
@@ -72,7 +131,7 @@ const SnapcastMiddleware = (function () {
   };
 
   const request = (store, method, params = null) => new Promise((resolve, reject) => {
-    const id = helpers.generateGuid();
+    const id = helpers.generateGuid(8);
     const message = {
       jsonrpc: '2.0',
       id,
@@ -82,7 +141,7 @@ const SnapcastMiddleware = (function () {
       message.params = params;
     }
 
-    if (store.getState().ui.log_pusher) {
+    if (store.getState().ui.log_snapcast) {
       console.log('Snapcast log (outgoing)', message);
     }
 
@@ -121,14 +180,46 @@ const SnapcastMiddleware = (function () {
         }
 
         store.dispatch({ type: 'SNAPCAST_CONNECTING' });
+
         var state = store.getState();
 
-        socket = new Mopidy({
-          webSocketUrl: `ws${window.location.protocol === 'https:' ? 's' : ''}://${state.snapcast.host}:${state.snapcast.port}/jsonrpc/`,
-          callingConvention: 'by-position-or-by-name',
-        });
+        socket = new WebSocket(
+          `ws${window.location.protocol === 'https:' ? 's' : ''}://${state.snapcast.host}:${state.snapcast.port}/jsonrpc`,
+        );
 
-        socket.on((type, data) => handleMessage(socket, store, type, data));
+        socket.onopen = () => {
+          store.dispatch({
+            type: 'SNAPCAST_CONNECTED',
+          });
+        };
+
+        socket.onclose = (e) => {
+          store.dispatch({
+            type: 'SNAPCAST_DISCONNECTED',
+          });
+
+          // attempt to reconnect every 5 seconds
+          if (state.snapcast.enabled) {
+            setTimeout(() => {
+              store.dispatch(snapcastActions.connect());
+            }, 5000);
+          }
+        };
+
+        socket.onerror = (e) => {
+          if (socket.readyState == 1) {
+            store.dispatch(coreActions.handleException(
+              'Snapcast websocket error',
+              e,
+              e.type,
+            ));
+          }
+        };
+
+        socket.onmessage = (message) => {
+          var message = JSON.parse(message.data);
+          handleMessage(socket, store, message);
+        };
         break;
 
       case 'SNAPCAST_CONNECTED':
@@ -137,6 +228,7 @@ const SnapcastMiddleware = (function () {
           ReactGA.event({ category: 'Snapcast', action: 'Connected', label: hashed_hostname });
         }
         store.dispatch(uiActions.createNotification({ content: 'Snapcast connected' }));
+        store.dispatch(snapcastActions.getServer());
         next(action);
         break;
 
@@ -152,39 +244,59 @@ const SnapcastMiddleware = (function () {
         break;
 
       case 'SNAPCAST_DEBUG':
-        request(socket, store, action.call, action.value)
-          .then((response) => {
-            store.dispatch({ type: 'DEBUG', response });
-          });
+        request(store, action.message.method, action.message.data)
+          .then(
+            (response) => {
+              store.dispatch({ type: 'DEBUG', response });
+            },
+            (error) => {
+              store.dispatch(coreActions.handleException(
+                'Could not debug',
+                error,
+                error.message,
+              ));
+            },
+          );
         break;
 
+      case 'SNAPCAST_REQUEST':
+        request(store, action.method, action.params)
+          .then(
+            (response) => {
+              if (action.response_callback) {
+                  action.response_callback.call(this, response);
+              }
+            },
+            (error) => {
+              if (action.error_callback) {
+                action.error_callback.call(this, error);
+              } else {
+                store.dispatch(coreActions.handleException(
+                  'Snapcast request failed',
+                  error,
+                  action.method,
+                  action,
+                ));
+              }
+            },
+          );
+        break;
 
       case 'SNAPCAST_GET_SERVER':
-        request(
-	                store,
-	                {
-	                	method: 'Server.GetStatus',
-	                },
-	                (response) => {
-            store.dispatch(snapcastActions.serverLoaded(response.server));
-	                },
-	                (error) => {
-            store.dispatch(coreActions.handleException(
-              'Could not get server',
-              error,
-            ));
-	                },
-	            );
-        break;
-
-      case 'SNAPCAST_SERVER_LOADED':
-        store.dispatch(snapcastActions.groupsLoaded(action.server.groups, true));
-        store.dispatch(snapcastActions.streamsLoaded(action.server.streams, true));
-
-        // Snapcast double-nests the server object
-        action.server = action.server.server;
-
-        next(action);
+        request(store, 'Server.GetStatus')
+          .then(
+            (response) => {
+              store.dispatch(snapcastActions.serverLoaded(response.server.server, true));
+              store.dispatch(snapcastActions.groupsLoaded(response.server.groups, true));
+              store.dispatch(snapcastActions.streamsLoaded(response.server.streams, true));
+            },
+            (error) => {
+              store.dispatch(coreActions.handleException(
+                'Could not get Snapcast server',
+                error,
+              ));
+            },
+          );
         break;
 
       case 'SNAPCAST_GROUPS_LOADED':
@@ -237,127 +349,110 @@ const SnapcastMiddleware = (function () {
 
       case 'SNAPCAST_SET_CLIENT_NAME':
         var client = snapcast.clients[action.id];
-        var data = {
-          method: 'Client.SetName',
-          params: {
-            id: action.id,
-            name: action.name,
-          },
+        var params = {
+          id: action.id,
+          name: action.name,
         };
 
-        request(
-                	store,
-                	data,
-                	(response) => {
-            store.dispatch(snapcastActions.clientLoaded(
-              {
-                id: action.id,
-                name: response.name,
-              },
-            ));
-          },
-        );
+        request(store, 'Client.SetName', params)
+          .then(
+            response => {
+              store.dispatch(snapcastActions.clientLoaded(
+                {
+                  id: action.id,
+                  name: response.name,
+                },
+              ));
+            },
+          );
         break;
 
       case 'SNAPCAST_SET_CLIENT_MUTE':
         var client = store.getState().snapcast.clients[action.id];
-        var data = {
-          method: 'Client.SetVolume',
-          params: {
-            id: action.id,
-            volume: {
-              muted: action.mute,
-              percent: client.volume,
-            },
+        var params = {
+          id: action.id,
+          volume: {
+            muted: action.mute,
+            percent: client.volume,
           },
         };
 
-        request(
-                	store,
-                	data,
-          (response) => {
-            store.dispatch(snapcastActions.clientLoaded(
-              {
-                id: action.id,
-                volume: response.volume.percent,
-                mute: response.volume.muted,
-              },
-            ));
-          },
-          (error) => {
-            store.dispatch(coreActions.handleException(
-              'Error',
-              error,
-              error.message,
-            ));
-          },
-        );
+        request(store, 'Client.SetVolume', params)
+          .then(
+            response => {
+              store.dispatch(snapcastActions.clientLoaded(
+                {
+                  id: action.id,
+                  volume: response.volume.percent,
+                  mute: response.volume.muted,
+                },
+              ));
+            },
+            error => {
+              store.dispatch(coreActions.handleException(
+                'Error',
+                error,
+                error.message,
+              ));
+            },
+          );
         break;
 
       case 'SNAPCAST_SET_CLIENT_VOLUME':
         var client = snapcast.clients[action.id];
-
-        var data = {
-          method: 'Client.SetVolume',
-          params: {
-            id: action.id,
-            volume: {
-              muted: client.mute,
-              percent: action.volume,
-            },
+        var params = {
+          id: action.id,
+          volume: {
+            muted: client.mute,
+            percent: action.volume,
           },
         };
 
-        request(
-                	store,
-                	data,
-          (response) => {
-            store.dispatch(snapcastActions.clientLoaded(
-              {
-                id: action.id,
-                volume: response.volume.percent,
-              },
-            ));
-          },
-          (error) => {
-            store.dispatch(coreActions.handleException(
-              'Error',
-              error,
-              error.message,
-            ));
-          },
-        );
+        request(store, 'Client.SetVolume', params)
+          .then(
+            response => {
+              store.dispatch(snapcastActions.clientLoaded(
+                {
+                  id: action.id,
+                  volume: response.volume.percent,
+                },
+              ));
+            },
+            (error) => {
+              store.dispatch(coreActions.handleException(
+                'Error',
+                error,
+                error.message,
+              ));
+            }
+          );
         break;
 
       case 'SNAPCAST_SET_CLIENT_LATENCY':
         var client = store.getState().snapcast.clients[action.id];
-        var data = {
-          method: 'Client.SetLatency',
-          params: {
-            id: action.id,
-            latency: action.latency,
-          },
+        var params = {
+          id: action.id,
+          latency: action.latency,
         };
 
-        request(
-          store,
-          data,
-          (response) => {
-            store.dispatch(snapcastActions.clientLoaded(
-              {
-                id: action.id,
-                latency: response.latency,
-              },
-            ));
-          },
-          (error) => {
-            store.dispatch(coreActions.handleException(
-              'Error',
-              error,
-              error.message,
-            ));
-          },
-        );
+        request(store, 'Client.SetLatency', params)
+          .then(
+            response => {
+              store.dispatch(snapcastActions.clientLoaded(
+                {
+                  id: action.id,
+                  latency: response.latency,
+                },
+              ));
+            },
+            error => {
+              store.dispatch(coreActions.handleException(
+                'Error',
+                error,
+                error.message,
+              ));
+            },
+          );
         break;
 
       case 'SNAPCAST_SET_CLIENT_GROUP':
@@ -375,117 +470,121 @@ const SnapcastMiddleware = (function () {
           clients_ids.splice(clients_ids_index, 1);
         }
 
-        var data = {
-          method: 'Group.SetClients',
-          params: {
-            id: action.group_id,
-            clients: clients_ids,
-          },
+        var params = {
+          id: action.group_id,
+          clients: clients_ids,
         };
 
-        request(
-                	store,
-                	data,
-          (response) => {
-            store.dispatch(snapcastActions.serverLoaded(response.server));
-          },
-          (error) => {
-            store.dispatch(coreActions.handleException(
-              'Error',
-              error,
-              error.message,
-            ));
-          },
-        );
+        request(store, 'Group.SetClients', params)
+          .then(
+            response => {
+              store.dispatch(snapcastActions.serverLoaded(response.server));
+            },
+            error => {
+              store.dispatch(coreActions.handleException(
+                'Error',
+                error,
+                error.message,
+              ));
+            },
+          );
         break;
 
       case 'SNAPCAST_DELETE_CLIENT':
-        var data = {
-          method: 'Server.DeleteClient',
-          params: {
-            id: action.id,
-          },
+        var params = {
+          id: action.id,
         };
 
-        request(
-                	store,
-                	data,
-          (response) => {
-            store.dispatch({
-              type: 'SNAPCAST_CLIENT_REMOVED',
-              key: action.data.params.id,
-            });
-          },
-          (error) => {
-            store.dispatch(coreActions.handleException(
-              'Error',
-              error,
-              error.message,
-            ));
-          },
-        );
+        request(store, 'Server.DeleteClient', params)
+          .then(
+            response => {
+              store.dispatch({
+                type: 'SNAPCAST_CLIENT_REMOVED',
+                key: action.data.params.id,
+              });
+            },
+            error => {
+              store.dispatch(coreActions.handleException(
+                'Error',
+                error,
+                error.message,
+              ));
+            },
+          );
         break;
+      
+      case 'SNAPCAST_SET_GROUP_NAME':
+          var group = snapcast.groups[action.id];
+          var params = {
+            id: action.id,
+            name: action.name,
+          };
+  
+          request(store, 'Group.SetName', params)
+            .then(
+              response => {
+                store.dispatch(snapcastActions.groupLoaded(
+                  {
+                    id: action.id,
+                    name: response.name,
+                  },
+                ));
+              },
+            );
+          break;
 
       case 'SNAPCAST_SET_GROUP_STREAM':
         var group = store.getState().snapcast.groups[action.id];
-        var data = {
-          method: 'Group.SetStream',
-          params: {
-            id: action.id,
-            stream_id: action.stream_id,
-          },
+        var params = {
+          id: action.id,
+          stream_id: action.stream_id,
         };
 
-        request(
-                	store,
-                	data,
-          (response) => {
-            store.dispatch(snapcastActions.groupLoaded(
-              {
-                id: action.id,
-                stream_id: action.stream_id,
-              },
-            ));
-          },
-          (error) => {
-            store.dispatch(coreActions.handleException(
-              'Could not change stream',
-              error,
-              error.message,
-            ));
-          },
-        );
+        request(store, 'Group.SetStream', params)
+          .then(
+            response => {
+              store.dispatch(snapcastActions.groupLoaded(
+                {
+                  id: action.id,
+                  stream_id: action.stream_id,
+                },
+              ));
+            },
+            error => {
+              store.dispatch(coreActions.handleException(
+                'Could not change stream',
+                error,
+                error.message,
+              ));
+            },
+          );
         break;
 
       case 'SNAPCAST_SET_GROUP_MUTE':
         var group = store.getState().snapcast.groups[action.id];
-        var data = {
-          method: 'Group.SetMute',
-          params: {
-            id: action.id,
-            mute: action.mute,
-          },
+        var params = {
+          id: action.id,
+          mute: action.mute,
         };
 
-        request(
-                	store,
-                	data,
-          (response) => {
-            store.dispatch(snapcastActions.groupLoaded(
-              {
-                id: action.id,
-                muted: response.mute,
-              },
-            ));
-          },
-          (error) => {
-            store.dispatch(coreActions.handleException(
-              'Could not toggle mute',
-              error,
-              error.message,
-            ));
-          },
-        );
+        request(store, 'Group.SetMute', params)
+          .then(
+            response => {
+              store.dispatch(snapcastActions.groupLoaded(
+                {
+                  id: action.id,
+                  muted: response.mute,
+                },
+              ));
+            },
+            error => {
+              store.dispatch(coreActions.handleException(
+                'Could not toggle mute',
+                error,
+                error.message,
+              ));
+            },
+          );
         break;
 
       case 'SNAPCAST_SET_GROUP_VOLUME':
@@ -522,78 +621,7 @@ const SnapcastMiddleware = (function () {
           store.dispatch(snapcastActions.setClientVolume(client_to_update.id, volume));
         }
         break;
-
-      case 'SNAPCAST_EVENT_RECEIVED':
-
-        // Drop the prefix
-        action.method = action.method.replace('snapcast_', '');
-
-        switch (action.method) {
-          case 'Client.OnConnect':
-            store.dispatch(snapcastActions.clientLoaded(
-              {
-                id: action.params.client.id,
-                name: action.params.client.name,
-                volume: action.params.client.volume.percent,
-                mute: action.params.client.volume.muted,
-                connected: action.params.client.connected,
-              },
-            ));
-            break;
-
-          case 'Client.OnDisconnect':
-            store.dispatch(snapcastActions.clientLoaded(
-              {
-                id: action.params.client.id,
-                connected: action.params.client.connected,
-              },
-            ));
-            break;
-
-          case 'Client.OnVolumeChanged':
-            store.dispatch(snapcastActions.clientLoaded(
-              {
-                id: action.params.id,
-                mute: action.params.volume.muted,
-                volume: action.params.volume.percent,
-              },
-            ));
-            break;
-
-          case 'Client.OnLatencyChanged':
-            store.dispatch(snapcastActions.clientLoaded(
-              {
-                id: action.params.id,
-                latency: action.params.latency,
-              },
-            ));
-            break;
-
-          case 'Client.OnNameChanged':
-            store.dispatch(snapcastActions.clientLoaded(
-              {
-                id: action.params.id,
-                name: action.params.name,
-              },
-            ));
-            break;
-
-          case 'Group.OnMute':
-            store.dispatch(snapcastActions.groupLoaded(
-              {
-                id: action.params.id,
-                mute: action.params.mute,
-              },
-            ));
-            break;
-
-          case 'Server.OnUpdate':
-            store.dispatch(snapcastActions.serverLoaded(action.params));
-            break;
-        }
-        break;
-
-        // This action is irrelevant to us, pass it on to the next middleware
+        
       default:
         return next(action);
     }

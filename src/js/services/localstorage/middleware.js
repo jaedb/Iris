@@ -236,6 +236,13 @@ const localstorageMiddleware = (function () {
         );
         break;
 
+      case 'SNAPCAST_SET':
+        helpers.setStorage(
+          'snapcast',
+          action.data,
+        );
+        break;
+
       case 'SNAPCAST_COMMANDS_UPDATED':
         helpers.setStorage(
           'snapcast',

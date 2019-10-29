@@ -1,8 +1,8 @@
 
-export function setEnabled(enabled) {
+export function set(data) {
   return {
-    type: 'SNAPCAST_SET_ENABLED',
-    enabled,
+    type: 'SNAPCAST_SET',
+    data,
   };
 }
 
@@ -15,6 +15,23 @@ export function connect() {
 export function disconnect() {
   return {
     type: 'SNAPCAST_DISCONNECT',
+  };
+}
+
+export function request(method, params = null, response_callback = null, error_callback = null) {
+  return {
+    type: 'SNAPCAST_REQUEST',
+    method,
+    params,
+    response_callback,
+    error_callback,
+  };
+}
+
+export function debug(message = null) {
+  return {
+    type: 'SNAPCAST_DEBUG',
+    message,
   };
 }
 
@@ -71,6 +88,14 @@ export function deleteClient(id) {
   };
 }
 
+export function setGroupName(id, name) {
+  return {
+    type: 'SNAPCAST_SET_GROUP_NAME',
+    id,
+    name,
+  };
+}
+
 export function setGroupStream(id, stream_id) {
   return {
     type: 'SNAPCAST_SET_GROUP_STREAM',
@@ -93,14 +118,6 @@ export function setGroupVolume(id, percent, old_percent = 0) {
     id,
     percent,
     old_percent,
-  };
-}
-
-export function eventReceived(message) {
-  return {
-    type: 'SNAPCAST_EVENT_RECEIVED',
-    method: message.method,
-    params: message.params,
   };
 }
 

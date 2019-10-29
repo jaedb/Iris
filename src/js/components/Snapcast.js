@@ -64,7 +64,7 @@ class Snapcast extends React.Component {
     if (!clients || clients.length <= 0) {
       return (
         <div className="text mid_grey-text">
-					No clients
+          No clients
         </div>
       );
     }
@@ -72,116 +72,121 @@ class Snapcast extends React.Component {
     return (
       <div className="list snapcast__clients">
         {
-					clients.map((client) => {
-					  let class_name = 'list__item list__item--no-interaction snapcast__client';
-					  if (client.connected) {
-					    class_name += ' snapcast__client--connected';
-					  } else {
-					    class_name += ' snapcast__client--disconnected';
-					  }
+          clients.map((client) => {
+            let class_name = 'list__item list__item--no-interaction snapcast__client';
+            if (client.connected) {
+              class_name += ' snapcast__client--connected';
+            } else {
+              class_name += ' snapcast__client--disconnected';
+            }
 
-					  if (this.state.clients_expanded.includes(client.id)) {
-					    return (
-  <div className={`${class_name} snapcast__client--expanded`} key={client.id}>
-    <div className="snapcast__client__header" onClick={(e) => this.toggleClientExpanded(client.id)}>
-      {client.name}
-      <div className="snapcast__client__header__icons">
-        {!client.connected ? <Icon name="power_off" className="disconnected" /> : null}
-        <Icon name="expand_less" />
-      </div>
-    </div>
-    <div className="snapcast__client__details">
-      <label className="field">
-        <div className="name">
-												Name
-        </div>
-        <div className="input">
-          <TextField
-            onChange={(value) => actions.setClientName(client.id, value)}
-            value={client.name}
-          />
-        </div>
-      </label>
-      <label className="field dropdown">
-        <div className="name">
-												Group
-        </div>
-        <div className="input">
-          <select onChange={(e) => actions.setClientGroup(client.id, e.target.value)} value={group.id}>
-            {
-														groups.map((group) => (
-  <option value={group.id} key={group.id}>
-    {group.name ? group.name : `Group ${group.id.substring(0, 3)}`}
-  </option>
-														))
-													}
-            <option value={group.id}>
-														New group
-            </option>
-          </select>
-        </div>
-      </label>
-      <div className="snapcast__client__volume field">
-        <div className="name">
-												Volume
-        </div>
-        <div className="input">
-          <MuteControl
-            className="snapcast__client__mute-control"
-            mute={client.mute}
-            onMuteChange={(mute) => actions.setClientMute(client.id, mute)}
-          />
-          <VolumeControl
-            className="snapcast__client__volume-control"
-            volume={client.volume}
-            onVolumeChange={(percent) => actions.setClientVolume(client.id, percent)}
-          />
-        </div>
-      </div>
-      <div className="snapcast__client__latency field">
-        <div className="name">
-												Latency
-        </div>
-        <div className="input">
-          <LatencyControl
-            max="150"
-            value={client.latency}
-            onChange={(value) => actions.setClientLatency(client.id, parseInt(value))}
-          />
-          <TextField
-            className="tiny"
-            type="number"
-            onChange={(value) => actions.setClientLatency(client.id, parseInt(value))}
-            value={String(client.latency)}
-          />
-        </div>
-      </div>
-    </div>
-  </div>
-					    );
-					  }
-					    return (
-  <div className={`${class_name} snapcast__client--collapsed`} key={client.id}>
-    <div className="snapcast__client__header" onClick={(e) => this.toggleClientExpanded(client.id)}>
-      {client.name}
-      <div className="snapcast__client__header__icons">
-        {!client.connected ? <Icon name="power_off" className="disconnected" /> : null}
-        <Icon name="expand_more" />
-      </div>
-    </div>
-  </div>
-					    );
-					})
-				}
+            if (this.state.clients_expanded.includes(client.id)) {
+              return (
+                <div className={`${class_name} snapcast__client--expanded`} key={client.id}>
+                  <div className="snapcast__client__header" onClick={(e) => this.toggleClientExpanded(client.id)}>
+                    {client.name}
+                    <div className="snapcast__client__header__icons">
+                      {!client.connected ? <Icon name="power_off" className="disconnected" /> : null}
+                      <Icon name="expand_less" />
+                    </div>
+                  </div>
+                  <div className="snapcast__client__details">
+                    <label className="field">
+                      <div className="name">
+                        Name
+                      </div>
+                      <div className="input">
+                        <TextField
+                          onChange={(value) => actions.setClientName(client.id, value)}
+                          value={client.name}
+                        />
+                      </div>
+                    </label>
+                    <label className="field dropdown">
+                      <div className="name">
+                        Group
+                      </div>
+                      <div className="input">
+                        <select onChange={(e) => actions.setClientGroup(client.id, e.target.value)} value={group.id}>
+                          {
+                            groups.map((group) => (
+                              <option value={group.id} key={group.id}>
+                                {group.name ? group.name : `Group ${group.id.substring(0, 3)}`}
+                              </option>
+                            ))
+                          }
+                          <option value={group.id}>
+                            New group
+                          </option>
+                        </select>
+                      </div>
+                    </label>
+                    <div className="snapcast__client__volume field">
+                      <div className="name">
+                        Volume
+                      </div>
+                      <div className="input">
+                        <MuteControl
+                          className="snapcast__client__mute-control"
+                          mute={client.mute}
+                          onMuteChange={(mute) => actions.setClientMute(client.id, mute)}
+                        />
+                        <VolumeControl
+                          className="snapcast__client__volume-control"
+                          volume={client.volume}
+                          onVolumeChange={(percent) => actions.setClientVolume(client.id, percent)}
+                        />
+                      </div>
+                    </div>
+                    <div className="snapcast__client__latency field">
+                      <div className="name">
+                        Latency
+                      </div>
+                      <div className="input">
+                        <LatencyControl
+                          max="150"
+                          value={client.latency}
+                          onChange={(value) => actions.setClientLatency(client.id, parseInt(value))}
+                        />
+                        <TextField
+                          className="tiny"
+                          type="number"
+                          onChange={(value) => actions.setClientLatency(client.id, parseInt(value))}
+                          value={String(client.latency)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            }
+            return (
+              <div className={`${class_name} snapcast__client--collapsed`} key={client.id}>
+                <div className="snapcast__client__header" onClick={(e) => this.toggleClientExpanded(client.id)}>
+                  {client.name}
+                  <div className="snapcast__client__header__icons">
+                    {!client.connected ? <Icon name="power_off" className="disconnected" /> : null}
+                    <Icon name="expand_more" />
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        }
       </div>
     );
   }
 
   render() {
     const {
-      enabled,
       snapcastActions: actions,
       uiActions,
+      snapcast: {
+        host,
+        port,
+        enabled,
+        connected,
+      },
     } = this.props;
 
     const streams = [];
@@ -202,13 +207,14 @@ class Snapcast extends React.Component {
       <div className="snapcast">
 
         <div className="field checkbox">
+          <div className="name">Enabled</div>
           <div className="input">
             <label>
               <input
                 type="checkbox"
                 name="enabled"
                 checked={enabled}
-                onChange={() => actions.setEnabled(!enabled)}
+                onChange={() => actions.set({ enabled: !enabled })}
               />
               <span className="label">
                 Enabled
@@ -222,93 +228,107 @@ class Snapcast extends React.Component {
                 onChange={() => uiActions.set({ snapcast_show_disconnected_clients: !this.props.show_disconnected_clients })}
               />
               <span className="label">
-								Show disconnected clients
+                Show disconnected clients
               </span>
             </label>
           </div>
         </div>
 
+        <div className="field">
+          <div className="name">Host</div>
+          <div className="input">
+            <TextField
+              value={host}
+              onChange={value => actions.set({ host: value })}
+            />
+          </div>
+        </div>
+
+        <div className="field">
+          <div className="name">Port</div>
+          <div className="input">
+            <TextField
+              value={port}
+              onChange={value => actions.set({ port: value })}
+            />
+          </div>
+        </div>
+
         <div className="snapcast__groups">
           {
-						groups.map((group) => {
-						  group = helpers.collate(group, { clients: this.props.clients });
+            groups.map((group) => {
+              group = helpers.collate(group, { clients: this.props.clients });
 
-						  // Average our clients' volume for an overall group volume
-						  let group_volume = 0;
-						  for (let i = 0; i < group.clients.length; i++) {
-						    const client = group.clients[i];
-						    group_volume += client.volume;
-						  }
-						  group_volume /= group.clients.length;
+              // Average our clients' volume for an overall group volume
+              let group_volume = 0;
+              for (let i = 0; i < group.clients.length; i++) {
+                const client = group.clients[i];
+                group_volume += client.volume;
+              }
+              group_volume /= group.clients.length;
 
-						  return (
-  <div className="snapcast__group" key={group.id}>
-    <div className="field">
-      <div className="name">
-											Name
-      </div>
-      <div className="input">
-        <div className="text">
-          {group.name}
-          {' '}
-&nbsp;
-          <span className="mid_grey-text">
-(
-            {group.id}
-)
-          </span>
-        </div>
-      </div>
-    </div>
-    <div className="field dropdown">
-      <div className="name">
-											Stream
-      </div>
-      <div className="input">
-        <select onChange={(e) => actions.setGroupStream(group.id, e.target.value)} value={group.stream_id}>
-          {
-													streams.map((stream) => (
-  <option value={stream.id} key={stream.id}>
-    {stream.id}
-    {' '}
-(
-    {stream.status}
-)
-  </option>
-													))
-												}
-        </select>
-      </div>
-    </div>
-    <div className="field">
-      <div className="name">
-											Volume
-      </div>
-      <div className="input">
-        <MuteControl
-          className="snapcast__group__mute-control"
-          mute={group.muted}
-          onMuteChange={(mute) => actions.setGroupMute(group.id, mute)}
-        />
-        <VolumeControl
-          className="snapcast__group__volume-control"
-          volume={group_volume}
-          onVolumeChange={(percent, old_percent) => actions.setGroupVolume(group.id, percent, old_percent)}
-        />
-      </div>
-    </div>
-    <div className="field">
-      <div className="name">
-											Clients
-      </div>
-      <div className="input">
-        {this.renderClientsList(group, groups)}
-      </div>
-    </div>
-  </div>
-						  );
-						})
-					}
+              return (
+                <div className="snapcast__group" key={group.id}>
+                  <div className="field text">
+                    <div className="name">
+                      Name
+                    </div>
+                    <div className="input">
+                      <TextField
+                        value={group.name}
+                        onChange={value => actions.setGroupName(group.id, value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="field dropdown">
+                    <div className="name">
+                      Stream
+                    </div>
+                    <div className="input">
+                      <select onChange={(e) => actions.setGroupStream(group.id, e.target.value)} value={group.stream_id}>
+                        {
+                          streams.map((stream) => (
+                            <option value={stream.id} key={stream.id}>
+                              {stream.id}
+                              {' '}
+                              (
+                                {stream.status}
+                              )
+                            </option>
+                          ))
+                        }
+                      </select>
+                    </div>
+                  </div>
+                  <div className="field">
+                    <div className="name">
+                      Volume
+                    </div>
+                    <div className="input">
+                      <MuteControl
+                        className="snapcast__group__mute-control"
+                        mute={group.muted}
+                        onMuteChange={(mute) => actions.setGroupMute(group.id, mute)}
+                      />
+                      <VolumeControl
+                        className="snapcast__group__volume-control"
+                        volume={group_volume}
+                        onVolumeChange={(percent, old_percent) => actions.setGroupVolume(group.id, percent, old_percent)}
+                      />
+                    </div>
+                  </div>
+                  <div className="field">
+                    <div className="name">
+                      Clients
+                    </div>
+                    <div className="input">
+                      {this.renderClientsList(group, groups)}
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          }
         </div>
       </div>
     );
@@ -316,8 +336,7 @@ class Snapcast extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  enabled: state.snapcast.enabled,
-  connected: state.snapcast.connected,
+  snapcast: state.snapcast,
   show_disconnected_clients: (
     state.ui.snapcast_show_disconnected_clients !== undefined
       ? state.ui.snapcast_show_disconnected_clients

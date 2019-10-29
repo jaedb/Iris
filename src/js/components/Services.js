@@ -359,7 +359,15 @@ class Services extends React.Component {
               <div className="menu-item__title">
 								Snapcast
               </div>
-              {this.props.pusher.config.snapcast_enabled ? <span className="status green-text">Enabled</span> : <span className="status mid_grey-text">Disabled</span>}
+              {!this.props.snapcast.enabled && (
+                <span className="status mid_grey-text">Disabled</span>
+              )}
+              {this.props.snapcast.enabled && !this.props.snapcast.connected && (
+                <span className="status red-text">Disconnected</span>
+              )}
+              {this.props.snapcast.enabled && this.props.snapcast.connected && (
+                <span className="status green-text">Connected</span>
+              )}
             </div>
           </Link>
           <Link history={this.props.history} className="menu-item menu-item--icecast" activeClassName="menu-item--active" to="/settings/icecast" scrollTo="#services-menu">
