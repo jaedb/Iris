@@ -20,10 +20,13 @@ class Hotkeys extends React.Component {
   }
 
   handleKeyDown(e) {
-    // When we're focussed on certian elements, don't fire any shortcuts
-    // Typically form inputs
-    const ignoreNodes = ['INPUT', 'TEXTAREA', 'BUTTON'];
-    if (ignoreNodes.indexOf(e.target.nodeName) > -1) {
+    const key = e.key.toLowerCase();
+
+    // Ignore text input fields
+    if (
+      (e.target.nodeName === 'INPUT' && (e.target.type === 'text' || e.target.type === 'number')) ||
+      e.target.nodeName === 'TEXTAREA' ||
+      (e.target.nodeName === 'BUTTON' && key === ' ')) {
       return;
     }
 
@@ -34,7 +37,7 @@ class Hotkeys extends React.Component {
     }
 
     let prevent = false;
-    switch (e.key.toLowerCase()) {
+    switch (key) {
       case ' ':
       case 'p': // Super-useful once you get used to it. This negates the issue where interactive elements
         // are in focus (ie slider) and <space> is reserved for that field's interactivity.

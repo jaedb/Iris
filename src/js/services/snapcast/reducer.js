@@ -1,9 +1,20 @@
 
 export default function reducer(snapcast = {}, action) {
   switch (action.type) {
+    case 'SNAPCAST_SET':
+      return { ...snapcast, ...action.data };
+
+    case 'SNAPCAST_CONNECTED':
+      return { ...snapcast, connected: true, connecting: false };
+
+    case 'SNAPCAST_CONNECTING':
+        return { ...snapcast, connecting: true, connected: false };
+
+    case 'SNAPCAST_DISCONNECTED':
+      return { ...snapcast, connected: false, connecting: false };
+
     case 'SNAPCAST_SERVER_LOADED':
-      var server = { ...action.server };
-      return { ...snapcast, server };
+      return { ...snapcast, server: action.server };
 
     case 'SNAPCAST_CLIENTS_LOADED':
       if (action.flush) {

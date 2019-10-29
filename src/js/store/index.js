@@ -95,6 +95,11 @@ let state = {
     enabled: false,
   },
   snapcast: {
+    enabled: false,
+    connected: false,
+    host: window.location.hostname,
+    port: '1780',
+    ssl: (window.location.protocol === 'https:'),
     streams: {},
     groups: {},
     clients: {},

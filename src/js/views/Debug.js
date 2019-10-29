@@ -13,6 +13,7 @@ import * as uiActions from '../services/ui/actions';
 import * as pusherActions from '../services/pusher/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import * as spotifyActions from '../services/spotify/actions';
+import * as snapcastActions from '../services/snapcast/actions';
 
 class Debug extends React.Component {
   constructor(props) {
@@ -21,6 +22,7 @@ class Debug extends React.Component {
       mopidy_call: 'playlists.asList',
       mopidy_data: '{}',
       pusher_data: '{"method":"get_config"}',
+      snapcast_data: '{"method":"Server.GetStatus"}',
       access_token: this.props.access_token,
       toggling_test_mode: false,
     };
@@ -38,6 +40,11 @@ class Debug extends React.Component {
   callPusher(e) {
     e.preventDefault();
     this.props.pusherActions.debug(JSON.parse(this.state.pusher_data));
+  }
+
+  callSnapcast(e) {
+    e.preventDefault();
+    this.props.snapcastActions.debug(JSON.parse(this.state.snapcast_data));
   }
 
   toggleTestMode(e) {
@@ -116,6 +123,15 @@ Back
                     onChange={(e) => this.props.uiActions.set({ log_pusher: !this.props.log_pusher })}
                   />
                   <span className="label">Log Pusher</span>
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    name="log_pusher"
+                    checked={this.props.log_snapcast}
+                    onChange={(e) => this.props.uiActions.set({ log_snapcast: !this.props.log_snapcast })}
+                  />
+                  <span className="label">Log Snapcast</span>
                 </label>
               </div>
             </div>
@@ -207,6 +223,25 @@ Back
             </div>
           </form>
 
+          <h4 className="underline">Snapcast</h4>
+          <form onSubmit={(e) => this.callSnapcast(e)}>
+            <label className="field">
+              <div className="name">Data</div>
+              <div className="input">
+                <textarea
+                  onChange={(e) => this.setState({ snapcast_data: e.target.value })}
+                  value={this.state.snapcast_data}
+                />
+              </div>
+            </label>
+            <div className="field">
+              <div className="name" />
+              <div className="input">
+                <button type="submit" className="button button--default">Send</button>
+              </div>
+            </div>
+          </form>
+
           <h4 className="underline">Response</h4>
           <pre>
             { this.props.debug_response ? JSON.stringify(this.props.debug_response, null, 2) : null }
@@ -224,6 +259,7 @@ const mapStateToProps = (state, ownProps) => ({
   log_actions: (state.ui.log_actions ? state.ui.log_actions : false),
   log_pusher: (state.ui.log_pusher ? state.ui.log_pusher : false),
   log_mopidy: (state.ui.log_mopidy ? state.ui.log_mopidy : false),
+  log_snapcast: (state.ui.log_snapcast ? state.ui.log_snapcast : false),
   test_mode: (state.ui.test_mode ? state.ui.test_mode : false),
   debug_info: (state.ui.debug_info ? state.ui.debug_info : false),
   debug_response: state.ui.debug_response,
@@ -234,6 +270,7 @@ const mapDispatchToProps = (dispatch) => ({
   pusherActions: bindActionCreators(pusherActions, dispatch),
   mopidyActions: bindActionCreators(mopidyActions, dispatch),
   spotifyActions: bindActionCreators(spotifyActions, dispatch),
+  snapcastActions: bindActionCreators(snapcastActions, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Debug);

@@ -6933,7 +6933,6 @@ main .track-view {
     margin-right: 2%; }
     .queue-view .current-track__artwork a {
       border: 0 !important;
-      display: block;
       position: relative; }
     .queue-view .current-track__artwork .thumbnail {
       width: 30vh;
@@ -6969,9 +6968,17 @@ main .track-view {
     padding-top: 2rem; }
   @media (max-width: 799px) {
     .queue-view .current-track {
-      display: block;
-      text-align: center;
       padding: 40px 0 20px; }
+      .queue-view .current-track__artwork {
+        width: 28%; }
+        .queue-view .current-track__artwork .thumbnail {
+          width: 100%; }
+      .queue-view .current-track__added-from {
+        display: none; } }
+  @media (max-width: 499px) {
+    .queue-view .current-track {
+      display: block;
+      text-align: center; }
       .queue-view .current-track__artwork {
         width: auto;
         margin: 0 0 20px 0;
@@ -6981,9 +6988,7 @@ main .track-view {
           max-width: 30vh; }
       .queue-view .current-track__details {
         width: auto;
-        margin: 0; }
-      .queue-view .current-track__added-from {
-        display: none; } }
+        margin: 0; } }
 
 .search-view {
   position: relative; }

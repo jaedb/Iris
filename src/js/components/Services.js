@@ -98,8 +98,7 @@ class Services extends React.Component {
         <div>
           <p className="message warning">
             <em>Mopidy-Spotify</em>
-            {' '}
-extension is not running - you will not be able to play any Spotify tracks
+            {' extension is not running - you will not be able to play any Spotify tracks'}
           </p>
           <br />
         </div>
@@ -120,14 +119,11 @@ extension is not running - you will not be able to play any Spotify tracks
               value={this.state.country}
             />
             <div className="description">
-							An
-              {' '}
+              {'An '}
               <a href="http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">ISO 3166-1 alpha-2</a>
-              {' '}
-country code (eg
-              {' '}
+              {' country code (eg '}
               <em>NZ</em>
-)
+              {')'}
             </div>
           </div>
         </label>
@@ -142,17 +138,13 @@ country code (eg
               value={this.state.locale}
             />
             <div className="description">
-							Lowercase
-              {' '}
+              {'Lowercase '}
               <a href="http://en.wikipedia.org/wiki/ISO_639" target="_blank">ISO 639 language code</a>
-              {' '}
-and an uppercase
-              {' '}
+              {' and an uppercase '}
               <a href="http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">ISO 3166-1 alpha-2 country code</a>
-, joined by an underscore (eg
-              {' '}
+              {', joined by an underscore (eg'}
               <em>en_NZ</em>
-)
+              {')'}
             </div>
           </div>
         </label>
@@ -170,7 +162,16 @@ and an uppercase
           <div className="name">Authorization</div>
           <div className="input">
             <SpotifyAuthenticationFrame />
-            {this.props.spotify.refreshing_token ? <a className="button button--working">Refreshing...</a> : <a className="button button--default" onClick={(e) => this.props.spotifyActions.refreshingToken()}>Force token refresh</a>}
+            {this.props.spotify.refreshing_token ? (
+              <a className="button button--working">Refreshing...</a>
+            ) : (
+              <a
+                className="button button--default"
+                onClick={(e) => this.props.spotifyActions.refreshingToken()}
+              >
+                Force token refresh
+              </a>
+            )}
           </div>
         </div>
       </div>
@@ -358,7 +359,15 @@ and an uppercase
               <div className="menu-item__title">
 								Snapcast
               </div>
-              {this.props.pusher.config.snapcast_enabled ? <span className="status green-text">Enabled</span> : <span className="status mid_grey-text">Disabled</span>}
+              {!this.props.snapcast.enabled && (
+                <span className="status mid_grey-text">Disabled</span>
+              )}
+              {this.props.snapcast.enabled && !this.props.snapcast.connected && (
+                <span className="status red-text">Disconnected</span>
+              )}
+              {this.props.snapcast.enabled && this.props.snapcast.connected && (
+                <span className="status green-text">Connected</span>
+              )}
             </div>
           </Link>
           <Link history={this.props.history} className="menu-item menu-item--icecast" activeClassName="menu-item--active" to="/settings/icecast" scrollTo="#services-menu">

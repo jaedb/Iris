@@ -52310,6 +52310,9 @@ var App = exports.App = function (_React$Component) {
       // Fire up our services
       this.props.mopidyActions.connect();
       this.props.pusherActions.connect();
+      if (this.props.snapcast_enabled) {
+        this.props.snapcastActions.connect();
+      }
       this.props.coreActions.getBroadcasts();
 
       // Check for url-parsed configuration values
@@ -52592,6 +52595,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
     initial_setup_complete: state.ui.initial_setup_complete,
     slim_mode: state.ui.slim_mode,
     mopidy_connected: state.mopidy.connected,
+    snapcast_enabled: state.snapcast.enabled,
     spotify_authorized: state.spotify.authorization,
     sidebar_open: state.ui.sidebar_open,
     dragging: state.ui.dragger && state.ui.dragger.active,
@@ -58606,10 +58610,10 @@ var Hotkeys = function (_React$Component) {
   }, {
     key: 'handleKeyDown',
     value: function handleKeyDown(e) {
-      // When we're focussed on certian elements, don't fire any shortcuts
-      // Typically form inputs
-      var ignoreNodes = ['INPUT', 'TEXTAREA', 'BUTTON'];
-      if (ignoreNodes.indexOf(e.target.nodeName) > -1) {
+      var key = e.key.toLowerCase();
+
+      // Ignore text input fields
+      if (e.target.nodeName === 'INPUT' && (e.target.type === 'text' || e.target.type === 'number') || e.target.nodeName === 'TEXTAREA' || e.target.nodeName === 'BUTTON' && key === ' ') {
         return;
       }
 
@@ -58620,7 +58624,7 @@ var Hotkeys = function (_React$Component) {
       }
 
       var prevent = false;
-      switch (e.key.toLowerCase()) {
+      switch (key) {
         case ' ':
         case 'p':
           // Super-useful once you get used to it. This negates the issue where interactive elements
@@ -61431,8 +61435,7 @@ var Services = function (_React$Component) {
               null,
               'Mopidy-Spotify'
             ),
-            ' ',
-            'extension is not running - you will not be able to play any Spotify tracks'
+            ' extension is not running - you will not be able to play any Spotify tracks'
           ),
           _react2.default.createElement('br', null)
         );
@@ -61469,16 +61472,13 @@ var Services = function (_React$Component) {
             _react2.default.createElement(
               'div',
               { className: 'description' },
-              'An',
-              ' ',
+              'An ',
               _react2.default.createElement(
                 'a',
                 { href: 'http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2', target: '_blank' },
                 'ISO 3166-1 alpha-2'
               ),
-              ' ',
-              'country code (eg',
-              ' ',
+              ' country code (eg ',
               _react2.default.createElement(
                 'em',
                 null,
@@ -61515,23 +61515,19 @@ var Services = function (_React$Component) {
             _react2.default.createElement(
               'div',
               { className: 'description' },
-              'Lowercase',
-              ' ',
+              'Lowercase ',
               _react2.default.createElement(
                 'a',
                 { href: 'http://en.wikipedia.org/wiki/ISO_639', target: '_blank' },
                 'ISO 639 language code'
               ),
-              ' ',
-              'and an uppercase',
-              ' ',
+              ' and an uppercase ',
               _react2.default.createElement(
                 'a',
                 { href: 'http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2', target: '_blank' },
                 'ISO 3166-1 alpha-2 country code'
               ),
               ', joined by an underscore (eg',
-              ' ',
               _react2.default.createElement(
                 'em',
                 null,
@@ -61577,9 +61573,12 @@ var Services = function (_React$Component) {
               'Refreshing...'
             ) : _react2.default.createElement(
               'a',
-              { className: 'button button--default', onClick: function onClick(e) {
+              {
+                className: 'button button--default',
+                onClick: function onClick(e) {
                   return _this2.props.spotifyActions.refreshingToken();
-                } },
+                }
+              },
               'Force token refresh'
             )
           )
@@ -61889,14 +61888,20 @@ var Services = function (_React$Component) {
                 { className: 'menu-item__title' },
                 'Snapcast'
               ),
-              this.props.pusher.config.snapcast_enabled ? _react2.default.createElement(
-                'span',
-                { className: 'status green-text' },
-                'Enabled'
-              ) : _react2.default.createElement(
+              !this.props.snapcast.enabled && _react2.default.createElement(
                 'span',
                 { className: 'status mid_grey-text' },
                 'Disabled'
+              ),
+              this.props.snapcast.enabled && !this.props.snapcast.connected && _react2.default.createElement(
+                'span',
+                { className: 'status red-text' },
+                'Disconnected'
+              ),
+              this.props.snapcast.enabled && this.props.snapcast.connected && _react2.default.createElement(
+                'span',
+                { className: 'status green-text' },
+                'Connected'
               )
             )
           ),
@@ -62293,10 +62298,6 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _Link = __webpack_require__(/*! ./Link */ "./src/js/components/Link.js");
-
-var _Link2 = _interopRequireDefault(_Link);
-
 var _VolumeControl = __webpack_require__(/*! ./Fields/VolumeControl */ "./src/js/components/Fields/VolumeControl.js");
 
 var _VolumeControl2 = _interopRequireDefault(_VolumeControl);
@@ -62312,10 +62313,6 @@ var _LatencyControl2 = _interopRequireDefault(_LatencyControl);
 var _TextField = __webpack_require__(/*! ./Fields/TextField */ "./src/js/components/Fields/TextField.js");
 
 var _TextField2 = _interopRequireDefault(_TextField);
-
-var _DropdownField = __webpack_require__(/*! ./Fields/DropdownField */ "./src/js/components/Fields/DropdownField.js");
-
-var _DropdownField2 = _interopRequireDefault(_DropdownField);
 
 var _Icon = __webpack_require__(/*! ./Icon */ "./src/js/components/Icon.js");
 
@@ -62333,13 +62330,9 @@ var _actions2 = __webpack_require__(/*! ../services/ui/actions */ "./src/js/serv
 
 var uiActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(/*! ../services/pusher/actions */ "./src/js/services/pusher/actions.js");
+var _actions3 = __webpack_require__(/*! ../services/snapcast/actions */ "./src/js/services/snapcast/actions.js");
 
-var pusherActions = _interopRequireWildcard(_actions3);
-
-var _actions4 = __webpack_require__(/*! ../services/snapcast/actions */ "./src/js/services/snapcast/actions.js");
-
-var snapcastActions = _interopRequireWildcard(_actions4);
+var snapcastActions = _interopRequireWildcard(_actions3);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -62368,22 +62361,23 @@ var Snapcast = function (_React$Component) {
   _createClass(Snapcast, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      if (this.props.pusher_connected && this.props.snapcast_enabled) {
-        this.props.snapcastActions.getServer();
+      var _props = this.props,
+          connected = _props.connected,
+          snapcastActions = _props.actions;
+
+      if (this.props.connected) {
+        actions.getServer();
       }
     }
   }, {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(newProps) {
-      // Just connected
-      if (newProps.snapcast_enabled && !this.props.pusher_connected && newProps.pusher_connected) {
-        this.props.snapcastActions.getServer();
+      var _props2 = this.props,
+          connected = _props2.connected,
+          snapcastActions = _props2.actions;
 
-        // Just enabled
-        // This is the more probable scenario as we don't know if we're enabled until pusher connects
-        // and then gets the config from the server
-      } else if (!this.props.snapcast_enabled && newProps.snapcast_enabled && newProps.pusher_connected) {
-        this.props.snapcastActions.getServer();
+      if (newProps.connected && !connected) {
+        actions.getServer();
       }
     }
   }, {
@@ -62405,6 +62399,9 @@ var Snapcast = function (_React$Component) {
     key: 'renderClientsList',
     value: function renderClientsList(group, groups) {
       var _this2 = this;
+
+      var actions = this.props.snapcastActions;
+
 
       if (!this.props.show_disconnected_clients && group.clients) {
         var clients = helpers.applyFilter('connected', true, group.clients);
@@ -62464,7 +62461,7 @@ var Snapcast = function (_React$Component) {
                     { className: 'input' },
                     _react2.default.createElement(_TextField2.default, {
                       onChange: function onChange(value) {
-                        return _this2.props.snapcastActions.setClientName(client.id, value);
+                        return actions.setClientName(client.id, value);
                       },
                       value: client.name
                     })
@@ -62484,7 +62481,7 @@ var Snapcast = function (_React$Component) {
                     _react2.default.createElement(
                       'select',
                       { onChange: function onChange(e) {
-                          return _this2.props.snapcastActions.setClientGroup(client.id, e.target.value);
+                          return actions.setClientGroup(client.id, e.target.value);
                         }, value: group.id },
                       groups.map(function (group) {
                         return _react2.default.createElement(
@@ -62516,14 +62513,14 @@ var Snapcast = function (_React$Component) {
                       className: 'snapcast__client__mute-control',
                       mute: client.mute,
                       onMuteChange: function onMuteChange(mute) {
-                        return _this2.props.snapcastActions.setClientMute(client.id, mute);
+                        return actions.setClientMute(client.id, mute);
                       }
                     }),
                     _react2.default.createElement(_VolumeControl2.default, {
                       className: 'snapcast__client__volume-control',
                       volume: client.volume,
                       onVolumeChange: function onVolumeChange(percent) {
-                        return _this2.props.snapcastActions.setClientVolume(client.id, percent);
+                        return actions.setClientVolume(client.id, percent);
                       }
                     })
                   )
@@ -62543,14 +62540,14 @@ var Snapcast = function (_React$Component) {
                       max: '150',
                       value: client.latency,
                       onChange: function onChange(value) {
-                        return _this2.props.snapcastActions.setClientLatency(client.id, parseInt(value));
+                        return actions.setClientLatency(client.id, parseInt(value));
                       }
                     }),
                     _react2.default.createElement(_TextField2.default, {
                       className: 'tiny',
                       type: 'number',
                       onChange: function onChange(value) {
-                        return _this2.props.snapcastActions.setClientLatency(client.id, parseInt(value));
+                        return actions.setClientLatency(client.id, parseInt(value));
                       },
                       value: String(client.latency)
                     })
@@ -62584,20 +62581,15 @@ var Snapcast = function (_React$Component) {
     value: function render() {
       var _this3 = this;
 
-      if (!this.props.snapcast_enabled) {
-        return _react2.default.createElement(
-          'p',
-          { className: 'message warning' },
-          'To enable Snapcast, edit your',
-          _react2.default.createElement(
-            'code',
-            null,
-            'mopidy.conf'
-          ),
-          ' ',
-          'file'
-        );
-      }
+      var _props3 = this.props,
+          actions = _props3.snapcastActions,
+          uiActions = _props3.uiActions,
+          _props3$snapcast = _props3.snapcast,
+          host = _props3$snapcast.host,
+          port = _props3$snapcast.port,
+          enabled = _props3$snapcast.enabled,
+          connected = _props3$snapcast.connected;
+
 
       var streams = [];
       for (var id in this.props.streams) {
@@ -62622,20 +62614,27 @@ var Snapcast = function (_React$Component) {
           _react2.default.createElement(
             'div',
             { className: 'name' },
-            'Display'
+            'Enabled'
           ),
           _react2.default.createElement(
             'div',
             { className: 'input' },
             _react2.default.createElement(
-              'button',
-              {
-                className: 'button button--default button--small',
-                onClick: function onClick(e) {
-                  return _this3.props.snapcastActions.getServer();
+              'label',
+              null,
+              _react2.default.createElement('input', {
+                type: 'checkbox',
+                name: 'enabled',
+                checked: enabled,
+                onChange: function onChange() {
+                  return actions.set({ enabled: !enabled });
                 }
-              },
-              'Refresh'
+              }),
+              _react2.default.createElement(
+                'span',
+                { className: 'label' },
+                'Enabled'
+              )
             ),
             _react2.default.createElement(
               'label',
@@ -62644,8 +62643,8 @@ var Snapcast = function (_React$Component) {
                 type: 'checkbox',
                 name: 'show_disconnected_clients',
                 checked: this.props.show_disconnected_clients,
-                onChange: function onChange(e) {
-                  return _this3.props.uiActions.set({ snapcast_show_disconnected_clients: !_this3.props.show_disconnected_clients });
+                onChange: function onChange() {
+                  return uiActions.set({ snapcast_show_disconnected_clients: !_this3.props.show_disconnected_clients });
                 }
               }),
               _react2.default.createElement(
@@ -62654,6 +62653,44 @@ var Snapcast = function (_React$Component) {
                 'Show disconnected clients'
               )
             )
+          )
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'field' },
+          _react2.default.createElement(
+            'div',
+            { className: 'name' },
+            'Host'
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: 'input' },
+            _react2.default.createElement(_TextField2.default, {
+              value: host,
+              onChange: function onChange(value) {
+                return actions.set({ host: value });
+              }
+            })
+          )
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'field' },
+          _react2.default.createElement(
+            'div',
+            { className: 'name' },
+            'Port'
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: 'input' },
+            _react2.default.createElement(_TextField2.default, {
+              value: port,
+              onChange: function onChange(value) {
+                return actions.set({ port: value });
+              }
+            })
           )
         ),
         _react2.default.createElement(
@@ -62675,7 +62712,7 @@ var Snapcast = function (_React$Component) {
               { className: 'snapcast__group', key: group.id },
               _react2.default.createElement(
                 'div',
-                { className: 'field' },
+                { className: 'field text' },
                 _react2.default.createElement(
                   'div',
                   { className: 'name' },
@@ -62684,20 +62721,12 @@ var Snapcast = function (_React$Component) {
                 _react2.default.createElement(
                   'div',
                   { className: 'input' },
-                  _react2.default.createElement(
-                    'div',
-                    { className: 'text' },
-                    group.name,
-                    ' ',
-                    '\xA0',
-                    _react2.default.createElement(
-                      'span',
-                      { className: 'mid_grey-text' },
-                      '(',
-                      group.id,
-                      ')'
-                    )
-                  )
+                  _react2.default.createElement(_TextField2.default, {
+                    value: group.name,
+                    onChange: function onChange(value) {
+                      return actions.setGroupName(group.id, value);
+                    }
+                  })
                 )
               ),
               _react2.default.createElement(
@@ -62714,7 +62743,7 @@ var Snapcast = function (_React$Component) {
                   _react2.default.createElement(
                     'select',
                     { onChange: function onChange(e) {
-                        return _this3.props.snapcastActions.setGroupStream(group.id, e.target.value);
+                        return actions.setGroupStream(group.id, e.target.value);
                       }, value: group.stream_id },
                     streams.map(function (stream) {
                       return _react2.default.createElement(
@@ -62745,14 +62774,14 @@ var Snapcast = function (_React$Component) {
                     className: 'snapcast__group__mute-control',
                     mute: group.muted,
                     onMuteChange: function onMuteChange(mute) {
-                      return _this3.props.snapcastActions.setGroupMute(group.id, mute);
+                      return actions.setGroupMute(group.id, mute);
                     }
                   }),
                   _react2.default.createElement(_VolumeControl2.default, {
                     className: 'snapcast__group__volume-control',
                     volume: group_volume,
                     onVolumeChange: function onVolumeChange(percent, old_percent) {
-                      return _this3.props.snapcastActions.setGroupVolume(group.id, percent, old_percent);
+                      return actions.setGroupVolume(group.id, percent, old_percent);
                     }
                   })
                 )
@@ -62783,8 +62812,7 @@ var Snapcast = function (_React$Component) {
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
   return {
-    snapcast_enabled: state.pusher.config.snapcast_enabled,
-    pusher_connected: state.pusher.connected,
+    snapcast: state.snapcast,
     show_disconnected_clients: state.ui.snapcast_show_disconnected_clients !== undefined ? state.ui.snapcast_show_disconnected_clients : false,
     streams: state.snapcast.streams ? state.snapcast.streams : null,
     groups: state.snapcast.groups ? state.snapcast.groups : null,
@@ -62796,8 +62824,7 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
   return {
     coreActions: (0, _redux.bindActionCreators)(coreActions, dispatch),
     uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
-    snapcastActions: (0, _redux.bindActionCreators)(snapcastActions, dispatch),
-    pusherActions: (0, _redux.bindActionCreators)(pusherActions, dispatch)
+    snapcastActions: (0, _redux.bindActionCreators)(snapcastActions, dispatch)
   };
 };
 
@@ -64317,6 +64344,7 @@ var digestMopidyImages = exports.digestMopidyImages = function digestMopidyImage
 
 var generateGuid = exports.generateGuid = function generateGuid() {
   var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'numeric';
+  var length = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 12;
 
   // numeric
   if (type == 'numeric') {
@@ -64324,10 +64352,10 @@ var generateGuid = exports.generateGuid = function generateGuid() {
     var random_number = Math.floor(Math.random() * 100).toString();
     return parseInt(date + random_number);
   }
-  var format = 'xxxxxxxxxx';
+  var format = 'x'.repeat(length);
   return format.replace(/[xy]/g, function (c) {
     var r = Math.random() * 16 | 0;var v = c == 'x' ? r : r & 0x3 | 0x8;
-    return v.toString(16);
+    return v.toString(length);
   });
 };
 
@@ -69403,6 +69431,10 @@ var localstorageMiddleware = function () {
             helpers.setStorage('spotify', action.data);
             break;
 
+          case 'SNAPCAST_SET':
+            helpers.setStorage('snapcast', action.data);
+            break;
+
           case 'SNAPCAST_COMMANDS_UPDATED':
             helpers.setStorage('snapcast', {
               commands: action.commands
@@ -72996,11 +73028,6 @@ var PusherMiddleware = function () {
             store.dispatch(uiActions.createNotification({ type: 'bad', content: message.params.message, description: message.params.description }));
             break;
         }
-
-        // Pass snapcast events to the Snapcast service
-        if (message.method.startsWith('snapcast_')) {
-          store.dispatch(snapcastActions.eventReceived(message));
-        }
       }
     }
   };
@@ -73610,6 +73637,11 @@ function reducer() {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.set = set;
+exports.connect = connect;
+exports.disconnect = disconnect;
+exports.request = request;
+exports.debug = debug;
 exports.getServer = getServer;
 exports.setClientName = setClientName;
 exports.setClientMute = setClientMute;
@@ -73617,10 +73649,10 @@ exports.setClientVolume = setClientVolume;
 exports.setClientLatency = setClientLatency;
 exports.setClientGroup = setClientGroup;
 exports.deleteClient = deleteClient;
+exports.setGroupName = setGroupName;
 exports.setGroupStream = setGroupStream;
 exports.setGroupMute = setGroupMute;
 exports.setGroupVolume = setGroupVolume;
-exports.eventReceived = eventReceived;
 exports.serverLoaded = serverLoaded;
 exports.clientLoaded = clientLoaded;
 exports.clientsLoaded = clientsLoaded;
@@ -73628,6 +73660,48 @@ exports.groupLoaded = groupLoaded;
 exports.groupsLoaded = groupsLoaded;
 exports.streamLoaded = streamLoaded;
 exports.streamsLoaded = streamsLoaded;
+function set(data) {
+  return {
+    type: 'SNAPCAST_SET',
+    data: data
+  };
+}
+
+function connect() {
+  return {
+    type: 'SNAPCAST_CONNECT'
+  };
+}
+
+function disconnect() {
+  return {
+    type: 'SNAPCAST_DISCONNECT'
+  };
+}
+
+function request(method) {
+  var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+  var response_callback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+  var error_callback = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+
+  return {
+    type: 'SNAPCAST_REQUEST',
+    method: method,
+    params: params,
+    response_callback: response_callback,
+    error_callback: error_callback
+  };
+}
+
+function debug() {
+  var message = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+
+  return {
+    type: 'SNAPCAST_DEBUG',
+    message: message
+  };
+}
+
 function getServer() {
   return {
     type: 'SNAPCAST_GET_SERVER'
@@ -73681,6 +73755,14 @@ function deleteClient(id) {
   };
 }
 
+function setGroupName(id, name) {
+  return {
+    type: 'SNAPCAST_SET_GROUP_NAME',
+    id: id,
+    name: name
+  };
+}
+
 function setGroupStream(id, stream_id) {
   return {
     type: 'SNAPCAST_SET_GROUP_STREAM',
@@ -73705,14 +73787,6 @@ function setGroupVolume(id, percent) {
     id: id,
     percent: percent,
     old_percent: old_percent
-  };
-}
-
-function eventReceived(message) {
-  return {
-    type: 'SNAPCAST_EVENT_RECEIVED',
-    method: message.method,
-    params: message.params
   };
 }
 
@@ -73790,6 +73864,8 @@ var _reactGa = __webpack_require__(/*! react-ga */ "./node_modules/react-ga/dist
 
 var _reactGa2 = _interopRequireDefault(_reactGa);
 
+var _jsSha = __webpack_require__(/*! js-sha256 */ "./node_modules/js-sha256/src/sha256.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -73801,13 +73877,147 @@ var pusherActions = __webpack_require__(/*! ../pusher/actions */ "./src/js/servi
 var snapcastActions = __webpack_require__(/*! ./actions */ "./src/js/services/snapcast/actions.js");
 
 var SnapcastMiddleware = function () {
-  // A snapcast request is an alias of the Pusher request
-  var request = function request(store) {
-    var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-    var response_callback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-    var error_callback = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+  var _this = this;
 
-    store.dispatch(pusherActions.request('snapcast', params, response_callback, error_callback));
+  var socket = null;
+
+  // requests pending
+  var deferredRequests = [];
+
+  // handle all manner of socket messages
+  var handleMessage = function handleMessage(ws, store, message) {
+    if (store.getState().ui.log_snapcast) {
+      console.log('Snapcast log (incoming)', message);
+    }
+
+    // Pull our ID. JSON-RPC nests the ID under the error object,
+    // so make sure we handle that.
+    // TODO: Use this as our measure of a successful response vs error
+    var id = null;
+    if (message.id) {
+      id = message.id;
+    } else if (message.error && message.error.id) {
+      id = message.error.id;
+    }
+
+    // Response with request_id
+    if (id) {
+      // Response matches a pending request
+      if (deferredRequests[id] !== undefined) {
+        store.dispatch(uiActions.stopLoading(id));
+
+        // Response is an error
+        if (message.error !== undefined) {
+          deferredRequests[id].reject(message.error);
+
+          // Successful response
+        } else {
+          deferredRequests[id].resolve(message.result);
+        }
+
+        // Hmm, the response doesn't appear to be for us?
+      } else {
+        store.dispatch(coreActions.handleException('Snapcast: Response received with no matching request', message));
+      }
+
+      // General broadcast received
+    } else {
+      // Broadcast of an error
+      if (message.error !== undefined) {
+        store.dispatch(coreActions.handleException('Snapcast: ' + message.error.message, message, message.error.data !== undefined && message.error.data.description !== undefined ? message.error.data.description : null));
+      } else {
+        switch (message.method) {
+          case 'Client.OnConnect':
+            store.dispatch(snapcastActions.clientLoaded({
+              id: message.params.client.id,
+              name: message.params.client.name,
+              volume: message.params.client.config.volume.percent,
+              mute: message.params.client.config.volume.muted,
+              connected: message.params.client.connected
+            }));
+            break;
+
+          case 'Client.OnDisconnect':
+            store.dispatch(snapcastActions.clientLoaded({
+              id: message.params.client.id,
+              connected: message.params.client.connected
+            }));
+            break;
+
+          case 'Client.OnVolumeChanged':
+            store.dispatch(snapcastActions.clientLoaded({
+              id: message.params.id,
+              mute: message.params.volume.muted,
+              volume: message.params.volume.percent
+            }));
+            break;
+
+          case 'Client.OnLatencyChanged':
+            store.dispatch(snapcastActions.clientLoaded({
+              id: message.params.id,
+              latency: message.params.latency
+            }));
+            break;
+
+          case 'Client.OnNameChanged':
+            store.dispatch(snapcastActions.clientLoaded({
+              id: message.params.id,
+              name: message.params.name
+            }));
+            break;
+
+          case 'Group.OnMute':
+            store.dispatch(snapcastActions.groupLoaded({
+              id: message.params.id,
+              mute: message.params.mute
+            }));
+            break;
+
+          case 'Server.OnUpdate':
+            store.dispatch(snapcastActions.serverLoaded(message.param));
+            break;
+        }
+      }
+    }
+  };
+
+  var request = function request(store, method) {
+    var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+    return new Promise(function (resolve, reject) {
+      var id = helpers.generateGuid(8);
+      var message = {
+        jsonrpc: '2.0',
+        id: id,
+        method: method
+      };
+      if (params) {
+        message.params = params;
+      }
+
+      if (store.getState().ui.log_snapcast) {
+        console.log('Snapcast log (outgoing)', message);
+      }
+
+      socket.send(JSON.stringify(message));
+
+      store.dispatch(uiActions.startLoading(id, 'snapcast_' + method));
+
+      // Start our 30 second timeout
+      var timeout = setTimeout(function () {
+        store.dispatch(uiActions.stopLoading(id));
+        reject({
+          id: id,
+          code: 32300,
+          message: 'Request timed out'
+        });
+      }, 30000);
+
+      // add query to our deferred responses
+      deferredRequests[id] = {
+        resolve: resolve,
+        reject: reject
+      };
+    });
   };
 
   return function (store) {
@@ -73817,24 +74027,100 @@ var SnapcastMiddleware = function () {
             snapcast = _store$getState.snapcast;
 
         switch (action.type) {
-          case 'SNAPCAST_GET_SERVER':
-            request(store, {
-              method: 'Server.GetStatus'
-            }, function (response) {
-              store.dispatch(snapcastActions.serverLoaded(response.server));
+
+          case 'SNAPCAST_CONNECT':
+            if (socket != null) {
+              socket.close();
+            }
+
+            store.dispatch({ type: 'SNAPCAST_CONNECTING' });
+
+            var state = store.getState();
+
+            socket = new WebSocket('ws' + (window.location.protocol === 'https:' ? 's' : '') + '://' + state.snapcast.host + ':' + state.snapcast.port + '/jsonrpc');
+
+            socket.onopen = function () {
+              store.dispatch({
+                type: 'SNAPCAST_CONNECTED'
+              });
+            };
+
+            socket.onclose = function (e) {
+              store.dispatch({
+                type: 'SNAPCAST_DISCONNECTED'
+              });
+
+              // attempt to reconnect every 5 seconds
+              if (state.snapcast.enabled) {
+                setTimeout(function () {
+                  store.dispatch(snapcastActions.connect());
+                }, 5000);
+              }
+            };
+
+            socket.onerror = function (e) {
+              if (socket.readyState == 1) {
+                store.dispatch(coreActions.handleException('Snapcast websocket error', e, e.type));
+              }
+            };
+
+            socket.onmessage = function (message) {
+              var message = JSON.parse(message.data);
+              handleMessage(socket, store, message);
+            };
+            break;
+
+          case 'SNAPCAST_CONNECTED':
+            if (store.getState().ui.allow_reporting) {
+              var hashed_hostname = (0, _jsSha.sha256)(window.location.hostname);
+              _reactGa2.default.event({ category: 'Snapcast', action: 'Connected', label: hashed_hostname });
+            }
+            store.dispatch(uiActions.createNotification({ content: 'Snapcast connected' }));
+            store.dispatch(snapcastActions.getServer());
+            next(action);
+            break;
+
+          case 'SNAPCAST_DISCONNECT':
+            if (socket != null) socket.close();
+            socket = null;
+            store.dispatch({ type: 'SNAPCAST_DISCONNECTED' });
+            break;
+
+          case 'SNAPCAST_DISCONNECTED':
+            store.dispatch(uiActions.createNotification({ type: 'bad', content: 'Snapcast disconnected' }));
+            helpers.setFavicon('favicon_error.png');
+            break;
+
+          case 'SNAPCAST_DEBUG':
+            request(store, action.message.method, action.message.data).then(function (response) {
+              store.dispatch({ type: 'DEBUG', response: response });
             }, function (error) {
-              store.dispatch(coreActions.handleException('Could not get server', error));
+              store.dispatch(coreActions.handleException('Could not debug', error, error.message));
             });
             break;
 
-          case 'SNAPCAST_SERVER_LOADED':
-            store.dispatch(snapcastActions.groupsLoaded(action.server.groups, true));
-            store.dispatch(snapcastActions.streamsLoaded(action.server.streams, true));
+          case 'SNAPCAST_REQUEST':
+            request(store, action.method, action.params).then(function (response) {
+              if (action.response_callback) {
+                action.response_callback.call(_this, response);
+              }
+            }, function (error) {
+              if (action.error_callback) {
+                action.error_callback.call(_this, error);
+              } else {
+                store.dispatch(coreActions.handleException('Snapcast request failed', error, action.method, action));
+              }
+            });
+            break;
 
-            // Snapcast double-nests the server object
-            action.server = action.server.server;
-
-            next(action);
+          case 'SNAPCAST_GET_SERVER':
+            request(store, 'Server.GetStatus').then(function (response) {
+              store.dispatch(snapcastActions.serverLoaded(response.server.server, true));
+              store.dispatch(snapcastActions.groupsLoaded(response.server.groups, true));
+              store.dispatch(snapcastActions.streamsLoaded(response.server.streams, true));
+            }, function (error) {
+              store.dispatch(coreActions.handleException('Could not get Snapcast server', error));
+            });
             break;
 
           case 'SNAPCAST_GROUPS_LOADED':
@@ -73929,15 +74215,12 @@ var SnapcastMiddleware = function () {
 
           case 'SNAPCAST_SET_CLIENT_NAME':
             var client = snapcast.clients[action.id];
-            var data = {
-              method: 'Client.SetName',
-              params: {
-                id: action.id,
-                name: action.name
-              }
+            var params = {
+              id: action.id,
+              name: action.name
             };
 
-            request(store, data, function (response) {
+            request(store, 'Client.SetName', params).then(function (response) {
               store.dispatch(snapcastActions.clientLoaded({
                 id: action.id,
                 name: response.name
@@ -73947,18 +74230,15 @@ var SnapcastMiddleware = function () {
 
           case 'SNAPCAST_SET_CLIENT_MUTE':
             var client = store.getState().snapcast.clients[action.id];
-            var data = {
-              method: 'Client.SetVolume',
-              params: {
-                id: action.id,
-                volume: {
-                  muted: action.mute,
-                  percent: client.volume
-                }
+            var params = {
+              id: action.id,
+              volume: {
+                muted: action.mute,
+                percent: client.volume
               }
             };
 
-            request(store, data, function (response) {
+            request(store, 'Client.SetVolume', params).then(function (response) {
               store.dispatch(snapcastActions.clientLoaded({
                 id: action.id,
                 volume: response.volume.percent,
@@ -73971,19 +74251,15 @@ var SnapcastMiddleware = function () {
 
           case 'SNAPCAST_SET_CLIENT_VOLUME':
             var client = snapcast.clients[action.id];
-
-            var data = {
-              method: 'Client.SetVolume',
-              params: {
-                id: action.id,
-                volume: {
-                  muted: client.mute,
-                  percent: action.volume
-                }
+            var params = {
+              id: action.id,
+              volume: {
+                muted: client.mute,
+                percent: action.volume
               }
             };
 
-            request(store, data, function (response) {
+            request(store, 'Client.SetVolume', params).then(function (response) {
               store.dispatch(snapcastActions.clientLoaded({
                 id: action.id,
                 volume: response.volume.percent
@@ -73995,15 +74271,12 @@ var SnapcastMiddleware = function () {
 
           case 'SNAPCAST_SET_CLIENT_LATENCY':
             var client = store.getState().snapcast.clients[action.id];
-            var data = {
-              method: 'Client.SetLatency',
-              params: {
-                id: action.id,
-                latency: action.latency
-              }
+            var params = {
+              id: action.id,
+              latency: action.latency
             };
 
-            request(store, data, function (response) {
+            request(store, 'Client.SetLatency', params).then(function (response) {
               store.dispatch(snapcastActions.clientLoaded({
                 id: action.id,
                 latency: response.latency
@@ -74030,15 +74303,12 @@ var SnapcastMiddleware = function () {
               clients_ids.splice(clients_ids_index, 1);
             }
 
-            var data = {
-              method: 'Group.SetClients',
-              params: {
-                id: action.group_id,
-                clients: clients_ids
-              }
+            var params = {
+              id: action.group_id,
+              clients: clients_ids
             };
 
-            request(store, data, function (response) {
+            request(store, 'Group.SetClients', params).then(function (response) {
               store.dispatch(snapcastActions.serverLoaded(response.server));
             }, function (error) {
               store.dispatch(coreActions.handleException('Error', error, error.message));
@@ -74046,14 +74316,11 @@ var SnapcastMiddleware = function () {
             break;
 
           case 'SNAPCAST_DELETE_CLIENT':
-            var data = {
-              method: 'Server.DeleteClient',
-              params: {
-                id: action.id
-              }
+            var params = {
+              id: action.id
             };
 
-            request(store, data, function (response) {
+            request(store, 'Server.DeleteClient', params).then(function (response) {
               store.dispatch({
                 type: 'SNAPCAST_CLIENT_REMOVED',
                 key: action.data.params.id
@@ -74063,17 +74330,29 @@ var SnapcastMiddleware = function () {
             });
             break;
 
-          case 'SNAPCAST_SET_GROUP_STREAM':
-            var group = store.getState().snapcast.groups[action.id];
-            var data = {
-              method: 'Group.SetStream',
-              params: {
-                id: action.id,
-                stream_id: action.stream_id
-              }
+          case 'SNAPCAST_SET_GROUP_NAME':
+            var group = snapcast.groups[action.id];
+            var params = {
+              id: action.id,
+              name: action.name
             };
 
-            request(store, data, function (response) {
+            request(store, 'Group.SetName', params).then(function (response) {
+              store.dispatch(snapcastActions.groupLoaded({
+                id: action.id,
+                name: response.name
+              }));
+            });
+            break;
+
+          case 'SNAPCAST_SET_GROUP_STREAM':
+            var group = store.getState().snapcast.groups[action.id];
+            var params = {
+              id: action.id,
+              stream_id: action.stream_id
+            };
+
+            request(store, 'Group.SetStream', params).then(function (response) {
               store.dispatch(snapcastActions.groupLoaded({
                 id: action.id,
                 stream_id: action.stream_id
@@ -74085,15 +74364,12 @@ var SnapcastMiddleware = function () {
 
           case 'SNAPCAST_SET_GROUP_MUTE':
             var group = store.getState().snapcast.groups[action.id];
-            var data = {
-              method: 'Group.SetMute',
-              params: {
-                id: action.id,
-                mute: action.mute
-              }
+            var params = {
+              id: action.id,
+              mute: action.mute
             };
 
-            request(store, data, function (response) {
+            request(store, 'Group.SetMute', params).then(function (response) {
               store.dispatch(snapcastActions.groupLoaded({
                 id: action.id,
                 muted: response.mute
@@ -74182,65 +74458,6 @@ var SnapcastMiddleware = function () {
 
             break;
 
-          case 'SNAPCAST_EVENT_RECEIVED':
-
-            // Drop the prefix
-            action.method = action.method.replace('snapcast_', '');
-
-            switch (action.method) {
-              case 'Client.OnConnect':
-                store.dispatch(snapcastActions.clientLoaded({
-                  id: action.params.client.id,
-                  name: action.params.client.name,
-                  volume: action.params.client.volume.percent,
-                  mute: action.params.client.volume.muted,
-                  connected: action.params.client.connected
-                }));
-                break;
-
-              case 'Client.OnDisconnect':
-                store.dispatch(snapcastActions.clientLoaded({
-                  id: action.params.client.id,
-                  connected: action.params.client.connected
-                }));
-                break;
-
-              case 'Client.OnVolumeChanged':
-                store.dispatch(snapcastActions.clientLoaded({
-                  id: action.params.id,
-                  mute: action.params.volume.muted,
-                  volume: action.params.volume.percent
-                }));
-                break;
-
-              case 'Client.OnLatencyChanged':
-                store.dispatch(snapcastActions.clientLoaded({
-                  id: action.params.id,
-                  latency: action.params.latency
-                }));
-                break;
-
-              case 'Client.OnNameChanged':
-                store.dispatch(snapcastActions.clientLoaded({
-                  id: action.params.id,
-                  name: action.params.name
-                }));
-                break;
-
-              case 'Group.OnMute':
-                store.dispatch(snapcastActions.groupLoaded({
-                  id: action.params.id,
-                  mute: action.params.mute
-                }));
-                break;
-
-              case 'Server.OnUpdate':
-                store.dispatch(snapcastActions.serverLoaded(action.params));
-                break;
-            }
-            break;
-
-          // This action is irrelevant to us, pass it on to the next middleware
           default:
             return next(action);
         }
@@ -74275,9 +74492,20 @@ function reducer() {
   var action = arguments[1];
 
   switch (action.type) {
+    case 'SNAPCAST_SET':
+      return _extends({}, snapcast, action.data);
+
+    case 'SNAPCAST_CONNECTED':
+      return _extends({}, snapcast, { connected: true, connecting: false });
+
+    case 'SNAPCAST_CONNECTING':
+      return _extends({}, snapcast, { connecting: true, connected: false });
+
+    case 'SNAPCAST_DISCONNECTED':
+      return _extends({}, snapcast, { connected: false, connecting: false });
+
     case 'SNAPCAST_SERVER_LOADED':
-      var server = _extends({}, action.server);
-      return _extends({}, snapcast, { server: server });
+      return _extends({}, snapcast, { server: action.server });
 
     case 'SNAPCAST_CLIENTS_LOADED':
       if (action.flush) {
@@ -74437,7 +74665,6 @@ exports.playArtistTopTracks = playArtistTopTracks;
 exports.getUser = getUser;
 exports.getUserPlaylists = getUserPlaylists;
 exports.getAlbum = getAlbum;
-exports.toggleAlbumInLibrary = toggleAlbumInLibrary;
 exports.createPlaylist = createPlaylist;
 exports.savePlaylist = savePlaylist;
 exports.getPlaylist = getPlaylist;
@@ -74445,7 +74672,6 @@ exports.getLibraryTracksAndPlay = getLibraryTracksAndPlay;
 exports.getLibraryTracksAndPlayProcessor = getLibraryTracksAndPlayProcessor;
 exports.getAllPlaylistTracks = getAllPlaylistTracks;
 exports.getAllPlaylistTracksProcessor = getAllPlaylistTracksProcessor;
-exports.toggleFollowingPlaylist = toggleFollowingPlaylist;
 exports.addTracksToPlaylist = addTracksToPlaylist;
 exports.deleteTracksFromPlaylist = deleteTracksFromPlaylist;
 exports.reorderPlaylistTracks = reorderPlaylistTracks;
@@ -75142,10 +75368,12 @@ function following(uri) {
           endpoint = 'playlists/' + helpers.getFromUri('playlistid', uri) + '/followers';
         }
         break;
+      default:
+        break;
     }
 
     request(dispatch, getState, endpoint, method, data).then(function (response) {
-      if (response) {
+      if (Array.isArray(response) && response.length > 0) {
         is_following = response[0];
       } else {
         is_following = is_following;
@@ -75156,6 +75384,12 @@ function following(uri) {
         key: uri,
         in_library: is_following
       });
+
+      if (method !== 'GET') {
+        dispatch(uiActions.createNotification({
+          message: is_following ? 'Added ' + asset_name + ' to library' : 'Removed ' + asset_name + ' from library'
+        }));
+      }
     }, function (error) {
       dispatch(coreActions.handleException('Could not follow/unfollow', error));
     });
@@ -75624,23 +75858,6 @@ function getAlbum(uri) {
   };
 }
 
-function toggleAlbumInLibrary(uri, method) {
-  if (method == 'PUT') var new_state = 1;
-  if (method == 'DELETE') var new_state = 0;
-
-  return function (dispatch, getState) {
-    request(dispatch, getState, 'me/albums?ids=' + helpers.getFromUri('albumid', uri), method).then(function (response) {
-      dispatch({
-        type: 'SPOTIFY_ALBUM_FOLLOWING',
-        key: uri,
-        data: new_state
-      });
-    }, function (error) {
-      dispatch(coreActions.handleException('Could not add/remove library album', error));
-    });
-  };
-}
-
 /**
  * =============================================================== PLAYLIST(S) ==========
  * ======================================================================================
@@ -75926,23 +76143,6 @@ function getAllPlaylistTracksProcessor(data) {
       }
     }, function (error) {
       dispatch(coreActions.handleException('Could not load tracks to play playlist', error));
-    });
-  };
-}
-
-function toggleFollowingPlaylist(uri, method) {
-  if (method == 'PUT') var new_state = 1;
-  if (method == 'DELETE') var new_state = 0;
-
-  return function (dispatch, getState) {
-    request(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '/followers', method).then(function (response) {
-      dispatch({
-        type: 'SPOTIFY_PLAYLIST_FOLLOWING_LOADED',
-        key: uri,
-        is_following: new_state
-      });
-    }, function (error) {
-      dispatch(coreActions.handleException('Could not add/remove library playlist', error));
     });
   };
 }
@@ -78108,6 +78308,11 @@ var state = {
     enabled: false
   },
   snapcast: {
+    enabled: false,
+    connected: false,
+    host: window.location.hostname,
+    port: '1780',
+    ssl: window.location.protocol === 'https:',
     streams: {},
     groups: {},
     clients: {},
@@ -79389,6 +79594,10 @@ var _actions4 = __webpack_require__(/*! ../services/spotify/actions */ "./src/js
 
 var spotifyActions = _interopRequireWildcard(_actions4);
 
+var _actions5 = __webpack_require__(/*! ../services/snapcast/actions */ "./src/js/services/snapcast/actions.js");
+
+var snapcastActions = _interopRequireWildcard(_actions5);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -79411,6 +79620,7 @@ var Debug = function (_React$Component) {
       mopidy_call: 'playlists.asList',
       mopidy_data: '{}',
       pusher_data: '{"method":"get_config"}',
+      snapcast_data: '{"method":"Server.GetStatus"}',
       access_token: _this.props.access_token,
       toggling_test_mode: false
     };
@@ -79433,6 +79643,12 @@ var Debug = function (_React$Component) {
     value: function callPusher(e) {
       e.preventDefault();
       this.props.pusherActions.debug(JSON.parse(this.state.pusher_data));
+    }
+  }, {
+    key: 'callSnapcast',
+    value: function callSnapcast(e) {
+      e.preventDefault();
+      this.props.snapcastActions.debug(JSON.parse(this.state.snapcast_data));
     }
   }, {
     key: 'toggleTestMode',
@@ -79597,6 +79813,23 @@ var Debug = function (_React$Component) {
                     'span',
                     { className: 'label' },
                     'Log Pusher'
+                  )
+                ),
+                _react2.default.createElement(
+                  'label',
+                  null,
+                  _react2.default.createElement('input', {
+                    type: 'checkbox',
+                    name: 'log_pusher',
+                    checked: this.props.log_snapcast,
+                    onChange: function onChange(e) {
+                      return _this2.props.uiActions.set({ log_snapcast: !_this2.props.log_snapcast });
+                    }
+                  }),
+                  _react2.default.createElement(
+                    'span',
+                    { className: 'label' },
+                    'Log Snapcast'
                   )
                 )
               )
@@ -79842,6 +80075,50 @@ var Debug = function (_React$Component) {
           _react2.default.createElement(
             'h4',
             { className: 'underline' },
+            'Snapcast'
+          ),
+          _react2.default.createElement(
+            'form',
+            { onSubmit: function onSubmit(e) {
+                return _this2.callSnapcast(e);
+              } },
+            _react2.default.createElement(
+              'label',
+              { className: 'field' },
+              _react2.default.createElement(
+                'div',
+                { className: 'name' },
+                'Data'
+              ),
+              _react2.default.createElement(
+                'div',
+                { className: 'input' },
+                _react2.default.createElement('textarea', {
+                  onChange: function onChange(e) {
+                    return _this2.setState({ snapcast_data: e.target.value });
+                  },
+                  value: this.state.snapcast_data
+                })
+              )
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: 'field' },
+              _react2.default.createElement('div', { className: 'name' }),
+              _react2.default.createElement(
+                'div',
+                { className: 'input' },
+                _react2.default.createElement(
+                  'button',
+                  { type: 'submit', className: 'button button--default' },
+                  'Send'
+                )
+              )
+            )
+          ),
+          _react2.default.createElement(
+            'h4',
+            { className: 'underline' },
             'Response'
           ),
           _react2.default.createElement(
@@ -79864,6 +80141,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
     log_actions: state.ui.log_actions ? state.ui.log_actions : false,
     log_pusher: state.ui.log_pusher ? state.ui.log_pusher : false,
     log_mopidy: state.ui.log_mopidy ? state.ui.log_mopidy : false,
+    log_snapcast: state.ui.log_snapcast ? state.ui.log_snapcast : false,
     test_mode: state.ui.test_mode ? state.ui.test_mode : false,
     debug_info: state.ui.debug_info ? state.ui.debug_info : false,
     debug_response: state.ui.debug_response
@@ -79875,7 +80153,8 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
     uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
     pusherActions: (0, _redux.bindActionCreators)(pusherActions, dispatch),
     mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch),
-    spotifyActions: (0, _redux.bindActionCreators)(spotifyActions, dispatch)
+    spotifyActions: (0, _redux.bindActionCreators)(spotifyActions, dispatch),
+    snapcastActions: (0, _redux.bindActionCreators)(snapcastActions, dispatch)
   };
 };
 
@@ -81134,6 +81413,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
@@ -81247,14 +81528,24 @@ var Search = function (_React$Component) {
 
       // Listen for a query baked-in to the URL
       // This would be the case when we've clicked from a link elsewhere
-      this.digestUri();
+      this.digestUri(_extends({}, this.props, {
+        term: decodeURIComponent(this.props.term)
+      }));
     }
   }, {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(nextProps) {
-      // Query changed
-      if (nextProps.term !== this.props.term || nextProps.type !== this.props.type) {
-        this.digestUri(nextProps);
+      var _props = this.props,
+          type = _props.type,
+          term = _props.term;
+      var nextType = nextProps.type,
+          nextTerm = nextProps.term;
+
+      if (nextType !== type || nextTerm !== term) {
+        this.digestUri({
+          type: nextType,
+          term: nextTerm
+        });
       }
 
       // Services came online
@@ -81271,6 +81562,8 @@ var Search = function (_React$Component) {
     value: function handleSubmit(term) {
       var _this2 = this;
 
+      var encodedTerm = encodeURIComponent(term);
+
       this.setState({ term: term }, function () {
         // Unchanged term, so this is a forced re-search
         // Often the other search parameters have changed instead, but we can't
@@ -81278,7 +81571,7 @@ var Search = function (_React$Component) {
         if (_this2.props.term == term) {
           _this2.search();
         } else {
-          _this2.props.history.push('/search/' + _this2.state.type + '/' + term);
+          _this2.props.history.push('/search/' + _this2.state.type + '/' + encodedTerm);
         }
       });
     }
@@ -81310,7 +81603,7 @@ var Search = function (_React$Component) {
       var term = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.state.term;
       var provider = arguments[2];
 
-      this.props.uiActions.setWindowTitle('Search: ' + term);
+      this.props.uiActions.setWindowTitle('Search: ' + decodeURIComponent(term));
 
       if (type && term) {
         if (provider == 'mopidy' || this.props.mopidy_connected && this.props.uri_schemes_search_enabled) {
@@ -81357,6 +81650,7 @@ var Search = function (_React$Component) {
     value: function renderArtists(artists, spotify_search_enabled) {
       var _this3 = this;
 
+      var encodedTerm = encodeURIComponent(this.state.term);
       return _react2.default.createElement(
         'div',
         null,
@@ -81365,8 +81659,8 @@ var Search = function (_React$Component) {
           null,
           _react2.default.createElement(
             _URILink2.default,
-            { type: 'search', uri: 'search:all:' + this.state.term },
-            'Search'
+            { uri: 'iris:search:all:' + encodedTerm },
+            'Search '
           ),
           _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
           ' Artists'
@@ -81386,6 +81680,7 @@ var Search = function (_React$Component) {
     value: function renderAlbums(albums, spotify_search_enabled) {
       var _this4 = this;
 
+      var encodedTerm = encodeURIComponent(this.state.term);
       return _react2.default.createElement(
         'div',
         null,
@@ -81394,7 +81689,7 @@ var Search = function (_React$Component) {
           null,
           _react2.default.createElement(
             _URILink2.default,
-            { type: 'search', uri: 'search:all:' + this.state.term },
+            { uri: 'iris:search:all:' + encodedTerm },
             'Search '
           ),
           _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
@@ -81415,6 +81710,7 @@ var Search = function (_React$Component) {
     value: function renderPlaylists(playlists, spotify_search_enabled) {
       var _this5 = this;
 
+      var encodedTerm = encodeURIComponent(this.state.term);
       return _react2.default.createElement(
         'div',
         null,
@@ -81423,7 +81719,7 @@ var Search = function (_React$Component) {
           null,
           _react2.default.createElement(
             _URILink2.default,
-            { type: 'search', uri: 'search:all:' + this.state.term },
+            { uri: 'iris:search:all:' + encodedTerm },
             'Search '
           ),
           _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
@@ -81444,6 +81740,7 @@ var Search = function (_React$Component) {
     value: function renderTracks(tracks, spotify_search_enabled) {
       var _this6 = this;
 
+      var encodedTerm = encodeURIComponent(this.state.term);
       return _react2.default.createElement(
         'div',
         null,
@@ -81452,7 +81749,7 @@ var Search = function (_React$Component) {
           null,
           _react2.default.createElement(
             _URILink2.default,
-            { type: 'search', uri: 'search:all:' + this.state.term },
+            { uri: 'iris:search:all:' + encodedTerm },
             'Search '
           ),
           _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
@@ -81461,7 +81758,7 @@ var Search = function (_React$Component) {
         _react2.default.createElement(
           'section',
           { className: 'list-wrapper' },
-          _react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: 'iris:search:' + this.state.type + ':' + this.state.term, show_source_icon: true }),
+          _react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: 'iris:search:' + this.state.type + ':' + encodedTerm, show_source_icon: true }),
           _react2.default.createElement(_LazyLoadListener2.default, { enabled: this.props.tracks_more && spotify_search_enabled, loadMore: function loadMore() {
               return _this6.loadMore('tracks');
             } })
@@ -81473,6 +81770,7 @@ var Search = function (_React$Component) {
     value: function renderAll(artists, albums, playlists, tracks, spotify_search_enabled) {
       var _this7 = this;
 
+      var encodedTerm = encodeURIComponent(this.state.term);
       if (artists.length > 0) {
         var artists_section = _react2.default.createElement(
           'section',
@@ -81482,7 +81780,7 @@ var Search = function (_React$Component) {
             { className: 'inner' },
             _react2.default.createElement(
               _URILink2.default,
-              { type: 'search', uri: 'search:artist:' + this.state.term },
+              { uri: 'iris:search:artist:' + encodedTerm },
               _react2.default.createElement(
                 'h4',
                 null,
@@ -81492,7 +81790,7 @@ var Search = function (_React$Component) {
             _react2.default.createElement(_ArtistGrid2.default, { mini: true, show_source_icon: true, artists: artists.slice(0, 6) }),
             artists.length >= 6 && _react2.default.createElement(
               _URILink2.default,
-              { type: 'search', uri: 'search:artist:' + this.state.term, className: 'button button--default' },
+              { uri: 'iris:search:artist:' + encodedTerm, className: 'button button--default' },
               'All artists (' + artists.length + ')'
             )
           )
@@ -81510,7 +81808,7 @@ var Search = function (_React$Component) {
             { className: 'inner' },
             _react2.default.createElement(
               _URILink2.default,
-              { type: 'search', uri: 'search:album:' + this.state.term },
+              { uri: 'iris:search:album:' + encodedTerm },
               _react2.default.createElement(
                 'h4',
                 null,
@@ -81520,7 +81818,7 @@ var Search = function (_React$Component) {
             _react2.default.createElement(_AlbumGrid2.default, { mini: true, show_source_icon: true, albums: albums.slice(0, 6) }),
             albums.length >= 6 && _react2.default.createElement(
               _URILink2.default,
-              { type: 'search', uri: 'search:album:' + this.state.term, className: 'button button--default' },
+              { uri: 'iris:search:album:' + encodedTerm, className: 'button button--default' },
               'All albums (' + albums.length + ')'
             )
           )
@@ -81538,7 +81836,7 @@ var Search = function (_React$Component) {
             { className: 'inner' },
             _react2.default.createElement(
               _URILink2.default,
-              { type: 'search', uri: 'search:playlist:' + this.state.term },
+              { uri: 'iris:search:playlist:' + encodedTerm },
               _react2.default.createElement(
                 'h4',
                 null,
@@ -81548,7 +81846,7 @@ var Search = function (_React$Component) {
             _react2.default.createElement(_PlaylistGrid2.default, { mini: true, show_source_icon: true, playlists: playlists.slice(0, 6) }),
             playlists.length >= 6 && _react2.default.createElement(
               _URILink2.default,
-              { type: 'search', uri: 'search:playlist:' + this.state.term, className: 'button button--default' },
+              { uri: 'iris:search:playlist:' + encodedTerm, className: 'button button--default' },
               'All playlists (' + playlists.length + ')'
             )
           )
@@ -81561,7 +81859,7 @@ var Search = function (_React$Component) {
         var tracks_section = _react2.default.createElement(
           'section',
           { className: 'list-wrapper' },
-          _react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: 'iris:search:' + this.state.type + ':' + this.state.term, show_source_icon: true }),
+          _react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: 'iris:search:' + this.state.type + ':' + encodedTerm, show_source_icon: true }),
           _react2.default.createElement(_LazyLoadListener2.default, { loading: this.props.tracks_more && spotify_search_enabled, loadMore: function loadMore() {
               return _this7.loadMore('tracks');
             } })
@@ -82560,18 +82858,17 @@ var Settings = function (_React$Component) {
                 'span',
                 { className: 'text' },
                 this.props.pusher.version.current,
-                ' ',
-                'installed',
+                ' installed',
                 this.props.pusher.version.upgrade_available ? _react2.default.createElement(
                   'span',
                   { className: 'flag flag--dark' },
                   _react2.default.createElement(_Icon2.default, { name: 'cloud_download', className: 'blue-text' }),
-                  '\xA0 Upgrade available'
+                  '  Upgrade available'
                 ) : _react2.default.createElement(
                   'span',
                   { className: 'flag flag--dark' },
                   _react2.default.createElement(_Icon2.default, { name: 'check', className: 'green-text' }),
-                  '\xA0 Up-to-date'
+                  '  Up-to-date'
                 )
               )
             )

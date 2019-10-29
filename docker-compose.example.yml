@@ -1,13 +1,14 @@
 version: "3"
 services:
   snapserver:
-    image: currucuxu/snapcastserver
+    image: jaedb/snapserver
     ports:
       - 1704:1704
       - 1705:1705
+      - 1780:1780
     volumes:
       - HOST_SNAPCAST_TEMP:/tmp
-      - ./docker/snapserver:/etc/default/snapserver
+      - ./docker/snapserver.conf:/etc/default/snapserver.conf
   mopidy:
     image: jaedb/iris
     build:
@@ -15,6 +16,7 @@ services:
     depends_on:
       - snapserver
     ports:
+      - 6600:6600
       - 6680:6680
     volumes:
       #- ./mopidy_iris:/iris/mopidy_iris (Uncomment this line to use a host-managed development build)

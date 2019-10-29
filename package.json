@@ -1,6 +1,6 @@
 {
   "name": "mopidy-iris",
-  "version": "3.41.2",
+  "version": "3.42.0",
   "description": "Mopidy HTTP interface",
   "repository": "https://github.com/jaedb/iris",
   "author": "James Barnsley <james@barnsley.nz>",
@@ -68,9 +68,10 @@
     "start": "webpack-dev-server",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
-    "dev": "node build_tools/build.js && NODE_ENV=development webpack --watch",
-    "prod": "node build_tools/build.js && NODE_ENV=production webpack --watch",
-    "build": "node build_tools/build.js && NODE_ENV=development webpack && NODE_ENV=production webpack",
+    "watch:dev": "node build_tools/build.js && NODE_ENV=development webpack --watch",
+    "watch:prod": "node build_tools/build.js && NODE_ENV=production webpack --watch",
+    "build:tools": "node build_tools/build.js",
+    "build:prod": "node build_tools/build.js && NODE_ENV=development webpack && NODE_ENV=production webpack",
     "release": "node build_tools/build.js && NODE_ENV=development webpack && NODE_ENV=production webpack && python setup.py sdist upload -r pypi && build_tools/release.sh"
   },
   "jest": {

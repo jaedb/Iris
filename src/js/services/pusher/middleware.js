@@ -159,11 +159,6 @@ const PusherMiddleware = (function () {
             store.dispatch(uiActions.createNotification({ type: 'bad', content: message.params.message, description: message.params.description }));
             break;
         }
-
-        // Pass snapcast events to the Snapcast service
-        if (message.method.startsWith('snapcast_')) {
-          store.dispatch(snapcastActions.eventReceived(message));
-        }
       }
     }
   };

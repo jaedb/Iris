@@ -243,18 +243,18 @@ export const digestMopidyImages = function (mopidy, images) {
 };
 
 
-export const generateGuid = function (type = 'numeric') {
+export const generateGuid = function (type = 'numeric', length = 12) {
   // numeric
   if (type == 'numeric') {
     const date = new Date().valueOf().toString();
     const random_number = Math.floor((Math.random() * 100)).toString();
     return parseInt(date + random_number);
   }
-  const format = 'xxxxxxxxxx';
+  const format = 'x'.repeat(length);
   return format.replace(/[xy]/g, (c) => {
     const r = Math.random() * 16 | 0; const
       v = c == 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
+    return v.toString(length);
   });
 };
 
