@@ -23,20 +23,6 @@ class Snapcast extends React.Component {
     };
   }
 
-  componentDidMount() {
-    const { connected, actions: snapcastActions } = this.props;
-    if (this.props.connected) {
-      actions.getServer();
-    }
-  }
-
-  componentWillReceiveProps(newProps) {
-    const { connected, actions: snapcastActions } = this.props;
-    if (newProps.connected && !connected) {
-      actions.getServer();
-    }
-  }
-
   toggleClientExpanded(client_id) {
     const { clients_expanded } = this.state;
     const index = clients_expanded.indexOf(client_id);
@@ -214,7 +200,7 @@ class Snapcast extends React.Component {
                 type="checkbox"
                 name="enabled"
                 checked={enabled}
-                onChange={() => actions.set({ enabled: !enabled })}
+                onChange={() => actions.setEnabled(!enabled)}
               />
               <span className="label">
                 Enabled
@@ -254,82 +240,84 @@ class Snapcast extends React.Component {
           </div>
         </div>
 
-        <div className="snapcast__groups">
-          {
-            groups.map((group) => {
-              group = helpers.collate(group, { clients: this.props.clients });
+        {connected && enabled && (
+          <div className="snapcast__groups">
+            {
+              groups.map((group) => {
+                group = helpers.collate(group, { clients: this.props.clients });
 
-              // Average our clients' volume for an overall group volume
-              let group_volume = 0;
-              for (let i = 0; i < group.clients.length; i++) {
-                const client = group.clients[i];
-                group_volume += client.volume;
-              }
-              group_volume /= group.clients.length;
+                // Average our clients' volume for an overall group volume
+                let group_volume = 0;
+                for (let i = 0; i < group.clients.length; i++) {
+                  const client = group.clients[i];
+                  group_volume += client.volume;
+                }
+                group_volume /= group.clients.length;
 
-              return (
-                <div className="snapcast__group" key={group.id}>
-                  <div className="field text">
-                    <div className="name">
-                      Name
+                return (
+                  <div className="snapcast__group" key={group.id}>
+                    <div className="field text">
+                      <div className="name">
+                        Name
+                      </div>
+                      <div className="input">
+                        <TextField
+                          value={group.name}
+                          onChange={value => actions.setGroupName(group.id, value)}
+                        />
+                      </div>
                     </div>
-                    <div className="input">
-                      <TextField
-                        value={group.name}
-                        onChange={value => actions.setGroupName(group.id, value)}
-                      />
+                    <div className="field dropdown">
+                      <div className="name">
+                        Stream
+                      </div>
+                      <div className="input">
+                        <select onChange={(e) => actions.setGroupStream(group.id, e.target.value)} value={group.stream_id}>
+                          {
+                            streams.map((stream) => (
+                              <option value={stream.id} key={stream.id}>
+                                {stream.id}
+                                {' '}
+                                (
+                                  {stream.status}
+                                )
+                              </option>
+                            ))
+                          }
+                        </select>
+                      </div>
+                    </div>
+                    <div className="field">
+                      <div className="name">
+                        Volume
+                      </div>
+                      <div className="input">
+                        <MuteControl
+                          className="snapcast__group__mute-control"
+                          mute={group.muted}
+                          onMuteChange={(mute) => actions.setGroupMute(group.id, mute)}
+                        />
+                        <VolumeControl
+                          className="snapcast__group__volume-control"
+                          volume={group_volume}
+                          onVolumeChange={(percent, previousPercent) => actions.setGroupVolume(group.id, percent, previousPercent)}
+                        />
+                      </div>
+                    </div>
+                    <div className="field">
+                      <div className="name">
+                        Clients
+                      </div>
+                      <div className="input">
+                        {this.renderClientsList(group, groups)}
+                      </div>
                     </div>
                   </div>
-                  <div className="field dropdown">
-                    <div className="name">
-                      Stream
-                    </div>
-                    <div className="input">
-                      <select onChange={(e) => actions.setGroupStream(group.id, e.target.value)} value={group.stream_id}>
-                        {
-                          streams.map((stream) => (
-                            <option value={stream.id} key={stream.id}>
-                              {stream.id}
-                              {' '}
-                              (
-                                {stream.status}
-                              )
-                            </option>
-                          ))
-                        }
-                      </select>
-                    </div>
-                  </div>
-                  <div className="field">
-                    <div className="name">
-                      Volume
-                    </div>
-                    <div className="input">
-                      <MuteControl
-                        className="snapcast__group__mute-control"
-                        mute={group.muted}
-                        onMuteChange={(mute) => actions.setGroupMute(group.id, mute)}
-                      />
-                      <VolumeControl
-                        className="snapcast__group__volume-control"
-                        volume={group_volume}
-                        onVolumeChange={(percent, old_percent) => actions.setGroupVolume(group.id, percent, old_percent)}
-                      />
-                    </div>
-                  </div>
-                  <div className="field">
-                    <div className="name">
-                      Clients
-                    </div>
-                    <div className="input">
-                      {this.renderClientsList(group, groups)}
-                    </div>
-                  </div>
-                </div>
-              );
-            })
-          }
-        </div>
+                );
+              })
+            }
+          </div>
+        )}
       </div>
     );
   }

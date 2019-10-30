@@ -65,61 +65,27 @@ const SnapcastMiddleware = (function () {
       } else {
         switch (message.method) {
           case 'Client.OnConnect':
-            store.dispatch(snapcastActions.clientLoaded(
-              {
-                id: message.params.client.id,
-                name: message.params.client.name,
-                volume: message.params.client.config.volume.percent,
-                mute: message.params.client.config.volume.muted,
-                connected: message.params.client.connected,
-              },
-            ));
+            store.dispatch(snapcastActions.clientLoaded(message.params.client));
             break;
 
           case 'Client.OnDisconnect':
-            store.dispatch(snapcastActions.clientLoaded(
-              {
-                id: message.params.client.id,
-                connected: message.params.client.connected,
-              },
-            ));
+            store.dispatch(snapcastActions.clientLoaded(message.params.client));
             break;
 
           case 'Client.OnVolumeChanged':
-            store.dispatch(snapcastActions.clientLoaded(
-              {
-                id: message.params.id,
-                mute: message.params.volume.muted,
-                volume: message.params.volume.percent,
-              },
-            ));
+            store.dispatch(snapcastActions.clientLoaded(message.params));
             break;
 
           case 'Client.OnLatencyChanged':
-            store.dispatch(snapcastActions.clientLoaded(
-              {
-                id: message.params.id,
-                latency: message.params.latency,
-              },
-            ));
+              store.dispatch(snapcastActions.clientLoaded(message.params));
             break;
 
           case 'Client.OnNameChanged':
-            store.dispatch(snapcastActions.clientLoaded(
-              {
-                id: message.params.id,
-                name: message.params.name,
-              },
-            ));
+              store.dispatch(snapcastActions.clientLoaded(message.params));
             break;
 
           case 'Group.OnMute':
-            store.dispatch(snapcastActions.groupLoaded(
-              {
-                id: message.params.id,
-                mute: message.params.mute,
-              },
-            ));
+            store.dispatch(snapcastActions.groupLoaded(message.params));
             break;
 
           case 'Server.OnUpdate':
@@ -175,16 +141,14 @@ const SnapcastMiddleware = (function () {
     switch (action.type) {
 
       case 'SNAPCAST_CONNECT':
-        if (socket != null) {
+        if (socket) {
           socket.close();
         }
 
         store.dispatch({ type: 'SNAPCAST_CONNECTING' });
 
-        var state = store.getState();
-
         socket = new WebSocket(
-          `ws${window.location.protocol === 'https:' ? 's' : ''}://${state.snapcast.host}:${state.snapcast.port}/jsonrpc`,
+          `ws${window.location.protocol === 'https:' ? 's' : ''}://${store.getState().snapcast.host}:${store.getState().snapcast.port}/jsonrpc`,
         );
 
         socket.onopen = () => {
@@ -199,7 +163,7 @@ const SnapcastMiddleware = (function () {
           });
 
           // attempt to reconnect every 5 seconds
-          if (state.snapcast.enabled) {
+          if (store.getState().snapcast.enabled) {
             setTimeout(() => {
               store.dispatch(snapcastActions.connect());
             }, 5000);
@@ -235,12 +199,12 @@ const SnapcastMiddleware = (function () {
       case 'SNAPCAST_DISCONNECT':
         if (socket != null) socket.close();
         socket = null;
-        store.dispatch({ type: 'SNAPCAST_DISCONNECTED' });
         break;
 
       case 'SNAPCAST_DISCONNECTED':
-        store.dispatch(uiActions.createNotification({ type: 'bad', content: 'Snapcast disconnected' }));
-        helpers.setFavicon('favicon_error.png');
+        if (store.getState().snapcast.enabled) {
+          store.dispatch(uiActions.createNotification({ type: 'bad', content: 'Snapcast disconnected' }));
+        }
         break;
 
       case 'SNAPCAST_DEBUG':
@@ -264,7 +228,7 @@ const SnapcastMiddleware = (function () {
           .then(
             (response) => {
               if (action.response_callback) {
-                  action.response_callback.call(this, response);
+                action.response_callback.call(this, response);
               }
             },
             (error) => {
@@ -280,6 +244,11 @@ const SnapcastMiddleware = (function () {
               }
             },
           );
+        break;
+
+      case 'SNAPCAST_SET_ENABLED':
+        store.dispatch(snapcastActions.set({ enabled: action.enabled }));
+        store.dispatch(action.enabled ? snapcastActions.connect() : snapcastActions.disconnect());
         break;
 
       case 'SNAPCAST_GET_SERVER':
@@ -512,14 +481,14 @@ const SnapcastMiddleware = (function () {
             },
           );
         break;
-      
+
       case 'SNAPCAST_SET_GROUP_NAME':
           var group = snapcast.groups[action.id];
           var params = {
             id: action.id,
             name: action.name,
           };
-  
+
           request(store, 'Group.SetName', params)
             .then(
               response => {
@@ -621,7 +590,7 @@ const SnapcastMiddleware = (function () {
           store.dispatch(snapcastActions.setClientVolume(client_to_update.id, volume));
         }
         break;
-        
+
       default:
         return next(action);
     }

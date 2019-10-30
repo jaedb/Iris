@@ -114,7 +114,7 @@ export const setStorage = function (key, value, replace = false) {
  * Cache handlers
  * This allows arbritrary requests to be cached by key into local storage. Typically key would be
  * a URL, but it could also be a asset id.
- * 
+ *
  * Use sparingly as localStorage is limited in size! Ideally store only the request data needed,
  * rather than the entire response data.
  */
@@ -834,6 +834,18 @@ export const formatClient = function (data) {
       }
       if (data.config.volume.muted) {
         client.mute = data.config.volume.muted;
+      }
+    }
+  } else {
+    if (client.latency === undefined && data.latency !== undefined) {
+      client.latency = data.latency;
+    }
+    if (typeof data.volume === 'object') {
+      if (data.volume.percent) {
+        client.volume = data.volume.percent;
+      }
+      if (data.volume.muted) {
+        client.mute = data.volume.muted;
       }
     }
   }
