@@ -72,26 +72,26 @@ class OutputControl extends React.Component {
       snapcast_clients = (
         <div>
           {
-						clients.map((client) => (
-  <div className="output-control__item outputs__item--snapcast" key={client.id}>
-    <div className="output-control__item__name">
-      {client.name}
-    </div>
-    <div className="output-control__item__controls">
-      <MuteControl
-        className="output-control__item__mute"
-        noTooltip
-        mute={client.mute}
-        onMuteChange={(mute) => this.props.snapcastActions.setClientMute(client.id, mute)}
-      />
-      <VolumeControl
-        className="output-control__item__volume"
-        volume={client.volume}
-        mute={client.mute}
-        onVolumeChange={(percent) => this.props.snapcastActions.setClientVolume(client.id, percent)}
-      />
-    </div>
-  </div>
+						clients.map(client => (
+              <div className="output-control__item outputs__item--snapcast" key={client.id}>
+                <div className="output-control__item__name">
+                  {client.name}
+                </div>
+                <div className="output-control__item__controls">
+                  <MuteControl
+                    className="output-control__item__mute"
+                    noTooltip
+                    mute={client.mute}
+                    onMuteChange={(mute) => this.props.snapcastActions.setClientMute(client.id, mute)}
+                  />
+                  <VolumeControl
+                    className="output-control__item__volume"
+                    volume={client.volume}
+                    mute={client.mute}
+                    onVolumeChange={(percent) => this.props.snapcastActions.setClientVolume(client.id, percent)}
+                  />
+                </div>
+              </div>
 						))
 					}
         </div>

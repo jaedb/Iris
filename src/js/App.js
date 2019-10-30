@@ -94,6 +94,9 @@ export class App extends React.Component {
     // Fire up our services
     this.props.mopidyActions.connect();
     this.props.pusherActions.connect();
+    if (this.props.snapcast_enabled) {
+      this.props.snapcastActions.connect();
+    }
     this.props.coreActions.getBroadcasts();
 
     // Check for url-parsed configuration values
@@ -358,6 +361,7 @@ const mapStateToProps = (state, ownProps) => ({
   initial_setup_complete: state.ui.initial_setup_complete,
   slim_mode: state.ui.slim_mode,
   mopidy_connected: state.mopidy.connected,
+  snapcast_enabled: state.snapcast.enabled,
   spotify_authorized: state.spotify.authorization,
   sidebar_open: state.ui.sidebar_open,
   dragging: state.ui.dragger && state.ui.dragger.active,

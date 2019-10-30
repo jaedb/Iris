@@ -14,8 +14,6 @@ from pkg_resources import parse_version
 from tornado.escape import json_encode, json_decode
 
 from .system import IrisSystemThread
-from .snapcast import IrisSnapcast
-from .snapcast_thread import IrisSnapcastThread
 
 if sys.platform == 'win32':
     import ctypes
@@ -37,7 +35,6 @@ class IrisCore(pykka.ThreadingActor):
         "seed_tracks": [],
         "results": []
     }
-    snapcast_daemon = False
 
 
     ##
@@ -49,42 +46,12 @@ class IrisCore(pykka.ThreadingActor):
         # Load our commands from file
         self.commands = self.load_from_file('commands')
 
-        # Start our TCP watcher with no request, so it becomes our
-        # long-running socket connection
-        if self.config['iris'].get('snapcast_enabled'):
-            self.snapcast_daemon = IrisSnapcastThread(self.config, self.broadcast)
-            self.snapcast_daemon.start()
 
-
-    ## 
+    ##
     # Mopidy is shutting down
     ##
     def stop(self):
         logger.info('Stopping Iris')
-
-        if self.snapcast_daemon:
-            logger.info('Stoppping Snapcast daemon')
-            self.snapcast_daemon.close()
-
-
-    ##
-    # Make a request to snapcast
-    ##
-    def snapcast(self, *args, **kwargs):
-        callback = kwargs.get('callback', None)
-        request_id = kwargs.get('request_id', None)
-        data = kwargs.get('data', {})
-
-        # Start a new thread, just for this request
-        socket = IrisSnapcast(self.config)
-        socket.connect()
-
-        response = socket.request(data)
-
-        if (callback):
-            callback(response)
-        else:
-            return response
 
 
     ##
@@ -431,8 +398,7 @@ class IrisCore(pykka.ThreadingActor):
                 "locale": self.config['iris']['locale'],
                 "spotify_authorization_url": self.config['iris']['spotify_authorization_url'],
                 "lastfm_authorization_url": self.config['iris']['lastfm_authorization_url'],
-                "genius_authorization_url": self.config['iris']['genius_authorization_url'],
-                "snapcast_enabled": self.config['iris']['snapcast_enabled']
+                "genius_authorization_url": self.config['iris']['genius_authorization_url']
             }
         }
 
@@ -939,7 +905,7 @@ class IrisCore(pykka.ThreadingActor):
             request = tornado.httpclient.HTTPRequest(command['url'], connect_timeout=5, method='POST', body=post_data, validate_cert=False, headers=headers)
         else:
             request = tornado.httpclient.HTTPRequest(command['url'], connect_timeout=5, validate_cert=False, headers=headers)
-        
+
         # Make the request, and handle any request errors
         try:
             command_response = http_client.fetch(request)
@@ -969,7 +935,7 @@ class IrisCore(pykka.ThreadingActor):
             'message': 'Command run',
             'response': command_response_body
         }
-        
+
         if (callback):
             callback(response)
             return
