@@ -62,9 +62,7 @@ class IrisCore(pykka.ThreadingActor):
     # @return void
     ##
     def save_to_file(self, dict, name):
-
-        # Build path to our special Iris folder
-        path = self.config['core'].get('cache_dir')+'/iris/'
+        path = self.config['iris'].get('data_dir')
 
         # Create the folder if it doesn't yet exist
         if not os.path.exists(path):
@@ -72,7 +70,7 @@ class IrisCore(pykka.ThreadingActor):
 
         # And now open the file, and drop in our dict
         try:
-            with open(path + name + '.pkl', 'wb') as f:
+            with open(path + '/' + name + '.pkl', 'wb') as f:
                 pickle.dump(dict, f, pickle.HIGHEST_PROTOCOL)
         except Exception:
             return False
@@ -85,12 +83,10 @@ class IrisCore(pykka.ThreadingActor):
     # @return Dict
     ##
     def load_from_file(self, name):
-
-        # Build path to our special Iris folder
-        path = self.config['core'].get('cache_dir')+'/iris/'
+        path = self.config['iris'].get('data_dir')
 
         try:
-            with open(path + name + '.pkl', 'rb') as f:
+            with open(path + '/' + name + '.pkl', 'rb') as f:
                 return pickle.load(f)
         except Exception:
             return {}

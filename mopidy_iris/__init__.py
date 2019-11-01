@@ -37,6 +37,7 @@ class Extension( ext.Extension ):
         schema['spotify_authorization_url'] = config.String()
         schema['lastfm_authorization_url'] = config.String()
         schema['genius_authorization_url'] = config.String()
+        schema['data_dir'] = config.String()
         return schema
 
     def setup(self, registry):

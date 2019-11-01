@@ -12,4 +12,5 @@ npm-debug.log
 .idea
 venv
 docker/mopidy.conf
+docker/data/
 docker-compose.yml
