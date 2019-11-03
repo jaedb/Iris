@@ -13,7 +13,7 @@ jobs:
           command: npm install
       - run:
           name: Build code
-          command: npm run build
+          command: npm run build:prod
       - run:
           name: Install python dependencies
           command: pip install -e .

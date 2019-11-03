@@ -12,7 +12,7 @@ from handlers import WebsocketHandler, HttpHandler
 from core import IrisCore
 
 logger = logging.getLogger(__name__)
-__version__ = '3.42.0'
+__version__ = '3.42.2'
 
 ##
 # Core extension class
@@ -37,6 +37,7 @@ class Extension( ext.Extension ):
         schema['spotify_authorization_url'] = config.String()
         schema['lastfm_authorization_url'] = config.String()
         schema['genius_authorization_url'] = config.String()
+        schema['data_dir'] = config.String()
         return schema
 
     def setup(self, registry):
