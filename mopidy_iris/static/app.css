@@ -5098,8 +5098,7 @@ select {
         padding-right: 8px;
         font-size: 1em; }
       .sidebar__menu__item .status {
-        margin-left: 5px;
-        float: right; }
+        margin-left: auto; }
         .sidebar__menu__item .status .icon {
           padding-right: 0;
           padding-left: 8px; }
@@ -6292,31 +6291,52 @@ main header {
 .snapcast button {
   margin-bottom: 0px; }
 
+.snapcast__mute-control {
+  display: inline-block;
+  float: left;
+  padding: 8px 5px 0;
+  border: 0;
+  color: #FFFFFF;
+  background: transparent; }
+  .light-theme .snapcast__mute-control {
+    color: #121212; }
+
+.snapcast__volume-control {
+  padding: 10px 0 5px 35px;
+  display: block;
+  width: 100%;
+  box-sizing: border-box; }
+
 .snapcast__group, .snapcast__client {
   display: block; }
-  .snapcast__group__mute-control, .snapcast__client__mute-control {
-    display: inline-block;
-    float: left;
-    padding: 8px 5px 0;
-    border: 0;
-    color: #FFFFFF;
-    background: transparent; }
-    .light-theme .snapcast__group__mute-control, .light-theme .snapcast__client__mute-control {
-      color: #121212; }
-  .snapcast__group__volume-control, .snapcast__client__volume-control {
-    padding: 10px 0 5px 35px;
-    display: block;
-    width: 100%;
-    box-sizing: border-box; }
 
 .snapcast__groups {
-  padding-top: 10px; }
+  margin-left: -20px;
+  margin-right: -20px; }
+  .snapcast__groups .menu-item__inner {
+    background: #222222; }
+  .snapcast__groups .menu-item:hover .menu-item__inner {
+    background: #2c2c2c !important; }
+  .snapcast__groups .menu-item--active .menu-item__inner {
+    background: #2c2c2c !important; }
+  .light-theme .snapcast__groups .menu-item .menu-item__inner {
+    background: #f4f2f0; }
+    .light-theme .snapcast__groups .menu-item .menu-item__inner:hover {
+      background: #e3ded8; }
+    .light-theme .snapcast__groups .menu-item .menu-item__inner:after {
+      background: #e3ded8; }
+  .light-theme .snapcast__groups .menu-item--active .menu-item__inner {
+    background: #e3ded8; }
 
 .snapcast__group {
-  padding-top: 10px;
-  border-top: 1px solid #383734; }
-  .snapcast__group:not(:last-child) {
-    padding-bottom: 20px; }
+  padding: 20px;
+  margin-bottom: -20px;
+  border-radius: 0 0 3px 3px;
+  background: #2c2c2c; }
+  .snapcast__group .field:last-child {
+    padding-bottom: 0; }
+  .light-theme .snapcast__group {
+    background: #e3ded8; }
 
 .snapcast__clients {
   padding: 0 10px; }
@@ -6327,30 +6347,6 @@ main header {
     content: "";
     clear: both;
     display: block; }
-  .snapcast__client--expanded {
-    background: rgba(255, 255, 255, 0.05); }
-    .light-theme .snapcast__client--expanded {
-      background: rgba(0, 0, 0, 0.05); }
-  .snapcast__client--collapsed .snapcast__client__header:hover {
-    background: rgba(255, 255, 255, 0.03); }
-    .light-theme .snapcast__client--collapsed .snapcast__client__header:hover {
-      background: rgba(0, 0, 0, 0.03); }
-  .snapcast__client__header {
-    font-weight: 500;
-    cursor: pointer;
-    position: relative;
-    padding: 14px 10px; }
-    .snapcast__client__header__icons {
-      position: absolute;
-      top: 0;
-      right: 0;
-      cursor: pointer;
-      z-index: 2;
-      padding: 14px 10px; }
-      .snapcast__client__header__icons .icon {
-        padding-left: 6px; }
-        .snapcast__client__header__icons .icon.disconnected {
-          color: #cf2d2d; }
   .snapcast__client__details {
     position: relative;
     padding: 0 14px 14px 14px; }

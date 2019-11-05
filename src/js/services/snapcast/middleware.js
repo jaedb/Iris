@@ -10,6 +10,7 @@ const snapcastActions = require('./actions');
 
 const SnapcastMiddleware = (function () {
   let socket = null;
+  let reconnectTimer = null;
 
   // requests pending
   const deferredRequests = [];
@@ -141,9 +142,8 @@ const SnapcastMiddleware = (function () {
     switch (action.type) {
 
       case 'SNAPCAST_CONNECT':
-        if (socket) {
-          socket.close();
-        }
+        if (socket) socket.close();
+        clearTimeout(reconnectTimer);
 
         store.dispatch({ type: 'SNAPCAST_CONNECTING' });
 
@@ -164,7 +164,8 @@ const SnapcastMiddleware = (function () {
 
           // attempt to reconnect every 5 seconds
           if (store.getState().snapcast.enabled) {
-            setTimeout(() => {
+            clearTimeout(reconnectTimer);
+            reconnectTimer = setTimeout(() => {
               store.dispatch(snapcastActions.connect());
             }, 5000);
           }
@@ -181,17 +182,18 @@ const SnapcastMiddleware = (function () {
         };
 
         socket.onmessage = (message) => {
-          var message = JSON.parse(message.data);
-          handleMessage(socket, store, message);
+          handleMessage(socket, store, JSON.parse(message.data));
         };
         break;
 
       case 'SNAPCAST_CONNECTED':
         if (store.getState().ui.allow_reporting) {
-          const hashed_hostname = sha256(window.location.hostname);
-          ReactGA.event({ category: 'Snapcast', action: 'Connected', label: hashed_hostname });
+          ReactGA.event({
+            category: 'Snapcast',
+            action: 'Connected',
+            label: sha256(window.location.hostname),
+          });
         }
-        store.dispatch(uiActions.createNotification({ content: 'Snapcast connected' }));
         store.dispatch(snapcastActions.getServer());
         next(action);
         break;
@@ -199,11 +201,24 @@ const SnapcastMiddleware = (function () {
       case 'SNAPCAST_DISCONNECT':
         if (socket != null) socket.close();
         socket = null;
+        clearTimeout(reconnectTimer);
         break;
 
-      case 'SNAPCAST_DISCONNECTED':
+      case 'SNAPCAST_SET_CONNECTION':
+        store.dispatch(snapcastActions.serverLoaded({}));
+        store.dispatch(snapcastActions.clientsLoaded([]));
+        store.dispatch(snapcastActions.groupsLoaded([]));
+        store.dispatch(snapcastActions.streamsLoaded([]));
+        store.dispatch(snapcastActions.set(action.data));
+
+        // Wait 250 ms and then retry connection
         if (store.getState().snapcast.enabled) {
-          store.dispatch(uiActions.createNotification({ type: 'bad', content: 'Snapcast disconnected' }));
+          setTimeout(
+            () => {
+              store.dispatch(snapcastActions.connect());
+            },
+            250,
+          );
         }
         break;
 

@@ -5,6 +5,14 @@ export function set(data) {
     data,
   };
 }
+
+export function setConnection(data) {
+  return {
+    type: 'SNAPCAST_SET_CONNECTION',
+    data,
+  };
+}
+
 export function setEnabled(enabled) {
   return {
     type: 'SNAPCAST_SET_ENABLED',

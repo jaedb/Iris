@@ -12,8 +12,11 @@ const spotifyActions = require('../spotify/actions');
 const snapcastActions = require('../snapcast/actions');
 
 const PusherMiddleware = (function () {
+
   // container for the actual websocket
   let socket = null;
+
+  let reconnectTimer = null;
 
   // requests pending
   const deferredRequests = [];
@@ -183,7 +186,7 @@ const PusherMiddleware = (function () {
     store.dispatch(uiActions.startLoading(id, `pusher_${method}`));
 
     // Start our 30 second timeout
-    const timeout = setTimeout(
+    setTimeout(
       () => {
         store.dispatch(uiActions.stopLoading(id));
         reject({
@@ -203,7 +206,7 @@ const PusherMiddleware = (function () {
   });
 
   return (store) => (next) => (action) => {
-    	const { pusher } = store.getState();
+    const { pusher } = store.getState();
 
     switch (action.type) {
       case 'PUSHER_CONNECT':
@@ -211,12 +214,11 @@ const PusherMiddleware = (function () {
           socket.close();
         }
 
+        clearTimeout(reconnectTimer);
         store.dispatch({ type: 'PUSHER_CONNECTING' });
 
-        var state = store.getState();
-
         socket = new WebSocket(
-          `ws${window.location.protocol === 'https:' ? 's' : ''}://${state.mopidy.host}:${state.mopidy.port}/iris/ws/`,
+          `ws${window.location.protocol === 'https:' ? 's' : ''}://${store.getState().mopidy.host}:${store.getState().mopidy.port}/iris/ws/`,
         );
 
         socket.onopen = () => {
@@ -231,7 +233,7 @@ const PusherMiddleware = (function () {
           });
 
           // attempt to reconnect every 5 seconds
-          setTimeout(() => {
+          reconnectTimer = setTimeout(() => {
             store.dispatch(pusherActions.connect());
           }, 5000);
         };
@@ -247,17 +249,17 @@ const PusherMiddleware = (function () {
         };
 
         socket.onmessage = (message) => {
-          var message = JSON.parse(message.data);
-          handleMessage(socket, store, message);
+          handleMessage(socket, store, JSON.parse(message.data));
         };
 
         break;
 
       case 'PUSHER_CONNECTED':
         if (store.getState().ui.allow_reporting) {
-	                ReactGA.event({ category: 'Pusher', action: 'Connected', label: action.username });
-	            }
+          ReactGA.event({ category: 'Pusher', action: 'Connected', label: action.username });
+        }
 
+        clearTimeout(reconnectTimer);
         store.dispatch(pusherActions.updateConnection());
         store.dispatch(pusherActions.getConfig());
         store.dispatch(pusherActions.getRadio());
@@ -280,21 +282,21 @@ const PusherMiddleware = (function () {
         request(store, action.method, action.params)
           .then(
             (response) => {
-	                        if (action.response_callback) {
-	                            action.response_callback.call(this, response);
-	                        }
+              if (action.response_callback) {
+                action.response_callback.call(this, response);
+              }
             },
             (error) => {
-	                        if (action.error_callback) {
-	                            action.error_callback.call(this, error);
-	                        } else {
-	                            store.dispatch(coreActions.handleException(
-	                                'Pusher request failed',
-	                                error,
-	                                action.method,
-	                                action,
-	                            ));
-	                        }
+              if (action.error_callback) {
+                action.error_callback.call(this, error);
+              } else {
+                store.dispatch(coreActions.handleException(
+                  'Pusher request failed',
+                  error,
+                  action.method,
+                  action,
+                ));
+              }
             },
           );
         break;

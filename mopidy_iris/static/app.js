@@ -66449,33 +66449,42 @@ var Services = function (_React$Component) {
   }, {
     key: 'renderService',
     value: function renderService() {
-      var service = null;
-      switch (this.props.match.params.service) {
-        case 'spotify':
-          service = this.renderSpotify();
-          break;
-        case 'lastfm':
-          service = this.renderLastfm();
-          break;
-        case 'genius':
-          service = this.renderGenius();
-          break;
-        case 'icecast':
-          service = this.renderIcecast();
-          break;
-        case 'snapcast':
-          service = _react2.default.createElement(_Snapcast2.default, null);
-          break;
-      }
+      var match = this.props.match;
 
-      if (service) {
-        return _react2.default.createElement(
-          'div',
-          { className: 'service' },
-          service
-        );
+      switch (match.params.service) {
+        case 'spotify':
+          return _react2.default.createElement(
+            'div',
+            { className: 'service' },
+            this.renderSpotify()
+          );
+        case 'lastfm':
+          return _react2.default.createElement(
+            'div',
+            { className: 'service' },
+            this.renderLastfm()
+          );
+        case 'genius':
+          return _react2.default.createElement(
+            'div',
+            { className: 'service' },
+            this.renderGenius()
+          );
+        case 'icecast':
+          return _react2.default.createElement(
+            'div',
+            { className: 'service' },
+            this.renderIcecast()
+          );
+        case 'snapcast':
+          return _react2.default.createElement(
+            'div',
+            { className: 'service' },
+            _react2.default.createElement(_Snapcast2.default, { match: this.props.match })
+          );
+        default:
+          return null;
       }
-      return null;
     }
   }, {
     key: 'render',
@@ -66584,7 +66593,14 @@ var Sidebar = function (_React$Component) {
   _createClass(Sidebar, [{
     key: 'renderStatusIcon',
     value: function renderStatusIcon() {
-      if (this.props.update_available) {
+      var _props = this.props,
+          update_available = _props.update_available,
+          mopidy_connected = _props.mopidy_connected,
+          pusher_connected = _props.pusher_connected,
+          snapcast_connected = _props.snapcast_connected,
+          snapcast_enabled = _props.snapcast_enabled;
+
+      if (update_available) {
         return _react2.default.createElement(
           'span',
           { className: 'status tooltip tooltip--right' },
@@ -66610,7 +66626,7 @@ var Sidebar = function (_React$Component) {
         );
       }
 
-      if (!this.props.mopidy_connected || !this.props.pusher_connected) {
+      if (!mopidy_connected || !pusher_connected || !snapcast_connected && snapcast_enabled) {
         return _react2.default.createElement(
           'span',
           { className: 'status tooltip tooltip--right' },
@@ -66618,16 +66634,22 @@ var Sidebar = function (_React$Component) {
           _react2.default.createElement(
             'span',
             { className: 'tooltip__content' },
-            !this.props.mopidy_connected && _react2.default.createElement(
+            !mopidy_connected && _react2.default.createElement(
               'span',
               null,
               'Mopidy not connected',
               _react2.default.createElement('br', null)
             ),
-            !this.props.pusher_connected && _react2.default.createElement(
+            !pusher_connected && _react2.default.createElement(
               'span',
               null,
               'Pusher not connected',
+              _react2.default.createElement('br', null)
+            ),
+            !snapcast_connected && snapcast_enabled && _react2.default.createElement(
+              'span',
+              null,
+              'Snapcast not connected',
               _react2.default.createElement('br', null)
             )
           )
@@ -66639,7 +66661,11 @@ var Sidebar = function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
-      var _this2 = this;
+      var _props2 = this.props,
+          history = _props2.history,
+          spotify_enabled = _props2.spotify_enabled,
+          uiActions = _props2.uiActions;
+
 
       return _react2.default.createElement(
         'aside',
@@ -66655,18 +66681,18 @@ var Sidebar = function (_React$Component) {
               { className: 'sidebar__menu__section' },
               _react2.default.createElement(
                 _Link2.default,
-                { to: '/queue', history: this.props.history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
+                { to: '/queue', history: history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
                 _react2.default.createElement(_Icon2.default, { name: 'play_arrow', type: 'material' }),
                 'Now playing'
               ),
               _react2.default.createElement(
                 _Link2.default,
-                { to: '/search', history: this.props.history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
+                { to: '/search', history: history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
                 _react2.default.createElement(_Icon2.default, { name: 'search', type: 'material' }),
                 'Search'
               )
             ),
-            this.props.spotify_enabled ? _react2.default.createElement(
+            spotify_enabled && _react2.default.createElement(
               'section',
               { className: 'sidebar__menu__section' },
               _react2.default.createElement(
@@ -66676,29 +66702,29 @@ var Sidebar = function (_React$Component) {
               ),
               _react2.default.createElement(
                 _Link2.default,
-                { to: '/discover/recommendations', history: this.props.history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
+                { to: '/discover/recommendations', history: history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
                 _react2.default.createElement(_Icon2.default, { name: 'explore', type: 'material' }),
                 'Discover'
               ),
               _react2.default.createElement(
                 _Link2.default,
-                { to: '/discover/categories', history: this.props.history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
+                { to: '/discover/categories', history: history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
                 _react2.default.createElement(_Icon2.default, { name: 'mood', type: 'material' }),
                 'Genre / Mood'
               ),
               _react2.default.createElement(
                 _Link2.default,
-                { to: '/discover/featured', history: this.props.history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
+                { to: '/discover/featured', history: history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
                 _react2.default.createElement(_Icon2.default, { name: 'star', type: 'material' }),
                 'Featured playlists'
               ),
               _react2.default.createElement(
                 _Link2.default,
-                { to: '/discover/new-releases', history: this.props.history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
+                { to: '/discover/new-releases', history: history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
                 _react2.default.createElement(_Icon2.default, { name: 'new_releases', type: 'material' }),
                 'New releases'
               )
-            ) : null,
+            ),
             _react2.default.createElement(
               'section',
               { className: 'sidebar__menu__section' },
@@ -66709,31 +66735,31 @@ var Sidebar = function (_React$Component) {
               ),
               _react2.default.createElement(
                 _Link2.default,
-                { to: '/library/playlists', history: this.props.history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
+                { to: '/library/playlists', history: history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
                 _react2.default.createElement(_Icon2.default, { name: 'queue_music', type: 'material' }),
                 'Playlists'
               ),
               _react2.default.createElement(
                 _Link2.default,
-                { to: '/library/artists', history: this.props.history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
+                { to: '/library/artists', history: history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
                 _react2.default.createElement(_Icon2.default, { name: 'recent_actors', type: 'material' }),
                 'Artists'
               ),
               _react2.default.createElement(
                 _Link2.default,
-                { to: '/library/albums', history: this.props.history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
+                { to: '/library/albums', history: history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
                 _react2.default.createElement(_Icon2.default, { name: 'album', type: 'material' }),
                 'Albums'
               ),
               _react2.default.createElement(
                 _Link2.default,
-                { to: '/library/tracks', history: this.props.history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
+                { to: '/library/tracks', history: history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
                 _react2.default.createElement(_Icon2.default, { name: 'music_note', type: 'material' }),
                 'Tracks'
               ),
               _react2.default.createElement(
                 _Link2.default,
-                { to: '/library/browse', history: this.props.history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
+                { to: '/library/browse', history: history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
                 _react2.default.createElement(_Icon2.default, { name: 'folder', type: 'material' }),
                 'Browse'
               )
@@ -66743,7 +66769,7 @@ var Sidebar = function (_React$Component) {
               { className: 'sidebar__menu__section' },
               _react2.default.createElement(
                 _Link2.default,
-                { to: '/settings', history: this.props.history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
+                { to: '/settings', history: history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
                 _react2.default.createElement(_Icon2.default, { name: 'settings', type: 'material' }),
                 'Settings',
                 this.renderStatusIcon()
@@ -66755,7 +66781,7 @@ var Sidebar = function (_React$Component) {
         _react2.default.createElement(
           'div',
           { className: 'close', onClick: function onClick(e) {
-              return _this2.props.uiActions.toggleSidebar(false);
+              return uiActions.toggleSidebar(false);
             } },
           _react2.default.createElement(_Icon2.default, { name: 'close' })
         )
@@ -66772,6 +66798,8 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
     pusher_connected: state.pusher.connected,
     spotify_enabled: state.spotify.enabled,
     spotify_authorized: state.spotify.authorization,
+    snapcast_connected: state.snapcast.connected,
+    snapcast_enabled: state.snapcast.enabled,
     update_available: state.pusher.version && state.pusher.version.update_available ? state.pusher.version.update_available : false,
     test_mode: state.ui.test_mode ? state.ui.test_mode : false,
     dragger: state.ui.dragger
@@ -66803,7 +66831,178 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+
+var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
+
+var _TextField = __webpack_require__(/*! ./Fields/TextField */ "./src/js/components/Fields/TextField.js");
+
+var _TextField2 = _interopRequireDefault(_TextField);
+
+var _SnapcastGroups = __webpack_require__(/*! ./SnapcastGroups */ "./src/js/components/SnapcastGroups.js");
+
+var _SnapcastGroups2 = _interopRequireDefault(_SnapcastGroups);
+
+var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
+
+var helpers = _interopRequireWildcard(_helpers);
+
+var _actions = __webpack_require__(/*! ../services/core/actions */ "./src/js/services/core/actions.js");
+
+var coreActions = _interopRequireWildcard(_actions);
+
+var _actions2 = __webpack_require__(/*! ../services/ui/actions */ "./src/js/services/ui/actions.js");
+
+var uiActions = _interopRequireWildcard(_actions2);
+
+var _actions3 = __webpack_require__(/*! ../services/snapcast/actions */ "./src/js/services/snapcast/actions.js");
+
+var actions = _interopRequireWildcard(_actions3);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Snapcast = function Snapcast(props) {
+  var actions = props.actions,
+      show_disconnected_clients = props.show_disconnected_clients,
+      uiActions = props.uiActions,
+      match = props.match,
+      history = props.history,
+      _props$snapcast = props.snapcast,
+      host = _props$snapcast.host,
+      port = _props$snapcast.port,
+      enabled = _props$snapcast.enabled,
+      connected = _props$snapcast.connected;
+
+
+  return _react2.default.createElement(
+    'div',
+    { className: 'snapcast' },
+    _react2.default.createElement(
+      'div',
+      { className: 'field checkbox' },
+      _react2.default.createElement(
+        'div',
+        { className: 'name' },
+        'Enabled'
+      ),
+      _react2.default.createElement(
+        'div',
+        { className: 'input' },
+        _react2.default.createElement(
+          'label',
+          null,
+          _react2.default.createElement('input', {
+            type: 'checkbox',
+            name: 'enabled',
+            checked: enabled,
+            onChange: function onChange() {
+              return actions.setEnabled(!enabled);
+            }
+          }),
+          _react2.default.createElement(
+            'span',
+            { className: 'label' },
+            'Enabled'
+          )
+        ),
+        _react2.default.createElement(
+          'label',
+          null,
+          _react2.default.createElement('input', {
+            type: 'checkbox',
+            name: 'show_disconnected_clients',
+            checked: show_disconnected_clients,
+            onChange: function onChange() {
+              return uiActions.set({ snapcast_show_disconnected_clients: !show_disconnected_clients });
+            }
+          }),
+          _react2.default.createElement(
+            'span',
+            { className: 'label' },
+            'Show disconnected clients'
+          )
+        )
+      )
+    ),
+    _react2.default.createElement(
+      'div',
+      { className: 'field' },
+      _react2.default.createElement(
+        'div',
+        { className: 'name' },
+        'Host'
+      ),
+      _react2.default.createElement(
+        'div',
+        { className: 'input' },
+        _react2.default.createElement(_TextField2.default, {
+          value: host,
+          onChange: function onChange(value) {
+            return actions.setConnection({ host: value });
+          }
+        })
+      )
+    ),
+    _react2.default.createElement(
+      'div',
+      { className: 'field' },
+      _react2.default.createElement(
+        'div',
+        { className: 'name' },
+        'Port'
+      ),
+      _react2.default.createElement(
+        'div',
+        { className: 'input' },
+        _react2.default.createElement(_TextField2.default, {
+          value: port,
+          onChange: function onChange(value) {
+            return actions.setConnection({ port: value });
+          }
+        })
+      )
+    ),
+    connected && enabled && _react2.default.createElement(_SnapcastGroups2.default, { match: match, history: history })
+  );
+};
+
+var mapStateToProps = function mapStateToProps(state, ownProps) {
+  return {
+    snapcast: state.snapcast,
+    show_disconnected_clients: state.ui.snapcast_show_disconnected_clients !== undefined ? state.ui.snapcast_show_disconnected_clients : false
+  };
+};
+
+var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+  return {
+    actions: (0, _redux.bindActionCreators)(actions, dispatch),
+    uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch)
+  };
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Snapcast);
+
+/***/ }),
+
+/***/ "./src/js/components/SnapcastClients.js":
+/*!**********************************************!*\
+  !*** ./src/js/components/SnapcastClients.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
@@ -66837,475 +67036,409 @@ var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
 
 var helpers = _interopRequireWildcard(_helpers);
 
-var _actions = __webpack_require__(/*! ../services/core/actions */ "./src/js/services/core/actions.js");
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-var coreActions = _interopRequireWildcard(_actions);
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var _actions2 = __webpack_require__(/*! ../services/ui/actions */ "./src/js/services/ui/actions.js");
+var SnapcastClients = function SnapcastClients(_ref) {
+  var actions = _ref.actions,
+      group = _ref.group,
+      groups = _ref.groups,
+      show_disconnected_clients = _ref.show_disconnected_clients;
 
-var uiActions = _interopRequireWildcard(_actions2);
+  if (!show_disconnected_clients && group.clients) {
+    var clients = helpers.applyFilter('connected', true, group.clients);
+  } else {
+    var clients = group.clients;
+  }
 
-var _actions3 = __webpack_require__(/*! ../services/snapcast/actions */ "./src/js/services/snapcast/actions.js");
+  if (!clients || clients.length <= 0) {
+    return _react2.default.createElement(
+      'div',
+      { className: 'text mid_grey-text' },
+      'No clients'
+    );
+  }
 
-var snapcastActions = _interopRequireWildcard(_actions3);
+  return _react2.default.createElement(
+    'div',
+    { className: 'list snapcast__clients' },
+    clients.map(function (client) {
+      var class_name = 'list__item list__item--no-interaction snapcast__client';
+      if (client.connected) {
+        class_name += ' snapcast__client--connected';
+      } else {
+        class_name += ' snapcast__client--disconnected';
+      }
+
+      return _react2.default.createElement(
+        'div',
+        { className: class_name, key: client.id },
+        _react2.default.createElement(
+          'div',
+          { className: 'snapcast__client__details' },
+          _react2.default.createElement(
+            'label',
+            { className: 'field' },
+            _react2.default.createElement(
+              'div',
+              { className: 'name' },
+              'Name'
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: 'input' },
+              _react2.default.createElement(_TextField2.default, {
+                onChange: function onChange(value) {
+                  return actions.setClientName(client.id, value);
+                },
+                value: client.name
+              })
+            )
+          ),
+          _react2.default.createElement(
+            'label',
+            { className: 'field dropdown' },
+            _react2.default.createElement(
+              'div',
+              { className: 'name' },
+              'Group'
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: 'input' },
+              _react2.default.createElement(
+                'select',
+                { onChange: function onChange(e) {
+                    return actions.setClientGroup(client.id, e.target.value);
+                  }, value: group.id },
+                groups.map(function (group) {
+                  return _react2.default.createElement(
+                    'option',
+                    { value: group.id, key: group.id },
+                    group.name ? group.name : 'Group ' + group.id.substring(0, 3)
+                  );
+                }),
+                _react2.default.createElement(
+                  'option',
+                  { value: group.id },
+                  'New group'
+                )
+              )
+            )
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: 'snapcast__client__volume field' },
+            _react2.default.createElement(
+              'div',
+              { className: 'name' },
+              'Volume'
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: 'input' },
+              _react2.default.createElement(_MuteControl2.default, {
+                className: 'snapcast__mute-control snapcast__client__mute-control',
+                mute: client.mute,
+                onMuteChange: function onMuteChange(mute) {
+                  return actions.setClientMute(client.id, mute);
+                }
+              }),
+              _react2.default.createElement(_VolumeControl2.default, {
+                className: 'snapcast__volume-control snapcast__client__volume-control',
+                volume: client.volume,
+                onVolumeChange: function onVolumeChange(percent) {
+                  return actions.setClientVolume(client.id, percent);
+                }
+              })
+            )
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: 'snapcast__client__latency field' },
+            _react2.default.createElement(
+              'div',
+              { className: 'name' },
+              'Latency'
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: 'input' },
+              _react2.default.createElement(_LatencyControl2.default, {
+                max: '150',
+                value: client.latency,
+                onChange: function onChange(value) {
+                  return actions.setClientLatency(client.id, parseInt(value));
+                }
+              }),
+              _react2.default.createElement(_TextField2.default, {
+                className: 'tiny',
+                type: 'number',
+                onChange: function onChange(value) {
+                  return actions.setClientLatency(client.id, parseInt(value));
+                },
+                value: String(client.latency)
+              })
+            )
+          )
+        )
+      );
+    })
+  );
+};
+
+exports.default = SnapcastClients;
+
+/***/ }),
+
+/***/ "./src/js/components/SnapcastGroups.js":
+/*!*********************************************!*\
+  !*** ./src/js/components/SnapcastGroups.js ***!
+  \*********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+
+var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
+
+var _VolumeControl = __webpack_require__(/*! ./Fields/VolumeControl */ "./src/js/components/Fields/VolumeControl.js");
+
+var _VolumeControl2 = _interopRequireDefault(_VolumeControl);
+
+var _MuteControl = __webpack_require__(/*! ./Fields/MuteControl */ "./src/js/components/Fields/MuteControl.js");
+
+var _MuteControl2 = _interopRequireDefault(_MuteControl);
+
+var _TextField = __webpack_require__(/*! ./Fields/TextField */ "./src/js/components/Fields/TextField.js");
+
+var _TextField2 = _interopRequireDefault(_TextField);
+
+var _SnapcastClients = __webpack_require__(/*! ./SnapcastClients */ "./src/js/components/SnapcastClients.js");
+
+var _SnapcastClients2 = _interopRequireDefault(_SnapcastClients);
+
+var _Icon = __webpack_require__(/*! ./Icon */ "./src/js/components/Icon.js");
+
+var _Icon2 = _interopRequireDefault(_Icon);
+
+var _Link = __webpack_require__(/*! ./Link */ "./src/js/components/Link.js");
+
+var _Link2 = _interopRequireDefault(_Link);
+
+var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
+
+var helpers = _interopRequireWildcard(_helpers);
+
+var _actions = __webpack_require__(/*! ../services/snapcast/actions */ "./src/js/services/snapcast/actions.js");
+
+var actions = _interopRequireWildcard(_actions);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var SnapcastGroups = function SnapcastGroups(props) {
+  var actions = props.actions,
+      show_disconnected_clients = props.show_disconnected_clients,
+      streams = props.streams,
+      groups = props.groups,
+      clients = props.clients,
+      history = props.history,
+      groupId = props.match.params.id;
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+  var streamsArray = Object.keys(streams).map(function (id) {
+    return streams[id];
+  });
+  var groupsArray = Object.keys(groups).map(function (id) {
+    return groups[id];
+  });
 
-var Snapcast = function (_React$Component) {
-  _inherits(Snapcast, _React$Component);
-
-  function Snapcast(props) {
-    _classCallCheck(this, Snapcast);
-
-    var _this = _possibleConstructorReturn(this, (Snapcast.__proto__ || Object.getPrototypeOf(Snapcast)).call(this, props));
-
-    _this.state = {
-      clients_expanded: []
-    };
-    return _this;
+  if (!groups || groupsArray.length <= 0) {
+    return null;
   }
 
-  _createClass(Snapcast, [{
-    key: 'toggleClientExpanded',
-    value: function toggleClientExpanded(client_id) {
-      var clients_expanded = this.state.clients_expanded;
-
-      var index = clients_expanded.indexOf(client_id);
-
-      if (index >= 0) {
-        clients_expanded.splice(index, 1);
-      } else {
-        clients_expanded.push(client_id);
-      }
-
-      this.setState({ clients_expanded: clients_expanded });
+  var renderGroup = function renderGroup() {
+    if (!groupId || !groups[groupId]) {
+      return null;
     }
-  }, {
-    key: 'renderClientsList',
-    value: function renderClientsList(group, groups) {
-      var _this2 = this;
 
-      var actions = this.props.snapcastActions;
+    var group = helpers.collate(groups[groupId], { clients: clients });
 
-
-      if (!this.props.show_disconnected_clients && group.clients) {
-        var clients = helpers.applyFilter('connected', true, group.clients);
-      } else {
-        var clients = group.clients;
-      }
-
-      if (!clients || clients.length <= 0) {
-        return _react2.default.createElement(
-          'div',
-          { className: 'text mid_grey-text' },
-          'No clients'
-        );
-      }
-
-      return _react2.default.createElement(
-        'div',
-        { className: 'list snapcast__clients' },
-        clients.map(function (client) {
-          var class_name = 'list__item list__item--no-interaction snapcast__client';
-          if (client.connected) {
-            class_name += ' snapcast__client--connected';
-          } else {
-            class_name += ' snapcast__client--disconnected';
-          }
-
-          if (_this2.state.clients_expanded.includes(client.id)) {
-            return _react2.default.createElement(
-              'div',
-              { className: class_name + ' snapcast__client--expanded', key: client.id },
-              _react2.default.createElement(
-                'div',
-                { className: 'snapcast__client__header', onClick: function onClick(e) {
-                    return _this2.toggleClientExpanded(client.id);
-                  } },
-                client.name,
-                _react2.default.createElement(
-                  'div',
-                  { className: 'snapcast__client__header__icons' },
-                  !client.connected ? _react2.default.createElement(_Icon2.default, { name: 'power_off', className: 'disconnected' }) : null,
-                  _react2.default.createElement(_Icon2.default, { name: 'expand_less' })
-                )
-              ),
-              _react2.default.createElement(
-                'div',
-                { className: 'snapcast__client__details' },
-                _react2.default.createElement(
-                  'label',
-                  { className: 'field' },
-                  _react2.default.createElement(
-                    'div',
-                    { className: 'name' },
-                    'Name'
-                  ),
-                  _react2.default.createElement(
-                    'div',
-                    { className: 'input' },
-                    _react2.default.createElement(_TextField2.default, {
-                      onChange: function onChange(value) {
-                        return actions.setClientName(client.id, value);
-                      },
-                      value: client.name
-                    })
-                  )
-                ),
-                _react2.default.createElement(
-                  'label',
-                  { className: 'field dropdown' },
-                  _react2.default.createElement(
-                    'div',
-                    { className: 'name' },
-                    'Group'
-                  ),
-                  _react2.default.createElement(
-                    'div',
-                    { className: 'input' },
-                    _react2.default.createElement(
-                      'select',
-                      { onChange: function onChange(e) {
-                          return actions.setClientGroup(client.id, e.target.value);
-                        }, value: group.id },
-                      groups.map(function (group) {
-                        return _react2.default.createElement(
-                          'option',
-                          { value: group.id, key: group.id },
-                          group.name ? group.name : 'Group ' + group.id.substring(0, 3)
-                        );
-                      }),
-                      _react2.default.createElement(
-                        'option',
-                        { value: group.id },
-                        'New group'
-                      )
-                    )
-                  )
-                ),
-                _react2.default.createElement(
-                  'div',
-                  { className: 'snapcast__client__volume field' },
-                  _react2.default.createElement(
-                    'div',
-                    { className: 'name' },
-                    'Volume'
-                  ),
-                  _react2.default.createElement(
-                    'div',
-                    { className: 'input' },
-                    _react2.default.createElement(_MuteControl2.default, {
-                      className: 'snapcast__client__mute-control',
-                      mute: client.mute,
-                      onMuteChange: function onMuteChange(mute) {
-                        return actions.setClientMute(client.id, mute);
-                      }
-                    }),
-                    _react2.default.createElement(_VolumeControl2.default, {
-                      className: 'snapcast__client__volume-control',
-                      volume: client.volume,
-                      onVolumeChange: function onVolumeChange(percent) {
-                        return actions.setClientVolume(client.id, percent);
-                      }
-                    })
-                  )
-                ),
-                _react2.default.createElement(
-                  'div',
-                  { className: 'snapcast__client__latency field' },
-                  _react2.default.createElement(
-                    'div',
-                    { className: 'name' },
-                    'Latency'
-                  ),
-                  _react2.default.createElement(
-                    'div',
-                    { className: 'input' },
-                    _react2.default.createElement(_LatencyControl2.default, {
-                      max: '150',
-                      value: client.latency,
-                      onChange: function onChange(value) {
-                        return actions.setClientLatency(client.id, parseInt(value));
-                      }
-                    }),
-                    _react2.default.createElement(_TextField2.default, {
-                      className: 'tiny',
-                      type: 'number',
-                      onChange: function onChange(value) {
-                        return actions.setClientLatency(client.id, parseInt(value));
-                      },
-                      value: String(client.latency)
-                    })
-                  )
-                )
-              )
-            );
-          }
-          return _react2.default.createElement(
-            'div',
-            { className: class_name + ' snapcast__client--collapsed', key: client.id },
-            _react2.default.createElement(
-              'div',
-              { className: 'snapcast__client__header', onClick: function onClick(e) {
-                  return _this2.toggleClientExpanded(client.id);
-                } },
-              client.name,
-              _react2.default.createElement(
-                'div',
-                { className: 'snapcast__client__header__icons' },
-                !client.connected ? _react2.default.createElement(_Icon2.default, { name: 'power_off', className: 'disconnected' }) : null,
-                _react2.default.createElement(_Icon2.default, { name: 'expand_more' })
-              )
-            )
-          );
-        })
-      );
+    // Average our clients' volume for an overall group volume
+    var group_volume = 0;
+    for (var i = 0; i < group.clients.length; i++) {
+      var client = group.clients[i];
+      group_volume += client.volume;
     }
-  }, {
-    key: 'render',
-    value: function render() {
-      var _this3 = this;
+    group_volume /= group.clients.length;
 
-      var _props = this.props,
-          actions = _props.snapcastActions,
-          uiActions = _props.uiActions,
-          _props$snapcast = _props.snapcast,
-          host = _props$snapcast.host,
-          port = _props$snapcast.port,
-          enabled = _props$snapcast.enabled,
-          connected = _props$snapcast.connected;
-
-
-      var streams = [];
-      for (var id in this.props.streams) {
-        if (this.props.streams.hasOwnProperty(id)) {
-          streams.push(this.props.streams[id]);
-        }
-      }
-
-      var groups = [];
-      for (var id in this.props.groups) {
-        if (this.props.groups.hasOwnProperty(id)) {
-          groups.push(this.props.groups[id]);
-        }
-      }
-
-      return _react2.default.createElement(
+    return _react2.default.createElement(
+      'div',
+      { className: 'snapcast__group', key: group.id },
+      _react2.default.createElement(
         'div',
-        { className: 'snapcast' },
+        { className: 'field text' },
         _react2.default.createElement(
           'div',
-          { className: 'field checkbox' },
-          _react2.default.createElement(
-            'div',
-            { className: 'name' },
-            'Enabled'
-          ),
-          _react2.default.createElement(
-            'div',
-            { className: 'input' },
-            _react2.default.createElement(
-              'label',
-              null,
-              _react2.default.createElement('input', {
-                type: 'checkbox',
-                name: 'enabled',
-                checked: enabled,
-                onChange: function onChange() {
-                  return actions.setEnabled(!enabled);
-                }
-              }),
-              _react2.default.createElement(
-                'span',
-                { className: 'label' },
-                'Enabled'
-              )
-            ),
-            _react2.default.createElement(
-              'label',
-              null,
-              _react2.default.createElement('input', {
-                type: 'checkbox',
-                name: 'show_disconnected_clients',
-                checked: this.props.show_disconnected_clients,
-                onChange: function onChange() {
-                  return uiActions.set({ snapcast_show_disconnected_clients: !_this3.props.show_disconnected_clients });
-                }
-              }),
-              _react2.default.createElement(
-                'span',
-                { className: 'label' },
-                'Show disconnected clients'
-              )
-            )
-          )
+          { className: 'name' },
+          'Name'
         ),
         _react2.default.createElement(
           'div',
-          { className: 'field' },
-          _react2.default.createElement(
-            'div',
-            { className: 'name' },
-            'Host'
-          ),
-          _react2.default.createElement(
-            'div',
-            { className: 'input' },
-            _react2.default.createElement(_TextField2.default, {
-              value: host,
-              onChange: function onChange(value) {
-                return actions.set({ host: value });
-              }
-            })
-          )
-        ),
-        _react2.default.createElement(
-          'div',
-          { className: 'field' },
-          _react2.default.createElement(
-            'div',
-            { className: 'name' },
-            'Port'
-          ),
-          _react2.default.createElement(
-            'div',
-            { className: 'input' },
-            _react2.default.createElement(_TextField2.default, {
-              value: port,
-              onChange: function onChange(value) {
-                return actions.set({ port: value });
-              }
-            })
-          )
-        ),
-        connected && enabled && _react2.default.createElement(
-          'div',
-          { className: 'snapcast__groups' },
-          groups.map(function (group) {
-            group = helpers.collate(group, { clients: _this3.props.clients });
-
-            // Average our clients' volume for an overall group volume
-            var group_volume = 0;
-            for (var i = 0; i < group.clients.length; i++) {
-              var client = group.clients[i];
-              group_volume += client.volume;
+          { className: 'input' },
+          _react2.default.createElement(_TextField2.default, {
+            value: group.name,
+            onChange: function onChange(value) {
+              return actions.setGroupName(group.id, value);
             }
-            group_volume /= group.clients.length;
-
-            return _react2.default.createElement(
-              'div',
-              { className: 'snapcast__group', key: group.id },
-              _react2.default.createElement(
-                'div',
-                { className: 'field text' },
-                _react2.default.createElement(
-                  'div',
-                  { className: 'name' },
-                  'Name'
-                ),
-                _react2.default.createElement(
-                  'div',
-                  { className: 'input' },
-                  _react2.default.createElement(_TextField2.default, {
-                    value: group.name,
-                    onChange: function onChange(value) {
-                      return actions.setGroupName(group.id, value);
-                    }
-                  })
-                )
-              ),
-              _react2.default.createElement(
-                'div',
-                { className: 'field dropdown' },
-                _react2.default.createElement(
-                  'div',
-                  { className: 'name' },
-                  'Stream'
-                ),
-                _react2.default.createElement(
-                  'div',
-                  { className: 'input' },
-                  _react2.default.createElement(
-                    'select',
-                    { onChange: function onChange(e) {
-                        return actions.setGroupStream(group.id, e.target.value);
-                      }, value: group.stream_id },
-                    streams.map(function (stream) {
-                      return _react2.default.createElement(
-                        'option',
-                        { value: stream.id, key: stream.id },
-                        stream.id,
-                        ' ',
-                        '(',
-                        stream.status,
-                        ')'
-                      );
-                    })
-                  )
-                )
-              ),
-              _react2.default.createElement(
-                'div',
-                { className: 'field' },
-                _react2.default.createElement(
-                  'div',
-                  { className: 'name' },
-                  'Volume'
-                ),
-                _react2.default.createElement(
-                  'div',
-                  { className: 'input' },
-                  _react2.default.createElement(_MuteControl2.default, {
-                    className: 'snapcast__group__mute-control',
-                    mute: group.muted,
-                    onMuteChange: function onMuteChange(mute) {
-                      return actions.setGroupMute(group.id, mute);
-                    }
-                  }),
-                  _react2.default.createElement(_VolumeControl2.default, {
-                    className: 'snapcast__group__volume-control',
-                    volume: group_volume,
-                    onVolumeChange: function onVolumeChange(percent, previousPercent) {
-                      return actions.setGroupVolume(group.id, percent, previousPercent);
-                    }
-                  })
-                )
-              ),
-              _react2.default.createElement(
-                'div',
-                { className: 'field' },
-                _react2.default.createElement(
-                  'div',
-                  { className: 'name' },
-                  'Clients'
-                ),
-                _react2.default.createElement(
-                  'div',
-                  { className: 'input' },
-                  _this3.renderClientsList(group, groups)
-                )
-              )
-            );
           })
         )
-      );
-    }
-  }]);
+      ),
+      _react2.default.createElement(
+        'div',
+        { className: 'field dropdown' },
+        _react2.default.createElement(
+          'div',
+          { className: 'name' },
+          'Stream'
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'input' },
+          _react2.default.createElement(
+            'select',
+            { onChange: function onChange(e) {
+                return actions.setGroupStream(group.id, e.target.value);
+              }, value: group.stream_id },
+            streamsArray.map(function (stream) {
+              return _react2.default.createElement(
+                'option',
+                { value: stream.id, key: stream.id },
+                stream.id,
+                ' ',
+                '(',
+                stream.status,
+                ')'
+              );
+            })
+          )
+        )
+      ),
+      _react2.default.createElement(
+        'div',
+        { className: 'field' },
+        _react2.default.createElement(
+          'div',
+          { className: 'name' },
+          'Volume'
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'input' },
+          _react2.default.createElement(_MuteControl2.default, {
+            className: 'snapcast__group__mute-control',
+            mute: group.muted,
+            onMuteChange: function onMuteChange(mute) {
+              return actions.setGroupMute(group.id, mute);
+            }
+          }),
+          _react2.default.createElement(_VolumeControl2.default, {
+            className: 'snapcast__group__volume-control',
+            volume: group_volume,
+            onVolumeChange: function onVolumeChange(percent, previousPercent) {
+              return actions.setGroupVolume(group.id, percent, previousPercent);
+            }
+          })
+        )
+      ),
+      _react2.default.createElement(
+        'div',
+        { className: 'field' },
+        _react2.default.createElement(
+          'div',
+          { className: 'name' },
+          'Clients'
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'input' },
+          _react2.default.createElement(_SnapcastClients2.default, {
+            group: group,
+            groups: groupsArray,
+            actions: actions,
+            show_disconnected_clients: show_disconnected_clients
+          })
+        )
+      )
+    );
+  };
 
-  return Snapcast;
-}(_react2.default.Component);
+  var renderMenuItem = function renderMenuItem(group) {
+    return _react2.default.createElement(
+      _Link2.default,
+      {
+        className: 'snapcast__groups__menu-item menu-item',
+        activeClassName: 'menu-item--active',
+        key: group.id,
+        history: history,
+        to: '/settings/snapcast/' + group.id,
+        scrollTo: '#services-snapcast-groups'
+      },
+      _react2.default.createElement(
+        'div',
+        { className: 'snapcast__groups__menu-item__inner menu-item__inner' },
+        _react2.default.createElement(_Icon2.default, { className: 'menu-item__icon', name: 'wifi_tethering' }),
+        _react2.default.createElement(
+          'div',
+          { className: 'menu-item__title' },
+          group.name
+        ),
+        _react2.default.createElement(_MuteControl2.default, {
+          className: 'snapcast__mute-control snapcast__group__menu-item__mute-control',
+          mute: group.mute,
+          onMuteChange: function onMuteChange(mute) {
+            return actions.setGroupMute(group.id, mute);
+          }
+        })
+      )
+    );
+  };
+
+  return _react2.default.createElement(
+    'div',
+    { className: 'snapcast__groups' },
+    _react2.default.createElement('a', { name: 'services-snapcast-groups' }),
+    _react2.default.createElement(
+      'div',
+      { className: 'snapcast__groups__menu menu' },
+      _react2.default.createElement(
+        'div',
+        { className: 'menu__inner' },
+        groupsArray.map(function (group) {
+          return renderMenuItem(group);
+        })
+      )
+    ),
+    renderGroup()
+  );
+};
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
   return {
-    snapcast: state.snapcast,
     show_disconnected_clients: state.ui.snapcast_show_disconnected_clients !== undefined ? state.ui.snapcast_show_disconnected_clients : false,
     streams: state.snapcast.streams ? state.snapcast.streams : null,
     groups: state.snapcast.groups ? state.snapcast.groups : null,
@@ -67315,13 +67448,11 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
   return {
-    coreActions: (0, _redux.bindActionCreators)(coreActions, dispatch),
-    uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
-    snapcastActions: (0, _redux.bindActionCreators)(snapcastActions, dispatch)
+    actions: (0, _redux.bindActionCreators)(actions, dispatch)
   };
 };
 
-exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Snapcast);
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(SnapcastGroups);
 
 /***/ }),
 
@@ -74010,6 +74141,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.set = set;
+exports.setConnection = setConnection;
 exports.request = request;
 exports.connect = connect;
 exports.connecting = connecting;
@@ -74088,6 +74220,13 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function set(data) {
   return {
     type: 'MOPIDY_SET',
+    data: data
+  };
+}
+
+function setConnection(data) {
+  return {
+    type: 'MOPIDY_SET_CONNECTION',
     data: data
   };
 }
@@ -74881,10 +75020,12 @@ var MopidyMiddleware = function () {
 
           case 'MOPIDY_CONNECTED':
             if (store.getState().ui.allow_reporting) {
-              var hashed_hostname = (0, _jsSha.sha256)(window.location.hostname);
-              _reactGa2.default.event({ category: 'Mopidy', action: 'Connected', label: hashed_hostname });
+              _reactGa2.default.event({
+                category: 'Mopidy',
+                action: 'Connected',
+                label: (0, _jsSha.sha256)(window.location.hostname)
+              });
             }
-            store.dispatch(uiActions.createNotification({ content: 'Mopidy connected' }));
             next(action);
             break;
 
@@ -74895,7 +75036,6 @@ var MopidyMiddleware = function () {
             break;
 
           case 'MOPIDY_DISCONNECTED':
-            store.dispatch(uiActions.createNotification({ type: 'bad', content: 'Mopidy disconnected' }));
             helpers.setFavicon('favicon_error.png');
             break;
 
@@ -74903,6 +75043,16 @@ var MopidyMiddleware = function () {
             request(socket, store, action.call, action.value).then(function (response) {
               store.dispatch({ type: 'DEBUG', response: response });
             });
+            break;
+
+          case 'MOPIDY_SET_CONNECTION':
+            store.dispatch(mopidyActions.set(action.data));
+
+            // Wait 250 ms and then retry connection
+            setTimeout(function () {
+              store.dispatch(mopidyActions.connect());
+              store.dispatch(pusherActions.connect());
+            }, 250);
             break;
 
           case 'SET_WINDOW_FOCUS':
@@ -77396,6 +77546,8 @@ var PusherMiddleware = function () {
   // container for the actual websocket
   var socket = null;
 
+  var reconnectTimer = null;
+
   // requests pending
   var deferredRequests = [];
 
@@ -77559,7 +77711,7 @@ var PusherMiddleware = function () {
       store.dispatch(uiActions.startLoading(id, 'pusher_' + method));
 
       // Start our 30 second timeout
-      var timeout = setTimeout(function () {
+      setTimeout(function () {
         store.dispatch(uiActions.stopLoading(id));
         reject({
           id: id,
@@ -77588,11 +77740,10 @@ var PusherMiddleware = function () {
               socket.close();
             }
 
+            clearTimeout(reconnectTimer);
             store.dispatch({ type: 'PUSHER_CONNECTING' });
 
-            var state = store.getState();
-
-            socket = new WebSocket('ws' + (window.location.protocol === 'https:' ? 's' : '') + '://' + state.mopidy.host + ':' + state.mopidy.port + '/iris/ws/');
+            socket = new WebSocket('ws' + (window.location.protocol === 'https:' ? 's' : '') + '://' + store.getState().mopidy.host + ':' + store.getState().mopidy.port + '/iris/ws/');
 
             socket.onopen = function () {
               store.dispatch({
@@ -77606,7 +77757,7 @@ var PusherMiddleware = function () {
               });
 
               // attempt to reconnect every 5 seconds
-              setTimeout(function () {
+              reconnectTimer = setTimeout(function () {
                 store.dispatch(pusherActions.connect());
               }, 5000);
             };
@@ -77618,8 +77769,7 @@ var PusherMiddleware = function () {
             };
 
             socket.onmessage = function (message) {
-              var message = JSON.parse(message.data);
-              handleMessage(socket, store, message);
+              handleMessage(socket, store, JSON.parse(message.data));
             };
 
             break;
@@ -77629,6 +77779,7 @@ var PusherMiddleware = function () {
               _reactGa2.default.event({ category: 'Pusher', action: 'Connected', label: action.username });
             }
 
+            clearTimeout(reconnectTimer);
             store.dispatch(pusherActions.updateConnection());
             store.dispatch(pusherActions.getConfig());
             store.dispatch(pusherActions.getRadio());
@@ -78143,6 +78294,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.set = set;
+exports.setConnection = setConnection;
 exports.setEnabled = setEnabled;
 exports.connect = connect;
 exports.disconnect = disconnect;
@@ -78172,6 +78324,14 @@ function set(data) {
     data: data
   };
 }
+
+function setConnection(data) {
+  return {
+    type: 'SNAPCAST_SET_CONNECTION',
+    data: data
+  };
+}
+
 function setEnabled(enabled) {
   return {
     type: 'SNAPCAST_SET_ENABLED',
@@ -78392,6 +78552,7 @@ var SnapcastMiddleware = function () {
   var _this = this;
 
   var socket = null;
+  var reconnectTimer = null;
 
   // requests pending
   var deferredRequests = [];
@@ -78519,9 +78680,8 @@ var SnapcastMiddleware = function () {
         switch (action.type) {
 
           case 'SNAPCAST_CONNECT':
-            if (socket) {
-              socket.close();
-            }
+            if (socket) socket.close();
+            clearTimeout(reconnectTimer);
 
             store.dispatch({ type: 'SNAPCAST_CONNECTING' });
 
@@ -78540,7 +78700,8 @@ var SnapcastMiddleware = function () {
 
               // attempt to reconnect every 5 seconds
               if (store.getState().snapcast.enabled) {
-                setTimeout(function () {
+                clearTimeout(reconnectTimer);
+                reconnectTimer = setTimeout(function () {
                   store.dispatch(snapcastActions.connect());
                 }, 5000);
               }
@@ -78553,17 +78714,18 @@ var SnapcastMiddleware = function () {
             };
 
             socket.onmessage = function (message) {
-              var message = JSON.parse(message.data);
-              handleMessage(socket, store, message);
+              handleMessage(socket, store, JSON.parse(message.data));
             };
             break;
 
           case 'SNAPCAST_CONNECTED':
             if (store.getState().ui.allow_reporting) {
-              var hashed_hostname = (0, _jsSha.sha256)(window.location.hostname);
-              _reactGa2.default.event({ category: 'Snapcast', action: 'Connected', label: hashed_hostname });
+              _reactGa2.default.event({
+                category: 'Snapcast',
+                action: 'Connected',
+                label: (0, _jsSha.sha256)(window.location.hostname)
+              });
             }
-            store.dispatch(uiActions.createNotification({ content: 'Snapcast connected' }));
             store.dispatch(snapcastActions.getServer());
             next(action);
             break;
@@ -78571,11 +78733,21 @@ var SnapcastMiddleware = function () {
           case 'SNAPCAST_DISCONNECT':
             if (socket != null) socket.close();
             socket = null;
+            clearTimeout(reconnectTimer);
             break;
 
-          case 'SNAPCAST_DISCONNECTED':
+          case 'SNAPCAST_SET_CONNECTION':
+            store.dispatch(snapcastActions.serverLoaded({}));
+            store.dispatch(snapcastActions.clientsLoaded([]));
+            store.dispatch(snapcastActions.groupsLoaded([]));
+            store.dispatch(snapcastActions.streamsLoaded([]));
+            store.dispatch(snapcastActions.set(action.data));
+
+            // Wait 250 ms and then retry connection
             if (store.getState().snapcast.enabled) {
-              store.dispatch(uiActions.createNotification({ type: 'bad', content: 'Snapcast disconnected' }));
+              setTimeout(function () {
+                store.dispatch(snapcastActions.connect());
+              }, 250);
             }
             break;
 
@@ -86769,20 +86941,6 @@ var Settings = function (_React$Component) {
       }
     }
   }, {
-    key: 'setConfig',
-    value: function setConfig(e) {
-      this.setState({ input_in_focus: null });
-      e.preventDefault();
-
-      this.props.mopidyActions.set({
-        host: this.state.mopidy_host,
-        port: this.state.mopidy_port
-      });
-
-      window.location.reload(true);
-      return false;
-    }
-  }, {
     key: 'handleBlur',
     value: function handleBlur(service, name, value) {
       this.setState({ input_in_focus: null });
@@ -86801,44 +86959,26 @@ var Settings = function (_React$Component) {
       }
     }
   }, {
-    key: 'renderApplyButton',
-    value: function renderApplyButton() {
-      if (this.props.mopidy.host == this.state.mopidy_host && this.props.mopidy.port == this.state.mopidy_port) {
-        return null;
-      }
-
-      return _react2.default.createElement(
-        'div',
-        { className: 'field' },
-        _react2.default.createElement('div', { className: 'name' }),
-        _react2.default.createElement(
-          'div',
-          { className: 'input' },
-          _react2.default.createElement(
-            'button',
-            { type: 'submit', className: 'button button--secondary' },
-            'Apply and reload'
-          )
-        )
-      );
-    }
-  }, {
     key: 'renderServerStatus',
     value: function renderServerStatus() {
+      var _props = this.props,
+          mopidy = _props.mopidy,
+          pusher = _props.pusher;
+
       var colour = 'grey';
       var icon = 'help';
       var status = 'Unknown';
       var className = null;
 
-      if (this.props.mopidy.connecting || this.props.pusher.connecting) {
+      if (mopidy.connecting || pusher.connecting) {
         icon = 'autorenew';
         status = 'Connecting...';
         className = 'icon--spin';
-      } else if (!this.props.mopidy.connected || !this.props.pusher.connected) {
+      } else if (!mopidy.connected || !pusher.connected) {
         colour = 'red';
         icon = 'close';
         status = 'Disconnected';
-      } else if (this.props.mopidy.connected && this.props.pusher.connected) {
+      } else if (mopidy.connected && pusher.connected) {
         colour = 'green';
         icon = 'check';
         status = 'Connected';
@@ -86857,13 +86997,23 @@ var Settings = function (_React$Component) {
     value: function render() {
       var _this2 = this;
 
+      var _props2 = this.props,
+          mopidyActions = _props2.mopidyActions,
+          mopidy = _props2.mopidy,
+          pusherActions = _props2.pusherActions,
+          pusher = _props2.pusher,
+          history = _props2.history,
+          uiActions = _props2.uiActions,
+          ui = _props2.ui;
+
+
       var options = _react2.default.createElement(
         'span',
         null,
         _react2.default.createElement(
           'a',
           { className: 'button button--default button--no-hover', onClick: function onClick(e) {
-              return _this2.props.history.push('/settings/debug');
+              return history.push('/settings/debug');
             } },
           _react2.default.createElement(_Icon2.default, { name: 'code' }),
           'Debug'
@@ -86881,7 +87031,7 @@ var Settings = function (_React$Component) {
         { className: 'view settings-view' },
         _react2.default.createElement(
           _Header2.default,
-          { options: options, uiActions: this.props.uiActions },
+          { options: options, uiActions: uiActions },
           _react2.default.createElement(_Icon2.default, { name: 'settings', type: 'material' }),
           'Settings'
         ),
@@ -86925,7 +87075,7 @@ var Settings = function (_React$Component) {
               { className: 'input' },
               _react2.default.createElement(_TextField2.default, {
                 onChange: function onChange(value) {
-                  return _this2.props.pusherActions.setUsername(value.replace(/\W/g, ''));
+                  return pusherActions.setUsername(value.replace(/\W/g, ''));
                 },
                 value: this.state.pusher_username
               }),
@@ -86952,18 +87102,11 @@ var Settings = function (_React$Component) {
               _react2.default.createElement(
                 'div',
                 { className: 'input' },
-                _react2.default.createElement('input', {
-                  type: 'text',
-                  onChange: function onChange(e) {
-                    return _this2.setState({ mopidy_host: e.target.value });
-                  },
-                  onFocus: function onFocus(e) {
-                    return _this2.setState({ input_in_focus: 'mopidy_host' });
-                  },
-                  onBlur: function onBlur(e) {
-                    return _this2.setState({ input_in_focus: null });
-                  },
-                  value: this.state.mopidy_host
+                _react2.default.createElement(_TextField2.default, {
+                  value: mopidy.host,
+                  onChange: function onChange(value) {
+                    return mopidyActions.setConnection({ host: value });
+                  }
                 })
               )
             ),
@@ -86978,22 +87121,15 @@ var Settings = function (_React$Component) {
               _react2.default.createElement(
                 'div',
                 { className: 'input' },
-                _react2.default.createElement('input', {
+                _react2.default.createElement(_TextField2.default, {
                   type: 'text',
-                  onChange: function onChange(e) {
-                    return _this2.setState({ mopidy_port: e.target.value });
-                  },
-                  onFocus: function onFocus(e) {
-                    return _this2.setState({ input_in_focus: 'mopidy_port' });
-                  },
-                  onBlur: function onBlur(e) {
-                    return _this2.setState({ input_in_focus: null });
-                  },
-                  value: this.state.mopidy_port
+                  value: mopidy.port,
+                  onChange: function onChange(value) {
+                    return mopidyActions.setConnection({ port: value });
+                  }
                 })
               )
-            ),
-            this.renderApplyButton()
+            )
           ),
           _react2.default.createElement(
             'h4',
@@ -87001,7 +87137,7 @@ var Settings = function (_React$Component) {
             'Services',
             _react2.default.createElement('a', { name: 'services' })
           ),
-          _react2.default.createElement(_reactRouterDom.Route, { path: '/settings/:service?', component: _Services2.default }),
+          _react2.default.createElement(_reactRouterDom.Route, { path: '/settings/:service?/:id?', component: _Services2.default }),
           _react2.default.createElement(
             'h4',
             { className: 'underline' },
@@ -87026,9 +87162,9 @@ var Settings = function (_React$Component) {
                   type: 'radio',
                   name: 'theme',
                   value: 'dark',
-                  checked: this.props.ui.theme == 'dark',
+                  checked: ui.theme == 'dark',
                   onChange: function onChange(e) {
-                    return _this2.props.uiActions.set({ theme: e.target.value });
+                    return uiActions.set({ theme: e.target.value });
                   }
                 }),
                 _react2.default.createElement(
@@ -87044,9 +87180,9 @@ var Settings = function (_React$Component) {
                   type: 'radio',
                   name: 'theme',
                   value: 'light',
-                  checked: this.props.ui.theme == 'light',
+                  checked: ui.theme == 'light',
                   onChange: function onChange(e) {
-                    return _this2.props.uiActions.set({ theme: e.target.value });
+                    return uiActions.set({ theme: e.target.value });
                   }
                 }),
                 _react2.default.createElement(
@@ -87074,9 +87210,9 @@ var Settings = function (_React$Component) {
                 _react2.default.createElement('input', {
                   type: 'checkbox',
                   name: 'log_actions',
-                  checked: this.props.ui.clear_tracklist_on_play,
+                  checked: ui.clear_tracklist_on_play,
                   onChange: function onChange(e) {
-                    return _this2.props.uiActions.set({ clear_tracklist_on_play: !_this2.props.ui.clear_tracklist_on_play });
+                    return uiActions.set({ clear_tracklist_on_play: !ui.clear_tracklist_on_play });
                   }
                 }),
                 _react2.default.createElement(
@@ -87096,9 +87232,9 @@ var Settings = function (_React$Component) {
                 _react2.default.createElement('input', {
                   type: 'checkbox',
                   name: 'hotkeys_enabled',
-                  checked: this.props.ui.hotkeys_enabled,
+                  checked: ui.hotkeys_enabled,
                   onChange: function onChange(e) {
-                    return _this2.props.uiActions.set({ hotkeys_enabled: !_this2.props.ui.hotkeys_enabled });
+                    return uiActions.set({ hotkeys_enabled: !ui.hotkeys_enabled });
                   }
                 }),
                 _react2.default.createElement(
@@ -87113,9 +87249,9 @@ var Settings = function (_React$Component) {
                 _react2.default.createElement('input', {
                   type: 'checkbox',
                   name: 'smooth_scrolling_enabled',
-                  checked: this.props.ui.smooth_scrolling_enabled,
+                  checked: ui.smooth_scrolling_enabled,
                   onChange: function onChange(e) {
-                    return _this2.props.uiActions.set({ smooth_scrolling_enabled: !_this2.props.ui.smooth_scrolling_enabled });
+                    return uiActions.set({ smooth_scrolling_enabled: !ui.smooth_scrolling_enabled });
                   }
                 }),
                 _react2.default.createElement(
@@ -87130,9 +87266,9 @@ var Settings = function (_React$Component) {
                 _react2.default.createElement('input', {
                   type: 'checkbox',
                   name: 'playback_controls_touch_enabled',
-                  checked: this.props.ui.playback_controls_touch_enabled,
+                  checked: ui.playback_controls_touch_enabled,
                   onChange: function onChange(e) {
-                    return _this2.props.uiActions.set({ playback_controls_touch_enabled: !_this2.props.ui.playback_controls_touch_enabled });
+                    return uiActions.set({ playback_controls_touch_enabled: !ui.playback_controls_touch_enabled });
                   }
                 }),
                 _react2.default.createElement(
@@ -87152,9 +87288,9 @@ var Settings = function (_React$Component) {
                 _react2.default.createElement('input', {
                   type: 'checkbox',
                   name: 'wide_scrollbar_enabled',
-                  checked: this.props.ui.wide_scrollbar_enabled,
+                  checked: ui.wide_scrollbar_enabled,
                   onChange: function onChange(e) {
-                    return _this2.props.uiActions.set({ wide_scrollbar_enabled: !_this2.props.ui.wide_scrollbar_enabled });
+                    return uiActions.set({ wide_scrollbar_enabled: !ui.wide_scrollbar_enabled });
                   }
                 }),
                 _react2.default.createElement(
@@ -87177,9 +87313,9 @@ var Settings = function (_React$Component) {
               'div',
               { className: 'input' },
               _react2.default.createElement(_SourcesPriority2.default, {
-                uri_schemes: this.props.mopidy.uri_schemes ? this.props.mopidy.uri_schemes : [],
-                uri_schemes_priority: this.props.ui.uri_schemes_priority ? this.props.ui.uri_schemes_priority : [],
-                uiActions: this.props.uiActions
+                uri_schemes: mopidy.uri_schemes ? mopidy.uri_schemes : [],
+                uri_schemes_priority: ui.uri_schemes_priority ? ui.uri_schemes_priority : [],
+                uiActions: uiActions
               }),
               _react2.default.createElement(
                 'div',
@@ -87205,9 +87341,9 @@ var Settings = function (_React$Component) {
                 _react2.default.createElement('input', {
                   type: 'checkbox',
                   name: 'allow_reporting',
-                  checked: this.props.ui.allow_reporting,
+                  checked: ui.allow_reporting,
                   onChange: function onChange(e) {
-                    return _this2.props.uiActions.set({ allow_reporting: !_this2.props.ui.allow_reporting });
+                    return uiActions.set({ allow_reporting: !ui.allow_reporting });
                   }
                 }),
                 _react2.default.createElement(

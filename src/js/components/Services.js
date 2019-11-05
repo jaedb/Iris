@@ -385,33 +385,21 @@ class Services extends React.Component {
   }
 
   renderService() {
-    let service = null;
-    switch (this.props.match.params.service) {
+    const { match } = this.props;
+    switch (match.params.service) {
       case 'spotify':
-        service = this.renderSpotify();
-        break;
+        return <div className="service">{this.renderSpotify()}</div>;
       case 'lastfm':
-        service = this.renderLastfm();
-        break;
+        return <div className="service">{this.renderLastfm()}</div>;
       case 'genius':
-        service = this.renderGenius();
-        break;
+        return <div className="service">{this.renderGenius()}</div>;
       case 'icecast':
-        service = this.renderIcecast();
-        break;
+        return <div className="service">{this.renderIcecast()}</div>;
       case 'snapcast':
-        service = <Snapcast />;
-        break;
+        return <div className="service">{<Snapcast match={this.props.match} />}</div>;
+      default:
+        return null;
     }
-
-    if (service) {
-      return (
-        <div className="service">
-          {service}
-        </div>
-      );
-    }
-    return null;
   }
 
   render() {

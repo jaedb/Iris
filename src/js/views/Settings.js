@@ -86,19 +86,6 @@ class Settings extends React.Component {
     }
   }
 
-  setConfig(e) {
-    this.setState({ input_in_focus: null });
-    e.preventDefault();
-
-    this.props.mopidyActions.set({
-      host: this.state.mopidy_host,
-      port: this.state.mopidy_port,
-    });
-
-    window.location.reload(true);
-    return false;
-  }
-
   handleBlur(service, name, value) {
     this.setState({ input_in_focus: null });
     const data = {};
@@ -116,37 +103,25 @@ class Settings extends React.Component {
     }
   }
 
-  renderApplyButton() {
-    if (this.props.mopidy.host == this.state.mopidy_host
-			&& this.props.mopidy.port == this.state.mopidy_port) {
-      return null;
-    }
-
-    return (
-      <div className="field">
-        <div className="name" />
-        <div className="input">
-          <button type="submit" className="button button--secondary">Apply and reload</button>
-        </div>
-      </div>
-    );
-  }
-
   renderServerStatus() {
+    const {
+      mopidy,
+      pusher,
+    } = this.props;
     let colour = 'grey';
     let icon = 'help';
     let status = 'Unknown';
     let className = null;
 
-    if (this.props.mopidy.connecting || this.props.pusher.connecting) {
+    if (mopidy.connecting || pusher.connecting) {
       icon = 'autorenew';
       status = 'Connecting...';
       className = 'icon--spin';
-    } else if (!this.props.mopidy.connected || !this.props.pusher.connected) {
+    } else if (!mopidy.connected || !pusher.connected) {
       colour = 'red';
       icon = 'close';
       status = 'Disconnected';
-    } else if (this.props.mopidy.connected && this.props.pusher.connected) {
+    } else if (mopidy.connected && pusher.connected) {
       colour = 'green';
       icon = 'check';
       status = 'Connected';
@@ -162,30 +137,40 @@ class Settings extends React.Component {
   }
 
   render() {
+    const {
+      mopidyActions,
+      mopidy,
+      pusherActions,
+      pusher,
+      history,
+      uiActions,
+      ui,
+    } = this.props;
+
     const options = (
       <span>
-        <a className="button button--default button--no-hover" onClick={(e) => this.props.history.push('/settings/debug')}>
+        <a className="button button--default button--no-hover" onClick={(e) => history.push('/settings/debug')}>
           <Icon name="code" />
-Debug
+          Debug
         </a>
         <a className="button button--default button--no-hover" href="https://github.com/jaedb/Iris/wiki" target="_blank">
           <Icon name="help" />
-Help
+          Help
         </a>
       </span>
     );
 
     return (
       <div className="view settings-view">
-        <Header options={options} uiActions={this.props.uiActions}>
+        <Header options={options} uiActions={uiActions}>
           <Icon name="settings" type="material" />
-					Settings
+          Settings
         </Header>
 
         <section className="content-wrapper">
 
           <h4 className="underline">
-Server
+            Server
             <a name="server" />
           </h4>
 
@@ -202,11 +187,11 @@ Server
             <div className="name">Username</div>
             <div className="input">
               <TextField
-                onChange={(value) => this.props.pusherActions.setUsername(value.replace(/\W/g, ''))}
+                onChange={(value) => pusherActions.setUsername(value.replace(/\W/g, ''))}
                 value={this.state.pusher_username}
               />
               <div className="description">
-								A non-unique string used to identify this client (no special characters)
+                A non-unique string used to identify this client (no special characters)
               </div>
             </div>
           </label>
@@ -215,39 +200,33 @@ Server
             <label className="field">
               <div className="name">Host</div>
               <div className="input">
-                <input
-                  type="text"
-                  onChange={(e) => this.setState({ mopidy_host: e.target.value })}
-                  onFocus={(e) => this.setState({ input_in_focus: 'mopidy_host' })}
-                  onBlur={(e) => this.setState({ input_in_focus: null })}
-                  value={this.state.mopidy_host}
+                <TextField
+                  value={mopidy.host}
+                  onChange={value => mopidyActions.setConnection({ host: value })}
                 />
               </div>
             </label>
             <label className="field">
               <div className="name">Port</div>
               <div className="input">
-                <input
+                <TextField
                   type="text"
-                  onChange={(e) => this.setState({ mopidy_port: e.target.value })}
-                  onFocus={(e) => this.setState({ input_in_focus: 'mopidy_port' })}
-                  onBlur={(e) => this.setState({ input_in_focus: null })}
-                  value={this.state.mopidy_port}
+                  value={mopidy.port}
+                  onChange={value => mopidyActions.setConnection({ port: value })}
                 />
               </div>
             </label>
-            {this.renderApplyButton()}
           </form>
 
           <h4 className="underline">
-Services
+            Services
             <a name="services" />
           </h4>
 
-          <Route path="/settings/:service?" component={Services} />
+          <Route path="/settings/:service?/:id?" component={Services} />
 
           <h4 className="underline">
-Interface
+            Interface
             <a name="interface" />
           </h4>
 
@@ -261,8 +240,8 @@ Interface
                   type="radio"
                   name="theme"
                   value="dark"
-                  checked={this.props.ui.theme == 'dark'}
-                  onChange={(e) => this.props.uiActions.set({ theme: e.target.value })}
+                  checked={ui.theme == 'dark'}
+                  onChange={(e) => uiActions.set({ theme: e.target.value })}
                 />
                 <span className="label">Dark</span>
               </label>
@@ -271,8 +250,8 @@ Interface
                   type="radio"
                   name="theme"
                   value="light"
-                  checked={this.props.ui.theme == 'light'}
-                  onChange={(e) => this.props.uiActions.set({ theme: e.target.value })}
+                  checked={ui.theme == 'light'}
+                  onChange={(e) => uiActions.set({ theme: e.target.value })}
                 />
                 <span className="label">Light</span>
               </label>
@@ -286,8 +265,8 @@ Interface
                 <input
                   type="checkbox"
                   name="log_actions"
-                  checked={this.props.ui.clear_tracklist_on_play}
-                  onChange={(e) => this.props.uiActions.set({ clear_tracklist_on_play: !this.props.ui.clear_tracklist_on_play })}
+                  checked={ui.clear_tracklist_on_play}
+                  onChange={(e) => uiActions.set({ clear_tracklist_on_play: !ui.clear_tracklist_on_play })}
                 />
                 <span className="label tooltip">
 									Clear tracklist on play of URI(s)
@@ -298,8 +277,8 @@ Interface
                 <input
                   type="checkbox"
                   name="hotkeys_enabled"
-                  checked={this.props.ui.hotkeys_enabled}
-                  onChange={(e) => this.props.uiActions.set({ hotkeys_enabled: !this.props.ui.hotkeys_enabled })}
+                  checked={ui.hotkeys_enabled}
+                  onChange={(e) => uiActions.set({ hotkeys_enabled: !ui.hotkeys_enabled })}
                 />
                 <span className="label">
 									Enable hotkeys
@@ -309,8 +288,8 @@ Interface
                 <input
                   type="checkbox"
                   name="smooth_scrolling_enabled"
-                  checked={this.props.ui.smooth_scrolling_enabled}
-                  onChange={(e) => this.props.uiActions.set({ smooth_scrolling_enabled: !this.props.ui.smooth_scrolling_enabled })}
+                  checked={ui.smooth_scrolling_enabled}
+                  onChange={(e) => uiActions.set({ smooth_scrolling_enabled: !ui.smooth_scrolling_enabled })}
                 />
                 <span className="label">
 									Enable smooth scrolling
@@ -320,8 +299,8 @@ Interface
                 <input
                   type="checkbox"
                   name="playback_controls_touch_enabled"
-                  checked={this.props.ui.playback_controls_touch_enabled}
-                  onChange={(e) => this.props.uiActions.set({ playback_controls_touch_enabled: !this.props.ui.playback_controls_touch_enabled })}
+                  checked={ui.playback_controls_touch_enabled}
+                  onChange={(e) => uiActions.set({ playback_controls_touch_enabled: !ui.playback_controls_touch_enabled })}
                 />
                 <span className="label tooltip">
 									Enable touch events on play controls
@@ -332,8 +311,8 @@ Interface
                 <input
                   type="checkbox"
                   name="wide_scrollbar_enabled"
-                  checked={this.props.ui.wide_scrollbar_enabled}
-                  onChange={(e) => this.props.uiActions.set({ wide_scrollbar_enabled: !this.props.ui.wide_scrollbar_enabled })}
+                  checked={ui.wide_scrollbar_enabled}
+                  onChange={(e) => uiActions.set({ wide_scrollbar_enabled: !ui.wide_scrollbar_enabled })}
                 />
                 <span className="label">
 									Use wide scrollbars
@@ -348,9 +327,9 @@ Interface
             </div>
             <div className="input">
               <SourcesPriority
-                uri_schemes={this.props.mopidy.uri_schemes ? this.props.mopidy.uri_schemes : []}
-                uri_schemes_priority={this.props.ui.uri_schemes_priority ? this.props.ui.uri_schemes_priority : []}
-                uiActions={this.props.uiActions}
+                uri_schemes={mopidy.uri_schemes ? mopidy.uri_schemes : []}
+                uri_schemes_priority={ui.uri_schemes_priority ? ui.uri_schemes_priority : []}
+                uiActions={uiActions}
               />
               <div className="description">
 				        		Drag-and-drop to prioritize search providers and results
@@ -366,8 +345,8 @@ Interface
                   <input
                     type="checkbox"
                     name="allow_reporting"
-                    checked={this.props.ui.allow_reporting}
-                    onChange={(e) => this.props.uiActions.set({ allow_reporting: !this.props.ui.allow_reporting })}
+                    checked={ui.allow_reporting}
+                    onChange={(e) => uiActions.set({ allow_reporting: !ui.allow_reporting })}
                   />
                   <span className="label">
 									Allow reporting of anonymous usage statistics

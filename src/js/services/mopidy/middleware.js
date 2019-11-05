@@ -224,7 +224,7 @@ const MopidyMiddleware = (function () {
     switch (action.type) {
       case 'MOPIDY_CONNECT':
         if (socket != null) {
-                	socket.close();
+          socket.close();
         }
 
         store.dispatch({ type: 'MOPIDY_CONNECTING' });
@@ -240,10 +240,12 @@ const MopidyMiddleware = (function () {
 
       case 'MOPIDY_CONNECTED':
         if (store.getState().ui.allow_reporting) {
-          const hashed_hostname = sha256(window.location.hostname);
-	                ReactGA.event({ category: 'Mopidy', action: 'Connected', label: hashed_hostname });
-	            }
-        store.dispatch(uiActions.createNotification({ content: 'Mopidy connected' }));
+          ReactGA.event({
+            category: 'Mopidy',
+            action: 'Connected',
+            label: sha256(window.location.hostname),
+          });
+        }
         next(action);
         break;
 
@@ -254,7 +256,6 @@ const MopidyMiddleware = (function () {
         break;
 
       case 'MOPIDY_DISCONNECTED':
-        store.dispatch(uiActions.createNotification({ type: 'bad', content: 'Mopidy disconnected' }));
         helpers.setFavicon('favicon_error.png');
         break;
 
@@ -263,6 +264,19 @@ const MopidyMiddleware = (function () {
           .then((response) => {
             store.dispatch({ type: 'DEBUG', response });
           });
+        break;
+
+      case 'MOPIDY_SET_CONNECTION':
+        store.dispatch(mopidyActions.set(action.data));
+
+        // Wait 250 ms and then retry connection
+        setTimeout(
+          () => {
+            store.dispatch(mopidyActions.connect());
+            store.dispatch(pusherActions.connect());
+          },
+          250,
+        );
         break;
 
       case 'SET_WINDOW_FOCUS':
@@ -284,21 +298,21 @@ const MopidyMiddleware = (function () {
         request(socket, store, action.method, action.params)
           .then(
             (response) => {
-	                        if (action.response_callback) {
-	                            store.dispatch(action.response_callback.call(this, response));
-	                        }
+              if (action.response_callback) {
+                store.dispatch(action.response_callback.call(this, response));
+              }
             },
             (error) => {
-	                        if (action.error_callback) {
-	                            store.dispatch(action.error_callback.call(this, error));
-	                        } else {
-	                            store.dispatch(coreActions.handleException(
-	                                'Mopidy request failed',
-	                                error,
-	                                action.method,
-	                                action,
-	                            ));
-	                        }
+              if (action.error_callback) {
+                store.dispatch(action.error_callback.call(this, error));
+              } else {
+                store.dispatch(coreActions.handleException(
+                  'Mopidy request failed',
+                  error,
+                  action.method,
+                  action,
+                ));
+              }
             },
           );
         break;
