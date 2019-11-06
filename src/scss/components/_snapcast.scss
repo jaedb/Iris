@@ -32,11 +32,12 @@
 
 	&__groups {
 		padding-top: 20px;
+		margin-bottom: -10px;
 
 		.menu {
 			.menu-item {
-				width: 15%;
-				min-width: 100px;
+				width: 12.5%;
+				min-width: 80px;
 				max-width: 140px;
 
 				&__inner {

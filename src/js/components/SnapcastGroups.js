@@ -115,25 +115,26 @@ const SnapcastGroups = (props) => {
 
   const renderMenuItem = (group) => {
     const icon = () => {
-      const iconWords = {
-        business: ['office', 'work'],
-        king_bed: ['bed'],
-        tv: ['lounge', 'tv'],
-        local_laundry_service: ['garage', 'laundry'],
-        fitness_center: ['gym'],
-        emoji_food_beverage: ['kitchen'],
-        deck: ['deck', 'outside'],
-        restaurant_menu: ['dining'],
-      };
+      const iconWords = [
+        { icon: 'business', words: ['office', 'work'] },
+        { icon: 'king_bed', words: ['bed'] },
+        { icon: 'tv', words: ['lounge', 'tv'] },
+        { icon: 'directions_car', words: ['garage', 'laundry'] },
+        { icon: 'fitness_center', words: ['gym'] },
+        { icon: 'emoji_food_beverage', words: ['kitchen'] },
+        { icon: 'deck', words: ['deck', 'outside'] },
+        { icon: 'restaurant_menu', words: ['dining'] },
+        { icon: 'laptop', words: ['laptop'] },
+      ];
       const name = group.name.toLowerCase();
-      for (let key in iconWords){
-        if (iconWords.hasOwnProperty(key)) {
-          if (iconWords[key].map(word => name.match(`/${word}/g`))) {
-            return key;
+      for (let item of iconWords) {
+        for (let word of item.words) {
+          if (name.match(new RegExp(`(${word})`, 'gi'))) {
+            return item.icon;
           }
         }
-      }
-      return 'speaker';
+      };
+      return 'speaker_group';
     }
     return (
       <Link
