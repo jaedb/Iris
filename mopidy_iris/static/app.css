@@ -6311,26 +6311,38 @@ main header {
   display: block; }
 
 .snapcast__groups {
-  margin-left: -20px;
-  margin-right: -20px; }
-  .snapcast__groups .menu-item__inner {
-    background: #222222; }
-  .snapcast__groups .menu-item:hover .menu-item__inner {
-    background: #2c2c2c !important; }
-  .snapcast__groups .menu-item--active .menu-item__inner {
-    background: #2c2c2c !important; }
-  .light-theme .snapcast__groups .menu-item .menu-item__inner {
-    background: #f4f2f0; }
-    .light-theme .snapcast__groups .menu-item .menu-item__inner:hover {
+  padding-top: 20px; }
+  .snapcast__groups .menu .menu-item {
+    width: 15%;
+    min-width: 100px;
+    max-width: 140px; }
+    .snapcast__groups .menu .menu-item__inner {
+      background: #1d1d1d;
+      padding: 20px 10px; }
+    .snapcast__groups .menu .menu-item__icon {
+      font-size: 30px;
+      height: 30px;
+      margin-top: 5px;
+      margin-bottom: 10px; }
+    .snapcast__groups .menu .menu-item__title {
+      font-size: 14px; }
+    .snapcast__groups .menu .menu-item:hover .menu-item__inner {
+      background: #2c2c2c; }
+    .snapcast__groups .menu .menu-item--active .menu-item__inner {
+      background: #2c2c2c;
+      padding-bottom: 30px; }
+    .light-theme .snapcast__groups .menu .menu-item .menu-item__inner {
+      background: #f4f2f0; }
+      .light-theme .snapcast__groups .menu .menu-item .menu-item__inner:hover {
+        background: #e3ded8; }
+      .light-theme .snapcast__groups .menu .menu-item .menu-item__inner:after {
+        background: #e3ded8; }
+    .light-theme .snapcast__groups .menu .menu-item--active .menu-item__inner {
       background: #e3ded8; }
-    .light-theme .snapcast__groups .menu-item .menu-item__inner:after {
-      background: #e3ded8; }
-  .light-theme .snapcast__groups .menu-item--active .menu-item__inner {
-    background: #e3ded8; }
 
 .snapcast__group {
   padding: 20px;
-  margin-bottom: -20px;
+  margin: 0 -20px -20px -20px;
   border-radius: 0 0 3px 3px;
   background: #2c2c2c; }
   .snapcast__group .field:last-child {

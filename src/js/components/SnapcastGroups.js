@@ -85,12 +85,12 @@ const SnapcastGroups = (props) => {
           </div>
           <div className="input">
             <MuteControl
-              className="snapcast__group__mute-control"
+              className="snapcast__group__mute-control snapcast__mute-control"
               mute={group.muted}
               onMuteChange={(mute) => actions.setGroupMute(group.id, mute)}
             />
             <VolumeControl
-              className="snapcast__group__volume-control"
+              className="snapcast__group__volume-control snapcast__volume-control"
               volume={group_volume}
               onVolumeChange={(percent, previousPercent) => actions.setGroupVolume(group.id, percent, previousPercent)}
             />
@@ -114,6 +114,27 @@ const SnapcastGroups = (props) => {
   }
 
   const renderMenuItem = (group) => {
+    const icon = () => {
+      const iconWords = {
+        business: ['office', 'work'],
+        king_bed: ['bed'],
+        tv: ['lounge', 'tv'],
+        local_laundry_service: ['garage', 'laundry'],
+        fitness_center: ['gym'],
+        emoji_food_beverage: ['kitchen'],
+        deck: ['deck', 'outside'],
+        restaurant_menu: ['dining'],
+      };
+      const name = group.name.toLowerCase();
+      for (let key in iconWords){
+        if (iconWords.hasOwnProperty(key)) {
+          if (iconWords[key].map(word => name.match(`/${word}/g`))) {
+            return key;
+          }
+        }
+      }
+      return 'speaker';
+    }
     return (
       <Link
         className="snapcast__groups__menu-item menu-item"
@@ -124,15 +145,10 @@ const SnapcastGroups = (props) => {
         scrollTo="#services-snapcast-groups"
       >
         <div className="snapcast__groups__menu-item__inner menu-item__inner">
-          <Icon className="menu-item__icon" name="wifi_tethering" />
+          <Icon className="menu-item__icon" name={icon()} />
           <div className="menu-item__title">
             {group.name}
           </div>
-          <MuteControl
-            className="snapcast__mute-control snapcast__group__menu-item__mute-control"
-            mute={group.mute}
-            onMuteChange={(mute) => actions.setGroupMute(group.id, mute)}
-          />
         </div>
       </Link>
     );
