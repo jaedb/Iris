@@ -879,8 +879,8 @@ export const formatGroup = function (data) {
     }
   }
 
-  if (group.mute === undefined && data.mute !== undefined) {
-    group.mute = data.mute;
+  if (group.mute === undefined && data.muted !== undefined) {
+    group.mute = data.muted;
   }
 
   return group;

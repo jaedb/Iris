@@ -119,8 +119,9 @@ const SnapcastGroups = (props) => {
         { icon: 'fitness_center', words: ['gym'] },
         { icon: 'emoji_food_beverage', words: ['kitchen'] },
         { icon: 'deck', words: ['deck', 'outside'] },
-        { icon: 'restaurant_menu', words: ['dining'] },
+        { icon: 'restaurant_menu', words: ['dining', 'dinner'] },
         { icon: 'laptop', words: ['laptop'] },
+        { icon: 'bug_report', words: ['test', 'debug'] },
       ];
       const name = group.name.toLowerCase();
       for (let item of iconWords) {
