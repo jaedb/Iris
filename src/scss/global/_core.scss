@@ -292,6 +292,13 @@ h4 {
     margin-bottom: -1px;
     margin-top: 0;
   }
+
+  &.breadcrumbs {
+    .icon {
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+  }
 }
 
 h5 {

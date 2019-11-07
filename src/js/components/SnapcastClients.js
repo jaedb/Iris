@@ -7,7 +7,7 @@ import VolumeControl from './Fields/VolumeControl';
 import MuteControl from './Fields/MuteControl';
 import LatencyControl from './Fields/LatencyControl';
 import TextField from './Fields/TextField';
-import Icon from './Icon';
+import SelectField from './Fields/SelectField';
 
 import * as helpers from '../helpers';
 
@@ -56,18 +56,14 @@ const SnapcastClients = ({ actions, group, groups, show_disconnected_clients }) 
                     Group
                   </div>
                   <div className="input">
-                    <select onChange={(e) => actions.setClientGroup(client.id, e.target.value)} value={group.id}>
-                      {
-                        groups.map((group) => (
-                          <option value={group.id} key={group.id}>
-                            {group.name ? group.name : `Group ${group.id.substring(0, 3)}`}
-                          </option>
-                        ))
-                      }
-                      <option value={group.id}>
-                        New group
-                      </option>
-                    </select>
+                    <SelectField
+                      onChange={(value) => actions.setClientGroup(client.id, value)}
+                      value={group.id}
+                      options={[
+                        ...groups.map((group) => ({ value: group.id, label: group.name })),
+                        { value: group.id, label: 'New group' },
+                      ]}
+                    />
                   </div>
                 </label>
                 <div className="snapcast__client__volume field">
@@ -83,6 +79,7 @@ const SnapcastClients = ({ actions, group, groups, show_disconnected_clients }) 
                     <VolumeControl
                       className="snapcast__volume-control snapcast__client__volume-control"
                       volume={client.volume}
+                      mute={client.mute}
                       onVolumeChange={(percent) => actions.setClientVolume(client.id, percent)}
                     />
                   </div>

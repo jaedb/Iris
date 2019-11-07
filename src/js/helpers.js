@@ -879,10 +879,6 @@ export const formatGroup = function (data) {
     }
   }
 
-  if (group.name === undefined || group.name === '') {
-    group.name = `Group ${data.id.substring(0, 3)}`;
-  }
-
   if (group.mute === undefined && data.mute !== undefined) {
     group.mute = data.mute;
   }

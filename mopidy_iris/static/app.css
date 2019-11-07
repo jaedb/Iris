@@ -2869,6 +2869,9 @@ h4 {
     margin-left: 10px;
     margin-bottom: -1px;
     margin-top: 0; }
+  h4.breadcrumbs .icon {
+    padding-left: 10px;
+    padding-right: 10px; }
 
 h5 {
   font-size: 1rem;
@@ -6617,6 +6620,18 @@ main header {
 
 .sortable-ghost {
   opacity: 0.15; }
+
+.mute-control {
+  cursor: pointer; }
+
+.select-field {
+  display: flex;
+  position: relative; }
+  .select-field__icon {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    pointer-events: none; }
 
 .artist-view .body-loader:not(.lazy-loader) {
   padding: 15vh 0; }

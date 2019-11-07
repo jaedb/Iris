@@ -285,11 +285,10 @@ const SnapcastMiddleware = (function () {
 
       case 'SNAPCAST_GROUPS_LOADED':
         var groups_index = { ...snapcast.groups };
-        var groups_loaded = [];
         var clients_loaded = [];
 
-        for (const raw_group of action.groups) {
-          var group = helpers.formatGroup(raw_group);
+        const groups_loaded = action.groups.map(raw_group => {
+          let group = helpers.formatGroup(raw_group);
 
           if (groups_index[group.id]) {
             group = { ...groups_index[group.id], ...group };
@@ -300,8 +299,13 @@ const SnapcastMiddleware = (function () {
             clients_loaded = [...clients_loaded, ...raw_group.clients];
           }
 
-          groups_loaded.push(group);
-        }
+          // Create a name (display only) based on it's ID
+          if (group.name === undefined || group.name === '') {
+            group.name = `Group ${group.id.substring(0, 3)}`;
+          }
+
+          return group;
+        });
 
         action.groups = groups_loaded;
 
@@ -462,7 +466,7 @@ const SnapcastMiddleware = (function () {
         request(store, 'Group.SetClients', params)
           .then(
             response => {
-              store.dispatch(snapcastActions.serverLoaded(response.server));
+              store.dispatch(snapcastActions.groupsLoaded(response.server.groups, true));
             },
             error => {
               store.dispatch(coreActions.handleException(
@@ -557,7 +561,7 @@ const SnapcastMiddleware = (function () {
               store.dispatch(snapcastActions.groupLoaded(
                 {
                   id: action.id,
-                  muted: response.mute,
+                  mute: response.mute,
                 },
               ));
             },

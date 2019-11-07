@@ -73,27 +73,24 @@ class LibraryBrowseDirectory extends React.Component {
       const uri_elements = uri.split('/');
 
       return (
-        <h4>
+        <h4 className="breadcrumbs">
           {uri_elements.map((uri_element, index) => {
             // Reconstruct a URL to this element
-					  let uri = 'file://';
-					  for (let i = 0; i <= index; i++) {
-					    uri += `/${uri_elements[i]}`;
-					  }
+            let uri = 'file://';
+            for (let i = 0; i <= index; i++) {
+              uri += `/${uri_elements[i]}`;
+            }
 
-					  return (
+            return (
               <span key={uri}>
                 {index > 0 && (
-                  <span>
-                    <Icon type="fontawesome" name="angle-right" />
-                    {'   '}
-                  </span>
+                  <Icon type="fontawesome" name="angle-right" />
                 )}
                 <URILink type="browse" uri={uri}>
                   {decodeURI(uri_element)}
                 </URILink>
               </span>
-					  );
+            );
           })}
         </h4>
       );

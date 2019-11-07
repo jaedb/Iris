@@ -12,6 +12,7 @@ import Link from './Link';
 
 import * as helpers from '../helpers';
 import * as actions from '../services/snapcast/actions';
+import SelectField from './Fields/SelectField';
 
 const SnapcastGroups = (props) => {
   const {
@@ -64,19 +65,13 @@ const SnapcastGroups = (props) => {
             Stream
           </div>
           <div className="input">
-            <select onChange={(e) => actions.setGroupStream(group.id, e.target.value)} value={group.stream_id}>
-              {
-                streamsArray.map((stream) => (
-                  <option value={stream.id} key={stream.id}>
-                    {stream.id}
-                    {' '}
-                    (
-                      {stream.status}
-                    )
-                  </option>
-                ))
-              }
-            </select>
+            <SelectField
+              onChange={(value) => actions.setGroupStream(group.id, value)}
+              value={group.stream_id}
+              options={streamsArray.map((stream) => (
+                { value: stream.id, label: `${stream.id} (${stream.status})` }
+              ))}
+            />
           </div>
         </div>
         <div className="field">
@@ -86,12 +81,13 @@ const SnapcastGroups = (props) => {
           <div className="input">
             <MuteControl
               className="snapcast__group__mute-control snapcast__mute-control"
-              mute={group.muted}
+              mute={group.mute}
               onMuteChange={(mute) => actions.setGroupMute(group.id, mute)}
             />
             <VolumeControl
               className="snapcast__group__volume-control snapcast__volume-control"
               volume={group_volume}
+              mute={group.mute}
               onVolumeChange={(percent, previousPercent) => actions.setGroupVolume(group.id, percent, previousPercent)}
             />
           </div>
@@ -156,8 +152,7 @@ const SnapcastGroups = (props) => {
   }
 
   return (
-    <div className="snapcast__groups">
-      <a name="services-snapcast-groups" />
+    <div className="snapcast__groups" id="services-snapcast-groups">
       <div className="snapcast__groups__menu menu">
         <div className="menu__inner">
           {groupsArray.map((group) => renderMenuItem(group))}
