@@ -36,7 +36,10 @@ export default function reducer(snapcast = {}, action) {
       }
 
       for (const group of action.groups) {
-        groups[group.id] = group;
+        groups[group.id] = {
+          ...(groups[group.id] ? groups[group.id] : {}),
+          ...group,
+        }
       }
       return { ...snapcast, groups };
 

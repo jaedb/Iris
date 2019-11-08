@@ -60,8 +60,16 @@ const SnapcastClients = ({ actions, group, groups, show_disconnected_clients }) 
                       onChange={(value) => actions.setClientGroup(client.id, value)}
                       value={group.id}
                       options={[
-                        ...groups.map((group) => ({ value: group.id, label: group.name })),
-                        { value: group.id, label: 'New group' },
+                        ...groups.map((group) => ({
+                          key: `client_${client.id}_group_${group.id}`,
+                          value: group.id,
+                          label: group.name,
+                        })),
+                        {
+                          key: `client_${client.id}_new_group`,
+                          value: group.id,
+                          label: 'New group',
+                        },
                       ]}
                     />
                   </div>
@@ -80,7 +88,7 @@ const SnapcastClients = ({ actions, group, groups, show_disconnected_clients }) 
                       className="snapcast__volume-control snapcast__client__volume-control"
                       volume={client.volume}
                       mute={client.mute}
-                      onVolumeChange={(percent) => actions.setClientVolume(client.id, percent)}
+                      onVolumeChange={(percent) => actions.setClientVolume(client.id, percent, group.id)}
                     />
                   </div>
                 </div>

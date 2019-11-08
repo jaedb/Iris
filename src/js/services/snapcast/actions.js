@@ -71,11 +71,12 @@ export function setClientMute(id, mute) {
   };
 }
 
-export function setClientVolume(id, volume) {
+export function setClientVolume(id, volume, group_id = null) {
   return {
     type: 'SNAPCAST_SET_CLIENT_VOLUME',
     id,
     volume,
+    group_id,
   };
 }
 
@@ -135,6 +136,15 @@ export function setGroupVolume(id, percent, old_percent = 0) {
   };
 }
 
+export function calculateGroupVolume(id, clients) {
+  return {
+    type: 'SNAPCAST_CALCULATE_GROUP_VOLUME',
+    id,
+    clients,
+  };
+}
+
+
 
 /**
  * Record loaders
@@ -167,7 +177,6 @@ export function groupsLoaded(groups, flush = false) {
   return {
     type: 'SNAPCAST_GROUPS_LOADED',
     groups,
-    flush,
   };
 }
 

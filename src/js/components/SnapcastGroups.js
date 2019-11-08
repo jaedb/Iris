@@ -39,14 +39,6 @@ const SnapcastGroups = (props) => {
 
     const group = helpers.collate(groups[groupId], { clients });
 
-    // Average our clients' volume for an overall group volume
-    let group_volume = 0;
-    for (let i = 0; i < group.clients.length; i++) {
-      const client = group.clients[i];
-      group_volume += client.volume;
-    }
-    group_volume /= group.clients.length;
-
     return (
       <div className="snapcast__group" key={group.id}>
         <div className="field text">
@@ -69,7 +61,11 @@ const SnapcastGroups = (props) => {
               onChange={(value) => actions.setGroupStream(group.id, value)}
               value={group.stream_id}
               options={streamsArray.map((stream) => (
-                { value: stream.id, label: `${stream.id} (${stream.status})` }
+                {
+                  key: `group_${group.id}_stream_${stream.id}`,
+                  value: stream.id,
+                  label: `${stream.id} (${stream.status})`,
+                }
               ))}
             />
           </div>
@@ -86,7 +82,7 @@ const SnapcastGroups = (props) => {
             />
             <VolumeControl
               className="snapcast__group__volume-control snapcast__volume-control"
-              volume={group_volume}
+              volume={group.volume}
               mute={group.mute}
               onVolumeChange={(percent, previousPercent) => actions.setGroupVolume(group.id, percent, previousPercent)}
             />

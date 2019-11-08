@@ -56,44 +56,41 @@ class OutputControl extends React.Component {
   renderOutputs() {
     let has_outputs = false;
 
-    const clients = [];
-    for (var key in this.props.snapcast_clients) {
-      if (this.props.snapcast_clients.hasOwnProperty(key)) {
-        const client = this.props.snapcast_clients[key];
-        if (client.connected || this.props.show_disconnected_clients) {
-          clients.push(client);
-        }
+    const groups = [];
+    for (var key in this.props.snapcast_groups) {
+      if (this.props.snapcast_groups.hasOwnProperty(key)) {
+        groups.push(this.props.snapcast_groups[key]);
       }
     }
 
-    let snapcast_clients = null;
-    if (clients.length > 0) {
+    let snapcast_groups = null;
+    if (groups.length > 0) {
       has_outputs = true;
-      snapcast_clients = (
+      snapcast_groups = (
         <div>
           {
-						clients.map(client => (
-              <div className="output-control__item outputs__item--snapcast" key={client.id}>
+						groups.map(group => (
+              <div className="output-control__item outputs__item--snapcast" key={group.id}>
                 <div className="output-control__item__name">
-                  {client.name}
+                  {group.name}
                 </div>
                 <div className="output-control__item__controls">
                   <MuteControl
                     className="output-control__item__mute"
                     noTooltip
-                    mute={client.mute}
-                    onMuteChange={(mute) => this.props.snapcastActions.setClientMute(client.id, mute)}
+                    mute={group.mute}
+                    onMuteChange={(mute) => this.props.snapcastActions.setGroupMute(group.id, mute)}
                   />
                   <VolumeControl
                     className="output-control__item__volume"
-                    volume={client.volume}
-                    mute={client.mute}
-                    onVolumeChange={(percent) => this.props.snapcastActions.setClientVolume(client.id, percent)}
+                    volume={group.volume}
+                    mute={group.mute}
+                    onVolumeChange={(percent) => this.props.snapcastActions.setGroupVolume(group.id, percent)}
                   />
                 </div>
               </div>
-						))
-					}
+            ))
+          }
         </div>
       );
     }
@@ -141,14 +138,14 @@ class OutputControl extends React.Component {
           <div className="output-control__item output-control__item--commands commands">
             {
 							commands_items.map((command) => (
-  <div
-    key={command.id}
-    className="commands__item commands__item--interactive"
-    onClick={(e) => this.props.pusherActions.runCommand(command.id)}
-  >
-    <Icon className="commands__item__icon" name={command.icon} />
-    <span className={`${command.colour}-background commands__item__background`} />
-  </div>
+                <div
+                  key={command.id}
+                  className="commands__item commands__item--interactive"
+                  onClick={(e) => this.props.pusherActions.runCommand(command.id)}
+                >
+                  <Icon className="commands__item__icon" name={command.icon} />
+                  <span className={`${command.colour}-background commands__item__background`} />
+                </div>
 							))
 						}
           </div>
@@ -167,7 +164,7 @@ class OutputControl extends React.Component {
       <div className="output-control__items">
         {commands}
         {local_streaming}
-        {snapcast_clients}
+        {snapcast_groups}
       </div>
     );
   }
@@ -205,7 +202,7 @@ const mapStateToProps = (state, ownProps) => ({
   pusher_connected: state.pusher.connected,
   snapcast_enabled: (state.pusher.config ? state.pusher.config.snapcast_enabled : null),
   show_disconnected_clients: (state.ui.snapcast_show_disconnected_clients !== undefined ? state.ui.snapcast_show_disconnected_clients : false),
-  snapcast_clients: state.snapcast.clients,
+  snapcast_groups: state.snapcast.groups,
   pusher_commands: (state.pusher.commands ? state.pusher.commands : {}),
 });
 
