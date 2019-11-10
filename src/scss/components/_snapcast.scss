@@ -18,13 +18,6 @@
 		}
 	}
 
-	&__volume-control {
-		padding: 10px 0 5px 35px;
-		display: block;
-		width: 100%;
-		box-sizing: border-box;
-	}
-
 	&__group,
 	&__client {
 		display: block;
@@ -37,7 +30,7 @@
 		.menu {
 			.menu-item {
 				width: 12.5%;
-				min-width: 80px;
+				min-width: 110px;
 				max-width: 140px;
 
 				&__inner {
@@ -105,15 +98,25 @@
 		.light-theme & {
 			background: darken(colour(faint_grey), 8%);
 		}
+
+		&__volume-control {
+			margin-left: 40px;
+			margin-top: 10px;
+		}
 	}
 
 	&__clients {
-		padding: 0 10px;
+		padding: 0;
+		margin: 0 -10px;
+		display: flex;
 	}
 
 	&__client {
 		@include clearfix();
-		padding: 0 !important;
+		padding: 10px 60px 10px 10px;
+		position: relative;
+		margin: 0;
+		width: 20%;		
 
 		&__details {
 			position: relative;
@@ -128,6 +131,27 @@
 			.icon {
 				padding-right: 0;
 			}
+		}
+
+		&__volume {
+			position: absolute;
+			top: 10px;
+			bottom: 30px;
+			right: 40px;
+		}
+
+		&__mute-control {
+			position: absolute;
+			bottom: 0;
+			left: -5px;
+		}
+
+		&__volume-control {
+			position: absolute;
+			top: 0;
+			left: 0;
+			bottom: 30px;
+			height: auto;
 		}
 
 		&__latency {
@@ -173,11 +197,33 @@
 				}
 			}
 		}
+	}
 
-		@include responsive($bp_medium){
-			padding-left: 0 !important;
-			padding-right: 0 !important;
-			padding-top: 0 !important;
+	@include responsive($bp_wide){
+		&__client {
+			width: 25%;
+		}
+	}
+
+	@include responsive($bp_medium){
+		&__client {
+			width: 50%;
+		}
+
+		&__groups {
+			.menu {
+				margin: 0 -20px;
+			}
+		}
+	}
+
+	@include responsive($bp_small){
+		&__client {
+			width: auto;
+		}
+
+		&__clients {
+			display: block;
 		}
 	}
 }

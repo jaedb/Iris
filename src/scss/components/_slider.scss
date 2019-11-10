@@ -8,8 +8,8 @@
 		position: absolute;
 		top: 0;
 		left: 0;
-		bottom: 0;
 		width: 100%;
+		height: 100%;
 		opacity: 0;
 		z-index: 2;
 		cursor: pointer;
@@ -96,6 +96,59 @@
 					top: -4px;
 					right: -6px;
 					background: lighten(colour(turquoise), 10%);
+				}
+			}
+		}
+	}
+
+	&__wrapper--vertical {
+		height: 100%;
+		width: 20px;
+
+		.slider {
+			height: 100%;
+			width: 20px;
+
+			&__input {
+				&:focus + .slider__track {
+					.slider__track__progress:after {
+						top: -6px;
+						left: -4px;
+					}
+				}
+			}
+
+			&__track {
+				height: auto;
+				width: 4px;
+				left: 42%;
+				top: 0;
+				right: auto;
+				bottom: 0;
+				margin-left: -3px;
+				margin-top: auto;
+
+				&__progress {
+					top: auto;
+					bottom: 0;
+					width: 100%;
+					max-height: 100%;
+
+					&:after {
+						top: -1px;
+						left: 0;
+					}
+				}
+			}
+
+			&:hover {
+				.slider__track {
+					&__progress {
+						&:after {
+							top: -6px;
+							left: -4px;
+						}
+					}
 				}
 			}
 		}

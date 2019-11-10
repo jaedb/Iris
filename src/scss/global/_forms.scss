@@ -418,6 +418,18 @@ select {
     }
   }
 
+  &--condensed {
+    & > .name {
+      width: auto;
+      float: none;
+    }
+
+    & > .input {
+      width: auto;
+      float: none;
+    }
+  }
+
   .label {
     .tooltip {
       left: -4px;

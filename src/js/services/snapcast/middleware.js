@@ -629,6 +629,11 @@ const SnapcastMiddleware = (function () {
 
           store.dispatch(snapcastActions.setClientVolume(client_to_update.id, volume));
         }
+
+        store.dispatch(snapcastActions.groupLoaded({
+          id: action.id,
+          volume: action.percent,
+        }))
         break;
 
       default:

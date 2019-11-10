@@ -85,7 +85,7 @@ class OutputControl extends React.Component {
                     className="output-control__item__volume"
                     volume={group.volume}
                     mute={group.mute}
-                    onVolumeChange={(percent) => this.props.snapcastActions.setGroupVolume(group.id, percent)}
+                    onVolumeChange={(percent, previousPercent) => this.props.snapcastActions.setGroupVolume(group.id, percent, previousPercent)}
                   />
                 </div>
               </div>

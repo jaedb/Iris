@@ -88,19 +88,12 @@ const SnapcastGroups = (props) => {
             />
           </div>
         </div>
-        <div className="field">
-          <div className="name">
-            Clients
-          </div>
-          <div className="input">
-            <SnapcastClients
-              group={group}
-              groups={groupsArray}
-              actions={actions}
-              show_disconnected_clients={show_disconnected_clients}
-            />
-          </div>
-        </div>
+        <SnapcastClients
+          group={group}
+          groups={groupsArray}
+          actions={actions}
+          show_disconnected_clients={show_disconnected_clients}
+        />
       </div>
     );
   }
