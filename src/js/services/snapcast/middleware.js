@@ -21,6 +21,12 @@ const SnapcastMiddleware = (function () {
       console.log('Snapcast log (incoming)', message);
     }
 
+    // Some messages are arrays of messages
+    if (Array.isArray(message)) {
+      message.map(messageItem => handleMessage(ws, store, messageItem));
+      return;
+    }
+
     // Pull our ID. JSON-RPC nests the ID under the error object,
     // so make sure we handle that.
     // TODO: Use this as our measure of a successful response vs error
@@ -56,43 +62,34 @@ const SnapcastMiddleware = (function () {
 
       // General broadcast received
     } else {
-      // Broadcast of an error
-      if (message.error !== undefined) {
-        store.dispatch(coreActions.handleException(
-          `Snapcast: ${message.error.message}`,
-          message,
-          (message.error.data !== undefined && message.error.data.description !== undefined ? message.error.data.description : null),
-        ));
-      } else {
-        switch (message.method) {
-          case 'Client.OnConnect':
-            store.dispatch(snapcastActions.clientLoaded(message.params.client));
-            break;
+      switch (message.method) {
+        case 'Client.OnConnect':
+          store.dispatch(snapcastActions.clientLoaded(message.params.client));
+          break;
 
-          case 'Client.OnDisconnect':
-            store.dispatch(snapcastActions.clientLoaded(message.params.client));
-            break;
+        case 'Client.OnDisconnect':
+          store.dispatch(snapcastActions.clientLoaded(message.params.client));
+          break;
 
-          case 'Client.OnVolumeChanged':
+        case 'Client.OnVolumeChanged':
+          store.dispatch(snapcastActions.clientLoaded(message.params));
+          break;
+
+        case 'Client.OnLatencyChanged':
             store.dispatch(snapcastActions.clientLoaded(message.params));
-            break;
+          break;
 
-          case 'Client.OnLatencyChanged':
-              store.dispatch(snapcastActions.clientLoaded(message.params));
-            break;
+        case 'Client.OnNameChanged':
+            store.dispatch(snapcastActions.clientLoaded(message.params));
+          break;
 
-          case 'Client.OnNameChanged':
-              store.dispatch(snapcastActions.clientLoaded(message.params));
-            break;
+        case 'Group.OnMute':
+          store.dispatch(snapcastActions.groupLoaded(message.params));
+          break;
 
-          case 'Group.OnMute':
-            store.dispatch(snapcastActions.groupLoaded(message.params));
-            break;
-
-          case 'Server.OnUpdate':
-            store.dispatch(snapcastActions.serverLoaded(message.param));
-            break;
-        }
+        case 'Server.OnUpdate':
+          store.dispatch(snapcastActions.serverLoaded(message.param));
+          break;
       }
     }
   };

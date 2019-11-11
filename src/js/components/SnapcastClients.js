@@ -19,11 +19,7 @@ const SnapcastClients = ({ actions, group, groups, show_disconnected_clients }) 
   }
 
   if (!clients || clients.length <= 0) {
-    return (
-      <div className="text mid_grey-text">
-        No clients
-      </div>
-    );
+    return null;
   }
 
   return (
@@ -42,6 +38,7 @@ const SnapcastClients = ({ actions, group, groups, show_disconnected_clients }) 
               <label className="field field--condensed">
                 <div className="name">
                   Name
+                  {!client.connected && ' (disconnected)'}
                 </div>
                 <div className="input">
                   <TextField
@@ -67,7 +64,7 @@ const SnapcastClients = ({ actions, group, groups, show_disconnected_clients }) 
                       {
                         key: `client_${client.id}_new_group`,
                         value: group.id,
-                        label: 'New group',
+                        label: '+ New group',
                       },
                     ]}
                   />

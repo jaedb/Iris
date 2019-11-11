@@ -110,6 +110,8 @@
 			width: 20px;
 
 			&__input {
+				-webkit-appearance: slider-vertical;
+
 				&:focus + .slider__track {
 					.slider__track__progress:after {
 						top: -6px;

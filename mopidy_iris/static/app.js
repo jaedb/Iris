@@ -62603,11 +62603,7 @@ var SnapcastClients = function SnapcastClients(_ref) {
   }
 
   if (!clients || clients.length <= 0) {
-    return _react2.default.createElement(
-      'div',
-      { className: 'text mid_grey-text' },
-      'No clients'
-    );
+    return null;
   }
 
   return _react2.default.createElement(
@@ -62630,7 +62626,8 @@ var SnapcastClients = function SnapcastClients(_ref) {
           _react2.default.createElement(
             'div',
             { className: 'name' },
-            'Name'
+            'Name',
+            !client.connected && ' (disconnected)'
           ),
           _react2.default.createElement(
             'div',
@@ -62668,7 +62665,7 @@ var SnapcastClients = function SnapcastClients(_ref) {
               })), [{
                 key: 'client_' + client.id + '_new_group',
                 value: group.id,
-                label: 'New group'
+                label: '+ New group'
               }])
             })
           )
@@ -62907,7 +62904,7 @@ var SnapcastGroups = function SnapcastGroups(props) {
 
   var renderMenuItem = function renderMenuItem(group) {
     var icon = function icon() {
-      var iconWords = [{ icon: 'business', words: ['office', 'work'] }, { icon: 'king_bed', words: ['bed'] }, { icon: 'tv', words: ['lounge', 'tv'] }, { icon: 'directions_car', words: ['garage', 'laundry'] }, { icon: 'fitness_center', words: ['gym'] }, { icon: 'emoji_food_beverage', words: ['kitchen'] }, { icon: 'deck', words: ['deck', 'outside'] }, { icon: 'restaurant_menu', words: ['dining', 'dinner'] }, { icon: 'laptop', words: ['laptop'] }, { icon: 'bug_report', words: ['test', 'debug'] }];
+      var iconWords = [{ icon: 'business', words: ['office', 'work'] }, { icon: 'king_bed', words: ['bed'] }, { icon: 'tv', words: ['lounge', 'tv'] }, { icon: 'directions_car', words: ['garage', 'laundry'] }, { icon: 'fitness_center', words: ['gym'] }, { icon: 'emoji_food_beverage', words: ['kitchen'] }, { icon: 'deck', words: ['deck', 'outside'] }, { icon: 'restaurant_menu', words: ['dining', 'dinner'] }, { icon: 'laptop', words: ['laptop'] }, { icon: 'bug_report', words: ['test', 'debug'] }, { icon: 'child_care', words: ['kids', 'baby'] }];
       var name = group.name.toLowerCase();
       var _iteratorNormalCompletion = true;
       var _didIteratorError = false;
@@ -62978,7 +62975,8 @@ var SnapcastGroups = function SnapcastGroups(props) {
         _react2.default.createElement(
           'div',
           { className: 'menu-item__title' },
-          group.name
+          group.name,
+          group.mute && _react2.default.createElement(_Icon2.default, { name: 'volume_off' })
         )
       )
     );
@@ -62993,7 +62991,7 @@ var SnapcastGroups = function SnapcastGroups(props) {
       _react2.default.createElement(
         'div',
         { className: 'menu__inner' },
-        groupsArray.map(function (group) {
+        helpers.sortItems(groupsArray, 'name').map(function (group) {
           return renderMenuItem(group);
         })
       )
@@ -74135,6 +74133,14 @@ var SnapcastMiddleware = function () {
       console.log('Snapcast log (incoming)', message);
     }
 
+    // Some messages are arrays of messages
+    if (Array.isArray(message)) {
+      message.map(function (messageItem) {
+        return handleMessage(ws, store, messageItem);
+      });
+      return;
+    }
+
     // Pull our ID. JSON-RPC nests the ID under the error object,
     // so make sure we handle that.
     // TODO: Use this as our measure of a successful response vs error
@@ -74167,39 +74173,34 @@ var SnapcastMiddleware = function () {
 
       // General broadcast received
     } else {
-      // Broadcast of an error
-      if (message.error !== undefined) {
-        store.dispatch(coreActions.handleException('Snapcast: ' + message.error.message, message, message.error.data !== undefined && message.error.data.description !== undefined ? message.error.data.description : null));
-      } else {
-        switch (message.method) {
-          case 'Client.OnConnect':
-            store.dispatch(snapcastActions.clientLoaded(message.params.client));
-            break;
+      switch (message.method) {
+        case 'Client.OnConnect':
+          store.dispatch(snapcastActions.clientLoaded(message.params.client));
+          break;
 
-          case 'Client.OnDisconnect':
-            store.dispatch(snapcastActions.clientLoaded(message.params.client));
-            break;
+        case 'Client.OnDisconnect':
+          store.dispatch(snapcastActions.clientLoaded(message.params.client));
+          break;
 
-          case 'Client.OnVolumeChanged':
-            store.dispatch(snapcastActions.clientLoaded(message.params));
-            break;
+        case 'Client.OnVolumeChanged':
+          store.dispatch(snapcastActions.clientLoaded(message.params));
+          break;
 
-          case 'Client.OnLatencyChanged':
-            store.dispatch(snapcastActions.clientLoaded(message.params));
-            break;
+        case 'Client.OnLatencyChanged':
+          store.dispatch(snapcastActions.clientLoaded(message.params));
+          break;
 
-          case 'Client.OnNameChanged':
-            store.dispatch(snapcastActions.clientLoaded(message.params));
-            break;
+        case 'Client.OnNameChanged':
+          store.dispatch(snapcastActions.clientLoaded(message.params));
+          break;
 
-          case 'Group.OnMute':
-            store.dispatch(snapcastActions.groupLoaded(message.params));
-            break;
+        case 'Group.OnMute':
+          store.dispatch(snapcastActions.groupLoaded(message.params));
+          break;
 
-          case 'Server.OnUpdate':
-            store.dispatch(snapcastActions.serverLoaded(message.param));
-            break;
-        }
+        case 'Server.OnUpdate':
+          store.dispatch(snapcastActions.serverLoaded(message.param));
+          break;
       }
     }
   };

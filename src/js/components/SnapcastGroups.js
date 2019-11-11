@@ -111,6 +111,7 @@ const SnapcastGroups = (props) => {
         { icon: 'restaurant_menu', words: ['dining', 'dinner'] },
         { icon: 'laptop', words: ['laptop'] },
         { icon: 'bug_report', words: ['test', 'debug'] },
+        { icon: 'child_care', words: ['kids', 'baby'] },
       ];
       const name = group.name.toLowerCase();
       for (let item of iconWords) {
@@ -135,6 +136,9 @@ const SnapcastGroups = (props) => {
           <Icon className="menu-item__icon" name={icon()} />
           <div className="menu-item__title">
             {group.name}
+            {group.mute && (
+              <Icon name="volume_off" />
+            )}
           </div>
         </div>
       </Link>
@@ -145,7 +149,7 @@ const SnapcastGroups = (props) => {
     <div className="snapcast__groups" id="services-snapcast-groups">
       <div className="snapcast__groups__menu menu">
         <div className="menu__inner">
-          {groupsArray.map((group) => renderMenuItem(group))}
+          {helpers.sortItems(groupsArray, 'name').map((group) => renderMenuItem(group))}
         </div>
       </div>
       {renderGroup()}
