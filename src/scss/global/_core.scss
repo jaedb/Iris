@@ -246,14 +246,14 @@ h2 {
     text-decoration: none;
 
     &:hover {
-      border-bottom: 1px solid colour(white);
+      border-bottom: 2px solid colour(white);
     }
   }
 
   &.grey-text {
     a:hover {
       color: colour(mid_grey) !important;
-      border-bottom: 1px solid colour(mid_grey);
+      border-bottom: 2px solid colour(mid_grey);
     }
   }
 }

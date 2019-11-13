@@ -1495,7 +1495,7 @@ export function getPlaylist(uri) {
             ...helpers.formatPlaylist(response),
             is_completely_loaded: true,
             user_uri: response.owner.uri,
-            tracks_uris: helpers.arrayOf('uri', tracks),
+            tracks_uris: tracks ? helpers.arrayOf('uri', tracks) : null,
             tracks_more: response.tracks.next,
             tracks_total: response.tracks.total,
             description,

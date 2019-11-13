@@ -4,12 +4,6 @@ main .track-view {
 	position: relative;
 
 	.title {
-		h2 {
-			a:hover {
-				color: darken(colour(mid_grey), 20%);
-			}
-		}
-
 		.details {
 			padding: 25px 0 30px;
 
@@ -45,7 +39,7 @@ main .track-view {
 		.content {
 			padding-bottom: 20px;
 
-			*, 
+			*,
 			& * {
 				font-size: 18px;
 				line-height: normal;
