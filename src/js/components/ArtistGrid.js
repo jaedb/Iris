@@ -75,7 +75,7 @@ class ArtistGrid extends React.Component {
 
 const mapStateToProps = (state, ownProps) => ({
   albums: state.core.albums,
-  spotifyAvailable: state.spotify.access_token !== null,
+  spotifyAvailable: state.spotify.enabled,
 });
 
 const mapDispatchToProps = (dispatch) => ({
