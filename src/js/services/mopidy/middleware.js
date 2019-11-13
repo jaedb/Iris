@@ -2125,7 +2125,7 @@ const MopidyMiddleware = (function () {
             const existing_artist = store.getState().core.artists[artist.uri];
             if (existing_artist) {
               if (!existing_artist.images) {
-                if (store.getState().spotify.access_token) {
+                if (store.getState().spotify.enabled) {
                   store.dispatch(spotifyActions.getArtistImages(artist));
                 } else {
                   store.dispatch(discogsActions.getArtistImages(artist.uri, artist));

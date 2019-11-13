@@ -52877,7 +52877,7 @@ var ArtistGrid = function (_React$Component) {
 var mapStateToProps = function mapStateToProps(state, ownProps) {
   return {
     albums: state.core.albums,
-    spotifyAvailable: state.spotify.access_token !== null
+    spotifyAvailable: state.spotify.enabled
   };
 };
 
@@ -72266,7 +72266,7 @@ var MopidyMiddleware = function () {
               var existing_artist = store.getState().core.artists[artist.uri];
               if (existing_artist) {
                 if (!existing_artist.images) {
-                  if (store.getState().spotify.access_token) {
+                  if (store.getState().spotify.enabled) {
                     store.dispatch(spotifyActions.getArtistImages(artist));
                   } else {
                     store.dispatch(discogsActions.getArtistImages(artist.uri, artist));
