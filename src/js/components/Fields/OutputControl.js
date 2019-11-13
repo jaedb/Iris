@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux';
 import VolumeControl from './VolumeControl';
 import MuteControl from './MuteControl';
 import Icon from '../Icon';
+import DropdownField from './DropdownField';
 import * as helpers from '../../helpers';
 
 import * as coreActions from '../../services/core/actions';
@@ -54,6 +55,9 @@ class OutputControl extends React.Component {
   }
 
   renderOutputs() {
+    const {
+      snapcast_streams,
+    } = this.props;
     let has_outputs = false;
 
     const groups = [];
@@ -62,6 +66,10 @@ class OutputControl extends React.Component {
         groups.push(this.props.snapcast_groups[key]);
       }
     }
+    
+    const streams = Object.keys(snapcast_streams).map(
+      (id) => ({ value: id, label: id })
+    );
 
     let snapcast_groups = null;
     if (groups.length > 0) {
@@ -75,6 +83,14 @@ class OutputControl extends React.Component {
                   {group.name}
                 </div>
                 <div className="output-control__item__controls">
+                  <DropdownField
+                    icon="settings_input_component"
+                    name="Source"
+                    value={group.stream_id}
+                    options={streams}
+                    noLabel
+                    handleChange={(value) => this.props.snapcastActions.setGroupStream(group.id, value)}
+                  />
                   <MuteControl
                     className="output-control__item__mute"
                     noTooltip
@@ -203,6 +219,7 @@ const mapStateToProps = (state, ownProps) => ({
   snapcast_enabled: (state.pusher.config ? state.pusher.config.snapcast_enabled : null),
   show_disconnected_clients: (state.ui.snapcast_show_disconnected_clients !== undefined ? state.ui.snapcast_show_disconnected_clients : false),
   snapcast_groups: state.snapcast.groups,
+  snapcast_streams: state.snapcast.streams,
   pusher_commands: (state.pusher.commands ? state.pusher.commands : {}),
 });
 
