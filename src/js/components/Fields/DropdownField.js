@@ -118,13 +118,14 @@ export default class DropdownField extends React.Component {
       no_status_icon,
       no_label,
       button,
-      className: classNameProp,
+      className: classNameProp = '',
       name,
       value,
       icon,
       icon_type,
       selected_icon: selectedIconProp,
       valueAsLabel,
+      noLabel,
     } = this.props;
     const { expanded } = this.state;
 
@@ -156,15 +157,17 @@ export default class DropdownField extends React.Component {
       <div className={className} data-uid={this.uid}>
         <div className={`dropdown-field__label${button ? ` button ${button}` : ''}`} onClick={(e) => this.setExpanded()}>
           {icon ? <Icon name={icon} type={icon_type ? icon_type : 'material'} /> : null}
-          <span className="text">
-            <span className="dropdown-field__label__value">
-              {valueAsLabel && selectedOptions.length === 1 ? selectedOptions[0].label : name}
+          {!noLabel && (
+            <span className="text">
+              <span className="dropdown-field__label__value">
+                {valueAsLabel && selectedOptions.length === 1 ? selectedOptions[0].label : name}
+              </span>
+              <span className="dropdown-field__label__name">
+                {name}
+              </span>
+              {this.isMultiSelect() ? ` (${selectedOptions.length})` : null}
             </span>
-            <span className="dropdown-field__label__name">
-              {name}
-            </span>
-            {this.isMultiSelect() ? ` (${selectedOptions.length})` : null}
-          </span>
+          )}
         </div>
         <div className="dropdown-field__options">
           <div className="dropdown-field__options__liner">
