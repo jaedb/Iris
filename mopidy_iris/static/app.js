@@ -55751,13 +55751,15 @@ var DropdownField = function (_React$Component) {
           no_status_icon = _props2.no_status_icon,
           no_label = _props2.no_label,
           button = _props2.button,
-          classNameProp = _props2.className,
+          _props2$className = _props2.className,
+          classNameProp = _props2$className === undefined ? '' : _props2$className,
           name = _props2.name,
           value = _props2.value,
           icon = _props2.icon,
           icon_type = _props2.icon_type,
           selectedIconProp = _props2.selected_icon,
-          valueAsLabel = _props2.valueAsLabel;
+          valueAsLabel = _props2.valueAsLabel,
+          noLabel = _props2.noLabel;
       var expanded = this.state.expanded;
 
 
@@ -55794,7 +55796,7 @@ var DropdownField = function (_React$Component) {
               return _this2.setExpanded();
             } },
           icon ? _react2.default.createElement(_Icon2.default, { name: icon, type: icon_type ? icon_type : 'material' }) : null,
-          _react2.default.createElement(
+          !noLabel && _react2.default.createElement(
             'span',
             { className: 'text' },
             _react2.default.createElement(
@@ -57141,6 +57143,10 @@ var _Icon = __webpack_require__(/*! ../Icon */ "./src/js/components/Icon.js");
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
+var _DropdownField = __webpack_require__(/*! ./DropdownField */ "./src/js/components/Fields/DropdownField.js");
+
+var _DropdownField2 = _interopRequireDefault(_DropdownField);
+
 var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
 
 var helpers = _interopRequireWildcard(_helpers);
@@ -57224,6 +57230,8 @@ var OutputControl = function (_React$Component) {
     value: function renderOutputs() {
       var _this2 = this;
 
+      var snapcast_streams = this.props.snapcast_streams;
+
       var has_outputs = false;
 
       var groups = [];
@@ -57232,6 +57240,10 @@ var OutputControl = function (_React$Component) {
           groups.push(this.props.snapcast_groups[key]);
         }
       }
+
+      var streams = Object.keys(snapcast_streams).map(function (id) {
+        return { value: id, label: id };
+      });
 
       var snapcast_groups = null;
       if (groups.length > 0) {
@@ -57251,6 +57263,16 @@ var OutputControl = function (_React$Component) {
               _react2.default.createElement(
                 'div',
                 { className: 'output-control__item__controls' },
+                _react2.default.createElement(_DropdownField2.default, {
+                  icon: 'settings_input_component',
+                  name: 'Source',
+                  value: group.stream_id,
+                  options: streams,
+                  noLabel: true,
+                  handleChange: function handleChange(value) {
+                    return _this2.props.snapcastActions.setGroupStream(group.id, value);
+                  }
+                }),
                 _react2.default.createElement(_MuteControl2.default, {
                   className: 'output-control__item__mute',
                   noTooltip: true,
@@ -57424,6 +57446,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
     snapcast_enabled: state.pusher.config ? state.pusher.config.snapcast_enabled : null,
     show_disconnected_clients: state.ui.snapcast_show_disconnected_clients !== undefined ? state.ui.snapcast_show_disconnected_clients : false,
     snapcast_groups: state.snapcast.groups,
+    snapcast_streams: state.snapcast.streams,
     pusher_commands: state.pusher.commands ? state.pusher.commands : {}
   };
 };

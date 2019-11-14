@@ -4979,29 +4979,27 @@ select {
       display: block; }
     .output-control__item:not(:first-child) {
       border-top: 1px solid rgba(0, 0, 0, 0.05); }
-    .output-control__item__actions {
-      float: right; }
-      .output-control__item__actions .action {
-        -webkit-transition: all 0.2s ease-in-out;
-        -moz-transition: all 0.2s ease-in-out;
-        -o-transition: all 0.2s ease-in-out;
-        transition: all 0.2s ease-in-out;
-        cursor: pointer;
-        color: #a3a19f; }
-        .output-control__item__actions .action:hover {
-          color: #181818; }
-    .output-control__item--has-power-button .output-control__item__volume {
-      padding-left: 50px; }
+    .output-control__item__controls {
+      display: flex;
+      align-items: center; }
+      .output-control__item__controls .dropdown-field {
+        flex-grow: 0; }
+        .output-control__item__controls .dropdown-field__label {
+          padding: 2px !important;
+          text-align: center; }
+          .output-control__item__controls .dropdown-field__label .icon {
+            font-size: 0.9em; }
     .output-control__item__volume {
-      padding-top: 2px;
-      padding-left: 25px; }
+      padding-top: 6px;
+      padding-left: 10px;
+      flex-grow: 1; }
     .output-control__item__mute.control {
       position: relative;
       display: inline-block;
       padding: 2px;
       color: #000000;
       float: left;
-      font-size: 16px; }
+      flex-grow: 0; }
 
 @keyframes click_feedback {
   0% {
@@ -5031,6 +5029,8 @@ select {
         animation-duration: 0.2s;
         animation-timing-function: ease-out;
         animation-iteration-count: 1; }
+      .output-control__item__mute.control .icon {
+        font-size: 1em; }
   @media (max-width: 799px) {
     .output-control {
       position: absolute;

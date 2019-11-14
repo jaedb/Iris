@@ -58,29 +58,28 @@
 			border-top: 1px solid rgba(0,0,0,0.05);
 		}
 
-		&__actions {
-			float: right;
-			
-			.action {
-				@include animate();
-				cursor: pointer;
-				color: colour(mid_grey);
+		&__controls {
+			display: flex;
+			align-items: center;
 
-				&:hover {
-					color: colour(dark_grey);
+			.dropdown-field {
+				flex-grow: 0;
+
+				&__label {
+					padding: 2px !important;
+					text-align: center;
+
+					.icon {
+						font-size: 0.9em;
+					}
 				}
 			}
 		}
 
-		&--has-power-button {
-			.output-control__item__volume {
-				padding-left: 50px;
-			}
-		}
-
 		&__volume {
-			padding-top: 2px;
-			padding-left: 25px;
+			padding-top: 6px;
+			padding-left: 10px;
+			flex-grow: 1;
 		}
 
 		&__mute.control {
@@ -88,7 +87,11 @@
 			padding: 2px;
 			color: colour(black);
 			float: left;
-			font-size: 16px;
+			flex-grow: 0;
+
+			.icon {
+				font-size: 1em;
+			}
 		}
 	}
 
