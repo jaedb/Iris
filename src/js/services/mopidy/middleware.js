@@ -1267,7 +1267,7 @@ const MopidyMiddleware = (function () {
               ));
             };
 
-            request(socket, store, 'library.search', { query: { track_title: [action.data.query] }, uris: [action.data.uri_scheme] })
+            request(socket, store, 'library.search', { query: { any: [action.data.query] }, uris: [action.data.uri_scheme] })
               .then(
                 (response) => {
                   if (response.length > 0 && response[0].tracks !== undefined) {
@@ -1312,7 +1312,7 @@ const MopidyMiddleware = (function () {
                   remaining: (action.data.uri_schemes.length) + 1,
                 },
               ));
-              request(socket, store, 'library.search', { query: { track_name: [action.data.query] }, uris: [action.data.uri_scheme] })
+              request(socket, store, 'library.search', { query: { any: [action.data.query] }, uris: [action.data.uri_scheme] })
                 .then(
                   (response) => {
                     if (response.length > 0 && response[0].tracks !== undefined) {

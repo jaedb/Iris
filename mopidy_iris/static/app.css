@@ -2840,10 +2840,10 @@ h2 {
     color: inherit;
     text-decoration: none; }
     h2 a:hover {
-      border-bottom: 1px solid #FFFFFF; }
+      border-bottom: 2px solid #FFFFFF; }
   h2.grey-text a:hover {
     color: #a3a19f !important;
-    border-bottom: 1px solid #a3a19f; }
+    border-bottom: 2px solid #a3a19f; }
 
 h3 {
   font-weight: 100;
@@ -6959,8 +6959,6 @@ main .playlist-view {
 main .track-view {
   padding-left: 30%;
   position: relative; }
-  main .track-view .title h2 a:hover {
-    color: #706e6c; }
   main .track-view .title .details {
     padding: 25px 0 30px; }
     main .track-view .title .details .flag {
