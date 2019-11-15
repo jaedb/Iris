@@ -17,7 +17,7 @@ export default class Dropzone extends React.Component {
     this.handleMouseOut = this.handleMouseOut.bind(this);
   }
 
-  componentWillMount() {
+  componentDidMount() {
     window.addEventListener('mouseover', this.handleMouseOver, false);
     window.addEventListener('mouseout', this.handleMouseOut, false);
   }

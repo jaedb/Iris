@@ -15,7 +15,7 @@ export default class FilterField extends React.Component {
     this.handleKeyUp = this.handleKeyUp.bind(this);
   }
 
-  componentWillMount() {
+  componentDidMount() {
     window.addEventListener('keyup', this.handleKeyUp, false);
     this.setState({ value: this.props.initialValue });
   }

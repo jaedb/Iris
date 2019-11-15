@@ -41,16 +41,30 @@ class ContextMenu extends React.Component {
     window.removeEventListener('touchstart', this.handleTouchStart, false);
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentDidUpdate(prevProps) {
+    const {
+      menu: prevMenu,
+      lastfm_authorized: prevLastfm_authorized,
+      tracks: prevTracks,
+    } = prevProps;
+    const {
+      menu,
+      tracks,
+      lastfm_authorized,
+      spotify_authorized,
+      spotifyActions,
+      lastfmActions,
+    } = this.props;
+
     // if we've been given a menu object (ie activated) when we didn't have one prior
-    if (nextProps.menu && !this.props.menu) {
+    if (!prevMenu && menu) {
       this.setState({ submenu: null });
 
-      const context = this.getContext(nextProps);
+      const context = this.getContext(this.props);
 
       // if we're able to be in the library, run a check
-      if (nextProps.spotify_authorized && context.source == 'spotify') {
-        switch (nextProps.menu.context) {
+      if (spotify_authorized && context.source === 'spotify') {
+        switch (menu.context) {
           case 'artist':
           case 'album':
           case 'playlist':
@@ -59,23 +73,27 @@ class ContextMenu extends React.Component {
           case 'playlist-track':
           case 'editable-playlist-track':
           case 'queue-track':
-            this.props.spotifyActions.following(nextProps.menu.items[0].uri);
+            spotifyActions.following(menu.items[0].uri);
+            break;
+          default:
             break;
         }
       }
 
       // if we're able to be in the LastFM library, run a check
-      if (nextProps.lastfm_authorized && context.is_track && context.items_count == 1) {
-        if (nextProps.menu.items[0].uri && this.props.tracks[nextProps.menu.items[0].uri] !== undefined && this.props.tracks[nextProps.menu.items[0].uri].userloved === undefined) {
-          this.props.lastfmActions.getTrack(nextProps.menu.items[0].uri);
+      if (lastfm_authorized && context.is_track && context.items_count == 1) {
+        if (menu.items[0].uri && prevTracks[menu.items[0].uri] !== undefined && tracks[menu.items[0].uri].userloved === undefined) {
+          lastfmActions.getTrack(menu.items[0].uri);
         }
       }
     }
   }
 
   handleScroll(e) {
-    if (this.props.menu) {
-      this.props.uiActions.hideContextMenu();
+    const { menu, uiActions } = this.props;
+
+    if (menu) {
+      uiActions.hideContextMenu();
     }
   }
 

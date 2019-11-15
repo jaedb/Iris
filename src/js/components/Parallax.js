@@ -13,7 +13,7 @@ export default class Parallax extends React.Component {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     if (this.props.image) {
       this.loadImage(this.props.image);
     }

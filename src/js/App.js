@@ -66,16 +66,6 @@ export class App extends React.Component {
     this.handleFocusAndBlur = this.handleFocusAndBlur.bind(this);
   }
 
-  componentWillMount() {
-    window.addEventListener(
-      'beforeinstallprompt',
-      this.handleInstallPrompt,
-      false,
-    );
-    window.addEventListener('focus', this.handleFocusAndBlur, false);
-    window.addEventListener('blur', this.handleFocusAndBlur, false);
-  }
-
   componentWillUnmount() {
     window.removeEventListener(
       'beforeinstallprompt',
@@ -87,6 +77,14 @@ export class App extends React.Component {
   }
 
   componentDidMount() {
+    window.addEventListener(
+      'beforeinstallprompt',
+      this.handleInstallPrompt,
+      false,
+    );
+    window.addEventListener('focus', this.handleFocusAndBlur, false);
+    window.addEventListener('blur', this.handleFocusAndBlur, false);
+
     if (this.props.allow_reporting) {
       ReactGA.initialize('UA-64701652-3');
     }

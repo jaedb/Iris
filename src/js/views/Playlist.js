@@ -27,16 +27,14 @@ import * as spotifyActions from '../services/spotify/actions';
 class Playlist extends React.Component {
   constructor(props) {
     super(props);
-  }
 
-  componentWillMount() {
-    let { uri } = this.props;
+    let { uri } = props;
 
     // Spotify upgraded their playlists URI to remove user component (Sept 2018)
     // We accept the old format, and redirect to the new one
     if (uri.includes('spotify:user:')) {
       uri = uri.replace(/spotify:user:([^:]*?):/i, 'spotify:');
-      this.props.history.push(`/playlist/${encodeURIComponent(uri)}`);
+      props.history.push(`/playlist/${encodeURIComponent(uri)}`);
     }
   }
 

@@ -11,7 +11,7 @@ class Hotkeys extends React.Component {
     this.handleKeyDown = this.handleKeyDown.bind(this);
   }
 
-  componentWillMount() {
+  componentDidMount() {
     window.addEventListener('keydown', this.handleKeyDown, false);
   }
 

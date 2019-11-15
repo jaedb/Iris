@@ -29,17 +29,15 @@ class LibraryArtists extends React.Component {
     };
   }
 
-  componentWillMount() {
-    // Before we mount, restore any limit defined in our location state
+  componentDidMount() {
+    // Restore any limit defined in our location state
     const state = (this.props.location.state ? this.props.location.state : {});
     if (state.limit) {
       this.setState({
         limit: state.limit,
       });
     }
-  }
 
-  componentDidMount() {
     this.props.uiActions.setWindowTitle('Artists');
 
     if (!this.props.mopidy_library_artists && this.props.mopidy_connected && (this.props.source == 'all' || this.props.source == 'local')) {

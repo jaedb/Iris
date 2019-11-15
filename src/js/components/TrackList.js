@@ -21,7 +21,7 @@ class TrackList extends React.Component {
     this.handleTouchEnd = this.handleTouchEnd.bind(this);
   }
 
-  componentWillMount() {
+  componentDidMount() {
     window.addEventListener('keydown', this.handleKeyDown, false);
     window.addEventListener('touchmove', this.handleTouchMove, false);
     window.addEventListener('touchend', this.handleTouchEnd, false);
