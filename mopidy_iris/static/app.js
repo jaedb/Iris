@@ -47629,7 +47629,7 @@ module.exports = hoistNonReactStatics;
 /*!***************************************************************!*\
   !*** ./node_modules/react-router-dom/esm/react-router-dom.js ***!
   \***************************************************************/
-/*! exports provided: MemoryRouter, Prompt, Redirect, Route, Router, StaticRouter, Switch, __RouterContext, generatePath, matchPath, useHistory, useLocation, useParams, useRouteMatch, withRouter, BrowserRouter, HashRouter, Link, NavLink */
+/*! exports provided: BrowserRouter, HashRouter, Link, NavLink, MemoryRouter, Prompt, Redirect, Route, Router, StaticRouter, Switch, __RouterContext, generatePath, matchPath, useHistory, useLocation, useParams, useRouteMatch, withRouter */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -76489,6 +76489,8 @@ function getMe() {
  * @param path = String, the relative API path for the HTML lyrics
  * */
 function getTrackLyrics(uri, path) {
+  var _this = this;
+
   return function (dispatch, getState) {
     dispatch(coreActions.trackLoaded({
       uri: uri,
@@ -76508,14 +76510,13 @@ function getTrackLyrics(uri, path) {
 
     $.ajax(config).then(function (response, status, xhr) {
       dispatch(uiActions.stopLoading(loader_key));
-
       if (response && response.result) {
         var html = $(response.result);
         var lyrics = html.find('.lyrics');
         if (lyrics.length > 0) {
           lyrics = lyrics.first();
           lyrics.find('a').replaceWith(function () {
-            return this.innerHTML;
+            return _this.innerHTML;
           });
 
           var lyrics_html = lyrics.html();
@@ -76546,6 +76547,7 @@ function findTrackLyrics(track) {
     query = query.toLowerCase();
     query = query.replace(/\([^)]*\) */g, ''); // anything in circle-braces
     query = query.replace(/\([^[]*\] */g, ''); // anything in square-braces
+    query = query.replace(/(?= - ).*$/g, ''); // remove anything after and including " - "
 
     sendRequest(dispatch, getState, 'search', 'GET', 'q=' + encodeURIComponent(query)).then(function (response) {
       if (response.hits && response.hits.length > 0) {
