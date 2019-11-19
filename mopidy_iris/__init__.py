@@ -1,15 +1,14 @@
 
 from __future__ import unicode_literals
 
-import logging, os, json
+import logging, os, json, pathlib
 import tornado.web
 import tornado.websocket
-import handlers
 
 from mopidy import config, ext
-from frontend import IrisFrontend
-from handlers import WebsocketHandler, HttpHandler
-from core import IrisCore
+from .frontend import IrisFrontend
+from .handlers import WebsocketHandler, HttpHandler
+from .core import IrisCore
 
 logger = logging.getLogger(__name__)
 __version__ = '3.42.2'
@@ -63,6 +62,7 @@ class Extension( ext.Extension ):
 class ReactRouterHandler(tornado.web.StaticFileHandler):
     def initialize(self, path):
         self.path = path
+        self.absolute_path = path
         self.dirname, self.filename = os.path.split(path)
         super(ReactRouterHandler, self).initialize(self.dirname)
 
@@ -74,7 +74,7 @@ class ReactRouterHandler(tornado.web.StaticFileHandler):
 ##
 def iris_factory(config, core):
 
-    path = os.path.join( os.path.dirname(__file__), 'static')
+    path = pathlib.Path(__file__).parent / "static"
 
     return [
         (
@@ -104,7 +104,7 @@ def iris_factory(config, core):
             r'/assets/(.*)',
             tornado.web.StaticFileHandler,
             {
-                'path': path+'/assets'
+                'path': str(path)+'/assets'
             }
         ),
         (
@@ -117,7 +117,7 @@ def iris_factory(config, core):
         (
             r'/(.*)',
             ReactRouterHandler, {
-                'path': path+'/index.html'
+                'path': str(path)+'/index.html'
             }
         ),
     ]

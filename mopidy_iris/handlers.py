@@ -3,16 +3,18 @@ from __future__ import unicode_literals
 from datetime import datetime
 from tornado.escape import json_encode, json_decode
 import tornado.ioloop, tornado.web, tornado.websocket, tornado.template
-import random, string, logging, uuid, subprocess, pykka, ast, logging, json, urllib, urllib2, mem, requests, time
+import random, string, logging, uuid, subprocess, pykka, ast, logging, json, urllib, requests, time
+
+from .mem import mem
 
 logger = logging.getLogger(__name__)
 
 class WebsocketHandler(tornado.websocket.WebSocketHandler):
-    
+
     # initiate (not the actual object __init__, but run shortly after)
     def initialize(self, core, config):
-        self.core = core  
-        self.config = config  
+        self.core = core
+        self.config = config
 
     def check_origin(self, origin):
         return True
@@ -31,14 +33,14 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
             'created': datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S')
         }
 
-        self.connection_id = client['connection_id']    
+        self.connection_id = client['connection_id']
 
         mem.iris.add_connection(connection=self, client=client)
- 
+
 
     def on_message(self, message):
         logger.debug("Iris websocket message received: "+message)
-        
+
         message = json_decode(message)
 
         if 'id' in message:
@@ -48,7 +50,7 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
 
         if 'jsonrpc' not in message:
             self.handle_result(id=id, error={'id': id, 'code': 32602, 'message': 'Invalid JSON-RPC request (missing property "jsonrpc")'})
-        
+
         if 'params' in message:
             params = message['params']
 
@@ -66,7 +68,7 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
             if hasattr(mem.iris, message['method']):
                 try:
                     getattr(mem.iris, message['method'])(data=params, callback=lambda response, error=False: self.handle_result(id=id, method=message['method'], response=response, error=error))
-                except Exception, e:
+                except Exception as e:
                     logger.error(str(e))
 
             else:
@@ -108,7 +110,7 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
         # Just a regular json object, so not an external request
         else:
             request_response['result'] = response
-        
+
         # Respond to the original request
         data = request_response
         data['recipient'] = self.connection_id
@@ -118,12 +120,12 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
 
 
 
-        
+
 class HttpHandler(tornado.web.RequestHandler):
 
     def set_default_headers(self):
         self.set_header("Access-Control-Allow-Origin", "*")
-        self.set_header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Client-Security-Token, Accept-Encoding")        
+        self.set_header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Client-Security-Token, Accept-Encoding")
 
     def initialize(self, core, config):
         self.core = core
@@ -134,8 +136,7 @@ class HttpHandler(tornado.web.RequestHandler):
     def options(self, slug=None):
         self.set_status(204)
         self.finish()
-    
-    @tornado.web.asynchronous
+
     def get(self, slug=None):
 
         id = int(time.time())
@@ -144,21 +145,20 @@ class HttpHandler(tornado.web.RequestHandler):
         if hasattr(mem.iris, slug):
             try:
                 getattr(mem.iris, slug)(request=self, callback=lambda response, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
-            except Exception, e:
+            except Exception as e:
                 logger.error(str(e))
-                
+
         else:
             self.handle_result(id=id, error={'code': 32601, 'message': "Method "+slug+" does not exist"})
             return
 
-    @tornado.web.asynchronous
     def post(self, slug=None):
 
         id = int(time.time())
 
         try:
             params = json.loads(self.request.body.decode('utf-8'))
-        except:            
+        except:
             self.handle_result(id=id, error={'code': 32700, 'message': "Missing or invalid payload"})
             return
 
@@ -167,7 +167,7 @@ class HttpHandler(tornado.web.RequestHandler):
             try:
                 getattr(mem.iris, slug)(data=params, request=self.request, callback=lambda response=False, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
 
-            except urllib2.HTTPError as e:
+            except HTTPError as e:
                 self.handle_result(id=id, error={'code': 32601, 'message': "Invalid JSON payload"})
                 return
 
@@ -222,4 +222,4 @@ class HttpHandler(tornado.web.RequestHandler):
         self.finish()
 
 
-        
+

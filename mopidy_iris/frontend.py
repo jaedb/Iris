@@ -2,9 +2,9 @@
 from __future__ import unicode_literals
 from mopidy.core import CoreListener
 
-import mem
 import pykka
 import logging
+from .mem import mem
 
 # import logger
 logger = logging.getLogger(__name__)
@@ -16,7 +16,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
         mem.iris.core = core
         mem.iris.config = config
 
-    def on_start(self):        
+    def on_start(self):
         mem.iris.start()
 
     def on_stop(self):
@@ -27,4 +27,3 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
 
     def tracklist_changed(self):
         mem.iris.clean_queue_metadata()
-        

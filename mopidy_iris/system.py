@@ -20,7 +20,7 @@ class IrisSystemThread(Thread):
 
         try:
             self.can_run()
-        except Exception, e:
+        except Exception as e:
             logger.error(e)
 
             error = {
