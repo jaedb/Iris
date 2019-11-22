@@ -383,14 +383,13 @@ select {
 .field {
   @include clearfix();
   @include noselect();
-  display: block;
+  display: flex;
   padding-bottom: 12px;
 
   & > .name {
     display: block;
     padding-top: 10px;
     width: 20%;
-    float: left;
 
     .icon {
       font-size: 0.9em;
@@ -400,7 +399,6 @@ select {
 
   & > .input {
     width: 80%;
-    float: left;
 
     input,
     select,
@@ -419,14 +417,14 @@ select {
   }
 
   &--condensed {
+    display: block;
+
     & > .name {
       width: auto;
-      float: none;
     }
 
     & > .input {
       width: auto;
-      float: none;
     }
   }
 
@@ -557,14 +555,14 @@ select {
 
 @include responsive($bp_medium) {
   .field {
+    display: block;
+
     .name {
-      float: none;
       width: auto;
       padding: 0 0 4px 0;
     }
 
     .input {
-      float: none;
       width: auto;
 
       .text {

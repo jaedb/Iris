@@ -101,6 +101,11 @@
 			padding-bottom: 0;
 		}
 
+		.no-results {
+			padding: 20px 20px 30px 20px;
+			font-size: 1rem;
+		}
+
 		.light-theme & {
 			background: darken(colour(faint_grey), 8%);
 		}

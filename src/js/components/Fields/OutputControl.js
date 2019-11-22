@@ -66,7 +66,7 @@ class OutputControl extends React.Component {
         groups.push(this.props.snapcast_groups[key]);
       }
     }
-    
+
     const streams = Object.keys(snapcast_streams).map(
       (id) => ({ value: id, label: id })
     );
@@ -116,15 +116,13 @@ class OutputControl extends React.Component {
       has_outputs = true;
       local_streaming = (
         <div className="output-control__item outputs__item--icecast">
-          <div className="output-control__item__actions">
-            <span className="output-control__item__action" onClick={(e) => this.props.coreActions.cachebustHttpStream()}>
-              <Icon name="refresh" />
-            </span>
-          </div>
           <div className="output-control__item__name">
 						Local browser
           </div>
           <div className="output-control__item__controls">
+            <span className="output-control__item__action" onClick={(e) => this.props.coreActions.cachebustHttpStream()}>
+              <Icon name="refresh" />
+            </span>
             <VolumeControl
               className="output-control__item__volume"
               volume={this.props.http_streaming_volume}
@@ -213,7 +211,7 @@ class OutputControl extends React.Component {
 
 const mapStateToProps = (state, ownProps) => ({
   http_streaming_enabled: state.core.http_streaming_enabled,
-  http_streaming_volume: parseInt(state.core.http_streaming_volume),
+  http_streaming_volume: parseInt(state.core.http_streaming_volume) || 50,
   http_streaming_mute: state.core.http_streaming_mute,
   pusher_connected: state.pusher.connected,
   snapcast_enabled: (state.pusher.config ? state.pusher.config.snapcast_enabled : null),

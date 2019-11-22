@@ -47629,7 +47629,7 @@ module.exports = hoistNonReactStatics;
 /*!***************************************************************!*\
   !*** ./node_modules/react-router-dom/esm/react-router-dom.js ***!
   \***************************************************************/
-/*! exports provided: BrowserRouter, HashRouter, Link, NavLink, MemoryRouter, Prompt, Redirect, Route, Router, StaticRouter, Switch, __RouterContext, generatePath, matchPath, useHistory, useLocation, useParams, useRouteMatch, withRouter */
+/*! exports provided: MemoryRouter, Prompt, Redirect, Route, Router, StaticRouter, Switch, __RouterContext, generatePath, matchPath, useHistory, useLocation, useParams, useRouteMatch, withRouter, BrowserRouter, HashRouter, Link, NavLink */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -65343,23 +65343,19 @@ var OutputControl = function (_React$Component) {
           { className: 'output-control__item outputs__item--icecast' },
           _react2.default.createElement(
             'div',
-            { className: 'output-control__item__actions' },
-            _react2.default.createElement(
-              'span',
-              { className: 'output-control__item__action', onClick: function onClick(e) {
-                  return _this2.props.coreActions.cachebustHttpStream();
-                } },
-              _react2.default.createElement(_Icon2.default, { name: 'refresh' })
-            )
-          ),
-          _react2.default.createElement(
-            'div',
             { className: 'output-control__item__name' },
             'Local browser'
           ),
           _react2.default.createElement(
             'div',
             { className: 'output-control__item__controls' },
+            _react2.default.createElement(
+              'span',
+              { className: 'output-control__item__action', onClick: function onClick(e) {
+                  return _this2.props.coreActions.cachebustHttpStream();
+                } },
+              _react2.default.createElement(_Icon2.default, { name: 'refresh' })
+            ),
             _react2.default.createElement(_VolumeControl2.default, {
               className: 'output-control__item__volume',
               volume: this.props.http_streaming_volume,
@@ -65480,7 +65476,7 @@ var OutputControl = function (_React$Component) {
 var mapStateToProps = function mapStateToProps(state, ownProps) {
   return {
     http_streaming_enabled: state.core.http_streaming_enabled,
-    http_streaming_volume: parseInt(state.core.http_streaming_volume),
+    http_streaming_volume: parseInt(state.core.http_streaming_volume) || 50,
     http_streaming_mute: state.core.http_streaming_mute,
     pusher_connected: state.pusher.connected,
     snapcast_enabled: state.pusher.config ? state.pusher.config.snapcast_enabled : null,
@@ -70666,7 +70662,11 @@ var SnapcastClients = function SnapcastClients(_ref) {
   }
 
   if (!clients || clients.length <= 0) {
-    return null;
+    return _react2.default.createElement(
+      'p',
+      { className: 'no-results' },
+      'No clients'
+    );
   }
 
   return _react2.default.createElement(

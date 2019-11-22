@@ -3547,7 +3547,7 @@ select {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  display: block;
+  display: flex;
   padding-bottom: 12px; }
   .field::after {
     content: "";
@@ -3556,14 +3556,12 @@ select {
   .field > .name {
     display: block;
     padding-top: 10px;
-    width: 20%;
-    float: left; }
+    width: 20%; }
     .field > .name .icon {
       font-size: 0.9em;
       margin-bottom: 0.3em; }
   .field > .input {
-    width: 80%;
-    float: left; }
+    width: 80%; }
     .field > .input input,
     .field > .input select,
     .field > .input textarea {
@@ -3573,12 +3571,12 @@ select {
       padding: 10px 14px 10px 0; }
     .field > .input .icon {
       margin-bottom: -3px; }
-  .field--condensed > .name {
-    width: auto;
-    float: none; }
-  .field--condensed > .input {
-    width: auto;
-    float: none; }
+  .field--condensed {
+    display: block; }
+    .field--condensed > .name {
+      width: auto; }
+    .field--condensed > .input {
+      width: auto; }
   .field .label .tooltip {
     left: -4px; }
   .field.sub-field {
@@ -3650,15 +3648,15 @@ select {
     color: rgba(0, 0, 0, 0.6); }
 
 @media (max-width: 799px) {
-  .field .name {
-    float: none;
-    width: auto;
-    padding: 0 0 4px 0; }
-  .field .input {
-    float: none;
-    width: auto; }
-    .field .input .text {
-      padding: 0 20px 0 0; } }
+  .field {
+    display: block; }
+    .field .name {
+      width: auto;
+      padding: 0 0 4px 0; }
+    .field .input {
+      width: auto; }
+      .field .input .text {
+        padding: 0 20px 0 0; } }
 
 @media (max-width: 799px) {
   body.context-menu-open .body {
@@ -6233,8 +6231,7 @@ main header {
 
 .services .menu__inner {
   display: flex;
-  flex-wrap: wrap;
-  margin: 0 -5px; }
+  margin: 0 0 0 -5px; }
 
 .services .menu .menu-item {
   -webkit-transition: none !important;
@@ -6316,7 +6313,6 @@ main header {
         width: 0px;
         height: 0px; }
       .services .menu__inner {
-        width: 700px;
         padding: 0 20px; }
       .services .menu .menu-item {
         width: 140px; }
@@ -6386,6 +6382,9 @@ main header {
   background: #2c2c2c; }
   .snapcast__group .field:last-child {
     padding-bottom: 0; }
+  .snapcast__group .no-results {
+    padding: 20px 20px 30px 20px;
+    font-size: 1rem; }
   .light-theme .snapcast__group {
     background: #e3ded8; }
   .snapcast__group__volume-control {
