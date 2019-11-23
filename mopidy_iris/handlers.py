@@ -5,7 +5,7 @@ from tornado.escape import json_encode, json_decode
 import tornado.ioloop, tornado.web, tornado.websocket, tornado.template
 import random, string, logging, uuid, subprocess, pykka, ast, logging, json, urllib, requests, time
 
-from .mem import mem
+from .mem import getIris
 
 logger = logging.getLogger(__name__)
 
@@ -28,14 +28,14 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
 
         # Construct our initial client object, and add to our list of connections
         client = {
-            'connection_id': mem.iris.generateGuid(),
+            'connection_id': getIris().generateGuid(),
             'ip': ip,
             'created': datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S')
         }
 
         self.connection_id = client['connection_id']
 
-        mem.iris.add_connection(connection=self, client=client)
+        getIris().add_connection(connection=self, client=client)
 
 
     def on_message(self, message):
@@ -65,9 +65,9 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
         if 'method' in message:
 
             # make sure the method exists
-            if hasattr(mem.iris, message['method']):
+            if hasattr(iris, message['method']):
                 try:
-                    getattr(mem.iris, message['method'])(data=params, callback=lambda response, error=False: self.handle_result(id=id, method=message['method'], response=response, error=error))
+                    getattr(iris, message['method'])(data=params, callback=lambda response, error=False: self.handle_result(id=id, method=message['method'], response=response, error=error))
                 except Exception as e:
                     logger.error(str(e))
 
@@ -80,7 +80,7 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
 
 
     def on_close(self):
-        mem.iris.remove_connection(connection_id=self.connection_id)
+        getIris().remove_connection(connection_id=self.connection_id)
 
     ##
     # Handle a response from our core
@@ -114,7 +114,7 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
         # Respond to the original request
         data = request_response
         data['recipient'] = self.connection_id
-        mem.iris.send_message(data=data)
+        getIris().send_message(data=data)
 
 
 
@@ -142,9 +142,9 @@ class HttpHandler(tornado.web.RequestHandler):
         id = int(time.time())
 
         # make sure the method exists
-        if hasattr(mem.iris, slug):
+        if hasattr(iris, slug):
             try:
-                getattr(mem.iris, slug)(request=self, callback=lambda response, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
+                getattr(iris, slug)(request=self, callback=lambda response, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
             except Exception as e:
                 logger.error(str(e))
 
@@ -163,9 +163,9 @@ class HttpHandler(tornado.web.RequestHandler):
             return
 
         # make sure the method exists
-        if hasattr(mem.iris, slug):
+        if hasattr(iris, slug):
             try:
-                getattr(mem.iris, slug)(data=params, request=self.request, callback=lambda response=False, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
+                getattr(iris, slug)(data=params, request=self.request, callback=lambda response=False, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
 
             except HTTPError as e:
                 self.handle_result(id=id, error={'code': 32601, 'message': "Invalid JSON payload"})

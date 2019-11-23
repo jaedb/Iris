@@ -9,6 +9,7 @@ from mopidy import config, ext
 from .frontend import IrisFrontend
 from .handlers import WebsocketHandler, HttpHandler
 from .core import IrisCore
+from .mem import setIris, getIris
 
 logger = logging.getLogger(__name__)
 __version__ = '3.42.2'
@@ -48,8 +49,8 @@ class Extension( ext.Extension ):
         })
 
         # create our core instance
-        mem.iris = IrisCore()
-        mem.iris.version = self.version
+        setIris(IrisCore())
+        getIris().version = self.version
 
         # Add our frontend
         registry.add('frontend', IrisFrontend)
@@ -77,13 +78,6 @@ def iris_factory(config, core):
     path = pathlib.Path(__file__).parent / "static"
 
     return [
-        (
-            r"/images/(.*)",
-            tornado.web.StaticFileHandler,
-            {
-                'path': config['local-images']['image_dir']
-            }
-        ),
         (
             r'/http/([^/]*)',
             handlers.HttpHandler,

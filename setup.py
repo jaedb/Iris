@@ -22,7 +22,6 @@ setup(
     install_requires=[
         'setuptools >= 3.3',
         'Mopidy >= 2.0',
-        'Mopidy-Local-Images >= 1.0',
         'ConfigObj >= 5.0.6',
         'requests >= 2.0.0'
     ],
