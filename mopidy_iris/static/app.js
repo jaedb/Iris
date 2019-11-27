@@ -93628,6 +93628,7 @@ var Discover = function (_React$Component) {
               _react2.default.createElement(_DropdownField2.default, { className: 'add-properties', name: 'Properties', options: addable_tunabilities, no_status_icon: true, button: 'default', handleChange: function handleChange(val) {
                   _this5.toggleTunability(val);
                 } }),
+              _react2.default.createElement('div', { className: 'intro__actions__separator' }),
               _react2.default.createElement(
                 'span',
                 { className: 'submit button button--primary button--large' + (is_loading ? ' button--working' : ''), onClick: function onClick(e) {

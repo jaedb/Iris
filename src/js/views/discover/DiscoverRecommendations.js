@@ -314,14 +314,14 @@ class Discover extends React.Component {
 					  }
 
 					  return (
-  <div className={`seed${seed.images ? ' has-thumbnail' : ''}`} key={seed.uri}>
-    {images ? <URILink className="thumbnail-wrapper" type={type} uri={seed.uri}><Thumbnail images={images} circle={seed.type == 'artist'} size="small" /></URILink> : null}
-    <div className="label">
-      <span className="text">{helpers.titleCase(type)}</span>
-      <Icon name="close" className="remove" onClick={() => this.removeSeed(index)} />
-    </div>
-    <div className="name">{seed.name}</div>
-  </div>
+              <div className={`seed${seed.images ? ' has-thumbnail' : ''}`} key={seed.uri}>
+                {images ? <URILink className="thumbnail-wrapper" type={type} uri={seed.uri}><Thumbnail images={images} circle={seed.type == 'artist'} size="small" /></URILink> : null}
+                <div className="label">
+                  <span className="text">{helpers.titleCase(type)}</span>
+                  <Icon name="close" className="remove" onClick={() => this.removeSeed(index)} />
+                </div>
+                <div className="name">{seed.name}</div>
+              </div>
 					  );
 					})
 				}
@@ -515,6 +515,7 @@ class Discover extends React.Component {
 
               <AddSeedField onSelect={(e, uri) => this.handleSelect(e, uri)} />
               <DropdownField className="add-properties" name="Properties" options={addable_tunabilities} no_status_icon button="default" handleChange={(val) => { this.toggleTunability(val); }} />
+              <div className="intro__actions__separator" />
               <span className={`submit button button--primary button--large${is_loading ? ' button--working' : ''}`} onClick={(e) => this.getRecommendations()}>
                 <Icon name="explore" />
 &nbsp;
