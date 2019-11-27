@@ -22,13 +22,9 @@
     }
 
     &__parameters {
-      @include clearfix();
+      display: flex;
       padding-top: 40px;
-
-      .seeds,
-      .tunabilities {
-        float: left;
-      }
+      margin: 0 -15px;
     }
 
     &__actions {
@@ -107,25 +103,30 @@
   }
 
   .seeds {
+    display: flex;
+    flex-wrap: wrap;
+
     .seed {
+      display: flex;
+      align-items: center;
       color: colour(white);
-      padding: 0 30px 30px 0;
-      float: left;
+      padding: 15px;
 
       .thumbnail-wrapper {
-        float: left;
         width: 44px;
         border: 0 !important;
+        margin-right: 15px;
       }
 
-      .label {
-        .text {
-          opacity: 0.5;
+      &__label {
+        opacity: 0.5;
+
+        &__text {
           font-size: 12px;
           text-transform: uppercase;
         }
 
-        .remove {
+        &__remove {
           @include animate();
           cursor: pointer;
           font-size: 14px;
@@ -137,16 +138,10 @@
             color: colour(red);
           }
         }
-      }
 
-      .name {
-        font-size: 16px;
-      }
-
-      &.has-thumbnail {
-        .label,
-        .name {
-          padding-left: 52px;
+        &__name {
+          padding-top: 3px;
+          font-size: 16px;
         }
       }
 
@@ -157,19 +152,27 @@
   }
 
   .tunabilities {
-    @include clearfix();
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
 
     .tunability {
-      width: 200px;
-      float: left;
+      display: block;
+      align-items: center;
       box-sizing: border-box;
-      padding: 0 30px 30px 0;
+      padding: 15px;
       position: relative;
 
-      .input {
-        float: none;
-        width: 100%;
-        padding-top: 4px;
+      &__label {
+        opacity: 0.5;
+        font-size: 12px;
+        text-transform: uppercase;
+      }
+
+      &__input {
+        width: 200px;
+        height: 1rem;
+        margin-top: 8px;
       }
 
       .input-range {
@@ -217,22 +220,19 @@
 
       &__parameters {
         padding-top: 10px;
+        display: block;
 
         .seeds {
           padding-top: 20px;
-          float: none;
-
-          .seed {
-            float: none;
-          }
         }
 
         .tunabilities {
-          float: none;
+          display: block;
 
           .tunability {
-            width: 100%;
-            float: none;
+            &__input {
+              width: 100%;
+            }
           }
         }
 

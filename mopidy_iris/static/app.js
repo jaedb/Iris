@@ -93359,20 +93359,24 @@ var Discover = function (_React$Component) {
             ) : null,
             _react2.default.createElement(
               'div',
-              { className: 'label' },
+              { className: 'seed__details' },
               _react2.default.createElement(
-                'span',
-                { className: 'text' },
-                helpers.titleCase(type)
+                'div',
+                { className: 'seed__label' },
+                _react2.default.createElement(
+                  'span',
+                  { className: 'seed__label__text' },
+                  helpers.titleCase(type)
+                ),
+                _react2.default.createElement(_Icon2.default, { name: 'close', className: 'seed__label__remove', onClick: function onClick() {
+                    return _this2.removeSeed(index);
+                  } })
               ),
-              _react2.default.createElement(_Icon2.default, { name: 'close', className: 'remove', onClick: function onClick() {
-                  return _this2.removeSeed(index);
-                } })
-            ),
-            _react2.default.createElement(
-              'div',
-              { className: 'name' },
-              seed.name
+              _react2.default.createElement(
+                'div',
+                { className: 'seed__label__name' },
+                seed.name
+              )
             )
           );
         })
@@ -93427,7 +93431,7 @@ var Discover = function (_React$Component) {
             { className: 'field tunability range', key: tunability.name },
             _react2.default.createElement(
               'div',
-              { className: 'label' },
+              { className: 'tunability__label' },
               helpers.titleCase(tunability.name),
               _react2.default.createElement(
                 'span',
@@ -93439,7 +93443,7 @@ var Discover = function (_React$Component) {
             ),
             _react2.default.createElement(
               'div',
-              { className: 'input' },
+              { className: 'tunability__input' },
               _react2.default.createElement(_reactInputRange2.default, {
                 disabled: !tunability.enabled,
                 minValue: tunability.min,

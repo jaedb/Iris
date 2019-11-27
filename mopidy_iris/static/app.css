@@ -7193,14 +7193,9 @@ main .track-view {
       padding-bottom: 8px;
       color: #a3a19f; }
   .discover-view .intro__parameters {
-    padding-top: 40px; }
-    .discover-view .intro__parameters::after {
-      content: "";
-      clear: both;
-      display: block; }
-    .discover-view .intro__parameters .seeds,
-    .discover-view .intro__parameters .tunabilities {
-      float: left; }
+    display: flex;
+    padding-top: 40px;
+    margin: 0 -15px; }
   .discover-view .intro__actions {
     padding-top: 20px;
     display: flex;
@@ -7247,66 +7242,72 @@ main .track-view {
       display: block;
       margin: 0; }
 
-.discover-view .seeds .seed {
-  color: #FFFFFF;
-  padding: 0 30px 30px 0;
-  float: left; }
-  .discover-view .seeds .seed .thumbnail-wrapper {
-    float: left;
-    width: 44px;
-    border: 0 !important; }
-  .discover-view .seeds .seed .label .text {
-    opacity: 0.5;
-    font-size: 12px;
-    text-transform: uppercase; }
-  .discover-view .seeds .seed .label .remove {
-    -webkit-transition: all 0.2s ease-in-out;
-    -moz-transition: all 0.2s ease-in-out;
-    -o-transition: all 0.2s ease-in-out;
-    transition: all 0.2s ease-in-out;
-    cursor: pointer;
-    font-size: 14px;
-    padding: 2px;
-    margin-left: 4px;
-    vertical-align: middle; }
-    .discover-view .seeds .seed .label .remove:hover {
-      color: #cf2d2d; }
-  .discover-view .seeds .seed .name {
-    font-size: 16px; }
-  .discover-view .seeds .seed.has-thumbnail .label,
-  .discover-view .seeds .seed.has-thumbnail .name {
-    padding-left: 52px; }
-  .light-theme .discover-view .seeds .seed {
-    color: #121212; }
+.discover-view .seeds {
+  display: flex;
+  flex-wrap: wrap; }
+  .discover-view .seeds .seed {
+    display: flex;
+    align-items: center;
+    color: #FFFFFF;
+    padding: 15px; }
+    .discover-view .seeds .seed .thumbnail-wrapper {
+      width: 44px;
+      border: 0 !important;
+      margin-right: 15px; }
+    .discover-view .seeds .seed__label {
+      opacity: 0.5; }
+      .discover-view .seeds .seed__label__text {
+        font-size: 12px;
+        text-transform: uppercase; }
+      .discover-view .seeds .seed__label__remove {
+        -webkit-transition: all 0.2s ease-in-out;
+        -moz-transition: all 0.2s ease-in-out;
+        -o-transition: all 0.2s ease-in-out;
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+        font-size: 14px;
+        padding: 2px;
+        margin-left: 4px;
+        vertical-align: middle; }
+        .discover-view .seeds .seed__label__remove:hover {
+          color: #cf2d2d; }
+      .discover-view .seeds .seed__label__name {
+        padding-top: 3px;
+        font-size: 16px; }
+    .light-theme .discover-view .seeds .seed {
+      color: #121212; }
 
-.discover-view .tunabilities::after {
-  content: "";
-  clear: both;
-  display: block; }
-
-.discover-view .tunabilities .tunability {
-  width: 200px;
-  float: left;
-  box-sizing: border-box;
-  padding: 0 30px 30px 0;
-  position: relative; }
-  .discover-view .tunabilities .tunability .input {
-    float: none;
-    width: 100%;
-    padding-top: 4px; }
-  .discover-view .tunabilities .tunability .input-range .input-range__label-container {
-    display: none; }
-  .discover-view .tunabilities .tunability .remove {
-    -webkit-transition: all 0.2s ease-in-out;
-    -moz-transition: all 0.2s ease-in-out;
-    -o-transition: all 0.2s ease-in-out;
-    transition: all 0.2s ease-in-out;
-    cursor: pointer;
-    font-size: 10px;
-    padding: 4px;
-    margin-left: 4px; }
-    .discover-view .tunabilities .tunability .remove:hover {
-      color: #cf2d2d; }
+.discover-view .tunabilities {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center; }
+  .discover-view .tunabilities .tunability {
+    display: block;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 15px;
+    position: relative; }
+    .discover-view .tunabilities .tunability__label {
+      opacity: 0.5;
+      font-size: 12px;
+      text-transform: uppercase; }
+    .discover-view .tunabilities .tunability__input {
+      width: 200px;
+      height: 1rem;
+      margin-top: 8px; }
+    .discover-view .tunabilities .tunability .input-range .input-range__label-container {
+      display: none; }
+    .discover-view .tunabilities .tunability .remove {
+      -webkit-transition: all 0.2s ease-in-out;
+      -moz-transition: all 0.2s ease-in-out;
+      -o-transition: all 0.2s ease-in-out;
+      transition: all 0.2s ease-in-out;
+      cursor: pointer;
+      font-size: 10px;
+      padding: 4px;
+      margin-left: 4px; }
+      .discover-view .tunabilities .tunability .remove:hover {
+        color: #cf2d2d; }
 
 .discover-view section .grid {
   padding-bottom: 20px; }
@@ -7324,17 +7325,14 @@ main .track-view {
   .discover-view .intro {
     padding: 40px 20px; }
     .discover-view .intro__parameters {
-      padding-top: 10px; }
+      padding-top: 10px;
+      display: block; }
       .discover-view .intro__parameters .seeds {
-        padding-top: 20px;
-        float: none; }
-        .discover-view .intro__parameters .seeds .seed {
-          float: none; }
+        padding-top: 20px; }
       .discover-view .intro__parameters .tunabilities {
-        float: none; }
-        .discover-view .intro__parameters .tunabilities .tunability {
-          width: 100%;
-          float: none; }
+        display: block; }
+        .discover-view .intro__parameters .tunabilities .tunability__input {
+          width: 100%; }
       .discover-view .intro__parameters .add .add-properties {
         margin-right: 0; }
     .discover-view .intro__actions {
