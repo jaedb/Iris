@@ -4620,10 +4620,10 @@ select {
   right: 0;
   left: 0;
   height: 60px;
-  background: #FFFFFF;
-  color: #121212;
+  background: #383734;
+  color: #FFFFFF;
   transform-style: preserve-3d;
-  border-left: 230px solid #FFFFFF;
+  border-left: 230px solid #383734;
   box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.1); }
   .playback-controls .current-track {
     position: absolute;
@@ -4672,7 +4672,7 @@ select {
       margin: 8px;
       margin-right: 12px; }
       .playback-controls .current-track .thumbnail__image {
-        background-color: #f4f2f0; }
+        background-color: #383734; }
       .playback-controls .current-track .thumbnail:before {
         -webkit-transition: all 0.2s ease-in-out;
         -moz-transition: all 0.2s ease-in-out;
@@ -4746,7 +4746,8 @@ select {
     padding: 12px 8px;
     display: inline-block;
     vertical-align: bottom;
-    background: none; }
+    background: none;
+    color: #FFFFFF; }
 
 @keyframes click_feedback {
   0% {
@@ -4796,8 +4797,7 @@ select {
         .playback-controls section.playback .control .icon {
           font-size: 1.3rem; }
         .playback-controls section.playback .control.play {
-          margin-bottom: -0.8rem;
-          color: #08d58f; }
+          margin-bottom: -0.8rem; }
           .playback-controls section.playback .control.play .icon {
             font-size: 3rem; }
     .playback-controls section.progress {
@@ -4805,8 +4805,7 @@ select {
       left: 10rem;
       right: 25rem;
       padding-left: 20px;
-      padding-right: 20px;
-      color: #a3a19f; }
+      padding-right: 20px; }
       .playback-controls section.progress .slider {
         position: absolute;
         bottom: 2px;
