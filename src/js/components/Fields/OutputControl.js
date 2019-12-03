@@ -54,120 +54,140 @@ class OutputControl extends React.Component {
     }
   }
 
-  renderOutputs() {
+  snapcastGroups() {
     const {
       snapcast_streams,
+      snapcastActions,
+      snapcast_groups,
     } = this.props;
-    let has_outputs = false;
 
     const groups = [];
-    for (var key in this.props.snapcast_groups) {
-      if (this.props.snapcast_groups.hasOwnProperty(key)) {
-        groups.push(this.props.snapcast_groups[key]);
+    for (var key in snapcast_groups) {
+      if (snapcast_groups.hasOwnProperty(key)) {
+        groups.push(snapcast_groups[key]);
       }
     }
+    if (groups.length <= 0) return null;
 
     const streams = Object.keys(snapcast_streams).map(
-      (id) => ({ value: id, label: id })
+      (id) => ({ value: id, label: id }),
     );
 
-    let snapcast_groups = null;
-    if (groups.length > 0) {
-      has_outputs = true;
-      snapcast_groups = (
-        <div>
-          {
-						groups.map(group => (
-              <div className="output-control__item outputs__item--snapcast" key={group.id}>
-                <div className="output-control__item__name">
-                  {group.name}
-                </div>
-                <div className="output-control__item__controls">
-                  <DropdownField
-                    icon="settings_input_component"
-                    name="Source"
-                    value={group.stream_id}
-                    options={streams}
-                    noLabel
-                    handleChange={(value) => this.props.snapcastActions.setGroupStream(group.id, value)}
-                  />
-                  <MuteControl
-                    className="output-control__item__mute"
-                    noTooltip
-                    mute={group.mute}
-                    onMuteChange={(mute) => this.props.snapcastActions.setGroupMute(group.id, mute)}
-                  />
-                  <VolumeControl
-                    className="output-control__item__volume"
-                    volume={group.volume}
-                    mute={group.mute}
-                    onVolumeChange={(percent, previousPercent) => this.props.snapcastActions.setGroupVolume(group.id, percent, previousPercent)}
-                  />
-                </div>
+
+    return (
+      <div>
+        {
+          groups.map((group) => (
+            <div className="output-control__item outputs__item--snapcast" key={group.id}>
+              <div className="output-control__item__name">
+                {group.name}
               </div>
-            ))
-          }
-        </div>
-      );
-    }
-
-    let local_streaming = null;
-    if (this.props.http_streaming_enabled) {
-      has_outputs = true;
-      local_streaming = (
-        <div className="output-control__item outputs__item--icecast">
-          <div className="output-control__item__name">
-						Local browser
-          </div>
-          <div className="output-control__item__controls">
-            <span className="output-control__item__action" onClick={(e) => this.props.coreActions.cachebustHttpStream()}>
-              <Icon name="refresh" />
-            </span>
-            <VolumeControl
-              className="output-control__item__volume"
-              volume={this.props.http_streaming_volume}
-              mute={this.props.http_streaming_mute}
-              onVolumeChange={(percent) => this.props.coreActions.set({ http_streaming_volume: percent })}
-              onMuteChange={(mute) => this.props.coreActions.set({ http_streaming_mute: mute })}
-            />
-          </div>
-        </div>
-      );
-    }
-
-    let commands = null;
-    if (this.props.pusher_commands) {
-      let commands_items = [];
-      for (var key in this.props.pusher_commands) {
-        if (this.props.pusher_commands.hasOwnProperty(key)) {
-          commands_items.push(this.props.pusher_commands[key]);
+              <div className="output-control__item__controls">
+                <DropdownField
+                  name="Source"
+                  value={group.stream_id}
+                  icon="settings_input_component"
+                  options={streams}
+                  noLabel
+                  handleChange={(value) => snapcastActions.setGroupStream(group.id, value)}
+                />
+                <MuteControl
+                  className="output-control__item__mute"
+                  noTooltip
+                  mute={group.mute}
+                  onMuteChange={(mute) => snapcastActions.setGroupMute(group.id, mute)}
+                />
+                <VolumeControl
+                  className="output-control__item__volume"
+                  volume={group.volume}
+                  mute={group.mute}
+                  onVolumeChange={(percent, previousPercent) => snapcastActions.setGroupVolume(group.id, percent, previousPercent)}
+                />
+              </div>
+            </div>
+          ))
         }
-      }
+      </div>
+    );
+  }
 
-      commands_items = helpers.sortItems(commands_items, 'sort_order');
+  commands() {
+    const {
+      pusher_commands,
+      pusherActions,
+    } = this.props;
 
-      if (commands_items.length > 0) {
-        has_outputs = true;
-        commands = (
-          <div className="output-control__item output-control__item--commands commands">
-            {
-							commands_items.map((command) => (
-                <div
-                  key={command.id}
-                  className="commands__item commands__item--interactive"
-                  onClick={(e) => this.props.pusherActions.runCommand(command.id)}
-                >
-                  <Icon className="commands__item__icon" name={command.icon} />
-                  <span className={`${command.colour}-background commands__item__background`} />
-                </div>
-							))
-						}
-          </div>
-        );
+    if (!pusher_commands) return null;
+
+    let items = [];
+    for (var key in pusher_commands) {
+      if (pusher_commands.hasOwnProperty(key)) {
+        items.push(pusher_commands[key]);
       }
     }
 
-    if (!has_outputs) {
+    if (items.length <= 0) return null;
+
+    items = helpers.sortItems(items, 'sort_order');
+
+    return (
+      <div className="output-control__item output-control__item--commands commands">
+        {
+          items.map((command) => (
+            <div
+              key={command.id}
+              className="commands__item commands__item--interactive"
+              onClick={(e) => pusherActions.runCommand(command.id)}
+            >
+              <Icon className="commands__item__icon" name={command.icon} />
+              <span className={`${command.colour}-background commands__item__background`} />
+            </div>
+          ))
+        }
+      </div>
+    );
+  }
+
+  localStreaming() {
+    const {
+      http_streaming_enabled,
+      http_streaming_volume,
+      http_streaming_mute,
+      coreActions,
+    } = this.props;
+
+    if (!http_streaming_enabled) return null;
+
+    return (
+      <div className="output-control__item outputs__item--icecast">
+        <div className="output-control__item__name">
+          Local browser
+        </div>
+        <div className="output-control__item__controls">
+          <span
+            className="output-control__item__action"
+            onClick={(e) => coreActions.cachebustHttpStream()}
+          >
+            <Icon name="refresh" />
+          </span>
+          <VolumeControl
+            className="output-control__item__volume"
+            volume={http_streaming_volume}
+            mute={http_streaming_mute}
+            onVolumeChange={(percent) => coreActions.set({ http_streaming_volume: percent })}
+            onMuteChange={(mute) => coreActions.set({ http_streaming_mute: mute })}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  renderOutputs() {
+    const snapcastGroups = this.snapcastGroups();
+    const localStreaming = this.localStreaming();
+    const commands = this.commands();
+
+    if (!snapcastGroups && !localStreaming && !commands) {
       return (
         <div className="output-control__items output-control__items--no-results">
           <p className="no-results">No outputs</p>
@@ -177,8 +197,8 @@ class OutputControl extends React.Component {
     return (
       <div className="output-control__items">
         {commands}
-        {local_streaming}
-        {snapcast_groups}
+        {localStreaming}
+        {snapcastGroups}
       </div>
     );
   }

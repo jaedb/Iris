@@ -60593,7 +60593,7 @@ var App = exports.App = function (_React$Component) {
           uiActions: this.props.uiActions,
           slim_mode: this.props.slim_mode
         }),
-        this.props.hotkeys_enabled && _react2.default.createElement(_Hotkeys2.default, null),
+        this.props.hotkeys_enabled && _react2.default.createElement(_Hotkeys2.default, { history: this.props.history }),
         _react2.default.createElement(_ContextMenu2.default, null),
         _react2.default.createElement(_Dragger2.default, null),
         _react2.default.createElement(_Notifications2.default, null),
@@ -65266,146 +65266,167 @@ var OutputControl = function (_React$Component) {
       }
     }
   }, {
-    key: 'renderOutputs',
-    value: function renderOutputs() {
-      var _this2 = this;
+    key: 'snapcastGroups',
+    value: function snapcastGroups() {
+      var _props = this.props,
+          snapcast_streams = _props.snapcast_streams,
+          snapcastActions = _props.snapcastActions,
+          snapcast_groups = _props.snapcast_groups;
 
-      var snapcast_streams = this.props.snapcast_streams;
-
-      var has_outputs = false;
 
       var groups = [];
-      for (var key in this.props.snapcast_groups) {
-        if (this.props.snapcast_groups.hasOwnProperty(key)) {
-          groups.push(this.props.snapcast_groups[key]);
+      for (var key in snapcast_groups) {
+        if (snapcast_groups.hasOwnProperty(key)) {
+          groups.push(snapcast_groups[key]);
         }
       }
+      if (groups.length <= 0) return null;
 
       var streams = Object.keys(snapcast_streams).map(function (id) {
         return { value: id, label: id };
       });
 
-      var snapcast_groups = null;
-      if (groups.length > 0) {
-        has_outputs = true;
-        snapcast_groups = _react2.default.createElement(
-          'div',
-          null,
-          groups.map(function (group) {
-            return _react2.default.createElement(
-              'div',
-              { className: 'output-control__item outputs__item--snapcast', key: group.id },
-              _react2.default.createElement(
-                'div',
-                { className: 'output-control__item__name' },
-                group.name
-              ),
-              _react2.default.createElement(
-                'div',
-                { className: 'output-control__item__controls' },
-                _react2.default.createElement(_DropdownField2.default, {
-                  icon: 'settings_input_component',
-                  name: 'Source',
-                  value: group.stream_id,
-                  options: streams,
-                  noLabel: true,
-                  handleChange: function handleChange(value) {
-                    return _this2.props.snapcastActions.setGroupStream(group.id, value);
-                  }
-                }),
-                _react2.default.createElement(_MuteControl2.default, {
-                  className: 'output-control__item__mute',
-                  noTooltip: true,
-                  mute: group.mute,
-                  onMuteChange: function onMuteChange(mute) {
-                    return _this2.props.snapcastActions.setGroupMute(group.id, mute);
-                  }
-                }),
-                _react2.default.createElement(_VolumeControl2.default, {
-                  className: 'output-control__item__volume',
-                  volume: group.volume,
-                  mute: group.mute,
-                  onVolumeChange: function onVolumeChange(percent, previousPercent) {
-                    return _this2.props.snapcastActions.setGroupVolume(group.id, percent, previousPercent);
-                  }
-                })
-              )
-            );
-          })
-        );
-      }
-
-      var local_streaming = null;
-      if (this.props.http_streaming_enabled) {
-        has_outputs = true;
-        local_streaming = _react2.default.createElement(
-          'div',
-          { className: 'output-control__item outputs__item--icecast' },
-          _react2.default.createElement(
+      return _react2.default.createElement(
+        'div',
+        null,
+        groups.map(function (group) {
+          return _react2.default.createElement(
             'div',
-            { className: 'output-control__item__name' },
-            'Local browser'
-          ),
-          _react2.default.createElement(
-            'div',
-            { className: 'output-control__item__controls' },
+            { className: 'output-control__item outputs__item--snapcast', key: group.id },
             _react2.default.createElement(
-              'span',
-              { className: 'output-control__item__action', onClick: function onClick(e) {
-                  return _this2.props.coreActions.cachebustHttpStream();
-                } },
-              _react2.default.createElement(_Icon2.default, { name: 'refresh' })
+              'div',
+              { className: 'output-control__item__name' },
+              group.name
             ),
-            _react2.default.createElement(_VolumeControl2.default, {
-              className: 'output-control__item__volume',
-              volume: this.props.http_streaming_volume,
-              mute: this.props.http_streaming_mute,
-              onVolumeChange: function onVolumeChange(percent) {
-                return _this2.props.coreActions.set({ http_streaming_volume: percent });
-              },
-              onMuteChange: function onMuteChange(mute) {
-                return _this2.props.coreActions.set({ http_streaming_mute: mute });
-              }
-            })
-          )
-        );
-      }
-
-      var commands = null;
-      if (this.props.pusher_commands) {
-        var commands_items = [];
-        for (var key in this.props.pusher_commands) {
-          if (this.props.pusher_commands.hasOwnProperty(key)) {
-            commands_items.push(this.props.pusher_commands[key]);
-          }
-        }
-
-        commands_items = helpers.sortItems(commands_items, 'sort_order');
-
-        if (commands_items.length > 0) {
-          has_outputs = true;
-          commands = _react2.default.createElement(
-            'div',
-            { className: 'output-control__item output-control__item--commands commands' },
-            commands_items.map(function (command) {
-              return _react2.default.createElement(
-                'div',
-                {
-                  key: command.id,
-                  className: 'commands__item commands__item--interactive',
-                  onClick: function onClick(e) {
-                    return _this2.props.pusherActions.runCommand(command.id);
-                  }
-                },
-                _react2.default.createElement(_Icon2.default, { className: 'commands__item__icon', name: command.icon }),
-                _react2.default.createElement('span', { className: command.colour + '-background commands__item__background' })
-              );
-            })
+            _react2.default.createElement(
+              'div',
+              { className: 'output-control__item__controls' },
+              _react2.default.createElement(_DropdownField2.default, {
+                name: 'Source',
+                value: group.stream_id,
+                icon: 'settings_input_component',
+                options: streams,
+                noLabel: true,
+                handleChange: function handleChange(value) {
+                  return snapcastActions.setGroupStream(group.id, value);
+                }
+              }),
+              _react2.default.createElement(_MuteControl2.default, {
+                className: 'output-control__item__mute',
+                noTooltip: true,
+                mute: group.mute,
+                onMuteChange: function onMuteChange(mute) {
+                  return snapcastActions.setGroupMute(group.id, mute);
+                }
+              }),
+              _react2.default.createElement(_VolumeControl2.default, {
+                className: 'output-control__item__volume',
+                volume: group.volume,
+                mute: group.mute,
+                onVolumeChange: function onVolumeChange(percent, previousPercent) {
+                  return snapcastActions.setGroupVolume(group.id, percent, previousPercent);
+                }
+              })
+            )
           );
+        })
+      );
+    }
+  }, {
+    key: 'commands',
+    value: function commands() {
+      var _props2 = this.props,
+          pusher_commands = _props2.pusher_commands,
+          pusherActions = _props2.pusherActions;
+
+
+      if (!pusher_commands) return null;
+
+      var items = [];
+      for (var key in pusher_commands) {
+        if (pusher_commands.hasOwnProperty(key)) {
+          items.push(pusher_commands[key]);
         }
       }
 
-      if (!has_outputs) {
+      if (items.length <= 0) return null;
+
+      items = helpers.sortItems(items, 'sort_order');
+
+      return _react2.default.createElement(
+        'div',
+        { className: 'output-control__item output-control__item--commands commands' },
+        items.map(function (command) {
+          return _react2.default.createElement(
+            'div',
+            {
+              key: command.id,
+              className: 'commands__item commands__item--interactive',
+              onClick: function onClick(e) {
+                return pusherActions.runCommand(command.id);
+              }
+            },
+            _react2.default.createElement(_Icon2.default, { className: 'commands__item__icon', name: command.icon }),
+            _react2.default.createElement('span', { className: command.colour + '-background commands__item__background' })
+          );
+        })
+      );
+    }
+  }, {
+    key: 'localStreaming',
+    value: function localStreaming() {
+      var _props3 = this.props,
+          http_streaming_enabled = _props3.http_streaming_enabled,
+          http_streaming_volume = _props3.http_streaming_volume,
+          http_streaming_mute = _props3.http_streaming_mute,
+          coreActions = _props3.coreActions;
+
+
+      if (!http_streaming_enabled) return null;
+
+      return _react2.default.createElement(
+        'div',
+        { className: 'output-control__item outputs__item--icecast' },
+        _react2.default.createElement(
+          'div',
+          { className: 'output-control__item__name' },
+          'Local browser'
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'output-control__item__controls' },
+          _react2.default.createElement(
+            'span',
+            {
+              className: 'output-control__item__action',
+              onClick: function onClick(e) {
+                return coreActions.cachebustHttpStream();
+              }
+            },
+            _react2.default.createElement(_Icon2.default, { name: 'refresh' })
+          ),
+          _react2.default.createElement(_VolumeControl2.default, {
+            className: 'output-control__item__volume',
+            volume: http_streaming_volume,
+            mute: http_streaming_mute,
+            onVolumeChange: function onVolumeChange(percent) {
+              return coreActions.set({ http_streaming_volume: percent });
+            },
+            onMuteChange: function onMuteChange(mute) {
+              return coreActions.set({ http_streaming_mute: mute });
+            }
+          })
+        )
+      );
+    }
+  }, {
+    key: 'renderOutputs',
+    value: function renderOutputs() {
+      var snapcastGroups = this.snapcastGroups();
+      var localStreaming = this.localStreaming();
+      var commands = this.commands();
+
+      if (!snapcastGroups && !localStreaming && !commands) {
         return _react2.default.createElement(
           'div',
           { className: 'output-control__items output-control__items--no-results' },
@@ -65420,14 +65441,14 @@ var OutputControl = function (_React$Component) {
         'div',
         { className: 'output-control__items' },
         commands,
-        local_streaming,
-        snapcast_groups
+        localStreaming,
+        snapcastGroups
       );
     }
   }, {
     key: 'render',
     value: function render() {
-      var _this3 = this;
+      var _this2 = this;
 
       if (this.state.expanded) {
         return _react2.default.createElement(
@@ -65436,7 +65457,7 @@ var OutputControl = function (_React$Component) {
           _react2.default.createElement(
             'button',
             { className: 'control speakers active', onClick: function onClick(e) {
-                return _this3.setExpanded();
+                return _this2.setExpanded();
               } },
             _react2.default.createElement(_Icon2.default, { name: 'speaker' })
           ),
@@ -65462,7 +65483,7 @@ var OutputControl = function (_React$Component) {
         _react2.default.createElement(
           'button',
           { className: 'control speakers', onClick: function onClick(e) {
-              return _this3.setExpanded();
+              return _this2.setExpanded();
             } },
           _react2.default.createElement(_Icon2.default, { name: 'speaker' })
         )
@@ -66732,6 +66753,17 @@ var Hotkeys = function (_React$Component) {
   }, {
     key: 'handleKeyDown',
     value: function handleKeyDown(e) {
+      var _props = this.props,
+          play_state = _props.play_state,
+          mopidyActions = _props.mopidyActions,
+          uiActions = _props.uiActions,
+          mute = _props.mute,
+          play_time_position = _props.play_time_position,
+          history = _props.history,
+          modal = _props.modal,
+          dragging = _props.dragging;
+      var volume = this.props.volume;
+
       var key = e.key.toLowerCase();
 
       // Ignore text input fields
@@ -66751,38 +66783,38 @@ var Hotkeys = function (_React$Component) {
         case 'p':
           // Super-useful once you get used to it. This negates the issue where interactive elements
           // are in focus (ie slider) and <space> is reserved for that field's interactivity.
-          if (this.props.play_state == 'playing') {
-            this.props.mopidyActions.pause();
-            this.props.uiActions.createNotification({ content: 'pause', type: 'shortcut' });
+          if (play_state == 'playing') {
+            mopidyActions.pause();
+            uiActions.createNotification({ content: 'pause', type: 'shortcut' });
           } else {
-            this.props.mopidyActions.play();
-            this.props.uiActions.createNotification({ content: 'play_arrow', type: 'shortcut' });
+            mopidyActions.play();
+            uiActions.createNotification({ content: 'play_arrow', type: 'shortcut' });
           }
           prevent = true;
           break;
 
         case 'escape':
-          if (this.props.dragging) {
-            this.props.uiActions.dragEnd();
+          if (dragging) {
+            uiActions.dragEnd();
             prevent = true;
-          } else if (this.props.modal) {
+          } else if (modal) {
             window.history.back();
             prevent = true;
           }
           break;
 
         case 's':
-          this.props.history.push('/search');
+          history.push('/search');
           prevent = true;
           break;
 
         case 'q':
-          this.props.history.push('/queue');
+          history.push('/queue');
           prevent = true;
           break;
 
         case 'k':
-          this.props.history.push('/kiosk-mode');
+          history.push('/kiosk-mode');
           prevent = true;
           break;
 
@@ -66797,82 +66829,80 @@ var Hotkeys = function (_React$Component) {
           break;
 
         case '=':
-          var volume = this.props.volume;
-
           if (volume !== 'false') {
             volume += 5;
             if (volume > 100) {
               volume = 100;
             }
-            this.props.mopidyActions.setVolume(volume);
-            if (this.props.mute) {
-              this.props.mopidyActions.setMute(false);
+            mopidyActions.setVolume(volume);
+            if (mute) {
+              mopidyActions.setMute(false);
             }
-            this.props.uiActions.createNotification({ content: 'volume_up', type: 'shortcut' });
+            uiActions.createNotification({ content: 'volume_up', type: 'shortcut' });
           }
           prevent = true;
           break;
 
         case '-':
-          var volume = this.props.volume;
-
           if (volume !== 'false') {
             volume -= 5;
             if (volume < 0) {
               volume = 0;
             }
-            this.props.mopidyActions.setVolume(volume);
-            if (this.props.mute) {
-              this.props.mopidyActions.setMute(false);
+            mopidyActions.setVolume(volume);
+            if (mute) {
+              mopidyActions.setMute(false);
             }
           }
-          this.props.uiActions.createNotification({ content: 'volume_down', type: 'shortcut' });
+          uiActions.createNotification({ content: 'volume_down', type: 'shortcut' });
           prevent = true;
           break;
 
         case '0':
-          if (this.props.mute) {
-            this.props.mopidyActions.setMute(false);
-            this.props.uiActions.createNotification({ content: 'volume_up', type: 'shortcut' });
+          if (mute) {
+            mopidyActions.setMute(false);
+            uiActions.createNotification({ content: 'volume_up', type: 'shortcut' });
           } else {
-            this.props.mopidyActions.setMute(true);
-            this.props.uiActions.createNotification({ content: 'volume_off', type: 'shortcut' });
+            mopidyActions.setMute(true);
+            uiActions.createNotification({ content: 'volume_off', type: 'shortcut' });
           }
           prevent = true;
           break;
 
         case ';':
-          var new_position = this.props.play_time_position - 30000;
+          var new_position = play_time_position - 30000;
           if (new_position < 0) {
             new_position = 0;
           }
-          this.props.mopidyActions.setTimePosition(new_position);
-          this.props.uiActions.createNotification({ content: 'fast_rewind', type: 'shortcut' });
+          mopidyActions.setTimePosition(new_position);
+          uiActions.createNotification({ content: 'fast_rewind', type: 'shortcut' });
           prevent = true;
           break;
 
         case "'":
-          this.props.mopidyActions.setTimePosition(this.props.play_time_position + 30000);
-          this.props.uiActions.createNotification({ content: 'fast_forward', type: 'shortcut' });
+          mopidyActions.setTimePosition(play_time_position + 30000);
+          uiActions.createNotification({ content: 'fast_forward', type: 'shortcut' });
           prevent = true;
           break;
 
         case '[':
-          this.props.mopidyActions.previous();
-          this.props.uiActions.createNotification({ content: 'skip_previous', type: 'shortcut' });
+          mopidyActions.previous();
+          uiActions.createNotification({ content: 'skip_previous', type: 'shortcut' });
           prevent = true;
           break;
 
         case ']':
-          this.props.mopidyActions.next();
-          this.props.uiActions.createNotification({ content: 'skip_next', type: 'shortcut' });
+          mopidyActions.next();
+          uiActions.createNotification({ content: 'skip_next', type: 'shortcut' });
           prevent = true;
+          break;
+
+        default:
           break;
       }
 
       if (prevent) {
         e.preventDefault();
-        return false;
       }
     }
   }, {

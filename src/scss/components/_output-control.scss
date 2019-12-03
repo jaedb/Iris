@@ -72,7 +72,21 @@
 					.icon {
 						font-size: 0.9em;
 					}
-				}
+        }
+
+        &__options {
+          top: auto;
+          bottom: 20px;
+          right: auto;
+          left: 0px;
+
+          &:before {
+            top: auto;
+            right: auto;
+            bottom: -3px;
+            left: 9px;
+          }
+        }
 			}
 		}
 
@@ -116,7 +130,11 @@
 			border-radius: 0;
 			box-shadow: none;
 			max-height: 50vh;
-			overflow-y: auto;
+
+			.dark-theme & {
+				color: colour(white);
+				background: lighten(colour(grey), 4%);
+			}
 
 			&:after {
 				display: none;

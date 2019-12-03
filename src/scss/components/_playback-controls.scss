@@ -9,7 +9,14 @@
   color: colour(white);
   transform-style: preserve-3d;
   border-left: 230px solid colour(grey);
-  box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 -1px 10px rgba(0, 0, 0, 0.6);
+
+  .light-theme & {
+    background: colour(white);
+    color: colour(darkest_grey);
+    border-color: colour(white);
+    box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.1);
+  }
 
   .current-track {
     position: absolute;
@@ -43,7 +50,11 @@
 
     &__transition {
       z-index: 2;
-      background: lighten(colour(white), 15%);
+      background: colour(grey);
+
+      .light-theme & {
+        background: lighten(colour(white), 15%);
+      }
 
       .text {
         @include animate(0.15s);
@@ -72,7 +83,7 @@
       margin-right: 12px;
 
       &__image {
-        background-color: colour(grey);
+        background-color: colour(middle_grey);
       }
 
       &:before {
@@ -151,6 +162,10 @@
     background: none;
     color: colour(white);
 
+    .light-theme & {
+      color: colour(darkest_grey);
+    }
+
     .icon {
       font-size: 0.9rem;
       margin-bottom: 0;
@@ -185,6 +200,10 @@
 
         &.play {
           margin-bottom: -0.8rem;
+
+          .light-theme & {
+            color: colour(turquoise);
+          }
 
           .icon {
             font-size: 3rem;
