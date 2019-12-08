@@ -93,7 +93,7 @@ $parallax: 'parallax';
 
 	.light-theme & {
 		&__stage {
-			background-color: lighten(colour(faint_grey), 2%);
+			background-color: colour(faint_grey);
 		}
 
 		&__overlay {

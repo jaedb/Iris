@@ -14,14 +14,22 @@
 		bottom: 48px;
 		right: -150px;
 		width: 300px;
-		background: colour(faint_grey);
-		color: colour(black);
 		font-size: 14px;
 		font-weight: 600;
 		text-align: left;
 		border-radius: 3px;
 		box-shadow: 2px 3px 6px rgba(0,0,0,0.2);
 		z-index: 9;
+
+		.dark-theme & {
+			color: colour(white);
+			background: lighten(colour(grey), 4%);
+		}
+
+		.light-theme & {
+			color: colour(darkest_grey);
+			background: colour(white);
+		}
 
 		&:after {
 			content: '';
@@ -130,11 +138,6 @@
 			border-radius: 0;
 			box-shadow: none;
 			max-height: 50vh;
-
-			.dark-theme & {
-				color: colour(white);
-				background: lighten(colour(grey), 4%);
-			}
 
 			&:after {
 				display: none;

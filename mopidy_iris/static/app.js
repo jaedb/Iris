@@ -56533,16 +56533,13 @@ var GeniusAuthenticationFrame = function (_React$Component) {
     value: function render() {
       var _this2 = this;
 
-      if (this.state.authorizing) {
+      var authorizing = this.state.authorizing;
+
+
+      if (this.props.authorized) {
         return _react2.default.createElement(
           'a',
-          { className: 'button button--working' },
-          'Authorizing...'
-        );
-      }if (this.props.authorized) {
-        return _react2.default.createElement(
-          'a',
-          { className: 'button button--destructive', onClick: function onClick(e) {
+          { className: "button button--destructive" + (authorizing ? ' button--working' : ''), onClick: function onClick(e) {
               return _this2.props.geniusActions.revokeAuthorization();
             } },
           'Log out'
@@ -56550,7 +56547,7 @@ var GeniusAuthenticationFrame = function (_React$Component) {
       }
       return _react2.default.createElement(
         'a',
-        { className: 'button button--primary', onClick: function onClick(e) {
+        { className: "button button--primary" + (authorizing ? ' button--working' : ''), onClick: function onClick(e) {
             return _this2.startAuthorization();
           } },
         'Log in'
@@ -56764,16 +56761,13 @@ var LastfmAuthenticationFrame = function (_React$Component) {
     value: function render() {
       var _this2 = this;
 
-      if (this.state.authorizing) {
+      var authorizing = this.state.authorizing;
+
+
+      if (this.props.authorization) {
         return _react2.default.createElement(
           'a',
-          { className: 'button button--working' },
-          'Authorizing...'
-        );
-      }if (this.props.authorization) {
-        return _react2.default.createElement(
-          'a',
-          { className: 'button button--destructive', onClick: function onClick(e) {
+          { className: "button button--destructive" + (authorizing ? ' button--working' : ''), onClick: function onClick(e) {
               return _this2.props.lastfmActions.revokeAuthorization();
             } },
           'Log out'
@@ -56781,7 +56775,7 @@ var LastfmAuthenticationFrame = function (_React$Component) {
       }
       return _react2.default.createElement(
         'a',
-        { className: 'button button--primary', onClick: function onClick(e) {
+        { className: "button button--primary" + (authorizing ? ' button--working' : ''), onClick: function onClick(e) {
             return _this2.startAuthorization();
           } },
         'Log in'
@@ -58074,16 +58068,14 @@ var SpotifyAuthenticationFrame = function (_React$Component) {
     value: function render() {
       var _this2 = this;
 
-      if (this.state.authorizing) {
+      var authorizing = this.state.authorizing;
+      var authorized = this.props.authorized;
+
+
+      if (authorized) {
         return _react2.default.createElement(
           'a',
-          { className: 'button button--working' },
-          'Authorizing...'
-        );
-      }if (this.props.authorized) {
-        return _react2.default.createElement(
-          'a',
-          { className: 'button button--destructive', onClick: function onClick(e) {
+          { className: 'button button--destructive ' + (authorizing ? 'button--working' : ''), onClick: function onClick(e) {
               return _this2.props.spotifyActions.revokeAuthorization();
             } },
           'Log out'
@@ -58091,7 +58083,7 @@ var SpotifyAuthenticationFrame = function (_React$Component) {
       }
       return _react2.default.createElement(
         'a',
-        { className: 'button button--primary', onClick: function onClick(e) {
+        { className: 'button button--primary ' + (authorizing ? 'button--working' : ''), onClick: function onClick(e) {
             return _this2.startAuthorization();
           } },
         'Log in'
@@ -61697,8 +61689,8 @@ var Services = function (_React$Component) {
             _react2.default.createElement(_SpotifyAuthenticationFrame2.default, null),
             this.props.spotify.refreshing_token ? _react2.default.createElement(
               'a',
-              { className: 'button button--working' },
-              'Refreshing...'
+              { className: 'button button--default button--working' },
+              'Force token refres'
             ) : _react2.default.createElement(
               'a',
               {
