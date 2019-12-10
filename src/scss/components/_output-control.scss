@@ -24,11 +24,19 @@
 		.dark-theme & {
 			color: colour(white);
 			background: lighten(colour(grey), 4%);
+
+			&:after {
+				background: lighten(colour(grey), 4%);
+			}
 		}
 
 		.light-theme & {
 			color: colour(darkest_grey);
 			background: colour(white);
+
+			&:after {
+				background: colour(white);
+			}
 		}
 
 		&:after {
@@ -36,7 +44,6 @@
 			display: block;
 			width: 6px;
 			height: 6px;
-			background: colour(faint_grey);
 			-ms-transform: rotate(45deg);
 			-webkit-transform: rotate(45deg);
 			transform: rotate(45deg);
@@ -107,7 +114,6 @@
 		&__mute.control {
 			@include click_feedback(rgba(0,0,0,0.5));
 			padding: 2px;
-			color: colour(black);
 			float: left;
 			flex-grow: 0;
 
@@ -136,8 +142,15 @@
 			width: auto;
 			padding: 0;
 			border-radius: 0;
-			box-shadow: none;
 			max-height: 50vh;
+
+			.dark-theme & {
+				box-shadow: 0 -5px 5px rgba(0, 0, 0, 0.6);
+			}
+			
+			.light-theme & {
+				box-shadow: 0 -5px 5px rgba(0, 0, 0, 0.1);
+			}
 
 			&:after {
 				display: none;

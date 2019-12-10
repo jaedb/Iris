@@ -5,11 +5,15 @@
   right: 0;
   left: 0;
   height: 60px;
-  background: colour(grey);
-  color: colour(white);
   transform-style: preserve-3d;
-  border-left: 230px solid colour(grey);
-  box-shadow: 0 -1px 10px rgba(0, 0, 0, 0.6);
+  border-left: 230px solid transparent;
+
+  .dark-theme & {
+    background: colour(grey);
+    color: colour(white);
+    box-shadow: 0 -1px 10px rgba(0, 0, 0, 0.6);
+    border-color: colour(grey);
+  }
 
   .light-theme & {
     background: colour(white);

@@ -363,9 +363,11 @@ select {
   }
 
   @include responsive($bp_medium) {
-    margin-right: 10px;
-    padding-left: 28px;
-    padding-right: 28px;
+    &--large {
+      width: 100%;
+      display: block;
+      margin-bottom: 10px;
+    }
   }
 }
 
