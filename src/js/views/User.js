@@ -69,7 +69,7 @@ class User extends React.Component {
     const user_id = helpers.getFromUri('userid', this.props.uri);
 
     if (!this.props.user) {
-      if (helpers.isLoading(this.props.load_queue, [`spotify_users/${user_id}`, `spotify_users/${user_id}/playlists/?`])) {
+      if (helpers.isLoading(this.props.load_queue, [`spotify_GET_users/${user_id}`, `spotify_GET_users/${user_id}/playlists/?`])) {
         return <Loader body loading />
       }
       return (

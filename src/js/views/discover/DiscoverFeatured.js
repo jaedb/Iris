@@ -58,7 +58,7 @@ class DiscoverFeatured extends React.Component {
   }
 
   render() {
-    if (helpers.isLoading(this.props.load_queue, ['spotify_browse/featured-playlists'])) {
+    if (helpers.isLoading(this.props.load_queue, ['spotify_GET_browse/featured-playlists'])) {
       return (
         <div className="view discover-featured-view preserve-3d">
           <Header className="overlay" uiActions={this.props.uiActions}>

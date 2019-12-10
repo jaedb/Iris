@@ -46,7 +46,7 @@ class LibraryTracks extends React.Component {
 
   render() {
     // Note trailing "?" makes sure our context menu in_library checks doesn't interfere
-    if (helpers.isLoading(this.props.load_queue, ['spotify_me/tracks?'])) {
+    if (helpers.isLoading(this.props.load_queue, ['spotify_GET_me/tracks?'])) {
       return (
         <div className="view library-tracks-view">
           <Header icon="music" title="My tracks" />

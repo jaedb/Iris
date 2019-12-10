@@ -3272,8 +3272,11 @@ input[type="radio"] + .label:before {
   width: 1.8rem;
   height: 1.8rem;
   border-radius: 50%;
-  background: rgba(128, 128, 128, 0.5);
-  margin-right: 0.5rem; }
+  background: transparent;
+  margin-right: 0.5rem;
+  border: 2px solid rgba(128, 128, 128, 0.35);
+  box-sizing: border-box;
+  background: rgba(128, 128, 128, 0.05); }
   .light-theme input[type="radio"] + .label:before {
     background: #FFFFFF; }
 
@@ -3302,12 +3305,13 @@ input[type="checkbox"] + .label:before {
   color: #FFFFFF;
   display: inline-flex;
   padding: 0 0.2rem;
-  height: 1.6rem;
-  width: 1.2rem;
+  height: calc(1.6rem - 2px);
+  width: calc(1.2rem - 2px);
   text-align: center;
   border-radius: 3px;
-  background: rgba(128, 128, 128, 0.5);
-  margin-right: 0.5rem; }
+  border: 2px solid rgba(128, 128, 128, 0.35);
+  margin-right: 0.5rem;
+  background: rgba(128, 128, 128, 0.05); }
   .light-theme input[type="checkbox"] + .label:before {
     background: #FFFFFF; }
 
@@ -4283,12 +4287,10 @@ select {
     width: 100%;
     padding-bottom: 100%;
     background-repeat: no-repeat;
-    background-color: #1d1d1d;
+    background-color: rgba(128, 128, 128, 0.15);
     background-position: 50% 50%;
     background-size: cover;
     border-radius: 3px; }
-    .light-theme .thumbnail__image {
-      background-color: #f4f2f0; }
     .thumbnail__image--glow {
       -webkit-filter: blur(10px);
       filter: blur(10px);
@@ -4401,7 +4403,7 @@ select {
   .light-theme .parallax__stage {
     background-color: #f4f2f0; }
   .light-theme .parallax__overlay {
-    background-image: linear-gradient(rgba(248, 247, 246, 0) 0%, #f8f7f6 95%); }
+    background-image: linear-gradient(rgba(244, 242, 240, 0) 0%, #f4f2f0 95%); }
 
 @font-face {
   font-family: 'Material Icons';
@@ -6216,9 +6218,10 @@ main header {
       bottom: -3px;
       left: 9px; }
     .light-theme .tooltip__content {
-      background: #e9e5e1; }
+      background: #181818;
+      color: #FFFFFF; }
       .light-theme .tooltip__content:after {
-        background: #e9e5e1; }
+        background: #181818; }
   .touch .tooltip:not(.touchable) .tooltip__content {
     display: none; }
   .tooltip:hover .tooltip__content {

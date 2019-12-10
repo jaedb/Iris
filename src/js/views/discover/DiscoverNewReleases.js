@@ -70,7 +70,7 @@ class DiscoverNewReleases extends React.Component {
   }
 
   render() {
-    if (helpers.isLoading(this.props.load_queue, ['spotify_browse/new-releases'])) {
+    if (helpers.isLoading(this.props.load_queue, ['spotify_GET_browse/new-releases'])) {
       return (
         <div className="view discover-new-releases-view">
           <Header>

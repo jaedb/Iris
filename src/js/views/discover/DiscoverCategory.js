@@ -63,7 +63,7 @@ class DiscoverCategory extends React.Component {
   }
 
   render() {
-    if (helpers.isLoading(this.props.load_queue, ['spotify_browse/categories/'])) {
+    if (helpers.isLoading(this.props.load_queue, ['spotify_GET_browse/categories/'])) {
       return (
         <div className="view discover-categories-view">
           <Header>

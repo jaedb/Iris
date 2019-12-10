@@ -22,7 +22,7 @@ const request = (dispatch, getState, endpoint, method = 'GET', data = false, cac
   // We do this straight away so that even if we're refreshing the token, it still registers as
   // loading said endpoint
   const loader_key = helpers.generateGuid();
-  dispatch(uiActions.startLoading(loader_key, `spotify_${endpoint}`));
+  dispatch(uiActions.startLoading(loader_key, `spotify_${method}_${endpoint}`));
 
   return new Promise((resolve, reject) => {
     getToken(dispatch, getState)

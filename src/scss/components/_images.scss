@@ -6,7 +6,7 @@
 	perspective: 100px;
 	width: 100%;
 	max-width: 300px;
-	
+
 	&__image {
 		@include animate(0.1s);
 		position: relative;
@@ -14,14 +14,10 @@
 		width: 100%;
 		padding-bottom: 100%;
 		background-repeat: no-repeat;
-		background-color: lighten(colour(dark_grey), 2%);
+		background-color: rgba(128, 128, 128, 0.15);
 		background-position: 50% 50%;
 		background-size: cover;
 		border-radius: 3px;
-
-		.light-theme & {
-			background-color: colour(faint_grey);
-		}
 
 		&--glow {
 			@include blur(10px);

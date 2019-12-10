@@ -361,7 +361,7 @@ class Artist extends React.Component {
     const scheme = helpers.uriSource(this.props.uri);
 
     if (!this.props.artist) {
-      if (helpers.isLoading(this.props.load_queue, [`spotify_artists/${helpers.getFromUri('artistid', this.props.uri)}`, 'lastfm_method=artist.getInfo'])) {
+      if (helpers.isLoading(this.props.load_queue, [`spotify_GET_artists/${helpers.getFromUri('artistid', this.props.uri)}`, 'lastfm_method=artist.getInfo'])) {
         return <Loader body loading />;
       }
       return (

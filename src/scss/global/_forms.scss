@@ -74,8 +74,11 @@ input[type="radio"] {
     width: 1.8rem;
     height: 1.8rem;
     border-radius: 50%;
-    background: colour(middle_grey);
+    background: transparent;
     margin-right: 0.5rem;
+    border: 2px solid rgba(128, 128, 128, 0.35);
+    box-sizing: border-box;
+    background: rgba(128, 128, 128, 0.05);
 
     .light-theme & {
       background: colour(white);
@@ -114,12 +117,13 @@ input[type="checkbox"] {
     color: colour(white);
     display: inline-flex;
     padding: 0 0.2rem;
-    height: 1.6rem;
-    width: 1.2rem;
+    height: calc(1.6rem - 2px);
+    width: calc(1.2rem - 2px);
     text-align: center;
     border-radius: 3px;
-    background: colour(middle_grey);
+    border: 2px solid rgba(128, 128, 128, 0.35);
     margin-right: 0.5rem;
+    background: rgba(128, 128, 128, 0.05);
 
     .light-theme & {
       background: colour(white);
