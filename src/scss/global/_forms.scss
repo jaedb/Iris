@@ -300,23 +300,18 @@ select {
 
   &--timing-out {
     position: relative;
+    overflow: hidden;
 
     &:before {
-      pointer-events: none;
-      display: inline-block;
+      @include animate_timeout(2s);
       content: "";
-      animation: spin 2s infinite linear;
-      width: 1.2em;
-      height: 1.2em;
-      border-radius: 100px;
       position: absolute;
-      left: 50%;
-      margin-left: -0.6em;
-      border: 2px solid transparent;
-      border-top-color: colour(middle_grey);
-      border-right-color: colour(middle_grey);
-      z-index: 1;
-      box-sizing: border-box;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 0;
+      background: colour(middle_grey);
+      opacity: 0.25;
     }
   }
 

@@ -3464,23 +3464,20 @@ select {
     .button--confirming:active, .button--destructive:active {
       background: rgba(128, 128, 128, 0.2); }
   .button--timing-out {
-    position: relative; }
+    position: relative;
+    overflow: hidden; }
     .button--timing-out:before {
-      pointer-events: none;
-      display: inline-block;
+      animation-name: shrink_from_right;
+      animation-duration: 2s;
+      animation-timing-function: linear;
       content: "";
-      animation: spin 2s infinite linear;
-      width: 1.2em;
-      height: 1.2em;
-      border-radius: 100px;
       position: absolute;
-      left: 50%;
-      margin-left: -0.6em;
-      border: 2px solid transparent;
-      border-top-color: rgba(128, 128, 128, 0.5);
-      border-right-color: rgba(128, 128, 128, 0.5);
-      z-index: 1;
-      box-sizing: border-box; }
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 0;
+      background: rgba(128, 128, 128, 0.5);
+      opacity: 0.25; }
   .button--discrete {
     border: none; }
     .button--discrete:before {
