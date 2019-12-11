@@ -22,7 +22,7 @@ const request = (dispatch, getState, endpoint, method = 'GET', data = false, cac
   // We do this straight away so that even if we're refreshing the token, it still registers as
   // loading said endpoint
   const loader_key = helpers.generateGuid();
-  dispatch(uiActions.startLoading(loader_key, `spotify_${method}_${endpoint}`));
+  dispatch(uiActions.startLoading(loader_key, `spotify_${endpoint}`));
 
   return new Promise((resolve, reject) => {
     getToken(dispatch, getState)
@@ -725,16 +725,16 @@ export function following(uri, method = 'GET') {
     switch (asset_name) {
       case 'track':
         if (method == 'GET') {
-          endpoint = `me/tracks/contains/?ids=${helpers.getFromUri('trackid', uri)}`;
+          endpoint = `me/tracks/contains?ids=${helpers.getFromUri('trackid', uri)}`;
         } else {
-          endpoint = `me/tracks/?ids=${helpers.getFromUri('trackid', uri)}`;
+          endpoint = `me/tracks?ids=${helpers.getFromUri('trackid', uri)}`;
         }
         break;
       case 'album':
         if (method == 'GET') {
-          endpoint = `me/albums/contains/?ids=${helpers.getFromUri('albumid', uri)}`;
+          endpoint = `me/albums/contains?ids=${helpers.getFromUri('albumid', uri)}`;
         } else {
-          endpoint = `me/albums/?ids=${helpers.getFromUri('albumid', uri)}`;
+          endpoint = `me/albums?ids=${helpers.getFromUri('albumid', uri)}`;
         }
         break;
       case 'artist':
@@ -778,14 +778,6 @@ export function following(uri, method = 'GET') {
             key: uri,
             in_library: is_following,
           });
-
-          if (method !== 'GET') {
-            dispatch(uiActions.createNotification(
-              {
-                message: is_following ? `Added ${asset_name} to library` : `Removed ${asset_name} from library`,
-              }
-            ));
-          }
         },
         (error) => {
           dispatch(coreActions.handleException(

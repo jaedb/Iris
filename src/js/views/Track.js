@@ -183,7 +183,7 @@ class Track extends React.Component {
   }
 
   render() {
-    if (helpers.isLoading(this.props.load_queue, [`spotify_GET_track/${helpers.getFromUri('trackid', this.props.uri)}`])) {
+    if (helpers.isLoading(this.props.load_queue, [`spotify_track/${helpers.getFromUri('trackid', this.props.uri)}`])) {
       return <Loader body loading />
     }
 

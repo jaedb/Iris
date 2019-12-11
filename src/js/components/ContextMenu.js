@@ -563,7 +563,7 @@ Back
 
     if (!this.props.spotify_authorized) {
       var toggle_in_library = null;
-    } else if (helpers.isLoading(this.props.load_queue, ['spotify_GET_me/tracks/contains', 'spotify_GET_me/playlists/contains', 'spotify_GET_me/albums/contains', 'spotify_me/artists/contains'])) {
+    } else if (helpers.isLoading(this.props.load_queue, ['spotify_me/tracks/contains', 'spotify_me/playlists/contains', 'spotify_me/albums/contains', 'spotify_me/artists/contains'])) {
       var toggle_in_library = (
         <div className="context-menu__item">
           <a className="context-menu__item__link">

@@ -175,7 +175,7 @@ class Playlist extends React.Component {
     const playlist_id = helpers.getFromUri('playlistid', this.props.uri);
 
     if (!this.props.playlist) {
-      if (helpers.isLoading(this.props.load_queue, [`spotify_GET_playlists/${playlist_id}?`])) {
+      if (helpers.isLoading(this.props.load_queue, [`spotify_playlists/${playlist_id}?`])) {
         return <Loader body loading />
       }
       return (

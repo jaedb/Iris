@@ -476,7 +476,7 @@ class Discover extends React.Component {
   }
 
   render() {
-    const is_loading = helpers.isLoading(this.props.load_queue, ['spotify_GET_recommendations']);
+    const is_loading = helpers.isLoading(this.props.load_queue, ['spotify_recommendations']);
     const addable_tunabilities = [];
     for (const key in this.state.tunabilities) {
       if (this.state.tunabilities.hasOwnProperty(key)) {
