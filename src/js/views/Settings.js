@@ -149,11 +149,11 @@ class Settings extends React.Component {
 
     const options = (
       <span>
-        <a className="button button--default button--no-hover" onClick={(e) => history.push('/settings/debug')}>
+        <a className="button button--discrete button--no-hover" onClick={(e) => history.push('/settings/debug')}>
           <Icon name="code" />
           Debug
         </a>
-        <a className="button button--default button--no-hover" href="https://github.com/jaedb/Iris/wiki" target="_blank">
+        <a className="button button--discrete button--no-hover" href="https://github.com/jaedb/Iris/wiki" target="_blank">
           <Icon name="help" />
           Help
         </a>

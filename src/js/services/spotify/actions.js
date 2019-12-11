@@ -757,7 +757,7 @@ export function following(uri, method = 'GET') {
         if (method == 'GET') {
           endpoint = `playlists/${helpers.getFromUri('playlistid', uri)}/followers/contains?ids=${getState().spotify.me.id}`;
         } else {
-          endpoint = `playlists/${helpers.getFromUri('playlistid', uri)}/followers`;
+          endpoint = `playlists/${helpers.getFromUri('playlistid', uri)}/followers?`;
         }
         break;
       default:

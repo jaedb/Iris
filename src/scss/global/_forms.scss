@@ -220,6 +220,10 @@ select {
     &:active {
       background: rgba(128, 128, 128, 0.2);
     }
+
+    &:hover {
+      box-shadow: 0 0 10px rgba(colour(darkest_grey), 0.3);
+    }
   }
 
   .dark-theme &--default {
@@ -227,6 +231,10 @@ select {
 
     &:active {
       background: rgba(128, 128, 128, 0.2);
+    }
+
+    &:hover {
+      box-shadow: 0 0 10px rgba(colour(white), 0.5);
     }
   }
 
@@ -252,14 +260,26 @@ select {
       background: darken(colour(turquoise), 10%);
       border-color: darken(colour(turquoise), 10%);
     }
+
+    &:hover {
+      box-shadow: 0 0 10px rgba(colour(turquoise), 0.5);
+    }
   }
 
   &--darken {
     border-color: rgba(0, 0, 0, 0.8);
+
+    &:hover {
+      box-shadow: 0 0 10px rgba(colour(black), 0.3);
+    }
   }
 
   &--lighten {
     border-color: rgba(255, 255, 255, 0.8);
+
+    &:hover {
+      box-shadow: 0 0 10px rgba(colour(white), 0.3);
+    }
   }
 
   &--secondary {
@@ -268,6 +288,10 @@ select {
 
     &:active {
       background: darken(colour(blue), 10%);
+    }
+
+    &:hover {
+      box-shadow: 0 0 10px rgba(colour(blue), 0.5);
     }
   }
 
@@ -278,14 +302,26 @@ select {
     &:active {
       background: rgba(128, 128, 128, 0.2);
     }
+
+    &:hover {
+      box-shadow: 0 0 10px rgba(colour(white), 0.5);
+    }
   }
 
   &--grey {
     border-color: colour(grey);
+
+    &:hover {
+      box-shadow: 0 0 10px rgba(colour(grey), 0.5);
+    }
   }
 
   &--black {
     border-color: colour(darkest_grey);
+
+    &:hover {
+      box-shadow: 0 0 10px rgba(colour(darkest_grey), 0.3);
+    }
   }
 
   &--confirming,
@@ -295,6 +331,10 @@ select {
 
     &:active {
       background: rgba(128, 128, 128, 0.2);
+    }
+
+    &:hover {
+      box-shadow: 0 0 10px rgba(colour(red), 0.5);
     }
   }
 

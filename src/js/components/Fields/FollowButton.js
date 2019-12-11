@@ -37,15 +37,12 @@ class FollowButton extends React.Component {
 
     className += ' button';
     if (helpers.isLoading(load_queue, [
-      'spotify_me/tracks/contains',
       'spotify_me/tracks?',
-      'spotify_me/albums/contains',
       'spotify_me/albums?',
-      'spotify_me/following/contains',
       'spotify_me/following?',
-      `spotify_playlists/${helpers.getFromUri('playlistid', uri)}/followers/contains?`,
-      `spotify_playlists/${helpers.getFromUri('playlistid', uri)}/followers`,
+      `spotify_playlists/${helpers.getFromUri('playlistid', uri)}/followers?`,
     ])) {
+      console.log("LOADING")
       className += ' button--working';
     }
 

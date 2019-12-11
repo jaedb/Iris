@@ -3422,10 +3422,14 @@ select {
     border-color: #121212; }
     .light-theme .button--default:active {
       background: rgba(128, 128, 128, 0.2); }
+    .light-theme .button--default:hover {
+      box-shadow: 0 0 10px rgba(18, 18, 18, 0.3); }
   .dark-theme .button--default {
     border-color: #FFFFFF; }
     .dark-theme .button--default:active {
       background: rgba(128, 128, 128, 0.2); }
+    .dark-theme .button--default:hover {
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
   .button--small {
     padding: 6px 18px 4px; }
   .button--large {
@@ -3440,29 +3444,45 @@ select {
     .button--primary:active {
       background: #06a46e;
       border-color: #06a46e; }
+    .button--primary:hover {
+      box-shadow: 0 0 10px rgba(8, 213, 143, 0.5); }
   .button--darken {
     border-color: rgba(0, 0, 0, 0.8); }
+    .button--darken:hover {
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); }
   .button--lighten {
     border-color: rgba(255, 255, 255, 0.8); }
+    .button--lighten:hover {
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.3); }
   .button--secondary {
     background: #32b5f2;
     color: #FFFFFF; }
     .button--secondary:active {
       background: #0e9fe3; }
+    .button--secondary:hover {
+      box-shadow: 0 0 10px rgba(50, 181, 242, 0.5); }
   .button--white {
     background: #FFFFFF;
     color: #000000; }
     .button--white:active {
       background: rgba(128, 128, 128, 0.2); }
+    .button--white:hover {
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
   .button--grey {
     border-color: #383734; }
+    .button--grey:hover {
+      box-shadow: 0 0 10px rgba(56, 55, 52, 0.5); }
   .button--black {
     border-color: #121212; }
+    .button--black:hover {
+      box-shadow: 0 0 10px rgba(18, 18, 18, 0.3); }
   .button--confirming, .button--destructive {
     border-color: #cf2d2d;
     color: #cf2d2d; }
     .button--confirming:active, .button--destructive:active {
       background: rgba(128, 128, 128, 0.2); }
+    .button--confirming:hover, .button--destructive:hover {
+      box-shadow: 0 0 10px rgba(207, 45, 45, 0.5); }
   .button--timing-out {
     position: relative;
     overflow: hidden; }
