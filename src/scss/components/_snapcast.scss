@@ -34,7 +34,6 @@
 				max-width: 140px;
 
 				&__inner {
-					background: lighten(colour(dark_grey), 2%);
 					padding: 20px 10px;
 				}
 
@@ -70,8 +69,6 @@
 
 				.light-theme & {
 					.menu-item__inner {
-						background: colour(faint_grey);
-
 						&:hover{
 							background: darken(colour(faint_grey), 8%);
 						}

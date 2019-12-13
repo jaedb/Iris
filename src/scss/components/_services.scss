@@ -24,7 +24,6 @@
 				padding: 30px 10px;
 				margin-bottom: 10px;
 				border-radius: 3px;
-				background: colour(darkest_grey);
 				display: block;
 				text-align: center;
 				box-sizing: border-box;
@@ -61,6 +60,10 @@
 			&:hover {
 				.menu-item__inner {
 					background: lighten(colour(dark_grey), 4%);
+
+					.light-theme & {
+						background: darken(colour(faint_grey), 4%);
+					}
 				}
 			}
 
@@ -77,24 +80,8 @@
 					border-bottom-right-radius: 0;
 					padding-bottom: 40px;
 					margin-bottom: 0;
-				}
-			}
 
-			.light-theme & {
-				.menu-item__inner {
-					background: colour(faint_grey);
-
-					&:hover{
-						background: darken(colour(faint_grey), 4%);
-					}
-
-					&:after {
-						background: darken(colour(faint_grey), 4%);
-					}
-				}
-
-				&--active {
-					.menu-item__inner {
+					.light-theme & {
 						background: darken(colour(faint_grey), 4%);
 					}
 				}
