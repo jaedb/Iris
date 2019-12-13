@@ -10,7 +10,7 @@
 .context-menu {
 	position: fixed;
 	z-index: 99;
-	font-size: 14px;
+	font-size: 13px;
 	font-weight: 500;
 	font-family: "Overpass";
 
@@ -19,7 +19,6 @@
 		overflow-y: scroll;
 
 		&--submenu {			
-			background: lighten(colour(grey), 10%);
 			z-index: 3;
 			border-radius: 3px;
 			transform: translateX(100%);
@@ -62,8 +61,8 @@
 			padding: 9px 12px 8px;
 			box-sizing: border-box;
 			position: relative;
-			color: colour(white);
 			text-decoration: none;
+			color: inherit;
 
 			.notouch &:hover {
 				&:before {
@@ -72,7 +71,7 @@
 			}
 
 			.notouch &:active {
-				background: colour(black);
+				background: colour(turquoise);
 				color: colour(white);
 			}
 
@@ -93,7 +92,8 @@
 		height: 1px;
 		padding: 0;
 		margin: 0;
-		background: lighten(colour(grey), 5%);
+		background: colour(middle_grey);
+		opacity: 0.5;
 	}
 
 	&--submenu-expanded {
@@ -112,10 +112,18 @@
 	}
 
 	@include responsive(null, $bp_medium){
-		background: colour(grey);
 		width: 200px;
 		overflow-x: hidden;
 		border-radius: 3px;
+		box-shadow: 2px 3px 6px rgba(0,0,0,0.2);
+
+		.light-theme & {
+			background: colour(white);
+		}
+
+		.dark-theme & {
+			background: colour(grey);
+		}
 
 		&--closing {
 			display: none;
@@ -131,6 +139,14 @@
 				left: 0;
 				right: 0;
 				bottom: 0;
+
+				.dark-theme & {
+					background: colour(grey);
+				}
+	
+				.light-theme & {
+					background: colour(white);
+				}
 			}
 		}
 

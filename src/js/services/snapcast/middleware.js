@@ -10,6 +10,7 @@ const snapcastActions = require('./actions');
 
 const SnapcastMiddleware = (function () {
   let socket = null;
+  let reconnectTimer = null;
 
   // requests pending
   const deferredRequests = [];
@@ -18,6 +19,12 @@ const SnapcastMiddleware = (function () {
   const handleMessage = (ws, store, message) => {
     if (store.getState().ui.log_snapcast) {
       console.log('Snapcast log (incoming)', message);
+    }
+
+    // Some messages are arrays of messages
+    if (Array.isArray(message)) {
+      message.map(messageItem => handleMessage(ws, store, messageItem));
+      return;
     }
 
     // Pull our ID. JSON-RPC nests the ID under the error object,
@@ -55,43 +62,34 @@ const SnapcastMiddleware = (function () {
 
       // General broadcast received
     } else {
-      // Broadcast of an error
-      if (message.error !== undefined) {
-        store.dispatch(coreActions.handleException(
-          `Snapcast: ${message.error.message}`,
-          message,
-          (message.error.data !== undefined && message.error.data.description !== undefined ? message.error.data.description : null),
-        ));
-      } else {
-        switch (message.method) {
-          case 'Client.OnConnect':
-            store.dispatch(snapcastActions.clientLoaded(message.params.client));
-            break;
+      switch (message.method) {
+        case 'Client.OnConnect':
+          store.dispatch(snapcastActions.clientLoaded(message.params.client));
+          break;
 
-          case 'Client.OnDisconnect':
-            store.dispatch(snapcastActions.clientLoaded(message.params.client));
-            break;
+        case 'Client.OnDisconnect':
+          store.dispatch(snapcastActions.clientLoaded(message.params.client));
+          break;
 
-          case 'Client.OnVolumeChanged':
+        case 'Client.OnVolumeChanged':
+          store.dispatch(snapcastActions.clientLoaded(message.params));
+          break;
+
+        case 'Client.OnLatencyChanged':
             store.dispatch(snapcastActions.clientLoaded(message.params));
-            break;
+          break;
 
-          case 'Client.OnLatencyChanged':
-              store.dispatch(snapcastActions.clientLoaded(message.params));
-            break;
+        case 'Client.OnNameChanged':
+            store.dispatch(snapcastActions.clientLoaded(message.params));
+          break;
 
-          case 'Client.OnNameChanged':
-              store.dispatch(snapcastActions.clientLoaded(message.params));
-            break;
+        case 'Group.OnMute':
+          store.dispatch(snapcastActions.groupLoaded(message.params));
+          break;
 
-          case 'Group.OnMute':
-            store.dispatch(snapcastActions.groupLoaded(message.params));
-            break;
-
-          case 'Server.OnUpdate':
-            store.dispatch(snapcastActions.serverLoaded(message.param));
-            break;
-        }
+        case 'Server.OnUpdate':
+          store.dispatch(snapcastActions.serverLoaded(message.param));
+          break;
       }
     }
   };
@@ -141,9 +139,8 @@ const SnapcastMiddleware = (function () {
     switch (action.type) {
 
       case 'SNAPCAST_CONNECT':
-        if (socket) {
-          socket.close();
-        }
+        if (socket) socket.close();
+        clearTimeout(reconnectTimer);
 
         store.dispatch({ type: 'SNAPCAST_CONNECTING' });
 
@@ -164,7 +161,8 @@ const SnapcastMiddleware = (function () {
 
           // attempt to reconnect every 5 seconds
           if (store.getState().snapcast.enabled) {
-            setTimeout(() => {
+            clearTimeout(reconnectTimer);
+            reconnectTimer = setTimeout(() => {
               store.dispatch(snapcastActions.connect());
             }, 5000);
           }
@@ -181,17 +179,18 @@ const SnapcastMiddleware = (function () {
         };
 
         socket.onmessage = (message) => {
-          var message = JSON.parse(message.data);
-          handleMessage(socket, store, message);
+          handleMessage(socket, store, JSON.parse(message.data));
         };
         break;
 
       case 'SNAPCAST_CONNECTED':
         if (store.getState().ui.allow_reporting) {
-          const hashed_hostname = sha256(window.location.hostname);
-          ReactGA.event({ category: 'Snapcast', action: 'Connected', label: hashed_hostname });
+          ReactGA.event({
+            category: 'Snapcast',
+            action: 'Connected',
+            label: sha256(window.location.hostname),
+          });
         }
-        store.dispatch(uiActions.createNotification({ content: 'Snapcast connected' }));
         store.dispatch(snapcastActions.getServer());
         next(action);
         break;
@@ -199,11 +198,24 @@ const SnapcastMiddleware = (function () {
       case 'SNAPCAST_DISCONNECT':
         if (socket != null) socket.close();
         socket = null;
+        clearTimeout(reconnectTimer);
         break;
 
-      case 'SNAPCAST_DISCONNECTED':
+      case 'SNAPCAST_SET_CONNECTION':
+        store.dispatch(snapcastActions.serverLoaded({}));
+        store.dispatch(snapcastActions.clientsLoaded([]));
+        store.dispatch(snapcastActions.groupsLoaded([]));
+        store.dispatch(snapcastActions.streamsLoaded([]));
+        store.dispatch(snapcastActions.set(action.data));
+
+        // Wait 250 ms and then retry connection
         if (store.getState().snapcast.enabled) {
-          store.dispatch(uiActions.createNotification({ type: 'bad', content: 'Snapcast disconnected' }));
+          setTimeout(
+            () => {
+              store.dispatch(snapcastActions.connect());
+            },
+            250,
+          );
         }
         break;
 
@@ -270,11 +282,10 @@ const SnapcastMiddleware = (function () {
 
       case 'SNAPCAST_GROUPS_LOADED':
         var groups_index = { ...snapcast.groups };
-        var groups_loaded = [];
         var clients_loaded = [];
 
-        for (const raw_group of action.groups) {
-          var group = helpers.formatGroup(raw_group);
+        const groups_loaded = action.groups.map(raw_group => {
+          let group = helpers.formatGroup(raw_group);
 
           if (groups_index[group.id]) {
             group = { ...groups_index[group.id], ...group };
@@ -283,10 +294,16 @@ const SnapcastMiddleware = (function () {
           if (raw_group.clients) {
             group.clients_ids = helpers.arrayOf('id', raw_group.clients);
             clients_loaded = [...clients_loaded, ...raw_group.clients];
+            store.dispatch(snapcastActions.calculateGroupVolume(group.id, raw_group.clients));
           }
 
-          groups_loaded.push(group);
-        }
+          // Create a name (display only) based on it's ID
+          if (group.name === undefined || group.name === '') {
+            group.name = `Group ${group.id.substring(0, 3)}`;
+          }
+
+          return group;
+        });
 
         action.groups = groups_loaded;
 
@@ -295,6 +312,17 @@ const SnapcastMiddleware = (function () {
         }
 
         next(action);
+        break;
+
+      case 'SNAPCAST_CALCULATE_GROUP_VOLUME':
+        const totalVolume = action.clients.reduce((accumulator, client) => {
+          return accumulator += helpers.formatClient(client).volume;
+        }, 0);
+
+        store.dispatch(snapcastActions.groupLoaded({
+          id: action.id,
+          volume: totalVolume / action.clients.length,
+        }));
         break;
 
       case 'SNAPCAST_CLIENTS_LOADED':
@@ -386,6 +414,15 @@ const SnapcastMiddleware = (function () {
                   volume: response.volume.percent,
                 },
               ));
+              /*
+              // A group was referenced, so we should update the group's averaged volume
+              if (action.group_id) {
+                const group = snapcast.groups[action.group_id];
+                const clients = [];
+                snapcast.groups.filter
+                store.dispatch(snapcastActions.calculateGroupVolume(group.id, clients));
+              }
+              */
             },
             (error) => {
               store.dispatch(coreActions.handleException(
@@ -447,7 +484,7 @@ const SnapcastMiddleware = (function () {
         request(store, 'Group.SetClients', params)
           .then(
             response => {
-              store.dispatch(snapcastActions.serverLoaded(response.server));
+              store.dispatch(snapcastActions.groupsLoaded(response.server.groups, true));
             },
             error => {
               store.dispatch(coreActions.handleException(
@@ -542,7 +579,7 @@ const SnapcastMiddleware = (function () {
               store.dispatch(snapcastActions.groupLoaded(
                 {
                   id: action.id,
-                  muted: response.mute,
+                  mute: response.mute,
                 },
               ));
             },
@@ -589,6 +626,11 @@ const SnapcastMiddleware = (function () {
 
           store.dispatch(snapcastActions.setClientVolume(client_to_update.id, volume));
         }
+
+        store.dispatch(snapcastActions.groupLoaded({
+          id: action.id,
+          volume: action.percent,
+        }))
         break;
 
       default:

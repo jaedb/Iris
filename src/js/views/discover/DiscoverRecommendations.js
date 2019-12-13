@@ -314,14 +314,16 @@ class Discover extends React.Component {
 					  }
 
 					  return (
-  <div className={`seed${seed.images ? ' has-thumbnail' : ''}`} key={seed.uri}>
-    {images ? <URILink className="thumbnail-wrapper" type={type} uri={seed.uri}><Thumbnail images={images} circle={seed.type == 'artist'} size="small" /></URILink> : null}
-    <div className="label">
-      <span className="text">{helpers.titleCase(type)}</span>
-      <Icon name="close" className="remove" onClick={() => this.removeSeed(index)} />
-    </div>
-    <div className="name">{seed.name}</div>
-  </div>
+              <div className={`seed${seed.images ? ' has-thumbnail' : ''}`} key={seed.uri}>
+                {images ? <URILink className="thumbnail-wrapper" type={type} uri={seed.uri}><Thumbnail images={images} circle={seed.type == 'artist'} size="small" /></URILink> : null}
+                <div className="seed__details">
+                  <div className="seed__label">
+                    <span className="seed__label__text">{helpers.titleCase(type)}</span>
+                    <Icon name="close" className="seed__label__remove" onClick={() => this.removeSeed(index)} />
+                  </div>
+                  <div className="seed__label__name">{seed.name}</div>
+                </div>
+              </div>
 					  );
 					})
 				}
@@ -365,27 +367,25 @@ class Discover extends React.Component {
 
     return (
       <div className="tunabilities">
-        {
-					enabled_tunabilities.map((tunability) => (
-  <div className="field tunability range" key={tunability.name}>
-    <div className="label">
-      {helpers.titleCase(tunability.name)}
-      <span className="remove" onClick={(e) => this.toggleTunability(tunability.name)}>
-        <Icon name="close" />
-      </span>
-    </div>
-    <div className="input">
-      <InputRange
-        disabled={!tunability.enabled}
-        minValue={tunability.min}
-        maxValue={tunability.max}
-        value={tunability.value}
-        onChange={(value) => this.setTunability(tunability.name, value)}
-      />
-    </div>
-  </div>
-					))
-				}
+        {enabled_tunabilities.map((tunability) => (
+          <div className="field tunability range" key={tunability.name}>
+            <div className="tunability__label">
+              {helpers.titleCase(tunability.name)}
+              <span className="remove" onClick={(e) => this.toggleTunability(tunability.name)}>
+                <Icon name="close" />
+              </span>
+            </div>
+            <div className="tunability__input">
+              <InputRange
+                disabled={!tunability.enabled}
+                minValue={tunability.min}
+                maxValue={tunability.max}
+                value={tunability.value}
+                onChange={(value) => this.setTunability(tunability.name, value)}
+              />
+            </div>
+          </div>
+        ))}
       </div>
     );
   }
@@ -515,6 +515,7 @@ class Discover extends React.Component {
 
               <AddSeedField onSelect={(e, uri) => this.handleSelect(e, uri)} />
               <DropdownField className="add-properties" name="Properties" options={addable_tunabilities} no_status_icon button="default" handleChange={(val) => { this.toggleTunability(val); }} />
+              <div className="intro__actions__separator" />
               <span className={`submit button button--primary button--large${is_loading ? ' button--working' : ''}`} onClick={(e) => this.getRecommendations()}>
                 <Icon name="explore" />
 &nbsp;

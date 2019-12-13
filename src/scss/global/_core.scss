@@ -80,7 +80,7 @@ body {
 
   &.light-theme {
     color: colour(darkest_grey);
-    background: lighten(colour(faint_grey), 2%);
+    background: colour(faint_grey);
   }
 
   &.dark-theme {
@@ -181,7 +181,7 @@ main {
     text-decoration: none;
     cursor: pointer;
 
-    &:not(.control):not(.action) {
+    &:not(.control):not(.action):not(.button) {
       border-bottom: 1px solid transparent;
 
       &:hover {
@@ -246,14 +246,14 @@ h2 {
     text-decoration: none;
 
     &:hover {
-      border-bottom: 1px solid colour(white);
+      border-bottom: 2px solid colour(white);
     }
   }
 
   &.grey-text {
     a:hover {
       color: colour(mid_grey) !important;
-      border-bottom: 1px solid colour(mid_grey);
+      border-bottom: 2px solid colour(mid_grey);
     }
   }
 }
@@ -291,6 +291,13 @@ h4 {
     margin-left: 10px;
     margin-bottom: -1px;
     margin-top: 0;
+  }
+
+  &.breadcrumbs {
+    .icon {
+      padding-left: 10px;
+      padding-right: 10px;
+    }
   }
 }
 

@@ -6,8 +6,7 @@
 
 		&__inner {
 			display: flex;
-			flex-wrap: wrap;
-			margin: 0 -5px;
+			margin: 0 0 0 -5px;
 		}
 
 		.menu-item {
@@ -18,14 +17,13 @@
 			padding: 0 5px;
 			display: block;
 			box-sizing: border-box;
-			border: 0;
+			border: none !important;
 
 			&__inner {
 				position: relative;
 				padding: 30px 10px;
 				margin-bottom: 10px;
 				border-radius: 3px;
-				background: colour(darkest_grey);
 				display: block;
 				text-align: center;
 				box-sizing: border-box;
@@ -62,6 +60,10 @@
 			&:hover {
 				.menu-item__inner {
 					background: lighten(colour(dark_grey), 4%);
+
+					.light-theme & {
+						background: darken(colour(faint_grey), 4%);
+					}
 				}
 			}
 
@@ -71,31 +73,15 @@
 				transform: scale(0.98);
 			}
 
-			&--active {				
+			&--active {
 				.menu-item__inner {
 					background: lighten(colour(dark_grey), 4%);
 					border-bottom-left-radius: 0;
 					border-bottom-right-radius: 0;
 					padding-bottom: 40px;
 					margin-bottom: 0;
-				}
-			}
 
-			.light-theme & {
-				.menu-item__inner {
-					background: colour(faint_grey);
-
-					&:hover{
-						background: darken(colour(faint_grey), 4%);
-					}
-
-					&:after {
-						background: darken(colour(faint_grey), 4%);
-					}
-				}
-
-				&--active {
-					.menu-item__inner {
+					.light-theme & {
 						background: darken(colour(faint_grey), 4%);
 					}
 				}
@@ -120,7 +106,7 @@
 	@include responsive($bp_medium){
 		margin-left: -20px;
 		margin-right: -20px;
-		
+
 		.menu {
 			overflow-x: auto;
 
@@ -130,7 +116,6 @@
 			}
 
 			&__inner {
-				width: 700px;
 				padding: 0 20px;
 			}
 

@@ -725,16 +725,16 @@ export function following(uri, method = 'GET') {
     switch (asset_name) {
       case 'track':
         if (method == 'GET') {
-          endpoint = `me/tracks/contains/?ids=${helpers.getFromUri('trackid', uri)}`;
+          endpoint = `me/tracks/contains?ids=${helpers.getFromUri('trackid', uri)}`;
         } else {
-          endpoint = `me/tracks/?ids=${helpers.getFromUri('trackid', uri)}`;
+          endpoint = `me/tracks?ids=${helpers.getFromUri('trackid', uri)}`;
         }
         break;
       case 'album':
         if (method == 'GET') {
-          endpoint = `me/albums/contains/?ids=${helpers.getFromUri('albumid', uri)}`;
+          endpoint = `me/albums/contains?ids=${helpers.getFromUri('albumid', uri)}`;
         } else {
-          endpoint = `me/albums/?ids=${helpers.getFromUri('albumid', uri)}`;
+          endpoint = `me/albums?ids=${helpers.getFromUri('albumid', uri)}`;
         }
         break;
       case 'artist':
@@ -757,7 +757,7 @@ export function following(uri, method = 'GET') {
         if (method == 'GET') {
           endpoint = `playlists/${helpers.getFromUri('playlistid', uri)}/followers/contains?ids=${getState().spotify.me.id}`;
         } else {
-          endpoint = `playlists/${helpers.getFromUri('playlistid', uri)}/followers`;
+          endpoint = `playlists/${helpers.getFromUri('playlistid', uri)}/followers?`;
         }
         break;
       default:
@@ -778,14 +778,6 @@ export function following(uri, method = 'GET') {
             key: uri,
             in_library: is_following,
           });
-
-          if (method !== 'GET') {
-            dispatch(uiActions.createNotification(
-              {
-                message: is_following ? `Added ${asset_name} to library` : `Removed ${asset_name} from library`,
-              }
-            ));
-          }
         },
         (error) => {
           dispatch(coreActions.handleException(
@@ -1495,7 +1487,7 @@ export function getPlaylist(uri) {
             ...helpers.formatPlaylist(response),
             is_completely_loaded: true,
             user_uri: response.owner.uri,
-            tracks_uris: helpers.arrayOf('uri', tracks),
+            tracks_uris: tracks ? helpers.arrayOf('uri', tracks) : null,
             tracks_more: response.tracks.next,
             tracks_total: response.tracks.total,
             description,

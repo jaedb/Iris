@@ -29,7 +29,6 @@
     line-height: 1em;
 
     &__item {
-      @include gradient_overlay(3px);
       font-family: "Overpass";
       font-weight: 600;
       font-size: 1.05rem;
@@ -40,7 +39,12 @@
       margin: 0 1.1em;
       border-radius: 3px;
 
+      .dark-theme & {
+        @include gradient_overlay(3px);
+      }
+
       .light-theme & {
+        @include animate();
         color: colour(darkest_grey);
         font-weight: 600;
       }
@@ -51,8 +55,7 @@
       }
 
       .status {
-        margin-left: 5px;
-        float: right;
+        margin-left: auto;
 
         .icon {
           padding-right: 0;
@@ -60,13 +63,9 @@
         }
       }
 
-      &--active {
+      &--active { 
         background: colour(turquoise);
-        color: colour(white);
-
-        .light-theme & {
-          color: colour(white);
-        }
+        color: colour(white) !important;
 
         .status {
           .icon {
@@ -88,6 +87,10 @@
         &:before {
           opacity: 0.15;
         }
+
+        .light-theme & {
+          color: lighten(colour(darkest_grey), 20%);
+        }
       }
 
       &:focus:not([disabled]):not(.sidebar__menu__item--active) {
@@ -108,8 +111,7 @@
         padding: 0 26px 5px 26px;
         font-size: 12px;
         text-transform: uppercase;
-        opacity: 0.5;
-        color: colour(mid_grey);
+        color: colour(middle_grey);
       }
     }
   }

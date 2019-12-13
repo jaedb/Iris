@@ -42,10 +42,11 @@ $module: 'tooltip';
 		}
 
 		.light-theme & {
-			background: darken(colour(faint_grey), 5%);
+			background: colour(dark_grey);
+			color: colour(white);
 
 			&:after {
-				background: darken(colour(faint_grey), 5%);
+				background: colour(dark_grey);
 			}
 		}
 	}
@@ -55,7 +56,7 @@ $module: 'tooltip';
 			display: none;
 		}
 	}
-	 
+
 	&:hover {
 		.#{$module}__content {
 			opacity: 1;

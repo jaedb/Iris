@@ -6,16 +6,12 @@ import { bindActionCreators } from 'redux';
 import Link from '../components/Link';
 import ErrorMessage from '../components/ErrorMessage';
 import Header from '../components/Header';
-import TrackList from '../components/TrackList';
 import Thumbnail from '../components/Thumbnail';
 import LinksSentence from '../components/LinksSentence';
-import ArtistGrid from '../components/ArtistGrid';
-import FollowButton from '../components/Fields/FollowButton';
 import LastfmLoveButton from '../components/Fields/LastfmLoveButton';
 import Dater from '../components/Dater';
-import LazyLoadListener from '../components/LazyLoadListener';
+import SelectField from '../components/Fields/SelectField';
 import ContextMenuTrigger from '../components/ContextMenuTrigger';
-import URILink from '../components/URILink';
 import Icon from '../components/Icon';
 import Loader from '../components/Loader';
 
@@ -117,15 +113,20 @@ class Track extends React.Component {
   }
 
   renderLyricsSelector() {
-    if (this.props.track.lyrics_results === undefined || this.props.track.lyrics_results === null) {
+    const {
+      track,
+      geniusActions,
+    } = this.props;
+
+    if (track.lyrics_results === undefined || track.lyrics_results === null) {
       return null;
-    } if (this.props.track.lyrics_results.length <= 0) {
+    } if (track.lyrics_results.length <= 0) {
       return (
         <div className="field lyrics-selector">
           <div className="input">
             <input type="text" disabled="disabled" value="No results" />
             <div className="description">
-							Switch to another lyrics seach result
+              Switch to another lyrics seach result
             </div>
           </div>
         </div>
@@ -135,23 +136,18 @@ class Track extends React.Component {
     return (
       <div className="field lyrics-selector">
         <div className="input">
-          <select
-            onChange={(e) => this.props.geniusActions.getTrackLyrics(this.props.track.uri, e.target.value)}
-          >
-            {
-							this.props.track.lyrics_results.map((result) => (
-  <option
-    key={result.path}
-    value={result.path}
-    defaultValue={result.path == this.props.track.lyrics_path}
-  >
-    {result.title}
-  </option>
-							))
-						}
-          </select>
+          <SelectField
+            onChange={(value) => geniusActions.getTrackLyrics(track.uri, value)}
+            options={
+              track.lyrics_results.map((result) => ({
+                value: result.path,
+                label: result.title,
+                defaultValue: (result.path === track.lyrics_path),
+              }))
+            }
+          />
           <div className="description">
-						Switch to another lyrics seach result
+            Switch to another lyrics seach result
           </div>
         </div>
       </div>
@@ -170,7 +166,7 @@ class Track extends React.Component {
         <div className="lyrics">
           <div className="content" dangerouslySetInnerHTML={{ __html: this.props.track.lyrics }} />
           <div className="origin mid_grey-text">
-						Origin:
+            Origin:
             {' '}
             <a href={`https://genius.com${this.props.track.lyrics_path}`} target="_blank">{`https://genius.com${this.props.track.lyrics_path}`}</a>
           </div>
@@ -180,9 +176,7 @@ class Track extends React.Component {
     return (
       <ErrorMessage type="not-found" title="Not found">
         <p>
-Could not find track with URI "
-          {encodeURIComponent(this.props.uri)}
-"
+          Could not find track with URI "{encodeURIComponent(this.props.uri)}"
         </p>
       </ErrorMessage>
     );

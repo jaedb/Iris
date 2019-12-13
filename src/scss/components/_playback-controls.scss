@@ -5,11 +5,22 @@
   right: 0;
   left: 0;
   height: 60px;
-  background: colour(white);
-  color: colour(darkest_grey);
   transform-style: preserve-3d;
-  border-left: 230px solid colour(white);
-  box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.1);
+  border-left: 230px solid transparent;
+
+  .dark-theme & {
+    background: colour(grey);
+    color: colour(white);
+    box-shadow: 0 -1px 10px rgba(0, 0, 0, 0.6);
+    border-color: colour(grey);
+  }
+
+  .light-theme & {
+    background: colour(white);
+    color: colour(darkest_grey);
+    border-color: colour(white);
+    box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.1);
+  }
 
   .current-track {
     position: absolute;
@@ -43,7 +54,11 @@
 
     &__transition {
       z-index: 2;
-      background: lighten(colour(white), 15%);
+      background: colour(grey);
+
+      .light-theme & {
+        background: lighten(colour(white), 15%);
+      }
 
       .text {
         @include animate(0.15s);
@@ -72,7 +87,7 @@
       margin-right: 12px;
 
       &__image {
-        background-color: colour(faint_grey);
+        background-color: colour(middle_grey);
       }
 
       &:before {
@@ -149,6 +164,11 @@
     display: inline-block;
     vertical-align: bottom;
     background: none;
+    color: colour(white);
+
+    .light-theme & {
+      color: colour(darkest_grey);
+    }
 
     .icon {
       font-size: 0.9rem;
@@ -184,7 +204,10 @@
 
         &.play {
           margin-bottom: -0.8rem;
-          color: colour(turquoise);
+
+          .light-theme & {
+            color: colour(turquoise);
+          }
 
           .icon {
             font-size: 3rem;
@@ -199,7 +222,6 @@
       right: 25rem;
       padding-left: 20px;
       padding-right: 20px;
-      color: colour(mid_grey);
 
       .slider {
         position: absolute;

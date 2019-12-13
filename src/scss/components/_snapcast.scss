@@ -4,96 +4,137 @@
 	button {
 		margin-bottom: 0px;
 	}
-					
+
+	&__mute-control {
+		display: inline-block;
+		float: left;
+		padding: 8px 5px 0;
+		border: 0;
+		color: colour(white);
+		background: transparent;
+
+		.light-theme & {
+			color: colour(darkest_grey);
+		}
+	}
+
 	&__group,
 	&__client {
 		display: block;
-
-		&__mute-control {
-			display: inline-block;
-			float: left;
-			padding: 8px 5px 0;
-			border: 0;
-			color: colour(white);
-			background: transparent;
-
-			.light-theme & {
-				color: colour(darkest_grey);
-			}
-		}
-
-		&__volume-control {
-			padding: 10px 0 5px 35px;
-			display: block;
-			width: 100%;
-			box-sizing: border-box;
-		}
 	}
 
 	&__groups {
-		padding-top: 10px;
-	}
-		
-	&__group {
-		padding-top: 10px;
-		border-top: 1px solid colour(grey);
+		padding-top: 20px;
+		margin-bottom: -10px;
 
-		&:not(:last-child){
-			padding-bottom: 20px;
+		.menu {
+			.menu-item {
+				width: 12.5%;
+				min-width: 110px;
+				max-width: 140px;
+
+				&__inner {
+					padding: 20px 10px;
+				}
+
+				&__icon {
+					font-size: 30px;
+					height: 30px;
+					margin-top: 5px;
+					margin-bottom: 10px;
+				}
+
+				&__title {
+					font-size: 14px;
+
+					.icon {
+						font-size: 0.9em;
+						padding-left: 5px;
+						vertical-align: middle;
+					}
+				}
+
+				&:hover {
+					.menu-item__inner {
+						background: lighten(colour(dark_grey), 8%);
+					}
+				}
+
+				&--active {
+					.menu-item__inner {
+						background: lighten(colour(dark_grey), 8%);
+						padding-bottom: 30px;
+					}
+				}
+
+				.light-theme & {
+					.menu-item__inner {
+						&:hover{
+							background: darken(colour(faint_grey), 8%);
+						}
+
+						&:after {
+							background: darken(colour(faint_grey), 8%);
+						}
+					}
+
+					&--active {
+						.menu-item__inner {
+							background: darken(colour(faint_grey), 8%);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	&__group {
+		padding: 20px 20px 0 20px;
+		margin: 0 -20px -20px -20px;
+		border-radius: 0 0 3px 3px;
+		background: lighten(colour(dark_grey), 8%);
+
+		.field:last-child {
+			padding-bottom: 0;
+		}
+
+		.no-results {
+			padding: 20px 20px 30px 20px;
+			font-size: 1rem;
+		}
+
+		.light-theme & {
+			background: darken(colour(faint_grey), 8%);
+		}
+
+		&__volume-control {
+			margin-left: 40px;
+			margin-top: 10px;
 		}
 	}
 
 	&__clients {
 		padding: 0 10px;
+		margin: 10px -20px 0;
+		display: flex;
+		flex-flow: row wrap;
+		background: rgba(128,128,128,0.05);
 	}
 
 	&__client {
 		@include clearfix();
-		padding: 0 !important;
+		padding: 10px 10px 10px 60px;
+		position: relative;
+		margin: 0;
+		width: 25%;
+		border-top: none !important;
+		box-sizing: border-box;
 
-		&--expanded {
-			background: rgba(255,255,255,0.05);
-
-			.light-theme & {
-				background: rgba(0,0,0,0.05);
-			}
+		&--disconnected {
+			opacity: 0.3;
 		}
 
-		&--collapsed {
-			.snapcast__client__header:hover {
-				background: rgba(255,255,255,0.03);
-
-				.light-theme & {
-					background: rgba(0,0,0,0.03);
-				}
-			}
-		}
-
-		&__header {
-			font-weight: 500;
-			cursor: pointer;
-			position: relative;
-			padding: 14px 10px;
-
-			&__icons {
-				position: absolute;
-				top: 0;
-				right: 0;
-				cursor: pointer;
-				z-index: 2;
-				padding: 14px 10px;
-
-				.icon {
-					padding-left: 6px;
-
-					&.disconnected {
-						color: colour(red);
-					}
-				}
-			}
-		}
-
-		&__details {			
+		&__details {
 			position: relative;
 			padding: 0 14px 14px 14px;
 		}
@@ -106,6 +147,27 @@
 			.icon {
 				padding-right: 0;
 			}
+		}
+
+		&__volume {
+			position: absolute;
+			top: 20px;
+			bottom: 30px;
+			left: 20px;
+		}
+
+		&__mute-control {
+			position: absolute;
+			bottom: 0;
+			left: -5px;
+		}
+
+		&__volume-control {
+			position: absolute;
+			top: 0;
+			left: 0;
+			bottom: 30px;
+			height: auto;
 		}
 
 		&__latency {
@@ -151,11 +213,27 @@
 				}
 			}
 		}
+	}
 
-		@include responsive($bp_medium){
-			padding-left: 0 !important;
-			padding-right: 0 !important;
-			padding-top: 0 !important;
+	@include responsive(900px){
+		&__client {
+			width: 50%;
+		}
+
+		&__groups {
+			.menu {
+				margin: 0 -20px;
+			}
+		}
+	}
+
+	@include responsive($bp_small){
+		&__client {
+			width: auto;
+		}
+
+		&__clients {
+			display: block;
 		}
 	}
 }

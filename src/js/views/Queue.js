@@ -30,17 +30,15 @@ class Queue extends React.Component {
     };
   }
 
-  componentWillMount() {
-    // Before we mount, restore any limit defined in our location state
+  componentDidMount() {
+    // Restore any limit defined in our location state
     const state = this.props.location.state ? this.props.location.state : {};
     if (state.limit) {
       this.setState({
         limit: state.limit,
       });
     }
-  }
 
-  componentDidMount() {
     this.props.uiActions.setWindowTitle('Now playing');
   }
 
@@ -147,7 +145,7 @@ class Queue extends React.Component {
     switch (uri_type){
       case 'radio':
         const radio_seeds = helpers.getFromUri('seeds', added_from_uri);
-        
+
         for (let seed of radio_seeds) {
           let item_type = helpers.uriType(seed);
           let item_library = this.props[`${item_type}s`];
@@ -180,13 +178,13 @@ class Queue extends React.Component {
           <URILink
             uri={items[0].uri}
             className="current-track__added-from__thumbnail"
-          >            
+          >
             <Thumbnail
               images={items[0].images}
               size="small"
               circle={helpers.uriType(items[0].uri) === 'artist'}
             />
-          </URILink>        
+          </URILink>
         )}
         <div className="current-track__added-from__text">
           {'Playing from '}

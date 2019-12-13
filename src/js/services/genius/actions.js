@@ -156,31 +156,28 @@ export function getTrackLyrics(uri, path) {
       .then(
         (response, status, xhr) => {
           dispatch(uiActions.stopLoading(loader_key));
+          if (response && response.result) {
+            const html = $(response.result);
+            let lyrics = html.find('.lyrics');
+            if (lyrics.length > 0) {
+              lyrics = lyrics.first();
+              lyrics.find('a').replaceWith(() => this.innerHTML);
 
-                	if (response && response.result) {
-	                    const html = $(response.result);
-	                    let lyrics = html.find('.lyrics');
-	                    if (lyrics.length > 0) {
-	                        lyrics = lyrics.first();
-	                        lyrics.find('a').replaceWith(function () {
-	                            return this.innerHTML;
-	                        });
+              let lyrics_html = lyrics.html();
+              lyrics_html = lyrics_html.replace(/(\[)/g, '<span class="mid_grey-text">[');
+              lyrics_html = lyrics_html.replace(/(\])/g, ']</span>');
 
-	                        let lyrics_html = lyrics.html();
-	                        lyrics_html = lyrics_html.replace(/(\[)/g, '<span class="mid_grey-text">[');
-	                        lyrics_html = lyrics_html.replace(/(\])/g, ']</span>');
-
-	                        dispatch(coreActions.trackLoaded({
+              dispatch(coreActions.trackLoaded({
                 uri,
                 lyrics: lyrics_html,
                 lyrics_path: path,
               }));
-	                    }
+            }
           } else {
-	                    dispatch(coreActions.handleException(
-	                        'Could not get track lyrics',
-	                        response.error,
-	                    ));
+            dispatch(coreActions.handleException(
+              'Could not get track lyrics',
+              response.error,
+            ));
           }
         },
         (xhr, status, error) => {
@@ -202,6 +199,7 @@ export function findTrackLyrics(track) {
     query = query.toLowerCase();
     query = query.replace(/\([^)]*\) */g, ''); // anything in circle-braces
     query = query.replace(/\([^[]*\] */g, ''); // anything in square-braces
+    query = query.replace(/(?= - ).*$/g, ''); // remove anything after and including " - "
 
     sendRequest(dispatch, getState, 'search', 'GET', `q=${encodeURIComponent(query)}`)
       .then(

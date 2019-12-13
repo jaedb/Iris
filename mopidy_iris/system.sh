@@ -1,9 +1,13 @@
 #!/bin/bash
 
-CURR_DIR="$(pwd)"
+if [[ "$(pwd)" = "/iris/mopidy_iris/system.sh" ]]; then
+	IS_CONTAINER = true
+else
+	IS_CONTAINER = false
+fi
 
 if [[ $1 = "upgrade" ]]; then
-	if [[ $CURR_DIR = "/iris/mopidy_iris/system.sh" ]]; then
+	if [[ $IS_CONTAINER ]]; then
 		echo "cd /iris && git checkout master && git pull origin master"
 		UPGRADE="$(cd /iris && git checkout master && git pull origin master)"
 	else
@@ -19,7 +23,11 @@ elif [[ $1 = "restart" ]]; then
 
 elif [[ $1 = "local_scan" ]]; then
 
-	SCAN="$(mopidyctl local scan)"
+	if [[ $IS_CONTAINER ]]; then
+		SCAN="$(-u mopidy mopidy local scan)"
+	else
+		SCAN="$(mopidyctl local scan)"
+	fi
 	echo -e "${SCAN}"
 
 elif [[ $1 = "test" ]]; then

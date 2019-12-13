@@ -869,6 +869,7 @@ export const formatGroup = function (data) {
     'id',
     'name',
     'mute',
+    'volume',
     'stream_id',
     'clients_ids',
   ];
@@ -879,12 +880,8 @@ export const formatGroup = function (data) {
     }
   }
 
-  if (group.name === undefined || group.name === '') {
-    group.name = `Group ${data.id.substring(0, 3)}`;
-  }
-
-  if (group.mute === undefined && data.mute !== undefined) {
-    group.mute = data.mute;
+  if (group.mute === undefined && data.muted !== undefined) {
+    group.mute = data.muted;
   }
 
   return group;

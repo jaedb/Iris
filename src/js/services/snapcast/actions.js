@@ -5,6 +5,14 @@ export function set(data) {
     data,
   };
 }
+
+export function setConnection(data) {
+  return {
+    type: 'SNAPCAST_SET_CONNECTION',
+    data,
+  };
+}
+
 export function setEnabled(enabled) {
   return {
     type: 'SNAPCAST_SET_ENABLED',
@@ -63,11 +71,12 @@ export function setClientMute(id, mute) {
   };
 }
 
-export function setClientVolume(id, volume) {
+export function setClientVolume(id, volume, group_id = null) {
   return {
     type: 'SNAPCAST_SET_CLIENT_VOLUME',
     id,
     volume,
+    group_id,
   };
 }
 
@@ -127,6 +136,15 @@ export function setGroupVolume(id, percent, old_percent = 0) {
   };
 }
 
+export function calculateGroupVolume(id, clients) {
+  return {
+    type: 'SNAPCAST_CALCULATE_GROUP_VOLUME',
+    id,
+    clients,
+  };
+}
+
+
 
 /**
  * Record loaders
@@ -159,7 +177,6 @@ export function groupsLoaded(groups, flush = false) {
   return {
     type: 'SNAPCAST_GROUPS_LOADED',
     groups,
-    flush,
   };
 }
 

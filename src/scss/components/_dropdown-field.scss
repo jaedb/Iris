@@ -2,13 +2,14 @@
 .dropdown-field {
 	@include noselect();
 	font-size: 13px;
-	font-weight: 800;
+	font-weight: 500;
 	font-family: "Overpass";
 	position: relative;
 	display: inline-block;
 
 	&__label {
 		display: flex;
+		font-weight: 800;
 
 		&__name {
 			display: none;
@@ -74,7 +75,7 @@
 			right: 9px;
 
 			.light-theme & {
-				background: colour(faint_grey);
+				background: colour(white);
 			}
 		}
 
@@ -87,33 +88,17 @@
 			border-radius: 3px;
 
 			.light-theme & {
-				background: colour(faint_grey);
+				background: colour(white);
 			}
 		}
 
 		&__item {
 			@include animate();
+			@include gradient_overlay(3px);
 			position: relative;
 			padding: 9px 12px 8px 24px;
 			cursor: pointer;
-			color: colour(black);
-			
-			&:before {
-				@include animate();
-				content: '';
-				display: block;
-				position: absolute;
-				top: 0;
-				right: 0;
-				bottom: 0;
-				left: 0;
-				opacity: 0;
-				z-index: 9;
-				background: -webkit-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
-				background: -moz-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
-				background: -o-linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
-				background: linear-gradient(to bottom right, rgba(255,255,255,1), rgba(0,0,0,0.5));
-			}
+			color: colour(darkest_grey);
 
 			.icon {
 				position: absolute;
@@ -123,7 +108,7 @@
 			}
 
 			.notouch &:hover {
-				color: colour(black);
+				color: colour(darkest_grey);
 
 				&:before {
 					opacity: 0.15;

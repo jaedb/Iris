@@ -294,7 +294,7 @@
 	@include responsive($bp_medium){
 		&__item {
 
-			:root .notouch:not(.dragging) &:not(.no-click) {
+			:root .notouch:not(.dragging) &:not(.list__item--no-interaction) {
 				&:active,
 				&:focus {
 					@include noanimate();

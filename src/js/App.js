@@ -66,16 +66,6 @@ export class App extends React.Component {
     this.handleFocusAndBlur = this.handleFocusAndBlur.bind(this);
   }
 
-  componentWillMount() {
-    window.addEventListener(
-      'beforeinstallprompt',
-      this.handleInstallPrompt,
-      false,
-    );
-    window.addEventListener('focus', this.handleFocusAndBlur, false);
-    window.addEventListener('blur', this.handleFocusAndBlur, false);
-  }
-
   componentWillUnmount() {
     window.removeEventListener(
       'beforeinstallprompt',
@@ -87,6 +77,14 @@ export class App extends React.Component {
   }
 
   componentDidMount() {
+    window.addEventListener(
+      'beforeinstallprompt',
+      this.handleInstallPrompt,
+      false,
+    );
+    window.addEventListener('focus', this.handleFocusAndBlur, false);
+    window.addEventListener('blur', this.handleFocusAndBlur, false);
+
     if (this.props.allow_reporting) {
       ReactGA.initialize('UA-64701652-3');
     }
@@ -340,7 +338,7 @@ export class App extends React.Component {
           uiActions={this.props.uiActions}
           slim_mode={this.props.slim_mode}
         />
-        {this.props.hotkeys_enabled && <Hotkeys />}
+        {this.props.hotkeys_enabled && <Hotkeys history={this.props.history} />}
         <ContextMenu />
         <Dragger />
         <Notifications />
