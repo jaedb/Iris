@@ -3529,10 +3529,13 @@ select {
     border-color: #a3a19f;
     background: transparent; }
   @media (max-width: 799px) {
-    .button--large {
-      width: 100%;
-      display: block;
-      margin-bottom: 10px; } }
+    .button {
+      padding-left: 30px;
+      padding-right: 30px; }
+      .button--large {
+        width: 100%;
+        display: block;
+        margin-bottom: 10px; } }
 
 .field {
   -webkit-touch-callout: none;

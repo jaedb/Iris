@@ -82515,6 +82515,22 @@ var Settings = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (Settings.__proto__ || Object.getPrototypeOf(Settings)).call(this, props));
 
+    _this.renderLocalScanButton = function () {
+      var processes = _this.props.ui.processes;
+
+      var loading = processes.local_scan && processes.local_scan.status === 'running';
+      return _react2.default.createElement(
+        'button',
+        {
+          className: 'button button--default ' + (loading ? 'button--working' : ''),
+          onClick: function onClick(e) {
+            return _this.props.pusherActions.localScan();
+          }
+        },
+        'Run local scan'
+      );
+    };
+
     _this.state = {
       mopidy_host: _this.props.mopidy.host,
       mopidy_port: _this.props.mopidy.port,
@@ -83167,13 +83183,7 @@ var Settings = function (_React$Component) {
           _react2.default.createElement(
             'div',
             { className: 'field' },
-            _react2.default.createElement(
-              'button',
-              { className: 'button button--default', onClick: function onClick(e) {
-                  return _this2.props.pusherActions.localScan();
-                } },
-              'Run local scan'
-            ),
+            this.renderLocalScanButton(),
             _react2.default.createElement(
               _reactRouterDom.Link,
               { className: 'button button--default', to: '/share-configuration' },
@@ -83224,53 +83234,49 @@ var Settings = function (_React$Component) {
           ),
           _react2.default.createElement(
             'div',
-            { className: 'field' },
+            null,
             _react2.default.createElement(
-              'div',
-              null,
-              _react2.default.createElement(
-                'em',
-                null,
-                _react2.default.createElement(
-                  'a',
-                  { href: 'https://github.com/jaedb/Iris', target: '_blank' },
-                  'Iris'
-                )
-              ),
-              ' ',
-              'is an open-source project by',
-              _react2.default.createElement(
-                'a',
-                { href: 'https://github.com/jaedb', target: '_blank' },
-                'James Barnsley'
-              ),
-              '. It is provided free and with absolutely no warranty. If you paid someone for this software, please let me know.'
-            ),
-            _react2.default.createElement('br', null),
-            _react2.default.createElement('br', null),
-            _react2.default.createElement(
-              'div',
+              'em',
               null,
               _react2.default.createElement(
                 'a',
-                { className: 'button button--default', href: 'https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=james%40barnsley%2enz&lc=NZ&item_name=James%20Barnsley&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted', target: '_blank' },
-                _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'paypal' }),
-                ' ',
-                'Donate'
-              ),
-              _react2.default.createElement(
-                'a',
-                { className: 'button button--default', href: 'https://github.com/jaedb/Iris', target: '_blank' },
-                _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'github' }),
-                ' ',
-                'GitHub'
-              ),
-              _react2.default.createElement(
-                'a',
-                { className: 'button button--default', href: 'http://creativecommons.org/licenses/by-nc/4.0/', target: '_blank' },
-                _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'creative-commons' }),
-                '\xA0Licence'
+                { href: 'https://github.com/jaedb/Iris', target: '_blank' },
+                'Iris'
               )
+            ),
+            ' ',
+            'is an open-source project by',
+            _react2.default.createElement(
+              'a',
+              { href: 'https://github.com/jaedb', target: '_blank' },
+              'James Barnsley'
+            ),
+            '. It is provided free and with absolutely no warranty. If you paid someone for this software, please let me know.'
+          ),
+          _react2.default.createElement('br', null),
+          _react2.default.createElement('br', null),
+          _react2.default.createElement(
+            'div',
+            null,
+            _react2.default.createElement(
+              'a',
+              { className: 'button button--default', href: 'https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=james%40barnsley%2enz&lc=NZ&item_name=James%20Barnsley&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted', target: '_blank' },
+              _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'paypal' }),
+              ' ',
+              'Donate'
+            ),
+            _react2.default.createElement(
+              'a',
+              { className: 'button button--default', href: 'https://github.com/jaedb/Iris', target: '_blank' },
+              _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'github' }),
+              ' ',
+              'GitHub'
+            ),
+            _react2.default.createElement(
+              'a',
+              { className: 'button button--default', href: 'http://creativecommons.org/licenses/by-nc/4.0/', target: '_blank' },
+              _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'creative-commons' }),
+              '\xA0Licence'
             )
           )
         )
