@@ -1,13 +1,12 @@
 FROM circleci/python:3.7.5
 
+
 # Switch to the root user while we do our changes
 USER root
 
 # Install GStreamer and other required Debian packages
 RUN apt-get update \
   && apt-get install -y \
-    curl \
-    dumb-init \
     graphviz-dev \
     gstreamer1.0-plugins-bad \
     gstreamer1.0-plugins-good \
@@ -16,13 +15,6 @@ RUN apt-get update \
     python-dev \
     python-gst-1.0 \
     python3-gst-1.0 \
-    git \
-    nano \
-    sudo \
-  && git clone https://github.com/jaedb/Iris.git /iris \
-  && cd /iris \
-  && mkdir -p /var/lib/mopidy/.config \
-  && ln -s /config /var/lib/mopidy/.config/mopidy \
   && rm -rf /var/lib/apt/lists/*
 
 # Make python3-gst-1.0 available to non-Debian Python 3.7 installation
@@ -39,22 +31,9 @@ RUN wget -q -O - https://apt.mopidy.com/mopidy.gpg \
 # Install additional Python dependencies
 RUN python3.7 -m pip install --no-cache tox
 
-# Start helper script.
-COPY docker/entrypoint.sh /entrypoint.sh
-
-# Default configuration.
-COPY docker/mopidy.example.conf /config/mopidy.conf
-
-# Copy the pulse-client configuratrion.
-COPY docker/pulse-client.conf /etc/pulse/client.conf
-
 # Add a VERSION file to the image
 ADD VERSION /
 
-# Allows any user to run mopidy, but runs by default as a randomly generated UID/GID.
-ENV HOME=/var/lib/mopidy
-
-EXPOSE 6600 6680
 
 # Switch back to the circleci user
 USER circleci
