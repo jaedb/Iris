@@ -1,10 +1,11 @@
 
 from __future__ import unicode_literals
 from mopidy.core import CoreListener
+from .core import IrisCore
 
 import pykka
 import logging
-from .mem import getIris
+from .mem import iris
 
 # import logger
 logger = logging.getLogger(__name__)
@@ -13,17 +14,21 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
 
     def __init__(self, config, core):
         super(IrisFrontend, self).__init__()
-        getIris().core = core
-        getIris().config = config
+
+
+        # create our core instance
+        iris = IrisCore(config, core)
+        print(iris)
 
     def on_start(self):
-        getIris().start()
+        print(iris)
+        iris.start()
 
     def on_stop(self):
-        getIris().stop()
+        iris.stop()
 
     def track_playback_ended(self, tl_track, time_position):
-        getIris().check_for_radio_update()
+        iris.check_for_radio_update()
 
     def tracklist_changed(self):
-        getIris().clean_queue_metadata()
+        iris.clean_queue_metadata()

@@ -9,7 +9,7 @@ from mopidy import config, ext
 from .frontend import IrisFrontend
 from .handlers import WebsocketHandler, HttpHandler
 from .core import IrisCore
-from .mem import setIris, getIris
+from .mem import iris
 
 logger = logging.getLogger(__name__)
 __version__ = '3.42.2'
@@ -47,10 +47,6 @@ class Extension( ext.Extension ):
             'name': self.ext_name,
             'factory': iris_factory
         })
-
-        # create our core instance
-        setIris(IrisCore())
-        getIris().version = self.version
 
         # Add our frontend
         registry.add('frontend', IrisFrontend)
@@ -110,8 +106,8 @@ def iris_factory(config, core):
         ),
         (
             r'/(.*)',
-            ReactRouterHandler, {
-                'path': str(path)+'/index.html'
+            tornado.web.StaticFileHandler, {
+                'path': str(path)
             }
         ),
     ]

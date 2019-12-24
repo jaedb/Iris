@@ -39,6 +39,9 @@ RUN wget -q -O - https://apt.mopidy.com/mopidy.gpg \
 # Install additional Python dependencies
 RUN python3.7 -m pip install --no-cache tox
 
+# TEMPORARY: Install mopidy pre-release
+RUN python3 -m pip install --user Mopidy==3.0.0b1
+
 # Start helper script.
 COPY docker/entrypoint.sh /entrypoint.sh
 
@@ -55,8 +58,5 @@ ADD VERSION /
 ENV HOME=/var/lib/mopidy
 
 EXPOSE 6600 6680
-
-# Switch back to the circleci user
-USER circleci
 
 CMD ["/bin/sh"]

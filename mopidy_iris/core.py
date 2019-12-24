@@ -22,7 +22,7 @@ if sys.platform == 'win32':
 logger = logging.getLogger(__name__)
 
 class IrisCore(pykka.ThreadingActor):
-    version = 0
+    version = "Unknown"
     spotify_token = False
     queue_metadata = {}
     connections = {}
@@ -35,6 +35,11 @@ class IrisCore(pykka.ThreadingActor):
         "seed_tracks": [],
         "results": []
     }
+
+
+    def __init__(self, config, core):
+        self.config = config
+        self.core = core
 
 
     ##
@@ -99,8 +104,7 @@ class IrisCore(pykka.ThreadingActor):
     # @return string
     ##
     def generateGuid(self):
-        length = 12
-        return ''.join(random.choice(string.lowercase) for i in range(length))
+        return ''.join(random.choices(string.ascii_uppercase + string.digits, k=12))
 
 
     ##
@@ -224,7 +228,7 @@ class IrisCore(pykka.ThreadingActor):
                 'params': data['params'] if 'params' in data else None
             }
 
-        for connection in self.connections.itervalues():
+        for connection in self.connections.values():
 
             send_to_this_connection = True
 

@@ -5,7 +5,7 @@ from tornado.escape import json_encode, json_decode
 import tornado.ioloop, tornado.web, tornado.websocket, tornado.template
 import random, string, logging, uuid, subprocess, pykka, ast, logging, json, urllib, requests, time
 
-from .mem import getIris
+from .mem import iris
 
 logger = logging.getLogger(__name__)
 
@@ -26,16 +26,20 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
         if (ip == '127.0.0.1' and hasattr(self.request.headers,'X-Forwarded-For')):
             ip = self.request.headers['X-Forwarded-For']
 
+        print("---------------------")
+        print("WebsocketHandler.open")
+        print(iris)
+
         # Construct our initial client object, and add to our list of connections
         client = {
-            'connection_id': getIris().generateGuid(),
+            'connection_id': iris.generateGuid(),
             'ip': ip,
             'created': datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S')
         }
 
         self.connection_id = client['connection_id']
 
-        getIris().add_connection(connection=self, client=client)
+        iris.add_connection(connection=self, client=client)
 
 
     def on_message(self, message):
@@ -80,7 +84,7 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
 
 
     def on_close(self):
-        getIris().remove_connection(connection_id=self.connection_id)
+        iris.remove_connection(connection_id=self.connection_id)
 
     ##
     # Handle a response from our core
@@ -114,7 +118,7 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
         # Respond to the original request
         data = request_response
         data['recipient'] = self.connection_id
-        getIris().send_message(data=data)
+        iris.send_message(data=data)
 
 
 
