@@ -80,7 +80,7 @@ body {
 
   &.light-theme {
     color: colour(darkest_grey);
-    background: lighten(colour(faint_grey), 2%);
+    background: colour(faint_grey);
   }
 
   &.dark-theme {
@@ -181,7 +181,7 @@ main {
     text-decoration: none;
     cursor: pointer;
 
-    &:not(.control):not(.action) {
+    &:not(.control):not(.action):not(.button) {
       border-bottom: 1px solid transparent;
 
       &:hover {

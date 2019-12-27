@@ -10,34 +10,72 @@ import * as uiActions from '../../services/ui/actions';
 import * as spotifyActions from '../../services/spotify/actions';
 
 class FollowButton extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   remove() {
-    this.props.spotifyActions.following(this.props.uri, 'DELETE');
+    const { spotifyActions: actions, uri } = this.props;
+    actions.following(uri, 'DELETE');
   }
 
   add() {
-    this.props.spotifyActions.following(this.props.uri, 'PUT');
+    const { spotifyActions: actions, uri } = this.props;
+    actions.following(uri, 'PUT');
   }
 
   render() {
-    if (!this.props.uri) {
-      return false;
+    const {
+      uri,
+      addText,
+      removeText,
+      spotify_authorized,
+      is_following,
+      uiActions: actions,
+      load_queue,
+    } = this.props;
+
+    let { className } = this.props;
+
+    if (!uri) return null;
+
+    className += ' button';
+    if (helpers.isLoading(load_queue, [
+      'spotify_me/tracks?',
+      'spotify_me/albums?',
+      'spotify_me/following?',
+      `spotify_playlists/${helpers.getFromUri('playlistid', uri)}/followers?`,
+    ])) {
+      console.log("LOADING")
+      className += ' button--working';
     }
 
-    let className = 'button';
-    if (this.props.className) {
-      className += ` ${this.props.className}`;
+    if (!spotify_authorized) {
+      return (
+        <button
+          type="button"
+          className={`${className} button--disabled`}
+          onClick={() => actions.createNotification({ content: 'You must authorize Spotify first', type: 'warning' })}
+        >
+          {addText}
+        </button>
+      );
+    } if (is_following === true) {
+      return (
+        <button
+          type="button"
+          className={`${className} button--destructive`}
+          onClick={() => this.remove()}
+        >
+          {removeText}
+        </button>
+      );
     }
-
-    if (!this.props.spotify_authorized) {
-      return <button className={`${className} button--disabled`} onClick={(e) => this.props.uiActions.createNotification({ content: 'You must authorize Spotify first', type: 'warning' })}>{this.props.addText}</button>;
-    } if (this.props.is_following === true) {
-      return <button className={`${className} button--destructive`} onClick={(e) => this.remove()}>{this.props.removeText}</button>;
-    }
-    return <button className={`${className} button--default`} onClick={(e) => this.add()}>{this.props.addText}</button>;
+    return (
+      <button
+        type="button"
+        className={`${className} button--default`}
+        onClick={() => this.add()}
+      >
+        {addText}
+      </button>
+    );
   }
 }
 

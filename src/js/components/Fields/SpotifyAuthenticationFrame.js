@@ -100,19 +100,16 @@ class SpotifyAuthenticationFrame extends React.Component {
   }
 
   render() {
-    if (this.state.authorizing) {
+    const { authorizing } = this.state;
+    const { authorized } = this.props;
+
+    if (authorized) {
       return (
-        <a className="button button--working">
-					Authorizing...
-        </a>
-      );
-    } if (this.props.authorized) {
-      return (
-        <a className="button button--destructive" onClick={(e) => this.props.spotifyActions.revokeAuthorization()}>Log out</a>
+        <a className={`button button--destructive ${authorizing ? 'button--working' :''}`} onClick={(e) => this.props.spotifyActions.revokeAuthorization()}>Log out</a>
       );
     }
     return (
-      <a className="button button--primary" onClick={(e) => this.startAuthorization()}>Log in</a>
+      <a className={`button button--primary ${authorizing ? 'button--working' :''}`} onClick={(e) => this.startAuthorization()}>Log in</a>
     );
   }
 }

@@ -74,8 +74,11 @@ input[type="radio"] {
     width: 1.8rem;
     height: 1.8rem;
     border-radius: 50%;
-    background: colour(middle_grey);
+    background: transparent;
     margin-right: 0.5rem;
+    border: 2px solid rgba(128, 128, 128, 0.35);
+    box-sizing: border-box;
+    background: rgba(128, 128, 128, 0.05);
 
     .light-theme & {
       background: colour(white);
@@ -114,12 +117,13 @@ input[type="checkbox"] {
     color: colour(white);
     display: inline-flex;
     padding: 0 0.2rem;
-    height: 1.6rem;
-    width: 1.2rem;
+    height: calc(1.6rem - 2px);
+    width: calc(1.2rem - 2px);
     text-align: center;
     border-radius: 3px;
-    background: colour(middle_grey);
+    border: 2px solid rgba(128, 128, 128, 0.35);
     margin-right: 0.5rem;
+    background: rgba(128, 128, 128, 0.05);
 
     .light-theme & {
       background: colour(white);
@@ -182,34 +186,27 @@ select {
   @include noselect();
   display: inline-flex;
   font-size: 14px;
-  color: colour(black);
-  padding: 9px 30px 7px;
+  color: inherit;
+  background: transparent;
+  padding: 9px 40px 7px;
   margin: 5px 20px 5px 0;
   box-sizing: border-box;
-  border-radius: 3px;
+  border-radius: 100px;
   vertical-align: middle;
   position: relative;
-  border: 0 !important;
   cursor: pointer;
   letter-spacing: -0.01rem;
   text-align: center;
   text-decoration: none;
+  border: 2px solid transparent;
+
+  .dark-theme & {
+    color: colour(white);
+  }
 
   .icon {
     padding-right: 8px;
     margin: 0;
-  }
-
-  &:not(.button--no-hover) {
-    @include gradient_overlay(3px, 0.05);
-  }
-
-  .notouch &:not(.button--no-hover):hover {
-    box-shadow: 1px 2px 6px rgba(0, 0, 0, 0.2);
-
-    &:before {
-      opacity: 0.2;
-    }
   }
 
   &:active {
@@ -218,11 +215,26 @@ select {
   }
 
   .light-theme &--default {
-    background: colour(dark_grey);
-    color: colour(white);
+    border-color: colour(darkest_grey);
 
     &:active {
-      background: colour(black);
+      background: rgba(128, 128, 128, 0.2);
+    }
+
+    &:hover {
+      box-shadow: 0 0 10px rgba(colour(darkest_grey), 0.3);
+    }
+  }
+
+  .dark-theme &--default {
+    border-color: colour(white);
+
+    &:active {
+      background: rgba(128, 128, 128, 0.2);
+    }
+
+    &:hover {
+      box-shadow: 0 0 10px rgba(colour(white), 0.5);
     }
   }
 
@@ -241,25 +253,33 @@ select {
 
   &--primary {
     background: colour(turquoise);
+    border-color: colour(turquoise);
     color: colour(white);
 
     &:active {
       background: darken(colour(turquoise), 10%);
+      border-color: darken(colour(turquoise), 10%);
+    }
+
+    &:hover {
+      box-shadow: 0 0 10px rgba(colour(turquoise), 0.5);
     }
   }
 
   &--darken {
-    background: rgba(0, 0, 0, 0.8);
-    color: colour(white);
+    border-color: rgba(0, 0, 0, 0.8);
 
-    &:active {
-      background: rgba(0, 0, 0, 0);
+    &:hover {
+      box-shadow: 0 0 10px rgba(colour(black), 0.3);
     }
   }
 
   &--lighten {
-    background: rgba(255, 255, 255, 0.8);
-    color: colour(darkest_grey);
+    border-color: rgba(255, 255, 255, 0.8);
+
+    &:hover {
+      box-shadow: 0 0 10px rgba(colour(white), 0.3);
+    }
   }
 
   &--secondary {
@@ -269,48 +289,58 @@ select {
     &:active {
       background: darken(colour(blue), 10%);
     }
+
+    &:hover {
+      box-shadow: 0 0 10px rgba(colour(blue), 0.5);
+    }
   }
 
-  &--default,
   &--white {
     background: colour(white);
     color: colour(black);
 
     &:active {
-      background: darken(colour(white), 10%);
+      background: rgba(128, 128, 128, 0.2);
+    }
+
+    &:hover {
+      box-shadow: 0 0 10px rgba(colour(white), 0.5);
     }
   }
 
   &--grey {
-    background: colour(grey);
-    color: colour(white);
+    border-color: colour(grey);
 
-    &:active {
-      background: darken(colour(grey), 10%);
+    &:hover {
+      box-shadow: 0 0 10px rgba(colour(grey), 0.5);
     }
   }
 
   &--black {
-    background: colour(darkest_grey);
-    color: colour(white);
+    border-color: colour(darkest_grey);
 
-    &:active {
-      background: darken(colour(darkest_grey), 10%);
+    &:hover {
+      box-shadow: 0 0 10px rgba(colour(darkest_grey), 0.3);
     }
   }
 
   &--confirming,
   &--destructive {
-    background: colour(red);
-    color: colour(white);
+    border-color: colour(red);
+    color: colour(red);
 
     &:active {
-      background: darken(colour(red), 10%);
+      background: rgba(128, 128, 128, 0.2);
+    }
+
+    &:hover {
+      box-shadow: 0 0 10px rgba(colour(red), 0.5);
     }
   }
 
   &--timing-out {
     position: relative;
+    overflow: hidden;
 
     &:before {
       @include animate_timeout(2s);
@@ -320,18 +350,13 @@ select {
       left: 0;
       bottom: 0;
       width: 0;
-      background: colour(black);
+      background: colour(middle_grey);
       opacity: 0.25;
     }
   }
 
   &--discrete {
-    background: transparent;
-    color: colour(white);
-
-    .light-theme & {
-      color: colour(darkest_grey);
-    }
+    border: none;
 
     &:before {
       display: none;
@@ -341,21 +366,24 @@ select {
   &--working {
     position: relative;
     cursor: wait !important;
-    background: colour(grey);
-    color: colour(mid_grey);
+    color: rgba(0,0,0,0) !important;
 
-    &:after {
+    &:before {
       pointer-events: none;
-      position: absolute;
-      display: block;
+      display: inline-block;
       content: "";
-      animation: slideloader 1s infinite linear;
-      background: rgba(200, 200, 200, 0.3);
-      top: 0;
-      left: 0;
-      bottom: 0;
-      right: 0;
+      animation: spin 1s infinite linear;
+      width: 1.2em;
+      height: 1.2em;
+      border-radius: 100px;
+      position: absolute;
+      left: 50%;
+      margin-left: -0.6em;
+      border: 2px solid transparent;
+      border-top-color: colour(middle_grey);
+      border-right-color: colour(middle_grey);
       z-index: 1;
+      box-sizing: border-box;
     }
   }
 
@@ -367,30 +395,30 @@ select {
     color: colour(mid_grey);
     border-color: colour(mid_grey);
     background: transparent;
-
-    &:before {
-      opacity: 0.15;
-    }
   }
 
   @include responsive($bp_medium) {
-    margin-right: 10px;
-    padding-left: 20px;
-    padding-right: 20px;
+    padding-left: 30px;
+    padding-right: 30px;
+    
+    &--large {
+      width: 100%;
+      display: block;
+      margin-bottom: 10px;
+    }
   }
 }
 
 .field {
   @include clearfix();
   @include noselect();
-  display: block;
+  display: flex;
   padding-bottom: 12px;
 
   & > .name {
     display: block;
     padding-top: 10px;
     width: 20%;
-    float: left;
 
     .icon {
       font-size: 0.9em;
@@ -400,7 +428,6 @@ select {
 
   & > .input {
     width: 80%;
-    float: left;
 
     input,
     select,
@@ -419,14 +446,14 @@ select {
   }
 
   &--condensed {
+    display: block;
+
     & > .name {
       width: auto;
-      float: none;
     }
 
     & > .input {
       width: auto;
-      float: none;
     }
   }
 
@@ -557,14 +584,14 @@ select {
 
 @include responsive($bp_medium) {
   .field {
+    display: block;
+
     .name {
-      float: none;
       width: auto;
       padding: 0 0 4px 0;
     }
 
     .input {
-      float: none;
       width: auto;
 
       .text {

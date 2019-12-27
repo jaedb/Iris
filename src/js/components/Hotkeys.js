@@ -20,6 +20,17 @@ class Hotkeys extends React.Component {
   }
 
   handleKeyDown(e) {
+    const {
+      play_state,
+      mopidyActions,
+      uiActions,
+      mute,
+      play_time_position,
+      history,
+      modal,
+      dragging,
+    } = this.props;
+    let { volume } = this.props;
     const key = e.key.toLowerCase();
 
     // Ignore text input fields
@@ -41,38 +52,38 @@ class Hotkeys extends React.Component {
       case ' ':
       case 'p': // Super-useful once you get used to it. This negates the issue where interactive elements
         // are in focus (ie slider) and <space> is reserved for that field's interactivity.
-        if (this.props.play_state == 'playing') {
-          this.props.mopidyActions.pause();
-          this.props.uiActions.createNotification({ content: 'pause', type: 'shortcut' });
+        if (play_state == 'playing') {
+          mopidyActions.pause();
+          uiActions.createNotification({ content: 'pause', type: 'shortcut' });
         } else {
-          this.props.mopidyActions.play();
-          this.props.uiActions.createNotification({ content: 'play_arrow', type: 'shortcut' });
+          mopidyActions.play();
+          uiActions.createNotification({ content: 'play_arrow', type: 'shortcut' });
         }
         prevent = true;
         break;
 
       case 'escape':
-        if (this.props.dragging) {
-          this.props.uiActions.dragEnd();
+        if (dragging) {
+          uiActions.dragEnd();
           prevent = true;
-        } else if (this.props.modal) {
-			        window.history.back();
+        } else if (modal) {
+          window.history.back();
           prevent = true;
         }
         break;
 
       case 's':
-        this.props.history.push('/search');
+        history.push('/search');
         prevent = true;
         break;
 
       case 'q':
-        this.props.history.push('/queue');
+        history.push('/queue');
         prevent = true;
         break;
 
       case 'k':
-        this.props.history.push('/kiosk-mode');
+        history.push('/kiosk-mode');
         prevent = true;
         break;
 
@@ -87,80 +98,80 @@ class Hotkeys extends React.Component {
         break;
 
       case '=':
-        var { volume } = this.props;
         if (volume !== 'false') {
           volume += 5;
           if (volume > 100) {
             volume = 100;
           }
-          this.props.mopidyActions.setVolume(volume);
-          if (this.props.mute) {
-            this.props.mopidyActions.setMute(false);
+          mopidyActions.setVolume(volume);
+          if (mute) {
+            mopidyActions.setMute(false);
           }
-          this.props.uiActions.createNotification({ content: 'volume_up', type: 'shortcut' });
+          uiActions.createNotification({ content: 'volume_up', type: 'shortcut' });
         }
         prevent = true;
         break;
 
       case '-':
-        var { volume } = this.props;
         if (volume !== 'false') {
           volume -= 5;
           if (volume < 0) {
             volume = 0;
           }
-          this.props.mopidyActions.setVolume(volume);
-          if (this.props.mute) {
-            this.props.mopidyActions.setMute(false);
+          mopidyActions.setVolume(volume);
+          if (mute) {
+            mopidyActions.setMute(false);
           }
         }
-        this.props.uiActions.createNotification({ content: 'volume_down', type: 'shortcut' });
+        uiActions.createNotification({ content: 'volume_down', type: 'shortcut' });
         prevent = true;
         break;
 
       case '0':
-        if (this.props.mute) {
-          this.props.mopidyActions.setMute(false);
-          this.props.uiActions.createNotification({ content: 'volume_up', type: 'shortcut' });
+        if (mute) {
+          mopidyActions.setMute(false);
+          uiActions.createNotification({ content: 'volume_up', type: 'shortcut' });
         } else {
-          this.props.mopidyActions.setMute(true);
-          this.props.uiActions.createNotification({ content: 'volume_off', type: 'shortcut' });
+          mopidyActions.setMute(true);
+          uiActions.createNotification({ content: 'volume_off', type: 'shortcut' });
         }
         prevent = true;
         break;
 
       case ';':
-        var new_position = this.props.play_time_position - 30000;
+        var new_position = play_time_position - 30000;
         if (new_position < 0) {
           new_position = 0;
         }
-        this.props.mopidyActions.setTimePosition(new_position);
-        this.props.uiActions.createNotification({ content: 'fast_rewind', type: 'shortcut' });
+        mopidyActions.setTimePosition(new_position);
+        uiActions.createNotification({ content: 'fast_rewind', type: 'shortcut' });
         prevent = true;
         break;
 
       case "'":
-        this.props.mopidyActions.setTimePosition(this.props.play_time_position + 30000);
-        this.props.uiActions.createNotification({ content: 'fast_forward', type: 'shortcut' });
+        mopidyActions.setTimePosition(play_time_position + 30000);
+        uiActions.createNotification({ content: 'fast_forward', type: 'shortcut' });
         prevent = true;
         break;
 
       case '[':
-        this.props.mopidyActions.previous();
-        this.props.uiActions.createNotification({ content: 'skip_previous', type: 'shortcut' });
+        mopidyActions.previous();
+        uiActions.createNotification({ content: 'skip_previous', type: 'shortcut' });
         prevent = true;
         break;
 
       case ']':
-        this.props.mopidyActions.next();
-        this.props.uiActions.createNotification({ content: 'skip_next', type: 'shortcut' });
+        mopidyActions.next();
+        uiActions.createNotification({ content: 'skip_next', type: 'shortcut' });
         prevent = true;
+        break;
+
+      default:
         break;
     }
 
     if (prevent) {
       e.preventDefault();
-      return false;
     }
   }
 

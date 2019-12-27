@@ -12,7 +12,7 @@ from .core import IrisCore
 from .mem import iris
 
 logger = logging.getLogger(__name__)
-__version__ = '3.42.2'
+__version__ = '3.43.0'
 
 ##
 # Core extension class

@@ -163,7 +163,7 @@ class Services extends React.Component {
           <div className="input">
             <SpotifyAuthenticationFrame />
             {this.props.spotify.refreshing_token ? (
-              <a className="button button--working">Refreshing...</a>
+              <a className="button button--default button--working">Force token refres</a>
             ) : (
               <a
                 className="button button--default"

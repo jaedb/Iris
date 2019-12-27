@@ -136,6 +136,19 @@ class Settings extends React.Component {
     );
   }
 
+  renderLocalScanButton = () => {
+    const { processes } = this.props.ui;
+    const loading = processes.local_scan && processes.local_scan.status === 'running';
+    return (
+      <button
+        className={`button button--default ${loading ? 'button--working' : ''}`}
+        onClick={(e) => this.props.pusherActions.localScan()}
+      >
+        Run local scan
+      </button>
+    );
+  }
+
   render() {
     const {
       mopidyActions,
@@ -149,11 +162,11 @@ class Settings extends React.Component {
 
     const options = (
       <span>
-        <a className="button button--default button--no-hover" onClick={(e) => history.push('/settings/debug')}>
+        <a className="button button--discrete button--no-hover" onClick={(e) => history.push('/settings/debug')}>
           <Icon name="code" />
           Debug
         </a>
-        <a className="button button--default button--no-hover" href="https://github.com/jaedb/Iris/wiki" target="_blank">
+        <a className="button button--discrete button--no-hover" href="https://github.com/jaedb/Iris/wiki" target="_blank">
           <Icon name="help" />
           Help
         </a>
@@ -441,7 +454,7 @@ Advanced
           </div>
 
           <div className="field">
-            <button className="button button--default" onClick={(e) => this.props.pusherActions.localScan()}>Run local scan</button>
+            {this.renderLocalScanButton()}
             <Link className="button button--default" to="/share-configuration">Share configuration</Link>
           </div>
 
@@ -471,32 +484,30 @@ Advanced
             <a name="about" />
           </h4>
 
-          <div className="field">
-            <div>
-              <em><a href="https://github.com/jaedb/Iris" target="_blank">Iris</a></em>
-              {' '}
+          <div>
+            <em><a href="https://github.com/jaedb/Iris" target="_blank">Iris</a></em>
+            {' '}
 is an open-source project by
-              <a href="https://github.com/jaedb" target="_blank">James Barnsley</a>
+            <a href="https://github.com/jaedb" target="_blank">James Barnsley</a>
 . It is provided free and with absolutely no warranty. If you paid someone for this software, please let me know.
-            </div>
-            <br />
-            <br />
-            <div>
-              <a className="button button--default" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=james%40barnsley%2enz&lc=NZ&item_name=James%20Barnsley&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted" target="_blank">
-                <Icon type="fontawesome" name="paypal" />
-                {' '}
+          </div>
+          <br />
+          <br />
+          <div>
+            <a className="button button--default" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=james%40barnsley%2enz&lc=NZ&item_name=James%20Barnsley&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted" target="_blank">
+              <Icon type="fontawesome" name="paypal" />
+              {' '}
 Donate
-              </a>
-              <a className="button button--default" href="https://github.com/jaedb/Iris" target="_blank">
-                <Icon type="fontawesome" name="github" />
-                {' '}
+            </a>
+            <a className="button button--default" href="https://github.com/jaedb/Iris" target="_blank">
+              <Icon type="fontawesome" name="github" />
+              {' '}
 GitHub
-              </a>
-              <a className="button button--default" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">
-                <Icon type="fontawesome" name="creative-commons" />
+            </a>
+            <a className="button button--default" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">
+              <Icon type="fontawesome" name="creative-commons" />
 &nbsp;Licence
-              </a>
-            </div>
+            </a>
           </div>
 
         </section>

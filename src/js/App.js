@@ -338,7 +338,7 @@ export class App extends React.Component {
           uiActions={this.props.uiActions}
           slim_mode={this.props.slim_mode}
         />
-        {this.props.hotkeys_enabled && <Hotkeys />}
+        {this.props.hotkeys_enabled && <Hotkeys history={this.props.history} />}
         <ContextMenu />
         <Dragger />
         <Notifications />
