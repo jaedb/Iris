@@ -12,7 +12,6 @@ from .core import IrisCore
 from .mem import iris
 
 logger = logging.getLogger(__name__)
-__version__ = '3.43.0'
 
 ##
 # Core extension class
@@ -23,7 +22,6 @@ class Extension( ext.Extension ):
 
     dist_name = 'Mopidy-Iris'
     ext_name = 'iris'
-    version = __version__
 
     def get_default_config(self):
         conf_file = os.path.join(os.path.dirname(__file__), 'ext.conf')
@@ -64,10 +62,7 @@ class ReactRouterHandler(tornado.web.StaticFileHandler):
         super(ReactRouterHandler, self).initialize(self.dirname)
 
     def get(self, path=None, include_body=True):
-        print(self.path)
-        print(include_body)
-        print('-------------')
-        super(ReactRouterHandler, self).get(self.path)
+        return super(ReactRouterHandler, self).get(self.path, include_body)
 
 ##
 # Frontend factory

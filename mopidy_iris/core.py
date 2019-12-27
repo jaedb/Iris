@@ -15,6 +15,7 @@ from tornado.escape import json_encode, json_decode
 
 from .system import IrisSystemThread
 
+__version__ = '3.43.0'
 if sys.platform == 'win32':
     import ctypes
 
@@ -22,7 +23,7 @@ if sys.platform == 'win32':
 logger = logging.getLogger(__name__)
 
 class IrisCore(pykka.ThreadingActor):
-    version = "Unknown"
+    version = __version__
     spotify_token = False
     queue_metadata = {}
     connections = {}

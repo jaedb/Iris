@@ -526,7 +526,7 @@ const MopidyMiddleware = (function () {
         break;
 
       case 'MOPIDY_GET_VOLUME':
-        request(socket, store, 'playback.getVolume')
+        request(socket, store, 'mixer.getVolume')
           .then(
             (response) => {
               store.dispatch({
@@ -538,7 +538,7 @@ const MopidyMiddleware = (function () {
         break;
 
       case 'MOPIDY_SET_VOLUME':
-        request(socket, store, 'playback.setVolume', { volume: action.volume })
+        request(socket, store, 'mixer.setVolume', { volume: action.volume })
           .then(
             (response) => {
               store.dispatch({

@@ -70908,7 +70908,7 @@ var MopidyMiddleware = function () {
             break;
 
           case 'MOPIDY_GET_VOLUME':
-            request(socket, store, 'playback.getVolume').then(function (response) {
+            request(socket, store, 'mixer.getVolume').then(function (response) {
               store.dispatch({
                 type: 'MOPIDY_VOLUME',
                 volume: response
@@ -70917,7 +70917,7 @@ var MopidyMiddleware = function () {
             break;
 
           case 'MOPIDY_SET_VOLUME':
-            request(socket, store, 'playback.setVolume', { volume: action.volume }).then(function (response) {
+            request(socket, store, 'mixer.setVolume', { volume: action.volume }).then(function (response) {
               store.dispatch({
                 type: 'MOPIDY_VOLUME',
                 volume: action.volume
