@@ -1,1 +1,3 @@
-iris = None
+from .core import IrisCore
+
+iris = IrisCore()

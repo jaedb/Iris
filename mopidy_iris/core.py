@@ -37,7 +37,7 @@ class IrisCore(pykka.ThreadingActor):
     }
 
 
-    def __init__(self, config, core):
+    def setup(self, config, core):
         self.config = config
         self.core = core
 
@@ -261,7 +261,7 @@ class IrisCore(pykka.ThreadingActor):
         callback = kwargs.get('callback', None)
 
         connections = []
-        for connection in self.connections.itervalues():
+        for connection in self.connections.values():
             connections.append(connection['client'])
 
         response = {
@@ -275,6 +275,9 @@ class IrisCore(pykka.ThreadingActor):
     def add_connection(self, *args, **kwargs):
         connection = kwargs.get('connection', None)
         client = kwargs.get('client', None)
+
+        logger.debug("Connection added")
+        logger.debug(connection)
 
         self.connections[client['connection_id']] = {
             'client': client,
@@ -409,20 +412,20 @@ class IrisCore(pykka.ThreadingActor):
 
 
     def get_version(self, *args, **kwargs):
+
         callback = kwargs.get('callback', False)
         url = 'https://pypi.python.org/pypi/Mopidy-Iris/json'
-        req = urllib.request(url)
 
         try:
-            response = urllib.urlopen(req, timeout=30).read()
+            response = urllib.request.urlopen(url, timeout=30).read()
             response = json.loads(response)
             latest_version = response['info']['version']
 
             # compare our versions, and convert result to boolean
-            upgrade_available = cmp( parse_version( latest_version ), parse_version( self.version ) )
+            upgrade_available = parse_version( latest_version ) > parse_version( self.version )
             upgrade_available = ( upgrade_available == 1 )
 
-        except (urllib.HTTPError, urllib.URLError) as e:
+        except (urllib.request.HTTPError, urllib.request.URLError) as e:
             latest_version = '0.0.0'
             upgrade_available = False
 

@@ -26,10 +26,6 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
         if (ip == '127.0.0.1' and hasattr(self.request.headers,'X-Forwarded-For')):
             ip = self.request.headers['X-Forwarded-For']
 
-        print("---------------------")
-        print("WebsocketHandler.open")
-        print(iris)
-
         # Construct our initial client object, and add to our list of connections
         client = {
             'connection_id': iris.generateGuid(),

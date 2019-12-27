@@ -15,13 +15,11 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
     def __init__(self, config, core):
         super(IrisFrontend, self).__init__()
 
-
-        # create our core instance
-        iris = IrisCore(config, core)
-        print(iris)
+        # Pass our Mopidy config and core to the IrisCore instance
+        iris.config = config
+        iris.core = core
 
     def on_start(self):
-        print(iris)
         iris.start()
 
     def on_stop(self):

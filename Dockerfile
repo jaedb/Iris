@@ -55,7 +55,7 @@ COPY docker/pulse-client.conf /etc/pulse/client.conf
 ADD VERSION /
 
 # Allows any user to run mopidy, but runs by default as a randomly generated UID/GID.
-ENV HOME=/var/lib/mopidy
+#ENV HOME=/var/lib/mopidy
 
 EXPOSE 6600 6680
 
