@@ -64,14 +64,17 @@ class ReactRouterHandler(tornado.web.StaticFileHandler):
         super(ReactRouterHandler, self).initialize(self.dirname)
 
     def get(self, path=None, include_body=True):
-        super(ReactRouterHandler, self).get(self.path, include_body)
+        print(self.path)
+        print(include_body)
+        print('-------------')
+        super(ReactRouterHandler, self).get(self.path)
 
 ##
 # Frontend factory
 ##
 def iris_factory(config, core):
 
-    path = pathlib.Path(__file__).parent / "static"
+    path = pathlib.Path(__file__).parent / 'static'
 
     return [
         (
@@ -94,7 +97,7 @@ def iris_factory(config, core):
             r'/assets/(.*)',
             tornado.web.StaticFileHandler,
             {
-                'path': str(path)+'/assets'
+                'path': path / 'assets'
             }
         ),
         (
@@ -106,8 +109,8 @@ def iris_factory(config, core):
         ),
         (
             r'/(.*)',
-            tornado.web.StaticFileHandler, {
-                'path': str(path)
+            ReactRouterHandler, {
+                'path': path / 'index.html'
             }
         ),
     ]
