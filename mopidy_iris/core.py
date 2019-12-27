@@ -15,7 +15,6 @@ from tornado.escape import json_encode, json_decode
 
 from .system import IrisSystemThread
 
-__version__ = '3.43.0'
 if sys.platform == 'win32':
     import ctypes
 
@@ -23,7 +22,7 @@ if sys.platform == 'win32':
 logger = logging.getLogger(__name__)
 
 class IrisCore(pykka.ThreadingActor):
-    version = __version__
+    version = ""
     spotify_token = False
     queue_metadata = {}
     connections = {}
@@ -37,28 +36,25 @@ class IrisCore(pykka.ThreadingActor):
         "results": []
     }
 
-
     def setup(self, config, core):
         self.config = config
         self.core = core
-
 
     ##
     # Mopidy server is starting
     ##
     def start(self):
+        self.version = self.load_version()
         logger.info('Starting Iris '+self.version)
 
         # Load our commands from file
         self.commands = self.load_from_file('commands')
-
 
     ##
     # Mopidy is shutting down
     ##
     def stop(self):
         logger.info('Stopping Iris')
-
 
     ##
     # Save dict object to disk
@@ -81,7 +77,6 @@ class IrisCore(pykka.ThreadingActor):
         except Exception:
             return False
 
-
     ##
     # Load a dict from disk
     #
@@ -97,6 +92,18 @@ class IrisCore(pykka.ThreadingActor):
         except Exception:
             return {}
 
+    ##
+    # Load version number from file
+    #
+    # @return String
+    ##
+    def load_version(self):
+        filepath = os.path.join(os.path.dirname(__file__), '..', 'IRIS_VERSION')
+        try:
+            with open(filepath, 'r') as f:
+                return f.read()
+        except Exception:
+            return "Unknown"
 
     ##
     # Generate a random string
@@ -106,7 +113,6 @@ class IrisCore(pykka.ThreadingActor):
     ##
     def generateGuid(self):
         return ''.join(random.choices(string.ascii_uppercase + string.digits, k=12))
-
 
     ##
     # Digest a protocol header into it's id/name parts
@@ -143,9 +149,6 @@ class IrisCore(pykka.ThreadingActor):
             "username": username,
             "generated": generated
         }
-
-
-
 
     def send_message(self, *args, **kwargs):
         callback = kwargs.get('callback', None)
@@ -209,7 +212,6 @@ class IrisCore(pykka.ThreadingActor):
                 callback(False, error)
             else:
                 return error
-
 
     def broadcast(self, *args, **kwargs):
         callback = kwargs.get('callback', None)
@@ -1006,7 +1008,7 @@ class IrisCore(pykka.ThreadingActor):
             else:
                 return response
 
-        except (urllib.HTTPError, urllib.URLError) as e:
+        except (urllib.error.HTTPError, urllib.error.URLError) as e:
             error = json.loads(e.read())
             error = {'message': 'Could not refresh token: '+error['error_description']}
 

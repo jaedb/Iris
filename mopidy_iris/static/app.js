@@ -71208,7 +71208,7 @@ var MopidyMiddleware = function () {
             var first_uri = action.uris[first_uri_index];
 
             // add our first track
-            request(socket, store, 'tracklist.add', { uri: first_uri, at_position: 0 }).then(function (response) {
+            request(socket, store, 'tracklist.add', { uris: [first_uri], at_position: 0 }).then(function (response) {
               // play it (only if we got a successful lookup)
               if (response.length > 0) {
                 store.dispatch(mopidyActions.changeTrack(response[0].tlid));

@@ -876,7 +876,7 @@ const MopidyMiddleware = (function () {
 	            var first_uri = action.uris[first_uri_index];
 
         // add our first track
-        request(socket, store, 'tracklist.add', { uri: first_uri, at_position: 0 })
+        request(socket, store, 'tracklist.add', { uris: [first_uri], at_position: 0 })
           .then(
             (response) => {
               // play it (only if we got a successful lookup)
