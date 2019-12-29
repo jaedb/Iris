@@ -12,6 +12,7 @@ from mopidy import config, ext
 from mopidy.core import CoreListener
 from pkg_resources import parse_version
 from tornado.escape import json_encode, json_decode
+from tornado.httpclient import AsyncHTTPClient
 
 from .system import IrisSystemThread
 
@@ -414,15 +415,16 @@ class IrisCore(pykka.ThreadingActor):
             return response
 
 
-    def get_version(self, *args, **kwargs):
+    async def get_version(self, *args, **kwargs):
 
         callback = kwargs.get('callback', False)
         url = 'https://pypi.python.org/pypi/Mopidy-Iris/json'
+        http_client = AsyncHTTPClient()
 
         try:
-            response = urllib.request.urlopen(url, timeout=30).read()
-            response = json.loads(response)
-            latest_version = response['info']['version']
+            http_response = await http_client.fetch(url)
+            response_body = json.loads(http_response.body)
+            latest_version = response_body['info']['version']
 
             # compare our versions, and convert result to boolean
             upgrade_available = parse_version( latest_version ) > parse_version( self.version )

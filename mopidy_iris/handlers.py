@@ -38,7 +38,7 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
         iris.add_connection(connection=self, client=client)
 
 
-    def on_message(self, message):
+    async def on_message(self, message):
         logger.debug("Iris websocket message received: "+message)
 
         message = json_decode(message)
@@ -137,14 +137,14 @@ class HttpHandler(tornado.web.RequestHandler):
         self.set_status(204)
         self.finish()
 
-    def get(self, slug=None):
+    async def get(self, slug=None):
 
         id = int(time.time())
 
         # make sure the method exists
         if hasattr(iris, slug):
             try:
-                getattr(iris, slug)(request=self, callback=lambda response, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
+                await getattr(iris, slug)(request=self, callback=lambda response, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
             except Exception as e:
                 logger.error(str(e))
 
@@ -152,7 +152,7 @@ class HttpHandler(tornado.web.RequestHandler):
             self.handle_result(id=id, error={'code': 32601, 'message': "Method "+slug+" does not exist"})
             return
 
-    def post(self, slug=None):
+    async def post(self, slug=None):
 
         id = int(time.time())
 
@@ -165,7 +165,7 @@ class HttpHandler(tornado.web.RequestHandler):
         # make sure the method exists
         if hasattr(iris, slug):
             try:
-                getattr(iris, slug)(data=params, request=self.request, callback=lambda response=False, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
+                await getattr(iris, slug)(data=params, request=self.request, callback=lambda response=False, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
 
             except HTTPError as e:
                 self.handle_result(id=id, error={'code': 32601, 'message': "Invalid JSON payload"})
