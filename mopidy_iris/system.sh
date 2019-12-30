@@ -1,9 +1,11 @@
 #!/bin/bash
 
+echo -e "Running $1 yeah nah"
+
 if [[ "$(pwd)" = "/iris/mopidy_iris/system.sh" ]]; then
-	IS_CONTAINER = true
+	IS_CONTAINER=true
 else
-	IS_CONTAINER = false
+	IS_CONTAINER=false
 fi
 
 if [[ $1 = "upgrade" ]]; then
@@ -11,22 +13,22 @@ if [[ $1 = "upgrade" ]]; then
 		echo "cd /iris && git checkout master && git pull origin master"
 		UPGRADE="$(cd /iris && git checkout master && git pull origin master)"
 	else
-		echo "pip install --upgrade mopidy-iris"
-		UPGRADE="$(pip install --upgrade mopidy-iris)"
+		echo "sudo pip install --upgrade mopidy-iris"
+		UPGRADE="$(sudo pip install --upgrade mopidy-iris)"
 	fi
 	echo -e "${UPGRADE}"
 
 elif [[ $1 = "restart" ]]; then
 
-	RESTART="$(service mopidy restart)"
+	RESTART="$(sudo service mopidy restart)"
 	echo -e "${RESTART}"
 
 elif [[ $1 = "local_scan" ]]; then
 
 	if [[ $IS_CONTAINER ]]; then
-		SCAN="$(-u mopidy mopidy local scan)"
+		SCAN="$(sudo -u mopidy mopidy local scan)"
 	else
-		SCAN="$(mopidyctl local scan)"
+		SCAN="$(sudo mopidyctl local scan)"
 	fi
 	echo -e "${SCAN}"
 

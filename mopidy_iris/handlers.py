@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from datetime import datetime
 from tornado.escape import json_encode, json_decode
 import tornado.ioloop, tornado.web, tornado.websocket, tornado.template
-import random, string, logging, uuid, subprocess, pykka, ast, logging, json, urllib, requests, time
+import random, string, logging, uuid, subprocess, pykka, ast, logging, json, urllib, requests, time, asyncio
 
 from .mem import iris
 
@@ -67,7 +67,10 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
             # make sure the method exists
             if hasattr(iris, message['method']):
                 try:
-                    getattr(iris, message['method'])(data=params, callback=lambda response, error=False: self.handle_result(id=id, method=message['method'], response=response, error=error))
+                    if asyncio.iscoroutinefunction(getattr(iris, message['method'])):
+                        await getattr(iris, message['method'])(data=params, callback=lambda response, error=False: self.handle_result(id=id, method=message['method'], response=response, error=error))
+                    else:
+                        getattr(iris, message['method'])(data=params, callback=lambda response, error=False: self.handle_result(id=id, method=message['method'], response=response, error=error))
                 except Exception as e:
                     logger.error(str(e))
 
@@ -144,7 +147,10 @@ class HttpHandler(tornado.web.RequestHandler):
         # make sure the method exists
         if hasattr(iris, slug):
             try:
-                await getattr(iris, slug)(request=self, callback=lambda response, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
+                if asyncio.iscoroutinefunction(getattr(iris, slug)):
+                    await getattr(iris, slug)(request=self, callback=lambda response, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
+                else:
+                    getattr(iris, slug)(request=self, callback=lambda response, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
             except Exception as e:
                 logger.error(str(e))
 
@@ -165,7 +171,10 @@ class HttpHandler(tornado.web.RequestHandler):
         # make sure the method exists
         if hasattr(iris, slug):
             try:
-                await getattr(iris, slug)(data=params, request=self.request, callback=lambda response=False, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
+                if asyncio.iscoroutinefunction(getattr(iris, slug)):
+                    await getattr(iris, slug)(data=params, request=self.request, callback=lambda response=False, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
+                else:
+                    getattr(iris, slug)(data=params, request=self.request, callback=lambda response=False, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
 
             except HTTPError as e:
                 self.handle_result(id=id, error={'code': 32601, 'message': "Invalid JSON payload"})

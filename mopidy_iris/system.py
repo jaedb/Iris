@@ -1,6 +1,6 @@
 
 from threading import Thread
-import os, logging, subprocess
+import os, logging, subprocess, json
 
 # import logger
 logger = logging.getLogger(__name__)
@@ -15,8 +15,8 @@ class IrisSystemThread(Thread):
     ##
     # Run the defined action
     ##
-    def run(self):
-        logger.info("Running system action: "+self.action)
+    async def run(self):
+        logger.info("Running system action '"+self.action+"'")
 
         try:
             self.can_run()
@@ -32,15 +32,31 @@ class IrisSystemThread(Thread):
                 self.callback(False, error)
             return
 
-        # Run the actual task (this is the process-blocking instruction)
-        output = subprocess.check_output(["sudo "+self.path+"/system.sh "+self.action], shell=True)
+        # Create subprocess
+        process = await asyncio.create_subprocess_shell(
+            self.path+"/system.sh "+self.action,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE
+        )
 
-        # And then, when complete, return to our callback
-        if self.callback:
-            response = {
-                'output': output
-            }
-            self.callback(response, False)
+        # Status
+        print("Started:", command, "(pid = " + str(process.pid) + ")", flush=True)
+
+        # Wait for the subprocess to finish
+        stdout, stderr = await process.communicate()
+
+        logger.debug("System action '"+self.action+"' completed with output:")
+        logger.debug(stdout)
+
+        # Some kind of failure, so we can't run any commands this way
+        if exitCode > 0:
+            raise Exception("System task '"+self.action+"' failed")
+        else:
+            if self.callback:
+                response = {
+                    'output': str(stdout)
+                }
+                self.callback(response, False)
 
 
     ##

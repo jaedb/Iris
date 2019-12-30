@@ -522,11 +522,11 @@ class IrisCore(pykka.ThreadingActor):
     # Run a mopidy local scan
     # Essetially an alias to "mopidyctl local scan"
     ##
-    def local_scan(self, *args, **kwargs):
+    async def local_scan(self, *args, **kwargs):
         callback = kwargs.get('callback', False)
 
         # Trigger the action
-        IrisSystemThread('local_scan', self.local_scan_callback).start()
+        await IrisSystemThread('local_scan', self.local_scan_callback).start()
 
         self.broadcast(data={
             'method': "local_scan_started"
