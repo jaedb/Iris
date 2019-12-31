@@ -1,21 +1,19 @@
 
 from threading import Thread
-import os, logging, subprocess, json
+import os, logging, subprocess, json, asyncio
 
 # import logger
 logger = logging.getLogger(__name__)
 
-class IrisSystemThread(Thread):
-    def __init__(self, action, callback):
-        Thread.__init__(self)
+class IrisSystemThread:
+    def __init__(self, action):
         self.action = action
-        self.callback = callback
         self.path = os.path.dirname(__file__)
 
     ##
     # Run the defined action
     ##
-    def run(self):
+    async def run(self):
         logger.info("Running system action '"+self.action+"'")
 
         try:
@@ -27,23 +25,29 @@ class IrisSystemThread(Thread):
                 'message': "Permission denied",
                 'description': str(e)
             }
-
-            if self.callback:
-                self.callback(False, error)
-            return
-
-        # Run the actual task (this is the process-blocking instruction)
-        output = subprocess.check_output([self.path+"/system.sh "+self.action], shell=True)
-
-        logger.debug("System action '"+self.action+"' completed with output:")
-        logger.debug(output)
-
-        # And then, when complete, return to our callback
-        if self.callback:
-            response = {
-                'output': str(output)
+            
+            return {
+                'error': error
             }
-            self.callback(response, False)
+
+        logger.debug("sudo "+ self.path +"/system.sh "+ self.action)
+
+        proc = subprocess.Popen(["sudo", self.path+"/system.sh", self.action], 
+            stdout=subprocess.PIPE, 
+            stderr=subprocess.STDOUT)
+        
+        stdout,stderr = proc.communicate()
+
+        if stderr:
+            logger.error(stderr.decode())
+            return {
+                'error': stderr.decode()
+            }
+        else:
+            logger.info(stdout.decode())
+            return {
+                'output': stdout.decode()
+            }
 
 
     ##

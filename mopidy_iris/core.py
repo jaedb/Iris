@@ -452,68 +452,58 @@ class IrisCore(pykka.ThreadingActor):
     # Restart Mopidy
     # This requires sudo access to system.sh
     ##
-    def restart(self, *args, **kwargs):
+    async def restart(self, *args, **kwargs):
         callback = kwargs.get('callback', False)
-
-        # Trigger the action
-        IrisSystemThread('restart', self.restart_callback).start()
 
         self.broadcast(data={
             'method': "restart_started"
         })
 
-        response = {
-            'message': "Restart started"
-        }
         if (callback):
-            callback(response)
-        else:
-            return response
+            callback({
+                'message': "Restarting..."
+            })
 
-    def restart_callback(self, response, error):
-        if error:
+        task_response = await IrisSystemThread('restart').run()
+
+        if 'error' in task_response:
             self.broadcast(data={
                 'method': "restart_error",
-                'params': error
+                'params': task_response
             })
         else:
             self.broadcast(data={
-                'method': "restart_finished"
+                'method': "restart_finished",
+                'params': task_response
             })
 
 
     ##
     # Run an upgrade of Iris
     ##
-    def upgrade(self, *args, **kwargs):
+    async def upgrade(self, *args, **kwargs):
         callback = kwargs.get('callback', False)
 
         self.broadcast(data={
             'method': "upgrade_started"
         })
 
-        # Trigger the action
-        IrisSystemThread('upgrade', self.upgrade_callback).start()
-
-        response = {
-            'message': "Upgrade started"
-        }
-
         if (callback):
-            callback(response)
-        else:
-            return response
+            callback({
+                'message': "Upgrade started"
+            })
+        
+        task_response = await IrisSystemThread('upgrade').run()
 
-    def upgrade_callback(self, response, error):
-        if error:
+        if 'error' in task_response:
             self.broadcast(data={
                 'method': "upgrade_error",
-                'params': error
+                'params': task_response
             })
         else:
             self.broadcast(data={
                 'method': "upgrade_finished",
-                'params': response
+                'params': task_response
             })
             self.restart()
 
@@ -525,31 +515,26 @@ class IrisCore(pykka.ThreadingActor):
     async def local_scan(self, *args, **kwargs):
         callback = kwargs.get('callback', False)
 
-        # Trigger the action
-        await IrisSystemThread('local_scan', self.local_scan_callback).start()
-
         self.broadcast(data={
             'method': "local_scan_started"
         })
 
-        response = {
-            'message': "Local scan started"
-        }
         if (callback):
-            callback(response)
-        else:
-            return response
+            callback({
+                'message': "Local scan started"
+            })
+        
+        task_response = await IrisSystemThread('local_scan').run()
 
-    def local_scan_callback(self, response, error):
-        if error:
+        if 'error' in task_response:
             self.broadcast(data={
                 'method': "local_scan_error",
-                'params': error
+                'params': task_response
             })
         else:
             self.broadcast(data={
                 'method': "local_scan_finished",
-                'params': response
+                'params': task_response
             })
 
 
@@ -988,7 +973,7 @@ class IrisCore(pykka.ThreadingActor):
 
         try:
             http_client = tornado.httpclient.HTTPClient()
-            request = tornado.httpclient.HTTPRequest(url, method='POST', body=urllib.urlencode(data))
+            request = tornado.httpclient.HTTPRequest(url, method='POST', body=urllib.parse.urlencode(data))
             response = http_client.fetch(request)
 
             token = json.loads(response.body)
@@ -1085,33 +1070,27 @@ class IrisCore(pykka.ThreadingActor):
     ##
     # Simple test method. Not for use in production for any purposes.
     ##
-    def test(self, *args, **kwargs):
+    async def test(self, *args, **kwargs):
         callback = kwargs.get('callback', False)
 
         self.broadcast(data={
             'method': "test_started"
         })
 
-        # Trigger the action
-        IrisSystemThread('test', self.test_callback).start()
-
-        response = {
-            'message': "Running test... please wait"
-        }
         if (callback):
-            callback(response)
-        else:
-            return response
+            callback({
+                'message': "Running test... please wait"
+            })
 
-    def test_callback(self, response, error):
-        if error:
+        task_response = await IrisSystemThread('test').run()
+
+        if 'error' in task_response:
             self.broadcast(data={
                 'method': "test_error",
-                'params': error
+                'params': task_response
             })
         else:
             self.broadcast(data={
                 'method': "test_finished",
-                'params': response
+                'params': task_response
             })
-

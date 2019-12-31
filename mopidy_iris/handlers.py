@@ -67,6 +67,8 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
             # make sure the method exists
             if hasattr(iris, message['method']):
                 try:
+
+                    # For async methods we need to await, but it must be ommited for syncronous methods
                     if asyncio.iscoroutinefunction(getattr(iris, message['method'])):
                         await getattr(iris, message['method'])(data=params, callback=lambda response, error=False: self.handle_result(id=id, method=message['method'], response=response, error=error))
                     else:
@@ -147,6 +149,8 @@ class HttpHandler(tornado.web.RequestHandler):
         # make sure the method exists
         if hasattr(iris, slug):
             try:
+                
+                # For async methods we need to await, but it must be ommited for syncronous methods
                 if asyncio.iscoroutinefunction(getattr(iris, slug)):
                     await getattr(iris, slug)(request=self, callback=lambda response, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
                 else:

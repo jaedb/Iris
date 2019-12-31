@@ -1,7 +1,5 @@
 #!/bin/bash
 
-echo -e "Running $1 yeah nah"
-
 if [[ "$(pwd)" = "/iris/mopidy_iris/system.sh" ]]; then
 	IS_CONTAINER=true
 else
@@ -34,9 +32,9 @@ elif [[ $1 = "local_scan" ]]; then
 
 elif [[ $1 = "test" ]]; then
 
-	sleep 3
+	sleep 5
 
-	TEST="$(echo 'Hello, this is your bash speaking. I was sleeping for 3 seconds.')"
+	TEST="$(echo 'Hello, this is your bash speaking. I was sleeping for 5 seconds.')"
 	echo -e "${TEST}"
 
 else
