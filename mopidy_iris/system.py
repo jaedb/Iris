@@ -1,20 +1,23 @@
 
 from threading import Thread
-import os, logging, subprocess, json, asyncio
+import os, logging, subprocess, json
 
 # import logger
 logger = logging.getLogger(__name__)
 
-class IrisSystemThread:
-    def __init__(self, action):
+class IrisSystemThread(Thread):
+    def __init__(self, action, origin):
+        Thread.__init__(self)
         self.action = action
+        self.origin = origin
         self.path = os.path.dirname(__file__)
 
     ##
     # Run the defined action
     ##
-    async def run(self):
+    def run(self):
         logger.info("Running system action '"+self.action+"'")
+        callback_name = self.action+"_callback"
 
         try:
             self.can_run()
@@ -40,14 +43,21 @@ class IrisSystemThread:
 
         if stderr:
             logger.error(stderr.decode())
-            return {
-                'error': stderr.decode()
-            }
+            getattr(self.origin, callback_name)(
+                None,
+                {
+                    'error': stderr.decode()
+                }
+            )
         else:
             logger.info(stdout.decode())
-            return {
-                'output': stdout.decode()
-            }
+            getattr(self.origin, callback_name)(
+                {
+                    'output': stdout.decode()
+                },
+                None
+            )
+
 
 
     ##

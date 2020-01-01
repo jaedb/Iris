@@ -24,7 +24,7 @@ elif [[ $1 = "restart" ]]; then
 elif [[ $1 = "local_scan" ]]; then
 
 	if [[ $IS_CONTAINER ]]; then
-		SCAN="$(sudo -u mopidy mopidy local scan)"
+		SCAN="$(mopidy --config /config/mopidy.conf local scan)"
 	else
 		SCAN="$(sudo mopidyctl local scan)"
 	fi
@@ -32,9 +32,9 @@ elif [[ $1 = "local_scan" ]]; then
 
 elif [[ $1 = "test" ]]; then
 
-	sleep 5
+	sleep 3
 
-	TEST="$(echo 'Hello, this is your bash speaking. I was sleeping for 5 seconds.')"
+	TEST="$(echo 'Hello, this is your bash speaking. I was sleeping for 3 seconds.')"
 	echo -e "${TEST}"
 
 else
