@@ -1,9 +1,11 @@
 #!/bin/bash
 
-if [[ "$(pwd)" = "/iris/mopidy_iris/system.sh" ]]; then
+if [[ "$(pwd)" = "/iris" ]]; then
 	IS_CONTAINER=true
+	echo -e "Detected as running in a Docker container"
 else
 	IS_CONTAINER=false
+	echo -e "Not running in a Docker container"
 fi
 
 if [[ $1 = "upgrade" ]]; then
@@ -17,9 +19,13 @@ if [[ $1 = "upgrade" ]]; then
 	echo -e "${UPGRADE}"
 
 elif [[ $1 = "restart" ]]; then
-
-	RESTART="$(sudo service mopidy restart)"
-	echo -e "${RESTART}"
+	if [[ $IS_CONTAINER ]]; then
+		echo -e "Cannot restart Mopidy when running in a Docker container"
+		exit 1
+	else
+		RESTART="$(sudo service mopidy restart)"
+		echo -e "${RESTART}"
+	fi
 
 elif [[ $1 = "local_scan" ]]; then
 
@@ -30,6 +36,9 @@ elif [[ $1 = "local_scan" ]]; then
 	fi
 	echo -e "${SCAN}"
 
+elif [[ $1 = "check" ]]; then
+	echo -e "Access permitted"
+
 elif [[ $1 = "test" ]]; then
 
 	sleep 3
@@ -39,6 +48,7 @@ elif [[ $1 = "test" ]]; then
 
 else
 	echo -e "Unsupported system task"
+	exit 1
 fi
 
 exit 0

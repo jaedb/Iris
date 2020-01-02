@@ -6,10 +6,10 @@ import os, logging, subprocess, json
 logger = logging.getLogger(__name__)
 
 class IrisSystemThread(Thread):
-    def __init__(self, action, origin):
+    def __init__(self, action, callback):
         Thread.__init__(self)
         self.action = action
-        self.origin = origin
+        self.callback = callback
         self.path = os.path.dirname(__file__)
 
     ##
@@ -17,7 +17,6 @@ class IrisSystemThread(Thread):
     ##
     def run(self):
         logger.info("Running system action '"+self.action+"'")
-        callback_name = self.action+"_callback"
 
         try:
             self.can_run()
@@ -43,20 +42,10 @@ class IrisSystemThread(Thread):
 
         if stderr:
             logger.error(stderr.decode())
-            getattr(self.origin, callback_name)(
-                None,
-                {
-                    'error': stderr.decode()
-                }
-            )
+            self.callback(None, { 'error': stderr.decode() })
         else:
             logger.info(stdout.decode())
-            getattr(self.origin, callback_name)(
-                {
-                    'output': stdout.decode()
-                },
-                None
-            )
+            self.callback({ 'output': stdout.decode() }, None)
 
 
 
@@ -68,7 +57,7 @@ class IrisSystemThread(Thread):
     def can_run(self, *args, **kwargs):
 
         # Attempt an empty call to our system file
-        process = subprocess.Popen("sudo -n "+self.path+"/system.sh", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        process = subprocess.Popen("sudo -n "+self.path+"/system.sh check", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         result, error = process.communicate()
         exitCode = process.wait()
 

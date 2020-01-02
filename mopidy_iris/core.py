@@ -456,7 +456,7 @@ class IrisCore(pykka.ThreadingActor):
         callback = kwargs.get('callback', False)
 
         # Trigger the action
-        IrisSystemThread('restart', self).start()
+        IrisSystemThread('restart', self.restart_callback).start()
 
         self.broadcast(data={
             'method': "restart_started"
@@ -478,7 +478,8 @@ class IrisCore(pykka.ThreadingActor):
             })
         else:
             self.broadcast(data={
-                'method': "restart_finished"
+                'method': "restart_finished",
+                'params': response
             })
 
 
@@ -493,7 +494,7 @@ class IrisCore(pykka.ThreadingActor):
         })
 
         # Trigger the action
-        IrisSystemThread('upgrade', self).start()
+        IrisSystemThread('upgrade', self.upgrade_callback).start()
 
         response = {
             'message': "Upgrade started"
@@ -526,7 +527,7 @@ class IrisCore(pykka.ThreadingActor):
         callback = kwargs.get('callback', False)
 
         # Trigger the action
-        IrisSystemThread('local_scan', self).start()
+        IrisSystemThread('local_scan', self.local_scan_callback).start()
 
         self.broadcast(data={
             'method': "local_scan_started"
@@ -1092,12 +1093,16 @@ class IrisCore(pykka.ThreadingActor):
             'method': "test_started"
         })
 
-        if (callback):
-            callback({
-                'message': "Running test... please wait"
-            })
+        response = {
+            'message': "Running test... please wait"
+        }
 
-        IrisSystemThread('test', self).run()
+        if (callback):
+            callback(response)
+        else:
+            return response
+
+        IrisSystemThread('test', self.test_callback).run()
 
     def test_callback(self, response, error):
         if error:
