@@ -1,4 +1,3 @@
-
 from threading import Thread
 import os, logging, subprocess, json
 

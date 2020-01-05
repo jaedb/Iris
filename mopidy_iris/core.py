@@ -1,6 +1,3 @@
-
-from __future__ import unicode_literals
-
 import random, string, logging, json, pykka, urllib, os, sys, mopidy_iris, subprocess
 import tornado.web
 import tornado.ioloop

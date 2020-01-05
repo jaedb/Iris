@@ -1,6 +1,3 @@
-
-from __future__ import unicode_literals
-
 import logging, os, json, pathlib
 import tornado.web
 import tornado.websocket
@@ -59,10 +56,10 @@ class ReactRouterHandler(tornado.web.StaticFileHandler):
         self.path = path
         self.absolute_path = path
         self.dirname, self.filename = os.path.split(path)
-        super(ReactRouterHandler, self).initialize(self.dirname)
+        super().initialize(self.dirname)
 
     def get(self, path=None, include_body=True):
-        return super(ReactRouterHandler, self).get(self.path, include_body)
+        return super().get(self.path, include_body)
 
 ##
 # Frontend factory

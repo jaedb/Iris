@@ -1,5 +1,3 @@
-
-from __future__ import unicode_literals
 from mopidy.core import CoreListener
 from .core import IrisCore
 
@@ -13,7 +11,7 @@ logger = logging.getLogger(__name__)
 class IrisFrontend(pykka.ThreadingActor, CoreListener):
 
     def __init__(self, config, core):
-        super(IrisFrontend, self).__init__()
+        super().__init__()
 
         # Pass our Mopidy config and core to the IrisCore instance
         iris.config = config
