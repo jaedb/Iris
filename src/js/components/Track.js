@@ -297,7 +297,6 @@ export default class Track extends React.Component {
           <div className="list__item__column list__item__column--name">
             <div className="list__item__column__item--name">
               {track.name ? track.name : <span className="mid_grey-text">{track.uri}</span>}
-              {track.explicit ? <span className="flag flag--dark">EXPLICIT</span> : null}
               {track.playing ? <Icon className={`js--${this.props.play_state}`} name="playing" type="css" /> : null}
             </div>
             {track_details ? (
@@ -309,6 +308,7 @@ export default class Track extends React.Component {
           {track_middle_column ? <div className="list__item__column list__item__column--middle">{track_middle_column}</div> : null}
           <div className="list__item__column list__item__column--right">
             {drag_zone}
+            {track.is_explicit ? <span className="flag flag--dark">EXPLICIT</span> : null}
             <span className="list__item__column__item list__item__column__item--duration">
               {track.duration ? <Dater type="length" data={track.duration} /> : '-'}
             </span>
