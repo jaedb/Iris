@@ -1,5 +1,5 @@
 from threading import Thread
-import os, logging, subprocess, json
+import logging, pathlib, subprocess, json
 
 # import logger
 logger = logging.getLogger(__name__)
@@ -9,7 +9,7 @@ class IrisSystemThread(Thread):
         Thread.__init__(self)
         self.action = action
         self.callback = callback
-        self.path = os.path.dirname(__file__)
+        self.script_path = pathlib.Path(__file__).parent / "system.sh"
 
     ##
     # Run the defined action
@@ -31,9 +31,9 @@ class IrisSystemThread(Thread):
                 'error': error
             }
 
-        logger.debug("sudo "+ self.path +"/system.sh "+ self.action)
+        logger.debug("sudo %s %s", self.script_path, self.action)
 
-        proc = subprocess.Popen(["sudo", self.path+"/system.sh", self.action], 
+        proc = subprocess.Popen(["sudo", str(self.script_path), self.action],
             stdout=subprocess.PIPE, 
             stderr=subprocess.STDOUT)
         
@@ -56,12 +56,12 @@ class IrisSystemThread(Thread):
     def can_run(self, *args, **kwargs):
 
         # Attempt an empty call to our system file
-        process = subprocess.Popen("sudo -n "+self.path+"/system.sh check", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        process = subprocess.Popen("sudo -n %s check" % self.script_path, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         result, error = process.communicate()
         exitCode = process.wait()
 
         # Some kind of failure, so we can't run any commands this way
         if exitCode > 0:
-            raise Exception("Password-less access to "+self.path+"/system.sh was refused. Check your /etc/sudoers file.")
+            raise Exception("Password-less access to %s was refused. Check your /etc/sudoers file." % self.script_path)
         else:
             return True

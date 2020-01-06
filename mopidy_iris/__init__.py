@@ -1,4 +1,4 @@
-import logging, os, json, pathlib
+import logging, json, pathlib
 import tornado.web
 import tornado.websocket
 
@@ -21,8 +21,7 @@ class Extension( ext.Extension ):
     ext_name = 'iris'
 
     def get_default_config(self):
-        conf_file = os.path.join(os.path.dirname(__file__), 'ext.conf')
-        return config.read(conf_file)
+        return config.read(pathlib.Path(__file__).parent / "ext.conf")
 
     def get_config_schema(self):
         schema = config.ConfigSchema(self.ext_name)
@@ -55,7 +54,8 @@ class ReactRouterHandler(tornado.web.StaticFileHandler):
     def initialize(self, path):
         self.path = path
         self.absolute_path = path
-        self.dirname, self.filename = os.path.split(path)
+        self.dirname = path.parent
+        self.filename = path.name
         super().initialize(self.dirname)
 
     def get(self, path=None, include_body=True):

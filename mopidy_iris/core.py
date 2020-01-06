@@ -1,4 +1,4 @@
-import random, string, logging, json, pykka, urllib, os, sys, mopidy_iris, subprocess
+import random, string, logging, json, pathlib, pykka, urllib, os, sys, mopidy_iris, subprocess
 import tornado.web
 import tornado.ioloop
 import tornado.httpclient
@@ -11,6 +11,7 @@ from pkg_resources import parse_version
 from tornado.escape import json_encode, json_decode
 from tornado.httpclient import AsyncHTTPClient
 
+from . import Extension
 from .system import IrisSystemThread
 
 if sys.platform == 'win32':
@@ -62,15 +63,11 @@ class IrisCore(pykka.ThreadingActor):
     # @return void
     ##
     def save_to_file(self, dict, name):
-        path = self.config['iris'].get('data_dir')
-
-        # Create the folder if it doesn't yet exist
-        if not os.path.exists(path):
-            os.makedirs(path)
+        file_path = Extension.get_data_dir(self.config) / ('%s.pkl' % name)
 
         # And now open the file, and drop in our dict
         try:
-            with open(path + '/' + name + '.pkl', 'wb') as f:
+            with file_path.open('wb') as f:
                 pickle.dump(dict, f, pickle.HIGHEST_PROTOCOL)
         except Exception:
             return False
@@ -82,10 +79,10 @@ class IrisCore(pykka.ThreadingActor):
     # @return Dict
     ##
     def load_from_file(self, name):
-        path = self.config['iris'].get('data_dir')
+        file_path = Extension.get_data_dir(self.config) / ('%s.pkl' % name)
 
         try:
-            with open(path + '/' + name + '.pkl', 'rb') as f:
+            with file_path.open('wb') as f:
                 return pickle.load(f)
         except Exception:
             return {}
@@ -96,10 +93,9 @@ class IrisCore(pykka.ThreadingActor):
     # @return String
     ##
     def load_version(self):
-        filepath = os.path.join(os.path.dirname(__file__), '..', 'IRIS_VERSION')
+        file_path = pathlib.Path(__file__).parent.parent / 'IRIS_VERSION'
         try:
-            with open(filepath, 'r') as f:
-                return f.read()
+            return file_path.read_text()
         except Exception:
             return "Unknown"
 
