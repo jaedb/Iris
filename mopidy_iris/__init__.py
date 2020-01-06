@@ -2,13 +2,17 @@ import logging, json, pathlib
 import tornado.web
 import tornado.websocket
 
+import pkg_resources
 from mopidy import config, ext
 from .frontend import IrisFrontend
 from .handlers import WebsocketHandler, HttpHandler
 from .core import IrisCore
 from .mem import iris
 
+__version__ = pkg_resources.get_distribution("Mopidy-Iris").version
+
 logger = logging.getLogger(__name__)
+
 
 ##
 # Core extension class
@@ -19,6 +23,7 @@ class Extension( ext.Extension ):
 
     dist_name = 'Mopidy-Iris'
     ext_name = 'iris'
+    version = __version__
 
     def get_default_config(self):
         return config.read(pathlib.Path(__file__).parent / "ext.conf")
