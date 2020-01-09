@@ -78168,7 +78168,8 @@ function playURIs() {
   return {
     type: 'MOPIDY_PLAY_URIS',
     uris: uris,
-    from_uri: from_uri
+    from_uri: from_uri,
+    shuffle: shuffle
   };
 }
 
@@ -79211,6 +79212,10 @@ var MopidyMiddleware = function () {
             if (!action.uris || action.uris.length <= 0) {
               _this.props.uiActions.createNotification({ content: 'No URIs to play', type: 'warning' });
               break;
+            }
+
+            if (action.shuffle) {
+              action.uris = helpers.shuffle(action.uris);
             }
 
             // Stop the radio

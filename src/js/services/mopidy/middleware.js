@@ -857,6 +857,10 @@ const MopidyMiddleware = (function () {
           break;
         }
 
+        if (action.shuffle) {
+          action.uris = helpers.shuffle(action.uris);
+        }
+
         // Stop the radio
         if (store.getState().core.radio && store.getState().core.radio.enabled) {
           store.dispatch(pusherActions.stopRadio());

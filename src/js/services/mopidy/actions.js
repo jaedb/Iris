@@ -270,6 +270,7 @@ export function playURIs(uris = [], from_uri = null, shuffle = false) {
     type: 'MOPIDY_PLAY_URIS',
     uris,
     from_uri,
+    shuffle,
   };
 }
 
