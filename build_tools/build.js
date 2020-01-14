@@ -1,6 +1,6 @@
 
 /**
- * Iris builder 
+ * Iris builder
  *
  * Collates all static elements into the mopidy_iris Python package folder
  * We also amend all related files with the latest build version
@@ -12,7 +12,7 @@ var fs = require('fs');
 var copydir = require('copy-dir');
 var copyfile = require('fs-copy-file');
 
-var version = fs.readFileSync("VERSION.md", "utf8");
+var version = fs.readFileSync("IRIS_VERSION", "utf8");
 version = version.replace(/\r?\n?/g, '').trim();
 var build = Math.floor(Date.now() / 1000);
 console.log('Building version '+version+' ('+build+')');

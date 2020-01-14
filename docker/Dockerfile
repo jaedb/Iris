@@ -29,7 +29,9 @@ RUN wget -q -O - https://apt.mopidy.com/mopidy.gpg \
   && rm -rf /var/lib/apt/lists/*
 
 # Install additional Python dependencies
-RUN python3.7 -m pip install --no-cache tox
+RUN cd /iris \
+  && python3.7 setup.py develop --no-cache \
+  && python3.7 -m pip install --no-cache tox mopidy-spotify
 
 # Add a VERSION file to the image
 ADD VERSION /
