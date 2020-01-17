@@ -2,10 +2,8 @@
 
 if [[ "$(pwd)" = "/iris" ]]; then
 	IS_CONTAINER=true
-	echo -e "Detected as running in a Docker container"
 else
 	IS_CONTAINER=false
-	echo -e "Not running in a Docker container"
 fi
 
 if [[ $1 = "upgrade" ]]; then
@@ -43,7 +41,7 @@ elif [[ $1 = "test" ]]; then
 
 	sleep 3
 
-	TEST="$(echo 'Hello, this is your bash speaking. I was sleeping for 3 seconds.')"
+	TEST=$(echo "Hello, this is your bash speaking. I was sleeping for 3 seconds. Is running a container: $IS_CONTAINER")
 	echo -e "${TEST}"
 
 else
