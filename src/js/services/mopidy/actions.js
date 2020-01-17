@@ -429,7 +429,7 @@ export function clearLibraryArtists() {
 export function getArtist(uri) {
   return {
     type: 'MOPIDY_GET_ARTIST',
-    data: { uri },
+    uri,
   };
 }
 

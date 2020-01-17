@@ -70320,7 +70320,7 @@ function clearLibraryArtists() {
 function getArtist(uri) {
   return {
     type: 'MOPIDY_GET_ARTIST',
-    data: { uri: uri }
+    uri: uri
   };
 }
 
@@ -71076,12 +71076,12 @@ var MopidyMiddleware = function () {
             }));
 
             // split into batches
-            var uris = Object.assign([], action.uris);
+            var _uris = Object.assign([], action.uris);
             var batches = [];
             var batch_size = 5;
-            while (uris.length > 0) {
+            while (_uris.length > 0) {
               batches.push({
-                uris: uris.splice(0, batch_size),
+                uris: _uris.splice(0, batch_size),
                 at_position: action.at_position,
                 play_next: action.play_next,
                 offset: action.offset + batch_size * batches.length,
@@ -71183,8 +71183,11 @@ var MopidyMiddleware = function () {
             break;
 
           case 'MOPIDY_PLAY_URIS':
+            var from_uri = action.from_uri;
 
-            if (!action.uris || action.uris.length <= 0) {
+            var _uris = Object.assign([], action.uris);
+
+            if (!_uris || !_uris.length) {
               _this.props.uiActions.createNotification({ content: 'No URIs to play', type: 'warning' });
               break;
             }
@@ -71205,7 +71208,7 @@ var MopidyMiddleware = function () {
             } else {
               var first_uri_index = 0;
             }
-            var first_uri = action.uris[first_uri_index];
+            var first_uri = _uris[first_uri_index];
 
             // add our first track
             request(socket, store, 'tracklist.add', { uris: [first_uri], at_position: 0 }).then(function (response) {
@@ -71217,20 +71220,20 @@ var MopidyMiddleware = function () {
                 for (var _i2 = 0; _i2 < response.length; _i2++) {
                   tlids.push(response[_i2].tlid);
                 }
-                store.dispatch(pusherActions.addQueueMetadata(tlids, action.from_uri));
+                store.dispatch(pusherActions.addQueueMetadata(tlids, from_uri));
               } else {
                 store.dispatch(coreActions.handleException('Mopidy: Failed to add some tracks', response));
               }
 
               // Remove our first_uri as we've already added it
-              action.uris.splice(first_uri_index, 1);
+              _uris.splice(first_uri_index, 1);
 
               // And add the rest of our uris (if any)
-              if (action.uris.length > 0) {
+              if (_uris.length > 0) {
                 // Wait a moment so the server can trigger track_changed etc
                 // this means our UI feels snappier as the first track shows up quickly
                 setTimeout(function () {
-                  store.dispatch(mopidyActions.enqueueURIs(action.uris, action.from_uri, null, 1));
+                  store.dispatch(mopidyActions.enqueueURIs(_uris, from_uri, null, 1));
                 }, 100);
               }
             }, function (error) {
@@ -71818,9 +71821,9 @@ var MopidyMiddleware = function () {
 
           case 'MOPIDY_RESOLVE_PLAYLIST_TRACKS':
             var tracks = Object.assign([], action.tracks);
-            var uris = helpers.arrayOf('uri', tracks);
+            var _uris = helpers.arrayOf('uri', tracks);
 
-            request(socket, store, 'library.lookup', { uris: uris }).then(function (response) {
+            request(socket, store, 'library.lookup', { uris: _uris }).then(function (response) {
               for (var uri in response) {
                 if (response.hasOwnProperty(uri)) {
                   var track = response[uri][0];
@@ -72036,15 +72039,15 @@ var MopidyMiddleware = function () {
               }
             }
 
-            var uris = Object.assign([], action.data.uris);
-            var uris_to_load = uris.splice(0, 50);
+            var _uris = Object.assign([], action.data.uris);
+            var uris_to_load = _uris.splice(0, 50);
 
             if (uris_to_load.length > 0) {
-              store.dispatch(uiActions.updateProcess('MOPIDY_LIBRARY_ALBUMS_PROCESSOR', 'Loading ' + uris.length + ' local albums', {
-                uris: uris,
-                remaining: uris.length
+              store.dispatch(uiActions.updateProcess('MOPIDY_LIBRARY_ALBUMS_PROCESSOR', 'Loading ' + _uris.length + ' local albums', {
+                uris: _uris,
+                remaining: _uris.length
               }));
-              store.dispatch(mopidyActions.getAlbums(uris_to_load, { name: 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR', data: { uris: uris } }));
+              store.dispatch(mopidyActions.getAlbums(uris_to_load, { name: 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR', data: { uris: _uris } }));
             } else {
               store.dispatch(uiActions.processFinishing('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'));
             }
@@ -72286,11 +72289,10 @@ var MopidyMiddleware = function () {
                * */
 
           case 'MOPIDY_GET_ARTIST':
-            request(socket, store, 'library.lookup', action.data).then(function (response) {
-              if (response.length <= 0) {
-                return;
-              }
-
+            request(socket, store, 'library.lookup', { uris: [action.uri] }).then(function (response) {
+              console.log(response);
+              if (!response[action.uri] || !response[action.uri].length) return;
+              response = response[action.uri];
               var albums = [];
               for (var _i8 = 0; _i8 < response.length; _i8++) {
                 if (response[_i8].album) {
@@ -72315,7 +72317,7 @@ var MopidyMiddleware = function () {
 
               // Start with an empty artist object
               var artist = {
-                uri: action.data.uri,
+                uri: action.uri,
                 provider: 'mopidy'
               };
 

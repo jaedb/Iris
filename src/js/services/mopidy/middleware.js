@@ -851,8 +851,10 @@ const MopidyMiddleware = (function () {
         break;
 
       case 'MOPIDY_PLAY_URIS':
+        const { from_uri } = action;
+        let uris = Object.assign([], action.uris);
 
-        if (!action.uris || action.uris.length <= 0) {
+        if (!uris || !uris.length) {
           this.props.uiActions.createNotification({ content: 'No URIs to play', type: 'warning' });
           break;
         }
@@ -869,11 +871,11 @@ const MopidyMiddleware = (function () {
 
         // Shuffle/random mode
         if (store.getState().mopidy.random) {
-                	var first_uri_index = Math.floor(Math.random() * action.uris.length);
-	            } else {
-                	var first_uri_index = 0;
-	            }
-	            var first_uri = action.uris[first_uri_index];
+            var first_uri_index = Math.floor(Math.random() * action.uris.length);
+        } else {
+            var first_uri_index = 0;
+        }
+        var first_uri = uris[first_uri_index];
 
         // add our first track
         request(socket, store, 'tracklist.add', { uris: [first_uri], at_position: 0 })
@@ -887,7 +889,7 @@ const MopidyMiddleware = (function () {
                 for (let i = 0; i < response.length; i++) {
                   tlids.push(response[i].tlid);
                 }
-                store.dispatch(pusherActions.addQueueMetadata(tlids, action.from_uri));
+                store.dispatch(pusherActions.addQueueMetadata(tlids, from_uri));
               } else {
                 store.dispatch(coreActions.handleException(
                   'Mopidy: Failed to add some tracks',
@@ -896,15 +898,15 @@ const MopidyMiddleware = (function () {
               }
 
               // Remove our first_uri as we've already added it
-              action.uris.splice(first_uri_index, 1);
+              uris.splice(first_uri_index, 1);
 
               // And add the rest of our uris (if any)
-              if (action.uris.length > 0) {
+              if (uris.length > 0) {
                 // Wait a moment so the server can trigger track_changed etc
                 // this means our UI feels snappier as the first track shows up quickly
                 setTimeout(
                   () => {
-                    store.dispatch(mopidyActions.enqueueURIs(action.uris, action.from_uri, null, 1));
+                    store.dispatch(mopidyActions.enqueueURIs(uris, from_uri, null, 1));
                   },
                   100,
                 );
@@ -2071,17 +2073,15 @@ const MopidyMiddleware = (function () {
              * */
 
       case 'MOPIDY_GET_ARTIST':
-        request(socket, store, 'library.lookup', action.data)
+        request(socket, store, 'library.lookup', { uris: [action.uri] })
           .then((response) => {
-            if (response.length <= 0) {
-                        	return;
-            }
-
+            console.log(response);
+            if (!response[action.uri] || !response[action.uri].length) return;
+            response = response[action.uri];
             const albums = [];
             for (let i = 0; i < response.length; i++) {
               if (response[i].album) {
                 var album = {
-
                   ...response[i].album,
                   uri: response[i].album.uri,
                 };
@@ -2102,17 +2102,17 @@ const MopidyMiddleware = (function () {
 
             // Start with an empty artist object
             let artist = {
-                        	uri: action.data.uri,
-                        	provider: 'mopidy',
+              uri: action.uri,
+              provider: 'mopidy',
             };
 
             // Get the artist object from the track. This is a bit ugly because it's a simplified
             // (Mopidy) artist object but gives us enough to fetch their name and artwork.
             for (const raw_artist of response[0].artists) {
-                        	// We're only interested in the artist we asked for
-                        	if (raw_artist.uri === artist.uri) {
-                        		artist = { ...raw_artist };
-                        	}
+              // We're only interested in the artist we asked for
+              if (raw_artist.uri === artist.uri) {
+                artist = { ...raw_artist };
+              }
             }
 
             // Add our tracks and albums
