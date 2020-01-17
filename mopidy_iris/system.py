@@ -73,7 +73,7 @@ class IrisSystemThread(Thread):
             if process.poll() is not None:
                 break
             if line:
-                print(line)
+                logger.info(line)
                 lines = lines+'\n'+line
                 # This seems to be ignored. Detected as spammy io?
                 #self.ioloop.add_callback(lambda: self.callback(None, None, {'output': line}))
