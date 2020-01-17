@@ -18,15 +18,6 @@ class IrisSystemPermissionError(IrisSystemError):
         super().__init__(message)
 
 
-class IrisSystemMissingError(IrisSystemError):
-    reason = "Not found"
-
-    def __init__(self, path):
-        message = "Unable to access %s." % path.as_uri()
-        logger.error(message)
-        super().__init__(message)
-
-
 class IrisSystemThread(Thread):
     _USE_SUDO = True
 
@@ -92,9 +83,6 @@ class IrisSystemThread(Thread):
     # @return boolean or exception
     ##
     def can_run(self, *args, **kwargs):
-        if not self.script_path.is_file():
-            raise IrisSystemMissingError(self.script_path)
-
         # Attempt an empty call to our system file
         command_bytes = b' '.join(self.get_command('check', non_interactive=True))
         process = subprocess.Popen(command_bytes, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)

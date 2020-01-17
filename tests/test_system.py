@@ -1,7 +1,7 @@
 import pathlib, pytest, subprocess
 from unittest import mock
 
-from mopidy_iris.system import IrisSystemThread, IrisSystemMissingError, IrisSystemPermissionError
+from mopidy_iris.system import IrisSystemThread, IrisSystemPermissionError
 
 
 def test_system_sh_path():
@@ -48,18 +48,6 @@ def test_can_run_calls_script_check(popen_mock, process_mock):
     IrisSystemThread('foo', None).can_run()
 
     assert popen_mock.call_args[0][0].endswith(b"system.sh check")
-
-
-def test_can_run_script_missing_raises(tmp_path, caplog):
-    iris_system = IrisSystemThread('foo', None)
-    iris_system.script_path = tmp_path
-
-    with pytest.raises(IrisSystemMissingError) as excinfo:
-        iris_system.can_run()
-
-    error_message = "Unable to access %s." % tmp_path.as_uri()
-    assert error_message in str(excinfo.value)
-    assert error_message in caplog.text
 
 
 def test_can_run_sudo_refused_raises(popen_mock, process_mock, caplog):
