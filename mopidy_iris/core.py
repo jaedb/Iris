@@ -155,7 +155,6 @@ class IrisCore(pykka.ThreadingActor):
 
         logger.debug(data)
 
-
         # Catch invalid recipient
         if data['recipient'] not in self.connections:
             error = 'Connection "'+data['recipient']+'" not found'

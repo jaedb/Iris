@@ -1,5 +1,5 @@
 from threading import Thread
-import logging, os, pathlib, subprocess, json
+import logging, os, pathlib, subprocess, json, tornado
 
 # import logger
 logger = logging.getLogger(__name__)
@@ -25,6 +25,7 @@ class IrisSystemThread(Thread):
         Thread.__init__(self)
         self.action = action
         self.callback = callback
+        self.ioloop = tornado.ioloop.IOLoop.current()
         self.script_path = pathlib.Path(__file__).parent / "system.sh"
 
     def get_command(self, action=None, *, non_interactive=False):
@@ -71,11 +72,15 @@ class IrisSystemThread(Thread):
         if stderr:
             error_string = os.fsdecode(stderr)
             logger.error(error_string)
-            self.callback(None, {'error': error_string})
+            self.ioloop.add_callback(lambda: self.callback(None, {'error': error_string}))
+        elif proc.returncode > 0:
+            response_string = os.fsdecode(stdout)
+            logger.info(response_string)
+            self.ioloop.add_callback(lambda: self.callback(None, {'error': response_string}))
         else:
             response_string = os.fsdecode(stdout)
             logger.info(response_string)
-            self.callback({'output': response_string}, None)
+            self.ioloop.add_callback(lambda: self.callback({'output': response_string}, None))
 
     ##
     # Check if we have access to the system script (system.sh)
