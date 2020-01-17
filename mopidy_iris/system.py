@@ -1,17 +1,47 @@
-
 from threading import Thread
-import os, logging, subprocess, json
+import logging, os, pathlib, subprocess, json
 
 # import logger
 logger = logging.getLogger(__name__)
 
+
+class IrisSystemError(Exception):
+    pass
+
+
+class IrisSystemPermissionError(IrisSystemError):
+    reason = "Permission denied"
+
+    def __init__(self, path):
+        message = "Password-less access to %s was refused. Check your /etc/sudoers file." % path.as_uri()
+        logger.error(message)
+        super().__init__(message)
+
+
 class IrisSystemThread(Thread):
+    _USE_SUDO = True
+
     def __init__(self, action, callback):
         Thread.__init__(self)
         self.action = action
         self.callback = callback
-        self.path = os.path.dirname(__file__)
+        self.script_path = pathlib.Path(__file__).parent / "system.sh"
 
+    def get_command(self, action=None, *, non_interactive=False):
+        if self._USE_SUDO:
+            if non_interactive:
+                args = [b'sudo -n']
+            else:
+                args = [b'sudo']
+        else:
+            args = []
+        
+        if action is None:
+            action = self.action
+
+        args = args + [bytes(self.script_path), action.encode()]
+        return args
+    
     ##
     # Run the defined action
     ##
@@ -20,34 +50,32 @@ class IrisSystemThread(Thread):
 
         try:
             self.can_run()
-        except Exception as e:
+        except IrisSystemError as e:
             logger.error(e)
 
             error = {
-                'message': "Permission denied",
-                'description': str(e)
+                'message': e.reason,
+                'description': e.message
             }
             
             return {
                 'error': error
             }
 
-        logger.debug("sudo "+ self.path +"/system.sh "+ self.action)
-
-        proc = subprocess.Popen(["sudo", self.path+"/system.sh", self.action], 
-            stdout=subprocess.PIPE, 
-            stderr=subprocess.STDOUT)
+        command = self.get_command()
+        logger.debug("Running '%s'", os.fsdecode(b' '.join(command)))
+        proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         
         stdout,stderr = proc.communicate()
 
         if stderr:
-            logger.error(stderr.decode())
-            self.callback(None, { 'error': stderr.decode() })
+            error_string = os.fsdecode(stderr)
+            logger.error(error_string)
+            self.callback(None, {'error': error_string})
         else:
-            logger.info(stdout.decode())
-            self.callback({ 'output': stdout.decode() }, None)
-
-
+            response_string = os.fsdecode(stdout)
+            logger.info(response_string)
+            self.callback({'output': response_string}, None)
 
     ##
     # Check if we have access to the system script (system.sh)
@@ -55,14 +83,14 @@ class IrisSystemThread(Thread):
     # @return boolean or exception
     ##
     def can_run(self, *args, **kwargs):
-
         # Attempt an empty call to our system file
-        process = subprocess.Popen("sudo -n "+self.path+"/system.sh check", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        command_bytes = b' '.join(self.get_command('check', non_interactive=True))
+        process = subprocess.Popen(command_bytes, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         result, error = process.communicate()
         exitCode = process.wait()
 
         # Some kind of failure, so we can't run any commands this way
         if exitCode > 0:
-            raise Exception("Password-less access to "+self.path+"/system.sh was refused. Check your /etc/sudoers file.")
+            raise IrisSystemPermissionError(self.script_path)
         else:
             return True

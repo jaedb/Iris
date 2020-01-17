@@ -1,5 +1,3 @@
-
-from __future__ import unicode_literals
 from datetime import datetime
 from tornado.escape import json_encode, json_decode
 import tornado.ioloop, tornado.web, tornado.websocket, tornado.template
@@ -235,4 +233,19 @@ class HttpHandler(tornado.web.RequestHandler):
         self.finish()
 
 
+##
+# Customised handler for react router URLS
+#
+# This routes all URLs to the same path, so that React can handle the path etc
+##
+class ReactRouterHandler(tornado.web.StaticFileHandler):
+    def initialize(self, path):
+        self.path = path
+        self.absolute_path = path
+        self.dirname = path.parent
+        self.filename = path.name
+        super().initialize(self.dirname)
+
+    def get(self, path=None, include_body=True):
+        return super().get(self.path, include_body)
 

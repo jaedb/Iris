@@ -1,17 +1,12 @@
+import logging, json, pathlib
 
-from __future__ import unicode_literals
-
-import logging, os, json, pathlib
-import tornado.web
-import tornado.websocket
-
+import pkg_resources
 from mopidy import config, ext
-from .frontend import IrisFrontend
-from .handlers import WebsocketHandler, HttpHandler
-from .core import IrisCore
-from .mem import iris
+
+__version__ = pkg_resources.get_distribution("Mopidy-Iris").version
 
 logger = logging.getLogger(__name__)
+
 
 ##
 # Core extension class
@@ -22,10 +17,10 @@ class Extension( ext.Extension ):
 
     dist_name = 'Mopidy-Iris'
     ext_name = 'iris'
+    version = __version__
 
     def get_default_config(self):
-        conf_file = os.path.join(os.path.dirname(__file__), 'ext.conf')
-        return config.read(conf_file)
+        return config.read(pathlib.Path(__file__).parent / "ext.conf")
 
     def get_config_schema(self):
         schema = config.ConfigSchema(self.ext_name)
@@ -39,7 +34,7 @@ class Extension( ext.Extension ):
         return schema
 
     def setup(self, registry):
-
+        from .frontend import IrisFrontend
         # Add web extension
         registry.add('http:app', {
             'name': self.ext_name,
@@ -50,31 +45,18 @@ class Extension( ext.Extension ):
         registry.add('frontend', IrisFrontend)
 
 ##
-# Customised handler for react router URLS
-#
-# This routes all URLs to the same path, so that React can handle the path etc
-##
-class ReactRouterHandler(tornado.web.StaticFileHandler):
-    def initialize(self, path):
-        self.path = path
-        self.absolute_path = path
-        self.dirname, self.filename = os.path.split(path)
-        super(ReactRouterHandler, self).initialize(self.dirname)
-
-    def get(self, path=None, include_body=True):
-        return super(ReactRouterHandler, self).get(self.path, include_body)
-
-##
 # Frontend factory
 ##
 def iris_factory(config, core):
+    from tornado.web import StaticFileHandler
+    from .handlers import HttpHandler, ReactRouterHandler, WebsocketHandler
 
     path = pathlib.Path(__file__).parent / 'static'
 
     return [
         (
             r'/http/([^/]*)',
-            handlers.HttpHandler,
+            HttpHandler,
             {
                 'core': core,
                 'config': config
@@ -82,7 +64,7 @@ def iris_factory(config, core):
         ),
         (
             r'/ws/?',
-            handlers.WebsocketHandler,
+            WebsocketHandler,
             {
                 'core': core,
                 'config': config
@@ -90,21 +72,22 @@ def iris_factory(config, core):
         ),
         (
             r'/assets/(.*)',
-            tornado.web.StaticFileHandler,
+            StaticFileHandler,
             {
                 'path': path / 'assets'
             }
         ),
         (
             r'/((.*)(?:css|js|json|map)$)',
-            tornado.web.StaticFileHandler,
+            StaticFileHandler,
             {
                 'path': path
             }
         ),
         (
             r'/(.*)',
-            ReactRouterHandler, {
+            ReactRouterHandler,
+            {
                 'path': path / 'index.html'
             }
         ),
