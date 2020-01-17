@@ -35,6 +35,11 @@ class IrisCore(pykka.ThreadingActor):
         "results": []
     }
 
+    @classmethod
+    async def do_fetch(cls, client, request):
+        # This wrapper function exists to ease mocking.
+        return await client.fetch(request)
+
     def setup(self, config, core):
         self.config = config
         self.core = core
@@ -968,7 +973,7 @@ class IrisCore(pykka.ThreadingActor):
         else:
             return response
 
-    def refresh_spotify_token(self, *args, **kwargs):
+    async def refresh_spotify_token(self, *args, **kwargs):
         callback = kwargs.get('callback', None)
 
         # Use client_id and client_secret from config
@@ -981,9 +986,9 @@ class IrisCore(pykka.ThreadingActor):
         }
 
         try:
-            http_client = tornado.httpclient.HTTPClient()
+            http_client = tornado.httpclient.AsyncHTTPClient()
             request = tornado.httpclient.HTTPRequest(url, method='POST', body=urllib.parse.urlencode(data))
-            response = http_client.fetch(request)
+            response = await self.do_fetch(http_client, request)
 
             token = json.loads(response.body)
             token['expires_at'] = time.time() + token['expires_in']
