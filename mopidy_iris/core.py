@@ -467,11 +467,16 @@ class IrisCore(pykka.ThreadingActor):
         else:
             return response
 
-    def restart_callback(self, response, error):
+    def restart_callback(self, response, error, update):
         if error:
             self.broadcast(data={
                 'method': "restart_error",
                 'params': error
+            })
+        elif update:
+            self.broadcast(data={
+                'method': "restart_update",
+                'params': update
             })
         else:
             self.broadcast(data={
@@ -502,11 +507,16 @@ class IrisCore(pykka.ThreadingActor):
         else:
             return response
 
-    def upgrade_callback(self, response, error):
+    def upgrade_callback(self, response, error, update):
         if error:
             self.broadcast(data={
                 'method': "upgrade_error",
                 'params': error
+            })
+        elif update:
+            self.broadcast(data={
+                'method': "upgrade_update",
+                'params': update
             })
         else:
             self.broadcast(data={
@@ -538,11 +548,16 @@ class IrisCore(pykka.ThreadingActor):
         else:
             return response
 
-    def local_scan_callback(self, response, error):
+    def local_scan_callback(self, response, error, update):
         if error:
             self.broadcast(data={
                 'method': "local_scan_error",
                 'params': error
+            })
+        elif update:
+            self.broadcast(data={
+                'method': "local_scan_update",
+                'params': update
             })
         else:
             self.broadcast(data={

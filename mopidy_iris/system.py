@@ -1,5 +1,5 @@
 from threading import Thread
-import logging, os, pathlib, subprocess, json, tornado
+import logging, os, pathlib, subprocess, json, tornado, sys, shlex
 
 # import logger
 logger = logging.getLogger(__name__)
@@ -65,22 +65,23 @@ class IrisSystemThread(Thread):
 
         command = self.get_command()
         logger.debug("Running '%s'", os.fsdecode(b' '.join(command)))
-        proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        
-        stdout,stderr = proc.communicate()
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, encoding='utf8')
 
-        if stderr:
-            error_string = os.fsdecode(stderr)
-            logger.error(error_string)
-            self.ioloop.add_callback(lambda: self.callback(None, {'error': error_string}))
-        elif proc.returncode > 0:
-            response_string = os.fsdecode(stdout)
-            logger.info(response_string)
-            self.ioloop.add_callback(lambda: self.callback(None, {'error': response_string}))
+        lines = ''
+        while True:
+            line = process.stdout.readline()
+            if process.poll() is not None:
+                break
+            if line:
+                print(line)
+                lines = lines+'\n'+line
+                # This seems to be ignored. Detected as spammy io?
+                #self.ioloop.add_callback(lambda: self.callback(None, None, {'output': line}))
+
+        if process.returncode == 0:
+            self.ioloop.add_callback(lambda: self.callback({'output': lines}, None, None))
         else:
-            response_string = os.fsdecode(stdout)
-            logger.info(response_string)
-            self.ioloop.add_callback(lambda: self.callback({'output': response_string}, None))
+            self.ioloop.add_callback(lambda: self.callback(None, {'error': lines}, None))
 
     ##
     # Check if we have access to the system script (system.sh)

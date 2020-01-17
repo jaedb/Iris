@@ -73291,6 +73291,9 @@ var PusherMiddleware = function () {
           case 'local_scan_started':
             store.dispatch(uiActions.updateProcess('local_scan', 'Scanning local library'));
             break;
+          case 'local_scan_updated':
+            store.dispatch(uiActions.updateProcess('local_scan', 'Scanning local library', {}, message.params.output));
+            break;
           case 'local_scan_finished':
             store.dispatch(uiActions.processFinished('local_scan'));
             store.dispatch(uiActions.createNotification({
@@ -73299,7 +73302,7 @@ var PusherMiddleware = function () {
             break;
           case 'local_scan_error':
             store.dispatch(uiActions.processFinished('local_scan'));
-            store.dispatch(uiActions.createNotification({ type: 'bad', content: message.params.message, description: message.params.error }));
+            store.dispatch(coreActions.handleException('Local scan failed', message, message.params.error));
             break;
 
           // Upgrade
@@ -73311,7 +73314,7 @@ var PusherMiddleware = function () {
             break;
           case 'upgrade_error':
             store.dispatch(uiActions.processFinished('upgrade'));
-            store.dispatch(uiActions.createNotification({ type: 'bad', content: message.params.message, description: message.params.error }));
+            store.dispatch(coreActions.handleException('Upgrade failed', message, message.params.error));
             break;
 
           // Restart
@@ -73321,7 +73324,7 @@ var PusherMiddleware = function () {
             break;
           case 'restart_error':
             store.dispatch(uiActions.processFinished('upgrade'));
-            store.dispatch(uiActions.createNotification({ type: 'bad', content: message.params.message, description: message.params.error }));
+            store.dispatch(coreActions.handleException('Restart failed', message, message.params.error));
             break;
 
           // Test
@@ -77904,12 +77907,14 @@ function stopLoading(key) {
 
 function startProcess(key, message) {
   var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var description = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 
   return {
     type: 'START_PROCESS',
     key: key,
     message: message,
-    data: data
+    data: data,
+    description: description
   };
 }
 
@@ -77924,12 +77929,14 @@ function resumeProcess(key, message) {
 
 function updateProcess(key, message) {
   var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var description = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 
   return {
     type: 'UPDATE_PROCESS',
     key: key,
     message: message,
-    data: data
+    data: data,
+    description: description
   };
 }
 
@@ -78415,6 +78422,7 @@ function reducer() {
       processes[action.key] = {
         key: action.key,
         message: action.message,
+        description: action.description,
         status: 'running',
         data: data
       };
