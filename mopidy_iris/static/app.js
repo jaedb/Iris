@@ -70840,7 +70840,7 @@ var MopidyMiddleware = function () {
             break;
 
           case 'MOPIDY_REMOVE_TRACKS':
-            request(socket, store, 'tracklist.remove', { tlid: action.tlids }).then(function (response) {
+            request(socket, store, 'tracklist.remove', { criteria: { tlid: action.tlids } }).then(function (response) {
               store.dispatch(pusherActions.deliverBroadcast('notification', {
                 notification: {
                   content: store.getState().pusher.username + ' removed ' + action.tlids.length + ' tracks'

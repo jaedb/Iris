@@ -178,7 +178,7 @@ class HttpHandler(tornado.web.RequestHandler):
                 else:
                     getattr(iris, slug)(data=params, request=self.request, callback=lambda response=False, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
 
-            except HTTPError as e:
+            except tornado.web.HTTPError as e:
                 self.handle_result(id=id, error={'code': 32601, 'message': "Invalid JSON payload"})
                 return
 

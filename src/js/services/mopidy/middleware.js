@@ -446,7 +446,7 @@ const MopidyMiddleware = (function () {
         break;
 
       case 'MOPIDY_REMOVE_TRACKS':
-        request(socket, store, 'tracklist.remove', { tlid: action.tlids })
+        request(socket, store, 'tracklist.remove', { criteria: { tlid: action.tlids } })
           .then((response) => {
             store.dispatch(pusherActions.deliverBroadcast(
               'notification',

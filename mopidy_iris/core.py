@@ -585,7 +585,7 @@ class IrisCore(pykka.ThreadingActor):
         else:
             return response
 
-    def change_radio(self, *args, **kwargs):
+    async def change_radio(self, *args, **kwargs):
         callback = kwargs.get('callback', False)
         data = kwargs.get('data', {})
 
@@ -604,7 +604,7 @@ class IrisCore(pykka.ThreadingActor):
             'enabled': 1,
             'results': []
         }
-        uris = self.load_more_tracks()
+        uris = await self.load_more_tracks()
 
         # make sure we got recommendations
         if uris:
@@ -656,7 +656,7 @@ class IrisCore(pykka.ThreadingActor):
         # Failed fetching/adding tracks, so no-go
         else:
             logger.error("No recommendations returned by Spotify")
-            self.radio['enabled'] = 0;
+            self.radio['enabled'] = 0
             error = {
                 'code': 32500,
                 'message': 'Could not start radio',
@@ -701,10 +701,10 @@ class IrisCore(pykka.ThreadingActor):
             return response
 
 
-    def load_more_tracks(self, *args, **kwargs):
+    async def load_more_tracks(self, *args, **kwargs):
 
         try:
-            self.get_spotify_token()
+            await self.get_spotify_token()
             spotify_token = self.spotify_token
             access_token = spotify_token['access_token']
         except:
@@ -712,27 +712,32 @@ class IrisCore(pykka.ThreadingActor):
             logger.error(error)
             return False
 
+        url = 'https://api.spotify.com/v1/recommendations/'
+        url = url+'?seed_artists='+(",".join(self.radio['seed_artists'])).replace('spotify:artist:','')
+        url = url+'&seed_genres='+(",".join(self.radio['seed_genres'])).replace('spotify:genre:','')
+        url = url+'&seed_tracks='+(",".join(self.radio['seed_tracks'])).replace('spotify:track:','')
+        url = url+'&limit=50'
+        http_client = AsyncHTTPClient()
+        
         try:
-            url = 'https://api.spotify.com/v1/recommendations/'
-            url = url+'?seed_artists='+(",".join(self.radio['seed_artists'])).replace('spotify:artist:','')
-            url = url+'&seed_genres='+(",".join(self.radio['seed_genres'])).replace('spotify:genre:','')
-            url = url+'&seed_tracks='+(",".join(self.radio['seed_tracks'])).replace('spotify:track:','')
-            url = url+'&limit=50'
-
-            req = urllib.request(url)
-            req.add_header('Authorization', 'Bearer '+access_token)
-
-            response = urllib.urlopen(req, timeout=30).read()
-            response_dict = json.loads(response)
+            http_response = await http_client.fetch(
+                url,
+                'POST',
+                headers={'Authorization': 'Bearer '+access_token}
+            )
+            response_body = json.loads(http_response.body)
 
             uris = []
-            for track in response_dict['tracks']:
+            for track in response_body['tracks']:
                 uris.append( track['uri'] )
 
             return uris
 
-        except:
-            logger.error('IrisFrontend: Failed to fetch Spotify recommendations')
+        except (urllib.error.HTTPError, urllib.error.URLError) as e:
+            error = json.loads(e.read())
+            error = {'message': 'Could not fetch Spotify recommendations: '+error['error_description']}
+            logger.error('Could not fetch Spotify recommendations: '+error['error_description'])
+            logger.debug(error)
             return False
 
 
@@ -971,12 +976,12 @@ class IrisCore(pykka.ThreadingActor):
     # passing token to frontend for javascript requests without use of the Authorization Code Flow.
     ##
 
-    def get_spotify_token(self, *args, **kwargs):
+    async def get_spotify_token(self, *args, **kwargs):
         callback = kwargs.get('callback', False)
 
         # Expired, so go get a new one
         if (not self.spotify_token or self.spotify_token['expires_at'] <= time.time()):
-            self.refresh_spotify_token()
+            await self.refresh_spotify_token()
 
         response = {
             'spotify_token': self.spotify_token
@@ -997,7 +1002,7 @@ class IrisCore(pykka.ThreadingActor):
             'client_id': self.config['spotify']['client_id'],
             'client_secret': self.config['spotify']['client_secret'],
             'grant_type': 'client_credentials'
-        }
+        }        
 
         try:
             http_client = tornado.httpclient.AsyncHTTPClient()
