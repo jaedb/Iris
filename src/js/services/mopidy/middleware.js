@@ -852,15 +852,15 @@ const MopidyMiddleware = (function () {
 
       case 'MOPIDY_PLAY_URIS':
         const { from_uri } = action;
-        let uris = Object.assign([], action.uris);
+        let urisToPlay = Object.assign([], action.uris);
 
-        if (!uris || !uris.length) {
+        if (!urisToPlay || !urisToPlay.length) {
           this.props.uiActions.createNotification({ content: 'No URIs to play', type: 'warning' });
           break;
         }
 
         if (action.shuffle) {
-          action.uris = helpers.shuffle(action.uris);
+          urisToPlay = helpers.shuffle(urisToPlay);
         }
 
         // Stop the radio
@@ -875,7 +875,7 @@ const MopidyMiddleware = (function () {
 
         // Shuffle/random mode
         if (store.getState().mopidy.random) {
-          var first_uri_index = Math.floor(Math.random() * action.uris.length);
+          var first_uri_index = Math.floor(Math.random() * urisToPlay.length);
         } else {
           var first_uri_index = 0;
         }
