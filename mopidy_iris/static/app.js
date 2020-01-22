@@ -76541,8 +76541,6 @@ function getMe() {
  * @param path = String, the relative API path for the HTML lyrics
  * */
 function getTrackLyrics(uri, path) {
-  var _this = this;
-
   return function (dispatch, getState) {
     dispatch(coreActions.trackLoaded({
       uri: uri,
@@ -76563,12 +76561,12 @@ function getTrackLyrics(uri, path) {
     $.ajax(config).then(function (response, status, xhr) {
       dispatch(uiActions.stopLoading(loader_key));
       if (response && response.result) {
-        var html = $('<div/>').html(response.result).contents();
+        var html = $(response.result);
         var lyrics = html.find('.lyrics');
         if (lyrics.length > 0) {
           lyrics = lyrics.first();
-          lyrics.find('a').replaceWith(function () {
-            return _this.innerHTML;
+          lyrics.find('a').replaceWith(function (item) {
+            return item.innerHTML;
           });
 
           var lyrics_html = lyrics.html();

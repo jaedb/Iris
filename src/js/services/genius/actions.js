@@ -157,11 +157,11 @@ export function getTrackLyrics(uri, path) {
         (response, status, xhr) => {
           dispatch(uiActions.stopLoading(loader_key));
           if (response && response.result) {
-            const html = $('<div/>').html(response.result).contents();
+            const html = $(response.result);
             let lyrics = html.find('.lyrics');
             if (lyrics.length > 0) {
               lyrics = lyrics.first();
-              lyrics.find('a').replaceWith(() => this.innerHTML);
+              lyrics.find('a').replaceWith((item) => item.innerHTML);
 
               let lyrics_html = lyrics.html();
               lyrics_html = lyrics_html.replace(/(\[)/g, '<span class="mid_grey-text">[');

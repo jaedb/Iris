@@ -718,7 +718,7 @@ class IrisCore(pykka.ThreadingActor):
         url = url+'&seed_tracks='+(",".join(self.radio['seed_tracks'])).replace('spotify:track:','')
         url = url+'&limit=50'
         http_client = AsyncHTTPClient()
-        
+
         try:
             http_response = await http_client.fetch(
                 url,
@@ -1002,7 +1002,7 @@ class IrisCore(pykka.ThreadingActor):
             'client_id': self.config['spotify']['client_id'],
             'client_secret': self.config['spotify']['client_secret'],
             'grant_type': 'client_credentials'
-        }        
+        }
 
         try:
             http_client = tornado.httpclient.AsyncHTTPClient()
@@ -1090,11 +1090,11 @@ class IrisCore(pykka.ThreadingActor):
 
         if error:
             return error
-    
+
         try:
             http_client = AsyncHTTPClient()
             http_response = await http_client.fetch(url)
-            callback(http_response, False)
+            callback(http_response.body.decode("utf-8"), False)
 
         except (urllib.error.HTTPError, urllib.error.URLError) as e:
             error = json.loads(e.read())

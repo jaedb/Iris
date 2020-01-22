@@ -214,11 +214,11 @@ class HttpHandler(tornado.web.RequestHandler):
             # Digest JSON responses into JSON
             content_type = response.headers.get('Content-Type')
             if content_type.startswith('application/json') or content_type.startswith('text/json'):
-                body = json.loads(response.body.decode("utf-8") )
+                body = json.loads(response.body)
 
             # Non-JSON so just copy as-is
             else:
-                body = json_encode(response.body.decode("utf-8") )
+                body = json_encode(response.body)
 
             request_response['result'] = body
 
