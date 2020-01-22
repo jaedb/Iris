@@ -12,6 +12,7 @@ RUN apt-get update \
     gstreamer1.0-plugins-bad \
     gstreamer1.0-plugins-good \
     gstreamer1.0-plugins-ugly \
+    gstreamer1.0-pulseaudio \
     libasound2-dev \
     python-dev \
     python-gst-1.0 \
@@ -41,7 +42,7 @@ RUN git clone https://github.com/jaedb/Iris.git /iris \
  && echo "mopidy ALL=NOPASSWD: /iris/mopidy_iris/system.sh" >> /etc/sudoers
 
 # Install additional Python dependencies
-RUN python3.7 -m pip install --no-cache tox mopidy-spotify mopidy-local
+RUN python3.7 -m pip install --no-cache tox mopidy-spotify
 
 # Start helper script.
 COPY docker/entrypoint.sh /entrypoint.sh
@@ -54,6 +55,7 @@ COPY docker/pulse-client.conf /etc/pulse/client.conf
 
 # Add a VERSION file to the image
 ADD VERSION /
+COPY IRIS_VERSION /iris/IRIS_VERSION
 
 # Allows any user to run mopidy, but runs by default as a randomly generated UID/GID.
 RUN useradd -ms /bin/bash mopidy
