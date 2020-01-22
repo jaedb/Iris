@@ -1056,7 +1056,7 @@ class IrisCore(pykka.ThreadingActor):
     # passing token to frontend for javascript requests without use of the Authorization Code Flow.
     ##
 
-    def get_lyrics(self, *args, **kwargs):
+    async def get_lyrics(self, *args, **kwargs):
         callback = kwargs.get('callback', False)
         request = kwargs.get('request', False)
         error = False
@@ -1089,15 +1089,19 @@ class IrisCore(pykka.ThreadingActor):
             }
 
         if error:
-            if (callback):
-                callback(False, error)
-                return
-            else:
-                return error
+            return error
+    
+        try:
+            http_client = AsyncHTTPClient()
+            http_response = await http_client.fetch(url)
+            callback(http_response, False)
 
-        http_request = tornado.httpclient.HTTPRequest(url)
-        http_client = tornado.httpclient.HTTPClient()
-        http_client.fetch(http_request, callback=callback)
+        except (urllib.error.HTTPError, urllib.error.URLError) as e:
+            error = json.loads(e.read())
+            error = {'message': 'Could not fetch Spotify recommendations: '+error['error_description']}
+            logger.error('Could not fetch Spotify recommendations: '+error['error_description'])
+            logger.debug(error)
+            return error
 
 
     ##

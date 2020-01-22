@@ -201,6 +201,9 @@ class HttpHandler(tornado.web.RequestHandler):
             'method': method
         }
 
+        print(response)
+        print(error)
+
         if error:
             request_response['error'] = error
             self.set_status(400)
@@ -209,7 +212,7 @@ class HttpHandler(tornado.web.RequestHandler):
         # We've been handed an AsyncHTTPClient callback. This is the case
         # when our request calls subsequent external requests (eg Spotify, Genius).
         # We don't need to wrap non-HTTPResponse responses as these are dicts
-        elif isinstance(response, tornado.httpclient.HTTPResponse):
+        elif isinstance(response, tornado.httpclient.HTTPResponse) or isinstance(response, tornado.httpclient.AsyncHTTPResponse):
 
             # Digest JSON responses into JSON
             content_type = response.headers.get('Content-Type')
