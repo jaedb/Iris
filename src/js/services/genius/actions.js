@@ -157,7 +157,7 @@ export function getTrackLyrics(uri, path) {
         (response, status, xhr) => {
           dispatch(uiActions.stopLoading(loader_key));
           if (response && response.result) {
-            const html = $(response.result);
+            const html = $('<div/>').html(response.result).contents();
             let lyrics = html.find('.lyrics');
             if (lyrics.length > 0) {
               lyrics = lyrics.first();

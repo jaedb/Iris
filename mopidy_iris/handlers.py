@@ -147,7 +147,7 @@ class HttpHandler(tornado.web.RequestHandler):
         # make sure the method exists
         if hasattr(iris, slug):
             try:
-                
+
                 # For async methods we need to await, but it must be ommited for syncronous methods
                 if asyncio.iscoroutinefunction(getattr(iris, slug)):
                     await getattr(iris, slug)(request=self, callback=lambda response, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
@@ -201,9 +201,6 @@ class HttpHandler(tornado.web.RequestHandler):
             'method': method
         }
 
-        print(response)
-        print(error)
-
         if error:
             request_response['error'] = error
             self.set_status(400)
@@ -212,16 +209,16 @@ class HttpHandler(tornado.web.RequestHandler):
         # We've been handed an AsyncHTTPClient callback. This is the case
         # when our request calls subsequent external requests (eg Spotify, Genius).
         # We don't need to wrap non-HTTPResponse responses as these are dicts
-        elif isinstance(response, tornado.httpclient.HTTPResponse) or isinstance(response, tornado.httpclient.AsyncHTTPResponse):
+        elif isinstance(response, tornado.httpclient.HTTPResponse):
 
             # Digest JSON responses into JSON
             content_type = response.headers.get('Content-Type')
             if content_type.startswith('application/json') or content_type.startswith('text/json'):
-                body = json.loads(response.body)
+                body = json.loads(response.body.decode("utf-8") )
 
             # Non-JSON so just copy as-is
             else:
-                body = response.body
+                body = json_encode(response.body.decode("utf-8") )
 
             request_response['result'] = body
 
