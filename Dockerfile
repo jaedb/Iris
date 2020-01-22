@@ -1,12 +1,12 @@
 FROM circleci/python:3.7.5
 
+
 # Switch to the root user while we do our changes
 USER root
 
 # Install GStreamer and other required Debian packages
 RUN apt-get update \
   && apt-get install -y \
-    curl \
     dumb-init \
     graphviz-dev \
     gstreamer1.0-plugins-bad \
@@ -16,13 +16,6 @@ RUN apt-get update \
     python-dev \
     python-gst-1.0 \
     python3-gst-1.0 \
-    git \
-    nano \
-    sudo \
-  && git clone https://github.com/jaedb/Iris.git /iris \
-  && cd /iris \
-  && mkdir -p /var/lib/mopidy/.config \
-  && ln -s /config /var/lib/mopidy/.config/mopidy \
   && rm -rf /var/lib/apt/lists/*
 
 # Make python3-gst-1.0 available to non-Debian Python 3.7 installation
@@ -36,11 +29,19 @@ RUN wget -q -O - https://apt.mopidy.com/mopidy.gpg \
   && apt-get install -y libspotify-dev \
   && rm -rf /var/lib/apt/lists/*
 
-# Install additional Python dependencies
-RUN python3.7 -m pip install --no-cache tox
+# Clone Iris from the repository and install in development mode.
+# This allows a binding at "/iris" to map to your local folder for development, rather than
+# installing using pip.
+RUN git clone https://github.com/jaedb/Iris.git /iris \
+ && cd /iris \
+ && python3.7 setup.py develop \
+ && mkdir -p /var/lib/mopidy/.config \
+ && ln -s /config /var/lib/mopidy/.config/mopidy \
+ # Allow mopidy user to run system commands (restart, local scan, etc)
+ && echo "mopidy ALL=NOPASSWD: /iris/mopidy_iris/system.sh" >> /etc/sudoers
 
-# TEMPORARY: Install mopidy pre-release
-RUN python3 -m pip install --user Mopidy==3.0.0b1
+# Install additional Python dependencies
+RUN python3.7 -m pip install --no-cache tox mopidy-spotify mopidy-local
 
 # Start helper script.
 COPY docker/entrypoint.sh /entrypoint.sh
@@ -55,8 +56,19 @@ COPY docker/pulse-client.conf /etc/pulse/client.conf
 ADD VERSION /
 
 # Allows any user to run mopidy, but runs by default as a randomly generated UID/GID.
-#ENV HOME=/var/lib/mopidy
+RUN useradd -ms /bin/bash mopidy
+ENV HOME=/var/lib/mopidy
+RUN set -ex \
+ && usermod -G audio,sudo mopidy \
+ && chown mopidy:audio -R $HOME /entrypoint.sh /iris \
+ && chmod go+rwx -R $HOME /entrypoint.sh /iris
 
-EXPOSE 6600 6680
+# Runs as mopidy user by default.
+USER mopidy:audio
 
-CMD ["/bin/sh"]
+VOLUME ["/var/lib/mopidy/local", "/var/lib/mopidy/local-images", "/iris"]
+
+EXPOSE 6600 6680 1704 1705 5555/udp
+
+ENTRYPOINT ["/usr/bin/dumb-init", "/entrypoint.sh"]
+CMD ["mopidy"]
