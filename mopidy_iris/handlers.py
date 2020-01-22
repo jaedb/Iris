@@ -1,18 +1,18 @@
-
-from __future__ import unicode_literals
 from datetime import datetime
 from tornado.escape import json_encode, json_decode
 import tornado.ioloop, tornado.web, tornado.websocket, tornado.template
-import random, string, logging, uuid, subprocess, pykka, ast, logging, json, urllib, urllib2, mem, requests, time
+import random, string, logging, uuid, subprocess, pykka, ast, logging, json, urllib, requests, time, asyncio
+
+from .mem import iris
 
 logger = logging.getLogger(__name__)
 
 class WebsocketHandler(tornado.websocket.WebSocketHandler):
-    
+
     # initiate (not the actual object __init__, but run shortly after)
     def initialize(self, core, config):
-        self.core = core  
-        self.config = config  
+        self.core = core
+        self.config = config
 
     def check_origin(self, origin):
         return True
@@ -26,19 +26,19 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
 
         # Construct our initial client object, and add to our list of connections
         client = {
-            'connection_id': mem.iris.generateGuid(),
+            'connection_id': iris.generateGuid(),
             'ip': ip,
             'created': datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S')
         }
 
-        self.connection_id = client['connection_id']    
+        self.connection_id = client['connection_id']
 
-        mem.iris.add_connection(connection=self, client=client)
- 
+        iris.add_connection(connection=self, client=client)
 
-    def on_message(self, message):
+
+    async def on_message(self, message):
         logger.debug("Iris websocket message received: "+message)
-        
+
         message = json_decode(message)
 
         if 'id' in message:
@@ -48,7 +48,7 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
 
         if 'jsonrpc' not in message:
             self.handle_result(id=id, error={'id': id, 'code': 32602, 'message': 'Invalid JSON-RPC request (missing property "jsonrpc")'})
-        
+
         if 'params' in message:
             params = message['params']
 
@@ -63,10 +63,15 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
         if 'method' in message:
 
             # make sure the method exists
-            if hasattr(mem.iris, message['method']):
+            if hasattr(iris, message['method']):
                 try:
-                    getattr(mem.iris, message['method'])(data=params, callback=lambda response, error=False: self.handle_result(id=id, method=message['method'], response=response, error=error))
-                except Exception, e:
+
+                    # For async methods we need to await, but it must be ommited for syncronous methods
+                    if asyncio.iscoroutinefunction(getattr(iris, message['method'])):
+                        await getattr(iris, message['method'])(data=params, callback=lambda response, error=False: self.handle_result(id=id, method=message['method'], response=response, error=error))
+                    else:
+                        getattr(iris, message['method'])(data=params, callback=lambda response, error=False: self.handle_result(id=id, method=message['method'], response=response, error=error))
+                except Exception as e:
                     logger.error(str(e))
 
             else:
@@ -78,7 +83,7 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
 
 
     def on_close(self):
-        mem.iris.remove_connection(connection_id=self.connection_id)
+        iris.remove_connection(connection_id=self.connection_id)
 
     ##
     # Handle a response from our core
@@ -108,22 +113,22 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
         # Just a regular json object, so not an external request
         else:
             request_response['result'] = response
-        
+
         # Respond to the original request
         data = request_response
         data['recipient'] = self.connection_id
-        mem.iris.send_message(data=data)
+        iris.send_message(data=data)
 
 
 
 
 
-        
+
 class HttpHandler(tornado.web.RequestHandler):
 
     def set_default_headers(self):
         self.set_header("Access-Control-Allow-Origin", "*")
-        self.set_header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Client-Security-Token, Accept-Encoding")        
+        self.set_header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, Client-Security-Token, Accept-Encoding")
 
     def initialize(self, core, config):
         self.core = core
@@ -134,40 +139,46 @@ class HttpHandler(tornado.web.RequestHandler):
     def options(self, slug=None):
         self.set_status(204)
         self.finish()
-    
-    @tornado.web.asynchronous
-    def get(self, slug=None):
+
+    async def get(self, slug=None):
 
         id = int(time.time())
 
         # make sure the method exists
-        if hasattr(mem.iris, slug):
+        if hasattr(iris, slug):
             try:
-                getattr(mem.iris, slug)(request=self, callback=lambda response, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
-            except Exception, e:
+
+                # For async methods we need to await, but it must be ommited for syncronous methods
+                if asyncio.iscoroutinefunction(getattr(iris, slug)):
+                    await getattr(iris, slug)(request=self, callback=lambda response, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
+                else:
+                    getattr(iris, slug)(request=self, callback=lambda response, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
+            except Exception as e:
                 logger.error(str(e))
-                
+
         else:
             self.handle_result(id=id, error={'code': 32601, 'message': "Method "+slug+" does not exist"})
             return
 
-    @tornado.web.asynchronous
-    def post(self, slug=None):
+    async def post(self, slug=None):
 
         id = int(time.time())
 
         try:
             params = json.loads(self.request.body.decode('utf-8'))
-        except:            
+        except:
             self.handle_result(id=id, error={'code': 32700, 'message': "Missing or invalid payload"})
             return
 
         # make sure the method exists
-        if hasattr(mem.iris, slug):
+        if hasattr(iris, slug):
             try:
-                getattr(mem.iris, slug)(data=params, request=self.request, callback=lambda response=False, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
+                if asyncio.iscoroutinefunction(getattr(iris, slug)):
+                    await getattr(iris, slug)(data=params, request=self.request, callback=lambda response=False, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
+                else:
+                    getattr(iris, slug)(data=params, request=self.request, callback=lambda response=False, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
 
-            except urllib2.HTTPError as e:
+            except tornado.web.HTTPError as e:
                 self.handle_result(id=id, error={'code': 32601, 'message': "Invalid JSON payload"})
                 return
 
@@ -207,7 +218,7 @@ class HttpHandler(tornado.web.RequestHandler):
 
             # Non-JSON so just copy as-is
             else:
-                body = response.body
+                body = json_encode(response.body)
 
             request_response['result'] = body
 
@@ -222,4 +233,19 @@ class HttpHandler(tornado.web.RequestHandler):
         self.finish()
 
 
-        
+##
+# Customised handler for react router URLS
+#
+# This routes all URLs to the same path, so that React can handle the path etc
+##
+class ReactRouterHandler(tornado.web.StaticFileHandler):
+    def initialize(self, path):
+        self.path = path
+        self.absolute_path = path
+        self.dirname = path.parent
+        self.filename = path.name
+        super().initialize(self.dirname)
+
+    def get(self, path=None, include_body=True):
+        return super().get(self.path, include_body)
+

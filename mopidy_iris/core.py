@@ -1,7 +1,4 @@
-
-from __future__ import unicode_literals
-
-import random, string, logging, json, pykka, urllib, urllib2, os, sys, mopidy_iris, subprocess
+import random, string, logging, json, pathlib, pykka, urllib, os, sys, mopidy_iris, subprocess
 import tornado.web
 import tornado.ioloop
 import tornado.httpclient
@@ -12,7 +9,9 @@ from mopidy import config, ext
 from mopidy.core import CoreListener
 from pkg_resources import parse_version
 from tornado.escape import json_encode, json_decode
+from tornado.httpclient import AsyncHTTPClient
 
+from . import Extension
 from .system import IrisSystemThread
 
 if sys.platform == 'win32':
@@ -22,7 +21,7 @@ if sys.platform == 'win32':
 logger = logging.getLogger(__name__)
 
 class IrisCore(pykka.ThreadingActor):
-    version = 0
+    version = ""
     spotify_token = False
     queue_metadata = {}
     connections = {}
@@ -36,23 +35,30 @@ class IrisCore(pykka.ThreadingActor):
         "results": []
     }
 
+    @classmethod
+    async def do_fetch(cls, client, request):
+        # This wrapper function exists to ease mocking.
+        return await client.fetch(request)
+
+    def setup(self, config, core):
+        self.config = config
+        self.core = core
 
     ##
     # Mopidy server is starting
     ##
     def start(self):
+        self.version = self.load_version()
         logger.info('Starting Iris '+self.version)
 
         # Load our commands from file
         self.commands = self.load_from_file('commands')
-
 
     ##
     # Mopidy is shutting down
     ##
     def stop(self):
         logger.info('Stopping Iris')
-
 
     ##
     # Save dict object to disk
@@ -62,19 +68,14 @@ class IrisCore(pykka.ThreadingActor):
     # @return void
     ##
     def save_to_file(self, dict, name):
-        path = self.config['iris'].get('data_dir')
-
-        # Create the folder if it doesn't yet exist
-        if not os.path.exists(path):
-            os.makedirs(path)
+        file_path = Extension.get_data_dir(self.config) / ('%s.pkl' % name)
 
         # And now open the file, and drop in our dict
         try:
-            with open(path + '/' + name + '.pkl', 'wb') as f:
+            with file_path.open('wb') as f:
                 pickle.dump(dict, f, pickle.HIGHEST_PROTOCOL)
         except Exception:
             return False
-
 
     ##
     # Load a dict from disk
@@ -83,14 +84,25 @@ class IrisCore(pykka.ThreadingActor):
     # @return Dict
     ##
     def load_from_file(self, name):
-        path = self.config['iris'].get('data_dir')
+        file_path = Extension.get_data_dir(self.config) / ('%s.pkl' % name)
 
         try:
-            with open(path + '/' + name + '.pkl', 'rb') as f:
+            with file_path.open('wb') as f:
                 return pickle.load(f)
         except Exception:
             return {}
 
+    ##
+    # Load version number from file
+    #
+    # @return String
+    ##
+    def load_version(self):
+        file_path = pathlib.Path(__file__).parent.parent / 'IRIS_VERSION'
+        try:
+            return file_path.read_text()
+        except Exception:
+            return "Unknown"
 
     ##
     # Generate a random string
@@ -99,9 +111,7 @@ class IrisCore(pykka.ThreadingActor):
     # @return string
     ##
     def generateGuid(self):
-        length = 12
-        return ''.join(random.choice(string.lowercase) for i in range(length))
-
+        return ''.join(random.choices(string.ascii_uppercase + string.digits, k=12))
 
     ##
     # Digest a protocol header into it's id/name parts
@@ -139,15 +149,11 @@ class IrisCore(pykka.ThreadingActor):
             "generated": generated
         }
 
-
-
-
     def send_message(self, *args, **kwargs):
         callback = kwargs.get('callback', None)
         data = kwargs.get('data', None)
 
         logger.debug(data)
-
 
         # Catch invalid recipient
         if data['recipient'] not in self.connections:
@@ -205,7 +211,6 @@ class IrisCore(pykka.ThreadingActor):
             else:
                 return error
 
-
     def broadcast(self, *args, **kwargs):
         callback = kwargs.get('callback', None)
         data = kwargs.get('data', None)
@@ -224,7 +229,7 @@ class IrisCore(pykka.ThreadingActor):
                 'params': data['params'] if 'params' in data else None
             }
 
-        for connection in self.connections.itervalues():
+        for connection in self.connections.values():
 
             send_to_this_connection = True
 
@@ -257,7 +262,7 @@ class IrisCore(pykka.ThreadingActor):
         callback = kwargs.get('callback', None)
 
         connections = []
-        for connection in self.connections.itervalues():
+        for connection in self.connections.values():
             connections.append(connection['client'])
 
         response = {
@@ -271,6 +276,9 @@ class IrisCore(pykka.ThreadingActor):
     def add_connection(self, *args, **kwargs):
         connection = kwargs.get('connection', None)
         client = kwargs.get('client', None)
+
+        logger.debug("Connection added")
+        logger.debug(connection)
 
         self.connections[client['connection_id']] = {
             'client': client,
@@ -404,21 +412,22 @@ class IrisCore(pykka.ThreadingActor):
             return response
 
 
-    def get_version(self, *args, **kwargs):
+    async def get_version(self, *args, **kwargs):
+
         callback = kwargs.get('callback', False)
         url = 'https://pypi.python.org/pypi/Mopidy-Iris/json'
-        req = urllib2.Request(url)
+        http_client = AsyncHTTPClient()
 
         try:
-            response = urllib2.urlopen(req, timeout=30).read()
-            response = json.loads(response)
-            latest_version = response['info']['version']
+            http_response = await http_client.fetch(url)
+            response_body = json.loads(http_response.body)
+            latest_version = response_body['info']['version']
 
             # compare our versions, and convert result to boolean
-            upgrade_available = cmp( parse_version( latest_version ), parse_version( self.version ) )
+            upgrade_available = parse_version( latest_version ) > parse_version( self.version )
             upgrade_available = ( upgrade_available == 1 )
 
-        except (urllib2.HTTPError, urllib2.URLError) as e:
+        except (urllib.request.HTTPError, urllib.request.URLError) as e:
             latest_version = '0.0.0'
             upgrade_available = False
 
@@ -458,15 +467,21 @@ class IrisCore(pykka.ThreadingActor):
         else:
             return response
 
-    def restart_callback(self, response, error):
+    def restart_callback(self, response, error, update):
         if error:
             self.broadcast(data={
                 'method': "restart_error",
                 'params': error
             })
+        elif update:
+            self.broadcast(data={
+                'method': "restart_update",
+                'params': update
+            })
         else:
             self.broadcast(data={
-                'method': "restart_finished"
+                'method': "restart_finished",
+                'params': response
             })
 
 
@@ -492,11 +507,16 @@ class IrisCore(pykka.ThreadingActor):
         else:
             return response
 
-    def upgrade_callback(self, response, error):
+    def upgrade_callback(self, response, error, update):
         if error:
             self.broadcast(data={
                 'method': "upgrade_error",
                 'params': error
+            })
+        elif update:
+            self.broadcast(data={
+                'method': "upgrade_update",
+                'params': update
             })
         else:
             self.broadcast(data={
@@ -528,11 +548,16 @@ class IrisCore(pykka.ThreadingActor):
         else:
             return response
 
-    def local_scan_callback(self, response, error):
+    def local_scan_callback(self, response, error, update):
         if error:
             self.broadcast(data={
                 'method': "local_scan_error",
                 'params': error
+            })
+        elif update:
+            self.broadcast(data={
+                'method': "local_scan_update",
+                'params': update
             })
         else:
             self.broadcast(data={
@@ -560,7 +585,7 @@ class IrisCore(pykka.ThreadingActor):
         else:
             return response
 
-    def change_radio(self, *args, **kwargs):
+    async def change_radio(self, *args, **kwargs):
         callback = kwargs.get('callback', False)
         data = kwargs.get('data', {})
 
@@ -579,7 +604,7 @@ class IrisCore(pykka.ThreadingActor):
             'enabled': 1,
             'results': []
         }
-        uris = self.load_more_tracks()
+        uris = await self.load_more_tracks()
 
         # make sure we got recommendations
         if uris:
@@ -631,7 +656,7 @@ class IrisCore(pykka.ThreadingActor):
         # Failed fetching/adding tracks, so no-go
         else:
             logger.error("No recommendations returned by Spotify")
-            self.radio['enabled'] = 0;
+            self.radio['enabled'] = 0
             error = {
                 'code': 32500,
                 'message': 'Could not start radio',
@@ -676,10 +701,10 @@ class IrisCore(pykka.ThreadingActor):
             return response
 
 
-    def load_more_tracks(self, *args, **kwargs):
+    async def load_more_tracks(self, *args, **kwargs):
 
         try:
-            self.get_spotify_token()
+            await self.get_spotify_token()
             spotify_token = self.spotify_token
             access_token = spotify_token['access_token']
         except:
@@ -687,27 +712,32 @@ class IrisCore(pykka.ThreadingActor):
             logger.error(error)
             return False
 
+        url = 'https://api.spotify.com/v1/recommendations/'
+        url = url+'?seed_artists='+(",".join(self.radio['seed_artists'])).replace('spotify:artist:','')
+        url = url+'&seed_genres='+(",".join(self.radio['seed_genres'])).replace('spotify:genre:','')
+        url = url+'&seed_tracks='+(",".join(self.radio['seed_tracks'])).replace('spotify:track:','')
+        url = url+'&limit=50'
+        http_client = AsyncHTTPClient()
+
         try:
-            url = 'https://api.spotify.com/v1/recommendations/'
-            url = url+'?seed_artists='+(",".join(self.radio['seed_artists'])).replace('spotify:artist:','')
-            url = url+'&seed_genres='+(",".join(self.radio['seed_genres'])).replace('spotify:genre:','')
-            url = url+'&seed_tracks='+(",".join(self.radio['seed_tracks'])).replace('spotify:track:','')
-            url = url+'&limit=50'
-
-            req = urllib2.Request(url)
-            req.add_header('Authorization', 'Bearer '+access_token)
-
-            response = urllib2.urlopen(req, timeout=30).read()
-            response_dict = json.loads(response)
+            http_response = await http_client.fetch(
+                url,
+                'POST',
+                headers={'Authorization': 'Bearer '+access_token}
+            )
+            response_body = json.loads(http_response.body)
 
             uris = []
-            for track in response_dict['tracks']:
+            for track in response_body['tracks']:
                 uris.append( track['uri'] )
 
             return uris
 
-        except:
-            logger.error('IrisFrontend: Failed to fetch Spotify recommendations')
+        except (urllib.error.HTTPError, urllib.error.URLError) as e:
+            error = json.loads(e.read())
+            error = {'message': 'Could not fetch Spotify recommendations: '+error['error_description']}
+            logger.error('Could not fetch Spotify recommendations: '+error['error_description'])
+            logger.debug(error)
             return False
 
 
@@ -946,12 +976,12 @@ class IrisCore(pykka.ThreadingActor):
     # passing token to frontend for javascript requests without use of the Authorization Code Flow.
     ##
 
-    def get_spotify_token(self, *args, **kwargs):
+    async def get_spotify_token(self, *args, **kwargs):
         callback = kwargs.get('callback', False)
 
         # Expired, so go get a new one
         if (not self.spotify_token or self.spotify_token['expires_at'] <= time.time()):
-            self.refresh_spotify_token()
+            await self.refresh_spotify_token()
 
         response = {
             'spotify_token': self.spotify_token
@@ -962,7 +992,7 @@ class IrisCore(pykka.ThreadingActor):
         else:
             return response
 
-    def refresh_spotify_token(self, *args, **kwargs):
+    async def refresh_spotify_token(self, *args, **kwargs):
         callback = kwargs.get('callback', None)
 
         # Use client_id and client_secret from config
@@ -975,9 +1005,9 @@ class IrisCore(pykka.ThreadingActor):
         }
 
         try:
-            http_client = tornado.httpclient.HTTPClient()
-            request = tornado.httpclient.HTTPRequest(url, method='POST', body=urllib.urlencode(data))
-            response = http_client.fetch(request)
+            http_client = tornado.httpclient.AsyncHTTPClient()
+            request = tornado.httpclient.HTTPRequest(url, method='POST', body=urllib.parse.urlencode(data))
+            response = await self.do_fetch(http_client, request)
 
             token = json.loads(response.body)
             token['expires_at'] = time.time() + token['expires_in']
@@ -998,7 +1028,7 @@ class IrisCore(pykka.ThreadingActor):
             else:
                 return response
 
-        except (urllib2.HTTPError, urllib2.URLError) as e:
+        except (urllib.error.HTTPError, urllib.error.URLError) as e:
             error = json.loads(e.read())
             error = {'message': 'Could not refresh token: '+error['error_description']}
 
@@ -1026,7 +1056,7 @@ class IrisCore(pykka.ThreadingActor):
     # passing token to frontend for javascript requests without use of the Authorization Code Flow.
     ##
 
-    def get_lyrics(self, *args, **kwargs):
+    async def get_lyrics(self, *args, **kwargs):
         callback = kwargs.get('callback', False)
         request = kwargs.get('request', False)
         error = False
@@ -1035,7 +1065,7 @@ class IrisCore(pykka.ThreadingActor):
         try:
             path = request.get_argument('path')
             url = 'https://genius.com'+path
-        except Exception, e:
+        except Exception as e:
             logger.error(e)
             error = {
                 'message': "Path not valid",
@@ -1051,7 +1081,7 @@ class IrisCore(pykka.ThreadingActor):
                     'description': 'Connection '+connection_id+' not connected'
                 }
 
-        except Exception, e:
+        except Exception as e:
             logger.error(e)
             error = {
                 'message': "Unauthorized request",
@@ -1059,15 +1089,19 @@ class IrisCore(pykka.ThreadingActor):
             }
 
         if error:
-            if (callback):
-                callback(False, error)
-                return
-            else:
-                return error
+            return error
 
-        http_request = tornado.httpclient.HTTPRequest(url)
-        http_client = tornado.httpclient.HTTPClient()
-        http_client.fetch(http_request, callback=callback)
+        try:
+            http_client = AsyncHTTPClient()
+            http_response = await http_client.fetch(url)
+            callback(http_response.body.decode("utf-8"), False)
+
+        except (urllib.error.HTTPError, urllib.error.URLError) as e:
+            error = json.loads(e.read())
+            error = {'message': 'Could not fetch Spotify recommendations: '+error['error_description']}
+            logger.error('Could not fetch Spotify recommendations: '+error['error_description'])
+            logger.debug(error)
+            return error
 
 
     ##
@@ -1080,16 +1114,16 @@ class IrisCore(pykka.ThreadingActor):
             'method': "test_started"
         })
 
-        # Trigger the action
-        IrisSystemThread('test', self.test_callback).start()
-
         response = {
             'message': "Running test... please wait"
         }
+
         if (callback):
             callback(response)
         else:
             return response
+
+        IrisSystemThread('test', self.test_callback).run()
 
     def test_callback(self, response, error):
         if error:
@@ -1102,4 +1136,3 @@ class IrisCore(pykka.ThreadingActor):
                 'method': "test_finished",
                 'params': response
             })
-

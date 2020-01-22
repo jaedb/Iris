@@ -76541,8 +76541,6 @@ function getMe() {
  * @param path = String, the relative API path for the HTML lyrics
  * */
 function getTrackLyrics(uri, path) {
-  var _this = this;
-
   return function (dispatch, getState) {
     dispatch(coreActions.trackLoaded({
       uri: uri,
@@ -76567,8 +76565,8 @@ function getTrackLyrics(uri, path) {
         var lyrics = html.find('.lyrics');
         if (lyrics.length > 0) {
           lyrics = lyrics.first();
-          lyrics.find('a').replaceWith(function () {
-            return _this.innerHTML;
+          lyrics.find('a').replaceWith(function (k, v) {
+            return v;
           });
 
           var lyrics_html = lyrics.html();
@@ -78316,14 +78314,14 @@ function getPlaylists(uris) {
 function getDirectory(uri) {
   return {
     type: 'MOPIDY_GET_DIRECTORY',
-    data: { uri: uri }
+    uri: uri
   };
 }
 
 function getTrack(uri) {
   return {
     type: 'MOPIDY_GET_TRACK',
-    data: { uri: uri }
+    uri: uri
   };
 }
 
@@ -78345,7 +78343,7 @@ function clearLibraryArtists() {
 function getArtist(uri) {
   return {
     type: 'MOPIDY_GET_ARTIST',
-    data: { uri: uri }
+    uri: uri
   };
 }
 
@@ -78362,7 +78360,7 @@ function getArtists(uris) {
 function getAlbum(uri) {
   return {
     type: 'MOPIDY_GET_ALBUM',
-    data: { uri: uri }
+    uri: uri
   };
 }
 
@@ -78865,7 +78863,7 @@ var MopidyMiddleware = function () {
             break;
 
           case 'MOPIDY_REMOVE_TRACKS':
-            request(socket, store, 'tracklist.remove', { tlid: action.tlids }).then(function (response) {
+            request(socket, store, 'tracklist.remove', { criteria: { tlid: action.tlids } }).then(function (response) {
               store.dispatch(pusherActions.deliverBroadcast('notification', {
                 notification: {
                   content: store.getState().pusher.username + ' removed ' + action.tlids.length + ' tracks'
@@ -78933,7 +78931,7 @@ var MopidyMiddleware = function () {
             break;
 
           case 'MOPIDY_GET_VOLUME':
-            request(socket, store, 'playback.getVolume').then(function (response) {
+            request(socket, store, 'mixer.getVolume').then(function (response) {
               store.dispatch({
                 type: 'MOPIDY_VOLUME',
                 volume: response
@@ -78942,7 +78940,7 @@ var MopidyMiddleware = function () {
             break;
 
           case 'MOPIDY_SET_VOLUME':
-            request(socket, store, 'playback.setVolume', { volume: action.volume }).then(function (response) {
+            request(socket, store, 'mixer.setVolume', { volume: action.volume }).then(function (response) {
               store.dispatch({
                 type: 'MOPIDY_VOLUME',
                 volume: action.volume
@@ -79101,12 +79099,12 @@ var MopidyMiddleware = function () {
             }));
 
             // split into batches
-            var uris = Object.assign([], action.uris);
+            var _uris = Object.assign([], action.uris);
             var batches = [];
             var batch_size = 5;
-            while (uris.length > 0) {
+            while (_uris.length > 0) {
               batches.push({
-                uris: uris.splice(0, batch_size),
+                uris: _uris.splice(0, batch_size),
                 at_position: action.at_position,
                 play_next: action.play_next,
                 offset: action.offset + batch_size * batches.length,
@@ -79208,8 +79206,11 @@ var MopidyMiddleware = function () {
             break;
 
           case 'MOPIDY_PLAY_URIS':
+            var from_uri = action.from_uri;
 
-            if (!action.uris || action.uris.length <= 0) {
+            var _uris = Object.assign([], action.uris);
+
+            if (!_uris || !_uris.length) {
               _this.props.uiActions.createNotification({ content: 'No URIs to play', type: 'warning' });
               break;
             }
@@ -79234,10 +79235,10 @@ var MopidyMiddleware = function () {
             } else {
               var first_uri_index = 0;
             }
-            var first_uri = action.uris[first_uri_index];
+            var first_uri = _uris[first_uri_index];
 
             // add our first track
-            request(socket, store, 'tracklist.add', { uri: first_uri, at_position: 0 }).then(function (response) {
+            request(socket, store, 'tracklist.add', { uris: [first_uri], at_position: 0 }).then(function (response) {
               // play it (only if we got a successful lookup)
               if (response.length > 0) {
                 store.dispatch(mopidyActions.changeTrack(response[0].tlid));
@@ -79246,20 +79247,20 @@ var MopidyMiddleware = function () {
                 for (var _i2 = 0; _i2 < response.length; _i2++) {
                   tlids.push(response[_i2].tlid);
                 }
-                store.dispatch(pusherActions.addQueueMetadata(tlids, action.from_uri));
+                store.dispatch(pusherActions.addQueueMetadata(tlids, from_uri));
               } else {
                 store.dispatch(coreActions.handleException('Mopidy: Failed to add some tracks', response));
               }
 
               // Remove our first_uri as we've already added it
-              action.uris.splice(first_uri_index, 1);
+              _uris.splice(first_uri_index, 1);
 
               // And add the rest of our uris (if any)
-              if (action.uris.length > 0) {
+              if (_uris.length > 0) {
                 // Wait a moment so the server can trigger track_changed etc
                 // this means our UI feels snappier as the first track shows up quickly
                 setTimeout(function () {
-                  store.dispatch(mopidyActions.enqueueURIs(action.uris, action.from_uri, null, 1));
+                  store.dispatch(mopidyActions.enqueueURIs(_uris, from_uri, null, 1));
                 }, 100);
               }
             }, function (error) {
@@ -79847,12 +79848,12 @@ var MopidyMiddleware = function () {
 
           case 'MOPIDY_RESOLVE_PLAYLIST_TRACKS':
             var tracks = Object.assign([], action.tracks);
-            var uris = helpers.arrayOf('uri', tracks);
+            var _uris = helpers.arrayOf('uri', tracks);
 
-            request(socket, store, 'library.lookup', { uris: uris }).then(function (response) {
-              for (var uri in response) {
-                if (response.hasOwnProperty(uri)) {
-                  var track = response[uri][0];
+            request(socket, store, 'library.lookup', { uris: _uris }).then(function (response) {
+              for (var _uri in response) {
+                if (response.hasOwnProperty(_uri)) {
+                  var track = response[_uri][0];
                   if (track) {
                     // find the track reference, and drop in the full track data
                     var getByURI = function getByURI(trackReference) {
@@ -80065,15 +80066,15 @@ var MopidyMiddleware = function () {
               }
             }
 
-            var uris = Object.assign([], action.data.uris);
-            var uris_to_load = uris.splice(0, 50);
+            var _uris = Object.assign([], action.data.uris);
+            var uris_to_load = _uris.splice(0, 50);
 
             if (uris_to_load.length > 0) {
-              store.dispatch(uiActions.updateProcess('MOPIDY_LIBRARY_ALBUMS_PROCESSOR', 'Loading ' + uris.length + ' local albums', {
-                uris: uris,
-                remaining: uris.length
+              store.dispatch(uiActions.updateProcess('MOPIDY_LIBRARY_ALBUMS_PROCESSOR', 'Loading ' + _uris.length + ' local albums', {
+                uris: _uris,
+                remaining: _uris.length
               }));
-              store.dispatch(mopidyActions.getAlbums(uris_to_load, { name: 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR', data: { uris: uris } }));
+              store.dispatch(mopidyActions.getAlbums(uris_to_load, { name: 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR', data: { uris: _uris } }));
             } else {
               store.dispatch(uiActions.processFinishing('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'));
             }
@@ -80082,18 +80083,15 @@ var MopidyMiddleware = function () {
 
           case 'MOPIDY_GET_ALBUMS':
             request(socket, store, 'library.lookup', { uris: action.uris }).then(function (response) {
-              if (response.length <= 0) {
-                return;
-              }
+              if (!response.length) return;
 
               var albums_loaded = [];
               var artists_loaded = [];
               var tracks_loaded = [];
 
-              for (var uri in response) {
-                if (response.hasOwnProperty(uri) && response[uri].length > 0 && response[uri][0].album) {
-                  var _tracks3 = response[uri];
-
+              for (var _uri2 in response) {
+                if (response.hasOwnProperty(_uri2) && response[_uri2].length > 0 && response[_uri2][0].album) {
+                  var _tracks3 = response[_uri2];
                   var artists_uris = [];
                   if (_tracks3[0].artists) {
                     var _iteratorNormalCompletion = true;
@@ -80101,7 +80099,7 @@ var MopidyMiddleware = function () {
                     var _iteratorError = undefined;
 
                     try {
-                      for (var _iterator = response[uri][0].artists[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                      for (var _iterator = response[_uri2][0].artists[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                         var artist = _step.value;
 
                         artists_uris.push(artist.uri);
@@ -80178,10 +80176,10 @@ var MopidyMiddleware = function () {
             break;
 
           case 'MOPIDY_GET_ALBUM':
-            request(socket, store, 'library.lookup', action.data).then(function (response) {
-              if (!response || response.length <= 0) {
-                return;
-              }
+            request(socket, store, 'library.lookup', { uris: [action.uri] }).then(function (_response) {
+              if (!_response) return;
+              var response = _response[action.uri];
+              if (!response || !response.length) return;
 
               var artists = [];
               if (response[0].artists) {
@@ -80234,9 +80232,9 @@ var MopidyMiddleware = function () {
               request(socket, store, 'library.lookup', { uris: album.tracks_uris }).then(function (response) {
                 var tracks_loaded = [];
 
-                for (var uri in response) {
-                  if (response.hasOwnProperty(uri)) {
-                    tracks_loaded.push(response[uri][0]);
+                for (var _uri3 in response) {
+                  if (response.hasOwnProperty(_uri3)) {
+                    tracks_loaded.push(response[_uri3][0]);
                   }
                 }
 
@@ -80246,11 +80244,12 @@ var MopidyMiddleware = function () {
             break;
 
           /**
-               * =============================================================== ARTIST(S) ============
-               * ======================================================================================
-               * */
+          * =============================================================== ARTIST(S) ============
+          * ======================================================================================
+          **/
           case 'MOPIDY_GET_LIBRARY_ARTISTS':
-            request(socket, store, 'library.browse', { uri: store.getState().mopidy.library_artists_uri }).then(function (response) {
+            var uri = store.getState().mopidy.library_artists_uri;
+            request(socket, store, 'library.browse', { uri: uri }).then(function (response) {
               if (response.length <= 0) return;
 
               var uris = [];
@@ -80315,10 +80314,10 @@ var MopidyMiddleware = function () {
                * */
 
           case 'MOPIDY_GET_ARTIST':
-            request(socket, store, 'library.lookup', action.data).then(function (response) {
-              if (response.length <= 0) {
-                return;
-              }
+            request(socket, store, 'library.lookup', { uris: [action.uri] }).then(function (_response) {
+              if (!_response) return;
+              var response = _response[action.uri];
+              if (!response || !response.length) return;
 
               var albums = [];
               for (var _i8 = 0; _i8 < response.length; _i8++) {
@@ -80344,7 +80343,7 @@ var MopidyMiddleware = function () {
 
               // Start with an empty artist object
               var artist = {
-                uri: action.data.uri,
+                uri: action.uri,
                 provider: 'mopidy'
               };
 
@@ -80414,9 +80413,9 @@ var MopidyMiddleware = function () {
 
               var artists = [];
 
-              for (var uri in response) {
-                if (response.hasOwnProperty(uri) && response[uri].length > 0 && response[uri][0].artists) {
-                  var artist = _extends({}, response ? response[uri][0].artists[0] : {}, {
+              for (var _uri4 in response) {
+                if (response.hasOwnProperty(_uri4) && response[_uri4].length > 0 && response[_uri4][0].artists) {
+                  var artist = _extends({}, response ? response[_uri4][0].artists[0] : {}, {
                     provider: 'mopidy'
                   });
                   artists.push(artist);
@@ -80525,11 +80524,13 @@ var MopidyMiddleware = function () {
             break;
 
           case 'MOPIDY_GET_TRACK':
-            request(socket, store, 'library.lookup', action.data).then(function (response) {
-              if (response.length > 0) {
-                var _track3 = _extends({}, response[0]);
-                store.dispatch(coreActions.trackLoaded(_track3));
-              }
+            request(socket, store, 'library.lookup', { uris: [action.uri] }).then(function (_response) {
+              if (!_response) return;
+              var response = _response[action.uri];
+              if (!response || !response.length) return;
+
+              var track = _extends({}, response[0]);
+              store.dispatch(coreActions.trackLoaded(track));
             }, function (error) {
               store.dispatch(coreActions.handleException('Mopidy: ' + (error.message ? error.message : 'Could not get track'), error));
             });
@@ -80544,18 +80545,18 @@ var MopidyMiddleware = function () {
             if (action.uris) {
               request(socket, store, 'library.getImages', { uris: action.uris }).then(function (response) {
                 var records = [];
-                for (var uri in response) {
-                  if (response.hasOwnProperty(uri)) {
-                    var images = response[uri];
+                for (var _uri5 in response) {
+                  if (response.hasOwnProperty(_uri5)) {
+                    var images = response[_uri5];
                     images = helpers.digestMopidyImages(store.getState().mopidy, images);
 
                     if (images && images.length > 0) {
                       records.push({
-                        uri: uri,
+                        uri: _uri5,
                         images: images
                       });
                     } else {
-                      store.dispatch(lastfmActions.getImages(action.context, uri));
+                      store.dispatch(lastfmActions.getImages(action.context, _uri5));
                     }
                   }
                 }
@@ -80581,7 +80582,7 @@ var MopidyMiddleware = function () {
               type: 'MOPIDY_DIRECTORY_FLUSH'
             });
 
-            request(socket, store, 'library.browse', action.data).then(function (response) {
+            request(socket, store, 'library.browse', { uri: action.uri }).then(function (response) {
               var tracks_uris = [];
               var subdirectories = [];
 
@@ -80622,9 +80623,9 @@ var MopidyMiddleware = function () {
 
                   var tracks = [];
 
-                  for (var uri in response) {
-                    if (response.hasOwnProperty(uri) && response[uri].length > 0) {
-                      tracks.push(helpers.formatTrack(response[uri][0]));
+                  for (var _uri6 in response) {
+                    if (response.hasOwnProperty(_uri6) && response[_uri6].length > 0) {
+                      tracks.push(helpers.formatTrack(response[_uri6][0]));
                     }
                   }
 
@@ -81320,6 +81321,9 @@ var PusherMiddleware = function () {
           case 'local_scan_started':
             store.dispatch(uiActions.updateProcess('local_scan', 'Scanning local library'));
             break;
+          case 'local_scan_updated':
+            store.dispatch(uiActions.updateProcess('local_scan', 'Scanning local library', {}, message.params.output));
+            break;
           case 'local_scan_finished':
             store.dispatch(uiActions.processFinished('local_scan'));
             store.dispatch(uiActions.createNotification({
@@ -81328,7 +81332,7 @@ var PusherMiddleware = function () {
             break;
           case 'local_scan_error':
             store.dispatch(uiActions.processFinished('local_scan'));
-            store.dispatch(uiActions.createNotification({ type: 'bad', content: message.params.message, description: message.params.description }));
+            store.dispatch(coreActions.handleException('Local scan failed', message, message.params.error));
             break;
 
           // Upgrade
@@ -81340,7 +81344,7 @@ var PusherMiddleware = function () {
             break;
           case 'upgrade_error':
             store.dispatch(uiActions.processFinished('upgrade'));
-            store.dispatch(uiActions.createNotification({ type: 'bad', content: message.params.message, description: message.params.description }));
+            store.dispatch(coreActions.handleException('Upgrade failed', message, message.params.error));
             break;
 
           // Restart
@@ -81350,7 +81354,7 @@ var PusherMiddleware = function () {
             break;
           case 'restart_error':
             store.dispatch(uiActions.processFinished('upgrade'));
-            store.dispatch(uiActions.createNotification({ type: 'bad', content: message.params.message, description: message.params.description }));
+            store.dispatch(coreActions.handleException('Restart failed', message, message.params.error));
             break;
 
           // Test
@@ -81363,7 +81367,7 @@ var PusherMiddleware = function () {
             break;
           case 'test_error':
             store.dispatch(uiActions.processFinished('test'));
-            store.dispatch(uiActions.createNotification({ type: 'bad', content: message.params.message, description: message.params.description }));
+            store.dispatch(uiActions.createNotification({ type: 'bad', content: message.params.message, description: message.params.error }));
             break;
         }
       }
@@ -85933,12 +85937,14 @@ function stopLoading(key) {
 
 function startProcess(key, message) {
   var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var description = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 
   return {
     type: 'START_PROCESS',
     key: key,
     message: message,
-    data: data
+    data: data,
+    description: description
   };
 }
 
@@ -85953,12 +85959,14 @@ function resumeProcess(key, message) {
 
 function updateProcess(key, message) {
   var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var description = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 
   return {
     type: 'UPDATE_PROCESS',
     key: key,
     message: message,
-    data: data
+    data: data,
+    description: description
   };
 }
 
@@ -86444,6 +86452,7 @@ function reducer() {
       processes[action.key] = {
         key: action.key,
         message: action.message,
+        description: action.description,
         status: 'running',
         data: data
       };
@@ -91622,17 +91631,7 @@ var Track = function (_React$Component) {
           )
         );
       }
-      return _react2.default.createElement(
-        _ErrorMessage2.default,
-        { type: 'not-found', title: 'Not found' },
-        _react2.default.createElement(
-          'p',
-          null,
-          'Could not find track with URI "',
-          encodeURIComponent(this.props.uri),
-          '"'
-        )
-      );
+      return _react2.default.createElement(_ErrorMessage2.default, { type: 'not-found', title: 'Could not load lyrics' });
     }
   }, {
     key: 'render',

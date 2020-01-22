@@ -228,12 +228,13 @@ export function stopLoading(key) {
   };
 }
 
-export function startProcess(key, message, data = {}) {
+export function startProcess(key, message, data = {}, description = null) {
   return {
     type: 'START_PROCESS',
     key,
     message,
     data,
+    description,
   };
 }
 
@@ -244,12 +245,13 @@ export function resumeProcess(key, message, data = {}) {
   };
 }
 
-export function updateProcess(key, message, data = {}) {
+export function updateProcess(key, message, data = {}, description = null) {
   return {
     type: 'UPDATE_PROCESS',
     key,
     message,
     data,
+    description,
   };
 }
 

@@ -403,14 +403,14 @@ export function getPlaylists(uris, processor = null) {
 export function getDirectory(uri) {
   return {
     type: 'MOPIDY_GET_DIRECTORY',
-    data: { uri },
+    uri,
   };
 }
 
 export function getTrack(uri) {
   return {
     type: 'MOPIDY_GET_TRACK',
-    data: { uri },
+    uri,
   };
 }
 
@@ -430,7 +430,7 @@ export function clearLibraryArtists() {
 export function getArtist(uri) {
   return {
     type: 'MOPIDY_GET_ARTIST',
-    data: { uri },
+    uri,
   };
 }
 
@@ -445,7 +445,7 @@ export function getArtists(uris, processor = null) {
 export function getAlbum(uri) {
   return {
     type: 'MOPIDY_GET_ALBUM',
-    data: { uri },
+    uri,
   };
 }
 
