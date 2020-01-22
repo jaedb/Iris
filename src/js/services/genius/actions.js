@@ -161,7 +161,7 @@ export function getTrackLyrics(uri, path) {
             let lyrics = html.find('.lyrics');
             if (lyrics.length > 0) {
               lyrics = lyrics.first();
-              lyrics.find('a').replaceWith((item) => item.innerHTML);
+              lyrics.find('a').replaceWith((k, v) => v);
 
               let lyrics_html = lyrics.html();
               lyrics_html = lyrics_html.replace(/(\[)/g, '<span class="mid_grey-text">[');
