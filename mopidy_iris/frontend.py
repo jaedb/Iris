@@ -1,8 +1,6 @@
+import pykka, logging, tornado
 from mopidy.core import CoreListener
 from .core import IrisCore
-
-import pykka
-import logging
 from .mem import iris
 
 # import logger

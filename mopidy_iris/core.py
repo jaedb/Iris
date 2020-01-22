@@ -451,9 +451,10 @@ class IrisCore(pykka.ThreadingActor):
     ##
     def restart(self, *args, **kwargs):
         callback = kwargs.get('callback', False)
+        ioloop = kwargs.get('ioloop', False)
 
         # Trigger the action
-        IrisSystemThread('restart', self.restart_callback).start()
+        IrisSystemThread('restart', ioloop, self.restart_callback).start()
 
         self.broadcast(data={
             'method': "restart_started"
@@ -490,13 +491,14 @@ class IrisCore(pykka.ThreadingActor):
     ##
     def upgrade(self, *args, **kwargs):
         callback = kwargs.get('callback', False)
+        ioloop = kwargs.get('ioloop', False)
 
         self.broadcast(data={
             'method': "upgrade_started"
         })
 
         # Trigger the action
-        IrisSystemThread('upgrade', self.upgrade_callback).start()
+        IrisSystemThread('upgrade', ioloop, self.upgrade_callback).start()
 
         response = {
             'message': "Upgrade started"
@@ -532,9 +534,10 @@ class IrisCore(pykka.ThreadingActor):
     ##
     def local_scan(self, *args, **kwargs):
         callback = kwargs.get('callback', False)
+        ioloop = kwargs.get('ioloop', False)
 
         # Trigger the action
-        IrisSystemThread('local_scan', self.local_scan_callback).start()
+        IrisSystemThread('local_scan', ioloop, self.local_scan_callback).start()
 
         self.broadcast(data={
             'method': "local_scan_started"
@@ -1109,6 +1112,7 @@ class IrisCore(pykka.ThreadingActor):
     ##
     def test(self, *args, **kwargs):
         callback = kwargs.get('callback', False)
+        ioloop = kwargs.get('ioloop', False)
 
         self.broadcast(data={
             'method': "test_started"
@@ -1123,13 +1127,18 @@ class IrisCore(pykka.ThreadingActor):
         else:
             return response
 
-        IrisSystemThread('test', self.test_callback).run()
+        IrisSystemThread('test', ioloop, self.test_callback).run()
 
-    def test_callback(self, response, error):
+    def test_callback(self, response, error, update):
         if error:
             self.broadcast(data={
                 'method': "test_error",
                 'params': error
+            })
+        elif error:
+            self.broadcast(data={
+                'method': "test_update",
+                'params': update
             })
         else:
             self.broadcast(data={

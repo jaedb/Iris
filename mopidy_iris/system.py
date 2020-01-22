@@ -1,5 +1,5 @@
 from threading import Thread
-import logging, os, pathlib, subprocess, json, tornado, sys, shlex
+import logging, os, pathlib, subprocess, json, sys
 
 # import logger
 logger = logging.getLogger(__name__)
@@ -21,11 +21,11 @@ class IrisSystemPermissionError(IrisSystemError):
 class IrisSystemThread(Thread):
     _USE_SUDO = True
 
-    def __init__(self, action, callback):
+    def __init__(self, action, ioloop, callback):
         Thread.__init__(self)
         self.action = action
         self.callback = callback
-        self.ioloop = tornado.ioloop.IOLoop.current()
+        self.ioloop = ioloop
         self.script_path = pathlib.Path(__file__).parent / "system.sh"
 
     def get_command(self, action=None, *, non_interactive=False):

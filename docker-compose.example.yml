@@ -19,7 +19,9 @@ services:
       - 6600:6600
       - 6680:6680
     volumes:
-      #- ./mopidy_iris:/iris/mopidy_iris (Uncomment this line to use a host-managed development build)
+      # Uncomment these lines to use a host-managed development build
+      #- ./mopidy_iris:/iris/mopidy_iris
+      #- ./IRIS_VERSION:/iris/IRIS_VERSION
       - ./docker/mopidy.conf:/config/mopidy.conf
       - HOST_MUSIC_DIRECTORY:/var/lib/mopidy/media
       - HOST_SNAPCAST_TEMP:/tmp

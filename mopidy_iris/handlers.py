@@ -13,6 +13,7 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
     def initialize(self, core, config):
         self.core = core
         self.config = config
+        self.ioloop = tornado.ioloop.IOLoop.current()
 
     def check_origin(self, origin):
         return True
@@ -68,9 +69,27 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
 
                     # For async methods we need to await, but it must be ommited for syncronous methods
                     if asyncio.iscoroutinefunction(getattr(iris, message['method'])):
-                        await getattr(iris, message['method'])(data=params, callback=lambda response, error=False: self.handle_result(id=id, method=message['method'], response=response, error=error))
+                        await getattr(iris, message['method'])(
+                            ioloop=self.ioloop,
+                            data=params,
+                            callback=lambda response, error=False: self.handle_result(
+                                id=id,
+                                method=message['method'],
+                                response=response,
+                                error=error
+                            )
+                        )
                     else:
-                        getattr(iris, message['method'])(data=params, callback=lambda response, error=False: self.handle_result(id=id, method=message['method'], response=response, error=error))
+                        getattr(iris, message['method'])(
+                            ioloop=self.ioloop,
+                            data=params,
+                            callback=lambda response, error=False: self.handle_result(
+                                id=id,
+                                method=message['method'],
+                                response=response,
+                                error=error
+                            )
+                        )
                 except Exception as e:
                     logger.error(str(e))
 
@@ -133,6 +152,7 @@ class HttpHandler(tornado.web.RequestHandler):
     def initialize(self, core, config):
         self.core = core
         self.config = config
+        self.ioloop = tornado.ioloop.IOLoop.current()
 
     # Options request
     # This is a preflight request for CORS requests
@@ -150,9 +170,27 @@ class HttpHandler(tornado.web.RequestHandler):
 
                 # For async methods we need to await, but it must be ommited for syncronous methods
                 if asyncio.iscoroutinefunction(getattr(iris, slug)):
-                    await getattr(iris, slug)(request=self, callback=lambda response, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
+                    await getattr(iris, slug)(
+                        ioloop=self.ioloop,
+                        request=self,
+                        callback=lambda response, error=False: self.handle_result(
+                            id=id,
+                            method=slug,
+                            response=response,
+                            error=error
+                        )
+                    )
                 else:
-                    getattr(iris, slug)(request=self, callback=lambda response, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
+                    getattr(iris, slug)(
+                        ioloop=self.ioloop,
+                        request=self,
+                        callback=lambda response, error=False: self.handle_result(
+                            id=id,
+                            method=slug,
+                            response=response,
+                            error=error
+                        )
+                    )
             except Exception as e:
                 logger.error(str(e))
 
@@ -174,9 +212,27 @@ class HttpHandler(tornado.web.RequestHandler):
         if hasattr(iris, slug):
             try:
                 if asyncio.iscoroutinefunction(getattr(iris, slug)):
-                    await getattr(iris, slug)(data=params, request=self.request, callback=lambda response=False, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
+                    await getattr(iris, slug)(
+                        data=params,
+                        request=self.request,
+                        callback=lambda response=False, error=False: self.handle_result(
+                            id=id,
+                            method=slug,
+                            response=response,
+                            error=error
+                        )
+                    )
                 else:
-                    getattr(iris, slug)(data=params, request=self.request, callback=lambda response=False, error=False: self.handle_result(id=id, method=slug, response=response, error=error))
+                    getattr(iris, slug)(
+                        data=params,
+                        request=self.request,
+                        callback=lambda response=False, error=False: self.handle_result(
+                            id=id,
+                            method=slug,
+                            response=response,
+                            error=error
+                        )
+                    )
 
             except tornado.web.HTTPError as e:
                 self.handle_result(id=id, error={'code': 32601, 'message': "Invalid JSON payload"})
