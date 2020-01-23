@@ -478,7 +478,7 @@ class IrisCore(pykka.ThreadingActor):
             })
         elif update:
             self.broadcast(data={
-                'method': "restart_update",
+                'method': "restart_updated",
                 'params': update
             })
         else:
@@ -519,7 +519,7 @@ class IrisCore(pykka.ThreadingActor):
             })
         elif update:
             self.broadcast(data={
-                'method': "upgrade_update",
+                'method': "upgrade_updated",
                 'params': update
             })
         else:
@@ -561,7 +561,7 @@ class IrisCore(pykka.ThreadingActor):
             })
         elif update:
             self.broadcast(data={
-                'method': "local_scan_update",
+                'method': "local_scan_updated",
                 'params': update
             })
         else:
@@ -1139,7 +1139,7 @@ class IrisCore(pykka.ThreadingActor):
             })
         elif error:
             self.broadcast(data={
-                'method': "test_update",
+                'method': "test_updated",
                 'params': update
             })
         else:
