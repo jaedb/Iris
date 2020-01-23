@@ -705,7 +705,6 @@ class IrisCore(pykka.ThreadingActor):
 
 
     async def load_more_tracks(self, *args, **kwargs):
-
         try:
             await self.get_spotify_token()
             spotify_token = self.spotify_token
@@ -744,7 +743,7 @@ class IrisCore(pykka.ThreadingActor):
             return False
 
 
-    def check_for_radio_update( self ):
+    def check_for_radio_update(self):
         tracklistLength = self.core.tracklist.get_length().get()
         if (tracklistLength < 3 and self.radio['enabled'] == 1):
 
@@ -766,7 +765,7 @@ class IrisCore(pykka.ThreadingActor):
             self.add_radio_metadata(added)
 
 
-    def add_radio_metadata( self, added ):
+    def add_radio_metadata(self, added):
         seeds = ''
         if len(self.radio['seed_artists']) > 0:
             seeds = seeds+(','.join(self.radio['seed_artists'])).replace('spotify:artist:','spotify_artist_')
@@ -780,6 +779,7 @@ class IrisCore(pykka.ThreadingActor):
         metadata = {'tlids': [], 'added_by': 'Radio', 'added_from': 'iris:radio:'+seeds}
         for added_tltrack in added.get():
             metadata['tlids'].append(added_tltrack.tlid)
+
         self.add_queue_metadata(data=metadata)
 
 
