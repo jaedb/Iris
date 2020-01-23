@@ -879,7 +879,7 @@ const MopidyMiddleware = (function () {
         } else {
           var first_uri_index = 0;
         }
-        var first_uri = uris[first_uri_index];
+        var first_uri = urisToPlay[first_uri_index];
 
         // add our first track
         request(socket, store, 'tracklist.add', { uris: [first_uri], at_position: 0 })
@@ -902,15 +902,15 @@ const MopidyMiddleware = (function () {
               }
 
               // Remove our first_uri as we've already added it
-              uris.splice(first_uri_index, 1);
+              urisToPlay.splice(first_uri_index, 1);
 
               // And add the rest of our uris (if any)
-              if (uris.length > 0) {
+              if (urisToPlay.length > 0) {
                 // Wait a moment so the server can trigger track_changed etc
                 // this means our UI feels snappier as the first track shows up quickly
                 setTimeout(
                   () => {
-                    store.dispatch(mopidyActions.enqueueURIs(uris, from_uri, null, 1));
+                    store.dispatch(mopidyActions.enqueueURIs(urisToPlay, from_uri, null, 1));
                   },
                   100,
                 );
@@ -2290,7 +2290,7 @@ const MopidyMiddleware = (function () {
               if (!_response) return;
               const response = _response[action.uri];
               if (!response || !response.length) return;
-              
+
               const track = { ...response[0] };
               store.dispatch(coreActions.trackLoaded(track));
             },
