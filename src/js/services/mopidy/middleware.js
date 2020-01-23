@@ -1885,8 +1885,6 @@ const MopidyMiddleware = (function () {
       case 'MOPIDY_GET_ALBUMS':
         request(socket, store, 'library.lookup', { uris: action.uris })
           .then((response) => {
-            if (!response.length) return;
-
             const albums_loaded = [];
             const artists_loaded = [];
             const tracks_loaded = [];

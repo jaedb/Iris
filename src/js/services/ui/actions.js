@@ -138,6 +138,7 @@ export function dragEnd() {
 }
 
 export function set(data) {
+  console.log('set',data);
   return {
     type: 'UI_SET',
     data,

@@ -1,7 +1,6 @@
 import random, string, logging, json, pathlib, pykka, urllib, os, sys, mopidy_iris, subprocess
 import tornado.web
 import tornado.ioloop
-import tornado.httpclient
 import requests
 import time
 import pickle
@@ -9,7 +8,8 @@ from mopidy import config, ext
 from mopidy.core import CoreListener
 from pkg_resources import parse_version
 from tornado.escape import json_encode, json_decode
-from tornado.httpclient import AsyncHTTPClient
+from tornado.httpclient import AsyncHTTPClient, HTTPRequest
+from pathlib import Path
 
 from . import Extension
 from .system import IrisSystemThread
@@ -48,8 +48,7 @@ class IrisCore(pykka.ThreadingActor):
     # Mopidy server is starting
     ##
     def start(self):
-        self.version = self.load_version()
-        logger.info('Starting Iris '+self.version)
+        logger.info('Starting Iris '+Extension.version)
 
         # Load our commands from file
         self.commands = self.load_from_file('commands')
@@ -61,6 +60,23 @@ class IrisCore(pykka.ThreadingActor):
         logger.info('Stopping Iris')
 
     ##
+    # Load a dict from disk
+    #
+    # @param name String
+    # @return Dict
+    ##
+    def load_from_file(self, name):
+        file_path = Path(self.config['iris']['data_dir']) / ('%s.pkl' % name)
+
+        try:
+            with file_path.open('rb') as f:
+                content = pickle.load(f)
+                f.close()
+                return content
+        except Exception as e:
+            return {}
+
+    ##
     # Save dict object to disk
     #
     # @param dict Dict
@@ -68,29 +84,14 @@ class IrisCore(pykka.ThreadingActor):
     # @return void
     ##
     def save_to_file(self, dict, name):
-        file_path = Extension.get_data_dir(self.config) / ('%s.pkl' % name)
+        file_path = Path(self.config['iris']['data_dir']) / ('%s.pkl' % name)
 
-        # And now open the file, and drop in our dict
         try:
             with file_path.open('wb') as f:
                 pickle.dump(dict, f, pickle.HIGHEST_PROTOCOL)
+                pickle.close()
         except Exception:
             return False
-
-    ##
-    # Load a dict from disk
-    #
-    # @param name String
-    # @return Dict
-    ##
-    def load_from_file(self, name):
-        file_path = Extension.get_data_dir(self.config) / ('%s.pkl' % name)
-
-        try:
-            with file_path.open('wb') as f:
-                return pickle.load(f)
-        except Exception:
-            return {}
 
     ##
     # Load version number from file
@@ -422,9 +423,10 @@ class IrisCore(pykka.ThreadingActor):
             http_response = await http_client.fetch(url)
             response_body = json.loads(http_response.body)
             latest_version = response_body['info']['version']
+            current_version = self.load_version()
 
             # compare our versions, and convert result to boolean
-            upgrade_available = parse_version( latest_version ) > parse_version( self.version )
+            upgrade_available = parse_version( latest_version ) > parse_version( current_version )
             upgrade_available = ( upgrade_available == 1 )
 
         except (urllib.request.HTTPError, urllib.request.URLError) as e:
@@ -433,7 +435,7 @@ class IrisCore(pykka.ThreadingActor):
 
         response = {
             'version': {
-                'current': self.version,
+                'current': current_version,
                 'latest': latest_version,
                 'is_root': self.is_root(),
                 'upgrade_available': upgrade_available
@@ -884,8 +886,9 @@ class IrisCore(pykka.ThreadingActor):
         else:
             return response
 
-    def run_command(self, *args, **kwargs):
+    async def run_command(self, *args, **kwargs):
         callback = kwargs.get('callback', False)
+        ioloop = kwargs.get('ioloop', False)
         data = kwargs.get('data', {})
         error = False
 
@@ -916,8 +919,6 @@ class IrisCore(pykka.ThreadingActor):
             else:
                 return error
 
-        # Construct the request
-        http_client = tornado.httpclient.HTTPClient()
         # Build headers dict if additional headers are given
         headers = None
         if 'additional_headers' in command:
@@ -931,13 +932,14 @@ class IrisCore(pykka.ThreadingActor):
                 post_data = command['post_data']
             else:
                 post_data = json.dumps(command['post_data'])
-            request = tornado.httpclient.HTTPRequest(command['url'], connect_timeout=5, method='POST', body=post_data, validate_cert=False, headers=headers)
+            request = HTTPRequest(command['url'], connect_timeout=5, method='POST', body=post_data, validate_cert=False, headers=headers)
         else:
-            request = tornado.httpclient.HTTPRequest(command['url'], connect_timeout=5, validate_cert=False, headers=headers)
+            request = HTTPRequest(command['url'], connect_timeout=5, validate_cert=False, headers=headers)
 
         # Make the request, and handle any request errors
         try:
-            command_response = http_client.fetch(request)
+            http_client = AsyncHTTPClient()
+            command_response = await http_client.fetch(request)
         except Exception as e:
             error = {
                 'message': 'Command failed',
