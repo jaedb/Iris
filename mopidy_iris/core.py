@@ -1099,7 +1099,7 @@ class IrisCore(pykka.ThreadingActor):
         try:
             http_client = AsyncHTTPClient()
             http_response = await http_client.fetch(url)
-            callback(http_response.body.decode("utf-8"), False)
+            callback(http_response.body.decode("utf-8", errors="replace"), False)
 
         except (urllib.error.HTTPError, urllib.error.URLError) as e:
             error = json.loads(e.read())
@@ -1110,7 +1110,7 @@ class IrisCore(pykka.ThreadingActor):
 
 
     ##
-    # Simple test method. Not for use in production for any purposes.
+    # Simple test method to debug access to system tasks
     ##
     def test(self, *args, **kwargs):
         callback = kwargs.get('callback', False)

@@ -112,48 +112,53 @@ class Notifications extends React.Component {
   }
 
   renderProcess(process) {
+    const {
+      data: { total, remaining },
+      message,
+      status,
+      closing,
+      key,
+    } = process;
+    const { uiActions } = this.props;
     let progress = 0;
-    if (process.data.total && process.data.remaining) {
-      progress = ((process.data.total - process.data.remaining) / process.data.total * 100).toFixed();
+    if (total && remaining) {
+      progress = ((total - remaining) / total).toFixed(4);
     }
 
-    switch (process.status) {
+    switch (status) {
       case 'running':
         return (
-          <div className={`notification notification--process${process.closing ? ' closing' : ''}`} key={process.key}>
-            <Loader loading mini white>
-              <div className="progress">
-                <div className="fill" style={{ width: `${progress}%` }} />
-              </div>
-            </Loader>
-            {process.message}
-            <Icon name="close" className="notification__close-button" onClick={(e) => { this.props.uiActions.cancelProcess(process.key); }} />
+          <div className={`notification notification--process${closing ? ' closing' : ''}`} key={key}>
+            <Loader
+              progress={progress}
+              loading
+              mini
+              white
+            />
+            {message}
+            <Icon name="close" className="notification__close-button" onClick={() => { uiActions.cancelProcess(key); }} />
           </div>
         );
 
       case 'cancelling':
         return (
-          <div className={`notification notification--process cancelling${process.closing ? ' closing' : ''}`} key={process.key}>
-            <div className="loader" />
+          <div className={`notification notification--process cancelling${closing ? ' closing' : ''}`} key={key}>
+            <Loader />
             Cancelling
           </div>
         );
 
       case 'cancelled':
       case 'finished':
+      default:
         return null;
     }
   }
 
   renderProcesses() {
-    if (!this.props.processes || this.props.processes.length <= 0) return null;
-
-    const processes = [];
-    for (const key in this.props.processes) {
-      if (this.props.processes.hasOwnProperty(key)) {
-        processes.push(this.props.processes[key]);
-      }
-    }
+    const { processes: processesObj = {} } = this.props;
+    const processes = Object.keys(processesObj).map((key) => processesObj[key]);
+    if (!processes.length) return null;
 
     return (
       <span>
@@ -162,41 +167,9 @@ class Notifications extends React.Component {
     );
   }
 
-  // do we want the loading of everything to be displayed?
-  // not likely...
-  renderLoader() {
-    if (!this.props.load_queue) {
-      return null;
-    }
-
-    const { load_queue } = this.props;
-    let load_count = 0;
-    for (const key in load_queue) {
-      if (load_queue.hasOwnProperty(key)) {
-        load_count++;
-      }
-    }
-
-    if (load_count > 0) {
-      let className = 'loading ';
-      if (load_count > 20) {
-        className += 'high';
-      } else if (load_count > 5) {
-        className += 'medium';
-      } else {
-        className += 'low';
-      }
-      return (
-        <div className={className} />
-      );
-    }
-    return null;
-  }
-
   render() {
     return (
       <div className="notifications">
-        {this.renderLoader()}
         {this.renderNotifications()}
         {this.renderProcesses()}
       </div>
@@ -204,7 +177,7 @@ class Notifications extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state) => ({
   broadcasts: (state.ui.broadcasts ? state.ui.broadcasts : []),
   notifications: (state.ui.notifications ? state.ui.notifications : []),
   processes: (state.ui.processes ? state.ui.processes : {}),

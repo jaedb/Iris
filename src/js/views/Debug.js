@@ -139,7 +139,7 @@ Back
               <div className="name" />
               <div className="input">
                 <a className="button button--default" onClick={(e) => this.props.uiActions.createNotification({ content: 'Test notification' })}>Create notification</a>
-                <a className="button button--default" onClick={(e) => this.props.uiActions.startProcess('test_process', "Test process", {remaining: 50, total: 100})}>Create process notification</a>
+                <a className="button button--default" onClick={(e) => this.props.uiActions.startProcess('test_process', "Test process", {remaining: 32, total: 100})}>Create process notification</a>
                 <a className="button button--default" onClick={(e) => this.props.pusherActions.request('test')}>Run test process</a>
               </div>
             </div>

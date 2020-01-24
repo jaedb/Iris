@@ -4174,11 +4174,6 @@ select {
     border-radius: 100%;
     border-style: solid;
     border-width: 2px; }
-  .loader__spinner:before {
-    position: absolute;
-    top: 0;
-    left: 0;
-    border-color: rgba(128, 128, 128, 0.15); }
   .loader__spinner:after {
     animation-name: spin;
     animation-duration: 0.5s;
@@ -4188,9 +4183,14 @@ select {
     border-left-color: transparent;
     border-bottom-color: transparent;
     border-right-color: #32b5f2; }
+  .loader__spinner:before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-color: rgba(128, 128, 128, 0.2); }
 
-.loader--white .loader__spinner:before {
-  opacity: 0; }
+.loader--progress .loader__spinner:after {
+  display: none; }
 
 .loader--white .loader__spinner:after {
   border-right-color: #FFFFFF; }
@@ -5801,21 +5801,6 @@ main header {
         position: absolute;
         top: 13px;
         left: 13px; }
-        .notifications .notification--process .loader .progress {
-          position: absolute;
-          top: 4px;
-          left: 4px;
-          bottom: 4px;
-          right: 4px;
-          border-radius: 50%;
-          overflow: hidden; }
-          .notifications .notification--process .loader .progress .fill {
-            background: #FFFFFF;
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            opacity: 0.35; }
     .notifications .notification.closing, .notifications .notification.finishing {
       animation-delay: 0;
       -webkit-animation-fill-mode: forwards;
@@ -5832,24 +5817,6 @@ main header {
   100% {
     opacity: 0;
     transform: translateY(5px); } }
-  .notifications .loading {
-    animation-name: pulse;
-    animation-duration: 0.1s;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-    position: fixed;
-    bottom: 8px;
-    right: 8px;
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: #a3a19f; }
-    .notifications .loading.high {
-      background: #cf2d2d; }
-    .notifications .loading.medium {
-      background: #f16f19; }
-    .notifications .loading.low {
-      background: #47af2a; }
   @media (max-width: 799px) {
     .notifications {
       bottom: 60px;
