@@ -11,7 +11,9 @@ const ProgressRing = ({ radius, stroke, progress }) => {
       className="loader__spinner__progress"
       height={radius * 2}
       width={radius * 2}
-      style={{ transform: `rotate(-90deg) translate(${stroke}px, -${stroke}px)` }}
+      style={{
+        transform: `rotate(-90deg) translate(${stroke}px, -${stroke}px)`,
+      }}
     >
       <circle
         stroke="white"

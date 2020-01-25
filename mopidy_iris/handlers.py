@@ -14,6 +14,7 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
         self.core = core
         self.config = config
         self.ioloop = tornado.ioloop.IOLoop.current()
+        iris.ioloop = self.ioloop # Make available elsewhere in the Frontend
 
     def check_origin(self, origin):
         return True

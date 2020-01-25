@@ -1,4 +1,4 @@
-import pykka, logging, tornado
+import pykka, logging, tornado, functools
 from mopidy.core import CoreListener
 from .core import IrisCore
 from .mem import iris
@@ -22,7 +22,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
         iris.stop()
 
     def track_playback_ended(self, tl_track, time_position):
-        iris.check_for_radio_update()
+        iris.ioloop.add_callback( functools.partial(iris.check_for_radio_update) )
 
     def tracklist_changed(self):
-        iris.clean_queue_metadata()
+        iris.ioloop.add_callback( functools.partial(iris.clean_queue_metadata) )
