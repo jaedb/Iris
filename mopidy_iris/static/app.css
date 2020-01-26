@@ -4057,7 +4057,8 @@ select {
       width: 60%; }
     .list__item__column--middle {
       display: flex;
-      margin-left: auto; }
+      margin-left: auto;
+      flex: 1; }
     .list__item__column--right {
       display: flex;
       margin-left: auto;

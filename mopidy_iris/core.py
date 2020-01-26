@@ -34,6 +34,7 @@ class IrisCore(pykka.ThreadingActor):
         "seed_tracks": [],
         "results": []
     }
+    ioloop = None
 
     @classmethod
     async def do_fetch(cls, client, request):
