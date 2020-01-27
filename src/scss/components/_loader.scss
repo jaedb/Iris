@@ -55,6 +55,15 @@
 			&:after {
 				display: none;
 			}
+
+			&__progress {
+				transform: rotate(-90deg) translate(3px, -3px);
+				position: absolute;
+
+				&__circle {
+					@include animate();
+				}
+			}
 		}
 	}
 

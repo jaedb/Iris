@@ -11,11 +11,9 @@ const ProgressRing = ({ radius, stroke, progress }) => {
       className="loader__spinner__progress"
       height={radius * 2}
       width={radius * 2}
-      style={{
-        transform: `rotate(-90deg) translate(${stroke}px, -${stroke}px)`,
-      }}
     >
       <circle
+        className="loader__spinner__progress__circle"
         stroke="white"
         fill="transparent"
         strokeWidth={stroke}
@@ -79,7 +77,7 @@ export default memo((props) => {
         <div className="loader__spinner">
           <ProgressRing
             stroke="2"
-            radius={mini ? '12' : '60'}
+            radius={mini ? '13' : '60'}
             progress={progress}
           />
         </div>

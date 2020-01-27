@@ -4193,6 +4193,15 @@ select {
 .loader--progress .loader__spinner:after {
   display: none; }
 
+.loader--progress .loader__spinner__progress {
+  transform: rotate(-90deg) translate(3px, -3px);
+  position: absolute; }
+  .loader--progress .loader__spinner__progress__circle {
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out; }
+
 .loader--white .loader__spinner:after {
   border-right-color: #FFFFFF; }
 
