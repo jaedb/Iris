@@ -3,7 +3,7 @@ import logging, json, pathlib
 import pkg_resources
 from mopidy import config, ext
 
-__version__ = pkg_resources.get_distribution("Mopidy-Iris").version
+__version__ = '3.44.0'
 
 logger = logging.getLogger(__name__)
 
