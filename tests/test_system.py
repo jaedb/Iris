@@ -5,13 +5,13 @@ from mopidy_iris.system import IrisSystemThread, IrisSystemPermissionError
 
 
 def test_system_sh_path():
-    iris_system = IrisSystemThread('foo', None)
+    iris_system = IrisSystemThread('foo', None, None)
     assert iris_system.script_path.is_file()
     assert iris_system.script_path.name == "system.sh"
 
 
 def test_can_run():
-    iris_system = IrisSystemThread('foo', None)
+    iris_system = IrisSystemThread('foo', None, None)
     iris_system._USE_SUDO = False
     assert iris_system.can_run() is True
 
