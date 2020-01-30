@@ -163,6 +163,7 @@ export default function reducer(ui = {}, action) {
       processes[action.key] = {
         key: action.key,
         message: action.message,
+        description: action.description,
         status: 'running',
         data,
       };

@@ -1,6 +1,6 @@
 
 /**
- * Iris builder 
+ * Iris builder
  *
  * Collates all static elements into the mopidy_iris Python package folder
  * We also amend all related files with the latest build version
@@ -12,7 +12,7 @@ var fs = require('fs');
 var copydir = require('copy-dir');
 var copyfile = require('fs-copy-file');
 
-var version = fs.readFileSync("VERSION.md", "utf8");
+var version = fs.readFileSync("IRIS_VERSION", "utf8");
 version = version.replace(/\r?\n?/g, '').trim();
 var build = Math.floor(Date.now() / 1000);
 console.log('Building version '+version+' ('+build+')');
@@ -52,12 +52,6 @@ copydir('src/assets', 'mopidy_iris/static/assets', function(error){
 		html_file_content = html_file_content.replace("BUILD_HERE", build);
 		fs.writeFileSync(html_file, html_file_content, 'utf8');
 		console.log('Setting version in HTML');
-
-		console.log('Setting version in Python');
-		var init_file = "mopidy_iris/__init__.py";
-		var init_file_content = fs.readFileSync(init_file, "utf8");
-		init_file_content = init_file_content.replace(/(?:__version__\ \=\ \')(?:.*)'/, "__version__ = '"+version+"'");
-		fs.writeFileSync(init_file, init_file_content, 'utf8');
 
 		console.log('Setting version in NPM');
 		var package_file = "package.json";

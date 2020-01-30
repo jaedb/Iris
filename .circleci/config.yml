@@ -1,89 +1,51 @@
-version: 2
-jobs:
-  build:
-    docker:
-      - image: nikolaik/python-nodejs:python2.7-nodejs11
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "VERSION.md" }}
-      - run:
-          name: Install npm dependencies
-          command: npm install
-      - run:
-          name: Build code
-          command: npm run build:prod
-      - run:
-          name: Install python dependencies
-          command: pip install -e .
-      - save_cache:
-          paths:
-            - node_modules
-            - mopidy_iris
-          key: v1-dependencies-{{ checksum "VERSION.md" }}
-  test:
-    docker:
-      - image: nikolaik/python-nodejs:python2.7-nodejs11
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "VERSION.md" }}
-      - run:
-          name: Run tests
-          command: npm run test
-  deploy:
-    docker:
-      - image: nikolaik/python-nodejs:python2.7-nodejs11
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "VERSION.md" }}
-      - run:
-          name: Prepare .pypirc
-          command: |
-            echo -e "[distutils]" >> ~/.pypirc
-            echo -e "index-servers =" >> ~/.pypirc
-            echo -e " pypi" >> ~/.pypirc
-            echo -e "[distutils]" >> ~/.pypirc
-            echo -e "[pypi]" >> ~/.pypirc
-            echo -e "username = jaedb" >> ~/.pypirc
-            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
-      - run:
-          name: Create and distribute package to pypi
-          command: python setup.py sdist upload -r pypi
+version: 2.1
+
+orbs:
+  codecov: codecov/codecov@1.0.5
+
 workflows:
   version: 2
-  build_and_test:
+  test:
     jobs:
-      - build:
-          filters:
-            branches:
-              only: deploy/test
-      - test:
-          requires:
-            - build
-          filters:
-            branches:
-              only: deploy/test
-  build_test_and_deploy:
-    jobs:
-      - build:
-          filters:
-            branches:
-              only: deploy/release
-      - test:
-          requires:
-            - build
-          filters:
-            branches:
-              only: deploy/release
-      - deploy:
-          requires:
-            - build
-            - test
-          filters:
-            branches:
-              only: deploy/release
+      - py38
+      - py37
+      - black
+      - check-manifest
+      - flake8
+
+jobs:
+  py38: &test-template
+    docker:
+      - image: mopidy/ci-python:3.8
+    steps:
+      - checkout
+      - restore_cache:
+          name: Restoring tox cache
+          key: tox-v1-{{ .Environment.CIRCLE_JOB }}-{{ checksum "setup.cfg" }}
+      - run:
+          name: Run tests
+          command: |
+            tox -e $CIRCLE_JOB -- \
+              --junit-xml=test-results/pytest/results.xml \
+              --cov-report=xml
+      - save_cache:
+          name: Saving tox cache
+          key: tox-v1-{{ .Environment.CIRCLE_JOB }}-{{ checksum "setup.cfg" }}
+          paths:
+            - ./.tox
+            - ~/.cache/pip
+      - codecov/upload:
+          file: coverage.xml
+      - store_test_results:
+          path: test-results
+
+  py37:
+    <<: *test-template
+    docker:
+      - image: mopidy/ci-python:3.7
+
+  black: *test-template
+
+  check-manifest: *test-template
+
+  flake8: *test-template

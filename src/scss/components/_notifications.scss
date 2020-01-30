@@ -15,17 +15,17 @@
 		margin: 0.5rem;
 		background: colour(soft_grey);
 		color: colour(white);
-		pointer-events: all; 
+		pointer-events: all;
 		border-radius: 3px;
 		font-size: 0.9rem;
-		
+
 		&__title {
 			padding-top: 0;
 		}
 
 		&__actions {
 			padding-top: 5px;
-			
+
 			&__item {
 				margin-bottom: 0;
 				margin-top: 5px;
@@ -111,54 +111,12 @@
 				position: absolute;
 				top: 13px;
 				left: 13px;
-
-				.progress {
-					position: absolute;
-					top: 4px;
-					left: 4px;
-					bottom: 4px;
-					right: 4px;				
-					border-radius: 50%;
-					overflow: hidden;
-
-					.fill {
-						background: colour(white);
-						position: absolute;
-						top: 0;
-						left: 0;
-						bottom: 0;
-						opacity: 0.35;
-					}
-				}
 			}
 		}
 
 		&.closing,
 		&.finishing {
 			@include fadeout();
-		}
-	}
-
-	.loading {
-		@include pulse(0.1s);
-		position: fixed;
-		bottom: 8px;
-		right: 8px;
-		width: 5px;
-		height: 5px;
-		border-radius: 50%;
-		background: colour(mid_grey);
-
-		&.high {
-			background: colour(red);
-		}
-
-		&.medium {
-			background: colour(orange);
-		}
-
-		&.low {
-			background: colour(green);
 		}
 	}
 

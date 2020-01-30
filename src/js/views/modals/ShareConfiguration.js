@@ -64,6 +64,13 @@ class ShareConfiguration extends React.Component {
     if (this.state.ui) {
       configuration.ui = this.props.ui;
     }
+    if (this.state.snapcast) {
+      configuration.snapcast = {
+        enabled: this.props.snapcast.enabled,
+        host: this.props.snapcast.host,
+        port: this.props.snapcast.port,
+      }
+    }
 
     for (const recipient of this.state.recipients) {
       this.props.pusherActions.deliverMessage(
@@ -88,7 +95,7 @@ class ShareConfiguration extends React.Component {
       var recipients = (
         <div className="input checkbox-group">
           {
-						connections.map((connection, index) => (
+            connections.map((connection, index) => (
               <div key={connection.connection_id} className="checkbox-group__item">
                 <label>
                   <input
@@ -99,23 +106,23 @@ class ShareConfiguration extends React.Component {
                   />
                   <div className="label">
                     <div>
-                      <div className="title">{ connection.username }</div>
+                      <div className="title">{connection.username}</div>
                       <div className="description mid_grey-text">
-                        ({ connection.ip })
+                        ({connection.ip})
                       </div>
                     </div>
                   </div>
                 </label>
               </div>
-						))
-					}
+            ))
+          }
         </div>
       );
     } else {
       var recipients = (
         <div className="input text">
           <span className="mid_grey-text">
-						No peer connections
+            No peer connections
           </span>
         </div>
       );
@@ -136,19 +143,6 @@ class ShareConfiguration extends React.Component {
           <div className="field checkbox checkbox--block">
             <div className="name">Configurations</div>
             <div className="input">
-              <div className="checkbox-group__item">
-                <label>
-                  <input
-                    type="checkbox"
-                    name="interface"
-                    checked={this.state.ui}
-                    onChange={(e) => this.setState({ ui: !this.state.ui })}
-                  />
-                  <span className="label">
-                    <span className="title">UI customisation (theme, sorting, filters)</span>
-                  </span>
-                </label>
-              </div>
 
               {this.props.spotify_me && this.props.spotify_authorization && (
                 <div className="checkbox-group__item">
@@ -205,13 +199,47 @@ class ShareConfiguration extends React.Component {
                       <div>
                         <div className="title">Genius authorization</div>
                         <div className="description mid_grey-text">
-                            {`Logged in as ${this.props.genius_me.name}`}
+                          {`Logged in as ${this.props.genius_me.name}`}
                         </div>
                       </div>
                     </div>
                   </label>
                 </div>
               )}
+
+              <div className="checkbox-group__item">
+                <label>
+                  <input
+                    type="checkbox"
+                    name="snapcast"
+                    checked={this.state.snapcast}
+                    onChange={() => this.setState({ snapcast: !this.state.snapcast })}
+                  />
+                  <div className="label">
+                    <div>
+                      <div className="title">Snapcast</div>
+                      <div className="description mid_grey-text">Server connection details</div>
+                    </div>
+                  </div>
+                </label>
+              </div>
+              
+              <div className="checkbox-group__item">
+                <label>
+                  <input
+                    type="checkbox"
+                    name="interface"
+                    checked={this.state.ui}
+                    onChange={(e) => this.setState({ ui: !this.state.ui })}
+                  />
+                  <div className="label">
+                    <div>
+                      <div className="title">Interface settings</div>
+                      <div className="description mid_grey-text">Theme, sorting, filters, etc</div>
+                    </div>
+                  </div>
+                </label>
+              </div>
             </div>
           </div>
 
@@ -232,6 +260,7 @@ const mapStateToProps = (state, ownProps) => ({
   lastfm_authorization: state.lastfm.authorization,
   lastfm_me: state.lastfm.me,
   ui: state.ui,
+  snapcast: state.snapcast,
   connection_id: state.pusher.connection_id,
   connections: state.pusher.connections,
 });

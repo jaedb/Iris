@@ -59780,7 +59780,7 @@ exports.default = ListItem;
 
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 
 var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
@@ -59793,54 +59793,108 @@ var _Icon2 = _interopRequireDefault(_Icon);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var ProgressRing = function ProgressRing(_ref) {
+  var radius = _ref.radius,
+      stroke = _ref.stroke,
+      progress = _ref.progress;
+
+  var normalizedRadius = radius - stroke * 2;
+  var circumference = normalizedRadius * 2 * Math.PI;
+  var strokeDashoffset = circumference - progress * circumference;
+
+  return _react2.default.createElement(
+    'svg',
+    {
+      className: 'loader__spinner__progress',
+      height: radius * 2,
+      width: radius * 2
+    },
+    _react2.default.createElement('circle', {
+      className: 'loader__spinner__progress__circle',
+      stroke: 'white',
+      fill: 'transparent',
+      strokeWidth: stroke,
+      strokeDasharray: circumference + ' ' + circumference,
+      strokeDashoffset: strokeDashoffset,
+      r: normalizedRadius,
+      cx: radius,
+      cy: radius
+    })
+  );
+};
+
 exports.default = (0, _react.memo)(function (props) {
-    var body = props.body,
-        loading = props.loading,
-        mini = props.mini,
-        lazy = props.lazy,
-        white = props.white,
-        _props$className = props.className,
-        className = _props$className === undefined ? '' : _props$className,
-        _props$children = props.children,
-        children = _props$children === undefined ? null : _props$children;
+  var body = props.body,
+      loading = props.loading,
+      mini = props.mini,
+      lazy = props.lazy,
+      white = props.white,
+      _props$className = props.className,
+      className = _props$className === undefined ? '' : _props$className,
+      _props$progress = props.progress,
+      progress = _props$progress === undefined ? null : _props$progress;
 
 
-    if (!loading) {
-        return null;
-    }
+  if (!loading) {
+    return null;
+  }
 
-    var classNameString = 'loader';
-    if (className) {
-        classNameString += ' ' + className;
-    }
-    if (mini) {
-        classNameString += ' loader--mini';
-    }
-    if (body) {
-        classNameString += ' loader--body';
-    }
-    if (lazy) {
-        classNameString += ' loader--lazy';
-    }
-    if (white) {
-        classNameString += ' loader--white';
-    }
+  var classNameString = 'loader';
+  if (className) {
+    classNameString += ' ' + className;
+  }
+  if (mini) {
+    classNameString += ' loader--mini';
+  }
+  if (body) {
+    classNameString += ' loader--body';
+  }
+  if (lazy) {
+    classNameString += ' loader--lazy';
+  }
+  if (white) {
+    classNameString += ' loader--white';
+  }
 
+  if (!navigator.onLine) {
     return _react2.default.createElement(
+      'div',
+      { className: classNameString },
+      _react2.default.createElement(
         'div',
-        { className: classNameString },
-        navigator.onLine ? _react2.default.createElement('div', { className: 'loader__spinner' }) : _react2.default.createElement(
-            'div',
-            { className: 'loader__offline' },
-            _react2.default.createElement(_Icon2.default, { name: 'wifi_off' }),
-            _react2.default.createElement(
-                'p',
-                null,
-                'You need to be online load this resource'
-            )
-        ),
-        children
+        { className: 'loader__offline' },
+        _react2.default.createElement(_Icon2.default, { name: 'wifi_off' }),
+        _react2.default.createElement(
+          'p',
+          null,
+          ' You need to be online load this resource '
+        )
+      )
     );
+  }
+
+  if (progress) {
+    classNameString += ' loader--progress';
+    return _react2.default.createElement(
+      'div',
+      { className: classNameString },
+      _react2.default.createElement(
+        'div',
+        { className: 'loader__spinner' },
+        _react2.default.createElement(ProgressRing, {
+          stroke: '2',
+          radius: mini ? '13' : '60',
+          progress: progress
+        })
+      )
+    );
+  }
+
+  return _react2.default.createElement(
+    'div',
+    { className: classNameString },
+    _react2.default.createElement('div', { className: 'loader__spinner' })
+  );
 });
 
 /***/ }),
@@ -59962,15 +60016,23 @@ var Notifications = function (_React$Component) {
   _createClass(Notifications, [{
     key: 'importConfiguration',
     value: function importConfiguration(notification_key, configuration) {
-      console.log('Importing configuration', configuration);
-      var configurations = '';
+      var _this2 = this;
 
-      if (configuration.interface) {
-        this.props.uiActions.set(configuration.interface);
+      console.log('Importing configuration', configuration);
+
+      if (configuration.ui) {
+        this.props.uiActions.set(configuration.ui);
       }
 
       if (configuration.spotify) {
         this.props.spotifyActions.importAuthorization(configuration.spotify.authorization, configuration.spotify.me);
+      }
+
+      if (configuration.snapcast) {
+        this.props.snapcastActions.set(configuration.snapcast);
+        setTimeout(function () {
+          return _this2.props.snapcastActions.connect();
+        }, 100);
       }
 
       if (configuration.lastfm) {
@@ -59987,7 +60049,7 @@ var Notifications = function (_React$Component) {
   }, {
     key: 'renderNotifications',
     value: function renderNotifications() {
-      var _this2 = this;
+      var _this3 = this;
 
       if (!this.props.notifications || this.props.notifications.length <= 0) return null;
 
@@ -60015,7 +60077,7 @@ var Notifications = function (_React$Component) {
                 'div',
                 { className: 'notification notification--info', key: notification.key, 'data-key': notification.key, 'data-duration': notification.duration },
                 _react2.default.createElement(_Icon2.default, { name: 'close', className: 'notification__close-button', onClick: function onClick(e) {
-                    return _this2.props.uiActions.removeNotification(notification.key, true);
+                    return _this3.props.uiActions.removeNotification(notification.key, true);
                   } }),
                 _react2.default.createElement(
                   'h4',
@@ -60052,6 +60114,11 @@ var Notifications = function (_React$Component) {
                       'li',
                       null,
                       'Genius'
+                    ) : null,
+                    notification.configuration.snapcast ? _react2.default.createElement(
+                      'li',
+                      null,
+                      'Snapcast'
                     ) : null
                   ),
                   _react2.default.createElement(
@@ -60066,9 +60133,9 @@ var Notifications = function (_React$Component) {
                   _react2.default.createElement(
                     'a',
                     { className: 'notification__actions__item button button--default', onClick: function onClick(e) {
-                        return _this2.importConfiguration(notification.key, notification.configuration);
+                        return _this3.importConfiguration(notification.key, notification.configuration);
                       } },
-                    'Import'
+                    'Import now'
                   )
                 )
               );
@@ -60078,7 +60145,7 @@ var Notifications = function (_React$Component) {
                 'div',
                 { className: 'notification notification--' + notification.type + (notification.closing ? ' closing' : ''), key: notification.key, 'data-key': notification.key, 'data-duration': notification.duration },
                 _react2.default.createElement(_Icon2.default, { name: 'close', className: 'notification__close-button', onClick: function onClick(e) {
-                    return _this2.props.uiActions.removeNotification(notification.key, true);
+                    return _this3.props.uiActions.removeNotification(notification.key, true);
                   } }),
                 notification.title ? _react2.default.createElement(
                   'h4',
@@ -60114,43 +60181,48 @@ var Notifications = function (_React$Component) {
   }, {
     key: 'renderProcess',
     value: function renderProcess(process) {
-      var _this3 = this;
+      var _process$data = process.data,
+          total = _process$data.total,
+          remaining = _process$data.remaining,
+          message = process.message,
+          status = process.status,
+          closing = process.closing,
+          key = process.key;
+      var uiActions = this.props.uiActions;
 
       var progress = 0;
-      if (process.data.total && process.data.remaining) {
-        progress = ((process.data.total - process.data.remaining) / process.data.total * 100).toFixed();
+      if (total && remaining) {
+        progress = ((total - remaining) / total).toFixed(4);
       }
 
-      switch (process.status) {
+      switch (status) {
         case 'running':
           return _react2.default.createElement(
             'div',
-            { className: 'notification notification--process' + (process.closing ? ' closing' : ''), key: process.key },
-            _react2.default.createElement(
-              _Loader2.default,
-              { loading: true, mini: true, white: true },
-              _react2.default.createElement(
-                'div',
-                { className: 'progress' },
-                _react2.default.createElement('div', { className: 'fill', style: { width: progress + '%' } })
-              )
-            ),
-            process.message,
-            _react2.default.createElement(_Icon2.default, { name: 'close', className: 'notification__close-button', onClick: function onClick(e) {
-                _this3.props.uiActions.cancelProcess(process.key);
+            { className: 'notification notification--process' + (closing ? ' closing' : ''), key: key },
+            _react2.default.createElement(_Loader2.default, {
+              progress: progress,
+              loading: true,
+              mini: true,
+              white: true
+            }),
+            message,
+            _react2.default.createElement(_Icon2.default, { name: 'close', className: 'notification__close-button', onClick: function onClick() {
+                uiActions.cancelProcess(key);
               } })
           );
 
         case 'cancelling':
           return _react2.default.createElement(
             'div',
-            { className: 'notification notification--process cancelling' + (process.closing ? ' closing' : ''), key: process.key },
-            _react2.default.createElement('div', { className: 'loader' }),
+            { className: 'notification notification--process cancelling' + (closing ? ' closing' : ''), key: key },
+            _react2.default.createElement(_Loader2.default, null),
             'Cancelling'
           );
 
         case 'cancelled':
         case 'finished':
+        default:
           return null;
       }
     }
@@ -60159,14 +60231,13 @@ var Notifications = function (_React$Component) {
     value: function renderProcesses() {
       var _this4 = this;
 
-      if (!this.props.processes || this.props.processes.length <= 0) return null;
+      var _props$processes = this.props.processes,
+          processesObj = _props$processes === undefined ? {} : _props$processes;
 
-      var processes = [];
-      for (var key in this.props.processes) {
-        if (this.props.processes.hasOwnProperty(key)) {
-          processes.push(this.props.processes[key]);
-        }
-      }
+      var processes = Object.keys(processesObj).map(function (key) {
+        return processesObj[key];
+      });
+      if (!processes.length) return null;
 
       return _react2.default.createElement(
         'span',
@@ -60176,46 +60247,12 @@ var Notifications = function (_React$Component) {
         })
       );
     }
-
-    // do we want the loading of everything to be displayed?
-    // not likely...
-
-  }, {
-    key: 'renderLoader',
-    value: function renderLoader() {
-      if (!this.props.load_queue) {
-        return null;
-      }
-
-      var load_queue = this.props.load_queue;
-
-      var load_count = 0;
-      for (var key in load_queue) {
-        if (load_queue.hasOwnProperty(key)) {
-          load_count++;
-        }
-      }
-
-      if (load_count > 0) {
-        var className = 'loading ';
-        if (load_count > 20) {
-          className += 'high';
-        } else if (load_count > 5) {
-          className += 'medium';
-        } else {
-          className += 'low';
-        }
-        return _react2.default.createElement('div', { className: className });
-      }
-      return null;
-    }
   }, {
     key: 'render',
     value: function render() {
       return _react2.default.createElement(
         'div',
         { className: 'notifications' },
-        this.renderLoader(),
         this.renderNotifications(),
         this.renderProcesses()
       );
@@ -60225,7 +60262,7 @@ var Notifications = function (_React$Component) {
   return Notifications;
 }(_react2.default.Component);
 
-var mapStateToProps = function mapStateToProps(state, ownProps) {
+var mapStateToProps = function mapStateToProps(state) {
   return {
     broadcasts: state.ui.broadcasts ? state.ui.broadcasts : [],
     notifications: state.ui.notifications ? state.ui.notifications : [],
@@ -63634,11 +63671,6 @@ var Track = function (_React$Component) {
                 { className: 'mid_grey-text' },
                 track.uri
               ),
-              track.explicit ? _react2.default.createElement(
-                'span',
-                { className: 'flag flag--dark' },
-                'EXPLICIT'
-              ) : null,
               track.playing ? _react2.default.createElement(_Icon2.default, { className: 'js--' + this.props.play_state, name: 'playing', type: 'css' }) : null
             ),
             track_details ? _react2.default.createElement(
@@ -63656,6 +63688,11 @@ var Track = function (_React$Component) {
             'div',
             { className: 'list__item__column list__item__column--right' },
             drag_zone,
+            track.is_explicit ? _react2.default.createElement(
+              'span',
+              { className: 'flag flag--dark' },
+              'EXPLICIT'
+            ) : null,
             _react2.default.createElement(
               'span',
               { className: 'list__item__column__item list__item__column__item--duration' },
@@ -68517,8 +68554,6 @@ function getMe() {
  * @param path = String, the relative API path for the HTML lyrics
  * */
 function getTrackLyrics(uri, path) {
-  var _this = this;
-
   return function (dispatch, getState) {
     dispatch(coreActions.trackLoaded({
       uri: uri,
@@ -68543,8 +68578,8 @@ function getTrackLyrics(uri, path) {
         var lyrics = html.find('.lyrics');
         if (lyrics.length > 0) {
           lyrics = lyrics.first();
-          lyrics.find('a').replaceWith(function () {
-            return _this.innerHTML;
+          lyrics.find('a').replaceWith(function (k, v) {
+            return v;
           });
 
           var lyrics_html = lyrics.html();
@@ -70144,7 +70179,8 @@ function playURIs() {
   return {
     type: 'MOPIDY_PLAY_URIS',
     uris: uris,
-    from_uri: from_uri
+    from_uri: from_uri,
+    shuffle: shuffle
   };
 }
 
@@ -70291,14 +70327,14 @@ function getPlaylists(uris) {
 function getDirectory(uri) {
   return {
     type: 'MOPIDY_GET_DIRECTORY',
-    data: { uri: uri }
+    uri: uri
   };
 }
 
 function getTrack(uri) {
   return {
     type: 'MOPIDY_GET_TRACK',
-    data: { uri: uri }
+    uri: uri
   };
 }
 
@@ -70320,7 +70356,7 @@ function clearLibraryArtists() {
 function getArtist(uri) {
   return {
     type: 'MOPIDY_GET_ARTIST',
-    data: { uri: uri }
+    uri: uri
   };
 }
 
@@ -70337,7 +70373,7 @@ function getArtists(uris) {
 function getAlbum(uri) {
   return {
     type: 'MOPIDY_GET_ALBUM',
-    data: { uri: uri }
+    uri: uri
   };
 }
 
@@ -70840,7 +70876,7 @@ var MopidyMiddleware = function () {
             break;
 
           case 'MOPIDY_REMOVE_TRACKS':
-            request(socket, store, 'tracklist.remove', { tlid: action.tlids }).then(function (response) {
+            request(socket, store, 'tracklist.remove', { criteria: { tlid: action.tlids } }).then(function (response) {
               store.dispatch(pusherActions.deliverBroadcast('notification', {
                 notification: {
                   content: store.getState().pusher.username + ' removed ' + action.tlids.length + ' tracks'
@@ -70908,7 +70944,7 @@ var MopidyMiddleware = function () {
             break;
 
           case 'MOPIDY_GET_VOLUME':
-            request(socket, store, 'playback.getVolume').then(function (response) {
+            request(socket, store, 'mixer.getVolume').then(function (response) {
               store.dispatch({
                 type: 'MOPIDY_VOLUME',
                 volume: response
@@ -70917,7 +70953,7 @@ var MopidyMiddleware = function () {
             break;
 
           case 'MOPIDY_SET_VOLUME':
-            request(socket, store, 'playback.setVolume', { volume: action.volume }).then(function (response) {
+            request(socket, store, 'mixer.setVolume', { volume: action.volume }).then(function (response) {
               store.dispatch({
                 type: 'MOPIDY_VOLUME',
                 volume: action.volume
@@ -71183,10 +71219,17 @@ var MopidyMiddleware = function () {
             break;
 
           case 'MOPIDY_PLAY_URIS':
+            var from_uri = action.from_uri;
 
-            if (!action.uris || action.uris.length <= 0) {
+            var urisToPlay = Object.assign([], action.uris);
+
+            if (!urisToPlay || !urisToPlay.length) {
               _this.props.uiActions.createNotification({ content: 'No URIs to play', type: 'warning' });
               break;
+            }
+
+            if (action.shuffle) {
+              urisToPlay = helpers.shuffle(urisToPlay);
             }
 
             // Stop the radio
@@ -71201,14 +71244,14 @@ var MopidyMiddleware = function () {
 
             // Shuffle/random mode
             if (store.getState().mopidy.random) {
-              var first_uri_index = Math.floor(Math.random() * action.uris.length);
+              var first_uri_index = Math.floor(Math.random() * urisToPlay.length);
             } else {
               var first_uri_index = 0;
             }
-            var first_uri = action.uris[first_uri_index];
+            var first_uri = urisToPlay[first_uri_index];
 
             // add our first track
-            request(socket, store, 'tracklist.add', { uri: first_uri, at_position: 0 }).then(function (response) {
+            request(socket, store, 'tracklist.add', { uris: [first_uri], at_position: 0 }).then(function (response) {
               // play it (only if we got a successful lookup)
               if (response.length > 0) {
                 store.dispatch(mopidyActions.changeTrack(response[0].tlid));
@@ -71217,20 +71260,20 @@ var MopidyMiddleware = function () {
                 for (var _i2 = 0; _i2 < response.length; _i2++) {
                   tlids.push(response[_i2].tlid);
                 }
-                store.dispatch(pusherActions.addQueueMetadata(tlids, action.from_uri));
+                store.dispatch(pusherActions.addQueueMetadata(tlids, from_uri));
               } else {
                 store.dispatch(coreActions.handleException('Mopidy: Failed to add some tracks', response));
               }
 
               // Remove our first_uri as we've already added it
-              action.uris.splice(first_uri_index, 1);
+              urisToPlay.splice(first_uri_index, 1);
 
               // And add the rest of our uris (if any)
-              if (action.uris.length > 0) {
+              if (urisToPlay.length > 0) {
                 // Wait a moment so the server can trigger track_changed etc
                 // this means our UI feels snappier as the first track shows up quickly
                 setTimeout(function () {
-                  store.dispatch(mopidyActions.enqueueURIs(action.uris, action.from_uri, null, 1));
+                  store.dispatch(mopidyActions.enqueueURIs(urisToPlay, from_uri, null, 1));
                 }, 100);
               }
             }, function (error) {
@@ -71821,9 +71864,9 @@ var MopidyMiddleware = function () {
             var uris = helpers.arrayOf('uri', tracks);
 
             request(socket, store, 'library.lookup', { uris: uris }).then(function (response) {
-              for (var uri in response) {
-                if (response.hasOwnProperty(uri)) {
-                  var track = response[uri][0];
+              for (var _uri in response) {
+                if (response.hasOwnProperty(_uri)) {
+                  var track = response[_uri][0];
                   if (track) {
                     // find the track reference, and drop in the full track data
                     var getByURI = function getByURI(trackReference) {
@@ -72053,18 +72096,13 @@ var MopidyMiddleware = function () {
 
           case 'MOPIDY_GET_ALBUMS':
             request(socket, store, 'library.lookup', { uris: action.uris }).then(function (response) {
-              if (response.length <= 0) {
-                return;
-              }
-
               var albums_loaded = [];
               var artists_loaded = [];
               var tracks_loaded = [];
 
-              for (var uri in response) {
-                if (response.hasOwnProperty(uri) && response[uri].length > 0 && response[uri][0].album) {
-                  var _tracks3 = response[uri];
-
+              for (var _uri2 in response) {
+                if (response.hasOwnProperty(_uri2) && response[_uri2].length > 0 && response[_uri2][0].album) {
+                  var _tracks3 = response[_uri2];
                   var artists_uris = [];
                   if (_tracks3[0].artists) {
                     var _iteratorNormalCompletion = true;
@@ -72072,7 +72110,7 @@ var MopidyMiddleware = function () {
                     var _iteratorError = undefined;
 
                     try {
-                      for (var _iterator = response[uri][0].artists[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                      for (var _iterator = response[_uri2][0].artists[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                         var artist = _step.value;
 
                         artists_uris.push(artist.uri);
@@ -72149,10 +72187,10 @@ var MopidyMiddleware = function () {
             break;
 
           case 'MOPIDY_GET_ALBUM':
-            request(socket, store, 'library.lookup', action.data).then(function (response) {
-              if (!response || response.length <= 0) {
-                return;
-              }
+            request(socket, store, 'library.lookup', { uris: [action.uri] }).then(function (_response) {
+              if (!_response) return;
+              var response = _response[action.uri];
+              if (!response || !response.length) return;
 
               var artists = [];
               if (response[0].artists) {
@@ -72205,9 +72243,9 @@ var MopidyMiddleware = function () {
               request(socket, store, 'library.lookup', { uris: album.tracks_uris }).then(function (response) {
                 var tracks_loaded = [];
 
-                for (var uri in response) {
-                  if (response.hasOwnProperty(uri)) {
-                    tracks_loaded.push(response[uri][0]);
+                for (var _uri3 in response) {
+                  if (response.hasOwnProperty(_uri3)) {
+                    tracks_loaded.push(response[_uri3][0]);
                   }
                 }
 
@@ -72217,11 +72255,12 @@ var MopidyMiddleware = function () {
             break;
 
           /**
-               * =============================================================== ARTIST(S) ============
-               * ======================================================================================
-               * */
+          * =============================================================== ARTIST(S) ============
+          * ======================================================================================
+          **/
           case 'MOPIDY_GET_LIBRARY_ARTISTS':
-            request(socket, store, 'library.browse', { uri: store.getState().mopidy.library_artists_uri }).then(function (response) {
+            var uri = store.getState().mopidy.library_artists_uri;
+            request(socket, store, 'library.browse', { uri: uri }).then(function (response) {
               if (response.length <= 0) return;
 
               var uris = [];
@@ -72286,10 +72325,10 @@ var MopidyMiddleware = function () {
                * */
 
           case 'MOPIDY_GET_ARTIST':
-            request(socket, store, 'library.lookup', action.data).then(function (response) {
-              if (response.length <= 0) {
-                return;
-              }
+            request(socket, store, 'library.lookup', { uris: [action.uri] }).then(function (_response) {
+              if (!_response) return;
+              var response = _response[action.uri];
+              if (!response || !response.length) return;
 
               var albums = [];
               for (var _i8 = 0; _i8 < response.length; _i8++) {
@@ -72315,7 +72354,7 @@ var MopidyMiddleware = function () {
 
               // Start with an empty artist object
               var artist = {
-                uri: action.data.uri,
+                uri: action.uri,
                 provider: 'mopidy'
               };
 
@@ -72385,9 +72424,9 @@ var MopidyMiddleware = function () {
 
               var artists = [];
 
-              for (var uri in response) {
-                if (response.hasOwnProperty(uri) && response[uri].length > 0 && response[uri][0].artists) {
-                  var artist = _extends({}, response ? response[uri][0].artists[0] : {}, {
+              for (var _uri4 in response) {
+                if (response.hasOwnProperty(_uri4) && response[_uri4].length > 0 && response[_uri4][0].artists) {
+                  var artist = _extends({}, response ? response[_uri4][0].artists[0] : {}, {
                     provider: 'mopidy'
                   });
                   artists.push(artist);
@@ -72496,11 +72535,13 @@ var MopidyMiddleware = function () {
             break;
 
           case 'MOPIDY_GET_TRACK':
-            request(socket, store, 'library.lookup', action.data).then(function (response) {
-              if (response.length > 0) {
-                var _track3 = _extends({}, response[0]);
-                store.dispatch(coreActions.trackLoaded(_track3));
-              }
+            request(socket, store, 'library.lookup', { uris: [action.uri] }).then(function (_response) {
+              if (!_response) return;
+              var response = _response[action.uri];
+              if (!response || !response.length) return;
+
+              var track = _extends({}, response[0]);
+              store.dispatch(coreActions.trackLoaded(track));
             }, function (error) {
               store.dispatch(coreActions.handleException('Mopidy: ' + (error.message ? error.message : 'Could not get track'), error));
             });
@@ -72515,18 +72556,18 @@ var MopidyMiddleware = function () {
             if (action.uris) {
               request(socket, store, 'library.getImages', { uris: action.uris }).then(function (response) {
                 var records = [];
-                for (var uri in response) {
-                  if (response.hasOwnProperty(uri)) {
-                    var images = response[uri];
+                for (var _uri5 in response) {
+                  if (response.hasOwnProperty(_uri5)) {
+                    var images = response[_uri5];
                     images = helpers.digestMopidyImages(store.getState().mopidy, images);
 
                     if (images && images.length > 0) {
                       records.push({
-                        uri: uri,
+                        uri: _uri5,
                         images: images
                       });
                     } else {
-                      store.dispatch(lastfmActions.getImages(action.context, uri));
+                      store.dispatch(lastfmActions.getImages(action.context, _uri5));
                     }
                   }
                 }
@@ -72552,7 +72593,7 @@ var MopidyMiddleware = function () {
               type: 'MOPIDY_DIRECTORY_FLUSH'
             });
 
-            request(socket, store, 'library.browse', action.data).then(function (response) {
+            request(socket, store, 'library.browse', { uri: action.uri }).then(function (response) {
               var tracks_uris = [];
               var subdirectories = [];
 
@@ -72593,9 +72634,9 @@ var MopidyMiddleware = function () {
 
                   var tracks = [];
 
-                  for (var uri in response) {
-                    if (response.hasOwnProperty(uri) && response[uri].length > 0) {
-                      tracks.push(helpers.formatTrack(response[uri][0]));
+                  for (var _uri6 in response) {
+                    if (response.hasOwnProperty(_uri6) && response[_uri6].length > 0) {
+                      tracks.push(helpers.formatTrack(response[_uri6][0]));
                     }
                   }
 
@@ -73291,6 +73332,9 @@ var PusherMiddleware = function () {
           case 'local_scan_started':
             store.dispatch(uiActions.updateProcess('local_scan', 'Scanning local library'));
             break;
+          case 'local_scan_updated':
+            store.dispatch(uiActions.updateProcess('local_scan', 'Scanning local library', {}, message.params.output));
+            break;
           case 'local_scan_finished':
             store.dispatch(uiActions.processFinished('local_scan'));
             store.dispatch(uiActions.createNotification({
@@ -73299,33 +73343,41 @@ var PusherMiddleware = function () {
             break;
           case 'local_scan_error':
             store.dispatch(uiActions.processFinished('local_scan'));
-            store.dispatch(uiActions.createNotification({ type: 'bad', content: message.params.message, description: message.params.description }));
+            store.dispatch(coreActions.handleException('Local scan failed', message, message.params.error));
             break;
 
           // Upgrade
           case 'upgrade_started':
             store.dispatch(uiActions.updateProcess('upgrade', 'Upgrading'));
             break;
+          case 'upgrade_updated':
+            store.dispatch(uiActions.updateProcess('upgrade', 'Upgrading', {}, message.params.output));
+            break;
           case 'upgrade_finished':
             store.dispatch(uiActions.updateProcess('upgrade', 'Restarting to complete upgrade'));
             break;
           case 'upgrade_error':
             store.dispatch(uiActions.processFinished('upgrade'));
-            store.dispatch(uiActions.createNotification({ type: 'bad', content: message.params.message, description: message.params.description }));
+            store.dispatch(coreActions.handleException('Upgrade failed', message, message.params.error));
             break;
 
           // Restart
           case 'restart_started':
-            store.dispatch(uiActions.processFinished('upgrade'));
-            store.dispatch(uiActions.createNotification({ type: 'info', content: 'Restarting server...' }));
+            store.dispatch(uiActions.processFinished('upgrade', 'Restarting'));
+            break;
+          case 'restart_updated':
+            store.dispatch(uiActions.updateProcess('upgrade', 'Restarting', {}, message.params.output));
             break;
           case 'restart_error':
             store.dispatch(uiActions.processFinished('upgrade'));
-            store.dispatch(uiActions.createNotification({ type: 'bad', content: message.params.message, description: message.params.description }));
+            store.dispatch(coreActions.handleException('Restart failed', message, message.params.error));
             break;
 
           // Test
           case 'test_started':
+            store.dispatch(uiActions.updateProcess('test', 'Running test', {}, message.params.output));
+            break;
+          case 'test_updated':
             store.dispatch(uiActions.updateProcess('test', 'Running test'));
             break;
           case 'test_finished':
@@ -73334,7 +73386,7 @@ var PusherMiddleware = function () {
             break;
           case 'test_error':
             store.dispatch(uiActions.processFinished('test'));
-            store.dispatch(uiActions.createNotification({ type: 'bad', content: message.params.message, description: message.params.description }));
+            store.dispatch(uiActions.createNotification({ type: 'bad', content: message.params.message, description: message.params.error }));
             break;
         }
       }
@@ -77904,12 +77956,14 @@ function stopLoading(key) {
 
 function startProcess(key, message) {
   var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var description = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 
   return {
     type: 'START_PROCESS',
     key: key,
     message: message,
-    data: data
+    data: data,
+    description: description
   };
 }
 
@@ -77924,12 +77978,14 @@ function resumeProcess(key, message) {
 
 function updateProcess(key, message) {
   var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  var description = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 
   return {
     type: 'UPDATE_PROCESS',
     key: key,
     message: message,
-    data: data
+    data: data,
+    description: description
   };
 }
 
@@ -78415,6 +78471,7 @@ function reducer() {
       processes[action.key] = {
         key: action.key,
         message: action.message,
+        description: action.description,
         status: 'running',
         data: data
       };
@@ -78611,7 +78668,7 @@ var state = {
     play_state: null,
     uri_schemes: [],
     library_albums_uri: 'local:directory?type=album',
-    library_artists_uri: 'local:directory?type=artist'
+    library_artists_uri: 'local:directory?type=artist&role=albumartist'
   },
   pusher: {
     connected: false,
@@ -80183,7 +80240,7 @@ var Debug = function (_React$Component) {
                 _react2.default.createElement(
                   'a',
                   { className: 'button button--default', onClick: function onClick(e) {
-                      return _this2.props.uiActions.startProcess('test_process', "Test process", { remaining: 50, total: 100 });
+                      return _this2.props.uiActions.startProcess('test_process', "Test process", { remaining: 32, total: 100 });
                     } },
                   'Create process notification'
                 ),
@@ -82515,6 +82572,22 @@ var Settings = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (Settings.__proto__ || Object.getPrototypeOf(Settings)).call(this, props));
 
+    _this.renderLocalScanButton = function () {
+      var processes = _this.props.ui.processes;
+
+      var loading = processes.local_scan && processes.local_scan.status === 'running';
+      return _react2.default.createElement(
+        'button',
+        {
+          className: 'button button--default ' + (loading ? 'button--working' : ''),
+          onClick: function onClick(e) {
+            return _this.props.pusherActions.localScan();
+          }
+        },
+        'Run local scan'
+      );
+    };
+
     _this.state = {
       mopidy_host: _this.props.mopidy.host,
       mopidy_port: _this.props.mopidy.port,
@@ -83167,13 +83240,7 @@ var Settings = function (_React$Component) {
           _react2.default.createElement(
             'div',
             { className: 'field' },
-            _react2.default.createElement(
-              'button',
-              { className: 'button button--default', onClick: function onClick(e) {
-                  return _this2.props.pusherActions.localScan();
-                } },
-              'Run local scan'
-            ),
+            this.renderLocalScanButton(),
             _react2.default.createElement(
               _reactRouterDom.Link,
               { className: 'button button--default', to: '/share-configuration' },
@@ -83224,53 +83291,49 @@ var Settings = function (_React$Component) {
           ),
           _react2.default.createElement(
             'div',
-            { className: 'field' },
+            null,
             _react2.default.createElement(
-              'div',
-              null,
-              _react2.default.createElement(
-                'em',
-                null,
-                _react2.default.createElement(
-                  'a',
-                  { href: 'https://github.com/jaedb/Iris', target: '_blank' },
-                  'Iris'
-                )
-              ),
-              ' ',
-              'is an open-source project by',
-              _react2.default.createElement(
-                'a',
-                { href: 'https://github.com/jaedb', target: '_blank' },
-                'James Barnsley'
-              ),
-              '. It is provided free and with absolutely no warranty. If you paid someone for this software, please let me know.'
-            ),
-            _react2.default.createElement('br', null),
-            _react2.default.createElement('br', null),
-            _react2.default.createElement(
-              'div',
+              'em',
               null,
               _react2.default.createElement(
                 'a',
-                { className: 'button button--default', href: 'https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=james%40barnsley%2enz&lc=NZ&item_name=James%20Barnsley&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted', target: '_blank' },
-                _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'paypal' }),
-                ' ',
-                'Donate'
-              ),
-              _react2.default.createElement(
-                'a',
-                { className: 'button button--default', href: 'https://github.com/jaedb/Iris', target: '_blank' },
-                _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'github' }),
-                ' ',
-                'GitHub'
-              ),
-              _react2.default.createElement(
-                'a',
-                { className: 'button button--default', href: 'http://creativecommons.org/licenses/by-nc/4.0/', target: '_blank' },
-                _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'creative-commons' }),
-                '\xA0Licence'
+                { href: 'https://github.com/jaedb/Iris', target: '_blank' },
+                'Iris'
               )
+            ),
+            ' ',
+            'is an open-source project by',
+            _react2.default.createElement(
+              'a',
+              { href: 'https://github.com/jaedb', target: '_blank' },
+              'James Barnsley'
+            ),
+            '. It is provided free and with absolutely no warranty. If you paid someone for this software, please let me know.'
+          ),
+          _react2.default.createElement('br', null),
+          _react2.default.createElement('br', null),
+          _react2.default.createElement(
+            'div',
+            null,
+            _react2.default.createElement(
+              'a',
+              { className: 'button button--default', href: 'https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=james%40barnsley%2enz&lc=NZ&item_name=James%20Barnsley&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted', target: '_blank' },
+              _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'paypal' }),
+              ' ',
+              'Donate'
+            ),
+            _react2.default.createElement(
+              'a',
+              { className: 'button button--default', href: 'https://github.com/jaedb/Iris', target: '_blank' },
+              _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'github' }),
+              ' ',
+              'GitHub'
+            ),
+            _react2.default.createElement(
+              'a',
+              { className: 'button button--default', href: 'http://creativecommons.org/licenses/by-nc/4.0/', target: '_blank' },
+              _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'creative-commons' }),
+              '\xA0Licence'
             )
           )
         )
@@ -83587,17 +83650,7 @@ var Track = function (_React$Component) {
           )
         );
       }
-      return _react2.default.createElement(
-        _ErrorMessage2.default,
-        { type: 'not-found', title: 'Not found' },
-        _react2.default.createElement(
-          'p',
-          null,
-          'Could not find track with URI "',
-          encodeURIComponent(this.props.uri),
-          '"'
-        )
-      );
+      return _react2.default.createElement(_ErrorMessage2.default, { type: 'not-found', title: 'Could not load lyrics' });
     }
   }, {
     key: 'render',
@@ -90672,6 +90725,13 @@ var ShareConfiguration = function (_React$Component) {
       if (this.state.ui) {
         configuration.ui = this.props.ui;
       }
+      if (this.state.snapcast) {
+        configuration.snapcast = {
+          enabled: this.props.snapcast.enabled,
+          host: this.props.snapcast.host,
+          port: this.props.snapcast.port
+        };
+      }
 
       var _iteratorNormalCompletion = true;
       var _didIteratorError = false;
@@ -90806,31 +90866,6 @@ var ShareConfiguration = function (_React$Component) {
             _react2.default.createElement(
               'div',
               { className: 'input' },
-              _react2.default.createElement(
-                'div',
-                { className: 'checkbox-group__item' },
-                _react2.default.createElement(
-                  'label',
-                  null,
-                  _react2.default.createElement('input', {
-                    type: 'checkbox',
-                    name: 'interface',
-                    checked: this.state.ui,
-                    onChange: function onChange(e) {
-                      return _this2.setState({ ui: !_this2.state.ui });
-                    }
-                  }),
-                  _react2.default.createElement(
-                    'span',
-                    { className: 'label' },
-                    _react2.default.createElement(
-                      'span',
-                      { className: 'title' },
-                      'UI customisation (theme, sorting, filters)'
-                    )
-                  )
-                )
-              ),
               this.props.spotify_me && this.props.spotify_authorization && _react2.default.createElement(
                 'div',
                 { className: 'checkbox-group__item' },
@@ -90932,6 +90967,74 @@ var ShareConfiguration = function (_React$Component) {
                     )
                   )
                 )
+              ),
+              _react2.default.createElement(
+                'div',
+                { className: 'checkbox-group__item' },
+                _react2.default.createElement(
+                  'label',
+                  null,
+                  _react2.default.createElement('input', {
+                    type: 'checkbox',
+                    name: 'snapcast',
+                    checked: this.state.snapcast,
+                    onChange: function onChange() {
+                      return _this2.setState({ snapcast: !_this2.state.snapcast });
+                    }
+                  }),
+                  _react2.default.createElement(
+                    'div',
+                    { className: 'label' },
+                    _react2.default.createElement(
+                      'div',
+                      null,
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'title' },
+                        'Snapcast'
+                      ),
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'description mid_grey-text' },
+                        'Server connection details'
+                      )
+                    )
+                  )
+                )
+              ),
+              _react2.default.createElement(
+                'div',
+                { className: 'checkbox-group__item' },
+                _react2.default.createElement(
+                  'label',
+                  null,
+                  _react2.default.createElement('input', {
+                    type: 'checkbox',
+                    name: 'interface',
+                    checked: this.state.ui,
+                    onChange: function onChange(e) {
+                      return _this2.setState({ ui: !_this2.state.ui });
+                    }
+                  }),
+                  _react2.default.createElement(
+                    'div',
+                    { className: 'label' },
+                    _react2.default.createElement(
+                      'div',
+                      null,
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'title' },
+                        'Interface settings'
+                      ),
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'description mid_grey-text' },
+                        'Theme, sorting, filters, etc'
+                      )
+                    )
+                  )
+                )
               )
             )
           ),
@@ -90969,6 +91072,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
     lastfm_authorization: state.lastfm.authorization,
     lastfm_me: state.lastfm.me,
     ui: state.ui,
+    snapcast: state.snapcast,
     connection_id: state.pusher.connection_id,
     connections: state.pusher.connections
   };

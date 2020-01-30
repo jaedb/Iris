@@ -1,6 +1,6 @@
 {
   "name": "mopidy-iris",
-  "version": "3.43.0",
+  "version": "3.44.0",
   "description": "Mopidy HTTP interface",
   "repository": "https://github.com/jaedb/iris",
   "author": "James Barnsley <james@barnsley.nz>",
@@ -17,6 +17,7 @@
     "react-router": "^5"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
     "@babel/preset-env": "^7.7.1",
     "@babel/preset-react": "^7.7.0",
     "babel-core": "^6",

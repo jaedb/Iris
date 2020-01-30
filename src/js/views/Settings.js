@@ -63,8 +63,8 @@ class Settings extends React.Component {
     if ('serviceWorker' in navigator) {
 
       // Hose out all our caches
-      caches.keys().then(function(cacheNames) {
-        cacheNames.forEach(function(cacheName) {
+      caches.keys().then(function (cacheNames) {
+        cacheNames.forEach(function (cacheName) {
           caches.delete(cacheName);
         });
       });
@@ -133,6 +133,19 @@ class Settings extends React.Component {
         {' '}
         {status}
       </span>
+    );
+  }
+
+  renderLocalScanButton = () => {
+    const { processes } = this.props.ui;
+    const loading = processes.local_scan && processes.local_scan.status === 'running';
+    return (
+      <button
+        className={`button button--default ${loading ? 'button--working' : ''}`}
+        onClick={(e) => this.props.pusherActions.localScan()}
+      >
+        Run local scan
+      </button>
     );
   }
 
@@ -232,7 +245,7 @@ class Settings extends React.Component {
 
           <div className="field radio">
             <div className="name">
-							Theme
+              Theme
             </div>
             <div className="input">
               <label>
@@ -269,7 +282,7 @@ class Settings extends React.Component {
                   onChange={(e) => uiActions.set({ clear_tracklist_on_play: !ui.clear_tracklist_on_play })}
                 />
                 <span className="label tooltip">
-									Clear tracklist on play of URI(s)
+                  Clear tracklist on play of URI(s)
                   <span className="tooltip__content">Playing one or more URIs will clear the current play queue first</span>
                 </span>
               </label>
@@ -281,7 +294,7 @@ class Settings extends React.Component {
                   onChange={(e) => uiActions.set({ hotkeys_enabled: !ui.hotkeys_enabled })}
                 />
                 <span className="label">
-									Enable hotkeys
+                  Enable hotkeys
                 </span>
               </label>
               <label>
@@ -292,7 +305,7 @@ class Settings extends React.Component {
                   onChange={(e) => uiActions.set({ smooth_scrolling_enabled: !ui.smooth_scrolling_enabled })}
                 />
                 <span className="label">
-									Enable smooth scrolling
+                  Enable smooth scrolling
                 </span>
               </label>
               <label>
@@ -303,7 +316,7 @@ class Settings extends React.Component {
                   onChange={(e) => uiActions.set({ playback_controls_touch_enabled: !ui.playback_controls_touch_enabled })}
                 />
                 <span className="label tooltip">
-									Enable touch events on play controls
+                  Enable touch events on play controls
                   <span className="tooltip__content">Allows left- and right-swipe to change tracks</span>
                 </span>
               </label>
@@ -315,7 +328,7 @@ class Settings extends React.Component {
                   onChange={(e) => uiActions.set({ wide_scrollbar_enabled: !ui.wide_scrollbar_enabled })}
                 />
                 <span className="label">
-									Use wide scrollbars
+                  Use wide scrollbars
                 </span>
               </label>
             </div>
@@ -323,7 +336,7 @@ class Settings extends React.Component {
 
           <div className="field sources-priority">
             <div className="name">
-							Sources priority
+              Sources priority
             </div>
             <div className="input">
               <SourcesPriority
@@ -332,7 +345,7 @@ class Settings extends React.Component {
                 uiActions={uiActions}
               />
               <div className="description">
-				        		Drag-and-drop to prioritize search providers and results
+                Drag-and-drop to prioritize search providers and results
               </div>
             </div>
           </div>
@@ -349,13 +362,13 @@ class Settings extends React.Component {
                     onChange={(e) => uiActions.set({ allow_reporting: !ui.allow_reporting })}
                   />
                   <span className="label">
-									Allow reporting of anonymous usage statistics
+                    Allow reporting of anonymous usage statistics
                   </span>
                 </label>
                 <div className="description">
-This helps identify errors and potential features that make Iris better for everyone. See
+                  This helps identify errors and potential features that make Iris better for everyone. See
                   <a href="https://github.com/jaedb/Iris/wiki/Terms-of-use#privacy-policy" target="_blank">privacy policy</a>
-.
+                  .
                 </div>
               </div>
             </div>
@@ -363,7 +376,7 @@ This helps identify errors and potential features that make Iris better for ever
 
           <div className="field commands-setup" id="commands-setup">
             <div className="name">
-							Commands
+              Commands
             </div>
             <div className="input">
               <Commands
@@ -376,7 +389,7 @@ This helps identify errors and potential features that make Iris better for ever
           </div>
 
           <h4 className="underline">
-Advanced
+            Advanced
             <a name="advanced" />
           </h4>
 
@@ -390,7 +403,7 @@ Advanced
                 onBlur={(e) => this.handleBlur('mopidy', 'library_artists_uri', e.target.value)}
               />
               <div className="description">
-								URI used for collecting library artists
+                URI used for collecting library artists
               </div>
             </div>
           </div>
@@ -405,7 +418,7 @@ Advanced
                 onBlur={(e) => this.handleBlur('mopidy', 'library_albums_uri', e.target.value)}
               />
               <div className="description">
-								URI used for collecting library albums
+                URI used for collecting library albums
               </div>
             </div>
           </label>
@@ -431,17 +444,17 @@ Advanced
                     {'  Upgrade available'}
                   </span>
                 ) : (
-                  <span className="flag flag--dark">
-                    <Icon name="check" className="green-text" />
-                    {'  Up-to-date'}
-                  </span>
-                )}
+                    <span className="flag flag--dark">
+                      <Icon name="check" className="green-text" />
+                      {'  Up-to-date'}
+                    </span>
+                  )}
               </span>
             </div>
           </div>
 
           <div className="field">
-            <button className="button button--default" onClick={(e) => this.props.pusherActions.localScan()}>Run local scan</button>
+            {this.renderLocalScanButton()}
             <Link className="button button--default" to="/share-configuration">Share configuration</Link>
           </div>
 
@@ -450,7 +463,7 @@ Advanced
               <button className="button button--secondary" onClick={(e) => this.props.pusherActions.upgrade()}>
                 {`Upgrade to ${this.props.pusher.version.latest}`}
               </button>
-            ) : null }
+            ) : null}
             <button className={`button button--destructive${this.props.mopidy.restarting ? ' button--working' : ''}`} onClick={(e) => this.props.pusherActions.restart()}>Restart server</button>
             <ConfirmationButton
               className="button--destructive"
@@ -471,32 +484,30 @@ Advanced
             <a name="about" />
           </h4>
 
-          <div className="field">
-            <div>
-              <em><a href="https://github.com/jaedb/Iris" target="_blank">Iris</a></em>
+          <div>
+            <em><a href="https://github.com/jaedb/Iris" target="_blank">Iris</a></em>
+            {' '}
+            is an open-source project by
+            <a href="https://github.com/jaedb" target="_blank">James Barnsley</a>
+            . It is provided free and with absolutely no warranty. If you paid someone for this software, please let me know.
+          </div>
+          <br />
+          <br />
+          <div>
+            <a className="button button--default" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=james%40barnsley%2enz&lc=NZ&item_name=James%20Barnsley&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted" target="_blank">
+              <Icon type="fontawesome" name="paypal" />
               {' '}
-is an open-source project by
-              <a href="https://github.com/jaedb" target="_blank">James Barnsley</a>
-. It is provided free and with absolutely no warranty. If you paid someone for this software, please let me know.
-            </div>
-            <br />
-            <br />
-            <div>
-              <a className="button button--default" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=james%40barnsley%2enz&lc=NZ&item_name=James%20Barnsley&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted" target="_blank">
-                <Icon type="fontawesome" name="paypal" />
-                {' '}
-Donate
-              </a>
-              <a className="button button--default" href="https://github.com/jaedb/Iris" target="_blank">
-                <Icon type="fontawesome" name="github" />
-                {' '}
-GitHub
-              </a>
-              <a className="button button--default" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">
-                <Icon type="fontawesome" name="creative-commons" />
-&nbsp;Licence
-              </a>
-            </div>
+              Donate
+            </a>
+            <a className="button button--default" href="https://github.com/jaedb/Iris" target="_blank">
+              <Icon type="fontawesome" name="github" />
+              {' '}
+              GitHub
+            </a>
+            <a className="button button--default" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">
+              <Icon type="fontawesome" name="creative-commons" />
+              &nbsp;Licence
+            </a>
           </div>
 
         </section>

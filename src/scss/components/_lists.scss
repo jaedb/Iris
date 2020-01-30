@@ -174,13 +174,10 @@
 		&__column {
 			align-items: center;
 
-			&:first-child {
-				width: 60%;
-			}
-
 			&--middle {
 				display: flex;
 				margin-left: auto;
+				flex: 1;
 			}
 
 			&--right {

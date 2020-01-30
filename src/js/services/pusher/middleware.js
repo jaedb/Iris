@@ -112,9 +112,12 @@ const PusherMiddleware = (function () {
             window.location.reload(true);
             break;
 
-            // Local scan
+          // Local scan
           case 'local_scan_started':
             store.dispatch(uiActions.updateProcess('local_scan', 'Scanning local library'));
+            break;
+          case 'local_scan_updated':
+            store.dispatch(uiActions.updateProcess('local_scan', 'Scanning local library', {}, message.params.output));
             break;
           case 'local_scan_finished':
             store.dispatch(uiActions.processFinished('local_scan'));
@@ -124,33 +127,41 @@ const PusherMiddleware = (function () {
             break;
           case 'local_scan_error':
             store.dispatch(uiActions.processFinished('local_scan'));
-            store.dispatch(uiActions.createNotification({ type: 'bad', content: message.params.message, description: message.params.description }));
+            store.dispatch(coreActions.handleException('Local scan failed', message, message.params.error));
             break;
 
-            // Upgrade
+          // Upgrade
           case 'upgrade_started':
             store.dispatch(uiActions.updateProcess('upgrade', 'Upgrading'));
+            break;
+          case 'upgrade_updated':
+            store.dispatch(uiActions.updateProcess('upgrade', 'Upgrading', {}, message.params.output));
             break;
           case 'upgrade_finished':
             store.dispatch(uiActions.updateProcess('upgrade', 'Restarting to complete upgrade'));
             break;
           case 'upgrade_error':
             store.dispatch(uiActions.processFinished('upgrade'));
-            store.dispatch(uiActions.createNotification({ type: 'bad', content: message.params.message, description: message.params.description }));
+            store.dispatch(coreActions.handleException('Upgrade failed', message, message.params.error));
             break;
 
-            // Restart
+          // Restart
           case 'restart_started':
-            store.dispatch(uiActions.processFinished('upgrade'));
-            store.dispatch(uiActions.createNotification({ type: 'info', content: 'Restarting server...' }));
+            store.dispatch(uiActions.processFinished('upgrade', 'Restarting'));
             break;
+          case 'restart_updated':
+              store.dispatch(uiActions.updateProcess('upgrade', 'Restarting', {}, message.params.output));
+              break;
           case 'restart_error':
             store.dispatch(uiActions.processFinished('upgrade'));
-            store.dispatch(uiActions.createNotification({ type: 'bad', content: message.params.message, description: message.params.description }));
+            store.dispatch(coreActions.handleException('Restart failed', message, message.params.error));
             break;
 
-            // Test
+          // Test
           case 'test_started':
+            store.dispatch(uiActions.updateProcess('test', 'Running test', {}, message.params.output));
+            break;
+          case 'test_updated':
             store.dispatch(uiActions.updateProcess('test', 'Running test'));
             break;
           case 'test_finished':
@@ -159,7 +170,7 @@ const PusherMiddleware = (function () {
             break;
           case 'test_error':
             store.dispatch(uiActions.processFinished('test'));
-            store.dispatch(uiActions.createNotification({ type: 'bad', content: message.params.message, description: message.params.description }));
+            store.dispatch(uiActions.createNotification({ type: 'bad', content: message.params.message, description: message.params.error }));
             break;
         }
       }
@@ -431,15 +442,15 @@ const PusherMiddleware = (function () {
         break;
 
 
-        /**
-             * Commands
-             * */
+      /**
+           * Commands
+           * */
 
       case 'PUSHER_GET_COMMANDS':
         request(store, 'get_commands')
           .then(
             (response) => {
-                			store.dispatch(pusherActions.commandsUpdated(response.commands));
+              store.dispatch(pusherActions.commandsUpdated(response.commands));
             },
             (error) => {
               // We're not too worried about capturing errors here
@@ -504,32 +515,32 @@ const PusherMiddleware = (function () {
         var command = { ...pusher.commands[action.id] };
         var notification_key = `command_${action.id}`;
 
-            	if (action.notify) {
+        if (action.notify) {
           store.dispatch(uiActions.startProcess(notification_key, 'Running command'));
         }
 
         request(store, 'run_command', { id: action.id })
           .then((response) => {
             console.log('Command response', response);
-	                	store.dispatch(uiActions.processFinished(notification_key));
+            store.dispatch(uiActions.processFinished(notification_key));
             if (action.notify) {
               store.dispatch(uiActions.createNotification({ key: notification_key, type: 'info', content: 'Command sent' }));
             }
           },
-          (error) => {
-	                	store.dispatch(uiActions.processFinished(notification_key));
-            store.dispatch(coreActions.handleException(
-              'Could not run command',
-              error,
-            ));
-          });
+            (error) => {
+              store.dispatch(uiActions.processFinished(notification_key));
+              store.dispatch(coreActions.handleException(
+                'Could not run command',
+                error,
+              ));
+            });
 
         break;
 
 
-        /**
-             * Radio
-             * */
+      /**
+           * Radio
+           * */
 
       case 'PUSHER_GET_RADIO':
         request(store, 'get_radio')
@@ -622,8 +633,8 @@ const PusherMiddleware = (function () {
         store.dispatch(uiActions.createNotification({ content: 'Stopping radio' }));
 
         if (store.getState().ui.allow_reporting) {
-	                ReactGA.event({ category: 'Pusher', action: 'Stop radio' });
-	            }
+          ReactGA.event({ category: 'Pusher', action: 'Stop radio' });
+        }
 
         store.dispatch(pusherActions.deliverBroadcast(
           'notification',
@@ -655,9 +666,9 @@ const PusherMiddleware = (function () {
         break;
 
 
-        /**
-             * Notifications and alerts
-             * */
+      /**
+           * Notifications and alerts
+           * */
 
       case 'PUSHER_BROWSER_NOTIFICATION':
         store.dispatch(uiActions.createBrowserNotification(action));
@@ -672,9 +683,9 @@ const PusherMiddleware = (function () {
         break;
 
 
-        /**
-             * Server actions
-             * */
+      /**
+           * Server actions
+           * */
 
       case 'PUSHER_RELOAD':
         // Hard reload. This doesn't strictly clear the cache, but our compiler's
@@ -689,15 +700,15 @@ const PusherMiddleware = (function () {
 
       case 'PUSHER_UPGRADE':
         if (store.getState().ui.allow_reporting) {
-	                ReactGA.event({ category: 'Pusher', action: 'Upgrade', label: '' });
-	            }
+          ReactGA.event({ category: 'Pusher', action: 'Upgrade', label: '' });
+        }
         request(store, 'upgrade');
         break;
 
       case 'PUSHER_LOCAL_SCAN':
         if (store.getState().ui.allow_reporting) {
-	                ReactGA.event({ category: 'Pusher', action: 'Local scan', label: '' });
-	            }
+          ReactGA.event({ category: 'Pusher', action: 'Local scan', label: '' });
+        }
         request(store, 'local_scan');
         break;
 
@@ -707,8 +718,8 @@ const PusherMiddleware = (function () {
 
       case 'PUSHER_VERSION':
         if (store.getState().ui.allow_reporting) {
-	                ReactGA.event({ category: 'Pusher', action: 'Version', label: action.version.current });
-	            }
+          ReactGA.event({ category: 'Pusher', action: 'Version', label: action.version.current });
+        }
         next(action);
         break;
 
@@ -768,12 +779,12 @@ const PusherMiddleware = (function () {
       case 'PUSHER_ERROR':
         store.dispatch(uiActions.createNotification(action.message, 'bad'));
         if (store.getState().ui.allow_reporting) {
-	                ReactGA.event({ category: 'Pusher', action: 'Error', label: action.message });
-	            }
+          ReactGA.event({ category: 'Pusher', action: 'Error', label: action.message });
+        }
         break;
 
 
-        // This action is irrelevant to us, pass it on to the next middleware
+      // This action is irrelevant to us, pass it on to the next middleware
       default:
         return next(action);
     }
