@@ -18,8 +18,6 @@ class Notifications extends React.Component {
   }
 
   importConfiguration(notification_key, configuration) {
-    console.log('Importing configuration', configuration);
-
     if (configuration.ui) {
       this.props.uiActions.set(configuration.ui);
     }
