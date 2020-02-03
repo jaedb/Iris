@@ -29,7 +29,7 @@ def process_mock(popen_mock):
     yield mock_process
 
 def test_can_run_args(popen_mock, process_mock):
-    IrisSystemThread('foo', None).can_run()
+    IrisSystemThread('foo', None, None).can_run()
     popen_mock.assert_called_once_with(
         mock.ANY,
         shell=True,
@@ -38,21 +38,21 @@ def test_can_run_args(popen_mock, process_mock):
     )
 
 def test_can_run_uses_sudo_non_interactive(popen_mock, process_mock):
-    IrisSystemThread('foo', None).can_run()
-    
+    IrisSystemThread('foo', None, None).can_run()
+
     popen_mock.assert_called_once()
     assert popen_mock.call_args[0][0].startswith(b"sudo -n ")
 
 
 def test_can_run_calls_script_check(popen_mock, process_mock):
-    IrisSystemThread('foo', None).can_run()
+    IrisSystemThread('foo', None, None).can_run()
 
     assert popen_mock.call_args[0][0].endswith(b"system.sh check")
 
 
 def test_can_run_sudo_refused_raises(popen_mock, process_mock, caplog):
     process_mock.wait.return_value = 1
-    iris_system = IrisSystemThread('foo', None)
+    iris_system = IrisSystemThread('foo', None, None)
 
     with pytest.raises(IrisSystemPermissionError) as excinfo:
         iris_system.can_run()
@@ -66,7 +66,7 @@ def test_can_run_sudo_refused_raises(popen_mock, process_mock, caplog):
 
 
 def test_run_args(popen_mock, process_mock):
-    iris_system = IrisSystemThread('foo', mock.Mock())
+    iris_system = IrisSystemThread('foo', mock.Mock(), None)
     iris_system.can_run = mock.Mock(return_value = True)
     iris_system.run()
 
@@ -78,9 +78,9 @@ def test_run_args(popen_mock, process_mock):
 
 
 def test_run_uses_sudo(popen_mock, process_mock):
-    iris_system = IrisSystemThread('foo', mock.Mock())
+    iris_system = IrisSystemThread('foo', mock.Mock(), None)
     iris_system.can_run = mock.Mock(return_value = True)
     iris_system.run()
-    
+
     popen_mock.assert_called_once()
     assert popen_mock.call_args[0][0][0] == b"sudo"
