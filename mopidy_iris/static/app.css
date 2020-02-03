@@ -4052,15 +4052,17 @@ select {
     top: 0;
     left: 0; }
   .list__item__column {
-    align-items: center; }
+    align-items: center;
+    flex: 10; }
     .list__item__column--middle {
       display: flex;
-      margin-left: auto;
-      flex: 1; }
+      flex: 5; }
     .list__item__column--right {
       display: flex;
       margin-left: auto;
-      z-index: 9; }
+      z-index: 9;
+      flex: 4;
+      justify-content: flex-end; }
       .list__item__column--right .list__item__column__item {
         padding-left: 10px;
         display: inline-block; }
