@@ -2,3 +2,4 @@ include mopidy_iris/ext.conf
 include mopidy_iris/system.sh
 include IRIS_VERSION
 recursive-include mopidy_iris/static *
+recursive-include mopidy_iris *.py

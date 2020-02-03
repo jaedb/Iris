@@ -60018,8 +60018,6 @@ var Notifications = function (_React$Component) {
     value: function importConfiguration(notification_key, configuration) {
       var _this2 = this;
 
-      console.log('Importing configuration', configuration);
-
       if (configuration.ui) {
         this.props.uiActions.set(configuration.ui);
       }
@@ -63888,8 +63886,6 @@ var TrackList = function (_React$Component) {
   }, {
     key: 'handleTouchDrag',
     value: function handleTouchDrag(e, track_key) {
-      console.log('touchDragging', e, track_key);
-
       // Drag initiated on a selected track
       if (this.props.selected_tracks.includes(track_key)) {
         // They're all dragging

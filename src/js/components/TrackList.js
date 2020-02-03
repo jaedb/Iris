@@ -119,8 +119,6 @@ class TrackList extends React.Component {
   }
 
   handleTouchDrag(e, track_key) {
-    console.log('touchDragging', e, track_key);
-
     // Drag initiated on a selected track
     if (this.props.selected_tracks.includes(track_key)) {
       // They're all dragging
