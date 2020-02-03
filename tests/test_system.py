@@ -39,7 +39,6 @@ def test_can_run_args(popen_mock, process_mock):
 
 def test_can_run_uses_sudo_non_interactive(popen_mock, process_mock):
     IrisSystemThread('foo', None, None).can_run()
-    
     popen_mock.assert_called_once()
     assert popen_mock.call_args[0][0].startswith(b"sudo -n ")
 
@@ -81,6 +80,6 @@ def test_run_uses_sudo(popen_mock, process_mock):
     iris_system = IrisSystemThread('foo', mock.Mock(), None)
     iris_system.can_run = mock.Mock(return_value = True)
     iris_system.run()
-    
+
     popen_mock.assert_called_once()
     assert popen_mock.call_args[0][0][0] == b"sudo"

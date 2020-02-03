@@ -1,6 +1,6 @@
 <img src="https://raw.githubusercontent.com/jaedb/iris/master/src/assets/logo.png" width="128" />
 
-Iris (formerly known as Spotmop) is an extension for the Mopidy music server. With support for Spotify, LastFM, Snapcast, Icecast and many other extensions, Iris is the software that brings all your music into one user-friendly and unified interface.
+Iris is an extension for the Mopidy music server. With support for Spotify, LastFM, Snapcast, Icecast and many other extensions, Iris brings all your music into one user-friendly and unified interface.
 
 Built and maintained by James Barnsley.
 
@@ -32,7 +32,6 @@ Requirements
 
 * Mopidy
 * Mopidy-Spotify (recommended, not required)
-* Mopidy-Local-Sqlite (recommended, not required)
 
 Getting started
 -------
