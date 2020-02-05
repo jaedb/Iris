@@ -101,10 +101,13 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
                             ),
                         )
                     else:
-                        getattr(iris, message["method"])(
+                        getattr(
+                            iris,
+                            message["method"])(
                             ioloop=self.ioloop,
                             data=params,
-                            callback=lambda response, error=False: self.handle_result(
+                            callback=lambda response,
+                            error=False: self.handle_result(
                                 id=id,
                                 method=message["method"],
                                 response=response,
@@ -211,12 +214,17 @@ class HttpHandler(tornado.web.RequestHandler):
                         ),
                     )
                 else:
-                    getattr(iris, slug)(
+                    getattr(
+                        iris,
+                        slug)(
                         ioloop=self.ioloop,
                         request=self,
-                        callback=lambda response, error=False: self.handle_result(
-                            id=id, method=slug, response=response, error=error
-                        ),
+                        callback=lambda response,
+                        error=False: self.handle_result(
+                            id=id,
+                            method=slug,
+                            response=response,
+                            error=error),
                     )
             except Exception as e:
                 logger.error(str(e))
@@ -256,12 +264,17 @@ class HttpHandler(tornado.web.RequestHandler):
                         ),
                     )
                 else:
-                    getattr(iris, slug)(
+                    getattr(
+                        iris,
+                        slug)(
                         data=params,
                         request=self.request,
-                        callback=lambda response=False, error=False: self.handle_result(
-                            id=id, method=slug, response=response, error=error
-                        ),
+                        callback=lambda response=False,
+                        error=False: self.handle_result(
+                            id=id,
+                            method=slug,
+                            response=response,
+                            error=error),
                     )
 
             except tornado.web.HTTPError:

@@ -886,7 +886,7 @@ class IrisCore(pykka.ThreadingActor):
             error = {
                 "message": "Command failed",
                 "description": "Could not find command by ID "
-                    + '"' + str(data["id"]) + '"',
+                + '"' + str(data["id"]) + '"',
             }
         else:
             command = self.commands[str(data["id"])]
