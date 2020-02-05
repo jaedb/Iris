@@ -40,8 +40,8 @@ class Extension(ext.Extension):
 
         # Add web extension
         registry.add(
-            "http:app", {
-                "name": self.ext_name, "factory": iris_factory})
+            "http:app", {"name": self.ext_name, "factory": iris_factory}
+        )
 
         # Add our frontend
         registry.add("frontend", IrisFrontend)

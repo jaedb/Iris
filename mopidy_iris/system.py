@@ -17,9 +17,10 @@ class IrisSystemPermissionError(IrisSystemError):
 
     def __init__(self, path):
         message = (
-            r'''Password-less access to %s was refused.
-            Check your /etc/sudoers file.''' %
-            path.as_uri())
+            r"""Password-less access to %s was refused.
+            Check your /etc/sudoers file."""
+            % path.as_uri()
+        )
         logger.error(message)
         super().__init__(message)
 
@@ -67,7 +68,8 @@ class IrisSystemThread(Thread):
         command = self.get_command()
         logger.debug("Running '%s'", os.fsdecode(b" ".join(command)))
         process = subprocess.Popen(
-            command, stdout=subprocess.PIPE, encoding="utf8")
+            command, stdout=subprocess.PIPE, encoding="utf8"
+        )
 
         lines = ""
         while True:
@@ -95,13 +97,14 @@ class IrisSystemThread(Thread):
     def can_run(self, *args, **kwargs):
         # Attempt an empty call to our system file
         command_bytes = b" ".join(
-            self.get_command(
-                "check", non_interactive=True))
+            self.get_command("check", non_interactive=True)
+        )
         process = subprocess.Popen(
             command_bytes,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            shell=True)
+            shell=True,
+        )
         result, error = process.communicate()
         exitCode = process.wait()
 

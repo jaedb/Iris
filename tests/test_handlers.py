@@ -11,7 +11,7 @@ from mopidy_iris import handlers
 from mopidy_iris import core
 from mopidy_iris.mem import iris
 
-        
+
 def async_return_helper(result):
     f = Future()
     f.set_result(result)
@@ -22,22 +22,13 @@ class HttpHandlerTest(tornado.testing.AsyncHTTPTestCase):
     @pytest.fixture(autouse=True)
     def inject_fixtures(self, caplog):
         self._caplog = caplog
-    
+
     def get_app(self):
         http_handler = handlers.HttpHandler
         # http_handler.handle_result = mock.Mock()
         # self.handler_mock = http_handler.handle_result
         return tornado.web.Application(
-            [
-                (
-                    r"/(.*)",
-                    http_handler,
-                    {
-                        'core': None,
-                        'config': {},
-                    },
-                )
-            ]
+            [(r"/(.*)", http_handler, {"core": None, "config": {},},)]
         )
 
     def test_get_method(self):
@@ -69,7 +60,7 @@ class HttpHandlerTest(tornado.testing.AsyncHTTPTestCase):
         iris_mock.foo = mock.Mock()
 
         response = self.fetch("/foo", method="GET")
-        
+
         iris_mock.foo.assert_called_once()
         assert 200 == response.code
 
@@ -78,14 +69,14 @@ class HttpHandlerTest(tornado.testing.AsyncHTTPTestCase):
         iris_mock.foo = mock.Mock(side_effect=Exception("bar"))
 
         response = self.fetch("/foo", method="GET")
-        
+
         iris_mock.foo.assert_called_once()
         assert 200 == response.code
         assert "bar" in self._caplog.text
 
     @mock.patch.object(handlers.iris, "do_fetch")
     def test_get_method_with_fetch(self, fetch_mock):
-        iris.config = {"spotify" : {"client_id": 123, "client_secret": 456}}
+        iris.config = {"spotify": {"client_id": 123, "client_secret": 456}}
         result = mock.Mock(spec=HTTPResponse, body='{"expires_in":88}')
         fetch_mock.return_value = async_return_helper(result)
 
