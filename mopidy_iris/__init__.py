@@ -1,8 +1,6 @@
 import logging
-import json
 import pathlib
 
-import pkg_resources
 from mopidy import config, ext
 
 __version__ = "3.44.0"
