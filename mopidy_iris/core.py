@@ -811,9 +811,7 @@ class IrisCore(pykka.ThreadingActor):
         self.broadcast(
             data={
                 "method": "queue_metadata_changed",
-                "params": {
-                    "queue_metadata": self.queue_metadata
-                },
+                "params": {"queue_metadata": self.queue_metadata},
             }
         )
 
@@ -865,9 +863,7 @@ class IrisCore(pykka.ThreadingActor):
         self.broadcast(
             data={
                 "method": "commands_changed",
-                "params": {
-                    "commands": self.commands
-                },
+                "params": {"commands": self.commands},
             }
         )
 
@@ -886,7 +882,9 @@ class IrisCore(pykka.ThreadingActor):
             error = {
                 "message": "Command failed",
                 "description": "Could not find command by ID "
-                + '"' + str(data["id"]) + '"',
+                + '"'
+                + str(data["id"])
+                + '"',
             }
         else:
             command = self.commands[str(data["id"])]
@@ -1030,9 +1028,7 @@ class IrisCore(pykka.ThreadingActor):
             self.broadcast(
                 data={
                     "method": "spotify_token_changed",
-                    "params": {
-                        "spotify_token": self.spotify_token
-                    },
+                    "params": {"spotify_token": self.spotify_token},
                 }
             )
 
