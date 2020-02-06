@@ -63,8 +63,10 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
                 error={
                     "id": id,
                     "code": 32602,
-                    "message": r"""Invalid JSON-RPC request (missing
-                    property "jsonrpc")""",
+                    "message": (
+                        "Invalid JSON-RPC request (missing ",
+                        "property 'jsonrpc')"
+                    )
                 },
             )
 
@@ -177,8 +179,10 @@ class HttpHandler(tornado.web.RequestHandler):
         self.set_header("Access-Control-Allow-Origin", "*")
         self.set_header(
             "Access-Control-Allow-Headers",
-            r"""Origin, X-Requested-With, Content-Type, Accept,
-            Authorization, Client-Security-Token, Accept-Encoding""",
+            (
+                "Origin, X-Requested-With, Content-Type, Accept, "
+                "Authorization, Client-Security-Token, Accept-Encoding"
+            )
         )
 
     def initialize(self, core, config):
@@ -240,7 +244,10 @@ class HttpHandler(tornado.web.RequestHandler):
         except BaseException:
             self.handle_result(
                 id=id,
-                error={"code": 32700, "message": "Missing or invalid payload"},
+                error={
+                    "code": 32700,
+                    "message": "Missing or invalid payload"
+                },
             )
             return
 
