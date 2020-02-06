@@ -17,9 +17,8 @@ class IrisSystemPermissionError(IrisSystemError):
 
     def __init__(self, path):
         message = (
-            r"""Password-less access to %s was refused.
-            Check your /etc/sudoers file."""
-            % path.as_uri()
+            "Password-less access to %s was refused. "
+            "Check your /etc/sudoers file." % path.as_uri()
         )
         logger.error(message)
         super().__init__(message)
@@ -61,7 +60,7 @@ class IrisSystemThread(Thread):
         except IrisSystemError as e:
             logger.error(e)
 
-            error = {"message": e.reason, "description": e.message}
+            error = {"message": e.reason, "description": str(e)}
 
             return {"error": error}
 
