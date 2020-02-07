@@ -31,12 +31,6 @@ workflows:
           filters:
             branches:
               only: deploy/test
-      - jest:
-          requires:
-            - build
-          filters:
-            branches:
-              only: deploy/test
   build_test_and_release:
     jobs:
       - py38:
