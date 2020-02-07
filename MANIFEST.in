@@ -1,3 +1,12 @@
+recursive-include mopidy_iris/static *
+recursive-include mopidy_iris *.py
+recursive-include docs *
+recursive-include tests *.py
+recursive-include tests *.js
 include mopidy_iris/ext.conf
 include mopidy_iris/system.sh
-recursive-include mopidy_iris/static *
+include IRIS_VERSION
+include Dockerfile
+include pyproject.toml
+include screenshot.jpg
+include tox.ini

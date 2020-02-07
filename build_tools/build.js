@@ -53,7 +53,19 @@ copydir('src/assets', 'mopidy_iris/static/assets', function(error){
 		fs.writeFileSync(html_file, html_file_content, 'utf8');
 		console.log('Setting version in HTML');
 
-		console.log('Setting version in NPM');
+		console.log('Setting version in __init__.py');
+		var init_file = "mopidy_iris/__init__.py";
+		var init_file_content = fs.readFileSync(init_file, "utf8");
+		init_file_content = init_file_content.replace(/(?:__version__\ \=\ \')(?:.*)'/, "__version__ = '"+version+"'");
+		fs.writeFileSync(init_file, init_file_content, 'utf8');
+
+		console.log('Setting version in setup.cfg');
+		var init_file = "mopidy_iris/__init__.py";
+		var init_file_content = fs.readFileSync(init_file, "utf8");
+		init_file_content = init_file_content.replace(/(?:version\ \=\ \')(?:.*)'/, "version = '"+version+"'");
+		fs.writeFileSync(init_file, init_file_content, 'utf8');
+
+		console.log('Setting version in package.json');
 		var package_file = "package.json";
 		var package_file_content = fs.readFileSync(package_file, "utf8");
 		package_file_content = package_file_content.replace(/(?:\"version\"\:\ \")(?:.*)"/, '"version": "'+version+'"');

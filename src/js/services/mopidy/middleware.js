@@ -852,11 +852,15 @@ const MopidyMiddleware = (function () {
 
       case 'MOPIDY_PLAY_URIS':
         const { from_uri } = action;
-        let uris = Object.assign([], action.uris);
+        let urisToPlay = Object.assign([], action.uris);
 
-        if (!uris || !uris.length) {
+        if (!urisToPlay || !urisToPlay.length) {
           this.props.uiActions.createNotification({ content: 'No URIs to play', type: 'warning' });
           break;
+        }
+
+        if (action.shuffle) {
+          urisToPlay = helpers.shuffle(urisToPlay);
         }
 
         // Stop the radio
@@ -871,11 +875,11 @@ const MopidyMiddleware = (function () {
 
         // Shuffle/random mode
         if (store.getState().mopidy.random) {
-          var first_uri_index = Math.floor(Math.random() * action.uris.length);
+          var first_uri_index = Math.floor(Math.random() * urisToPlay.length);
         } else {
           var first_uri_index = 0;
         }
-        var first_uri = uris[first_uri_index];
+        var first_uri = urisToPlay[first_uri_index];
 
         // add our first track
         request(socket, store, 'tracklist.add', { uris: [first_uri], at_position: 0 })
@@ -898,15 +902,15 @@ const MopidyMiddleware = (function () {
               }
 
               // Remove our first_uri as we've already added it
-              uris.splice(first_uri_index, 1);
+              urisToPlay.splice(first_uri_index, 1);
 
               // And add the rest of our uris (if any)
-              if (uris.length > 0) {
+              if (urisToPlay.length > 0) {
                 // Wait a moment so the server can trigger track_changed etc
                 // this means our UI feels snappier as the first track shows up quickly
                 setTimeout(
                   () => {
-                    store.dispatch(mopidyActions.enqueueURIs(uris, from_uri, null, 1));
+                    store.dispatch(mopidyActions.enqueueURIs(urisToPlay, from_uri, null, 1));
                   },
                   100,
                 );
@@ -1881,8 +1885,6 @@ const MopidyMiddleware = (function () {
       case 'MOPIDY_GET_ALBUMS':
         request(socket, store, 'library.lookup', { uris: action.uris })
           .then((response) => {
-            if (!response.length) return;
-
             const albums_loaded = [];
             const artists_loaded = [];
             const tracks_loaded = [];
@@ -2286,7 +2288,7 @@ const MopidyMiddleware = (function () {
               if (!_response) return;
               const response = _response[action.uri];
               if (!response || !response.length) return;
-              
+
               const track = { ...response[0] };
               store.dispatch(coreActions.trackLoaded(track));
             },

@@ -17,6 +17,7 @@
     "react-router": "^5"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
     "@babel/preset-env": "^7.7.1",
     "@babel/preset-react": "^7.7.0",
     "babel-core": "^6",
@@ -64,7 +65,7 @@
     "webpack-strip": "0.1.0"
   },
   "scripts": {
-    "test": "jest",
+    "jest": "jest",
     "start": "webpack-dev-server",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
