@@ -119,8 +119,9 @@ class IrisCore(pykka.ThreadingActor):
     # @return string
     ##
     def generateGuid(self):
-        return "".join(random.choices(
-            string.ascii_uppercase + string.digits, k=12))
+        return "".join(
+            random.choices(string.ascii_uppercase + string.digits, k=12)
+        )
 
     ##
     # Digest a protocol header into it's id/name parts
@@ -242,8 +243,11 @@ class IrisCore(pykka.ThreadingActor):
             if send_to_this_connection:
                 connection["connection"].write_message(json_encode(message))
 
-        response = {"message": "Broadcast to " +
-                    str(len(self.connections)) + " connections"}
+        response = {
+            "message": "Broadcast to "
+            + str(len(self.connections))
+            + " connections"
+        }
         if callback:
             callback(response)
         else:
@@ -286,8 +290,8 @@ class IrisCore(pykka.ThreadingActor):
         self.broadcast(
             data={
                 "method": "connection_added",
-                "params": {
-                    "connection": client}}
+                "params": {"connection": client},
+            }
         )
 
     def update_connection(self, *args, **kwargs):
@@ -304,11 +308,11 @@ class IrisCore(pykka.ThreadingActor):
                 data={
                     "method": "connection_changed",
                     "params": {
-                        "connection":
-                            self.connections[connection_id]["client"]},
-                })
-            response = {
-                "connection": self.connections[connection_id]["client"]}
+                        "connection": self.connections[connection_id]["client"]
+                    },
+                }
+            )
+            response = {"connection": self.connections[connection_id]["client"]}
             if callback:
                 callback(response)
             else:
@@ -350,12 +354,14 @@ class IrisCore(pykka.ThreadingActor):
                 data={
                     "method": "connection_changed",
                     "params": {
-                        "connection":
-                            self.connections[connection_id]["client"]},
-                })
+                        "connection": self.connections[connection_id]["client"]
+                    },
+                }
+            )
             response = {
                 "connection_id": connection_id,
-                "username": data["username"]}
+                "username": data["username"],
+            }
             if callback:
                 callback(response)
             else:
@@ -469,15 +475,11 @@ class IrisCore(pykka.ThreadingActor):
         if error:
             self.broadcast(data={"method": "restart_error", "params": error})
         elif update:
-            self.broadcast(
-                data={
-                    "method": "restart_updated",
-                    "params": update})
+            self.broadcast(data={"method": "restart_updated", "params": update})
         else:
             self.broadcast(
-                data={
-                    "method": "restart_finished",
-                    "params": response})
+                data={"method": "restart_finished", "params": response}
+            )
 
     ##
     # Run an upgrade of Iris
@@ -502,15 +504,11 @@ class IrisCore(pykka.ThreadingActor):
         if error:
             self.broadcast(data={"method": "upgrade_error", "params": error})
         elif update:
-            self.broadcast(
-                data={
-                    "method": "upgrade_updated",
-                    "params": update})
+            self.broadcast(data={"method": "upgrade_updated", "params": update})
         else:
             self.broadcast(
-                data={
-                    "method": "upgrade_finished",
-                    "params": response})
+                data={"method": "upgrade_finished", "params": response}
+            )
             self.restart()
 
     ##
@@ -522,10 +520,7 @@ class IrisCore(pykka.ThreadingActor):
         ioloop = kwargs.get("ioloop", False)
 
         # Trigger the action
-        IrisSystemThread(
-            "local_scan",
-            ioloop,
-            self.local_scan_callback).start()
+        IrisSystemThread("local_scan", ioloop, self.local_scan_callback).start()
 
         self.broadcast(data={"method": "local_scan_started"})
 
@@ -537,20 +532,15 @@ class IrisCore(pykka.ThreadingActor):
 
     def local_scan_callback(self, response, error, update):
         if error:
-            self.broadcast(
-                data={
-                    "method": "local_scan_error",
-                    "params": error})
+            self.broadcast(data={"method": "local_scan_error", "params": error})
         elif update:
             self.broadcast(
-                data={
-                    "method": "local_scan_updated",
-                    "params": update})
+                data={"method": "local_scan_updated", "params": update}
+            )
         else:
             self.broadcast(
-                data={
-                    "method": "local_scan_finished",
-                    "params": response})
+                data={"method": "local_scan_finished", "params": response}
+            )
 
     ##
     # Spotify Radio
@@ -624,15 +614,15 @@ class IrisCore(pykka.ThreadingActor):
                 self.broadcast(
                     data={
                         "method": "radio_started",
-                        "params": {
-                            "radio": self.radio}}
+                        "params": {"radio": self.radio},
+                    }
                 )
             else:
                 self.broadcast(
                     data={
                         "method": "radio_changed",
-                        "params": {
-                            "radio": self.radio}}
+                        "params": {"radio": self.radio},
+                    }
                 )
 
             self.get_radio(callback=callback)
@@ -691,29 +681,30 @@ class IrisCore(pykka.ThreadingActor):
         url = (
             url
             + "?seed_artists="
-            + (",".join(self.radio["seed_artists"])
-               ).replace("spotify:artist:", "")
+            + (",".join(self.radio["seed_artists"])).replace(
+                "spotify:artist:", ""
+            )
         )
         url = (
             url
             + "&seed_genres="
-            + (",".join(self.radio["seed_genres"])
-               ).replace("spotify:genre:", "")
+            + (",".join(self.radio["seed_genres"])).replace(
+                "spotify:genre:", ""
+            )
         )
         url = (
             url
             + "&seed_tracks="
-            + (",".join(self.radio["seed_tracks"])
-               ).replace("spotify:track:", "")
+            + (",".join(self.radio["seed_tracks"])).replace(
+                "spotify:track:", ""
+            )
         )
         url = url + "&limit=50"
         http_client = AsyncHTTPClient()
 
         try:
             http_response = await http_client.fetch(
-                url, "POST", headers={
-                    "Authorization": "Bearer " + access_token
-                }
+                url, "POST", headers={"Authorization": "Bearer " + access_token}
             )
             response_body = json.loads(http_response.body)
 
@@ -730,8 +721,8 @@ class IrisCore(pykka.ThreadingActor):
                 + error["error_description"]
             }
             logger.error(
-                "Could not fetch Spotify recommendations: " +
-                error["error_description"]
+                "Could not fetch Spotify recommendations: "
+                + error["error_description"]
             )
             logger.debug(error)
             return False
@@ -810,10 +801,10 @@ class IrisCore(pykka.ThreadingActor):
         for tlid in data["tlids"]:
             item = {
                 "tlid": tlid,
-                "added_from":
-                    data["added_from"] if "added_from" in data else None,
-                "added_by":
-                    data["added_by"] if "added_by" in data else None,
+                "added_from": data["added_from"]
+                if "added_from" in data
+                else None,
+                "added_by": data["added_by"] if "added_by" in data else None,
             }
             self.queue_metadata["tlid_" + str(tlid)] = item
 
@@ -872,8 +863,8 @@ class IrisCore(pykka.ThreadingActor):
         self.broadcast(
             data={
                 "method": "commands_changed",
-                "params": {
-                    "commands": self.commands}}
+                "params": {"commands": self.commands},
+            }
         )
 
         response = {"message": "Commands saved"}
@@ -890,8 +881,10 @@ class IrisCore(pykka.ThreadingActor):
         if str(data["id"]) not in self.commands:
             error = {
                 "message": "Command failed",
-                "description": r'''Could not find command by ID
-                "' + str(data["id"]) + '"''',
+                "description": "Could not find command by ID "
+                + '"'
+                + str(data["id"])
+                + '"',
             }
         else:
             command = self.commands[str(data["id"])]
@@ -921,8 +914,7 @@ class IrisCore(pykka.ThreadingActor):
             d = command["additional_headers"].split("\n")
             lines = list(filter(lambda x: x.find(":") > 0, d))
             fields = [
-                (x.split(":", 1)[0].strip().lower(),
-                 x.split(":", 1)[1].strip())
+                (x.split(":", 1)[0].strip().lower(), x.split(":", 1)[1].strip())
                 for x in lines
             ]
             headers = dict(fields)
@@ -948,7 +940,8 @@ class IrisCore(pykka.ThreadingActor):
                 command["url"],
                 connect_timeout=5,
                 validate_cert=False,
-                headers=headers)
+                headers=headers,
+            )
 
         # Make the request, and handle any request errors
         try:
@@ -969,14 +962,13 @@ class IrisCore(pykka.ThreadingActor):
             # Perhaps it requires unicode encoding?
             try:
                 command_response_body = tornado.escape.to_unicode(
-                    command_response.body)
+                    command_response.body
+                )
             except BaseException:
                 command_response_body = ""
 
         # Finally, return the result
-        response = {
-            "message": "Command run",
-            "response": command_response_body}
+        response = {"message": "Command run", "response": command_response_body}
 
         if callback:
             callback(response)
@@ -998,8 +990,8 @@ class IrisCore(pykka.ThreadingActor):
 
         # Expired, so go get a new one
         if (
-            not self.spotify_token or
-            self.spotify_token["expires_at"] <= time.time()
+            not self.spotify_token
+            or self.spotify_token["expires_at"] <= time.time()
         ):
             await self.refresh_spotify_token()
 
@@ -1049,8 +1041,9 @@ class IrisCore(pykka.ThreadingActor):
         except (urllib.error.HTTPError, urllib.error.URLError) as e:
             error = json.loads(e.read())
             error = {
-                "message": "Could not refresh token: " +
-                error["error_description"]}
+                "message": "Could not refresh token: "
+                + error["error_description"]
+            }
 
             if callback:
                 callback(False, error)
@@ -1094,9 +1087,9 @@ class IrisCore(pykka.ThreadingActor):
             if connection_id not in self.connections:
                 error = {
                     "message": "Unauthorized request",
-                    "description": "Connection " +
-                    connection_id +
-                    " not connected",
+                    "description": "Connection "
+                    + connection_id
+                    + " not connected",
                 }
 
         except Exception as e:
@@ -1113,10 +1106,8 @@ class IrisCore(pykka.ThreadingActor):
             http_client = AsyncHTTPClient()
             http_response = await http_client.fetch(url)
             callback(
-                http_response.body.decode(
-                    "utf-8",
-                    errors="replace"),
-                False)
+                http_response.body.decode("utf-8", errors="replace"), False
+            )
 
         except (urllib.error.HTTPError, urllib.error.URLError) as e:
             error = json.loads(e.read())
@@ -1125,8 +1116,8 @@ class IrisCore(pykka.ThreadingActor):
                 + error["error_description"]
             }
             logger.error(
-                "Could not fetch Spotify recommendations: " +
-                error["error_description"]
+                "Could not fetch Spotify recommendations: "
+                + error["error_description"]
             )
             logger.debug(error)
             return error
@@ -1155,7 +1146,4 @@ class IrisCore(pykka.ThreadingActor):
         elif error:
             self.broadcast(data={"method": "test_updated", "params": update})
         else:
-            self.broadcast(
-                data={
-                    "method": "test_finished",
-                    "params": response})
+            self.broadcast(data={"method": "test_finished", "params": response})

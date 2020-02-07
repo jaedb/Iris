@@ -1,8 +1,6 @@
 import logging
-import json
 import pathlib
 
-import pkg_resources
 from mopidy import config, ext
 
 __version__ = "3.44.0"
@@ -40,8 +38,8 @@ class Extension(ext.Extension):
 
         # Add web extension
         registry.add(
-            "http:app", {
-                "name": self.ext_name, "factory": iris_factory})
+            "http:app", {"name": self.ext_name, "factory": iris_factory}
+        )
 
         # Add our frontend
         registry.add("frontend", IrisFrontend)

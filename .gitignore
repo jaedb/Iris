@@ -15,3 +15,4 @@ docker/mopidy.conf
 docker/data/
 docker-compose.yml
 /.tox/
+/tests/__pycache__/

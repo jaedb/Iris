@@ -31,7 +31,8 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
         # Get the client's IP. If it's local, then use it's proxy origin
         ip = self.request.remote_ip
         if ip == "127.0.0.1" and hasattr(
-                self.request.headers, "X-Forwarded-For"):
+            self.request.headers, "X-Forwarded-For"
+        ):
             ip = self.request.headers["X-Forwarded-For"]
 
         # Construct our initial client object, and add to our list of
@@ -62,8 +63,10 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
                 error={
                     "id": id,
                     "code": 32602,
-                    "message": r'''Invalid JSON-RPC request (missing
-                    property "jsonrpc")''',
+                    "message": (
+                        "Invalid JSON-RPC request (missing ",
+                        "property 'jsonrpc')",
+                    ),
                 },
             )
 
@@ -87,12 +90,12 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
                     # For async methods we need to await, but it must be
                     # ommited for syncronous methods
                     if asyncio.iscoroutinefunction(
-                            getattr(iris, message["method"])):
+                        getattr(iris, message["method"])
+                    ):
                         await getattr(iris, message["method"])(
                             ioloop=self.ioloop,
                             data=params,
-                            callback=lambda response,
-                            error=False: self.handle_result(
+                            callback=lambda response, error=False: self.handle_result(
                                 id=id,
                                 method=message["method"],
                                 response=response,
@@ -100,13 +103,10 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
                             ),
                         )
                     else:
-                        getattr(
-                            iris,
-                            message["method"])(
+                        getattr(iris, message["method"])(
                             ioloop=self.ioloop,
                             data=params,
-                            callback=lambda response,
-                            error=False: self.handle_result(
+                            callback=lambda response, error=False: self.handle_result(
                                 id=id,
                                 method=message["method"],
                                 response=response,
@@ -121,9 +121,9 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
                     error={
                         "id": id,
                         "code": 32601,
-                        "message": 'Method "' +
-                        message["method"] +
-                        '" does not exist',
+                        "message": 'Method "'
+                        + message["method"]
+                        + '" does not exist',
                     },
                     id=id,
                 )
@@ -179,8 +179,10 @@ class HttpHandler(tornado.web.RequestHandler):
         self.set_header("Access-Control-Allow-Origin", "*")
         self.set_header(
             "Access-Control-Allow-Headers",
-            r'''Origin, X-Requested-With, Content-Type, Accept,
-            Authorization, Client-Security-Token, Accept-Encoding''',
+            (
+                "Origin, X-Requested-With, Content-Type, Accept, "
+                "Authorization, Client-Security-Token, Accept-Encoding"
+            ),
         )
 
     def initialize(self, core, config):
@@ -208,23 +210,16 @@ class HttpHandler(tornado.web.RequestHandler):
                     await getattr(iris, slug)(
                         ioloop=self.ioloop,
                         request=self,
-                        callback=lambda response,
-                        error=False: self.handle_result(
+                        callback=lambda response, error=False: self.handle_result(
                             id=id, method=slug, response=response, error=error
                         ),
                     )
                 else:
-                    getattr(
-                        iris,
-                        slug)(
+                    getattr(iris, slug)(
                         ioloop=self.ioloop,
                         request=self,
-                        callback=lambda response,
-                        error=False: self.handle_result(
-                            id=id,
-                            method=slug,
-                            response=response,
-                            error=error
+                        callback=lambda response, error=False: self.handle_result(
+                            id=id, method=slug, response=response, error=error
                         ),
                     )
             except Exception as e:
@@ -235,9 +230,8 @@ class HttpHandler(tornado.web.RequestHandler):
                 id=id,
                 error={
                     "code": 32601,
-                    "message": "Method " +
-                    slug +
-                    " does not exist"},
+                    "message": "Method " + slug + " does not exist",
+                },
             )
             return
 
@@ -249,8 +243,8 @@ class HttpHandler(tornado.web.RequestHandler):
             params = json.loads(self.request.body.decode("utf-8"))
         except BaseException:
             self.handle_result(
-                id=id, error={
-                    "code": 32700, "message": "Missing or invalid payload"}
+                id=id,
+                error={"code": 32700, "message": "Missing or invalid payload"},
             )
             return
 
@@ -261,30 +255,23 @@ class HttpHandler(tornado.web.RequestHandler):
                     await getattr(iris, slug)(
                         data=params,
                         request=self.request,
-                        callback=lambda response=False,
-                        error=False: self.handle_result(
+                        callback=lambda response=False, error=False: self.handle_result(
                             id=id, method=slug, response=response, error=error
                         ),
                     )
                 else:
-                    getattr(
-                        iris,
-                        slug)(
+                    getattr(iris, slug)(
                         data=params,
                         request=self.request,
-                        callback=lambda response=False,
-                        error=False: self.handle_result(
-                            id=id,
-                            method=slug,
-                            response=response,
-                            error=error
+                        callback=lambda response=False, error=False: self.handle_result(
+                            id=id, method=slug, response=response, error=error
                         ),
                     )
 
             except tornado.web.HTTPError:
                 self.handle_result(
-                    id=id, error={
-                        "code": 32601, "message": "Invalid JSON payload"}
+                    id=id,
+                    error={"code": 32601, "message": "Invalid JSON payload"},
                 )
                 return
 
@@ -293,9 +280,8 @@ class HttpHandler(tornado.web.RequestHandler):
                 id=id,
                 error={
                     "code": 32601,
-                    "message": "Method " +
-                    slug +
-                    " does not exist"},
+                    "message": "Method " + slug + " does not exist",
+                },
             )
             return
 
@@ -322,10 +308,8 @@ class HttpHandler(tornado.web.RequestHandler):
             # Digest JSON responses into JSON
             content_type = response.headers.get("Content-Type")
             if content_type.startswith(
-                    "application/json"
-                ) or content_type.startswith(
-                    "text/json"
-                    ):
+                "application/json"
+            ) or content_type.startswith("text/json"):
                 body = json.loads(response.body)
 
             # Non-JSON so just copy as-is
