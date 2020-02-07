@@ -31,7 +31,7 @@ workflows:
           filters:
             branches:
               only: deploy/test
-      - test:
+      - jest:
           requires:
             - build
           filters:
@@ -63,16 +63,9 @@ workflows:
           filters:
             branches:
               only: deploy/release
-      - test:
-          requires:
-            - build
-          filters:
-            branches:
-              only: deploy/release
       - deploy:
           requires:
             - build
-            - test
           filters:
             branches:
               only: deploy/release
@@ -137,17 +130,6 @@ jobs:
             - mopidy_iris
           key: v1-dependencies-{{ checksum "VERSION.md" }}
 
-  test:
-    docker:
-      - image: nikolaik/python-nodejs:python3.7-nodejs12-stretch
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "VERSION.md" }}
-      - run:
-          name: Run tests
-          command: npm run test
   deploy:
     docker:
       - image: nikolaik/python-nodejs:python3.7-nodejs12-stretch
