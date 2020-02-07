@@ -5,13 +5,28 @@ orbs:
 
 workflows:
   version: 2
-  test:
+  build_and_test:
     jobs:
-      - py38
-      - py37
-      - black
-      - check-manifest
-      - flake8
+      - py38:
+          filters:
+            branches:
+              only: deploy/test
+      - py37:
+          filters:
+            branches:
+              only: deploy/test
+      - black:
+          filters:
+            branches:
+              only: deploy/test
+      - check-manifest:
+          filters:
+            branches:
+              only: deploy/test
+      - flake8:
+          filters:
+            branches:
+              only: deploy/test
       - build:
           filters:
             branches:
@@ -22,13 +37,28 @@ workflows:
           filters:
             branches:
               only: deploy/test
-  test_and_release:
+  build_test_and_release:
     jobs:
-      - py38
-      - py37
-      - black
-      - check-manifest
-      - flake8
+      - py38:
+          filters:
+            branches:
+              only: deploy/release
+      - py37:
+          filters:
+            branches:
+              only: deploy/release
+      - black:
+          filters:
+            branches:
+              only: deploy/release
+      - check-manifest:
+          filters:
+            branches:
+              only: deploy/release
+      - flake8:
+          filters:
+            branches:
+              only: deploy/release
       - build:
           filters:
             branches:
