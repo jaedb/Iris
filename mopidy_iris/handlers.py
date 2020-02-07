@@ -1,7 +1,13 @@
 from datetime import datetime
 from tornado.escape import json_encode, json_decode
-import tornado.ioloop, tornado.web, tornado.websocket, tornado.template
-import random, string, logging, uuid, subprocess, pykka, ast, logging, json, urllib, requests, time, asyncio
+import tornado.ioloop
+import tornado.web
+import tornado.websocket
+import tornado.template
+import logging
+import json
+import time
+import asyncio
 
 from .mem import iris
 
@@ -24,10 +30,13 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
 
         # Get the client's IP. If it's local, then use it's proxy origin
         ip = self.request.remote_ip
-        if ip == "127.0.0.1" and hasattr(self.request.headers, "X-Forwarded-For"):
+        if ip == "127.0.0.1" and hasattr(
+            self.request.headers, "X-Forwarded-For"
+        ):
             ip = self.request.headers["X-Forwarded-For"]
 
-        # Construct our initial client object, and add to our list of connections
+        # Construct our initial client object, and add to our list of
+        # connections
         client = {
             "connection_id": iris.generateGuid(),
             "ip": ip,
@@ -54,7 +63,10 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
                 error={
                     "id": id,
                     "code": 32602,
-                    "message": 'Invalid JSON-RPC request (missing property "jsonrpc")',
+                    "message": (
+                        "Invalid JSON-RPC request (missing ",
+                        "property 'jsonrpc')",
+                    ),
                 },
             )
 
@@ -75,8 +87,11 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
             if hasattr(iris, message["method"]):
                 try:
 
-                    # For async methods we need to await, but it must be ommited for syncronous methods
-                    if asyncio.iscoroutinefunction(getattr(iris, message["method"])):
+                    # For async methods we need to await, but it must be
+                    # ommited for syncronous methods
+                    if asyncio.iscoroutinefunction(
+                        getattr(iris, message["method"])
+                    ):
                         await getattr(iris, message["method"])(
                             ioloop=self.ioloop,
                             data=params,
@@ -106,7 +121,9 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
                     error={
                         "id": id,
                         "code": 32601,
-                        "message": 'Method "' + message["method"] + '" does not exist',
+                        "message": 'Method "'
+                        + message["method"]
+                        + '" does not exist',
                     },
                     id=id,
                 )
@@ -142,7 +159,8 @@ class WebsocketHandler(tornado.websocket.WebSocketHandler):
             request_response["error"] = error
 
         # We've been handed an AsyncHTTPClient callback. This is the case
-        # when our request calls subsequent external requests (eg Spotify, Genius)
+        # when our request calls subsequent external requests (eg Spotify,
+        # Genius)
         elif isinstance(response, tornado.httpclient.HTTPResponse):
             request_response["result"] = response.body
 
@@ -161,7 +179,10 @@ class HttpHandler(tornado.web.RequestHandler):
         self.set_header("Access-Control-Allow-Origin", "*")
         self.set_header(
             "Access-Control-Allow-Headers",
-            "Origin, X-Requested-With, Content-Type, Accept, Authorization, Client-Security-Token, Accept-Encoding",
+            (
+                "Origin, X-Requested-With, Content-Type, Accept, "
+                "Authorization, Client-Security-Token, Accept-Encoding"
+            ),
         )
 
     def initialize(self, core, config):
@@ -183,7 +204,8 @@ class HttpHandler(tornado.web.RequestHandler):
         if hasattr(iris, slug):
             try:
 
-                # For async methods we need to await, but it must be ommited for syncronous methods
+                # For async methods we need to await, but it must be ommited
+                # for syncronous methods
                 if asyncio.iscoroutinefunction(getattr(iris, slug)):
                     await getattr(iris, slug)(
                         ioloop=self.ioloop,
@@ -206,7 +228,10 @@ class HttpHandler(tornado.web.RequestHandler):
         else:
             self.handle_result(
                 id=id,
-                error={"code": 32601, "message": "Method " + slug + " does not exist"},
+                error={
+                    "code": 32601,
+                    "message": "Method " + slug + " does not exist",
+                },
             )
             return
 
@@ -216,9 +241,10 @@ class HttpHandler(tornado.web.RequestHandler):
 
         try:
             params = json.loads(self.request.body.decode("utf-8"))
-        except:
+        except BaseException:
             self.handle_result(
-                id=id, error={"code": 32700, "message": "Missing or invalid payload"}
+                id=id,
+                error={"code": 32700, "message": "Missing or invalid payload"},
             )
             return
 
@@ -242,16 +268,20 @@ class HttpHandler(tornado.web.RequestHandler):
                         ),
                     )
 
-            except tornado.web.HTTPError as e:
+            except tornado.web.HTTPError:
                 self.handle_result(
-                    id=id, error={"code": 32601, "message": "Invalid JSON payload"}
+                    id=id,
+                    error={"code": 32601, "message": "Invalid JSON payload"},
                 )
                 return
 
         else:
             self.handle_result(
                 id=id,
-                error={"code": 32601, "message": "Method " + slug + " does not exist"},
+                error={
+                    "code": 32601,
+                    "message": "Method " + slug + " does not exist",
+                },
             )
             return
 
@@ -271,15 +301,15 @@ class HttpHandler(tornado.web.RequestHandler):
             self.set_status(400)
 
         # We've been handed an AsyncHTTPClient callback. This is the case
-        # when our request calls subsequent external requests (eg Spotify, Genius).
+        # when our request calls subsequent external requests.
         # We don't need to wrap non-HTTPResponse responses as these are dicts
         elif isinstance(response, tornado.httpclient.HTTPResponse):
 
             # Digest JSON responses into JSON
             content_type = response.headers.get("Content-Type")
-            if content_type.startswith("application/json") or content_type.startswith(
-                "text/json"
-            ):
+            if content_type.startswith(
+                "application/json"
+            ) or content_type.startswith("text/json"):
                 body = json.loads(response.body)
 
             # Non-JSON so just copy as-is

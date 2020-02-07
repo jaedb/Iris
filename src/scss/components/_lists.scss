@@ -42,7 +42,7 @@
 
 		:root .notouch:not(.dragging) &:not(.list__item--no-interaction){
 			cursor: pointer;
-			
+
 			&:hover {
 				cursor: pointer;
 				background: rgba(255,255,255,0.03);
@@ -173,17 +173,19 @@
 
 		&__column {
 			align-items: center;
+			flex: 10;
 
 			&--middle {
 				display: flex;
-				margin-left: auto;
-				flex: 1;
+				flex: 5;
 			}
 
 			&--right {
 				display: flex;
 				margin-left: auto;
 				z-index: 9;
+				flex: 4;
+				justify-content: flex-end;
 
 				.list__item__column__item {
 					padding-left: 10px;
@@ -263,7 +265,7 @@
 			}
 
 			&.has-touch-drag-zone {
-				padding-left: 45px;				
+				padding-left: 45px;
 
 				.drag-zone {
 					position: absolute;
@@ -275,7 +277,7 @@
 					display: block;
 					color: colour(mid_grey);
 					padding: 0;
-					
+
 					.icon {
 						position: absolute;
 						top: 50%;
