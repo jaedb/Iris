@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ "$(pwd)" = "/iris" ]]; then
+if [ -f "/var/lib/mopidy/IS_CONTAINER" ]; then
 	IS_CONTAINER=true
 else
 	IS_CONTAINER=false
