@@ -65,7 +65,7 @@
     "webpack-strip": "0.1.0"
   },
   "scripts": {
-    "test": "jest",
+    "jest": "jest",
     "start": "webpack-dev-server",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",

@@ -5,13 +5,64 @@ orbs:
 
 workflows:
   version: 2
-  test:
+  build_and_test:
     jobs:
-      - py38
-      - py37
-      - black
-      - check-manifest
-      - flake8
+      - py38:
+          filters:
+            branches:
+              only: deploy/test
+      - py37:
+          filters:
+            branches:
+              only: deploy/test
+      - black:
+          filters:
+            branches:
+              only: deploy/test
+      - check-manifest:
+          filters:
+            branches:
+              only: deploy/test
+      - flake8:
+          filters:
+            branches:
+              only: deploy/test
+      - build:
+          filters:
+            branches:
+              only: deploy/test
+  build_test_and_release:
+    jobs:
+      - py38:
+          filters:
+            branches:
+              only: deploy/release
+      - py37:
+          filters:
+            branches:
+              only: deploy/release
+      - black:
+          filters:
+            branches:
+              only: deploy/release
+      - check-manifest:
+          filters:
+            branches:
+              only: deploy/release
+      - flake8:
+          filters:
+            branches:
+              only: deploy/release
+      - build:
+          filters:
+            branches:
+              only: deploy/release
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: deploy/release
 
 jobs:
   py38: &test-template
@@ -49,3 +100,47 @@ jobs:
   check-manifest: *test-template
 
   flake8: *test-template
+
+  build:
+    docker:
+      - image: nikolaik/python-nodejs:python3.7-nodejs12-stretch
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "IRIS_VERSION" }}
+      - run:
+          name: Install npm dependencies
+          command: npm install
+      - run:
+          name: Build code
+          command: npm run build:prod
+      - run:
+          name: Install python dependencies
+          command: pip install -e .
+      - save_cache:
+          paths:
+            - node_modules
+            - mopidy_iris
+          key: v1-dependencies-{{ checksum "IRIS_VERSION" }}
+
+  deploy:
+    docker:
+      - image: nikolaik/python-nodejs:python3.7-nodejs12-stretch
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "IRIS_VERSION" }}
+      - run:
+          name: Prepare .pypirc
+          command: |
+            echo -e "[distutils]" >> ~/.pypirc
+            echo -e "index-servers =" >> ~/.pypirc
+            echo -e " pypi" >> ~/.pypirc
+            echo -e "[pypi]" >> ~/.pypirc
+            echo -e "username = jaedb" >> ~/.pypirc
+            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+      - run:
+          name: Create and distribute package to pypi
+          command: python setup.py sdist upload -r pypi

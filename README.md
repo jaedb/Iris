@@ -13,7 +13,7 @@ Features
 --------
 
 * Full web-based interface controls for Mopidy
-* Improved support for local libraries (powered by Mopidy-Local-Sqlite)
+* Improved support for local libraries (powered by Mopidy-Local)
 * Browse and manage your playlists and tracks
 * Discover new, popular and related music (powered by Spotify)
 * Freely hosted, auto-updated interface available ([beta](https://jaedb.github.io/Iris/#/))
@@ -32,6 +32,7 @@ Requirements
 
 * Mopidy
 * Mopidy-Spotify (recommended, not required)
+* Mopidy-Local (recommended, not required)
 
 Getting started
 -------
