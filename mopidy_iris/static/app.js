@@ -52294,51 +52294,48 @@ var App = exports.App = function (_React$Component) {
   }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
-      var _this2 = this;
+      var _props = this.props,
+          search = _props.location.search,
+          history = _props.history,
+          snapcast_enabled = _props.snapcast_enabled,
+          allow_reporting = _props.allow_reporting,
+          initial_setup_complete = _props.initial_setup_complete,
+          mopidyActions = _props.mopidyActions,
+          pusherActions = _props.pusherActions,
+          snapcastActions = _props.snapcastActions,
+          coreActions = _props.coreActions;
+
 
       window.addEventListener('beforeinstallprompt', this.handleInstallPrompt, false);
       window.addEventListener('focus', this.handleFocusAndBlur, false);
       window.addEventListener('blur', this.handleFocusAndBlur, false);
 
-      if (this.props.allow_reporting) {
+      if (allow_reporting) {
         _reactGa2.default.initialize('UA-64701652-3');
       }
 
       // Fire up our services
-      this.props.mopidyActions.connect();
-      this.props.pusherActions.connect();
-      if (this.props.snapcast_enabled) {
-        this.props.snapcastActions.connect();
+      mopidyActions.connect();
+      pusherActions.connect();
+      if (snapcast_enabled) {
+        snapcastActions.connect();
       }
-      this.props.coreActions.getBroadcasts();
+      coreActions.getBroadcasts();
 
       // Check for url-parsed configuration values
-      var url_vars = this.props.location.query;
-      if (url_vars) {
-        var has_values = false;
-        var values = {};
-        if (url_vars.host !== undefined) {
-          has_values = true;
-          values.host = url_vars.host;
-        }
-        if (url_vars.port !== undefined) {
-          has_values = true;
-          values.port = url_vars.port;
-        }
+      var customHost = helpers.queryString('host', search);
+      var customPort = helpers.queryString('port', search);
+      if (customHost && customPort) {
+        mopidyActions.set({ host: customHost, port: customPort });
 
-        if (has_values) {
-          this.props.mopidyActions.set(values);
+        // Allow 100ms for the action above to complete before we re-route
+        setTimeout(function () {
+          history.push('/');
+        }, 100);
 
-          // Allow 100ms for the action above to complete before we re-route
-          setTimeout(function () {
-            _this2.props.history.push('/');
-          }, 100);
-        }
-      }
-
-      // show initial setup if required
-      if (!this.props.initial_setup_complete) {
-        this.props.history.push('/initial-setup');
+        // Just show default initial setup for fresh installs
+      } else if (!initial_setup_complete) {
+        history.push('/initial-setup');
       }
     }
   }, {
@@ -64396,6 +64393,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 var isTouchDevice = exports.isTouchDevice = function isTouchDevice() {
   return 'ontouchstart' in document.documentElement;
 };
@@ -64608,6 +64607,35 @@ var isCached = exports.isCached = function isCached(url) {
   var image = new Image();
   image.src = url;
   return image.complete;
+};
+
+/**
+ * Digest a react-router's location.search string into an array of values
+ * 
+ * @param key String = the key you want from the URL
+ * @param string String = the locaion.search string
+ */
+var queryString = exports.queryString = function queryString(key, string) {
+  var compact = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+
+  var elements = string.replace('?', '').split('&');
+  var results = elements.reduce(function (accumulator, current) {
+    var subElements = current.split('=');
+    var results = [];
+
+    // We decode the URI, but also treat "+" as a space. This is needed for backend CGI.encode that
+    // happens when redirecting from an OAuth failure.
+    if (subElements[0] === key) {
+      results = subElements[1].split(',').map(function (item) {
+        return decodeURIComponent(item.replace(/\+/g, '%20'));
+      });
+    }
+    return [].concat(_toConsumableArray(accumulator), _toConsumableArray(results));
+  }, []);
+
+  if (compact && results.length === 1) return results[0];
+  if (compact && results.length === 0) return null;
+  return results;
 };
 
 /**

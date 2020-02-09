@@ -199,6 +199,33 @@ export const isCached = function (url) {
   return image.complete;
 };
 
+/**
+ * Digest a react-router's location.search string into an array of values
+ * 
+ * @param key String = the key you want from the URL
+ * @param string String = the locaion.search string
+ */
+export const queryString = (key, string, compact = true) => {
+  const elements = string.replace('?','').split('&');
+  const results = elements.reduce((accumulator, current) => {
+    const subElements = current.split('=');
+    let results = [];
+
+    // We decode the URI, but also treat "+" as a space. This is needed for backend CGI.encode that
+    // happens when redirecting from an OAuth failure.
+    if (subElements[0] === key) {
+      results = subElements[1].split(',').map(
+        item => decodeURIComponent(item.replace(/\+/g, '%20')),
+      );
+    }
+    return [...accumulator, ...results];
+  }, []);
+
+  if (compact && results.length === 1) return results[0];
+  if (compact && results.length === 0) return null;
+  return results;
+};
+
 
 /**
  * Digest an array of Mopidy image objects into a universal format. We also re-write

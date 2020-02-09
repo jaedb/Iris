@@ -77,6 +77,20 @@ export class App extends React.Component {
   }
 
   componentDidMount() {
+    const { 
+      location: {
+        search,
+      },
+      history,
+      snapcast_enabled,
+      allow_reporting,
+      initial_setup_complete,
+      mopidyActions,
+      pusherActions,
+      snapcastActions,
+      coreActions,
+    } = this.props;
+
     window.addEventListener(
       'beforeinstallprompt',
       this.handleInstallPrompt,
@@ -85,45 +99,33 @@ export class App extends React.Component {
     window.addEventListener('focus', this.handleFocusAndBlur, false);
     window.addEventListener('blur', this.handleFocusAndBlur, false);
 
-    if (this.props.allow_reporting) {
+    if (allow_reporting) {
       ReactGA.initialize('UA-64701652-3');
     }
 
     // Fire up our services
-    this.props.mopidyActions.connect();
-    this.props.pusherActions.connect();
-    if (this.props.snapcast_enabled) {
-      this.props.snapcastActions.connect();
+    mopidyActions.connect();
+    pusherActions.connect();
+    if (snapcast_enabled) {
+      snapcastActions.connect();
     }
-    this.props.coreActions.getBroadcasts();
+    coreActions.getBroadcasts();
 
     // Check for url-parsed configuration values
-    const url_vars = this.props.location.query;
-    if (url_vars) {
-      let has_values = false;
-      const values = {};
-      if (url_vars.host !== undefined) {
-        has_values = true;
-        values.host = url_vars.host;
-      }
-      if (url_vars.port !== undefined) {
-        has_values = true;
-        values.port = url_vars.port;
-      }
+    const customHost = helpers.queryString('host', search);
+    const customPort = helpers.queryString('port', search);
+    if (customHost && customPort) {
+      mopidyActions.set({ host: customHost, port: customPort });
+      uiActions.set({ initial_setup_complete: true });
 
-      if (has_values) {
-        this.props.mopidyActions.set(values);
+      // Allow 100ms for the action above to complete before we re-route
+      setTimeout(() => {
+        history.push('/');
+      }, 100);
 
-        // Allow 100ms for the action above to complete before we re-route
-        setTimeout(() => {
-          this.props.history.push('/');
-        }, 100);
-      }
-    }
-
-    // show initial setup if required
-    if (!this.props.initial_setup_complete) {
-      this.props.history.push('/initial-setup');
+    // Just show default initial setup for fresh installs
+    } else if (!initial_setup_complete) {
+      history.push('/initial-setup');
     }
   }
 
