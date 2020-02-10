@@ -10,21 +10,33 @@ class SearchForm extends React.Component {
     super(props);
 
     this.state = {
-      term: this.props.term,
+      term: props.term,
       pristine: true,
     };
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.state.pristine && this.state.term == '' && this.state.term !== nextProps.term) {
+  componentWillReceiveProps = (nextProps) => {
+    const { pristine, term } = this.state;
+    if (pristine && term === '' && term !== nextProps.term) {
       this.setState({ term: nextProps.term, pristine: false });
     }
   }
 
-  handleBlur(e) {
+  shouldComponentUpdate = (nextProps, nextState) => {
+    const { term: termProp } = this.props;
+    const { term: termState } = this.props;
+    if (nextProps.term !== termProp) return true;
+    if (nextState.term !== termState) return true;
+
+    return false;
+  }
+
+  handleBlur() {
+    const { onBlur } = this.props;
+    const { term } = this.state;
     this.setState({ pristine: false });
-    if (this.props.onBlur) {
-      this.props.onBlur(this.state.term);
+    if (onBlur) {
+      onBlur(term);
     }
   }
 
@@ -62,6 +74,7 @@ class SearchForm extends React.Component {
   }
 
   render() {
+    console.log('rendering', this.state);
     return (
       <form className="search-form" onSubmit={(e) => this.handleSubmit(e)}>
         <label>
