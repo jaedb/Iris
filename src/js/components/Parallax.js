@@ -10,6 +10,7 @@ export default class Parallax extends React.Component {
     this.state = {
       loaded: false,
       url: null,
+      outgoingUrl: null,
     };
   }
 
@@ -20,7 +21,7 @@ export default class Parallax extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.image != this.state.url) {
+    if (nextProps.image !== this.state.url) {
       this.loadImage(nextProps.image);
     }
   }
@@ -53,26 +54,26 @@ export default class Parallax extends React.Component {
   }
 
   render() {
-    let class_name = 'parallax preserve-3d';
-    if (this.props.blur) {
-      class_name += ' parallax--blur';
-    }
-    if (this.state.loaded) {
-      class_name += ' parallax--loaded';
-    }
-    if (this.props.fixedHeight) {
-      class_name += ' parallax--fixed-height';
-    } else {
-      class_name += ' parallax--flexible-height';
-    }
+    const {
+      blur,
+      fixedHeight,
+      animate = true,
+    } = this.props;
+    const {
+      loaded,
+      url,
+    } = this.state;
 
-    let style = {};
-    if (this.state.loaded && this.state.url) {
-      style = { backgroundImage: `url("${this.state.url}")` };
-    }
+    let className = 'parallax preserve-3d';
+    className += ` parallax--${fixedHeight ? 'fixed' : 'flexible'}-height`;
+    if (blur) className += ' parallax--blur';
+    if (loaded) className += ' parallax--loaded';
+    if (animate) className += ' parallax--animate';
+
+    const style = loaded && url ? { backgroundImage: `url("${url}")` } : {};
 
     return (
-      <div className={class_name}>
+      <div className={className}>
         <div className="parallax__layer preserve-3d">
           <div className="parallax__image" style={style} />
           <div className="parallax__overlay" />

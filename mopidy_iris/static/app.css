@@ -4390,10 +4390,6 @@ select {
     left: 0;
     z-index: 1; }
   .parallax__image {
-    -webkit-transition: all 0.5s ease-in-out;
-    -moz-transition: all 0.5s ease-in-out;
-    -o-transition: all 0.5s ease-in-out;
-    transition: all 0.5s ease-in-out;
     position: absolute;
     top: -10px;
     left: -10px;
@@ -4404,6 +4400,11 @@ select {
     background-position: 50% 30%;
     opacity: 0;
     z-index: 1; }
+  .parallax--animate .parallax__image {
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out; }
   .parallax__overlay {
     content: '';
     display: block;

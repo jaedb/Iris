@@ -15,16 +15,35 @@ class InitialSetup extends React.Component {
   constructor(props) {
     super(props);
 
+    const {
+      host,
+      port,
+      username,
+      allow_reporting,
+    } = props;
+
     this.state = {
-      username: this.props.username,
-      allow_reporting: this.props.allow_reporting,
-      host: this.props.host,
-      port: this.props.port,
+      username,
+      allow_reporting,
+      host,
+      port,
     };
   }
 
   componentDidMount() {
-    this.props.uiActions.setWindowTitle('Welcome to Iris');
+    const {
+      location: {
+        search,
+      },
+      uiActions,
+    } = this.props;
+
+    // Check for url-parsed configuration values
+    const customHost = helpers.queryString('host', search);
+    const customPort = helpers.queryString('port', search);
+
+    this.setState({ host: customHost, port: customPort });
+    uiActions.setWindowTitle('Welcome to Iris');
   }
 
   handleSubmit(e) {

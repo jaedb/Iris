@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ "$(pwd)" = "/iris" ]]; then
+if [ -f "/IS_CONTAINER" ]; then
 	IS_CONTAINER=true
 else
 	IS_CONTAINER=false
@@ -11,8 +11,8 @@ if [[ $1 = "upgrade" ]]; then
 		echo "cd /iris && git checkout master && git pull origin master"
 		UPGRADE="$(cd /iris && git checkout master && git pull origin master)"
 	else
-		echo "sudo pip install --upgrade mopidy-iris"
-		UPGRADE="$(sudo pip install --upgrade mopidy-iris)"
+		echo "sudo python3 -m pip install --upgrade mopidy-iris"
+		UPGRADE="$(sudo python3 -m pip install --upgrade mopidy-iris)"
 	fi
 	echo -e "${UPGRADE}"
 

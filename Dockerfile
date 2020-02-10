@@ -53,9 +53,8 @@ COPY docker/mopidy.example.conf /config/mopidy.conf
 # Copy the pulse-client configuratrion.
 COPY docker/pulse-client.conf /etc/pulse/client.conf
 
-# Add a VERSION file to the image
-ADD VERSION /
-COPY IRIS_VERSION /iris/IRIS_VERSION
+# Add version info to image
+COPY VERSION /
 
 # Allows any user to run mopidy, but runs by default as a randomly generated UID/GID.
 RUN useradd -ms /bin/bash mopidy
@@ -63,12 +62,13 @@ ENV HOME=/var/lib/mopidy
 RUN set -ex \
  && usermod -G audio,sudo mopidy \
  && chown mopidy:audio -R $HOME /entrypoint.sh /iris \
- && chmod go+rwx -R $HOME /entrypoint.sh /iris
+ && chmod go+rwx -R $HOME /entrypoint.sh /iris \
+ && echo "1" >> /IS_CONTAINER
 
 # Runs as mopidy user by default.
 USER mopidy:audio
 
-VOLUME ["/var/lib/mopidy/local", "/var/lib/mopidy/local-images", "/iris"]
+VOLUME ["/var/lib/mopidy/local", "/var/lib/mopidy/local-images"]
 
 EXPOSE 6600 6680 1704 1705 5555/udp
 
