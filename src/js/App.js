@@ -77,10 +77,7 @@ export class App extends React.Component {
   }
 
   componentDidMount() {
-    const { 
-      location: {
-        search,
-      },
+    const {
       history,
       snapcast_enabled,
       allow_reporting,
@@ -111,20 +108,7 @@ export class App extends React.Component {
     }
     coreActions.getBroadcasts();
 
-    // Check for url-parsed configuration values
-    const customHost = helpers.queryString('host', search);
-    const customPort = helpers.queryString('port', search);
-    if (customHost && customPort) {
-      mopidyActions.set({ host: customHost, port: customPort });
-      uiActions.set({ initial_setup_complete: true });
-
-      // Allow 100ms for the action above to complete before we re-route
-      setTimeout(() => {
-        history.push('/');
-      }, 100);
-
-    // Just show default initial setup for fresh installs
-    } else if (!initial_setup_complete) {
+    if (!initial_setup_complete) {
       history.push('/initial-setup');
     }
   }

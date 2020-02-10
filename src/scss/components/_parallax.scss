@@ -27,7 +27,6 @@ $parallax: 'parallax';
 	}
 
 	&__image {
-		@include animate(0.5s);
 		position: absolute;
 		top: -10px;
 		left: -10px;
@@ -38,6 +37,12 @@ $parallax: 'parallax';
 		background-position: 50% 30%;
 		opacity: 0;
 		z-index: 1;
+	}
+
+	&--animate {
+		.#{$parallax}__image {
+			@include animate(0.5s);
+		}
 	}
 
 	&__overlay {

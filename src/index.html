@@ -16,7 +16,7 @@
 	<meta name="apple-mobile-web-app-status-bar-style" content="#121212" />
 	<meta name="mobile-web-app-capable" content="yes" />
 	<meta name="theme-color" content="#222222" />
-	
+
 	<!-- Icons -->
 	<link rel="apple-touch-startup-image" href="/iris/assets/app-icon_512.png" />
 	<link rel="apple-touch-icon" sizes="192x192" href="/iris/assets/app-icon_192.png" />
@@ -30,7 +30,7 @@
 
 	<!-- Loading screen styles -->
 	<style>
-		html {			
+		html {
 			background-color: #121212;
 		}
 		@keyframes loader {
@@ -52,7 +52,7 @@
 		#app-loading::before {
 			position: absolute;
 			display: block;
-			content: '';			
+			content: '';
 			height: 100%;
 		    animation-name: loader;
 		    background: #444444;
@@ -104,17 +104,22 @@
 	var version = "VERSION_HERE";
 
 	// Construct the script tag
-    var js = document.createElement("script");
-    js.type = "application/javascript";
+	var js = document.createElement("script");
+	js.type = "application/javascript";
 
-    // Construct our css tag
-    var css = document.createElement("link");
-    css.rel = "stylesheet";
+	// Construct our css tag
+	var css = document.createElement("link");
+	css.rel = "stylesheet";
 
-    // Check for test mode. This is toggled under Settings > Debug > Test mode
-    try {
-	    var ui = JSON.parse(localStorage.getItem('ui') );
-	    var test_mode = (typeof(ui) !== 'undefined' && ui && typeof(ui.test_mode) !== 'undefined' && ui.test_mode);
+	// Check for test mode. This is toggled under Settings > Debug > Test mode
+	try {
+		var ui = JSON.parse(localStorage.getItem('ui') );
+		var test_mode = (
+			typeof(ui) !== 'undefined'
+			&& ui
+			&& typeof(ui.test_mode) !== 'undefined'
+			&& ui.test_mode
+		);
 	} catch(error){
 		console.error(error);
 		var test_mode = false;
