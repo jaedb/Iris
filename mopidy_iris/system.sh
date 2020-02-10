@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ -f "/var/lib/mopidy/IS_CONTAINER" ]; then
+if [ -f "/IS_CONTAINER" ]; then
 	IS_CONTAINER=true
 else
 	IS_CONTAINER=false
