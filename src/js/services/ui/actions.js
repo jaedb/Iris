@@ -228,30 +228,31 @@ export function stopLoading(key) {
   };
 }
 
-export function startProcess(key, message, data = {}, description = null) {
+export function startProcess(key, content, data = {}, description = null) {
   return {
     type: 'START_PROCESS',
     key,
-    message,
     data,
+    content,
     description,
   };
 }
 
-export function resumeProcess(key, message, data = {}) {
+export function resumeProcess(key) {
   return {
     type: 'RESUME_PROCESS',
     key,
   };
 }
 
-export function updateProcess(key, message, data = {}, description = null) {
+export function updateProcess(key, content, data = {}, description = null, level = 'info') {
   return {
     type: 'UPDATE_PROCESS',
     key,
-    message,
+    content,
     data,
     description,
+    level,
   };
 }
 
@@ -276,16 +277,24 @@ export function processCancelled(key) {
   };
 }
 
-export function processFinishing(key) {
+export function processFinished(key, completionMessage = null) {
   return {
-    type: 'PROCESS_FINISHING',
+    type: 'PROCESS_FINISHED',
+    key,
+    completionMessage,
+  };
+}
+
+export function closeProcess(key) {
+  return {
+    type: 'CLOSE_PROCESS',
     key,
   };
 }
 
-export function processFinished(key) {
+export function removeProcess(key) {
   return {
-    type: 'PROCESS_FINISHED',
+    type: 'REMOVE_PROCESS',
     key,
   };
 }

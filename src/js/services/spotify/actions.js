@@ -619,7 +619,7 @@ export function getSearchResults(type, query, limit = 50, offset = 0) {
             });
           }
 
-          dispatch(uiActions.processFinishing('SPOTIFY_GET_SEARCH_RESULTS_PROCESSOR'));
+          dispatch(uiActions.processFinished('SPOTIFY_GET_SEARCH_RESULTS_PROCESSOR'));
         },
         (error) => {
           dispatch(coreActions.handleException(
@@ -1573,7 +1573,7 @@ export function getLibraryTracksAndPlayProcessor(data) {
             ));
           } else {
             dispatch(mopidyActions.playURIs(uris, data.uri));
-            dispatch(uiActions.processFinishing('SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR'));
+            dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR'));
           }
         },
         (error) => {
@@ -1669,7 +1669,7 @@ export function getAllPlaylistTracksProcessor(data) {
                     	// We don't bother "finishing", we just want it "finished" immediately
                     	// This bypasses the fade transition for a more smooth transition between two
                     	// processes that flow together
-            dispatch(uiActions.processFinished('SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR'));
+            dispatch(uiActions.removeProcess('SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR'));
 
                     	if (data.callback_action == 'enqueue') {
                         	dispatch(mopidyActions.enqueueURIs(uris, data.uri, data.play_next, data.at_position, data.offset));
@@ -1827,7 +1827,7 @@ export function getLibraryPlaylistsProcessor(data) {
             ));
             dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR', { next: response.next }));
           } else {
-            dispatch(uiActions.processFinishing('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'));
+            dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'));
             dispatch({ type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED_ALL' });
           }
         },
@@ -1898,7 +1898,7 @@ export function getLibraryArtistsProcessor(data) {
             ));
             dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR', { next: response.artists.next }));
           } else {
-            dispatch(uiActions.processFinishing('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'));
+            dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'));
           }
         },
         (error) => {
@@ -1968,7 +1968,7 @@ export function getLibraryAlbumsProcessor(data) {
             ));
             dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR', { next: response.next }));
           } else {
-            dispatch(uiActions.processFinishing('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'));
+            dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'));
           }
         },
         (error) => {

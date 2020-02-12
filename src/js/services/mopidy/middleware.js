@@ -784,7 +784,7 @@ const MopidyMiddleware = (function () {
 
           // no batches means we're done here
         } else {
-          store.dispatch(uiActions.processFinishing('MOPIDY_ENQUEUE_URIS_PROCESSOR'));
+          store.dispatch(uiActions.processFinished('MOPIDY_ENQUEUE_URIS_PROCESSOR'));
           break;
         }
 
@@ -1013,7 +1013,7 @@ const MopidyMiddleware = (function () {
 
           // No more schemes, so we're done!
         } if (!action.data.uri_scheme) {
-          store.dispatch(uiActions.processFinishing('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
+          store.dispatch(uiActions.processFinished('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
           return;
         }
 
@@ -1204,7 +1204,7 @@ const MopidyMiddleware = (function () {
             ));
 
             var continue_process = () => {
-              store.dispatch(uiActions.processFinishing('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
+              store.dispatch(uiActions.processFinished('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
             };
 
             request(socket, store, 'playlists.asList')
@@ -1877,7 +1877,7 @@ const MopidyMiddleware = (function () {
           ));
           store.dispatch(mopidyActions.getAlbums(uris_to_load, { name: 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR', data: { uris } }));
         } else {
-          store.dispatch(uiActions.processFinishing('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'));
+          store.dispatch(uiActions.processFinished('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'));
         }
 
         break;
@@ -2066,7 +2066,7 @@ const MopidyMiddleware = (function () {
                   store.dispatch(uiActions.updateProcess('MOPIDY_LIBRARY_ARTISTS_PROCESSOR', 'Loading '+uris.length+' local artists', {uris: uris}));
                   store.dispatch(mopidyActions.getArtists(uris_to_load, {name: 'MOPIDY_LIBRARY_ARTISTS_PROCESSOR', data: {uris: uris}}));
               } else {
-                  store.dispatch(uiActions.processFinishing('MOPIDY_LIBRARY_ARTISTS_PROCESSOR'));
+                  store.dispatch(uiActions.processFinished('MOPIDY_LIBRARY_ARTISTS_PROCESSOR'));
               }
 
               break;

@@ -100,7 +100,7 @@
 
 	// Release details
 	// These are automatically injected to built HTML
-	var build = "1581537157";
+	var build = "1581537831";
 	var version = "3.44.2";
 
 	// Construct the script tag
@@ -128,7 +128,7 @@
 
 	// Test mode, use un-minified code
 	if (test_mode){
-		console.info("Test mode enabled, using un-minified code");
+		console.debug("Test mode enabled, using un-minified code");
 		css.href = '/iris/app.css?v='+build;
 		js.src = '/iris/app.js?v='+build;
 

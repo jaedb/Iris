@@ -117,7 +117,7 @@ const UIMiddleware = (function () {
 
         // start a timeout to close this notification
         if (!action.notification.sticky) {
-          var timeout = setTimeout(
+          setTimeout(
             () => {
               store.dispatch(uiActions.closeNotification(action.notification.key));
             },
@@ -133,7 +133,7 @@ const UIMiddleware = (function () {
 
         // start a timeout to remove this notification
         // This gives us time to animate out the notification before we remove the data
-        var timeout = setTimeout(
+        setTimeout(
           () => {
             store.dispatch(uiActions.removeNotification(action.key));
           },
@@ -214,28 +214,47 @@ const UIMiddleware = (function () {
         next(action);
         break;
 
-      case 'PROCESS_FINISHING':
-
-        // start a timeout to remove this notification
-        // This gives us time to animate out the notification before we remove the data
-        var timeout = setTimeout(
-          () => {
-            store.dispatch(uiActions.processFinished(action.key));
-          },
-          200,
-        );
-
-        next(action);
-        break;
-
       case 'PROCESS_FINISHED':
         store.dispatch({
           type: `${action.key}_FINISHED`,
         });
+
+        // start a timeout to remove this notification
+        // This gives us time to animate out the notification before we remove the data
+        if (action.completionMessage) {
+          store.dispatch(uiActions.updateProcess(
+            action.key,
+            action.completionMessage.content,
+            {},
+            action.completionMessage.description,
+            action.completionMessage.level,
+          ));
+          if (!action.completionMessage.sticky) {
+            setTimeout(
+              () => {
+                store.dispatch(uiActions.closeProcess(action.key));
+              },
+              5000,
+            );
+          }
+        } else {
+          store.dispatch(uiActions.closeProcess(action.key));
+        }
+
         next(action);
         break;
 
-        // This action is irrelevant to us, pass it on to the next middleware
+      case 'CLOSE_PROCESS':
+        setTimeout(
+          () => {
+            store.dispatch(uiActions.removeProcess(action.key));
+          },
+          200,
+        );
+        next(action);
+        break;
+
+      // This action is irrelevant to us, pass it on to the next middleware
       default:
         return next(action);
     }

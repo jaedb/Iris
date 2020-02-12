@@ -31,6 +31,7 @@ export default memo((props) => {
   const {
     body,
     loading,
+    finished = false,
     mini,
     lazy,
     white,
@@ -38,7 +39,7 @@ export default memo((props) => {
     progress = null,
   } = props;
 
-  if (!loading) {
+  if (!loading && !finished) {
     return null;
   }
 
@@ -65,6 +66,17 @@ export default memo((props) => {
         <div className="loader__offline">
           <Icon name="wifi_off" />
           <p> You need to be online load this resource </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (finished) {
+    classNameString += ' loader--finished';
+    return (
+      <div className={classNameString}>
+        <div className="loader__spinner">
+          <Icon name="check" />
         </div>
       </div>
     );

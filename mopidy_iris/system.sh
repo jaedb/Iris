@@ -37,7 +37,7 @@ elif [[ $1 = "check" ]]; then
 	echo -e "Access permitted"
 
 elif [[ $1 = "test" ]]; then
-	sleep 3
+	sleep 1
 
 	TEST=$(echo "Hello, this is your bash speaking. I was sleeping for 3 seconds. Is running a container: $IS_CONTAINER")
 	echo -e "${TEST}"

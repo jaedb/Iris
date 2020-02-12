@@ -47629,7 +47629,7 @@ module.exports = hoistNonReactStatics;
 /*!***************************************************************!*\
   !*** ./node_modules/react-router-dom/esm/react-router-dom.js ***!
   \***************************************************************/
-/*! exports provided: BrowserRouter, HashRouter, Link, NavLink, MemoryRouter, Prompt, Redirect, Route, Router, StaticRouter, Switch, __RouterContext, generatePath, matchPath, useHistory, useLocation, useParams, useRouteMatch, withRouter */
+/*! exports provided: MemoryRouter, Prompt, Redirect, Route, Router, StaticRouter, Switch, __RouterContext, generatePath, matchPath, useHistory, useLocation, useParams, useRouteMatch, withRouter, BrowserRouter, HashRouter, Link, NavLink */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -67851,6 +67851,8 @@ var ProgressRing = function ProgressRing(_ref) {
 exports.default = (0, _react.memo)(function (props) {
   var body = props.body,
       loading = props.loading,
+      _props$finished = props.finished,
+      finished = _props$finished === undefined ? false : _props$finished,
       mini = props.mini,
       lazy = props.lazy,
       white = props.white,
@@ -67860,7 +67862,7 @@ exports.default = (0, _react.memo)(function (props) {
       progress = _props$progress === undefined ? null : _props$progress;
 
 
-  if (!loading) {
+  if (!loading && !finished) {
     return null;
   }
 
@@ -67894,6 +67896,19 @@ exports.default = (0, _react.memo)(function (props) {
           null,
           ' You need to be online load this resource '
         )
+      )
+    );
+  }
+
+  if (finished) {
+    classNameString += ' loader--finished';
+    return _react2.default.createElement(
+      'div',
+      { className: classNameString },
+      _react2.default.createElement(
+        'div',
+        { className: 'loader__spinner' },
+        _react2.default.createElement(_Icon2.default, { name: 'check' })
       )
     );
   }
@@ -68207,7 +68222,11 @@ var Notifications = function (_React$Component) {
       var _process$data = process.data,
           total = _process$data.total,
           remaining = _process$data.remaining,
-          message = process.message,
+          _process$level = process.level,
+          level = _process$level === undefined ? 'info' : _process$level,
+          content = process.content,
+          _process$description = process.description,
+          description = _process$description === undefined ? null : _process$description,
           status = process.status,
           closing = process.closing,
           key = process.key;
@@ -68222,29 +68241,76 @@ var Notifications = function (_React$Component) {
         case 'running':
           return _react2.default.createElement(
             'div',
-            { className: 'notification notification--process' + (closing ? ' closing' : ''), key: key },
+            {
+              className: 'notification notification--' + level + ' notification--process' + (closing ? ' closing' : ''),
+              key: key
+            },
             _react2.default.createElement(_Loader2.default, {
               progress: progress,
               loading: true,
               mini: true,
               white: true
             }),
-            message,
+            content && content !== '' && _react2.default.createElement(
+              'div',
+              { className: 'notification__content' },
+              content
+            ),
+            description && description !== '' && _react2.default.createElement(
+              'div',
+              { className: 'notification__description' },
+              description
+            ),
             _react2.default.createElement(_Icon2.default, { name: 'close', className: 'notification__close-button', onClick: function onClick() {
                 uiActions.cancelProcess(key);
+              } })
+          );
+
+        case 'finished':
+          return _react2.default.createElement(
+            'div',
+            {
+              className: 'notification notification--' + level + ' notification--process' + (closing ? ' closing' : ''),
+              key: key
+            },
+            _react2.default.createElement(_Icon2.default, { className: 'notification__icon', name: level === 'error' ? 'close' : 'check' }),
+            content && content !== '' && _react2.default.createElement(
+              'div',
+              { className: 'notification__content' },
+              content
+            ),
+            description && description !== '' && _react2.default.createElement(
+              'div',
+              { className: 'notification__description' },
+              description
+            ),
+            _react2.default.createElement(_Icon2.default, { name: 'close', className: 'notification__close-button', onClick: function onClick() {
+                uiActions.closeProcess(key);
               } })
           );
 
         case 'cancelling':
           return _react2.default.createElement(
             'div',
-            { className: 'notification notification--process cancelling' + (closing ? ' closing' : ''), key: key },
+            {
+              className: 'notification notification--' + level + ' notification--process cancelling' + (closing ? ' closing' : ''),
+              key: key
+            },
             _react2.default.createElement(_Loader2.default, null),
-            'Cancelling'
+            content && content !== '' && _react2.default.createElement(
+              'div',
+              { className: 'notification__content' },
+              content
+            ),
+            description && description !== '' && _react2.default.createElement(
+              'div',
+              { className: 'notification__description' },
+              description
+            )
           );
 
         case 'cancelled':
-        case 'finished':
+        case 'completed':
         default:
           return null;
       }
@@ -76944,9 +77010,9 @@ var GoogleMiddleware = function () {
                   remaining: uris.length
                 }));
               });
-            } else if (last_run.status == 'cancelled') {
+            } else if (last_run.status === 'cancelled') {
               store.dispatch(uiActions.resumeProcess('GOOGLE_LIBRARY_ALBUMS_PROCESSOR'));
-            } else if (last_run.status == 'finished') {
+            } else if (last_run.status === 'finished') {
               // TODO: do we want to force a refresh?
             }
 
@@ -76956,7 +77022,7 @@ var GoogleMiddleware = function () {
             if (store.getState().ui.processes.GOOGLE_LIBRARY_ALBUMS_PROCESSOR !== undefined) {
               var processor = store.getState().ui.processes.GOOGLE_LIBRARY_ALBUMS_PROCESSOR;
 
-              if (processor.status == 'cancelling') {
+              if (processor.status === 'cancelling') {
                 store.dispatch(uiActions.processCancelled('GOOGLE_LIBRARY_ALBUMS_PROCESSOR'));
                 return false;
               }
@@ -76972,7 +77038,7 @@ var GoogleMiddleware = function () {
               }));
               store.dispatch(mopidyActions.getAlbums(uris_to_load, { name: 'GOOGLE_LIBRARY_ALBUMS_PROCESSOR', data: { uris: uris } }));
             } else {
-              store.dispatch(uiActions.processFinishing('GOOGLE_LIBRARY_ALBUMS_PROCESSOR'));
+              store.dispatch(uiActions.processFinished('GOOGLE_LIBRARY_ALBUMS_PROCESSOR'));
             }
 
             break;
@@ -79214,7 +79280,7 @@ var MopidyMiddleware = function () {
 
               // no batches means we're done here
             } else {
-              store.dispatch(uiActions.processFinishing('MOPIDY_ENQUEUE_URIS_PROCESSOR'));
+              store.dispatch(uiActions.processFinished('MOPIDY_ENQUEUE_URIS_PROCESSOR'));
               break;
             }
 
@@ -79402,7 +79468,7 @@ var MopidyMiddleware = function () {
 
               // No more schemes, so we're done!
             }if (!action.data.uri_scheme) {
-              store.dispatch(uiActions.processFinishing('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
+              store.dispatch(uiActions.processFinished('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
               return;
             }
 
@@ -79560,7 +79626,7 @@ var MopidyMiddleware = function () {
                 store.dispatch(uiActions.updateProcess('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR', 'Searching playlists'));
 
                 var continue_process = function continue_process() {
-                  store.dispatch(uiActions.processFinishing('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
+                  store.dispatch(uiActions.processFinished('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
                 };
 
                 request(socket, store, 'playlists.asList').then(function (response) {
@@ -80142,7 +80208,7 @@ var MopidyMiddleware = function () {
               }));
               store.dispatch(mopidyActions.getAlbums(uris_to_load, { name: 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR', data: { uris: uris } }));
             } else {
-              store.dispatch(uiActions.processFinishing('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'));
+              store.dispatch(uiActions.processFinished('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'));
             }
 
             break;
@@ -80372,7 +80438,7 @@ var MopidyMiddleware = function () {
                       store.dispatch(uiActions.updateProcess('MOPIDY_LIBRARY_ARTISTS_PROCESSOR', 'Loading '+uris.length+' local artists', {uris: uris}));
                       store.dispatch(mopidyActions.getArtists(uris_to_load, {name: 'MOPIDY_LIBRARY_ARTISTS_PROCESSOR', data: {uris: uris}}));
                   } else {
-                      store.dispatch(uiActions.processFinishing('MOPIDY_LIBRARY_ARTISTS_PROCESSOR'));
+                      store.dispatch(uiActions.processFinished('MOPIDY_LIBRARY_ARTISTS_PROCESSOR'));
                   }
                     break;
                * */
@@ -81333,115 +81399,120 @@ var PusherMiddleware = function () {
         store.dispatch(coreActions.handleException('Pusher: Response received with no matching request', message));
       }
 
+      // Broadcast of an error
+    } else if (message.error !== undefined) {
+      store.dispatch(coreActions.handleException('Pusher: ' + message.error.message, message, message.error.data !== undefined && message.error.data.description !== undefined ? message.error.data.description : null));
       // General broadcast received
     } else {
-      // Broadcast of an error
-      if (message.error !== undefined) {
-        store.dispatch(coreActions.handleException('Pusher: ' + message.error.message, message, message.error.data !== undefined && message.error.data.description !== undefined ? message.error.data.description : null));
-      } else {
-        switch (message.method) {
-          case 'connection_added':
-            store.dispatch(pusherActions.connectionAdded(message.params.connection));
-            break;
-          case 'connection_changed':
-            store.dispatch(pusherActions.connectionChanged(message.params.connection));
-            break;
-          case 'connection_removed':
-            store.dispatch(pusherActions.connectionRemoved(message.params.connection));
-            break;
-          case 'queue_metadata_changed':
-            store.dispatch(pusherActions.queueMetadataChanged(message.params.queue_metadata));
-            break;
-          case 'spotify_token_changed':
-            store.dispatch(spotifyActions.tokenChanged(message.params.spotify_token));
-            break;
-          case 'share_configuration_received':
-            store.dispatch(uiActions.createNotification({
-              type: 'share-configuration-received',
-              configuration: message.params,
-              sticky: true
-            }));
-            break;
-          case 'notification':
-            store.dispatch(uiActions.createNotification(message.params.notification));
-            break;
-          case 'radio_started':
-            store.dispatch(pusherActions.radioStarted(message.params.radio));
-            break;
-          case 'radio_changed':
-            store.dispatch(pusherActions.radioChanged(message.params.radio));
-            break;
-          case 'radio_stopped':
-            store.dispatch(pusherActions.radioStopped());
-            break;
-          case 'commands_changed':
-            store.dispatch(pusherActions.commandsUpdated(message.params.commands));
-            break;
-          case 'reload':
-            window.location.reload(true);
-            break;
+      var params = message.params ? message.params : {};
+      switch (message.method) {
+        case 'connection_added':
+          store.dispatch(pusherActions.connectionAdded(params.connection));
+          break;
+        case 'connection_changed':
+          store.dispatch(pusherActions.connectionChanged(params.connection));
+          break;
+        case 'connection_removed':
+          store.dispatch(pusherActions.connectionRemoved(params.connection));
+          break;
+        case 'queue_metadata_changed':
+          store.dispatch(pusherActions.queueMetadataChanged(params.queue_metadata));
+          break;
+        case 'spotify_token_changed':
+          store.dispatch(spotifyActions.tokenChanged(params.spotify_token));
+          break;
+        case 'share_configuration_received':
+          store.dispatch(uiActions.createNotification({
+            type: 'share-configuration-received',
+            configuration: params,
+            sticky: true
+          }));
+          break;
+        case 'notification':
+          store.dispatch(uiActions.createNotification(params.notification));
+          break;
+        case 'radio_started':
+          store.dispatch(pusherActions.radioStarted(params.radio));
+          break;
+        case 'radio_changed':
+          store.dispatch(pusherActions.radioChanged(params.radio));
+          break;
+        case 'radio_stopped':
+          store.dispatch(pusherActions.radioStopped());
+          break;
+        case 'commands_changed':
+          store.dispatch(pusherActions.commandsUpdated(params.commands));
+          break;
+        case 'reload':
+          window.location.reload(true);
+          break;
 
-          // Local scan
-          case 'local_scan_started':
-            store.dispatch(uiActions.updateProcess('local_scan', 'Scanning local library'));
-            break;
-          case 'local_scan_updated':
-            store.dispatch(uiActions.updateProcess('local_scan', 'Scanning local library', {}, message.params.output));
-            break;
-          case 'local_scan_finished':
-            store.dispatch(uiActions.processFinished('local_scan'));
-            store.dispatch(uiActions.createNotification({
-              key: 'local_scan', type: 'info', content: 'Local scan finished', description: message.params.output
-            }));
-            break;
-          case 'local_scan_error':
-            store.dispatch(uiActions.processFinished('local_scan'));
-            store.dispatch(coreActions.handleException('Local scan failed', message, message.params.error));
-            break;
+        // Local scan
+        case 'local_scan_started':
+          store.dispatch(uiActions.updateProcess('local_scan', 'Scanning local library'));
+          break;
+        case 'local_scan_updated':
+          store.dispatch(uiActions.updateProcess('local_scan', 'Scanning local library', {}, params.output));
+          break;
+        case 'local_scan_finished':
+          store.dispatch(uiActions.processFinished('local_scan', {
+            content: 'Local scan finished', description: params.output, sticky: true
+          }));
+          break;
+        case 'local_scan_error':
+          store.dispatch(uiActions.processFinished('local_scan', {
+            level: 'error', content: 'Local scan failed', description: params.error, sticky: true
+          }));
+          break;
 
-          // Upgrade
-          case 'upgrade_started':
-            store.dispatch(uiActions.updateProcess('upgrade', 'Upgrading'));
-            break;
-          case 'upgrade_updated':
-            store.dispatch(uiActions.updateProcess('upgrade', 'Upgrading', {}, message.params.output));
-            break;
-          case 'upgrade_finished':
-            store.dispatch(uiActions.updateProcess('upgrade', 'Restarting to complete upgrade'));
-            break;
-          case 'upgrade_error':
-            store.dispatch(uiActions.processFinished('upgrade'));
-            store.dispatch(coreActions.handleException('Upgrade failed', message, message.params.error));
-            break;
+        // Upgrade
+        case 'upgrade_started':
+          store.dispatch(uiActions.updateProcess('upgrade', 'Upgrading'));
+          break;
+        case 'upgrade_updated':
+          store.dispatch(uiActions.updateProcess('upgrade', 'Upgrading', {}, params.output));
+          break;
+        case 'upgrade_finished':
+          store.dispatch(uiActions.updateProcess('upgrade', 'Restarting to complete upgrade'));
+          break;
+        case 'upgrade_error':
+          store.dispatch(uiActions.processFinished('upgrade', {
+            level: 'error', content: 'Upgrade failed', description: params.error, sticky: true
+          }));
+          break;
 
-          // Restart
-          case 'restart_started':
-            store.dispatch(uiActions.processFinished('upgrade', 'Restarting'));
-            break;
-          case 'restart_updated':
-            store.dispatch(uiActions.updateProcess('upgrade', 'Restarting', {}, message.params.output));
-            break;
-          case 'restart_error':
-            store.dispatch(uiActions.processFinished('upgrade'));
-            store.dispatch(coreActions.handleException('Restart failed', message, message.params.error));
-            break;
+        // Restart
+        case 'restart_started':
+          store.dispatch(uiActions.removeProcess('upgrade', 'Restarting'));
+          break;
+        case 'restart_updated':
+          store.dispatch(uiActions.updateProcess('upgrade', 'Restarting', {}, params.output));
+          break;
+        case 'restart_error':
+          store.dispatch(uiActions.processFinished('upgrade', {
+            level: 'error', content: 'Restart failed', description: params.error, sticky: true
+          }));
+          break;
 
-          // Test
-          case 'test_started':
-            store.dispatch(uiActions.updateProcess('test', 'Running test', {}, message.params.output));
-            break;
-          case 'test_updated':
-            store.dispatch(uiActions.updateProcess('test', 'Running test'));
-            break;
-          case 'test_finished':
-            store.dispatch(uiActions.processFinished('test'));
-            store.dispatch(uiActions.createNotification({ type: 'info', content: 'Test finished', description: message.params.output }));
-            break;
-          case 'test_error':
-            store.dispatch(uiActions.processFinished('test'));
-            store.dispatch(uiActions.createNotification({ type: 'bad', content: message.params.message, description: message.params.error }));
-            break;
-        }
+        // Test
+        case 'test_started':
+          store.dispatch(uiActions.updateProcess('test', 'Running test', {}, params.output));
+          break;
+        case 'test_updated':
+          store.dispatch(uiActions.updateProcess('test', 'Running test'));
+          break;
+        case 'test_finished':
+          store.dispatch(uiActions.processFinished('test', {
+            content: 'Test finished', description: params.output, sticky: true
+          }));
+          break;
+        case 'test_error':
+          store.dispatch(uiActions.removeProcess('test', {
+            level: 'error', content: params.message, description: params.error
+          }));
+          break;
+        default:
+          break;
       }
     }
   };
@@ -81713,12 +81784,12 @@ var PusherMiddleware = function () {
 
             request(store, 'run_command', { id: action.id }).then(function (response) {
               console.log('Command response', response);
-              store.dispatch(uiActions.processFinished(notification_key));
+              store.dispatch(uiActions.removeProcess(notification_key));
               if (action.notify) {
                 store.dispatch(uiActions.createNotification({ key: notification_key, type: 'info', content: 'Command sent' }));
               }
             }, function (error) {
-              store.dispatch(uiActions.processFinished(notification_key));
+              store.dispatch(uiActions.removeProcess(notification_key));
               store.dispatch(coreActions.handleException('Could not run command', error));
             });
 
@@ -81787,13 +81858,13 @@ var PusherMiddleware = function () {
             }
 
             request(store, 'change_radio', data).then(function (response) {
-              store.dispatch(uiActions.processFinishing('PUSHER_RADIO_PROCESS'));
+              store.dispatch(uiActions.processFinished('PUSHER_RADIO_PROCESS'));
               if (response.status == 0) {
                 store.dispatch(uiActions.createNotification({ content: response.message, type: 'bad' }));
               }
               store.dispatch(pusherActions.radioChanged(response.radio));
             }, function (error) {
-              store.dispatch(uiActions.processFinishing('PUSHER_RADIO_PROCESS'));
+              store.dispatch(uiActions.processFinished('PUSHER_RADIO_PROCESS'));
               store.dispatch(coreActions.handleException('Could not change radio', error));
             });
             break;
@@ -83676,7 +83747,7 @@ function getSearchResults(type, query) {
         });
       }
 
-      dispatch(uiActions.processFinishing('SPOTIFY_GET_SEARCH_RESULTS_PROCESSOR'));
+      dispatch(uiActions.processFinished('SPOTIFY_GET_SEARCH_RESULTS_PROCESSOR'));
     }, function (error) {
       dispatch(coreActions.handleException('Could not load search results', error));
     });
@@ -84468,7 +84539,7 @@ function getLibraryTracksAndPlayProcessor(data) {
         }));
       } else {
         dispatch(mopidyActions.playURIs(uris, data.uri));
-        dispatch(uiActions.processFinishing('SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR'));
+        dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR'));
       }
     }, function (error) {
       dispatch(coreActions.handleException('Could not load library tracks', error));
@@ -84570,7 +84641,7 @@ function getAllPlaylistTracksProcessor(data) {
         // We don't bother "finishing", we just want it "finished" immediately
         // This bypasses the fade transition for a more smooth transition between two
         // processes that flow together
-        dispatch(uiActions.processFinished('SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR'));
+        dispatch(uiActions.removeProcess('SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR'));
 
         if (data.callback_action == 'enqueue') {
           dispatch(mopidyActions.enqueueURIs(uris, data.uri, data.play_next, data.at_position, data.offset));
@@ -84695,7 +84766,7 @@ function getLibraryPlaylistsProcessor(data) {
         }));
         dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR', { next: response.next }));
       } else {
-        dispatch(uiActions.processFinishing('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'));
+        dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'));
         dispatch({ type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED_ALL' });
       }
     }, function (error) {
@@ -84755,7 +84826,7 @@ function getLibraryArtistsProcessor(data) {
         }));
         dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR', { next: response.artists.next }));
       } else {
-        dispatch(uiActions.processFinishing('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'));
+        dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'));
       }
     }, function (error) {
       dispatch(coreActions.handleException('Could not load library artists', error));
@@ -84814,7 +84885,7 @@ function getLibraryAlbumsProcessor(data) {
         }));
         dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR', { next: response.next }));
       } else {
-        dispatch(uiActions.processFinishing('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'));
+        dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'));
       }
     }, function (error) {
       dispatch(coreActions.handleException('Could not load library albums', error));
@@ -85761,8 +85832,9 @@ exports.updateProcess = updateProcess;
 exports.runProcess = runProcess;
 exports.cancelProcess = cancelProcess;
 exports.processCancelled = processCancelled;
-exports.processFinishing = processFinishing;
 exports.processFinished = processFinished;
+exports.closeProcess = closeProcess;
+exports.removeProcess = removeProcess;
 
 var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
 
@@ -86007,38 +86079,38 @@ function stopLoading(key) {
   };
 }
 
-function startProcess(key, message) {
+function startProcess(key, content) {
   var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
   var description = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 
   return {
     type: 'START_PROCESS',
     key: key,
-    message: message,
     data: data,
+    content: content,
     description: description
   };
 }
 
-function resumeProcess(key, message) {
-  var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
+function resumeProcess(key) {
   return {
     type: 'RESUME_PROCESS',
     key: key
   };
 }
 
-function updateProcess(key, message) {
+function updateProcess(key, content) {
   var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
   var description = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+  var level = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 'info';
 
   return {
     type: 'UPDATE_PROCESS',
     key: key,
-    message: message,
+    content: content,
     data: data,
-    description: description
+    description: description,
+    level: level
   };
 }
 
@@ -86065,16 +86137,26 @@ function processCancelled(key) {
   };
 }
 
-function processFinishing(key) {
+function processFinished(key) {
+  var completionMessage = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
   return {
-    type: 'PROCESS_FINISHING',
+    type: 'PROCESS_FINISHED',
+    key: key,
+    completionMessage: completionMessage
+  };
+}
+
+function closeProcess(key) {
+  return {
+    type: 'CLOSE_PROCESS',
     key: key
   };
 }
 
-function processFinished(key) {
+function removeProcess(key) {
   return {
-    type: 'PROCESS_FINISHED',
+    type: 'REMOVE_PROCESS',
     key: key
   };
 }
@@ -86223,7 +86305,7 @@ var UIMiddleware = function () {
 
             // start a timeout to close this notification
             if (!action.notification.sticky) {
-              var timeout = setTimeout(function () {
+              setTimeout(function () {
                 store.dispatch(uiActions.closeNotification(action.notification.key));
               }, action.notification.duration * 1000);
             }
@@ -86236,7 +86318,7 @@ var UIMiddleware = function () {
 
             // start a timeout to remove this notification
             // This gives us time to animate out the notification before we remove the data
-            var timeout = setTimeout(function () {
+            setTimeout(function () {
               store.dispatch(uiActions.removeNotification(action.key));
             }, 200);
 
@@ -86314,21 +86396,31 @@ var UIMiddleware = function () {
             next(action);
             break;
 
-          case 'PROCESS_FINISHING':
-
-            // start a timeout to remove this notification
-            // This gives us time to animate out the notification before we remove the data
-            var timeout = setTimeout(function () {
-              store.dispatch(uiActions.processFinished(action.key));
-            }, 200);
-
-            next(action);
-            break;
-
           case 'PROCESS_FINISHED':
             store.dispatch({
               type: action.key + '_FINISHED'
             });
+
+            // start a timeout to remove this notification
+            // This gives us time to animate out the notification before we remove the data
+            if (action.completionMessage) {
+              store.dispatch(uiActions.updateProcess(action.key, action.completionMessage.content, {}, action.completionMessage.description, action.completionMessage.level));
+              if (!action.completionMessage.sticky) {
+                setTimeout(function () {
+                  store.dispatch(uiActions.closeProcess(action.key));
+                }, 5000);
+              }
+            } else {
+              store.dispatch(uiActions.closeProcess(action.key));
+            }
+
+            next(action);
+            break;
+
+          case 'CLOSE_PROCESS':
+            setTimeout(function () {
+              store.dispatch(uiActions.removeProcess(action.key));
+            }, 200);
             next(action);
             break;
 
@@ -86523,9 +86615,10 @@ function reducer() {
       }
       processes[action.key] = {
         key: action.key,
-        message: action.message,
+        content: action.content,
         description: action.description,
         status: 'running',
+        level: action.level,
         data: data
       };
       return _extends({}, ui, { processes: processes });
@@ -86551,17 +86644,24 @@ function reducer() {
       }
       return _extends({}, ui, { processes: processes });
 
-    case 'PROCESS_FINISHING':
+    case 'PROCESS_FINISHED':
+      var processes = _extends({}, ui.processes ? ui.processes : {});
+      if (processes[action.key]) {
+        processes[action.key] = _extends({}, processes[action.key], { status: 'finished' });
+      }
+      return _extends({}, ui, { processes: processes });
+
+    case 'CLOSE_PROCESS':
       var processes = _extends({}, ui.processes ? ui.processes : {});
       if (processes[action.key]) {
         processes[action.key] = _extends({}, processes[action.key], { closing: true });
       }
       return _extends({}, ui, { processes: processes });
 
-    case 'PROCESS_FINISHED':
+    case 'REMOVE_PROCESS':
       var processes = _extends({}, ui.processes ? ui.processes : {});
       if (processes[action.key]) {
-        processes[action.key] = _extends({}, processes[action.key], { status: 'finished', closing: false });
+        processes[action.key] = _extends({}, processes[action.key], { status: 'completed', closing: false });
       }
       return _extends({}, ui, { processes: processes });
 

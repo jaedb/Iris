@@ -112,7 +112,9 @@ class Notifications extends React.Component {
   renderProcess(process) {
     const {
       data: { total, remaining },
-      message,
+      level = 'info',
+      content,
+      description = null,
       status,
       closing,
       key,
@@ -126,28 +128,55 @@ class Notifications extends React.Component {
     switch (status) {
       case 'running':
         return (
-          <div className={`notification notification--process${closing ? ' closing' : ''}`} key={key}>
+          <div
+            className={
+              `notification notification--${level} notification--process${closing ? ' closing' : ''}`
+            }
+            key={key}
+          >
             <Loader
               progress={progress}
               loading
               mini
               white
             />
-            {message}
+            {content && content !== '' && <div className="notification__content">{content}</div>}
+            {description && description !== '' && <div className="notification__description">{description}</div>}
             <Icon name="close" className="notification__close-button" onClick={() => { uiActions.cancelProcess(key); }} />
+          </div>
+        );
+
+      case 'finished':
+        return (
+          <div
+            className={
+              `notification notification--${level} notification--process${closing ? ' closing' : ''}`
+            }
+            key={key}
+          >
+            <Icon className="notification__icon" name={level === 'error' ? 'close' : 'check'} />
+            {content && content !== '' && <div className="notification__content">{content}</div>}
+            {description && description !== '' && <div className="notification__description">{description}</div>}
+            <Icon name="close" className="notification__close-button" onClick={() => { uiActions.closeProcess(key); }} />
           </div>
         );
 
       case 'cancelling':
         return (
-          <div className={`notification notification--process cancelling${closing ? ' closing' : ''}`} key={key}>
+          <div
+            className={
+              `notification notification--${level} notification--process cancelling${closing ? ' closing' : ''}`
+            }
+            key={key}
+          >
             <Loader />
-            Cancelling
+            {content && content !== '' && <div className="notification__content">{content}</div>}
+            {description && description !== '' && <div className="notification__description">{description}</div>}
           </div>
         );
 
       case 'cancelled':
-      case 'finished':
+      case 'completed':
       default:
         return null;
     }

@@ -56,9 +56,9 @@ const GoogleMiddleware = (function () {
               ));
             },
           );
-        } else if (last_run.status == 'cancelled') {
+        } else if (last_run.status === 'cancelled') {
           store.dispatch(uiActions.resumeProcess('GOOGLE_LIBRARY_ALBUMS_PROCESSOR'));
-        } else if (last_run.status == 'finished') {
+        } else if (last_run.status === 'finished') {
           // TODO: do we want to force a refresh?
         }
 
@@ -68,7 +68,7 @@ const GoogleMiddleware = (function () {
         if (store.getState().ui.processes.GOOGLE_LIBRARY_ALBUMS_PROCESSOR !== undefined) {
           const processor = store.getState().ui.processes.GOOGLE_LIBRARY_ALBUMS_PROCESSOR;
 
-          if (processor.status == 'cancelling') {
+          if (processor.status === 'cancelling') {
             store.dispatch(uiActions.processCancelled('GOOGLE_LIBRARY_ALBUMS_PROCESSOR'));
             return false;
           }
@@ -88,7 +88,7 @@ const GoogleMiddleware = (function () {
           ));
           store.dispatch(mopidyActions.getAlbums(uris_to_load, { name: 'GOOGLE_LIBRARY_ALBUMS_PROCESSOR', data: { uris } }));
         } else {
-          store.dispatch(uiActions.processFinishing('GOOGLE_LIBRARY_ALBUMS_PROCESSOR'));
+          store.dispatch(uiActions.processFinished('GOOGLE_LIBRARY_ALBUMS_PROCESSOR'));
         }
 
         break;

@@ -5735,6 +5735,11 @@ main header {
       padding-top: 5px;
       line-height: 1.1em;
       word-break: break-word; }
+    .notifications .notification__icon {
+      position: absolute;
+      top: 12px;
+      left: 15px;
+      font-size: 1.4rem; }
     .notifications .notification__close-button {
       -webkit-transition: all 0.2s ease-in-out;
       -moz-transition: all 0.2s ease-in-out;
@@ -5779,14 +5784,14 @@ main header {
         animation-iteration-count: 1; }
       .notifications .notification__close-button:hover {
         opacity: 1; }
-    .notifications .notification--good {
+    .notifications .notification--good, .notifications .notification--success {
       background: #47af2a; }
     .notifications .notification--broadcast {
       background: #FFF39C;
       color: #000000; }
     .notifications .notification--warning {
       background: #f16f19; }
-    .notifications .notification--bad {
+    .notifications .notification--bad, .notifications .notification--error {
       background: #cf2d2d; }
     .notifications .notification--shortcut {
       position: fixed;
