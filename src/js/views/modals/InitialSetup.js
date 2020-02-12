@@ -41,8 +41,9 @@ class InitialSetup extends React.Component {
     // Check for url-parsed configuration values
     const customHost = helpers.queryString('host', search);
     const customPort = helpers.queryString('port', search);
+    if (customHost) this.setState({ host: customHost });
+    if (customPort) this.setState({ port: customPort });
 
-    this.setState({ host: customHost, port: customPort });
     uiActions.setWindowTitle('Welcome to Iris');
   }
 
