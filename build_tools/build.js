@@ -56,7 +56,7 @@ copydir('src/assets', 'mopidy_iris/static/assets', function(error){
 		console.log('Setting version in __init__.py');
 		var init_file = "mopidy_iris/__init__.py";
 		var init_file_content = fs.readFileSync(init_file, "utf8");
-		init_file_content = init_file_content.replace(/(?:__version__\ \=\ \")(?:.*)"/, "__version__ = '"+version+"'");
+		init_file_content = init_file_content.replace(/(?:__version__\ \=\ \")(?:.*)"/, '__version__ = "'+version+'"');
 		fs.writeFileSync(init_file, init_file_content, 'utf8');
 
 		console.log('Setting version in setup.cfg');
