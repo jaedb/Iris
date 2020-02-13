@@ -39,7 +39,7 @@ copyfile('src/manifest.json', 'mopidy_iris/static/manifest.json', function(error
 
 copydir('src/assets', 'mopidy_iris/static/assets', function(error){
 
-	if (error){
+	if (error) {
 		console.log('Build failed, could not copy assets', error);
 		return false;
 
@@ -56,14 +56,14 @@ copydir('src/assets', 'mopidy_iris/static/assets', function(error){
 		console.log('Setting version in __init__.py');
 		var init_file = "mopidy_iris/__init__.py";
 		var init_file_content = fs.readFileSync(init_file, "utf8");
-		init_file_content = init_file_content.replace(/(?:__version__\ \=\ \')(?:.*)'/, "__version__ = '"+version+"'");
+		init_file_content = init_file_content.replace(/(?:__version__\ \=\ \")(?:.*)"/, "__version__ = '"+version+"'");
 		fs.writeFileSync(init_file, init_file_content, 'utf8');
 
 		console.log('Setting version in setup.cfg');
-		var init_file = "mopidy_iris/__init__.py";
-		var init_file_content = fs.readFileSync(init_file, "utf8");
-		init_file_content = init_file_content.replace(/(?:version\ \=\ \')(?:.*)'/, "version = '"+version+"'");
-		fs.writeFileSync(init_file, init_file_content, 'utf8');
+		var cfg_file = "setup.cfg";
+		var cfg_file_content = fs.readFileSync(cfg_file, "utf8");
+		cfg_file_content = cfg_file_content.replace(/(?:version\ \=\ )(?:.*)/, "version = "+version);
+		fs.writeFileSync(cfg_file, cfg_file_content, 'utf8');
 
 		console.log('Setting version in package.json');
 		var package_file = "package.json";
