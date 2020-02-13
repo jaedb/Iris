@@ -26,12 +26,13 @@ elif [[ $1 = "restart" ]]; then
 	fi
 
 elif [[ $1 = "local_scan" ]]; then
+	START=$(date +%s)
 	if $IS_CONTAINER; then
-		SCAN="$(mopidy --config /config/mopidy.conf local scan 2>&1)"
+		SCAN=$(mopidy --config /config/mopidy.conf local scan)
 	else
-		SCAN="$(sudo mopidyctl local scan 2>&1)"
+		SCAN=$(sudo mopidyctl local scan)
 	fi
-	echo -e "${SCAN}"
+	echo -e "Completed in $(($(date +%s) - $START)) seconds"
 
 elif [[ $1 = "check" ]]; then
 	echo -e "Access permitted"
