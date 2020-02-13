@@ -24,7 +24,7 @@ class LibraryTracks extends React.Component {
     this.props.uiActions.setWindowTitle('Tracks');
 
     if (!this.props.spotify_me) {
-      this.props.uiActions.createNotification({ type: 'warning', content: 'Enable Spotify to browse tracks' });
+      this.props.uiActions.createNotification({ level: 'warning', content: 'Enable Spotify to browse tracks' });
     } else if (this.props.library_tracks === undefined) {
       this.props.spotifyActions.getLibraryTracks();
     }

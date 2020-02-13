@@ -27,9 +27,9 @@ elif [[ $1 = "restart" ]]; then
 
 elif [[ $1 = "local_scan" ]]; then
 	if $IS_CONTAINER; then
-		SCAN="$(mopidy --config /config/mopidy.conf local scan)"
+		SCAN="$(mopidy --config /config/mopidy.conf local scan 2>&1)"
 	else
-		SCAN="$(sudo mopidyctl local scan)"
+		SCAN="$(sudo mopidyctl local scan 2>&1)"
 	fi
 	echo -e "${SCAN}"
 
@@ -37,7 +37,7 @@ elif [[ $1 = "check" ]]; then
 	echo -e "Access permitted"
 
 elif [[ $1 = "test" ]]; then
-	sleep 1
+	sleep 3
 
 	TEST=$(echo "Hello, this is your bash speaking. I was sleeping for 3 seconds. Is running a container: $IS_CONTAINER")
 	echo -e "${TEST}"

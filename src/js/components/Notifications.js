@@ -40,7 +40,7 @@ class Notifications extends React.Component {
     }
 
     this.props.uiActions.removeNotification(notification_key, true);
-    this.props.uiActions.createNotification({ type: 'info', content: 'Import successful' });
+    this.props.uiActions.createNotification({ level: 'warning', content: 'Import successful' });
   }
 
   renderNotifications() {

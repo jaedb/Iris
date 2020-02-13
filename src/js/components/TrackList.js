@@ -290,7 +290,7 @@ class TrackList extends React.Component {
     const selected_tracks_indexes = helpers.arrayOf('index', selected_tracks);
 
     if (selected_tracks.length <= 0) {
-      return this.props.uiActions.createNotification({ content: 'No tracks selected', type: 'bad' });
+      return this.props.uiActions.createNotification({ content: 'No tracks selected', level: 'error' });
     }
 
     // Our parent handles playing
@@ -313,7 +313,7 @@ class TrackList extends React.Component {
 
       // No handler? We can't really do anything then, so notify user
     }
-    this.props.uiActions.createNotification({ content: `Cannot delete ${selected_tracks.length > 1 ? 'these tracks' : 'this track'}`, type: 'bad' });
+    this.props.uiActions.createNotification({ content: `Cannot delete ${selected_tracks.length > 1 ? 'these tracks' : 'this track'}`, level: 'error' });
   }
 
 

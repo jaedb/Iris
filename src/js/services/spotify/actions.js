@@ -1387,7 +1387,7 @@ export function createPlaylist(name, description, is_public, is_collaborative) {
             uris: [response.uri],
           });
 
-          dispatch(uiActions.createNotification({ type: 'info', content: 'Created playlist' }));
+          dispatch(uiActions.createNotification({ level: 'warning', content: 'Created playlist' }));
         },
         (error) => {
           dispatch(coreActions.handleException(
@@ -1414,7 +1414,7 @@ export function savePlaylist(uri, name, description, is_public, is_collaborative
     )
       .then(
         (response) => {
-          dispatch(uiActions.createNotification({ type: 'info', content: 'Playlist saved' }));
+          dispatch(uiActions.createNotification({ level: 'warning', content: 'Playlist saved' }));
 
           // Save the image
           if (image) {

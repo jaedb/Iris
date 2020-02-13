@@ -639,7 +639,7 @@ const MopidyMiddleware = (function () {
           .then(
             (response) => {
               if (!response || response.tracks === undefined || !response.tracks) {
-                store.dispatch(uiActions.createNotification({ content: 'Failed to load playlist tracks', type: 'bad' }));
+                store.dispatch(uiActions.createNotification({ content: 'Failed to load playlist tracks', level: 'error' }));
               } else {
                 let tracks_uris = helpers.arrayOf('uri', response.tracks);
                 if (action.shuffle) {
@@ -691,7 +691,7 @@ const MopidyMiddleware = (function () {
           .then(
             (response) => {
               if (response.tracks === undefined) {
-                store.dispatch(uiActions.createNotification({ content: 'Failed to load playlist tracks', type: 'bad' }));
+                store.dispatch(uiActions.createNotification({ content: 'Failed to load playlist tracks', level: 'error' }));
               } else {
                 let tracks_uris = helpers.arrayOf('uri', response.tracks);
                 if (action.shuffle) {
@@ -712,7 +712,7 @@ const MopidyMiddleware = (function () {
       case 'MOPIDY_ENQUEUE_URIS':
 
         if (!action.uris || action.uris.length <= 0) {
-          this.props.uiActions.createNotification({ content: 'No URIs to enqueue', type: 'warning' });
+          this.props.uiActions.createNotification({ content: 'No URIs to enqueue', level: 'warning' });
           break;
         }
 
@@ -855,7 +855,7 @@ const MopidyMiddleware = (function () {
         let urisToPlay = Object.assign([], action.uris);
 
         if (!urisToPlay || !urisToPlay.length) {
-          this.props.uiActions.createNotification({ content: 'No URIs to play', type: 'warning' });
+          this.props.uiActions.createNotification({ content: 'No URIs to play', level: 'warning' });
           break;
         }
 
@@ -983,7 +983,7 @@ const MopidyMiddleware = (function () {
         var uri_scheme = uri_schemes.shift();
 
         if (uri_schemes_total <= 0) {
-          store.dispatch(uiActions.createNotification({ content: 'No sources selected', type: 'warning' }));
+          store.dispatch(uiActions.createNotification({ content: 'No sources selected', level: 'warning' }));
         } else {
           store.dispatch(uiActions.startProcess(
             'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
@@ -1745,7 +1745,7 @@ const MopidyMiddleware = (function () {
 
                 store.dispatch(coreActions.playlistLoaded(playlist));
 
-                store.dispatch(uiActions.createNotification({ type: 'info', content: 'Playlist saved' }));
+                store.dispatch(uiActions.createNotification({ level: 'warning', content: 'Playlist saved' }));
               });
           });
         break;
@@ -1793,7 +1793,7 @@ const MopidyMiddleware = (function () {
       case 'MOPIDY_CREATE_PLAYLIST':
         request(socket, store, 'playlists.create', { name: action.name, uri_scheme: action.scheme })
           .then((response) => {
-            store.dispatch(uiActions.createNotification({ type: 'info', content: 'Created playlist' }));
+            store.dispatch(uiActions.createNotification({ level: 'warning', content: 'Created playlist' }));
             store.dispatch(coreActions.playlistLoaded(response));
             store.dispatch({
               type: 'MOPIDY_LIBRARY_PLAYLIST_CREATED',

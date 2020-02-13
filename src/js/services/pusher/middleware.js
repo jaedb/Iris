@@ -342,7 +342,7 @@ const PusherMiddleware = (function () {
         request(store, 'send_message', action.data)
           .then(
             (response) => {
-              store.dispatch(uiActions.createNotification({ type: 'info', content: 'Message delivered' }));
+              store.dispatch(uiActions.createNotification({ level: 'warning', content: 'Message delivered' }));
             },
             (error) => {
               store.dispatch(coreActions.handleException(
@@ -550,7 +550,7 @@ const PusherMiddleware = (function () {
             console.log('Command response', response);
             store.dispatch(uiActions.removeProcess(notification_key));
             if (action.notify) {
-              store.dispatch(uiActions.createNotification({ key: notification_key, type: 'info', content: 'Command sent' }));
+              store.dispatch(uiActions.createNotification({ key: notification_key, level: 'warning', content: 'Command sent' }));
             }
           },
             (error) => {
@@ -629,7 +629,7 @@ const PusherMiddleware = (function () {
             'notification',
             {
               notification: {
-                type: 'info',
+                level: 'warning',
                 content: `${pusher.username} is starting radio mode`,
               },
             },
@@ -641,7 +641,7 @@ const PusherMiddleware = (function () {
             (response) => {
               store.dispatch(uiActions.processFinished('PUSHER_RADIO_PROCESS'));
               if (response.status == 0) {
-                store.dispatch(uiActions.createNotification({ content: response.message, type: 'bad' }));
+                store.dispatch(uiActions.createNotification({ content: response.message, level: 'error' }));
               }
               store.dispatch(pusherActions.radioChanged(response.radio));
             },
@@ -666,7 +666,7 @@ const PusherMiddleware = (function () {
           'notification',
           {
             notification: {
-              type: 'info',
+              level: 'warning',
               content: `${pusher.username} stopped radio mode`,
             },
           },

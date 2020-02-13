@@ -78,7 +78,7 @@ const CoreMiddleware = (function () {
 	            }
 
 	            if (action.show_notification) {
-	                store.dispatch(uiActions.createNotification({ content: message, type: 'bad', description }));
+	                store.dispatch(uiActions.createNotification({ content: message, level: 'error', description }));
 	            }
 
         console.error(message, description, data);
@@ -227,7 +227,7 @@ const CoreMiddleware = (function () {
         break;
 
       case 'PLAYLIST_TRACKS_ADDED':
-        store.dispatch(uiActions.createNotification({ type: 'info', content: `Added ${action.tracks_uris.length} tracks to playlist` }));
+        store.dispatch(uiActions.createNotification({ level: 'warning', content: `Added ${action.tracks_uris.length} tracks to playlist` }));
         switch (helpers.uriSource(action.key)) {
           case 'spotify':
             store.dispatch(spotifyActions.getPlaylist(action.key));
