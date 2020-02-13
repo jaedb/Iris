@@ -502,7 +502,7 @@ export function getURL(url, action_name, key = false) {
   };
 }
 
-export function getMore(url, core_action = null, custom_action = null) {
+export function getMore(url, core_action = null, custom_action = null, extra_data = {}) {
   return (dispatch, getState) => {
     request(dispatch, getState, url)
       .then(
@@ -513,6 +513,7 @@ export function getMore(url, core_action = null, custom_action = null) {
               core_action.parent_key,
               core_action.records_type,
               response,
+              extra_data,
             ));
           } else if (custom_action) {
             custom_action.data = response;
@@ -1301,7 +1302,6 @@ export function getAlbum(uri) {
           const tracks = Object.assign([], response.tracks.items);
 
           const album = {
-
             ...helpers.formatAlbum(response),
             artists_uris: helpers.arrayOf('uri', response.artists),
             tracks_uris: helpers.arrayOf('uri', tracks),

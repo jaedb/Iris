@@ -221,13 +221,14 @@ export function userPlaylistsLoaded(uri, playlists, more = null, total = null) {
   };
 }
 
-export function loadedMore(parent_type, parent_key, records_type, records_data) {
+export function loadedMore(parent_type, parent_key, records_type, records_data, extra_data = {}) {
   return {
     type: 'LOADED_MORE',
     parent_type,
     parent_key,
     records_type,
     records_data,
+    extra_data,
   };
 }
 

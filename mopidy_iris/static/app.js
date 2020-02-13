@@ -47629,7 +47629,7 @@ module.exports = hoistNonReactStatics;
 /*!***************************************************************!*\
   !*** ./node_modules/react-router-dom/esm/react-router-dom.js ***!
   \***************************************************************/
-/*! exports provided: BrowserRouter, HashRouter, Link, NavLink, MemoryRouter, Prompt, Redirect, Route, Router, StaticRouter, Switch, __RouterContext, generatePath, matchPath, useHistory, useLocation, useParams, useRouteMatch, withRouter */
+/*! exports provided: MemoryRouter, Prompt, Redirect, Route, Router, StaticRouter, Switch, __RouterContext, generatePath, matchPath, useHistory, useLocation, useParams, useRouteMatch, withRouter, BrowserRouter, HashRouter, Link, NavLink */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -72706,7 +72706,7 @@ var isCached = exports.isCached = function isCached(url) {
 
 /**
  * Digest a react-router's location.search string into an array of values
- * 
+ *
  * @param key String = the key you want from the URL
  * @param string String = the locaion.search string
  */
@@ -73134,7 +73134,7 @@ var formatUsers = exports.formatUsers = function formatUsers() {
  * */
 var formatAlbum = exports.formatAlbum = function formatAlbum(data) {
   var album = {};
-  var fields = ['uri', 'provider', 'name', 'type', 'added_at', 'release_date', 'listeners', 'play_count', 'wiki', 'wiki_publish_date', 'popularity', 'images', 'artists_uris', 'tracks_uris', 'artists'];
+  var fields = ['uri', 'provider', 'name', 'type', 'added_at', 'release_date', 'listeners', 'play_count', 'wiki', 'wiki_publish_date', 'popularity', 'images', 'artists_uris', 'tracks_uris', 'tracks_total', 'tracks_more', 'artists'];
 
   // Loop fields and import from data
   var _iteratorNormalCompletion8 = true;
@@ -74856,12 +74856,15 @@ function userPlaylistsLoaded(uri, playlists) {
 }
 
 function loadedMore(parent_type, parent_key, records_type, records_data) {
+  var extra_data = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
+
   return {
     type: 'LOADED_MORE',
     parent_type: parent_type,
     parent_key: parent_key,
     records_type: records_type,
-    records_data: records_data
+    records_data: records_data,
+    extra_data: extra_data
   };
 }
 
@@ -75957,6 +75960,13 @@ var CoreMiddleware = function () {
             var records_type_plural = action.records_type + 's';
             var records_index = {};
             var records_uris = helpers.arrayOf('uri', records);
+
+            // Merge any extra data (eg more_track's albums)
+            if (action.extra_data) {
+              records = records.map(function (record) {
+                return _extends({}, record, action.extra_data);
+              });
+            }
 
             // If we're a list of playlists, we need to manually filter Spotify's new URI structure
             // Really poor form because they haven't updated it everywhere, yet
@@ -83618,11 +83628,12 @@ function getURL(url, action_name) {
 function getMore(url) {
   var core_action = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
   var custom_action = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+  var extra_data = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 
   return function (dispatch, getState) {
     request(dispatch, getState, url).then(function (response) {
       if (core_action) {
-        dispatch(coreActions.loadedMore(core_action.parent_type, core_action.parent_key, core_action.records_type, response));
+        dispatch(coreActions.loadedMore(core_action.parent_type, core_action.parent_key, core_action.records_type, response, extra_data));
       } else if (custom_action) {
         custom_action.data = response;
         dispatch(custom_action);
@@ -87117,6 +87128,11 @@ var Album = exports.Album = function (_React$Component) {
         parent_type: 'album',
         parent_key: this.props.album.uri,
         records_type: 'track'
+      }, null, {
+        album: {
+          uri: this.props.album.uri,
+          name: this.props.album.name
+        }
       });
     }
   }, {
@@ -87201,7 +87217,7 @@ var Album = exports.Album = function (_React$Component) {
             album.tracks ? _react2.default.createElement(
               'li',
               null,
-              album.tracks.length,
+              album.tracks_total || album.tracks.length,
               ' ',
               'tracks'
             ) : null,
