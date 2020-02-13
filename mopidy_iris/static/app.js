@@ -47629,7 +47629,7 @@ module.exports = hoistNonReactStatics;
 /*!***************************************************************!*\
   !*** ./node_modules/react-router-dom/esm/react-router-dom.js ***!
   \***************************************************************/
-/*! exports provided: MemoryRouter, Prompt, Redirect, Route, Router, StaticRouter, Switch, __RouterContext, generatePath, matchPath, useHistory, useLocation, useParams, useRouteMatch, withRouter, BrowserRouter, HashRouter, Link, NavLink */
+/*! exports provided: BrowserRouter, HashRouter, Link, NavLink, MemoryRouter, Prompt, Redirect, Route, Router, StaticRouter, Switch, __RouterContext, generatePath, matchPath, useHistory, useLocation, useParams, useRouteMatch, withRouter */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -64382,7 +64382,7 @@ var FollowButton = function (_React$Component) {
             type: 'button',
             className: className + ' button--disabled',
             onClick: function onClick() {
-              return actions.createNotification({ content: 'You must authorize Spotify first', type: 'warning' });
+              return actions.createNotification({ content: 'You must authorize Spotify first', level: 'warning' });
             }
           },
           addText
@@ -64520,13 +64520,13 @@ var GeniusAuthenticationFrame = function (_React$Component) {
       // Only allow incoming data from our authorized authenticator proxy
       var authorization_domain = this.props.authorization_url.substring(0, this.props.authorization_url.indexOf('/', 8));
       if (event.origin != authorization_domain) {
-        this.props.uiActions.createNotification({ content: 'Authorization failed. ' + event.origin + ' is not the configured authorization_url.', type: 'bad' });
+        this.props.uiActions.createNotification({ content: 'Authorization failed. ' + event.origin + ' is not the configured authorization_url.', level: 'error' });
         return false;
       }
 
       // Bounced with an error
       if (data.error !== undefined) {
-        this.props.uiActions.createNotification({ content: data.message, type: 'bad' });
+        this.props.uiActions.createNotification({ content: data.message, level: 'error' });
 
         // No errors? We're in!
       } else {
@@ -64560,7 +64560,7 @@ var GeniusAuthenticationFrame = function (_React$Component) {
 
           // Popup does not exist, so must have been blocked
         } else {
-          self.props.uiActions.createNotification({ content: 'Popup blocked. Please allow popups and try again.', type: 'bad' });
+          self.props.uiActions.createNotification({ content: 'Popup blocked. Please allow popups and try again.', level: 'error' });
           self.setState({ authorizing: false });
           clearInterval(timer);
         }
@@ -64748,13 +64748,13 @@ var LastfmAuthenticationFrame = function (_React$Component) {
       // Only allow incoming data from our authorized authenticator proxy
       var authorization_domain = this.props.authorization_url.substring(0, this.props.authorization_url.indexOf('/', 8));
       if (event.origin != authorization_domain) {
-        this.props.uiActions.createNotification({ content: 'Authorization failed. ' + event.origin + ' is not the configured authorization_url.', type: 'bad' });
+        this.props.uiActions.createNotification({ content: 'Authorization failed. ' + event.origin + ' is not the configured authorization_url.', level: 'error' });
         return false;
       }
 
       // Bounced with an error
       if (data.error !== undefined) {
-        this.props.uiActions.createNotification({ content: data.message, type: 'bad' });
+        this.props.uiActions.createNotification({ content: data.message, level: 'error' });
 
         // No errors? We're in!
       } else {
@@ -64788,7 +64788,7 @@ var LastfmAuthenticationFrame = function (_React$Component) {
 
           // Popup does not exist, so must have been blocked
         } else {
-          self.props.uiActions.createNotification({ content: 'Popup blocked. Please allow popups and try again.', type: 'bad' });
+          self.props.uiActions.createNotification({ content: 'Popup blocked. Please allow popups and try again.', level: 'error' });
           self.setState({ authorizing: false });
           clearInterval(timer);
         }
@@ -64932,7 +64932,7 @@ var FollowButton = function (_React$Component) {
         return _react2.default.createElement(
           'button',
           { className: className + ' button--disabled', onClick: function onClick(e) {
-              return _this2.props.uiActions.createNotification({ content: 'You must authorize LastFM first', type: 'warning' });
+              return _this2.props.uiActions.createNotification({ content: 'You must authorize LastFM first', level: 'warning' });
             } },
           this.props.addText
         );
@@ -66072,13 +66072,13 @@ var SpotifyAuthenticationFrame = function (_React$Component) {
       // Only allow incoming data from our authorized authenticator proxy
       var authorization_domain = this.props.authorization_url.substring(0, this.props.authorization_url.indexOf('/', 8));
       if (event.origin != authorization_domain) {
-        this.props.uiActions.createNotification({ content: 'Authorization failed. ' + event.origin + ' is not the configured authorization_url.', type: 'bad' });
+        this.props.uiActions.createNotification({ content: 'Authorization failed. ' + event.origin + ' is not the configured authorization_url.', level: 'error' });
         return false;
       }
 
       // Spotify bounced with an error
       if (data.error !== undefined) {
-        this.props.uiActions.createNotification({ content: data.error, type: 'bad' });
+        this.props.uiActions.createNotification({ content: data.error, level: 'error' });
 
         // No errors? We're in!
       } else {
@@ -66112,7 +66112,7 @@ var SpotifyAuthenticationFrame = function (_React$Component) {
 
           // Popup does not exist, so must have been blocked
         } else {
-          self.props.uiActions.createNotification({ content: 'Popup blocked. Please allow popups and try again.', type: 'bad' });
+          self.props.uiActions.createNotification({ content: 'Popup blocked. Please allow popups and try again.', level: 'error' });
           self.setState({ authorizing: false });
           clearInterval(timer);
         }
@@ -68082,7 +68082,7 @@ var Notifications = function (_React$Component) {
       }
 
       this.props.uiActions.removeNotification(notification_key, true);
-      this.props.uiActions.createNotification({ type: 'info', content: 'Import successful' });
+      this.props.uiActions.createNotification({ level: 'warning', content: 'Import successful' });
     }
   }, {
     key: 'renderNotifications',
@@ -72166,7 +72166,7 @@ var TrackList = function (_React$Component) {
       var selected_tracks_indexes = helpers.arrayOf('index', selected_tracks);
 
       if (selected_tracks.length <= 0) {
-        return this.props.uiActions.createNotification({ content: 'No tracks selected', type: 'bad' });
+        return this.props.uiActions.createNotification({ content: 'No tracks selected', level: 'error' });
       }
 
       // Our parent handles playing
@@ -72190,7 +72190,7 @@ var TrackList = function (_React$Component) {
 
         // No handler? We can't really do anything then, so notify user
       }
-      this.props.uiActions.createNotification({ content: 'Cannot delete ' + (selected_tracks.length > 1 ? 'these tracks' : 'this track'), type: 'bad' });
+      this.props.uiActions.createNotification({ content: 'Cannot delete ' + (selected_tracks.length > 1 ? 'these tracks' : 'this track'), level: 'error' });
     }
 
     /**
@@ -75127,7 +75127,7 @@ var CoreMiddleware = function () {
             }
 
             if (action.show_notification) {
-              store.dispatch(uiActions.createNotification({ content: message, type: 'bad', description: description }));
+              store.dispatch(uiActions.createNotification({ content: message, level: 'error', description: description }));
             }
 
             console.error(message, description, data);
@@ -75275,7 +75275,7 @@ var CoreMiddleware = function () {
             break;
 
           case 'PLAYLIST_TRACKS_ADDED':
-            store.dispatch(uiActions.createNotification({ type: 'info', content: 'Added ' + action.tracks_uris.length + ' tracks to playlist' }));
+            store.dispatch(uiActions.createNotification({ level: 'warning', content: 'Added ' + action.tracks_uris.length + ' tracks to playlist' }));
             switch (helpers.uriSource(action.key)) {
               case 'spotify':
                 store.dispatch(spotifyActions.getPlaylist(action.key));
@@ -79158,7 +79158,7 @@ var MopidyMiddleware = function () {
             // Fetch the playlist tracks via backend and add each track by URI
             request(socket, store, 'playlists.lookup', { uri: action.uri }).then(function (response) {
               if (!response || response.tracks === undefined || !response.tracks) {
-                store.dispatch(uiActions.createNotification({ content: 'Failed to load playlist tracks', type: 'bad' }));
+                store.dispatch(uiActions.createNotification({ content: 'Failed to load playlist tracks', level: 'error' }));
               } else {
                 var tracks_uris = helpers.arrayOf('uri', response.tracks);
                 if (action.shuffle) {
@@ -79203,7 +79203,7 @@ var MopidyMiddleware = function () {
             // Fetch the playlist tracks via backend and add each track by URI
             request(socket, store, 'playlists.lookup', { uri: action.uri }).then(function (response) {
               if (response.tracks === undefined) {
-                store.dispatch(uiActions.createNotification({ content: 'Failed to load playlist tracks', type: 'bad' }));
+                store.dispatch(uiActions.createNotification({ content: 'Failed to load playlist tracks', level: 'error' }));
               } else {
                 var _tracks_uris = helpers.arrayOf('uri', response.tracks);
                 if (action.shuffle) {
@@ -79219,7 +79219,7 @@ var MopidyMiddleware = function () {
           case 'MOPIDY_ENQUEUE_URIS':
 
             if (!action.uris || action.uris.length <= 0) {
-              _this.props.uiActions.createNotification({ content: 'No URIs to enqueue', type: 'warning' });
+              _this.props.uiActions.createNotification({ content: 'No URIs to enqueue', level: 'warning' });
               break;
             }
 
@@ -79343,7 +79343,7 @@ var MopidyMiddleware = function () {
             var urisToPlay = Object.assign([], action.uris);
 
             if (!urisToPlay || !urisToPlay.length) {
-              _this.props.uiActions.createNotification({ content: 'No URIs to play', type: 'warning' });
+              _this.props.uiActions.createNotification({ content: 'No URIs to play', level: 'warning' });
               break;
             }
 
@@ -79443,7 +79443,7 @@ var MopidyMiddleware = function () {
             var uri_scheme = uri_schemes.shift();
 
             if (uri_schemes_total <= 0) {
-              store.dispatch(uiActions.createNotification({ content: 'No sources selected', type: 'warning' }));
+              store.dispatch(uiActions.createNotification({ content: 'No sources selected', level: 'warning' }));
             } else {
               store.dispatch(uiActions.startProcess('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR', 'Searching ' + uri_schemes_total + ' Mopidy providers', {
                 context: action.context,
@@ -80089,7 +80089,7 @@ var MopidyMiddleware = function () {
 
                 store.dispatch(coreActions.playlistLoaded(playlist));
 
-                store.dispatch(uiActions.createNotification({ type: 'info', content: 'Playlist saved' }));
+                store.dispatch(uiActions.createNotification({ level: 'warning', content: 'Playlist saved' }));
               });
             });
             break;
@@ -80135,7 +80135,7 @@ var MopidyMiddleware = function () {
 
           case 'MOPIDY_CREATE_PLAYLIST':
             request(socket, store, 'playlists.create', { name: action.name, uri_scheme: action.scheme }).then(function (response) {
-              store.dispatch(uiActions.createNotification({ type: 'info', content: 'Created playlist' }));
+              store.dispatch(uiActions.createNotification({ level: 'warning', content: 'Created playlist' }));
               store.dispatch(coreActions.playlistLoaded(response));
               store.dispatch({
                 type: 'MOPIDY_LIBRARY_PLAYLIST_CREATED',
@@ -80279,7 +80279,6 @@ var MopidyMiddleware = function () {
                   }
 
                   var album = _extends({
-
                     source: 'local',
                     artists_uris: artists_uris,
                     tracks_uris: _tracks_uris2,
@@ -80290,6 +80289,7 @@ var MopidyMiddleware = function () {
                 }
               }
 
+              store.dispatch(mopidyActions.getImages('albums', helpers.arrayOf('uri', albums_loaded)));
               store.dispatch(coreActions.albumsLoaded(albums_loaded));
               store.dispatch(coreActions.artistsLoaded(artists_loaded));
               store.dispatch(coreActions.tracksLoaded(tracks_loaded));
@@ -80349,14 +80349,9 @@ var MopidyMiddleware = function () {
               store.dispatch(coreActions.albumLoaded(album));
               store.dispatch(coreActions.artistsLoaded(artists));
 
-              // load artwork from LastFM
+              // Load images
               if (!response[0].album.images) {
-                var mbid = helpers.getFromUri('mbid', album.uri);
-                if (mbid) {
-                  store.dispatch(lastfmActions.getAlbum(album.uri, false, false, mbid));
-                } else if (artists && artists.length > 0) {
-                  store.dispatch(lastfmActions.getAlbum(album.uri, artists[0].name, album.name));
-                }
+                store.dispatch(mopidyActions.getImages('albums', [album.uri]));
               }
 
               request(socket, store, 'library.lookup', { uris: album.tracks_uris }).then(function (response) {
@@ -81639,7 +81634,7 @@ var PusherMiddleware = function () {
 
           case 'PUSHER_DELIVER_MESSAGE':
             request(store, 'send_message', action.data).then(function (response) {
-              store.dispatch(uiActions.createNotification({ type: 'info', content: 'Message delivered' }));
+              store.dispatch(uiActions.createNotification({ level: 'warning', content: 'Message delivered' }));
             }, function (error) {
               store.dispatch(coreActions.handleException('Could not deliver message', error));
             });
@@ -81786,7 +81781,7 @@ var PusherMiddleware = function () {
               console.log('Command response', response);
               store.dispatch(uiActions.removeProcess(notification_key));
               if (action.notify) {
-                store.dispatch(uiActions.createNotification({ key: notification_key, type: 'info', content: 'Command sent' }));
+                store.dispatch(uiActions.createNotification({ key: notification_key, level: 'warning', content: 'Command sent' }));
               }
             }, function (error) {
               store.dispatch(uiActions.removeProcess(notification_key));
@@ -81851,7 +81846,7 @@ var PusherMiddleware = function () {
             if (action.type == 'PUSHER_START_RADIO') {
               store.dispatch(pusherActions.deliverBroadcast('notification', {
                 notification: {
-                  type: 'info',
+                  level: 'warning',
                   content: pusher.username + ' is starting radio mode'
                 }
               }));
@@ -81860,7 +81855,7 @@ var PusherMiddleware = function () {
             request(store, 'change_radio', data).then(function (response) {
               store.dispatch(uiActions.processFinished('PUSHER_RADIO_PROCESS'));
               if (response.status == 0) {
-                store.dispatch(uiActions.createNotification({ content: response.message, type: 'bad' }));
+                store.dispatch(uiActions.createNotification({ content: response.message, level: 'error' }));
               }
               store.dispatch(pusherActions.radioChanged(response.radio));
             }, function (error) {
@@ -81878,7 +81873,7 @@ var PusherMiddleware = function () {
 
             store.dispatch(pusherActions.deliverBroadcast('notification', {
               notification: {
-                type: 'info',
+                level: 'warning',
                 content: pusher.username + ' stopped radio mode'
               }
             }));
@@ -84397,7 +84392,7 @@ function createPlaylist(name, description, is_public, is_collaborative) {
         uris: [response.uri]
       });
 
-      dispatch(uiActions.createNotification({ type: 'info', content: 'Created playlist' }));
+      dispatch(uiActions.createNotification({ level: 'warning', content: 'Created playlist' }));
     }, function (error) {
       dispatch(coreActions.handleException('Could not create playlist', error));
     });
@@ -84415,7 +84410,7 @@ function savePlaylist(uri, name, description, is_public, is_collaborative, image
 
     // Update the playlist fields
     request(dispatch, getState, 'users/' + getState().spotify.me.id + '/playlists/' + helpers.getFromUri('playlistid', uri), 'PUT', data).then(function (response) {
-      dispatch(uiActions.createNotification({ type: 'info', content: 'Playlist saved' }));
+      dispatch(uiActions.createNotification({ level: 'warning', content: 'Playlist saved' }));
 
       // Save the image
       if (image) {
@@ -96009,7 +96004,7 @@ var LibraryTracks = function (_React$Component) {
       this.props.uiActions.setWindowTitle('Tracks');
 
       if (!this.props.spotify_me) {
-        this.props.uiActions.createNotification({ type: 'warning', content: 'Enable Spotify to browse tracks' });
+        this.props.uiActions.createNotification({ level: 'warning', content: 'Enable Spotify to browse tracks' });
       } else if (this.props.library_tracks === undefined) {
         this.props.spotifyActions.getLibraryTracks();
       }
