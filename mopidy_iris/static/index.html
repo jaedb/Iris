@@ -100,8 +100,8 @@
 
 	// Release details
 	// These are automatically injected to built HTML
-	var build = "1581367597";
-	var version = "3.44.0";
+	var build = "1581630917";
+	var version = "3.44.2";
 
 	// Construct the script tag
 	var js = document.createElement("script");
@@ -111,7 +111,8 @@
 	var css = document.createElement("link");
 	css.rel = "stylesheet";
 
-	// Check for test mode. This is toggled under Settings > Debug > Test mode
+	// Check for test mode. This is toggled under Settings > Debug > Test mode or can
+	// be manually triggered with the URL var "?test_mode=1"
 	try {
 		var ui = JSON.parse(localStorage.getItem('ui') );
 		var test_mode = (
@@ -119,22 +120,23 @@
 			&& ui
 			&& typeof(ui.test_mode) !== 'undefined'
 			&& ui.test_mode
-		);
+		) || window.location.href.indexOf('test_mode=1') > -1;
 	} catch(error){
 		console.error(error);
 		var test_mode = false;
 	}
 
 	// Test mode, use un-minified code
-    if (test_mode){
-	    css.href = '/iris/app.css?v='+build;
-	    js.src = '/iris/app.js?v='+build;
+	if (test_mode){
+		console.debug("Test mode enabled, using un-minified code");
+		css.href = '/iris/app.css?v='+build;
+		js.src = '/iris/app.js?v='+build;
 
-    // Production-grade, minified app
-    } else {
-	    css.href = '/iris/app.min.css?v='+build;
-	    js.src = '/iris/app.min.js?v='+build;
-    }
+	// Production-grade, minified app
+	} else {
+		css.href = '/iris/app.min.css?v='+build;
+		js.src = '/iris/app.min.js?v='+build;
+	}
 
 	// And finally inject our CSS/JS tags
 	document.body.appendChild(css);

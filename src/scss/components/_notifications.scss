@@ -48,6 +48,13 @@
 			word-break: break-word;
 		}
 
+		&__icon {
+			position: absolute;
+			top: 12px;
+			left: 15px;
+			font-size: 1.4rem;
+		}
+
 		&__close-button {
 			@include animate();
 			@include click_feedback();
@@ -63,7 +70,8 @@
 			}
 		}
 
-		&--good {
+		&--good,
+		&--success {
 			background: colour(green);
 		}
 
@@ -76,7 +84,8 @@
 			background: colour(orange);
 		}
 
-		&--bad {
+		&--bad,
+		&--error {
 			background: colour(red);
 		}
 

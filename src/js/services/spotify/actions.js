@@ -502,7 +502,7 @@ export function getURL(url, action_name, key = false) {
   };
 }
 
-export function getMore(url, core_action = null, custom_action = null) {
+export function getMore(url, core_action = null, custom_action = null, extra_data = {}) {
   return (dispatch, getState) => {
     request(dispatch, getState, url)
       .then(
@@ -513,6 +513,7 @@ export function getMore(url, core_action = null, custom_action = null) {
               core_action.parent_key,
               core_action.records_type,
               response,
+              extra_data,
             ));
           } else if (custom_action) {
             custom_action.data = response;
@@ -619,7 +620,7 @@ export function getSearchResults(type, query, limit = 50, offset = 0) {
             });
           }
 
-          dispatch(uiActions.processFinishing('SPOTIFY_GET_SEARCH_RESULTS_PROCESSOR'));
+          dispatch(uiActions.processFinished('SPOTIFY_GET_SEARCH_RESULTS_PROCESSOR'));
         },
         (error) => {
           dispatch(coreActions.handleException(
@@ -1301,7 +1302,6 @@ export function getAlbum(uri) {
           const tracks = Object.assign([], response.tracks.items);
 
           const album = {
-
             ...helpers.formatAlbum(response),
             artists_uris: helpers.arrayOf('uri', response.artists),
             tracks_uris: helpers.arrayOf('uri', tracks),
@@ -1387,7 +1387,7 @@ export function createPlaylist(name, description, is_public, is_collaborative) {
             uris: [response.uri],
           });
 
-          dispatch(uiActions.createNotification({ type: 'info', content: 'Created playlist' }));
+          dispatch(uiActions.createNotification({ level: 'warning', content: 'Created playlist' }));
         },
         (error) => {
           dispatch(coreActions.handleException(
@@ -1414,7 +1414,7 @@ export function savePlaylist(uri, name, description, is_public, is_collaborative
     )
       .then(
         (response) => {
-          dispatch(uiActions.createNotification({ type: 'info', content: 'Playlist saved' }));
+          dispatch(uiActions.createNotification({ level: 'warning', content: 'Playlist saved' }));
 
           // Save the image
           if (image) {
@@ -1573,7 +1573,7 @@ export function getLibraryTracksAndPlayProcessor(data) {
             ));
           } else {
             dispatch(mopidyActions.playURIs(uris, data.uri));
-            dispatch(uiActions.processFinishing('SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR'));
+            dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR'));
           }
         },
         (error) => {
@@ -1669,7 +1669,7 @@ export function getAllPlaylistTracksProcessor(data) {
                     	// We don't bother "finishing", we just want it "finished" immediately
                     	// This bypasses the fade transition for a more smooth transition between two
                     	// processes that flow together
-            dispatch(uiActions.processFinished('SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR'));
+            dispatch(uiActions.removeProcess('SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR'));
 
                     	if (data.callback_action == 'enqueue') {
                         	dispatch(mopidyActions.enqueueURIs(uris, data.uri, data.play_next, data.at_position, data.offset));
@@ -1827,7 +1827,7 @@ export function getLibraryPlaylistsProcessor(data) {
             ));
             dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR', { next: response.next }));
           } else {
-            dispatch(uiActions.processFinishing('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'));
+            dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'));
             dispatch({ type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED_ALL' });
           }
         },
@@ -1898,7 +1898,7 @@ export function getLibraryArtistsProcessor(data) {
             ));
             dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR', { next: response.artists.next }));
           } else {
-            dispatch(uiActions.processFinishing('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'));
+            dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'));
           }
         },
         (error) => {
@@ -1968,7 +1968,7 @@ export function getLibraryAlbumsProcessor(data) {
             ));
             dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR', { next: response.next }));
           } else {
-            dispatch(uiActions.processFinishing('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'));
+            dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'));
           }
         },
         (error) => {

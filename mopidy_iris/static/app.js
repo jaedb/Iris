@@ -47629,7 +47629,7 @@ module.exports = hoistNonReactStatics;
 /*!***************************************************************!*\
   !*** ./node_modules/react-router-dom/esm/react-router-dom.js ***!
   \***************************************************************/
-/*! exports provided: MemoryRouter, Prompt, Redirect, Route, Router, StaticRouter, Switch, __RouterContext, generatePath, matchPath, useHistory, useLocation, useParams, useRouteMatch, withRouter, BrowserRouter, HashRouter, Link, NavLink */
+/*! exports provided: BrowserRouter, HashRouter, Link, NavLink, MemoryRouter, Prompt, Redirect, Route, Router, StaticRouter, Switch, __RouterContext, generatePath, matchPath, useHistory, useLocation, useParams, useRouteMatch, withRouter */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -64382,7 +64382,7 @@ var FollowButton = function (_React$Component) {
             type: 'button',
             className: className + ' button--disabled',
             onClick: function onClick() {
-              return actions.createNotification({ content: 'You must authorize Spotify first', type: 'warning' });
+              return actions.createNotification({ content: 'You must authorize Spotify first', level: 'warning' });
             }
           },
           addText
@@ -64520,13 +64520,13 @@ var GeniusAuthenticationFrame = function (_React$Component) {
       // Only allow incoming data from our authorized authenticator proxy
       var authorization_domain = this.props.authorization_url.substring(0, this.props.authorization_url.indexOf('/', 8));
       if (event.origin != authorization_domain) {
-        this.props.uiActions.createNotification({ content: 'Authorization failed. ' + event.origin + ' is not the configured authorization_url.', type: 'bad' });
+        this.props.uiActions.createNotification({ content: 'Authorization failed. ' + event.origin + ' is not the configured authorization_url.', level: 'error' });
         return false;
       }
 
       // Bounced with an error
       if (data.error !== undefined) {
-        this.props.uiActions.createNotification({ content: data.message, type: 'bad' });
+        this.props.uiActions.createNotification({ content: data.message, level: 'error' });
 
         // No errors? We're in!
       } else {
@@ -64560,7 +64560,7 @@ var GeniusAuthenticationFrame = function (_React$Component) {
 
           // Popup does not exist, so must have been blocked
         } else {
-          self.props.uiActions.createNotification({ content: 'Popup blocked. Please allow popups and try again.', type: 'bad' });
+          self.props.uiActions.createNotification({ content: 'Popup blocked. Please allow popups and try again.', level: 'error' });
           self.setState({ authorizing: false });
           clearInterval(timer);
         }
@@ -64748,13 +64748,13 @@ var LastfmAuthenticationFrame = function (_React$Component) {
       // Only allow incoming data from our authorized authenticator proxy
       var authorization_domain = this.props.authorization_url.substring(0, this.props.authorization_url.indexOf('/', 8));
       if (event.origin != authorization_domain) {
-        this.props.uiActions.createNotification({ content: 'Authorization failed. ' + event.origin + ' is not the configured authorization_url.', type: 'bad' });
+        this.props.uiActions.createNotification({ content: 'Authorization failed. ' + event.origin + ' is not the configured authorization_url.', level: 'error' });
         return false;
       }
 
       // Bounced with an error
       if (data.error !== undefined) {
-        this.props.uiActions.createNotification({ content: data.message, type: 'bad' });
+        this.props.uiActions.createNotification({ content: data.message, level: 'error' });
 
         // No errors? We're in!
       } else {
@@ -64788,7 +64788,7 @@ var LastfmAuthenticationFrame = function (_React$Component) {
 
           // Popup does not exist, so must have been blocked
         } else {
-          self.props.uiActions.createNotification({ content: 'Popup blocked. Please allow popups and try again.', type: 'bad' });
+          self.props.uiActions.createNotification({ content: 'Popup blocked. Please allow popups and try again.', level: 'error' });
           self.setState({ authorizing: false });
           clearInterval(timer);
         }
@@ -64932,7 +64932,7 @@ var FollowButton = function (_React$Component) {
         return _react2.default.createElement(
           'button',
           { className: className + ' button--disabled', onClick: function onClick(e) {
-              return _this2.props.uiActions.createNotification({ content: 'You must authorize LastFM first', type: 'warning' });
+              return _this2.props.uiActions.createNotification({ content: 'You must authorize LastFM first', level: 'warning' });
             } },
           this.props.addText
         );
@@ -66072,13 +66072,13 @@ var SpotifyAuthenticationFrame = function (_React$Component) {
       // Only allow incoming data from our authorized authenticator proxy
       var authorization_domain = this.props.authorization_url.substring(0, this.props.authorization_url.indexOf('/', 8));
       if (event.origin != authorization_domain) {
-        this.props.uiActions.createNotification({ content: 'Authorization failed. ' + event.origin + ' is not the configured authorization_url.', type: 'bad' });
+        this.props.uiActions.createNotification({ content: 'Authorization failed. ' + event.origin + ' is not the configured authorization_url.', level: 'error' });
         return false;
       }
 
       // Spotify bounced with an error
       if (data.error !== undefined) {
-        this.props.uiActions.createNotification({ content: data.error, type: 'bad' });
+        this.props.uiActions.createNotification({ content: data.error, level: 'error' });
 
         // No errors? We're in!
       } else {
@@ -66112,7 +66112,7 @@ var SpotifyAuthenticationFrame = function (_React$Component) {
 
           // Popup does not exist, so must have been blocked
         } else {
-          self.props.uiActions.createNotification({ content: 'Popup blocked. Please allow popups and try again.', type: 'bad' });
+          self.props.uiActions.createNotification({ content: 'Popup blocked. Please allow popups and try again.', level: 'error' });
           self.setState({ authorizing: false });
           clearInterval(timer);
         }
@@ -67851,6 +67851,8 @@ var ProgressRing = function ProgressRing(_ref) {
 exports.default = (0, _react.memo)(function (props) {
   var body = props.body,
       loading = props.loading,
+      _props$finished = props.finished,
+      finished = _props$finished === undefined ? false : _props$finished,
       mini = props.mini,
       lazy = props.lazy,
       white = props.white,
@@ -67860,7 +67862,7 @@ exports.default = (0, _react.memo)(function (props) {
       progress = _props$progress === undefined ? null : _props$progress;
 
 
-  if (!loading) {
+  if (!loading && !finished) {
     return null;
   }
 
@@ -67894,6 +67896,19 @@ exports.default = (0, _react.memo)(function (props) {
           null,
           ' You need to be online load this resource '
         )
+      )
+    );
+  }
+
+  if (finished) {
+    classNameString += ' loader--finished';
+    return _react2.default.createElement(
+      'div',
+      { className: classNameString },
+      _react2.default.createElement(
+        'div',
+        { className: 'loader__spinner' },
+        _react2.default.createElement(_Icon2.default, { name: 'check' })
       )
     );
   }
@@ -68067,7 +68082,7 @@ var Notifications = function (_React$Component) {
       }
 
       this.props.uiActions.removeNotification(notification_key, true);
-      this.props.uiActions.createNotification({ type: 'info', content: 'Import successful' });
+      this.props.uiActions.createNotification({ level: 'warning', content: 'Import successful' });
     }
   }, {
     key: 'renderNotifications',
@@ -68207,7 +68222,11 @@ var Notifications = function (_React$Component) {
       var _process$data = process.data,
           total = _process$data.total,
           remaining = _process$data.remaining,
-          message = process.message,
+          _process$level = process.level,
+          level = _process$level === undefined ? 'info' : _process$level,
+          content = process.content,
+          _process$description = process.description,
+          description = _process$description === undefined ? null : _process$description,
           status = process.status,
           closing = process.closing,
           key = process.key;
@@ -68222,29 +68241,76 @@ var Notifications = function (_React$Component) {
         case 'running':
           return _react2.default.createElement(
             'div',
-            { className: 'notification notification--process' + (closing ? ' closing' : ''), key: key },
+            {
+              className: 'notification notification--' + level + ' notification--process' + (closing ? ' closing' : ''),
+              key: key
+            },
             _react2.default.createElement(_Loader2.default, {
               progress: progress,
               loading: true,
               mini: true,
               white: true
             }),
-            message,
+            content && content !== '' && _react2.default.createElement(
+              'div',
+              { className: 'notification__content' },
+              content
+            ),
+            description && description !== '' && _react2.default.createElement(
+              'div',
+              { className: 'notification__description' },
+              description
+            ),
             _react2.default.createElement(_Icon2.default, { name: 'close', className: 'notification__close-button', onClick: function onClick() {
                 uiActions.cancelProcess(key);
+              } })
+          );
+
+        case 'finished':
+          return _react2.default.createElement(
+            'div',
+            {
+              className: 'notification notification--' + level + ' notification--process' + (closing ? ' closing' : ''),
+              key: key
+            },
+            _react2.default.createElement(_Icon2.default, { className: 'notification__icon', name: level === 'error' ? 'close' : 'check' }),
+            content && content !== '' && _react2.default.createElement(
+              'div',
+              { className: 'notification__content' },
+              content
+            ),
+            description && description !== '' && _react2.default.createElement(
+              'div',
+              { className: 'notification__description' },
+              description
+            ),
+            _react2.default.createElement(_Icon2.default, { name: 'close', className: 'notification__close-button', onClick: function onClick() {
+                uiActions.closeProcess(key);
               } })
           );
 
         case 'cancelling':
           return _react2.default.createElement(
             'div',
-            { className: 'notification notification--process cancelling' + (closing ? ' closing' : ''), key: key },
+            {
+              className: 'notification notification--' + level + ' notification--process cancelling' + (closing ? ' closing' : ''),
+              key: key
+            },
             _react2.default.createElement(_Loader2.default, null),
-            'Cancelling'
+            content && content !== '' && _react2.default.createElement(
+              'div',
+              { className: 'notification__content' },
+              content
+            ),
+            description && description !== '' && _react2.default.createElement(
+              'div',
+              { className: 'notification__description' },
+              description
+            )
           );
 
         case 'cancelled':
-        case 'finished':
+        case 'completed':
         default:
           return null;
       }
@@ -72100,7 +72166,7 @@ var TrackList = function (_React$Component) {
       var selected_tracks_indexes = helpers.arrayOf('index', selected_tracks);
 
       if (selected_tracks.length <= 0) {
-        return this.props.uiActions.createNotification({ content: 'No tracks selected', type: 'bad' });
+        return this.props.uiActions.createNotification({ content: 'No tracks selected', level: 'error' });
       }
 
       // Our parent handles playing
@@ -72124,7 +72190,7 @@ var TrackList = function (_React$Component) {
 
         // No handler? We can't really do anything then, so notify user
       }
-      this.props.uiActions.createNotification({ content: 'Cannot delete ' + (selected_tracks.length > 1 ? 'these tracks' : 'this track'), type: 'bad' });
+      this.props.uiActions.createNotification({ content: 'Cannot delete ' + (selected_tracks.length > 1 ? 'these tracks' : 'this track'), level: 'error' });
     }
 
     /**
@@ -72640,7 +72706,7 @@ var isCached = exports.isCached = function isCached(url) {
 
 /**
  * Digest a react-router's location.search string into an array of values
- * 
+ *
  * @param key String = the key you want from the URL
  * @param string String = the locaion.search string
  */
@@ -73068,7 +73134,7 @@ var formatUsers = exports.formatUsers = function formatUsers() {
  * */
 var formatAlbum = exports.formatAlbum = function formatAlbum(data) {
   var album = {};
-  var fields = ['uri', 'provider', 'name', 'type', 'added_at', 'release_date', 'listeners', 'play_count', 'wiki', 'wiki_publish_date', 'popularity', 'images', 'artists_uris', 'tracks_uris', 'artists'];
+  var fields = ['uri', 'provider', 'name', 'type', 'added_at', 'release_date', 'listeners', 'play_count', 'wiki', 'wiki_publish_date', 'popularity', 'images', 'artists_uris', 'tracks_uris', 'tracks_total', 'tracks_more', 'artists'];
 
   // Loop fields and import from data
   var _iteratorNormalCompletion8 = true;
@@ -74790,12 +74856,15 @@ function userPlaylistsLoaded(uri, playlists) {
 }
 
 function loadedMore(parent_type, parent_key, records_type, records_data) {
+  var extra_data = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
+
   return {
     type: 'LOADED_MORE',
     parent_type: parent_type,
     parent_key: parent_key,
     records_type: records_type,
-    records_data: records_data
+    records_data: records_data,
+    extra_data: extra_data
   };
 }
 
@@ -75061,7 +75130,7 @@ var CoreMiddleware = function () {
             }
 
             if (action.show_notification) {
-              store.dispatch(uiActions.createNotification({ content: message, type: 'bad', description: description }));
+              store.dispatch(uiActions.createNotification({ content: message, level: 'error', description: description }));
             }
 
             console.error(message, description, data);
@@ -75209,7 +75278,7 @@ var CoreMiddleware = function () {
             break;
 
           case 'PLAYLIST_TRACKS_ADDED':
-            store.dispatch(uiActions.createNotification({ type: 'info', content: 'Added ' + action.tracks_uris.length + ' tracks to playlist' }));
+            store.dispatch(uiActions.createNotification({ level: 'warning', content: 'Added ' + action.tracks_uris.length + ' tracks to playlist' }));
             switch (helpers.uriSource(action.key)) {
               case 'spotify':
                 store.dispatch(spotifyActions.getPlaylist(action.key));
@@ -75891,6 +75960,13 @@ var CoreMiddleware = function () {
             var records_type_plural = action.records_type + 's';
             var records_index = {};
             var records_uris = helpers.arrayOf('uri', records);
+
+            // Merge any extra data (eg more_track's albums)
+            if (action.extra_data) {
+              records = records.map(function (record) {
+                return _extends({}, record, action.extra_data);
+              });
+            }
 
             // If we're a list of playlists, we need to manually filter Spotify's new URI structure
             // Really poor form because they haven't updated it everywhere, yet
@@ -76944,9 +77020,9 @@ var GoogleMiddleware = function () {
                   remaining: uris.length
                 }));
               });
-            } else if (last_run.status == 'cancelled') {
+            } else if (last_run.status === 'cancelled') {
               store.dispatch(uiActions.resumeProcess('GOOGLE_LIBRARY_ALBUMS_PROCESSOR'));
-            } else if (last_run.status == 'finished') {
+            } else if (last_run.status === 'finished') {
               // TODO: do we want to force a refresh?
             }
 
@@ -76956,7 +77032,7 @@ var GoogleMiddleware = function () {
             if (store.getState().ui.processes.GOOGLE_LIBRARY_ALBUMS_PROCESSOR !== undefined) {
               var processor = store.getState().ui.processes.GOOGLE_LIBRARY_ALBUMS_PROCESSOR;
 
-              if (processor.status == 'cancelling') {
+              if (processor.status === 'cancelling') {
                 store.dispatch(uiActions.processCancelled('GOOGLE_LIBRARY_ALBUMS_PROCESSOR'));
                 return false;
               }
@@ -76972,7 +77048,7 @@ var GoogleMiddleware = function () {
               }));
               store.dispatch(mopidyActions.getAlbums(uris_to_load, { name: 'GOOGLE_LIBRARY_ALBUMS_PROCESSOR', data: { uris: uris } }));
             } else {
-              store.dispatch(uiActions.processFinishing('GOOGLE_LIBRARY_ALBUMS_PROCESSOR'));
+              store.dispatch(uiActions.processFinished('GOOGLE_LIBRARY_ALBUMS_PROCESSOR'));
             }
 
             break;
@@ -79092,7 +79168,7 @@ var MopidyMiddleware = function () {
             // Fetch the playlist tracks via backend and add each track by URI
             request(socket, store, 'playlists.lookup', { uri: action.uri }).then(function (response) {
               if (!response || response.tracks === undefined || !response.tracks) {
-                store.dispatch(uiActions.createNotification({ content: 'Failed to load playlist tracks', type: 'bad' }));
+                store.dispatch(uiActions.createNotification({ content: 'Failed to load playlist tracks', level: 'error' }));
               } else {
                 var tracks_uris = helpers.arrayOf('uri', response.tracks);
                 if (action.shuffle) {
@@ -79137,7 +79213,7 @@ var MopidyMiddleware = function () {
             // Fetch the playlist tracks via backend and add each track by URI
             request(socket, store, 'playlists.lookup', { uri: action.uri }).then(function (response) {
               if (response.tracks === undefined) {
-                store.dispatch(uiActions.createNotification({ content: 'Failed to load playlist tracks', type: 'bad' }));
+                store.dispatch(uiActions.createNotification({ content: 'Failed to load playlist tracks', level: 'error' }));
               } else {
                 var _tracks_uris = helpers.arrayOf('uri', response.tracks);
                 if (action.shuffle) {
@@ -79153,7 +79229,7 @@ var MopidyMiddleware = function () {
           case 'MOPIDY_ENQUEUE_URIS':
 
             if (!action.uris || action.uris.length <= 0) {
-              _this.props.uiActions.createNotification({ content: 'No URIs to enqueue', type: 'warning' });
+              _this.props.uiActions.createNotification({ content: 'No URIs to enqueue', level: 'warning' });
               break;
             }
 
@@ -79214,7 +79290,7 @@ var MopidyMiddleware = function () {
 
               // no batches means we're done here
             } else {
-              store.dispatch(uiActions.processFinishing('MOPIDY_ENQUEUE_URIS_PROCESSOR'));
+              store.dispatch(uiActions.processFinished('MOPIDY_ENQUEUE_URIS_PROCESSOR'));
               break;
             }
 
@@ -79277,7 +79353,7 @@ var MopidyMiddleware = function () {
             var urisToPlay = Object.assign([], action.uris);
 
             if (!urisToPlay || !urisToPlay.length) {
-              _this.props.uiActions.createNotification({ content: 'No URIs to play', type: 'warning' });
+              _this.props.uiActions.createNotification({ content: 'No URIs to play', level: 'warning' });
               break;
             }
 
@@ -79377,7 +79453,7 @@ var MopidyMiddleware = function () {
             var uri_scheme = uri_schemes.shift();
 
             if (uri_schemes_total <= 0) {
-              store.dispatch(uiActions.createNotification({ content: 'No sources selected', type: 'warning' }));
+              store.dispatch(uiActions.createNotification({ content: 'No sources selected', level: 'warning' }));
             } else {
               store.dispatch(uiActions.startProcess('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR', 'Searching ' + uri_schemes_total + ' Mopidy providers', {
                 context: action.context,
@@ -79402,7 +79478,7 @@ var MopidyMiddleware = function () {
 
               // No more schemes, so we're done!
             }if (!action.data.uri_scheme) {
-              store.dispatch(uiActions.processFinishing('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
+              store.dispatch(uiActions.processFinished('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
               return;
             }
 
@@ -79560,7 +79636,7 @@ var MopidyMiddleware = function () {
                 store.dispatch(uiActions.updateProcess('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR', 'Searching playlists'));
 
                 var continue_process = function continue_process() {
-                  store.dispatch(uiActions.processFinishing('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
+                  store.dispatch(uiActions.processFinished('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
                 };
 
                 request(socket, store, 'playlists.asList').then(function (response) {
@@ -80023,7 +80099,7 @@ var MopidyMiddleware = function () {
 
                 store.dispatch(coreActions.playlistLoaded(playlist));
 
-                store.dispatch(uiActions.createNotification({ type: 'info', content: 'Playlist saved' }));
+                store.dispatch(uiActions.createNotification({ level: 'warning', content: 'Playlist saved' }));
               });
             });
             break;
@@ -80069,7 +80145,7 @@ var MopidyMiddleware = function () {
 
           case 'MOPIDY_CREATE_PLAYLIST':
             request(socket, store, 'playlists.create', { name: action.name, uri_scheme: action.scheme }).then(function (response) {
-              store.dispatch(uiActions.createNotification({ type: 'info', content: 'Created playlist' }));
+              store.dispatch(uiActions.createNotification({ level: 'warning', content: 'Created playlist' }));
               store.dispatch(coreActions.playlistLoaded(response));
               store.dispatch({
                 type: 'MOPIDY_LIBRARY_PLAYLIST_CREATED',
@@ -80142,7 +80218,7 @@ var MopidyMiddleware = function () {
               }));
               store.dispatch(mopidyActions.getAlbums(uris_to_load, { name: 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR', data: { uris: uris } }));
             } else {
-              store.dispatch(uiActions.processFinishing('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'));
+              store.dispatch(uiActions.processFinished('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'));
             }
 
             break;
@@ -80213,7 +80289,6 @@ var MopidyMiddleware = function () {
                   }
 
                   var album = _extends({
-
                     source: 'local',
                     artists_uris: artists_uris,
                     tracks_uris: _tracks_uris2,
@@ -80224,6 +80299,7 @@ var MopidyMiddleware = function () {
                 }
               }
 
+              store.dispatch(mopidyActions.getImages('albums', helpers.arrayOf('uri', albums_loaded)));
               store.dispatch(coreActions.albumsLoaded(albums_loaded));
               store.dispatch(coreActions.artistsLoaded(artists_loaded));
               store.dispatch(coreActions.tracksLoaded(tracks_loaded));
@@ -80283,14 +80359,9 @@ var MopidyMiddleware = function () {
               store.dispatch(coreActions.albumLoaded(album));
               store.dispatch(coreActions.artistsLoaded(artists));
 
-              // load artwork from LastFM
+              // Load images
               if (!response[0].album.images) {
-                var mbid = helpers.getFromUri('mbid', album.uri);
-                if (mbid) {
-                  store.dispatch(lastfmActions.getAlbum(album.uri, false, false, mbid));
-                } else if (artists && artists.length > 0) {
-                  store.dispatch(lastfmActions.getAlbum(album.uri, artists[0].name, album.name));
-                }
+                store.dispatch(mopidyActions.getImages('albums', [album.uri]));
               }
 
               request(socket, store, 'library.lookup', { uris: album.tracks_uris }).then(function (response) {
@@ -80372,7 +80443,7 @@ var MopidyMiddleware = function () {
                       store.dispatch(uiActions.updateProcess('MOPIDY_LIBRARY_ARTISTS_PROCESSOR', 'Loading '+uris.length+' local artists', {uris: uris}));
                       store.dispatch(mopidyActions.getArtists(uris_to_load, {name: 'MOPIDY_LIBRARY_ARTISTS_PROCESSOR', data: {uris: uris}}));
                   } else {
-                      store.dispatch(uiActions.processFinishing('MOPIDY_LIBRARY_ARTISTS_PROCESSOR'));
+                      store.dispatch(uiActions.processFinished('MOPIDY_LIBRARY_ARTISTS_PROCESSOR'));
                   }
                     break;
                * */
@@ -81333,115 +81404,120 @@ var PusherMiddleware = function () {
         store.dispatch(coreActions.handleException('Pusher: Response received with no matching request', message));
       }
 
+      // Broadcast of an error
+    } else if (message.error !== undefined) {
+      store.dispatch(coreActions.handleException('Pusher: ' + message.error.message, message, message.error.data !== undefined && message.error.data.description !== undefined ? message.error.data.description : null));
       // General broadcast received
     } else {
-      // Broadcast of an error
-      if (message.error !== undefined) {
-        store.dispatch(coreActions.handleException('Pusher: ' + message.error.message, message, message.error.data !== undefined && message.error.data.description !== undefined ? message.error.data.description : null));
-      } else {
-        switch (message.method) {
-          case 'connection_added':
-            store.dispatch(pusherActions.connectionAdded(message.params.connection));
-            break;
-          case 'connection_changed':
-            store.dispatch(pusherActions.connectionChanged(message.params.connection));
-            break;
-          case 'connection_removed':
-            store.dispatch(pusherActions.connectionRemoved(message.params.connection));
-            break;
-          case 'queue_metadata_changed':
-            store.dispatch(pusherActions.queueMetadataChanged(message.params.queue_metadata));
-            break;
-          case 'spotify_token_changed':
-            store.dispatch(spotifyActions.tokenChanged(message.params.spotify_token));
-            break;
-          case 'share_configuration_received':
-            store.dispatch(uiActions.createNotification({
-              type: 'share-configuration-received',
-              configuration: message.params,
-              sticky: true
-            }));
-            break;
-          case 'notification':
-            store.dispatch(uiActions.createNotification(message.params.notification));
-            break;
-          case 'radio_started':
-            store.dispatch(pusherActions.radioStarted(message.params.radio));
-            break;
-          case 'radio_changed':
-            store.dispatch(pusherActions.radioChanged(message.params.radio));
-            break;
-          case 'radio_stopped':
-            store.dispatch(pusherActions.radioStopped());
-            break;
-          case 'commands_changed':
-            store.dispatch(pusherActions.commandsUpdated(message.params.commands));
-            break;
-          case 'reload':
-            window.location.reload(true);
-            break;
+      var params = message.params ? message.params : {};
+      switch (message.method) {
+        case 'connection_added':
+          store.dispatch(pusherActions.connectionAdded(params.connection));
+          break;
+        case 'connection_changed':
+          store.dispatch(pusherActions.connectionChanged(params.connection));
+          break;
+        case 'connection_removed':
+          store.dispatch(pusherActions.connectionRemoved(params.connection));
+          break;
+        case 'queue_metadata_changed':
+          store.dispatch(pusherActions.queueMetadataChanged(params.queue_metadata));
+          break;
+        case 'spotify_token_changed':
+          store.dispatch(spotifyActions.tokenChanged(params.spotify_token));
+          break;
+        case 'share_configuration_received':
+          store.dispatch(uiActions.createNotification({
+            type: 'share-configuration-received',
+            configuration: params,
+            sticky: true
+          }));
+          break;
+        case 'notification':
+          store.dispatch(uiActions.createNotification(params.notification));
+          break;
+        case 'radio_started':
+          store.dispatch(pusherActions.radioStarted(params.radio));
+          break;
+        case 'radio_changed':
+          store.dispatch(pusherActions.radioChanged(params.radio));
+          break;
+        case 'radio_stopped':
+          store.dispatch(pusherActions.radioStopped());
+          break;
+        case 'commands_changed':
+          store.dispatch(pusherActions.commandsUpdated(params.commands));
+          break;
+        case 'reload':
+          window.location.reload(true);
+          break;
 
-          // Local scan
-          case 'local_scan_started':
-            store.dispatch(uiActions.updateProcess('local_scan', 'Scanning local library'));
-            break;
-          case 'local_scan_updated':
-            store.dispatch(uiActions.updateProcess('local_scan', 'Scanning local library', {}, message.params.output));
-            break;
-          case 'local_scan_finished':
-            store.dispatch(uiActions.processFinished('local_scan'));
-            store.dispatch(uiActions.createNotification({
-              key: 'local_scan', type: 'info', content: 'Local scan finished', description: message.params.output
-            }));
-            break;
-          case 'local_scan_error':
-            store.dispatch(uiActions.processFinished('local_scan'));
-            store.dispatch(coreActions.handleException('Local scan failed', message, message.params.error));
-            break;
+        // Local scan
+        case 'local_scan_started':
+          store.dispatch(uiActions.updateProcess('local_scan', 'Scanning local library'));
+          break;
+        case 'local_scan_updated':
+          store.dispatch(uiActions.updateProcess('local_scan', 'Scanning local library', {}, params.output));
+          break;
+        case 'local_scan_finished':
+          store.dispatch(uiActions.processFinished('local_scan', {
+            content: 'Local scan finished', description: params.output, sticky: true
+          }));
+          break;
+        case 'local_scan_error':
+          store.dispatch(uiActions.processFinished('local_scan', {
+            level: 'error', content: 'Local scan failed', description: params.error, sticky: true
+          }));
+          break;
 
-          // Upgrade
-          case 'upgrade_started':
-            store.dispatch(uiActions.updateProcess('upgrade', 'Upgrading'));
-            break;
-          case 'upgrade_updated':
-            store.dispatch(uiActions.updateProcess('upgrade', 'Upgrading', {}, message.params.output));
-            break;
-          case 'upgrade_finished':
-            store.dispatch(uiActions.updateProcess('upgrade', 'Restarting to complete upgrade'));
-            break;
-          case 'upgrade_error':
-            store.dispatch(uiActions.processFinished('upgrade'));
-            store.dispatch(coreActions.handleException('Upgrade failed', message, message.params.error));
-            break;
+        // Upgrade
+        case 'upgrade_started':
+          store.dispatch(uiActions.updateProcess('upgrade', 'Upgrading'));
+          break;
+        case 'upgrade_updated':
+          store.dispatch(uiActions.updateProcess('upgrade', 'Upgrading', {}, params.output));
+          break;
+        case 'upgrade_finished':
+          store.dispatch(uiActions.updateProcess('upgrade', 'Restarting to complete upgrade'));
+          break;
+        case 'upgrade_error':
+          store.dispatch(uiActions.processFinished('upgrade', {
+            level: 'error', content: 'Upgrade failed', description: params.error, sticky: true
+          }));
+          break;
 
-          // Restart
-          case 'restart_started':
-            store.dispatch(uiActions.processFinished('upgrade', 'Restarting'));
-            break;
-          case 'restart_updated':
-            store.dispatch(uiActions.updateProcess('upgrade', 'Restarting', {}, message.params.output));
-            break;
-          case 'restart_error':
-            store.dispatch(uiActions.processFinished('upgrade'));
-            store.dispatch(coreActions.handleException('Restart failed', message, message.params.error));
-            break;
+        // Restart
+        case 'restart_started':
+          store.dispatch(uiActions.removeProcess('upgrade', 'Restarting'));
+          break;
+        case 'restart_updated':
+          store.dispatch(uiActions.updateProcess('upgrade', 'Restarting', {}, params.output));
+          break;
+        case 'restart_error':
+          store.dispatch(uiActions.processFinished('upgrade', {
+            level: 'error', content: 'Restart failed', description: params.error, sticky: true
+          }));
+          break;
 
-          // Test
-          case 'test_started':
-            store.dispatch(uiActions.updateProcess('test', 'Running test', {}, message.params.output));
-            break;
-          case 'test_updated':
-            store.dispatch(uiActions.updateProcess('test', 'Running test'));
-            break;
-          case 'test_finished':
-            store.dispatch(uiActions.processFinished('test'));
-            store.dispatch(uiActions.createNotification({ type: 'info', content: 'Test finished', description: message.params.output }));
-            break;
-          case 'test_error':
-            store.dispatch(uiActions.processFinished('test'));
-            store.dispatch(uiActions.createNotification({ type: 'bad', content: message.params.message, description: message.params.error }));
-            break;
-        }
+        // Test
+        case 'test_started':
+          store.dispatch(uiActions.updateProcess('test', 'Running test', {}, params.output));
+          break;
+        case 'test_updated':
+          store.dispatch(uiActions.updateProcess('test', 'Running test'));
+          break;
+        case 'test_finished':
+          store.dispatch(uiActions.processFinished('test', {
+            content: 'Test finished', description: params.output, sticky: true
+          }));
+          break;
+        case 'test_error':
+          store.dispatch(uiActions.removeProcess('test', {
+            level: 'error', content: params.message, description: params.error
+          }));
+          break;
+        default:
+          break;
       }
     }
   };
@@ -81568,7 +81644,7 @@ var PusherMiddleware = function () {
 
           case 'PUSHER_DELIVER_MESSAGE':
             request(store, 'send_message', action.data).then(function (response) {
-              store.dispatch(uiActions.createNotification({ type: 'info', content: 'Message delivered' }));
+              store.dispatch(uiActions.createNotification({ level: 'warning', content: 'Message delivered' }));
             }, function (error) {
               store.dispatch(coreActions.handleException('Could not deliver message', error));
             });
@@ -81713,12 +81789,12 @@ var PusherMiddleware = function () {
 
             request(store, 'run_command', { id: action.id }).then(function (response) {
               console.log('Command response', response);
-              store.dispatch(uiActions.processFinished(notification_key));
+              store.dispatch(uiActions.removeProcess(notification_key));
               if (action.notify) {
-                store.dispatch(uiActions.createNotification({ key: notification_key, type: 'info', content: 'Command sent' }));
+                store.dispatch(uiActions.createNotification({ key: notification_key, level: 'warning', content: 'Command sent' }));
               }
             }, function (error) {
-              store.dispatch(uiActions.processFinished(notification_key));
+              store.dispatch(uiActions.removeProcess(notification_key));
               store.dispatch(coreActions.handleException('Could not run command', error));
             });
 
@@ -81780,20 +81856,20 @@ var PusherMiddleware = function () {
             if (action.type == 'PUSHER_START_RADIO') {
               store.dispatch(pusherActions.deliverBroadcast('notification', {
                 notification: {
-                  type: 'info',
+                  level: 'warning',
                   content: pusher.username + ' is starting radio mode'
                 }
               }));
             }
 
             request(store, 'change_radio', data).then(function (response) {
-              store.dispatch(uiActions.processFinishing('PUSHER_RADIO_PROCESS'));
+              store.dispatch(uiActions.processFinished('PUSHER_RADIO_PROCESS'));
               if (response.status == 0) {
-                store.dispatch(uiActions.createNotification({ content: response.message, type: 'bad' }));
+                store.dispatch(uiActions.createNotification({ content: response.message, level: 'error' }));
               }
               store.dispatch(pusherActions.radioChanged(response.radio));
             }, function (error) {
-              store.dispatch(uiActions.processFinishing('PUSHER_RADIO_PROCESS'));
+              store.dispatch(uiActions.processFinished('PUSHER_RADIO_PROCESS'));
               store.dispatch(coreActions.handleException('Could not change radio', error));
             });
             break;
@@ -81807,7 +81883,7 @@ var PusherMiddleware = function () {
 
             store.dispatch(pusherActions.deliverBroadcast('notification', {
               notification: {
-                type: 'info',
+                level: 'warning',
                 content: pusher.username + ' stopped radio mode'
               }
             }));
@@ -83552,11 +83628,12 @@ function getURL(url, action_name) {
 function getMore(url) {
   var core_action = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
   var custom_action = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+  var extra_data = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 
   return function (dispatch, getState) {
     request(dispatch, getState, url).then(function (response) {
       if (core_action) {
-        dispatch(coreActions.loadedMore(core_action.parent_type, core_action.parent_key, core_action.records_type, response));
+        dispatch(coreActions.loadedMore(core_action.parent_type, core_action.parent_key, core_action.records_type, response, extra_data));
       } else if (custom_action) {
         custom_action.data = response;
         dispatch(custom_action);
@@ -83676,7 +83753,7 @@ function getSearchResults(type, query) {
         });
       }
 
-      dispatch(uiActions.processFinishing('SPOTIFY_GET_SEARCH_RESULTS_PROCESSOR'));
+      dispatch(uiActions.processFinished('SPOTIFY_GET_SEARCH_RESULTS_PROCESSOR'));
     }, function (error) {
       dispatch(coreActions.handleException('Could not load search results', error));
     });
@@ -84326,7 +84403,7 @@ function createPlaylist(name, description, is_public, is_collaborative) {
         uris: [response.uri]
       });
 
-      dispatch(uiActions.createNotification({ type: 'info', content: 'Created playlist' }));
+      dispatch(uiActions.createNotification({ level: 'warning', content: 'Created playlist' }));
     }, function (error) {
       dispatch(coreActions.handleException('Could not create playlist', error));
     });
@@ -84344,7 +84421,7 @@ function savePlaylist(uri, name, description, is_public, is_collaborative, image
 
     // Update the playlist fields
     request(dispatch, getState, 'users/' + getState().spotify.me.id + '/playlists/' + helpers.getFromUri('playlistid', uri), 'PUT', data).then(function (response) {
-      dispatch(uiActions.createNotification({ type: 'info', content: 'Playlist saved' }));
+      dispatch(uiActions.createNotification({ level: 'warning', content: 'Playlist saved' }));
 
       // Save the image
       if (image) {
@@ -84468,7 +84545,7 @@ function getLibraryTracksAndPlayProcessor(data) {
         }));
       } else {
         dispatch(mopidyActions.playURIs(uris, data.uri));
-        dispatch(uiActions.processFinishing('SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR'));
+        dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR'));
       }
     }, function (error) {
       dispatch(coreActions.handleException('Could not load library tracks', error));
@@ -84570,7 +84647,7 @@ function getAllPlaylistTracksProcessor(data) {
         // We don't bother "finishing", we just want it "finished" immediately
         // This bypasses the fade transition for a more smooth transition between two
         // processes that flow together
-        dispatch(uiActions.processFinished('SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR'));
+        dispatch(uiActions.removeProcess('SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR'));
 
         if (data.callback_action == 'enqueue') {
           dispatch(mopidyActions.enqueueURIs(uris, data.uri, data.play_next, data.at_position, data.offset));
@@ -84695,7 +84772,7 @@ function getLibraryPlaylistsProcessor(data) {
         }));
         dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR', { next: response.next }));
       } else {
-        dispatch(uiActions.processFinishing('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'));
+        dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'));
         dispatch({ type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED_ALL' });
       }
     }, function (error) {
@@ -84755,7 +84832,7 @@ function getLibraryArtistsProcessor(data) {
         }));
         dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR', { next: response.artists.next }));
       } else {
-        dispatch(uiActions.processFinishing('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'));
+        dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'));
       }
     }, function (error) {
       dispatch(coreActions.handleException('Could not load library artists', error));
@@ -84814,7 +84891,7 @@ function getLibraryAlbumsProcessor(data) {
         }));
         dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR', { next: response.next }));
       } else {
-        dispatch(uiActions.processFinishing('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'));
+        dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'));
       }
     }, function (error) {
       dispatch(coreActions.handleException('Could not load library albums', error));
@@ -85761,8 +85838,9 @@ exports.updateProcess = updateProcess;
 exports.runProcess = runProcess;
 exports.cancelProcess = cancelProcess;
 exports.processCancelled = processCancelled;
-exports.processFinishing = processFinishing;
 exports.processFinished = processFinished;
+exports.closeProcess = closeProcess;
+exports.removeProcess = removeProcess;
 
 var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
 
@@ -86007,38 +86085,38 @@ function stopLoading(key) {
   };
 }
 
-function startProcess(key, message) {
+function startProcess(key, content) {
   var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
   var description = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 
   return {
     type: 'START_PROCESS',
     key: key,
-    message: message,
     data: data,
+    content: content,
     description: description
   };
 }
 
-function resumeProcess(key, message) {
-  var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
+function resumeProcess(key) {
   return {
     type: 'RESUME_PROCESS',
     key: key
   };
 }
 
-function updateProcess(key, message) {
+function updateProcess(key, content) {
   var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
   var description = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+  var level = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 'info';
 
   return {
     type: 'UPDATE_PROCESS',
     key: key,
-    message: message,
+    content: content,
     data: data,
-    description: description
+    description: description,
+    level: level
   };
 }
 
@@ -86065,16 +86143,26 @@ function processCancelled(key) {
   };
 }
 
-function processFinishing(key) {
+function processFinished(key) {
+  var completionMessage = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
   return {
-    type: 'PROCESS_FINISHING',
+    type: 'PROCESS_FINISHED',
+    key: key,
+    completionMessage: completionMessage
+  };
+}
+
+function closeProcess(key) {
+  return {
+    type: 'CLOSE_PROCESS',
     key: key
   };
 }
 
-function processFinished(key) {
+function removeProcess(key) {
   return {
-    type: 'PROCESS_FINISHED',
+    type: 'REMOVE_PROCESS',
     key: key
   };
 }
@@ -86223,7 +86311,7 @@ var UIMiddleware = function () {
 
             // start a timeout to close this notification
             if (!action.notification.sticky) {
-              var timeout = setTimeout(function () {
+              setTimeout(function () {
                 store.dispatch(uiActions.closeNotification(action.notification.key));
               }, action.notification.duration * 1000);
             }
@@ -86236,7 +86324,7 @@ var UIMiddleware = function () {
 
             // start a timeout to remove this notification
             // This gives us time to animate out the notification before we remove the data
-            var timeout = setTimeout(function () {
+            setTimeout(function () {
               store.dispatch(uiActions.removeNotification(action.key));
             }, 200);
 
@@ -86314,21 +86402,31 @@ var UIMiddleware = function () {
             next(action);
             break;
 
-          case 'PROCESS_FINISHING':
-
-            // start a timeout to remove this notification
-            // This gives us time to animate out the notification before we remove the data
-            var timeout = setTimeout(function () {
-              store.dispatch(uiActions.processFinished(action.key));
-            }, 200);
-
-            next(action);
-            break;
-
           case 'PROCESS_FINISHED':
             store.dispatch({
               type: action.key + '_FINISHED'
             });
+
+            // start a timeout to remove this notification
+            // This gives us time to animate out the notification before we remove the data
+            if (action.completionMessage) {
+              store.dispatch(uiActions.updateProcess(action.key, action.completionMessage.content, {}, action.completionMessage.description, action.completionMessage.level));
+              if (!action.completionMessage.sticky) {
+                setTimeout(function () {
+                  store.dispatch(uiActions.closeProcess(action.key));
+                }, 5000);
+              }
+            } else {
+              store.dispatch(uiActions.closeProcess(action.key));
+            }
+
+            next(action);
+            break;
+
+          case 'CLOSE_PROCESS':
+            setTimeout(function () {
+              store.dispatch(uiActions.removeProcess(action.key));
+            }, 200);
             next(action);
             break;
 
@@ -86523,9 +86621,10 @@ function reducer() {
       }
       processes[action.key] = {
         key: action.key,
-        message: action.message,
+        content: action.content,
         description: action.description,
         status: 'running',
+        level: action.level,
         data: data
       };
       return _extends({}, ui, { processes: processes });
@@ -86551,17 +86650,24 @@ function reducer() {
       }
       return _extends({}, ui, { processes: processes });
 
-    case 'PROCESS_FINISHING':
+    case 'PROCESS_FINISHED':
+      var processes = _extends({}, ui.processes ? ui.processes : {});
+      if (processes[action.key]) {
+        processes[action.key] = _extends({}, processes[action.key], { status: 'finished' });
+      }
+      return _extends({}, ui, { processes: processes });
+
+    case 'CLOSE_PROCESS':
       var processes = _extends({}, ui.processes ? ui.processes : {});
       if (processes[action.key]) {
         processes[action.key] = _extends({}, processes[action.key], { closing: true });
       }
       return _extends({}, ui, { processes: processes });
 
-    case 'PROCESS_FINISHED':
+    case 'REMOVE_PROCESS':
       var processes = _extends({}, ui.processes ? ui.processes : {});
       if (processes[action.key]) {
-        processes[action.key] = _extends({}, processes[action.key], { status: 'finished', closing: false });
+        processes[action.key] = _extends({}, processes[action.key], { status: 'completed', closing: false });
       }
       return _extends({}, ui, { processes: processes });
 
@@ -87022,6 +87128,11 @@ var Album = exports.Album = function (_React$Component) {
         parent_type: 'album',
         parent_key: this.props.album.uri,
         records_type: 'track'
+      }, null, {
+        album: {
+          uri: this.props.album.uri,
+          name: this.props.album.name
+        }
       });
     }
   }, {
@@ -87106,7 +87217,7 @@ var Album = exports.Album = function (_React$Component) {
             album.tracks ? _react2.default.createElement(
               'li',
               null,
-              album.tracks.length,
+              album.tracks_total || album.tracks.length,
               ' ',
               'tracks'
             ) : null,
@@ -95909,7 +96020,7 @@ var LibraryTracks = function (_React$Component) {
       this.props.uiActions.setWindowTitle('Tracks');
 
       if (!this.props.spotify_me) {
-        this.props.uiActions.createNotification({ type: 'warning', content: 'Enable Spotify to browse tracks' });
+        this.props.uiActions.createNotification({ level: 'warning', content: 'Enable Spotify to browse tracks' });
       } else if (this.props.library_tracks === undefined) {
         this.props.spotifyActions.getLibraryTracks();
       }
@@ -98163,8 +98274,9 @@ var InitialSetup = function (_React$Component) {
 
       var customHost = helpers.queryString('host', search);
       var customPort = helpers.queryString('port', search);
+      if (customHost) this.setState({ host: customHost });
+      if (customPort) this.setState({ port: customPort });
 
-      this.setState({ host: customHost, port: customPort });
       uiActions.setWindowTitle('Welcome to Iris');
     }
   }, {

@@ -7,7 +7,7 @@ else
 fi
 
 if [[ $1 = "upgrade" ]]; then
-	if [[ $IS_CONTAINER ]]; then
+	if $IS_CONTAINER; then
 		echo "cd /iris && git checkout master && git pull origin master"
 		UPGRADE="$(cd /iris && git checkout master && git pull origin master)"
 	else
@@ -17,7 +17,7 @@ if [[ $1 = "upgrade" ]]; then
 	echo -e "${UPGRADE}"
 
 elif [[ $1 = "restart" ]]; then
-	if [[ $IS_CONTAINER ]]; then
+	if $IS_CONTAINER; then
 		echo -e "Cannot restart Mopidy when running in a Docker container"
 		exit 1
 	else
@@ -26,19 +26,18 @@ elif [[ $1 = "restart" ]]; then
 	fi
 
 elif [[ $1 = "local_scan" ]]; then
-
-	if [[ $IS_CONTAINER ]]; then
-		SCAN="$(mopidy --config /config/mopidy.conf local scan)"
+	START=$(date +%s)
+	if $IS_CONTAINER; then
+		SCAN=$(mopidy --config /config/mopidy.conf local scan)
 	else
-		SCAN="$(sudo mopidyctl local scan)"
+		SCAN=$(sudo mopidyctl local scan)
 	fi
-	echo -e "${SCAN}"
+	echo -e "Completed in $(($(date +%s) - $START)) seconds"
 
 elif [[ $1 = "check" ]]; then
 	echo -e "Access permitted"
 
 elif [[ $1 = "test" ]]; then
-
 	sleep 3
 
 	TEST=$(echo "Hello, this is your bash speaking. I was sleeping for 3 seconds. Is running a container: $IS_CONTAINER")

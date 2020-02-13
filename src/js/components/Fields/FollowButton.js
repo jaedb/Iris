@@ -51,7 +51,7 @@ class FollowButton extends React.Component {
         <button
           type="button"
           className={`${className} button--disabled`}
-          onClick={() => actions.createNotification({ content: 'You must authorize Spotify first', type: 'warning' })}
+          onClick={() => actions.createNotification({ content: 'You must authorize Spotify first', level: 'warning' })}
         >
           {addText}
         </button>

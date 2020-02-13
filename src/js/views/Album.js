@@ -114,11 +114,20 @@ export class Album extends React.Component {
   }
 
   loadMore() {
-    this.props.spotifyActions.getMore(this.props.album.tracks_more, {
-      parent_type: 'album',
-      parent_key: this.props.album.uri,
-      records_type: 'track',
-    });
+    this.props.spotifyActions.getMore(
+      this.props.album.tracks_more, {
+        parent_type: 'album',
+        parent_key: this.props.album.uri,
+        records_type: 'track',
+      },
+      null,
+      {
+        album: {
+          uri: this.props.album.uri,
+          name: this.props.album.name,
+        },
+      },
+    );
   }
 
   play() {
@@ -196,7 +205,7 @@ export class Album extends React.Component {
             ) : null}
             {album.tracks ? (
               <li>
-                {album.tracks.length}
+                {album.tracks_total || album.tracks.length}
                 {' '}
 tracks
               </li>

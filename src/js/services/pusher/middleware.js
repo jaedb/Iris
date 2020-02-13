@@ -60,119 +60,145 @@ const PusherMiddleware = (function () {
         ));
       }
 
-      // General broadcast received
+    // Broadcast of an error
+    } else if (message.error !== undefined) {
+      store.dispatch(coreActions.handleException(
+        `Pusher: ${message.error.message}`,
+        message,
+        (message.error.data !== undefined && message.error.data.description !== undefined
+          ? message.error.data.description
+          : null
+        ),
+      ));
+    // General broadcast received
     } else {
-      // Broadcast of an error
-      if (message.error !== undefined) {
-        store.dispatch(coreActions.handleException(
-          `Pusher: ${message.error.message}`,
-          message,
-          (message.error.data !== undefined && message.error.data.description !== undefined ? message.error.data.description : null),
-        ));
-      } else {
-        switch (message.method) {
-          case 'connection_added':
-            store.dispatch(pusherActions.connectionAdded(message.params.connection));
-            break;
-          case 'connection_changed':
-            store.dispatch(pusherActions.connectionChanged(message.params.connection));
-            break;
-          case 'connection_removed':
-            store.dispatch(pusherActions.connectionRemoved(message.params.connection));
-            break;
-          case 'queue_metadata_changed':
-            store.dispatch(pusherActions.queueMetadataChanged(message.params.queue_metadata));
-            break;
-          case 'spotify_token_changed':
-            store.dispatch(spotifyActions.tokenChanged(message.params.spotify_token));
-            break;
-          case 'share_configuration_received':
-            store.dispatch(uiActions.createNotification({
-              type: 'share-configuration-received',
-              configuration: message.params,
-              sticky: true,
-            }));
-            break;
-          case 'notification':
-            store.dispatch(uiActions.createNotification(message.params.notification));
-            break;
-          case 'radio_started':
-            store.dispatch(pusherActions.radioStarted(message.params.radio));
-            break;
-          case 'radio_changed':
-            store.dispatch(pusherActions.radioChanged(message.params.radio));
-            break;
-          case 'radio_stopped':
-            store.dispatch(pusherActions.radioStopped());
-            break;
-          case 'commands_changed':
-            store.dispatch(pusherActions.commandsUpdated(message.params.commands));
-            break;
-          case 'reload':
-            window.location.reload(true);
-            break;
+      const params = message.params ? message.params : {};
+      switch (message.method) {
+        case 'connection_added':
+          store.dispatch(pusherActions.connectionAdded(params.connection));
+          break;
+        case 'connection_changed':
+          store.dispatch(pusherActions.connectionChanged(params.connection));
+          break;
+        case 'connection_removed':
+          store.dispatch(pusherActions.connectionRemoved(params.connection));
+          break;
+        case 'queue_metadata_changed':
+          store.dispatch(pusherActions.queueMetadataChanged(params.queue_metadata));
+          break;
+        case 'spotify_token_changed':
+          store.dispatch(spotifyActions.tokenChanged(params.spotify_token));
+          break;
+        case 'share_configuration_received':
+          store.dispatch(uiActions.createNotification({
+            type: 'share-configuration-received',
+            configuration: params,
+            sticky: true,
+          }));
+          break;
+        case 'notification':
+          store.dispatch(uiActions.createNotification(params.notification));
+          break;
+        case 'radio_started':
+          store.dispatch(pusherActions.radioStarted(params.radio));
+          break;
+        case 'radio_changed':
+          store.dispatch(pusherActions.radioChanged(params.radio));
+          break;
+        case 'radio_stopped':
+          store.dispatch(pusherActions.radioStopped());
+          break;
+        case 'commands_changed':
+          store.dispatch(pusherActions.commandsUpdated(params.commands));
+          break;
+        case 'reload':
+          window.location.reload(true);
+          break;
 
-          // Local scan
-          case 'local_scan_started':
-            store.dispatch(uiActions.updateProcess('local_scan', 'Scanning local library'));
-            break;
-          case 'local_scan_updated':
-            store.dispatch(uiActions.updateProcess('local_scan', 'Scanning local library', {}, message.params.output));
-            break;
-          case 'local_scan_finished':
-            store.dispatch(uiActions.processFinished('local_scan'));
-            store.dispatch(uiActions.createNotification({
-              key: 'local_scan', type: 'info', content: 'Local scan finished', description: message.params.output,
-            }));
-            break;
-          case 'local_scan_error':
-            store.dispatch(uiActions.processFinished('local_scan'));
-            store.dispatch(coreActions.handleException('Local scan failed', message, message.params.error));
-            break;
+        // Local scan
+        case 'local_scan_started':
+          store.dispatch(uiActions.updateProcess('local_scan', 'Scanning local library'));
+          break;
+        case 'local_scan_updated':
+          store.dispatch(uiActions.updateProcess('local_scan', 'Scanning local library', {}, params.output));
+          break;
+        case 'local_scan_finished':
+          store.dispatch(uiActions.processFinished(
+            'local_scan',
+            {
+              content: 'Local scan finished', description: params.output, sticky: true,
+            },
+          ));
+          break;
+        case 'local_scan_error':
+          store.dispatch(uiActions.processFinished(
+            'local_scan',
+            {
+              level: 'error', content: 'Local scan failed', description: params.error, sticky: true,
+            },
+          ));
+          break;
 
-          // Upgrade
-          case 'upgrade_started':
-            store.dispatch(uiActions.updateProcess('upgrade', 'Upgrading'));
-            break;
-          case 'upgrade_updated':
-            store.dispatch(uiActions.updateProcess('upgrade', 'Upgrading', {}, message.params.output));
-            break;
-          case 'upgrade_finished':
-            store.dispatch(uiActions.updateProcess('upgrade', 'Restarting to complete upgrade'));
-            break;
-          case 'upgrade_error':
-            store.dispatch(uiActions.processFinished('upgrade'));
-            store.dispatch(coreActions.handleException('Upgrade failed', message, message.params.error));
-            break;
+        // Upgrade
+        case 'upgrade_started':
+          store.dispatch(uiActions.updateProcess('upgrade', 'Upgrading'));
+          break;
+        case 'upgrade_updated':
+          store.dispatch(uiActions.updateProcess('upgrade', 'Upgrading', {}, params.output));
+          break;
+        case 'upgrade_finished':
+          store.dispatch(uiActions.updateProcess('upgrade', 'Restarting to complete upgrade'));
+          break;
+        case 'upgrade_error':
+          store.dispatch(uiActions.processFinished(
+            'upgrade',
+            {
+              level: 'error', content: 'Upgrade failed', description: params.error, sticky: true,
+            },
+          ));
+          break;
 
-          // Restart
-          case 'restart_started':
-            store.dispatch(uiActions.processFinished('upgrade', 'Restarting'));
-            break;
-          case 'restart_updated':
-              store.dispatch(uiActions.updateProcess('upgrade', 'Restarting', {}, message.params.output));
-              break;
-          case 'restart_error':
-            store.dispatch(uiActions.processFinished('upgrade'));
-            store.dispatch(coreActions.handleException('Restart failed', message, message.params.error));
-            break;
+        // Restart
+        case 'restart_started':
+          store.dispatch(uiActions.removeProcess('upgrade', 'Restarting'));
+          break;
+        case 'restart_updated':
+          store.dispatch(uiActions.updateProcess('upgrade', 'Restarting', {}, params.output));
+          break;
+        case 'restart_error':
+          store.dispatch(uiActions.processFinished(
+            'upgrade',
+            {
+              level: 'error', content: 'Restart failed', description: params.error, sticky: true,
+            },
+          ));
+          break;
 
-          // Test
-          case 'test_started':
-            store.dispatch(uiActions.updateProcess('test', 'Running test', {}, message.params.output));
-            break;
-          case 'test_updated':
-            store.dispatch(uiActions.updateProcess('test', 'Running test'));
-            break;
-          case 'test_finished':
-            store.dispatch(uiActions.processFinished('test'));
-            store.dispatch(uiActions.createNotification({ type: 'info', content: 'Test finished', description: message.params.output }));
-            break;
-          case 'test_error':
-            store.dispatch(uiActions.processFinished('test'));
-            store.dispatch(uiActions.createNotification({ type: 'bad', content: message.params.message, description: message.params.error }));
-            break;
-        }
+        // Test
+        case 'test_started':
+          store.dispatch(uiActions.updateProcess('test', 'Running test', {}, params.output));
+          break;
+        case 'test_updated':
+          store.dispatch(uiActions.updateProcess('test', 'Running test'));
+          break;
+        case 'test_finished':
+          store.dispatch(uiActions.processFinished(
+            'test',
+            {
+              content: 'Test finished', description: params.output, sticky: true,
+            },
+          ));
+          break;
+        case 'test_error':
+          store.dispatch(uiActions.removeProcess(
+            'test',
+            {
+              level: 'error', content: params.message, description: params.error,
+            },
+          ));
+          break;
+        default:
+          break;
       }
     }
   };
@@ -316,7 +342,7 @@ const PusherMiddleware = (function () {
         request(store, 'send_message', action.data)
           .then(
             (response) => {
-              store.dispatch(uiActions.createNotification({ type: 'info', content: 'Message delivered' }));
+              store.dispatch(uiActions.createNotification({ level: 'warning', content: 'Message delivered' }));
             },
             (error) => {
               store.dispatch(coreActions.handleException(
@@ -522,13 +548,13 @@ const PusherMiddleware = (function () {
         request(store, 'run_command', { id: action.id })
           .then((response) => {
             console.log('Command response', response);
-            store.dispatch(uiActions.processFinished(notification_key));
+            store.dispatch(uiActions.removeProcess(notification_key));
             if (action.notify) {
-              store.dispatch(uiActions.createNotification({ key: notification_key, type: 'info', content: 'Command sent' }));
+              store.dispatch(uiActions.createNotification({ key: notification_key, level: 'warning', content: 'Command sent' }));
             }
           },
             (error) => {
-              store.dispatch(uiActions.processFinished(notification_key));
+              store.dispatch(uiActions.removeProcess(notification_key));
               store.dispatch(coreActions.handleException(
                 'Could not run command',
                 error,
@@ -603,7 +629,7 @@ const PusherMiddleware = (function () {
             'notification',
             {
               notification: {
-                type: 'info',
+                level: 'warning',
                 content: `${pusher.username} is starting radio mode`,
               },
             },
@@ -613,14 +639,14 @@ const PusherMiddleware = (function () {
         request(store, 'change_radio', data)
           .then(
             (response) => {
-              store.dispatch(uiActions.processFinishing('PUSHER_RADIO_PROCESS'));
+              store.dispatch(uiActions.processFinished('PUSHER_RADIO_PROCESS'));
               if (response.status == 0) {
-                store.dispatch(uiActions.createNotification({ content: response.message, type: 'bad' }));
+                store.dispatch(uiActions.createNotification({ content: response.message, level: 'error' }));
               }
               store.dispatch(pusherActions.radioChanged(response.radio));
             },
             (error) => {
-              store.dispatch(uiActions.processFinishing('PUSHER_RADIO_PROCESS'));
+              store.dispatch(uiActions.processFinished('PUSHER_RADIO_PROCESS'));
               store.dispatch(coreActions.handleException(
                 'Could not change radio',
                 error,
@@ -640,7 +666,7 @@ const PusherMiddleware = (function () {
           'notification',
           {
             notification: {
-              type: 'info',
+              level: 'warning',
               content: `${pusher.username} stopped radio mode`,
             },
           },

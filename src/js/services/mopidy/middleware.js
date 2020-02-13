@@ -639,7 +639,7 @@ const MopidyMiddleware = (function () {
           .then(
             (response) => {
               if (!response || response.tracks === undefined || !response.tracks) {
-                store.dispatch(uiActions.createNotification({ content: 'Failed to load playlist tracks', type: 'bad' }));
+                store.dispatch(uiActions.createNotification({ content: 'Failed to load playlist tracks', level: 'error' }));
               } else {
                 let tracks_uris = helpers.arrayOf('uri', response.tracks);
                 if (action.shuffle) {
@@ -691,7 +691,7 @@ const MopidyMiddleware = (function () {
           .then(
             (response) => {
               if (response.tracks === undefined) {
-                store.dispatch(uiActions.createNotification({ content: 'Failed to load playlist tracks', type: 'bad' }));
+                store.dispatch(uiActions.createNotification({ content: 'Failed to load playlist tracks', level: 'error' }));
               } else {
                 let tracks_uris = helpers.arrayOf('uri', response.tracks);
                 if (action.shuffle) {
@@ -712,7 +712,7 @@ const MopidyMiddleware = (function () {
       case 'MOPIDY_ENQUEUE_URIS':
 
         if (!action.uris || action.uris.length <= 0) {
-          this.props.uiActions.createNotification({ content: 'No URIs to enqueue', type: 'warning' });
+          this.props.uiActions.createNotification({ content: 'No URIs to enqueue', level: 'warning' });
           break;
         }
 
@@ -784,7 +784,7 @@ const MopidyMiddleware = (function () {
 
           // no batches means we're done here
         } else {
-          store.dispatch(uiActions.processFinishing('MOPIDY_ENQUEUE_URIS_PROCESSOR'));
+          store.dispatch(uiActions.processFinished('MOPIDY_ENQUEUE_URIS_PROCESSOR'));
           break;
         }
 
@@ -855,7 +855,7 @@ const MopidyMiddleware = (function () {
         let urisToPlay = Object.assign([], action.uris);
 
         if (!urisToPlay || !urisToPlay.length) {
-          this.props.uiActions.createNotification({ content: 'No URIs to play', type: 'warning' });
+          this.props.uiActions.createNotification({ content: 'No URIs to play', level: 'warning' });
           break;
         }
 
@@ -983,7 +983,7 @@ const MopidyMiddleware = (function () {
         var uri_scheme = uri_schemes.shift();
 
         if (uri_schemes_total <= 0) {
-          store.dispatch(uiActions.createNotification({ content: 'No sources selected', type: 'warning' }));
+          store.dispatch(uiActions.createNotification({ content: 'No sources selected', level: 'warning' }));
         } else {
           store.dispatch(uiActions.startProcess(
             'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
@@ -1013,7 +1013,7 @@ const MopidyMiddleware = (function () {
 
           // No more schemes, so we're done!
         } if (!action.data.uri_scheme) {
-          store.dispatch(uiActions.processFinishing('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
+          store.dispatch(uiActions.processFinished('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
           return;
         }
 
@@ -1204,7 +1204,7 @@ const MopidyMiddleware = (function () {
             ));
 
             var continue_process = () => {
-              store.dispatch(uiActions.processFinishing('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
+              store.dispatch(uiActions.processFinished('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
             };
 
             request(socket, store, 'playlists.asList')
@@ -1745,7 +1745,7 @@ const MopidyMiddleware = (function () {
 
                 store.dispatch(coreActions.playlistLoaded(playlist));
 
-                store.dispatch(uiActions.createNotification({ type: 'info', content: 'Playlist saved' }));
+                store.dispatch(uiActions.createNotification({ level: 'warning', content: 'Playlist saved' }));
               });
           });
         break;
@@ -1793,7 +1793,7 @@ const MopidyMiddleware = (function () {
       case 'MOPIDY_CREATE_PLAYLIST':
         request(socket, store, 'playlists.create', { name: action.name, uri_scheme: action.scheme })
           .then((response) => {
-            store.dispatch(uiActions.createNotification({ type: 'info', content: 'Created playlist' }));
+            store.dispatch(uiActions.createNotification({ level: 'warning', content: 'Created playlist' }));
             store.dispatch(coreActions.playlistLoaded(response));
             store.dispatch({
               type: 'MOPIDY_LIBRARY_PLAYLIST_CREATED',
@@ -1877,7 +1877,7 @@ const MopidyMiddleware = (function () {
           ));
           store.dispatch(mopidyActions.getAlbums(uris_to_load, { name: 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR', data: { uris } }));
         } else {
-          store.dispatch(uiActions.processFinishing('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'));
+          store.dispatch(uiActions.processFinished('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'));
         }
 
         break;
@@ -1907,7 +1907,6 @@ const MopidyMiddleware = (function () {
                 }
 
                 const album = {
-
                   source: 'local',
                   artists_uris,
                   tracks_uris,
@@ -1919,6 +1918,7 @@ const MopidyMiddleware = (function () {
               }
             }
 
+            store.dispatch(mopidyActions.getImages('albums', helpers.arrayOf('uri', albums_loaded)));
             store.dispatch(coreActions.albumsLoaded(albums_loaded));
             store.dispatch(coreActions.artistsLoaded(artists_loaded));
             store.dispatch(coreActions.tracksLoaded(tracks_loaded));
@@ -1952,7 +1952,6 @@ const MopidyMiddleware = (function () {
             }
 
             const album = {
-
               ...response[0].album,
               source: 'local',
               artists_uris: helpers.arrayOf('uri', artists),
@@ -1963,14 +1962,9 @@ const MopidyMiddleware = (function () {
             store.dispatch(coreActions.albumLoaded(album));
             store.dispatch(coreActions.artistsLoaded(artists));
 
-            // load artwork from LastFM
+            // Load images
             if (!response[0].album.images) {
-              const mbid = helpers.getFromUri('mbid', album.uri);
-              if (mbid) {
-                store.dispatch(lastfmActions.getAlbum(album.uri, false, false, mbid));
-              } else if (artists && artists.length > 0) {
-                store.dispatch(lastfmActions.getAlbum(album.uri, artists[0].name, album.name));
-              }
+              store.dispatch(mopidyActions.getImages('albums', [album.uri]));
             }
 
             request(socket, store, 'library.lookup', { uris: album.tracks_uris })
@@ -2066,7 +2060,7 @@ const MopidyMiddleware = (function () {
                   store.dispatch(uiActions.updateProcess('MOPIDY_LIBRARY_ARTISTS_PROCESSOR', 'Loading '+uris.length+' local artists', {uris: uris}));
                   store.dispatch(mopidyActions.getArtists(uris_to_load, {name: 'MOPIDY_LIBRARY_ARTISTS_PROCESSOR', data: {uris: uris}}));
               } else {
-                  store.dispatch(uiActions.processFinishing('MOPIDY_LIBRARY_ARTISTS_PROCESSOR'));
+                  store.dispatch(uiActions.processFinished('MOPIDY_LIBRARY_ARTISTS_PROCESSOR'));
               }
 
               break;

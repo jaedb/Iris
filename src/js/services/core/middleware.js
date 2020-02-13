@@ -78,7 +78,7 @@ const CoreMiddleware = (function () {
 	            }
 
 	            if (action.show_notification) {
-	                store.dispatch(uiActions.createNotification({ content: message, type: 'bad', description }));
+	                store.dispatch(uiActions.createNotification({ content: message, level: 'error', description }));
 	            }
 
         console.error(message, description, data);
@@ -227,7 +227,7 @@ const CoreMiddleware = (function () {
         break;
 
       case 'PLAYLIST_TRACKS_ADDED':
-        store.dispatch(uiActions.createNotification({ type: 'info', content: `Added ${action.tracks_uris.length} tracks to playlist` }));
+        store.dispatch(uiActions.createNotification({ level: 'warning', content: `Added ${action.tracks_uris.length} tracks to playlist` }));
         switch (helpers.uriSource(action.key)) {
           case 'spotify':
             store.dispatch(spotifyActions.getPlaylist(action.key));
@@ -759,6 +759,11 @@ const CoreMiddleware = (function () {
         var records_type_plural = `${action.records_type}s`;
         var records_index = {};
         var records_uris = helpers.arrayOf('uri', records);
+
+        // Merge any extra data (eg more_track's albums)
+        if (action.extra_data) {
+          records = records.map(record => ({ ...record, ...action.extra_data }));
+        }
 
         // If we're a list of playlists, we need to manually filter Spotify's new URI structure
         // Really poor form because they haven't updated it everywhere, yet

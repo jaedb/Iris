@@ -162,9 +162,10 @@ export default function reducer(ui = {}, action) {
       }
       processes[action.key] = {
         key: action.key,
-        message: action.message,
+        content: action.content,
         description: action.description,
         status: 'running',
+        level: action.level,
         data,
       };
       return { ...ui, processes };
@@ -190,17 +191,24 @@ export default function reducer(ui = {}, action) {
       }
       return { ...ui, processes };
 
-    case 'PROCESS_FINISHING':
+    case 'PROCESS_FINISHED':
+      var processes = { ...(ui.processes ? ui.processes : {}) };
+      if (processes[action.key]) {
+        processes[action.key] = { ...processes[action.key], status: 'finished' };
+      }
+      return { ...ui, processes };
+
+    case 'CLOSE_PROCESS':
       var processes = { ...(ui.processes ? ui.processes : {}) };
       if (processes[action.key]) {
         processes[action.key] = { ...processes[action.key], closing: true };
       }
       return { ...ui, processes };
 
-    case 'PROCESS_FINISHED':
+    case 'REMOVE_PROCESS':
       var processes = { ...(ui.processes ? ui.processes : {}) };
       if (processes[action.key]) {
-        processes[action.key] = { ...processes[action.key], status: 'finished', closing: false };
+        processes[action.key] = { ...processes[action.key], status: 'completed', closing: false };
       }
       return { ...ui, processes };
 
