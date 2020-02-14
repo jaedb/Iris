@@ -1907,7 +1907,6 @@ const MopidyMiddleware = (function () {
                 }
 
                 const album = {
-
                   source: 'local',
                   artists_uris,
                   tracks_uris,
@@ -1919,6 +1918,7 @@ const MopidyMiddleware = (function () {
               }
             }
 
+            store.dispatch(mopidyActions.getImages('albums', helpers.arrayOf('uri', albums_loaded)));
             store.dispatch(coreActions.albumsLoaded(albums_loaded));
             store.dispatch(coreActions.artistsLoaded(artists_loaded));
             store.dispatch(coreActions.tracksLoaded(tracks_loaded));
@@ -1952,7 +1952,6 @@ const MopidyMiddleware = (function () {
             }
 
             const album = {
-
               ...response[0].album,
               source: 'local',
               artists_uris: helpers.arrayOf('uri', artists),
@@ -1963,14 +1962,9 @@ const MopidyMiddleware = (function () {
             store.dispatch(coreActions.albumLoaded(album));
             store.dispatch(coreActions.artistsLoaded(artists));
 
-            // load artwork from LastFM
+            // Load images
             if (!response[0].album.images) {
-              const mbid = helpers.getFromUri('mbid', album.uri);
-              if (mbid) {
-                store.dispatch(lastfmActions.getAlbum(album.uri, false, false, mbid));
-              } else if (artists && artists.length > 0) {
-                store.dispatch(lastfmActions.getAlbum(album.uri, artists[0].name, album.name));
-              }
+              store.dispatch(mopidyActions.getImages('albums', [album.uri]));
             }
 
             request(socket, store, 'library.lookup', { uris: album.tracks_uris })

@@ -201,7 +201,7 @@ export const isCached = function (url) {
 
 /**
  * Digest a react-router's location.search string into an array of values
- * 
+ *
  * @param key String = the key you want from the URL
  * @param string String = the locaion.search string
  */
@@ -508,6 +508,8 @@ export let formatAlbum = function (data) {
     'images',
     'artists_uris',
     'tracks_uris',
+    'tracks_total',
+    'tracks_more',
     'artists',	// Array of simple records
   ];
 

@@ -760,6 +760,11 @@ const CoreMiddleware = (function () {
         var records_index = {};
         var records_uris = helpers.arrayOf('uri', records);
 
+        // Merge any extra data (eg more_track's albums)
+        if (action.extra_data) {
+          records = records.map(record => ({ ...record, ...action.extra_data }));
+        }
+
         // If we're a list of playlists, we need to manually filter Spotify's new URI structure
         // Really poor form because they haven't updated it everywhere, yet
         if (action.records_type == 'playlist') {

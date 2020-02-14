@@ -59,6 +59,11 @@ workflows:
               only: deploy/release
       - deploy:
           requires:
+            - py38
+            - py37
+            - black
+            - check-manifest
+            - flake8
             - build
           filters:
             branches:
