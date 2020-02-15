@@ -2285,6 +2285,7 @@ const MopidyMiddleware = (function () {
 
               const track = { ...response[0] };
               store.dispatch(coreActions.trackLoaded(track));
+              store.dispatch(mopidyActions.getImages('tracks', [track.uri]));
             },
             (error) => {
               store.dispatch(coreActions.handleException(
@@ -2309,7 +2310,7 @@ const MopidyMiddleware = (function () {
               for (const uri in response) {
                 if (response.hasOwnProperty(uri)) {
                   let images = response[uri];
-                  images = helpers.digestMopidyImages(store.getState().mopidy, images);
+                  images = helpers.formatImages(helpers.digestMopidyImages(store.getState().mopidy, images));
 
                   if (images && images.length > 0) {
                     records.push({

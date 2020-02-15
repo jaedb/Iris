@@ -20,24 +20,27 @@ class Modal extends React.Component {
   }
 
   render() {
-    let className = 'modal';
-    if (this.props.className) {
-      className += ` ${this.props.className}`;
-    }
+    const {
+      extraControls = null,
+      noclose = false,
+      children,
+      className = '',
+    } = this.props;
 
     return (
-      <div className={className}>
+      <div className={`modal ${className}`}>
 
         <div className="controls">
-          {this.props.noclose ? null : (
+          {!noclose && (
             <div className="control close" onClick={(e) => window.history.back()}>
               <Icon name="close" className="white" />
             </div>
-          ) }
+          )}
+          {extraControls}
         </div>
 
         <div className="content">
-          {this.props.children}
+          {children}
         </div>
       </div>
     );

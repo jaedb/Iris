@@ -263,6 +263,7 @@
       width: 90%;
       height: 90%;
       text-align: center;
+      display: flex;
 
       .thumbnail.background {
         position: absolute;
@@ -273,6 +274,7 @@
         width: auto;
         opacity: 0.2;
         max-width: none;
+        z-index: -1;
 
         .thumbnail__image {
           @include blur(100px);
@@ -281,65 +283,112 @@
         }
       }
 
-      .artwork {
-        width: 70vw;
-        margin: 0 auto;
-        max-width: 60vh;
-        max-height: 60vh;
-        z-index: 2;
-        position: relative;
-        cursor: pointer;
+      .track-info {
+        height: 100%;
+        width: 100%;
 
-        .thumbnail {
-          max-width: none;
+        &--with-lyrics {
+          width: 30%;
         }
 
-        .icon {
-          @include animate();
-          display: inline-block;
-          position: absolute;
-          color: colour(darkest_grey);
-          font-size: 20rem;
-          top: 25%;
-          left: 0;
-          right: 0;
+        .artwork {
           text-align: center;
-          opacity: 0;
+          height: 50%;
           z-index: 2;
-        }
-
-        &:hover {
+          position: relative;
+          cursor: pointer;
+          width: 100%;
+          max-width: 50vh;
+          margin: 0 auto;
+  
+          .thumbnail {
+            max-width: none;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+          }
+  
           .icon {
-            opacity: 0.75;
+            @include animate();
+            display: inline-block;
+            position: absolute;
+            color: colour(darkest_grey);
+            font-size: 20rem;
+            top: 25%;
+            left: 0;
+            right: 0;
+            text-align: center;
+            opacity: 0;
+            z-index: 2;
+          }
+  
+          &:hover {
+            .icon {
+              opacity: 0.75;
+            }
+          }
+        }
+  
+        .player {
+          height: 40%;
+          padding-top: 10%;
+          max-width: 50vh;
+          margin: 0 auto;
+          display: flex;
+          flex-direction: column;
+  
+          .current-track {
+            flex: 1;
+            font-size: 2rem;
+    
+            .links-sentence {
+              opacity: 0.5;
+            }
+          }
+
+          &__controls {
+            flex: 1;
+
+            .control {
+              background: transparent;
+              color: white;
+              font-size: 2.4rem;
+            }
+          }
+    
+          .progress-wrapper {
+            flex: 1;
+            margin: 0 auto;
+            width: 100%;
+    
+            .slider {
+              &__track {
+                background: rgba(128, 128, 128, 0.25);
+              }
+            }
           }
         }
       }
 
-      .current-track {
-        padding-top: 80px;
-        font-size: 30px;
+      .lyrics {
+        width: 70%;
+        height: 100%;
+        overflow: hidden;
+        position: relative;
 
-        .links-sentence {
-          opacity: 0.5;
-        }
-      }
-
-      .progress-wrapper {
-        margin: 0 auto;
-        padding-top: 50px;
-        width: 60vw;
-        max-width: 60vh;
-
-        .slider {
-          &__track {
-            background: rgba(128, 128, 128, 0.25);
-          }
+        &__content {
+          font-size: 1.6rem;
+          line-height: 2.2rem;
+          position: absolute;
+          top: 50%;
+          width: 100%;
+          transition: transform 0.9s linear;
         }
       }
     }
   }
 
-  @include responsive($bp_medium) {
+  @include responsive($bp_medium, null, $bp_shallow) {
     .controls {
       top: 0;
       right: 0;
@@ -381,6 +430,21 @@
               padding-top: 14px;
               padding-bottom: 14px;
             }
+          }
+        }
+      }
+    }
+
+    &--kiosk-mode {
+      .content {
+        .track-info {
+          .artwork {
+            height: 45%;
+          }
+          .player {
+            height: 50%;
+            padding-top: 5%;
+            font-size: 1.2rem;
           }
         }
       }

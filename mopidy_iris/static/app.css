@@ -4046,10 +4046,11 @@ select {
   .list__item--has-thumbnail .list__item__column--name {
     padding-left: 50px;
     position: relative; }
+  .list__item--has-thumbnail .list__item__column__item--details {
+    min-height: 1em; }
   .list__item--has-thumbnail .list__item__column__item--thumbnail, .list__item--has-thumbnail .list__item__column__item--thumbnail.thumbnail {
     width: 40px;
     position: absolute;
-    top: 0;
     left: 0; }
   .list__item__column {
     align-items: center;
@@ -7642,7 +7643,8 @@ main .track-view {
       padding: 5%;
       width: 90%;
       height: 90%;
-      text-align: center; }
+      text-align: center;
+      display: flex; }
       .modal--kiosk-mode .content .thumbnail.background {
         position: absolute;
         top: -5vh;
@@ -7651,52 +7653,86 @@ main .track-view {
         left: -5vw;
         width: auto;
         opacity: 0.2;
-        max-width: none; }
+        max-width: none;
+        z-index: -1; }
         .modal--kiosk-mode .content .thumbnail.background .thumbnail__image {
           -webkit-filter: blur(100px);
           filter: blur(100px);
           width: 110vw;
           padding-bottom: 110vh; }
-      .modal--kiosk-mode .content .artwork {
-        width: 70vw;
-        margin: 0 auto;
-        max-width: 60vh;
-        max-height: 60vh;
-        z-index: 2;
-        position: relative;
-        cursor: pointer; }
-        .modal--kiosk-mode .content .artwork .thumbnail {
-          max-width: none; }
-        .modal--kiosk-mode .content .artwork .icon {
-          -webkit-transition: all 0.2s ease-in-out;
-          -moz-transition: all 0.2s ease-in-out;
-          -o-transition: all 0.2s ease-in-out;
-          transition: all 0.2s ease-in-out;
-          display: inline-block;
-          position: absolute;
-          color: #121212;
-          font-size: 20rem;
-          top: 25%;
-          left: 0;
-          right: 0;
+      .modal--kiosk-mode .content .track-info {
+        height: 100%;
+        width: 100%; }
+        .modal--kiosk-mode .content .track-info--with-lyrics {
+          width: 30%; }
+        .modal--kiosk-mode .content .track-info .artwork {
           text-align: center;
-          opacity: 0;
-          z-index: 2; }
-        .modal--kiosk-mode .content .artwork:hover .icon {
-          opacity: 0.75; }
-      .modal--kiosk-mode .content .current-track {
-        padding-top: 80px;
-        font-size: 30px; }
-        .modal--kiosk-mode .content .current-track .links-sentence {
-          opacity: 0.5; }
-      .modal--kiosk-mode .content .progress-wrapper {
-        margin: 0 auto;
-        padding-top: 50px;
-        width: 60vw;
-        max-width: 60vh; }
-        .modal--kiosk-mode .content .progress-wrapper .slider__track {
-          background: rgba(128, 128, 128, 0.25); }
-  @media (max-width: 799px) {
+          height: 50%;
+          z-index: 2;
+          position: relative;
+          cursor: pointer;
+          width: 100%;
+          max-width: 50vh;
+          margin: 0 auto; }
+          .modal--kiosk-mode .content .track-info .artwork .thumbnail {
+            max-width: none;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%); }
+          .modal--kiosk-mode .content .track-info .artwork .icon {
+            -webkit-transition: all 0.2s ease-in-out;
+            -moz-transition: all 0.2s ease-in-out;
+            -o-transition: all 0.2s ease-in-out;
+            transition: all 0.2s ease-in-out;
+            display: inline-block;
+            position: absolute;
+            color: #121212;
+            font-size: 20rem;
+            top: 25%;
+            left: 0;
+            right: 0;
+            text-align: center;
+            opacity: 0;
+            z-index: 2; }
+          .modal--kiosk-mode .content .track-info .artwork:hover .icon {
+            opacity: 0.75; }
+        .modal--kiosk-mode .content .track-info .player {
+          height: 40%;
+          padding-top: 10%;
+          max-width: 50vh;
+          margin: 0 auto;
+          display: flex;
+          flex-direction: column; }
+          .modal--kiosk-mode .content .track-info .player .current-track {
+            flex: 1;
+            font-size: 2rem; }
+            .modal--kiosk-mode .content .track-info .player .current-track .links-sentence {
+              opacity: 0.5; }
+          .modal--kiosk-mode .content .track-info .player__controls {
+            flex: 1; }
+            .modal--kiosk-mode .content .track-info .player__controls .control {
+              background: transparent;
+              color: white;
+              font-size: 2.4rem; }
+          .modal--kiosk-mode .content .track-info .player .progress-wrapper {
+            flex: 1;
+            margin: 0 auto;
+            width: 100%; }
+            .modal--kiosk-mode .content .track-info .player .progress-wrapper .slider__track {
+              background: rgba(128, 128, 128, 0.25); }
+      .modal--kiosk-mode .content .lyrics {
+        width: 70%;
+        height: 100%;
+        overflow: hidden;
+        position: relative; }
+        .modal--kiosk-mode .content .lyrics__content {
+          font-size: 1.6rem;
+          line-height: 2.2rem;
+          position: absolute;
+          top: 50%;
+          width: 100%;
+          transition: transform 0.9s linear; }
+  @media (max-width: 799px), (max-height: 649px) {
     .modal .controls {
       top: 0;
       right: 0; }
@@ -7722,7 +7758,13 @@ main .track-view {
         margin: 0; }
         .modal .content .list .list__item.draggable .drag-handle {
           padding-top: 14px;
-          padding-bottom: 14px; } }
+          padding-bottom: 14px; }
+    .modal--kiosk-mode .content .track-info .artwork {
+      height: 45%; }
+    .modal--kiosk-mode .content .track-info .player {
+      height: 50%;
+      padding-top: 5%;
+      font-size: 1.2rem; } }
 
 
 /*# sourceMappingURL=app.css.map*/
