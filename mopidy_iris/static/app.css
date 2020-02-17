@@ -7753,11 +7753,12 @@ main .track-view {
           padding-top: 14px;
           padding-bottom: 14px; }
     .modal--kiosk-mode .content .track-info .artwork {
-      height: 45%; }
+      height: 35%; }
     .modal--kiosk-mode .content .track-info .player {
-      height: 50%;
-      padding-top: 5%;
-      font-size: 1.2rem; } }
+      height: 45%;
+      padding-top: 20%; }
+      .modal--kiosk-mode .content .track-info .player .current-track {
+        font-size: 1.2rem; } }
 
 
 /*# sourceMappingURL=app.css.map*/

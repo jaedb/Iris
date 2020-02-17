@@ -68952,8 +68952,8 @@ var PlaybackControls = function (_React$Component) {
             tabIndex: '-1'
           },
           _react2.default.createElement(
-            'div',
-            { className: 'thumbnail-wrapper' },
+            _Link2.default,
+            { className: 'thumbnail-wrapper', to: '/kiosk-mode', tabIndex: '-1' },
             _react2.default.createElement(_Thumbnail2.default, { size: 'small', images: images })
           ),
           _react2.default.createElement(
@@ -76745,8 +76745,11 @@ function getTrackLyrics(uri, path) {
   };
 }
 
-function findTrackLyrics(track) {
+function findTrackLyrics() {
+  var track = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+
   return function (dispatch, getState) {
+    if (!track) return;
     var query = '';
     query += track.artists[0].name + ' ';
     query += track.name;
@@ -98606,57 +98609,108 @@ var LyricsScroller = function LyricsScroller(_ref) {
 var KioskMode = function (_React$Component) {
   _inherits(KioskMode, _React$Component);
 
-  function KioskMode(props) {
+  function KioskMode() {
+    var _ref2;
+
+    var _temp, _this, _ret;
+
     _classCallCheck(this, KioskMode);
 
-    var _this = _possibleConstructorReturn(this, (KioskMode.__proto__ || Object.getPrototypeOf(KioskMode)).call(this, props));
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
 
-    _this.toggleLyrics = function () {
-      var showLyrics = _this.state.showLyrics;
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref2 = KioskMode.__proto__ || Object.getPrototypeOf(KioskMode)).call.apply(_ref2, [this].concat(args))), _this), _this.toggleLyrics = function () {
+      var _this$props = _this.props,
+          show_lyrics = _this$props.show_lyrics,
+          uiActions = _this$props.uiActions,
+          genius_authorized = _this$props.genius_authorized,
+          current_track = _this$props.current_track;
 
 
-      _this.setState({ showLyrics: !showLyrics });
-      if (!showLyrics && _this.props.genius_authorized && _this.props.current_track && _this.props.current_track.artists && !_this.props.current_track.lyrics_results) {
-        _this.props.geniusActions.findTrackLyrics(_this.props.current_track);
+      uiActions.set({ show_lyrics: !show_lyrics });
+      if (!show_lyrics && _this.props.genius_authorized && current_track && current_track.artists && !current_track.lyrics_results) {
+        _this.props.geniusActions.findTrackLyrics(current_track);
       }
-    };
+    }, _this.renderLyrics = function () {
+      var _this$props2 = _this.props,
+          load_queue = _this$props2.load_queue,
+          genius_authorized = _this$props2.genius_authorized,
+          _this$props2$time_pos = _this$props2.time_position,
+          time_position = _this$props2$time_pos === undefined ? null : _this$props2$time_pos,
+          current_track = _this$props2.current_track;
 
-    _this.renderLyrics = function () {
-      if (helpers.isLoading(_this.props.load_queue, ['genius_'])) {
+      var _ref3 = current_track || {},
+          lyrics = _ref3.lyrics,
+          duration = _ref3.duration;
+
+      if (helpers.isLoading(load_queue, ['genius_'])) {
         return _react2.default.createElement(
           'div',
           { className: 'lyrics' },
-          _react2.default.createElement(_Loader2.default, { loading: true })
+          _react2.default.createElement(_Loader2.default, { body: true, loading: true })
         );
-      }if (_this.props.current_track && _this.props.current_track.lyrics) {
+      } else if (!genius_authorized) {
+
+        return _react2.default.createElement(
+          'p',
+          { className: 'no-results' },
+          'Want track lyrics? Authorize Genius under',
+          ' ',
+          _react2.default.createElement(
+            _Link2.default,
+            { to: '/settings/genius', scrollTo: '#services-menu' },
+            'Settings'
+          ),
+          '.'
+        );
+      } else if (lyrics) {
         return _react2.default.createElement(LyricsScroller, {
-          content: _this.props.current_track.lyrics,
-          time_position: _this.props.time_position,
-          duration: _this.props.current_track ? _this.props.current_track.duration : null
+          content: lyrics,
+          time_position: time_position,
+          duration: duration
         });
       };
       return null;
-    };
-
-    _this.state = {
-      showLyrics: false
-    };
-    return _this;
+    }, _temp), _possibleConstructorReturn(_this, _ret);
   }
 
   _createClass(KioskMode, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
+      var _props = this.props,
+          current_track = _props.current_track,
+          genius_authorized = _props.genius_authorized,
+          show_lyrics = _props.show_lyrics,
+          geniusActions = _props.geniusActions;
+
       this.setWindowTitle();
+
+      if (show_lyrics && current_track && genius_authorized && current_track && current_track.artists && !current_track.lyrics_results) {
+        geniusActions.findTrackLyrics();
+      }
     }
   }, {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(nextProps) {
-      if (!this.props.current_track && nextProps.current_track) {
-        this.setWindowTitle(nextProps.current_track);
+      var _props2 = this.props,
+          current_track = _props2.current_track,
+          show_lyrics = _props2.show_lyrics,
+          geniusActions = _props2.geniusActions;
+      var next_current_track = nextProps.current_track,
+          next_show_lyrics = nextProps.show_lyrics,
+          next_genius_authorized = nextProps.genius_authorized;
 
-        if (this.state.showLyrics && nextProps.genius_authorized && nextProps.current_track && nextProps.current_track.artists && !nextProps.current_track.lyrics_results) {
-          this.props.geniusActions.findTrackLyrics(nextProps.current_track);
+
+      if (!current_track && next_current_track) {
+        this.setWindowTitle(next_current_track);
+
+        if (show_lyrics && next_genius_authorized && next_current_track && next_current_track.artists && !next_current_track.lyrics_results) {
+          geniusActions.findTrackLyrics(next_current_track);
+        }
+      } else if (show_lyrics !== next_show_lyrics && next_show_lyrics && next_current_track) {
+        if (next_genius_authorized && next_current_track && next_current_track.artists && !next_current_track.lyrics_results) {
+          geniusActions.findTrackLyrics(next_current_track);
         }
       }
     }
@@ -98715,18 +98769,20 @@ var KioskMode = function (_React$Component) {
     value: function render() {
       var _this3 = this;
 
-      var showLyrics = this.state.showLyrics;
+      var _props3 = this.props,
+          show_lyrics = _props3.show_lyrics,
+          current_track = _props3.current_track;
 
-      if (this.props.current_track && this.props.current_track.images) {
-        var images = this.props.current_track.images;
+      if (current_track && current_track.images) {
+        var images = current_track.images;
       } else {
         var images = [];
       }
 
       var extraControls = _react2.default.createElement(
         'div',
-        { className: 'control', onClick: this.toggleLyrics, style: showLyrics ? { opacity: 1 } : {} },
-        _react2.default.createElement(_Icon2.default, { name: 'queue_music', className: showLyrics ? 'turquoise-text' : null })
+        { className: 'control', onClick: this.toggleLyrics, style: show_lyrics ? { opacity: 1 } : {} },
+        _react2.default.createElement(_Icon2.default, { name: 'queue_music', className: show_lyrics ? 'turquoise-text' : null })
       );
 
       return _react2.default.createElement(
@@ -98735,7 +98791,7 @@ var KioskMode = function (_React$Component) {
         _react2.default.createElement(_Thumbnail2.default, { className: 'background', images: images }),
         _react2.default.createElement(
           'div',
-          { className: 'track-info track-info--' + (showLyrics ? 'with' : 'without') + '-lyrics' },
+          { className: 'track-info track-info--' + (show_lyrics ? 'with' : 'without') + '-lyrics' },
           _react2.default.createElement(
             'div',
             { className: 'artwork' },
@@ -98750,13 +98806,13 @@ var KioskMode = function (_React$Component) {
               _react2.default.createElement(
                 'div',
                 { className: 'title' },
-                this.props.current_track ? this.props.current_track.name : _react2.default.createElement(
+                current_track ? current_track.name : _react2.default.createElement(
                   'span',
                   null,
                   '-'
                 )
               ),
-              this.props.current_track ? _react2.default.createElement(_LinksSentence2.default, { nolinks: true, items: this.props.current_track.artists }) : _react2.default.createElement(_LinksSentence2.default, null)
+              current_track ? _react2.default.createElement(_LinksSentence2.default, { nolinks: true, items: current_track.artists }) : _react2.default.createElement(_LinksSentence2.default, null)
             ),
             _react2.default.createElement(
               'div',
@@ -98784,7 +98840,7 @@ var KioskMode = function (_React$Component) {
             )
           )
         ),
-        showLyrics && this.renderLyrics()
+        show_lyrics && this.renderLyrics()
       );
     }
   }]);
@@ -98798,6 +98854,7 @@ var mapStateToProps = function mapStateToProps(state) {
     current_track: state.core.current_track && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null,
     time_position: state.mopidy.time_position,
     load_queue: state.ui.load_queue,
+    show_lyrics: state.ui.show_lyrics,
     genius_authorized: state.genius.authorization
   };
 };

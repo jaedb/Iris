@@ -275,9 +275,9 @@ class PlaybackControls extends React.Component {
           onTouchEnd={(e) => touch_enabled && this.handleTouchEnd(e)}
           tabIndex="-1"
         >
-          <div className="thumbnail-wrapper">
+          <Link className="thumbnail-wrapper" to="/kiosk-mode" tabIndex="-1">
             <Thumbnail size="small" images={images} />
-          </div>
+          </Link>
           <div className="text">
             <div className="title">
               {current_track ? current_track.name : <span>-</span>}

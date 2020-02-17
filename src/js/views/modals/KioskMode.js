@@ -31,24 +31,42 @@ const LyricsScroller = ({ content = '', time_position = 1, duration = 100 }) => 
 }
 
 class KioskMode extends React.Component {
-  constructor(props) {
-    super(props);
 
-    this.state = {
-      showLyrics: false,
+  componentDidMount() {
+    const {
+      current_track,
+      genius_authorized,
+      show_lyrics,
+      geniusActions,
+    } = this.props;
+    this.setWindowTitle();
+
+    if (show_lyrics && current_track && genius_authorized && current_track && current_track.artists && !current_track.lyrics_results) {
+      geniusActions.findTrackLyrics();
     }
   }
 
-  componentDidMount() {
-    this.setWindowTitle();
-  }
-
   componentWillReceiveProps(nextProps) {
-    if (!this.props.current_track && nextProps.current_track) {
-      this.setWindowTitle(nextProps.current_track);
+    const {
+      current_track,
+      show_lyrics,
+      geniusActions,
+    } = this.props;
+    const {
+      current_track: next_current_track,
+      show_lyrics: next_show_lyrics,
+      genius_authorized: next_genius_authorized,
+    } = nextProps;
 
-      if (this.state.showLyrics && nextProps.genius_authorized && nextProps.current_track && nextProps.current_track.artists && !nextProps.current_track.lyrics_results) {
-        this.props.geniusActions.findTrackLyrics(nextProps.current_track);
+    if (!current_track && next_current_track) {
+      this.setWindowTitle(next_current_track);
+
+      if (show_lyrics && next_genius_authorized && next_current_track && next_current_track.artists && !next_current_track.lyrics_results) {
+        geniusActions.findTrackLyrics(next_current_track);
+      }
+    } else if (show_lyrics !== next_show_lyrics && next_show_lyrics && next_current_track) {
+      if (next_genius_authorized && next_current_track && next_current_track.artists && !next_current_track.lyrics_results) {
+        geniusActions.findTrackLyrics(next_current_track);
       }
     }
   }
@@ -78,33 +96,55 @@ class KioskMode extends React.Component {
 
   toggleLyrics = () => {
     const {
-      showLyrics,
-    } = this.state;
+      show_lyrics,
+      uiActions,
+      genius_authorized,
+      current_track,
+    } = this.props;
 
-    this.setState({ showLyrics: !showLyrics });
+    uiActions.set({ show_lyrics: !show_lyrics });
     if (
-      !showLyrics
+      !show_lyrics
       && this.props.genius_authorized
-      && this.props.current_track
-      && this.props.current_track.artists
-      && !this.props.current_track.lyrics_results) {
-      this.props.geniusActions.findTrackLyrics(this.props.current_track);
+      && current_track
+      && current_track.artists
+      && !current_track.lyrics_results) {
+      this.props.geniusActions.findTrackLyrics(current_track);
     }
   }
 
   renderLyrics = () => {
-    if (helpers.isLoading(this.props.load_queue, ['genius_'])) {
+    const {
+      load_queue,
+      genius_authorized,
+      time_position = null,
+      current_track,
+    } = this.props;
+
+    const { lyrics, duration } = current_track || {};
+
+    if (helpers.isLoading(load_queue, ['genius_'])) {
       return (
         <div className="lyrics">
-          <Loader loading />
+          <Loader body loading />
         </div>
       );
-    } if (this.props.current_track && this.props.current_track.lyrics) {
+    } else if (!genius_authorized) {
+      
+      return (
+        <p className="no-results">
+          Want track lyrics? Authorize Genius under
+          {' '}
+          <Link to="/settings/genius" scrollTo="#services-menu">Settings</Link>.
+        </p>
+      );
+      
+    } else if (lyrics) {
       return (
         <LyricsScroller
-          content={this.props.current_track.lyrics}
-          time_position={this.props.time_position}
-          duration={this.props.current_track ? this.props.current_track.duration : null}
+          content={lyrics}
+          time_position={time_position}
+          duration={duration}
         />
       );
     };
@@ -121,17 +161,18 @@ class KioskMode extends React.Component {
 
   render() {
     const {
-      showLyrics,
-    } = this.state;
-    if (this.props.current_track && this.props.current_track.images) {
-      var { images } = this.props.current_track;
+      show_lyrics,
+      current_track,
+    } = this.props;
+    if (current_track && current_track.images) {
+      var { images } = current_track;
     } else {
       var images = [];
     }
 
     const extraControls = (      
-      <div className="control" onClick={this.toggleLyrics} style={showLyrics ? { opacity: 1 } : {}}>
-        <Icon name="queue_music" className={showLyrics ? 'turquoise-text' : null} />
+      <div className="control" onClick={this.toggleLyrics} style={show_lyrics ? { opacity: 1 } : {}}>
+        <Icon name="queue_music" className={show_lyrics ? 'turquoise-text' : null} />
       </div>
     );
 
@@ -139,15 +180,15 @@ class KioskMode extends React.Component {
       <Modal className="modal--kiosk-mode" extraControls={extraControls}>
         <Thumbnail className="background" images={images} />
 
-        <div className={`track-info track-info--${showLyrics ? 'with' : 'without'}-lyrics`}>
+        <div className={`track-info track-info--${show_lyrics ? 'with' : 'without'}-lyrics`}>
           <div className="artwork">
             <Thumbnail images={images} />
           </div>
 
           <div className="player">
             <div className="current-track">
-              <div className="title">{ this.props.current_track ? this.props.current_track.name : <span>-</span> }</div>
-              { this.props.current_track ? <LinksSentence nolinks items={this.props.current_track.artists} /> : <LinksSentence /> }
+              <div className="title">{ current_track ? current_track.name : <span>-</span> }</div>
+              { current_track ? <LinksSentence nolinks items={current_track.artists} /> : <LinksSentence /> }
             </div>
 
             <div className="player__controls">
@@ -165,7 +206,7 @@ class KioskMode extends React.Component {
             </div>
           </div>
         </div>
-        {showLyrics && this.renderLyrics()}
+        {show_lyrics && this.renderLyrics()}
       </Modal>
     );
   }
@@ -176,6 +217,7 @@ const mapStateToProps = (state) => ({
   current_track: (state.core.current_track && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null),
   time_position: state.mopidy.time_position,
   load_queue: state.ui.load_queue,
+  show_lyrics: state.ui.show_lyrics,
   genius_authorized: state.genius.authorization,
 });
 

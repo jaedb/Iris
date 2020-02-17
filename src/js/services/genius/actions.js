@@ -197,8 +197,9 @@ export function getTrackLyrics(uri, path) {
   };
 }
 
-export function findTrackLyrics(track) {
+export function findTrackLyrics(track = null) {
   return (dispatch, getState) => {
+    if (!track) return;
     let query = '';
     query += `${track.artists[0].name} `;
     query += track.name;
