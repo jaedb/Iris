@@ -4194,7 +4194,7 @@ select {
     -moz-transition: all 0.2s ease-in-out;
     -o-transition: all 0.2s ease-in-out;
     transition: all 0.2s ease-in-out;
-    stroke: #b4b4b4; }
+    stroke: #aaaaaa; }
 
 .loader--white .loader__spinner__foreground {
   border-right-color: #FFFFFF; }

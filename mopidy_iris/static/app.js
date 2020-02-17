@@ -47629,7 +47629,7 @@ module.exports = hoistNonReactStatics;
 /*!***************************************************************!*\
   !*** ./node_modules/react-router-dom/esm/react-router-dom.js ***!
   \***************************************************************/
-/*! exports provided: MemoryRouter, Prompt, Redirect, Route, Router, StaticRouter, Switch, __RouterContext, generatePath, matchPath, useHistory, useLocation, useParams, useRouteMatch, withRouter, BrowserRouter, HashRouter, Link, NavLink */
+/*! exports provided: BrowserRouter, HashRouter, Link, NavLink, MemoryRouter, Prompt, Redirect, Route, Router, StaticRouter, Switch, __RouterContext, generatePath, matchPath, useHistory, useLocation, useParams, useRouteMatch, withRouter */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -76618,11 +76618,23 @@ var sendRequest = function sendRequest(dispatch, getState, endpoint) {
     var loader_key = helpers.generateGuid();
     dispatch(uiActions.startLoading(loader_key, 'genius_' + endpoint));
 
-    $.ajax(config).then(function (response) {
+    function status(response) {
       dispatch(uiActions.stopLoading(loader_key));
 
-      if (response.meta && response.meta.status >= 200 && response.meta.status < 300 && response.response) {
-        resolve(response.response);
+      if (response.status >= 200 && response.status < 300) {
+        return Promise.resolve(response);
+      }
+      return Promise.reject(new Error(response.statusText));
+    }
+
+    fetch(url, config).then(status).then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      var status = data.meta.status,
+          response = data.response;
+
+      if (status >= 200 && status < 300 && response) {
+        resolve(response);
       } else {
         reject({
           config: config,
@@ -76631,14 +76643,8 @@ var sendRequest = function sendRequest(dispatch, getState, endpoint) {
           error: error
         });
       }
-    }, function (xhr, status, error) {
-      dispatch(uiActions.stopLoading(loader_key));
-      reject({
-        config: config,
-        xhr: xhr,
-        status: status,
-        error: error
-      });
+    }).catch(function (error) {
+      reject(error);
     });
   });
 };
@@ -77240,9 +77246,8 @@ var sendRequest = function sendRequest(dispatch, getState, params) {
 
       if (response.status >= 200 && response.status < 300) {
         return Promise.resolve(response);
-      } else {
-        return Promise.reject(new Error(response.statusText));
       }
+      return Promise.reject(new Error(response.statusText));
     }
 
     fetch(url, config).then(status).then(function (response) {
@@ -77284,21 +77289,29 @@ var sendSignedRequest = function sendSignedRequest(dispatch, getState, params) {
 
     var config = {
       method: 'GET',
-      cache: false,
       timeout: 30000
     };
 
-    fetch(url, config).then(function (signResponse) {
+    function status(response) {
       dispatch(uiActions.stopLoading(loader_key));
 
+      if (response.status >= 200 && response.status < 300) {
+        return Promise.resolve(response);
+      }
+      return Promise.reject(new Error(response.statusText));
+    }
+
+    fetch(url, config).then(status).then(function (response) {
+      return response.json();
+    }).then(function (data) {
       // Now we have signed params, we can make the actual request
-      sendRequest(dispatch, getState, signResponse.params, true).then(function (response) {
+      sendRequest(dispatch, getState, data.params, true).then(function (response) {
         return resolve(response);
       }, function (error) {
         return reject(error);
       });
     }).catch(function (error) {
-      return reject(error);
+      reject(error);
     });
   });
 };

@@ -35,7 +35,7 @@ const sendRequest = (dispatch, getState, endpoint, method = 'GET', data = false)
     method,
     url,
     timeout: 30000,
-         	crossDomain: true,
+    crossDomain: true,
   };
 
   // only if we've got data do we add it to the request (this prevents appending of "&false" to the URL)
@@ -51,12 +51,25 @@ const sendRequest = (dispatch, getState, endpoint, method = 'GET', data = false)
   const loader_key = helpers.generateGuid();
   dispatch(uiActions.startLoading(loader_key, `genius_${endpoint}`));
 
-  $.ajax(config).then(
-    (response) => {
-      dispatch(uiActions.stopLoading(loader_key));
+  function status(response) {
+    dispatch(uiActions.stopLoading(loader_key));
 
-      if (response.meta && response.meta.status >= 200 && response.meta.status < 300 && response.response) {
-        resolve(response.response);
+    if (response.status >= 200 && response.status < 300) {
+      return Promise.resolve(response);
+    }
+    return Promise.reject(new Error(response.statusText));
+  }
+
+  fetch(url, config)
+    .then(status)
+    .then((response) => response.json())
+    .then((data) => {
+      const {
+        meta: { status },
+        response,
+      } = data;
+      if (status >= 200 && status < 300 && response) {
+        resolve(response);
       } else {
         reject({
           config,
@@ -65,17 +78,10 @@ const sendRequest = (dispatch, getState, endpoint, method = 'GET', data = false)
           error,
         });
       }
-    },
-    (xhr, status, error) => {
-      dispatch(uiActions.stopLoading(loader_key));
-      reject({
-        config,
-        xhr,
-        status,
-        error,
-      });
-    },
-  );
+    })
+    .catch((error) => {
+      reject(error);
+    });
 });
 
 
