@@ -2358,6 +2358,32 @@ const MopidyMiddleware = (function () {
               }
             }
 
+            if (subdirectories.length > 0) {
+              request(socket, store, 'library.getImages', { uris: helpers.arrayOf('uri', subdirectories) })
+                .then((response) => {
+
+                  const subdirectories_with_images = subdirectories.map((subdir) => {
+                    let images = response[subdir.uri] || undefined;
+                    if (images) {
+                      images = helpers.formatImages(helpers.digestMopidyImages(store.getState().mopidy, images));
+                    }
+                    return {
+                      ...subdir,
+                      images: images,
+                    }
+                  });
+
+                  console.log(subdirectories_with_images);
+
+                  store.dispatch({
+                    type: 'MOPIDY_DIRECTORY_LOADED',
+                    directory: {
+                      subdirectories: subdirectories_with_images,
+                    },
+                  });
+                });
+            }
+
             if (tracks_uris.length > 0) {
               request(socket, store, 'library.lookup', { uris: tracks_uris })
                 .then((response) => {

@@ -80788,6 +80788,30 @@ var MopidyMiddleware = function () {
                 }
               }
 
+              if (subdirectories.length > 0) {
+                request(socket, store, 'library.getImages', { uris: helpers.arrayOf('uri', subdirectories) }).then(function (response) {
+
+                  var subdirectories_with_images = subdirectories.map(function (subdir) {
+                    var images = response[subdir.uri] || undefined;
+                    if (images) {
+                      images = helpers.formatImages(helpers.digestMopidyImages(store.getState().mopidy, images));
+                    }
+                    return _extends({}, subdir, {
+                      images: images
+                    });
+                  });
+
+                  console.log(subdirectories_with_images);
+
+                  store.dispatch({
+                    type: 'MOPIDY_DIRECTORY_LOADED',
+                    directory: {
+                      subdirectories: subdirectories_with_images
+                    }
+                  });
+                });
+              }
+
               if (tracks_uris.length > 0) {
                 request(socket, store, 'library.lookup', { uris: tracks_uris }).then(function (response) {
                   if (response.length <= 0) {
