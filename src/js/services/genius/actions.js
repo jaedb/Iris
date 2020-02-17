@@ -30,6 +30,10 @@ const sendRequest = (dispatch, getState, endpoint, method = 'GET', data = false)
     }
   }
 
+  if (data) {
+    url += `&${data}`;
+  }
+
   // create our ajax request config
   const config = {
     method,
@@ -148,9 +152,9 @@ export function getTrackLyrics(uri, path) {
       lyrics_path: null,
     }));
 
+    const url = `//${getState().mopidy.host}:${getState().mopidy.port}/iris/http/get_lyrics?path=${path}&connection_id=${getState().pusher.connection_id}`;
     const config = {
       method: 'GET',
-      url: `//${getState().mopidy.host}:${getState().mopidy.port}/iris/http/get_lyrics?path=${path}&connection_id=${getState().pusher.connection_id}`,
       timeout: 10000,
     };
 
@@ -158,42 +162,49 @@ export function getTrackLyrics(uri, path) {
     const loader_key = helpers.generateGuid();
     dispatch(uiActions.startLoading(loader_key, 'genius_get_lyrics'));
 
-    $.ajax(config)
-      .then(
-        (response, status, xhr) => {
-          dispatch(uiActions.stopLoading(loader_key));
-          if (response && response.result) {
-            const html = $(response.result);
-            let lyrics = html.find('.lyrics');
-            if (lyrics.length > 0) {
-              lyrics = lyrics.first();
-              lyrics.find('a').replaceWith((k, v) => v);
+    function status(response) {
+      dispatch(uiActions.stopLoading(loader_key));
 
-              let lyrics_html = lyrics.html();
-              lyrics_html = lyrics_html.replace(/(\[)/g, '<span class="mid_grey-text">[');
-              lyrics_html = lyrics_html.replace(/(\])/g, ']</span>');
+      if (response.status >= 200 && response.status < 300) {
+        return Promise.resolve(response);
+      }
+      return Promise.reject(new Error(response.statusText));
+    }
 
-              dispatch(coreActions.trackLoaded({
-                uri,
-                lyrics: lyrics_html,
-                lyrics_path: path,
-              }));
-            }
-          } else {
-            dispatch(coreActions.handleException(
-              'Could not get track lyrics',
-              response.error,
-            ));
+    fetch(url, config)
+      .then(status)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          const html = $(data.result);
+          let lyrics = html.find('.lyrics');
+          if (lyrics.length > 0) {
+            lyrics = lyrics.first();
+            lyrics.find('a').replaceWith((k, v) => v);
+
+            let lyrics_html = lyrics.html();
+            lyrics_html = lyrics_html.replace(/(\[)/g, '<span class="mid_grey-text">[');
+            lyrics_html = lyrics_html.replace(/(\])/g, ']</span>');
+
+            dispatch(coreActions.trackLoaded({
+              uri,
+              lyrics: lyrics_html,
+              lyrics_path: path,
+            }));
           }
-        },
-        (xhr, status, error) => {
-          dispatch(uiActions.stopLoading(loader_key));
+        } else {
           dispatch(coreActions.handleException(
             'Could not get track lyrics',
-            error,
+            data.error,
           ));
-        },
-      );
+        }
+      })
+      .catch((error) => {
+        dispatch(coreActions.handleException(
+          'Could not get track lyrics',
+          error,
+        ));
+      });
   };
 }
 
