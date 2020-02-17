@@ -41,8 +41,8 @@ class KioskMode extends React.Component {
     } = this.props;
     this.setWindowTitle();
 
-    if (show_lyrics && current_track && genius_authorized && current_track && current_track.artists && !current_track.lyrics_results) {
-      geniusActions.findTrackLyrics();
+    if (show_lyrics && genius_authorized && current_track && current_track.artists && !current_track.lyrics_results) {
+      geniusActions.findTrackLyrics(current_track);
     }
   }
 
@@ -130,7 +130,7 @@ class KioskMode extends React.Component {
         </div>
       );
     } else if (!genius_authorized) {
-      
+
       return (
         <p className="no-results">
           Want track lyrics? Authorize Genius under
@@ -138,7 +138,7 @@ class KioskMode extends React.Component {
           <Link to="/settings/genius" scrollTo="#services-menu">Settings</Link>.
         </p>
       );
-      
+
     } else if (lyrics) {
       return (
         <LyricsScroller
@@ -170,7 +170,7 @@ class KioskMode extends React.Component {
       var images = [];
     }
 
-    const extraControls = (      
+    const extraControls = (
       <div className="control" onClick={this.toggleLyrics} style={show_lyrics ? { opacity: 1 } : {}}>
         <Icon name="queue_music" className={show_lyrics ? 'turquoise-text' : null} />
       </div>

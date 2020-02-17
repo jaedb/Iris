@@ -2373,8 +2373,6 @@ const MopidyMiddleware = (function () {
                     }
                   });
 
-                  console.log(subdirectories_with_images);
-
                   store.dispatch({
                     type: 'MOPIDY_DIRECTORY_LOADED',
                     directory: {

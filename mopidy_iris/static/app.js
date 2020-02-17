@@ -80801,8 +80801,6 @@ var MopidyMiddleware = function () {
                     });
                   });
 
-                  console.log(subdirectories_with_images);
-
                   store.dispatch({
                     type: 'MOPIDY_DIRECTORY_LOADED',
                     directory: {
@@ -98723,8 +98721,8 @@ var KioskMode = function (_React$Component) {
 
       this.setWindowTitle();
 
-      if (show_lyrics && current_track && genius_authorized && current_track && current_track.artists && !current_track.lyrics_results) {
-        geniusActions.findTrackLyrics();
+      if (show_lyrics && genius_authorized && current_track && current_track.artists && !current_track.lyrics_results) {
+        geniusActions.findTrackLyrics(current_track);
       }
     }
   }, {
