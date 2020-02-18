@@ -101,18 +101,6 @@ class IrisCore(pykka.ThreadingActor):
             return False
 
     ##
-    # Load version number from file
-    #
-    # @return String
-    ##
-    def load_version(self):
-        file_path = pathlib.Path(__file__).parent.parent / "IRIS_VERSION"
-        try:
-            return file_path.read_text()
-        except Exception:
-            return "Unknown"
-
-    ##
     # Generate a random string
     #
     # Used for connection_ids where none is provided by client
@@ -427,7 +415,7 @@ class IrisCore(pykka.ThreadingActor):
             http_response = await http_client.fetch(url)
             response_body = json.loads(http_response.body)
             latest_version = response_body["info"]["version"]
-            current_version = self.load_version()
+            current_version = Extension.version
 
             # compare our versions, and convert result to boolean
             upgrade_available = parse_version(latest_version) > parse_version(
