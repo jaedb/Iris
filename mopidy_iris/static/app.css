@@ -7654,19 +7654,19 @@ main .track-view {
           width: 110vw;
           padding-bottom: 110vh; }
       .modal--kiosk-mode .content .track-info {
-        height: 100%;
-        width: 100%; }
-        .modal--kiosk-mode .content .track-info--with-lyrics {
-          width: 30%; }
+        height: 90%;
+        width: 100%;
+        display: flex;
+        flex-flow: column; }
         .modal--kiosk-mode .content .track-info .artwork {
           text-align: center;
-          height: 50%;
           z-index: 2;
           position: relative;
           cursor: pointer;
-          width: 100%;
+          width: 50%;
           max-width: 50vh;
-          margin: 0 auto; }
+          margin: 0 auto;
+          flex-grow: 1; }
           .modal--kiosk-mode .content .track-info .artwork .thumbnail {
             max-width: none;
             position: absolute;
@@ -7690,41 +7690,82 @@ main .track-view {
           .modal--kiosk-mode .content .track-info .artwork:hover .icon {
             opacity: 0.75; }
         .modal--kiosk-mode .content .track-info .player {
-          height: 40%;
-          padding-top: 10%;
-          max-width: 50vh;
-          margin: 0 auto;
-          display: flex;
-          flex-direction: column; }
+          padding-top: 40px;
+          width: 50%;
+          margin: auto auto 0 auto; }
           .modal--kiosk-mode .content .track-info .player .current-track {
-            flex: 1;
             font-size: 2rem; }
             .modal--kiosk-mode .content .track-info .player .current-track .links-sentence {
               opacity: 0.5; }
           .modal--kiosk-mode .content .track-info .player__controls {
-            flex: 1; }
+            padding-top: 40px; }
             .modal--kiosk-mode .content .track-info .player__controls .control {
               background: transparent;
               color: white;
-              font-size: 2.4rem; }
+              font-size: 2.4rem;
+              margin: 0 10px; }
           .modal--kiosk-mode .content .track-info .player .progress-wrapper {
-            flex: 1;
-            margin: 0 auto;
-            width: 100%; }
+            padding-top: 40px; }
             .modal--kiosk-mode .content .track-info .player .progress-wrapper .slider__track {
               background: rgba(128, 128, 128, 0.25); }
       .modal--kiosk-mode .content .lyrics {
         width: 70%;
         height: 100%;
-        overflow: hidden;
+        overflow-y: hidden;
         position: relative; }
         .modal--kiosk-mode .content .lyrics__content {
           font-size: 1.6rem;
           line-height: 2.2rem;
           position: absolute;
           top: 50%;
-          width: 100%;
+          left: 10%;
+          width: 80%;
           transition: transform 0.9s linear; }
+    .modal--kiosk-mode--with-lyrics .content .track-info {
+      width: 30%; }
+      .modal--kiosk-mode--with-lyrics .content .track-info .artwork {
+        width: 100%; }
+      .modal--kiosk-mode--with-lyrics .content .track-info .player {
+        width: 100%; }
+        .modal--kiosk-mode--with-lyrics .content .track-info .player .current-track {
+          font-size: 1.6rem; }
+    @media (max-width: 799px), (max-height: 649px) {
+      .modal--kiosk-mode .content .track-info .player .current-track {
+        padding-top: 20px;
+        font-size: 1.2rem; }
+      .modal--kiosk-mode .content .track-info .player__controls {
+        padding-top: 20px; }
+        .modal--kiosk-mode .content .track-info .player__controls .control {
+          font-size: 1.8rem; }
+      .modal--kiosk-mode .content .track-info .player .progress-wrapper {
+        padding-top: 20px; }
+      .modal--kiosk-mode .content .lyrics {
+        width: auto; }
+      .modal--kiosk-mode--with-lyrics .content {
+        display: block;
+        width: auto; }
+        .modal--kiosk-mode--with-lyrics .content .track-info {
+          width: auto;
+          display: flex;
+          flex-flow: row;
+          height: auto;
+          padding-top: 20px; }
+          .modal--kiosk-mode--with-lyrics .content .track-info .artwork {
+            width: 25%; }
+          .modal--kiosk-mode--with-lyrics .content .track-info .player {
+            padding-top: 0; }
+            .modal--kiosk-mode--with-lyrics .content .track-info .player .current-track {
+              padding-top: 0; }
+            .modal--kiosk-mode--with-lyrics .content .track-info .player .progress-wrapper {
+              display: none; }
+        .modal--kiosk-mode--with-lyrics .content .lyrics {
+          width: auto;
+          height: auto; } }
+    @media (max-width: 799px) {
+      .modal--kiosk-mode .content .artwork {
+        width: 100%; }
+      .modal--kiosk-mode .content .player {
+        width: 100%; } }
   @media (max-width: 799px), (max-height: 649px) {
     .modal .controls {
       top: 0;
@@ -7751,14 +7792,7 @@ main .track-view {
         margin: 0; }
         .modal .content .list .list__item.draggable .drag-handle {
           padding-top: 14px;
-          padding-bottom: 14px; }
-    .modal--kiosk-mode .content .track-info .artwork {
-      height: 35%; }
-    .modal--kiosk-mode .content .track-info .player {
-      height: 45%;
-      padding-top: 20%; }
-      .modal--kiosk-mode .content .track-info .player .current-track {
-        font-size: 1.2rem; } }
+          padding-bottom: 14px; } }
 
 
 /*# sourceMappingURL=app.css.map*/

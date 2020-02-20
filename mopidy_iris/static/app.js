@@ -47629,7 +47629,7 @@ module.exports = hoistNonReactStatics;
 /*!***************************************************************!*\
   !*** ./node_modules/react-router-dom/esm/react-router-dom.js ***!
   \***************************************************************/
-/*! exports provided: MemoryRouter, Prompt, Redirect, Route, Router, StaticRouter, Switch, __RouterContext, generatePath, matchPath, useHistory, useLocation, useParams, useRouteMatch, withRouter, BrowserRouter, HashRouter, Link, NavLink */
+/*! exports provided: BrowserRouter, HashRouter, Link, NavLink, MemoryRouter, Prompt, Redirect, Route, Router, StaticRouter, Switch, __RouterContext, generatePath, matchPath, useHistory, useLocation, useParams, useRouteMatch, withRouter */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -98822,11 +98822,14 @@ var KioskMode = function (_React$Component) {
 
       return _react2.default.createElement(
         _Modal2.default,
-        { className: 'modal--kiosk-mode', extraControls: extraControls },
+        {
+          className: 'modal--kiosk-mode modal--kiosk-mode--' + (show_lyrics ? 'with' : 'without') + '-lyrics',
+          extraControls: extraControls
+        },
         _react2.default.createElement(_Thumbnail2.default, { className: 'background', images: images }),
         _react2.default.createElement(
           'div',
-          { className: 'track-info track-info--' + (show_lyrics ? 'with' : 'without') + '-lyrics' },
+          { className: 'track-info' },
           _react2.default.createElement(
             'div',
             { className: 'artwork' },

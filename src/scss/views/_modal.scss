@@ -284,30 +284,28 @@
       }
 
       .track-info {
-        height: 100%;
+        height: 90%;
         width: 100%;
-
-        &--with-lyrics {
-          width: 30%;
-        }
+        display: flex;
+        flex-flow: column;
 
         .artwork {
           text-align: center;
-          height: 50%;
           z-index: 2;
           position: relative;
           cursor: pointer;
-          width: 100%;
+          width: 50%;
           max-width: 50vh;
           margin: 0 auto;
-  
+          flex-grow: 1;
+
           .thumbnail {
             max-width: none;
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
           }
-  
+
           .icon {
             @include animate();
             display: inline-block;
@@ -321,46 +319,39 @@
             opacity: 0;
             z-index: 2;
           }
-  
+
           &:hover {
             .icon {
               opacity: 0.75;
             }
           }
         }
-  
+
         .player {
-          height: 40%;
-          padding-top: 10%;
-          max-width: 50vh;
-          margin: 0 auto;
-          display: flex;
-          flex-direction: column;
-  
+          padding-top: 40px;
+          width: 50%;
+          margin: auto auto 0 auto;
+
           .current-track {
-            flex: 1;
             font-size: 2rem;
-    
+
             .links-sentence {
               opacity: 0.5;
             }
           }
 
           &__controls {
-            flex: 1;
-
+            padding-top: 40px;
             .control {
               background: transparent;
               color: white;
               font-size: 2.4rem;
+              margin: 0 10px;
             }
           }
-    
+
           .progress-wrapper {
-            flex: 1;
-            margin: 0 auto;
-            width: 100%;
-    
+            padding-top: 40px;
             .slider {
               &__track {
                 background: rgba(128, 128, 128, 0.25);
@@ -373,7 +364,7 @@
       .lyrics {
         width: 70%;
         height: 100%;
-        overflow: hidden;
+        overflow-y: hidden;
         position: relative;
 
         &__content {
@@ -381,8 +372,103 @@
           line-height: 2.2rem;
           position: absolute;
           top: 50%;
-          width: 100%;
+          left: 10%;
+          width: 80%;
           transition: transform 0.9s linear;
+        }
+      }
+    }
+
+    &--with-lyrics {
+      .content {
+        .track-info {
+          width: 30%;
+
+          .artwork {
+            width: 100%;
+          }
+          .player {
+            width: 100%;
+
+            .current-track {
+              font-size: 1.6rem;
+            }
+          }
+        }
+      }
+    }
+
+    @include responsive($bp_medium, null, $bp_shallow) {
+      .content {
+        .track-info {
+          .player {
+            .current-track {
+              padding-top: 20px;
+              font-size: 1.2rem;
+            }
+
+            &__controls {
+              padding-top: 20px;
+              .control {
+                font-size: 1.8rem;
+              }
+            }
+            .progress-wrapper {
+              padding-top: 20px;
+            }
+          }
+        }
+
+        .lyrics {
+          width: auto;
+        }
+      }
+
+      &--with-lyrics {
+        .content {
+          display: block;
+          width: auto;
+
+          .track-info {
+            width: auto;
+            display: flex;
+            flex-flow: row;
+            height: auto;
+            padding-top: 20px;
+
+            .artwork {
+              width: 25%;
+            }
+
+            .player {
+              padding-top: 0;
+
+              .current-track {
+                padding-top: 0;
+              }
+
+              .progress-wrapper {
+                display: none;
+              }
+            }
+          }
+
+          .lyrics {
+            width: auto;
+            height: auto;
+          }
+        }
+      }
+    }
+
+    // Shallow viewport
+    @include responsive($bp_medium, null, null, $bp_shallow) {
+      .content {
+        .artwork {
+          width: 100%;
+        }
+        .player {
+          width: 100%;
         }
       }
     }
@@ -429,24 +515,6 @@
             .drag-handle {
               padding-top: 14px;
               padding-bottom: 14px;
-            }
-          }
-        }
-      }
-    }
-
-    &--kiosk-mode {
-      .content {
-        .track-info {
-          .artwork {
-            height: 35%;
-          }
-          .player {
-            height: 45%;
-            padding-top: 20%;
-
-            .current-track {
-              font-size: 1.2rem;
             }
           }
         }

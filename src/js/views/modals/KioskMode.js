@@ -177,10 +177,13 @@ class KioskMode extends React.Component {
     );
 
     return (
-      <Modal className="modal--kiosk-mode" extraControls={extraControls}>
+      <Modal
+        className={`modal--kiosk-mode modal--kiosk-mode--${show_lyrics ? 'with' : 'without'}-lyrics`}
+        extraControls={extraControls}
+      >
         <Thumbnail className="background" images={images} />
 
-        <div className={`track-info track-info--${show_lyrics ? 'with' : 'without'}-lyrics`}>
+        <div className="track-info">
           <div className="artwork">
             <Thumbnail images={images} />
           </div>
