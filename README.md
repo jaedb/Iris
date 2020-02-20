@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/jaedb/iris/master/src/assets/logo.png" width="128" />
+<img src="https://raw.githubusercontent.com/jaedb/Iris/master/src/assets/logo.png" width="128" />
 
 Iris is an extension for the Mopidy music server. With support for Spotify, LastFM, Snapcast, Icecast and many other extensions, Iris brings all your music into one user-friendly and unified interface.
 
@@ -24,7 +24,7 @@ Features
   * [Snapcast](https://github.com/badaix/snapcast/)
   * [Icecast](http://icecast.org/)
 
-![Overview](https://raw.githubusercontent.com/jaedb/iris/master/screenshot.jpg)
+![Overview](https://raw.githubusercontent.com/jaedb/Iris/master/screenshot.jpg)
 
 
 Requirements
@@ -40,5 +40,5 @@ Getting started
 * [Installation](https://github.com/jaedb/Iris/wiki/Getting-started#installing)
 * [Debugging](https://github.com/jaedb/Iris/wiki/Advanced#debugging)
 * [Issues and requests](https://github.com/jaedb/Iris/wiki/Support#before-you-log-an-issue)
-* [Changelog](https://github.com/jaedb/iris/releases)
+* [Changelog](https://github.com/jaedb/Iris/releases)
 
