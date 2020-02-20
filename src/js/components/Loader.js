@@ -77,6 +77,8 @@ export default memo((props) => {
       <div className={classNameString}>
         <div className="loader__spinner">
           <Icon name="check" />
+          <div className="loader__spinner__background" />
+          <div className="loader__spinner__foreground" />
         </div>
       </div>
     );
@@ -92,6 +94,7 @@ export default memo((props) => {
             radius={mini ? '13' : '60'}
             progress={progress}
           />
+          <div className="loader__spinner__foreground" />
         </div>
       </div>
     );
@@ -99,7 +102,10 @@ export default memo((props) => {
 
   return (
     <div className={classNameString}>
-      <div className="loader__spinner" />
+      <div className="loader__spinner">
+        <div className="loader__spinner__background" />
+        <div className="loader__spinner__foreground" />
+      </div>
     </div>
   );
 });

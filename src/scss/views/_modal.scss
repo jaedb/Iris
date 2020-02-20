@@ -263,6 +263,7 @@
       width: 90%;
       height: 90%;
       text-align: center;
+      display: flex;
 
       .thumbnail.background {
         position: absolute;
@@ -273,6 +274,7 @@
         width: auto;
         opacity: 0.2;
         max-width: none;
+        z-index: -1;
 
         .thumbnail__image {
           @include blur(100px);
@@ -281,65 +283,198 @@
         }
       }
 
-      .artwork {
-        width: 70vw;
-        margin: 0 auto;
-        max-width: 60vh;
-        max-height: 60vh;
-        z-index: 2;
-        position: relative;
-        cursor: pointer;
+      .track-info {
+        height: 90%;
+        width: 100%;
+        display: flex;
+        flex-flow: column;
 
-        .thumbnail {
-          max-width: none;
-        }
-
-        .icon {
-          @include animate();
-          display: inline-block;
-          position: absolute;
-          color: colour(darkest_grey);
-          font-size: 20rem;
-          top: 25%;
-          left: 0;
-          right: 0;
+        .artwork {
           text-align: center;
-          opacity: 0;
           z-index: 2;
-        }
+          position: relative;
+          cursor: pointer;
+          width: 50%;
+          max-width: 50vh;
+          margin: 0 auto;
+          flex-grow: 1;
 
-        &:hover {
+          .thumbnail {
+            max-width: none;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+          }
+
           .icon {
-            opacity: 0.75;
+            @include animate();
+            display: inline-block;
+            position: absolute;
+            color: colour(darkest_grey);
+            font-size: 20rem;
+            top: 25%;
+            left: 0;
+            right: 0;
+            text-align: center;
+            opacity: 0;
+            z-index: 2;
+          }
+
+          &:hover {
+            .icon {
+              opacity: 0.75;
+            }
+          }
+        }
+
+        .player {
+          padding-top: 40px;
+          width: 50%;
+          margin: auto auto 0 auto;
+
+          .current-track {
+            font-size: 2rem;
+
+            .links-sentence {
+              opacity: 0.5;
+            }
+          }
+
+          &__controls {
+            padding-top: 40px;
+            .control {
+              background: transparent;
+              color: white;
+              font-size: 2.4rem;
+              margin: 0 10px;
+            }
+          }
+
+          .progress-wrapper {
+            padding-top: 40px;
+            .slider {
+              &__track {
+                background: rgba(128, 128, 128, 0.25);
+              }
+            }
           }
         }
       }
 
-      .current-track {
-        padding-top: 80px;
-        font-size: 30px;
+      .lyrics {
+        width: 70%;
+        height: 100%;
+        overflow-y: hidden;
+        position: relative;
 
-        .links-sentence {
-          opacity: 0.5;
+        &__content {
+          font-size: 1.6rem;
+          line-height: 2.2rem;
+          position: absolute;
+          top: 50%;
+          left: 10%;
+          width: 80%;
+          transition: transform 0.9s linear;
+        }
+      }
+    }
+
+    &--with-lyrics {
+      .content {
+        .track-info {
+          width: 30%;
+
+          .artwork {
+            width: 100%;
+          }
+          .player {
+            width: 100%;
+
+            .current-track {
+              font-size: 1.6rem;
+            }
+          }
+        }
+      }
+    }
+
+    @include responsive($bp_medium, null, $bp_shallow) {
+      .content {
+        .track-info {
+          .player {
+            .current-track {
+              padding-top: 20px;
+              font-size: 1.2rem;
+            }
+
+            &__controls {
+              padding-top: 20px;
+              .control {
+                font-size: 1.8rem;
+              }
+            }
+            .progress-wrapper {
+              padding-top: 20px;
+            }
+          }
+        }
+
+        .lyrics {
+          width: auto;
         }
       }
 
-      .progress-wrapper {
-        margin: 0 auto;
-        padding-top: 50px;
-        width: 60vw;
-        max-width: 60vh;
+      &--with-lyrics {
+        .content {
+          display: block;
+          width: auto;
 
-        .slider {
-          &__track {
-            background: rgba(128, 128, 128, 0.25);
+          .track-info {
+            width: auto;
+            display: flex;
+            flex-flow: row;
+            height: auto;
+            padding-top: 20px;
+
+            .artwork {
+              width: 25%;
+            }
+
+            .player {
+              padding-top: 0;
+
+              .current-track {
+                padding-top: 0;
+              }
+
+              .progress-wrapper {
+                display: none;
+              }
+            }
           }
+
+          .lyrics {
+            width: auto;
+            height: auto;
+          }
+        }
+      }
+    }
+
+    // Shallow viewport
+    @include responsive($bp_medium, null, null, $bp_shallow) {
+      .content {
+        .artwork {
+          width: 100%;
+        }
+        .player {
+          width: 100%;
         }
       }
     }
   }
 
-  @include responsive($bp_medium) {
+  @include responsive($bp_medium, null, $bp_shallow) {
     .controls {
       top: 0;
       right: 0;

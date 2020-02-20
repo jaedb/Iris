@@ -7,26 +7,67 @@ import Link from '../../components/Link';
 import Modal from './Modal';
 import Thumbnail from '../../components/Thumbnail';
 import LinksSentence from '../../components/LinksSentence';
-import Dater from '../../components/Dater';
+import Loader from '../../components/Loader';
 import Icon from '../../components/Icon';
 import ProgressSlider from '../../components/Fields/ProgressSlider';
 
 import * as helpers from '../../helpers';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
+import * as geniusActions from '../../services/genius/actions';
+
+const LyricsScroller = ({ content = '', time_position = 1, duration = 100 }) => {
+  const percent = ((time_position / duration) * 110).toFixed(4);
+
+  return (
+    <div className="lyrics">
+      <div
+        className="lyrics__content"
+        dangerouslySetInnerHTML={{ __html: content }}
+        style={{ transform: `translateY(-${percent}%)` }}
+      />
+    </div>
+  );
+}
 
 class KioskMode extends React.Component {
-  constructor(props) {
-    super(props);
-  }
 
   componentDidMount() {
+    const {
+      current_track,
+      genius_authorized,
+      show_lyrics,
+      geniusActions,
+    } = this.props;
     this.setWindowTitle();
+
+    if (show_lyrics && genius_authorized && current_track && current_track.artists && !current_track.lyrics_results) {
+      geniusActions.findTrackLyrics(current_track);
+    }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (!this.props.current_track && nextProps.current_track) {
-      this.setWindowTitle(nextProps.current_track);
+    const {
+      current_track,
+      show_lyrics,
+      geniusActions,
+    } = this.props;
+    const {
+      current_track: next_current_track,
+      show_lyrics: next_show_lyrics,
+      genius_authorized: next_genius_authorized,
+    } = nextProps;
+
+    if (!current_track && next_current_track) {
+      this.setWindowTitle(next_current_track);
+
+      if (show_lyrics && next_genius_authorized && next_current_track && next_current_track.artists && !next_current_track.lyrics_results) {
+        geniusActions.findTrackLyrics(next_current_track);
+      }
+    } else if (show_lyrics !== next_show_lyrics && next_show_lyrics && next_current_track) {
+      if (next_genius_authorized && next_current_track && next_current_track.artists && !next_current_track.lyrics_results) {
+        geniusActions.findTrackLyrics(next_current_track);
+      }
     }
   }
 
@@ -53,33 +94,122 @@ class KioskMode extends React.Component {
     }
   }
 
+  toggleLyrics = () => {
+    const {
+      show_lyrics,
+      uiActions,
+      genius_authorized,
+      current_track,
+    } = this.props;
+
+    uiActions.set({ show_lyrics: !show_lyrics });
+    if (
+      !show_lyrics
+      && this.props.genius_authorized
+      && current_track
+      && current_track.artists
+      && !current_track.lyrics_results) {
+      this.props.geniusActions.findTrackLyrics(current_track);
+    }
+  }
+
+  renderLyrics = () => {
+    const {
+      load_queue,
+      genius_authorized,
+      time_position = null,
+      current_track,
+    } = this.props;
+
+    const { lyrics, duration } = current_track || {};
+
+    if (helpers.isLoading(load_queue, ['genius_'])) {
+      return (
+        <div className="lyrics">
+          <Loader body loading />
+        </div>
+      );
+    } else if (!genius_authorized) {
+
+      return (
+        <p className="no-results">
+          Want track lyrics? Authorize Genius under
+          {' '}
+          <Link to="/settings/genius" scrollTo="#services-menu">Settings</Link>.
+        </p>
+      );
+
+    } else if (lyrics) {
+      return (
+        <LyricsScroller
+          content={lyrics}
+          time_position={time_position}
+          duration={duration}
+        />
+      );
+    };
+    return null;
+  }
+
+  renderPlayButton() {
+    let button = <button className="control play" onClick={() => this.props.mopidyActions.play()}><Icon name="play_circle_filled" type="material" /></button>;
+    if (this.props.play_state == 'playing') {
+      button = <button className="control play" onClick={() => this.props.mopidyActions.pause()}><Icon name="pause_circle_filled" type="material" /></button>;
+    }
+    return button;
+  }
+
   render() {
-    if (this.props.current_track && this.props.current_track.images) {
-      var { images } = this.props.current_track;
+    const {
+      show_lyrics,
+      current_track,
+    } = this.props;
+    if (current_track && current_track.images) {
+      var { images } = current_track;
     } else {
       var images = [];
     }
 
-    return (
-      <Modal className="modal--kiosk-mode">
+    const extraControls = (
+      <div className="control" onClick={this.toggleLyrics} style={show_lyrics ? { opacity: 1 } : {}}>
+        <Icon name="queue_music" className={show_lyrics ? 'turquoise-text' : null} />
+      </div>
+    );
 
+    return (
+      <Modal
+        className={`modal--kiosk-mode modal--kiosk-mode--${show_lyrics ? 'with' : 'without'}-lyrics`}
+        extraControls={extraControls}
+      >
         <Thumbnail className="background" images={images} />
 
-        <div className="artwork" onClick={(e) => this.togglePlay(e)}>
-          <Thumbnail images={images} />
-          {this.props.play_state == 'playing' ? <Icon name="pause_circle_filled" /> : <Icon name="play_circle_filled" />}
-        </div>
-
-        <div className="player">
-          <div className="current-track">
-            <div className="title">{ this.props.current_track ? this.props.current_track.name : <span>-</span> }</div>
-            { this.props.current_track ? <LinksSentence nolinks items={this.props.current_track.artists} /> : <LinksSentence /> }
+        <div className="track-info">
+          <div className="artwork">
+            <Thumbnail images={images} />
           </div>
 
-          <div className="progress-wrapper">
-            <ProgressSlider />
+          <div className="player">
+            <div className="current-track">
+              <div className="title">{ current_track ? current_track.name : <span>-</span> }</div>
+              { current_track ? <LinksSentence nolinks items={current_track.artists} /> : <LinksSentence /> }
+            </div>
+
+            <div className="player__controls">
+              <button className="control previous" onClick={() => this.props.mopidyActions.previous()}>
+                <Icon name="navigate_before" type="material" />
+              </button>
+              { this.renderPlayButton() }
+              <button className="control next" onClick={() => this.props.mopidyActions.next()}>
+                <Icon name="navigate_next" type="material" />
+              </button>
+            </div>
+
+            <div className="progress-wrapper">
+              <ProgressSlider />
+            </div>
           </div>
         </div>
+        {show_lyrics && this.renderLyrics()}
       </Modal>
     );
   }
@@ -88,11 +218,16 @@ class KioskMode extends React.Component {
 const mapStateToProps = (state) => ({
   play_state: state.mopidy.play_state,
   current_track: (state.core.current_track && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null),
+  time_position: state.mopidy.time_position,
+  load_queue: state.ui.load_queue,
+  show_lyrics: state.ui.show_lyrics,
+  genius_authorized: state.genius.authorization,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   uiActions: bindActionCreators(uiActions, dispatch),
   mopidyActions: bindActionCreators(mopidyActions, dispatch),
+  geniusActions: bindActionCreators(geniusActions, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(KioskMode);

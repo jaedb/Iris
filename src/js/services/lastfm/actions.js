@@ -43,19 +43,18 @@ const sendRequest = (dispatch, getState, params, signed = false) => new Promise(
     dispatch(uiActions.stopLoading(loader_key));
 
     if (response.status >= 200 && response.status < 300) {
-      return Promise.resolve(response)
-    } else {
-      return Promise.reject(new Error(response.statusText))
+      return Promise.resolve(response);
     }
+    return Promise.reject(new Error(response.statusText));
   }
 
   fetch(url, config)
     .then(status)
-    .then(response => response.json())
-    .then(data => {
+    .then((response) => response.json())
+    .then((data) => {
       resolve(data);
     })
-    .catch(error => {
+    .catch((error) => {
       reject(error);
     });
 });
@@ -88,22 +87,32 @@ const sendSignedRequest = (dispatch, getState, params) => new Promise((resolve, 
 
   const config = {
     method: 'GET',
-    cache: false,
     timeout: 30000,
   };
 
-  fetch(url, config)
-    .then(signResponse => {
-      dispatch(uiActions.stopLoading(loader_key));
+  function status(response) {
+    dispatch(uiActions.stopLoading(loader_key));
 
+    if (response.status >= 200 && response.status < 300) {
+      return Promise.resolve(response)
+    }
+    return Promise.reject(new Error(response.statusText));
+  }
+
+  fetch(url, config)
+    .then(status)
+    .then((response) => response.json())
+    .then((data) => {
       // Now we have signed params, we can make the actual request
-      sendRequest(dispatch, getState, signResponse.params, true)
+      sendRequest(dispatch, getState, data.params, true)
         .then(
-          response => resolve(response),
-          error => reject(error),
+          (response) => resolve(response),
+          (error) => reject(error),
         );
     })
-    .catch(error => reject(error));
+    .catch((error) => {
+      reject(error);
+    });
 });
 
 

@@ -67908,7 +67908,9 @@ exports.default = (0, _react.memo)(function (props) {
       _react2.default.createElement(
         'div',
         { className: 'loader__spinner' },
-        _react2.default.createElement(_Icon2.default, { name: 'check' })
+        _react2.default.createElement(_Icon2.default, { name: 'check' }),
+        _react2.default.createElement('div', { className: 'loader__spinner__background' }),
+        _react2.default.createElement('div', { className: 'loader__spinner__foreground' })
       )
     );
   }
@@ -67925,7 +67927,8 @@ exports.default = (0, _react.memo)(function (props) {
           stroke: '2',
           radius: mini ? '13' : '60',
           progress: progress
-        })
+        }),
+        _react2.default.createElement('div', { className: 'loader__spinner__foreground' })
       )
     );
   }
@@ -67933,7 +67936,12 @@ exports.default = (0, _react.memo)(function (props) {
   return _react2.default.createElement(
     'div',
     { className: classNameString },
-    _react2.default.createElement('div', { className: 'loader__spinner' })
+    _react2.default.createElement(
+      'div',
+      { className: 'loader__spinner' },
+      _react2.default.createElement('div', { className: 'loader__spinner__background' }),
+      _react2.default.createElement('div', { className: 'loader__spinner__foreground' })
+    )
   );
 });
 
@@ -76589,6 +76597,10 @@ var sendRequest = function sendRequest(dispatch, getState, endpoint) {
       }
     }
 
+    if (data) {
+      url += '&' + data;
+    }
+
     // create our ajax request config
     var config = {
       method: method,
@@ -76610,11 +76622,23 @@ var sendRequest = function sendRequest(dispatch, getState, endpoint) {
     var loader_key = helpers.generateGuid();
     dispatch(uiActions.startLoading(loader_key, 'genius_' + endpoint));
 
-    $.ajax(config).then(function (response) {
+    function status(response) {
       dispatch(uiActions.stopLoading(loader_key));
 
-      if (response.meta && response.meta.status >= 200 && response.meta.status < 300 && response.response) {
-        resolve(response.response);
+      if (response.status >= 200 && response.status < 300) {
+        return Promise.resolve(response);
+      }
+      return Promise.reject(new Error(response.statusText));
+    }
+
+    fetch(url, config).then(status).then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      var status = data.meta.status,
+          response = data.response;
+
+      if (status >= 200 && status < 300 && response) {
+        resolve(response);
       } else {
         reject({
           config: config,
@@ -76623,14 +76647,8 @@ var sendRequest = function sendRequest(dispatch, getState, endpoint) {
           error: error
         });
       }
-    }, function (xhr, status, error) {
-      dispatch(uiActions.stopLoading(loader_key));
-      reject({
-        config: config,
-        xhr: xhr,
-        status: status,
-        error: error
-      });
+    }).catch(function (error) {
+      reject(error);
     });
   });
 };
@@ -76690,9 +76708,9 @@ function getTrackLyrics(uri, path) {
       lyrics_path: null
     }));
 
+    var url = '//' + getState().mopidy.host + ':' + getState().mopidy.port + '/iris/http/get_lyrics?path=' + path + '&connection_id=' + getState().pusher.connection_id;
     var config = {
       method: 'GET',
-      url: '//' + getState().mopidy.host + ':' + getState().mopidy.port + '/iris/http/get_lyrics?path=' + path + '&connection_id=' + getState().pusher.connection_id,
       timeout: 10000
     };
 
@@ -76700,10 +76718,20 @@ function getTrackLyrics(uri, path) {
     var loader_key = helpers.generateGuid();
     dispatch(uiActions.startLoading(loader_key, 'genius_get_lyrics'));
 
-    $.ajax(config).then(function (response, status, xhr) {
+    function status(response) {
       dispatch(uiActions.stopLoading(loader_key));
-      if (response && response.result) {
-        var html = $(response.result);
+
+      if (response.status >= 200 && response.status < 300) {
+        return Promise.resolve(response);
+      }
+      return Promise.reject(new Error(response.statusText));
+    }
+
+    fetch(url, config).then(status).then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      if (data.result) {
+        var html = $(data.result);
         var lyrics = html.find('.lyrics');
         if (lyrics.length > 0) {
           lyrics = lyrics.first();
@@ -76722,17 +76750,19 @@ function getTrackLyrics(uri, path) {
           }));
         }
       } else {
-        dispatch(coreActions.handleException('Could not get track lyrics', response.error));
+        dispatch(coreActions.handleException('Could not get track lyrics', data.error));
       }
-    }, function (xhr, status, error) {
-      dispatch(uiActions.stopLoading(loader_key));
+    }).catch(function (error) {
       dispatch(coreActions.handleException('Could not get track lyrics', error));
     });
   };
 }
 
-function findTrackLyrics(track) {
+function findTrackLyrics() {
+  var track = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+
   return function (dispatch, getState) {
+    if (!track) return;
     var query = '';
     query += track.artists[0].name + ' ';
     query += track.name;
@@ -77232,9 +77262,8 @@ var sendRequest = function sendRequest(dispatch, getState, params) {
 
       if (response.status >= 200 && response.status < 300) {
         return Promise.resolve(response);
-      } else {
-        return Promise.reject(new Error(response.statusText));
       }
+      return Promise.reject(new Error(response.statusText));
     }
 
     fetch(url, config).then(status).then(function (response) {
@@ -77276,21 +77305,29 @@ var sendSignedRequest = function sendSignedRequest(dispatch, getState, params) {
 
     var config = {
       method: 'GET',
-      cache: false,
       timeout: 30000
     };
 
-    fetch(url, config).then(function (signResponse) {
+    function status(response) {
       dispatch(uiActions.stopLoading(loader_key));
 
+      if (response.status >= 200 && response.status < 300) {
+        return Promise.resolve(response);
+      }
+      return Promise.reject(new Error(response.statusText));
+    }
+
+    fetch(url, config).then(status).then(function (response) {
+      return response.json();
+    }).then(function (data) {
       // Now we have signed params, we can make the actual request
-      sendRequest(dispatch, getState, signResponse.params, true).then(function (response) {
+      sendRequest(dispatch, getState, data.params, true).then(function (response) {
         return resolve(response);
       }, function (error) {
         return reject(error);
       });
     }).catch(function (error) {
-      return reject(error);
+      reject(error);
     });
   });
 };
@@ -80666,6 +80703,7 @@ var MopidyMiddleware = function () {
 
               var track = _extends({}, response[0]);
               store.dispatch(coreActions.trackLoaded(track));
+              store.dispatch(mopidyActions.getImages('tracks', [track.uri]));
             }, function (error) {
               store.dispatch(coreActions.handleException('Mopidy: ' + (error.message ? error.message : 'Could not get track'), error));
             });
@@ -80683,7 +80721,7 @@ var MopidyMiddleware = function () {
                 for (var _uri5 in response) {
                   if (response.hasOwnProperty(_uri5)) {
                     var images = response[_uri5];
-                    images = helpers.digestMopidyImages(store.getState().mopidy, images);
+                    images = helpers.formatImages(helpers.digestMopidyImages(store.getState().mopidy, images));
 
                     if (images && images.length > 0) {
                       records.push({
@@ -80748,6 +80786,28 @@ var MopidyMiddleware = function () {
                     throw _iteratorError5;
                   }
                 }
+              }
+
+              if (subdirectories.length > 0) {
+                request(socket, store, 'library.getImages', { uris: helpers.arrayOf('uri', subdirectories) }).then(function (response) {
+
+                  var subdirectories_with_images = subdirectories.map(function (subdir) {
+                    var images = response[subdir.uri] || undefined;
+                    if (images) {
+                      images = helpers.formatImages(helpers.digestMopidyImages(store.getState().mopidy, images));
+                    }
+                    return _extends({}, subdir, {
+                      images: images
+                    });
+                  });
+
+                  store.dispatch({
+                    type: 'MOPIDY_DIRECTORY_LOADED',
+                    directory: {
+                      subdirectories: subdirectories_with_images
+                    }
+                  });
+                });
               }
 
               if (tracks_uris.length > 0) {
@@ -88404,7 +88464,7 @@ var Debug = function (_React$Component) {
                 _react2.default.createElement(
                   'a',
                   { className: 'button button--default', onClick: function onClick(e) {
-                      return _this2.props.uiActions.startProcess('test_process', "Test process", { remaining: 32, total: 100 });
+                      return _this2.props.uiActions.startProcess('test_process', "Test process", { remaining: 68, total: 100 });
                     } },
                   'Create process notification'
                 ),
@@ -89442,8 +89502,8 @@ var Queue = function (_React$Component) {
         'div',
         { className: 'current-track__artwork' },
         _react2.default.createElement(
-          _URILink2.default,
-          { uri: uri },
+          _Link2.default,
+          { to: '/kiosk-mode' },
           _react2.default.createElement(_Thumbnail2.default, { glow: true, image: image })
         )
       );
@@ -98522,9 +98582,9 @@ var _LinksSentence = __webpack_require__(/*! ../../components/LinksSentence */ "
 
 var _LinksSentence2 = _interopRequireDefault(_LinksSentence);
 
-var _Dater = __webpack_require__(/*! ../../components/Dater */ "./src/js/components/Dater.js");
+var _Loader = __webpack_require__(/*! ../../components/Loader */ "./src/js/components/Loader.js");
 
-var _Dater2 = _interopRequireDefault(_Dater);
+var _Loader2 = _interopRequireDefault(_Loader);
 
 var _Icon = __webpack_require__(/*! ../../components/Icon */ "./src/js/components/Icon.js");
 
@@ -98546,6 +98606,10 @@ var _actions2 = __webpack_require__(/*! ../../services/mopidy/actions */ "./src/
 
 var mopidyActions = _interopRequireWildcard(_actions2);
 
+var _actions3 = __webpack_require__(/*! ../../services/genius/actions */ "./src/js/services/genius/actions.js");
+
+var geniusActions = _interopRequireWildcard(_actions3);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -98556,25 +98620,133 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var LyricsScroller = function LyricsScroller(_ref) {
+  var _ref$content = _ref.content,
+      content = _ref$content === undefined ? '' : _ref$content,
+      _ref$time_position = _ref.time_position,
+      time_position = _ref$time_position === undefined ? 1 : _ref$time_position,
+      _ref$duration = _ref.duration,
+      duration = _ref$duration === undefined ? 100 : _ref$duration;
+
+  var percent = (time_position / duration * 110).toFixed(4);
+
+  return _react2.default.createElement(
+    'div',
+    { className: 'lyrics' },
+    _react2.default.createElement('div', {
+      className: 'lyrics__content',
+      dangerouslySetInnerHTML: { __html: content },
+      style: { transform: 'translateY(-' + percent + '%)' }
+    })
+  );
+};
+
 var KioskMode = function (_React$Component) {
   _inherits(KioskMode, _React$Component);
 
-  function KioskMode(props) {
+  function KioskMode() {
+    var _ref2;
+
+    var _temp, _this, _ret;
+
     _classCallCheck(this, KioskMode);
 
-    return _possibleConstructorReturn(this, (KioskMode.__proto__ || Object.getPrototypeOf(KioskMode)).call(this, props));
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref2 = KioskMode.__proto__ || Object.getPrototypeOf(KioskMode)).call.apply(_ref2, [this].concat(args))), _this), _this.toggleLyrics = function () {
+      var _this$props = _this.props,
+          show_lyrics = _this$props.show_lyrics,
+          uiActions = _this$props.uiActions,
+          genius_authorized = _this$props.genius_authorized,
+          current_track = _this$props.current_track;
+
+
+      uiActions.set({ show_lyrics: !show_lyrics });
+      if (!show_lyrics && _this.props.genius_authorized && current_track && current_track.artists && !current_track.lyrics_results) {
+        _this.props.geniusActions.findTrackLyrics(current_track);
+      }
+    }, _this.renderLyrics = function () {
+      var _this$props2 = _this.props,
+          load_queue = _this$props2.load_queue,
+          genius_authorized = _this$props2.genius_authorized,
+          _this$props2$time_pos = _this$props2.time_position,
+          time_position = _this$props2$time_pos === undefined ? null : _this$props2$time_pos,
+          current_track = _this$props2.current_track;
+
+      var _ref3 = current_track || {},
+          lyrics = _ref3.lyrics,
+          duration = _ref3.duration;
+
+      if (helpers.isLoading(load_queue, ['genius_'])) {
+        return _react2.default.createElement(
+          'div',
+          { className: 'lyrics' },
+          _react2.default.createElement(_Loader2.default, { body: true, loading: true })
+        );
+      } else if (!genius_authorized) {
+
+        return _react2.default.createElement(
+          'p',
+          { className: 'no-results' },
+          'Want track lyrics? Authorize Genius under',
+          ' ',
+          _react2.default.createElement(
+            _Link2.default,
+            { to: '/settings/genius', scrollTo: '#services-menu' },
+            'Settings'
+          ),
+          '.'
+        );
+      } else if (lyrics) {
+        return _react2.default.createElement(LyricsScroller, {
+          content: lyrics,
+          time_position: time_position,
+          duration: duration
+        });
+      };
+      return null;
+    }, _temp), _possibleConstructorReturn(_this, _ret);
   }
 
   _createClass(KioskMode, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
+      var _props = this.props,
+          current_track = _props.current_track,
+          genius_authorized = _props.genius_authorized,
+          show_lyrics = _props.show_lyrics,
+          geniusActions = _props.geniusActions;
+
       this.setWindowTitle();
+
+      if (show_lyrics && genius_authorized && current_track && current_track.artists && !current_track.lyrics_results) {
+        geniusActions.findTrackLyrics(current_track);
+      }
     }
   }, {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(nextProps) {
-      if (!this.props.current_track && nextProps.current_track) {
-        this.setWindowTitle(nextProps.current_track);
+      var _props2 = this.props,
+          current_track = _props2.current_track,
+          show_lyrics = _props2.show_lyrics,
+          geniusActions = _props2.geniusActions;
+      var next_current_track = nextProps.current_track,
+          next_show_lyrics = nextProps.show_lyrics,
+          next_genius_authorized = nextProps.genius_authorized;
+
+
+      if (!current_track && next_current_track) {
+        this.setWindowTitle(next_current_track);
+
+        if (show_lyrics && next_genius_authorized && next_current_track && next_current_track.artists && !next_current_track.lyrics_results) {
+          geniusActions.findTrackLyrics(next_current_track);
+        }
+      } else if (show_lyrics !== next_show_lyrics && next_show_lyrics && next_current_track) {
+        if (next_genius_authorized && next_current_track && next_current_track.artists && !next_current_track.lyrics_results) {
+          geniusActions.findTrackLyrics(next_current_track);
+        }
       }
     }
   }, {
@@ -98605,51 +98777,108 @@ var KioskMode = function (_React$Component) {
       }
     }
   }, {
-    key: 'render',
-    value: function render() {
+    key: 'renderPlayButton',
+    value: function renderPlayButton() {
       var _this2 = this;
 
-      if (this.props.current_track && this.props.current_track.images) {
-        var images = this.props.current_track.images;
+      var button = _react2.default.createElement(
+        'button',
+        { className: 'control play', onClick: function onClick() {
+            return _this2.props.mopidyActions.play();
+          } },
+        _react2.default.createElement(_Icon2.default, { name: 'play_circle_filled', type: 'material' })
+      );
+      if (this.props.play_state == 'playing') {
+        button = _react2.default.createElement(
+          'button',
+          { className: 'control play', onClick: function onClick() {
+              return _this2.props.mopidyActions.pause();
+            } },
+          _react2.default.createElement(_Icon2.default, { name: 'pause_circle_filled', type: 'material' })
+        );
+      }
+      return button;
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this3 = this;
+
+      var _props3 = this.props,
+          show_lyrics = _props3.show_lyrics,
+          current_track = _props3.current_track;
+
+      if (current_track && current_track.images) {
+        var images = current_track.images;
       } else {
         var images = [];
       }
 
+      var extraControls = _react2.default.createElement(
+        'div',
+        { className: 'control', onClick: this.toggleLyrics, style: show_lyrics ? { opacity: 1 } : {} },
+        _react2.default.createElement(_Icon2.default, { name: 'queue_music', className: show_lyrics ? 'turquoise-text' : null })
+      );
+
       return _react2.default.createElement(
         _Modal2.default,
-        { className: 'modal--kiosk-mode' },
+        {
+          className: 'modal--kiosk-mode modal--kiosk-mode--' + (show_lyrics ? 'with' : 'without') + '-lyrics',
+          extraControls: extraControls
+        },
         _react2.default.createElement(_Thumbnail2.default, { className: 'background', images: images }),
         _react2.default.createElement(
           'div',
-          { className: 'artwork', onClick: function onClick(e) {
-              return _this2.togglePlay(e);
-            } },
-          _react2.default.createElement(_Thumbnail2.default, { images: images }),
-          this.props.play_state == 'playing' ? _react2.default.createElement(_Icon2.default, { name: 'pause_circle_filled' }) : _react2.default.createElement(_Icon2.default, { name: 'play_circle_filled' })
-        ),
-        _react2.default.createElement(
-          'div',
-          { className: 'player' },
+          { className: 'track-info' },
           _react2.default.createElement(
             'div',
-            { className: 'current-track' },
-            _react2.default.createElement(
-              'div',
-              { className: 'title' },
-              this.props.current_track ? this.props.current_track.name : _react2.default.createElement(
-                'span',
-                null,
-                '-'
-              )
-            ),
-            this.props.current_track ? _react2.default.createElement(_LinksSentence2.default, { nolinks: true, items: this.props.current_track.artists }) : _react2.default.createElement(_LinksSentence2.default, null)
+            { className: 'artwork' },
+            _react2.default.createElement(_Thumbnail2.default, { images: images })
           ),
           _react2.default.createElement(
             'div',
-            { className: 'progress-wrapper' },
-            _react2.default.createElement(_ProgressSlider2.default, null)
+            { className: 'player' },
+            _react2.default.createElement(
+              'div',
+              { className: 'current-track' },
+              _react2.default.createElement(
+                'div',
+                { className: 'title' },
+                current_track ? current_track.name : _react2.default.createElement(
+                  'span',
+                  null,
+                  '-'
+                )
+              ),
+              current_track ? _react2.default.createElement(_LinksSentence2.default, { nolinks: true, items: current_track.artists }) : _react2.default.createElement(_LinksSentence2.default, null)
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: 'player__controls' },
+              _react2.default.createElement(
+                'button',
+                { className: 'control previous', onClick: function onClick() {
+                    return _this3.props.mopidyActions.previous();
+                  } },
+                _react2.default.createElement(_Icon2.default, { name: 'navigate_before', type: 'material' })
+              ),
+              this.renderPlayButton(),
+              _react2.default.createElement(
+                'button',
+                { className: 'control next', onClick: function onClick() {
+                    return _this3.props.mopidyActions.next();
+                  } },
+                _react2.default.createElement(_Icon2.default, { name: 'navigate_next', type: 'material' })
+              )
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: 'progress-wrapper' },
+              _react2.default.createElement(_ProgressSlider2.default, null)
+            )
           )
-        )
+        ),
+        show_lyrics && this.renderLyrics()
       );
     }
   }]);
@@ -98660,14 +98889,19 @@ var KioskMode = function (_React$Component) {
 var mapStateToProps = function mapStateToProps(state) {
   return {
     play_state: state.mopidy.play_state,
-    current_track: state.core.current_track && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null
+    current_track: state.core.current_track && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null,
+    time_position: state.mopidy.time_position,
+    load_queue: state.ui.load_queue,
+    show_lyrics: state.ui.show_lyrics,
+    genius_authorized: state.genius.authorization
   };
 };
 
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
   return {
     uiActions: (0, _redux.bindActionCreators)(uiActions, dispatch),
-    mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch)
+    mopidyActions: (0, _redux.bindActionCreators)(mopidyActions, dispatch),
+    geniusActions: (0, _redux.bindActionCreators)(geniusActions, dispatch)
   };
 };
 
@@ -98739,29 +98973,35 @@ var Modal = function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
-      var className = 'modal';
-      if (this.props.className) {
-        className += ' ' + this.props.className;
-      }
+      var _props = this.props,
+          _props$extraControls = _props.extraControls,
+          extraControls = _props$extraControls === undefined ? null : _props$extraControls,
+          _props$noclose = _props.noclose,
+          noclose = _props$noclose === undefined ? false : _props$noclose,
+          children = _props.children,
+          _props$className = _props.className,
+          className = _props$className === undefined ? '' : _props$className;
+
 
       return _react2.default.createElement(
         'div',
-        { className: className },
+        { className: 'modal ' + className },
         _react2.default.createElement(
           'div',
           { className: 'controls' },
-          this.props.noclose ? null : _react2.default.createElement(
+          !noclose && _react2.default.createElement(
             'div',
             { className: 'control close', onClick: function onClick(e) {
                 return window.history.back();
               } },
             _react2.default.createElement(_Icon2.default, { name: 'close', className: 'white' })
-          )
+          ),
+          extraControls
         ),
         _react2.default.createElement(
           'div',
           { className: 'content' },
-          this.props.children
+          children
         )
       );
     }

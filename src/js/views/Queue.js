@@ -127,9 +127,9 @@ class Queue extends React.Component {
     }
     return (
       <div className="current-track__artwork">
-        <URILink uri={uri}>
+        <Link to="/kiosk-mode" >
           <Thumbnail glow image={image} />
-        </URILink>
+        </Link>
       </div>
     );
   }

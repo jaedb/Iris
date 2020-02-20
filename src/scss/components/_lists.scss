@@ -157,12 +157,15 @@
 					}
 
 					&__item {
+						&--details {
+							min-height: 1em;
+						}
+
 						&--thumbnail {
 							&,
 							&.thumbnail {
 								width: 40px;
 								position: absolute;
-								top: 0;
 								left: 0;
 							}
 						}

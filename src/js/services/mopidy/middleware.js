@@ -2285,6 +2285,7 @@ const MopidyMiddleware = (function () {
 
               const track = { ...response[0] };
               store.dispatch(coreActions.trackLoaded(track));
+              store.dispatch(mopidyActions.getImages('tracks', [track.uri]));
             },
             (error) => {
               store.dispatch(coreActions.handleException(
@@ -2309,7 +2310,7 @@ const MopidyMiddleware = (function () {
               for (const uri in response) {
                 if (response.hasOwnProperty(uri)) {
                   let images = response[uri];
-                  images = helpers.digestMopidyImages(store.getState().mopidy, images);
+                  images = helpers.formatImages(helpers.digestMopidyImages(store.getState().mopidy, images));
 
                   if (images && images.length > 0) {
                     records.push({
@@ -2355,6 +2356,30 @@ const MopidyMiddleware = (function () {
               } else {
                 subdirectories.push(item);
               }
+            }
+
+            if (subdirectories.length > 0) {
+              request(socket, store, 'library.getImages', { uris: helpers.arrayOf('uri', subdirectories) })
+                .then((response) => {
+
+                  const subdirectories_with_images = subdirectories.map((subdir) => {
+                    let images = response[subdir.uri] || undefined;
+                    if (images) {
+                      images = helpers.formatImages(helpers.digestMopidyImages(store.getState().mopidy, images));
+                    }
+                    return {
+                      ...subdir,
+                      images: images,
+                    }
+                  });
+
+                  store.dispatch({
+                    type: 'MOPIDY_DIRECTORY_LOADED',
+                    directory: {
+                      subdirectories: subdirectories_with_images,
+                    },
+                  });
+                });
             }
 
             if (tracks_uris.length > 0) {
