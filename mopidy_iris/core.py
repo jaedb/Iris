@@ -2,7 +2,6 @@ import random
 import string
 import logging
 import json
-import pathlib
 import pykka
 import urllib
 import os
