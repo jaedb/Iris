@@ -7711,6 +7711,7 @@ main .track-view {
       .modal--kiosk-mode .content .lyrics {
         width: 70%;
         height: 100%;
+        margin-top: 50px;
         overflow-y: hidden;
         position: relative; }
         .modal--kiosk-mode .content .lyrics__content {
@@ -7757,10 +7758,7 @@ main .track-view {
             .modal--kiosk-mode--with-lyrics .content .track-info .player .current-track {
               padding-top: 0; }
             .modal--kiosk-mode--with-lyrics .content .track-info .player .progress-wrapper {
-              display: none; }
-        .modal--kiosk-mode--with-lyrics .content .lyrics {
-          width: auto;
-          height: auto; } }
+              display: none; } }
     @media (max-width: 799px) {
       .modal--kiosk-mode .content .artwork {
         width: 100%; }

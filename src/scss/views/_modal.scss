@@ -364,6 +364,7 @@
       .lyrics {
         width: 70%;
         height: 100%;
+        margin-top: 50px;
         overflow-y: hidden;
         position: relative;
 
@@ -451,11 +452,6 @@
                 display: none;
               }
             }
-          }
-
-          .lyrics {
-            width: auto;
-            height: auto;
           }
         }
       }
