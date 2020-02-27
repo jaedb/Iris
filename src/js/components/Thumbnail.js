@@ -54,7 +54,11 @@ export default memo((props) => {
 
   return (
     <div className={class_name}>
-      <div className="thumbnail__image" style={{ backgroundImage: `url("${image || '/iris/assets/no-image.svg'}")` }} />
+      {props.useImageTag ? (
+        <img alt="Artwork thumbnail" className="thumbnail__image thumbnail__image--use-image-tag" src={`${image || '/iris/assets/no-image.svg'}`} />
+      ) : (
+        <div className="thumbnail__image" style={{ backgroundImage: `url("${image || '/iris/assets/no-image.svg'}")` }} />
+      )}
       {props.glow && image && <div className="thumbnail__image thumbnail__image--glow" style={{ backgroundImage: `url("${image}")` }} />}
       {zoom_icon}
     </div>

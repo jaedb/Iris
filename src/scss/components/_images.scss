@@ -19,6 +19,10 @@
 		background-size: cover;
 		border-radius: 3px;
 
+		&--use-image-tag {
+			padding-bottom: 0;
+		}
+
 		&--glow {
 			@include blur(10px);
 			position: absolute;

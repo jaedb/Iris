@@ -262,8 +262,10 @@
       padding: 5%;
       width: 90%;
       height: 90%;
-      text-align: center;
       display: flex;
+      flex-flow: row;
+      align-items: center;
+      align-content: center;
 
       .thumbnail.background {
         position: absolute;
@@ -283,63 +285,59 @@
         }
       }
 
-      .track-info {
-        height: 90%;
-        width: 100%;
+      .player {
+        text-align: center;
         display: flex;
         flex-flow: column;
+        align-items: center;
+        width: 100%;
 
-        .artwork {
-          text-align: center;
-          z-index: 2;
-          position: relative;
-          cursor: pointer;
-          width: 50%;
-          max-width: 50vh;
-          margin: 0 auto;
-          flex-grow: 1;
+        .track {
+          height: 90%;
+          width: 100%;
+          display: flex;
+          flex-flow: column;
 
-          .thumbnail {
-            max-width: none;
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-          }
-
-          .icon {
-            @include animate();
-            display: inline-block;
-            position: absolute;
-            color: colour(darkest_grey);
-            font-size: 20rem;
-            top: 25%;
-            left: 0;
-            right: 0;
+          &__artwork {
             text-align: center;
-            opacity: 0;
             z-index: 2;
-          }
-
-          &:hover {
+            position: relative;
+            cursor: pointer;
+            width: 100%;
+            flex-grow: 1;
+            align-items: center;
+            display: flex;
+            flex-flow: column;
             .icon {
-              opacity: 0.75;
+              @include animate();
+              display: inline-block;
+              position: absolute;
+              color: colour(darkest_grey);
+              font-size: 20rem;
+              top: 25%;
+              left: 0;
+              right: 0;
+              text-align: center;
+              opacity: 0;
+              z-index: 2;
+            }
+            &:hover {
+              .icon {
+                opacity: 0.75;
+              }
             }
           }
-        }
 
-        .player {
-          padding-top: 40px;
-          width: 50%;
-          margin: auto auto 0 auto;
-
-          .current-track {
+          &__info {
             font-size: 2rem;
-
+            padding-top: 40px;
             .links-sentence {
               opacity: 0.5;
             }
           }
+        }
 
+        .playback {
           &__controls {
             padding-top: 40px;
             .control {
@@ -349,13 +347,22 @@
               margin: 0 10px;
             }
           }
-
-          .progress-wrapper {
+          &__progress {
             padding-top: 40px;
             .slider {
               &__track {
                 background: rgba(128, 128, 128, 0.25);
               }
+            }
+          }
+        }
+
+        &--with-lyrics {
+          width: 30%;
+
+          .track {
+            &__info {
+              font-size: 1.6rem;
             }
           }
         }
@@ -376,95 +383,77 @@
           left: 10%;
           width: 80%;
           transition: transform 0.9s linear;
-        }
-      }
-    }
+          text-align: center;
 
-    &--with-lyrics {
-      .content {
-        .track-info {
-          width: 30%;
-
-          .artwork {
-            width: 100%;
+          @include responsive(null, null, $bp_medium) {
+            font-size: 1.4rem;
+            line-height: 1.8rem;
           }
-          .player {
-            width: 100%;
 
-            .current-track {
-              font-size: 1.6rem;
-            }
+          @include responsive($bp_medium) {
+            font-size: 1rem;
+            line-height: 1.4rem;
           }
         }
       }
-    }
 
-    @include responsive($bp_medium, null, $bp_shallow) {
-      .content {
-        .track-info {
-          .player {
-            .current-track {
-              padding-top: 20px;
-              font-size: 1.2rem;
-            }
+      @include responsive($bp_medium) {
+        flex-flow: column;
+        padding-top: 60px !important;
+        padding-bottom: 40px !important;
+        height: calc(100% - 80px) !important;
 
-            &__controls {
-              padding-top: 20px;
-              .control {
-                font-size: 1.8rem;
-              }
-            }
-            .progress-wrapper {
-              padding-top: 20px;
-            }
-          }
-        }
-
-        .lyrics {
-          width: auto;
-        }
-      }
-
-      &--with-lyrics {
-        .content {
-          display: block;
-          width: auto;
-
-          .track-info {
-            width: auto;
-            display: flex;
-            flex-flow: row;
-            height: auto;
-            padding-top: 20px;
-
-            .artwork {
-              width: 25%;
-            }
-
-            .player {
-              padding-top: 0;
-
-              .current-track {
-                padding-top: 0;
-              }
-
-              .progress-wrapper {
-                display: none;
-              }
-            }
-          }
-        }
-      }
-    }
-
-    // Shallow viewport
-    @include responsive($bp_medium, null, null, $bp_shallow) {
-      .content {
-        .artwork {
-          width: 100%;
-        }
         .player {
           width: 100%;
+          .track {
+            display: flex;
+            flex-flow: row;
+            align-items: center;
+            &__artwork {
+              width: 25%;
+            }
+            &__info {
+              padding-top: 0;
+              width: 75%;
+              font-size: 1.2rem;
+            }
+          }
+          .playback {
+            &__progress {
+              display: none;
+            }
+          }
+        }
+        .lyrics {
+          width: 100%;
+        }
+      }
+
+      @include responsive(null, null, $bp_shallow) {
+        flex-flow: column;
+        padding-top: 60px !important;
+        padding-bottom: 40px !important;
+        height: calc(100% - 80px) !important;
+
+        .player {
+          .track {
+            display: flex;
+            flex-flow: row;
+            align-items: center;
+            &__artwork {
+              width: 25%;
+            }
+            &__info {
+              padding-top: 0;
+              width: 75%;
+              font-size: 1.2rem;
+            }
+          }
+          .playback {
+            &__progress {
+              display: none;
+            }
+          }
         }
       }
     }

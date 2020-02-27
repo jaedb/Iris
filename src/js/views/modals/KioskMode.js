@@ -178,23 +178,25 @@ class KioskMode extends React.Component {
 
     return (
       <Modal
-        className={`modal--kiosk-mode modal--kiosk-mode--${show_lyrics ? 'with' : 'without'}-lyrics`}
+        className="modal--kiosk-mode"
         extraControls={extraControls}
       >
         <Thumbnail className="background" images={images} />
 
-        <div className="track-info">
-          <div className="artwork">
-            <Thumbnail images={images} />
-          </div>
+        <div className={`player player--${show_lyrics ? 'with' : 'without'}-lyrics`}>
 
-          <div className="player">
-            <div className="current-track">
+          <div className="track">
+            <div className="track__artwork">
+              <Thumbnail images={images} useImageTag />
+            </div>
+            <div className="track__info">
               <div className="title">{ current_track ? current_track.name : <span>-</span> }</div>
               { current_track ? <LinksSentence nolinks items={current_track.artists} /> : <LinksSentence /> }
             </div>
+          </div>
 
-            <div className="player__controls">
+          <div className="playback">
+            <div className="playback__controls">
               <button className="control previous" onClick={() => this.props.mopidyActions.previous()}>
                 <Icon name="navigate_before" type="material" />
               </button>
@@ -203,12 +205,13 @@ class KioskMode extends React.Component {
                 <Icon name="navigate_next" type="material" />
               </button>
             </div>
-
-            <div className="progress-wrapper">
+            <div className="playback__progress">
               <ProgressSlider />
             </div>
           </div>
+
         </div>
+
         {show_lyrics && this.renderLyrics()}
       </Modal>
     );
