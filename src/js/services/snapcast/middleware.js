@@ -1,8 +1,17 @@
 
 import ReactGA from 'react-ga';
 import { sha256 } from 'js-sha256';
+import {
+  generateGuid,
+} from '../../util/helpers';
+import {
+  arrayOf,
+} from '../../util/arrays';
+import {
+  formatGroup,
+  formatClient,
+} from '../../util/format';
 
-const helpers = require('../../helpers');
 const coreActions = require('../core/actions');
 const uiActions = require('../ui/actions');
 const pusherActions = require('../pusher/actions');
@@ -95,7 +104,7 @@ const SnapcastMiddleware = (function () {
   };
 
   const request = (store, method, params = null) => new Promise((resolve, reject) => {
-    const id = helpers.generateGuid(8);
+    const id = generateGuid(8);
     const message = {
       jsonrpc: '2.0',
       id,
@@ -285,14 +294,14 @@ const SnapcastMiddleware = (function () {
         var clients_loaded = [];
 
         const groups_loaded = action.groups.map(raw_group => {
-          let group = helpers.formatGroup(raw_group);
+          let group = formatGroup(raw_group);
 
           if (groups_index[group.id]) {
             group = { ...groups_index[group.id], ...group };
           }
 
           if (raw_group.clients) {
-            group.clients_ids = helpers.arrayOf('id', raw_group.clients);
+            group.clients_ids = arrayOf('id', raw_group.clients);
             clients_loaded = [...clients_loaded, ...raw_group.clients];
             store.dispatch(snapcastActions.calculateGroupVolume(group.id, raw_group.clients));
           }
@@ -316,7 +325,7 @@ const SnapcastMiddleware = (function () {
 
       case 'SNAPCAST_CALCULATE_GROUP_VOLUME':
         const totalVolume = action.clients.reduce((accumulator, client) => {
-          return accumulator += helpers.formatClient(client).volume;
+          return accumulator += formatClient(client).volume;
         }, 0);
 
         store.dispatch(snapcastActions.groupLoaded({
@@ -330,7 +339,7 @@ const SnapcastMiddleware = (function () {
         var clients_loaded = [];
 
         for (const raw_client of action.clients) {
-          var client = helpers.formatClient(raw_client);
+          var client = formatClient(raw_client);
 
           if (clients_index[client.id]) {
             client = { ...clients_index[client.id], ...client };

@@ -8,8 +8,10 @@ import ContextMenuTrigger from './ContextMenuTrigger';
 import Icon from './Icon';
 import Thumbnail from './Thumbnail';
 import Popularity from './Popularity';
-
-import * as helpers from '../helpers';
+import {
+  uriType,
+  scrollTo,
+} from '../util/helpers';
 
 export default class ListItem extends React.Component {
   constructor(props) {
@@ -23,7 +25,7 @@ export default class ListItem extends React.Component {
     // If the item that has just been mounted doesn't have images,
     // try fetching them from LastFM
     if (!item.images) {
-      switch (helpers.uriType(item.uri)) {
+      switch (uriType(item.uri)) {
         case 'artist':
           if (discogsActions) {
             discogsActions.getArtistImages(item.uri, item);
@@ -44,7 +46,7 @@ export default class ListItem extends React.Component {
     if (e.target.tagName.toLowerCase() !== 'a') {
       e.preventDefault();
       this.props.history.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(this.props.item.uri));
-      helpers.scrollTo();
+      scrollTo();
     }
   }
 
@@ -53,7 +55,7 @@ export default class ListItem extends React.Component {
     if (e.target.tagName.toLowerCase() !== 'a') {
       e.preventDefault();
       this.props.history.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(this.props.item.uri));
-      helpers.scrollTo();
+      scrollTo();
     }
   }
 

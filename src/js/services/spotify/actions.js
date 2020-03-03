@@ -1,10 +1,25 @@
-import { exception } from 'react-ga';
+
+import {
+  arrayOf,
+  shuffle,
+} from '../../util/arrays';
+import {
+  generateGuid,
+  getFromUri,
+  uriType,
+  upgradeSpotifyPlaylistUris,
+} from '../../util/helpers';
+import {
+  formatTracks,
+  formatPlaylist,
+  formatUser,
+  formatAlbum,
+} from '../../util/format';
 
 const coreActions = require('../../services/core/actions');
 const uiActions = require('../../services/ui/actions');
 const mopidyActions = require('../../services/mopidy/actions');
 const lastfmActions = require('../../services/lastfm/actions');
-const helpers = require('../../helpers');
 
 /**
  * Send an ajax request to the Spotify API
@@ -21,7 +36,7 @@ const request = (dispatch, getState, endpoint, method = 'GET', data = false, cac
   // Add reference to loader queue
   // We do this straight away so that even if we're refreshing the token, it still registers as
   // loading said endpoint
-  const loader_key = helpers.generateGuid();
+  const loader_key = generateGuid();
   dispatch(uiActions.startLoading(loader_key, `spotify_${endpoint}`));
 
   return new Promise((resolve, reject) => {
@@ -137,7 +152,7 @@ function getToken(dispatch, getState) {
 function refreshToken(dispatch, getState) {
   return new Promise((resolve, reject) => {
     // add reference to loader queue
-    const loader_key = helpers.generateGuid();
+    const loader_key = generateGuid();
     dispatch(uiActions.startLoading(loader_key, 'spotify_refresh_token'));
 
     // Fully-authorized, so we can use the local Spotify credentials
@@ -304,7 +319,7 @@ export function getMe() {
  * */
 export function getTrack(uri) {
   return (dispatch, getState) => {
-    request(dispatch, getState, `tracks/${helpers.getFromUri('trackid', uri)}`)
+    request(dispatch, getState, `tracks/${getFromUri('trackid', uri)}`)
       .then(
         (response) => {
           dispatch(coreActions.trackLoaded(response));
@@ -382,7 +397,7 @@ export function getFeaturedPlaylists() {
             type: 'SPOTIFY_FEATURED_PLAYLISTS_LOADED',
             data: {
               message: response.message,
-              playlists: helpers.upgradeSpotifyPlaylistUris(helpers.arrayOf('uri', response.playlists.items)),
+              playlists: upgradeSpotifyPlaylistUris(arrayOf('uri', response.playlists.items)),
             },
           });
         },
@@ -563,7 +578,7 @@ export function getSearchResults(type, query, limit = 50, offset = 0) {
               type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
               context: 'tracks',
               query,
-              results: helpers.formatTracks(response.tracks.items),
+              results: formatTracks(response.tracks.items),
               more: response.tracks.next,
             });
           }
@@ -577,7 +592,7 @@ export function getSearchResults(type, query, limit = 50, offset = 0) {
               type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
               context: 'artists',
               query,
-              results: helpers.arrayOf('uri', response.artists.items),
+              results: arrayOf('uri', response.artists.items),
               more: response.artists.next,
             });
           }
@@ -591,7 +606,7 @@ export function getSearchResults(type, query, limit = 50, offset = 0) {
               type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
               context: 'albums',
               query,
-              results: helpers.arrayOf('uri', response.albums.items),
+              results: arrayOf('uri', response.albums.items),
               more: response.albums.next,
             });
           }
@@ -601,7 +616,7 @@ export function getSearchResults(type, query, limit = 50, offset = 0) {
             for (const playlist of response.playlists.items) {
               playlists.push({
 
-                ...helpers.formatPlaylist(playlist),
+                ...formatPlaylist(playlist),
                 can_edit: (getState().spotify.me && playlist.owner.id == getState().spotify.me.id),
                 tracks_total: playlist.tracks.total,
               });
@@ -615,7 +630,7 @@ export function getSearchResults(type, query, limit = 50, offset = 0) {
               type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
               context: 'playlists',
               query,
-              results: helpers.arrayOf('uri', playlists),
+              results: arrayOf('uri', playlists),
               more: response.playlists.next,
             });
           }
@@ -712,7 +727,7 @@ export function clearAutocompleteResults(field_id = null) {
 
 export function following(uri, method = 'GET') {
   return (dispatch, getState) => {
-    const asset_name = helpers.uriType(uri);
+    const asset_name = uriType(uri);
     let endpoint;
     let data;
     let is_following = null;
@@ -726,39 +741,39 @@ export function following(uri, method = 'GET') {
     switch (asset_name) {
       case 'track':
         if (method == 'GET') {
-          endpoint = `me/tracks/contains?ids=${helpers.getFromUri('trackid', uri)}`;
+          endpoint = `me/tracks/contains?ids=${getFromUri('trackid', uri)}`;
         } else {
-          endpoint = `me/tracks?ids=${helpers.getFromUri('trackid', uri)}`;
+          endpoint = `me/tracks?ids=${getFromUri('trackid', uri)}`;
         }
         break;
       case 'album':
         if (method == 'GET') {
-          endpoint = `me/albums/contains?ids=${helpers.getFromUri('albumid', uri)}`;
+          endpoint = `me/albums/contains?ids=${getFromUri('albumid', uri)}`;
         } else {
-          endpoint = `me/albums?ids=${helpers.getFromUri('albumid', uri)}`;
+          endpoint = `me/albums?ids=${getFromUri('albumid', uri)}`;
         }
         break;
       case 'artist':
         if (method == 'GET') {
-          endpoint = `me/following/contains?type=artist&ids=${helpers.getFromUri('artistid', uri)}`;
+          endpoint = `me/following/contains?type=artist&ids=${getFromUri('artistid', uri)}`;
         } else {
-          endpoint = `me/following?type=artist&ids=${helpers.getFromUri('artistid', uri)}`;
+          endpoint = `me/following?type=artist&ids=${getFromUri('artistid', uri)}`;
           data = {};
         }
         break;
       case 'user':
         if (method == 'GET') {
-          endpoint = `me/following/contains?type=user&ids=${helpers.getFromUri('userid', uri)}`;
+          endpoint = `me/following/contains?type=user&ids=${getFromUri('userid', uri)}`;
         } else {
-          endpoint = `me/following?type=user&ids=${helpers.getFromUri('userid', uri)}`;
+          endpoint = `me/following?type=user&ids=${getFromUri('userid', uri)}`;
           data = {};
         }
         break;
       case 'playlist':
         if (method == 'GET') {
-          endpoint = `playlists/${helpers.getFromUri('playlistid', uri)}/followers/contains?ids=${getState().spotify.me.id}`;
+          endpoint = `playlists/${getFromUri('playlistid', uri)}/followers/contains?ids=${getState().spotify.me.id}`;
         } else {
-          endpoint = `playlists/${helpers.getFromUri('playlistid', uri)}/followers?`;
+          endpoint = `playlists/${getFromUri('playlistid', uri)}/followers?`;
         }
         break;
       default:
@@ -801,7 +816,7 @@ export function resolveRadioSeeds(radio) {
       let artist_ids = '';
       for (var i = 0; i < radio.seed_artists.length; i++) {
         if (i > 0) artist_ids += ',';
-        artist_ids += helpers.getFromUri('artistid', radio.seed_artists[i]);
+        artist_ids += getFromUri('artistid', radio.seed_artists[i]);
       }
 
       request(dispatch, getState, `artists?ids=${artist_ids}`)
@@ -829,7 +844,7 @@ export function resolveRadioSeeds(radio) {
       let track_ids = '';
       for (var i = 0; i < radio.seed_tracks.length; i++) {
         if (i > 0) track_ids += ',';
-        track_ids += helpers.getFromUri('trackid', radio.seed_tracks[i]);
+        track_ids += getFromUri('trackid', radio.seed_tracks[i]);
       }
 
       request(dispatch, getState, `tracks?ids=${track_ids}`)
@@ -908,17 +923,17 @@ export function getRecommendations(uris = [], limit = 20, tunabilities = null) {
     for (let i = 0; i < uris.length; i++) {
       const uri = uris[i];
 
-      switch (helpers.uriType(uri)) {
+      switch (uriType(uri)) {
         case 'artist':
-          artists_ids.push(helpers.getFromUri('artistid', uri));
+          artists_ids.push(getFromUri('artistid', uri));
           break;
 
         case 'track':
-          tracks_ids.push(helpers.getFromUri('trackid', uri));
+          tracks_ids.push(getFromUri('trackid', uri));
           break;
 
         case 'genre':
-          genres.push(helpers.getFromUri('genreid', uri));
+          genres.push(getFromUri('genreid', uri));
           break;
 
         case 'default':
@@ -992,9 +1007,9 @@ export function getRecommendations(uris = [], limit = 20, tunabilities = null) {
           dispatch({
             type: 'SPOTIFY_RECOMMENDATIONS_LOADED',
             seeds_uris: uris,
-            tracks_uris: helpers.arrayOf('uri', tracks),
+            tracks_uris: arrayOf('uri', tracks),
             artists_uris,
-            albums_uris: helpers.arrayOf('uri', albums),
+            albums_uris: arrayOf('uri', albums),
           });
         },
         (error) => {
@@ -1053,7 +1068,7 @@ export function getArtist(uri, full = false) {
 
     // We need our artist, obviously
     const requests = [
-      request(dispatch, getState, `artists/${helpers.getFromUri('artistid', uri)}`, 'GET', false, true)
+      request(dispatch, getState, `artists/${getFromUri('artistid', uri)}`, 'GET', false, true)
         .then(
           (response) => {
             Object.assign(artist, response);
@@ -1070,7 +1085,7 @@ export function getArtist(uri, full = false) {
     // Do we want a full artist, with all supporting material?
     if (full) {
       requests.push(
-        request(dispatch, getState, `artists/${helpers.getFromUri('artistid', uri)}/top-tracks?country=${getState().spotify.country}`)
+        request(dispatch, getState, `artists/${getFromUri('artistid', uri)}/top-tracks?country=${getState().spotify.country}`)
           .then(
             (response) => {
               Object.assign(artist, response);
@@ -1085,11 +1100,11 @@ export function getArtist(uri, full = false) {
       );
 
       requests.push(
-        request(dispatch, getState, `artists/${helpers.getFromUri('artistid', uri)}/related-artists`)
+        request(dispatch, getState, `artists/${getFromUri('artistid', uri)}/related-artists`)
           .then(
             (response) => {
               dispatch(coreActions.artistsLoaded(response.artists));
-              Object.assign(artist, { related_artists_uris: helpers.arrayOf('uri', response.artists) });
+              Object.assign(artist, { related_artists_uris: arrayOf('uri', response.artists) });
             },
             (error) => {
               dispatch(coreActions.handleException(
@@ -1113,7 +1128,7 @@ export function getArtist(uri, full = false) {
 
       // Now go get our artist albums
       if (full) {
-        request(dispatch, getState, `artists/${helpers.getFromUri('artistid', uri)}/albums?market=${getState().spotify.country}`)
+        request(dispatch, getState, `artists/${getFromUri('artistid', uri)}/albums?market=${getState().spotify.country}`)
           .then(
             (response) => {
               dispatch({
@@ -1140,7 +1155,7 @@ export function getArtists(uris) {
     let ids = '';
     for (let i = 0; i < uris.length; i++) {
       if (ids != '') ids += ',';
-      ids += helpers.getFromUri('artistid', uris[i]);
+      ids += getFromUri('artistid', uris[i]);
     }
 
     request(dispatch, getState, `artists/?ids=${ids}`)
@@ -1154,7 +1169,7 @@ export function getArtists(uris) {
                 album: artist.albums[i],
               });
             }
-            artist.albums_uris = helpers.arrayOf('uri', artist.albums);
+            artist.albums_uris = arrayOf('uri', artist.albums);
             artist.albums_more = artist.albums.next;
             dispatch(coreActions.artistLoaded(artist));
           }
@@ -1199,15 +1214,15 @@ export function playArtistTopTracks(uri) {
 
     // Do we have this artist (and their tracks) in our index already?
     if (typeof (artists[uri]) !== 'undefined' && typeof (artists[uri].tracks) !== 'undefined') {
-      const uris = helpers.arrayOf('uri', artists[uri].tracks);
+      const uris = arrayOf('uri', artists[uri].tracks);
       dispatch(mopidyActions.playURIs(uris, uri));
 
       // We need to load the artist's top tracks first
     } else {
-      request(dispatch, getState, `artists/${helpers.getFromUri('artistid', uri)}/top-tracks?country=${getState().spotify.country}`)
+      request(dispatch, getState, `artists/${getFromUri('artistid', uri)}/top-tracks?country=${getState().spotify.country}`)
         .then(
           (response) => {
-            const uris = helpers.arrayOf('uri', response.tracks);
+            const uris = arrayOf('uri', response.tracks);
             dispatch(mopidyActions.playURIs(uris, uri));
           },
           (error) => {
@@ -1229,10 +1244,10 @@ export function playArtistTopTracks(uri) {
 
 export function getUser(uri) {
   return (dispatch, getState) => {
-    request(dispatch, getState, `users/${helpers.getFromUri('userid', uri)}`)
+    request(dispatch, getState, `users/${getFromUri('userid', uri)}`)
       .then(
         (response) => {
-          dispatch(coreActions.userLoaded(helpers.formatUser(response)));
+          dispatch(coreActions.userLoaded(formatUser(response)));
         },
         (error) => {
           dispatch(coreActions.handleException(
@@ -1247,7 +1262,7 @@ export function getUser(uri) {
 export function getUserPlaylists(uri) {
   return (dispatch, getState) => {
     // get the first page of playlists
-    request(dispatch, getState, `users/${helpers.getFromUri('userid', uri)}/playlists?limit=40`)
+    request(dispatch, getState, `users/${getFromUri('userid', uri)}/playlists?limit=40`)
       .then(
         (response) => {
           const playlists = [];
@@ -1259,7 +1274,7 @@ export function getUserPlaylists(uri) {
 
             const playlist = {
 
-              ...helpers.formatPlaylist(raw_playlist),
+              ...formatPlaylist(raw_playlist),
               can_edit,
               tracks_total: raw_playlist.tracks.total,
             };
@@ -1293,7 +1308,7 @@ export function getUserPlaylists(uri) {
 export function getAlbum(uri) {
   return (dispatch, getState) => {
     // get the album
-    request(dispatch, getState, `albums/${helpers.getFromUri('albumid', uri)}`)
+    request(dispatch, getState, `albums/${getFromUri('albumid', uri)}`)
       .then(
         (response) => {
           // dispatch our loaded artists (simple objects)
@@ -1302,9 +1317,9 @@ export function getAlbum(uri) {
           const tracks = Object.assign([], response.tracks.items);
 
           const album = {
-            ...helpers.formatAlbum(response),
-            artists_uris: helpers.arrayOf('uri', response.artists),
-            tracks_uris: helpers.arrayOf('uri', tracks),
+            ...formatAlbum(response),
+            artists_uris: arrayOf('uri', response.artists),
+            tracks_uris: arrayOf('uri', tracks),
             tracks_more: response.tracks.next,
             tracks_total: response.tracks.total,
           };
@@ -1324,7 +1339,7 @@ export function getAlbum(uri) {
           // we do this to get the artist artwork
           const artist_ids = [];
           for (var i = 0; i < response.artists.length; i++) {
-            artist_ids.push(helpers.getFromUri('artistid', response.artists[i].uri));
+            artist_ids.push(getFromUri('artistid', response.artists[i].uri));
           }
 
           // get all album artists as full objects
@@ -1410,7 +1425,7 @@ export function savePlaylist(uri, name, description, is_public, is_collaborative
 
     // Update the playlist fields
     request(
-      dispatch, getState, `users/${getState().spotify.me.id}/playlists/${helpers.getFromUri('playlistid', uri)}`, 'PUT', data,
+      dispatch, getState, `users/${getState().spotify.me.id}/playlists/${getFromUri('playlistid', uri)}`, 'PUT', data,
     )
       .then(
         (response) => {
@@ -1418,7 +1433,7 @@ export function savePlaylist(uri, name, description, is_public, is_collaborative
 
           // Save the image
           if (image) {
-            request(dispatch, getState, `users/${getState().spotify.me.id}/playlists/${helpers.getFromUri('playlistid', uri)}/images`, 'PUT', image)
+            request(dispatch, getState, `users/${getState().spotify.me.id}/playlists/${getFromUri('playlistid', uri)}/images`, 'PUT', image)
               .then(
 
                 (response) => {
@@ -1468,7 +1483,7 @@ export function savePlaylist(uri, name, description, is_public, is_collaborative
 export function getPlaylist(uri) {
   return (dispatch, getState) => {
     // get the main playlist object
-    request(dispatch, getState, `playlists/${helpers.getFromUri('playlistid', uri)}?market=${getState().spotify.country}`)
+    request(dispatch, getState, `playlists/${getFromUri('playlistid', uri)}?market=${getState().spotify.country}`)
       .then(
         (response) => {
           // convert links in description
@@ -1480,20 +1495,20 @@ export function getPlaylist(uri) {
             description = description.split('<a href="spotify:user:').join('<a href="#' + '/user/spotify:user:');
           }
 
-          const tracks = helpers.formatTracks(response.tracks.items);
+          const tracks = formatTracks(response.tracks.items);
 
           const playlist = {
 
-            ...helpers.formatPlaylist(response),
+            ...formatPlaylist(response),
             is_completely_loaded: true,
             user_uri: response.owner.uri,
-            tracks_uris: tracks ? helpers.arrayOf('uri', tracks) : null,
+            tracks_uris: tracks ? arrayOf('uri', tracks) : null,
             tracks_more: response.tracks.next,
             tracks_total: response.tracks.total,
             description,
           };
 
-          dispatch(coreActions.userLoaded(helpers.formatUser(response.owner)));
+          dispatch(coreActions.userLoaded(formatUser(response.owner)));
           dispatch(coreActions.tracksLoaded(tracks));
           dispatch(coreActions.playlistLoaded(playlist));
         },
@@ -1599,7 +1614,7 @@ export function getAllPlaylistTracks(uri, shuffle = false, callback_action = nul
       'Loading playlist tracks',
       {
         uri,
-        next: `playlists/${helpers.getFromUri('playlistid', uri)}/tracks?market=${getState().spotify.country}`,
+        next: `playlists/${getFromUri('playlistid', uri)}/tracks?market=${getState().spotify.country}`,
         shuffle,
         play_next,
         at_position,
@@ -1663,7 +1678,7 @@ export function getAllPlaylistTracksProcessor(data) {
             ));
           } else {
                     	if (data.shuffle) {
-                    		uris = helpers.shuffle(uris);
+                    		uris = shuffle(uris);
                     	}
 
                     	// We don't bother "finishing", we just want it "finished" immediately
@@ -1690,7 +1705,7 @@ export function getAllPlaylistTracksProcessor(data) {
 
 export function addTracksToPlaylist(uri, tracks_uris) {
   return (dispatch, getState) => {
-    request(dispatch, getState, `playlists/${helpers.getFromUri('playlistid', uri)}/tracks`, 'POST', { uris: tracks_uris })
+    request(dispatch, getState, `playlists/${getFromUri('playlistid', uri)}/tracks`, 'POST', { uris: tracks_uris })
       .then(
         (response) => {
           dispatch({
@@ -1712,7 +1727,7 @@ export function addTracksToPlaylist(uri, tracks_uris) {
 
 export function deleteTracksFromPlaylist(uri, snapshot_id, tracks_indexes) {
   return (dispatch, getState) => {
-    request(dispatch, getState, `playlists/${helpers.getFromUri('playlistid', uri)}/tracks`, 'DELETE', { snapshot_id, positions: tracks_indexes })
+    request(dispatch, getState, `playlists/${getFromUri('playlistid', uri)}/tracks`, 'DELETE', { snapshot_id, positions: tracks_indexes })
       .then(
         (response) => {
           dispatch({
@@ -1734,7 +1749,7 @@ export function deleteTracksFromPlaylist(uri, snapshot_id, tracks_indexes) {
 
 export function reorderPlaylistTracks(uri, range_start, range_length, insert_before, snapshot_id) {
   return (dispatch, getState) => {
-    request(dispatch, getState, `playlists/${helpers.getFromUri('playlistid', uri)}/tracks`, 'PUT', {
+    request(dispatch, getState, `playlists/${getFromUri('playlistid', uri)}/tracks`, 'PUT', {
       uri, range_start, range_length, insert_before, snapshot_id,
     })
       .then(

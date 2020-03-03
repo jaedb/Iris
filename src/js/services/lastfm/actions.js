@@ -1,7 +1,9 @@
 
+import { formatImages } from '../../util/format';
+import { generateGuid } from '../../util/helpers';
+
 const coreActions = require('../core/actions');
 const uiActions = require('../ui/actions');
-const helpers = require('../../helpers');
 
 export function set(data) {
   return {
@@ -36,7 +38,7 @@ const sendRequest = (dispatch, getState, params, signed = false) => new Promise(
     timeout: 30000,
   };
 
-  const loader_key = helpers.generateGuid();
+  const loader_key = generateGuid();
   dispatch(uiActions.startLoading(loader_key, `lastfm_${method}`));
 
   function status(response) {
@@ -76,7 +78,7 @@ const sendSignedRequest = (dispatch, getState, params) => new Promise((resolve, 
     });
   }
 
-  const loader_key = helpers.generateGuid();
+  const loader_key = generateGuid();
   let method = params.substring(params.indexOf('method=') + 7, params.length);
   method = method.substring(0, method.indexOf('&'));
 
@@ -311,7 +313,7 @@ export function getImages(context, uri) {
               .then(
                 (response) => {
                   if (response.album) {
-                    const images = helpers.formatImages(response.album.image);
+                    const images = formatImages(response.album.image);
                     dispatch(coreActions.trackLoaded({ uri, images }));
                   }
                 },

@@ -2,25 +2,19 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
-import Link from '../../components/Link';
 import Header from '../../components/Header';
 import Icon from '../../components/Icon';
 import AlbumGrid from '../../components/AlbumGrid';
 import Parallax from '../../components/Parallax';
 import LazyLoadListener from '../../components/LazyLoadListener';
 import Loader from '../../components/Loader';
-
-import * as helpers from '../../helpers';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
+import { isLoading } from '../../util/helpers';
+import { collate } from '../../util/format';
 
 class DiscoverNewReleases extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
     this.props.uiActions.setWindowTitle('New releases');
 
@@ -70,7 +64,7 @@ class DiscoverNewReleases extends React.Component {
   }
 
   render() {
-    if (helpers.isLoading(this.props.load_queue, ['spotify_browse/new-releases'])) {
+    if (isLoading(this.props.load_queue, ['spotify_browse/new-releases'])) {
       return (
         <div className="view discover-new-releases-view">
           <Header>
@@ -94,7 +88,7 @@ class DiscoverNewReleases extends React.Component {
     // Pull the first playlist out and we'll use this as a banner
     let first_album = albums[0];
     if (first_album) {
-      first_album = helpers.collate(first_album, { artists: this.props.artists });
+      first_album = collate(first_album, { artists: this.props.artists });
     }
 
     const options = (

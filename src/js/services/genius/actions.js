@@ -1,7 +1,8 @@
 
+import { generateGuid } from '../../util/helpers';
+
 const coreActions = require('../core/actions');
 const uiActions = require('../ui/actions');
-const helpers = require('../../helpers');
 
 export function set(data) {
   return {
@@ -52,7 +53,7 @@ const sendRequest = (dispatch, getState, endpoint, method = 'GET', data = false)
   }
 
   // add reference to loader queue
-  const loader_key = helpers.generateGuid();
+  const loader_key = generateGuid();
   dispatch(uiActions.startLoading(loader_key, `genius_${endpoint}`));
 
   function status(response) {
@@ -159,7 +160,7 @@ export function getTrackLyrics(uri, path) {
     };
 
     // add reference to loader queue
-    const loader_key = helpers.generateGuid();
+    const loader_key = generateGuid();
     dispatch(uiActions.startLoading(loader_key, 'genius_get_lyrics'));
 
     function status(response) {

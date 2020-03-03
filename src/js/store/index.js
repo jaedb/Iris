@@ -2,8 +2,9 @@
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 
 import thunk from 'redux-thunk';
-import * as helpers from '../helpers';
 
+import { generateGuid } from '../util/helpers';
+import storage from '../util/storage';
 import core from '../services/core/reducer';
 import ui from '../services/ui/reducer';
 import pusher from '../services/pusher/reducer';
@@ -70,8 +71,8 @@ let state = {
   },
   pusher: {
     connected: false,
-    username: helpers.generateGuid(),
-    client_id: helpers.generateGuid(),
+    username: generateGuid(),
+    client_id: generateGuid(),
     connections: {},
     version: {
       current: null,
@@ -109,15 +110,15 @@ let state = {
 };
 
 // load all our stored values from LocalStorage
-state.core = { ...state.core, ...helpers.getStorage('core') };
-state.ui = { ...state.ui, ...helpers.getStorage('ui') };
-state.mopidy = { ...state.mopidy, ...helpers.getStorage('mopidy') };
-state.pusher = { ...state.pusher, ...helpers.getStorage('pusher') };
-state.spotify = { ...state.spotify, ...helpers.getStorage('spotify') };
-state.lastfm = { ...state.lastfm, ...helpers.getStorage('lastfm') };
-state.genius = { ...state.genius, ...helpers.getStorage('genius') };
-state.google = { ...state.google, ...helpers.getStorage('google') };
-state.snapcast = { ...state.snapcast, ...helpers.getStorage('snapcast') };
+state.core = { ...state.core, ...storage.get('core') };
+state.ui = { ...state.ui, ...storage.get('ui') };
+state.mopidy = { ...state.mopidy, ...storage.get('mopidy') };
+state.pusher = { ...state.pusher, ...storage.get('pusher') };
+state.spotify = { ...state.spotify, ...storage.get('spotify') };
+state.lastfm = { ...state.lastfm, ...storage.get('lastfm') };
+state.genius = { ...state.genius, ...storage.get('genius') };
+state.google = { ...state.google, ...storage.get('google') };
+state.snapcast = { ...state.snapcast, ...storage.get('snapcast') };
 
 // Run any migrations
 state = migration(state);

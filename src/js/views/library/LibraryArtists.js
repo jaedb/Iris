@@ -2,8 +2,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import Link from '../../components/Link';
-
 import Header from '../../components/Header';
 import ArtistGrid from '../../components/ArtistGrid';
 import List from '../../components/List';
@@ -11,12 +9,14 @@ import DropdownField from '../../components/Fields/DropdownField';
 import FilterField from '../../components/Fields/FilterField';
 import LazyLoadListener from '../../components/LazyLoadListener';
 import Icon from '../../components/Icon';
-
-import * as helpers from '../../helpers';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
 import * as googleActions from '../../services/google/actions';
+import {
+  uriSource,
+} from '../../util/helpers';
+import { sortItems, applyFilter } from '../../util/arrays';
 
 class LibraryArtists extends React.Component {
   constructor(props) {
@@ -126,7 +126,7 @@ class LibraryArtists extends React.Component {
       for (uri of this.props.mopidy_library_artists) {
         // Construct item placeholder. This is used as Mopidy needs to
         // lookup ref objects to get the full object which can take some time
-        var source = helpers.uriSource(uri);
+        var source = uriSource(uri);
         var artist = {
           uri,
           source,
@@ -145,7 +145,7 @@ class LibraryArtists extends React.Component {
       for (uri of this.props.google_library_artists) {
         // Construct item placeholder. This is used as Mopidy needs to
         // lookup ref objects to get the full object which can take some time
-        var source = helpers.uriSource(uri);
+        var source = uriSource(uri);
         var artist = {
           uri,
           source,
@@ -170,11 +170,11 @@ class LibraryArtists extends React.Component {
     }
 
     if (this.props.sort) {
-      artists = helpers.sortItems(artists, this.props.sort, this.props.sort_reverse);
+      artists = sortItems(artists, this.props.sort, this.props.sort_reverse);
     }
 
     if (this.state.filter !== '') {
-      artists = helpers.applyFilter('name', this.state.filter, artists);
+      artists = applyFilter('name', this.state.filter, artists);
     }
 
     // Apply our lazy-load-rendering

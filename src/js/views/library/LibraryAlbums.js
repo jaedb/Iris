@@ -2,7 +2,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
 import AlbumGrid from '../../components/AlbumGrid';
 import List from '../../components/List';
 import Header from '../../components/Header';
@@ -10,13 +9,16 @@ import DropdownField from '../../components/Fields/DropdownField';
 import FilterField from '../../components/Fields/FilterField';
 import LazyLoadListener from '../../components/LazyLoadListener';
 import Icon from '../../components/Icon';
-
-import * as helpers from '../../helpers';
 import * as coreActions from '../../services/core/actions';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as googleActions from '../../services/google/actions';
 import * as spotifyActions from '../../services/spotify/actions';
+import {
+  uriSource,
+} from '../../util/helpers';
+import { sortItems, applyFilter } from '../../util/arrays';
+import { collate } from '../../util/format';
 
 class LibraryAlbums extends React.Component {
   constructor(props) {
@@ -101,7 +103,7 @@ class LibraryAlbums extends React.Component {
     if (this.props.albums && this.props.library_albums) {
       for (let i = 0; i < this.props.library_albums.length; i++) {
         const uri = this.props.library_albums[i];
-        if (!this.props.albums.hasOwnProperty(uri) && helpers.uriSource(uri) == 'local') {
+        if (!this.props.albums.hasOwnProperty(uri) && uriSource(uri) == 'local') {
           uris.push(uri);
         }
 
@@ -152,7 +154,7 @@ class LibraryAlbums extends React.Component {
       for (var uri of this.props.mopidy_library_albums) {
         // Construct item placeholder. This is used as Mopidy needs to
         // lookup ref objects to get the full object which can take some time
-        var source = helpers.uriSource(uri);
+        var source = uriSource(uri);
         var album = {
           uri,
           source,
@@ -169,7 +171,7 @@ class LibraryAlbums extends React.Component {
       for (var uri of this.props.google_library_albums) {
         // Construct item placeholder. This is used as Mopidy needs to
         // lookup ref objects to get the full object which can take some time
-        var source = helpers.uriSource(uri);
+        var source = uriSource(uri);
         var album = {
           uri,
           source,
@@ -185,15 +187,15 @@ class LibraryAlbums extends React.Component {
 
     // Collate each album into it's full object (including nested artists)
     for (let i = 0; i < albums.length; i++) {
-      albums[i] = helpers.collate(albums[i], { artists: this.props.artists });
+      albums[i] = collate(albums[i], { artists: this.props.artists });
     }
 
     if (this.props.sort) {
-      albums = helpers.sortItems(albums, this.props.sort, this.props.sort_reverse);
+      albums = sortItems(albums, this.props.sort, this.props.sort_reverse);
     }
 
     if (this.state.filter && this.state.filter !== '') {
-      albums = helpers.applyFilter('name', this.state.filter, albums);
+      albums = applyFilter('name', this.state.filter, albums);
     }
 
     // Apply our lazy-load-rendering

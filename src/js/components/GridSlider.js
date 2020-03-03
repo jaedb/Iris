@@ -1,10 +1,7 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import { createStore, bindActionCreators } from 'redux';
-
-import Link from './Link';
-
+import { bindActionCreators } from 'redux';
 import LinksSentence from './LinksSentence';
 import Thumbnail from './Thumbnail';
 

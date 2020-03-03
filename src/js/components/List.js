@@ -1,21 +1,14 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import { createStore, bindActionCreators } from 'redux';
+import { bindActionCreators } from 'redux';
 import { withRouter } from 'react-router';
-
 import ListItem from './ListItem';
-
-import * as helpers from '../helpers';
 import * as uiActions from '../services/ui/actions';
 import * as lastfmActions from '../services/lastfm/actions';
 import * as discogsActions from '../services/discogs/actions';
 
 class List extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   handleContextMenu(e, item) {
     if (this.props.handleContextMenu) {
       e.preventDefault();

@@ -1,8 +1,7 @@
 
 import React from 'react';
-import * as helpers from '../../helpers';
-
 import Icon from '../Icon';
+import { removeDuplicates } from '../../util/arrays';
 
 export default class DropdownField extends React.Component {
   constructor(props) {
@@ -54,7 +53,7 @@ export default class DropdownField extends React.Component {
   handleChange(value, is_selected) {
     const current_value = this.props.value;
     this.setState({ changed: true });
-    
+
     if (this.isMultiSelect()) {
       if (value == 'select-all') {
         var new_value = [];
@@ -69,7 +68,7 @@ export default class DropdownField extends React.Component {
         current_value.push(value);
         var new_value = current_value;
       }
-      new_value = helpers.removeDuplicates(new_value);
+      new_value = removeDuplicates(new_value);
     } else {
       var new_value = value;
 

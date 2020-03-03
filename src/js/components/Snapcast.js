@@ -2,12 +2,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
 import TextField from './Fields/TextField';
 import SnapcastGroups from './SnapcastGroups';
-
-import * as helpers from '../helpers';
-import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
 import * as actions from '../services/snapcast/actions';
 

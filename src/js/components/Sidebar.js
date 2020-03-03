@@ -3,20 +3,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { withRouter } from 'react-router';
-
 import Link from './Link';
 import Icon from './Icon';
 import Dropzones from './Fields/Dropzones';
-import Thumbnail from './Thumbnail';
-
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 
 class Sidebar extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   renderStatusIcon() {
     const {
       update_available,

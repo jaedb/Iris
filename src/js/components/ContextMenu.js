@@ -3,14 +3,22 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { withRouter } from 'react-router';
-
+import {
+  uriSource,
+  uriType,
+  getFromUri,
+  buildLink,
+  isLoading,
+} from '../util/helpers';
+import {
+  arrayOf,
+  sortItems,
+} from '../util/arrays';
 import Link from './Link';
-import TrackList from './TrackList';
 import Icon from './Icon';
 import Loader from './Loader';
 import URILink from './URILink';
 
-import * as helpers from '../helpers';
 import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
 import * as pusherActions from '../services/pusher/actions';
@@ -145,8 +153,8 @@ class ContextMenu extends React.Component {
         const item = props.menu.items[0];
         context.item = item;
         context.items_count = props.menu.items.length;
-        context.source = helpers.uriSource(item.uri);
-        context.type = helpers.uriType(item.uri);
+        context.source = uriSource(item.uri);
+        context.type = uriType(item.uri);
         context.in_library = this.inLibrary(item);
         context.is_loved = this.isLoved(item);
       }
@@ -160,7 +168,7 @@ class ContextMenu extends React.Component {
       return false;
     }
 
-    switch (helpers.uriType(item.uri)) {
+    switch (uriType(item.uri)) {
       case 'artist':
         return (this.props.spotify_library_artists && this.props.spotify_library_artists.indexOf(item.uri) > -1);
         break;
@@ -198,7 +206,7 @@ class ContextMenu extends React.Component {
     if (!this.props.spotify_authorized) {
       return false;
     }
-    return (helpers.uriSource(this.props.menu.items[0].uri) == 'spotify');
+    return (uriSource(this.props.menu.items[0].uri) == 'spotify');
   }
 
   toggleInLibrary(e, in_library) {
@@ -292,7 +300,7 @@ class ContextMenu extends React.Component {
 
   goToRecommendations(e) {
     this.props.uiActions.hideContextMenu();
-    const uris_string = helpers.arrayOf('uri', this.props.menu.items).join(',');
+    const uris_string = arrayOf('uri', this.props.menu.items).join(',');
     this.props.history.push(`/discover/recommendations/${uris_string}`);
   }
 
@@ -303,7 +311,7 @@ class ContextMenu extends React.Component {
     this.props.uiActions.hideContextMenu();
 
     // note: we can only go to one artist (even if this item has multiple artists, just go to the first one)
-    this.props.history.push(helpers.buildLink(this.props.menu.items[0].artists_uris[0]));
+    this.props.history.push(buildLink(this.props.menu.items[0].artists_uris[0]));
   }
 
   goToUser(e) {
@@ -311,7 +319,7 @@ class ContextMenu extends React.Component {
       return null;
     }
     this.props.uiActions.hideContextMenu();
-    this.props.history.push(helpers.buildLink(this.props.menu.items[0].user_uri));
+    this.props.history.push(buildLink(this.props.menu.items[0].user_uri));
   }
 
   goToTrack(e) {
@@ -319,7 +327,7 @@ class ContextMenu extends React.Component {
       return null;
     }
     this.props.uiActions.hideContextMenu();
-    this.props.history.push(helpers.buildLink(this.props.menu.items[0].uri));
+    this.props.history.push(buildLink(this.props.menu.items[0].uri));
   }
 
   copyURIs(e) {
@@ -357,11 +365,11 @@ selected
         const metadata = this.props.queue_metadata[`tlid_${context.item.tlid}`];
 
         if (metadata.added_from && metadata.added_by) {
-          const type = (metadata.added_from ? helpers.uriType(metadata.added_from) : null);
+          const type = (metadata.added_from ? uriType(metadata.added_from) : null);
 
           switch (type) {
             case 'discover':
-              var link = <URILink type="recommendations" uri={helpers.getFromUri('seeds', metadata.added_from)}>discover</URILink>;
+              var link = <URILink type="recommendations" uri={getFromUri('seeds', metadata.added_from)}>discover</URILink>;
               break;
 
             case 'browse':
@@ -428,7 +436,7 @@ selected
           if (this.props.playlists[uri].can_edit) playlists.push(this.props.playlists[uri]);
         }
 
-        playlists = helpers.sortItems(playlists, 'name');
+        playlists = sortItems(playlists, 'name');
 
         if (this.props.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR && this.props.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR.status == 'running') {
           isLoading = true;
@@ -563,7 +571,7 @@ Back
 
     if (!this.props.spotify_authorized) {
       var toggle_in_library = null;
-    } else if (helpers.isLoading(this.props.load_queue, ['spotify_me/tracks/contains', 'spotify_me/playlists/contains', 'spotify_me/albums/contains', 'spotify_me/artists/contains'])) {
+    } else if (isLoading(this.props.load_queue, ['spotify_me/tracks/contains', 'spotify_me/playlists/contains', 'spotify_me/albums/contains', 'spotify_me/artists/contains'])) {
       var toggle_in_library = (
         <div className="context-menu__item">
           <a className="context-menu__item__link">
@@ -587,7 +595,7 @@ Back
 
     if (!this.props.lastfm_authorized) {
       var toggle_loved = null;
-    } else if (helpers.isLoading(this.props.load_queue, ['lastfm_track.getInfo'])) {
+    } else if (isLoading(this.props.load_queue, ['lastfm_track.getInfo'])) {
       var toggle_loved = (
         <div className="context-menu__item">
           <a className="context-menu__item__link">

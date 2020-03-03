@@ -2,14 +2,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
-
-import Link from '../Link';
 import LinksSentence from '../LinksSentence';
-import * as helpers from '../../helpers';
 import * as coreActions from '../../services/core/actions';
 import * as uiActions from '../../services/ui/actions';
 import * as spotifyActions from '../../services/spotify/actions';
+import { generateGuid } from '../../util/helpers';
 
 class AddSeedField extends React.Component {
   constructor(props) {
@@ -18,7 +15,7 @@ class AddSeedField extends React.Component {
     this.state = {
       value: '',
     };
-    this.id = helpers.generateGuid();
+    this.id = generateGuid();
     this.timer = null;
     this.handleClick = this.handleClick.bind(this);
   }

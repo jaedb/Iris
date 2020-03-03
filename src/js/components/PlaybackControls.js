@@ -12,8 +12,7 @@ import Dater from './Dater';
 import LinksSentence from './LinksSentence';
 import Thumbnail from './Thumbnail';
 import Icon from './Icon';
-
-import * as helpers from '../helpers';
+import { scrollTo } from '../util/helpers';
 import * as uiActions from '../services/ui/actions';
 import * as coreActions from '../services/core/actions';
 import * as mopidyActions from '../services/mopidy/actions';
@@ -141,7 +140,7 @@ class PlaybackControls extends React.Component {
     if (this.start_position.x + tap_distance_threshold > end_position.x
 			&& this.start_position.x - tap_distance_threshold < end_position.x) {
       // Scroll to top (without smooth_scroll)
-      helpers.scrollTo(null, false);
+      scrollTo(null, false);
       this.props.history.push('/queue');
     } else {
       // Swipe to the left = previous track

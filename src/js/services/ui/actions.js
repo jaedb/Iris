@@ -1,5 +1,5 @@
 
-import * as helpers from '../../helpers';
+import { generateGuid } from '../../util/helpers';
 
 export function setWindowTitle(title = null, play_state = null) {
   return {
@@ -179,7 +179,7 @@ export function createNotification(data) {
   return {
     type: 'CREATE_NOTIFICATION',
     notification: {
-      key: helpers.generateGuid(),
+      key: generateGuid(),
       duration: 5,
       type: 'default',
       title: null,

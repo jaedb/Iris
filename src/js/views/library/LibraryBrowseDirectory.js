@@ -2,7 +2,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
 import Loader from '../../components/Loader';
 import Header from '../../components/Header';
 import List from '../../components/List';
@@ -12,17 +11,15 @@ import DropdownField from '../../components/Fields/DropdownField';
 import Icon from '../../components/Icon';
 import URILink from '../../components/URILink';
 import ErrorBoundary from '../../components/ErrorBoundary';
-
-import * as helpers from '../../helpers';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
+import {
+  isLoading,
+} from '../../util/helpers';
+import { arrayOf, sortItems } from '../../util/arrays';
 
 class LibraryBrowseDirectory extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
     this.props.uiActions.setWindowTitle('Browse');
     this.loadDirectory();
@@ -51,7 +48,7 @@ class LibraryBrowseDirectory extends React.Component {
   }
 
   playAll(e, tracks) {
-    const tracks_uris = helpers.arrayOf('uri', tracks);
+    const tracks_uris = arrayOf('uri', tracks);
     this.props.mopidyActions.playURIs(tracks_uris, `iris:browse:${this.props.uri}`);
     this.props.uiActions.hideContextMenu();
   }
@@ -136,7 +133,7 @@ class LibraryBrowseDirectory extends React.Component {
       title = title.charAt(0).toUpperCase() + title.slice(1);
     }
 
-    if (!this.props.directory || helpers.isLoading(this.props.load_queue, ['mopidy_browse'])) {
+    if (!this.props.directory || isLoading(this.props.load_queue, ['mopidy_browse'])) {
       return (
         <div className="view library-local-view">
           <Header icon="music" title={title} uiActions={this.props.uiActions} />
@@ -146,10 +143,10 @@ class LibraryBrowseDirectory extends React.Component {
     }
 
     let tracks = (this.props.directory.tracks && this.props.directory.tracks.length > 0 ? this.props.directory.tracks : null);
-    tracks = helpers.sortItems(tracks, 'name');
+    tracks = sortItems(tracks, 'name');
 
     let subdirectories = (this.props.directory.subdirectories && this.props.directory.subdirectories.length > 0 ? this.props.directory.subdirectories : null);
-    subdirectories = helpers.sortItems(subdirectories, 'name');
+    subdirectories = sortItems(subdirectories, 'name');
 
     const view_options = [
       {

@@ -1,20 +1,18 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import { createStore, bindActionCreators } from 'redux';
+import { bindActionCreators } from 'redux';
 import Link from '../../components/Link';
-
 import Modal from './Modal';
 import Thumbnail from '../../components/Thumbnail';
 import LinksSentence from '../../components/LinksSentence';
 import Loader from '../../components/Loader';
 import Icon from '../../components/Icon';
 import ProgressSlider from '../../components/Fields/ProgressSlider';
-
-import * as helpers from '../../helpers';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as geniusActions from '../../services/genius/actions';
+import { isLoading } from '../../util/helpers';
 
 const LyricsScroller = ({ content = '', time_position = 1, duration = 100 }) => {
   const percent = ((time_position / duration) * 110).toFixed(4);
@@ -123,7 +121,7 @@ class KioskMode extends React.Component {
 
     const { lyrics, duration } = current_track || {};
 
-    if (helpers.isLoading(load_queue, ['genius_'])) {
+    if (isLoading(load_queue, ['genius_'])) {
       return (
         <div className="lyrics">
           <Loader body loading />

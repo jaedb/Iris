@@ -1,16 +1,10 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import { createStore, bindActionCreators } from 'redux';
-
-
+import { bindActionCreators } from 'redux';
 import * as pusherActions from '../services/pusher/actions';
 
 class PusherConnectionList extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
     if (this.props.connected) {
       this.props.pusherActions.getConnections();

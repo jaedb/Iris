@@ -2,15 +2,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
-import * as helpers from '../../helpers';
 import * as mopidyActions from '../../services/mopidy/actions';
+import { throttle } from '../../util/helpers';
 
 class ProgressSlider extends React.Component {
   constructor(props) {
     super(props);
 
-    this.handleChange = helpers.throttle(this.handleChange.bind(this), 250);
+    this.handleChange = throttle(this.handleChange.bind(this), 250);
   }
 
   handleChange(value) {

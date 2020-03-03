@@ -3,7 +3,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Route, Link } from 'react-router-dom';
-
 import ConfirmationButton from '../components/Fields/ConfirmationButton';
 import PusherConnectionList from '../components/PusherConnectionList';
 import SourcesPriority from '../components/Fields/SourcesPriority';
@@ -12,14 +11,13 @@ import TextField from '../components/Fields/TextField';
 import Header from '../components/Header';
 import Icon from '../components/Icon';
 import Services from '../components/Services';
-
-import * as helpers from '../helpers';
 import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
 import * as pusherActions from '../services/pusher/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import * as lastfmActions from '../services/lastfm/actions';
 import * as spotifyActions from '../services/spotify/actions';
+import { isHosted } from '../util/helpers';
 
 class Settings extends React.Component {
   constructor(props) {
@@ -350,7 +348,7 @@ class Settings extends React.Component {
             </div>
           </div>
 
-          {helpers.isHosted() ? null : (
+          {isHosted() ? null : (
             <div className="field checkbox">
               <div className="name">Reporting</div>
               <div className="input">

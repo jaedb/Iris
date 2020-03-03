@@ -1,7 +1,7 @@
 
 import ReactGA from 'react-ga';
+import { arrayOf } from '../../util/arrays';
 
-const helpers = require('../../helpers');
 const coreActions = require('../core/actions');
 const mopidyActions = require('../mopidy/actions');
 const uiActions = require('../ui/actions');
@@ -38,7 +38,7 @@ const GoogleMiddleware = (function () {
                 return;
               }
 
-              const uris = helpers.arrayOf('uri', response);
+              const uris = arrayOf('uri', response);
               store.dispatch({
                 type: 'GOOGLE_LIBRARY_ALBUMS_LOADED',
                 uris,

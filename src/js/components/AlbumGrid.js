@@ -3,7 +3,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { createStore, bindActionCreators } from 'redux';
 
-import * as helpers from '../helpers';
 import * as uiActions from '../services/ui/actions';
 import * as lastfmActions from '../services/lastfm/actions';
 

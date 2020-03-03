@@ -2,11 +2,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
-import * as helpers from '../../helpers';
-
 import * as uiActions from '../../services/ui/actions';
 import * as lastfmActions from '../../services/lastfm/actions';
+import { toJSON } from '../../util/format';
 
 class LastfmAuthenticationFrame extends React.Component {
   constructor(props) {
@@ -28,7 +26,7 @@ class LastfmAuthenticationFrame extends React.Component {
   }
 
   handleMessage(event) {
-    const data = helpers.toJSON(event.data);
+    const data = toJSON(event.data);
 
     // Only digest messages relevant to us
     if (data.origin != 'auth_lastfm') {

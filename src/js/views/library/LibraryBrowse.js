@@ -2,28 +2,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Route, Switch } from 'react-router-dom';
-
-import Link from '../../components/Link';
-
 import Header from '../../components/Header';
-import List from '../../components/List';
-import TrackList from '../../components/TrackList';
 import GridItem from '../../components/GridItem';
-import DropdownField from '../../components/Fields/DropdownField';
 import Icon from '../../components/Icon';
-import URILink from '../../components/URILink';
 import ErrorBoundary from '../../components/ErrorBoundary';
-
-import * as helpers from '../../helpers';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
+import {
+  formatImages,
+} from '../../util/helpers';
 
 class LibraryBrowse extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
     this.loadDirectory();
     this.props.uiActions.setWindowTitle('Browse');
@@ -93,7 +82,7 @@ class LibraryBrowse extends React.Component {
         grid_items.push({
           name: subdirectory.name,
           link: `/library/browse/${encodeURIComponent(subdirectory.uri)}`,
-          icons: helpers.formatImages(subdirectory.icons),
+          icons: formatImages(subdirectory.icons),
         });
       }
     }

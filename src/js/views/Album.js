@@ -15,19 +15,20 @@ import Dater from '../components/Dater';
 import LazyLoadListener from '../components/LazyLoadListener';
 import ContextMenuTrigger from '../components/ContextMenuTrigger';
 import Icon from '../components/Icon';
-
-import * as helpers from '../helpers';
 import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import * as spotifyActions from '../services/spotify/actions';
 import * as lastfmActions from '../services/lastfm/actions';
+import {
+  uriSource,
+  getFromUri,
+  isLoading,
+  sourceIcon,
+} from '../util/helpers';
+import { collate } from '../util/format';
 
 export class Album extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
     this.setWindowTitle();
     this.props.coreActions.loadAlbum(this.props.uri);
@@ -57,7 +58,7 @@ export class Album extends React.Component {
 
       // if mopidy has just connected AND we're a local album, go get
     } else if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
-      if (helpers.uriSource(nextProps.uri) != 'spotify') {
+      if (uriSource(nextProps.uri) != 'spotify') {
         this.props.coreActions.loadAlbum(nextProps.uri);
       }
     }
@@ -135,7 +136,7 @@ export class Album extends React.Component {
   }
 
   inLibrary() {
-    const library = `${helpers.uriSource(this.props.uri)}_library_albums`;
+    const library = `${uriSource(this.props.uri)}_library_albums`;
     return (
       this.props[library] && this.props[library].indexOf(this.props.uri) > -1
     );
@@ -144,8 +145,8 @@ export class Album extends React.Component {
   render() {
     if (!this.props.album) {
       if (
-        helpers.isLoading(this.props.load_queue, [
-          `spotify_albums/${helpers.getFromUri('albumid', this.props.uri)}`,
+        isLoading(this.props.load_queue, [
+          `spotify_albums/${getFromUri('albumid', this.props.uri)}`,
         ])
       ) {
         return <Loader body loading />;
@@ -161,7 +162,7 @@ export class Album extends React.Component {
       );
     }
 
-    const album = helpers.collate(this.props.album, {
+    const album = collate(this.props.album, {
       tracks: this.props.tracks,
       artists: this.props.artists,
     });
@@ -190,7 +191,7 @@ export class Album extends React.Component {
           <ul className="details">
             {!this.props.slim_mode ? (
               <li className="source">
-                <Icon type="fontawesome" name={helpers.sourceIcon(album.uri)} />
+                <Icon type="fontawesome" name={sourceIcon(album.uri)} />
               </li>
             ) : null}
             {album.artists && album.artists.length > 0 ? (
@@ -236,7 +237,7 @@ listeners
           <button className="button button--primary" onClick={(e) => this.play()}>
             Play
           </button>
-          {helpers.uriSource(this.props.uri) == 'spotify' ? (
+          {uriSource(this.props.uri) == 'spotify' ? (
             <FollowButton
               className="secondary"
               uri={this.props.uri}

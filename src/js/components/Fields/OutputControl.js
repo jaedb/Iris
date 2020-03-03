@@ -2,16 +2,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
 import VolumeControl from './VolumeControl';
 import MuteControl from './MuteControl';
 import Icon from '../Icon';
 import DropdownField from './DropdownField';
-import * as helpers from '../../helpers';
-
 import * as coreActions from '../../services/core/actions';
 import * as pusherActions from '../../services/pusher/actions';
 import * as snapcastActions from '../../services/snapcast/actions';
+import { sortItems } from '../../util/arrays';
 
 class OutputControl extends React.Component {
   constructor(props) {
@@ -128,7 +126,7 @@ class OutputControl extends React.Component {
 
     if (items.length <= 0) return null;
 
-    items = helpers.sortItems(items, 'sort_order');
+    items = sortItems(items, 'sort_order');
 
     return (
       <div className="output-control__item output-control__item--commands commands">

@@ -47629,7 +47629,7 @@ module.exports = hoistNonReactStatics;
 /*!***************************************************************!*\
   !*** ./node_modules/react-router-dom/esm/react-router-dom.js ***!
   \***************************************************************/
-/*! exports provided: BrowserRouter, HashRouter, Link, NavLink, MemoryRouter, Prompt, Redirect, Route, Router, StaticRouter, Switch, __RouterContext, generatePath, matchPath, useHistory, useLocation, useParams, useRouteMatch, withRouter */
+/*! exports provided: MemoryRouter, Prompt, Redirect, Route, Router, StaticRouter, Switch, __RouterContext, generatePath, matchPath, useHistory, useLocation, useParams, useRouteMatch, withRouter, BrowserRouter, HashRouter, Link, NavLink */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -60249,9 +60249,7 @@ var _EditCommand = __webpack_require__(/*! ./views/modals/EditCommand */ "./src/
 
 var _EditCommand2 = _interopRequireDefault(_EditCommand);
 
-var _helpers = __webpack_require__(/*! ./helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
+var _helpers = __webpack_require__(/*! ./util/helpers */ "./src/js/util/helpers.js");
 
 var _actions = __webpack_require__(/*! ./services/core/actions */ "./src/js/services/core/actions.js");
 
@@ -60365,7 +60363,7 @@ var App = exports.App = function (_React$Component) {
         // hitting back in the browser allows us to restore the position
         var location_state = this.props.location.state ? this.props.location.state : {};
         if (location_state.scroll_position) {
-          helpers.scrollTo(parseInt(location_state.scroll_position), false);
+          (0, _helpers.scrollTo)(parseInt(location_state.scroll_position), false);
         }
 
         // Hide our sidebar
@@ -60429,7 +60427,7 @@ var App = exports.App = function (_React$Component) {
       if (this.props.smooth_scrolling_enabled) {
         className += ' smooth-scrolling-enabled';
       }
-      if (helpers.isTouchDevice()) {
+      if ((0, _helpers.isTouchDevice)()) {
         className += ' touch';
       } else {
         className += ' notouch';
@@ -60650,10 +60648,6 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../services/ui/actions */ "./src/js/services/ui/actions.js");
 
 var uiActions = _interopRequireWildcard(_actions);
@@ -60778,9 +60772,7 @@ var _GridItem = __webpack_require__(/*! ./GridItem */ "./src/js/components/GridI
 
 var _GridItem2 = _interopRequireDefault(_GridItem);
 
-var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
+var _format = __webpack_require__(/*! ../util/format */ "./src/js/util/format.js");
 
 var _actions = __webpack_require__(/*! ../services/ui/actions */ "./src/js/services/ui/actions.js");
 
@@ -60807,10 +60799,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var ArtistGrid = function (_React$Component) {
   _inherits(ArtistGrid, _React$Component);
 
-  function ArtistGrid(props) {
+  function ArtistGrid() {
     _classCallCheck(this, ArtistGrid);
 
-    return _possibleConstructorReturn(this, (ArtistGrid.__proto__ || Object.getPrototypeOf(ArtistGrid)).call(this, props));
+    return _possibleConstructorReturn(this, (ArtistGrid.__proto__ || Object.getPrototypeOf(ArtistGrid)).apply(this, arguments));
   }
 
   _createClass(ArtistGrid, [{
@@ -60853,7 +60845,7 @@ var ArtistGrid = function (_React$Component) {
           'div',
           { className: className },
           artists.map(function (item) {
-            var artist = helpers.collate(item, { albums: albums });
+            var artist = (0, _format.collate)(item, { albums: albums });
             return _react2.default.createElement(_GridItem2.default, {
               key: artist.uri,
               type: 'artist',
@@ -60973,13 +60965,13 @@ var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js"
 
 var _reactRouter = __webpack_require__(/*! react-router */ "./node_modules/react-router/esm/react-router.js");
 
+var _helpers = __webpack_require__(/*! ../util/helpers */ "./src/js/util/helpers.js");
+
+var _arrays = __webpack_require__(/*! ../util/arrays */ "./src/js/util/arrays.js");
+
 var _Link = __webpack_require__(/*! ./Link */ "./src/js/components/Link.js");
 
 var _Link2 = _interopRequireDefault(_Link);
-
-var _TrackList = __webpack_require__(/*! ./TrackList */ "./src/js/components/TrackList.js");
-
-var _TrackList2 = _interopRequireDefault(_TrackList);
 
 var _Icon = __webpack_require__(/*! ./Icon */ "./src/js/components/Icon.js");
 
@@ -60992,10 +60984,6 @@ var _Loader2 = _interopRequireDefault(_Loader);
 var _URILink = __webpack_require__(/*! ./URILink */ "./src/js/components/URILink.js");
 
 var _URILink2 = _interopRequireDefault(_URILink);
-
-var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
 
 var _actions = __webpack_require__(/*! ../services/core/actions */ "./src/js/services/core/actions.js");
 
@@ -61175,8 +61163,8 @@ var ContextMenu = function (_React$Component) {
           var item = props.menu.items[0];
           context.item = item;
           context.items_count = props.menu.items.length;
-          context.source = helpers.uriSource(item.uri);
-          context.type = helpers.uriType(item.uri);
+          context.source = (0, _helpers.uriSource)(item.uri);
+          context.type = (0, _helpers.uriType)(item.uri);
           context.in_library = this.inLibrary(item);
           context.is_loved = this.isLoved(item);
         }
@@ -61193,7 +61181,7 @@ var ContextMenu = function (_React$Component) {
         return false;
       }
 
-      switch (helpers.uriType(item.uri)) {
+      switch ((0, _helpers.uriType)(item.uri)) {
         case 'artist':
           return this.props.spotify_library_artists && this.props.spotify_library_artists.indexOf(item.uri) > -1;
           break;
@@ -61237,7 +61225,7 @@ var ContextMenu = function (_React$Component) {
       if (!this.props.spotify_authorized) {
         return false;
       }
-      return helpers.uriSource(this.props.menu.items[0].uri) == 'spotify';
+      return (0, _helpers.uriSource)(this.props.menu.items[0].uri) == 'spotify';
     }
   }, {
     key: 'toggleInLibrary',
@@ -61351,7 +61339,7 @@ var ContextMenu = function (_React$Component) {
     key: 'goToRecommendations',
     value: function goToRecommendations(e) {
       this.props.uiActions.hideContextMenu();
-      var uris_string = helpers.arrayOf('uri', this.props.menu.items).join(',');
+      var uris_string = (0, _arrays.arrayOf)('uri', this.props.menu.items).join(',');
       this.props.history.push('/discover/recommendations/' + uris_string);
     }
   }, {
@@ -61363,7 +61351,7 @@ var ContextMenu = function (_React$Component) {
       this.props.uiActions.hideContextMenu();
 
       // note: we can only go to one artist (even if this item has multiple artists, just go to the first one)
-      this.props.history.push(helpers.buildLink(this.props.menu.items[0].artists_uris[0]));
+      this.props.history.push((0, _helpers.buildLink)(this.props.menu.items[0].artists_uris[0]));
     }
   }, {
     key: 'goToUser',
@@ -61372,7 +61360,7 @@ var ContextMenu = function (_React$Component) {
         return null;
       }
       this.props.uiActions.hideContextMenu();
-      this.props.history.push(helpers.buildLink(this.props.menu.items[0].user_uri));
+      this.props.history.push((0, _helpers.buildLink)(this.props.menu.items[0].user_uri));
     }
   }, {
     key: 'goToTrack',
@@ -61381,7 +61369,7 @@ var ContextMenu = function (_React$Component) {
         return null;
       }
       this.props.uiActions.hideContextMenu();
-      this.props.history.push(helpers.buildLink(this.props.menu.items[0].uri));
+      this.props.history.push((0, _helpers.buildLink)(this.props.menu.items[0].uri));
     }
   }, {
     key: 'copyURIs',
@@ -61431,13 +61419,13 @@ var ContextMenu = function (_React$Component) {
           var metadata = this.props.queue_metadata['tlid_' + context.item.tlid];
 
           if (metadata.added_from && metadata.added_by) {
-            var type = metadata.added_from ? helpers.uriType(metadata.added_from) : null;
+            var type = metadata.added_from ? (0, _helpers.uriType)(metadata.added_from) : null;
 
             switch (type) {
               case 'discover':
                 var link = _react2.default.createElement(
                   _URILink2.default,
-                  { type: 'recommendations', uri: helpers.getFromUri('seeds', metadata.added_from) },
+                  { type: 'recommendations', uri: (0, _helpers.getFromUri)('seeds', metadata.added_from) },
                   'discover'
                 );
                 break;
@@ -61526,7 +61514,7 @@ var ContextMenu = function (_React$Component) {
             if (this.props.playlists[uri].can_edit) playlists.push(this.props.playlists[uri]);
           }
 
-          playlists = helpers.sortItems(playlists, 'name');
+          playlists = (0, _arrays.sortItems)(playlists, 'name');
 
           if (this.props.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR && this.props.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR.status == 'running') {
             isLoading = true;
@@ -61776,7 +61764,7 @@ var ContextMenu = function (_React$Component) {
 
       if (!this.props.spotify_authorized) {
         var toggle_in_library = null;
-      } else if (helpers.isLoading(this.props.load_queue, ['spotify_me/tracks/contains', 'spotify_me/playlists/contains', 'spotify_me/albums/contains', 'spotify_me/artists/contains'])) {
+      } else if ((0, _helpers.isLoading)(this.props.load_queue, ['spotify_me/tracks/contains', 'spotify_me/playlists/contains', 'spotify_me/albums/contains', 'spotify_me/artists/contains'])) {
         var toggle_in_library = _react2.default.createElement(
           'div',
           { className: 'context-menu__item' },
@@ -61810,7 +61798,7 @@ var ContextMenu = function (_React$Component) {
 
       if (!this.props.lastfm_authorized) {
         var toggle_loved = null;
-      } else if (helpers.isLoading(this.props.load_queue, ['lastfm_track.getInfo'])) {
+      } else if ((0, _helpers.isLoading)(this.props.load_queue, ['lastfm_track.getInfo'])) {
         var toggle_loved = _react2.default.createElement(
           'div',
           { className: 'context-menu__item' },
@@ -62412,9 +62400,9 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
+var _util = __webpack_require__(/*! ../util */ "./src/js/util/index.js");
 
-var helpers = _interopRequireWildcard(_helpers);
+var _helpers = __webpack_require__(/*! ../util/helpers */ "./src/js/util/helpers.js");
 
 var _actions = __webpack_require__(/*! ../services/ui/actions */ "./src/js/services/ui/actions.js");
 
@@ -62610,7 +62598,7 @@ var DebugInfo = function (_React$Component) {
             { className: 'debug-info-item' },
             'Cached URLs:',
             ' ',
-            Object.keys(helpers.getStorage('cache')).length
+            Object.keys(_util.storage.get('cache')).length
           )
         ),
         _react2.default.createElement(
@@ -62640,7 +62628,7 @@ var DebugInfo = function (_React$Component) {
             { className: 'debug-info-item' },
             'Touch:',
             ' ',
-            helpers.isTouchDevice() ? 'on' : 'off'
+            (0, _helpers.isTouchDevice)() ? 'on' : 'off'
           ),
           _react2.default.createElement(
             'div',
@@ -63005,17 +62993,9 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _Link = __webpack_require__(/*! ../Link */ "./src/js/components/Link.js");
-
-var _Link2 = _interopRequireDefault(_Link);
-
 var _LinksSentence = __webpack_require__(/*! ../LinksSentence */ "./src/js/components/LinksSentence.js");
 
 var _LinksSentence2 = _interopRequireDefault(_LinksSentence);
-
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
 
 var _actions = __webpack_require__(/*! ../../services/core/actions */ "./src/js/services/core/actions.js");
 
@@ -63028,6 +63008,8 @@ var uiActions = _interopRequireWildcard(_actions2);
 var _actions3 = __webpack_require__(/*! ../../services/spotify/actions */ "./src/js/services/spotify/actions.js");
 
 var spotifyActions = _interopRequireWildcard(_actions3);
+
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -63050,7 +63032,7 @@ var AddSeedField = function (_React$Component) {
     _this.state = {
       value: ''
     };
-    _this.id = helpers.generateGuid();
+    _this.id = (0, _helpers.generateGuid)();
     _this.timer = null;
     _this.handleClick = _this.handleClick.bind(_this);
     return _this;
@@ -63296,11 +63278,7 @@ var _Link = __webpack_require__(/*! ../Link */ "./src/js/components/Link.js");
 
 var _Link2 = _interopRequireDefault(_Link);
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+var _arrays = __webpack_require__(/*! ../../util/arrays */ "./src/js/util/arrays.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -63364,7 +63342,7 @@ var Commands = function (_React$Component) {
         }
       }
 
-      commands = helpers.sortItems(commands, 'sort_order');
+      commands = (0, _arrays.sortItems)(commands, 'sort_order');
 
       return commands;
     }
@@ -63597,15 +63575,11 @@ var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _Icon = __webpack_require__(/*! ../Icon */ "./src/js/components/Icon.js");
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+var _arrays = __webpack_require__(/*! ../../util/arrays */ "./src/js/util/arrays.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -63695,7 +63669,7 @@ var DropdownField = function (_React$Component) {
           current_value.push(value);
           var new_value = current_value;
         }
-        new_value = helpers.removeDuplicates(new_value);
+        new_value = (0, _arrays.removeDuplicates)(new_value);
       } else {
         var new_value = value;
 
@@ -63890,10 +63864,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
 var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
-
-var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
-
-var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
 var _Icon = __webpack_require__(/*! ../Icon */ "./src/js/components/Icon.js");
 
@@ -64298,14 +64268,6 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _Link = __webpack_require__(/*! ../Link */ "./src/js/components/Link.js");
-
-var _Link2 = _interopRequireDefault(_Link);
-
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../../services/ui/actions */ "./src/js/services/ui/actions.js");
 
 var uiActions = _interopRequireWildcard(_actions);
@@ -64313,6 +64275,8 @@ var uiActions = _interopRequireWildcard(_actions);
 var _actions2 = __webpack_require__(/*! ../../services/spotify/actions */ "./src/js/services/spotify/actions.js");
 
 var spotifyActions = _interopRequireWildcard(_actions2);
+
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -64370,8 +64334,7 @@ var FollowButton = function (_React$Component) {
       if (!uri) return null;
 
       className += ' button';
-      if (helpers.isLoading(load_queue, ['spotify_me/tracks?', 'spotify_me/albums?', 'spotify_me/following?', 'spotify_playlists/' + helpers.getFromUri('playlistid', uri) + '/followers?'])) {
-        console.log("LOADING");
+      if ((0, _helpers.isLoading)(load_queue, ['spotify_me/tracks?', 'spotify_me/albums?', 'spotify_me/following?', 'spotify_playlists/' + (0, _helpers.getFromUri)('playlistid', uri) + '/followers?'])) {
         className += ' button--working';
       }
 
@@ -64459,10 +64422,6 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../../services/ui/actions */ "./src/js/services/ui/actions.js");
 
 var uiActions = _interopRequireWildcard(_actions);
@@ -64470,6 +64429,8 @@ var uiActions = _interopRequireWildcard(_actions);
 var _actions2 = __webpack_require__(/*! ../../services/genius/actions */ "./src/js/services/genius/actions.js");
 
 var geniusActions = _interopRequireWildcard(_actions2);
+
+var _format = __webpack_require__(/*! ../../util/format */ "./src/js/util/format.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -64510,7 +64471,7 @@ var GeniusAuthenticationFrame = function (_React$Component) {
   }, {
     key: 'handleMessage',
     value: function handleMessage(event) {
-      var data = helpers.toJSON(event.data);
+      var data = (0, _format.toJSON)(event.data);
 
       // Only digest messages relevant to us
       if (data.origin != 'auth_genius') {
@@ -64687,10 +64648,6 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../../services/ui/actions */ "./src/js/services/ui/actions.js");
 
 var uiActions = _interopRequireWildcard(_actions);
@@ -64698,6 +64655,8 @@ var uiActions = _interopRequireWildcard(_actions);
 var _actions2 = __webpack_require__(/*! ../../services/lastfm/actions */ "./src/js/services/lastfm/actions.js");
 
 var lastfmActions = _interopRequireWildcard(_actions2);
+
+var _format = __webpack_require__(/*! ../../util/format */ "./src/js/util/format.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -64738,7 +64697,7 @@ var LastfmAuthenticationFrame = function (_React$Component) {
   }, {
     key: 'handleMessage',
     value: function handleMessage(event) {
-      var data = helpers.toJSON(event.data);
+      var data = (0, _format.toJSON)(event.data);
 
       // Only digest messages relevant to us
       if (data.origin != 'auth_lastfm') {
@@ -64867,14 +64826,6 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _Link = __webpack_require__(/*! ../Link */ "./src/js/components/Link.js");
-
-var _Link2 = _interopRequireDefault(_Link);
-
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../../services/ui/actions */ "./src/js/services/ui/actions.js");
 
 var uiActions = _interopRequireWildcard(_actions);
@@ -64996,11 +64947,7 @@ var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -65018,7 +64965,7 @@ var LatencyControl = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (LatencyControl.__proto__ || Object.getPrototypeOf(LatencyControl)).call(this, props));
 
-    _this.handleChange = helpers.throttle(_this.handleChange.bind(_this), 100);
+    _this.handleChange = (0, _helpers.throttle)(_this.handleChange.bind(_this), 100);
     return _this;
   }
 
@@ -65195,10 +65142,6 @@ var _DropdownField = __webpack_require__(/*! ./DropdownField */ "./src/js/compon
 
 var _DropdownField2 = _interopRequireDefault(_DropdownField);
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../../services/core/actions */ "./src/js/services/core/actions.js");
 
 var coreActions = _interopRequireWildcard(_actions);
@@ -65210,6 +65153,8 @@ var pusherActions = _interopRequireWildcard(_actions2);
 var _actions3 = __webpack_require__(/*! ../../services/snapcast/actions */ "./src/js/services/snapcast/actions.js");
 
 var snapcastActions = _interopRequireWildcard(_actions3);
+
+var _arrays = __webpack_require__(/*! ../../util/arrays */ "./src/js/util/arrays.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -65359,7 +65304,7 @@ var OutputControl = function (_React$Component) {
 
       if (items.length <= 0) return null;
 
-      items = helpers.sortItems(items, 'sort_order');
+      items = (0, _arrays.sortItems)(items, 'sort_order');
 
       return _react2.default.createElement(
         'div',
@@ -65553,13 +65498,11 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../../services/mopidy/actions */ "./src/js/services/mopidy/actions.js");
 
 var mopidyActions = _interopRequireWildcard(_actions);
+
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -65579,7 +65522,7 @@ var ProgressSlider = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (ProgressSlider.__proto__ || Object.getPrototypeOf(ProgressSlider)).call(this, props));
 
-    _this.handleChange = helpers.throttle(_this.handleChange.bind(_this), 250);
+    _this.handleChange = (0, _helpers.throttle)(_this.handleChange.bind(_this), 250);
     return _this;
   }
 
@@ -65676,13 +65619,11 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../../services/ui/actions */ "./src/js/services/ui/actions.js");
 
 var uiActions = _interopRequireWildcard(_actions);
+
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -65751,7 +65692,7 @@ var SearchForm = function (_React$Component) {
       e.preventDefault();
 
       // check for uri type matching
-      switch (helpers.uriType(this.state.term)) {
+      switch ((0, _helpers.uriType)(this.state.term)) {
         case 'album':
           this.props.history.push('/album/' + encodeURIComponent(this.state.term));
           break;
@@ -65904,11 +65845,7 @@ var _Icon = __webpack_require__(/*! ../Icon */ "./src/js/components/Icon.js");
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -65921,10 +65858,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var SourcesPriority = function (_React$Component) {
   _inherits(SourcesPriority, _React$Component);
 
-  function SourcesPriority(props) {
+  function SourcesPriority() {
     _classCallCheck(this, SourcesPriority);
 
-    return _possibleConstructorReturn(this, (SourcesPriority.__proto__ || Object.getPrototypeOf(SourcesPriority)).call(this, props));
+    return _possibleConstructorReturn(this, (SourcesPriority.__proto__ || Object.getPrototypeOf(SourcesPriority)).apply(this, arguments));
   }
 
   _createClass(SourcesPriority, [{
@@ -65967,7 +65904,7 @@ var SourcesPriority = function (_React$Component) {
           }
         },
         ordered_schemes.map(function (scheme) {
-          var name = helpers.titleCase(scheme.replace(':', '').replace('+', ' '));
+          var name = (0, _helpers.titleCase)(scheme.replace(':', '').replace('+', ' '));
 
           return _react2.default.createElement(
             'span',
@@ -66011,10 +65948,6 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../../services/ui/actions */ "./src/js/services/ui/actions.js");
 
 var uiActions = _interopRequireWildcard(_actions);
@@ -66022,6 +65955,8 @@ var uiActions = _interopRequireWildcard(_actions);
 var _actions2 = __webpack_require__(/*! ../../services/spotify/actions */ "./src/js/services/spotify/actions.js");
 
 var spotifyActions = _interopRequireWildcard(_actions2);
+
+var _format = __webpack_require__(/*! ../../util/format */ "./src/js/util/format.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -66062,7 +65997,7 @@ var SpotifyAuthenticationFrame = function (_React$Component) {
   }, {
     key: 'handleMessage',
     value: function handleMessage(event) {
-      var data = helpers.toJSON(event.data);
+      var data = (0, _format.toJSON)(event.data);
 
       // Only digest messages relevant to us
       if (data.origin != 'auth_spotify') {
@@ -66286,15 +66221,7 @@ var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Icon = __webpack_require__(/*! ../Icon */ "./src/js/components/Icon.js");
-
-var _Icon2 = _interopRequireDefault(_Icon);
-
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -66312,7 +66239,7 @@ var VolumeControl = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (VolumeControl.__proto__ || Object.getPrototypeOf(VolumeControl)).call(this, props));
 
-    _this.handleChange = helpers.throttle(_this.handleChange.bind(_this), 100);
+    _this.handleChange = (0, _helpers.throttle)(_this.handleChange.bind(_this), 100);
     return _this;
   }
 
@@ -66390,9 +66317,7 @@ var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
-var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
+var _helpers = __webpack_require__(/*! ../util/helpers */ "./src/js/util/helpers.js");
 
 var _Link = __webpack_require__(/*! ./Link */ "./src/js/components/Link.js");
 
@@ -66409,8 +66334,6 @@ var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
 var _LinksSentence = __webpack_require__(/*! ./LinksSentence */ "./src/js/components/LinksSentence.js");
 
 var _LinksSentence2 = _interopRequireDefault(_LinksSentence);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -66443,7 +66366,7 @@ var GridItem = function (_React$Component) {
       // If the item that has just been mounted doesn't have images,
       // try fetching them from LastFM or Discogs
       if (!item.images) {
-        switch (helpers.uriType(item.uri)) {
+        switch ((0, _helpers.uriType)(item.uri)) {
           case 'artist':
             if (spotifyActions && spotifyAvailable) {
               spotifyActions.getArtistImages(item);
@@ -66476,7 +66399,7 @@ var GridItem = function (_React$Component) {
       var output = '';
       var link_to = null;
 
-      switch (helpers.uriType(item.uri)) {
+      switch ((0, _helpers.uriType)(item.uri)) {
         case 'playlist':
           if (item.tracks_total) {
             return _react2.default.createElement(
@@ -66555,7 +66478,7 @@ var GridItem = function (_React$Component) {
           className: 'grid__item grid__item--' + this.props.type,
           to: link,
           onClick: function onClick(e) {
-            return helpers.scrollTo();
+            return (0, _helpers.scrollTo)();
           },
           onContextMenu: function onContextMenu(e) {
             return _this2.onContextMenu(e);
@@ -66574,7 +66497,7 @@ var GridItem = function (_React$Component) {
         _react2.default.createElement(
           'div',
           { className: 'grid__item__secondary' },
-          this.props.show_source_icon ? _react2.default.createElement(_Icon2.default, { name: helpers.sourceIcon(item.uri), type: 'fontawesome', className: 'source' }) : null,
+          this.props.show_source_icon ? _react2.default.createElement(_Icon2.default, { name: (0, _helpers.sourceIcon)(item.uri), type: 'fontawesome', className: 'source' }) : null,
           this.renderSecondary(item)
         )
       );
@@ -66607,10 +66530,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
 var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
-
-var _Icon = __webpack_require__(/*! ./Icon */ "./src/js/components/Icon.js");
-
-var _Icon2 = _interopRequireDefault(_Icon);
 
 var _ContextMenuTrigger = __webpack_require__(/*! ./ContextMenuTrigger */ "./src/js/components/ContextMenuTrigger.js");
 
@@ -67054,15 +66973,11 @@ var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
-var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
+var _helpers = __webpack_require__(/*! ../util/helpers */ "./src/js/util/helpers.js");
 
 var _Loader = __webpack_require__(/*! ./Loader */ "./src/js/components/Loader.js");
 
 var _Loader2 = _interopRequireDefault(_Loader);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -67085,7 +67000,7 @@ var LazyLoadListener = function (_React$Component) {
       loadKey: _this.props.loadKey
     };
 
-    _this.handleScroll = helpers.throttle(_this.handleScroll.bind(_this), 50);
+    _this.handleScroll = (0, _helpers.throttle)(_this.handleScroll.bind(_this), 50);
     return _this;
   }
 
@@ -67166,11 +67081,7 @@ var _reactRouter = __webpack_require__(/*! react-router */ "./node_modules/react
 
 var _reactRouterDom = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/esm/react-router-dom.js");
 
-var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+var _helpers = __webpack_require__(/*! ../util/helpers */ "./src/js/util/helpers.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -67210,7 +67121,7 @@ var CustomLink = function (_React$Component) {
       // Allow a link to disable auto-scrolling to the top of the page
       // on navigation. Useful for tabs, etc.
       if (!this.props.retainScroll) {
-        helpers.scrollTo(this.props.scrollTo, this.props.scrollTo);
+        (0, _helpers.scrollTo)(this.props.scrollTo, this.props.scrollTo);
       }
     }
   }, {
@@ -67402,10 +67313,6 @@ var _ListItem = __webpack_require__(/*! ./ListItem */ "./src/js/components/ListI
 
 var _ListItem2 = _interopRequireDefault(_ListItem);
 
-var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../services/ui/actions */ "./src/js/services/ui/actions.js");
 
 var uiActions = _interopRequireWildcard(_actions);
@@ -67431,10 +67338,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var List = function (_React$Component) {
   _inherits(List, _React$Component);
 
-  function List(props) {
+  function List() {
     _classCallCheck(this, List);
 
-    return _possibleConstructorReturn(this, (List.__proto__ || Object.getPrototypeOf(List)).call(this, props));
+    return _possibleConstructorReturn(this, (List.__proto__ || Object.getPrototypeOf(List)).apply(this, arguments));
   }
 
   _createClass(List, [{
@@ -67547,11 +67454,7 @@ var _Popularity = __webpack_require__(/*! ./Popularity */ "./src/js/components/P
 
 var _Popularity2 = _interopRequireDefault(_Popularity);
 
-var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+var _helpers = __webpack_require__(/*! ../util/helpers */ "./src/js/util/helpers.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -67583,7 +67486,7 @@ var ListItem = function (_React$Component) {
       // If the item that has just been mounted doesn't have images,
       // try fetching them from LastFM
       if (!item.images) {
-        switch (helpers.uriType(item.uri)) {
+        switch ((0, _helpers.uriType)(item.uri)) {
           case 'artist':
             if (discogsActions) {
               discogsActions.getArtistImages(item.uri, item);
@@ -67605,7 +67508,7 @@ var ListItem = function (_React$Component) {
       if (e.target.tagName.toLowerCase() !== 'a') {
         e.preventDefault();
         this.props.history.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(this.props.item.uri));
-        helpers.scrollTo();
+        (0, _helpers.scrollTo)();
       }
     }
   }, {
@@ -67615,7 +67518,7 @@ var ListItem = function (_React$Component) {
       if (e.target.tagName.toLowerCase() !== 'a') {
         e.preventDefault();
         this.props.history.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(this.props.item.uri));
-        helpers.scrollTo();
+        (0, _helpers.scrollTo)();
       }
     }
   }, {
@@ -68055,10 +67958,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Notifications = function (_React$Component) {
   _inherits(Notifications, _React$Component);
 
-  function Notifications(props) {
+  function Notifications() {
     _classCallCheck(this, Notifications);
 
-    return _possibleConstructorReturn(this, (Notifications.__proto__ || Object.getPrototypeOf(Notifications)).call(this, props));
+    return _possibleConstructorReturn(this, (Notifications.__proto__ || Object.getPrototypeOf(Notifications)).apply(this, arguments));
   }
 
   _createClass(Notifications, [{
@@ -68401,11 +68304,7 @@ var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
-var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+var _storage = __webpack_require__(/*! ../util/storage */ "./src/js/util/storage.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -68450,7 +68349,7 @@ var Parallax = function (_React$Component) {
     value: function loadImage(url) {
       if (url && url !== '') {
         this.setState({
-          loaded: helpers.isCached(url),
+          loaded: (0, _storage.isCached)(url),
           url: url
         });
 
@@ -68574,9 +68473,7 @@ var _Icon = __webpack_require__(/*! ./Icon */ "./src/js/components/Icon.js");
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
+var _helpers = __webpack_require__(/*! ../util/helpers */ "./src/js/util/helpers.js");
 
 var _actions = __webpack_require__(/*! ../services/ui/actions */ "./src/js/services/ui/actions.js");
 
@@ -68736,7 +68633,7 @@ var PlaybackControls = function (_React$Component) {
       // this event as a 'tap'
       if (this.start_position.x + tap_distance_threshold > end_position.x && this.start_position.x - tap_distance_threshold < end_position.x) {
         // Scroll to top (without smooth_scroll)
-        helpers.scrollTo(null, false);
+        (0, _helpers.scrollTo)(null, false);
         this.props.history.push('/queue');
       } else {
         // Swipe to the left = previous track
@@ -69120,10 +69017,6 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../services/ui/actions */ "./src/js/services/ui/actions.js");
 
 var uiActions = _interopRequireWildcard(_actions);
@@ -69145,10 +69038,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var PlaylistGrid = function (_React$Component) {
   _inherits(PlaylistGrid, _React$Component);
 
-  function PlaylistGrid(props) {
+  function PlaylistGrid() {
     _classCallCheck(this, PlaylistGrid);
 
-    return _possibleConstructorReturn(this, (PlaylistGrid.__proto__ || Object.getPrototypeOf(PlaylistGrid)).call(this, props));
+    return _possibleConstructorReturn(this, (PlaylistGrid.__proto__ || Object.getPrototypeOf(PlaylistGrid)).apply(this, arguments));
   }
 
   _createClass(PlaylistGrid, [{
@@ -69303,10 +69196,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var PusherConnectionList = function (_React$Component) {
   _inherits(PusherConnectionList, _React$Component);
 
-  function PusherConnectionList(props) {
+  function PusherConnectionList() {
     _classCallCheck(this, PusherConnectionList);
 
-    return _possibleConstructorReturn(this, (PusherConnectionList.__proto__ || Object.getPrototypeOf(PusherConnectionList)).call(this, props));
+    return _possibleConstructorReturn(this, (PusherConnectionList.__proto__ || Object.getPrototypeOf(PusherConnectionList)).apply(this, arguments));
   }
 
   _createClass(PusherConnectionList, [{
@@ -70329,10 +70222,6 @@ var _Dropzones = __webpack_require__(/*! ./Fields/Dropzones */ "./src/js/compone
 
 var _Dropzones2 = _interopRequireDefault(_Dropzones);
 
-var _Thumbnail = __webpack_require__(/*! ./Thumbnail */ "./src/js/components/Thumbnail.js");
-
-var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
-
 var _actions = __webpack_require__(/*! ../services/ui/actions */ "./src/js/services/ui/actions.js");
 
 var uiActions = _interopRequireWildcard(_actions);
@@ -70354,10 +70243,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Sidebar = function (_React$Component) {
   _inherits(Sidebar, _React$Component);
 
-  function Sidebar(props) {
+  function Sidebar() {
     _classCallCheck(this, Sidebar);
 
-    return _possibleConstructorReturn(this, (Sidebar.__proto__ || Object.getPrototypeOf(Sidebar)).call(this, props));
+    return _possibleConstructorReturn(this, (Sidebar.__proto__ || Object.getPrototypeOf(Sidebar)).apply(this, arguments));
   }
 
   _createClass(Sidebar, [{
@@ -70617,21 +70506,13 @@ var _SnapcastGroups = __webpack_require__(/*! ./SnapcastGroups */ "./src/js/comp
 
 var _SnapcastGroups2 = _interopRequireDefault(_SnapcastGroups);
 
-var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
+var _actions = __webpack_require__(/*! ../services/ui/actions */ "./src/js/services/ui/actions.js");
 
-var helpers = _interopRequireWildcard(_helpers);
+var uiActions = _interopRequireWildcard(_actions);
 
-var _actions = __webpack_require__(/*! ../services/core/actions */ "./src/js/services/core/actions.js");
+var _actions2 = __webpack_require__(/*! ../services/snapcast/actions */ "./src/js/services/snapcast/actions.js");
 
-var coreActions = _interopRequireWildcard(_actions);
-
-var _actions2 = __webpack_require__(/*! ../services/ui/actions */ "./src/js/services/ui/actions.js");
-
-var uiActions = _interopRequireWildcard(_actions2);
-
-var _actions3 = __webpack_require__(/*! ../services/snapcast/actions */ "./src/js/services/snapcast/actions.js");
-
-var actions = _interopRequireWildcard(_actions3);
+var actions = _interopRequireWildcard(_actions2);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -70778,9 +70659,7 @@ var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
-
-var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
+var _arrays = __webpack_require__(/*! ../util/arrays */ "./src/js/util/arrays.js");
 
 var _VolumeControl = __webpack_require__(/*! ./Fields/VolumeControl */ "./src/js/components/Fields/VolumeControl.js");
 
@@ -70802,12 +70681,6 @@ var _SelectField = __webpack_require__(/*! ./Fields/SelectField */ "./src/js/com
 
 var _SelectField2 = _interopRequireDefault(_SelectField);
 
-var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -70819,7 +70692,7 @@ var SnapcastClients = function SnapcastClients(_ref) {
       show_disconnected_clients = _ref.show_disconnected_clients;
 
   if (!show_disconnected_clients && group.clients) {
-    var clients = helpers.applyFilter('connected', true, group.clients);
+    var clients = (0, _arrays.applyFilter)('connected', true, group.clients);
   } else {
     var clients = group.clients;
   }
@@ -70975,6 +70848,10 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
+var _format = __webpack_require__(/*! ../util/format */ "./src/js/util/format.js");
+
+var _arrays = __webpack_require__(/*! ../util/arrays */ "./src/js/util/arrays.js");
+
 var _VolumeControl = __webpack_require__(/*! ./Fields/VolumeControl */ "./src/js/components/Fields/VolumeControl.js");
 
 var _VolumeControl2 = _interopRequireDefault(_VolumeControl);
@@ -70998,10 +70875,6 @@ var _Icon2 = _interopRequireDefault(_Icon);
 var _Link = __webpack_require__(/*! ./Link */ "./src/js/components/Link.js");
 
 var _Link2 = _interopRequireDefault(_Link);
-
-var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
 
 var _actions = __webpack_require__(/*! ../services/snapcast/actions */ "./src/js/services/snapcast/actions.js");
 
@@ -71041,7 +70914,7 @@ var SnapcastGroups = function SnapcastGroups(props) {
       return null;
     }
 
-    var group = helpers.collate(groups[groupId], { clients: clients });
+    var group = (0, _format.collate)(groups[groupId], { clients: clients });
 
     return _react2.default.createElement(
       'div',
@@ -71217,7 +71090,7 @@ var SnapcastGroups = function SnapcastGroups(props) {
       _react2.default.createElement(
         'div',
         { className: 'menu__inner' },
-        helpers.sortItems(groupsArray, 'name').map(function (group) {
+        (0, _arrays.sortItems)(groupsArray, 'name').map(function (group) {
           return renderMenuItem(group);
         })
       )
@@ -71358,10 +71231,6 @@ var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Link = __webpack_require__(/*! ./Link */ "./src/js/components/Link.js");
-
-var _Link2 = _interopRequireDefault(_Link);
-
 var _Icon = __webpack_require__(/*! ./Icon */ "./src/js/components/Icon.js");
 
 var _Icon2 = _interopRequireDefault(_Icon);
@@ -71382,19 +71251,11 @@ var _ContextMenuTrigger = __webpack_require__(/*! ./ContextMenuTrigger */ "./src
 
 var _ContextMenuTrigger2 = _interopRequireDefault(_ContextMenuTrigger);
 
-var _Popularity = __webpack_require__(/*! ./Popularity */ "./src/js/components/Popularity.js");
-
-var _Popularity2 = _interopRequireDefault(_Popularity);
-
 var _ErrorBoundary = __webpack_require__(/*! ./ErrorBoundary */ "./src/js/components/ErrorBoundary.js");
 
 var _ErrorBoundary2 = _interopRequireDefault(_ErrorBoundary);
 
-var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+var _helpers = __webpack_require__(/*! ../util/helpers */ "./src/js/util/helpers.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -71630,13 +71491,13 @@ var Track = function (_React$Component) {
         );
       } else if (this.props.track_context == 'queue') {
         if (track.added_from && track.added_by) {
-          var type = track.added_from ? helpers.uriType(track.added_from) : null;
+          var type = track.added_from ? (0, _helpers.uriType)(track.added_from) : null;
 
           switch (type) {
             case 'discover':
               var link = _react2.default.createElement(
                 _URILink2.default,
-                { type: 'recommendations', uri: helpers.getFromUri('seeds', track.added_from) },
+                { type: 'recommendations', uri: (0, _helpers.getFromUri)('seeds', track.added_from) },
                 'Discover'
               );
               break;
@@ -71669,7 +71530,7 @@ var Track = function (_React$Component) {
               var link = _react2.default.createElement(
                 _URILink2.default,
                 { type: type, uri: track.added_from },
-                helpers.titleCase(type)
+                (0, _helpers.titleCase)(type)
               );
           }
 
@@ -71702,7 +71563,7 @@ var Track = function (_React$Component) {
 
       // If we're touchable, and can sort this tracklist
       var drag_zone = null;
-      if (helpers.isTouchDevice() && this.props.can_sort) {
+      if ((0, _helpers.isTouchDevice)() && this.props.can_sort) {
         className += ' list__item--has-drag-zone';
 
         drag_zone = _react2.default.createElement(
@@ -71799,7 +71660,7 @@ var Track = function (_React$Component) {
             this.props.show_source_icon ? _react2.default.createElement(
               'span',
               { className: 'list__item__column__item list__item__column__item--source' },
-              _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(track.uri), fixedWidth: true })
+              _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: (0, _helpers.sourceIcon)(track.uri), fixedWidth: true })
             ) : null,
             _react2.default.createElement(_ContextMenuTrigger2.default, { className: 'list__item__column__item--context-menu-trigger subtle', onTrigger: function onTrigger(e) {
                 return _this2.props.handleContextMenu(e);
@@ -71846,14 +71707,6 @@ var _Track = __webpack_require__(/*! ./Track */ "./src/js/components/Track.js");
 
 var _Track2 = _interopRequireDefault(_Track);
 
-var _ContextMenuTrigger = __webpack_require__(/*! ./ContextMenuTrigger */ "./src/js/components/ContextMenuTrigger.js");
-
-var _ContextMenuTrigger2 = _interopRequireDefault(_ContextMenuTrigger);
-
-var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../services/mopidy/actions */ "./src/js/services/mopidy/actions.js");
 
 var mopidyActions = _interopRequireWildcard(_actions);
@@ -71861,6 +71714,10 @@ var mopidyActions = _interopRequireWildcard(_actions);
 var _actions2 = __webpack_require__(/*! ../services/ui/actions */ "./src/js/services/ui/actions.js");
 
 var uiActions = _interopRequireWildcard(_actions2);
+
+var _helpers = __webpack_require__(/*! ../util/helpers */ "./src/js/util/helpers.js");
+
+var _arrays = __webpack_require__(/*! ../util/arrays */ "./src/js/util/arrays.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -71966,7 +71823,7 @@ var TrackList = function (_React$Component) {
         selected_tracks = this.digestTracksKeys();
       }
 
-      var selected_tracks_indexes = helpers.arrayOf('index', selected_tracks);
+      var selected_tracks_indexes = (0, _arrays.arrayOf)('index', selected_tracks);
 
       this.props.uiActions.dragStart(e, this.props.track_context, this.props.uri, selected_tracks, selected_tracks_indexes);
     }
@@ -72032,7 +71889,7 @@ var TrackList = function (_React$Component) {
           var dropped_at = siblings.index(over);
 
           if (this.props.reorderTracks !== undefined) {
-            this.props.reorderTracks(helpers.arrayOf('index', this.digestTracksKeys()), dropped_at);
+            this.props.reorderTracks((0, _arrays.arrayOf)('index', this.digestTracksKeys()), dropped_at);
             this.props.uiActions.setSelectedTracks([]);
           }
         }
@@ -72088,8 +71945,8 @@ var TrackList = function (_React$Component) {
       }
 
       var selected_tracks_digested = this.digestTracksKeys(selected_tracks);
-      var selected_tracks_uris = helpers.arrayOf('uri', selected_tracks_digested);
-      var selected_tracks_indexes = helpers.arrayOf('index', selected_tracks_digested);
+      var selected_tracks_uris = (0, _arrays.arrayOf)('uri', selected_tracks_digested);
+      var selected_tracks_indexes = (0, _arrays.arrayOf)('index', selected_tracks_digested);
 
       var data = {
         e: e,
@@ -72171,7 +72028,7 @@ var TrackList = function (_React$Component) {
       } else {
         var selected_tracks = this.digestTracksKeys();
       }
-      var selected_tracks_indexes = helpers.arrayOf('index', selected_tracks);
+      var selected_tracks_indexes = (0, _arrays.arrayOf)('index', selected_tracks);
 
       if (selected_tracks.length <= 0) {
         return this.props.uiActions.createNotification({ content: 'No tracks selected', level: 'error' });
@@ -72183,7 +72040,7 @@ var TrackList = function (_React$Component) {
 
         // Default to playing the URIs
       }
-      var selected_tracks_uris = helpers.arrayOf('uri', selected_tracks);
+      var selected_tracks_uris = (0, _arrays.arrayOf)('uri', selected_tracks);
       return this.props.mopidyActions.playURIs(selected_tracks_uris, this.props.uri);
     }
   }, {
@@ -72193,7 +72050,7 @@ var TrackList = function (_React$Component) {
 
       // Our parent has a handler for this
       if (this.props.removeTracks !== undefined) {
-        var selected_tracks_indexes = helpers.arrayOf('index', selected_tracks);
+        var selected_tracks_indexes = (0, _arrays.arrayOf)('index', selected_tracks);
         return this.props.removeTracks(selected_tracks_indexes);
 
         // No handler? We can't really do anything then, so notify user
@@ -72315,7 +72172,7 @@ var TrackList = function (_React$Component) {
           return _react2.default.createElement(_Track2.default, {
             show_source_icon: _this2.props.show_source_icon,
             key: track_key,
-            mini_zones: _this2.props.slim_mode || helpers.isTouchDevice(),
+            mini_zones: _this2.props.slim_mode || (0, _helpers.isTouchDevice)(),
             track: track,
             track_context: _this2.props.track_context,
             can_sort: _this2.props.track_context == 'queue' || _this2.props.track_context == 'editable-playlist',
@@ -72400,11 +72257,7 @@ var _Link = __webpack_require__(/*! ./Link */ "./src/js/components/Link.js");
 
 var _Link2 = _interopRequireDefault(_Link);
 
-var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+var _helpers = __webpack_require__(/*! ../util/helpers */ "./src/js/util/helpers.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -72413,7 +72266,7 @@ exports.default = (0, _react.memo)(function (props) {
   var uri = props.uri,
       type = props.type;
 
-  var uriType = type || helpers.uriType(uri);
+  var uriType = type || (0, _helpers.uriType)(uri);
   if (!props.unencoded) {
     uri = encodeURIComponent(uri);
   }
@@ -72475,2060 +72328,6 @@ exports.default = (0, _react.memo)(function (props) {
     props.children
   );
 });
-
-/***/ }),
-
-/***/ "./src/js/helpers.js":
-/*!***************************!*\
-  !*** ./src/js/helpers.js ***!
-  \***************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-var isTouchDevice = exports.isTouchDevice = function isTouchDevice() {
-  return 'ontouchstart' in document.documentElement;
-};
-
-/**
- * Returns a function, that, as long as it continues to be invoked, will not
- * be triggered. The function will be called after it stops being called for
- * N milliseconds. If `immediate` is passed, trigger the function on the
- * leading edge, instead of the trailing.
- * */
-var debounce = exports.debounce = function debounce(fn, wait, immediate) {
-  var timeout = void 0;
-  return function () {
-    var context = this;var args = arguments;
-
-    var later = function later() {
-      timeout = null;
-      if (!immediate) {
-        fn.apply(context, args);
-      }
-    };
-
-    var callNow = immediate && !timeout;
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-
-    if (callNow) {
-      fn.apply(context, args);
-    }
-  };
-};
-
-var throttle = exports.throttle = function throttle(fn, delay) {
-  var lastCall = 0;
-  return function () {
-    var now = new Date().getTime();
-    if (now - lastCall < delay) {
-      return;
-    }
-    lastCall = now;
-    return fn.apply(undefined, arguments);
-  };
-};
-
-/**
- * Storage handler
- * All localStorage tasks are handled below. This means we can detect for localStorage issues in one place
- * */
-
-var storage = function () {
-  var uid = new Date();
-  var storage = void 0;
-  var result = void 0;
-  try {
-    (storage = window.localStorage).setItem(uid, uid);
-    result = storage.getItem(uid) == uid;
-    storage.removeItem(uid);
-    return result && storage;
-  } catch (exception) {}
-}();
-
-/**
- * Get a storage value
- *
- * @param key = string
- * @param default_value = mixed (optional, if localStorage key doesn't exist, return this)
- * */
-var getStorage = exports.getStorage = function getStorage(key) {
-  var default_value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-  if (storage) {
-    var value = storage.getItem(key);
-    if (value) {
-      return JSON.parse(value);
-    }
-    return default_value;
-  }
-  console.warn('localStorage not available. Using default value for \'' + key + '\'.');
-  return default_value;
-};
-
-/**
- * Set a storage value
- *
- * @param key = string
- * @param value = object
- * @param replace = boolean (optional, completely replace our local value rather than merging it)
- * */
-var setStorage = exports.setStorage = function setStorage(key, value) {
-  var replace = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-
-  if (storage) {
-    var stored_value = storage.getItem(key);
-
-    // We have nothing to merge with, or we want to completely replace previous value
-    if (!stored_value || replace) {
-      var new_value = value;
-
-      // Merge new value with existing
-    } else {
-      var new_value = _extends({}, JSON.parse(stored_value), value);
-    }
-    storage.setItem(key, JSON.stringify(new_value));
-  } else {
-    console.warn('localStorage not available. \'' + key + '\'\' will not perist when you close your browser.');
-  }
-};
-
-/**
- * Cache handlers
- * This allows arbritrary requests to be cached by key into local storage. Typically key would be
- * a URL, but it could also be a asset id.
- *
- * Use sparingly as localStorage is limited in size! Ideally store only the request data needed,
- * rather than the entire response data.
- */
-var cache = exports.cache = {
-  get: function get(key) {
-    var cache = getStorage('cache', {});
-    if (cache['"' + key + '"'] !== undefined) {
-      return cache['"' + key + '"'];
-    }
-  },
-  set: function set(key, data) {
-    var cache = getStorage('cache', {});
-    cache['"' + key + '"'] = data;
-    setStorage('cache', cache);
-    return true;
-  },
-  clear: function clear() {
-    setStorage('cache', {}, true);
-  }
-
-  /**
-   * Convert a string to JSON, after we've checked whether it needs
-   * conversion or not.
-   *
-   * @param data String or Object
-   * @return Object
-   * */
-};var toJSON = exports.toJSON = function toJSON(data) {
-  // Parse it
-  try {
-    var json = JSON.parse(data);
-    return json;
-
-    // Could not parse string
-  } catch (e) {
-    // Check if it's JSON already
-    if (data.constructor === {}.constructor) {
-      return data;
-    }
-    console.error('Could not convert non-JSON', string);
-  }
-  return {};
-};
-
-/**
- * Set the app's favicon to a specific image.
- *
- * @param filename String
- */
-var setFavicon = exports.setFavicon = function setFavicon(filename) {
-  var links = document.getElementsByClassName('favicon');
-  var _iteratorNormalCompletion = true;
-  var _didIteratorError = false;
-  var _iteratorError = undefined;
-
-  try {
-    for (var _iterator = links[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-      var link = _step.value;
-
-      // Construct new <links>
-      var new_link = document.createElement('link');
-      new_link.className = link.className;
-      new_link.rel = link.rel;
-      new_link.href = '/iris/assets/' + filename;
-      if (link.type) {
-        new_link.type = link.type;
-      }
-
-      // Remove the old one and add the new one
-      document.head.removeChild(link);
-      document.head.appendChild(new_link);
-    }
-  } catch (err) {
-    _didIteratorError = true;
-    _iteratorError = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion && _iterator.return) {
-        _iterator.return();
-      }
-    } finally {
-      if (_didIteratorError) {
-        throw _iteratorError;
-      }
-    }
-  }
-};
-
-/**
- * Check if an image URL is cached or not
- * Useful for bypassing load animations for cached assets (eg parallax)
- *
- * @param url String
- * @return Boolean
- * */
-var isCached = exports.isCached = function isCached(url) {
-  var image = new Image();
-  image.src = url;
-  return image.complete;
-};
-
-/**
- * Digest a react-router's location.search string into an array of values
- *
- * @param key String = the key you want from the URL
- * @param string String = the locaion.search string
- */
-var queryString = exports.queryString = function queryString(key, string) {
-  var compact = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-
-  var elements = string.replace('?', '').split('&');
-  var results = elements.reduce(function (accumulator, current) {
-    var subElements = current.split('=');
-    var results = [];
-
-    // We decode the URI, but also treat "+" as a space. This is needed for backend CGI.encode that
-    // happens when redirecting from an OAuth failure.
-    if (subElements[0] === key) {
-      results = subElements[1].split(',').map(function (item) {
-        return decodeURIComponent(item.replace(/\+/g, '%20'));
-      });
-    }
-    return [].concat(_toConsumableArray(accumulator), _toConsumableArray(results));
-  }, []);
-
-  if (compact && results.length === 1) return results[0];
-  if (compact && results.length === 0) return null;
-  return results;
-};
-
-/**
- * Digest an array of Mopidy image objects into a universal format. We also re-write
- * image URLs to be absolute to the mopidy server (required for proxy setups).
- *
- * @param mopidy = obj (mopidy store object)
- * @param images = array
- * @return array
- * */
-var digestMopidyImages = exports.digestMopidyImages = function digestMopidyImages(mopidy, images) {
-  var digested = [];
-
-  for (var i = 0; i < images.length; i++) {
-    // Image object (ie from images.get)
-    if (_typeof(images[i]) === 'object') {
-      // Accommodate backends that provide URIs vs URLs
-      var url = images[i].url;
-
-      if (!url && images[i].uri) {
-        url = images[i].uri;
-      }
-
-      // Amend our URL
-      images[i].url = url;
-
-      // Replace local images to point directly to our Mopidy server
-      if (url && url.startsWith('/images/')) {
-        url = '//' + mopidy.host + ':' + mopidy.port + url;
-      }
-
-      // String-based image
-    } else if (typeof images[i] === 'string') {
-      // Replace local images to point directly to our Mopidy server
-      if (images[i].startsWith('/images/')) {
-        images[i] = '//' + mopidy.host + ':' + mopidy.port + images[i];
-      }
-    }
-
-    digested.push(images[i]);
-  }
-
-  return digested;
-};
-
-var generateGuid = exports.generateGuid = function generateGuid() {
-  var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'numeric';
-  var length = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 12;
-
-  // numeric
-  if (type == 'numeric') {
-    var date = new Date().valueOf().toString();
-    var random_number = Math.floor(Math.random() * 100).toString();
-    return parseInt(date + random_number);
-  }
-  var format = 'x'.repeat(length);
-  return format.replace(/[xy]/g, function (c) {
-    var r = Math.random() * 16 | 0;var v = c == 'x' ? r : r & 0x3 | 0x8;
-    return v.toString(length);
-  });
-};
-
-var getCurrentPusherConnection = exports.getCurrentPusherConnection = function getCurrentPusherConnection(connections, connectionid) {
-  function isCurrentConnection(connection) {
-    return connection.connectionid == newProps.pusher.connectionid;
-  }
-
-  var currentConnection = newProps.pusher.connections.find(isCurrentConnection);
-  if (!currentConnection) return false;
-
-  return currentConnection;
-};
-
-/**
- * Get a track's icon
- * @param track object
- * @return string
- * */
-var getTrackIcon = exports.getTrackIcon = function getTrackIcon() {
-  var current_track = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-  var core = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
-  if (!core) return false;
-  if (!current_track) return false;
-  if (typeof current_track.uri === 'undefined') return false;
-  if (typeof core.tracks[current_track.uri] === 'undefined') return false;
-  var track = core.tracks[current_track.uri];
-  if (!track.images) return false;
-  return formatImages(track.images).small;
-};
-
-/**
- * Format image URLs into a consistent size-based object
- * We digest all our known image source formats into a universal small,medium,large,huge object
- *
- * @param $data mixed
- * @return Object
- * */
-var formatImages = exports.formatImages = function formatImages(data) {
-  var sizes = {
-    formatted: true,
-    small: null,
-    medium: null,
-    large: null,
-    huge: null
-  };
-
-  if (!data) {
-    return sizes;
-  }
-
-  // An array of images has been provided
-  if (Array.isArray(data)) {
-    if (data.length <= 0) {
-      return sizes;
-    }
-
-    for (var i = 0; i < data.length; i++) {
-      var image = data[i];
-
-      // Already-formatted
-      if (image.formatted) {
-        return image;
-
-        // Mopidy image object
-      }if (image.__model__ && image.__model__ == 'Image') {
-        if (image.width < 400) {
-          sizes.small = image.url;
-        } else if (image.width < 800) {
-          sizes.medium = image.url;
-        } else if (image.width < 1000) {
-          sizes.large = image.url;
-        } else {
-          sizes.huge = image.url;
-        }
-
-        // Mopidy image string
-      } else if (typeof image === 'string') {
-        sizes.small = image;
-
-        // spotify-styled images
-      } else if (image.width !== undefined) {
-        if (image.width < 400) {
-          sizes.small = image.url;
-        } else if (image.width < 800) {
-          sizes.medium = image.url;
-        } else if (image.width < 1000) {
-          sizes.large = image.url;
-        } else {
-          sizes.huge = image.url;
-        }
-
-        // lastfm-styled images
-      } else if (image.size !== undefined) {
-        switch (image.size) {
-          case 'mega':
-          case 'extralarge':
-          case 'large':
-            sizes.medium = image['#text'];
-            break;
-          case 'medium':
-          case 'small':
-            sizes.small = image['#text'];
-            break;
-        }
-      }
-    }
-
-    // An object of images has been provided
-    // The Genius avatar object is an example of this
-  } else {
-    if (data.small) sizes.small = data.small.url;
-    if (data.medium) sizes.medium = data.medium.url;
-    if (data.large) sizes.large = data.large.url;
-    if (data.huge) sizes.huge = data.huge.url;
-  }
-
-  // Inherit images where we haven't been given the appropriate size
-  // Ie small duplicated to tiny, large duplicated to medium, etc
-  if (!sizes.small) {
-    if (sizes.medium) sizes.small = sizes.medium;else if (sizes.large) sizes.small = sizes.large;else if (sizes.huge) sizes.small = sizes.huge;else sizes.small = null;
-  }
-  if (!sizes.medium) {
-    if (sizes.large) sizes.medium = sizes.large;else if (sizes.huge) sizes.medium = sizes.huge;else sizes.medium = sizes.small;
-  }
-  if (!sizes.large) sizes.large = sizes.medium;
-  if (!sizes.huge) sizes.huge = sizes.large;
-
-  return sizes;
-};
-
-/**
- * Format a simple object
- * This is a shell record containing only the bare essentials. Typically
- * a tracks' artists/album
- *
- * @param data obj
- * @return obj
- * */
-var formatSimpleObject = exports.formatSimpleObject = function formatSimpleObject(data) {
-  var simple_object = {};
-  var fields = ['uri', 'name'];
-
-  var _iteratorNormalCompletion2 = true;
-  var _didIteratorError2 = false;
-  var _iteratorError2 = undefined;
-
-  try {
-    for (var _iterator2 = fields[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-      var field = _step2.value;
-
-      if (data.hasOwnProperty(field)) {
-        simple_object[field] = data[field];
-      }
-    }
-  } catch (err) {
-    _didIteratorError2 = true;
-    _iteratorError2 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion2 && _iterator2.return) {
-        _iterator2.return();
-      }
-    } finally {
-      if (_didIteratorError2) {
-        throw _iteratorError2;
-      }
-    }
-  }
-
-  return simple_object;
-};
-
-/**
- * Format multiple items
- *
- * @param tracks Array
- * @return Array
- * */
-var formatTracks = exports.formatTracks = function formatTracks() {
-  var records = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-
-  var formatted = [];
-  var _iteratorNormalCompletion3 = true;
-  var _didIteratorError3 = false;
-  var _iteratorError3 = undefined;
-
-  try {
-    for (var _iterator3 = records[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-      var record = _step3.value;
-
-      formatted.push(formatTrack(record));
-    }
-  } catch (err) {
-    _didIteratorError3 = true;
-    _iteratorError3 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion3 && _iterator3.return) {
-        _iterator3.return();
-      }
-    } finally {
-      if (_didIteratorError3) {
-        throw _iteratorError3;
-      }
-    }
-  }
-
-  return formatted;
-};
-var formatAlbums = exports.formatAlbums = function formatAlbums() {
-  var records = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-
-  var formatted = [];
-  var _iteratorNormalCompletion4 = true;
-  var _didIteratorError4 = false;
-  var _iteratorError4 = undefined;
-
-  try {
-    for (var _iterator4 = records[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-      var record = _step4.value;
-
-      formatted.push(formatAlbum(record));
-    }
-  } catch (err) {
-    _didIteratorError4 = true;
-    _iteratorError4 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion4 && _iterator4.return) {
-        _iterator4.return();
-      }
-    } finally {
-      if (_didIteratorError4) {
-        throw _iteratorError4;
-      }
-    }
-  }
-
-  return formatted;
-};
-var formatArtists = exports.formatArtists = function formatArtists() {
-  var records = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-
-  var formatted = [];
-  var _iteratorNormalCompletion5 = true;
-  var _didIteratorError5 = false;
-  var _iteratorError5 = undefined;
-
-  try {
-    for (var _iterator5 = records[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-      var record = _step5.value;
-
-      formatted.push(formatArtist(record));
-    }
-  } catch (err) {
-    _didIteratorError5 = true;
-    _iteratorError5 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion5 && _iterator5.return) {
-        _iterator5.return();
-      }
-    } finally {
-      if (_didIteratorError5) {
-        throw _iteratorError5;
-      }
-    }
-  }
-
-  return formatted;
-};
-var formatPlaylists = exports.formatPlaylists = function formatPlaylists() {
-  var records = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-
-  var formatted = [];
-  var _iteratorNormalCompletion6 = true;
-  var _didIteratorError6 = false;
-  var _iteratorError6 = undefined;
-
-  try {
-    for (var _iterator6 = records[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-      var record = _step6.value;
-
-      formatted.push(formatTrack(record));
-    }
-  } catch (err) {
-    _didIteratorError6 = true;
-    _iteratorError6 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion6 && _iterator6.return) {
-        _iterator6.return();
-      }
-    } finally {
-      if (_didIteratorError6) {
-        throw _iteratorError6;
-      }
-    }
-  }
-
-  return formatted;
-};
-var formatUsers = exports.formatUsers = function formatUsers() {
-  var records = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-
-  var formatted = [];
-  var _iteratorNormalCompletion7 = true;
-  var _didIteratorError7 = false;
-  var _iteratorError7 = undefined;
-
-  try {
-    for (var _iterator7 = records[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-      var record = _step7.value;
-
-      formatted.push(formatUser(record));
-    }
-  } catch (err) {
-    _didIteratorError7 = true;
-    _iteratorError7 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion7 && _iterator7.return) {
-        _iterator7.return();
-      }
-    } finally {
-      if (_didIteratorError7) {
-        throw _iteratorError7;
-      }
-    }
-  }
-
-  return formatted;
-};
-
-/**
- * Format our album objects into a universal format
- *
- * @param data obj
- * @return obj
- * */
-var formatAlbum = exports.formatAlbum = function formatAlbum(data) {
-  var album = {};
-  var fields = ['uri', 'provider', 'name', 'type', 'added_at', 'release_date', 'listeners', 'play_count', 'wiki', 'wiki_publish_date', 'popularity', 'images', 'artists_uris', 'tracks_uris', 'tracks_total', 'tracks_more', 'artists'];
-
-  // Loop fields and import from data
-  var _iteratorNormalCompletion8 = true;
-  var _didIteratorError8 = false;
-  var _iteratorError8 = undefined;
-
-  try {
-    for (var _iterator8 = fields[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
-      var field = _step8.value;
-
-      if (data.hasOwnProperty(field)) {
-        album[field] = data[field];
-      }
-    }
-  } catch (err) {
-    _didIteratorError8 = true;
-    _iteratorError8 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion8 && _iterator8.return) {
-        _iterator8.return();
-      }
-    } finally {
-      if (_didIteratorError8) {
-        throw _iteratorError8;
-      }
-    }
-  }
-
-  if (album.images && !album.images.formatted) {
-    album.images = formatImages(album.images);
-  }
-
-  if (data.date && !album.date) {
-    album.release_date = data.date;
-  }
-  if (data.album_type) {
-    album.type = data.album_type;
-  }
-  if (album.provider === undefined && album.uri !== undefined) {
-    album.provider = uriSource(album.uri);
-  }
-
-  return album;
-};
-
-/**
- * Format our artist objects into a universal format
- *
- * @param data obj
- * @return obj
- * */
-var formatArtist = exports.formatArtist = function formatArtist(data) {
-  var artist = {};
-  var fields = ['uri', 'provider', 'mbid', 'name', 'type', 'popularity', 'followers', 'listeners', 'added_at', 'biography', 'biography_link', 'biography_publish_date', 'related_artists_uris', 'albums_uris', 'albums_total', 'albums_more', 'tracks_uris', 'tracks_total', 'tracks_more'];
-
-  // Loop fields and import from data
-  var _iteratorNormalCompletion9 = true;
-  var _didIteratorError9 = false;
-  var _iteratorError9 = undefined;
-
-  try {
-    for (var _iterator9 = fields[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
-      var field = _step9.value;
-
-      if (data.hasOwnProperty(field)) {
-        artist[field] = data[field];
-      }
-    }
-  } catch (err) {
-    _didIteratorError9 = true;
-    _iteratorError9 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion9 && _iterator9.return) {
-        _iterator9.return();
-      }
-    } finally {
-      if (_didIteratorError9) {
-        throw _iteratorError9;
-      }
-    }
-  }
-
-  if (data.images && data.images.length > 0) {
-    artist.images = [formatImages(data.images)];
-  }
-
-  if (data.followers && data.followers.total !== undefined) {
-    artist.followers = data.followers.total;
-  }
-
-  if (data.bio) {
-    if (data.bio.content && !artist.biography) {
-      artist.biography = data.bio.content;
-    }
-    if (data.bio.links && data.bio.links.link && data.bio.links.link.href && !artist.biography_link) {
-      artist.biography_link = data.bio.links.link.href;
-    }
-    if (data.bio.published && !artist.biography_publish_date) {
-      artist.biography_publish_date = data.bio.published;
-    }
-  }
-
-  if (artist.provider === undefined && artist.uri !== undefined) {
-    artist.provider = uriSource(artist.uri);
-  }
-
-  return artist;
-};
-
-/**
- * Format our playlist objects into a universal format
- *
- * @param data obj
- * @return obj
- * */
-var formatPlaylist = exports.formatPlaylist = function formatPlaylist(data) {
-  var playlist = {};
-  var fields = ['uri', 'snapshot_id', 'provider', 'type', 'collaborative', 'public', 'name', 'description', 'images', 'popularity', 'followers', 'added_at', 'last_modified_date', 'can_edit', 'owner', 'user_uri', 'tracks_uris', 'tracks_total', 'tracks_more'];
-
-  // Loop fields and import from data
-  var _iteratorNormalCompletion10 = true;
-  var _didIteratorError10 = false;
-  var _iteratorError10 = undefined;
-
-  try {
-    for (var _iterator10 = fields[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
-      var field = _step10.value;
-
-      if (data.hasOwnProperty(field)) {
-        playlist[field] = data[field];
-      }
-    }
-  } catch (err) {
-    _didIteratorError10 = true;
-    _iteratorError10 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion10 && _iterator10.return) {
-        _iterator10.return();
-      }
-    } finally {
-      if (_didIteratorError10) {
-        throw _iteratorError10;
-      }
-    }
-  }
-
-  if (playlist.images && !playlist.images.formatted) {
-    playlist.images = formatImages(playlist.images);
-  }
-
-  if (data.followers && data.followers.total !== undefined) {
-    playlist.followers = data.followers.total;
-  }
-
-  if (data.tracks && data.tracks.total !== undefined) {
-    playlist.tracks_total = data.tracks.total;
-  }
-
-  if (data.owner) {
-    playlist.owner = {
-      id: data.owner.id,
-      uri: data.owner.uri,
-      name: data.owner.display_name ? data.owner.display_name : null
-    };
-    playlist.user_uri = data.owner.uri;
-  }
-
-  // Spotify upgraded their playlists URI to remove user component (Sept 2018)
-  playlist.uri = upgradeSpotifyPlaylistUri(playlist.uri);
-
-  if (playlist.provider === undefined && playlist.uri !== undefined) {
-    playlist.provider = uriSource(playlist.uri);
-  }
-
-  return playlist;
-};
-
-/**
- * Format a user objects into a universal format
- *
- * @param data obj
- * @return obj
- * */
-var formatUser = exports.formatUser = function formatUser(data) {
-  var user = {};
-  var fields = ['id', 'uri', 'provider', 'name', 'images', 'followers', 'playlists_uris', 'playlists_total', 'playlists_more'];
-
-  // Loop fields and import from data
-  var _iteratorNormalCompletion11 = true;
-  var _didIteratorError11 = false;
-  var _iteratorError11 = undefined;
-
-  try {
-    for (var _iterator11 = fields[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
-      var field = _step11.value;
-
-      if (data.hasOwnProperty(field)) {
-        user[field] = data[field];
-      }
-    }
-  } catch (err) {
-    _didIteratorError11 = true;
-    _iteratorError11 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion11 && _iterator11.return) {
-        _iterator11.return();
-      }
-    } finally {
-      if (_didIteratorError11) {
-        throw _iteratorError11;
-      }
-    }
-  }
-
-  if (!user.images && data.image) {
-    user.images = formatImages(data.image);
-  } else if (!user.images && data.avatar) {
-    user.images = formatImages(data.avatar);
-  } else if (user.images && !user.images.formatted) {
-    user.images = formatImages(user.images);
-  }
-
-  if (data.followers && data.followers.total !== undefined) {
-    user.followers = data.followers.total;
-  }
-  if (data.realname) {
-    user.name = data.realname;
-  }
-  if (data.display_name && !user.name) {
-    user.name = data.display_name;
-  }
-  if (data.id && !user.name) {
-    user.name = data.id;
-  }
-  if (user.provider === undefined && user.uri !== undefined) {
-    user.provider = uriSource(user.uri);
-  }
-
-  return user;
-};
-
-/**
- * Format tracks into our universal format
- *
- * @param data obj
- * @return obj
- * */
-var formatTrack = exports.formatTrack = function formatTrack(data) {
-  var track = {};
-  var fields = ['uri', 'tlid', 'provider', 'name', 'images', 'release_date', 'disc_number', 'track_number', 'duration', 'followers', 'popularity', 'userloved', 'is_explicit', 'is_local', 'lyrics', 'lyrics_path', 'lyrics_results', 'artists', // Array of simple records
-  'album'];
-
-  // Nested track object (eg in spotify playlist)
-  if (data && data.track && isObject(data.track)) {
-    // Copy wrapper's details (if applicable)
-    if (data.added_by) {
-      data.track.added_by = data.added_by;
-    }
-    if (data.added_at) {
-      data.track.added_at = data.added_at;
-    }
-    if (data.tlid) {
-      data.track.tlid = data.tlid;
-    }
-
-    // And now flatten
-    data = data.track;
-  }
-
-  // Loop fields and import from data
-  var _iteratorNormalCompletion12 = true;
-  var _didIteratorError12 = false;
-  var _iteratorError12 = undefined;
-
-  try {
-    for (var _iterator12 = fields[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
-      var field = _step12.value;
-
-      if (data.hasOwnProperty(field)) {
-        track[field] = data[field];
-      }
-    }
-  } catch (err) {
-    _didIteratorError12 = true;
-    _iteratorError12 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion12 && _iterator12.return) {
-        _iterator12.return();
-      }
-    } finally {
-      if (_didIteratorError12) {
-        throw _iteratorError12;
-      }
-    }
-  }
-
-  if (data.followers && data.followers.total) {
-    track.followers = data.followers.total;
-  }
-
-  if (track.duration === undefined && data.duration_ms !== undefined) {
-    track.duration = data.duration_ms;
-  } else if (track.duration === undefined && data.length !== undefined) {
-    track.duration = data.length;
-  }
-
-  if (track.track_number === undefined && data.track_no !== undefined) {
-    track.track_number = data.track_no;
-  }
-
-  if (track.disc_number === undefined && data.disc_no !== undefined) {
-    track.disc_number = data.disc_no;
-  }
-
-  if (track.release_date === undefined && data.date !== undefined) {
-    track.release_date = data.date;
-  }
-
-  if (track.explicit === undefined && data.explicit !== undefined) {
-    track.is_explicit = data.explicit;
-  }
-
-  // Copy images from albums (if applicable)
-  // TOOD: Identify if we stil need this...
-  if (data.album && data.album.images) {
-    if (track.images === undefined || !track.images.formatted) {
-      track.images = formatImages(data.album.images);
-    }
-  }
-
-  if (track.provider === undefined && track.uri !== undefined) {
-    track.provider = uriSource(track.uri);
-  }
-
-  return track;
-};
-
-/**
- * Format a snapcast client object into a universal format
- *
- * @param data obj
- * @return obj
- * */
-var formatClient = exports.formatClient = function formatClient(data) {
-  var client = {};
-  var fields = ['id', 'connected', 'name', 'host_name', 'volume', 'mute', 'latency', 'power_on_command', 'power_off_command'];
-
-  var _iteratorNormalCompletion13 = true;
-  var _didIteratorError13 = false;
-  var _iteratorError13 = undefined;
-
-  try {
-    for (var _iterator13 = fields[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
-      var field = _step13.value;
-
-      if (data.hasOwnProperty(field)) {
-        client[field] = data[field];
-      }
-    }
-  } catch (err) {
-    _didIteratorError13 = true;
-    _iteratorError13 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion13 && _iterator13.return) {
-        _iterator13.return();
-      }
-    } finally {
-      if (_didIteratorError13) {
-        throw _iteratorError13;
-      }
-    }
-  }
-
-  if (data.config) {
-    if (client.latency === undefined && data.config.latency !== undefined) {
-      client.latency = data.config.latency;
-    }
-
-    if (!client.name && data.config.name) {
-      client.name = data.config.name;
-    }
-
-    if (data.config.volume) {
-      if (data.config.volume.percent) {
-        client.volume = data.config.volume.percent;
-      }
-      if (data.config.volume.muted) {
-        client.mute = data.config.volume.muted;
-      }
-    }
-  } else {
-    if (client.latency === undefined && data.latency !== undefined) {
-      client.latency = data.latency;
-    }
-    if (_typeof(data.volume) === 'object') {
-      if (data.volume.percent) {
-        client.volume = data.volume.percent;
-      }
-      if (data.volume.muted) {
-        client.mute = data.volume.muted;
-      }
-    }
-  }
-
-  if (client.name === undefined && data.host && data.host.name) {
-    client.name = data.host.name;
-  }
-
-  return client;
-};
-
-/**
- * Format a snapcast client object into a universal format
- *
- * @param data obj
- * @return obj
- * */
-var formatGroup = exports.formatGroup = function formatGroup(data) {
-  var group = {};
-  var fields = ['id', 'name', 'mute', 'volume', 'stream_id', 'clients_ids'];
-
-  var _iteratorNormalCompletion14 = true;
-  var _didIteratorError14 = false;
-  var _iteratorError14 = undefined;
-
-  try {
-    for (var _iterator14 = fields[Symbol.iterator](), _step14; !(_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done); _iteratorNormalCompletion14 = true) {
-      var field = _step14.value;
-
-      if (data.hasOwnProperty(field)) {
-        group[field] = data[field];
-      }
-    }
-  } catch (err) {
-    _didIteratorError14 = true;
-    _iteratorError14 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion14 && _iterator14.return) {
-        _iterator14.return();
-      }
-    } finally {
-      if (_didIteratorError14) {
-        throw _iteratorError14;
-      }
-    }
-  }
-
-  if (group.mute === undefined && data.muted !== undefined) {
-    group.mute = data.muted;
-  }
-
-  return group;
-};
-
-/**
- * Collate an object with external references into a fully self-contained object
- * We merge *_uris references (ie tracks_uris) into the main object
- *
- * @param object Obj
- * @param indexes Obj (the relevant core indexes)
- * @return object Obj
- * */
-var collate = exports.collate = function collate(obj) {
-  var indexes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-  // First, let's reset this object
-  // This is important because by changing this object, we inadvertently
-  // change the source object (ie the indexed record), which undoes the
-  // efficiencies of a lean index object
-  obj = _extends({}, obj);
-
-  // Setup empty arrays for the appropriate reference objects
-  // This helps create a consistent object structure
-  if (obj.artists_uris !== undefined) obj.artists = [];
-  if (obj.albums_uris !== undefined) obj.albums = [];
-  if (obj.tracks_uris !== undefined) obj.tracks = [];
-  if (obj.users_uris !== undefined) obj.users = [];
-  if (obj.playlists_uris !== undefined) obj.playlists = [];
-  if (obj.related_artists_uris !== undefined) obj.related_artists = [];
-  if (obj.clients_ids !== undefined) obj.clients = [];
-
-  if (indexes.artists) {
-    if (obj.artists_uris) {
-      var _iteratorNormalCompletion15 = true;
-      var _didIteratorError15 = false;
-      var _iteratorError15 = undefined;
-
-      try {
-        for (var _iterator15 = obj.artists_uris[Symbol.iterator](), _step15; !(_iteratorNormalCompletion15 = (_step15 = _iterator15.next()).done); _iteratorNormalCompletion15 = true) {
-          var uri = _step15.value;
-
-          if (indexes.artists[uri]) {
-            obj.artists.push(indexes.artists[uri]);
-          }
-        }
-      } catch (err) {
-        _didIteratorError15 = true;
-        _iteratorError15 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion15 && _iterator15.return) {
-            _iterator15.return();
-          }
-        } finally {
-          if (_didIteratorError15) {
-            throw _iteratorError15;
-          }
-        }
-      }
-    }
-    if (obj.related_artists_uris) {
-      var _iteratorNormalCompletion16 = true;
-      var _didIteratorError16 = false;
-      var _iteratorError16 = undefined;
-
-      try {
-        for (var _iterator16 = obj.related_artists_uris[Symbol.iterator](), _step16; !(_iteratorNormalCompletion16 = (_step16 = _iterator16.next()).done); _iteratorNormalCompletion16 = true) {
-          var uri = _step16.value;
-
-          if (indexes.artists[uri]) {
-            obj.related_artists.push(indexes.artists[uri]);
-          }
-        }
-      } catch (err) {
-        _didIteratorError16 = true;
-        _iteratorError16 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion16 && _iterator16.return) {
-            _iterator16.return();
-          }
-        } finally {
-          if (_didIteratorError16) {
-            throw _iteratorError16;
-          }
-        }
-      }
-    }
-    if (obj.artist_uri) {
-      if (indexes.artists[obj.artist_uri]) {
-        obj.artist = indexes.artists[obj.artist_uri];
-      }
-    }
-  }
-
-  if (indexes.albums) {
-    if (obj.albums_uris) {
-      var _iteratorNormalCompletion17 = true;
-      var _didIteratorError17 = false;
-      var _iteratorError17 = undefined;
-
-      try {
-        for (var _iterator17 = obj.albums_uris[Symbol.iterator](), _step17; !(_iteratorNormalCompletion17 = (_step17 = _iterator17.next()).done); _iteratorNormalCompletion17 = true) {
-          var uri = _step17.value;
-
-          if (indexes.albums[uri]) {
-            obj.albums.push(indexes.albums[uri]);
-          }
-        }
-      } catch (err) {
-        _didIteratorError17 = true;
-        _iteratorError17 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion17 && _iterator17.return) {
-            _iterator17.return();
-          }
-        } finally {
-          if (_didIteratorError17) {
-            throw _iteratorError17;
-          }
-        }
-      }
-    }
-    if (obj.album_uri) {
-      if (indexes.albums[obj.album_uri]) {
-        obj.album = indexes.albums[obj.album_uri];
-      }
-    }
-  }
-
-  if (indexes.tracks) {
-    if (obj.tracks_uris) {
-      var _iteratorNormalCompletion18 = true;
-      var _didIteratorError18 = false;
-      var _iteratorError18 = undefined;
-
-      try {
-        for (var _iterator18 = obj.tracks_uris[Symbol.iterator](), _step18; !(_iteratorNormalCompletion18 = (_step18 = _iterator18.next()).done); _iteratorNormalCompletion18 = true) {
-          var uri = _step18.value;
-
-          if (indexes.tracks[uri]) {
-            obj.tracks.push(indexes.tracks[uri]);
-          }
-        }
-      } catch (err) {
-        _didIteratorError18 = true;
-        _iteratorError18 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion18 && _iterator18.return) {
-            _iterator18.return();
-          }
-        } finally {
-          if (_didIteratorError18) {
-            throw _iteratorError18;
-          }
-        }
-      }
-    }
-    if (obj.track_uri) {
-      if (indexes.tracks[obj.track_uri]) {
-        obj.track = indexes.tracks[obj.track_uri];
-      }
-    }
-  }
-
-  if (indexes.users) {
-    if (obj.users_uris) {
-      var _iteratorNormalCompletion19 = true;
-      var _didIteratorError19 = false;
-      var _iteratorError19 = undefined;
-
-      try {
-        for (var _iterator19 = obj.users_uris[Symbol.iterator](), _step19; !(_iteratorNormalCompletion19 = (_step19 = _iterator19.next()).done); _iteratorNormalCompletion19 = true) {
-          var uri = _step19.value;
-
-          if (indexes.users[uri]) {
-            obj.users.push(indexes.users[uri]);
-          }
-        }
-      } catch (err) {
-        _didIteratorError19 = true;
-        _iteratorError19 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion19 && _iterator19.return) {
-            _iterator19.return();
-          }
-        } finally {
-          if (_didIteratorError19) {
-            throw _iteratorError19;
-          }
-        }
-      }
-    }
-    if (obj.user_uri) {
-      if (indexes.users[obj.user_uri]) {
-        obj.user = indexes.users[obj.user_uri];
-      }
-    }
-  }
-
-  if (indexes.playlists) {
-    if (obj.playlists_uris) {
-      var _iteratorNormalCompletion20 = true;
-      var _didIteratorError20 = false;
-      var _iteratorError20 = undefined;
-
-      try {
-        for (var _iterator20 = obj.playlists_uris[Symbol.iterator](), _step20; !(_iteratorNormalCompletion20 = (_step20 = _iterator20.next()).done); _iteratorNormalCompletion20 = true) {
-          var uri = _step20.value;
-
-          if (indexes.playlists[uri]) {
-            obj.playlists.push(indexes.playlists[uri]);
-          }
-        }
-      } catch (err) {
-        _didIteratorError20 = true;
-        _iteratorError20 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion20 && _iterator20.return) {
-            _iterator20.return();
-          }
-        } finally {
-          if (_didIteratorError20) {
-            throw _iteratorError20;
-          }
-        }
-      }
-    }
-    if (obj.playlist_uri) {
-      if (indexes.playlists[obj.playlist_uri]) {
-        obj.playlist = indexes.playlists[obj.playlist_uri];
-      }
-    }
-  }
-
-  if (indexes.clients) {
-    if (obj.clients_ids) {
-      var _iteratorNormalCompletion21 = true;
-      var _didIteratorError21 = false;
-      var _iteratorError21 = undefined;
-
-      try {
-        for (var _iterator21 = obj.clients_ids[Symbol.iterator](), _step21; !(_iteratorNormalCompletion21 = (_step21 = _iterator21.next()).done); _iteratorNormalCompletion21 = true) {
-          var id = _step21.value;
-
-          if (indexes.clients[id]) {
-            obj.clients.push(indexes.clients[id]);
-          }
-        }
-      } catch (err) {
-        _didIteratorError21 = true;
-        _iteratorError21 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion21 && _iterator21.return) {
-            _iterator21.return();
-          }
-        } finally {
-          if (_didIteratorError21) {
-            throw _iteratorError21;
-          }
-        }
-      }
-    }
-  }
-
-  return obj;
-};
-
-/**
- * Figure out a URI's source namespace
- * @param uri = string
- * */
-var uriSource = exports.uriSource = function uriSource(uri) {
-  if (!uri) {
-    return false;
-  }
-  var exploded = uri.split(':');
-  return exploded[0];
-};
-/**
- * Identify what kind of asset a URI is (playlist, album, etc)
- *
- * @param uri = string
- * @return string
- * */
-var uriType = exports.uriType = function uriType(uri) {
-  if (!uri) return null;
-
-  var exploded = uri.split(':');
-
-  if (exploded[0] === 'm3u') {
-    return 'playlist';
-  }
-
-  if (exploded[0] === 'iris') {
-    return exploded[1];
-  }
-
-  switch (exploded[1]) {
-    case 'track':
-    case 'artist':
-    case 'album':
-    case 'playlist':
-    case 'genre':
-      return exploded[1];
-    case 'user':
-      if (exploded.length > 3 && exploded[3] == 'playlist') {
-        return 'playlist';
-      }
-      return exploded[1];
-    default:
-      return null;
-  }
-};
-
-var sourceIcon = exports.sourceIcon = function sourceIcon(uri) {
-  var source = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-
-  if (uri) source = uriSource(uri);
-  switch (source) {
-    case 'local':
-    case 'm3u':
-      return 'folder';
-
-    case 'gmusic':
-      return 'google';
-
-    case 'podcast':
-    case 'podcast+file':
-    case 'podcast+http':
-    case 'podcast+https':
-    case 'podcast+itunes':
-      return 'podcast';
-
-    case 'tunein':
-    case 'somafm':
-    case 'dirble':
-      return 'microphone';
-
-    default:
-      return source;
-  }
-};
-
-/**
- * Get an element from a URI
- * @param element = string, the element we wish to extract
- * @param uri = string
- * */
-var getFromUri = exports.getFromUri = function getFromUri(element) {
-  var uri = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-
-  var exploded = uri.split(':');
-  var namespace = exploded[0];
-
-  switch (element) {
-    case 'mbid':
-      var index = exploded.indexOf('mbid');
-      if (index > -1) return exploded[index + 1];
-      break;
-
-    case 'artistid':
-      if (exploded[1] == 'artist') {
-        return exploded[2];
-      }
-      break;
-
-    case 'albumid':
-      if (exploded[1] == 'album') {
-        return exploded[2];
-      }
-      break;
-
-    case 'playlistid':
-      if (exploded[1] == 'playlist') {
-        return exploded[2];
-      }if (exploded[1] == 'user' && exploded[3] == 'playlist') {
-        return exploded[4];
-      }
-      break;
-
-    case 'playlistowner':
-      if (exploded[1] == 'user' && exploded[3] == 'playlist') {
-        return exploded[2];
-      }
-      break;
-
-    case 'trackid':
-      if (exploded[1] == 'track') {
-        return exploded[2];
-      }
-      break;
-
-    case 'userid':
-      if (exploded[1] == 'user') {
-        return exploded[2];
-      }
-      break;
-
-    case 'genreid':
-      if (exploded[1] == 'genre') {
-        return exploded[2];
-      }
-      break;
-
-    case 'seeds':
-      if (exploded[1] == 'discover') {
-        return exploded[2];
-      } else if (exploded[1] === 'radio') {
-        var seeds = exploded[2].split(',');
-        return seeds.map(function (seed) {
-          return seed.replace(/_/gi, ':');
-        });
-      }
-      break;
-
-    case 'searchtype':
-      if (exploded[1] == 'search') {
-        return exploded[2];
-      }
-      break;
-
-    case 'searchterm':
-      if (exploded[1] == 'search') {
-        return exploded[3];
-      }
-      break;
-
-    default:
-      return null;
-  }
-};
-
-/**
- * Build a link to an asset. Using the URI type we can ascertain where we need
- * to direct the user (eg /track/local:track:1235.mp3)
- *
- * @param $uri = String
- * @return String
- * */
-var buildLink = exports.buildLink = function buildLink(uri) {
-  // Start the link with the URI type
-  var type = uriType(uri);
-  var link = '/' + type + '/';
-
-  // Encode the whole URI as though it's a component. This makes it URL friendly for
-  // all Mopidy backends (some use URIs like local:track:http://rss.com/stuff.mp3) which
-  // is never going to work nicely.
-  uri = encodeURIComponent(uri);
-  link += uri;
-
-  return link;
-};
-
-/**
- * Digest an array of objects and pull into simple array of one property
- *
- * @param property = string
- * @param items = Array
- * @return Array
- * */
-var arrayOf = exports.arrayOf = function arrayOf(property, items) {
-  var array = [];
-  var _iteratorNormalCompletion22 = true;
-  var _didIteratorError22 = false;
-  var _iteratorError22 = undefined;
-
-  try {
-    for (var _iterator22 = items[Symbol.iterator](), _step22; !(_iteratorNormalCompletion22 = (_step22 = _iterator22.next()).done); _iteratorNormalCompletion22 = true) {
-      var item = _step22.value;
-
-      // Make sure the property is defined
-      if (item[property] !== undefined && item[property] != null) {
-        array.push(item[property]);
-      }
-    }
-  } catch (err) {
-    _didIteratorError22 = true;
-    _iteratorError22 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion22 && _iterator22.return) {
-        _iterator22.return();
-      }
-    } finally {
-      if (_didIteratorError22) {
-        throw _iteratorError22;
-      }
-    }
-  }
-
-  return array;
-};
-
-/**
- * Merge duplicated items in an array
- *
- * @param list Array the unclean array
- * @param key string = the unique key (id, uri, tlid, etc)
- * */
-var mergeDuplicates = exports.mergeDuplicates = function mergeDuplicates(list, key) {
-  var clean_list = [];
-  var keyed_list = {};
-
-  for (var i in list) {
-    var item = list[i];
-    if (item[key] in keyed_list) {
-      item = _extends({}, keyed_list[item[key]], item);
-    }
-    keyed_list[item[key]] = item;
-  }
-
-  for (i in keyed_list) {
-    clean_list.push(keyed_list[i]);
-  }
-
-  return clean_list;
-};
-
-/**
- * Remove duplicate items in a simple array
- *
- * @param list Array the unclean array
- * */
-var removeDuplicates = exports.removeDuplicates = function removeDuplicates(array) {
-  var unique = [];
-
-  for (var i in array) {
-    if (unique.indexOf(array[i]) <= -1) {
-      unique.push(array[i]);
-    }
-  }
-
-  return unique;
-};
-
-/**
- * Apply a partial text search on an array of objects
- *
- * @param field = string (the field we're to search)
- * @param value = string (the value to find)
- * @param array = array of objects to search
- * @param singular = boolean (just return the first result)
- * @return array
- * */
-var applyFilter = exports.applyFilter = function applyFilter(field, value, array) {
-  var singular = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-
-  var results = [];
-
-  for (var i = 0; i < array.length; i++) {
-    if (array[i][field] && String(array[i][field]).toLowerCase().includes(String(value).toLowerCase())) {
-      if (singular) {
-        return array[i];
-      }
-      results.push(array[i]);
-    }
-  }
-
-  return results;
-};
-
-/**
- * Convert a list of indexes to a useable range
- * We ignore stragglers, and only attend to the first 'bunch' of consecutive indexes
- *
- * @param indexes array of int
- * */
-var createRange = exports.createRange = function createRange(indexes) {
-  // sort our indexes smallest to largest
-  function sortAsc(a, b) {
-    return a - b;
-  }
-  indexes.sort(sortAsc);
-
-  // iterate indexes to build the first 'bunch'
-  var first_bunch = [];
-  var previous_index = false;
-  for (var i = 0; i < indexes.length; i++) {
-    if (!previous_index || previous_index == indexes[i] - 1) {
-      first_bunch.push(indexes[i]);
-      previous_index = indexes[i];
-    }
-    // TODO: break when we find an integer step for better performance
-  }
-
-  return {
-    start: first_bunch[0],
-    length: first_bunch.length
-  };
-};
-
-/**
- * Sort an array of objects
- * @param array = array to sort
- * @param property = string to sort by
- * @param reverse = boolean
- * @param sort_map = array of value ordering (rather than alphabetical, numerical, etc)
- * @return array
- * */
-var sortItems = exports.sortItems = function sortItems(array, property) {
-  var reverse = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-  var sort_map = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
-
-  if (!array || array.length <= 0) {
-    return [];
-  }
-
-  function get_value(value) {
-    var split = property.split('.');
-    var _iteratorNormalCompletion23 = true;
-    var _didIteratorError23 = false;
-    var _iteratorError23 = undefined;
-
-    try {
-      for (var _iterator23 = split[Symbol.iterator](), _step23; !(_iteratorNormalCompletion23 = (_step23 = _iterator23.next()).done); _iteratorNormalCompletion23 = true) {
-        var property_element = _step23.value;
-
-        // Apply sort on a property of the first item of an array
-        if (property_element == 'first') {
-          if (Array.isArray(value) && value.length > 0) {
-            value = value[0];
-            continue;
-          } else {
-            return null;
-          }
-
-          // Just need the length of an array
-        } else if (property_element == 'length') {
-          if (Array.isArray(value)) {
-            return value.length;
-          }
-          return 0;
-
-          // No value here
-        } else if (typeof value[property_element] === 'undefined') {
-          return null;
-        }
-
-        // Otherwise continue looping to the end of the split property
-        value = value[property_element];
-      }
-    } catch (err) {
-      _didIteratorError23 = true;
-      _iteratorError23 = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion23 && _iterator23.return) {
-          _iterator23.return();
-        }
-      } finally {
-        if (_didIteratorError23) {
-          throw _iteratorError23;
-        }
-      }
-    }
-
-    return value;
-  }
-
-  function compare(a, b) {
-    var a_value = get_value(a);
-    var b_value = get_value(b);
-
-    // Sorting by URI as a reference for sorting by uri source (first component of URI)
-    if (property == 'uri') {
-      a_value = uriSource(a_value);
-      b_value = uriSource(b_value);
-    }
-
-    // Map sorting
-    // Use the index of the string as a sorting mechanism
-    if (sort_map) {
-      var a_index = sort_map.indexOf(a_value + ':');
-      var b_index = sort_map.indexOf(b_value + ':');
-      if (a_index < b_index) return 1;
-      if (a_index > b_index) return -1;
-
-      // Boolean sorting
-    } else if (typeof a_value === 'boolean' && typeof b_value === 'boolean') {
-      if (a_value && !b_value) return -1;
-      if (!a_value && b_value) return 1;
-      return 0;
-
-      // Numeric sorting
-    } else if (typeof a_value === 'number' && typeof b_value === 'number') {
-      if (a_value == null && b_value == null) return 0;
-      if (a_value == null) return -1;
-      if (b_value == null) return 1;
-      if (parseInt(a_value) > parseInt(b_value)) return 1;
-      if (parseInt(a_value) < parseInt(b_value)) return -1;
-      return 0;
-
-      // Alphabetic sorting
-    } else {
-      if (a_value && !b_value) return -1;
-      if (!a_value && b_value) return 1;
-      if (!a_value && !b_value) return 0;
-      if (a_value.toLowerCase() > b_value.toLowerCase()) return 1;
-      if (a_value.toLowerCase() < b_value.toLowerCase()) return -1;
-      return 0;
-    }
-  }
-
-  var sorted = Object.assign([], array.sort(compare));
-  if (reverse) {
-    sorted.reverse();
-  }
-  return sorted;
-};
-
-/**
- * Shuffle items in place
- *
- * @param Array items
- * @return Array
- * */
-var shuffle = exports.shuffle = function shuffle(array) {
-  var j = void 0;var x = void 0;var i = void 0;
-  for (i = array.length - 1; i > 0; i--) {
-    j = Math.floor(Math.random() * (i + 1));
-    x = array[i];
-    array[i] = array[j];
-    array[j] = x;
-  }
-  return array;
-};
-
-/**
- * Figure out if a value is a number
- * @param value = mixed
- * @return boolean
- * */
-var isNumeric = exports.isNumeric = function isNumeric(value) {
-  return !isNaN(parseFloat(value)) && isFinite(value);
-};
-
-/**
- * Figure out if a value is an object
- * @param value = mixed
- * @return boolean
- * */
-var isObject = exports.isObject = function isObject(value) {
-  return value instanceof Object && value.constructor === Object;
-};
-
-/**
- * Detect if an item is in the loading queue. We simply loop all load items to
- * see if any items contain our searched key.
- *
- * TODO: Explore performance of this
- * TODO: Allow wildcards
- *
- * @param load_queue = obj (passed from store)
- * @param key = string (the string to lookup)
- * @return boolean
- * */
-var isLoading = exports.isLoading = function isLoading() {
-  var load_queue = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-  var keys = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-
-  // Loop all of our load queue items
-  for (var load_queue_key in load_queue) {
-    // Make sure it's not a root object method
-    if (load_queue.hasOwnProperty(load_queue_key)) {
-      // Loop all the keys we're looking for
-      for (var i = 0; i < keys.length; i++) {
-        if (load_queue[load_queue_key].includes(keys[i])) {
-          return true;
-        }
-      }
-    }
-  }
-  return false;
-};
-
-/**
- * Is this app running from the hosted instance?
- * For example the GitHub-hosted UI
- *
- * @param Array hosts = valid hosted domain names
- * @return Boolean
- * */
-var isHosted = exports.isHosted = function isHosted() {
-  var hosts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : ['jaedb.github.io'];
-  var hostname = window.location.hostname;
-
-  return hosts.includes(hostname);
-};
-
-/**
- * Get indexed record(s) by URI from our asset index
- *
- * @param store = obj
- * @param uris = mixed (array or string)
- * @return array
- * */
-var getIndexedRecords = exports.getIndexedRecords = function getIndexedRecords(index, uris) {
-  var records = [];
-
-  // Wrap in array, if we've only got one URI
-  if (!(uris instanceof Array)) {
-    uris = [uris];
-  }
-
-  for (var i = 0; i < uris.length; i++) {
-    if (index.hasOwnProperty(uris[i])) {
-      records.push(index[uris[i]]);
-    }
-  }
-
-  return records;
-};
-
-/**
- * Uppercase-ify the first character of a string
- *
- * @param string String
- * @return String
- * */
-var titleCase = exports.titleCase = function titleCase(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-};
-
-/**
- * Scroll to the top of the page
- * Our 'content' is housed in the <main> DOM element
- * We make sure the target supports scrolling before we attempt it
- * Safari and IE Edge, well, don't.
- *
- * @param target String (element ID, optional)
- * @param smooth_scroll Boolean (optional)
- * */
-var scrollTo = exports.scrollTo = function scrollTo() {
-  var target = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-  var smooth_scroll = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
-  var main = document.getElementById('main');
-
-  // Remove our smooth-scroll class
-  if (!smooth_scroll) {
-    main.classList.remove('smooth-scroll');
-  }
-
-  // Target is a number, so treat as pixel position
-  if (target && Number.isInteger(target)) {
-    if (typeof main.scrollTo === 'function') {
-      main.scrollTop = target;
-    }
-
-    // Target is a string representing a DOM element by class/id
-  } else if (target) {
-    var element = null;
-
-    if (target.charAt(0) == '#') {
-      element = document.getElementById(target.substring(1));
-    } else if (target.charAt(0) == '.') {
-      element = document.getElementsByClassName(target.substring(1));
-      if (element.length > 0) {
-        element = element[0];
-      }
-    } else {
-      console.error('Invalid target type \'' + target + '\'. Must start with \'#\' or \'.\'.');
-    }
-
-    if (element && typeof element.scrollIntoView === 'function') {
-      element.scrollIntoView();
-    }
-  } else {
-    main.scrollTop = 0;
-  }
-
-  // Now reinstate smooth scroll
-  if (!smooth_scroll) {
-    main.classList.add('smooth-scroll');
-  }
-};
-
-/**
- * Upgrade one or many Spotify Playlist URIs
- * This is their new, simplified syntax (September 2018) but they haven't updated it everywhere
- * So we need to manually strip user:abc to keep things consistent
- *
- * @param uris Array|String
- * @return Array|String
- * */
-var upgradeSpotifyPlaylistUris = exports.upgradeSpotifyPlaylistUris = function upgradeSpotifyPlaylistUris(uris) {
-  var upgraded = [];
-
-  var _iteratorNormalCompletion24 = true;
-  var _didIteratorError24 = false;
-  var _iteratorError24 = undefined;
-
-  try {
-    for (var _iterator24 = uris[Symbol.iterator](), _step24; !(_iteratorNormalCompletion24 = (_step24 = _iterator24.next()).done); _iteratorNormalCompletion24 = true) {
-      var uri = _step24.value;
-
-      if (uri.includes('spotify:user:')) {
-        uri = uri.replace(/spotify:user:([^:]*?):/i, 'spotify:');
-      }
-      upgraded.push(uri);
-    }
-  } catch (err) {
-    _didIteratorError24 = true;
-    _iteratorError24 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion24 && _iterator24.return) {
-        _iterator24.return();
-      }
-    } finally {
-      if (_didIteratorError24) {
-        throw _iteratorError24;
-      }
-    }
-  }
-
-  return upgraded;
-};
-
-// As above, but for a single URI
-var upgradeSpotifyPlaylistUri = exports.upgradeSpotifyPlaylistUri = function upgradeSpotifyPlaylistUri(uri) {
-  return upgradeSpotifyPlaylistUris([uri])[0];
-};
 
 /***/ }),
 
@@ -74627,11 +72426,9 @@ exports.getLibraryPlaylists = getLibraryPlaylists;
 exports.getLibraryAlbums = getLibraryAlbums;
 exports.getLibraryArtists = getLibraryArtists;
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
+var _arrays = __webpack_require__(/*! ../../util/arrays */ "./src/js/util/arrays.js");
 
-var helpers = _interopRequireWildcard(_helpers);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
 
 var spotifyActions = __webpack_require__(/*! ../../services/spotify/actions */ "./src/js/services/spotify/actions.js");
 var mopidyActions = __webpack_require__(/*! ../../services/mopidy/actions */ "./src/js/services/mopidy/actions.js");
@@ -74894,8 +72691,8 @@ function removeFromIndex(index_name, key) {
 function reorderPlaylistTracks(uri, indexes, insert_before) {
   var snapshot_id = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
 
-  var range = helpers.createRange(indexes);
-  switch (helpers.uriSource(uri)) {
+  var range = (0, _arrays.createRange)(indexes);
+  switch ((0, _helpers.uriSource)(uri)) {
     case 'spotify':
       return {
         type: 'SPOTIFY_REORDER_PLAYLIST_TRACKS',
@@ -74923,7 +72720,7 @@ function savePlaylist(uri, name) {
   var is_collaborative = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
   var image = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : null;
 
-  switch (helpers.uriSource(uri)) {
+  switch ((0, _helpers.uriSource)(uri)) {
     case 'spotify':
       return {
         type: 'SPOTIFY_SAVE_PLAYLIST',
@@ -74964,7 +72761,7 @@ function createPlaylist(scheme, name) {
 }
 
 function deletePlaylist(uri) {
-  switch (helpers.uriSource(uri)) {
+  switch ((0, _helpers.uriSource)(uri)) {
     case 'spotify':
       return spotifyActions.following(uri, 'DELETE');
 
@@ -74975,7 +72772,7 @@ function deletePlaylist(uri) {
 }
 
 function removeTracksFromPlaylist(uri, tracks_indexes) {
-  switch (helpers.uriSource(uri)) {
+  switch ((0, _helpers.uriSource)(uri)) {
     case 'spotify':
       return {
         type: 'SPOTIFY_REMOVE_PLAYLIST_TRACKS',
@@ -74993,7 +72790,7 @@ function removeTracksFromPlaylist(uri, tracks_indexes) {
 }
 
 function addTracksToPlaylist(uri, tracks_uris) {
-  switch (helpers.uriSource(uri)) {
+  switch ((0, _helpers.uriSource)(uri)) {
     case 'spotify':
       return {
         type: 'SPOTIFY_ADD_PLAYLIST_TRACKS',
@@ -75055,17 +72852,20 @@ var _reactGa = __webpack_require__(/*! react-ga */ "./node_modules/react-ga/dist
 
 var _reactGa2 = _interopRequireDefault(_reactGa);
 
+var _arrays = __webpack_require__(/*! ../../util/arrays */ "./src/js/util/arrays.js");
+
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
+
+var _format = __webpack_require__(/*! ../../util/format */ "./src/js/util/format.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var coreActions = __webpack_require__(/*! ./actions.js */ "./src/js/services/core/actions.js");
 var uiActions = __webpack_require__(/*! ../ui/actions.js */ "./src/js/services/ui/actions.js");
-var pusherActions = __webpack_require__(/*! ../pusher/actions.js */ "./src/js/services/pusher/actions.js");
 var mopidyActions = __webpack_require__(/*! ../mopidy/actions.js */ "./src/js/services/mopidy/actions.js");
 var spotifyActions = __webpack_require__(/*! ../spotify/actions.js */ "./src/js/services/spotify/actions.js");
-var lastfmActions = __webpack_require__(/*! ../lastfm/actions.js */ "./src/js/services/lastfm/actions.js");
-var helpers = __webpack_require__(/*! ../../helpers.js */ "./src/js/helpers.js");
 
 var CoreMiddleware = function () {
   /**
@@ -75274,8 +73074,8 @@ var CoreMiddleware = function () {
                * */
 
           case 'PLAYLIST_TRACKS':
-            var tracks = helpers.formatTracks(action.tracks);
-            action.tracks_uris = helpers.arrayOf('uri', tracks);
+            var tracks = (0, _format.formatTracks)(action.tracks);
+            action.tracks_uris = (0, _arrays.arrayOf)('uri', tracks);
 
             store.dispatch({
               type: 'TRACKS_LOADED',
@@ -75287,7 +73087,7 @@ var CoreMiddleware = function () {
 
           case 'PLAYLIST_TRACKS_ADDED':
             store.dispatch(uiActions.createNotification({ level: 'warning', content: 'Added ' + action.tracks_uris.length + ' tracks to playlist' }));
-            switch (helpers.uriSource(action.key)) {
+            switch ((0, _helpers.uriSource)(action.key)) {
               case 'spotify':
                 store.dispatch(spotifyActions.getPlaylist(action.key));
                 break;
@@ -75375,7 +73175,7 @@ var CoreMiddleware = function () {
               break;
             }
 
-            switch (helpers.uriSource(action.uri)) {
+            switch ((0, _helpers.uriSource)(action.uri)) {
               case 'spotify':
                 store.dispatch(spotifyActions.getTrack(action.uri));
 
@@ -75400,7 +73200,7 @@ var CoreMiddleware = function () {
               break;
             }
 
-            switch (helpers.uriSource(action.uri)) {
+            switch ((0, _helpers.uriSource)(action.uri)) {
               case 'spotify':
                 store.dispatch(spotifyActions.getAlbum(action.uri));
 
@@ -75425,7 +73225,7 @@ var CoreMiddleware = function () {
               break;
             }
 
-            switch (helpers.uriSource(action.uri)) {
+            switch ((0, _helpers.uriSource)(action.uri)) {
               case 'spotify':
                 store.dispatch(spotifyActions.getArtist(action.uri, true));
 
@@ -75450,7 +73250,7 @@ var CoreMiddleware = function () {
               break;
             }
 
-            switch (helpers.uriSource(action.uri)) {
+            switch ((0, _helpers.uriSource)(action.uri)) {
               case 'spotify':
                 store.dispatch(spotifyActions.getPlaylist(action.uri));
 
@@ -75475,7 +73275,7 @@ var CoreMiddleware = function () {
               break;
             }
 
-            switch (helpers.uriSource(action.uri)) {
+            switch ((0, _helpers.uriSource)(action.uri)) {
               case 'spotify':
                 store.dispatch(spotifyActions.getUser(action.uri));
 
@@ -75498,7 +73298,7 @@ var CoreMiddleware = function () {
               break;
             }
 
-            switch (helpers.uriSource(action.uri)) {
+            switch ((0, _helpers.uriSource)(action.uri)) {
               case 'spotify':
                 store.dispatch(spotifyActions.getUserPlaylists(action.uri));
                 break;
@@ -75518,13 +73318,13 @@ var CoreMiddleware = function () {
 
           case 'CURRENT_TRACK_LOADED':
             store.dispatch(coreActions.trackLoaded(action.track));
-            action.track = helpers.formatTrack(action.track);
+            action.track = (0, _format.formatTrack)(action.track);
             next(action);
             break;
 
           case 'QUEUE_LOADED':
             store.dispatch(coreActions.tracksLoaded(action.tracks));
-            action.tracks = helpers.formatTracks(action.tracks);
+            action.tracks = (0, _format.formatTracks)(action.tracks);
             next(action);
             break;
 
@@ -75544,24 +73344,18 @@ var CoreMiddleware = function () {
               for (var _iterator = action.tracks[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                 var raw_track = _step.value;
 
-                var track = helpers.formatTrack(raw_track);
+                var track = (0, _format.formatTrack)(raw_track);
 
                 if (tracks_index[track.uri] !== undefined) {
                   track = _extends({}, tracks_index[track.uri], track);
                 }
 
                 if (raw_track.album) {
-                  track.album = helpers.formatSimpleObject(raw_track.album);
+                  track.album = (0, _format.formatSimpleObject)(raw_track.album);
 
                   if (!albums_index[raw_track.album.uri]) {
                     albums_loaded.push(raw_track.album);
                   }
-
-                  // Copy the images to the track
-                  /*
-                              if (raw_track.album.images){
-                                  track.images = helpers.digestMopidyImages(store.getState().mopidy, raw_track.album.images);
-                              } */
                 }
 
                 if (raw_track.artists && raw_track.artists.length > 0) {
@@ -75575,7 +73369,7 @@ var CoreMiddleware = function () {
                     for (var _iterator2 = raw_track.artists[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
                       var artist = _step2.value;
 
-                      track.artists.push(helpers.formatSimpleObject(artist));
+                      track.artists.push((0, _format.formatSimpleObject)(artist));
 
                       // Not already in our index, so let's add it
                       if (!artists_index[artist.uri]) {
@@ -75641,15 +73435,11 @@ var CoreMiddleware = function () {
               for (var _iterator3 = action.albums[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
                 var raw_album = _step3.value;
 
-                var album = helpers.formatAlbum(raw_album);
+                var album = (0, _format.formatAlbum)(raw_album);
 
                 if (albums_index[album.uri]) {
                   album = _extends({}, albums_index[album.uri], album);
                 }
-                /*
-                          if (raw_album.images && raw_album.images.length > 0){
-                              album.images = helpers.digestMopidyImages(store.getState().mopidy, raw_album.images);
-                          } */
 
                 if (raw_album.tracks) {
                   album.tracks_uris = [];
@@ -75663,7 +73453,7 @@ var CoreMiddleware = function () {
                       var track = _step4.value;
 
                       if (!track.album) {
-                        track.album = helpers.formatSimpleObject(album);
+                        track.album = (0, _format.formatSimpleObject)(album);
                       }
                       album.tracks_uris.push(track.uri);
                       tracks_loaded.push(track);
@@ -75685,7 +73475,7 @@ var CoreMiddleware = function () {
                 }
 
                 if (raw_album.artists) {
-                  album.artists_uris = helpers.arrayOf('uri', raw_album.artists);
+                  album.artists_uris = (0, _arrays.arrayOf)('uri', raw_album.artists);
                   artists_loaded = [].concat(_toConsumableArray(artists_loaded), _toConsumableArray(raw_album.artists));
                 }
 
@@ -75731,7 +73521,7 @@ var CoreMiddleware = function () {
               for (var _iterator5 = action.artists[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
                 var raw_artist = _step5.value;
 
-                var artist = helpers.formatArtist(raw_artist);
+                var artist = (0, _format.formatArtist)(raw_artist);
 
                 // Already have an artist in the index
                 if (artists_index[artist.uri]) {
@@ -75784,8 +73574,8 @@ var CoreMiddleware = function () {
 
                 // Migrate nested tracks objects into references to our tracks index
                 if (raw_artist.tracks) {
-                  var tracks = helpers.formatTracks(raw_artist.tracks);
-                  var tracks_uris = helpers.arrayOf('uri', tracks);
+                  var tracks = (0, _format.formatTracks)(raw_artist.tracks);
+                  var tracks_uris = (0, _arrays.arrayOf)('uri', tracks);
                   artist.tracks_uris = tracks_uris;
                   tracks_loaded = [].concat(_toConsumableArray(tracks_loaded), _toConsumableArray(tracks));
                 }
@@ -75829,10 +73619,10 @@ var CoreMiddleware = function () {
               for (var _iterator7 = action.playlists[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
                 var playlist = _step7.value;
 
-                playlist = helpers.formatPlaylist(playlist);
+                playlist = (0, _format.formatPlaylist)(playlist);
 
                 // Detect editability
-                switch (helpers.uriSource(playlist.uri)) {
+                switch ((0, _helpers.uriSource)(playlist.uri)) {
                   case 'm3u':
                     playlist.can_edit = true;
                     break;
@@ -75855,8 +73645,8 @@ var CoreMiddleware = function () {
 
                 // Load our tracks
                 if (playlist.tracks) {
-                  var tracks = helpers.formatTracks(playlist.tracks);
-                  var tracks_uris = helpers.arrayOf('uri', tracks);
+                  var tracks = (0, _format.formatTracks)(playlist.tracks);
+                  var tracks_uris = (0, _arrays.arrayOf)('uri', tracks);
                   playlist.tracks_uris = tracks_uris;
                   delete playlist.tracks;
                   tracks_loaded = [].concat(_toConsumableArray(tracks_loaded), _toConsumableArray(tracks));
@@ -75901,7 +73691,7 @@ var CoreMiddleware = function () {
               for (var _iterator8 = action.users[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
                 var user = _step8.value;
 
-                user = helpers.formatUser(user);
+                user = (0, _format.formatUser)(user);
 
                 if (users_index[user.uri]) {
                   user = _extends({}, users_index[user.uri], user);
@@ -75962,12 +73752,12 @@ var CoreMiddleware = function () {
             // Pre-emptively format tracks
             // Providers give us tracks in all kinds of structures, so this cleans things first
             if (action.records_type == 'track') {
-              records = helpers.formatTracks(records);
+              records = (0, _format.formatTracks)(records);
             }
 
             var records_type_plural = action.records_type + 's';
             var records_index = {};
-            var records_uris = helpers.arrayOf('uri', records);
+            var records_uris = (0, _arrays.arrayOf)('uri', records);
 
             // Merge any extra data (eg more_track's albums)
             if (action.extra_data) {
@@ -75979,7 +73769,7 @@ var CoreMiddleware = function () {
             // If we're a list of playlists, we need to manually filter Spotify's new URI structure
             // Really poor form because they haven't updated it everywhere, yet
             if (action.records_type == 'playlist') {
-              records_uris = helpers.upgradeSpotifyPlaylistUris(records_uris);
+              records_uris = (0, _helpers.upgradeSpotifyPlaylistUris)(records_uris);
             }
 
             // Append our parent object's reference to these records
@@ -76040,11 +73830,9 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 exports.default = reducer;
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
+var _arrays = __webpack_require__(/*! ../../util/arrays */ "./src/js/util/arrays.js");
 
-var helpers = _interopRequireWildcard(_helpers);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+var _format = __webpack_require__(/*! ../../util/format */ "./src/js/util/format.js");
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
@@ -76275,7 +74063,7 @@ function reducer() {
         existing_playlists_uris = users[action.uri].playlists_uris;
       }
 
-      var playlists_uris = [].concat(_toConsumableArray(existing_playlists_uris), _toConsumableArray(helpers.arrayOf('uri', action.playlists)));
+      var playlists_uris = [].concat(_toConsumableArray(existing_playlists_uris), _toConsumableArray((0, _arrays.arrayOf)('uri', action.playlists)));
 
       var user = _extends({}, users[action.uri], {
         playlists_uris: playlists_uris,
@@ -76326,7 +74114,7 @@ function reducer() {
         var library_playlists = action.uris;
       }
 
-      library_playlists = helpers.removeDuplicates(library_playlists);
+      library_playlists = (0, _arrays.removeDuplicates)(library_playlists);
 
       return _extends({}, core, {
         library_playlists: library_playlists,
@@ -76395,7 +74183,7 @@ function reducer() {
       } else {
         var tracks = [];
       }
-      if (action.tracks) tracks = [].concat(_toConsumableArray(tracks), _toConsumableArray(helpers.formatTracks(action.tracks)));
+      if (action.tracks) tracks = [].concat(_toConsumableArray(tracks), _toConsumableArray((0, _format.formatTracks)(action.tracks)));
 
       // more tracks
       if (typeof action.tracks_more !== 'undefined') var tracks_more = action.tracks_more;else if (core.search_results && core.search_results.tracks_more) var tracks_more = core.search_results.tracks_more;else var tracks_more = null;
@@ -76403,11 +74191,11 @@ function reducer() {
       return _extends({}, core, {
         search_results: {
           artists_more: artists_more,
-          artists_uris: helpers.removeDuplicates(artists_uris),
+          artists_uris: (0, _arrays.removeDuplicates)(artists_uris),
           albums_more: albums_more,
-          albums_uris: helpers.removeDuplicates(albums_uris),
+          albums_uris: (0, _arrays.removeDuplicates)(albums_uris),
           playlists_more: playlists_more,
-          playlists_uris: helpers.removeDuplicates(playlists_uris),
+          playlists_uris: (0, _arrays.removeDuplicates)(playlists_uris),
           tracks: tracks,
           tracks_more: tracks_more
         }
@@ -76435,9 +74223,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getArtistImages = getArtistImages;
 
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
+
 var coreActions = __webpack_require__(/*! ../core/actions */ "./src/js/services/core/actions.js");
 var uiActions = __webpack_require__(/*! ../ui/actions */ "./src/js/services/ui/actions.js");
-var helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
 
 /**
  * Send an ajax request to the LastFM API
@@ -76453,7 +74242,7 @@ var sendRequest = function sendRequest(dispatch, getState, endpoint, params) {
     var secret = 'KiEUfwKpebxRnEHlKoXnYIftJxeuqjTK';
     var url = 'https://api.discogs.com/' + endpoint + '?' + params;
 
-    var loader_key = helpers.generateGuid();
+    var loader_key = (0, _helpers.generateGuid)();
     dispatch(uiActions.startLoading(loader_key, 'discogs_' + endpoint));
 
     var config = {
@@ -76515,8 +74304,7 @@ function getArtistImages(uri, artist) {
         helpers.cache.set(`discogs_${artist.name}`, cover_image);
       }
     }
-    
-    const cached = helpers.cache.get(`discogs_${artist.name}`);
+      const cached = helpers.cache.get(`discogs_${artist.name}`);
     if (cached) {
       finalise(cached);
       return;
@@ -76563,9 +74351,10 @@ exports.getMe = getMe;
 exports.getTrackLyrics = getTrackLyrics;
 exports.findTrackLyrics = findTrackLyrics;
 
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
+
 var coreActions = __webpack_require__(/*! ../core/actions */ "./src/js/services/core/actions.js");
 var uiActions = __webpack_require__(/*! ../ui/actions */ "./src/js/services/ui/actions.js");
-var helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
 
 function set(data) {
   return {
@@ -76619,7 +74408,7 @@ var sendRequest = function sendRequest(dispatch, getState, endpoint) {
     }
 
     // add reference to loader queue
-    var loader_key = helpers.generateGuid();
+    var loader_key = (0, _helpers.generateGuid)();
     dispatch(uiActions.startLoading(loader_key, 'genius_' + endpoint));
 
     function status(response) {
@@ -76715,7 +74504,7 @@ function getTrackLyrics(uri, path) {
     };
 
     // add reference to loader queue
-    var loader_key = helpers.generateGuid();
+    var loader_key = (0, _helpers.generateGuid)();
     dispatch(uiActions.startLoading(loader_key, 'genius_get_lyrics'));
 
     function status(response) {
@@ -76813,7 +74602,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var helpers = __webpack_require__(/*! ./../../helpers */ "./src/js/helpers.js");
+var _format = __webpack_require__(/*! ../../util/format */ "./src/js/util/format.js");
+
 var coreActions = __webpack_require__(/*! ../core/actions */ "./src/js/services/core/actions.js");
 var geniusActions = __webpack_require__(/*! ./actions */ "./src/js/services/genius/actions.js");
 
@@ -76825,7 +74615,7 @@ var GeniusMiddleware = function () {
 
         switch (action.type) {
           case 'GENIUS_ME_LOADED':
-            var me = helpers.formatUser(action.me);
+            var me = (0, _format.formatUser)(action.me);
             Object.assign(me, {
               uri: 'genius:user:' + me.id
             });
@@ -76839,7 +74629,7 @@ var GeniusMiddleware = function () {
             break;
 
           case 'GENIUS_USER_LOADED':
-            var user = helpers.formatUser(action.user);
+            var user = (0, _format.formatUser)(action.user);
             Object.assign(user, {
               uri: 'genius:user:' + user.id
             });
@@ -77002,9 +74792,10 @@ var _reactGa = __webpack_require__(/*! react-ga */ "./node_modules/react-ga/dist
 
 var _reactGa2 = _interopRequireDefault(_reactGa);
 
+var _arrays = __webpack_require__(/*! ../../util/arrays */ "./src/js/util/arrays.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
 var coreActions = __webpack_require__(/*! ../core/actions */ "./src/js/services/core/actions.js");
 var mopidyActions = __webpack_require__(/*! ../mopidy/actions */ "./src/js/services/mopidy/actions.js");
 var uiActions = __webpack_require__(/*! ../ui/actions */ "./src/js/services/ui/actions.js");
@@ -77037,7 +74828,7 @@ var GoogleMiddleware = function () {
                   return;
                 }
 
-                var uris = helpers.arrayOf('uri', response);
+                var uris = (0, _arrays.arrayOf)('uri', response);
                 store.dispatch({
                   type: 'GOOGLE_LIBRARY_ALBUMS_LOADED',
                   uris: uris
@@ -77141,11 +74932,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 exports.default = reducer;
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+var _arrays = __webpack_require__(/*! ../../util/arrays */ "./src/js/util/arrays.js");
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
@@ -77163,7 +74950,7 @@ function reducer() {
       } else {
         var uris = action.uris;
       }
-      return _extends({}, google, { library_artists: helpers.removeDuplicates(uris) });
+      return _extends({}, google, { library_artists: (0, _arrays.removeDuplicates)(uris) });
 
     case 'GOOGLE_CLEAR_LIBRARY_ARTISTS':
       return _extends({}, google, { library_artists: null });
@@ -77174,7 +74961,7 @@ function reducer() {
       } else {
         var uris = action.uris;
       }
-      return _extends({}, google, { library_albums: helpers.removeDuplicates(uris) });
+      return _extends({}, google, { library_albums: (0, _arrays.removeDuplicates)(uris) });
 
     case 'GOOGLE_CLEAR_LIBRARY_ALBUMS':
       return _extends({}, google, { library_albums: null });
@@ -77215,9 +75002,12 @@ exports.loveTrack = loveTrack;
 exports.unloveTrack = unloveTrack;
 exports.scrobble = scrobble;
 
+var _format = __webpack_require__(/*! ../../util/format */ "./src/js/util/format.js");
+
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
+
 var coreActions = __webpack_require__(/*! ../core/actions */ "./src/js/services/core/actions.js");
 var uiActions = __webpack_require__(/*! ../ui/actions */ "./src/js/services/ui/actions.js");
-var helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
 
 function set(data) {
   return {
@@ -77254,7 +75044,7 @@ var sendRequest = function sendRequest(dispatch, getState, params) {
       timeout: 30000
     };
 
-    var loader_key = helpers.generateGuid();
+    var loader_key = (0, _helpers.generateGuid)();
     dispatch(uiActions.startLoading(loader_key, 'lastfm_' + method));
 
     function status(response) {
@@ -77294,7 +75084,7 @@ var sendSignedRequest = function sendSignedRequest(dispatch, getState, params) {
       });
     }
 
-    var loader_key = helpers.generateGuid();
+    var loader_key = (0, _helpers.generateGuid)();
     var method = params.substring(params.indexOf('method=') + 7, params.length);
     method = method.substring(0, method.indexOf('&'));
 
@@ -77498,7 +75288,7 @@ function getImages(context, uri) {
           if (params) {
             sendRequest(dispatch, getState, params).then(function (response) {
               if (response.album) {
-                var images = helpers.formatImages(response.album.image);
+                var images = (0, _format.formatImages)(response.album.image);
                 dispatch(coreActions.trackLoaded({ uri: uri, images: images }));
               }
             });
@@ -77629,7 +75419,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var helpers = __webpack_require__(/*! ./../../helpers */ "./src/js/helpers.js");
+var _format = __webpack_require__(/*! ../../util/format */ "./src/js/util/format.js");
+
 var coreActions = __webpack_require__(/*! ../core/actions */ "./src/js/services/core/actions.js");
 var lastfmActions = __webpack_require__(/*! ./actions */ "./src/js/services/lastfm/actions.js");
 
@@ -77639,7 +75430,7 @@ var LastfmMiddleware = function () {
       return function (action) {
         switch (action.type) {
           case 'LASTFM_ME_LOADED':
-            var me = helpers.formatUser(action.me);
+            var me = (0, _format.formatUser)(action.me);
             Object.assign(me, {
               uri: 'lastfm:user:' + me.name
             });
@@ -77747,7 +75538,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var helpers = __webpack_require__(/*! ../../helpers.js */ "./src/js/helpers.js");
+var _storage = __webpack_require__(/*! ../../util/storage */ "./src/js/util/storage.js");
+
+var _storage2 = _interopRequireDefault(_storage);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var localstorageMiddleware = function () {
   /**
@@ -77775,25 +75570,25 @@ var localstorageMiddleware = function () {
 
         switch (action.type) {
           case 'PUSHER_CONNECTED':
-            helpers.setStorage('pusher', {
+            _storage2.default.set('pusher', {
               connection_id: action.connection_id
             });
             break;
 
           case 'PUSHER_SET_PORT':
-            helpers.setStorage('pusher', {
+            _storage2.default.set('pusher', {
               port: action.port
             });
             break;
 
           case 'PUSHER_SET_USERNAME':
-            helpers.setStorage('pusher', {
+            _storage2.default.set('pusher', {
               username: action.username
             });
             break;
 
           case 'MOPIDY_URISCHEMES_FILTERED':
-            helpers.setStorage('mopidy', {
+            _storage2.default.set('mopidy', {
               uri_schemes: action.data
             });
             break;
@@ -77804,7 +75599,7 @@ var localstorageMiddleware = function () {
             } else if (action.data) {
               var authorization = action.data;
             }
-            helpers.setStorage('spotify', {
+            _storage2.default.set('spotify', {
               authorization: authorization,
               access_token: authorization.access_token,
               refresh_token: authorization.refresh_token,
@@ -77813,7 +75608,7 @@ var localstorageMiddleware = function () {
             break;
 
           case 'SPOTIFY_IMPORT_AUTHORIZATION':
-            helpers.setStorage('spotify', {
+            _storage2.default.set('spotify', {
               authorization: action.authorization,
               access_token: action.authorization.access_token,
               refresh_token: action.authorization.refresh_token,
@@ -77823,7 +75618,7 @@ var localstorageMiddleware = function () {
             break;
 
           case 'SPOTIFY_AUTHORIZATION_REVOKED':
-            helpers.setStorage('spotify', {
+            _storage2.default.set('spotify', {
               authorization: null,
               access_token: null,
               refresh_token: null,
@@ -77833,7 +75628,7 @@ var localstorageMiddleware = function () {
             break;
 
           case 'SPOTIFY_TOKEN_REFRESHED':
-            helpers.setStorage('spotify', {
+            _storage2.default.set('spotify', {
               access_token: action.data.access_token,
               token_expiry: action.data.token_expiry,
               provider: action.provider
@@ -77841,45 +75636,45 @@ var localstorageMiddleware = function () {
             break;
 
           case 'SPOTIFY_ME_LOADED':
-            helpers.setStorage('spotify', {
+            _storage2.default.set('spotify', {
               me: action.me
             });
             break;
 
           case 'LASTFM_ME_LOADED':
-            helpers.setStorage('lastfm', {
+            _storage2.default.set('lastfm', {
               me: action.me
             });
             break;
 
           case 'LASTFM_AUTHORIZATION_GRANTED':
-            helpers.setStorage('lastfm', {
+            _storage2.default.set('lastfm', {
               authorization: action.data.session
             });
             break;
 
           case 'LASTFM_AUTHORIZATION_REVOKED':
-            helpers.setStorage('lastfm', {
+            _storage2.default.set('lastfm', {
               authorization: null,
               me: null
             });
             break;
 
           case 'LASTFM_IMPORT_AUTHORIZATION':
-            helpers.setStorage('lastfm', {
+            _storage2.default.set('lastfm', {
               authorization: action.authorization,
               me: null
             });
             break;
 
           case 'GENIUS_ME_LOADED':
-            helpers.setStorage('genius', {
+            _storage2.default.set('genius', {
               me: action.me
             });
             break;
 
           case 'GENIUS_AUTHORIZATION_GRANTED':
-            helpers.setStorage('genius', {
+            _storage2.default.set('genius', {
               authorization: action.data,
               authorization_code: action.data.authorization_code,
               access_token: action.data.access_token
@@ -77887,7 +75682,7 @@ var localstorageMiddleware = function () {
             break;
 
           case 'GENIUS_AUTHORIZATION_REVOKED':
-            helpers.setStorage('genius', {
+            _storage2.default.set('genius', {
               me: null,
               authorization: null,
               authorization_code: null,
@@ -77896,7 +75691,7 @@ var localstorageMiddleware = function () {
             break;
 
           case 'GENIUS_IMPORT_AUTHORIZATION':
-            helpers.setStorage('genius', {
+            _storage2.default.set('genius', {
               authorization: action.authorization,
               authorization_code: action.authorization.authorization_code,
               access_token: action.authorization.access_token,
@@ -77905,33 +75700,33 @@ var localstorageMiddleware = function () {
             break;
 
           case 'CORE_SET':
-            helpers.setStorage('core', action.data);
+            _storage2.default.set('core', action.data);
             break;
 
           case 'UI_SET':
-            helpers.setStorage('ui', action.data);
+            _storage2.default.set('ui', action.data);
             break;
 
           case 'MOPIDY_SET':
-            helpers.setStorage('mopidy', action.data);
+            _storage2.default.set('mopidy', action.data);
             break;
 
           case 'SPOTIFY_SET':
-            helpers.setStorage('spotify', action.data);
+            _storage2.default.set('spotify', action.data);
             break;
 
           case 'SNAPCAST_SET':
-            helpers.setStorage('snapcast', action.data);
+            _storage2.default.set('snapcast', action.data);
             break;
 
           case 'SNAPCAST_COMMANDS_UPDATED':
-            helpers.setStorage('snapcast', {
+            _storage2.default.set('snapcast', {
               commands: action.commands
             });
             break;
 
           case 'SUPPRESS_BROADCAST':
-            var ui = helpers.getStorage('ui');
+            var ui = _storage2.default.get('ui');
             if (ui.suppressed_broadcasts !== undefined) {
               var suppressed_broadcasts = ui.suppressed_broadcasts;
             } else {
@@ -77940,7 +75735,7 @@ var localstorageMiddleware = function () {
 
             suppressed_broadcasts.push(action.key);
 
-            helpers.setStorage('ui', {
+            _storage2.default.set('ui', {
               suppressed_broadcasts: suppressed_broadcasts
             });
             break;
@@ -77950,23 +75745,23 @@ var localstorageMiddleware = function () {
            * This uses way too much storage space (ie 10MB+) so won't work. We need
            * to use the IndexedDB engine instead for storing this quantity of data
             case 'UPDATE_TRACKS_INDEX':
-              helpers.setStorage('core', {tracks: action.tracks});
+              storage.set('core', {tracks: action.tracks});
               next(action);
               break;
           case 'UPDATE_ALBUMS_INDEX':
-              helpers.setStorage('core', {albums: action.albums});
+              storage.set('core', {albums: action.albums});
               next(action);
               break;
           case 'UPDATE_ARTISTS_INDEX':
-              helpers.setStorage('core', {artists: action.artists});
+              storage.set('core', {artists: action.artists});
               next(action);
               break;
           case 'UPDATE_PLAYLISTS_INDEX':
-              helpers.setStorage('core', {playlists: action.playlists});
+              storage.set('core', {playlists: action.playlists});
               next(action);
               break;
           case 'UPDATE_USERS_INDEX':
-              helpers.setStorage('core', {users: action.users});
+              storage.set('core', {users: action.users});
               next(action);
               break;
            */
@@ -78064,11 +75859,7 @@ exports.clearSearchResults = clearSearchResults;
 exports.getSearchResults = getSearchResults;
 exports.getQueueHistory = getQueueHistory;
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+var _arrays = __webpack_require__(/*! ../../util/arrays */ "./src/js/util/arrays.js");
 
 function set(data) {
   return {
@@ -78426,7 +76217,7 @@ function removeTracks(tlids) {
 }
 
 function reorderTracklist(indexes, insert_before) {
-  var range = helpers.createRange(indexes);
+  var range = (0, _arrays.createRange)(indexes);
   if (insert_before > range.start) insert_before -= range.length;
   return {
     type: 'MOPIDY_REORDER_TRACKLIST',
@@ -78639,11 +76430,11 @@ var _mopidy2 = _interopRequireDefault(_mopidy);
 
 var _jsSha = __webpack_require__(/*! js-sha256 */ "./node_modules/js-sha256/src/sha256.js");
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
 
-var helpers = _interopRequireWildcard(_helpers);
+var _format = __webpack_require__(/*! ../../util/format */ "./src/js/util/format.js");
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+var _arrays = __webpack_require__(/*! ../../util/arrays */ "./src/js/util/arrays.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -78822,7 +76613,7 @@ var MopidyMiddleware = function () {
         reject(error);
       }
 
-      var loader_key = helpers.generateGuid();
+      var loader_key = (0, _helpers.generateGuid)();
       store.dispatch(uiActions.startLoading(loader_key, 'mopidy_' + property));
 
       // Start our 15 second timeout
@@ -78890,7 +76681,7 @@ var MopidyMiddleware = function () {
             break;
 
           case 'MOPIDY_DISCONNECTED':
-            helpers.setFavicon('favicon_error.png');
+            (0, _helpers.setFavicon)('favicon_error.png');
             break;
 
           case 'MOPIDY_DEBUG':
@@ -78946,9 +76737,9 @@ var MopidyMiddleware = function () {
             store.dispatch(uiActions.setWindowTitle(null, action.play_state));
 
             if (action.play_state == 'playing') {
-              helpers.setFavicon('favicon.png');
+              (0, _helpers.setFavicon)('favicon.png');
             } else {
-              helpers.setFavicon('favicon_paused.png');
+              (0, _helpers.setFavicon)('favicon_paused.png');
             }
             next(action);
             break;
@@ -78973,7 +76764,7 @@ var MopidyMiddleware = function () {
             store.dispatch(pusherActions.deliverBroadcast('notification', {
               notification: {
                 content: store.getState().pusher.username + (store.getState().mopidy.play_state == 'paused' ? ' resumed' : ' started') + ' playback',
-                icon: store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false
+                icon: store.getState().core.current_track ? (0, _format.getTrackIcon)(store.getState().core.current_track, store.getState().core) : false
               }
             }));
             break;
@@ -78987,7 +76778,7 @@ var MopidyMiddleware = function () {
               store.dispatch(pusherActions.deliverBroadcast('notification', {
                 notification: {
                   content: store.getState().pusher.username + ' paused playback',
-                  icon: store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false
+                  icon: store.getState().core.current_track ? (0, _format.getTrackIcon)(store.getState().core.current_track, store.getState().core) : false
                 }
               }));
             });
@@ -79011,7 +76802,7 @@ var MopidyMiddleware = function () {
               store.dispatch(pusherActions.deliverBroadcast('notification', {
                 notification: {
                   content: store.getState().pusher.username + ' skipped "' + store.getState().core.current_track.name + '"',
-                  icon: store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false
+                  icon: store.getState().core.current_track ? (0, _format.getTrackIcon)(store.getState().core.current_track, store.getState().core) : false
                 }
               }));
             });
@@ -79025,7 +76816,7 @@ var MopidyMiddleware = function () {
               store.dispatch(pusherActions.deliverBroadcast('notification', {
                 notification: {
                   content: store.getState().pusher.username + ' stopped playback',
-                  icon: store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false
+                  icon: store.getState().core.current_track ? (0, _format.getTrackIcon)(store.getState().core.current_track, store.getState().core) : false
                 }
               }));
             });
@@ -79196,7 +76987,7 @@ var MopidyMiddleware = function () {
               }
 
               // It's a Spotify playlist that we haven't loaded yet, so Spotify HTTP API needs to go get it
-            } else if (helpers.uriSource(action.uri) == 'spotify' && store.getState().spotify.enabled) {
+            } else if ((0, _helpers.uriSource)(action.uri) == 'spotify' && store.getState().spotify.enabled) {
               store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri, action.shuffle, 'play'));
               break;
             }
@@ -79207,9 +76998,9 @@ var MopidyMiddleware = function () {
               if (!response || response.tracks === undefined || !response.tracks) {
                 store.dispatch(uiActions.createNotification({ content: 'Failed to load playlist tracks', level: 'error' }));
               } else {
-                var tracks_uris = helpers.arrayOf('uri', response.tracks);
+                var tracks_uris = (0, _arrays.arrayOf)('uri', response.tracks);
                 if (action.shuffle) {
-                  tracks_uris = helpers.shuffle(tracks_uris);
+                  tracks_uris = (0, _arrays.shuffle)(tracks_uris);
                 }
                 store.dispatch(mopidyActions.playURIs(tracks_uris, action.uri));
               }
@@ -79228,7 +77019,7 @@ var MopidyMiddleware = function () {
               if (playlist.tracks_total == playlist.tracks_uris.length) {
                 var tracks_uris = Object.assign([], playlist.tracks_uris);
                 if (action.shuffle) {
-                  tracks_uris = helpers.shuffle(tracks_uris);
+                  tracks_uris = (0, _arrays.shuffle)(tracks_uris);
                 }
                 store.dispatch(mopidyActions.enqueueURIs(tracks_uris, action.uri, action.play_next, action.at_position, action.offset));
                 break;
@@ -79241,7 +77032,7 @@ var MopidyMiddleware = function () {
               }
 
               // It's a Spotify playlist that we haven't loaded yet, so Spotify HTTP API needs to go get it
-            } else if (helpers.uriSource(action.uri) == 'spotify' && store.getState().spotify.enabled) {
+            } else if ((0, _helpers.uriSource)(action.uri) == 'spotify' && store.getState().spotify.enabled) {
               store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri, action.shuffle, 'enqueue', action.play_next));
               break;
             }
@@ -79252,9 +77043,9 @@ var MopidyMiddleware = function () {
               if (response.tracks === undefined) {
                 store.dispatch(uiActions.createNotification({ content: 'Failed to load playlist tracks', level: 'error' }));
               } else {
-                var _tracks_uris = helpers.arrayOf('uri', response.tracks);
+                var _tracks_uris = (0, _arrays.arrayOf)('uri', response.tracks);
                 if (action.shuffle) {
-                  _tracks_uris = helpers.shuffle(_tracks_uris);
+                  _tracks_uris = (0, _arrays.shuffle)(_tracks_uris);
                 }
                 store.dispatch(mopidyActions.enqueueURIs(_tracks_uris, action.uri, action.play_next, action.at_position, action.offset));
               }
@@ -79273,7 +77064,7 @@ var MopidyMiddleware = function () {
             store.dispatch(pusherActions.deliverBroadcast('notification', {
               notification: {
                 content: store.getState().pusher.username + ' is adding ' + action.uris.length + ' URIs to queue',
-                icon: store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false
+                icon: store.getState().core.current_track ? (0, _format.getTrackIcon)(store.getState().core.current_track, store.getState().core) : false
               }
             }));
 
@@ -79395,7 +77186,7 @@ var MopidyMiddleware = function () {
             }
 
             if (action.shuffle) {
-              urisToPlay = helpers.shuffle(urisToPlay);
+              urisToPlay = (0, _arrays.shuffle)(urisToPlay);
             }
 
             // Stop the radio
@@ -79569,8 +77360,8 @@ var MopidyMiddleware = function () {
                       }
                     }
 
-                    var albums_uris = helpers.arrayOf('uri', albums);
-                    albums_uris = helpers.removeDuplicates(albums_uris);
+                    var albums_uris = (0, _arrays.arrayOf)('uri', albums);
+                    albums_uris = (0, _arrays.removeDuplicates)(albums_uris);
 
                     store.dispatch(coreActions.albumsLoaded(albums));
 
@@ -79637,7 +77428,7 @@ var MopidyMiddleware = function () {
                       }
                     }
 
-                    artists_uris = helpers.removeDuplicates(artists_uris);
+                    artists_uris = (0, _arrays.removeDuplicates)(artists_uris);
 
                     // load each artist
                     for (var i = 0; i < artists_uris.length; i++) {
@@ -79682,7 +77473,7 @@ var MopidyMiddleware = function () {
 
                     for (var i = 0; i < response.length; i++) {
                       var _playlist = response[i];
-                      if (_playlist.name.includes(action.data.query) && action.data.uri_schemes.includes(helpers.uriSource(_playlist.uri) + ':')) {
+                      if (_playlist.name.includes(action.data.query) && action.data.uri_schemes.includes((0, _helpers.uriSource)(_playlist.uri) + ':')) {
                         playlists_uris.push(_playlist.uri);
                       }
                     }
@@ -79738,7 +77529,7 @@ var MopidyMiddleware = function () {
                       type: 'MOPIDY_SEARCH_RESULTS_LOADED',
                       query: action.data.query,
                       context: action.data.context,
-                      results: helpers.formatTracks(_tracks)
+                      results: (0, _format.formatTracks)(_tracks)
                     });
                   }
                   continue_process();
@@ -79773,7 +77564,7 @@ var MopidyMiddleware = function () {
                         type: 'MOPIDY_SEARCH_RESULTS_LOADED',
                         query: action.data.query,
                         context: 'tracks',
-                        results: helpers.formatTracks(_tracks2)
+                        results: (0, _format.formatTracks)(_tracks2)
                       });
                     }
 
@@ -79813,8 +77604,8 @@ var MopidyMiddleware = function () {
                         }
                       }
 
-                      var albums_uris = helpers.arrayOf('uri', albums);
-                      albums_uris = helpers.removeDuplicates(albums_uris);
+                      var albums_uris = (0, _arrays.arrayOf)('uri', albums);
+                      albums_uris = (0, _arrays.removeDuplicates)(albums_uris);
 
                       store.dispatch(coreActions.albumsLoaded(albums));
 
@@ -79870,7 +77661,7 @@ var MopidyMiddleware = function () {
                         }
                       }
 
-                      artists_uris = helpers.removeDuplicates(artists_uris);
+                      artists_uris = (0, _arrays.removeDuplicates)(artists_uris);
 
                       // load each artist
                       for (var i = 0; i < artists_uris.length; i++) {
@@ -79909,7 +77700,7 @@ var MopidyMiddleware = function () {
                         var playlists_uris = [];
                         for (var i = 0; i < response.length; i++) {
                           var _playlist2 = response[i];
-                          if (_playlist2.name.includes(action.data.query) && action.data.uri_schemes.includes(helpers.uriSource(_playlist2.uri) + ':')) {
+                          if (_playlist2.name.includes(action.data.query) && action.data.uri_schemes.includes((0, _helpers.uriSource)(_playlist2.uri) + ':')) {
                             playlists_uris.push(_playlist2.uri);
                           }
                         }
@@ -79967,12 +77758,12 @@ var MopidyMiddleware = function () {
           case 'MOPIDY_GET_LIBRARY_PLAYLISTS':
             request(socket, store, 'playlists.asList').then(function (response) {
               // drop in our URI list
-              var playlist_uris = helpers.arrayOf('uri', response);
+              var playlist_uris = (0, _arrays.arrayOf)('uri', response);
               var playlist_uris_filtered = [];
 
               // Remove any Spotify playlists. These will be handled by our Spotify API
               for (var i = 0; i < playlist_uris.length; i++) {
-                if (helpers.uriSource(playlist_uris[i]) != 'spotify') {
+                if ((0, _helpers.uriSource)(playlist_uris[i]) != 'spotify') {
                   playlist_uris_filtered.push(playlist_uris[i]);
                 }
               }
@@ -79983,7 +77774,7 @@ var MopidyMiddleware = function () {
               // get the full playlist objects
               for (var i = 0; i < playlist_uris_filtered.length; i++) {
                 request(socket, store, 'playlists.lookup', { uri: playlist_uris_filtered[i] }).then(function (response) {
-                  var source = helpers.uriSource(response.uri);
+                  var source = (0, _helpers.uriSource)(response.uri);
                   var playlist = {
 
                     type: 'playlist',
@@ -80027,7 +77818,7 @@ var MopidyMiddleware = function () {
 
           case 'MOPIDY_RESOLVE_PLAYLIST_TRACKS':
             var tracks = Object.assign([], action.tracks);
-            var uris = helpers.arrayOf('uri', tracks);
+            var uris = (0, _arrays.arrayOf)('uri', tracks);
 
             request(socket, store, 'library.lookup', { uris: uris }).then(function (response) {
               for (var _uri in response) {
@@ -80214,7 +78005,7 @@ var MopidyMiddleware = function () {
               request(socket, store, 'library.browse', { uri: store.getState().mopidy.library_albums_uri }).then(function (response) {
                 if (response.length <= 0) return;
 
-                var uris = helpers.arrayOf('uri', response);
+                var uris = (0, _arrays.arrayOf)('uri', response);
                 store.dispatch({
                   type: 'MOPIDY_LIBRARY_ALBUMS_LOADED',
                   uris: uris
@@ -80336,7 +78127,7 @@ var MopidyMiddleware = function () {
                 }
               }
 
-              store.dispatch(mopidyActions.getImages('albums', helpers.arrayOf('uri', albums_loaded)));
+              store.dispatch(mopidyActions.getImages('albums', (0, _arrays.arrayOf)('uri', albums_loaded)));
               store.dispatch(coreActions.albumsLoaded(albums_loaded));
               store.dispatch(coreActions.artistsLoaded(artists_loaded));
               store.dispatch(coreActions.tracksLoaded(tracks_loaded));
@@ -80388,8 +78179,8 @@ var MopidyMiddleware = function () {
 
               var album = _extends({}, response[0].album, {
                 source: 'local',
-                artists_uris: helpers.arrayOf('uri', artists),
-                tracks_uris: helpers.arrayOf('uri', response),
+                artists_uris: (0, _arrays.arrayOf)('uri', artists),
+                tracks_uris: (0, _arrays.arrayOf)('uri', response),
                 tracks_total: response.length
               });
 
@@ -80452,7 +78243,7 @@ var MopidyMiddleware = function () {
                       request(socket, store, 'library.browse', { uri: 'local:directory?type=artist' } )
                           .then(response => {
                               if (response.length <= 0) return;
-                                var uris = helpers.arrayOf('uri',response);
+                                var uris = arrayOf('uri',response);
                                 store.dispatch({
                                   type: 'MOPIDY_LIBRARY_ARTISTS_LOADED',
                                   uris: uris
@@ -80551,7 +78342,7 @@ var MopidyMiddleware = function () {
                 }
               }
 
-              artist.albums_uris = helpers.arrayOf('uri', albums), artist.tracks = response;
+              artist.albums_uris = (0, _arrays.arrayOf)('uri', albums), artist.tracks = response;
 
               store.dispatch(coreActions.artistLoaded(artist));
 
@@ -80643,7 +78434,7 @@ var MopidyMiddleware = function () {
             // Let the UI know we're finished transition
             store.dispatch(uiActions.setCurrentTrackTransition(false));
 
-            var track = helpers.formatTrack(action.tl_track);
+            var track = (0, _format.formatTrack)(action.tl_track);
             if (track.uri) {
               // Deliver the data we've got already
               store.dispatch({
@@ -80655,7 +78446,7 @@ var MopidyMiddleware = function () {
               // Now attempt to get supporting images
               if (store.getState().core.tracks[track.uri] === undefined || store.getState().core.tracks[track.uri].images === undefined) {
                 // We've got Spotify running, and it's a spotify track - go straight to the source!
-                if (store.getState().spotify.enabled && helpers.uriSource(track.uri) == 'spotify') {
+                if (store.getState().spotify.enabled && (0, _helpers.uriSource)(track.uri) == 'spotify') {
                   store.dispatch(spotifyActions.getTrack(track.uri));
 
                   // Some other source, rely on Mopidy backends to do their work
@@ -80671,7 +78462,7 @@ var MopidyMiddleware = function () {
               if (response && response >= 0) {
                 // Get the full track object from our tracklist
                 // We know it will be here, as the tlid refers to an item in this list
-                var _track2 = helpers.applyFilter('tlid', response, store.getState().core.queue, true);
+                var _track2 = (0, _arrays.applyFilter)('tlid', response, store.getState().core.queue, true);
 
                 if (_track2 && _track2.uri) {
                   store.dispatch({
@@ -80682,7 +78473,7 @@ var MopidyMiddleware = function () {
                   // We don't have the track (including images) already in our index
                   if (store.getState().core.tracks[_track2.uri] === undefined || store.getState().core.tracks[_track2.uri].images === undefined) {
                     // We've got Spotify running, and it's a spotify track - go straight to the source!
-                    if (store.getState().spotify.enabled && helpers.uriSource(_track2.uri) == 'spotify') {
+                    if (store.getState().spotify.enabled && (0, _helpers.uriSource)(_track2.uri) == 'spotify') {
                       store.dispatch(spotifyActions.getTrack(_track2.uri));
 
                       // Some other source, rely on Mopidy backends to do their work
@@ -80721,7 +78512,7 @@ var MopidyMiddleware = function () {
                 for (var _uri5 in response) {
                   if (response.hasOwnProperty(_uri5)) {
                     var images = response[_uri5];
-                    images = helpers.formatImages(helpers.digestMopidyImages(store.getState().mopidy, images));
+                    images = (0, _format.formatImages)((0, _format.digestMopidyImages)(store.getState().mopidy, images));
 
                     if (images && images.length > 0) {
                       records.push({
@@ -80789,12 +78580,12 @@ var MopidyMiddleware = function () {
               }
 
               if (subdirectories.length > 0) {
-                request(socket, store, 'library.getImages', { uris: helpers.arrayOf('uri', subdirectories) }).then(function (response) {
+                request(socket, store, 'library.getImages', { uris: (0, _arrays.arrayOf)('uri', subdirectories) }).then(function (response) {
 
                   var subdirectories_with_images = subdirectories.map(function (subdir) {
                     var images = response[subdir.uri] || undefined;
                     if (images) {
-                      images = helpers.formatImages(helpers.digestMopidyImages(store.getState().mopidy, images));
+                      images = (0, _format.formatImages)((0, _format.digestMopidyImages)(store.getState().mopidy, images));
                     }
                     return _extends({}, subdir, {
                       images: images
@@ -80820,7 +78611,7 @@ var MopidyMiddleware = function () {
 
                   for (var _uri6 in response) {
                     if (response.hasOwnProperty(_uri6) && response[_uri6].length > 0) {
-                      tracks.push(helpers.formatTrack(response[_uri6][0]));
+                      tracks.push((0, _format.formatTrack)(response[_uri6][0]));
                     }
                   }
 
@@ -80882,11 +78673,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 exports.default = reducer;
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+var _arrays = __webpack_require__(/*! ../../util/arrays */ "./src/js/util/arrays.js");
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
@@ -80998,7 +78785,7 @@ function reducer() {
       } else {
         var uris = action.uris;
       }
-      return _extends({}, mopidy, { library_playlists: helpers.removeDuplicates(uris) });
+      return _extends({}, mopidy, { library_playlists: (0, _arrays.removeDuplicates)(uris) });
 
     case 'MOPIDY_LIBRARY_PLAYLISTS_LOADED_ALL':
       return _extends({}, mopidy, { library_playlists_loaded_all: true });
@@ -81025,7 +78812,7 @@ function reducer() {
       } else {
         var uris = action.uris;
       }
-      return _extends({}, mopidy, { library_artists: helpers.removeDuplicates(uris) });
+      return _extends({}, mopidy, { library_artists: (0, _arrays.removeDuplicates)(uris) });
 
     case 'MOPIDY_CLEAR_LIBRARY_ARTISTS':
       return _extends({}, mopidy, { library_artists: null });
@@ -81036,7 +78823,7 @@ function reducer() {
       } else {
         var uris = action.uris;
       }
-      return _extends({}, mopidy, { library_albums: helpers.removeDuplicates(uris) });
+      return _extends({}, mopidy, { library_albums: (0, _arrays.removeDuplicates)(uris) });
 
     case 'MOPIDY_CLEAR_LIBRARY_ALBUMS':
       return _extends({}, mopidy, { library_albums: null });
@@ -81405,17 +79192,16 @@ var _reactGa = __webpack_require__(/*! react-ga */ "./node_modules/react-ga/dist
 
 var _reactGa2 = _interopRequireDefault(_reactGa);
 
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
 var coreActions = __webpack_require__(/*! ../core/actions */ "./src/js/services/core/actions.js");
 var uiActions = __webpack_require__(/*! ../ui/actions */ "./src/js/services/ui/actions.js");
-var mopidyActions = __webpack_require__(/*! ../mopidy/actions */ "./src/js/services/mopidy/actions.js");
 var pusherActions = __webpack_require__(/*! ./actions */ "./src/js/services/pusher/actions.js");
 var lastfmActions = __webpack_require__(/*! ../lastfm/actions */ "./src/js/services/lastfm/actions.js");
 var geniusActions = __webpack_require__(/*! ../genius/actions */ "./src/js/services/genius/actions.js");
 var spotifyActions = __webpack_require__(/*! ../spotify/actions */ "./src/js/services/spotify/actions.js");
-var snapcastActions = __webpack_require__(/*! ../snapcast/actions */ "./src/js/services/snapcast/actions.js");
 
 var PusherMiddleware = function () {
   var _this = this;
@@ -81585,7 +79371,7 @@ var PusherMiddleware = function () {
   var request = function request(store, method) {
     var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
     return new Promise(function (resolve, reject) {
-      var id = helpers.generateGuid();
+      var id = (0, _helpers.generateGuid)();
       var message = {
         jsonrpc: '2.0',
         id: id,
@@ -81900,7 +79686,7 @@ var PusherMiddleware = function () {
             };
 
             for (var i = 0; i < action.uris.length; i++) {
-              switch (helpers.uriType(action.uris[i])) {
+              switch ((0, _helpers.uriType)(action.uris[i])) {
                 case 'artist':
                   data.seed_artists.push(action.uris[i]);
                   break;
@@ -82442,11 +80228,16 @@ var _reactGa2 = _interopRequireDefault(_reactGa);
 
 var _jsSha = __webpack_require__(/*! js-sha256 */ "./node_modules/js-sha256/src/sha256.js");
 
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
+
+var _arrays = __webpack_require__(/*! ../../util/arrays */ "./src/js/util/arrays.js");
+
+var _format = __webpack_require__(/*! ../../util/format */ "./src/js/util/format.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-var helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
 var coreActions = __webpack_require__(/*! ../core/actions */ "./src/js/services/core/actions.js");
 var uiActions = __webpack_require__(/*! ../ui/actions */ "./src/js/services/ui/actions.js");
 var pusherActions = __webpack_require__(/*! ../pusher/actions */ "./src/js/services/pusher/actions.js");
@@ -82542,7 +80333,7 @@ var SnapcastMiddleware = function () {
   var request = function request(store, method) {
     var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
     return new Promise(function (resolve, reject) {
-      var id = helpers.generateGuid(8);
+      var id = (0, _helpers.generateGuid)(8);
       var message = {
         jsonrpc: '2.0',
         id: id,
@@ -82700,14 +80491,14 @@ var SnapcastMiddleware = function () {
             var clients_loaded = [];
 
             var groups_loaded = action.groups.map(function (raw_group) {
-              var group = helpers.formatGroup(raw_group);
+              var group = (0, _format.formatGroup)(raw_group);
 
               if (groups_index[group.id]) {
                 group = _extends({}, groups_index[group.id], group);
               }
 
               if (raw_group.clients) {
-                group.clients_ids = helpers.arrayOf('id', raw_group.clients);
+                group.clients_ids = (0, _arrays.arrayOf)('id', raw_group.clients);
                 clients_loaded = [].concat(_toConsumableArray(clients_loaded), _toConsumableArray(raw_group.clients));
                 store.dispatch(snapcastActions.calculateGroupVolume(group.id, raw_group.clients));
               }
@@ -82731,7 +80522,7 @@ var SnapcastMiddleware = function () {
 
           case 'SNAPCAST_CALCULATE_GROUP_VOLUME':
             var totalVolume = action.clients.reduce(function (accumulator, client) {
-              return accumulator += helpers.formatClient(client).volume;
+              return accumulator += (0, _format.formatClient)(client).volume;
             }, 0);
 
             store.dispatch(snapcastActions.groupLoaded({
@@ -82752,7 +80543,7 @@ var SnapcastMiddleware = function () {
               for (var _iterator = action.clients[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                 var raw_client = _step.value;
 
-                var client = helpers.formatClient(raw_client);
+                var client = (0, _format.formatClient)(raw_client);
 
                 if (clients_index[client.id]) {
                   client = _extends({}, clients_index[client.id], client);
@@ -83262,7 +81053,11 @@ exports.getLibraryArtistsProcessor = getLibraryArtistsProcessor;
 exports.getLibraryAlbums = getLibraryAlbums;
 exports.getLibraryAlbumsProcessor = getLibraryAlbumsProcessor;
 
-var _reactGa = __webpack_require__(/*! react-ga */ "./node_modules/react-ga/dist/esm/index.js");
+var _arrays = __webpack_require__(/*! ../../util/arrays */ "./src/js/util/arrays.js");
+
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
+
+var _format = __webpack_require__(/*! ../../util/format */ "./src/js/util/format.js");
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
@@ -83270,7 +81065,6 @@ var coreActions = __webpack_require__(/*! ../../services/core/actions */ "./src/
 var uiActions = __webpack_require__(/*! ../../services/ui/actions */ "./src/js/services/ui/actions.js");
 var mopidyActions = __webpack_require__(/*! ../../services/mopidy/actions */ "./src/js/services/mopidy/actions.js");
 var lastfmActions = __webpack_require__(/*! ../../services/lastfm/actions */ "./src/js/services/lastfm/actions.js");
-var helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
 
 /**
  * Send an ajax request to the Spotify API
@@ -83291,7 +81085,7 @@ var request = function request(dispatch, getState, endpoint) {
   // Add reference to loader queue
   // We do this straight away so that even if we're refreshing the token, it still registers as
   // loading said endpoint
-  var loader_key = helpers.generateGuid();
+  var loader_key = (0, _helpers.generateGuid)();
   dispatch(uiActions.startLoading(loader_key, 'spotify_' + endpoint));
 
   return new Promise(function (resolve, reject) {
@@ -83395,7 +81189,7 @@ function getToken(dispatch, getState) {
 function refreshToken(dispatch, getState) {
   return new Promise(function (resolve, reject) {
     // add reference to loader queue
-    var loader_key = helpers.generateGuid();
+    var loader_key = (0, _helpers.generateGuid)();
     dispatch(uiActions.startLoading(loader_key, 'spotify_refresh_token'));
 
     // Fully-authorized, so we can use the local Spotify credentials
@@ -83544,7 +81338,7 @@ function getMe() {
  * */
 function getTrack(uri) {
   return function (dispatch, getState) {
-    request(dispatch, getState, 'tracks/' + helpers.getFromUri('trackid', uri)).then(function (response) {
+    request(dispatch, getState, 'tracks/' + (0, _helpers.getFromUri)('trackid', uri)).then(function (response) {
       dispatch(coreActions.trackLoaded(response));
     }, function (error) {
       dispatch(coreActions.handleException('Could not load track', error));
@@ -83604,7 +81398,7 @@ function getFeaturedPlaylists() {
         type: 'SPOTIFY_FEATURED_PLAYLISTS_LOADED',
         data: {
           message: response.message,
-          playlists: helpers.upgradeSpotifyPlaylistUris(helpers.arrayOf('uri', response.playlists.items))
+          playlists: (0, _helpers.upgradeSpotifyPlaylistUris)((0, _arrays.arrayOf)('uri', response.playlists.items))
         }
       });
     }, function (error) {
@@ -83736,7 +81530,7 @@ function getSearchResults(type, query) {
           type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
           context: 'tracks',
           query: query,
-          results: helpers.formatTracks(response.tracks.items),
+          results: (0, _format.formatTracks)(response.tracks.items),
           more: response.tracks.next
         });
       }
@@ -83750,7 +81544,7 @@ function getSearchResults(type, query) {
           type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
           context: 'artists',
           query: query,
-          results: helpers.arrayOf('uri', response.artists.items),
+          results: (0, _arrays.arrayOf)('uri', response.artists.items),
           more: response.artists.next
         });
       }
@@ -83764,7 +81558,7 @@ function getSearchResults(type, query) {
           type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
           context: 'albums',
           query: query,
-          results: helpers.arrayOf('uri', response.albums.items),
+          results: (0, _arrays.arrayOf)('uri', response.albums.items),
           more: response.albums.next
         });
       }
@@ -83779,7 +81573,7 @@ function getSearchResults(type, query) {
           for (var _iterator = response.playlists.items[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
             var playlist = _step.value;
 
-            playlists.push(_extends({}, helpers.formatPlaylist(playlist), {
+            playlists.push(_extends({}, (0, _format.formatPlaylist)(playlist), {
               can_edit: getState().spotify.me && playlist.owner.id == getState().spotify.me.id,
               tracks_total: playlist.tracks.total
             }));
@@ -83808,7 +81602,7 @@ function getSearchResults(type, query) {
           type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
           context: 'playlists',
           query: query,
-          results: helpers.arrayOf('uri', playlists),
+          results: (0, _arrays.arrayOf)('uri', playlists),
           more: response.playlists.next
         });
       }
@@ -83899,7 +81693,7 @@ function following(uri) {
   var method = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'GET';
 
   return function (dispatch, getState) {
-    var asset_name = helpers.uriType(uri);
+    var asset_name = (0, _helpers.uriType)(uri);
     var endpoint = void 0;
     var data = void 0;
     var is_following = null;
@@ -83913,39 +81707,39 @@ function following(uri) {
     switch (asset_name) {
       case 'track':
         if (method == 'GET') {
-          endpoint = 'me/tracks/contains?ids=' + helpers.getFromUri('trackid', uri);
+          endpoint = 'me/tracks/contains?ids=' + (0, _helpers.getFromUri)('trackid', uri);
         } else {
-          endpoint = 'me/tracks?ids=' + helpers.getFromUri('trackid', uri);
+          endpoint = 'me/tracks?ids=' + (0, _helpers.getFromUri)('trackid', uri);
         }
         break;
       case 'album':
         if (method == 'GET') {
-          endpoint = 'me/albums/contains?ids=' + helpers.getFromUri('albumid', uri);
+          endpoint = 'me/albums/contains?ids=' + (0, _helpers.getFromUri)('albumid', uri);
         } else {
-          endpoint = 'me/albums?ids=' + helpers.getFromUri('albumid', uri);
+          endpoint = 'me/albums?ids=' + (0, _helpers.getFromUri)('albumid', uri);
         }
         break;
       case 'artist':
         if (method == 'GET') {
-          endpoint = 'me/following/contains?type=artist&ids=' + helpers.getFromUri('artistid', uri);
+          endpoint = 'me/following/contains?type=artist&ids=' + (0, _helpers.getFromUri)('artistid', uri);
         } else {
-          endpoint = 'me/following?type=artist&ids=' + helpers.getFromUri('artistid', uri);
+          endpoint = 'me/following?type=artist&ids=' + (0, _helpers.getFromUri)('artistid', uri);
           data = {};
         }
         break;
       case 'user':
         if (method == 'GET') {
-          endpoint = 'me/following/contains?type=user&ids=' + helpers.getFromUri('userid', uri);
+          endpoint = 'me/following/contains?type=user&ids=' + (0, _helpers.getFromUri)('userid', uri);
         } else {
-          endpoint = 'me/following?type=user&ids=' + helpers.getFromUri('userid', uri);
+          endpoint = 'me/following?type=user&ids=' + (0, _helpers.getFromUri)('userid', uri);
           data = {};
         }
         break;
       case 'playlist':
         if (method == 'GET') {
-          endpoint = 'playlists/' + helpers.getFromUri('playlistid', uri) + '/followers/contains?ids=' + getState().spotify.me.id;
+          endpoint = 'playlists/' + (0, _helpers.getFromUri)('playlistid', uri) + '/followers/contains?ids=' + getState().spotify.me.id;
         } else {
-          endpoint = 'playlists/' + helpers.getFromUri('playlistid', uri) + '/followers?';
+          endpoint = 'playlists/' + (0, _helpers.getFromUri)('playlistid', uri) + '/followers?';
         }
         break;
       default:
@@ -83981,7 +81775,7 @@ function resolveRadioSeeds(radio) {
       var artist_ids = '';
       for (var i = 0; i < radio.seed_artists.length; i++) {
         if (i > 0) artist_ids += ',';
-        artist_ids += helpers.getFromUri('artistid', radio.seed_artists[i]);
+        artist_ids += (0, _helpers.getFromUri)('artistid', radio.seed_artists[i]);
       }
 
       request(dispatch, getState, 'artists?ids=' + artist_ids).then(function (response) {
@@ -84002,7 +81796,7 @@ function resolveRadioSeeds(radio) {
       var track_ids = '';
       for (var i = 0; i < radio.seed_tracks.length; i++) {
         if (i > 0) track_ids += ',';
-        track_ids += helpers.getFromUri('trackid', radio.seed_tracks[i]);
+        track_ids += (0, _helpers.getFromUri)('trackid', radio.seed_tracks[i]);
       }
 
       request(dispatch, getState, 'tracks?ids=' + track_ids).then(function (response) {
@@ -84068,17 +81862,17 @@ function getRecommendations() {
     for (var i = 0; i < uris.length; i++) {
       var uri = uris[i];
 
-      switch (helpers.uriType(uri)) {
+      switch ((0, _helpers.uriType)(uri)) {
         case 'artist':
-          artists_ids.push(helpers.getFromUri('artistid', uri));
+          artists_ids.push((0, _helpers.getFromUri)('artistid', uri));
           break;
 
         case 'track':
-          tracks_ids.push(helpers.getFromUri('trackid', uri));
+          tracks_ids.push((0, _helpers.getFromUri)('trackid', uri));
           break;
 
         case 'genre':
-          genres.push(helpers.getFromUri('genreid', uri));
+          genres.push((0, _helpers.getFromUri)('genreid', uri));
           break;
 
         case 'default':
@@ -84151,9 +81945,9 @@ function getRecommendations() {
       dispatch({
         type: 'SPOTIFY_RECOMMENDATIONS_LOADED',
         seeds_uris: uris,
-        tracks_uris: helpers.arrayOf('uri', tracks),
+        tracks_uris: (0, _arrays.arrayOf)('uri', tracks),
         artists_uris: artists_uris,
-        albums_uris: helpers.arrayOf('uri', albums)
+        albums_uris: (0, _arrays.arrayOf)('uri', albums)
       });
     }, function (error) {
       dispatch(coreActions.handleException('Could not load recommendations', error));
@@ -84199,7 +81993,7 @@ function getArtist(uri) {
     var artist = {};
 
     // We need our artist, obviously
-    var requests = [request(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri), 'GET', false, true).then(function (response) {
+    var requests = [request(dispatch, getState, 'artists/' + (0, _helpers.getFromUri)('artistid', uri), 'GET', false, true).then(function (response) {
       Object.assign(artist, response);
     }, function (error) {
       dispatch(coreActions.handleException('Could not load artist', error));
@@ -84207,15 +82001,15 @@ function getArtist(uri) {
 
     // Do we want a full artist, with all supporting material?
     if (full) {
-      requests.push(request(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri) + '/top-tracks?country=' + getState().spotify.country).then(function (response) {
+      requests.push(request(dispatch, getState, 'artists/' + (0, _helpers.getFromUri)('artistid', uri) + '/top-tracks?country=' + getState().spotify.country).then(function (response) {
         Object.assign(artist, response);
       }, function (error) {
         dispatch(coreActions.handleException('Could not load artist\'s top tracks', error));
       }));
 
-      requests.push(request(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri) + '/related-artists').then(function (response) {
+      requests.push(request(dispatch, getState, 'artists/' + (0, _helpers.getFromUri)('artistid', uri) + '/related-artists').then(function (response) {
         dispatch(coreActions.artistsLoaded(response.artists));
-        Object.assign(artist, { related_artists_uris: helpers.arrayOf('uri', response.artists) });
+        Object.assign(artist, { related_artists_uris: (0, _arrays.arrayOf)('uri', response.artists) });
       }, function (error) {
         dispatch(coreActions.handleException('Could not load artist\'s related artists', error));
       }));
@@ -84233,7 +82027,7 @@ function getArtist(uri) {
 
       // Now go get our artist albums
       if (full) {
-        request(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri) + '/albums?market=' + getState().spotify.country).then(function (response) {
+        request(dispatch, getState, 'artists/' + (0, _helpers.getFromUri)('artistid', uri) + '/albums?market=' + getState().spotify.country).then(function (response) {
           dispatch({
             type: 'SPOTIFY_ARTIST_ALBUMS_LOADED',
             artist_uri: uri,
@@ -84253,7 +82047,7 @@ function getArtists(uris) {
     var ids = '';
     for (var i = 0; i < uris.length; i++) {
       if (ids != '') ids += ',';
-      ids += helpers.getFromUri('artistid', uris[i]);
+      ids += (0, _helpers.getFromUri)('artistid', uris[i]);
     }
 
     request(dispatch, getState, 'artists/?ids=' + ids).then(function (response) {
@@ -84265,7 +82059,7 @@ function getArtists(uris) {
             album: artist.albums[i]
           });
         }
-        artist.albums_uris = helpers.arrayOf('uri', artist.albums);
+        artist.albums_uris = (0, _arrays.arrayOf)('uri', artist.albums);
         artist.albums_more = artist.albums.next;
         dispatch(coreActions.artistLoaded(artist));
       }
@@ -84299,13 +82093,13 @@ function playArtistTopTracks(uri) {
     // Do we have this artist (and their tracks) in our index already?
 
     if (typeof artists[uri] !== 'undefined' && typeof artists[uri].tracks !== 'undefined') {
-      var uris = helpers.arrayOf('uri', artists[uri].tracks);
+      var uris = (0, _arrays.arrayOf)('uri', artists[uri].tracks);
       dispatch(mopidyActions.playURIs(uris, uri));
 
       // We need to load the artist's top tracks first
     } else {
-      request(dispatch, getState, 'artists/' + helpers.getFromUri('artistid', uri) + '/top-tracks?country=' + getState().spotify.country).then(function (response) {
-        var uris = helpers.arrayOf('uri', response.tracks);
+      request(dispatch, getState, 'artists/' + (0, _helpers.getFromUri)('artistid', uri) + '/top-tracks?country=' + getState().spotify.country).then(function (response) {
+        var uris = (0, _arrays.arrayOf)('uri', response.tracks);
         dispatch(mopidyActions.playURIs(uris, uri));
       }, function (error) {
         dispatch(coreActions.handleException('Could not play artist\'s top tracks', error));
@@ -84321,8 +82115,8 @@ function playArtistTopTracks(uri) {
 
 function getUser(uri) {
   return function (dispatch, getState) {
-    request(dispatch, getState, 'users/' + helpers.getFromUri('userid', uri)).then(function (response) {
-      dispatch(coreActions.userLoaded(helpers.formatUser(response)));
+    request(dispatch, getState, 'users/' + (0, _helpers.getFromUri)('userid', uri)).then(function (response) {
+      dispatch(coreActions.userLoaded((0, _format.formatUser)(response)));
     }, function (error) {
       dispatch(coreActions.handleException('Could not load user', error));
     });
@@ -84332,7 +82126,7 @@ function getUser(uri) {
 function getUserPlaylists(uri) {
   return function (dispatch, getState) {
     // get the first page of playlists
-    request(dispatch, getState, 'users/' + helpers.getFromUri('userid', uri) + '/playlists?limit=40').then(function (response) {
+    request(dispatch, getState, 'users/' + (0, _helpers.getFromUri)('userid', uri) + '/playlists?limit=40').then(function (response) {
       var playlists = [];
       var _iteratorNormalCompletion2 = true;
       var _didIteratorError2 = false;
@@ -84347,7 +82141,7 @@ function getUserPlaylists(uri) {
             can_edit = true;
           }
 
-          var playlist = _extends({}, helpers.formatPlaylist(raw_playlist), {
+          var playlist = _extends({}, (0, _format.formatPlaylist)(raw_playlist), {
             can_edit: can_edit,
             tracks_total: raw_playlist.tracks.total
           });
@@ -84389,15 +82183,15 @@ function getUserPlaylists(uri) {
 function getAlbum(uri) {
   return function (dispatch, getState) {
     // get the album
-    request(dispatch, getState, 'albums/' + helpers.getFromUri('albumid', uri)).then(function (response) {
+    request(dispatch, getState, 'albums/' + (0, _helpers.getFromUri)('albumid', uri)).then(function (response) {
       // dispatch our loaded artists (simple objects)
       dispatch(coreActions.artistsLoaded(response.artists));
 
       var tracks = Object.assign([], response.tracks.items);
 
-      var album = _extends({}, helpers.formatAlbum(response), {
-        artists_uris: helpers.arrayOf('uri', response.artists),
-        tracks_uris: helpers.arrayOf('uri', tracks),
+      var album = _extends({}, (0, _format.formatAlbum)(response), {
+        artists_uris: (0, _arrays.arrayOf)('uri', response.artists),
+        tracks_uris: (0, _arrays.arrayOf)('uri', tracks),
         tracks_more: response.tracks.next,
         tracks_total: response.tracks.total
       });
@@ -84417,7 +82211,7 @@ function getAlbum(uri) {
       // we do this to get the artist artwork
       var artist_ids = [];
       for (var i = 0; i < response.artists.length; i++) {
-        artist_ids.push(helpers.getFromUri('artistid', response.artists[i].uri));
+        artist_ids.push((0, _helpers.getFromUri)('artistid', response.artists[i].uri));
       }
 
       // get all album artists as full objects
@@ -84480,12 +82274,12 @@ function savePlaylist(uri, name, description, is_public, is_collaborative, image
     };
 
     // Update the playlist fields
-    request(dispatch, getState, 'users/' + getState().spotify.me.id + '/playlists/' + helpers.getFromUri('playlistid', uri), 'PUT', data).then(function (response) {
+    request(dispatch, getState, 'users/' + getState().spotify.me.id + '/playlists/' + (0, _helpers.getFromUri)('playlistid', uri), 'PUT', data).then(function (response) {
       dispatch(uiActions.createNotification({ level: 'warning', content: 'Playlist saved' }));
 
       // Save the image
       if (image) {
-        request(dispatch, getState, 'users/' + getState().spotify.me.id + '/playlists/' + helpers.getFromUri('playlistid', uri) + '/images', 'PUT', image).then(function (response) {
+        request(dispatch, getState, 'users/' + getState().spotify.me.id + '/playlists/' + (0, _helpers.getFromUri)('playlistid', uri) + '/images', 'PUT', image).then(function (response) {
           dispatch({
             type: 'PLAYLIST_UPDATED',
             key: uri,
@@ -84522,7 +82316,7 @@ function savePlaylist(uri, name, description, is_public, is_collaborative, image
 function getPlaylist(uri) {
   return function (dispatch, getState) {
     // get the main playlist object
-    request(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '?market=' + getState().spotify.country).then(function (response) {
+    request(dispatch, getState, 'playlists/' + (0, _helpers.getFromUri)('playlistid', uri) + '?market=' + getState().spotify.country).then(function (response) {
       // convert links in description
       var description = null;
       if (response.description) {
@@ -84532,18 +82326,18 @@ function getPlaylist(uri) {
         description = description.split('<a href="spotify:user:').join('<a href="#' + '/user/spotify:user:');
       }
 
-      var tracks = helpers.formatTracks(response.tracks.items);
+      var tracks = (0, _format.formatTracks)(response.tracks.items);
 
-      var playlist = _extends({}, helpers.formatPlaylist(response), {
+      var playlist = _extends({}, (0, _format.formatPlaylist)(response), {
         is_completely_loaded: true,
         user_uri: response.owner.uri,
-        tracks_uris: tracks ? helpers.arrayOf('uri', tracks) : null,
+        tracks_uris: tracks ? (0, _arrays.arrayOf)('uri', tracks) : null,
         tracks_more: response.tracks.next,
         tracks_total: response.tracks.total,
         description: description
       });
 
-      dispatch(coreActions.userLoaded(helpers.formatUser(response.owner)));
+      dispatch(coreActions.userLoaded((0, _format.formatUser)(response.owner)));
       dispatch(coreActions.tracksLoaded(tracks));
       dispatch(coreActions.playlistLoaded(playlist));
     }, function (error) {
@@ -84629,7 +82423,7 @@ function getAllPlaylistTracks(uri) {
   return function (dispatch, getState) {
     dispatch(uiActions.startProcess('SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR', 'Loading playlist tracks', {
       uri: uri,
-      next: 'playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks?market=' + getState().spotify.country,
+      next: 'playlists/' + (0, _helpers.getFromUri)('playlistid', uri) + '/tracks?market=' + getState().spotify.country,
       shuffle: shuffle,
       play_next: play_next,
       at_position: at_position,
@@ -84701,7 +82495,7 @@ function getAllPlaylistTracksProcessor(data) {
         })));
       } else {
         if (data.shuffle) {
-          uris = helpers.shuffle(uris);
+          uris = (0, _arrays.shuffle)(uris);
         }
 
         // We don't bother "finishing", we just want it "finished" immediately
@@ -84723,7 +82517,7 @@ function getAllPlaylistTracksProcessor(data) {
 
 function addTracksToPlaylist(uri, tracks_uris) {
   return function (dispatch, getState) {
-    request(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks', 'POST', { uris: tracks_uris }).then(function (response) {
+    request(dispatch, getState, 'playlists/' + (0, _helpers.getFromUri)('playlistid', uri) + '/tracks', 'POST', { uris: tracks_uris }).then(function (response) {
       dispatch({
         type: 'PLAYLIST_TRACKS_ADDED',
         key: uri,
@@ -84738,7 +82532,7 @@ function addTracksToPlaylist(uri, tracks_uris) {
 
 function deleteTracksFromPlaylist(uri, snapshot_id, tracks_indexes) {
   return function (dispatch, getState) {
-    request(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks', 'DELETE', { snapshot_id: snapshot_id, positions: tracks_indexes }).then(function (response) {
+    request(dispatch, getState, 'playlists/' + (0, _helpers.getFromUri)('playlistid', uri) + '/tracks', 'DELETE', { snapshot_id: snapshot_id, positions: tracks_indexes }).then(function (response) {
       dispatch({
         type: 'PLAYLIST_TRACKS_REMOVED',
         key: uri,
@@ -84753,7 +82547,7 @@ function deleteTracksFromPlaylist(uri, snapshot_id, tracks_indexes) {
 
 function reorderPlaylistTracks(uri, range_start, range_length, insert_before, snapshot_id) {
   return function (dispatch, getState) {
-    request(dispatch, getState, 'playlists/' + helpers.getFromUri('playlistid', uri) + '/tracks', 'PUT', {
+    request(dispatch, getState, 'playlists/' + (0, _helpers.getFromUri)('playlistid', uri) + '/tracks', 'PUT', {
       uri: uri, range_start: range_start, range_length: range_length, insert_before: insert_before, snapshot_id: snapshot_id
     }).then(function (response) {
       dispatch({
@@ -84984,12 +82778,16 @@ var _reactGa2 = _interopRequireDefault(_reactGa);
 
 var _jsSha = __webpack_require__(/*! js-sha256 */ "./node_modules/js-sha256/src/sha256.js");
 
+var _arrays = __webpack_require__(/*! ../../util/arrays */ "./src/js/util/arrays.js");
+
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
+
+var _format = __webpack_require__(/*! ../../util/format */ "./src/js/util/format.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var helpers = __webpack_require__(/*! ./../../helpers */ "./src/js/helpers.js");
 var coreActions = __webpack_require__(/*! ../core/actions */ "./src/js/services/core/actions.js");
 var spotifyActions = __webpack_require__(/*! ./actions */ "./src/js/services/spotify/actions.js");
-var uiActions = __webpack_require__(/*! ../ui/actions */ "./src/js/services/ui/actions.js");
 var pusherActions = __webpack_require__(/*! ../pusher/actions */ "./src/js/services/pusher/actions.js");
 
 var SpotifyMiddleware = function () {
@@ -85082,7 +82880,7 @@ var SpotifyMiddleware = function () {
             });
 
             // Collate result into the three key values we want
-            action.uris = helpers.arrayOf('uri', action.data.albums.items);
+            action.uris = (0, _arrays.arrayOf)('uri', action.data.albums.items);
             action.more = action.data.albums.next;
             action.total = action.data.albums.total;
 
@@ -85095,7 +82893,7 @@ var SpotifyMiddleware = function () {
             store.dispatch({
               type: 'ARTIST_ALBUMS_LOADED',
               artist_uri: action.artist_uri,
-              albums_uris: helpers.arrayOf('uri', action.data.items),
+              albums_uris: (0, _arrays.arrayOf)('uri', action.data.items),
               more: action.data.next,
               total: action.data.total
             });
@@ -85122,7 +82920,7 @@ var SpotifyMiddleware = function () {
             store.dispatch({
               type: 'USER_PLAYLISTS_LOADED',
               key: action.key,
-              uris: helpers.arrayOf('uri', playlists),
+              uris: (0, _arrays.arrayOf)('uri', playlists),
               more: action.data.next,
               total: action.data.total
             });
@@ -85150,7 +82948,7 @@ var SpotifyMiddleware = function () {
                     store.dispatch({
                       type: 'CATEGORY_PLAYLISTS_LOADED',
                       key: action.key,
-                      uris: helpers.arrayOf('uri',playlists),
+                      uris: arrayOf('uri',playlists),
                       more: action.data.playlists.next,
                       total: action.data.playlists.total
                   });
@@ -85160,13 +82958,13 @@ var SpotifyMiddleware = function () {
           case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED':
             store.dispatch(coreActions.playlistsLoaded(action.playlists.items));
 
-            action.uris = helpers.arrayOf('uri', action.playlists.items);
+            action.uris = (0, _arrays.arrayOf)('uri', action.playlists.items);
             action.more = action.playlists.next;
             action.total = action.playlists.total;
             delete action.playlists;
 
             // Upgrade our URIs
-            action.uris = helpers.upgradeSpotifyPlaylistUris(action.uris);
+            action.uris = (0, _helpers.upgradeSpotifyPlaylistUris)(action.uris);
 
             next(action);
             break;
@@ -85209,7 +83007,7 @@ var SpotifyMiddleware = function () {
                 }
 
                 if (category.icons) {
-                  category.icons = helpers.formatImages(category.icons);
+                  category.icons = (0, _format.formatImages)(category.icons);
                 }
 
                 categories_loaded.push(category);
@@ -85281,7 +83079,7 @@ var SpotifyMiddleware = function () {
             });
 
             // Append our action with the uris. This gets handed down to subsequent middleware and our reducer.
-            action.uris = helpers.arrayOf('uri', playlists);
+            action.uris = (0, _arrays.arrayOf)('uri', playlists);
             next(action);
             break;
 
@@ -85304,7 +83102,7 @@ var SpotifyMiddleware = function () {
             });
 
             // Append our action with the uris. This gets handed down to subsequent middleware and our reducer.
-            action.uris = helpers.arrayOf('uri', artists);
+            action.uris = (0, _arrays.arrayOf)('uri', artists);
             next(action);
             break;
 
@@ -85339,7 +83137,7 @@ var SpotifyMiddleware = function () {
             });
 
             // Append our action with the uris. This gets handed down to subsequent middleware and our reducer.
-            action.uris = helpers.arrayOf('uri', albums);
+            action.uris = (0, _arrays.arrayOf)('uri', albums);
             next(action);
             break;
 
@@ -85349,14 +83147,14 @@ var SpotifyMiddleware = function () {
                 type: 'ARTISTS_LOADED',
                 artists: action.artists
               });
-              action.artists_uris = helpers.arrayOf('uri', action.artists);
+              action.artists_uris = (0, _arrays.arrayOf)('uri', action.artists);
             }
             if (action.tracks.length > 0) {
               store.dispatch({
                 type: 'TRACKS_LOADED',
                 tracks: action.tracks
               });
-              action.tracks_uris = helpers.arrayOf('uri', action.tracks);
+              action.tracks_uris = (0, _arrays.arrayOf)('uri', action.tracks);
             }
             next(action);
             break;
@@ -85396,7 +83194,7 @@ var SpotifyMiddleware = function () {
             store.dispatch({
               type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
               context: 'tracks',
-              results: helpers.formatTracks(action.data.tracks.items),
+              results: (0, _format.formatTracks)(action.data.tracks.items),
               more: action.data.tracks.next
             });
             break;
@@ -85411,7 +83209,7 @@ var SpotifyMiddleware = function () {
             store.dispatch({
               type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
               context: 'artists',
-              results: helpers.arrayOf('uri', action.data.playlists.items),
+              results: (0, _arrays.arrayOf)('uri', action.data.playlists.items),
               more: action.data.playlists.next
             });
             break;
@@ -85426,7 +83224,7 @@ var SpotifyMiddleware = function () {
             store.dispatch({
               type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
               context: 'playlists',
-              results: helpers.arrayOf('uri', action.data.albums.items),
+              results: (0, _arrays.arrayOf)('uri', action.data.albums.items),
               more: action.data.albums.next
             });
             break;
@@ -85448,13 +83246,13 @@ var SpotifyMiddleware = function () {
             store.dispatch({
               type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
               context: 'playlists',
-              results: helpers.arrayOf('uri', action.data.playlists.items),
+              results: (0, _arrays.arrayOf)('uri', action.data.playlists.items),
               more: action.data.playlists.next
             });
             break;
 
           case 'SPOTIFY_ME_LOADED':
-            var me = _extends({}, helpers.formatUser(action.me));
+            var me = _extends({}, (0, _format.formatUser)(action.me));
 
             // We are Anonymous currently so use 'me' name as my Pusher username
             if (store.getState().pusher.username == 'Anonymous') {
@@ -85503,11 +83301,9 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 exports.default = reducer;
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
+var _arrays = __webpack_require__(/*! ../../util/arrays */ "./src/js/util/arrays.js");
 
-var helpers = _interopRequireWildcard(_helpers);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+var _format = __webpack_require__(/*! ../../util/format */ "./src/js/util/format.js");
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
@@ -85586,7 +83382,7 @@ function reducer() {
         new_releases = Object.assign([], spotify.new_releases);
       }
       return _extends({}, spotify, {
-        new_releases: helpers.removeDuplicates([].concat(_toConsumableArray(new_releases), _toConsumableArray(action.uris))),
+        new_releases: (0, _arrays.removeDuplicates)([].concat(_toConsumableArray(new_releases), _toConsumableArray(action.uris))),
         new_releases_more: action.more,
         new_releases_total: action.total
       });
@@ -85726,7 +83522,7 @@ function reducer() {
       } else {
         var uris = action.uris;
       }
-      return _extends({}, spotify, { library_playlists: helpers.removeDuplicates(uris) });
+      return _extends({}, spotify, { library_playlists: (0, _arrays.removeDuplicates)(uris) });
 
     case 'SPOTIFY_LIBRARY_ARTISTS_LOADED':
       if (spotify.library_artists) {
@@ -85734,7 +83530,7 @@ function reducer() {
       } else {
         var uris = action.uris;
       }
-      return _extends({}, spotify, { library_artists: helpers.removeDuplicates(uris) });
+      return _extends({}, spotify, { library_artists: (0, _arrays.removeDuplicates)(uris) });
 
     case 'SPOTIFY_LIBRARY_ALBUMS_LOADED':
       if (spotify.library_albums) {
@@ -85742,7 +83538,7 @@ function reducer() {
       } else {
         var uris = action.uris;
       }
-      return _extends({}, spotify, { library_albums: helpers.removeDuplicates(uris) });
+      return _extends({}, spotify, { library_albums: (0, _arrays.removeDuplicates)(uris) });
 
     case 'SPOTIFY_LIBRARY_TRACKS_LOADED':
     case 'SPOTIFY_LIBRARY_TRACKS_LOADED_MORE':
@@ -85750,15 +83546,15 @@ function reducer() {
       var uris = [];
 
       if (tracks) {
-        tracks = helpers.formatTracks(tracks);
-        uris = helpers.arrayOf('uri', tracks);
+        tracks = (0, _format.formatTracks)(tracks);
+        uris = (0, _arrays.arrayOf)('uri', tracks);
         if (spotify.library_tracks) {
           uris = [].concat(_toConsumableArray(spotify.library_tracks), _toConsumableArray(uris));
         }
       }
 
       return _extends({}, spotify, {
-        library_tracks: helpers.removeDuplicates(uris),
+        library_tracks: (0, _arrays.removeDuplicates)(uris),
         library_tracks_more: action.data.next
       });
 
@@ -85902,11 +83698,7 @@ exports.processFinished = processFinished;
 exports.closeProcess = closeProcess;
 exports.removeProcess = removeProcess;
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
 
 function setWindowTitle() {
   var title = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
@@ -86096,7 +83888,7 @@ function createNotification(data) {
   return {
     type: 'CREATE_NOTIFICATION',
     notification: _extends({
-      key: helpers.generateGuid(),
+      key: (0, _helpers.generateGuid)(),
       duration: 5,
       type: 'default',
       title: null,
@@ -86251,16 +84043,9 @@ var _reactGa = __webpack_require__(/*! react-ga */ "./node_modules/react-ga/dist
 
 var _reactGa2 = _interopRequireDefault(_reactGa);
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var uiActions = __webpack_require__(/*! ./actions.js */ "./src/js/services/ui/actions.js");
-var mopidyActions = __webpack_require__(/*! ../mopidy/actions.js */ "./src/js/services/mopidy/actions.js");
 
 var UIMiddleware = function () {
   /**
@@ -86521,13 +84306,6 @@ Object.defineProperty(exports, "__esModule", {
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 exports.default = reducer;
-
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
 function reducer() {
   var ui = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   var action = arguments[1];
@@ -86760,9 +84538,11 @@ var _reduxThunk = __webpack_require__(/*! redux-thunk */ "./node_modules/redux-t
 
 var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 
-var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
+var _helpers = __webpack_require__(/*! ../util/helpers */ "./src/js/util/helpers.js");
 
-var helpers = _interopRequireWildcard(_helpers);
+var _storage = __webpack_require__(/*! ../util/storage */ "./src/js/util/storage.js");
+
+var _storage2 = _interopRequireDefault(_storage);
 
 var _reducer = __webpack_require__(/*! ../services/core/reducer */ "./src/js/services/core/reducer.js");
 
@@ -86844,8 +84624,6 @@ var _middleware19 = __webpack_require__(/*! ../services/localstorage/middleware 
 
 var _middleware20 = _interopRequireDefault(_middleware19);
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var state = {
@@ -86891,8 +84669,8 @@ var state = {
   },
   pusher: {
     connected: false,
-    username: helpers.generateGuid(),
-    client_id: helpers.generateGuid(),
+    username: (0, _helpers.generateGuid)(),
+    client_id: (0, _helpers.generateGuid)(),
     connections: {},
     version: {
       current: null
@@ -86930,15 +84708,15 @@ var state = {
 };
 
 // load all our stored values from LocalStorage
-state.core = _extends({}, state.core, helpers.getStorage('core'));
-state.ui = _extends({}, state.ui, helpers.getStorage('ui'));
-state.mopidy = _extends({}, state.mopidy, helpers.getStorage('mopidy'));
-state.pusher = _extends({}, state.pusher, helpers.getStorage('pusher'));
-state.spotify = _extends({}, state.spotify, helpers.getStorage('spotify'));
-state.lastfm = _extends({}, state.lastfm, helpers.getStorage('lastfm'));
-state.genius = _extends({}, state.genius, helpers.getStorage('genius'));
-state.google = _extends({}, state.google, helpers.getStorage('google'));
-state.snapcast = _extends({}, state.snapcast, helpers.getStorage('snapcast'));
+state.core = _extends({}, state.core, _storage2.default.get('core'));
+state.ui = _extends({}, state.ui, _storage2.default.get('ui'));
+state.mopidy = _extends({}, state.mopidy, _storage2.default.get('mopidy'));
+state.pusher = _extends({}, state.pusher, _storage2.default.get('pusher'));
+state.spotify = _extends({}, state.spotify, _storage2.default.get('spotify'));
+state.lastfm = _extends({}, state.lastfm, _storage2.default.get('lastfm'));
+state.genius = _extends({}, state.genius, _storage2.default.get('genius'));
+state.google = _extends({}, state.google, _storage2.default.get('google'));
+state.snapcast = _extends({}, state.snapcast, _storage2.default.get('snapcast'));
 
 // Run any migrations
 state = (0, _migration2.default)(state);
@@ -86978,6 +84756,2269 @@ exports.default = function (state) {
     state.ui.hotkeys_enabled = state.ui.shortkeys_enabled;
   }
   return state;
+};
+
+/***/ }),
+
+/***/ "./src/js/util/arrays.js":
+/*!*******************************!*\
+  !*** ./src/js/util/arrays.js ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+/**
+ * Digest an array of objects and pull into simple array of one property
+ *
+ * @param property = string
+ * @param items = Array
+ * @return Array
+ * */
+var arrayOf = function arrayOf(property, items) {
+  var array = [];
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+    for (var _iterator = items[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var item = _step.value;
+
+      // Make sure the property is defined
+      if (item[property] !== undefined && item[property] != null) {
+        array.push(item[property]);
+      }
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return) {
+        _iterator.return();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
+
+  return array;
+};
+
+/**
+ * Merge duplicated items in an array
+ *
+ * @param list Array the unclean array
+ * @param key string = the unique key (id, uri, tlid, etc)
+ * */
+var mergeDuplicates = function mergeDuplicates(list, key) {
+  var clean_list = [];
+  var keyed_list = {};
+
+  for (var i in list) {
+    var item = list[i];
+    if (item[key] in keyed_list) {
+      item = _extends({}, keyed_list[item[key]], item);
+    }
+    keyed_list[item[key]] = item;
+  }
+
+  for (i in keyed_list) {
+    clean_list.push(keyed_list[i]);
+  }
+
+  return clean_list;
+};
+
+/**
+ * Remove duplicate items in a simple array
+ *
+ * @param list Array the unclean array
+ * */
+var removeDuplicates = function removeDuplicates(array) {
+  var unique = [];
+
+  for (var i in array) {
+    if (unique.indexOf(array[i]) <= -1) {
+      unique.push(array[i]);
+    }
+  }
+
+  return unique;
+};
+
+/**
+ * Apply a partial text search on an array of objects
+ *
+ * @param field = string (the field we're to search)
+ * @param value = string (the value to find)
+ * @param array = array of objects to search
+ * @param singular = boolean (just return the first result)
+ * @return array
+ * */
+var applyFilter = function applyFilter(field, value, array) {
+  var singular = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+
+  var results = [];
+
+  for (var i = 0; i < array.length; i++) {
+    if (array[i][field] && String(array[i][field]).toLowerCase().includes(String(value).toLowerCase())) {
+      if (singular) {
+        return array[i];
+      }
+      results.push(array[i]);
+    }
+  }
+
+  return results;
+};
+
+/**
+ * Convert a list of indexes to a useable range
+ * We ignore stragglers, and only attend to the first 'bunch' of consecutive indexes
+ *
+ * @param indexes array of int
+ * */
+var createRange = function createRange(indexes) {
+  // sort our indexes smallest to largest
+  function sortAsc(a, b) {
+    return a - b;
+  }
+  indexes.sort(sortAsc);
+
+  // iterate indexes to build the first 'bunch'
+  var first_bunch = [];
+  var previous_index = false;
+  for (var i = 0; i < indexes.length; i++) {
+    if (!previous_index || previous_index == indexes[i] - 1) {
+      first_bunch.push(indexes[i]);
+      previous_index = indexes[i];
+    }
+    // TODO: break when we find an integer step for better performance
+  }
+
+  return {
+    start: first_bunch[0],
+    length: first_bunch.length
+  };
+};
+
+/**
+ * Sort an array of objects
+ * @param array = array to sort
+ * @param property = string to sort by
+ * @param reverse = boolean
+ * @param sort_map = array of value ordering (rather than alphabetical, numerical, etc)
+ * @return array
+ * */
+var sortItems = function sortItems(array, property) {
+  var reverse = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+  var sort_map = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+
+  if (!array || array.length <= 0) {
+    return [];
+  }
+
+  function get_value(value) {
+    var split = property.split('.');
+    var _iteratorNormalCompletion2 = true;
+    var _didIteratorError2 = false;
+    var _iteratorError2 = undefined;
+
+    try {
+      for (var _iterator2 = split[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+        var property_element = _step2.value;
+
+        // Apply sort on a property of the first item of an array
+        if (property_element == 'first') {
+          if (Array.isArray(value) && value.length > 0) {
+            value = value[0];
+            continue;
+          } else {
+            return null;
+          }
+
+          // Just need the length of an array
+        } else if (property_element == 'length') {
+          if (Array.isArray(value)) {
+            return value.length;
+          }
+          return 0;
+
+          // No value here
+        } else if (typeof value[property_element] === 'undefined') {
+          return null;
+        }
+
+        // Otherwise continue looping to the end of the split property
+        value = value[property_element];
+      }
+    } catch (err) {
+      _didIteratorError2 = true;
+      _iteratorError2 = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion2 && _iterator2.return) {
+          _iterator2.return();
+        }
+      } finally {
+        if (_didIteratorError2) {
+          throw _iteratorError2;
+        }
+      }
+    }
+
+    return value;
+  }
+
+  function compare(a, b) {
+    var a_value = get_value(a);
+    var b_value = get_value(b);
+
+    // Sorting by URI as a reference for sorting by uri source (first component of URI)
+    if (property == 'uri') {
+      a_value = uriSource(a_value);
+      b_value = uriSource(b_value);
+    }
+
+    // Map sorting
+    // Use the index of the string as a sorting mechanism
+    if (sort_map) {
+      var a_index = sort_map.indexOf(a_value + ':');
+      var b_index = sort_map.indexOf(b_value + ':');
+      if (a_index < b_index) return 1;
+      if (a_index > b_index) return -1;
+
+      // Boolean sorting
+    } else if (typeof a_value === 'boolean' && typeof b_value === 'boolean') {
+      if (a_value && !b_value) return -1;
+      if (!a_value && b_value) return 1;
+      return 0;
+
+      // Numeric sorting
+    } else if (typeof a_value === 'number' && typeof b_value === 'number') {
+      if (a_value == null && b_value == null) return 0;
+      if (a_value == null) return -1;
+      if (b_value == null) return 1;
+      if (parseInt(a_value) > parseInt(b_value)) return 1;
+      if (parseInt(a_value) < parseInt(b_value)) return -1;
+      return 0;
+
+      // Alphabetic sorting
+    } else {
+      if (a_value && !b_value) return -1;
+      if (!a_value && b_value) return 1;
+      if (!a_value && !b_value) return 0;
+      if (a_value.toLowerCase() > b_value.toLowerCase()) return 1;
+      if (a_value.toLowerCase() < b_value.toLowerCase()) return -1;
+      return 0;
+    }
+  }
+
+  var sorted = Object.assign([], array.sort(compare));
+  if (reverse) {
+    sorted.reverse();
+  }
+  return sorted;
+};
+
+/**
+ * Shuffle items in place
+ *
+ * @param Array items
+ * @return Array
+ * */
+var shuffle = function shuffle(array) {
+  var j = void 0;var x = void 0;var i = void 0;
+  for (i = array.length - 1; i > 0; i--) {
+    j = Math.floor(Math.random() * (i + 1));
+    x = array[i];
+    array[i] = array[j];
+    array[j] = x;
+  }
+  return array;
+};
+
+exports.arrayOf = arrayOf;
+exports.mergeDuplicates = mergeDuplicates;
+exports.removeDuplicates = removeDuplicates;
+exports.applyFilter = applyFilter;
+exports.createRange = createRange;
+exports.sortItems = sortItems;
+exports.shuffle = shuffle;
+exports.default = {
+  arrayOf: arrayOf,
+  mergeDuplicates: mergeDuplicates,
+  removeDuplicates: removeDuplicates,
+  applyFilter: applyFilter,
+  createRange: createRange,
+  sortItems: sortItems,
+  shuffle: shuffle
+};
+
+/***/ }),
+
+/***/ "./src/js/util/format.js":
+/*!*******************************!*\
+  !*** ./src/js/util/format.js ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.collate = exports.formatGroup = exports.formatClient = exports.formatTracks = exports.formatTrack = exports.formatUsers = exports.formatUser = exports.formatPlaylists = exports.formatPlaylist = exports.formatArtists = exports.formatArtist = exports.formatAlbums = exports.formatAlbum = exports.formatSimpleObject = exports.formatImages = exports.digestMopidyImages = exports.getTrackIcon = exports.toJSON = undefined;
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _helpers = __webpack_require__(/*! ./helpers */ "./src/js/util/helpers.js");
+
+/**
+ * Convert a string to JSON, after we've checked whether it needs
+ * conversion or not.
+ *
+ * @param data String or Object
+ * @return Object
+ * */
+var toJSON = function toJSON(data) {
+  // Parse it
+  try {
+    var json = JSON.parse(data);
+    return json;
+
+    // Could not parse string
+  } catch (e) {
+    // Check if it's JSON already
+    if (data.constructor === {}.constructor) {
+      return data;
+    }
+    console.error('Could not convert non-JSON', string);
+  }
+  return {};
+};
+
+/**
+ * Get a track's icon
+ * @param track object
+ * @return string
+ * */
+var getTrackIcon = function getTrackIcon() {
+  var current_track = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+  var core = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+  if (!core) return false;
+  if (!current_track) return false;
+  if (typeof current_track.uri === 'undefined') return false;
+  if (typeof core.tracks[current_track.uri] === 'undefined') return false;
+  var track = core.tracks[current_track.uri];
+  if (!track.images) return false;
+  return formatImages(track.images).small;
+};
+
+/**
+ * Digest an array of Mopidy image objects into a universal format. We also re-write
+ * image URLs to be absolute to the mopidy server (required for proxy setups).
+ *
+ * @param mopidy = obj (mopidy store object)
+ * @param images = array
+ * @return array
+ * */
+var digestMopidyImages = function digestMopidyImages(mopidy, images) {
+  var digested = [];
+
+  for (var i = 0; i < images.length; i++) {
+    // Image object (ie from images.get)
+    if (_typeof(images[i]) === 'object') {
+      // Accommodate backends that provide URIs vs URLs
+      var url = images[i].url;
+
+      if (!url && images[i].uri) {
+        url = images[i].uri;
+      }
+
+      // Amend our URL
+      images[i].url = url;
+
+      // Replace local images to point directly to our Mopidy server
+      if (url && url.startsWith('/images/')) {
+        url = '//' + mopidy.host + ':' + mopidy.port + url;
+      }
+
+      // String-based image
+    } else if (typeof images[i] === 'string') {
+      // Replace local images to point directly to our Mopidy server
+      if (images[i].startsWith('/images/')) {
+        images[i] = '//' + mopidy.host + ':' + mopidy.port + images[i];
+      }
+    }
+
+    digested.push(images[i]);
+  }
+
+  return digested;
+};
+
+/**
+ * Format image URLs into a consistent size-based object
+ * We digest all our known image source formats into a universal small,medium,large,huge object
+ *
+ * @param $data mixed
+ * @return Object
+ * */
+var formatImages = function formatImages(data) {
+  var sizes = {
+    formatted: true,
+    small: null,
+    medium: null,
+    large: null,
+    huge: null
+  };
+
+  if (!data) {
+    return sizes;
+  }
+
+  // An array of images has been provided
+  if (Array.isArray(data)) {
+    if (data.length <= 0) {
+      return sizes;
+    }
+
+    for (var i = 0; i < data.length; i++) {
+      var image = data[i];
+
+      // Already-formatted
+      if (image.formatted) {
+        return image;
+
+        // Mopidy image object
+      }if (image.__model__ && image.__model__ == 'Image') {
+        if (image.width < 400) {
+          sizes.small = image.url;
+        } else if (image.width < 800) {
+          sizes.medium = image.url;
+        } else if (image.width < 1000) {
+          sizes.large = image.url;
+        } else {
+          sizes.huge = image.url;
+        }
+
+        // Mopidy image string
+      } else if (typeof image === 'string') {
+        sizes.small = image;
+
+        // spotify-styled images
+      } else if (image.width !== undefined) {
+        if (image.width < 400) {
+          sizes.small = image.url;
+        } else if (image.width < 800) {
+          sizes.medium = image.url;
+        } else if (image.width < 1000) {
+          sizes.large = image.url;
+        } else {
+          sizes.huge = image.url;
+        }
+
+        // lastfm-styled images
+      } else if (image.size !== undefined) {
+        switch (image.size) {
+          case 'mega':
+          case 'extralarge':
+          case 'large':
+            sizes.medium = image['#text'];
+            break;
+          case 'medium':
+          case 'small':
+            sizes.small = image['#text'];
+            break;
+        }
+      }
+    }
+
+    // An object of images has been provided
+    // The Genius avatar object is an example of this
+  } else {
+    if (data.small) sizes.small = data.small.url;
+    if (data.medium) sizes.medium = data.medium.url;
+    if (data.large) sizes.large = data.large.url;
+    if (data.huge) sizes.huge = data.huge.url;
+  }
+
+  // Inherit images where we haven't been given the appropriate size
+  // Ie small duplicated to tiny, large duplicated to medium, etc
+  if (!sizes.small) {
+    if (sizes.medium) sizes.small = sizes.medium;else if (sizes.large) sizes.small = sizes.large;else if (sizes.huge) sizes.small = sizes.huge;else sizes.small = null;
+  }
+  if (!sizes.medium) {
+    if (sizes.large) sizes.medium = sizes.large;else if (sizes.huge) sizes.medium = sizes.huge;else sizes.medium = sizes.small;
+  }
+  if (!sizes.large) sizes.large = sizes.medium;
+  if (!sizes.huge) sizes.huge = sizes.large;
+
+  return sizes;
+};
+
+/**
+ * Format a simple object
+ * This is a shell record containing only the bare essentials. Typically
+ * a tracks' artists/album
+ *
+ * @param data obj
+ * @return obj
+ * */
+var formatSimpleObject = function formatSimpleObject(data) {
+  var simple_object = {};
+  var fields = ['uri', 'name'];
+
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+    for (var _iterator = fields[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var field = _step.value;
+
+      if (data.hasOwnProperty(field)) {
+        simple_object[field] = data[field];
+      }
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return) {
+        _iterator.return();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
+
+  return simple_object;
+};
+
+/**
+ * Format multiple items
+ *
+ * @param tracks Array
+ * @return Array
+ * */
+var formatTracks = function formatTracks() {
+  var records = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+  var formatted = [];
+  var _iteratorNormalCompletion2 = true;
+  var _didIteratorError2 = false;
+  var _iteratorError2 = undefined;
+
+  try {
+    for (var _iterator2 = records[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+      var record = _step2.value;
+
+      formatted.push(formatTrack(record));
+    }
+  } catch (err) {
+    _didIteratorError2 = true;
+    _iteratorError2 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion2 && _iterator2.return) {
+        _iterator2.return();
+      }
+    } finally {
+      if (_didIteratorError2) {
+        throw _iteratorError2;
+      }
+    }
+  }
+
+  return formatted;
+};
+var formatAlbums = function formatAlbums() {
+  var records = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+  var formatted = [];
+  var _iteratorNormalCompletion3 = true;
+  var _didIteratorError3 = false;
+  var _iteratorError3 = undefined;
+
+  try {
+    for (var _iterator3 = records[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+      var record = _step3.value;
+
+      formatted.push(formatAlbum(record));
+    }
+  } catch (err) {
+    _didIteratorError3 = true;
+    _iteratorError3 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion3 && _iterator3.return) {
+        _iterator3.return();
+      }
+    } finally {
+      if (_didIteratorError3) {
+        throw _iteratorError3;
+      }
+    }
+  }
+
+  return formatted;
+};
+var formatArtists = function formatArtists() {
+  var records = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+  var formatted = [];
+  var _iteratorNormalCompletion4 = true;
+  var _didIteratorError4 = false;
+  var _iteratorError4 = undefined;
+
+  try {
+    for (var _iterator4 = records[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+      var record = _step4.value;
+
+      formatted.push(formatArtist(record));
+    }
+  } catch (err) {
+    _didIteratorError4 = true;
+    _iteratorError4 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion4 && _iterator4.return) {
+        _iterator4.return();
+      }
+    } finally {
+      if (_didIteratorError4) {
+        throw _iteratorError4;
+      }
+    }
+  }
+
+  return formatted;
+};
+var formatPlaylists = function formatPlaylists() {
+  var records = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+  var formatted = [];
+  var _iteratorNormalCompletion5 = true;
+  var _didIteratorError5 = false;
+  var _iteratorError5 = undefined;
+
+  try {
+    for (var _iterator5 = records[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+      var record = _step5.value;
+
+      formatted.push(formatTrack(record));
+    }
+  } catch (err) {
+    _didIteratorError5 = true;
+    _iteratorError5 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion5 && _iterator5.return) {
+        _iterator5.return();
+      }
+    } finally {
+      if (_didIteratorError5) {
+        throw _iteratorError5;
+      }
+    }
+  }
+
+  return formatted;
+};
+var formatUsers = function formatUsers() {
+  var records = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+
+  var formatted = [];
+  var _iteratorNormalCompletion6 = true;
+  var _didIteratorError6 = false;
+  var _iteratorError6 = undefined;
+
+  try {
+    for (var _iterator6 = records[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+      var record = _step6.value;
+
+      formatted.push(formatUser(record));
+    }
+  } catch (err) {
+    _didIteratorError6 = true;
+    _iteratorError6 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion6 && _iterator6.return) {
+        _iterator6.return();
+      }
+    } finally {
+      if (_didIteratorError6) {
+        throw _iteratorError6;
+      }
+    }
+  }
+
+  return formatted;
+};
+
+/**
+ * Format our album objects into a universal format
+ *
+ * @param data obj
+ * @return obj
+ * */
+var formatAlbum = function formatAlbum(data) {
+  var album = {};
+  var fields = ['uri', 'provider', 'name', 'type', 'added_at', 'release_date', 'listeners', 'play_count', 'wiki', 'wiki_publish_date', 'popularity', 'images', 'artists_uris', 'tracks_uris', 'tracks_total', 'tracks_more', 'artists'];
+
+  // Loop fields and import from data
+  var _iteratorNormalCompletion7 = true;
+  var _didIteratorError7 = false;
+  var _iteratorError7 = undefined;
+
+  try {
+    for (var _iterator7 = fields[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+      var field = _step7.value;
+
+      if (data.hasOwnProperty(field)) {
+        album[field] = data[field];
+      }
+    }
+  } catch (err) {
+    _didIteratorError7 = true;
+    _iteratorError7 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion7 && _iterator7.return) {
+        _iterator7.return();
+      }
+    } finally {
+      if (_didIteratorError7) {
+        throw _iteratorError7;
+      }
+    }
+  }
+
+  if (album.images && !album.images.formatted) {
+    album.images = formatImages(album.images);
+  }
+
+  if (data.date && !album.date) {
+    album.release_date = data.date;
+  }
+  if (data.album_type) {
+    album.type = data.album_type;
+  }
+  if (album.provider === undefined && album.uri !== undefined) {
+    album.provider = (0, _helpers.uriSource)(album.uri);
+  }
+
+  return album;
+};
+
+/**
+ * Format our artist objects into a universal format
+ *
+ * @param data obj
+ * @return obj
+ * */
+var formatArtist = function formatArtist(data) {
+  var artist = {};
+  var fields = ['uri', 'provider', 'mbid', 'name', 'type', 'popularity', 'followers', 'listeners', 'added_at', 'biography', 'biography_link', 'biography_publish_date', 'related_artists_uris', 'albums_uris', 'albums_total', 'albums_more', 'tracks_uris', 'tracks_total', 'tracks_more'];
+
+  // Loop fields and import from data
+  var _iteratorNormalCompletion8 = true;
+  var _didIteratorError8 = false;
+  var _iteratorError8 = undefined;
+
+  try {
+    for (var _iterator8 = fields[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+      var field = _step8.value;
+
+      if (data.hasOwnProperty(field)) {
+        artist[field] = data[field];
+      }
+    }
+  } catch (err) {
+    _didIteratorError8 = true;
+    _iteratorError8 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion8 && _iterator8.return) {
+        _iterator8.return();
+      }
+    } finally {
+      if (_didIteratorError8) {
+        throw _iteratorError8;
+      }
+    }
+  }
+
+  if (data.images && data.images.length > 0) {
+    artist.images = [formatImages(data.images)];
+  }
+
+  if (data.followers && data.followers.total !== undefined) {
+    artist.followers = data.followers.total;
+  }
+
+  if (data.bio) {
+    if (data.bio.content && !artist.biography) {
+      artist.biography = data.bio.content;
+    }
+    if (data.bio.links && data.bio.links.link && data.bio.links.link.href && !artist.biography_link) {
+      artist.biography_link = data.bio.links.link.href;
+    }
+    if (data.bio.published && !artist.biography_publish_date) {
+      artist.biography_publish_date = data.bio.published;
+    }
+  }
+
+  if (artist.provider === undefined && artist.uri !== undefined) {
+    artist.provider = (0, _helpers.uriSource)(artist.uri);
+  }
+
+  return artist;
+};
+
+/**
+ * Format our playlist objects into a universal format
+ *
+ * @param data obj
+ * @return obj
+ * */
+var formatPlaylist = function formatPlaylist(data) {
+  var playlist = {};
+  var fields = ['uri', 'snapshot_id', 'provider', 'type', 'collaborative', 'public', 'name', 'description', 'images', 'popularity', 'followers', 'added_at', 'last_modified_date', 'can_edit', 'owner', 'user_uri', 'tracks_uris', 'tracks_total', 'tracks_more'];
+
+  // Loop fields and import from data
+  var _iteratorNormalCompletion9 = true;
+  var _didIteratorError9 = false;
+  var _iteratorError9 = undefined;
+
+  try {
+    for (var _iterator9 = fields[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+      var field = _step9.value;
+
+      if (data.hasOwnProperty(field)) {
+        playlist[field] = data[field];
+      }
+    }
+  } catch (err) {
+    _didIteratorError9 = true;
+    _iteratorError9 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion9 && _iterator9.return) {
+        _iterator9.return();
+      }
+    } finally {
+      if (_didIteratorError9) {
+        throw _iteratorError9;
+      }
+    }
+  }
+
+  if (playlist.images && !playlist.images.formatted) {
+    playlist.images = formatImages(playlist.images);
+  }
+
+  if (data.followers && data.followers.total !== undefined) {
+    playlist.followers = data.followers.total;
+  }
+
+  if (data.tracks && data.tracks.total !== undefined) {
+    playlist.tracks_total = data.tracks.total;
+  }
+
+  if (data.owner) {
+    playlist.owner = {
+      id: data.owner.id,
+      uri: data.owner.uri,
+      name: data.owner.display_name ? data.owner.display_name : null
+    };
+    playlist.user_uri = data.owner.uri;
+  }
+
+  // Spotify upgraded their playlists URI to remove user component (Sept 2018)
+  playlist.uri = (0, _helpers.upgradeSpotifyPlaylistUri)(playlist.uri);
+
+  if (playlist.provider === undefined && playlist.uri !== undefined) {
+    playlist.provider = (0, _helpers.uriSource)(playlist.uri);
+  }
+
+  return playlist;
+};
+
+/**
+ * Format a user objects into a universal format
+ *
+ * @param data obj
+ * @return obj
+ * */
+var formatUser = function formatUser(data) {
+  var user = {};
+  var fields = ['id', 'uri', 'provider', 'name', 'images', 'followers', 'playlists_uris', 'playlists_total', 'playlists_more'];
+
+  // Loop fields and import from data
+  var _iteratorNormalCompletion10 = true;
+  var _didIteratorError10 = false;
+  var _iteratorError10 = undefined;
+
+  try {
+    for (var _iterator10 = fields[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
+      var field = _step10.value;
+
+      if (data.hasOwnProperty(field)) {
+        user[field] = data[field];
+      }
+    }
+  } catch (err) {
+    _didIteratorError10 = true;
+    _iteratorError10 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion10 && _iterator10.return) {
+        _iterator10.return();
+      }
+    } finally {
+      if (_didIteratorError10) {
+        throw _iteratorError10;
+      }
+    }
+  }
+
+  if (!user.images && data.image) {
+    user.images = formatImages(data.image);
+  } else if (!user.images && data.avatar) {
+    user.images = formatImages(data.avatar);
+  } else if (user.images && !user.images.formatted) {
+    user.images = formatImages(user.images);
+  }
+
+  if (data.followers && data.followers.total !== undefined) {
+    user.followers = data.followers.total;
+  }
+  if (data.realname) {
+    user.name = data.realname;
+  }
+  if (data.display_name && !user.name) {
+    user.name = data.display_name;
+  }
+  if (data.id && !user.name) {
+    user.name = data.id;
+  }
+  if (user.provider === undefined && user.uri !== undefined) {
+    user.provider = (0, _helpers.uriSource)(user.uri);
+  }
+
+  return user;
+};
+
+/**
+ * Format tracks into our universal format
+ *
+ * @param data obj
+ * @return obj
+ * */
+var formatTrack = function formatTrack(data) {
+  var track = {};
+  var fields = ['uri', 'tlid', 'provider', 'name', 'images', 'release_date', 'disc_number', 'track_number', 'duration', 'followers', 'popularity', 'userloved', 'is_explicit', 'is_local', 'lyrics', 'lyrics_path', 'lyrics_results', 'artists', // Array of simple records
+  'album'];
+
+  // Nested track object (eg in spotify playlist)
+  if (data && data.track && (0, _helpers.isObject)(data.track)) {
+    // Copy wrapper's details (if applicable)
+    if (data.added_by) {
+      data.track.added_by = data.added_by;
+    }
+    if (data.added_at) {
+      data.track.added_at = data.added_at;
+    }
+    if (data.tlid) {
+      data.track.tlid = data.tlid;
+    }
+
+    // And now flatten
+    data = data.track;
+  }
+
+  // Loop fields and import from data
+  var _iteratorNormalCompletion11 = true;
+  var _didIteratorError11 = false;
+  var _iteratorError11 = undefined;
+
+  try {
+    for (var _iterator11 = fields[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
+      var field = _step11.value;
+
+      if (data.hasOwnProperty(field)) {
+        track[field] = data[field];
+      }
+    }
+  } catch (err) {
+    _didIteratorError11 = true;
+    _iteratorError11 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion11 && _iterator11.return) {
+        _iterator11.return();
+      }
+    } finally {
+      if (_didIteratorError11) {
+        throw _iteratorError11;
+      }
+    }
+  }
+
+  if (data.followers && data.followers.total) {
+    track.followers = data.followers.total;
+  }
+
+  if (track.duration === undefined && data.duration_ms !== undefined) {
+    track.duration = data.duration_ms;
+  } else if (track.duration === undefined && data.length !== undefined) {
+    track.duration = data.length;
+  }
+
+  if (track.track_number === undefined && data.track_no !== undefined) {
+    track.track_number = data.track_no;
+  }
+
+  if (track.disc_number === undefined && data.disc_no !== undefined) {
+    track.disc_number = data.disc_no;
+  }
+
+  if (track.release_date === undefined && data.date !== undefined) {
+    track.release_date = data.date;
+  }
+
+  if (track.explicit === undefined && data.explicit !== undefined) {
+    track.is_explicit = data.explicit;
+  }
+
+  // Copy images from albums (if applicable)
+  // TOOD: Identify if we stil need this...
+  if (data.album && data.album.images) {
+    if (track.images === undefined || !track.images.formatted) {
+      track.images = formatImages(data.album.images);
+    }
+  }
+
+  if (track.provider === undefined && track.uri !== undefined) {
+    track.provider = (0, _helpers.uriSource)(track.uri);
+  }
+
+  return track;
+};
+
+/**
+ * Format a snapcast client object into a universal format
+ *
+ * @param data obj
+ * @return obj
+ * */
+var formatClient = function formatClient(data) {
+  var client = {};
+  var fields = ['id', 'connected', 'name', 'host_name', 'volume', 'mute', 'latency', 'power_on_command', 'power_off_command'];
+
+  var _iteratorNormalCompletion12 = true;
+  var _didIteratorError12 = false;
+  var _iteratorError12 = undefined;
+
+  try {
+    for (var _iterator12 = fields[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
+      var field = _step12.value;
+
+      if (data.hasOwnProperty(field)) {
+        client[field] = data[field];
+      }
+    }
+  } catch (err) {
+    _didIteratorError12 = true;
+    _iteratorError12 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion12 && _iterator12.return) {
+        _iterator12.return();
+      }
+    } finally {
+      if (_didIteratorError12) {
+        throw _iteratorError12;
+      }
+    }
+  }
+
+  if (data.config) {
+    if (client.latency === undefined && data.config.latency !== undefined) {
+      client.latency = data.config.latency;
+    }
+
+    if (!client.name && data.config.name) {
+      client.name = data.config.name;
+    }
+
+    if (data.config.volume) {
+      if (data.config.volume.percent) {
+        client.volume = data.config.volume.percent;
+      }
+      if (data.config.volume.muted) {
+        client.mute = data.config.volume.muted;
+      }
+    }
+  } else {
+    if (client.latency === undefined && data.latency !== undefined) {
+      client.latency = data.latency;
+    }
+    if (_typeof(data.volume) === 'object') {
+      if (data.volume.percent) {
+        client.volume = data.volume.percent;
+      }
+      if (data.volume.muted) {
+        client.mute = data.volume.muted;
+      }
+    }
+  }
+
+  if (client.name === undefined && data.host && data.host.name) {
+    client.name = data.host.name;
+  }
+
+  return client;
+};
+
+/**
+ * Format a snapcast client object into a universal format
+ *
+ * @param data obj
+ * @return obj
+ * */
+var formatGroup = function formatGroup(data) {
+  var group = {};
+  var fields = ['id', 'name', 'mute', 'volume', 'stream_id', 'clients_ids'];
+
+  var _iteratorNormalCompletion13 = true;
+  var _didIteratorError13 = false;
+  var _iteratorError13 = undefined;
+
+  try {
+    for (var _iterator13 = fields[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
+      var field = _step13.value;
+
+      if (data.hasOwnProperty(field)) {
+        group[field] = data[field];
+      }
+    }
+  } catch (err) {
+    _didIteratorError13 = true;
+    _iteratorError13 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion13 && _iterator13.return) {
+        _iterator13.return();
+      }
+    } finally {
+      if (_didIteratorError13) {
+        throw _iteratorError13;
+      }
+    }
+  }
+
+  if (group.mute === undefined && data.muted !== undefined) {
+    group.mute = data.muted;
+  }
+
+  return group;
+};
+
+/**
+ * Collate an object with external references into a fully self-contained object
+ * We merge *_uris references (ie tracks_uris) into the main object
+ *
+ * @param object Obj
+ * @param indexes Obj (the relevant core indexes)
+ * @return object Obj
+ * */
+var collate = function collate(obj) {
+  var indexes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  // First, let's reset this object
+  // This is important because by changing this object, we inadvertently
+  // change the source object (ie the indexed record), which undoes the
+  // efficiencies of a lean index object
+  obj = _extends({}, obj);
+
+  // Setup empty arrays for the appropriate reference objects
+  // This helps create a consistent object structure
+  if (obj.artists_uris !== undefined) obj.artists = [];
+  if (obj.albums_uris !== undefined) obj.albums = [];
+  if (obj.tracks_uris !== undefined) obj.tracks = [];
+  if (obj.users_uris !== undefined) obj.users = [];
+  if (obj.playlists_uris !== undefined) obj.playlists = [];
+  if (obj.related_artists_uris !== undefined) obj.related_artists = [];
+  if (obj.clients_ids !== undefined) obj.clients = [];
+
+  if (indexes.artists) {
+    if (obj.artists_uris) {
+      var _iteratorNormalCompletion14 = true;
+      var _didIteratorError14 = false;
+      var _iteratorError14 = undefined;
+
+      try {
+        for (var _iterator14 = obj.artists_uris[Symbol.iterator](), _step14; !(_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done); _iteratorNormalCompletion14 = true) {
+          var uri = _step14.value;
+
+          if (indexes.artists[uri]) {
+            obj.artists.push(indexes.artists[uri]);
+          }
+        }
+      } catch (err) {
+        _didIteratorError14 = true;
+        _iteratorError14 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion14 && _iterator14.return) {
+            _iterator14.return();
+          }
+        } finally {
+          if (_didIteratorError14) {
+            throw _iteratorError14;
+          }
+        }
+      }
+    }
+    if (obj.related_artists_uris) {
+      var _iteratorNormalCompletion15 = true;
+      var _didIteratorError15 = false;
+      var _iteratorError15 = undefined;
+
+      try {
+        for (var _iterator15 = obj.related_artists_uris[Symbol.iterator](), _step15; !(_iteratorNormalCompletion15 = (_step15 = _iterator15.next()).done); _iteratorNormalCompletion15 = true) {
+          var uri = _step15.value;
+
+          if (indexes.artists[uri]) {
+            obj.related_artists.push(indexes.artists[uri]);
+          }
+        }
+      } catch (err) {
+        _didIteratorError15 = true;
+        _iteratorError15 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion15 && _iterator15.return) {
+            _iterator15.return();
+          }
+        } finally {
+          if (_didIteratorError15) {
+            throw _iteratorError15;
+          }
+        }
+      }
+    }
+    if (obj.artist_uri) {
+      if (indexes.artists[obj.artist_uri]) {
+        obj.artist = indexes.artists[obj.artist_uri];
+      }
+    }
+  }
+
+  if (indexes.albums) {
+    if (obj.albums_uris) {
+      var _iteratorNormalCompletion16 = true;
+      var _didIteratorError16 = false;
+      var _iteratorError16 = undefined;
+
+      try {
+        for (var _iterator16 = obj.albums_uris[Symbol.iterator](), _step16; !(_iteratorNormalCompletion16 = (_step16 = _iterator16.next()).done); _iteratorNormalCompletion16 = true) {
+          var uri = _step16.value;
+
+          if (indexes.albums[uri]) {
+            obj.albums.push(indexes.albums[uri]);
+          }
+        }
+      } catch (err) {
+        _didIteratorError16 = true;
+        _iteratorError16 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion16 && _iterator16.return) {
+            _iterator16.return();
+          }
+        } finally {
+          if (_didIteratorError16) {
+            throw _iteratorError16;
+          }
+        }
+      }
+    }
+    if (obj.album_uri) {
+      if (indexes.albums[obj.album_uri]) {
+        obj.album = indexes.albums[obj.album_uri];
+      }
+    }
+  }
+
+  if (indexes.tracks) {
+    if (obj.tracks_uris) {
+      var _iteratorNormalCompletion17 = true;
+      var _didIteratorError17 = false;
+      var _iteratorError17 = undefined;
+
+      try {
+        for (var _iterator17 = obj.tracks_uris[Symbol.iterator](), _step17; !(_iteratorNormalCompletion17 = (_step17 = _iterator17.next()).done); _iteratorNormalCompletion17 = true) {
+          var uri = _step17.value;
+
+          if (indexes.tracks[uri]) {
+            obj.tracks.push(indexes.tracks[uri]);
+          }
+        }
+      } catch (err) {
+        _didIteratorError17 = true;
+        _iteratorError17 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion17 && _iterator17.return) {
+            _iterator17.return();
+          }
+        } finally {
+          if (_didIteratorError17) {
+            throw _iteratorError17;
+          }
+        }
+      }
+    }
+    if (obj.track_uri) {
+      if (indexes.tracks[obj.track_uri]) {
+        obj.track = indexes.tracks[obj.track_uri];
+      }
+    }
+  }
+
+  if (indexes.users) {
+    if (obj.users_uris) {
+      var _iteratorNormalCompletion18 = true;
+      var _didIteratorError18 = false;
+      var _iteratorError18 = undefined;
+
+      try {
+        for (var _iterator18 = obj.users_uris[Symbol.iterator](), _step18; !(_iteratorNormalCompletion18 = (_step18 = _iterator18.next()).done); _iteratorNormalCompletion18 = true) {
+          var uri = _step18.value;
+
+          if (indexes.users[uri]) {
+            obj.users.push(indexes.users[uri]);
+          }
+        }
+      } catch (err) {
+        _didIteratorError18 = true;
+        _iteratorError18 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion18 && _iterator18.return) {
+            _iterator18.return();
+          }
+        } finally {
+          if (_didIteratorError18) {
+            throw _iteratorError18;
+          }
+        }
+      }
+    }
+    if (obj.user_uri) {
+      if (indexes.users[obj.user_uri]) {
+        obj.user = indexes.users[obj.user_uri];
+      }
+    }
+  }
+
+  if (indexes.playlists) {
+    if (obj.playlists_uris) {
+      var _iteratorNormalCompletion19 = true;
+      var _didIteratorError19 = false;
+      var _iteratorError19 = undefined;
+
+      try {
+        for (var _iterator19 = obj.playlists_uris[Symbol.iterator](), _step19; !(_iteratorNormalCompletion19 = (_step19 = _iterator19.next()).done); _iteratorNormalCompletion19 = true) {
+          var uri = _step19.value;
+
+          if (indexes.playlists[uri]) {
+            obj.playlists.push(indexes.playlists[uri]);
+          }
+        }
+      } catch (err) {
+        _didIteratorError19 = true;
+        _iteratorError19 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion19 && _iterator19.return) {
+            _iterator19.return();
+          }
+        } finally {
+          if (_didIteratorError19) {
+            throw _iteratorError19;
+          }
+        }
+      }
+    }
+    if (obj.playlist_uri) {
+      if (indexes.playlists[obj.playlist_uri]) {
+        obj.playlist = indexes.playlists[obj.playlist_uri];
+      }
+    }
+  }
+
+  if (indexes.clients) {
+    if (obj.clients_ids) {
+      var _iteratorNormalCompletion20 = true;
+      var _didIteratorError20 = false;
+      var _iteratorError20 = undefined;
+
+      try {
+        for (var _iterator20 = obj.clients_ids[Symbol.iterator](), _step20; !(_iteratorNormalCompletion20 = (_step20 = _iterator20.next()).done); _iteratorNormalCompletion20 = true) {
+          var id = _step20.value;
+
+          if (indexes.clients[id]) {
+            obj.clients.push(indexes.clients[id]);
+          }
+        }
+      } catch (err) {
+        _didIteratorError20 = true;
+        _iteratorError20 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion20 && _iterator20.return) {
+            _iterator20.return();
+          }
+        } finally {
+          if (_didIteratorError20) {
+            throw _iteratorError20;
+          }
+        }
+      }
+    }
+  }
+
+  return obj;
+};
+
+exports.toJSON = toJSON;
+exports.getTrackIcon = getTrackIcon;
+exports.digestMopidyImages = digestMopidyImages;
+exports.formatImages = formatImages;
+exports.formatSimpleObject = formatSimpleObject;
+exports.formatAlbum = formatAlbum;
+exports.formatAlbums = formatAlbums;
+exports.formatArtist = formatArtist;
+exports.formatArtists = formatArtists;
+exports.formatPlaylist = formatPlaylist;
+exports.formatPlaylists = formatPlaylists;
+exports.formatUser = formatUser;
+exports.formatUsers = formatUsers;
+exports.formatTrack = formatTrack;
+exports.formatTracks = formatTracks;
+exports.formatClient = formatClient;
+exports.formatGroup = formatGroup;
+exports.collate = collate;
+exports.default = {
+  toJSON: toJSON,
+  getTrackIcon: getTrackIcon,
+  digestMopidyImages: digestMopidyImages,
+  formatImages: formatImages,
+  formatSimpleObject: formatSimpleObject,
+  formatAlbum: formatAlbum,
+  formatAlbums: formatAlbums,
+  formatArtist: formatArtist,
+  formatArtists: formatArtists,
+  formatPlaylist: formatPlaylist,
+  formatPlaylists: formatPlaylists,
+  formatUser: formatUser,
+  formatUsers: formatUsers,
+  formatTrack: formatTrack,
+  formatTracks: formatTracks,
+  formatClient: formatClient,
+  formatGroup: formatGroup,
+  collate: collate
+};
+
+/***/ }),
+
+/***/ "./src/js/util/helpers.js":
+/*!********************************!*\
+  !*** ./src/js/util/helpers.js ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+/**
+ * Returns a function, that, as long as it continues to be invoked, will not
+ * be triggered. The function will be called after it stops being called for
+ * N milliseconds. If `immediate` is passed, trigger the function on the
+ * leading edge, instead of the trailing.
+ * */
+var debounce = function debounce(fn, wait, immediate) {
+  var timeout = void 0;
+  return function () {
+    var context = this;var args = arguments;
+
+    var later = function later() {
+      timeout = null;
+      if (!immediate) {
+        fn.apply(context, args);
+      }
+    };
+
+    var callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+
+    if (callNow) {
+      fn.apply(context, args);
+    }
+  };
+};
+
+var throttle = function throttle(fn, delay) {
+  var lastCall = 0;
+  return function () {
+    var now = new Date().getTime();
+    if (now - lastCall < delay) {
+      return;
+    }
+    lastCall = now;
+    return fn.apply(undefined, arguments);
+  };
+};
+
+/**
+ * Set the app's favicon to a specific image.
+ *
+ * @param filename String
+ */
+var setFavicon = function setFavicon(filename) {
+  var links = document.getElementsByClassName('favicon');
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+    for (var _iterator = links[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var link = _step.value;
+
+      // Construct new <links>
+      var new_link = document.createElement('link');
+      new_link.className = link.className;
+      new_link.rel = link.rel;
+      new_link.href = '/iris/assets/' + filename;
+      if (link.type) {
+        new_link.type = link.type;
+      }
+
+      // Remove the old one and add the new one
+      document.head.removeChild(link);
+      document.head.appendChild(new_link);
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return) {
+        _iterator.return();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
+};
+
+/**
+ * Digest a react-router's location.search string into an array of values
+ *
+ * @param key String = the key you want from the URL
+ * @param string String = the locaion.search string
+ */
+var queryString = function queryString(key, string) {
+  var compact = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+
+  var elements = string.replace('?', '').split('&');
+  var results = elements.reduce(function (accumulator, current) {
+    var subElements = current.split('=');
+    var results = [];
+
+    // We decode the URI, but also treat "+" as a space. This is needed for backend CGI.encode that
+    // happens when redirecting from an OAuth failure.
+    if (subElements[0] === key) {
+      results = subElements[1].split(',').map(function (item) {
+        return decodeURIComponent(item.replace(/\+/g, '%20'));
+      });
+    }
+    return [].concat(_toConsumableArray(accumulator), _toConsumableArray(results));
+  }, []);
+
+  if (compact && results.length === 1) return results[0];
+  if (compact && results.length === 0) return null;
+  return results;
+};
+
+var generateGuid = function generateGuid() {
+  var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'numeric';
+  var length = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 12;
+
+  // numeric
+  if (type == 'numeric') {
+    var date = new Date().valueOf().toString();
+    var random_number = Math.floor(Math.random() * 100).toString();
+    return parseInt(date + random_number);
+  }
+  var format = 'x'.repeat(length);
+  return format.replace(/[xy]/g, function (c) {
+    var r = Math.random() * 16 | 0;var v = c == 'x' ? r : r & 0x3 | 0x8;
+    return v.toString(length);
+  });
+};
+
+var getCurrentPusherConnection = function getCurrentPusherConnection(connections, connectionid) {
+  function isCurrentConnection(connection) {
+    return connection.connectionid == newProps.pusher.connectionid;
+  }
+
+  var currentConnection = newProps.pusher.connections.find(isCurrentConnection);
+  if (!currentConnection) return false;
+
+  return currentConnection;
+};
+
+/**
+ * Figure out a URI's source namespace
+ * @param uri = string
+ * */
+var uriSource = function uriSource(uri) {
+  if (!uri) {
+    return false;
+  }
+  var exploded = uri.split(':');
+  return exploded[0];
+};
+/**
+ * Identify what kind of asset a URI is (playlist, album, etc)
+ *
+ * @param uri = string
+ * @return string
+ * */
+var uriType = function uriType(uri) {
+  if (!uri) return null;
+
+  var exploded = uri.split(':');
+
+  if (exploded[0] === 'm3u') {
+    return 'playlist';
+  }
+
+  if (exploded[0] === 'iris') {
+    return exploded[1];
+  }
+
+  switch (exploded[1]) {
+    case 'track':
+    case 'artist':
+    case 'album':
+    case 'playlist':
+    case 'genre':
+      return exploded[1];
+    case 'user':
+      if (exploded.length > 3 && exploded[3] == 'playlist') {
+        return 'playlist';
+      }
+      return exploded[1];
+    default:
+      return null;
+  }
+};
+
+var sourceIcon = function sourceIcon(uri) {
+  var source = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+  if (uri) source = uriSource(uri);
+  switch (source) {
+    case 'local':
+    case 'm3u':
+      return 'folder';
+
+    case 'gmusic':
+      return 'google';
+
+    case 'podcast':
+    case 'podcast+file':
+    case 'podcast+http':
+    case 'podcast+https':
+    case 'podcast+itunes':
+      return 'podcast';
+
+    case 'tunein':
+    case 'somafm':
+    case 'dirble':
+      return 'microphone';
+
+    default:
+      return source;
+  }
+};
+
+/**
+ * Get an element from a URI
+ * @param element = string, the element we wish to extract
+ * @param uri = string
+ * */
+var getFromUri = function getFromUri(element) {
+  var uri = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+
+  var exploded = uri.split(':');
+  var namespace = exploded[0];
+
+  switch (element) {
+    case 'mbid':
+      var index = exploded.indexOf('mbid');
+      if (index > -1) return exploded[index + 1];
+      break;
+
+    case 'artistid':
+      if (exploded[1] == 'artist') {
+        return exploded[2];
+      }
+      break;
+
+    case 'albumid':
+      if (exploded[1] == 'album') {
+        return exploded[2];
+      }
+      break;
+
+    case 'playlistid':
+      if (exploded[1] == 'playlist') {
+        return exploded[2];
+      }if (exploded[1] == 'user' && exploded[3] == 'playlist') {
+        return exploded[4];
+      }
+      break;
+
+    case 'playlistowner':
+      if (exploded[1] == 'user' && exploded[3] == 'playlist') {
+        return exploded[2];
+      }
+      break;
+
+    case 'trackid':
+      if (exploded[1] == 'track') {
+        return exploded[2];
+      }
+      break;
+
+    case 'userid':
+      if (exploded[1] == 'user') {
+        return exploded[2];
+      }
+      break;
+
+    case 'genreid':
+      if (exploded[1] == 'genre') {
+        return exploded[2];
+      }
+      break;
+
+    case 'seeds':
+      if (exploded[1] == 'discover') {
+        return exploded[2];
+      } else if (exploded[1] === 'radio') {
+        var seeds = exploded[2].split(',');
+        return seeds.map(function (seed) {
+          return seed.replace(/_/gi, ':');
+        });
+      }
+      break;
+
+    case 'searchtype':
+      if (exploded[1] == 'search') {
+        return exploded[2];
+      }
+      break;
+
+    case 'searchterm':
+      if (exploded[1] == 'search') {
+        return exploded[3];
+      }
+      break;
+
+    default:
+      return null;
+  }
+};
+
+/**
+ * Build a link to an asset. Using the URI type we can ascertain where we need
+ * to direct the user (eg /track/local:track:1235.mp3)
+ *
+ * @param $uri = String
+ * @return String
+ * */
+var buildLink = function buildLink(uri) {
+  // Start the link with the URI type
+  var type = uriType(uri);
+  var link = '/' + type + '/';
+
+  // Encode the whole URI as though it's a component. This makes it URL friendly for
+  // all Mopidy backends (some use URIs like local:track:http://rss.com/stuff.mp3) which
+  // is never going to work nicely.
+  uri = encodeURIComponent(uri);
+  link += uri;
+
+  return link;
+};
+
+/**
+ * Detect touch-ability
+ */
+var isTouchDevice = function isTouchDevice() {
+  return 'ontouchstart' in document.documentElement;
+};
+
+/**
+ * Figure out if a value is a number
+ * @param value = mixed
+ * @return boolean
+ * */
+var isNumeric = function isNumeric(value) {
+  return !isNaN(parseFloat(value)) && isFinite(value);
+};
+
+/**
+ * Figure out if a value is an object
+ * @param value = mixed
+ * @return boolean
+ * */
+var isObject = function isObject(value) {
+  return value instanceof Object && value.constructor === Object;
+};
+
+/**
+ * Detect if an item is in the loading queue. We simply loop all load items to
+ * see if any items contain our searched key.
+ *
+ * TODO: Explore performance of this
+ * TODO: Allow wildcards
+ *
+ * @param load_queue = obj (passed from store)
+ * @param key = string (the string to lookup)
+ * @return boolean
+ * */
+var isLoading = function isLoading() {
+  var load_queue = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+  var keys = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+
+  // Loop all of our load queue items
+  for (var load_queue_key in load_queue) {
+    // Make sure it's not a root object method
+    if (load_queue.hasOwnProperty(load_queue_key)) {
+      // Loop all the keys we're looking for
+      for (var i = 0; i < keys.length; i++) {
+        if (load_queue[load_queue_key].includes(keys[i])) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+};
+
+/**
+ * Is this app running from the hosted instance?
+ * For example the GitHub-hosted UI
+ *
+ * @param Array hosts = valid hosted domain names
+ * @return Boolean
+ * */
+var isHosted = function isHosted() {
+  var hosts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : ['jaedb.github.io'];
+  var hostname = window.location.hostname;
+
+  return hosts.includes(hostname);
+};
+
+/**
+ * Get indexed record(s) by URI from our asset index
+ *
+ * @param store = obj
+ * @param uris = mixed (array or string)
+ * @return array
+ * */
+var getIndexedRecords = function getIndexedRecords(index, uris) {
+  var records = [];
+
+  // Wrap in array, if we've only got one URI
+  if (!(uris instanceof Array)) {
+    uris = [uris];
+  }
+
+  for (var i = 0; i < uris.length; i++) {
+    if (index.hasOwnProperty(uris[i])) {
+      records.push(index[uris[i]]);
+    }
+  }
+
+  return records;
+};
+
+/**
+ * Uppercase-ify the first character of a string
+ *
+ * @param string String
+ * @return String
+ * */
+var titleCase = function titleCase(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
+/**
+ * Scroll to the top of the page
+ * Our 'content' is housed in the <main> DOM element
+ * We make sure the target supports scrolling before we attempt it
+ * Safari and IE Edge, well, don't.
+ *
+ * @param target String (element ID, optional)
+ * @param smooth_scroll Boolean (optional)
+ * */
+var scrollTo = function scrollTo() {
+  var target = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+  var smooth_scroll = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+  var main = document.getElementById('main');
+
+  // Remove our smooth-scroll class
+  if (!smooth_scroll) {
+    main.classList.remove('smooth-scroll');
+  }
+
+  // Target is a number, so treat as pixel position
+  if (target && Number.isInteger(target)) {
+    if (typeof main.scrollTo === 'function') {
+      main.scrollTop = target;
+    }
+
+    // Target is a string representing a DOM element by class/id
+  } else if (target) {
+    var element = null;
+
+    if (target.charAt(0) == '#') {
+      element = document.getElementById(target.substring(1));
+    } else if (target.charAt(0) == '.') {
+      element = document.getElementsByClassName(target.substring(1));
+      if (element.length > 0) {
+        element = element[0];
+      }
+    } else {
+      console.error('Invalid target type \'' + target + '\'. Must start with \'#\' or \'.\'.');
+    }
+
+    if (element && typeof element.scrollIntoView === 'function') {
+      element.scrollIntoView();
+    }
+  } else {
+    main.scrollTop = 0;
+  }
+
+  // Now reinstate smooth scroll
+  if (!smooth_scroll) {
+    main.classList.add('smooth-scroll');
+  }
+};
+
+/**
+ * Upgrade one or many Spotify Playlist URIs
+ * This is their new, simplified syntax (September 2018) but they haven't updated it everywhere
+ * So we need to manually strip user:abc to keep things consistent
+ *
+ * @param uris Array|String
+ * @return Array|String
+ * */
+var upgradeSpotifyPlaylistUris = function upgradeSpotifyPlaylistUris(uris) {
+  var upgraded = [];
+
+  var _iteratorNormalCompletion2 = true;
+  var _didIteratorError2 = false;
+  var _iteratorError2 = undefined;
+
+  try {
+    for (var _iterator2 = uris[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+      var uri = _step2.value;
+
+      if (uri.includes('spotify:user:')) {
+        uri = uri.replace(/spotify:user:([^:]*?):/i, 'spotify:');
+      }
+      upgraded.push(uri);
+    }
+  } catch (err) {
+    _didIteratorError2 = true;
+    _iteratorError2 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion2 && _iterator2.return) {
+        _iterator2.return();
+      }
+    } finally {
+      if (_didIteratorError2) {
+        throw _iteratorError2;
+      }
+    }
+  }
+
+  return upgraded;
+};
+
+// As above, but for a single URI
+var upgradeSpotifyPlaylistUri = function upgradeSpotifyPlaylistUri(uri) {
+  return upgradeSpotifyPlaylistUris([uri])[0];
+};
+
+exports.debounce = debounce;
+exports.throttle = throttle;
+exports.setFavicon = setFavicon;
+exports.queryString = queryString;
+exports.generateGuid = generateGuid;
+exports.getCurrentPusherConnection = getCurrentPusherConnection;
+exports.uriSource = uriSource;
+exports.uriType = uriType;
+exports.sourceIcon = sourceIcon;
+exports.getFromUri = getFromUri;
+exports.buildLink = buildLink;
+exports.isTouchDevice = isTouchDevice;
+exports.isNumeric = isNumeric;
+exports.isObject = isObject;
+exports.isLoading = isLoading;
+exports.isHosted = isHosted;
+exports.getIndexedRecords = getIndexedRecords;
+exports.titleCase = titleCase;
+exports.scrollTo = scrollTo;
+exports.upgradeSpotifyPlaylistUris = upgradeSpotifyPlaylistUris;
+exports.upgradeSpotifyPlaylistUri = upgradeSpotifyPlaylistUri;
+exports.default = {
+  debounce: debounce,
+  throttle: throttle,
+  setFavicon: setFavicon,
+  queryString: queryString,
+  generateGuid: generateGuid,
+  getCurrentPusherConnection: getCurrentPusherConnection,
+  uriSource: uriSource,
+  uriType: uriType,
+  sourceIcon: sourceIcon,
+  getFromUri: getFromUri,
+  buildLink: buildLink,
+  isTouchDevice: isTouchDevice,
+  isNumeric: isNumeric,
+  isObject: isObject,
+  isLoading: isLoading,
+  isHosted: isHosted,
+  getIndexedRecords: getIndexedRecords,
+  titleCase: titleCase,
+  scrollTo: scrollTo,
+  upgradeSpotifyPlaylistUris: upgradeSpotifyPlaylistUris,
+  upgradeSpotifyPlaylistUri: upgradeSpotifyPlaylistUri
+};
+
+/***/ }),
+
+/***/ "./src/js/util/index.js":
+/*!******************************!*\
+  !*** ./src/js/util/index.js ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _helpers = __webpack_require__(/*! ./helpers */ "./src/js/util/helpers.js");
+
+var helpers = _interopRequireWildcard(_helpers);
+
+var _storage = __webpack_require__(/*! ./storage */ "./src/js/util/storage.js");
+
+var storage = _interopRequireWildcard(_storage);
+
+var _format = __webpack_require__(/*! ./format */ "./src/js/util/format.js");
+
+var format = _interopRequireWildcard(_format);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+exports.default = {
+  helpers: helpers,
+  storage: storage,
+  format: format
+};
+
+/***/ }),
+
+/***/ "./src/js/util/storage.js":
+/*!********************************!*\
+  !*** ./src/js/util/storage.js ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+/**
+ * Storage handler
+ * All localStorage tasks are handled below. This means we can detect for localStorage issues in one place
+ * */
+
+var storageFactory = function () {
+  var uid = '' + new Date().getTime();
+  var storage = void 0;
+  var result = void 0;
+  try {
+    (storage = window.localStorage).setItem(uid, uid);
+    result = storage.getItem(uid) === uid;
+    storage.removeItem(uid);
+    return result && storage;
+  } catch (exception) {
+    return false;
+  };
+}();
+
+/**
+ * Get a storage value
+ *
+ * @param key = string
+ * @param default_value = mixed (optional, if localStorage key doesn't exist, return this)
+ * */
+var _get = function _get(key) {
+  var default_value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  if (storageFactory) {
+    var value = storageFactory.getItem(key);
+    if (value) {
+      return JSON.parse(value);
+    }
+    return default_value;
+  }
+  console.warn('localStorage not available. Using default value for \'' + key + '\'.');
+  return default_value;
+};
+
+/**
+ * Set a storage value
+ *
+ * @param key = string
+ * @param value = object
+ * @param replace = boolean (optional, completely replace our local value rather than merging it)
+ * */
+var _set = function _set(key, value) {
+  var replace = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+  if (storageFactory) {
+    var stored_value = storageFactory.getItem(key);
+
+    // We have nothing to merge with, or we want to completely replace previous value
+    if (!stored_value || replace) {
+      var new_value = value;
+
+      // Merge new value with existing
+    } else {
+      var new_value = _extends({}, JSON.parse(stored_value), value);
+    }
+    storageFactory.setItem(key, JSON.stringify(new_value));
+  } else {
+    console.warn('localStorage not available. \'' + key + '\' will not perist when you close your browser.');
+  }
+};
+
+/**
+ * Cache handlers
+ * This allows arbritrary requests to be cached by key into local storage. Typically key would be
+ * a URL, but it could also be a asset id.
+ *
+ * Use sparingly as localStorage is limited in size! Ideally store only the request data needed,
+ * rather than the entire response data.
+ */
+var cache = {
+  get: function get(key) {
+    var cache = _get('cache', {});
+    if (cache['"' + key + '"'] !== undefined) {
+      return cache['"' + key + '"'];
+    }
+  },
+  set: function set(key, data) {
+    var cache = _get('cache', {});
+    cache['"' + key + '"'] = data;
+    _set('cache', cache);
+    return true;
+  },
+  clear: function clear() {
+    _set('cache', {}, true);
+  }
+};
+
+/**
+ * Check if an image URL is cached or not
+ * Useful for bypassing load animations for cached assets (eg parallax)
+ *
+ * @param url String
+ * @return Boolean
+ * */
+var isCached = function isCached(url) {
+  var image = new Image();
+  image.src = url;
+  return image.complete;
+};
+
+exports.get = _get;
+exports.set = _set;
+exports.cache = cache;
+exports.isCached = isCached;
+exports.default = {
+  get: _get,
+  set: _set,
+  cache: cache,
+  isCached: isCached
 };
 
 /***/ }),
@@ -87059,10 +87100,6 @@ var _Icon = __webpack_require__(/*! ../components/Icon */ "./src/js/components/I
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../services/core/actions */ "./src/js/services/core/actions.js");
 
 var coreActions = _interopRequireWildcard(_actions);
@@ -87083,6 +87120,10 @@ var _actions5 = __webpack_require__(/*! ../services/lastfm/actions */ "./src/js/
 
 var lastfmActions = _interopRequireWildcard(_actions5);
 
+var _helpers = __webpack_require__(/*! ../util/helpers */ "./src/js/util/helpers.js");
+
+var _format = __webpack_require__(/*! ../util/format */ "./src/js/util/format.js");
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -87096,10 +87137,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Album = exports.Album = function (_React$Component) {
   _inherits(Album, _React$Component);
 
-  function Album(props) {
+  function Album() {
     _classCallCheck(this, Album);
 
-    return _possibleConstructorReturn(this, (Album.__proto__ || Object.getPrototypeOf(Album)).call(this, props));
+    return _possibleConstructorReturn(this, (Album.__proto__ || Object.getPrototypeOf(Album)).apply(this, arguments));
   }
 
   _createClass(Album, [{
@@ -87131,7 +87172,7 @@ var Album = exports.Album = function (_React$Component) {
 
         // if mopidy has just connected AND we're a local album, go get
       } else if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
-        if (helpers.uriSource(nextProps.uri) != 'spotify') {
+        if ((0, _helpers.uriSource)(nextProps.uri) != 'spotify') {
           this.props.coreActions.loadAlbum(nextProps.uri);
         }
       }
@@ -87203,7 +87244,7 @@ var Album = exports.Album = function (_React$Component) {
   }, {
     key: 'inLibrary',
     value: function inLibrary() {
-      var library = helpers.uriSource(this.props.uri) + '_library_albums';
+      var library = (0, _helpers.uriSource)(this.props.uri) + '_library_albums';
       return this.props[library] && this.props[library].indexOf(this.props.uri) > -1;
     }
   }, {
@@ -87212,7 +87253,7 @@ var Album = exports.Album = function (_React$Component) {
       var _this2 = this;
 
       if (!this.props.album) {
-        if (helpers.isLoading(this.props.load_queue, ['spotify_albums/' + helpers.getFromUri('albumid', this.props.uri)])) {
+        if ((0, _helpers.isLoading)(this.props.load_queue, ['spotify_albums/' + (0, _helpers.getFromUri)('albumid', this.props.uri)])) {
           return _react2.default.createElement(_Loader2.default, { body: true, loading: true });
         }
         return _react2.default.createElement(
@@ -87228,7 +87269,7 @@ var Album = exports.Album = function (_React$Component) {
         );
       }
 
-      var album = helpers.collate(this.props.album, {
+      var album = (0, _format.collate)(this.props.album, {
         tracks: this.props.tracks,
         artists: this.props.artists
       });
@@ -87262,7 +87303,7 @@ var Album = exports.Album = function (_React$Component) {
             !this.props.slim_mode ? _react2.default.createElement(
               'li',
               { className: 'source' },
-              _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(album.uri) })
+              _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: (0, _helpers.sourceIcon)(album.uri) })
             ) : null,
             album.artists && album.artists.length > 0 ? _react2.default.createElement(
               'li',
@@ -87312,7 +87353,7 @@ var Album = exports.Album = function (_React$Component) {
               } },
             'Play'
           ),
-          helpers.uriSource(this.props.uri) == 'spotify' ? _react2.default.createElement(_FollowButton2.default, {
+          (0, _helpers.uriSource)(this.props.uri) == 'spotify' ? _react2.default.createElement(_FollowButton2.default, {
             className: 'secondary',
             uri: this.props.uri,
             addText: 'Add to library',
@@ -87486,10 +87527,6 @@ var _Loader = __webpack_require__(/*! ../components/Loader */ "./src/js/componen
 
 var _Loader2 = _interopRequireDefault(_Loader);
 
-var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../services/core/actions */ "./src/js/services/core/actions.js");
 
 var coreActions = _interopRequireWildcard(_actions);
@@ -87514,6 +87551,12 @@ var _actions6 = __webpack_require__(/*! ../services/spotify/actions */ "./src/js
 
 var spotifyActions = _interopRequireWildcard(_actions6);
 
+var _helpers = __webpack_require__(/*! ../util/helpers */ "./src/js/util/helpers.js");
+
+var _format = __webpack_require__(/*! ../util/format */ "./src/js/util/format.js");
+
+var _arrays = __webpack_require__(/*! ../util/arrays */ "./src/js/util/arrays.js");
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -87527,10 +87570,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Artist = function (_React$Component) {
   _inherits(Artist, _React$Component);
 
-  function Artist(props) {
+  function Artist() {
     _classCallCheck(this, Artist);
 
-    return _possibleConstructorReturn(this, (Artist.__proto__ || Object.getPrototypeOf(Artist)).call(this, props));
+    return _possibleConstructorReturn(this, (Artist.__proto__ || Object.getPrototypeOf(Artist)).apply(this, arguments));
   }
 
   _createClass(Artist, [{
@@ -87545,7 +87588,7 @@ var Artist = function (_React$Component) {
       if (nextProps.uri != this.props.uri) {
         this.props.coreActions.loadArtist(nextProps.uri);
       } else if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
-        if (helpers.uriSource(this.props.uri) != 'spotify') {
+        if ((0, _helpers.uriSource)(this.props.uri) != 'spotify') {
           this.props.coreActions.loadArtist(nextProps.uri);
         }
       }
@@ -87592,7 +87635,7 @@ var Artist = function (_React$Component) {
   }, {
     key: 'inLibrary',
     value: function inLibrary() {
-      var library = helpers.uriSource(this.props.uri) + '_library_artists';
+      var library = (0, _helpers.uriSource)(this.props.uri) + '_library_artists';
       return this.props[library] && this.props[library].indexOf(this.props.uri) > -1;
     }
   }, {
@@ -87619,18 +87662,18 @@ var Artist = function (_React$Component) {
     value: function renderOverview() {
       var _this2 = this;
 
-      var artist = helpers.collate(this.props.artist, {
+      var artist = (0, _format.collate)(this.props.artist, {
         artists: this.props.artists,
         albums: this.props.albums,
         tracks: this.props.tracks
       });
 
       if (this.props.sort && artist.albums) {
-        artist.albums = helpers.sortItems(artist.albums, this.props.sort, this.props.sort_reverse);
+        artist.albums = (0, _arrays.sortItems)(artist.albums, this.props.sort, this.props.sort_reverse);
       }
 
       if (this.props.filter && artist.albums) {
-        artist.albums = helpers.applyFilter('type', this.props.filter, artist.albums);
+        artist.albums = (0, _arrays.applyFilter)('type', this.props.filter, artist.albums);
       }
 
       var sort_options = [{
@@ -87765,7 +87808,7 @@ var Artist = function (_React$Component) {
   }, {
     key: 'renderTracks',
     value: function renderTracks() {
-      var artist = helpers.collate(this.props.artist, {
+      var artist = (0, _format.collate)(this.props.artist, {
         artists: this.props.artists,
         tracks: this.props.tracks
       });
@@ -87790,7 +87833,7 @@ var Artist = function (_React$Component) {
   }, {
     key: 'renderRelatedArtists',
     value: function renderRelatedArtists() {
-      var artist = helpers.collate(this.props.artist, {
+      var artist = (0, _format.collate)(this.props.artist, {
         artists: this.props.artists
       });
 
@@ -87807,7 +87850,7 @@ var Artist = function (_React$Component) {
   }, {
     key: 'renderAbout',
     value: function renderAbout() {
-      var artist = helpers.collate(this.props.artist, {
+      var artist = (0, _format.collate)(this.props.artist, {
         artists: this.props.artists
       });
 
@@ -87860,8 +87903,8 @@ var Artist = function (_React$Component) {
             _react2.default.createElement(
               'span',
               { className: 'content' },
-              _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(artist.uri) }),
-              helpers.titleCase(helpers.uriSource(artist.uri)) + ' artist'
+              _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: (0, _helpers.sourceIcon)(artist.uri) }),
+              (0, _helpers.titleCase)((0, _helpers.uriSource)(artist.uri)) + ' artist'
             )
           ),
           artist.followers && _react2.default.createElement(
@@ -87936,10 +87979,10 @@ var Artist = function (_React$Component) {
     value: function render() {
       var _this3 = this;
 
-      var scheme = helpers.uriSource(this.props.uri);
+      var scheme = (0, _helpers.uriSource)(this.props.uri);
 
       if (!this.props.artist) {
-        if (helpers.isLoading(this.props.load_queue, ['spotify_artists/' + helpers.getFromUri('artistid', this.props.uri), 'lastfm_method=artist.getInfo'])) {
+        if ((0, _helpers.isLoading)(this.props.load_queue, ['spotify_artists/' + (0, _helpers.getFromUri)('artistid', this.props.uri), 'lastfm_method=artist.getInfo'])) {
           return _react2.default.createElement(_Loader2.default, { body: true, loading: true });
         }
         return _react2.default.createElement(
@@ -88179,17 +88222,9 @@ var _Header = __webpack_require__(/*! ../components/Header */ "./src/js/componen
 
 var _Header2 = _interopRequireDefault(_Header);
 
-var _Thumbnail = __webpack_require__(/*! ../components/Thumbnail */ "./src/js/components/Thumbnail.js");
-
-var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
-
 var _Icon = __webpack_require__(/*! ../components/Icon */ "./src/js/components/Icon.js");
 
 var _Icon2 = _interopRequireDefault(_Icon);
-
-var _Link = __webpack_require__(/*! ../components/Link */ "./src/js/components/Link.js");
-
-var _Link2 = _interopRequireDefault(_Link);
 
 var _actions = __webpack_require__(/*! ../services/ui/actions */ "./src/js/services/ui/actions.js");
 
@@ -88855,10 +88890,6 @@ var _Icon = __webpack_require__(/*! ../components/Icon */ "./src/js/components/I
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../services/core/actions */ "./src/js/services/core/actions.js");
 
 var coreActions = _interopRequireWildcard(_actions);
@@ -88874,6 +88905,10 @@ var mopidyActions = _interopRequireWildcard(_actions3);
 var _actions4 = __webpack_require__(/*! ../services/spotify/actions */ "./src/js/services/spotify/actions.js");
 
 var spotifyActions = _interopRequireWildcard(_actions4);
+
+var _helpers = __webpack_require__(/*! ../util/helpers */ "./src/js/util/helpers.js");
+
+var _format = __webpack_require__(/*! ../util/format */ "./src/js/util/format.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -88922,7 +88957,7 @@ var Playlist = function (_React$Component) {
       if (nextProps.uri != this.props.uri) {
         this.props.coreActions.loadPlaylist(nextProps.uri);
       } else if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
-        if (helpers.uriSource(this.props.uri) != 'spotify') {
+        if ((0, _helpers.uriSource)(this.props.uri) != 'spotify') {
           this.props.coreActions.loadPlaylist(nextProps.uri);
         }
       }
@@ -89011,7 +89046,7 @@ var Playlist = function (_React$Component) {
   }, {
     key: 'inLibrary',
     value: function inLibrary() {
-      var library = helpers.uriSource(this.props.uri) + '_library_playlists';
+      var library = (0, _helpers.uriSource)(this.props.uri) + '_library_playlists';
       return this.props[library] && this.props[library].indexOf(this.props.uri) > -1;
     }
   }, {
@@ -89019,7 +89054,7 @@ var Playlist = function (_React$Component) {
     value: function renderActions() {
       var _this2 = this;
 
-      switch (helpers.uriSource(this.props.uri)) {
+      switch ((0, _helpers.uriSource)(this.props.uri)) {
         case 'm3u':
           return _react2.default.createElement(
             'div',
@@ -89101,10 +89136,10 @@ var Playlist = function (_React$Component) {
     value: function render() {
       var _this3 = this;
 
-      var playlist_id = helpers.getFromUri('playlistid', this.props.uri);
+      var playlist_id = (0, _helpers.getFromUri)('playlistid', this.props.uri);
 
       if (!this.props.playlist) {
-        if (helpers.isLoading(this.props.load_queue, ['spotify_playlists/' + playlist_id + '?'])) {
+        if ((0, _helpers.isLoading)(this.props.load_queue, ['spotify_playlists/' + playlist_id + '?'])) {
           return _react2.default.createElement(_Loader2.default, { body: true, loading: true });
         }
         return _react2.default.createElement(
@@ -89120,7 +89155,7 @@ var Playlist = function (_React$Component) {
         );
       }
 
-      var playlist = helpers.collate(this.props.playlist, { tracks: this.props.tracks, users: this.props.users });
+      var playlist = (0, _format.collate)(this.props.playlist, { tracks: this.props.tracks, users: this.props.users });
 
       var context = 'playlist';
       if (playlist.can_edit) {
@@ -89157,7 +89192,7 @@ var Playlist = function (_React$Component) {
             !this.props.slim_mode ? _react2.default.createElement(
               'li',
               { className: 'source' },
-              _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(playlist.uri) })
+              _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: (0, _helpers.sourceIcon)(playlist.uri) })
             ) : null,
             playlist.user_uri ? _react2.default.createElement(
               'li',
@@ -89165,7 +89200,7 @@ var Playlist = function (_React$Component) {
               _react2.default.createElement(
                 _URILink2.default,
                 { type: 'user', uri: playlist.user_uri },
-                playlist.user ? playlist.user.name : helpers.getFromUri('userid', playlist.user_uri)
+                playlist.user ? playlist.user.name : (0, _helpers.getFromUri)('userid', playlist.user_uri)
               )
             ) : null,
             _react2.default.createElement(
@@ -89334,10 +89369,6 @@ var _LazyLoadListener = __webpack_require__(/*! ../components/LazyLoadListener *
 
 var _LazyLoadListener2 = _interopRequireDefault(_LazyLoadListener);
 
-var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../services/core/actions */ "./src/js/services/core/actions.js");
 
 var coreActions = _interopRequireWildcard(_actions);
@@ -89357,6 +89388,8 @@ var spotifyActions = _interopRequireWildcard(_actions4);
 var _actions5 = __webpack_require__(/*! ../services/mopidy/actions */ "./src/js/services/mopidy/actions.js");
 
 var mopidyActions = _interopRequireWildcard(_actions5);
+
+var _helpers = __webpack_require__(/*! ../util/helpers */ "./src/js/util/helpers.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -89411,7 +89444,7 @@ var Queue = function (_React$Component) {
 
 
       if (next_added_from_uri && next_added_from_uri !== added_from_uri) {
-        var item_type = helpers.uriType(next_added_from_uri);
+        var item_type = (0, _helpers.uriType)(next_added_from_uri);
         switch (item_type) {
           case 'album':
             coreActions.loadAlbum(next_added_from_uri);
@@ -89515,13 +89548,13 @@ var Queue = function (_React$Component) {
 
       if (!added_from_uri) return null;
 
-      var uri_type = helpers.uriType(added_from_uri);
+      var uri_type = (0, _helpers.uriType)(added_from_uri);
       var items = [];
 
       // Radio nests it's seed URIs in an encoded URI format
       switch (uri_type) {
         case 'radio':
-          var radio_seeds = helpers.getFromUri('seeds', added_from_uri);
+          var radio_seeds = (0, _helpers.getFromUri)('seeds', added_from_uri);
 
           var _iteratorNormalCompletion = true;
           var _didIteratorError = false;
@@ -89531,7 +89564,7 @@ var Queue = function (_React$Component) {
             for (var _iterator = radio_seeds[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
               var seed = _step.value;
 
-              var item_type = helpers.uriType(seed);
+              var item_type = (0, _helpers.uriType)(seed);
               var _item_library = this.props[item_type + 's'];
               if (_item_library && _item_library[seed]) {
                 items.push(_item_library[seed]);
@@ -89557,7 +89590,7 @@ var Queue = function (_React$Component) {
         case 'search':
           items.push({
             uri: added_from_uri,
-            name: '"' + helpers.getFromUri('searchterm', added_from_uri) + '" search'
+            name: '"' + (0, _helpers.getFromUri)('searchterm', added_from_uri) + '" search'
           });
           break;
 
@@ -89583,7 +89616,7 @@ var Queue = function (_React$Component) {
           _react2.default.createElement(_Thumbnail2.default, {
             images: items[0].images,
             size: 'small',
-            circle: helpers.uriType(items[0].uri) === 'artist'
+            circle: (0, _helpers.uriType)(items[0].uri) === 'artist'
           })
         ),
         _react2.default.createElement(
@@ -89900,10 +89933,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var QueueHistory = function (_React$Component) {
   _inherits(QueueHistory, _React$Component);
 
-  function QueueHistory(props) {
+  function QueueHistory() {
     _classCallCheck(this, QueueHistory);
 
-    return _possibleConstructorReturn(this, (QueueHistory.__proto__ || Object.getPrototypeOf(QueueHistory)).call(this, props));
+    return _possibleConstructorReturn(this, (QueueHistory.__proto__ || Object.getPrototypeOf(QueueHistory)).apply(this, arguments));
   }
 
   _createClass(QueueHistory, [{
@@ -90035,10 +90068,6 @@ var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js"
 
 var _reactRouterDom = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/esm/react-router-dom.js");
 
-var _Link = __webpack_require__(/*! ../components/Link */ "./src/js/components/Link.js");
-
-var _Link2 = _interopRequireDefault(_Link);
-
 var _Header = __webpack_require__(/*! ../components/Header */ "./src/js/components/Header.js");
 
 var _Header2 = _interopRequireDefault(_Header);
@@ -90079,10 +90108,6 @@ var _URILink = __webpack_require__(/*! ../components/URILink */ "./src/js/compon
 
 var _URILink2 = _interopRequireDefault(_URILink);
 
-var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../services/core/actions */ "./src/js/services/core/actions.js");
 
 var coreActions = _interopRequireWildcard(_actions);
@@ -90098,6 +90123,10 @@ var mopidyActions = _interopRequireWildcard(_actions3);
 var _actions4 = __webpack_require__(/*! ../services/spotify/actions */ "./src/js/services/spotify/actions.js");
 
 var spotifyActions = _interopRequireWildcard(_actions4);
+
+var _helpers = __webpack_require__(/*! ../util/helpers */ "./src/js/util/helpers.js");
+
+var _arrays = __webpack_require__(/*! ../util/arrays */ "./src/js/util/arrays.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -90515,7 +90544,7 @@ var Search = function (_React$Component) {
       for (var i = 0; i < this.props.uri_schemes.length; i++) {
         provider_options.push({
           value: this.props.uri_schemes[i],
-          label: helpers.titleCase(this.props.uri_schemes[i].replace(':', '').replace('+', ' '))
+          label: (0, _helpers.titleCase)(this.props.uri_schemes[i].replace(':', '').replace('+', ' '))
         });
       }
       var spotify_search_enabled = this.props.search_settings && this.props.search_settings.spotify;
@@ -90539,30 +90568,30 @@ var Search = function (_React$Component) {
 
       var artists = [];
       if (this.props.mopidy_search_results.artists) {
-        artists = [].concat(_toConsumableArray(artists), _toConsumableArray(helpers.getIndexedRecords(this.props.artists, this.props.mopidy_search_results.artists)));
+        artists = [].concat(_toConsumableArray(artists), _toConsumableArray((0, _helpers.getIndexedRecords)(this.props.artists, this.props.mopidy_search_results.artists)));
       }
       if (this.props.spotify_search_results.artists) {
-        artists = [].concat(_toConsumableArray(artists), _toConsumableArray(helpers.getIndexedRecords(this.props.artists, this.props.spotify_search_results.artists)));
+        artists = [].concat(_toConsumableArray(artists), _toConsumableArray((0, _helpers.getIndexedRecords)(this.props.artists, this.props.spotify_search_results.artists)));
       }
-      artists = helpers.sortItems(artists, sort, sort_reverse, sort_map);
+      artists = (0, _arrays.sortItems)(artists, sort, sort_reverse, sort_map);
 
       var albums = [];
       if (this.props.mopidy_search_results.albums) {
-        albums = [].concat(_toConsumableArray(albums), _toConsumableArray(helpers.getIndexedRecords(this.props.albums, this.props.mopidy_search_results.albums)));
+        albums = [].concat(_toConsumableArray(albums), _toConsumableArray((0, _helpers.getIndexedRecords)(this.props.albums, this.props.mopidy_search_results.albums)));
       }
       if (this.props.spotify_search_results.albums) {
-        albums = [].concat(_toConsumableArray(albums), _toConsumableArray(helpers.getIndexedRecords(this.props.albums, this.props.spotify_search_results.albums)));
+        albums = [].concat(_toConsumableArray(albums), _toConsumableArray((0, _helpers.getIndexedRecords)(this.props.albums, this.props.spotify_search_results.albums)));
       }
-      albums = helpers.sortItems(albums, sort, sort_reverse, sort_map);
+      albums = (0, _arrays.sortItems)(albums, sort, sort_reverse, sort_map);
 
       var playlists = [];
       if (this.props.mopidy_search_results.playlists) {
-        playlists = [].concat(_toConsumableArray(playlists), _toConsumableArray(helpers.getIndexedRecords(this.props.playlists, this.props.mopidy_search_results.playlists)));
+        playlists = [].concat(_toConsumableArray(playlists), _toConsumableArray((0, _helpers.getIndexedRecords)(this.props.playlists, this.props.mopidy_search_results.playlists)));
       }
       if (this.props.spotify_search_results.playlists) {
-        playlists = [].concat(_toConsumableArray(playlists), _toConsumableArray(helpers.getIndexedRecords(this.props.playlists, this.props.spotify_search_results.playlists)));
+        playlists = [].concat(_toConsumableArray(playlists), _toConsumableArray((0, _helpers.getIndexedRecords)(this.props.playlists, this.props.spotify_search_results.playlists)));
       }
-      playlists = helpers.sortItems(playlists, sort, sort_reverse, sort_map);
+      playlists = (0, _arrays.sortItems)(playlists, sort, sort_reverse, sort_map);
 
       var tracks = [];
       if (this.props.mopidy_search_results.tracks) {
@@ -90572,7 +90601,7 @@ var Search = function (_React$Component) {
         tracks = [].concat(_toConsumableArray(tracks), _toConsumableArray(this.props.spotify_search_results.tracks));
       }
 
-      tracks = helpers.sortItems(tracks, sort == 'followers' ? 'popularity' : sort, sort_reverse, sort_map);
+      tracks = (0, _arrays.sortItems)(tracks, sort == 'followers' ? 'popularity' : sort, sort_reverse, sort_map);
 
       var options = _react2.default.createElement(
         'span',
@@ -90750,10 +90779,6 @@ var _Services = __webpack_require__(/*! ../components/Services */ "./src/js/comp
 
 var _Services2 = _interopRequireDefault(_Services);
 
-var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../services/core/actions */ "./src/js/services/core/actions.js");
 
 var coreActions = _interopRequireWildcard(_actions);
@@ -90777,6 +90802,8 @@ var lastfmActions = _interopRequireWildcard(_actions5);
 var _actions6 = __webpack_require__(/*! ../services/spotify/actions */ "./src/js/services/spotify/actions.js");
 
 var spotifyActions = _interopRequireWildcard(_actions6);
+
+var _helpers = __webpack_require__(/*! ../util/helpers */ "./src/js/util/helpers.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -91283,7 +91310,7 @@ var Settings = function (_React$Component) {
               )
             )
           ),
-          helpers.isHosted() ? null : _react2.default.createElement(
+          (0, _helpers.isHosted)() ? null : _react2.default.createElement(
             'div',
             { className: 'field checkbox' },
             _react2.default.createElement(
@@ -91655,10 +91682,6 @@ var _Loader = __webpack_require__(/*! ../components/Loader */ "./src/js/componen
 
 var _Loader2 = _interopRequireDefault(_Loader);
 
-var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../services/core/actions */ "./src/js/services/core/actions.js");
 
 var coreActions = _interopRequireWildcard(_actions);
@@ -91683,6 +91706,8 @@ var _actions6 = __webpack_require__(/*! ../services/genius/actions */ "./src/js/
 
 var geniusActions = _interopRequireWildcard(_actions6);
 
+var _helpers = __webpack_require__(/*! ../util/helpers */ "./src/js/util/helpers.js");
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -91696,10 +91721,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Track = function (_React$Component) {
   _inherits(Track, _React$Component);
 
-  function Track(props) {
+  function Track() {
     _classCallCheck(this, Track);
 
-    return _possibleConstructorReturn(this, (Track.__proto__ || Object.getPrototypeOf(Track)).call(this, props));
+    return _possibleConstructorReturn(this, (Track.__proto__ || Object.getPrototypeOf(Track)).apply(this, arguments));
   }
 
   _createClass(Track, [{
@@ -91850,7 +91875,7 @@ var Track = function (_React$Component) {
   }, {
     key: 'renderLyrics',
     value: function renderLyrics() {
-      if (helpers.isLoading(this.props.load_queue, ['genius_'])) {
+      if ((0, _helpers.isLoading)(this.props.load_queue, ['genius_'])) {
         return _react2.default.createElement(
           'div',
           { className: 'lyrics' },
@@ -91881,7 +91906,7 @@ var Track = function (_React$Component) {
     value: function render() {
       var _this2 = this;
 
-      if (helpers.isLoading(this.props.load_queue, ['spotify_track/' + helpers.getFromUri('trackid', this.props.uri)])) {
+      if ((0, _helpers.isLoading)(this.props.load_queue, ['spotify_track/' + (0, _helpers.getFromUri)('trackid', this.props.uri)])) {
         return _react2.default.createElement(_Loader2.default, { body: true, loading: true });
       }
 
@@ -91943,7 +91968,7 @@ var Track = function (_React$Component) {
             !this.props.slim_mode ? _react2.default.createElement(
               'li',
               { className: 'source' },
-              _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(this.props.uri) })
+              _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: (0, _helpers.sourceIcon)(this.props.uri) })
             ) : null,
             track.date ? _react2.default.createElement(
               'li',
@@ -92041,11 +92066,11 @@ var Track = function (_React$Component) {
 
 
 var rebuildUri = function rebuildUri(uri) {
-  var rebuilt_uri = helpers.uriSource(uri) + ':' + helpers.uriType(uri) + ':';
+  var rebuilt_uri = (0, _helpers.uriSource)(uri) + ':' + (0, _helpers.uriType)(uri) + ':';
 
   // Escape unreserved characters (RFC 3986)
   // https://stackoverflow.com/questions/18251399/why-doesnt-encodeuricomponent-encode-single-quotes-apostrophes
-  var id = helpers.getFromUri('trackid', uri);
+  var id = (0, _helpers.getFromUri)('trackid', uri);
   id = encodeURIComponent(id).replace(/[!'()*]/g, escape);
 
   // Reinstate slashes for the Mopidy-Local structure
@@ -92150,10 +92175,6 @@ var _Icon = __webpack_require__(/*! ../components/Icon */ "./src/js/components/I
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _helpers = __webpack_require__(/*! ../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../services/core/actions */ "./src/js/services/core/actions.js");
 
 var coreActions = _interopRequireWildcard(_actions);
@@ -92162,13 +92183,13 @@ var _actions2 = __webpack_require__(/*! ../services/ui/actions */ "./src/js/serv
 
 var uiActions = _interopRequireWildcard(_actions2);
 
-var _actions3 = __webpack_require__(/*! ../services/mopidy/actions */ "./src/js/services/mopidy/actions.js");
+var _actions3 = __webpack_require__(/*! ../services/spotify/actions */ "./src/js/services/spotify/actions.js");
 
-var mopidyActions = _interopRequireWildcard(_actions3);
+var spotifyActions = _interopRequireWildcard(_actions3);
 
-var _actions4 = __webpack_require__(/*! ../services/spotify/actions */ "./src/js/services/spotify/actions.js");
+var _helpers = __webpack_require__(/*! ../util/helpers */ "./src/js/util/helpers.js");
 
-var spotifyActions = _interopRequireWildcard(_actions4);
+var _format = __webpack_require__(/*! ../util/format */ "./src/js/util/format.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -92183,10 +92204,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var User = function (_React$Component) {
   _inherits(User, _React$Component);
 
-  function User(props) {
+  function User() {
     _classCallCheck(this, User);
 
-    return _possibleConstructorReturn(this, (User.__proto__ || Object.getPrototypeOf(User)).call(this, props));
+    return _possibleConstructorReturn(this, (User.__proto__ || Object.getPrototypeOf(User)).apply(this, arguments));
   }
 
   _createClass(User, [{
@@ -92231,7 +92252,7 @@ var User = function (_React$Component) {
   }, {
     key: 'isMe',
     value: function isMe() {
-      var userid = helpers.getFromUri('userid', this.props.uri);
+      var userid = (0, _helpers.getFromUri)('userid', this.props.uri);
       return this.props.me && this.props.me.id && this.props.me.id == userid;
     }
   }, {
@@ -92239,10 +92260,10 @@ var User = function (_React$Component) {
     value: function render() {
       var _this2 = this;
 
-      var user_id = helpers.getFromUri('userid', this.props.uri);
+      var user_id = (0, _helpers.getFromUri)('userid', this.props.uri);
 
       if (!this.props.user) {
-        if (helpers.isLoading(this.props.load_queue, ['spotify_users/' + user_id, 'spotify_users/' + user_id + '/playlists/?'])) {
+        if ((0, _helpers.isLoading)(this.props.load_queue, ['spotify_users/' + user_id, 'spotify_users/' + user_id + '/playlists/?'])) {
           return _react2.default.createElement(_Loader2.default, { body: true, loading: true });
         }
         return _react2.default.createElement(
@@ -92258,7 +92279,7 @@ var User = function (_React$Component) {
         );
       }
 
-      var user = helpers.collate(this.props.user, { playlists: this.props.playlists });
+      var user = (0, _format.collate)(this.props.user, { playlists: this.props.playlists });
 
       if (user && user.images) {
         var image = user.images.huge;
@@ -92309,7 +92330,7 @@ var User = function (_React$Component) {
                       !this.props.slim_mode ? _react2.default.createElement(
                         'li',
                         { className: 'source' },
-                        _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: helpers.sourceIcon(user.uri) })
+                        _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: (0, _helpers.sourceIcon)(user.uri) })
                       ) : null,
                       user.playlists_total ? _react2.default.createElement(
                         'li',
@@ -92433,10 +92454,6 @@ var _Loader = __webpack_require__(/*! ../../components/Loader */ "./src/js/compo
 
 var _Loader2 = _interopRequireDefault(_Loader);
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../../services/ui/actions */ "./src/js/services/ui/actions.js");
 
 var uiActions = _interopRequireWildcard(_actions);
@@ -92444,6 +92461,8 @@ var uiActions = _interopRequireWildcard(_actions);
 var _actions2 = __webpack_require__(/*! ../../services/spotify/actions */ "./src/js/services/spotify/actions.js");
 
 var spotifyActions = _interopRequireWildcard(_actions2);
+
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -92458,10 +92477,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var DiscoverCategories = function (_React$Component) {
   _inherits(DiscoverCategories, _React$Component);
 
-  function DiscoverCategories(props) {
+  function DiscoverCategories() {
     _classCallCheck(this, DiscoverCategories);
 
-    return _possibleConstructorReturn(this, (DiscoverCategories.__proto__ || Object.getPrototypeOf(DiscoverCategories)).call(this, props));
+    return _possibleConstructorReturn(this, (DiscoverCategories.__proto__ || Object.getPrototypeOf(DiscoverCategories)).apply(this, arguments));
   }
 
   _createClass(DiscoverCategories, [{
@@ -92478,7 +92497,7 @@ var DiscoverCategories = function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
-      if (helpers.isLoading(this.props.load_queue, ['spotify_browse/categories'])) {
+      if ((0, _helpers.isLoading)(this.props.load_queue, ['spotify_browse/categories'])) {
         return _react2.default.createElement(
           'div',
           { className: 'view discover-categories-view' },
@@ -92586,10 +92605,6 @@ var _Loader = __webpack_require__(/*! ../../components/Loader */ "./src/js/compo
 
 var _Loader2 = _interopRequireDefault(_Loader);
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../../services/ui/actions */ "./src/js/services/ui/actions.js");
 
 var uiActions = _interopRequireWildcard(_actions);
@@ -92597,6 +92612,10 @@ var uiActions = _interopRequireWildcard(_actions);
 var _actions2 = __webpack_require__(/*! ../../services/spotify/actions */ "./src/js/services/spotify/actions.js");
 
 var spotifyActions = _interopRequireWildcard(_actions2);
+
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
+
+var _format = __webpack_require__(/*! ../../util/format */ "./src/js/util/format.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -92611,10 +92630,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var DiscoverCategory = function (_React$Component) {
   _inherits(DiscoverCategory, _React$Component);
 
-  function DiscoverCategory(props) {
+  function DiscoverCategory() {
     _classCallCheck(this, DiscoverCategory);
 
-    return _possibleConstructorReturn(this, (DiscoverCategory.__proto__ || Object.getPrototypeOf(DiscoverCategory)).call(this, props));
+    return _possibleConstructorReturn(this, (DiscoverCategory.__proto__ || Object.getPrototypeOf(DiscoverCategory)).apply(this, arguments));
   }
 
   _createClass(DiscoverCategory, [{
@@ -92669,7 +92688,7 @@ var DiscoverCategory = function (_React$Component) {
     value: function render() {
       var _this2 = this;
 
-      if (helpers.isLoading(this.props.load_queue, ['spotify_browse/categories/'])) {
+      if ((0, _helpers.isLoading)(this.props.load_queue, ['spotify_browse/categories/'])) {
         return _react2.default.createElement(
           'div',
           { className: 'view discover-categories-view' },
@@ -92687,7 +92706,7 @@ var DiscoverCategory = function (_React$Component) {
         return null;
       }
 
-      var category = helpers.collate(this.props.category, { playlists: this.props.playlists });
+      var category = (0, _format.collate)(this.props.category, { playlists: this.props.playlists });
 
       return _react2.default.createElement(
         'div',
@@ -92764,10 +92783,6 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _Link = __webpack_require__(/*! ../../components/Link */ "./src/js/components/Link.js");
-
-var _Link2 = _interopRequireDefault(_Link);
-
 var _PlaylistGrid = __webpack_require__(/*! ../../components/PlaylistGrid */ "./src/js/components/PlaylistGrid.js");
 
 var _PlaylistGrid2 = _interopRequireDefault(_PlaylistGrid);
@@ -92788,10 +92803,6 @@ var _Loader = __webpack_require__(/*! ../../components/Loader */ "./src/js/compo
 
 var _Loader2 = _interopRequireDefault(_Loader);
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../../services/ui/actions */ "./src/js/services/ui/actions.js");
 
 var uiActions = _interopRequireWildcard(_actions);
@@ -92803,6 +92814,8 @@ var mopidyActions = _interopRequireWildcard(_actions2);
 var _actions3 = __webpack_require__(/*! ../../services/spotify/actions */ "./src/js/services/spotify/actions.js");
 
 var spotifyActions = _interopRequireWildcard(_actions3);
+
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -92817,10 +92830,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var DiscoverFeatured = function (_React$Component) {
   _inherits(DiscoverFeatured, _React$Component);
 
-  function DiscoverFeatured(props) {
+  function DiscoverFeatured() {
     _classCallCheck(this, DiscoverFeatured);
 
-    return _possibleConstructorReturn(this, (DiscoverFeatured.__proto__ || Object.getPrototypeOf(DiscoverFeatured)).call(this, props));
+    return _possibleConstructorReturn(this, (DiscoverFeatured.__proto__ || Object.getPrototypeOf(DiscoverFeatured)).apply(this, arguments));
   }
 
   _createClass(DiscoverFeatured, [{
@@ -92871,7 +92884,7 @@ var DiscoverFeatured = function (_React$Component) {
     value: function render() {
       var _this2 = this;
 
-      if (helpers.isLoading(this.props.load_queue, ['spotify_browse/featured-playlists'])) {
+      if ((0, _helpers.isLoading)(this.props.load_queue, ['spotify_browse/featured-playlists'])) {
         return _react2.default.createElement(
           'div',
           { className: 'view discover-featured-view preserve-3d' },
@@ -92974,10 +92987,6 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _Link = __webpack_require__(/*! ../../components/Link */ "./src/js/components/Link.js");
-
-var _Link2 = _interopRequireDefault(_Link);
-
 var _Header = __webpack_require__(/*! ../../components/Header */ "./src/js/components/Header.js");
 
 var _Header2 = _interopRequireDefault(_Header);
@@ -93002,10 +93011,6 @@ var _Loader = __webpack_require__(/*! ../../components/Loader */ "./src/js/compo
 
 var _Loader2 = _interopRequireDefault(_Loader);
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../../services/ui/actions */ "./src/js/services/ui/actions.js");
 
 var uiActions = _interopRequireWildcard(_actions);
@@ -93017,6 +93022,10 @@ var mopidyActions = _interopRequireWildcard(_actions2);
 var _actions3 = __webpack_require__(/*! ../../services/spotify/actions */ "./src/js/services/spotify/actions.js");
 
 var spotifyActions = _interopRequireWildcard(_actions3);
+
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
+
+var _format = __webpack_require__(/*! ../../util/format */ "./src/js/util/format.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -93031,10 +93040,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var DiscoverNewReleases = function (_React$Component) {
   _inherits(DiscoverNewReleases, _React$Component);
 
-  function DiscoverNewReleases(props) {
+  function DiscoverNewReleases() {
     _classCallCheck(this, DiscoverNewReleases);
 
-    return _possibleConstructorReturn(this, (DiscoverNewReleases.__proto__ || Object.getPrototypeOf(DiscoverNewReleases)).call(this, props));
+    return _possibleConstructorReturn(this, (DiscoverNewReleases.__proto__ || Object.getPrototypeOf(DiscoverNewReleases)).apply(this, arguments));
   }
 
   _createClass(DiscoverNewReleases, [{
@@ -93093,7 +93102,7 @@ var DiscoverNewReleases = function (_React$Component) {
     value: function render() {
       var _this2 = this;
 
-      if (helpers.isLoading(this.props.load_queue, ['spotify_browse/new-releases'])) {
+      if ((0, _helpers.isLoading)(this.props.load_queue, ['spotify_browse/new-releases'])) {
         return _react2.default.createElement(
           'div',
           { className: 'view discover-new-releases-view' },
@@ -93140,7 +93149,7 @@ var DiscoverNewReleases = function (_React$Component) {
       // Pull the first playlist out and we'll use this as a banner
       var first_album = albums[0];
       if (first_album) {
-        first_album = helpers.collate(first_album, { artists: this.props.artists });
+        first_album = (0, _format.collate)(first_album, { artists: this.props.artists });
       }
 
       var options = _react2.default.createElement(
@@ -93235,18 +93244,6 @@ var _reactInputRange = __webpack_require__(/*! react-input-range */ "./node_modu
 
 var _reactInputRange2 = _interopRequireDefault(_reactInputRange);
 
-var _Header = __webpack_require__(/*! ../../components/Header */ "./src/js/components/Header.js");
-
-var _Header2 = _interopRequireDefault(_Header);
-
-var _LinksSentence = __webpack_require__(/*! ../../components/LinksSentence */ "./src/js/components/LinksSentence.js");
-
-var _LinksSentence2 = _interopRequireDefault(_LinksSentence);
-
-var _ArtistGrid = __webpack_require__(/*! ../../components/ArtistGrid */ "./src/js/components/ArtistGrid.js");
-
-var _ArtistGrid2 = _interopRequireDefault(_ArtistGrid);
-
 var _AlbumGrid = __webpack_require__(/*! ../../components/AlbumGrid */ "./src/js/components/AlbumGrid.js");
 
 var _AlbumGrid2 = _interopRequireDefault(_AlbumGrid);
@@ -93287,10 +93284,6 @@ var _Icon = __webpack_require__(/*! ../../components/Icon */ "./src/js/component
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../../services/ui/actions */ "./src/js/services/ui/actions.js");
 
 var uiActions = _interopRequireWildcard(_actions);
@@ -93302,6 +93295,10 @@ var mopidyActions = _interopRequireWildcard(_actions2);
 var _actions3 = __webpack_require__(/*! ../../services/spotify/actions */ "./src/js/services/spotify/actions.js");
 
 var spotifyActions = _interopRequireWildcard(_actions3);
+
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
+
+var _arrays = __webpack_require__(/*! ../../util/arrays */ "./src/js/util/arrays.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -93489,7 +93486,7 @@ var Discover = function (_React$Component) {
         e: e,
         context: 'track',
         items: tracks,
-        uris: helpers.arrayOf('uri', tracks)
+        uris: (0, _arrays.arrayOf)('uri', tracks)
       };
       this.props.uiActions.showContextMenu(data);
     }
@@ -93504,7 +93501,7 @@ var Discover = function (_React$Component) {
       var seeds = seeds_string.split('_').join(':').split(',');
 
       for (var i = 0; i < seeds.length; i++) {
-        switch (helpers.uriType(seeds[i])) {
+        switch ((0, _helpers.uriType)(seeds[i])) {
           case 'artist':
             this.props.spotifyActions.getArtist(seeds[i]);
             break;
@@ -93578,7 +93575,7 @@ var Discover = function (_React$Component) {
         for (var i = 0; i < this.state.seeds.length; i++) {
           var uri = this.state.seeds[i];
 
-          switch (helpers.uriType(uri)) {
+          switch ((0, _helpers.uriType)(uri)) {
             case 'track':
               if (typeof this.props.tracks[uri] !== 'undefined') {
                 seeds_objects.push(this.props.tracks[uri]);
@@ -93602,7 +93599,7 @@ var Discover = function (_React$Component) {
               break;
 
             case 'genre':
-              var name = helpers.getFromUri('genreid', uri);
+              var name = (0, _helpers.getFromUri)('genreid', uri);
               seeds_objects.push({
                 name: (name.charAt(0).toUpperCase() + name.slice(1)).replace('-', ' '),
                 uri: uri
@@ -93616,7 +93613,7 @@ var Discover = function (_React$Component) {
         'div',
         { className: 'seeds' },
         seeds_objects.map(function (seed, index) {
-          var type = helpers.uriType(seed.uri);
+          var type = (0, _helpers.uriType)(seed.uri);
           var images = null;
           if (seed.images) {
             if (type == 'artist') {
@@ -93645,7 +93642,7 @@ var Discover = function (_React$Component) {
                 _react2.default.createElement(
                   'span',
                   { className: 'seed__label__text' },
-                  helpers.titleCase(type)
+                  (0, _helpers.titleCase)(type)
                 ),
                 _react2.default.createElement(_Icon2.default, { name: 'close', className: 'seed__label__remove', onClick: function onClick() {
                     return _this2.removeSeed(index);
@@ -93694,7 +93691,7 @@ var Discover = function (_React$Component) {
             enabled_tunabilities.push(tunability);
           } else {
             addable_tunabilities.push({
-              label: helpers.titleCase(tunability.name),
+              label: (0, _helpers.titleCase)(tunability.name),
               value: tunability.name
             });
           }
@@ -93711,7 +93708,7 @@ var Discover = function (_React$Component) {
             _react2.default.createElement(
               'div',
               { className: 'tunability__label' },
-              helpers.titleCase(tunability.name),
+              (0, _helpers.titleCase)(tunability.name),
               _react2.default.createElement(
                 'span',
                 { className: 'remove', onClick: function onClick(e) {
@@ -93854,7 +93851,7 @@ var Discover = function (_React$Component) {
     value: function render() {
       var _this5 = this;
 
-      var is_loading = helpers.isLoading(this.props.load_queue, ['spotify_recommendations']);
+      var is_loading = (0, _helpers.isLoading)(this.props.load_queue, ['spotify_recommendations']);
       var addable_tunabilities = [];
       for (var key in this.state.tunabilities) {
         if (this.state.tunabilities.hasOwnProperty(key)) {
@@ -93864,7 +93861,7 @@ var Discover = function (_React$Component) {
 
           if (!tunability.enabled) {
             addable_tunabilities.push({
-              label: helpers.titleCase(tunability.name),
+              label: (0, _helpers.titleCase)(tunability.name),
               value: tunability.name
             });
           }
@@ -94009,10 +94006,6 @@ var _Icon = __webpack_require__(/*! ../../components/Icon */ "./src/js/component
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../../services/core/actions */ "./src/js/services/core/actions.js");
 
 var coreActions = _interopRequireWildcard(_actions);
@@ -94032,6 +94025,12 @@ var googleActions = _interopRequireWildcard(_actions4);
 var _actions5 = __webpack_require__(/*! ../../services/spotify/actions */ "./src/js/services/spotify/actions.js");
 
 var spotifyActions = _interopRequireWildcard(_actions5);
+
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
+
+var _arrays = __webpack_require__(/*! ../../util/arrays */ "./src/js/util/arrays.js");
+
+var _format = __webpack_require__(/*! ../../util/format */ "./src/js/util/format.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -94136,7 +94135,7 @@ var LibraryAlbums = function (_React$Component) {
       if (this.props.albums && this.props.library_albums) {
         for (var i = 0; i < this.props.library_albums.length; i++) {
           var uri = this.props.library_albums[i];
-          if (!this.props.albums.hasOwnProperty(uri) && helpers.uriSource(uri) == 'local') {
+          if (!this.props.albums.hasOwnProperty(uri) && (0, _helpers.uriSource)(uri) == 'local') {
             uris.push(uri);
           }
 
@@ -94220,7 +94219,7 @@ var LibraryAlbums = function (_React$Component) {
 
             // Construct item placeholder. This is used as Mopidy needs to
             // lookup ref objects to get the full object which can take some time
-            var source = helpers.uriSource(uri);
+            var source = (0, _helpers.uriSource)(uri);
             var album = {
               uri: uri,
               source: source
@@ -94258,7 +94257,7 @@ var LibraryAlbums = function (_React$Component) {
 
             // Construct item placeholder. This is used as Mopidy needs to
             // lookup ref objects to get the full object which can take some time
-            var source = helpers.uriSource(uri);
+            var source = (0, _helpers.uriSource)(uri);
             var album = {
               uri: uri,
               source: source
@@ -94288,15 +94287,15 @@ var LibraryAlbums = function (_React$Component) {
 
       // Collate each album into it's full object (including nested artists)
       for (var i = 0; i < albums.length; i++) {
-        albums[i] = helpers.collate(albums[i], { artists: this.props.artists });
+        albums[i] = (0, _format.collate)(albums[i], { artists: this.props.artists });
       }
 
       if (this.props.sort) {
-        albums = helpers.sortItems(albums, this.props.sort, this.props.sort_reverse);
+        albums = (0, _arrays.sortItems)(albums, this.props.sort, this.props.sort_reverse);
       }
 
       if (this.state.filter && this.state.filter !== '') {
-        albums = helpers.applyFilter('name', this.state.filter, albums);
+        albums = (0, _arrays.applyFilter)('name', this.state.filter, albums);
       }
 
       // Apply our lazy-load-rendering
@@ -94522,10 +94521,6 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _Link = __webpack_require__(/*! ../../components/Link */ "./src/js/components/Link.js");
-
-var _Link2 = _interopRequireDefault(_Link);
-
 var _Header = __webpack_require__(/*! ../../components/Header */ "./src/js/components/Header.js");
 
 var _Header2 = _interopRequireDefault(_Header);
@@ -94554,10 +94549,6 @@ var _Icon = __webpack_require__(/*! ../../components/Icon */ "./src/js/component
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../../services/ui/actions */ "./src/js/services/ui/actions.js");
 
 var uiActions = _interopRequireWildcard(_actions);
@@ -94573,6 +94564,10 @@ var spotifyActions = _interopRequireWildcard(_actions3);
 var _actions4 = __webpack_require__(/*! ../../services/google/actions */ "./src/js/services/google/actions.js");
 
 var googleActions = _interopRequireWildcard(_actions4);
+
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
+
+var _arrays = __webpack_require__(/*! ../../util/arrays */ "./src/js/util/arrays.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -94713,7 +94708,7 @@ var LibraryArtists = function (_React$Component) {
 
             // Construct item placeholder. This is used as Mopidy needs to
             // lookup ref objects to get the full object which can take some time
-            var source = helpers.uriSource(uri);
+            var source = (0, _helpers.uriSource)(uri);
             var artist = {
               uri: uri,
               source: source
@@ -94753,7 +94748,7 @@ var LibraryArtists = function (_React$Component) {
 
             // Construct item placeholder. This is used as Mopidy needs to
             // lookup ref objects to get the full object which can take some time
-            var source = helpers.uriSource(uri);
+            var source = (0, _helpers.uriSource)(uri);
             var artist = {
               uri: uri,
               source: source
@@ -94792,11 +94787,11 @@ var LibraryArtists = function (_React$Component) {
       }
 
       if (this.props.sort) {
-        artists = helpers.sortItems(artists, this.props.sort, this.props.sort_reverse);
+        artists = (0, _arrays.sortItems)(artists, this.props.sort, this.props.sort_reverse);
       }
 
       if (this.state.filter !== '') {
-        artists = helpers.applyFilter('name', this.state.filter, artists);
+        artists = (0, _arrays.applyFilter)('name', this.state.filter, artists);
       }
 
       // Apply our lazy-load-rendering
@@ -95017,47 +95012,21 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _reactRouterDom = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/esm/react-router-dom.js");
-
-var _Link = __webpack_require__(/*! ../../components/Link */ "./src/js/components/Link.js");
-
-var _Link2 = _interopRequireDefault(_Link);
-
 var _Header = __webpack_require__(/*! ../../components/Header */ "./src/js/components/Header.js");
 
 var _Header2 = _interopRequireDefault(_Header);
-
-var _List = __webpack_require__(/*! ../../components/List */ "./src/js/components/List.js");
-
-var _List2 = _interopRequireDefault(_List);
-
-var _TrackList = __webpack_require__(/*! ../../components/TrackList */ "./src/js/components/TrackList.js");
-
-var _TrackList2 = _interopRequireDefault(_TrackList);
 
 var _GridItem = __webpack_require__(/*! ../../components/GridItem */ "./src/js/components/GridItem.js");
 
 var _GridItem2 = _interopRequireDefault(_GridItem);
 
-var _DropdownField = __webpack_require__(/*! ../../components/Fields/DropdownField */ "./src/js/components/Fields/DropdownField.js");
-
-var _DropdownField2 = _interopRequireDefault(_DropdownField);
-
 var _Icon = __webpack_require__(/*! ../../components/Icon */ "./src/js/components/Icon.js");
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _URILink = __webpack_require__(/*! ../../components/URILink */ "./src/js/components/URILink.js");
-
-var _URILink2 = _interopRequireDefault(_URILink);
-
 var _ErrorBoundary = __webpack_require__(/*! ../../components/ErrorBoundary */ "./src/js/components/ErrorBoundary.js");
 
 var _ErrorBoundary2 = _interopRequireDefault(_ErrorBoundary);
-
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
 
 var _actions = __webpack_require__(/*! ../../services/ui/actions */ "./src/js/services/ui/actions.js");
 
@@ -95066,6 +95035,8 @@ var uiActions = _interopRequireWildcard(_actions);
 var _actions2 = __webpack_require__(/*! ../../services/mopidy/actions */ "./src/js/services/mopidy/actions.js");
 
 var mopidyActions = _interopRequireWildcard(_actions2);
+
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -95080,10 +95051,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var LibraryBrowse = function (_React$Component) {
   _inherits(LibraryBrowse, _React$Component);
 
-  function LibraryBrowse(props) {
+  function LibraryBrowse() {
     _classCallCheck(this, LibraryBrowse);
 
-    return _possibleConstructorReturn(this, (LibraryBrowse.__proto__ || Object.getPrototypeOf(LibraryBrowse)).call(this, props));
+    return _possibleConstructorReturn(this, (LibraryBrowse.__proto__ || Object.getPrototypeOf(LibraryBrowse)).apply(this, arguments));
   }
 
   _createClass(LibraryBrowse, [{
@@ -95169,7 +95140,7 @@ var LibraryBrowse = function (_React$Component) {
             grid_items.push({
               name: subdirectory.name,
               link: '/library/browse/' + encodeURIComponent(subdirectory.uri),
-              icons: helpers.formatImages(subdirectory.icons)
+              icons: (0, _helpers.formatImages)(subdirectory.icons)
             });
           }
         } catch (err) {
@@ -95304,10 +95275,6 @@ var _ErrorBoundary = __webpack_require__(/*! ../../components/ErrorBoundary */ "
 
 var _ErrorBoundary2 = _interopRequireDefault(_ErrorBoundary);
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../../services/ui/actions */ "./src/js/services/ui/actions.js");
 
 var uiActions = _interopRequireWildcard(_actions);
@@ -95319,6 +95286,10 @@ var mopidyActions = _interopRequireWildcard(_actions2);
 var _actions3 = __webpack_require__(/*! ../../services/spotify/actions */ "./src/js/services/spotify/actions.js");
 
 var spotifyActions = _interopRequireWildcard(_actions3);
+
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
+
+var _arrays = __webpack_require__(/*! ../../util/arrays */ "./src/js/util/arrays.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -95335,10 +95306,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var LibraryBrowseDirectory = function (_React$Component) {
   _inherits(LibraryBrowseDirectory, _React$Component);
 
-  function LibraryBrowseDirectory(props) {
+  function LibraryBrowseDirectory() {
     _classCallCheck(this, LibraryBrowseDirectory);
 
-    return _possibleConstructorReturn(this, (LibraryBrowseDirectory.__proto__ || Object.getPrototypeOf(LibraryBrowseDirectory)).call(this, props));
+    return _possibleConstructorReturn(this, (LibraryBrowseDirectory.__proto__ || Object.getPrototypeOf(LibraryBrowseDirectory)).apply(this, arguments));
   }
 
   _createClass(LibraryBrowseDirectory, [{
@@ -95376,7 +95347,7 @@ var LibraryBrowseDirectory = function (_React$Component) {
   }, {
     key: 'playAll',
     value: function playAll(e, tracks) {
-      var tracks_uris = helpers.arrayOf('uri', tracks);
+      var tracks_uris = (0, _arrays.arrayOf)('uri', tracks);
       this.props.mopidyActions.playURIs(tracks_uris, 'iris:browse:' + this.props.uri);
       this.props.uiActions.hideContextMenu();
     }
@@ -95462,7 +95433,7 @@ var LibraryBrowseDirectory = function (_React$Component) {
         title = title.charAt(0).toUpperCase() + title.slice(1);
       }
 
-      if (!this.props.directory || helpers.isLoading(this.props.load_queue, ['mopidy_browse'])) {
+      if (!this.props.directory || (0, _helpers.isLoading)(this.props.load_queue, ['mopidy_browse'])) {
         return _react2.default.createElement(
           'div',
           { className: 'view library-local-view' },
@@ -95472,10 +95443,10 @@ var LibraryBrowseDirectory = function (_React$Component) {
       }
 
       var tracks = this.props.directory.tracks && this.props.directory.tracks.length > 0 ? this.props.directory.tracks : null;
-      tracks = helpers.sortItems(tracks, 'name');
+      tracks = (0, _arrays.sortItems)(tracks, 'name');
 
       var subdirectories = this.props.directory.subdirectories && this.props.directory.subdirectories.length > 0 ? this.props.directory.subdirectories : null;
-      subdirectories = helpers.sortItems(subdirectories, 'name');
+      subdirectories = (0, _arrays.sortItems)(subdirectories, 'name');
 
       var view_options = [{
         label: 'Thumbnails',
@@ -95637,10 +95608,6 @@ var _Icon = __webpack_require__(/*! ../../components/Icon */ "./src/js/component
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../../services/core/actions */ "./src/js/services/core/actions.js");
 
 var coreActions = _interopRequireWildcard(_actions);
@@ -95656,6 +95623,8 @@ var mopidyActions = _interopRequireWildcard(_actions3);
 var _actions4 = __webpack_require__(/*! ../../services/spotify/actions */ "./src/js/services/spotify/actions.js");
 
 var spotifyActions = _interopRequireWildcard(_actions4);
+
+var _arrays = __webpack_require__(/*! ../../util/arrays */ "./src/js/util/arrays.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -95789,12 +95758,12 @@ var LibraryPlaylists = function (_React$Component) {
       }
 
       if (this.props.sort) {
-        playlists = helpers.sortItems(playlists, this.props.sort, this.props.sort_reverse);
+        playlists = (0, _arrays.sortItems)(playlists, this.props.sort, this.props.sort_reverse);
       }
-      playlists = helpers.removeDuplicates(playlists);
+      playlists = (0, _arrays.removeDuplicates)(playlists);
 
       if (this.state.filter !== '') {
-        playlists = helpers.applyFilter('name', this.state.filter, playlists);
+        playlists = (0, _arrays.applyFilter)('name', this.state.filter, playlists);
       }
 
       // Apply our lazy-load-rendering
@@ -96036,10 +96005,6 @@ var _Icon = __webpack_require__(/*! ../../components/Icon */ "./src/js/component
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../../services/ui/actions */ "./src/js/services/ui/actions.js");
 
 var uiActions = _interopRequireWildcard(_actions);
@@ -96051,6 +96016,8 @@ var mopidyActions = _interopRequireWildcard(_actions2);
 var _actions3 = __webpack_require__(/*! ../../services/spotify/actions */ "./src/js/services/spotify/actions.js");
 
 var spotifyActions = _interopRequireWildcard(_actions3);
+
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -96065,14 +96032,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var LibraryTracks = function (_React$Component) {
   _inherits(LibraryTracks, _React$Component);
 
-  function LibraryTracks(props) {
+  function LibraryTracks() {
     _classCallCheck(this, LibraryTracks);
 
-    return _possibleConstructorReturn(this, (LibraryTracks.__proto__ || Object.getPrototypeOf(LibraryTracks)).call(this, props));
+    return _possibleConstructorReturn(this, (LibraryTracks.__proto__ || Object.getPrototypeOf(LibraryTracks)).apply(this, arguments));
   }
-
-  // on render
-
 
   _createClass(LibraryTracks, [{
     key: 'componentDidMount',
@@ -96103,7 +96067,7 @@ var LibraryTracks = function (_React$Component) {
       var _this2 = this;
 
       // Note trailing "?" makes sure our context menu in_library checks doesn't interfere
-      if (helpers.isLoading(this.props.load_queue, ['spotify_me/tracks?'])) {
+      if ((0, _helpers.isLoading)(this.props.load_queue, ['spotify_me/tracks?'])) {
         return _react2.default.createElement(
           'div',
           { className: 'view library-tracks-view' },
@@ -96211,10 +96175,6 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _reactGa = __webpack_require__(/*! react-ga */ "./node_modules/react-ga/dist/esm/index.js");
-
-var _reactGa2 = _interopRequireDefault(_reactGa);
-
 var _Loader = __webpack_require__(/*! ../../components/Loader */ "./src/js/components/Loader.js");
 
 var _Loader2 = _interopRequireDefault(_Loader);
@@ -96247,9 +96207,9 @@ var _actions4 = __webpack_require__(/*! ../../services/spotify/actions */ "./src
 
 var spotifyActions = _interopRequireWildcard(_actions4);
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
 
-var helpers = _interopRequireWildcard(_helpers);
+var _arrays = __webpack_require__(/*! ../../util/arrays */ "./src/js/util/arrays.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -96319,7 +96279,7 @@ var AddToPlaylist = function (_React$Component) {
         if (playlists[uri].can_edit) editablePlaylists.push(playlists[uri]);
       }
 
-      editablePlaylists = helpers.sortItems(editablePlaylists, 'name');
+      editablePlaylists = (0, _arrays.sortItems)(editablePlaylists, 'name');
 
       var isLoading = spotify_library_playlists_status === 'running';
 
@@ -96366,7 +96326,7 @@ var AddToPlaylist = function (_React$Component) {
                 _react2.default.createElement(
                   'li',
                   null,
-                  _react2.default.createElement(_Icon2.default, { type: 'fontawesome', className: 'source', name: helpers.sourceIcon(playlist.uri) })
+                  _react2.default.createElement(_Icon2.default, { type: 'fontawesome', className: 'source', name: (0, _helpers.sourceIcon)(playlist.uri) })
                 ),
                 _react2.default.createElement(
                   'li',
@@ -96443,21 +96403,9 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _reactGa = __webpack_require__(/*! react-ga */ "./node_modules/react-ga/dist/esm/index.js");
-
-var _reactGa2 = _interopRequireDefault(_reactGa);
-
-var _Link = __webpack_require__(/*! ../../components/Link */ "./src/js/components/Link.js");
-
-var _Link2 = _interopRequireDefault(_Link);
-
 var _Modal = __webpack_require__(/*! ./Modal */ "./src/js/views/modals/Modal.js");
 
 var _Modal2 = _interopRequireDefault(_Modal);
-
-var _Icon = __webpack_require__(/*! ../../components/Icon */ "./src/js/components/Icon.js");
-
-var _Icon2 = _interopRequireDefault(_Icon);
 
 var _actions = __webpack_require__(/*! ../../services/core/actions */ "./src/js/services/core/actions.js");
 
@@ -96474,10 +96422,6 @@ var mopidyActions = _interopRequireWildcard(_actions3);
 var _actions4 = __webpack_require__(/*! ../../services/spotify/actions */ "./src/js/services/spotify/actions.js");
 
 var spotifyActions = _interopRequireWildcard(_actions4);
-
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -96669,21 +96613,9 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _reactGa = __webpack_require__(/*! react-ga */ "./node_modules/react-ga/dist/esm/index.js");
-
-var _reactGa2 = _interopRequireDefault(_reactGa);
-
-var _Link = __webpack_require__(/*! ../../components/Link */ "./src/js/components/Link.js");
-
-var _Link2 = _interopRequireDefault(_Link);
-
 var _Modal = __webpack_require__(/*! ./Modal */ "./src/js/views/modals/Modal.js");
 
 var _Modal2 = _interopRequireDefault(_Modal);
-
-var _Icon = __webpack_require__(/*! ../../components/Icon */ "./src/js/components/Icon.js");
-
-var _Icon2 = _interopRequireDefault(_Icon);
 
 var _actions = __webpack_require__(/*! ../../services/core/actions */ "./src/js/services/core/actions.js");
 
@@ -96692,10 +96624,6 @@ var coreActions = _interopRequireWildcard(_actions);
 var _actions2 = __webpack_require__(/*! ../../services/ui/actions */ "./src/js/services/ui/actions.js");
 
 var uiActions = _interopRequireWildcard(_actions2);
-
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -96995,21 +96923,9 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _reactGa = __webpack_require__(/*! react-ga */ "./node_modules/react-ga/dist/esm/index.js");
-
-var _reactGa2 = _interopRequireDefault(_reactGa);
-
 var _Modal = __webpack_require__(/*! ./Modal */ "./src/js/views/modals/Modal.js");
 
 var _Modal2 = _interopRequireDefault(_Modal);
-
-var _Link = __webpack_require__(/*! ../../components/Link */ "./src/js/components/Link.js");
-
-var _Link2 = _interopRequireDefault(_Link);
-
-var _Icon = __webpack_require__(/*! ../../components/Icon */ "./src/js/components/Icon.js");
-
-var _Icon2 = _interopRequireDefault(_Icon);
 
 var _ColourField = __webpack_require__(/*! ../../components/Fields/ColourField */ "./src/js/components/Fields/ColourField.js");
 
@@ -97031,9 +96947,7 @@ var _actions2 = __webpack_require__(/*! ../../services/ui/actions */ "./src/js/s
 
 var uiActions = _interopRequireWildcard(_actions2);
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -97054,7 +96968,7 @@ var EditCommand = function (_React$Component) {
     var _this = _possibleConstructorReturn(this, (EditCommand.__proto__ || Object.getPrototypeOf(EditCommand)).call(this, props));
 
     _this.state = {
-      id: helpers.generateGuid(),
+      id: (0, _helpers.generateGuid)(),
       icon: 'power_settings_new',
       name: '',
       colour: '',
@@ -97088,7 +97002,7 @@ var EditCommand = function (_React$Component) {
       // A bit hacky, but wait for a moment to allow the back navigation
       // and then scroll down to our commands list
       setTimeout(function () {
-        helpers.scrollTo('#commands-setup');
+        (0, _helpers.scrollTo)('#commands-setup');
       }, 10);
 
       return false;
@@ -97102,7 +97016,7 @@ var EditCommand = function (_React$Component) {
       // A bit hacky, but wait for a moment to allow the back navigation
       // and then scroll down to our commands list
       setTimeout(function () {
-        helpers.scrollTo('#commands-setup');
+        (0, _helpers.scrollTo)('#commands-setup');
       }, 10);
     }
   }, {
@@ -97363,21 +97277,9 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _reactGa = __webpack_require__(/*! react-ga */ "./node_modules/react-ga/dist/esm/index.js");
-
-var _reactGa2 = _interopRequireDefault(_reactGa);
-
-var _Link = __webpack_require__(/*! ../../components/Link */ "./src/js/components/Link.js");
-
-var _Link2 = _interopRequireDefault(_Link);
-
 var _Modal = __webpack_require__(/*! ./Modal */ "./src/js/views/modals/Modal.js");
 
 var _Modal2 = _interopRequireDefault(_Modal);
-
-var _Icon = __webpack_require__(/*! ../../components/Icon */ "./src/js/components/Icon.js");
-
-var _Icon2 = _interopRequireDefault(_Icon);
 
 var _actions = __webpack_require__(/*! ../../services/core/actions */ "./src/js/services/core/actions.js");
 
@@ -97395,9 +97297,7 @@ var _actions4 = __webpack_require__(/*! ../../services/spotify/actions */ "./src
 
 var spotifyActions = _interopRequireWildcard(_actions4);
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -97507,7 +97407,7 @@ var EditPlaylist = function (_React$Component) {
     value: function renderFields() {
       var _this2 = this;
 
-      switch (helpers.uriSource(this.props.uri)) {
+      switch ((0, _helpers.uriSource)(this.props.uri)) {
         case 'spotify':
           return _react2.default.createElement(
             'div',
@@ -97752,14 +97652,6 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _reactGa = __webpack_require__(/*! react-ga */ "./node_modules/react-ga/dist/esm/index.js");
-
-var _reactGa2 = _interopRequireDefault(_reactGa);
-
-var _Link = __webpack_require__(/*! ../../components/Link */ "./src/js/components/Link.js");
-
-var _Link2 = _interopRequireDefault(_Link);
-
 var _Modal = __webpack_require__(/*! ./Modal */ "./src/js/views/modals/Modal.js");
 
 var _Modal2 = _interopRequireDefault(_Modal);
@@ -97788,9 +97680,7 @@ var _actions5 = __webpack_require__(/*! ../../services/pusher/actions */ "./src/
 
 var pusherActions = _interopRequireWildcard(_actions5);
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -97913,7 +97803,7 @@ var EditRadio = function (_React$Component) {
       }
 
       for (var i = 0; i < uris.length; i++) {
-        if (helpers.uriSource(uris[i]) !== 'spotify') {
+        if ((0, _helpers.uriSource)(uris[i]) !== 'spotify') {
           this.setState({ error_message: 'Non-Spotify URIs not supported' });
           return;
         }if (seeds.indexOf(uris[i]) > -1) {
@@ -97923,7 +97813,7 @@ var EditRadio = function (_React$Component) {
         }
 
         // Resolve
-        switch (helpers.uriType(uris[i])) {
+        switch ((0, _helpers.uriType)(uris[i])) {
           case 'track':
             this.props.spotifyActions.getTrack(uris[i]);
             break;
@@ -97960,7 +97850,7 @@ var EditRadio = function (_React$Component) {
         for (var i = 0; i < this.state.seeds.length && i < 5; i++) {
           var uri = this.state.seeds[i];
           if (uri) {
-            if (helpers.uriType(uri) == 'artist') {
+            if ((0, _helpers.uriType)(uri) == 'artist') {
               if (this.props.artists && this.props.artists.hasOwnProperty(uri)) {
                 seeds.push(this.props.artists[uri]);
               } else {
@@ -97969,7 +97859,7 @@ var EditRadio = function (_React$Component) {
                   uri: uri
                 });
               }
-            } else if (helpers.uriType(uri) == 'track') {
+            } else if ((0, _helpers.uriType)(uri) == 'track') {
               if (this.props.tracks && this.props.tracks.hasOwnProperty(uri)) {
                 seeds.push(this.props.tracks[uri]);
               } else {
@@ -98016,7 +97906,7 @@ var EditRadio = function (_React$Component) {
                   'span',
                   { className: 'mid_grey-text' },
                   '\xA0(',
-                  helpers.uriType(seed.uri),
+                  (0, _helpers.uriType)(seed.uri),
                   ')'
                 ) : null,
                 _react2.default.createElement(
@@ -98178,14 +98068,6 @@ var _Modal = __webpack_require__(/*! ./Modal */ "./src/js/views/modals/Modal.js"
 
 var _Modal2 = _interopRequireDefault(_Modal);
 
-var _Thumbnail = __webpack_require__(/*! ../../components/Thumbnail */ "./src/js/components/Thumbnail.js");
-
-var _Thumbnail2 = _interopRequireDefault(_Thumbnail);
-
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../../services/ui/actions */ "./src/js/services/ui/actions.js");
 
 var uiActions = _interopRequireWildcard(_actions);
@@ -98203,10 +98085,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var ImageZoom = function (_React$Component) {
   _inherits(ImageZoom, _React$Component);
 
-  function ImageZoom(props) {
+  function ImageZoom() {
     _classCallCheck(this, ImageZoom);
 
-    return _possibleConstructorReturn(this, (ImageZoom.__proto__ || Object.getPrototypeOf(ImageZoom)).call(this, props));
+    return _possibleConstructorReturn(this, (ImageZoom.__proto__ || Object.getPrototypeOf(ImageZoom)).apply(this, arguments));
   }
 
   _createClass(ImageZoom, [{
@@ -98286,9 +98168,7 @@ var _actions4 = __webpack_require__(/*! ../../services/mopidy/actions */ "./src/
 
 var mopidyActions = _interopRequireWildcard(_actions4);
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -98332,8 +98212,8 @@ var InitialSetup = function (_React$Component) {
 
       // Check for url-parsed configuration values
 
-      var customHost = helpers.queryString('host', search);
-      var customPort = helpers.queryString('port', search);
+      var customHost = (0, _helpers.queryString)('host', search);
+      var customPort = (0, _helpers.queryString)('port', search);
       if (customHost) this.setState({ host: customHost });
       if (customPort) this.setState({ port: customPort });
 
@@ -98459,7 +98339,7 @@ var InitialSetup = function (_React$Component) {
               })
             )
           ),
-          helpers.isHosted() ? null : _react2.default.createElement(
+          (0, _helpers.isHosted)() ? null : _react2.default.createElement(
             'div',
             { className: 'field checkbox' },
             _react2.default.createElement(
@@ -98594,10 +98474,6 @@ var _ProgressSlider = __webpack_require__(/*! ../../components/Fields/ProgressSl
 
 var _ProgressSlider2 = _interopRequireDefault(_ProgressSlider);
 
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _actions = __webpack_require__(/*! ../../services/ui/actions */ "./src/js/services/ui/actions.js");
 
 var uiActions = _interopRequireWildcard(_actions);
@@ -98609,6 +98485,8 @@ var mopidyActions = _interopRequireWildcard(_actions2);
 var _actions3 = __webpack_require__(/*! ../../services/genius/actions */ "./src/js/services/genius/actions.js");
 
 var geniusActions = _interopRequireWildcard(_actions3);
+
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -98679,7 +98557,7 @@ var KioskMode = function (_React$Component) {
           lyrics = _ref3.lyrics,
           duration = _ref3.duration;
 
-      if (helpers.isLoading(load_queue, ['genius_'])) {
+      if ((0, _helpers.isLoading)(load_queue, ['genius_'])) {
         return _react2.default.createElement(
           'div',
           { className: 'lyrics' },
@@ -98935,17 +98813,9 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
 
-var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
-
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
 var _Icon = __webpack_require__(/*! ../../components/Icon */ "./src/js/components/Icon.js");
 
 var _Icon2 = _interopRequireDefault(_Icon);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -98958,10 +98828,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Modal = function (_React$Component) {
   _inherits(Modal, _React$Component);
 
-  function Modal(props) {
+  function Modal() {
     _classCallCheck(this, Modal);
 
-    return _possibleConstructorReturn(this, (Modal.__proto__ || Object.getPrototypeOf(Modal)).call(this, props));
+    return _possibleConstructorReturn(this, (Modal.__proto__ || Object.getPrototypeOf(Modal)).apply(this, arguments));
   }
 
   _createClass(Modal, [{
@@ -99053,17 +98923,9 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _Link = __webpack_require__(/*! ../../components/Link */ "./src/js/components/Link.js");
-
-var _Link2 = _interopRequireDefault(_Link);
-
 var _Modal = __webpack_require__(/*! ./Modal */ "./src/js/views/modals/Modal.js");
 
 var _Modal2 = _interopRequireDefault(_Modal);
-
-var _Icon = __webpack_require__(/*! ../../components/Icon */ "./src/js/components/Icon.js");
-
-var _Icon2 = _interopRequireDefault(_Icon);
 
 var _actions = __webpack_require__(/*! ../../services/ui/actions */ "./src/js/services/ui/actions.js");
 
@@ -99072,10 +98934,6 @@ var uiActions = _interopRequireWildcard(_actions);
 var _actions2 = __webpack_require__(/*! ../../services/pusher/actions */ "./src/js/services/pusher/actions.js");
 
 var pusherActions = _interopRequireWildcard(_actions2);
-
-var _helpers = __webpack_require__(/*! ../../helpers */ "./src/js/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 

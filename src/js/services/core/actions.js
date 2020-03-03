@@ -1,5 +1,6 @@
 
-import * as helpers from '../../helpers';
+import { createRange } from '../../util/arrays';
+import { uriSource } from '../../util/helpers';
 
 const spotifyActions = require('../../services/spotify/actions');
 const mopidyActions = require('../../services/mopidy/actions');
@@ -247,8 +248,8 @@ export function removeFromIndex(index_name, key, new_key = null) {
  * */
 
 export function reorderPlaylistTracks(uri, indexes, insert_before, snapshot_id = false) {
-  const range = helpers.createRange(indexes);
-  switch (helpers.uriSource(uri)) {
+  const range = createRange(indexes);
+  switch (uriSource(uri)) {
     case 'spotify':
       return {
         type: 'SPOTIFY_REORDER_PLAYLIST_TRACKS',
@@ -271,7 +272,7 @@ export function reorderPlaylistTracks(uri, indexes, insert_before, snapshot_id =
 }
 
 export function savePlaylist(uri, name, description = '', is_public = false, is_collaborative = false, image = null) {
-  switch (helpers.uriSource(uri)) {
+  switch (uriSource(uri)) {
     case 'spotify':
       return {
         type: 'SPOTIFY_SAVE_PLAYLIST',
@@ -308,7 +309,7 @@ export function createPlaylist(scheme, name, description = '', is_public = false
 }
 
 export function deletePlaylist(uri) {
-  switch (helpers.uriSource(uri)) {
+  switch (uriSource(uri)) {
     case 'spotify':
       return spotifyActions.following(uri, 'DELETE');
 
@@ -319,7 +320,7 @@ export function deletePlaylist(uri) {
 }
 
 export function removeTracksFromPlaylist(uri, tracks_indexes) {
-  switch (helpers.uriSource(uri)) {
+  switch (uriSource(uri)) {
     case 'spotify':
       return {
         type: 'SPOTIFY_REMOVE_PLAYLIST_TRACKS',
@@ -337,7 +338,7 @@ export function removeTracksFromPlaylist(uri, tracks_indexes) {
 }
 
 export function addTracksToPlaylist(uri, tracks_uris) {
-  switch (helpers.uriSource(uri)) {
+  switch (uriSource(uri)) {
     case 'spotify':
       return {
         type: 'SPOTIFY_ADD_PLAYLIST_TRACKS',

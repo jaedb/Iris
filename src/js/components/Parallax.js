@@ -1,7 +1,8 @@
 
 import React from 'react';
-
-import * as helpers from '../helpers';
+import {
+  isCached,
+} from '../util/storage';
 
 export default class Parallax extends React.Component {
   constructor(props) {
@@ -29,7 +30,7 @@ export default class Parallax extends React.Component {
   loadImage(url) {
     if (url && url !== '') {
       this.setState({
-        loaded: helpers.isCached(url),
+        loaded: isCached(url),
         url,
       });
 

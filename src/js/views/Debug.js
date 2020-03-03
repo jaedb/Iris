@@ -1,14 +1,9 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-
 import { bindActionCreators } from 'redux';
-
 import Header from '../components/Header';
-import Thumbnail from '../components/Thumbnail';
 import Icon from '../components/Icon';
-import Link from '../components/Link';
-
 import * as uiActions from '../services/ui/actions';
 import * as pusherActions from '../services/pusher/actions';
 import * as mopidyActions from '../services/mopidy/actions';

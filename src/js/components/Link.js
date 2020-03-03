@@ -3,7 +3,7 @@ import React from 'react';
 import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
 
-import * as helpers from '../helpers';
+import { scrollTo } from '../util/helpers';
 
 /**
  * Extends react-router's Link but provides the ability to hook in to the navigation event
@@ -29,7 +29,7 @@ class CustomLink extends React.Component {
     // Allow a link to disable auto-scrolling to the top of the page
     // on navigation. Useful for tabs, etc.
     if (!this.props.retainScroll) {
-      helpers.scrollTo(this.props.scrollTo, (this.props.scrollTo));
+      scrollTo(this.props.scrollTo, (this.props.scrollTo));
     }
   }
 

@@ -3,7 +3,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import ReactGA from 'react-ga';
-
 import ErrorMessage from '../components/ErrorMessage';
 import Link from '../components/Link';
 import TrackList from '../components/TrackList';
@@ -17,12 +16,17 @@ import Loader from '../components/Loader';
 import ContextMenuTrigger from '../components/ContextMenuTrigger';
 import URILink from '../components/URILink';
 import Icon from '../components/Icon';
-
-import * as helpers from '../helpers';
 import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import * as spotifyActions from '../services/spotify/actions';
+import {
+  uriSource,
+  getFromUri,
+  isLoading,
+  sourceIcon,
+} from '../util/helpers';
+import { collate } from '../util/format';
 
 class Playlist extends React.Component {
   constructor(props) {
@@ -52,7 +56,7 @@ class Playlist extends React.Component {
     if (nextProps.uri != this.props.uri) {
       this.props.coreActions.loadPlaylist(nextProps.uri);
     } else if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
-      if (helpers.uriSource(this.props.uri) != 'spotify') {
+      if (uriSource(this.props.uri) != 'spotify') {
         this.props.coreActions.loadPlaylist(nextProps.uri);
       }
     }
@@ -128,12 +132,12 @@ class Playlist extends React.Component {
   }
 
   inLibrary() {
-    const library = `${helpers.uriSource(this.props.uri)}_library_playlists`;
+    const library = `${uriSource(this.props.uri)}_library_playlists`;
     return (this.props[library] && this.props[library].indexOf(this.props.uri) > -1);
   }
 
   renderActions() {
-    switch (helpers.uriSource(this.props.uri)) {
+    switch (uriSource(this.props.uri)) {
       case 'm3u':
         return (
           <div className="actions">
@@ -172,10 +176,10 @@ class Playlist extends React.Component {
   }
 
   render() {
-    const playlist_id = helpers.getFromUri('playlistid', this.props.uri);
+    const playlist_id = getFromUri('playlistid', this.props.uri);
 
     if (!this.props.playlist) {
-      if (helpers.isLoading(this.props.load_queue, [`spotify_playlists/${playlist_id}?`])) {
+      if (isLoading(this.props.load_queue, [`spotify_playlists/${playlist_id}?`])) {
         return <Loader body loading />
       }
       return (
@@ -189,7 +193,7 @@ Could not find playlist with URI "
       );
     }
 
-    const playlist = helpers.collate(this.props.playlist, { tracks: this.props.tracks, users: this.props.users });
+    const playlist = collate(this.props.playlist, { tracks: this.props.tracks, users: this.props.users });
 
     let context = 'playlist';
     if (playlist.can_edit) {
@@ -216,8 +220,8 @@ Could not find playlist with URI "
           {playlist.description ? <h2 className="description" dangerouslySetInnerHTML={{ __html: playlist.description }} /> : null }
 
           <ul className="details">
-            {!this.props.slim_mode ? <li className="source"><Icon type="fontawesome" name={helpers.sourceIcon(playlist.uri)} /></li> : null }
-            {playlist.user_uri ? <li><URILink type="user" uri={playlist.user_uri}>{playlist.user ? playlist.user.name : helpers.getFromUri('userid', playlist.user_uri)}</URILink></li> : null }
+            {!this.props.slim_mode ? <li className="source"><Icon type="fontawesome" name={sourceIcon(playlist.uri)} /></li> : null }
+            {playlist.user_uri ? <li><URILink type="user" uri={playlist.user_uri}>{playlist.user ? playlist.user.name : getFromUri('userid', playlist.user_uri)}</URILink></li> : null }
             <li>
               {playlist.tracks_total ? playlist.tracks_total : '0'}
               {' '}

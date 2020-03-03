@@ -1,19 +1,15 @@
 
 import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-
+import { applyFilter } from '../util/arrays';
 import VolumeControl from './Fields/VolumeControl';
 import MuteControl from './Fields/MuteControl';
 import LatencyControl from './Fields/LatencyControl';
 import TextField from './Fields/TextField';
 import SelectField from './Fields/SelectField';
 
-import * as helpers from '../helpers';
-
 const SnapcastClients = ({ actions, group, groups, show_disconnected_clients }) => {
   if (!show_disconnected_clients && group.clients) {
-    var clients = helpers.applyFilter('connected', true, group.clients);
+    var clients = applyFilter('connected', true, group.clients);
   } else {
     var { clients } = group;
   }

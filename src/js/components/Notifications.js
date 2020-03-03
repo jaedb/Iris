@@ -13,10 +13,6 @@ import Icon from './Icon';
 import Loader from './Loader';
 
 class Notifications extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   importConfiguration(notification_key, configuration) {
     if (configuration.ui) {
       this.props.uiActions.set(configuration.ui);

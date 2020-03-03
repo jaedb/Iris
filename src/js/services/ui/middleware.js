@@ -1,9 +1,6 @@
 
 import ReactGA from 'react-ga';
-import * as helpers from '../../helpers';
-
 const uiActions = require('./actions.js');
-const mopidyActions = require('../mopidy/actions.js');
 
 const UIMiddleware = (function () {
   /**

@@ -2,19 +2,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
 import GridItem from './GridItem';
-
-import * as helpers from '../helpers';
+import { collate } from '../util/format';
 import * as uiActions from '../services/ui/actions';
 import * as lastfmActions from '../services/lastfm/actions';
 import * as spotifyActions from '../services/spotify/actions';
 
 class ArtistGrid extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   handleContextMenu(e, item) {
     e.preventDefault();
     const data = {
@@ -50,7 +44,7 @@ class ArtistGrid extends React.Component {
         <div className={className}>
           {
 						artists.map((item) => {
-						  const artist = helpers.collate(item, { albums: albums });
+						  const artist = collate(item, { albums });
 						  return (
                 <GridItem
                   key={artist.uri}

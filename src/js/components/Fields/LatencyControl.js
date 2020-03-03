@@ -1,12 +1,11 @@
 
 import React from 'react';
-
-import * as helpers from '../../helpers';
+import { throttle } from '../../util/helpers';
 
 export default class LatencyControl extends React.Component {
   constructor(props) {
     super(props);
-    this.handleChange = helpers.throttle(this.handleChange.bind(this), 100);
+    this.handleChange = throttle(this.handleChange.bind(this), 100);
   }
 
   handleChange(value) {

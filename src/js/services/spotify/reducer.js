@@ -1,5 +1,6 @@
 
-import * as helpers from '../../helpers';
+import { removeDuplicates, arrayOf } from '../../util/arrays';
+import { formatTracks } from '../../util/format';
 
 export default function reducer(spotify = {}, action) {
   switch (action.type) {
@@ -81,7 +82,7 @@ export default function reducer(spotify = {}, action) {
       }
       return {
         ...spotify,
-        new_releases: helpers.removeDuplicates([...new_releases, ...action.uris]),
+        new_releases: removeDuplicates([...new_releases, ...action.uris]),
         new_releases_more: action.more,
         new_releases_total: action.total,
       };
@@ -218,7 +219,7 @@ export default function reducer(spotify = {}, action) {
       } else {
         var { uris } = action;
       }
-      return { ...spotify, library_playlists: helpers.removeDuplicates(uris) };
+      return { ...spotify, library_playlists: removeDuplicates(uris) };
 
     case 'SPOTIFY_LIBRARY_ARTISTS_LOADED':
       if (spotify.library_artists) {
@@ -226,7 +227,7 @@ export default function reducer(spotify = {}, action) {
       } else {
         var { uris } = action;
       }
-      return { ...spotify, library_artists: helpers.removeDuplicates(uris) };
+      return { ...spotify, library_artists: removeDuplicates(uris) };
 
     case 'SPOTIFY_LIBRARY_ALBUMS_LOADED':
       if (spotify.library_albums) {
@@ -234,7 +235,7 @@ export default function reducer(spotify = {}, action) {
       } else {
         var { uris } = action;
       }
-      return { ...spotify, library_albums: helpers.removeDuplicates(uris) };
+      return { ...spotify, library_albums: removeDuplicates(uris) };
 
     case 'SPOTIFY_LIBRARY_TRACKS_LOADED':
     case 'SPOTIFY_LIBRARY_TRACKS_LOADED_MORE':
@@ -242,8 +243,8 @@ export default function reducer(spotify = {}, action) {
       var uris = [];
 
       if (tracks) {
-        tracks = helpers.formatTracks(tracks);
-        uris = helpers.arrayOf('uri', tracks);
+        tracks = formatTracks(tracks);
+        uris = arrayOf('uri', tracks);
         if (spotify.library_tracks) {
           uris = [...spotify.library_tracks, ...uris];
         }
@@ -251,7 +252,7 @@ export default function reducer(spotify = {}, action) {
 
       return {
         ...spotify,
-        library_tracks: helpers.removeDuplicates(uris),
+        library_tracks: removeDuplicates(uris),
         library_tracks_more: action.data.next,
       };
 

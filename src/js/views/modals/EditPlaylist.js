@@ -2,16 +2,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import ReactGA from 'react-ga';
-import Link from '../../components/Link';
-
 import Modal from './Modal';
-import Icon from '../../components/Icon';
 import * as coreActions from '../../services/core/actions';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
-import * as helpers from '../../helpers';
+import { uriSource } from '../../util/helpers';
 
 class EditPlaylist extends React.Component {
   constructor(props) {
@@ -104,7 +100,7 @@ class EditPlaylist extends React.Component {
   }
 
   renderFields() {
-    switch (helpers.uriSource(this.props.uri)) {
+    switch (uriSource(this.props.uri)) {
       case 'spotify':
         return (
           <div>

@@ -2,8 +2,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
-import * as helpers from '../helpers';
+import { storage } from '../util';
+import { isTouchDevice } from '../util/helpers';
 import * as uiActions from '../services/ui/actions';
 
 class DebugInfo extends React.Component {
@@ -134,7 +134,7 @@ class DebugInfo extends React.Component {
           <div className="debug-info-item">
 						Cached URLs:
             {' '}
-            {Object.keys(helpers.getStorage('cache')).length}
+            {Object.keys(storage.get('cache')).length}
           </div>
         </div>
 
@@ -153,7 +153,7 @@ class DebugInfo extends React.Component {
           <div className="debug-info-item">
 						Touch:
             {' '}
-            {helpers.isTouchDevice() ? 'on' : 'off'}
+            {isTouchDevice() ? 'on' : 'off'}
           </div>
           <div className="debug-info-item">
 						LocalStorage usage:

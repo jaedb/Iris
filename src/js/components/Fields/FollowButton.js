@@ -1,13 +1,10 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import { createStore, bindActionCreators } from 'redux';
-
-import Link from '../Link';
-
-import * as helpers from '../../helpers';
+import { bindActionCreators } from 'redux';
 import * as uiActions from '../../services/ui/actions';
 import * as spotifyActions from '../../services/spotify/actions';
+import { isLoading, getFromUri } from '../../util/helpers';
 
 class FollowButton extends React.Component {
   remove() {
@@ -36,13 +33,12 @@ class FollowButton extends React.Component {
     if (!uri) return null;
 
     className += ' button';
-    if (helpers.isLoading(load_queue, [
+    if (isLoading(load_queue, [
       'spotify_me/tracks?',
       'spotify_me/albums?',
       'spotify_me/following?',
-      `spotify_playlists/${helpers.getFromUri('playlistid', uri)}/followers?`,
+      `spotify_playlists/${getFromUri('playlistid', uri)}/followers?`,
     ])) {
-      console.log("LOADING")
       className += ' button--working';
     }
 

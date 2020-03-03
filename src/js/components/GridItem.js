@@ -1,7 +1,10 @@
 
 import React from 'react';
-
-import * as helpers from '../helpers';
+import {
+  uriType,
+  scrollTo,
+  sourceIcon,
+} from '../util/helpers';
 import Link from './Link';
 import Icon from './Icon';
 import Thumbnail from './Thumbnail';
@@ -20,7 +23,7 @@ export default class GridItem extends React.Component {
     // If the item that has just been mounted doesn't have images,
     // try fetching them from LastFM or Discogs
     if (!item.images) {
-      switch (helpers.uriType(item.uri)) {
+      switch (uriType(item.uri)) {
         case 'artist':
           if (spotifyActions && spotifyAvailable) {
             spotifyActions.getArtistImages(item);
@@ -50,7 +53,7 @@ export default class GridItem extends React.Component {
     const output = '';
     const link_to = null;
 
-    switch (helpers.uriType(item.uri)) {
+    switch (uriType(item.uri)) {
       case 'playlist':
         if (item.tracks_total) {
           return (
@@ -123,7 +126,7 @@ tracks
       <Link
         className={`grid__item grid__item--${this.props.type}`}
         to={link}
-        onClick={(e) => helpers.scrollTo()}
+        onClick={(e) => scrollTo()}
         onContextMenu={(e) => this.onContextMenu(e)}
       >
         <Thumbnail glow size="medium" className="grid__item__thumbnail" images={images} />
@@ -131,7 +134,7 @@ tracks
           {item.name ? item.name : <span className="opaque-text">{item.uri}</span>}
         </div>
         <div className="grid__item__secondary">
-          {this.props.show_source_icon ? <Icon name={helpers.sourceIcon(item.uri)} type="fontawesome" className="source" /> : null}
+          {this.props.show_source_icon ? <Icon name={sourceIcon(item.uri)} type="fontawesome" className="source" /> : null}
           {this.renderSecondary(item)}
         </div>
       </Link>

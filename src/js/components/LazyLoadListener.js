@@ -1,6 +1,6 @@
 
 import React from 'react';
-import * as helpers from '../helpers';
+import { throttle } from '../util/helpers';
 import Loader from './Loader';
 
 export default class LazyLoadListener extends React.Component {
@@ -11,7 +11,7 @@ export default class LazyLoadListener extends React.Component {
       loadKey: this.props.loadKey,
     };
 
-    this.handleScroll = helpers.throttle(this.handleScroll.bind(this), 50);
+    this.handleScroll = throttle(this.handleScroll.bind(this), 50);
   }
 
   componentDidMount() {

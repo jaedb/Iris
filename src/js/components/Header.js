@@ -1,7 +1,5 @@
 
 import React from 'react';
-
-import Icon from './Icon';
 import ContextMenuTrigger from './ContextMenuTrigger';
 
 export default class Header extends React.Component {

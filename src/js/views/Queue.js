@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
 import Link from '../components/Link';
 import Icon from '../components/Icon';
 import Parallax from '../components/Parallax';
@@ -12,13 +11,15 @@ import Thumbnail from '../components/Thumbnail';
 import Header from '../components/Header';
 import URILink from '../components/URILink';
 import LazyLoadListener from '../components/LazyLoadListener';
-
-import * as helpers from '../helpers';
 import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
 import * as pusherActions from '../services/pusher/actions';
 import * as spotifyActions from '../services/spotify/actions';
 import * as mopidyActions from '../services/mopidy/actions';
+import {
+  getFromUri,
+  uriType,
+} from '../util/helpers';
 
 class Queue extends React.Component {
   constructor(props) {
@@ -51,7 +52,7 @@ class Queue extends React.Component {
     const { coreActions, added_from_uri } = this.props;
 
     if (next_added_from_uri && next_added_from_uri !== added_from_uri) {
-      const item_type = helpers.uriType(next_added_from_uri);
+      const item_type = uriType(next_added_from_uri);
       switch (item_type) {
         case 'album':
           coreActions.loadAlbum(next_added_from_uri);
@@ -138,16 +139,16 @@ class Queue extends React.Component {
     const { added_from_uri } = this.props;
     if (!added_from_uri) return null;
 
-    const uri_type = helpers.uriType(added_from_uri);
+    const uri_type = uriType(added_from_uri);
     const items = [];
 
     // Radio nests it's seed URIs in an encoded URI format
     switch (uri_type){
       case 'radio':
-        const radio_seeds = helpers.getFromUri('seeds', added_from_uri);
+        const radio_seeds = getFromUri('seeds', added_from_uri);
 
         for (let seed of radio_seeds) {
-          let item_type = helpers.uriType(seed);
+          let item_type = uriType(seed);
           let item_library = this.props[`${item_type}s`];
           if (item_library && item_library[seed]) {
             items.push(item_library[seed]);
@@ -158,7 +159,7 @@ class Queue extends React.Component {
       case 'search':
         items.push({
           uri: added_from_uri,
-          name: `"${helpers.getFromUri('searchterm', added_from_uri)}" search`,
+          name: `"${getFromUri('searchterm', added_from_uri)}" search`,
         })
         break;
 
@@ -182,7 +183,7 @@ class Queue extends React.Component {
             <Thumbnail
               images={items[0].images}
               size="small"
-              circle={helpers.uriType(items[0].uri) === 'artist'}
+              circle={uriType(items[0].uri) === 'artist'}
             />
           </URILink>
         )}

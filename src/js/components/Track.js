@@ -1,16 +1,18 @@
 
 import React from 'react';
-import Link from './Link';
-
 import Icon from './Icon';
 import LinksSentence from './LinksSentence';
 import Dater from './Dater';
 import URILink from './URILink';
 import ContextMenuTrigger from './ContextMenuTrigger';
-import Popularity from './Popularity';
 import ErrorBoundary from './ErrorBoundary';
-
-import * as helpers from '../helpers';
+import {
+  getFromUri,
+  titleCase,
+  isTouchDevice,
+  sourceIcon,
+  uriType,
+} from '../util/helpers';
 
 export default class Track extends React.Component {
   constructor(props) {
@@ -215,11 +217,11 @@ export default class Track extends React.Component {
       );
     } else if (this.props.track_context == 'queue') {
       if (track.added_from && track.added_by) {
-        const type = (track.added_from ? helpers.uriType(track.added_from) : null);
+        const type = (track.added_from ? uriType(track.added_from) : null);
 
         switch (type) {
           case 'discover':
-            var link = <URILink type="recommendations" uri={helpers.getFromUri('seeds', track.added_from)}>Discover</URILink>;
+            var link = <URILink type="recommendations" uri={getFromUri('seeds', track.added_from)}>Discover</URILink>;
             break;
 
           case 'browse':
@@ -235,7 +237,7 @@ export default class Track extends React.Component {
             break;
 
           default:
-            var link = <URILink type={type} uri={track.added_from}>{helpers.titleCase(type)}</URILink>;
+            var link = <URILink type={type} uri={track.added_from}>{titleCase(type)}</URILink>;
         }
 
         var track_middle_column = (
@@ -259,7 +261,7 @@ export default class Track extends React.Component {
 
     // If we're touchable, and can sort this tracklist
     let drag_zone = null;
-    if (helpers.isTouchDevice() && this.props.can_sort) {
+    if (isTouchDevice() && this.props.can_sort) {
       className += ' list__item--has-drag-zone';
 
       drag_zone = (
@@ -314,7 +316,7 @@ export default class Track extends React.Component {
             </span>
             {this.props.show_source_icon ? (
               <span className="list__item__column__item list__item__column__item--source">
-                <Icon type="fontawesome" name={helpers.sourceIcon(track.uri)} fixedWidth />
+                <Icon type="fontawesome" name={sourceIcon(track.uri)} fixedWidth />
               </span>
             ) : null}
             <ContextMenuTrigger className="list__item__column__item--context-menu-trigger subtle" onTrigger={(e) => this.props.handleContextMenu(e)} />

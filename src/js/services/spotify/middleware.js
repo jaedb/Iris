@@ -2,10 +2,15 @@
 import ReactGA from 'react-ga';
 import { sha256 } from 'js-sha256';
 
-const helpers = require('./../../helpers');
+import { arrayOf } from '../../util/arrays';
+import { upgradeSpotifyPlaylistUris } from '../../util/helpers';
+import {
+  formatTracks,
+  formatImages,
+  formatUser,
+} from '../../util/format';
 const coreActions = require('../core/actions');
 const spotifyActions = require('./actions');
-const uiActions = require('../ui/actions');
 const pusherActions = require('../pusher/actions');
 
 const SpotifyMiddleware = (function () {
@@ -94,7 +99,7 @@ const SpotifyMiddleware = (function () {
         });
 
         // Collate result into the three key values we want
-        action.uris = helpers.arrayOf('uri', action.data.albums.items);
+        action.uris = arrayOf('uri', action.data.albums.items);
         action.more = action.data.albums.next;
         action.total = action.data.albums.total;
 
@@ -107,7 +112,7 @@ const SpotifyMiddleware = (function () {
         store.dispatch({
           type: 'ARTIST_ALBUMS_LOADED',
           artist_uri: action.artist_uri,
-          albums_uris: helpers.arrayOf('uri', action.data.items),
+          albums_uris: arrayOf('uri', action.data.items),
           more: action.data.next,
           total: action.data.total,
         });
@@ -136,7 +141,7 @@ const SpotifyMiddleware = (function () {
         store.dispatch({
           type: 'USER_PLAYLISTS_LOADED',
           key: action.key,
-          uris: helpers.arrayOf('uri', playlists),
+          uris: arrayOf('uri', playlists),
           more: action.data.next,
           total: action.data.total,
         });
@@ -169,7 +174,7 @@ const SpotifyMiddleware = (function () {
                 store.dispatch({
                     type: 'CATEGORY_PLAYLISTS_LOADED',
                     key: action.key,
-                    uris: helpers.arrayOf('uri',playlists),
+                    uris: arrayOf('uri',playlists),
                     more: action.data.playlists.next,
                     total: action.data.playlists.total
                 });
@@ -179,13 +184,13 @@ const SpotifyMiddleware = (function () {
       case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED':
         store.dispatch(coreActions.playlistsLoaded(action.playlists.items));
 
-        action.uris = helpers.arrayOf('uri', action.playlists.items);
+        action.uris = arrayOf('uri', action.playlists.items);
         action.more = action.playlists.next;
         action.total = action.playlists.total;
         delete action.playlists;
 
         // Upgrade our URIs
-        action.uris = helpers.upgradeSpotifyPlaylistUris(action.uris);
+        action.uris = upgradeSpotifyPlaylistUris(action.uris);
 
         next(action);
         break;
@@ -221,7 +226,7 @@ const SpotifyMiddleware = (function () {
           }
 
           if (category.icons) {
-            category.icons = helpers.formatImages(category.icons);
+            category.icons = formatImages(category.icons);
           }
 
           categories_loaded.push(category);
@@ -261,7 +266,7 @@ const SpotifyMiddleware = (function () {
         });
 
         // Append our action with the uris. This gets handed down to subsequent middleware and our reducer.
-        action.uris = helpers.arrayOf('uri', playlists);
+        action.uris = arrayOf('uri', playlists);
         next(action);
         break;
 
@@ -288,7 +293,7 @@ const SpotifyMiddleware = (function () {
         });
 
         // Append our action with the uris. This gets handed down to subsequent middleware and our reducer.
-        action.uris = helpers.arrayOf('uri', artists);
+        action.uris = arrayOf('uri', artists);
         next(action);
         break;
 
@@ -327,7 +332,7 @@ const SpotifyMiddleware = (function () {
         });
 
         // Append our action with the uris. This gets handed down to subsequent middleware and our reducer.
-        action.uris = helpers.arrayOf('uri', albums);
+        action.uris = arrayOf('uri', albums);
         next(action);
         break;
 
@@ -337,14 +342,14 @@ const SpotifyMiddleware = (function () {
             type: 'ARTISTS_LOADED',
             artists: action.artists,
           });
-          action.artists_uris = helpers.arrayOf('uri', action.artists);
+          action.artists_uris = arrayOf('uri', action.artists);
         }
         if (action.tracks.length > 0) {
           store.dispatch({
             type: 'TRACKS_LOADED',
             tracks: action.tracks,
           });
-          action.tracks_uris = helpers.arrayOf('uri', action.tracks);
+          action.tracks_uris = arrayOf('uri', action.tracks);
         }
         next(action);
         break;
@@ -385,7 +390,7 @@ const SpotifyMiddleware = (function () {
         store.dispatch({
           type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
           context: 'tracks',
-          results: helpers.formatTracks(action.data.tracks.items),
+          results: formatTracks(action.data.tracks.items),
           more: action.data.tracks.next,
         });
         break;
@@ -400,7 +405,7 @@ const SpotifyMiddleware = (function () {
         store.dispatch({
           type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
           context: 'artists',
-          results: helpers.arrayOf('uri', action.data.playlists.items),
+          results: arrayOf('uri', action.data.playlists.items),
           more: action.data.playlists.next,
         });
         break;
@@ -415,7 +420,7 @@ const SpotifyMiddleware = (function () {
         store.dispatch({
           type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
           context: 'playlists',
-          results: helpers.arrayOf('uri', action.data.albums.items),
+          results: arrayOf('uri', action.data.albums.items),
           more: action.data.albums.next,
         });
         break;
@@ -439,14 +444,14 @@ const SpotifyMiddleware = (function () {
         store.dispatch({
           type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
           context: 'playlists',
-          results: helpers.arrayOf('uri', action.data.playlists.items),
+          results: arrayOf('uri', action.data.playlists.items),
           more: action.data.playlists.next,
         });
         break;
 
 
       case 'SPOTIFY_ME_LOADED':
-        var me = { ...helpers.formatUser(action.me) };
+        var me = { ...formatUser(action.me) };
 
         // We are Anonymous currently so use 'me' name as my Pusher username
         if (store.getState().pusher.username == 'Anonymous') {

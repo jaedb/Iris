@@ -2,22 +2,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
 import Header from '../../components/Header';
 import Icon from '../../components/Icon';
 import PlaylistGrid from '../../components/PlaylistGrid';
 import LazyLoadListener from '../../components/LazyLoadListener';
 import Loader from '../../components/Loader';
-
-import * as helpers from '../../helpers';
 import * as uiActions from '../../services/ui/actions';
 import * as spotifyActions from '../../services/spotify/actions';
+import { isLoading } from '../../util/helpers';
+import { collate } from '../../util/format';
 
 class DiscoverCategory extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
     this.loadCategory();
     this.setWindowTitle();
@@ -63,7 +58,7 @@ class DiscoverCategory extends React.Component {
   }
 
   render() {
-    if (helpers.isLoading(this.props.load_queue, ['spotify_browse/categories/'])) {
+    if (isLoading(this.props.load_queue, ['spotify_browse/categories/'])) {
       return (
         <div className="view discover-categories-view">
           <Header>
@@ -79,7 +74,7 @@ class DiscoverCategory extends React.Component {
       return null;
     }
 
-    const category = helpers.collate(this.props.category, { playlists: this.props.playlists });
+    const category = collate(this.props.category, { playlists: this.props.playlists });
 
     return (
       <div className="view discover-categories-view">
