@@ -23,36 +23,43 @@ export default class LazyLoadListener extends React.Component {
     this.element.removeEventListener('scroll', this.handleScroll, false);
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.loadKey && nextProps.loadKey !== this.state.loadKey) {
-      this.setState({
-        loadKey: nextProps.loadKey,
+  static getDerivedStateFromProps(props, state) {
+    if (props.loadKey && props.loadKey !== state.loadKey) {
+      return {
+        loadKey: props.loadKey,
         listening: true,
-      });
+      };
     }
+    return null;
   }
 
   handleScroll(e) {
-    if (this.state.listening) {
+    const { listening } = this.state;
+    const { loadKey, loadMore } = this.props;
+    const { scrollTop, scrollHeight, offsetHeight } = this.element || {};
+
+    if (listening) {
       const window_height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
 
       // At, or half a screen from bottom of the page
-		    if (this.element.scrollTop > (this.element.scrollHeight - this.element.offsetHeight - (window_height / 2))) {
+		  if (scrollTop > (scrollHeight - offsetHeight - (window_height / 2))) {
+
         // Immediately stop listening to avoid duplicating pagination requests
         this.setState(
           { listening: false },
           () => {
-            console.info(`Loading more: ${this.props.loadKey}`);
-            this.props.loadMore();
+            console.info(`Loading more: ${loadKey}`);
+            loadMore();
           },
         );
-		    }
+		  }
     }
   }
 
-  render() {
+  render = () => {
+    const { showLoader } = this.props;
     return (
-      <Loader body lazy loading={this.props.showLoader} />
+      <Loader body lazy loading={showLoader} />
     );
   }
 }
