@@ -4,6 +4,7 @@ import {
   uriType,
   scrollTo,
   sourceIcon,
+  uriSource,
 } from '../util/helpers';
 import Link from './Link';
 import Icon from './Icon';
@@ -14,42 +15,44 @@ export default class GridItem extends React.Component {
   componentDidMount() {
     const {
       lastfmActions,
+      mopidyActions,
       spotifyActions,
       spotifyAvailable,
       item,
     } = this.props;
-    if (!item) return;
 
-    // If the item that has just been mounted doesn't have images,
-    // try fetching them from LastFM or Discogs
-    if (!item.images) {
-      switch (uriType(item.uri)) {
-        case 'artist':
-          if (spotifyActions && spotifyAvailable) {
-            spotifyActions.getArtistImages(item);
-          }
-          break;
+    if (!item || item.images) return;
 
-        case 'album':
-          if (lastfmActions && item.artists && item.artists.length > 0) {
-            lastfmActions.getAlbum(item.uri, item.artists[0].name, item.name, (item.mbid ? item.mbid : null));
-          }
-          break;
-      }
+    switch (uriType(item.uri)) {
+      case 'artist':
+        if (spotifyActions && spotifyAvailable) {
+          spotifyActions.getArtistImages(item);
+        }
+        break;
+
+      case 'album':
+        // If Mopidy doesn't find any images, then it will pass on the call to LastFM
+        mopidyActions.getImages('albums', [item.uri]);
+        break;
+
+      default:
+        break;
     }
   }
 
-  onContextMenu(e) {
-    if (this.props.onContextMenu) {
-      this.props.onContextMenu(e);
+  shouldComponentUpdate = (nextProps) => {
+    const { item } = this.props;
+    return nextProps.item !== item;
+  }
+
+  onContextMenu = (e) => {
+    const { onContextMenu } = this.props;
+    if (onContextMenu) {
+      onContextMenu(e);
     }
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return nextProps.item != this.props.item;
-  }
-
-  renderSecondary(item) {
+  renderSecondary = (item) => {
     const output = '';
     const link_to = null;
 
@@ -95,46 +98,43 @@ tracks
     return output;
   }
 
-  render() {
-    if (!this.props.item) {
-      return null;
-    }
+  render = () => {
+    const { item, link: customLink, type, show_source_icon } = this.props;
+    if (!item) return null;
 
-    let { item } = this.props;
-    if (item.album !== undefined) {
-      item.album.added_at = item.added_at;
-      item = item.album;
-    }
+    const album = {
+      ...item.album,
+      added_at: item.album && item.album.added_at,
+    };
+
     let images = null;
-    if (this.props.item.images) {
-      if (Array.isArray(this.props.item.images)) {
-        images = this.props.item.images[0];
+    if (album.images) {
+      if (Array.isArray(album.images)) {
+        images = album.images[0];
       } else {
-        images = this.props.item.images;
+        images = album.images;
       }
-    } else if (this.props.item.icons) {
-      images = this.props.item.icons;
+    } else if (item.icons) {
+      images = item.icons;
     }
 
-    if (this.props.link) {
-      var { link } = this.props;
-    } else {
-      var link = `/${this.props.type}/${encodeURIComponent(item.uri)}`;
-    }
+    const link = customLink || `/${type}/${encodeURIComponent(item.uri)}`;
 
     return (
       <Link
-        className={`grid__item grid__item--${this.props.type}`}
+        className={`grid__item grid__item--${type}`}
         to={link}
-        onClick={(e) => scrollTo()}
-        onContextMenu={(e) => this.onContextMenu(e)}
+        onClick={scrollTo}
+        onContextMenu={this.onContextMenu}
       >
         <Thumbnail glow size="medium" className="grid__item__thumbnail" images={images} />
         <div className="grid__item__name">
           {item.name ? item.name : <span className="opaque-text">{item.uri}</span>}
         </div>
         <div className="grid__item__secondary">
-          {this.props.show_source_icon ? <Icon name={sourceIcon(item.uri)} type="fontawesome" className="source" /> : null}
+          {show_source_icon && (
+            <Icon name={sourceIcon(item.uri)} type="fontawesome" className="source" />
+          )}
           {this.renderSecondary(item)}
         </div>
       </Link>

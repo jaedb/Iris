@@ -1,18 +1,15 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import { createStore, bindActionCreators } from 'redux';
+import { bindActionCreators } from 'redux';
 
 import * as uiActions from '../services/ui/actions';
+import * as mopidyActions from '../services/mopidy/actions';
 import * as lastfmActions from '../services/lastfm/actions';
 
 import GridItem from './GridItem';
 
 class AlbumGrid extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   handleContextMenu(e, item) {
     e.preventDefault();
     const data = {
@@ -41,6 +38,7 @@ class AlbumGrid extends React.Component {
     type="album"
     item={album}
     lastfmActions={this.props.lastfmActions}
+    mopidyActions={this.props.mopidyActions}
     show_source_icon={this.props.show_source_icon}
     onContextMenu={(e) => this.handleContextMenu(e, album)}
   />
@@ -60,6 +58,7 @@ const mapStateToProps = (state, ownProps) => ({
 const mapDispatchToProps = (dispatch) => ({
   uiActions: bindActionCreators(uiActions, dispatch),
   lastfmActions: bindActionCreators(lastfmActions, dispatch),
+  mopidyActions: bindActionCreators(mopidyActions, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AlbumGrid);

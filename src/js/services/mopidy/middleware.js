@@ -2329,7 +2329,7 @@ const MopidyMiddleware = (function () {
                   let images = response[uri];
                   images = formatImages(digestMopidyImages(store.getState().mopidy, images));
 
-                  if (images && images.length > 0) {
+                  if (images) {
                     records.push({
                       uri,
                       images,
