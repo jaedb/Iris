@@ -15,7 +15,7 @@ export default memo((props) => {
   }
 
   return (
-    <span className={className} onClick={(e) => handleClick(e)}>
+    <span className={className} onClick={handleClick}>
       <Icon name="more_horiz" />
     </span>
   );

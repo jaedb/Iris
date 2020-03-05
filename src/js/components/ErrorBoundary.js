@@ -8,7 +8,7 @@ export default class ErrorBoundary extends React.Component {
     this.state = {
       hasError: false,
       error: null,
-      info: null,
+      info: {},
     };
   }
 
@@ -21,14 +21,17 @@ export default class ErrorBoundary extends React.Component {
     console.error(error, info);
   }
 
-  render() {
-    if (this.state.hasError) {
+  render = () => {
+    const { hasError, info: { componentStack } = {} } = this.state;
+    const { children } = this.props;
+
+    if (hasError) {
       return (
         <ErrorMessage type="error-boundary">
-          {this.state.info ? <pre className="error-message__trace">{this.state.info.componentStack}</pre> : null}
+          {componentStack && <pre className="error-message__trace">{componentStack}</pre>}
         </ErrorMessage>
       );
     }
-    return this.props.children;
+    return children;
   }
 }

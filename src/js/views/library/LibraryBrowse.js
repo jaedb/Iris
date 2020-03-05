@@ -8,9 +8,7 @@ import Icon from '../../components/Icon';
 import ErrorBoundary from '../../components/ErrorBoundary';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
-import {
-  formatImages,
-} from '../../util/helpers';
+import { formatImages } from '../../util/format';
 
 class LibraryBrowse extends React.Component {
   componentDidMount() {

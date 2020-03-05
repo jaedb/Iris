@@ -31,14 +31,16 @@ class Dragger extends React.Component {
   }
 
   handleMouseMove(e) {
-    if (!this.props.dragger) return null;
+    const { dragger, uiActions: { dragActive } } = this.props;
+    const { target } = e;
+    if (!dragger) return null;
 
     const threshold = 10;
     if (
-      e.clientX > this.props.dragger.start_x + threshold
-			|| e.clientX < this.props.dragger.start_x - threshold
-			|| e.clientY > this.props.dragger.start_y + threshold
-			|| e.clientY < this.props.dragger.start_y - threshold) {
+      e.clientX > dragger.start_x + threshold
+			|| e.clientX < dragger.start_x - threshold
+			|| e.clientY > dragger.start_y + threshold
+			|| e.clientY < dragger.start_y - threshold) {
       this.setState({
         position_x: e.clientX,
         position_y: e.clientY,
@@ -49,41 +51,41 @@ class Dragger extends React.Component {
         dropzones[i].classList.remove('hover');
       }
 
-      if (e.target.classList.contains('dropzone') && !e.target.classList.contains('hover')) {
-        e.target.className += ' hover';
+      if (target.classList.contains('dropzone') && !target.classList.contains('hover')) {
+        target.className += ' hover';
       }
 
       // if not already, activate
-      if (!this.props.dragger.active) this.props.uiActions.dragActive();
+      if (!dragger.active) dragActive();
     }
   }
 
   handleMouseUp(e) {
-    if (!this.props.dragger) return null;
-    this.props.uiActions.dragEnd(e);
+    const { dragger, uiActions: { dragEnd } } = this.props;
+    if (!dragger) return null;
+    dragEnd(e);
   }
 
   render() {
-    if (!this.props.dragger || !this.props.dragger.active) return null;
+    const { dragger: { active, victims } = {} } = this.props;
+    const { position_x, position_y } = this.state;
 
-    const style = {
-      left: this.state.position_x,
-      top: this.state.position_y,
-    };
+    if (!active) return null;
 
     return (
-      <div className="dragger" style={style}>
-				Dragging
-        {' '}
-        { this.props.dragger.victims.length }
-        {' '}
-things
+      <div
+        className="dragger" style={{
+          left: position_x,
+          top: position_y,
+        }}
+      >
+				{`Dragging ${victims.length} things`}
       </div>
     );
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state) => ({
   dragger: state.ui.dragger,
 });
 
