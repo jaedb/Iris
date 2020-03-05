@@ -54211,9 +54211,7 @@ exports.default = (0, _react.memo)(function (props) {
 
   return _react2.default.createElement(
     'span',
-    { className: className, onClick: function onClick(e) {
-        return handleClick(e);
-      } },
+    { className: className, onClick: handleClick },
     _react2.default.createElement(_Icon2.default, { name: 'more_horiz' })
   );
 });
@@ -54235,10 +54233,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-
-var _react2 = _interopRequireDefault(_react);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
  * Format time duration
@@ -54376,7 +54370,7 @@ var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-r
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 
-var _util = __webpack_require__(/*! ../util */ "./src/js/util/index.js");
+var _storage = __webpack_require__(/*! ../util/storage */ "./src/js/util/storage.js");
 
 var _helpers = __webpack_require__(/*! ../util/helpers */ "./src/js/util/helpers.js");
 
@@ -54397,10 +54391,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var DebugInfo = function (_React$Component) {
   _inherits(DebugInfo, _React$Component);
 
-  function DebugInfo(props) {
+  function DebugInfo() {
     _classCallCheck(this, DebugInfo);
 
-    return _possibleConstructorReturn(this, (DebugInfo.__proto__ || Object.getPrototypeOf(DebugInfo)).call(this, props));
+    return _possibleConstructorReturn(this, (DebugInfo.__proto__ || Object.getPrototypeOf(DebugInfo)).apply(this, arguments));
   }
 
   _createClass(DebugInfo, [{
@@ -54428,32 +54422,13 @@ var DebugInfo = function (_React$Component) {
   }, {
     key: 'renderLoadQueue',
     value: function renderLoadQueue() {
-      if (!this.props.ui.load_queue) {
-        return null;
-      }
-
       var load_queue = this.props.ui.load_queue;
 
-      var queue = [];
-
-      return _react2.default.createElement(
+      if (!load_queue) return _react2.default.createElement(
         'div',
-        { className: 'debug-info-item' },
-        queue
+        { className: 'debug-info-item mid_grey-text' },
+        'Nothing loading'
       );
-    }
-  }, {
-    key: 'renderLoadQueue',
-    value: function renderLoadQueue() {
-      if (!this.props.ui.load_queue) {
-        return _react2.default.createElement(
-          'div',
-          { className: 'debug-info-item mid_grey-text' },
-          'Nothing loading'
-        );
-      }
-
-      var load_queue = this.props.ui.load_queue;
 
       var queue = [];
       for (var key in load_queue) {
@@ -54574,7 +54549,7 @@ var DebugInfo = function (_React$Component) {
             { className: 'debug-info-item' },
             'Cached URLs:',
             ' ',
-            Object.keys(_util.storage.get('cache')).length
+            Object.keys((0, _storage.get)('cache')).length
           )
         ),
         _react2.default.createElement(
@@ -54747,10 +54722,15 @@ var Dragger = function (_React$Component) {
   }, {
     key: 'handleMouseMove',
     value: function handleMouseMove(e) {
-      if (!this.props.dragger) return null;
+      var _props = this.props,
+          dragger = _props.dragger,
+          dragActive = _props.uiActions.dragActive;
+      var target = e.target;
+
+      if (!dragger) return null;
 
       var threshold = 10;
-      if (e.clientX > this.props.dragger.start_x + threshold || e.clientX < this.props.dragger.start_x - threshold || e.clientY > this.props.dragger.start_y + threshold || e.clientY < this.props.dragger.start_y - threshold) {
+      if (e.clientX > dragger.start_x + threshold || e.clientX < dragger.start_x - threshold || e.clientY > dragger.start_y + threshold || e.clientY < dragger.start_y - threshold) {
         this.setState({
           position_x: e.clientX,
           position_y: e.clientY
@@ -54761,38 +54741,47 @@ var Dragger = function (_React$Component) {
           dropzones[i].classList.remove('hover');
         }
 
-        if (e.target.classList.contains('dropzone') && !e.target.classList.contains('hover')) {
-          e.target.className += ' hover';
+        if (target.classList.contains('dropzone') && !target.classList.contains('hover')) {
+          target.className += ' hover';
         }
 
         // if not already, activate
-        if (!this.props.dragger.active) this.props.uiActions.dragActive();
+        if (!dragger.active) dragActive();
       }
     }
   }, {
     key: 'handleMouseUp',
     value: function handleMouseUp(e) {
-      if (!this.props.dragger) return null;
-      this.props.uiActions.dragEnd(e);
+      var _props2 = this.props,
+          dragger = _props2.dragger,
+          dragEnd = _props2.uiActions.dragEnd;
+
+      if (!dragger) return null;
+      dragEnd(e);
     }
   }, {
     key: 'render',
     value: function render() {
-      if (!this.props.dragger || !this.props.dragger.active) return null;
+      var _props$dragger = this.props.dragger;
+      _props$dragger = _props$dragger === undefined ? {} : _props$dragger;
+      var active = _props$dragger.active,
+          victims = _props$dragger.victims;
+      var _state = this.state,
+          position_x = _state.position_x,
+          position_y = _state.position_y;
 
-      var style = {
-        left: this.state.position_x,
-        top: this.state.position_y
-      };
+
+      if (!active) return null;
 
       return _react2.default.createElement(
         'div',
-        { className: 'dragger', style: style },
-        'Dragging',
-        ' ',
-        this.props.dragger.victims.length,
-        ' ',
-        'things'
+        {
+          className: 'dragger', style: {
+            left: position_x,
+            top: position_y
+          }
+        },
+        'Dragging ' + victims.length + ' things'
       );
     }
   }]);
@@ -54800,7 +54789,7 @@ var Dragger = function (_React$Component) {
   return Dragger;
 }(_react2.default.Component);
 
-var mapStateToProps = function mapStateToProps(state, ownProps) {
+var mapStateToProps = function mapStateToProps(state) {
   return {
     dragger: state.ui.dragger
   };
@@ -54858,10 +54847,33 @@ var ErrorBoundary = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (ErrorBoundary.__proto__ || Object.getPrototypeOf(ErrorBoundary)).call(this, props));
 
+    _this.render = function () {
+      var _this$state = _this.state,
+          hasError = _this$state.hasError,
+          _this$state$info = _this$state.info;
+      _this$state$info = _this$state$info === undefined ? {} : _this$state$info;
+      var componentStack = _this$state$info.componentStack;
+      var children = _this.props.children;
+
+
+      if (hasError) {
+        return _react2.default.createElement(
+          _ErrorMessage2.default,
+          { type: 'error-boundary' },
+          componentStack && _react2.default.createElement(
+            'pre',
+            { className: 'error-message__trace' },
+            componentStack
+          )
+        );
+      }
+      return children;
+    };
+
     _this.state = {
       hasError: false,
       error: null,
-      info: null
+      info: {}
     };
     return _this;
   }
@@ -54875,22 +54887,6 @@ var ErrorBoundary = function (_React$Component) {
         info: info
       });
       console.error(error, info);
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      if (this.state.hasError) {
-        return _react2.default.createElement(
-          _ErrorMessage2.default,
-          { type: 'error-boundary' },
-          this.state.info ? _react2.default.createElement(
-            'pre',
-            { className: 'error-message__trace' },
-            this.state.info.componentStack
-          ) : null
-        );
-      }
-      return this.props.children;
     }
   }]);
 
@@ -54921,10 +54917,13 @@ var _react2 = _interopRequireDefault(_react);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = (0, _react.memo)(function (props) {
+exports.default = (0, _react.memo)(function (_ref) {
+  var type = _ref.type,
+      title = _ref.title,
+      children = _ref.children;
   return _react2.default.createElement(
     'div',
-    { className: 'error-message' + (props.type ? ' error-message--' + props.type : '') },
+    { className: 'error-message' + (type ? ' error-message--' + type : '') },
     _react2.default.createElement(
       'i',
       { className: 'error-message__icon icon icon--material' },
@@ -54933,12 +54932,12 @@ exports.default = (0, _react.memo)(function (props) {
     _react2.default.createElement(
       'h4',
       { className: 'error-message__title' },
-      props.title ? props.title : 'Unknown error'
+      title ? title : 'Unknown error'
     ),
     _react2.default.createElement(
       'div',
       { className: 'error-message__content' },
-      props.children
+      children
     )
   );
 });
@@ -58501,8 +58500,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
@@ -58527,75 +58524,81 @@ var Header = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (Header.__proto__ || Object.getPrototypeOf(Header)).call(this, props));
 
+    _this.handleContextMenuTrigger = function (e, options) {
+      var _this$props = _this.props,
+          title = _this$props.title,
+          handleContextMenuTrigger = _this$props.handleContextMenuTrigger,
+          showContextMenu = _this$props.uiActions.showContextMenu;
+
+
+      if (handleContextMenuTrigger) return handleContextMenuTrigger(e);
+
+      e.preventDefault();
+      var data = {
+        e: e,
+        context: 'custom',
+        title: title,
+        options: options
+      };
+      showContextMenu(data);
+    };
+
+    _this.renderContextMenuTrigger = function () {
+      var _this$props2 = _this.props,
+          handleContextMenuTrigger = _this$props2.handleContextMenuTrigger,
+          options = _this$props2.options;
+
+
+      if (!handleContextMenuTrigger && !options) return null;
+
+      return _react2.default.createElement(_ContextMenuTrigger2.default, { onTrigger: function onTrigger(e) {
+          return _this.handleContextMenuTrigger(e, options);
+        } });
+    };
+
+    _this.renderOptions = function () {
+      var _this$props3 = _this.props,
+          handleContextMenuTrigger = _this$props3.handleContextMenuTrigger,
+          options = _this$props3.options;
+
+
+      if (!options && !handleContextMenuTrigger) return null;
+
+      return _react2.default.createElement(
+        'div',
+        { className: 'header__options' },
+        _this.renderContextMenuTrigger(),
+        _react2.default.createElement(
+          'div',
+          { className: 'header__options__wrapper' },
+          options || null
+        )
+      );
+    };
+
+    _this.render = function () {
+      var _this$props4 = _this.props,
+          className = _this$props4.className,
+          children = _this$props4.children;
+
+
+      return _react2.default.createElement(
+        'header',
+        { className: className },
+        _react2.default.createElement(
+          'h1',
+          null,
+          children
+        ),
+        _this.renderOptions()
+      );
+    };
+
     _this.state = {
       expanded: false
     };
     return _this;
   }
-
-  _createClass(Header, [{
-    key: 'handleContextMenuTrigger',
-    value: function handleContextMenuTrigger(e, options) {
-      // We have an override trigger (eg Album, Playlist)
-      if (this.props.handleContextMenuTrigger) {
-        return this.props.handleContextMenuTrigger(e);
-      }
-      e.preventDefault();
-      var data = {
-        e: e,
-        context: 'custom',
-        title: this.props.title,
-        options: options
-      };
-      this.props.uiActions.showContextMenu(data);
-    }
-  }, {
-    key: 'renderContextMenuTrigger',
-    value: function renderContextMenuTrigger() {
-      var _this2 = this;
-
-      // No custom trigger, nor any options
-      if (!this.props.handleContextMenuTrigger && !this.props.options) {
-        return null;
-      }
-
-      return _react2.default.createElement(_ContextMenuTrigger2.default, { onTrigger: function onTrigger(e) {
-          return _this2.handleContextMenuTrigger(e, _this2.props.options);
-        } });
-    }
-  }, {
-    key: 'renderOptions',
-    value: function renderOptions() {
-      if (!this.props.options && !this.props.handleContextMenuTrigger) {
-        return null;
-      }
-
-      return _react2.default.createElement(
-        'div',
-        { className: 'header__options' },
-        this.renderContextMenuTrigger(),
-        _react2.default.createElement(
-          'div',
-          { className: 'header__options__wrapper' },
-          this.props.options || null
-        )
-      );
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      return _react2.default.createElement(
-        'header',
-        { className: this.props.className ? this.props.className : null },
-        _react2.default.createElement(
-          'h1',
-          null,
-          this.props.children ? this.props.children : null
-        ),
-        this.renderOptions()
-      );
-    }
-  }]);
 
   return Header;
 }(_react2.default.Component);
@@ -58878,51 +58881,43 @@ var _reactFontawesome2 = _interopRequireDefault(_reactFontawesome);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = (0, _react.memo)(function (props) {
-  if (!props.name || props.name === '') {
-    return null;
-  }
+exports.default = (0, _react.memo)(function (_ref) {
+  var name = _ref.name,
+      type = _ref.type,
+      className = _ref.className,
+      onClick = _ref.onClick;
 
-  var className = 'icon icon--' + (props.type ? props.type : 'material');
-  if (props.className) {
-    className += ' ' + props.className;
-  }
+  if (!name || name === '') return null;
 
-  switch (props.type) {
+  var fullClassName = 'icon icon--' + (type || 'material') + ' ' + className;
+
+  switch (type) {
     case 'svg':
-      return _react2.default.createElement('img', { className: className, src: '/iris/assets/icons/' + props.name + '.svg', onClick: function onClick(e) {
-          return props.onClick ? props.onClick(e) : null;
-        } });
+      return _react2.default.createElement('img', { className: fullClassName, src: '/iris/assets/icons/' + name + '.svg', onClick: onClick });
 
     case 'gif':
-      return _react2.default.createElement('img', { className: className, src: '/iris/assets/icons/' + props.name + '.gif', onClick: function onClick(e) {
-          return props.onClick ? props.onClick(e) : null;
-        } });
+      return _react2.default.createElement('img', { className: fullClassName, src: '/iris/assets/icons/' + name + '.gif', onClick: onClick });
 
     case 'fontawesome':
-      return _react2.default.createElement(_reactFontawesome2.default, { className: className, type: 'fontawesome', name: props.name, onClick: function onClick(e) {
-          return props.onClick ? props.onClick(e) : null;
-        } });
+      return _react2.default.createElement(_reactFontawesome2.default, { className: fullClassName, type: 'fontawesome', name: name, onClick: onClick });
 
     case 'css':
-      switch (props.name) {
-        case 'playing':
-          return _react2.default.createElement(
-            'i',
-            { className: className + ' icon--playing' },
-            _react2.default.createElement('span', null),
-            _react2.default.createElement('span', null),
-            _react2.default.createElement('span', null)
-          );
+      if (name === 'playing') {
+        return _react2.default.createElement(
+          'i',
+          { className: fullClassName + ' icon--playing' },
+          _react2.default.createElement('span', null),
+          _react2.default.createElement('span', null),
+          _react2.default.createElement('span', null)
+        );
       }
+      break;
 
     default:
       return _react2.default.createElement(
         'i',
-        { className: className, onClick: function onClick(e) {
-            return props.onClick ? props.onClick(e) : null;
-          } },
-        props.name
+        { className: fullClassName, onClick: onClick },
+        name
       );
   }
 });
@@ -59058,7 +59053,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
@@ -59085,99 +59080,90 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var CustomLink = function (_React$Component) {
   _inherits(CustomLink, _React$Component);
 
-  function CustomLink(props) {
+  function CustomLink() {
+    var _ref;
+
+    var _temp, _this, _ret;
+
     _classCallCheck(this, CustomLink);
 
-    return _possibleConstructorReturn(this, (CustomLink.__proto__ || Object.getPrototypeOf(CustomLink)).call(this, props));
-  }
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
 
-  _createClass(CustomLink, [{
-    key: 'handleClick',
-    value: function handleClick(e) {
-      // Fetch the current scroll position of our #main element and
-      // save to our history's state, so clicking 'back' etc will restore
-      // the previous scroll position.
-      // Note that this doesn't trigger lazy-load elements (unless scrolling
-      // exposes the LazyLoader component).
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = CustomLink.__proto__ || Object.getPrototypeOf(CustomLink)).call.apply(_ref, [this].concat(args))), _this), _this.handleClick = function () {
+      var _this$props = _this.props,
+          state = _this$props.location.state,
+          history = _this$props.history,
+          retainScroll = _this$props.retainScroll,
+          scrollToProp = _this$props.scrollTo;
+
+      // Fetch the current scroll position of our #main element and save to our history's state, so
+      // clicking 'back' etc will restore the previous scroll position.
+      // This doesn't trigger lazy-load elements (unless scrolling exposes the LazyLoader component).
+
       var main = document.getElementById('main');
-      var state = this.props.location && this.props.location.state ? this.props.location.state : {};
-      state.scroll_position = main.scrollTop;
 
-      this.props.history.replace({ state: state });
+      history.replace(_extends({}, state, {
+        scroll_position: main.scrollTop
+      }));
 
       // Allow a link to disable auto-scrolling to the top of the page
       // on navigation. Useful for tabs, etc.
-      if (!this.props.retainScroll) {
-        (0, _helpers.scrollTo)(this.props.scrollTo, this.props.scrollTo);
-      }
-    }
-  }, {
-    key: 'handleContextMenu',
-    value: function handleContextMenu(e) {
-      if (this.props.onContextMenu) {
-        this.props.onContextMenu(e);
-      }
-    }
-  }, {
-    key: 'isLinkActive',
-    value: function isLinkActive(link) {
-      // Decode both links
-      // This handles issues where one link is encoded and the other isn't,
-      // but they're otherwise identical
+      if (!retainScroll) (0, _helpers.scrollTo)(scrollToProp, scrollToProp);
+    }, _this.handleContextMenu = function (e) {
+      var onContextMenu = _this.props.onContextMenu;
+
+
+      if (onContextMenu) onContextMenu(e);
+    }, _this.isLinkActive = function (link) {
+      var _this$props2 = _this.props,
+          exact = _this$props2.exact,
+          _this$props2$history = _this$props2.history;
+      _this$props2$history = _this$props2$history === undefined ? {} : _this$props2$history;
+      var _this$props2$history$ = _this$props2$history.location;
+      _this$props2$history$ = _this$props2$history$ === undefined ? {} : _this$props2$history$;
+      var pathname = _this$props2$history$.pathname;
+
+      // Decode both links. This handles issues where one link is encoded and the other isn't, but
+      // they're otherwise identical
+
       link = decodeURIComponent(link);
-      var current_link = decodeURIComponent(this.props.history.location.pathname);
+      var current_link = decodeURIComponent(pathname);
 
-      if (this.props.exact) {
-        return current_link === link;
-      }
+      if (exact) return current_link === link;
       return current_link.startsWith(link);
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var _this2 = this;
+    }, _this.render = function () {
+      var _this$props3 = _this.props,
+          className = _this$props3.className,
+          activeClassName = _this$props3.activeClassName,
+          to = _this$props3.to,
+          children = _this$props3.children,
+          history = _this$props3.history;
 
-      var className = '';
-      if (this.props.className) {
-        className += this.props.className;
-      }
 
-      if (!this.props.to) {
-        return _react2.default.createElement(
-          'span',
-          { className: className },
-          this.props.children
-        );
-      }
+      if (!to) return _react2.default.createElement(
+        'span',
+        { className: className },
+        children
+      );
 
       // We have an active detector method
       // This is used almost solely by the Sidebar navigation
-      if (this.props.history !== undefined) {
-        if (this.isLinkActive(this.props.to)) {
-          if (this.props.activeClassName) {
-            className += ' ' + this.props.activeClassName;
-          } else {
-            className += ' active';
-          }
-        }
-      }
+      var active = history && _this.isLinkActive(to) ? activeClassName || 'active' : '';
 
       return _react2.default.createElement(
         _reactRouterDom.Link,
         {
-          onClick: function onClick(e) {
-            return _this2.handleClick(e);
-          },
-          onContextMenu: function onContextMenu(e) {
-            return _this2.handleContextMenu(e);
-          },
-          className: className,
-          to: this.props.to
+          onClick: _this.handleClick,
+          onContextMenu: _this.handleContextMenu,
+          className: className + ' ' + active,
+          to: to
         },
-        this.props.children
+        children
       );
-    }
-  }]);
+    }, _temp), _possibleConstructorReturn(_this, _ret);
+  }
 
   return CustomLink;
 }(_react2.default.Component);
@@ -59210,57 +59196,63 @@ var _URILink2 = _interopRequireDefault(_URILink);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = (0, _react.memo)(function (props) {
-		if (!props.items) {
-				return _react2.default.createElement(
-						'span',
-						{ className: props.className ? props.className + ' links-sentence' : 'links-sentence' },
-						'-'
-				);
-		}
+exports.default = (0, _react.memo)(function (_ref) {
+		var items = _ref.items,
+		    className = _ref.className,
+		    nolinks = _ref.nolinks;
+
+		if (!items) return _react2.default.createElement(
+				'span',
+				{ className: className + ' links-sentence' },
+				'-'
+		);
 
 		return _react2.default.createElement(
 				'span',
-				{ className: props.className ? props.className + ' links-sentence' : 'links-sentence' },
-				props.items.map(function (item, index) {
-						if (!item) {
-								return _react2.default.createElement(
-										'span',
-										null,
-										'-'
-								);
-						}
+				{ className: className + ' links-sentence' },
+				items.map(function (_ref2, index) {
+						var name = _ref2.name,
+						    uri = _ref2.uri;
+
+						if (!name) return _react2.default.createElement(
+								'span',
+								null,
+								'-'
+						);
 
 						var separator = null;
-						if (index == props.items.length - 2) {
+						if (index == items.length - 2) {
 								separator = ' and ';
-						} else if (index < props.items.length - 2) {
+						} else if (index < items.length - 2) {
 								separator = ', ';
 						}
 
-						if (!item.name) {
+						if (!name) {
 								var content = _react2.default.createElement(
 										'span',
 										null,
 										'-'
 								);
-						} else if (!item.uri || props.nolinks) {
+						} else if (!uri || nolinks) {
 								var content = _react2.default.createElement(
 										'span',
 										null,
-										item.name
+										name
 								);
 						} else {
 								var content = _react2.default.createElement(
 										_URILink2.default,
-										{ className: 'links-sentence__item links-sentence__item--link', uri: item.uri },
-										item.name
+										{
+												className: 'links-sentence__item links-sentence__item--link',
+												uri: uri
+										},
+										name
 								);
 						}
 
 						return _react2.default.createElement(
 								'span',
-								{ key: 'index_' + item.uri },
+								{ key: 'index_' + uri },
 								content,
 								separator
 						);
@@ -78840,42 +78832,6 @@ exports.default = {
 
 /***/ }),
 
-/***/ "./src/js/util/index.js":
-/*!******************************!*\
-  !*** ./src/js/util/index.js ***!
-  \******************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _helpers = __webpack_require__(/*! ./helpers */ "./src/js/util/helpers.js");
-
-var helpers = _interopRequireWildcard(_helpers);
-
-var _storage = __webpack_require__(/*! ./storage */ "./src/js/util/storage.js");
-
-var storage = _interopRequireWildcard(_storage);
-
-var _format = __webpack_require__(/*! ./format */ "./src/js/util/format.js");
-
-var format = _interopRequireWildcard(_format);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-exports.default = {
-  helpers: helpers,
-  storage: storage,
-  format: format
-};
-
-/***/ }),
-
 /***/ "./src/js/util/storage.js":
 /*!********************************!*\
   !*** ./src/js/util/storage.js ***!
@@ -87023,7 +86979,7 @@ var _actions2 = __webpack_require__(/*! ../../services/mopidy/actions */ "./src/
 
 var mopidyActions = _interopRequireWildcard(_actions2);
 
-var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
+var _format = __webpack_require__(/*! ../../util/format */ "./src/js/util/format.js");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -87127,7 +87083,7 @@ var LibraryBrowse = function (_React$Component) {
             grid_items.push({
               name: subdirectory.name,
               link: '/library/browse/' + encodeURIComponent(subdirectory.uri),
-              icons: (0, _helpers.formatImages)(subdirectory.icons)
+              icons: (0, _format.formatImages)(subdirectory.icons)
             });
           }
         } catch (err) {
