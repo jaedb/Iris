@@ -10,48 +10,51 @@ import * as lastfmActions from '../services/lastfm/actions';
 import GridItem from './GridItem';
 
 class AlbumGrid extends React.Component {
-  handleContextMenu(e, item) {
+  handleContextMenu = (e, item) => {
+    const { uiActions: { showContextMenu } } = this.props;
     e.preventDefault();
-    const data = {
+    showContextMenu({
       e,
       context: 'album',
       uris: [item.uri],
       items: [item],
       tracklist_uri: item.uri,
-    };
-    this.props.uiActions.showContextMenu(data);
+    });
   }
 
-  render() {
-    if (this.props.albums) {
-      let className = 'grid grid--albums';
-      if (this.props.className) className += ` ${this.props.className}`;
-      if (this.props.single_row) className += ' grid--single-row';
-      if (this.props.mini) className += ' grid--mini';
+  render = () => {
+    const {
+      albums,
+      className,
+      mini,
+      lastfmActions,
+      mopidyActions,
+      show_source_icon,
+    } = this.props;
 
-      return (
-        <div className={className}>
-          {
-						this.props.albums.map((album) => (
-  <GridItem
-    key={album.uri}
-    type="album"
-    item={album}
-    lastfmActions={this.props.lastfmActions}
-    mopidyActions={this.props.mopidyActions}
-    show_source_icon={this.props.show_source_icon}
-    onContextMenu={(e) => this.handleContextMenu(e, album)}
-  />
-						))
-					}
-        </div>
-      );
-    }
-    return null;
+    if (!albums) return null;
+
+    return (
+      <div className={`grid grid--albums ${className} ${mini ? ' grid--mini' : ''}`}>
+        {
+          albums.map((album) => (
+            <GridItem
+              key={album.uri}
+              type="album"
+              item={album}
+              lastfmActions={lastfmActions}
+              mopidyActions={mopidyActions}
+              show_source_icon={show_source_icon}
+              onContextMenu={(e) => this.handleContextMenu(e, album)}
+            />
+          ))
+        }
+      </div>
+    );
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state) => ({
   artists: state.core.artists,
 });
 

@@ -4,7 +4,6 @@ import {
   uriType,
   scrollTo,
   sourceIcon,
-  uriSource,
 } from '../util/helpers';
 import Link from './Link';
 import Icon from './Icon';
@@ -14,7 +13,6 @@ import LinksSentence from './LinksSentence';
 export default class GridItem extends React.Component {
   componentDidMount() {
     const {
-      lastfmActions,
       mopidyActions,
       spotifyActions,
       spotifyAvailable,
@@ -52,71 +50,57 @@ export default class GridItem extends React.Component {
     }
   }
 
-  renderSecondary = (item) => {
-    const output = '';
-    const link_to = null;
-
-    switch (uriType(item.uri)) {
+  renderSecondary = ({
+    uri,
+    tracks_total,
+    followers,
+    albums_uris,
+    artists,
+  }) => {
+    switch (uriType(uri)) {
       case 'playlist':
-        if (item.tracks_total) {
-          return (
-            <span className="grid__item__secondary__content">
-              {item.tracks_total}
-              {' '}
-tracks
-            </span>
-          );
-        }
-        break;
+        return tracks_total ? (
+          <span className="grid__item__secondary__content">
+            {`${tracks_total} tracks`}
+          </span>
+        ) : null;
 
       case 'artist':
         return (
           <span className="grid__item__secondary__content">
-            {item.followers !== undefined ? `${item.followers.toLocaleString()} followers ` : null}
-            {item.albums_uris !== undefined ? `${item.albums_uris.length} albums` : null}
+            {followers && `${followers.toLocaleString()} followers `}
+            {albums_uris && `${albums_uris.length} albums`}
           </span>
         );
-        break;
 
       case 'album':
         return (
           <span className="grid__item__secondary__content">
-            {item.artists !== undefined ? <LinksSentence nolinks items={item.artists} /> : null}
+            {artists && <LinksSentence nolinks items={artists} />}
           </span>
         );
-        break;
 
       default:
         return (
           <span className="grid__item__secondary__content">
-            { item.artists !== undefined ? <LinksSentence nolinks items={item.artists} /> : null }
-            { item.followers !== undefined ? `${item.followers.toLocaleString()} followers` : null }
+            {artists && <LinksSentence nolinks items={item.artists} /> }
+            {followers && `${followers.toLocaleString()} followers` }
           </span>
         );
     }
-
-    return output;
   }
 
   render = () => {
-    const { item, link: customLink, type, show_source_icon } = this.props;
+    const {
+      item: { album },
+      link: customLink,
+      type,
+      show_source_icon,
+    } = this.props;
+    let { item } = this.props;
+
     if (!item) return null;
-
-    const album = {
-      ...item.album,
-      added_at: item.album && item.album.added_at,
-    };
-
-    let images = null;
-    if (album.images) {
-      if (Array.isArray(album.images)) {
-        images = album.images[0];
-      } else {
-        images = album.images;
-      }
-    } else if (item.icons) {
-      images = item.icons;
-    }
+    if (album) item = { ...item, ...album };
 
     const link = customLink || `/${type}/${encodeURIComponent(item.uri)}`;
 
@@ -127,7 +111,7 @@ tracks
         onClick={scrollTo}
         onContextMenu={this.onContextMenu}
       >
-        <Thumbnail glow size="medium" className="grid__item__thumbnail" images={images} />
+        <Thumbnail glow size="medium" className="grid__item__thumbnail" images={item.images || item.icons} />
         <div className="grid__item__name">
           {item.name ? item.name : <span className="opaque-text">{item.uri}</span>}
         </div>

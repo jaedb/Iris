@@ -2327,9 +2327,8 @@ const MopidyMiddleware = (function () {
               for (const uri in response) {
                 if (response.hasOwnProperty(uri)) {
                   let images = response[uri];
-                  images = formatImages(digestMopidyImages(store.getState().mopidy, images));
-
-                  if (images) {
+                  if (images.length) {
+                    images = formatImages(digestMopidyImages(store.getState().mopidy, images));
                     records.push({
                       uri,
                       images,

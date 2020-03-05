@@ -1,5 +1,5 @@
 
-import { formatImages } from '../../util/format';
+import { formatImages, collate } from '../../util/format';
 import { generateGuid } from '../../util/helpers';
 
 const coreActions = require('../core/actions');
@@ -302,10 +302,13 @@ export function getImages(context, uri) {
 
           if (record.mbid) {
             var params = `method=album.getInfo&mbid=${record.mbid}`;
-          } else if (record.artists && record.artists.length > 0 && record.album) {
-            var artist = encodeURIComponent(record.artists[0].name);
-            var album = encodeURIComponent(record.album.name);
-            var params = `method=album.getInfo&album=${album}&artist=${artist}`;
+          } else {
+            record = collate(record, { artists: getState().core.artists });
+            if (record.artists && record.artists.length > 0 && record.album) {
+              var artist = encodeURIComponent(record.artists[0].name);
+              var album = encodeURIComponent(record.album.name);
+              var params = `method=album.getInfo&album=${album}&artist=${artist}`;
+            }
           }
 
           if (params) {
@@ -325,10 +328,13 @@ export function getImages(context, uri) {
 
           if (record.mbid) {
             var params = `method=album.getInfo&mbid=${record.mbid}`;
-          } else if (record.artists && record.artists.length > 0) {
-            var artist = encodeURIComponent(record.artists[0].name);
-            var album = encodeURIComponent(record.name);
-            var params = `method=album.getInfo&album=${album}&artist=${artist}`;
+          } else {
+            record = collate(record, { artists: getState().core.artists });
+            if (record.artists && record.artists.length > 0) {
+              var artist = encodeURIComponent(record.artists[0].name);
+              var album = encodeURIComponent(record.name);
+              var params = `method=album.getInfo&album=${album}&artist=${artist}`;
+            }
           }
 
           if (params) {
@@ -342,6 +348,9 @@ export function getImages(context, uri) {
                 },
               );
           }
+          break;
+
+        default:
           break;
       }
     }
