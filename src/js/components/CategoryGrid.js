@@ -2,25 +2,23 @@
 import React, { memo } from 'react';
 import GridItem from './GridItem';
 
-export default memo((props) => {
-  if (!props.categories) {
-    return null;
-  }
-
-  let className = 'grid grid--tiles';
-  if (props.className) className += ` ${props.className}`;
-  if (props.mini) className += ' grid--mini';
+export default memo(({
+  categories,
+  className,
+  mini,
+}) => {
+  if (!categories) return null;
 
   return (
-    <div className={className}>
+    <div className={`grid grid--tiles ${className} ${mini ? 'grid--mini' : ''}`}>
       {
-				props.categories.map((category) => (
-  <GridItem
-    key={category.id}
-    type="category"
-    item={category}
-    link={`/discover/categories/${encodeURIComponent(category.id)}`}
-  />
+				categories.map((category) => (
+          <GridItem
+            key={category.id}
+            type="category"
+            item={category}
+            link={`/discover/categories/${encodeURIComponent(category.id)}`}
+          />
 				))
 			}
     </div>

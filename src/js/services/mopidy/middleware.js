@@ -1935,7 +1935,6 @@ const MopidyMiddleware = (function () {
               }
             }
 
-            store.dispatch(mopidyActions.getImages('albums', arrayOf('uri', albums_loaded)));
             store.dispatch(coreActions.albumsLoaded(albums_loaded));
             store.dispatch(coreActions.artistsLoaded(artists_loaded));
             store.dispatch(coreActions.tracksLoaded(tracks_loaded));

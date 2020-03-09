@@ -97,12 +97,13 @@ class LibraryBrowse extends React.Component {
               {
 								grid_items.map(
 								  (item, index) => (
-  <GridItem
-    item={item}
-    key={index}
-    link={item.link}
-    type="browse"
-  />
+                    <GridItem
+                      item={item}
+                      key={index}
+                      link={item.link}
+                      mopidyActions={this.props.mopidyActions}
+                      type="browse"
+                    />
 								  ),
 								)
 							}

@@ -30,7 +30,9 @@ export default class GridItem extends React.Component {
 
       case 'album':
         // If Mopidy doesn't find any images, then it will pass on the call to LastFM
-        mopidyActions.getImages('albums', [item.uri]);
+        if (mopidyActions) {
+          mopidyActions.getImages('albums', [item.uri]);
+        }
         break;
 
       default:

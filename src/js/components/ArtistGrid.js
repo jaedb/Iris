@@ -9,22 +9,22 @@ import * as lastfmActions from '../services/lastfm/actions';
 import * as spotifyActions from '../services/spotify/actions';
 
 class ArtistGrid extends React.Component {
-  handleContextMenu(e, item) {
+  handleContextMenu = (e, item) => {
+    const { uiActions: { showContextMenu } } = this.props;
     e.preventDefault();
-    const data = {
+    showContextMenu({
       e,
       context: 'artist',
       uris: [item.uri],
       items: [item],
-    };
-    this.props.uiActions.showContextMenu(data);
+    });
   }
 
-  render() {
+  render = () => {
     const {
       artists,
       albums,
-      className: classNameProp,
+      className,
       single_row,
       mini,
       show_source_icon,
@@ -34,36 +34,30 @@ class ArtistGrid extends React.Component {
       lastfmActions,
     } = this.props;
 
-    if (artists) {
-      let className = 'grid grid--artists';
-      if (classNameProp) className += ` ${classNameProp}`;
-      if (single_row) className += ' grid--single-row';
-      if (mini) className += ' grid--mini';
+    if (!artists) return null;
 
-      return (
-        <div className={className}>
-          {
-						artists.map((item) => {
-						  const artist = collate(item, { albums });
-						  return (
-                <GridItem
-                  key={artist.uri}
-                  type="artist"
-                  item={artist}
-                  show_source_icon={show_source_icon}
-                  onClick={(e) => { history.push(`/artist/${encodeURIComponent(artist.uri)}`); }}
-                  lastfmActions={lastfmActions}
-                  spotifyActions={spotifyActions}
-                  spotifyAvailable={spotifyAvailable}
-                  onContextMenu={(e) => this.handleContextMenu(e, artist)}
-                />
-						  );
-						})
-					}
-        </div>
-      );
-    }
-    return null;
+    return (
+      <div className={`grid grid--artists ${className} ${mini ? 'grid--mini' : ''}`}>
+        {
+          artists.map((item) => {
+            const artist = collate(item, { albums });
+            return (
+              <GridItem
+                key={artist.uri}
+                type="artist"
+                item={artist}
+                show_source_icon={show_source_icon}
+                onClick={() => { history.push(`/artist/${encodeURIComponent(artist.uri)}`); }}
+                lastfmActions={lastfmActions}
+                spotifyActions={spotifyActions}
+                spotifyAvailable={spotifyAvailable}
+                onContextMenu={(e) => this.handleContextMenu(e, artist)}
+              />
+            );
+          })
+        }
+      </div>
+    );
   }
 }
 

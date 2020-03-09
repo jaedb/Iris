@@ -9,6 +9,7 @@ import {
   getFromUri,
   buildLink,
   isLoading,
+  throttle,
 } from '../util/helpers';
 import {
   arrayOf,
@@ -32,27 +33,20 @@ class ContextMenu extends React.Component {
     this.state = {
       submenu: null,
     };
-    this.handleScroll = this.handleScroll.bind(this);
-    this.handleMouseDown = this.handleMouseDown.bind(this);
-    this.handleTouchStart = this.handleTouchStart.bind(this);
+    this.handleScroll = throttle(this.handleScroll.bind(this), 50);
   }
 
-  componentDidMount() {
+  componentDidMount = () => {
     window.addEventListener('scroll', this.handleScroll, false);
-    window.addEventListener('mousedown', this.handleMouseDown, false);
-    window.addEventListener('touchstart', this.handleTouchStart, false);
   }
 
-  componentWillUnmount() {
+  componentWillUnmount = () => {
     window.removeEventListener('scroll', this.handleScroll, false);
-    window.removeEventListener('mousedown', this.handleMouseDown, false);
-    window.removeEventListener('touchstart', this.handleTouchStart, false);
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate = (prevProps) => {
     const {
       menu: prevMenu,
-      lastfm_authorized: prevLastfm_authorized,
       tracks: prevTracks,
     } = prevProps;
     const {
@@ -97,41 +91,28 @@ class ContextMenu extends React.Component {
     }
   }
 
-  handleScroll(e) {
-    const { menu, uiActions } = this.props;
+  handleScroll = () => {
+    const { menu, uiActions: { hideContextMenu } } = this.props;
 
-    if (menu) {
-      uiActions.hideContextMenu();
-    }
-  }
-
-  handleMouseDown(e) {
-    // if we click (touch or mouse) outside of the context menu or context menu trigger, kill it
-    if ($(e.target).closest('.context-menu').length <= 0 && $(e.target).closest('.context-menu-trigger').length <= 0) {
-      this.props.uiActions.hideContextMenu();
-    }
-  }
-
-  handleTouchStart(e) {
-    // if we click (touch or mouse) outside of the context menu or context menu trigger, kill it
-    if ($(e.target).closest('.context-menu').length <= 0 && $(e.target).closest('.context-menu-trigger').length <= 0) {
-      this.props.uiActions.hideContextMenu();
-    }
+    if (menu) hideContextMenu();
   }
 
   getContext(props = this.props) {
+    const {
+      menu,
+    } = props;
     const context = {
       name: null,
       nice_name: 'Unknown',
       is_track: false,
     };
 
-    if (props.menu && props.menu.context) {
-      context.name = props.menu.context;
-      context.nice_name = props.menu.context;
+    if (menu && menu.context) {
+      context.name = menu.context;
+      context.nice_name = menu.context;
 
       // handle ugly labels
-      switch (props.menu.context) {
+      switch (menu.context) {
         case 'playlist':
         case 'editable-playlist':
           context.nice_name = 'playlist';
@@ -149,10 +130,10 @@ class ContextMenu extends React.Component {
       // Consider the object(s) themselves
       // We can only really accommodate the first item. The only instances where
       // there is multiple is tracklists, when they're all of the same source (except search?)
-      if (props.menu.items && props.menu.items.length > 0) {
-        const item = props.menu.items[0];
+      if (menu.items && menu.items.length > 0) {
+        const item = menu.items[0];
         context.item = item;
-        context.items_count = props.menu.items.length;
+        context.items_count = menu.items.length;
         context.source = uriSource(item.uri);
         context.type = uriType(item.uri);
         context.in_library = this.inLibrary(item);
@@ -163,206 +144,448 @@ class ContextMenu extends React.Component {
     return context;
   }
 
-  inLibrary(item = null) {
-    if (!item) {
-      return false;
-    }
+  inLibrary = ({ uri } = {}) => {
+    const {
+      spotify_library_artists,
+      spotify_library_albums,
+      spotify_library_playlists,
+      spotify_library_tracks,
+    } = this.props;
+    if (!uri) return false;
 
-    switch (uriType(item.uri)) {
+    switch (uriType(uri)) {
       case 'artist':
-        return (this.props.spotify_library_artists && this.props.spotify_library_artists.indexOf(item.uri) > -1);
-        break;
+        return (spotify_library_artists && spotify_library_artists.indexOf(uri) > -1);
       case 'album':
-        return (this.props.spotify_library_albums && this.props.spotify_library_albums.indexOf(item.uri) > -1);
-        break;
+        return (spotify_library_albums && spotify_library_albums.indexOf(uri) > -1);
       case 'playlist':
-        return (this.props.spotify_library_playlists && this.props.spotify_library_playlists.indexOf(item.uri) > -1);
-        break;
+        return (spotify_library_playlists && spotify_library_playlists.indexOf(uri) > -1);
       case 'track':
-        return (this.props.spotify_library_tracks && this.props.spotify_library_tracks.indexOf(item.uri) > -1);
-        break;
+        return (spotify_library_tracks && spotify_library_tracks.indexOf(uri) > -1);
+      default:
+        return false;
     }
-    return false;
   }
 
   /**
 	 * TODO: Currently the select track keys are the only details available. We need
 	 * the actual track object reference (including name and artists) to getTrack from LastFM
 	 * */
-  isLoved(item = null) {
-    if (!item) {
-      return false;
-    }
+  isLoved = ({ uri } = {}) => {
+    const {
+      tracks,
+    } = this.props;
 
-    if (this.props.tracks[item.uri] === undefined) {
-      return false;
-    }
-    const track = this.props.tracks[item.uri];
-
+    if (!uri) return false;
+    if (tracks[uri] === undefined) return false;
+    
+    const track = tracks[uri];
     return (track.userloved !== undefined && track.userloved == '1');
   }
 
-  canBeInLibrary() {
-    if (!this.props.spotify_authorized) {
-      return false;
-    }
-    return (uriSource(this.props.menu.items[0].uri) == 'spotify');
+  canBeInLibrary = () => {
+    const { spotify_authorized, menu: { items } } = this.props;
+    if (!spotify_authorized) return false;
+    return (uriSource(items[0].uri) === 'spotify');
   }
 
-  toggleInLibrary(e, in_library) {
-    this.props.uiActions.hideContextMenu();
+  toggleInLibrary = (e, in_library) => {
+    const {
+      uiActions: {
+        hideContextMenu,
+      },
+      spotifyActions: {
+        following,
+      },
+      menu: {
+        items,
+      } = {},
+    } = this.props;
+
+    hideContextMenu();
     if (in_library) {
-      this.props.spotifyActions.following(this.props.menu.items[0].uri, 'DELETE');
+      following(items[0].uri, 'DELETE');
     } else {
-      this.props.spotifyActions.following(this.props.menu.items[0].uri, 'PUT');
+      following(items[0].uri, 'PUT');
     }
   }
 
-  playQueueItem(e) {
-    this.props.uiActions.hideContextMenu();
-    const tracks = this.props.menu.items;
-    this.props.mopidyActions.changeTrack(tracks[0].tlid);
+  playQueueItem = () => {
+    const {
+      uiActions: {
+        hideContextMenu,
+      },
+      mopidyActions: {
+        changeTrack,
+      },
+      menu: {
+        items,
+      } = {},
+    } = this.props;
+
+    hideContextMenu();
+    changeTrack(items[0].tlid);
   }
 
-  removeFromQueue(e) {
-    this.props.uiActions.hideContextMenu();
-    const tracks = this.props.menu.items;
-    const tracks_tlids = [];
-    for (let i = 0; i < tracks.length; i++) {
-      tracks_tlids.push(tracks[i].tlid);
-    }
-    this.props.mopidyActions.removeTracks(tracks_tlids);
+  removeFromQueue = () => {
+    const {
+      uiActions: {
+        hideContextMenu,
+      },
+      mopidyActions: {
+        removeTracks,
+      },
+      menu: {
+        items,
+      } = {},
+    } = this.props;
+    
+    hideContextMenu();    
+    removeTracks(arrayOf('tlid', items));
   }
 
-  playURIs(e) {
-    this.props.uiActions.hideContextMenu();
-    this.props.mopidyActions.playURIs(this.props.menu.uris, this.props.menu.tracklist_uri);
+  playURIs = () => {
+    const {
+      uiActions: {
+        hideContextMenu,
+      },
+      mopidyActions: {
+        playURIs,
+      },
+      menu: {
+        uris,
+        tracklist_uri,
+      } = {},
+    } = this.props;
+  
+    hideContextMenu();
+    playURIs(uris, tracklist_uri);
   }
 
-  playPlaylist(e) {
-    this.props.uiActions.hideContextMenu();
-    this.props.mopidyActions.playPlaylist(this.props.menu.uris[0]);
+  playPlaylist = () => {
+    const {
+      uiActions: {
+        hideContextMenu,
+      },
+      mopidyActions: {
+        playPlaylist,
+      },
+      menu: {
+        uris,
+      } = {},
+    } = this.props;
+  
+    hideContextMenu();
+    playPlaylist(uris[0]);
   }
 
-  enqueuePlaylist(e, play_next = false) {
-    this.props.uiActions.hideContextMenu();
-    this.props.mopidyActions.enqueuePlaylist(this.props.menu.uris[0], play_next);
+  enqueuePlaylist = (e, play_next = false) => {
+    const {
+      uiActions: {
+        hideContextMenu,
+      },
+      mopidyActions: {
+        enqueuePlaylist,
+      },
+      menu: {
+        uris,
+      } = {},
+    } = this.props;
+  
+    hideContextMenu();
+    enqueuePlaylist(uris[0], play_next);
   }
 
   shufflePlayPlaylist(e) {
-    this.props.uiActions.hideContextMenu();
-    this.props.mopidyActions.playPlaylist(this.props.menu.uris[0], true);
+    const {
+      uiActions: {
+        hideContextMenu,
+      },
+      mopidyActions: {
+        playPlaylist,
+      },
+      menu: {
+        uris,
+      } = {},
+    } = this.props;
+  
+    hideContextMenu();
+    playPlaylist(uris[0], true);
   }
 
-  playArtistTopTracks(e) {
-    this.props.uiActions.hideContextMenu();
-    this.props.spotifyActions.playArtistTopTracks(this.props.menu.uris[0]);
+  playArtistTopTracks = () => {
+    const {
+      uiActions: {
+        hideContextMenu,
+      },
+      spotifyActions: {
+        playArtistTopTracks,
+      },
+      menu: {
+        uris,
+      } = {},
+    } = this.props;
+  
+    hideContextMenu();
+    playArtistTopTracks(uris[0]);
   }
 
-  addToQueue(e, play_next = false) {
-    this.props.uiActions.hideContextMenu();
-    this.props.mopidyActions.enqueueURIs(this.props.menu.uris, this.props.menu.tracklist_uri, play_next);
+  addToQueue = (e, play_next = false) => {
+    const {
+      uiActions: {
+        hideContextMenu,
+      },
+      mopidyActions: {
+        enqueueURIs,
+      },
+      menu: {
+        uris,
+        tracklist_uri,
+      } = {},
+    } = this.props;
+  
+    hideContextMenu();
+    enqueueURIs(uris, tracklist_uri, play_next);
   }
 
-  addTracksToPlaylist(e, playlist_uri) {
-    this.props.uiActions.hideContextMenu();
-    this.props.coreActions.addTracksToPlaylist(playlist_uri, this.props.menu.uris);
+  addTracksToPlaylist = (e, playlist_uri) => {
+    const {
+      uiActions: {
+        hideContextMenu,
+      },
+      mopidyActions: {
+        addTracksToPlaylist,
+      },
+      menu: {
+        uris,
+      } = {},
+    } = this.props;
+  
+    hideContextMenu();
+    addTracksToPlaylist(playlist_uri, uris);
   }
 
-  toggleLoved(e, is_loved) {
-    this.props.uiActions.hideContextMenu();
+  toggleLoved = (e, is_loved) => {
+    const {
+      uiActions: {
+        hideContextMenu,
+      },
+      lastfmActions: {
+        unloveTrack,
+        loveTrack,
+      },
+      menu: {
+        uris,
+      } = {},
+    } = this.props;
+  
+    hideContextMenu();
     if (is_loved) {
-      this.props.lastfmActions.unloveTrack(this.props.menu.items[0].uri);
+      unloveTrack(uris[0]);
     } else {
-      this.props.lastfmActions.loveTrack(this.props.menu.items[0].uri);
+      loveTrack(uris[0]);
     }
   }
 
-  unloveTrack(e) {
-    this.props.uiActions.hideContextMenu();
-    this.props.lastfmActions.unloveTrack(this.props.menu.items[0]);
+  unloveTrack = () => {
+    const {
+      uiActions: {
+        hideContextMenu,
+      },
+      lastfmActions: {
+        unloveTrack,
+      },
+      menu: {
+        items,
+      } = {},
+    } = this.props;
+  
+    hideContextMenu();
+    unloveTrack(items[0]);
   }
 
-  removeFromPlaylist(e) {
-    this.props.uiActions.hideContextMenu();
-    this.props.coreActions.removeTracksFromPlaylist(this.props.menu.tracklist_uri, this.props.menu.indexes);
+  removeFromPlaylist = () => {
+    const {
+      uiActions: {
+        hideContextMenu,
+      },
+      coreActions: {
+        removeTracksFromPlaylist,
+      },
+      menu: {
+        tracklist_uri,
+        indexes,
+      } = {},
+    } = this.props;
+  
+    hideContextMenu();
+    removeTracksFromPlaylist(tracklist_uri, indexes);
   }
 
-  deletePlaylist(e) {
-    this.props.uiActions.hideContextMenu();
-    this.props.coreActions.deletePlaylist(this.props.menu.uris[0]);
+  deletePlaylist = () => {
+    const {
+      uiActions: {
+        hideContextMenu,
+      },
+      coreActions: {
+        deletePlaylist,
+      },
+      menu: {
+        uris,
+      } = {},
+    } = this.props;
+  
+    hideContextMenu();
+    deletePlaylist(uris[0]);
   }
 
   startRadio(e) {
-    this.props.uiActions.hideContextMenu();
-    this.props.pusherActions.startRadio(this.props.menu.uris);
+    const {
+      uiActions: {
+        hideContextMenu,
+      },
+      pusherActions: {
+        startRadio,
+      },
+      menu: {
+        uris,
+      } = {},
+    } = this.props;
+  
+    hideContextMenu();
+    startRadio(uris);
   }
 
   goToRecommendations(e) {
-    this.props.uiActions.hideContextMenu();
-    const uris_string = arrayOf('uri', this.props.menu.items).join(',');
-    this.props.history.push(`/discover/recommendations/${uris_string}`);
+    const {
+      uiActions: {
+        hideContextMenu,
+      },
+      menu: {
+        items,
+      } = {},
+      history: {
+        push,
+      },
+    } = this.props;
+  
+    hideContextMenu();
+    push(`/discover/recommendations/${arrayOf('uri', items).join(',')}`);
   }
 
-  goToArtist(e) {
-    if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].artists_uris || this.props.menu.items[0].artists_uris.length <= 0) {
+  goToArtist = () => {
+    const {
+      uiActions: {
+        hideContextMenu,
+      },
+      menu: {
+        items,
+      } = {},
+      history: {
+        push,
+      },
+    } = this.props;
+
+    if (!items || items.length <= 0 || !items[0].artists_uris || items[0].artists_uris.length <= 0) {
       return null;
-    }
-    this.props.uiActions.hideContextMenu();
+    }  
+    hideContextMenu();
 
     // note: we can only go to one artist (even if this item has multiple artists, just go to the first one)
-    this.props.history.push(buildLink(this.props.menu.items[0].artists_uris[0]));
+    push(buildLink(items[0].artists_uris[0]));
   }
 
-  goToUser(e) {
-    if (!this.props.menu.items || this.props.menu.items.length <= 0 || !this.props.menu.items[0].user_uri) {
-      return null;
-    }
-    this.props.uiActions.hideContextMenu();
-    this.props.history.push(buildLink(this.props.menu.items[0].user_uri));
+  goToUser = () => {
+    const {
+      uiActions: {
+        hideContextMenu,
+      },
+      menu: {
+        items,
+      } = {},
+      history: {
+        push,
+      },
+    } = this.props;
+  
+    if (!items || items.length <= 0 || !items[0].user_uri) return null;
+    hideContextMenu();
+    push(buildLink(items[0].user_uri));
   }
 
-  goToTrack(e) {
-    if (!this.props.menu.items || this.props.menu.items.length <= 0) {
-      return null;
-    }
-    this.props.uiActions.hideContextMenu();
-    this.props.history.push(buildLink(this.props.menu.items[0].uri));
+  goToTrack = () => {
+    const {
+      uiActions: {
+        hideContextMenu,
+      },
+      menu: {
+        uris,
+      } = {},
+      history: {
+        push,
+      },
+    } = this.props;
+  
+    if (!uris) return null;
+    hideContextMenu();
+    push(buildLink(uris[0]));
   }
 
-  copyURIs(e) {
+  copyURIs = () => {
+    const {
+      uiActions: {
+        hideContextMenu,
+        createNotification,
+      },
+      menu: {
+        uris,
+      } = {},
+    } = this.props;  
+
     const temp = $('<input>');
     $('body').append(temp);
-    temp.val(this.props.menu.uris.join(',')).select();
+    temp.val(uris.join(',')).select();
     document.execCommand('copy');
     temp.remove();
 
-    this.props.uiActions.createNotification({ content: `Copied ${this.props.menu.uris.length} URIs` });
-    this.props.uiActions.hideContextMenu();
+    createNotification({ content: `Copied ${uris.length} URIs` });
+    hideContextMenu();
   }
 
-  renderTitle() {
+  renderTitle = () => {
+    const {
+      uiActions: {
+        hideContextMenu,
+        setSelectedTracks,
+      },
+      queue_metadata,
+      menu: {
+        title,
+      },
+    } = this.props;
+
     const context = this.getContext();
 
     if (context.items_count > 1) {
       return (
         <div className="context-menu__title">
           <div className="context-menu__title__text">
-            {context.items_count}
-            {' '}
-            {context.nice_name}
-            {context.items_count > 1 ? 's' : null}
-            {' '}
-selected
-            <span className="context-menu__title__deselect" onClick={(e) => { this.props.uiActions.setSelectedTracks([]); this.props.uiActions.hideContextMenu(); }}><Icon name="close" /></span>
+            {`${context.items_count} ${context.nice_name}${context.items_count > 1 ? 's' : ''} selected`}
+            <span
+              className="context-menu__title__deselect"
+              onClick={() => {
+                setSelectedTracks([]);
+              }}>
+                <Icon name="close" />
+              </span>
           </div>
         </div>
       );
     }
 
     if (context.items_count == 1 && context.name == 'queue-track' && context.item !== undefined) {
-      if (this.props.queue_metadata[`tlid_${context.item.tlid}`] !== undefined) {
-        const metadata = this.props.queue_metadata[`tlid_${context.item.tlid}`];
+      if (queue_metadata[`tlid_${context.item.tlid}`] !== undefined) {
+        const metadata = queue_metadata[`tlid_${context.item.tlid}`];
 
         if (metadata.added_from && metadata.added_by) {
           const type = (metadata.added_from ? uriType(metadata.added_from) : null);
@@ -397,32 +620,35 @@ selected
     }
 
     if (context.name == 'custom') {
-      if (!this.props.menu.title) {
-        return null;
-      }
+      if (!title) return null;
 
       return (
         <div className="context-menu__title">
           <div className="context-menu__title__text">
-            {this.props.menu.title}
+            {title}
           </div>
         </div>
       );
     }
   }
 
-  setSubmenu(name) {
-    if (this.state.submenu !== name && name == 'add-to-playlist') {
-      if (!this.props.spotify_library_playlists_loaded_all) {
-        this.props.spotifyActions.getLibraryPlaylists();
-      }
-      if (!this.props.mopidy_library_playlists_loaded_all) {
-        this.props.mopidyActions.getLibraryPlaylists();
-      }
+  setSubmenu = (name) => {
+    const { submenu } = this.state;
+    const {
+      spotify_library_playlists_loaded_all,
+      mopidy_library_playlists_loaded_all,
+      spotifyActions,
+      mopidyActions,
+    } = this.props;
+    if (submenu !== name && name == 'add-to-playlist') {
+      if (!spotify_library_playlists_loaded_all) spotifyActions.getLibraryPlaylists();
+      if (!mopidy_library_playlists_loaded_all) mopidyActions.getLibraryPlaylists();
     }
 
     this.setState({ submenu: name });
   }
+
+  // THIS IS WHERE I GOT TO
 
   renderSubmenu() {
     let list = null;
@@ -817,30 +1043,31 @@ Copy URI
   }
 
   render() {
-    if (!this.props.menu) {
-      return null;
-    }
+    const {
+      menu,
+      uiActions: {
+        hideContextMenu,
+      },
+    } = this.props;
+    const { submenu } = this.state;
+  
+    if (!menu) return null;
 
     const style = {
-      left: this.props.menu.position_x,
-      top: this.props.menu.position_y,
+      left: menu.position_x,
+      top: menu.position_y,
     };
     const height = 200; // TODO: use jquery to detect height
-    let className = `context-menu ${this.props.menu.context}`;
-    if (this.state.submenu) {
-      className += ' context-menu--submenu-expanded';
-    }
+    let className = `context-menu ${menu.context}`;
+    if (submenu) className += ' context-menu--submenu-expanded';
+    if (menu.closing) className += ' context-menu--closing';
 
-    if (this.props.menu.closing) {
-      className += ' context-menu--closing';
-    }
-
-    if (this.props.menu.position_x > (window.innerWidth - 174)) {
+    if (menu.position_x > (window.innerWidth - 174)) {
       style.left = 'auto';
       style.right = 10;
     }
 
-    if (this.props.menu.position_y > (window.innerHeight - height)) {
+    if (menu.position_y > (window.innerHeight - height)) {
       style.top = 'auto';
       style.bottom = 10;
     }
@@ -852,7 +1079,7 @@ Copy URI
           {this.props.menu.context == 'custom' ? this.props.menu.options : this.renderItems()}
         </div>
         {this.renderSubmenu()}
-        <div className="context-menu__background" onClick={(e) => this.props.uiActions.hideContextMenu()} />
+        <div className="context-menu__background" onClick={hideContextMenu} />
       </div>
     );
   }
