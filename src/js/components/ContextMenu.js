@@ -33,15 +33,22 @@ class ContextMenu extends React.Component {
     this.state = {
       submenu: null,
     };
+    this.setRef = this.setRef.bind(this);
     this.handleScroll = throttle(this.handleScroll.bind(this), 50);
+    this.handleMouseDown = this.handleMouseDown.bind(this);
+    this.handleTouchStart = this.handleTouchStart.bind(this);
   }
 
   componentDidMount = () => {
     window.addEventListener('scroll', this.handleScroll, false);
+    window.addEventListener('mousedown', this.handleMouseDown, false);
+    window.addEventListener('touchstart', this.handleTouchStart, false);
   }
 
   componentWillUnmount = () => {
     window.removeEventListener('scroll', this.handleScroll, false);
+    window.removeEventListener('mousedown', this.handleMouseDown, false);
+    window.removeEventListener('touchstart', this.handleTouchStart, false);
   }
 
   componentDidUpdate = (prevProps) => {
@@ -95,6 +102,35 @@ class ContextMenu extends React.Component {
     const { menu, uiActions: { hideContextMenu } } = this.props;
 
     if (menu) hideContextMenu();
+  }
+
+  handleMouseDown = (e) => {
+    const { uiActions: { hideContextMenu } } = this.props;
+    
+    if (this._ref && !this._ref.contains(e.target)) {
+      console.log('outside');
+      hideContextMenu();
+    }
+
+    /*
+    // if we click (touch or mouse) outside of the context menu or context menu trigger, kill it
+    if ($(e.target).closest('.context-menu').length <= 0 && $(e.target).closest('.context-menu-trigger').length <= 0) {
+      hideContextMenu();
+    }
+    */
+  }
+
+  handleTouchStart = (e) => {
+    const { uiActions: { hideContextMenu } } = this.props;
+
+    // if we click (touch or mouse) outside of the context menu or context menu trigger, kill it
+    if ($(e.target).closest('.context-menu').length <= 0 && $(e.target).closest('.context-menu-trigger').length <= 0) {
+      hideContextMenu();
+    }
+  }
+
+  setRef(ref) {
+    this._ref = ref;
   }
 
   getContext(props = this.props) {
@@ -530,6 +566,7 @@ class ContextMenu extends React.Component {
     hideContextMenu();
     push(buildLink(uris[0]));
   }
+
 
   copyURIs = () => {
     const {

@@ -57754,10 +57754,14 @@ var ContextMenu = function (_React$Component) {
 
     _this.componentDidMount = function () {
       window.addEventListener('scroll', _this.handleScroll, false);
+      window.addEventListener('mousedown', _this.handleMouseDown, false);
+      window.addEventListener('touchstart', _this.handleTouchStart, false);
     };
 
     _this.componentWillUnmount = function () {
       window.removeEventListener('scroll', _this.handleScroll, false);
+      window.removeEventListener('mousedown', _this.handleMouseDown, false);
+      window.removeEventListener('touchstart', _this.handleTouchStart, false);
     };
 
     _this.componentDidUpdate = function (prevProps) {
@@ -57812,6 +57816,33 @@ var ContextMenu = function (_React$Component) {
 
 
       if (menu) hideContextMenu();
+    };
+
+    _this.handleMouseDown = function (e) {
+      var hideContextMenu = _this.props.uiActions.hideContextMenu;
+
+
+      if (_this._ref && !_this._ref.contains(e.target)) {
+        console.log('outside');
+        hideContextMenu();
+      }
+
+      /*
+      // if we click (touch or mouse) outside of the context menu or context menu trigger, kill it
+      if ($(e.target).closest('.context-menu').length <= 0 && $(e.target).closest('.context-menu-trigger').length <= 0) {
+        hideContextMenu();
+      }
+      */
+    };
+
+    _this.handleTouchStart = function (e) {
+      var hideContextMenu = _this.props.uiActions.hideContextMenu;
+
+      // if we click (touch or mouse) outside of the context menu or context menu trigger, kill it
+
+      if ($(e.target).closest('.context-menu').length <= 0 && $(e.target).closest('.context-menu-trigger').length <= 0) {
+        hideContextMenu();
+      }
     };
 
     _this.inLibrary = function () {
@@ -58233,11 +58264,19 @@ var ContextMenu = function (_React$Component) {
     _this.state = {
       submenu: null
     };
+    _this.setRef = _this.setRef.bind(_this);
     _this.handleScroll = (0, _helpers.throttle)(_this.handleScroll.bind(_this), 50);
+    _this.handleMouseDown = _this.handleMouseDown.bind(_this);
+    _this.handleTouchStart = _this.handleTouchStart.bind(_this);
     return _this;
   }
 
   _createClass(ContextMenu, [{
+    key: 'setRef',
+    value: function setRef(ref) {
+      this._ref = ref;
+    }
+  }, {
     key: 'getContext',
     value: function getContext() {
       var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props;
