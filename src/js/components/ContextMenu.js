@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { createRef } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { withRouter } from 'react-router';
@@ -27,13 +27,19 @@ import * as mopidyActions from '../services/mopidy/actions';
 import * as lastfmActions from '../services/lastfm/actions';
 import * as spotifyActions from '../services/spotify/actions';
 
+const Wrapper = ({ children }) => (
+  <div>
+    {children}
+  </div>
+);
+
 class ContextMenu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       submenu: null,
     };
-    this.setRef = this.setRef.bind(this);
+    this.ref = createRef();
     this.handleScroll = throttle(this.handleScroll.bind(this), 50);
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.handleTouchStart = this.handleTouchStart.bind(this);
@@ -106,10 +112,14 @@ class ContextMenu extends React.Component {
 
   handleMouseDown = (e) => {
     const { uiActions: { hideContextMenu } } = this.props;
-    
-    if (this._ref && !this._ref.contains(e.target)) {
+
+    console.log(this.ref);
+
+    if (this.ref && this.ref.current && !this.ref.current.contains(e.target)) {
       console.log('outside');
       hideContextMenu();
+    } else {
+      console.log('not outside');
     }
 
     /*
@@ -127,10 +137,6 @@ class ContextMenu extends React.Component {
     if ($(e.target).closest('.context-menu').length <= 0 && $(e.target).closest('.context-menu-trigger').length <= 0) {
       hideContextMenu();
     }
-  }
-
-  setRef(ref) {
-    this._ref = ref;
   }
 
   getContext(props = this.props) {
@@ -214,7 +220,7 @@ class ContextMenu extends React.Component {
 
     if (!uri) return false;
     if (tracks[uri] === undefined) return false;
-    
+
     const track = tracks[uri];
     return (track.userloved !== undefined && track.userloved == '1');
   }
@@ -275,8 +281,8 @@ class ContextMenu extends React.Component {
         items,
       } = {},
     } = this.props;
-    
-    hideContextMenu();    
+
+    hideContextMenu();
     removeTracks(arrayOf('tlid', items));
   }
 
@@ -293,7 +299,7 @@ class ContextMenu extends React.Component {
         tracklist_uri,
       } = {},
     } = this.props;
-  
+
     hideContextMenu();
     playURIs(uris, tracklist_uri);
   }
@@ -310,7 +316,7 @@ class ContextMenu extends React.Component {
         uris,
       } = {},
     } = this.props;
-  
+
     hideContextMenu();
     playPlaylist(uris[0]);
   }
@@ -327,7 +333,7 @@ class ContextMenu extends React.Component {
         uris,
       } = {},
     } = this.props;
-  
+
     hideContextMenu();
     enqueuePlaylist(uris[0], play_next);
   }
@@ -344,7 +350,7 @@ class ContextMenu extends React.Component {
         uris,
       } = {},
     } = this.props;
-  
+
     hideContextMenu();
     playPlaylist(uris[0], true);
   }
@@ -361,7 +367,7 @@ class ContextMenu extends React.Component {
         uris,
       } = {},
     } = this.props;
-  
+
     hideContextMenu();
     playArtistTopTracks(uris[0]);
   }
@@ -379,7 +385,7 @@ class ContextMenu extends React.Component {
         tracklist_uri,
       } = {},
     } = this.props;
-  
+
     hideContextMenu();
     enqueueURIs(uris, tracklist_uri, play_next);
   }
@@ -396,7 +402,7 @@ class ContextMenu extends React.Component {
         uris,
       } = {},
     } = this.props;
-  
+
     hideContextMenu();
     addTracksToPlaylist(playlist_uri, uris);
   }
@@ -414,7 +420,7 @@ class ContextMenu extends React.Component {
         uris,
       } = {},
     } = this.props;
-  
+
     hideContextMenu();
     if (is_loved) {
       unloveTrack(uris[0]);
@@ -435,7 +441,7 @@ class ContextMenu extends React.Component {
         items,
       } = {},
     } = this.props;
-  
+
     hideContextMenu();
     unloveTrack(items[0]);
   }
@@ -453,7 +459,7 @@ class ContextMenu extends React.Component {
         indexes,
       } = {},
     } = this.props;
-  
+
     hideContextMenu();
     removeTracksFromPlaylist(tracklist_uri, indexes);
   }
@@ -470,7 +476,7 @@ class ContextMenu extends React.Component {
         uris,
       } = {},
     } = this.props;
-  
+
     hideContextMenu();
     deletePlaylist(uris[0]);
   }
@@ -487,7 +493,7 @@ class ContextMenu extends React.Component {
         uris,
       } = {},
     } = this.props;
-  
+
     hideContextMenu();
     startRadio(uris);
   }
@@ -504,7 +510,7 @@ class ContextMenu extends React.Component {
         push,
       },
     } = this.props;
-  
+
     hideContextMenu();
     push(`/discover/recommendations/${arrayOf('uri', items).join(',')}`);
   }
@@ -524,7 +530,7 @@ class ContextMenu extends React.Component {
 
     if (!items || items.length <= 0 || !items[0].artists_uris || items[0].artists_uris.length <= 0) {
       return null;
-    }  
+    }
     hideContextMenu();
 
     // note: we can only go to one artist (even if this item has multiple artists, just go to the first one)
@@ -543,7 +549,7 @@ class ContextMenu extends React.Component {
         push,
       },
     } = this.props;
-  
+
     if (!items || items.length <= 0 || !items[0].user_uri) return null;
     hideContextMenu();
     push(buildLink(items[0].user_uri));
@@ -561,7 +567,7 @@ class ContextMenu extends React.Component {
         push,
       },
     } = this.props;
-  
+
     if (!uris) return null;
     hideContextMenu();
     push(buildLink(uris[0]));
@@ -577,7 +583,7 @@ class ContextMenu extends React.Component {
       menu: {
         uris,
       } = {},
-    } = this.props;  
+    } = this.props;
 
     const temp = $('<input>');
     $('body').append(temp);
@@ -1087,7 +1093,7 @@ Copy URI
       },
     } = this.props;
     const { submenu } = this.state;
-  
+
     if (!menu) return null;
 
     const style = {
@@ -1110,14 +1116,16 @@ Copy URI
     }
 
     return (
-      <div id="context-menu" className={className} style={style}>
-        <div className="context-menu__section context-menu__section--items">
-          {this.renderTitle()}
-          {this.props.menu.context == 'custom' ? this.props.menu.options : this.renderItems()}
+      <Wrapper ref={this.ref}>
+        <div id="context-menu" className={className} style={style}>
+          <div className="context-menu__section context-menu__section--items">
+            {this.renderTitle()}
+            {this.props.menu.context == 'custom' ? this.props.menu.options : this.renderItems()}
+          </div>
+          {this.renderSubmenu()}
+          <div className="context-menu__background" onClick={hideContextMenu} />
         </div>
-        {this.renderSubmenu()}
-        <div className="context-menu__background" onClick={hideContextMenu} />
-      </div>
+      </Wrapper>
     );
   }
 }
