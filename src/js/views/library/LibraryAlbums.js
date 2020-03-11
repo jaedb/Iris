@@ -55,35 +55,42 @@ class LibraryAlbums extends React.Component {
     }
   }
 
-  componentWillReceiveProps(newProps) {
-    if (newProps.mopidy_connected && (newProps.source == 'all' || newProps.source == 'local')) {
-      // We've just connected
-      if (!this.props.mopidy_connected) {
-        this.props.mopidyActions.getLibraryAlbums();
-      }
+  componentDidUpdate = ({
+    mopidy_connected: prev_mopidy_connected,
+  }) => {
+    const {
+      mopidy_connected,
+      google_enabled,
+      spotify_enabled,
+      source,
+      mopidyActions,
+      googleActions,
+      spotifyActions,
+      mopidy_library_albums_status,
+      google_library_albums_status,
+      spotify_library_albums_status,
+    } = this.props;
+
+    if (mopidy_connected && (source == 'all' || source == 'local')) {
+      if (!prev_mopidy_connected) mopidyActions.getLibraryAlbums();
 
       // Filter changed, but we haven't got this provider's library yet
-      if (this.props.source != 'all' && this.props.source != 'local' && newProps.mopidy_library_albums_status != 'finished' && newProps.mopidy_library_albums_status != 'started') {
-        this.props.mopidyActions.getLibraryAlbums();
+      if (source !== 'all' && source !== 'local' && mopidy_library_albums_status !== 'finished' && mopidy_library_albums_status !== 'started') {
+        mopidyActions.getLibraryAlbums();
       }
     }
 
-    if (newProps.google_enabled && (newProps.source == 'all' || newProps.source == 'google')) {
-      // We've just been enabled (or detected as such)
-      if (!this.props.google_enabled) {
-        this.props.googleActions.getLibraryAlbums();
-      }
-
+    if (google_enabled && (newProps.source == 'all' || newProps.source == 'google')) {
       // Filter changed, but we haven't got this provider's library yet
-      if (this.props.source != 'all' && this.props.source != 'google' && newProps.google_library_albums_status != 'finished' && newProps.google_library_albums_status != 'started') {
-        this.props.googleActions.getLibraryAlbums();
+      if (source !== 'all' && source !== 'google' && google_library_albums_status !== 'finished' && google_library_albums_status !== 'started') {
+        googleActions.getLibraryAlbums();
       }
     }
 
-    if (newProps.spotify_enabled && (newProps.source == 'all' || newProps.source == 'spotify')) {
+    if (spotify_enabled && (source === 'all' || source === 'spotify')) {
       // Filter changed, but we haven't got this provider's library yet
-      if (newProps.spotify_library_albums_status != 'finished' && newProps.spotify_library_albums_status != 'started') {
-        this.props.spotifyActions.getLibraryAlbums();
+      if (spotify_library_albums_status !== 'finished' && spotify_library_albums_status !== 'started') {
+        spotifyActions.getLibraryAlbums();
       }
     }
   }

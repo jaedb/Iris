@@ -158,11 +158,21 @@ class Discover extends React.Component {
     }
   }
 
-  componentWillReceiveProps(newProps, newState) {
-    // New seeds via URL
-    if (newProps.match.params.seeds != this.props.match.params.seeds) {
-      this.handleURLSeeds(newProps.match.params.seeds);
-    }
+  componentDiUpdate = ({
+    match: {
+      params: {
+        seeds: prevSeeds,
+      },
+    },
+  }) => {
+    const {
+      match: {
+        params: {
+          seeds,
+        },
+      },
+    } = this.props;
+    if (prevSeeds !== seeds) this.handleURLSeeds(seeds);
   }
 
   handleContextMenu(e) {
