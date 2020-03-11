@@ -1,4 +1,4 @@
-
+import { uriSource } from './helpers';
 
 /**
  * Digest an array of objects and pull into simple array of one property

@@ -28,15 +28,25 @@ class User extends React.Component {
     this.props.coreActions.loadUserPlaylists(this.props.uri);
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.uri != this.props.uri) {
-      this.props.coreActions.loadUser(nextProps.uri);
-      this.props.coreActions.loadUserPlaylists(this.props.uri);
+  componentDidUpdate = ({
+    uri: prevUri,
+    user: prevUser,
+  }) => {
+    const {
+      uri,
+      user,
+      coreActions: {
+        loadUser,
+        loadUserPlaylists,
+      },
+    } = this.props;
+
+    if (prevUri !== uri) {
+      loadUser(uri);
+      loadUserPlaylists(uri);
     }
 
-    if (!this.props.user && nextProps.user) {
-      this.setWindowTitle(nextProps.user);
-    }
+    if (!prevUser && user) this.setWindowTitle(user);
   }
 
   setWindowTitle(user = this.props.user) {

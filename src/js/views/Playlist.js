@@ -47,27 +47,37 @@ class Playlist extends React.Component {
     this.props.coreActions.loadPlaylist(this.props.uri);
   }
 
-  componentWillReceiveProps(nextProps) {
-    // Follow a URI moved_to instruction
-    if (this.props.playlist && nextProps.playlist && this.props.playlist.moved_to != nextProps.playlist.moved_to) {
-      this.props.history.push(`/playlist/${encodeURIComponent(nextProps.playlist.moved_to)}`);
+  componentDidUpdate = ({
+    uri: prevUri,
+    playlist: prevPlaylist,
+    mopidy_connected: prev_mopidy_connected,
+  }) => {
+    const {
+      uri,
+      playlist,
+      mopidy_connected,
+      coreActions: {
+        loadPlaylist,
+      },
+      history: {
+        push,
+      },
+    } = this.props;
+  
+    if (prevPlaylist && playlist && prevPlaylist.moved_to !== playlist.moved_to) {
+      push(`/playlist/${encodeURIComponent(playlist.moved_to)}`);
     }
 
-    if (nextProps.uri != this.props.uri) {
-      this.props.coreActions.loadPlaylist(nextProps.uri);
-    } else if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
-      if (uriSource(this.props.uri) != 'spotify') {
-        this.props.coreActions.loadPlaylist(nextProps.uri);
+    if (uri !== prevUri) {
+      loadPlaylist(uri);
+    } else if (!prev_mopidy_connected && mopidy_connected) {
+      if (uriSource(uri) !== 'spotify') {
+        loadPlaylist(nextProps.uri);
       }
     }
 
-    if (!this.props.playlist && nextProps.playlist) {
-      this.setWindowTitle(nextProps.playlist);
-    }
-
-    if (this.props.uri !== nextProps.uri && nextProps.playlist) {
-      this.setWindowTitle(nextProps.playlist);
-    }
+    if (!prevPlaylist && playlist) this.setWindowTitle(playlist);
+    if (prevUri !== uri && playlist) this.setWindowTitle(playlist);
   }
 
   setWindowTitle(playlist = this.props.playlist) {

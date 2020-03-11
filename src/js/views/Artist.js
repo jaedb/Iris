@@ -39,22 +39,30 @@ class Artist extends React.Component {
     this.props.coreActions.loadArtist(this.props.uri);
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.uri != this.props.uri) {
-      this.props.coreActions.loadArtist(nextProps.uri);
-    } else if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
-      if (uriSource(this.props.uri) != 'spotify') {
-        this.props.coreActions.loadArtist(nextProps.uri);
+  componentDidUpdate = ({
+    uri: prevUri,
+    mopidy_connected: prev_mopidy_connected,
+    artist: prevArtist,
+  }) => {
+    const {
+      uri,
+      mopidy_connected,
+      artist,
+      coreActions: {
+        loadArtist,
+      },
+    } = this.props;
+  
+    if (uri !== prevUri) {
+      loadArtist(uri);
+    } else if (!prev_mopidy_connected && mopidy_connected) {
+      if (uriSource(uri) != 'spotify') {
+        loadArtist(uri);
       }
     }
 
-    if (!this.props.artist && nextProps.artist) {
-      this.setWindowTitle(nextProps.artist);
-    }
-
-    if (this.props.uri !== nextProps.uri && nextProps.artist) {
-      this.setWindowTitle(nextProps.artist);
-    }
+    if (!prevArtist && artist) this.setWindowTitle(artist);
+    if (prevUri !== uri && artist) this.setWindowTitle(artist);
   }
 
   setWindowTitle(artist = this.props.artist) {

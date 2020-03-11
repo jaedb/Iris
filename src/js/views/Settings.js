@@ -36,18 +36,16 @@ class Settings extends React.Component {
     this.props.uiActions.setWindowTitle('Settings');
   }
 
-  componentWillReceiveProps(nextProps) {
-    let changed = false;
-    const { state } = this;
+  componentDidUpdate = () => {
+    const { pusher: { username } } = this.props;
+    const { pusher_username, input_in_focus } = this.state;
+    let new_username = null;
 
-    if (nextProps.pusher.username && nextProps.pusher.username != this.state.pusher_username && this.state.input_in_focus != 'pusher_username') {
-      state.pusher_username = nextProps.pusher.username;
-      changed = true;
+    if (username && username !== pusher_username && input_in_focus !== 'pusher_username') {
+      new_username = username;
     }
 
-    if (changed) {
-      this.setState(state);
-    }
+    if (new_username) this.setState({ pusher_username: new_username });
   }
 
   resetAllSettings() {

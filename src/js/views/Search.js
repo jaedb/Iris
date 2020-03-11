@@ -47,22 +47,29 @@ class Search extends React.Component {
     });
   }
 
-  componentWillReceiveProps(nextProps) {
-    const { type, term } = this.props;
-    const { type: nextType, term: nextTerm } = nextProps;
-    if (nextType !== type || nextTerm !== term) {
-      this.digestUri({
-        type: nextType,
-        term: nextTerm,
-      });
+  componentDidUpdate = ({
+    type: prevType,
+    term: prevTerm,
+    mopidy_connected: prev_mopidy_connected,
+  }) => {
+    const {
+      type: typeProp,
+      term: termProp,
+      mopidy_connected,
+      uri_schemes_search_enabled,
+    } = this.props;
+    const { type, term } = this.state;
+
+    if (prevType !== typeProp || prevTerm !== termProp) {
+      this.digestUri({ type: typeProp, term: termProp });
     }
 
     // Services came online
-    if (!this.props.mopidy_connected && nextProps.mopidy_connected && nextProps.uri_schemes_search_enabled) {
-      this.search(this.state.type, this.state.term, 'mopidy');
+    if (!prev_mopidy_connected && mopidy_connected && uri_schemes_search_enabled) {
+      this.search(type, term, 'mopidy');
 
-      if (nextProps.uri_schemes_search_enabled.includes('spotify:')) {
-        this.search(this.state.type, this.state.term, 'spotify');
+      if (uri_schemes_search_enabled.includes('spotify:')) {
+        this.search(type, term, 'spotify');
       }
     }
   }

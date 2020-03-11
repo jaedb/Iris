@@ -16,10 +16,9 @@ class QueueHistory extends React.Component {
     this.loadHistory();
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
-      this.loadHistory(nextProps);
-    }
+  componentDidUpdate = ({ mopidy_connected: prev_mopidy_connected }) => {
+    const { mopidy_connected } = this.props;
+    if (!prev_mopidy_connected && mopidy_connected) this.loadHistory();
   }
 
   loadHistory(props = this.props) {
