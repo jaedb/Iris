@@ -318,7 +318,7 @@ class ContextMenu extends React.Component {
     enqueuePlaylist(uris[0], play_next);
   }
 
-  shufflePlayPlaylist(e) {
+  shufflePlayPlaylist = () => {
     const {
       uiActions: {
         hideContextMenu,
@@ -461,7 +461,7 @@ class ContextMenu extends React.Component {
     deletePlaylist(uris[0]);
   }
 
-  startRadio(e) {
+  startRadio = () => {
     const {
       uiActions: {
         hideContextMenu,
@@ -478,7 +478,7 @@ class ContextMenu extends React.Component {
     startRadio(uris);
   }
 
-  goToRecommendations(e) {
+  goToRecommendations = () => {
     const {
       uiActions: {
         hideContextMenu,
@@ -553,7 +553,6 @@ class ContextMenu extends React.Component {
     push(buildLink(uris[0]));
   }
 
-
   copyURIs = () => {
     const {
       uiActions: {
@@ -598,6 +597,7 @@ class ContextMenu extends React.Component {
               className="context-menu__title__deselect"
               onClick={() => {
                 setSelectedTracks([]);
+                hideContextMenu();
               }}>
                 <Icon name="close" />
               </span>
@@ -606,7 +606,7 @@ class ContextMenu extends React.Component {
       );
     }
 
-    if (context.items_count == 1 && context.name == 'queue-track' && context.item !== undefined) {
+    if (context.items_count === 1 && context.name === 'queue-track' && context.item !== undefined) {
       if (queue_metadata[`tlid_${context.item.tlid}`] !== undefined) {
         const metadata = queue_metadata[`tlid_${context.item.tlid}`];
 
@@ -642,7 +642,7 @@ class ContextMenu extends React.Component {
       }
     }
 
-    if (context.name == 'custom') {
+    if (context.name === 'custom') {
       if (!title) return null;
 
       return (
@@ -653,6 +653,8 @@ class ContextMenu extends React.Component {
         </div>
       );
     }
+
+    return null;
   }
 
   setSubmenu = (name) => {
@@ -672,8 +674,6 @@ class ContextMenu extends React.Component {
   }
 
   closeSubmenu = () => this.setState({ submenu: null });
-
-  // THIS IS WHERE I GOT TO
 
   renderSubmenu = () => {
     const { submenu } = this.state;
