@@ -18,14 +18,25 @@ class DiscoverCategory extends React.Component {
     this.setWindowTitle();
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.match.params.id != this.props.match.params.id) {
-      this.loadCategory();
-    }
+  componentDidUpdate = ({
+    match: {
+      params: {
+        id: prevId,
+      },
+    },
+    category: prevCategory,
+  }) => {
+    const {
+      match: {
+        params: {
+          id,
+        },
+      },
+      category,
+    } = this.props;
 
-    if (!this.props.category && nextProps.category) {
-      this.setWindowTitle(nextProps.category);
-    }
+    if (prevId !== id) this.loadCategory();
+    if (!prevCategory && category) this.setWindowTitle(category);
   }
 
   setWindowTitle(category = this.props.category) {
