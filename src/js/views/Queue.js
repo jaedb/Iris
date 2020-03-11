@@ -50,7 +50,14 @@ class Queue extends React.Component {
   componentDidUpdate = ({
     added_from_uri: prev_added_from_uri,
   }) => {
-    const { coreActions: { loadPlaylist }, added_from_uri } = this.props;
+    const {
+      coreActions: {
+        loadAlbum,
+        loadArtist,
+        loadPlaylist,
+      },
+      added_from_uri,
+    } = this.props;
 
     if (added_from_uri && added_from_uri !== prev_added_from_uri) {
       const item_type = uriType(added_from_uri);

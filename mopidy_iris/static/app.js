@@ -47629,7 +47629,7 @@ module.exports = hoistNonReactStatics;
 /*!***************************************************************!*\
   !*** ./node_modules/react-router-dom/esm/react-router-dom.js ***!
   \***************************************************************/
-/*! exports provided: MemoryRouter, Prompt, Redirect, Route, Router, StaticRouter, Switch, __RouterContext, generatePath, matchPath, useHistory, useLocation, useParams, useRouteMatch, withRouter, BrowserRouter, HashRouter, Link, NavLink */
+/*! exports provided: BrowserRouter, HashRouter, Link, NavLink, MemoryRouter, Prompt, Redirect, Route, Router, StaticRouter, Switch, __RouterContext, generatePath, matchPath, useHistory, useLocation, useParams, useRouteMatch, withRouter */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -61241,13 +61241,26 @@ var ContextMenu = function (_React$Component) {
       enqueuePlaylist(uris[0], play_next);
     };
 
-    _this.playArtistTopTracks = function () {
+    _this.shufflePlayPlaylist = function () {
       var _this$props12 = _this.props,
           hideContextMenu = _this$props12.uiActions.hideContextMenu,
-          playArtistTopTracks = _this$props12.spotifyActions.playArtistTopTracks,
+          playPlaylist = _this$props12.mopidyActions.playPlaylist,
           _this$props12$menu = _this$props12.menu;
       _this$props12$menu = _this$props12$menu === undefined ? {} : _this$props12$menu;
       var uris = _this$props12$menu.uris;
+
+
+      hideContextMenu();
+      playPlaylist(uris[0], true);
+    };
+
+    _this.playArtistTopTracks = function () {
+      var _this$props13 = _this.props,
+          hideContextMenu = _this$props13.uiActions.hideContextMenu,
+          playArtistTopTracks = _this$props13.spotifyActions.playArtistTopTracks,
+          _this$props13$menu = _this$props13.menu;
+      _this$props13$menu = _this$props13$menu === undefined ? {} : _this$props13$menu;
+      var uris = _this$props13$menu.uris;
 
 
       hideContextMenu();
@@ -61256,13 +61269,13 @@ var ContextMenu = function (_React$Component) {
 
     _this.addToQueue = function (e) {
       var play_next = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-      var _this$props13 = _this.props,
-          hideContextMenu = _this$props13.uiActions.hideContextMenu,
-          enqueueURIs = _this$props13.mopidyActions.enqueueURIs,
-          _this$props13$menu = _this$props13.menu;
-      _this$props13$menu = _this$props13$menu === undefined ? {} : _this$props13$menu;
-      var uris = _this$props13$menu.uris,
-          tracklist_uri = _this$props13$menu.tracklist_uri;
+      var _this$props14 = _this.props,
+          hideContextMenu = _this$props14.uiActions.hideContextMenu,
+          enqueueURIs = _this$props14.mopidyActions.enqueueURIs,
+          _this$props14$menu = _this$props14.menu;
+      _this$props14$menu = _this$props14$menu === undefined ? {} : _this$props14$menu;
+      var uris = _this$props14$menu.uris,
+          tracklist_uri = _this$props14$menu.tracklist_uri;
 
 
       hideContextMenu();
@@ -61270,12 +61283,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.addTracksToPlaylist = function (e, playlist_uri) {
-      var _this$props14 = _this.props,
-          hideContextMenu = _this$props14.uiActions.hideContextMenu,
-          addTracksToPlaylist = _this$props14.mopidyActions.addTracksToPlaylist,
-          _this$props14$menu = _this$props14.menu;
-      _this$props14$menu = _this$props14$menu === undefined ? {} : _this$props14$menu;
-      var uris = _this$props14$menu.uris;
+      var _this$props15 = _this.props,
+          hideContextMenu = _this$props15.uiActions.hideContextMenu,
+          addTracksToPlaylist = _this$props15.mopidyActions.addTracksToPlaylist,
+          _this$props15$menu = _this$props15.menu;
+      _this$props15$menu = _this$props15$menu === undefined ? {} : _this$props15$menu;
+      var uris = _this$props15$menu.uris;
 
 
       hideContextMenu();
@@ -61283,14 +61296,14 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.toggleLoved = function (e, is_loved) {
-      var _this$props15 = _this.props,
-          hideContextMenu = _this$props15.uiActions.hideContextMenu,
-          _this$props15$lastfmA = _this$props15.lastfmActions,
-          unloveTrack = _this$props15$lastfmA.unloveTrack,
-          loveTrack = _this$props15$lastfmA.loveTrack,
-          _this$props15$menu = _this$props15.menu;
-      _this$props15$menu = _this$props15$menu === undefined ? {} : _this$props15$menu;
-      var uris = _this$props15$menu.uris;
+      var _this$props16 = _this.props,
+          hideContextMenu = _this$props16.uiActions.hideContextMenu,
+          _this$props16$lastfmA = _this$props16.lastfmActions,
+          unloveTrack = _this$props16$lastfmA.unloveTrack,
+          loveTrack = _this$props16$lastfmA.loveTrack,
+          _this$props16$menu = _this$props16.menu;
+      _this$props16$menu = _this$props16$menu === undefined ? {} : _this$props16$menu;
+      var uris = _this$props16$menu.uris;
 
 
       hideContextMenu();
@@ -61302,12 +61315,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.unloveTrack = function () {
-      var _this$props16 = _this.props,
-          hideContextMenu = _this$props16.uiActions.hideContextMenu,
-          unloveTrack = _this$props16.lastfmActions.unloveTrack,
-          _this$props16$menu = _this$props16.menu;
-      _this$props16$menu = _this$props16$menu === undefined ? {} : _this$props16$menu;
-      var items = _this$props16$menu.items;
+      var _this$props17 = _this.props,
+          hideContextMenu = _this$props17.uiActions.hideContextMenu,
+          unloveTrack = _this$props17.lastfmActions.unloveTrack,
+          _this$props17$menu = _this$props17.menu;
+      _this$props17$menu = _this$props17$menu === undefined ? {} : _this$props17$menu;
+      var items = _this$props17$menu.items;
 
 
       hideContextMenu();
@@ -61315,13 +61328,13 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.removeFromPlaylist = function () {
-      var _this$props17 = _this.props,
-          hideContextMenu = _this$props17.uiActions.hideContextMenu,
-          removeTracksFromPlaylist = _this$props17.coreActions.removeTracksFromPlaylist,
-          _this$props17$menu = _this$props17.menu;
-      _this$props17$menu = _this$props17$menu === undefined ? {} : _this$props17$menu;
-      var tracklist_uri = _this$props17$menu.tracklist_uri,
-          indexes = _this$props17$menu.indexes;
+      var _this$props18 = _this.props,
+          hideContextMenu = _this$props18.uiActions.hideContextMenu,
+          removeTracksFromPlaylist = _this$props18.coreActions.removeTracksFromPlaylist,
+          _this$props18$menu = _this$props18.menu;
+      _this$props18$menu = _this$props18$menu === undefined ? {} : _this$props18$menu;
+      var tracklist_uri = _this$props18$menu.tracklist_uri,
+          indexes = _this$props18$menu.indexes;
 
 
       hideContextMenu();
@@ -61329,25 +61342,51 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.deletePlaylist = function () {
-      var _this$props18 = _this.props,
-          hideContextMenu = _this$props18.uiActions.hideContextMenu,
-          deletePlaylist = _this$props18.coreActions.deletePlaylist,
-          _this$props18$menu = _this$props18.menu;
-      _this$props18$menu = _this$props18$menu === undefined ? {} : _this$props18$menu;
-      var uris = _this$props18$menu.uris;
+      var _this$props19 = _this.props,
+          hideContextMenu = _this$props19.uiActions.hideContextMenu,
+          deletePlaylist = _this$props19.coreActions.deletePlaylist,
+          _this$props19$menu = _this$props19.menu;
+      _this$props19$menu = _this$props19$menu === undefined ? {} : _this$props19$menu;
+      var uris = _this$props19$menu.uris;
 
 
       hideContextMenu();
       deletePlaylist(uris[0]);
     };
 
+    _this.startRadio = function () {
+      var _this$props20 = _this.props,
+          hideContextMenu = _this$props20.uiActions.hideContextMenu,
+          startRadio = _this$props20.pusherActions.startRadio,
+          _this$props20$menu = _this$props20.menu;
+      _this$props20$menu = _this$props20$menu === undefined ? {} : _this$props20$menu;
+      var uris = _this$props20$menu.uris;
+
+
+      hideContextMenu();
+      startRadio(uris);
+    };
+
+    _this.goToRecommendations = function () {
+      var _this$props21 = _this.props,
+          hideContextMenu = _this$props21.uiActions.hideContextMenu,
+          _this$props21$menu = _this$props21.menu;
+      _this$props21$menu = _this$props21$menu === undefined ? {} : _this$props21$menu;
+      var items = _this$props21$menu.items,
+          push = _this$props21.history.push;
+
+
+      hideContextMenu();
+      push('/discover/recommendations/' + (0, _arrays.arrayOf)('uri', items).join(','));
+    };
+
     _this.goToArtist = function () {
-      var _this$props19 = _this.props,
-          hideContextMenu = _this$props19.uiActions.hideContextMenu,
-          _this$props19$menu = _this$props19.menu;
-      _this$props19$menu = _this$props19$menu === undefined ? {} : _this$props19$menu;
-      var items = _this$props19$menu.items,
-          push = _this$props19.history.push;
+      var _this$props22 = _this.props,
+          hideContextMenu = _this$props22.uiActions.hideContextMenu,
+          _this$props22$menu = _this$props22.menu;
+      _this$props22$menu = _this$props22$menu === undefined ? {} : _this$props22$menu;
+      var items = _this$props22$menu.items,
+          push = _this$props22.history.push;
 
 
       if (!items || items.length <= 0 || !items[0].artists_uris || items[0].artists_uris.length <= 0) {
@@ -61360,12 +61399,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.goToUser = function () {
-      var _this$props20 = _this.props,
-          hideContextMenu = _this$props20.uiActions.hideContextMenu,
-          _this$props20$menu = _this$props20.menu;
-      _this$props20$menu = _this$props20$menu === undefined ? {} : _this$props20$menu;
-      var items = _this$props20$menu.items,
-          push = _this$props20.history.push;
+      var _this$props23 = _this.props,
+          hideContextMenu = _this$props23.uiActions.hideContextMenu,
+          _this$props23$menu = _this$props23.menu;
+      _this$props23$menu = _this$props23$menu === undefined ? {} : _this$props23$menu;
+      var items = _this$props23$menu.items,
+          push = _this$props23.history.push;
 
 
       if (!items || items.length <= 0 || !items[0].user_uri) return null;
@@ -61374,12 +61413,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.goToTrack = function () {
-      var _this$props21 = _this.props,
-          hideContextMenu = _this$props21.uiActions.hideContextMenu,
-          _this$props21$menu = _this$props21.menu;
-      _this$props21$menu = _this$props21$menu === undefined ? {} : _this$props21$menu;
-      var uris = _this$props21$menu.uris,
-          push = _this$props21.history.push;
+      var _this$props24 = _this.props,
+          hideContextMenu = _this$props24.uiActions.hideContextMenu,
+          _this$props24$menu = _this$props24.menu;
+      _this$props24$menu = _this$props24$menu === undefined ? {} : _this$props24$menu;
+      var uris = _this$props24$menu.uris,
+          push = _this$props24.history.push;
 
 
       if (!uris) return null;
@@ -61388,13 +61427,13 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.copyURIs = function () {
-      var _this$props22 = _this.props,
-          _this$props22$uiActio = _this$props22.uiActions,
-          hideContextMenu = _this$props22$uiActio.hideContextMenu,
-          createNotification = _this$props22$uiActio.createNotification,
-          _this$props22$menu = _this$props22.menu;
-      _this$props22$menu = _this$props22$menu === undefined ? {} : _this$props22$menu;
-      var uris = _this$props22$menu.uris;
+      var _this$props25 = _this.props,
+          _this$props25$uiActio = _this$props25.uiActions,
+          hideContextMenu = _this$props25$uiActio.hideContextMenu,
+          createNotification = _this$props25$uiActio.createNotification,
+          _this$props25$menu = _this$props25.menu;
+      _this$props25$menu = _this$props25$menu === undefined ? {} : _this$props25$menu;
+      var uris = _this$props25$menu.uris;
 
 
       var temp = $('<input>');
@@ -61408,12 +61447,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.renderTitle = function () {
-      var _this$props23 = _this.props,
-          _this$props23$uiActio = _this$props23.uiActions,
-          hideContextMenu = _this$props23$uiActio.hideContextMenu,
-          setSelectedTracks = _this$props23$uiActio.setSelectedTracks,
-          queue_metadata = _this$props23.queue_metadata,
-          title = _this$props23.menu.title;
+      var _this$props26 = _this.props,
+          _this$props26$uiActio = _this$props26.uiActions,
+          hideContextMenu = _this$props26$uiActio.hideContextMenu,
+          setSelectedTracks = _this$props26$uiActio.setSelectedTracks,
+          queue_metadata = _this$props26.queue_metadata,
+          title = _this$props26.menu.title;
 
 
       var context = _this.getContext();
@@ -61432,6 +61471,7 @@ var ContextMenu = function (_React$Component) {
                 className: 'context-menu__title__deselect',
                 onClick: function onClick() {
                   setSelectedTracks([]);
+                  hideContextMenu();
                 } },
               _react2.default.createElement(_Icon2.default, { name: 'close' })
             )
@@ -61439,7 +61479,7 @@ var ContextMenu = function (_React$Component) {
         );
       }
 
-      if (context.items_count == 1 && context.name == 'queue-track' && context.item !== undefined) {
+      if (context.items_count === 1 && context.name === 'queue-track' && context.item !== undefined) {
         if (queue_metadata['tlid_' + context.item.tlid] !== undefined) {
           var metadata = queue_metadata['tlid_' + context.item.tlid];
 
@@ -61493,7 +61533,7 @@ var ContextMenu = function (_React$Component) {
         }
       }
 
-      if (context.name == 'custom') {
+      if (context.name === 'custom') {
         if (!title) return null;
 
         return _react2.default.createElement(
@@ -61506,15 +61546,17 @@ var ContextMenu = function (_React$Component) {
           )
         );
       }
+
+      return null;
     };
 
     _this.setSubmenu = function (name) {
       var submenu = _this.state.submenu;
-      var _this$props24 = _this.props,
-          spotify_library_playlists_loaded_all = _this$props24.spotify_library_playlists_loaded_all,
-          mopidy_library_playlists_loaded_all = _this$props24.mopidy_library_playlists_loaded_all,
-          spotifyActions = _this$props24.spotifyActions,
-          mopidyActions = _this$props24.mopidyActions;
+      var _this$props27 = _this.props,
+          spotify_library_playlists_loaded_all = _this$props27.spotify_library_playlists_loaded_all,
+          mopidy_library_playlists_loaded_all = _this$props27.mopidy_library_playlists_loaded_all,
+          spotifyActions = _this$props27.spotifyActions,
+          mopidyActions = _this$props27.mopidyActions;
 
       if (submenu !== name && name == 'add-to-playlist') {
         if (!spotify_library_playlists_loaded_all) spotifyActions.getLibraryPlaylists();
@@ -61530,9 +61572,9 @@ var ContextMenu = function (_React$Component) {
 
     _this.renderSubmenu = function () {
       var submenu = _this.state.submenu;
-      var _this$props25 = _this.props,
-          playlists = _this$props25.playlists,
-          processes = _this$props25.processes;
+      var _this$props28 = _this.props,
+          playlists = _this$props28.playlists,
+          processes = _this$props28.processes;
 
 
       var list = null;
@@ -61614,10 +61656,10 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.renderItems = function () {
-      var _this$props26 = _this.props,
-          lastfm_authorized = _this$props26.lastfm_authorized,
-          spotify_authorized = _this$props26.spotify_authorized,
-          load_queue = _this$props26.load_queue;
+      var _this$props29 = _this.props,
+          lastfm_authorized = _this$props29.lastfm_authorized,
+          spotify_authorized = _this$props29.spotify_authorized,
+          load_queue = _this$props29.load_queue;
 
       var context = _this.getContext();
 
@@ -62159,56 +62201,11 @@ var ContextMenu = function (_React$Component) {
      * */
 
   }, {
-    key: 'shufflePlayPlaylist',
-    value: function shufflePlayPlaylist(e) {
-      var _props = this.props,
-          hideContextMenu = _props.uiActions.hideContextMenu,
-          playPlaylist = _props.mopidyActions.playPlaylist,
-          _props$menu = _props.menu;
-      _props$menu = _props$menu === undefined ? {} : _props$menu;
-      var uris = _props$menu.uris;
-
-
-      hideContextMenu();
-      playPlaylist(uris[0], true);
-    }
-  }, {
-    key: 'startRadio',
-    value: function startRadio(e) {
-      var _props2 = this.props,
-          hideContextMenu = _props2.uiActions.hideContextMenu,
-          startRadio = _props2.pusherActions.startRadio,
-          _props2$menu = _props2.menu;
-      _props2$menu = _props2$menu === undefined ? {} : _props2$menu;
-      var uris = _props2$menu.uris;
-
-
-      hideContextMenu();
-      startRadio(uris);
-    }
-  }, {
-    key: 'goToRecommendations',
-    value: function goToRecommendations(e) {
-      var _props3 = this.props,
-          hideContextMenu = _props3.uiActions.hideContextMenu,
-          _props3$menu = _props3.menu;
-      _props3$menu = _props3$menu === undefined ? {} : _props3$menu;
-      var items = _props3$menu.items,
-          push = _props3.history.push;
-
-
-      hideContextMenu();
-      push('/discover/recommendations/' + (0, _arrays.arrayOf)('uri', items).join(','));
-    }
-
-    // THIS IS WHERE I GOT TO
-
-  }, {
     key: 'render',
     value: function render() {
-      var _props4 = this.props,
-          menu = _props4.menu,
-          hideContextMenu = _props4.uiActions.hideContextMenu;
+      var _props = this.props,
+          menu = _props.menu,
+          hideContextMenu = _props.uiActions.hideContextMenu;
       var submenu = this.state.submenu;
 
 
@@ -65267,6 +65264,13 @@ var OutputControl = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (OutputControl.__proto__ || Object.getPrototypeOf(OutputControl)).call(this, props));
 
+    _this.componentDidUpdate = function (_ref) {
+      var prev_force_expanded = _ref.force_expanded;
+      var force_expanded = _this.props.force_expanded;
+
+      if (!prev_force_expanded && force_expanded) _this.setExpanded(true);
+    };
+
     _this.state = {
       expanded: false
     };
@@ -65280,14 +65284,6 @@ var OutputControl = function (_React$Component) {
     value: function handleClick(e) {
       if (!this.props.force_expanded && $(e.target).closest('.output-control').length <= 0) {
         this.setExpanded(false);
-      }
-    }
-  }, {
-    key: 'componentWillReceiveProps',
-    value: function componentWillReceiveProps(nextProps) {
-      // When force expanded triggered
-      if (!this.props.force_expanded && nextProps.force_expanded) {
-        this.setExpanded(true, nextProps);
       }
     }
   }, {
@@ -68396,6 +68392,13 @@ var Parallax = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (Parallax.__proto__ || Object.getPrototypeOf(Parallax)).call(this, props));
 
+    _this.componentDidUpdate = function () {
+      var image = _this.props.image;
+      var url = _this.state.url;
+
+      if (image !== url) _this.loadImage(image);
+    };
+
     _this.state = {
       loaded: false,
       url: null,
@@ -68409,13 +68412,6 @@ var Parallax = function (_React$Component) {
     value: function componentDidMount() {
       if (this.props.image) {
         this.loadImage(this.props.image);
-      }
-    }
-  }, {
-    key: 'componentWillReceiveProps',
-    value: function componentWillReceiveProps(nextProps) {
-      if (nextProps.image !== this.state.url) {
-        this.loadImage(nextProps.image);
       }
     }
   }, {
@@ -68501,6 +68497,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
@@ -68579,6 +68577,44 @@ var PlaybackControls = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (PlaybackControls.__proto__ || Object.getPrototypeOf(PlaybackControls)).call(this, props));
 
+    _this.componentDidUpdate = function (_ref) {
+      var prev_http_streaming_cachebuster = _ref.http_streaming_cachebuster,
+          prev_http_streaming_enabled = _ref.http_streaming_enabled,
+          prev_http_streaming_mute = _ref.http_streaming_mute,
+          prev_http_streaming_volume = _ref.http_streaming_volume;
+      var _this$props = _this.props,
+          http_streaming_cachebuster = _this$props.http_streaming_cachebuster,
+          http_streaming_enabled = _this$props.http_streaming_enabled,
+          http_streaming_mute = _this$props.http_streaming_mute,
+          http_streaming_volume = _this$props.http_streaming_volume;
+
+      // Cachebuster changed
+      // This happens when playback changes, so that the stream is "new", rather
+      // than the original stream. This prevents the browser cache from starting
+      // the stream right from the beginning (which could be hours of continuous playback).
+
+      if (prev_http_streaming_cachebuster !== http_streaming_cachebuster) _this.playStream();
+
+      // Just been enabled
+      if (!prev_http_streaming_enabled && http_streaming_enabled) _this.playStream();
+
+      if (_this.stream) {
+        if (http_streaming_mute !== prev_http_streaming_mute) {
+          _this.stream.muted = http_streaming_mute;
+        }
+
+        // Just had volume changed
+        if (http_streaming_volume !== prev_http_streaming_volume) {
+          _this.stream.volume = http_streaming_volume / 100;
+        }
+
+        // Just been disabled
+        if (!http_streaming_enabled) {
+          _this.stream = null;
+        }
+      }
+    };
+
     _this.stream = null;
     _this.state = {
       expanded: false,
@@ -68622,58 +68658,6 @@ var PlaybackControls = function (_React$Component) {
       this.stream.play();
 
       console.log('Playing stream: ' + this.stream.src);
-    }
-  }, {
-    key: 'componentWillReceiveProps',
-    value: function componentWillReceiveProps(nextProps) {
-      // Cachebuster changed
-      // This happens when playback changes, so that the stream is "new", rather
-      // than the original stream. This prevents the browser cache from starting
-      // the stream right from the beginning (which could be hours of continuous playback).
-      if (this.props.http_streaming_cachebuster !== nextProps.http_streaming_cachebuster) {
-        this.playStream(nextProps);
-      }
-
-      // Just been enabled
-      if (!this.props.http_streaming_enabled && nextProps.http_streaming_enabled) {
-        this.playStream(nextProps);
-      }
-
-      if (this.stream) {
-        // Just been muted
-        if (this.props.http_streaming_mute !== nextProps.http_streaming_mute) {
-          this.stream.muted = nextProps.http_streaming_mute;
-        }
-
-        // Just had volume changed
-        if (this.props.http_streaming_volume !== nextProps.http_streaming_volume) {
-          this.stream.volume = nextProps.http_streaming_volume / 100;
-        }
-
-        // Just been disabled
-        if (!nextProps.http_streaming_enabled) {
-          this.stream = null;
-        }
-      }
-
-      // Started a track or changed to no track
-      if (!this.props.current_track && nextProps.current_track || this.props.current_track && !nextProps.current_track) {
-        this.setState({ current_track: nextProps.current_track });
-      }
-
-      // Direct swap-out of a track (with no 'null' intermediate state)
-      // This is precautionary and I've never been able to trigger it, but it's a good safety
-      if (this.props.current_track && nextProps.current_track && this.props.current_track.uri !== nextProps.current_track.uri) {
-        this.setState({ current_track: nextProps.current_track });
-      }
-
-      // Images have just loaded
-      // A bit niggly to have to deeply check this...
-      if (this.props.current_track && nextProps.current_track) {
-        if (this.props.current_track.images && !nextProps.current_track.images || !this.props.current_track.images && nextProps.current_track.images) {
-          this.setState({ current_track: nextProps.current_track });
-        }
-      }
     }
   }, {
     key: 'handleTouchStart',
@@ -69025,6 +69009,15 @@ var PlaybackControls = function (_React$Component) {
           )
         )
       );
+    }
+  }], [{
+    key: 'getDerivedStateFromProps',
+    value: function getDerivedStateFromProps(_ref2, state) {
+      var current_track = _ref2.current_track;
+
+      return _extends({}, state, {
+        current_track: current_track
+      });
     }
   }]);
 
@@ -84854,8 +84847,11 @@ exports.default = function (state) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.shuffle = exports.sortItems = exports.createRange = exports.applyFilter = exports.removeDuplicates = exports.mergeDuplicates = exports.arrayOf = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _helpers = __webpack_require__(/*! ./helpers */ "./src/js/util/helpers.js");
 
 /**
  * Digest an array of objects and pull into simple array of one property
@@ -85069,8 +85065,8 @@ var sortItems = function sortItems(array, property) {
 
     // Sorting by URI as a reference for sorting by uri source (first component of URI)
     if (property == 'uri') {
-      a_value = uriSource(a_value);
-      b_value = uriSource(b_value);
+      a_value = (0, _helpers.uriSource)(a_value);
+      b_value = (0, _helpers.uriSource)(b_value);
     }
 
     // Map sorting
@@ -87083,8 +87079,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Album = undefined;
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
@@ -87183,122 +87177,147 @@ var Album = exports.Album = function (_React$Component) {
   _inherits(Album, _React$Component);
 
   function Album() {
+    var _ref;
+
+    var _temp, _this, _ret;
+
     _classCallCheck(this, Album);
 
-    return _possibleConstructorReturn(this, (Album.__proto__ || Object.getPrototypeOf(Album)).apply(this, arguments));
-  }
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
 
-  _createClass(Album, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      this.setWindowTitle();
-      this.props.coreActions.loadAlbum(this.props.uri);
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = Album.__proto__ || Object.getPrototypeOf(Album)).call.apply(_ref, [this].concat(args))), _this), _this.componentDidMount = function () {
+      var _this$props = _this.props,
+          uri = _this$props.uri,
+          album = _this$props.album,
+          loadAlbum = _this$props.coreActions.loadAlbum,
+          getAlbum = _this$props.lastfmActions.getAlbum;
+
+
+      _this.setWindowTitle();
+      loadAlbum(uri);
 
       // We already have the album in our index, so it won't fire componentWillReceiveProps
-      if (this.props.album) {
-        if (this.props.album.artists && this.props.album.wiki === undefined) {
-          this.props.lastfmActions.getAlbum(this.props.album.uri, this.props.album.artists[0].name, this.props.album.name);
+      if (album) {
+        if (album.artists && album.wiki === undefined) {
+          getAlbum(album.uri, album.artists[0].name, album.name);
         }
       }
-    }
-  }, {
-    key: 'handleContextMenu',
-    value: function handleContextMenu(e) {
-      e.preventDefault();
-      var data = { uris: [this.props.uri] };
-      this.props.uiActions.showContextMenu(e, data, 'album', 'click');
-    }
-  }, {
-    key: 'componentWillReceiveProps',
-    value: function componentWillReceiveProps(nextProps) {
-      // if our URI has changed, fetch new album
-      if (nextProps.uri != this.props.uri) {
-        this.props.coreActions.loadAlbum(nextProps.uri);
+    }, _this.handleContextMenu = function (e) {
+      var _this$props2 = _this.props,
+          uri = _this$props2.uri,
+          showContextMenu = _this$props2.uiActions.showContextMenu;
 
-        // if mopidy has just connected AND we're a local album, go get
-      } else if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
-        if ((0, _helpers.uriSource)(nextProps.uri) != 'spotify') {
-          this.props.coreActions.loadAlbum(nextProps.uri);
+
+      e.preventDefault();
+      var data = { uris: [uri] };
+      showContextMenu(e, data, 'album', 'click');
+    }, _this.componentDidUpdate = function (_ref2) {
+      var prevUri = _ref2.uri,
+          prevAlbum = _ref2.album,
+          prev_mopidy_connected = _ref2.mopidy_connected;
+      var _this$props3 = _this.props,
+          uri = _this$props3.uri,
+          album = _this$props3.album,
+          mopidy_connected = _this$props3.mopidy_connected,
+          loadAlbum = _this$props3.coreActions.loadAlbum,
+          getAlbum = _this$props3.lastfmActions.getAlbum;
+
+
+      if (uri !== prevUri) {
+        loadAlbum(uri);
+      } else if (!prev_mopidy_connected && mopidy_connected) {
+        if ((0, _helpers.uriSource)(uri) !== 'spotify') {
+          loadAlbum(uri);
         }
       }
 
       // We have just received our full album or our album artists
-      if (!this.props.album && nextProps.album || !this.props.album.artists && nextProps.album.artists) {
-        if (nextProps.album.wiki === undefined && nextProps.artists.length > 0) {
-          this.props.lastfmActions.getAlbum(nextProps.album.uri, nextProps.album.artists[0].name, nextProps.album.name);
+      if (!prevAlbum && album || !prevAlbum.artists && album.artists) {
+        if (album.wiki === undefined && album.artists.length > 0) {
+          getAlbum(album.uri, album.artists[0].name, album.name);
         }
       }
 
-      if (!this.props.album && nextProps.album) {
-        this.setWindowTitle(nextProps.album);
-      }
-    }
-  }, {
-    key: 'setWindowTitle',
-    value: function setWindowTitle() {
-      var album = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props.album;
+      if (!prevAlbum && album) _this.setWindowTitle(album);
+    }, _this.setWindowTitle = function () {
+      var album = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _this.props.album;
+      var setWindowTitle = _this.props.uiActions.setWindowTitle;
+
 
       if (album) {
         var artists = '';
-        if (album.artists_uris && this.props.artists) {
+        if (album.artists_uris && artists) {
           for (var i = 0; i < album.artists_uris.length; i++) {
             var uri = album.artists_uris[i];
-            if (this.props.artists.hasOwnProperty(uri)) {
+            if (artists.hasOwnProperty(uri)) {
               if (artists != '') {
                 artists += ', ';
               }
-              artists += this.props.artists[uri].name;
+              artists += artists[uri].name;
             }
           }
         }
-        this.props.uiActions.setWindowTitle(album.name + ' by ' + artists + ' (album)');
+        setWindowTitle(album.name + ' by ' + artists + ' (album)');
       } else {
-        this.props.uiActions.setWindowTitle('Album');
+        setWindowTitle('Album');
       }
-    }
-  }, {
-    key: 'handleContextMenu',
-    value: function handleContextMenu(e) {
-      var data = {
+    }, _this.handleContextMenu = function (e) {
+      var _this$props4 = _this.props,
+          album = _this$props4.album,
+          uri = _this$props4.uri,
+          showContextMenu = _this$props4.uiActions.showContextMenu;
+
+
+      showContextMenu({
         e: e,
         context: 'album',
-        items: [this.props.album],
-        uris: [this.props.uri]
-      };
-      this.props.uiActions.showContextMenu(data);
-    }
-  }, {
-    key: 'loadMore',
-    value: function loadMore() {
-      this.props.spotifyActions.getMore(this.props.album.tracks_more, {
+        items: [album],
+        uris: [uri]
+      });
+    }, _this.loadMore = function () {
+      var _this$props5 = _this.props,
+          getMore = _this$props5.spotifyActions.getMore,
+          _this$props5$album = _this$props5.album;
+      _this$props5$album = _this$props5$album === undefined ? {} : _this$props5$album;
+      var uri = _this$props5$album.uri,
+          name = _this$props5$album.name,
+          tracks_more = _this$props5$album.tracks_more;
+
+
+      getMore(tracks_more, {
         parent_type: 'album',
-        parent_key: this.props.album.uri,
+        parent_key: uri,
         records_type: 'track'
       }, null, {
         album: {
-          uri: this.props.album.uri,
-          name: this.props.album.name
+          uri: uri,
+          name: name
         }
       });
-    }
-  }, {
-    key: 'play',
-    value: function play() {
-      this.props.mopidyActions.playURIs([this.props.uri], this.props.uri);
-    }
-  }, {
-    key: 'inLibrary',
-    value: function inLibrary() {
-      var library = (0, _helpers.uriSource)(this.props.uri) + '_library_albums';
-      return this.props[library] && this.props[library].indexOf(this.props.uri) > -1;
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var _this2 = this;
+    }, _this.play = function () {
+      var _this$props6 = _this.props,
+          uri = _this$props6.uri,
+          playURIs = _this$props6.mopidyActions.playURIs;
 
-      if (!this.props.album) {
-        if ((0, _helpers.isLoading)(this.props.load_queue, ['spotify_albums/' + (0, _helpers.getFromUri)('albumid', this.props.uri)])) {
+      playURIs([uri], uri);
+    }, _this.inLibrary = function () {
+      var uri = _this.props.uri;
+
+      var library = (0, _helpers.uriSource)(uri) + '_library_albums';
+      return _this.props[library] && _this.props[library].indexOf(_this.props.uri) > -1;
+    }, _this.render = function () {
+      var _this$props7 = _this.props,
+          uri = _this$props7.uri,
+          albumProp = _this$props7.album,
+          tracks = _this$props7.tracks,
+          artists = _this$props7.artists,
+          load_queue = _this$props7.load_queue;
+
+
+      if (!albumProp) {
+        if ((0, _helpers.isLoading)(load_queue, ['spotify_albums/' + (0, _helpers.getFromUri)('albumid', uri)])) {
           return _react2.default.createElement(_Loader2.default, { body: true, loading: true });
         }
         return _react2.default.createElement(
@@ -87307,17 +87326,12 @@ var Album = exports.Album = function (_React$Component) {
           _react2.default.createElement(
             'p',
             null,
-            'Could not find album with URI "',
-            encodeURIComponent(this.props.uri),
-            '"'
+            'Could not find album with URI "' + encodeURIComponent(uri) + '"'
           )
         );
       }
 
-      var album = (0, _format.collate)(this.props.album, {
-        tracks: this.props.tracks,
-        artists: this.props.artists
-      });
+      var album = (0, _format.collate)(albumProp, { tracks: tracks, artists: artists });
 
       if (!album.tracks_uris || album.tracks_uris && !album.tracks || album.tracks_uris.length !== album.tracks.length) {
         var is_loading_tracks = true;
@@ -87328,7 +87342,7 @@ var Album = exports.Album = function (_React$Component) {
       return _react2.default.createElement(
         'div',
         { className: 'view album-view content-wrapper preserve-3d' },
-        _react2.default.createElement(_Parallax2.default, { image: album.images ? album.images.huge : null, blur: true }),
+        _react2.default.createElement(_Parallax2.default, { image: album.images && album.images.huge, blur: true }),
         _react2.default.createElement(
           'div',
           { className: 'thumbnail-wrapper' },
@@ -87345,7 +87359,7 @@ var Album = exports.Album = function (_React$Component) {
           _react2.default.createElement(
             'ul',
             { className: 'details' },
-            !this.props.slim_mode ? _react2.default.createElement(
+            !_this.props.slim_mode ? _react2.default.createElement(
               'li',
               { className: 'source' },
               _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: (0, _helpers.sourceIcon)(album.uri) })
@@ -87367,19 +87381,19 @@ var Album = exports.Album = function (_React$Component) {
               ' ',
               'tracks'
             ) : null,
-            !this.props.slim_mode && album.tracks ? _react2.default.createElement(
+            !_this.props.slim_mode && album.tracks ? _react2.default.createElement(
               'li',
               null,
               _react2.default.createElement(_Dater2.default, { type: 'total-time', data: album.tracks })
             ) : null,
-            !this.props.slim_mode && album.play_count ? _react2.default.createElement(
+            !_this.props.slim_mode && album.play_count ? _react2.default.createElement(
               'li',
               null,
               _react2.default.createElement(_NiceNumber2.default, { value: album.play_count }),
               ' ',
               'plays'
             ) : null,
-            !this.props.slim_mode && album.listeners ? _react2.default.createElement(
+            !_this.props.slim_mode && album.listeners ? _react2.default.createElement(
               'li',
               null,
               _react2.default.createElement(_NiceNumber2.default, { value: album.listeners }),
@@ -87394,19 +87408,19 @@ var Album = exports.Album = function (_React$Component) {
           _react2.default.createElement(
             'button',
             { className: 'button button--primary', onClick: function onClick(e) {
-                return _this2.play();
+                return _this.play();
               } },
             'Play'
           ),
-          (0, _helpers.uriSource)(this.props.uri) == 'spotify' ? _react2.default.createElement(_FollowButton2.default, {
+          (0, _helpers.uriSource)(_this.props.uri) == 'spotify' ? _react2.default.createElement(_FollowButton2.default, {
             className: 'secondary',
-            uri: this.props.uri,
+            uri: _this.props.uri,
             addText: 'Add to library',
             removeText: 'Remove from library',
-            is_following: this.inLibrary()
+            is_following: _this.inLibrary()
           }) : null,
           _react2.default.createElement(_ContextMenuTrigger2.default, { onTrigger: function onTrigger(e) {
-              return _this2.handleContextMenu(e);
+              return _this.handleContextMenu(e);
             } })
         ),
         _react2.default.createElement(
@@ -87421,7 +87435,7 @@ var Album = exports.Album = function (_React$Component) {
             loadKey: album.tracks_more,
             showLoader: is_loading_tracks,
             loadMore: function loadMore() {
-              return _this2.loadMore();
+              return _this.loadMore();
             }
           })
         ),
@@ -87452,8 +87466,8 @@ var Album = exports.Album = function (_React$Component) {
           )
         ) : null
       );
-    }
-  }]);
+    }, _temp), _possibleConstructorReturn(_this, _ret);
+  }
 
   return Album;
 }(_react2.default.Component);
@@ -87616,9 +87630,38 @@ var Artist = function (_React$Component) {
   _inherits(Artist, _React$Component);
 
   function Artist() {
+    var _ref;
+
+    var _temp, _this, _ret;
+
     _classCallCheck(this, Artist);
 
-    return _possibleConstructorReturn(this, (Artist.__proto__ || Object.getPrototypeOf(Artist)).apply(this, arguments));
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = Artist.__proto__ || Object.getPrototypeOf(Artist)).call.apply(_ref, [this].concat(args))), _this), _this.componentDidUpdate = function (_ref2) {
+      var prevUri = _ref2.uri,
+          prev_mopidy_connected = _ref2.mopidy_connected,
+          prevArtist = _ref2.artist;
+      var _this$props = _this.props,
+          uri = _this$props.uri,
+          mopidy_connected = _this$props.mopidy_connected,
+          artist = _this$props.artist,
+          loadArtist = _this$props.coreActions.loadArtist;
+
+
+      if (uri !== prevUri) {
+        loadArtist(uri);
+      } else if (!prev_mopidy_connected && mopidy_connected) {
+        if ((0, _helpers.uriSource)(uri) != 'spotify') {
+          loadArtist(uri);
+        }
+      }
+
+      if (!prevArtist && artist) _this.setWindowTitle(artist);
+      if (prevUri !== uri && artist) _this.setWindowTitle(artist);
+    }, _temp), _possibleConstructorReturn(_this, _ret);
   }
 
   _createClass(Artist, [{
@@ -87626,25 +87669,6 @@ var Artist = function (_React$Component) {
     value: function componentDidMount() {
       this.setWindowTitle();
       this.props.coreActions.loadArtist(this.props.uri);
-    }
-  }, {
-    key: 'componentWillReceiveProps',
-    value: function componentWillReceiveProps(nextProps) {
-      if (nextProps.uri != this.props.uri) {
-        this.props.coreActions.loadArtist(nextProps.uri);
-      } else if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
-        if ((0, _helpers.uriSource)(this.props.uri) != 'spotify') {
-          this.props.coreActions.loadArtist(nextProps.uri);
-        }
-      }
-
-      if (!this.props.artist && nextProps.artist) {
-        this.setWindowTitle(nextProps.artist);
-      }
-
-      if (this.props.uri !== nextProps.uri && nextProps.artist) {
-        this.setWindowTitle(nextProps.artist);
-      }
     }
   }, {
     key: 'setWindowTitle',
@@ -88973,6 +88997,8 @@ var Playlist = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (Playlist.__proto__ || Object.getPrototypeOf(Playlist)).call(this, props));
 
+    _initialiseProps.call(_this);
+
     var uri = props.uri;
 
     // Spotify upgraded their playlists URI to remove user component (Sept 2018)
@@ -88990,30 +89016,6 @@ var Playlist = function (_React$Component) {
     value: function componentDidMount() {
       this.setWindowTitle();
       this.props.coreActions.loadPlaylist(this.props.uri);
-    }
-  }, {
-    key: 'componentWillReceiveProps',
-    value: function componentWillReceiveProps(nextProps) {
-      // Follow a URI moved_to instruction
-      if (this.props.playlist && nextProps.playlist && this.props.playlist.moved_to != nextProps.playlist.moved_to) {
-        this.props.history.push('/playlist/' + encodeURIComponent(nextProps.playlist.moved_to));
-      }
-
-      if (nextProps.uri != this.props.uri) {
-        this.props.coreActions.loadPlaylist(nextProps.uri);
-      } else if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
-        if ((0, _helpers.uriSource)(this.props.uri) != 'spotify') {
-          this.props.coreActions.loadPlaylist(nextProps.uri);
-        }
-      }
-
-      if (!this.props.playlist && nextProps.playlist) {
-        this.setWindowTitle(nextProps.playlist);
-      }
-
-      if (this.props.uri !== nextProps.uri && nextProps.playlist) {
-        this.setWindowTitle(nextProps.playlist);
-      }
     }
   }, {
     key: 'setWindowTitle',
@@ -89306,6 +89308,38 @@ var Playlist = function (_React$Component) {
   return Playlist;
 }(_react2.default.Component);
 
+var _initialiseProps = function _initialiseProps() {
+  var _this4 = this;
+
+  this.componentDidUpdate = function (_ref) {
+    var prevUri = _ref.uri,
+        prevPlaylist = _ref.playlist,
+        prev_mopidy_connected = _ref.mopidy_connected;
+    var _props = _this4.props,
+        uri = _props.uri,
+        playlist = _props.playlist,
+        mopidy_connected = _props.mopidy_connected,
+        loadPlaylist = _props.coreActions.loadPlaylist,
+        push = _props.history.push;
+
+
+    if (prevPlaylist && playlist && prevPlaylist.moved_to !== playlist.moved_to) {
+      push('/playlist/' + encodeURIComponent(playlist.moved_to));
+    }
+
+    if (uri !== prevUri) {
+      loadPlaylist(uri);
+    } else if (!prev_mopidy_connected && mopidy_connected) {
+      if ((0, _helpers.uriSource)(uri) !== 'spotify') {
+        loadPlaylist(nextProps.uri);
+      }
+    }
+
+    if (!prevPlaylist && playlist) _this4.setWindowTitle(playlist);
+    if (prevUri !== uri && playlist) _this4.setWindowTitle(playlist);
+  };
+};
+
 var mapStateToProps = function mapStateToProps(state, ownProps) {
   // Decode the URI, and then re-encode selected characters
   // This is needed as Mopidy encodes *some* characters in playlist URIs (but not other characters)
@@ -89454,6 +89488,34 @@ var Queue = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (Queue.__proto__ || Object.getPrototypeOf(Queue)).call(this, props));
 
+    _this.componentDidUpdate = function (_ref) {
+      var prev_added_from_uri = _ref.added_from_uri;
+      var _this$props = _this.props,
+          _this$props$coreActio = _this$props.coreActions,
+          loadAlbum = _this$props$coreActio.loadAlbum,
+          loadArtist = _this$props$coreActio.loadArtist,
+          loadPlaylist = _this$props$coreActio.loadPlaylist,
+          added_from_uri = _this$props.added_from_uri;
+
+
+      if (added_from_uri && added_from_uri !== prev_added_from_uri) {
+        var item_type = (0, _helpers.uriType)(added_from_uri);
+        switch (item_type) {
+          case 'album':
+            loadAlbum(added_from_uri);
+            break;
+          case 'artist':
+            loadArtist(added_from_uri);
+            break;
+          case 'playlist':
+            loadPlaylist(added_from_uri);
+            break;
+          default:
+            break;
+        }
+      }
+    };
+
     _this.state = {
       limit: 50,
       per_page: 50
@@ -89480,40 +89542,14 @@ var Queue = function (_React$Component) {
       return nextProps !== this.props;
     }
   }, {
-    key: 'componentWillReceiveProps',
-    value: function componentWillReceiveProps(nextProps) {
-      var next_added_from_uri = nextProps.added_from_uri;
-      var _props = this.props,
-          coreActions = _props.coreActions,
-          added_from_uri = _props.added_from_uri;
-
-
-      if (next_added_from_uri && next_added_from_uri !== added_from_uri) {
-        var item_type = (0, _helpers.uriType)(next_added_from_uri);
-        switch (item_type) {
-          case 'album':
-            coreActions.loadAlbum(next_added_from_uri);
-            break;
-          case 'artist':
-            coreActions.loadArtist(next_added_from_uri);
-            break;
-          case 'playlist':
-            coreActions.loadPlaylist(next_added_from_uri);
-            break;
-          default:
-            break;
-        }
-      }
-    }
-  }, {
     key: 'loadMore',
     value: function loadMore() {
       var _state = this.state,
           limit = _state.limit,
           per_page = _state.per_page;
-      var _props2 = this.props,
-          location = _props2.location,
-          history = _props2.history;
+      var _props = this.props,
+          location = _props.location,
+          history = _props.history;
 
       var new_limit = limit + per_page;
 
@@ -89527,9 +89563,9 @@ var Queue = function (_React$Component) {
   }, {
     key: 'removeTracks',
     value: function removeTracks(track_indexes) {
-      var _props3 = this.props,
-          queue_tracks = _props3.queue_tracks,
-          mopidyActions = _props3.mopidyActions;
+      var _props2 = this.props,
+          queue_tracks = _props2.queue_tracks,
+          mopidyActions = _props2.mopidyActions;
 
       var tlids = [];
       for (var i = 0; i < track_indexes.length; i++) {
@@ -89682,9 +89718,9 @@ var Queue = function (_React$Component) {
     value: function render() {
       var _this2 = this;
 
-      var _props4 = this.props,
-          current_track = _props4.current_track,
-          queue_tracks = _props4.queue_tracks;
+      var _props3 = this.props,
+          current_track = _props3.current_track,
+          queue_tracks = _props3.queue_tracks;
       var limit = this.state.limit;
 
       var total_queue_tracks = queue_tracks.length;
@@ -89979,9 +90015,22 @@ var QueueHistory = function (_React$Component) {
   _inherits(QueueHistory, _React$Component);
 
   function QueueHistory() {
+    var _ref;
+
+    var _temp, _this, _ret;
+
     _classCallCheck(this, QueueHistory);
 
-    return _possibleConstructorReturn(this, (QueueHistory.__proto__ || Object.getPrototypeOf(QueueHistory)).apply(this, arguments));
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = QueueHistory.__proto__ || Object.getPrototypeOf(QueueHistory)).call.apply(_ref, [this].concat(args))), _this), _this.componentDidUpdate = function (_ref2) {
+      var prev_mopidy_connected = _ref2.mopidy_connected;
+      var mopidy_connected = _this.props.mopidy_connected;
+
+      if (!prev_mopidy_connected && mopidy_connected) _this.loadHistory();
+    }, _temp), _possibleConstructorReturn(_this, _ret);
   }
 
   _createClass(QueueHistory, [{
@@ -89989,13 +90038,6 @@ var QueueHistory = function (_React$Component) {
     value: function componentDidMount() {
       this.props.uiActions.setWindowTitle('Queue history');
       this.loadHistory();
-    }
-  }, {
-    key: 'componentWillReceiveProps',
-    value: function componentWillReceiveProps(nextProps) {
-      if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
-        this.loadHistory(nextProps);
-      }
     }
   }, {
     key: 'loadHistory',
@@ -90193,6 +90235,34 @@ var Search = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (Search.__proto__ || Object.getPrototypeOf(Search)).call(this, props));
 
+    _this.componentDidUpdate = function (_ref) {
+      var prevType = _ref.type,
+          prevTerm = _ref.term,
+          prev_mopidy_connected = _ref.mopidy_connected;
+      var _this$props = _this.props,
+          typeProp = _this$props.type,
+          termProp = _this$props.term,
+          mopidy_connected = _this$props.mopidy_connected,
+          uri_schemes_search_enabled = _this$props.uri_schemes_search_enabled;
+      var _this$state = _this.state,
+          type = _this$state.type,
+          term = _this$state.term;
+
+
+      if (prevType !== typeProp || prevTerm !== termProp) {
+        _this.digestUri({ type: typeProp, term: termProp });
+      }
+
+      // Services came online
+      if (!prev_mopidy_connected && mopidy_connected && uri_schemes_search_enabled) {
+        _this.search(type, term, 'mopidy');
+
+        if (uri_schemes_search_enabled.includes('spotify:')) {
+          _this.search(type, term, 'spotify');
+        }
+      }
+    };
+
     _this.state = {
       type: 'all',
       term: ''
@@ -90213,31 +90283,6 @@ var Search = function (_React$Component) {
       this.digestUri(_extends({}, this.props, {
         term: decodeURIComponent(this.props.term)
       }));
-    }
-  }, {
-    key: 'componentWillReceiveProps',
-    value: function componentWillReceiveProps(nextProps) {
-      var _props = this.props,
-          type = _props.type,
-          term = _props.term;
-      var nextType = nextProps.type,
-          nextTerm = nextProps.term;
-
-      if (nextType !== type || nextTerm !== term) {
-        this.digestUri({
-          type: nextType,
-          term: nextTerm
-        });
-      }
-
-      // Services came online
-      if (!this.props.mopidy_connected && nextProps.mopidy_connected && nextProps.uri_schemes_search_enabled) {
-        this.search(this.state.type, this.state.term, 'mopidy');
-
-        if (nextProps.uri_schemes_search_enabled.includes('spotify:')) {
-          this.search(this.state.type, this.state.term, 'spotify');
-        }
-      }
     }
   }, {
     key: 'handleSubmit',
@@ -90868,6 +90913,21 @@ var Settings = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (Settings.__proto__ || Object.getPrototypeOf(Settings)).call(this, props));
 
+    _this.componentDidUpdate = function () {
+      var username = _this.props.pusher.username;
+      var _this$state = _this.state,
+          pusher_username = _this$state.pusher_username,
+          input_in_focus = _this$state.input_in_focus;
+
+      var new_username = null;
+
+      if (username && username !== pusher_username && input_in_focus !== 'pusher_username') {
+        new_username = username;
+      }
+
+      if (new_username) _this.setState({ pusher_username: new_username });
+    };
+
     _this.renderLocalScanButton = function () {
       var processes = _this.props.ui.processes;
 
@@ -90899,22 +90959,6 @@ var Settings = function (_React$Component) {
     key: 'componentDidMount',
     value: function componentDidMount() {
       this.props.uiActions.setWindowTitle('Settings');
-    }
-  }, {
-    key: 'componentWillReceiveProps',
-    value: function componentWillReceiveProps(nextProps) {
-      var changed = false;
-      var state = this.state;
-
-
-      if (nextProps.pusher.username && nextProps.pusher.username != this.state.pusher_username && this.state.input_in_focus != 'pusher_username') {
-        state.pusher_username = nextProps.pusher.username;
-        changed = true;
-      }
-
-      if (changed) {
-        this.setState(state);
-      }
     }
   }, {
     key: 'resetAllSettings',
@@ -91767,9 +91811,49 @@ var Track = function (_React$Component) {
   _inherits(Track, _React$Component);
 
   function Track() {
+    var _ref;
+
+    var _temp, _this, _ret;
+
     _classCallCheck(this, Track);
 
-    return _possibleConstructorReturn(this, (Track.__proto__ || Object.getPrototypeOf(Track)).apply(this, arguments));
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = Track.__proto__ || Object.getPrototypeOf(Track)).call.apply(_ref, [this].concat(args))), _this), _this.componentDidUpdate = function (_ref2) {
+      var prevUri = _ref2.uri,
+          prevTrack = _ref2.track,
+          prev_mopidy_connected = _ref2.mopidy_connected;
+      var _this$props = _this.props,
+          uri = _this$props.uri,
+          track = _this$props.track,
+          genius_authorized = _this$props.genius_authorized,
+          lastfm_authorized = _this$props.lastfm_authorized,
+          mopidy_connected = _this$props.mopidy_connected,
+          loadTrack = _this$props.coreActions.loadTrack,
+          findTrackLyrics = _this$props.geniusActions.findTrackLyrics,
+          getTrack = _this$props.lastfmActions.getTrack;
+      // if our URI has changed, fetch new track
+
+      if (prevUri !== uri) {
+        loadTrack(uri);
+        if (genius_authorized && track.artists) findTrackLyrics(track);
+
+        // if mopidy has just connected AND we're not a Spotify track, go get
+      } else if (!prev_mopidy_connected && mopidy_connected) {
+        if ((0, _helpers.uriSource)(uri) !== 'spotify') loadTrack(uri);
+      }
+
+      // We have just received our full track or our track artists
+      if (!prevTrack && track || !prevTrack.artists && track.artists) {
+        _this.setWindowTitle(track);
+        if (lastfm_authorized) getTrack(track.uri);
+        if (genius_authorized && !track.lyrics_results) findTrackLyrics(track);
+      }
+
+      if (!prevTrack && track) _this.setWindowTitle(track);
+    }, _temp), _possibleConstructorReturn(_this, _ret);
   }
 
   _createClass(Track, [{
@@ -91792,43 +91876,6 @@ var Track = function (_React$Component) {
       e.preventDefault();
       var data = { uris: [this.props.uri] };
       this.props.uiActions.showContextMenu(e, data, 'track', 'click');
-    }
-  }, {
-    key: 'componentWillReceiveProps',
-    value: function componentWillReceiveProps(nextProps) {
-      // if our URI has changed, fetch new track
-      if (nextProps.uri != this.props.uri) {
-        this.props.coreActions.loadTrack(nextProps.uri);
-
-        if (nextProps.genius_authorized && nextProps.tracks.artists) {
-          this.props.geniusActions.findTrackLyrics(nextProps.track);
-        }
-
-        // if mopidy has just connected AND we're not a Spotify track, go get
-      } else if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
-        if (helpers.uriSource(this.props.uri) != 'spotify') {
-          this.props.coreActions.loadTrack(nextProps.uri);
-        }
-      }
-
-      // We have just received our full track or our track artists
-      if (!this.props.track && nextProps.track || !this.props.track.artists && nextProps.track.artists) {
-        this.setWindowTitle(nextProps.track);
-
-        // Ready to load LastFM
-        if (nextProps.lastfm_authorized) {
-          this.props.lastfmActions.getTrack(nextProps.track.uri);
-        }
-
-        // Ready to load lyrics
-        if (nextProps.genius_authorized && !nextProps.track.lyrics_results) {
-          this.props.geniusActions.findTrackLyrics(nextProps.track);
-        }
-      }
-
-      if (!this.props.track && nextProps.track) {
-        this.setWindowTitle(nextProps.track);
-      }
     }
   }, {
     key: 'setWindowTitle',
@@ -92250,9 +92297,34 @@ var User = function (_React$Component) {
   _inherits(User, _React$Component);
 
   function User() {
+    var _ref;
+
+    var _temp, _this, _ret;
+
     _classCallCheck(this, User);
 
-    return _possibleConstructorReturn(this, (User.__proto__ || Object.getPrototypeOf(User)).apply(this, arguments));
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = User.__proto__ || Object.getPrototypeOf(User)).call.apply(_ref, [this].concat(args))), _this), _this.componentDidUpdate = function (_ref2) {
+      var prevUri = _ref2.uri,
+          prevUser = _ref2.user;
+      var _this$props = _this.props,
+          uri = _this$props.uri,
+          user = _this$props.user,
+          _this$props$coreActio = _this$props.coreActions,
+          loadUser = _this$props$coreActio.loadUser,
+          loadUserPlaylists = _this$props$coreActio.loadUserPlaylists;
+
+
+      if (prevUri !== uri) {
+        loadUser(uri);
+        loadUserPlaylists(uri);
+      }
+
+      if (!prevUser && user) _this.setWindowTitle(user);
+    }, _temp), _possibleConstructorReturn(_this, _ret);
   }
 
   _createClass(User, [{
@@ -92261,18 +92333,6 @@ var User = function (_React$Component) {
       this.setWindowTitle();
       this.props.coreActions.loadUser(this.props.uri);
       this.props.coreActions.loadUserPlaylists(this.props.uri);
-    }
-  }, {
-    key: 'componentWillReceiveProps',
-    value: function componentWillReceiveProps(nextProps) {
-      if (nextProps.uri != this.props.uri) {
-        this.props.coreActions.loadUser(nextProps.uri);
-        this.props.coreActions.loadUserPlaylists(this.props.uri);
-      }
-
-      if (!this.props.user && nextProps.user) {
-        this.setWindowTitle(nextProps.user);
-      }
     }
   }, {
     key: 'setWindowTitle',
@@ -92676,9 +92736,27 @@ var DiscoverCategory = function (_React$Component) {
   _inherits(DiscoverCategory, _React$Component);
 
   function DiscoverCategory() {
+    var _ref;
+
+    var _temp, _this, _ret;
+
     _classCallCheck(this, DiscoverCategory);
 
-    return _possibleConstructorReturn(this, (DiscoverCategory.__proto__ || Object.getPrototypeOf(DiscoverCategory)).apply(this, arguments));
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = DiscoverCategory.__proto__ || Object.getPrototypeOf(DiscoverCategory)).call.apply(_ref, [this].concat(args))), _this), _this.componentDidUpdate = function (_ref2) {
+      var prevId = _ref2.match.params.id,
+          prevCategory = _ref2.category;
+      var _this$props = _this.props,
+          id = _this$props.match.params.id,
+          category = _this$props.category;
+
+
+      if (prevId !== id) _this.loadCategory();
+      if (!prevCategory && category) _this.setWindowTitle(category);
+    }, _temp), _possibleConstructorReturn(_this, _ret);
   }
 
   _createClass(DiscoverCategory, [{
@@ -92686,17 +92764,6 @@ var DiscoverCategory = function (_React$Component) {
     value: function componentDidMount() {
       this.loadCategory();
       this.setWindowTitle();
-    }
-  }, {
-    key: 'componentWillReceiveProps',
-    value: function componentWillReceiveProps(nextProps) {
-      if (nextProps.match.params.id != this.props.match.params.id) {
-        this.loadCategory();
-      }
-
-      if (!this.props.category && nextProps.category) {
-        this.setWindowTitle(nextProps.category);
-      }
     }
   }, {
     key: 'setWindowTitle',
@@ -93363,6 +93430,13 @@ var Discover = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (Discover.__proto__ || Object.getPrototypeOf(Discover)).call(this, props));
 
+    _this.componentDiUpdate = function (_ref) {
+      var prevSeeds = _ref.match.params.seeds;
+      var seeds = _this.props.match.params.seeds;
+
+      if (prevSeeds !== seeds) _this.handleURLSeeds(seeds);
+    };
+
     _this._autocomplete_timer = false;
 
     _this.state = {
@@ -93493,14 +93567,6 @@ var Discover = function (_React$Component) {
       // We have seeds provided in the URL
       if (this.props.match.params.seeds) {
         this.handleURLSeeds(this.props.match.params.seeds);
-      }
-    }
-  }, {
-    key: 'componentWillReceiveProps',
-    value: function componentWillReceiveProps(newProps, newState) {
-      // New seeds via URL
-      if (newProps.match.params.seeds != this.props.match.params.seeds) {
-        this.handleURLSeeds(newProps.match.params.seeds);
       }
     }
   }, {
@@ -94095,6 +94161,45 @@ var LibraryAlbums = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (LibraryAlbums.__proto__ || Object.getPrototypeOf(LibraryAlbums)).call(this, props));
 
+    _this.componentDidUpdate = function (_ref) {
+      var prev_mopidy_connected = _ref.mopidy_connected;
+      var _this$props = _this.props,
+          mopidy_connected = _this$props.mopidy_connected,
+          google_enabled = _this$props.google_enabled,
+          spotify_enabled = _this$props.spotify_enabled,
+          source = _this$props.source,
+          mopidyActions = _this$props.mopidyActions,
+          googleActions = _this$props.googleActions,
+          spotifyActions = _this$props.spotifyActions,
+          mopidy_library_albums_status = _this$props.mopidy_library_albums_status,
+          google_library_albums_status = _this$props.google_library_albums_status,
+          spotify_library_albums_status = _this$props.spotify_library_albums_status;
+
+
+      if (mopidy_connected && (source == 'all' || source == 'local')) {
+        if (!prev_mopidy_connected) mopidyActions.getLibraryAlbums();
+
+        // Filter changed, but we haven't got this provider's library yet
+        if (source !== 'all' && source !== 'local' && mopidy_library_albums_status !== 'finished' && mopidy_library_albums_status !== 'started') {
+          mopidyActions.getLibraryAlbums();
+        }
+      }
+
+      if (google_enabled && (newProps.source == 'all' || newProps.source == 'google')) {
+        // Filter changed, but we haven't got this provider's library yet
+        if (source !== 'all' && source !== 'google' && google_library_albums_status !== 'finished' && google_library_albums_status !== 'started') {
+          googleActions.getLibraryAlbums();
+        }
+      }
+
+      if (spotify_enabled && (source === 'all' || source === 'spotify')) {
+        // Filter changed, but we haven't got this provider's library yet
+        if (spotify_library_albums_status !== 'finished' && spotify_library_albums_status !== 'started') {
+          spotifyActions.getLibraryAlbums();
+        }
+      }
+    };
+
     _this.state = {
       filter: '',
       limit: 50,
@@ -94126,40 +94231,6 @@ var LibraryAlbums = function (_React$Component) {
 
       if (this.props.spotify_enabled && this.props.spotify_library_albums_status != 'finished' && this.props.spotify_library_albums_status != 'started' && (this.props.source == 'all' || this.props.source == 'spotify')) {
         this.props.spotifyActions.getLibraryAlbums();
-      }
-    }
-  }, {
-    key: 'componentWillReceiveProps',
-    value: function componentWillReceiveProps(newProps) {
-      if (newProps.mopidy_connected && (newProps.source == 'all' || newProps.source == 'local')) {
-        // We've just connected
-        if (!this.props.mopidy_connected) {
-          this.props.mopidyActions.getLibraryAlbums();
-        }
-
-        // Filter changed, but we haven't got this provider's library yet
-        if (this.props.source != 'all' && this.props.source != 'local' && newProps.mopidy_library_albums_status != 'finished' && newProps.mopidy_library_albums_status != 'started') {
-          this.props.mopidyActions.getLibraryAlbums();
-        }
-      }
-
-      if (newProps.google_enabled && (newProps.source == 'all' || newProps.source == 'google')) {
-        // We've just been enabled (or detected as such)
-        if (!this.props.google_enabled) {
-          this.props.googleActions.getLibraryAlbums();
-        }
-
-        // Filter changed, but we haven't got this provider's library yet
-        if (this.props.source != 'all' && this.props.source != 'google' && newProps.google_library_albums_status != 'finished' && newProps.google_library_albums_status != 'started') {
-          this.props.googleActions.getLibraryAlbums();
-        }
-      }
-
-      if (newProps.spotify_enabled && (newProps.source == 'all' || newProps.source == 'spotify')) {
-        // Filter changed, but we haven't got this provider's library yet
-        if (newProps.spotify_library_albums_status != 'finished' && newProps.spotify_library_albums_status != 'started') {
-          this.props.spotifyActions.getLibraryAlbums();
-        }
       }
     }
   }, {

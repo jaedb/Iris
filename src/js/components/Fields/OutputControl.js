@@ -28,11 +28,11 @@ class OutputControl extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    // When force expanded triggered
-    if (!this.props.force_expanded && nextProps.force_expanded) {
-      this.setExpanded(true, nextProps);
-    }
+  componentDidUpdate = ({
+    force_expanded: prev_force_expanded,
+  }) => {
+    const { force_expanded } = this.props;
+    if (!prev_force_expanded && force_expanded) this.setExpanded(true);
   }
 
   setExpanded(expanded = !this.state.expanded, props = this.props) {

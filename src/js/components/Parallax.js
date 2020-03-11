@@ -21,10 +21,10 @@ export default class Parallax extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.image !== this.state.url) {
-      this.loadImage(nextProps.image);
-    }
+  componentDidUpdate = () => {
+    const { image } = this.props;
+    const { url } = this.state;
+    if (image !== url) this.loadImage(image);
   }
 
   loadImage(url) {
