@@ -47,40 +47,45 @@ class Track extends React.Component {
     this.props.uiActions.showContextMenu(e, data, 'track', 'click');
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentDidUpdate = ({
+    uri: prevUri,
+    track: prevTrack,
+    mopidy_connected: prev_mopidy_connected,
+  }) => {
+    const {
+      uri,
+      track,
+      genius_authorized,
+      lastfm_authorized,
+      mopidy_connected,
+      coreActions: {
+        loadTrack,
+      },
+      geniusActions: {
+        findTrackLyrics,
+      },
+      lastfmActions: {
+        getTrack,
+      },
+    } = this.props;
     // if our URI has changed, fetch new track
-    if (nextProps.uri != this.props.uri) {
-      this.props.coreActions.loadTrack(nextProps.uri);
-
-      if (nextProps.genius_authorized && nextProps.tracks.artists) {
-        this.props.geniusActions.findTrackLyrics(nextProps.track);
-      }
+    if (prevUri !== uri) {
+      loadTrack(uri);
+      if (genius_authorized && track.artists) findTrackLyrics(track);
 
       // if mopidy has just connected AND we're not a Spotify track, go get
-    } else if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
-      if (helpers.uriSource(this.props.uri) != 'spotify') {
-        this.props.coreActions.loadTrack(nextProps.uri);
-      }
+    } else if (!prev_mopidy_connected && mopidy_connected) {
+      if (uriSource(uri) !== 'spotify') loadTrack(uri);
     }
 
     // We have just received our full track or our track artists
-    if ((!this.props.track && nextProps.track) || (!this.props.track.artists && nextProps.track.artists)) {
-      this.setWindowTitle(nextProps.track);
-
-      // Ready to load LastFM
-      if (nextProps.lastfm_authorized) {
-        this.props.lastfmActions.getTrack(nextProps.track.uri);
-      }
-
-      // Ready to load lyrics
-      if (nextProps.genius_authorized && !nextProps.track.lyrics_results) {
-        this.props.geniusActions.findTrackLyrics(nextProps.track);
-      }
+    if ((!prevTrack && track) || (!prevTrack.artists && track.artists)) {
+      this.setWindowTitle(track);
+      if (lastfm_authorized) getTrack(track.uri);
+      if (genius_authorized && !track.lyrics_results) findTrackLyrics(track);
     }
 
-    if (!this.props.track && nextProps.track) {
-      this.setWindowTitle(nextProps.track);
-    }
+    if (!prevTrack && track) this.setWindowTitle(track);
   }
 
   setWindowTitle(track = this.props.track) {

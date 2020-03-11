@@ -47,21 +47,22 @@ class Queue extends React.Component {
     return nextProps !== this.props;
   }
 
-  componentWillReceiveProps(nextProps) {
-    const { added_from_uri: next_added_from_uri } = nextProps;
-    const { coreActions, added_from_uri } = this.props;
+  componentDidUpdate = ({
+    added_from_uri: prev_added_from_uri,
+  }) => {
+    const { coreActions: { loadPlaylist }, added_from_uri } = this.props;
 
-    if (next_added_from_uri && next_added_from_uri !== added_from_uri) {
-      const item_type = uriType(next_added_from_uri);
+    if (added_from_uri && added_from_uri !== prev_added_from_uri) {
+      const item_type = uriType(added_from_uri);
       switch (item_type) {
         case 'album':
-          coreActions.loadAlbum(next_added_from_uri);
+          loadAlbum(added_from_uri);
           break;
         case 'artist':
-          coreActions.loadArtist(next_added_from_uri);
+          loadArtist(added_from_uri);
           break;
         case 'playlist':
-          coreActions.loadPlaylist(next_added_from_uri);
+          loadPlaylist(added_from_uri);
           break;
         default:
           break;
