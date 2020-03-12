@@ -35,20 +35,11 @@ class DiscoverFeatured extends React.Component {
     this.props.uiActions.showContextMenu(data);
   }
 
-  renderIntro(playlist = null) {
-    if (playlist) {
-      return (
-        <div className="intro preserve-3d">
-          <Parallax image={playlist.images ? playlist.images.large : null} blur />
-        </div>
-      );
-    }
-    return (
-      <div className="intro">
-        <Parallax disabled={this.props.disable_parallax} />
-      </div>
-    );
-  }
+  renderIntro = ({ images: { large } = {} } = {}) => (
+    <div className="intro preserve-3d">
+      <Parallax image={large} blur />
+    </div>
+  );
 
   render() {
     if (isLoading(this.props.load_queue, ['spotify_browse/featured-playlists'])) {

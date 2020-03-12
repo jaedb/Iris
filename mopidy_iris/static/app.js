@@ -47629,7 +47629,7 @@ module.exports = hoistNonReactStatics;
 /*!***************************************************************!*\
   !*** ./node_modules/react-router-dom/esm/react-router-dom.js ***!
   \***************************************************************/
-/*! exports provided: BrowserRouter, HashRouter, Link, NavLink, MemoryRouter, Prompt, Redirect, Route, Router, StaticRouter, Switch, __RouterContext, generatePath, matchPath, useHistory, useLocation, useParams, useRouteMatch, withRouter */
+/*! exports provided: MemoryRouter, Prompt, Redirect, Route, Router, StaticRouter, Switch, __RouterContext, generatePath, matchPath, useHistory, useLocation, useParams, useRouteMatch, withRouter, BrowserRouter, HashRouter, Link, NavLink */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -92943,9 +92943,28 @@ var DiscoverFeatured = function (_React$Component) {
   _inherits(DiscoverFeatured, _React$Component);
 
   function DiscoverFeatured() {
+    var _ref;
+
+    var _temp, _this, _ret;
+
     _classCallCheck(this, DiscoverFeatured);
 
-    return _possibleConstructorReturn(this, (DiscoverFeatured.__proto__ || Object.getPrototypeOf(DiscoverFeatured)).apply(this, arguments));
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = DiscoverFeatured.__proto__ || Object.getPrototypeOf(DiscoverFeatured)).call.apply(_ref, [this].concat(args))), _this), _this.renderIntro = function () {
+      var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+          _ref2$images = _ref2.images;
+
+      _ref2$images = _ref2$images === undefined ? {} : _ref2$images;
+      var large = _ref2$images.large;
+      return _react2.default.createElement(
+        'div',
+        { className: 'intro preserve-3d' },
+        _react2.default.createElement(_Parallax2.default, { image: large, blur: true })
+      );
+    }, _temp), _possibleConstructorReturn(_this, _ret);
   }
 
   _createClass(DiscoverFeatured, [{
@@ -92972,24 +92991,6 @@ var DiscoverFeatured = function (_React$Component) {
         items: [item]
       };
       this.props.uiActions.showContextMenu(data);
-    }
-  }, {
-    key: 'renderIntro',
-    value: function renderIntro() {
-      var playlist = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-
-      if (playlist) {
-        return _react2.default.createElement(
-          'div',
-          { className: 'intro preserve-3d' },
-          _react2.default.createElement(_Parallax2.default, { image: playlist.images ? playlist.images.large : null, blur: true })
-        );
-      }
-      return _react2.default.createElement(
-        'div',
-        { className: 'intro' },
-        _react2.default.createElement(_Parallax2.default, { disabled: this.props.disable_parallax })
-      );
     }
   }, {
     key: 'render',
