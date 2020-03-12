@@ -24,7 +24,7 @@ export default class Parallax extends React.Component {
   componentDidUpdate = () => {
     const { image } = this.props;
     const { url } = this.state;
-    if (image !== url) this.loadImage(image);
+    if (image && image !== url) this.loadImage(image);
   }
 
   loadImage(url) {
@@ -58,6 +58,7 @@ export default class Parallax extends React.Component {
     const {
       blur,
       fixedHeight,
+      image,
       animate = true,
     } = this.props;
     const {

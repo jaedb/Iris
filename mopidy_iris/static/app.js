@@ -65139,7 +65139,7 @@ var Parallax = function (_React$Component) {
       var image = _this.props.image;
       var url = _this.state.url;
 
-      if (image !== url) _this.loadImage(image);
+      if (image && image !== url) _this.loadImage(image);
     };
 
     _this.state = {
@@ -65191,6 +65191,7 @@ var Parallax = function (_React$Component) {
       var _props = this.props,
           blur = _props.blur,
           fixedHeight = _props.fixedHeight,
+          image = _props.image,
           _props$animate = _props.animate,
           animate = _props$animate === undefined ? true : _props$animate;
       var _state = this.state,
@@ -89900,9 +89901,28 @@ var DiscoverNewReleases = function (_React$Component) {
   _inherits(DiscoverNewReleases, _React$Component);
 
   function DiscoverNewReleases() {
+    var _ref;
+
+    var _temp, _this, _ret;
+
     _classCallCheck(this, DiscoverNewReleases);
 
-    return _possibleConstructorReturn(this, (DiscoverNewReleases.__proto__ || Object.getPrototypeOf(DiscoverNewReleases)).apply(this, arguments));
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = DiscoverNewReleases.__proto__ || Object.getPrototypeOf(DiscoverNewReleases)).call.apply(_ref, [this].concat(args))), _this), _this.renderIntro = function () {
+      var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+          _ref2$images = _ref2.images;
+
+      _ref2$images = _ref2$images === undefined ? {} : _ref2$images;
+      var large = _ref2$images.large;
+      return _react2.default.createElement(
+        'div',
+        { className: 'intro preserve-3d' },
+        _react2.default.createElement(_Parallax2.default, { image: large, blur: true })
+      );
+    }, _temp), _possibleConstructorReturn(_this, _ret);
   }
 
   _createClass(DiscoverNewReleases, [{
@@ -89937,24 +89957,6 @@ var DiscoverNewReleases = function (_React$Component) {
         items: [item]
       };
       this.props.uiActions.showContextMenu(data);
-    }
-  }, {
-    key: 'renderIntro',
-    value: function renderIntro() {
-      var album = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-
-      if (album) {
-        return _react2.default.createElement(
-          'div',
-          { className: 'intro preserve-3d' },
-          _react2.default.createElement(_Parallax2.default, { image: album.images ? album.images.large : null, blur: true })
-        );
-      }
-      return _react2.default.createElement(
-        'div',
-        { className: 'intro preserve-3d' },
-        _react2.default.createElement(_Parallax2.default, null)
-      );
     }
   }, {
     key: 'render',

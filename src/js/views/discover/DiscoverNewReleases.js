@@ -48,20 +48,11 @@ class DiscoverNewReleases extends React.Component {
     this.props.uiActions.showContextMenu(data);
   }
 
-  renderIntro(album = null) {
-    if (album) {
-      return (
-        <div className="intro preserve-3d">
-          <Parallax image={album.images ? album.images.large : null} blur />
-        </div>
-      );
-    }
-    return (
-      <div className="intro preserve-3d">
-        <Parallax />
-      </div>
-    );
-  }
+  renderIntro = ({ images: { large } = {} } = {}) => (
+    <div className="intro preserve-3d">
+      <Parallax image={large} blur />
+    </div>
+  );
 
   render() {
     if (isLoading(this.props.load_queue, ['spotify_browse/new-releases'])) {
