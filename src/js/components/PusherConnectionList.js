@@ -11,10 +11,9 @@ class PusherConnectionList extends React.Component {
     }
   }
 
-  componentWillReceiveProps(newProps) {
-    if (!this.props.connected && newProps.connected) {
-      this.props.pusherActions.getConnections();
-    }
+  componentDidUpdate = ({ connected: prevConnected }) => {
+    const { connected, pusherActions: { getConnections } } = this.props;
+    if (!prevConnected && connected) getConnections();
   }
 
   render() {

@@ -33,10 +33,9 @@ class EditRadio extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (!this.props.radio && nextProps.radio) {
-      this.loadRadio(nextProps.radio);
-    }
+  componentDidUpdate = ({ radio: prev_radio }) => {
+    const { radio } = this.props;
+    if (!prev_radio && radio) this.loadRadio(radio);
   }
 
   loadRadio(radio) {

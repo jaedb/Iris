@@ -25,16 +25,17 @@ class LibraryBrowseDirectory extends React.Component {
     this.loadDirectory();
   }
 
-  componentWillReceiveProps(nextProps) {
-    // mopidy goes online
-    if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
-      this.loadDirectory(nextProps);
-    }
+  componentDidUpdate = ({
+    mopidy_connected: prev_mopidy_connected,
+    uri: prevUri,
+  }) => {
+    const {
+      uri,
+      mopidy_connected,
+    } = this.props;
 
-    // our uri changes
-    if (nextProps.uri && nextProps.uri !== this.props.uri) {
-      this.loadDirectory(nextProps);
-    }
+    if (!prev_mopidy_connected && mopidy_connected) this.loadDirectory();
+    if (uri && uri !== prevUri) this.loadDirectory();
   }
 
   loadDirectory(props = this.props) {

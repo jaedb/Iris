@@ -44,27 +44,27 @@ class KioskMode extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentDidUpdate = ({
+    current_track: prev_current_track,
+  }) => {
     const {
       current_track,
       show_lyrics,
-      geniusActions,
+      genius_authorized,
+      geniusActions: {
+        findTrackLyrics,
+      },
     } = this.props;
-    const {
-      current_track: next_current_track,
-      show_lyrics: next_show_lyrics,
-      genius_authorized: next_genius_authorized,
-    } = nextProps;
 
-    if (!current_track && next_current_track) {
-      this.setWindowTitle(next_current_track);
+    if (!prev_current_track && current_track) {
+      this.setWindowTitle(current_track);
 
-      if (show_lyrics && next_genius_authorized && next_current_track && next_current_track.artists && !next_current_track.lyrics_results) {
-        geniusActions.findTrackLyrics(next_current_track);
+      if (show_lyrics && genius_authorized && current_track && current_track.artists && !current_track.lyrics_results) {
+        findTrackLyrics(current_track);
       }
-    } else if (show_lyrics !== next_show_lyrics && next_show_lyrics && next_current_track) {
-      if (next_genius_authorized && next_current_track && next_current_track.artists && !next_current_track.lyrics_results) {
-        geniusActions.findTrackLyrics(next_current_track);
+    } else if (show_lyrics !== show_lyrics && show_lyrics && current_track) {
+      if (genius_authorized && current_track && current_track.artists && !current_track.lyrics_results) {
+        findTrackLyrics(current_track);
       }
     }
   }

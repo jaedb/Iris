@@ -13,6 +13,7 @@ class EditPlaylist extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      loaded: false,
       error: null,
       name: '',
       description: '',
@@ -27,13 +28,14 @@ class EditPlaylist extends React.Component {
 
     if (this.props.playlist) {
       this.setState({
+        loaded: true,
         name: this.props.playlist.name,
         description: this.props.playlist.description,
         public: (this.props.playlist.public == true),
         collaborative: (this.props.playlist.collaborative == true),
       });
     } else {
-      switch (helpers.uriSource(this.props.uri)) {
+      switch (uriSource(this.props.uri)) {
         case 'spotify':
           this.props.spotifyActions.getPlaylist(this.props.uri);
           this.props.spotifyActions.following(this.props.uri);
@@ -48,20 +50,34 @@ class EditPlaylist extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    // Playlist just loaded
-    if (!this.props.playlist && nextProps.playlist) {
-      this.setState({
-        name: nextProps.playlist.name,
-        description: nextProps.playlist.description,
-        public: (nextProps.playlist.public == true),
-        collaborative: (nextProps.playlist.collaborative == true),
-      });
+  componentDidUpdate = ({
+    mopidy_connected: prev_mopidy_connected,
+  }) => {
+    const {
+      uri,
+      playlist,
+      mopidy_connected,
+      mopidyActions: {
+        getPlaylist,
+      },
+    } = this.props;
 
-      // Mopidy just connected, and we don't have the playlist yet
-    } else if (this.props.mopidy_connected != nextProps.mopidy_connected && !nextProps.playlist) {
-      this.props.mopidyActions.getPlaylist(this.props.uri);
+    if (!prev_mopidy_connected && mopidy_connected && !playlist) {
+      getPlaylist(uri);
     }
+  }
+
+  static getDerivedStateFromProps({ playlist }, state) {
+    if (playlist && !state.loaded) {
+      return {
+        loaded: true,
+        name: playlist.name,
+        description: playlist.description,
+        public: (playlist.public === true),
+        collaborative: (playlist.collaborative === true),
+      };
+    }
+    return null;
   }
 
   savePlaylist(e) {

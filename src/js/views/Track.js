@@ -31,7 +31,6 @@ class Track extends React.Component {
   componentDidMount() {
     this.props.coreActions.loadTrack(this.props.uri);
 
-    // We already have the track in our index, so it won't fire componentWillReceiveProps
     if (this.props.track) {
       this.setWindowTitle(this.props.track);
 

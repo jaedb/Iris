@@ -42,23 +42,21 @@ class Services extends React.Component {
     }
   }
 
-  componentWillReceiveProps(newProps) {
+  static getDerivedStateFromProps(props, state) {
     let changed = false;
-    const { state } = this;
+    const changes = {};
 
-    if (newProps.spotify.country != this.state.country && this.state.input_in_focus != 'country') {
-      state.country = newProps.spotify.country;
+    if (props.spotify.country !== state.country && state.input_in_focus !== 'country') {
       changed = true;
+      changes.country = props.spotify.country;
     }
-
-    if (newProps.spotify.locale != this.state.locale && this.state.input_in_focus != 'locale') {
-      state.locale = newProps.spotify.locale;
+    if (props.spotify.locale !== state.locale && state.input_in_focus !== 'locale') {
       changed = true;
+      changes.locale = props.spotify.locale;
     }
 
-    if (changed) {
-      this.setState(state);
-    }
+    if (changed) return changes;
+    return null;
   }
 
   handleBlur(name, value) {

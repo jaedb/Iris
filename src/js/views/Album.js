@@ -44,7 +44,6 @@ export class Album extends React.Component {
     this.setWindowTitle();
     loadAlbum(uri);
 
-    // We already have the album in our index, so it won't fire componentWillReceiveProps
     if (album) {
       if (album.artists && album.wiki === undefined) {
         getAlbum(album.uri, album.artists[0].name, album.name);

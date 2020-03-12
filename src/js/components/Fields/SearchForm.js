@@ -14,11 +14,15 @@ class SearchForm extends React.Component {
     };
   }
 
-  componentWillReceiveProps = (nextProps) => {
-    const { pristine, term } = this.state;
-    if (pristine && term === '' && term !== nextProps.term) {
-      this.setState({ term: nextProps.term, pristine: false });
+  static getDerivedStateFromProps(props, state) {
+    const { pristine, term } = state;
+    if (pristine && term === '' && term !== props.term) {
+      return {
+        term,
+        pristine: false,
+      };
     }
+    return null;
   }
 
   shouldComponentUpdate = (nextProps, nextState) => {
@@ -73,7 +77,6 @@ class SearchForm extends React.Component {
   }
 
   render() {
-    console.log('rendering', this.state);
     return (
       <form className="search-form" onSubmit={(e) => this.handleSubmit(e)}>
         <label>

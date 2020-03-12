@@ -113,7 +113,12 @@ export default class GridItem extends React.Component {
         onClick={scrollTo}
         onContextMenu={this.onContextMenu}
       >
-        <Thumbnail glow size="medium" className="grid__item__thumbnail" images={item.images || item.icons} />
+        <Thumbnail
+          glow
+          size="medium"
+          className="grid__item__thumbnail"
+          images={item.images || item.icons}
+        />
         <div className="grid__item__name">
           {item.name ? item.name : <span className="opaque-text">{item.uri}</span>}
         </div>

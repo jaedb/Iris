@@ -53,35 +53,39 @@ class LibraryArtists extends React.Component {
     }
   }
 
-  componentWillReceiveProps(newProps) {
-    if (newProps.mopidy_connected && (newProps.source == 'all' || newProps.source == 'local')) {
-      // We've just connected
-      if (!this.props.mopidy_connected) {
-        this.props.mopidyActions.getLibraryArtists();
-      }
+  componentDidUpdate = ({
+    mopidy_connected: prev_mopidy_connected,
+  }) => {
+    const {
+      source,
+      mopidy_connected,
+      google_enabled,
+      spotify_enabled,
+      mopidyActions,
+      googleActions,
+      spotifyActions,
+      mopidy_library_artists,
+      google_library_artists,
+      spotify_library_artists_status,
+    } = this.props;
+  
+    if (mopidy_connected && (source === 'all' || source === 'local')) {
+      if (!prev_mopidy_connected) mopidyActions.getLibraryArtists();
 
-      // Filter changed, but we haven't got this provider's library yet
-      if (this.props.source != 'all' && this.props.source != 'local' && !newProps.mopidy_library_artists) {
-        this.props.mopidyActions.getLibraryArtists();
+      if (source !== 'all' && source !== 'local' && !mopidy_library_artists) {
+        mopidyActions.getLibraryArtists();
       }
     }
 
-    if (newProps.mopidy_connected && newProps.google_enabled && (newProps.source == 'all' || newProps.source == 'google')) {
-      // We've just been enabled (or detected as such)
-      if (!this.props.google_enabled) {
-        this.props.googleActions.getLibraryArtists();
-      }
-
-      // Filter changed, but we haven't got this provider's library yet
-      if (this.props.source != 'all' && this.props.source != 'google' && !newProps.google_library_artists) {
-        this.props.googleActions.getLibraryArtists();
+    if (mopidy_connected && google_enabled && (source === 'all' || source === 'google')) {
+      if (source !== 'all' && source !== 'google' && !google_library_artists) {
+        googleActions.getLibraryArtists();
       }
     }
 
-    if (newProps.spotify_enabled && (newProps.source == 'all' || newProps.source == 'spotify')) {
-      // Filter changed, but we haven't got this provider's library yet
-      if (newProps.spotify_library_artists_status != 'finished' && newProps.spotify_library_artists_status != 'started') {
-        this.props.spotifyActions.getLibraryArtists();
+    if (spotify_enabled && (source === 'all' || source === 'spotify')) {
+      if (spotify_library_artists_status !== 'finished' && spotify_library_artists_status !== 'started') {
+        spotifyActions.getLibraryArtists();
       }
     }
   }

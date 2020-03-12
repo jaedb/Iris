@@ -16,11 +16,9 @@ class LibraryBrowse extends React.Component {
     this.props.uiActions.setWindowTitle('Browse');
   }
 
-  componentWillReceiveProps(nextProps) {
-    // mopidy goes online
-    if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
-      this.loadDirectory(nextProps);
-    }
+  componentDidUpdate = ({ mopidy_connected: prev_mopidy_connected}) => {
+    const { mopidy_connected } = this.props;
+    if (!prev_mopidy_connected && mopidy_connected) this.loadDirectory();
   }
 
   loadDirectory(props = this.props) {
