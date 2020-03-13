@@ -1,6 +1,20 @@
 import { uriSource } from './helpers';
 
 /**
+ * Convert an object (ie index) to an array of values
+ *
+ * @param object Object
+ * @return Array
+ */
+const indexToArray = (index) => {
+  const array = [];
+  for (let key in index) {
+    if (index.hasOwnProperty(key)) array.push(index[key]);
+  }
+  return array;
+};
+
+/**
  * Digest an array of objects and pull into simple array of one property
  *
  * @param property = string
@@ -241,6 +255,7 @@ export {
   createRange,
   sortItems,
   shuffle,
+  indexToArray,
 };
 
 export default {
@@ -251,4 +266,5 @@ export default {
   createRange,
   sortItems,
   shuffle,
+  indexToArray,
 };

@@ -14,6 +14,7 @@ import {
 import {
   arrayOf,
   sortItems,
+  indexToArray,
 } from '../util/arrays';
 import Link from './Link';
 import Icon from './Icon';
@@ -375,7 +376,7 @@ class ContextMenu extends React.Component {
       uiActions: {
         hideContextMenu,
       },
-      mopidyActions: {
+      coreActions: {
         addTracksToPlaylist,
       },
       menu: {
@@ -678,7 +679,7 @@ class ContextMenu extends React.Component {
   renderSubmenu = () => {
     const { submenu } = this.state;
     const {
-      playlists,
+      playlists: playlistsIndex,
       processes,
     } = this.props;
 
@@ -686,10 +687,11 @@ class ContextMenu extends React.Component {
     let isLoading = false;
 
     if (submenu === 'add-to-playlist') {
-      const editablePlaylists =
-        playlists.filter(playlist => playlist.can_edit).sortItems(editablePlaylists, 'name');
+      let playlists = indexToArray(playlistsIndex);
+      playlists = playlists.filter((playlist) => playlist.can_edit);
+      playlists = sortItems(playlists, 'name');
 
-      if (processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR && processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR.status == 'running') {
+      if (processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR && processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR.status === 'running') {
         isLoading = true;
       }
 
@@ -698,8 +700,8 @@ class ContextMenu extends React.Component {
           <span className="context-menu__item mid_grey-text">No writable playlists</span>
         </span>
       );
-      if (editablePlaylists.length > 0) {
-        list = editablePlaylists.map((playlist) => (
+      if (playlists.length > 0) {
+        list = playlists.map((playlist) => (
           <span className="context-menu__item" key={playlist.uri}>
             <a
               className="context-menu__item__link"

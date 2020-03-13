@@ -14,8 +14,7 @@ import { sourceIcon } from '../../util/helpers';
 import { sortItems } from '../../util/arrays';
 
 class AddToPlaylist extends React.Component {
-  constructor(props) {
-    super(props);
+  componentDidMount = () => {
     const {
       spotify_library_playlists,
       mopidy_library_playlists,

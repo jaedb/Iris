@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux';
 import { get as getStorage } from '../util/storage';
 import { isTouchDevice } from '../util/helpers';
 import * as uiActions from '../services/ui/actions';
+import { indexToArray } from '../util/arrays';
 
 class DebugInfo extends React.Component {
   localStorageSize() {
@@ -32,17 +33,12 @@ class DebugInfo extends React.Component {
     const { ui: { load_queue } } = this.props;
     if (!load_queue) return <div className="debug-info-item mid_grey-text">Nothing loading</div>;
 
-    const queue = [];
-    for (const key in load_queue) {
-      if (load_queue.hasOwnProperty(key)) {
-        queue.push(<div key={key}>{load_queue[key]}</div>);
-      }
-    }
+    const queue = indexToArray(load_queue);
 
     if (queue.length > 0) {
       return (
         <div className="debug-info-item">
-          {queue}
+          {queue.map((item) => (<div key={item}>{item}</div>))}
         </div>
       );
     }

@@ -9,7 +9,7 @@ import DropdownField from './DropdownField';
 import * as coreActions from '../../services/core/actions';
 import * as pusherActions from '../../services/pusher/actions';
 import * as snapcastActions from '../../services/snapcast/actions';
-import { sortItems } from '../../util/arrays';
+import { sortItems, indexToArray } from '../../util/arrays';
 
 class OutputControl extends React.Component {
   constructor(props) {
@@ -59,12 +59,7 @@ class OutputControl extends React.Component {
       snapcast_groups,
     } = this.props;
 
-    const groups = [];
-    for (var key in snapcast_groups) {
-      if (snapcast_groups.hasOwnProperty(key)) {
-        groups.push(snapcast_groups[key]);
-      }
-    }
+    const groups = indexToArray(snapcast_groups);
     if (groups.length <= 0) return null;
 
     const streams = Object.keys(snapcast_streams).map(
@@ -117,13 +112,7 @@ class OutputControl extends React.Component {
 
     if (!pusher_commands) return null;
 
-    let items = [];
-    for (var key in pusher_commands) {
-      if (pusher_commands.hasOwnProperty(key)) {
-        items.push(pusher_commands[key]);
-      }
-    }
-
+    let items = indexToArray(pusher_commands);
     if (items.length <= 0) return null;
 
     items = sortItems(items, 'sort_order');
