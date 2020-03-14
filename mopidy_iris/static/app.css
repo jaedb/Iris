@@ -3722,6 +3722,11 @@ select {
         background: -moz-linear-gradient(to bottom right, rgba(200, 200, 200, 0.75), #646464);
         background: -o-linear-gradient(to bottom right, rgba(200, 200, 200, 0.75), #646464);
         background: linear-gradient(to bottom right, rgba(200, 200, 200, 0.75), #646464); }
+      .context-menu__item__link--inactive {
+        cursor: default;
+        opacity: 0.5; }
+        .context-menu__item__link--inactive:before {
+          display: none; }
       .notouch .context-menu__item__link:hover:before {
         opacity: 0.15; }
       .notouch .context-menu__item__link:active {
@@ -5721,6 +5726,10 @@ main header {
       .notifications .notification__actions__item {
         margin-bottom: 0;
         margin-top: 5px; }
+    .notifications .notification a {
+      text-decoration: none;
+      color: inherit;
+      border-bottom: 2px solid #FFFFFF; }
     .notifications .notification ul {
       padding: 4px 0 4px 20px; }
     .notifications .notification__content {

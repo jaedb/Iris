@@ -32,6 +32,12 @@
 			}
 		}
 
+		a {
+			text-decoration: none;
+			color: inherit;
+			border-bottom: 2px solid colour(white);
+		}
+
 		ul {
 			padding: 4px 0 4px 20px;
 		}

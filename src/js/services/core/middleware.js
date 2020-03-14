@@ -1,6 +1,8 @@
 
+import React from 'react';
 import ReactGA from 'react-ga';
 import { arrayOf } from '../../util/arrays';
+import URILink from '../../components/URILink';
 import { uriSource, upgradeSpotifyPlaylistUris } from '../../util/helpers';
 import {
   formatTracks,
@@ -235,7 +237,10 @@ const CoreMiddleware = (function () {
         break;
 
       case 'PLAYLIST_TRACKS_ADDED':
-        store.dispatch(uiActions.createNotification({ level: 'warning', content: `Added ${action.tracks_uris.length} tracks to playlist` }));
+        store.dispatch(uiActions.createNotification({
+          level: 'warning',
+          content: <span>Added {action.tracks_uris.length} tracks to <URILink uri={action.key}>playlist</URILink></span>,
+        }));
         switch (uriSource(action.key)) {
           case 'spotify':
             store.dispatch(spotifyActions.getPlaylist(action.key));

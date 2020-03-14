@@ -632,8 +632,8 @@ const formatClient = function (data) {
       client.name = data.config.name;
     }
 
-    if (data.config.volume) {
-      if (data.config.volume.percent) {
+    if (data.config.volume !== undefined) {
+      if (data.config.volume.percent !== undefined) {
         client.volume = data.config.volume.percent;
       }
       if (data.config.volume.muted) {

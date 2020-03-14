@@ -324,9 +324,10 @@ const SnapcastMiddleware = (function () {
         break;
 
       case 'SNAPCAST_CALCULATE_GROUP_VOLUME':
-        const totalVolume = action.clients.reduce((accumulator, client) => {
-          return accumulator += formatClient(client).volume;
-        }, 0);
+        const totalVolume = action.clients.reduce((accumulator, client) =>
+          accumulator += formatClient(client).volume,
+          0,
+        );
 
         store.dispatch(snapcastActions.groupLoaded({
           id: action.id,

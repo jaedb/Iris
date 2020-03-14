@@ -697,10 +697,14 @@ class ContextMenu extends React.Component {
 
       list = (
         <span className="context-menu__item">
-          <span className="context-menu__item mid_grey-text">No writable playlists</span>
+          <span className="context-menu__item mid_grey-text">
+            <span className="context-menu__item__link context-menu__item__link--inactive">
+              No writable playlists
+            </span>
+          </span>
         </span>
       );
-      if (playlists.length > 0) {
+      if (playlists.length) {
         list = playlists.map((playlist) => (
           <span className="context-menu__item" key={playlist.uri}>
             <a

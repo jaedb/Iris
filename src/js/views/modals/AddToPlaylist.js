@@ -16,18 +16,18 @@ import { sortItems } from '../../util/arrays';
 class AddToPlaylist extends React.Component {
   componentDidMount = () => {
     const {
-      spotify_library_playlists,
-      mopidy_library_playlists,
+      spotify_library_playlists_status,
+      mopidy_library_playlists_status,
       mopidy_connected,
       spotifyActions,
       mopidyActions,
     } = this.props;
 
-    if (!spotify_library_playlists) {
+    if (!spotify_library_playlists_status || spotify_library_playlists_status !== 'finished') {
       spotifyActions.getLibraryPlaylists();
     }
 
-    if (!mopidy_library_playlists && mopidy_connected) {
+    if ((!mopidy_library_playlists_status || mopidy_library_playlists_status !== 'finished') && mopidy_connected) {
       mopidyActions.getLibraryPlaylists();
     }
   }
