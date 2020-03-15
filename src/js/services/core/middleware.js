@@ -1,13 +1,23 @@
 
+import React from 'react';
 import ReactGA from 'react-ga';
+import { arrayOf } from '../../util/arrays';
+import URILink from '../../components/URILink';
+import { uriSource, upgradeSpotifyPlaylistUris } from '../../util/helpers';
+import {
+  formatTracks,
+  formatTrack,
+  formatSimpleObject,
+  formatAlbum,
+  formatArtist,
+  formatPlaylist,
+  formatUser,
+} from '../../util/format';
 
 const coreActions = require('./actions.js');
 const uiActions = require('../ui/actions.js');
-const pusherActions = require('../pusher/actions.js');
 const mopidyActions = require('../mopidy/actions.js');
 const spotifyActions = require('../spotify/actions.js');
-const lastfmActions = require('../lastfm/actions.js');
-const helpers = require('../../helpers.js');
 
 const CoreMiddleware = (function () {
   /**
@@ -215,8 +225,8 @@ const CoreMiddleware = (function () {
              * */
 
       case 'PLAYLIST_TRACKS':
-        var tracks = helpers.formatTracks(action.tracks);
-        action.tracks_uris = helpers.arrayOf('uri', tracks);
+        var tracks = formatTracks(action.tracks);
+        action.tracks_uris = arrayOf('uri', tracks);
 
         store.dispatch({
           type: 'TRACKS_LOADED',
@@ -227,8 +237,11 @@ const CoreMiddleware = (function () {
         break;
 
       case 'PLAYLIST_TRACKS_ADDED':
-        store.dispatch(uiActions.createNotification({ level: 'warning', content: `Added ${action.tracks_uris.length} tracks to playlist` }));
-        switch (helpers.uriSource(action.key)) {
+        const asset = store.getState().core.playlists[action.key];
+        store.dispatch(uiActions.createNotification({
+          content: <span>Added {action.tracks_uris.length} tracks to <URILink uri={action.key}>{asset ? asset.name : 'playlist'}</URILink></span>,
+        }));
+        switch (uriSource(action.key)) {
           case 'spotify':
             store.dispatch(spotifyActions.getPlaylist(action.key));
             break;
@@ -318,7 +331,7 @@ const CoreMiddleware = (function () {
 	            		break;
             	}
 
-        switch (helpers.uriSource(action.uri)) {
+        switch (uriSource(action.uri)) {
           case 'spotify':
             store.dispatch(spotifyActions.getTrack(action.uri));
 
@@ -346,7 +359,7 @@ const CoreMiddleware = (function () {
 	            		break;
             	}
 
-        switch (helpers.uriSource(action.uri)) {
+        switch (uriSource(action.uri)) {
           case 'spotify':
             store.dispatch(spotifyActions.getAlbum(action.uri));
 
@@ -375,7 +388,7 @@ const CoreMiddleware = (function () {
 	            		break;
             	}
 
-        switch (helpers.uriSource(action.uri)) {
+        switch (uriSource(action.uri)) {
           case 'spotify':
             store.dispatch(spotifyActions.getArtist(action.uri, true));
 
@@ -403,7 +416,7 @@ const CoreMiddleware = (function () {
 	            		break;
             	}
 
-        switch (helpers.uriSource(action.uri)) {
+        switch (uriSource(action.uri)) {
           case 'spotify':
             store.dispatch(spotifyActions.getPlaylist(action.uri));
 
@@ -431,7 +444,7 @@ const CoreMiddleware = (function () {
 	            		break;
             	}
 
-        switch (helpers.uriSource(action.uri)) {
+        switch (uriSource(action.uri)) {
           case 'spotify':
             store.dispatch(spotifyActions.getUser(action.uri));
 
@@ -457,7 +470,7 @@ const CoreMiddleware = (function () {
           break;
         }
 
-        switch (helpers.uriSource(action.uri)) {
+        switch (uriSource(action.uri)) {
           case 'spotify':
             store.dispatch(spotifyActions.getUserPlaylists(action.uri));
             break;
@@ -478,13 +491,13 @@ const CoreMiddleware = (function () {
 
       case 'CURRENT_TRACK_LOADED':
         store.dispatch(coreActions.trackLoaded(action.track));
-        action.track = helpers.formatTrack(action.track);
+        action.track = formatTrack(action.track);
         next(action);
         break;
 
       case 'QUEUE_LOADED':
         store.dispatch(coreActions.tracksLoaded(action.tracks));
-        action.tracks = helpers.formatTracks(action.tracks);
+        action.tracks = formatTracks(action.tracks);
         next(action);
         break;
 
@@ -497,31 +510,25 @@ const CoreMiddleware = (function () {
         var albums_loaded = [];
 
         for (const raw_track of action.tracks) {
-          var track = helpers.formatTrack(raw_track);
+          var track = formatTrack(raw_track);
 
           if (tracks_index[track.uri] !== undefined) {
             track = { ...tracks_index[track.uri], ...track };
           }
 
           if (raw_track.album) {
-            track.album = helpers.formatSimpleObject(raw_track.album);
+            track.album = formatSimpleObject(raw_track.album);
 
             if (!albums_index[raw_track.album.uri]) {
               albums_loaded.push(raw_track.album);
             }
-
-            // Copy the images to the track
-            /*
-                        if (raw_track.album.images){
-                            track.images = helpers.digestMopidyImages(store.getState().mopidy, raw_track.album.images);
-                        } */
           }
 
           if (raw_track.artists && raw_track.artists.length > 0) {
             track.artists = [];
 
             for (var artist of raw_track.artists) {
-              track.artists.push(helpers.formatSimpleObject(artist));
+              track.artists.push(formatSimpleObject(artist));
 
               // Not already in our index, so let's add it
               if (!artists_index[artist.uri]) {
@@ -552,22 +559,18 @@ const CoreMiddleware = (function () {
         var tracks_loaded = [];
 
         for (const raw_album of action.albums) {
-          let album = helpers.formatAlbum(raw_album);
+          let album = formatAlbum(raw_album);
 
           if (albums_index[album.uri]) {
             album = { ...albums_index[album.uri], ...album };
           }
-          /*
-                    if (raw_album.images && raw_album.images.length > 0){
-                        album.images = helpers.digestMopidyImages(store.getState().mopidy, raw_album.images);
-                    } */
 
           if (raw_album.tracks) {
             album.tracks_uris = [];
 
             for (var track of raw_album.tracks) {
               if (!track.album) {
-                track.album = helpers.formatSimpleObject(album);
+                track.album = formatSimpleObject(album);
               }
               album.tracks_uris.push(track.uri);
               tracks_loaded.push(track);
@@ -575,7 +578,7 @@ const CoreMiddleware = (function () {
           }
 
           if (raw_album.artists) {
-            album.artists_uris = helpers.arrayOf('uri', raw_album.artists);
+            album.artists_uris = arrayOf('uri', raw_album.artists);
             artists_loaded = [...artists_loaded, ...raw_album.artists];
           }
 
@@ -600,7 +603,7 @@ const CoreMiddleware = (function () {
         var tracks_loaded = [];
 
         for (const raw_artist of action.artists) {
-                	var artist = helpers.formatArtist(raw_artist);
+                	var artist = formatArtist(raw_artist);
 
                 	// Already have an artist in the index
           if (artists_index[artist.uri]) {
@@ -631,8 +634,8 @@ const CoreMiddleware = (function () {
 
           // Migrate nested tracks objects into references to our tracks index
           if (raw_artist.tracks) {
-            var tracks = helpers.formatTracks(raw_artist.tracks);
-            var tracks_uris = helpers.arrayOf('uri', tracks);
+            var tracks = formatTracks(raw_artist.tracks);
+            var tracks_uris = arrayOf('uri', tracks);
             artist.tracks_uris = tracks_uris;
             tracks_loaded = [...tracks_loaded, ...tracks];
           }
@@ -655,10 +658,10 @@ const CoreMiddleware = (function () {
         var tracks_loaded = [];
 
         for (var playlist of action.playlists) {
-                	playlist = helpers.formatPlaylist(playlist);
+                	playlist = formatPlaylist(playlist);
 
           // Detect editability
-          switch (helpers.uriSource(playlist.uri)) {
+          switch (uriSource(playlist.uri)) {
             case 'm3u':
               playlist.can_edit = true;
               break;
@@ -681,8 +684,8 @@ const CoreMiddleware = (function () {
 
           // Load our tracks
           if (playlist.tracks) {
-            var tracks = helpers.formatTracks(playlist.tracks);
-            var tracks_uris = helpers.arrayOf('uri', tracks);
+            var tracks = formatTracks(playlist.tracks);
+            var tracks_uris = arrayOf('uri', tracks);
             playlist.tracks_uris = tracks_uris;
             delete playlist.tracks;
             tracks_loaded = [...tracks_loaded, ...tracks];
@@ -706,7 +709,7 @@ const CoreMiddleware = (function () {
         var users_loaded = [];
 
         for (let user of action.users) {
-          user = helpers.formatUser(user);
+          user = formatUser(user);
 
           if (users_index[user.uri]) {
             user = { ...users_index[user.uri], ...user };
@@ -753,12 +756,12 @@ const CoreMiddleware = (function () {
         // Pre-emptively format tracks
         // Providers give us tracks in all kinds of structures, so this cleans things first
         if (action.records_type == 'track') {
-          records = helpers.formatTracks(records);
+          records = formatTracks(records);
         }
 
         var records_type_plural = `${action.records_type}s`;
         var records_index = {};
-        var records_uris = helpers.arrayOf('uri', records);
+        var records_uris = arrayOf('uri', records);
 
         // Merge any extra data (eg more_track's albums)
         if (action.extra_data) {
@@ -768,7 +771,7 @@ const CoreMiddleware = (function () {
         // If we're a list of playlists, we need to manually filter Spotify's new URI structure
         // Really poor form because they haven't updated it everywhere, yet
         if (action.records_type == 'playlist') {
-                	records_uris = helpers.upgradeSpotifyPlaylistUris(records_uris);
+                	records_uris = upgradeSpotifyPlaylistUris(records_uris);
         }
 
         // Append our parent object's reference to these records

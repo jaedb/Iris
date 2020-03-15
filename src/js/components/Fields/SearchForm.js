@@ -1,9 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
-import * as helpers from '../../helpers';
 import * as uiActions from '../../services/ui/actions';
+import { uriType } from '../../util/helpers';
 
 class SearchForm extends React.Component {
   constructor(props) {
@@ -15,11 +14,15 @@ class SearchForm extends React.Component {
     };
   }
 
-  componentWillReceiveProps = (nextProps) => {
-    const { pristine, term } = this.state;
-    if (pristine && term === '' && term !== nextProps.term) {
-      this.setState({ term: nextProps.term, pristine: false });
+  static getDerivedStateFromProps(props, state) {
+    const { pristine, term } = state;
+    if (pristine && term === '' && term !== props.term) {
+      return {
+        term,
+        pristine: false,
+      };
     }
+    return null;
   }
 
   shouldComponentUpdate = (nextProps, nextState) => {
@@ -48,7 +51,7 @@ class SearchForm extends React.Component {
     e.preventDefault();
 
     // check for uri type matching
-    switch (helpers.uriType(this.state.term)) {
+    switch (uriType(this.state.term)) {
       case 'album':
         this.props.history.push(`/album/${encodeURIComponent(this.state.term)}`);
         break;
@@ -74,7 +77,6 @@ class SearchForm extends React.Component {
   }
 
   render() {
-    console.log('rendering', this.state);
     return (
       <form className="search-form" onSubmit={(e) => this.handleSubmit(e)}>
         <label>

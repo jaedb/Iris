@@ -2,16 +2,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
 import VolumeControl from './VolumeControl';
 import MuteControl from './MuteControl';
 import Icon from '../Icon';
 import DropdownField from './DropdownField';
-import * as helpers from '../../helpers';
-
 import * as coreActions from '../../services/core/actions';
 import * as pusherActions from '../../services/pusher/actions';
 import * as snapcastActions from '../../services/snapcast/actions';
+import { sortItems, indexToArray } from '../../util/arrays';
 
 class OutputControl extends React.Component {
   constructor(props) {
@@ -30,11 +28,11 @@ class OutputControl extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    // When force expanded triggered
-    if (!this.props.force_expanded && nextProps.force_expanded) {
-      this.setExpanded(true, nextProps);
-    }
+  componentDidUpdate = ({
+    force_expanded: prev_force_expanded,
+  }) => {
+    const { force_expanded } = this.props;
+    if (!prev_force_expanded && force_expanded) this.setExpanded(true);
   }
 
   setExpanded(expanded = !this.state.expanded, props = this.props) {
@@ -61,12 +59,7 @@ class OutputControl extends React.Component {
       snapcast_groups,
     } = this.props;
 
-    const groups = [];
-    for (var key in snapcast_groups) {
-      if (snapcast_groups.hasOwnProperty(key)) {
-        groups.push(snapcast_groups[key]);
-      }
-    }
+    const groups = indexToArray(snapcast_groups);
     if (groups.length <= 0) return null;
 
     const streams = Object.keys(snapcast_streams).map(
@@ -119,16 +112,10 @@ class OutputControl extends React.Component {
 
     if (!pusher_commands) return null;
 
-    let items = [];
-    for (var key in pusher_commands) {
-      if (pusher_commands.hasOwnProperty(key)) {
-        items.push(pusher_commands[key]);
-      }
-    }
-
+    let items = indexToArray(pusher_commands);
     if (items.length <= 0) return null;
 
-    items = helpers.sortItems(items, 'sort_order');
+    items = sortItems(items, 'sort_order');
 
     return (
       <div className="output-control__item output-control__item--commands commands">

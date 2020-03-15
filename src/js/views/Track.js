@@ -2,7 +2,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
 import Link from '../components/Link';
 import ErrorMessage from '../components/ErrorMessage';
 import Header from '../components/Header';
@@ -14,24 +13,24 @@ import SelectField from '../components/Fields/SelectField';
 import ContextMenuTrigger from '../components/ContextMenuTrigger';
 import Icon from '../components/Icon';
 import Loader from '../components/Loader';
-
-import * as helpers from '../helpers';
 import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import * as spotifyActions from '../services/spotify/actions';
 import * as lastfmActions from '../services/lastfm/actions';
 import * as geniusActions from '../services/genius/actions';
+import {
+  isLoading,
+  getFromUri,
+  sourceIcon,
+  uriSource,
+  uriType,
+} from '../util/helpers';
 
 class Track extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
     this.props.coreActions.loadTrack(this.props.uri);
 
-    // We already have the track in our index, so it won't fire componentWillReceiveProps
     if (this.props.track) {
       this.setWindowTitle(this.props.track);
 
@@ -47,40 +46,45 @@ class Track extends React.Component {
     this.props.uiActions.showContextMenu(e, data, 'track', 'click');
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentDidUpdate = ({
+    uri: prevUri,
+    track: prevTrack,
+    mopidy_connected: prev_mopidy_connected,
+  }) => {
+    const {
+      uri,
+      track,
+      genius_authorized,
+      lastfm_authorized,
+      mopidy_connected,
+      coreActions: {
+        loadTrack,
+      },
+      geniusActions: {
+        findTrackLyrics,
+      },
+      lastfmActions: {
+        getTrack,
+      },
+    } = this.props;
     // if our URI has changed, fetch new track
-    if (nextProps.uri != this.props.uri) {
-      this.props.coreActions.loadTrack(nextProps.uri);
-
-      if (nextProps.genius_authorized && nextProps.tracks.artists) {
-        this.props.geniusActions.findTrackLyrics(nextProps.track);
-      }
+    if (prevUri !== uri) {
+      loadTrack(uri);
+      if (genius_authorized && track.artists) findTrackLyrics(track);
 
       // if mopidy has just connected AND we're not a Spotify track, go get
-    } else if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
-      if (helpers.uriSource(this.props.uri) != 'spotify') {
-        this.props.coreActions.loadTrack(nextProps.uri);
-      }
+    } else if (!prev_mopidy_connected && mopidy_connected) {
+      if (uriSource(uri) !== 'spotify') loadTrack(uri);
     }
 
     // We have just received our full track or our track artists
-    if ((!this.props.track && nextProps.track) || (!this.props.track.artists && nextProps.track.artists)) {
-      this.setWindowTitle(nextProps.track);
-
-      // Ready to load LastFM
-      if (nextProps.lastfm_authorized) {
-        this.props.lastfmActions.getTrack(nextProps.track.uri);
-      }
-
-      // Ready to load lyrics
-      if (nextProps.genius_authorized && !nextProps.track.lyrics_results) {
-        this.props.geniusActions.findTrackLyrics(nextProps.track);
-      }
+    if ((!prevTrack && track) || (!prevTrack.artists && track.artists)) {
+      this.setWindowTitle(track);
+      if (lastfm_authorized) getTrack(track.uri);
+      if (genius_authorized && !track.lyrics_results) findTrackLyrics(track);
     }
 
-    if (!this.props.track && nextProps.track) {
-      this.setWindowTitle(nextProps.track);
-    }
+    if (!prevTrack && track) this.setWindowTitle(track);
   }
 
   setWindowTitle(track = this.props.track) {
@@ -155,7 +159,7 @@ class Track extends React.Component {
   }
 
   renderLyrics() {
-    if (helpers.isLoading(this.props.load_queue, ['genius_'])) {
+    if (isLoading(this.props.load_queue, ['genius_'])) {
       return (
         <div className="lyrics">
           <Loader body loading />
@@ -179,7 +183,7 @@ class Track extends React.Component {
   }
 
   render() {
-    if (helpers.isLoading(this.props.load_queue, [`spotify_track/${helpers.getFromUri('trackid', this.props.uri)}`])) {
+    if (isLoading(this.props.load_queue, [`spotify_track/${getFromUri('trackid', this.props.uri)}`])) {
       return <Loader body loading />
     }
 
@@ -226,7 +230,7 @@ class Track extends React.Component {
           </h2>
 
           <ul className="details">
-            {!this.props.slim_mode ? <li className="source"><Icon type="fontawesome" name={helpers.sourceIcon(this.props.uri)} /></li> : null}
+            {!this.props.slim_mode ? <li className="source"><Icon type="fontawesome" name={sourceIcon(this.props.uri)} /></li> : null}
             {track.date ? <li><Dater type="date" data={track.date} /></li> : null}
             {track.explicit ? <li><span className="flag flag--dark">EXPLICIT</span></li> : null}
             <li>
@@ -272,11 +276,11 @@ Want track lyrics? Authorize Genius under
  * @return String
  * */
 const rebuildUri = (uri) => {
-  const rebuilt_uri = `${helpers.uriSource(uri)}:${helpers.uriType(uri)}:`;
+  const rebuilt_uri = `${uriSource(uri)}:${uriType(uri)}:`;
 
   // Escape unreserved characters (RFC 3986)
   // https://stackoverflow.com/questions/18251399/why-doesnt-encodeuricomponent-encode-single-quotes-apostrophes
-  let id = helpers.getFromUri('trackid', uri);
+  let id = getFromUri('trackid', uri);
   id = encodeURIComponent(id).replace(/[!'()*]/g, escape);
 
   // Reinstate slashes for the Mopidy-Local structure

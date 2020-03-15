@@ -3,7 +3,7 @@ import React from 'react';
 import Sortable from 'react-sortablejs';
 import Icon from '../Icon';
 import Link from '../Link';
-import * as helpers from '../../helpers';
+import { sortItems } from '../../util/arrays';
 
 export default class Commands extends React.Component {
   constructor(props) {
@@ -31,7 +31,7 @@ export default class Commands extends React.Component {
       }
     }
 
-    commands = helpers.sortItems(commands, 'sort_order');
+    commands = sortItems(commands, 'sort_order');
 
     return commands;
   }

@@ -1,5 +1,6 @@
 
-import * as helpers from '../../helpers';
+import { removeDuplicates, arrayOf } from '../../util/arrays';
+import { formatTracks } from '../../util/format';
 
 export default function reducer(core = {}, action) {
   switch (action.type) {
@@ -126,7 +127,7 @@ export default function reducer(core = {}, action) {
             	existing_playlists_uris = users[action.uri].playlists_uris;
       }
 
-      var playlists_uris = [...existing_playlists_uris, ...helpers.arrayOf('uri', action.playlists)];
+      var playlists_uris = [...existing_playlists_uris, ...arrayOf('uri', action.playlists)];
 
       var user = {
 
@@ -181,7 +182,7 @@ export default function reducer(core = {}, action) {
         var library_playlists = action.uris;
       }
 
-      library_playlists = helpers.removeDuplicates(library_playlists);
+      library_playlists = removeDuplicates(library_playlists);
 
       return {
         ...core,
@@ -263,7 +264,7 @@ export default function reducer(core = {}, action) {
       } else {
         var tracks = [];
       }
-      if (action.tracks) tracks = [...tracks, ...helpers.formatTracks(action.tracks)];
+      if (action.tracks) tracks = [...tracks, ...formatTracks(action.tracks)];
 
       // more tracks
       if (typeof (action.tracks_more) !== 'undefined') var { tracks_more } = action;
@@ -274,11 +275,11 @@ export default function reducer(core = {}, action) {
         ...core,
         search_results: {
           artists_more,
-          artists_uris: helpers.removeDuplicates(artists_uris),
+          artists_uris: removeDuplicates(artists_uris),
           albums_more,
-          albums_uris: helpers.removeDuplicates(albums_uris),
+          albums_uris: removeDuplicates(albums_uris),
           playlists_more,
-          playlists_uris: helpers.removeDuplicates(playlists_uris),
+          playlists_uris: removeDuplicates(playlists_uris),
           tracks,
           tracks_more,
         },

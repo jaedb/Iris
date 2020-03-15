@@ -15,137 +15,175 @@ import Dater from '../components/Dater';
 import LazyLoadListener from '../components/LazyLoadListener';
 import ContextMenuTrigger from '../components/ContextMenuTrigger';
 import Icon from '../components/Icon';
-
-import * as helpers from '../helpers';
 import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import * as spotifyActions from '../services/spotify/actions';
 import * as lastfmActions from '../services/lastfm/actions';
+import {
+  uriSource,
+  getFromUri,
+  isLoading,
+  sourceIcon,
+} from '../util/helpers';
+import { collate } from '../util/format';
 
 export class Album extends React.Component {
-  constructor(props) {
-    super(props);
-  }
+  componentDidMount = () => {
+    const {
+      uri,
+      album,
+      coreActions: {
+        loadAlbum,
+      },
+      lastfmActions: {
+        getAlbum,
+      },
+    } = this.props;
 
-  componentDidMount() {
     this.setWindowTitle();
-    this.props.coreActions.loadAlbum(this.props.uri);
+    loadAlbum(uri);
 
-    // We already have the album in our index, so it won't fire componentWillReceiveProps
-    if (this.props.album) {
-      if (this.props.album.artists && this.props.album.wiki === undefined) {
-        this.props.lastfmActions.getAlbum(
-          this.props.album.uri,
-          this.props.album.artists[0].name,
-          this.props.album.name,
-        );
+    if (album) {
+      if (album.artists && album.wiki === undefined) {
+        getAlbum(album.uri, album.artists[0].name, album.name);
       }
     }
   }
 
-  handleContextMenu(e) {
+  handleContextMenu = (e) => {
+    const {
+      uri,
+      uiActions: {
+        showContextMenu,
+      },
+    } = this.props;
+
     e.preventDefault();
-    const data = { uris: [this.props.uri] };
-    this.props.uiActions.showContextMenu(e, data, 'album', 'click');
+    const data = { uris: [uri] };
+    showContextMenu(e, data, 'album', 'click');
   }
 
-  componentWillReceiveProps(nextProps) {
-    // if our URI has changed, fetch new album
-    if (nextProps.uri != this.props.uri) {
-      this.props.coreActions.loadAlbum(nextProps.uri);
+  componentDidUpdate = ({
+    uri: prevUri,
+    album: prevAlbum,
+    mopidy_connected: prev_mopidy_connected,
+  }) => {
+    const {
+      uri,
+      album,
+      mopidy_connected,
+      coreActions: {
+        loadAlbum,
+      },
+      lastfmActions: {
+        getAlbum,
+      },
+    } = this.props;
 
-      // if mopidy has just connected AND we're a local album, go get
-    } else if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
-      if (helpers.uriSource(nextProps.uri) != 'spotify') {
-        this.props.coreActions.loadAlbum(nextProps.uri);
+    if (uri !== prevUri) {
+      loadAlbum(uri);
+    } else if (!prev_mopidy_connected && mopidy_connected) {
+      if (uriSource(uri) !== 'spotify') {
+        loadAlbum(uri);
       }
     }
 
     // We have just received our full album or our album artists
-    if (
-      (!this.props.album && nextProps.album)
-      || (!this.props.album.artists && nextProps.album.artists)
-    ) {
-      if (nextProps.album.wiki === undefined && nextProps.artists.length > 0) {
-        this.props.lastfmActions.getAlbum(
-          nextProps.album.uri,
-          nextProps.album.artists[0].name,
-          nextProps.album.name,
-        );
+    if ((!prevAlbum && album) || (!prevAlbum.artists && album.artists)) {
+      if (album.wiki === undefined && album.artists.length > 0) {
+        getAlbum(album.uri, album.artists[0].name, album.name);
       }
     }
 
-    if (!this.props.album && nextProps.album) {
-      this.setWindowTitle(nextProps.album);
-    }
+    if (!prevAlbum && album) this.setWindowTitle(album);
   }
 
-  setWindowTitle(album = this.props.album) {
+  setWindowTitle = (album = this.props.album) => {
+    const { uiActions: { setWindowTitle } } = this.props;
+  
     if (album) {
       let artists = '';
-      if (album.artists_uris && this.props.artists) {
+      if (album.artists_uris && artists) {
         for (let i = 0; i < album.artists_uris.length; i++) {
           const uri = album.artists_uris[i];
-          if (this.props.artists.hasOwnProperty(uri)) {
+          if (artists.hasOwnProperty(uri)) {
             if (artists != '') {
               artists += ', ';
             }
-            artists += this.props.artists[uri].name;
+            artists += artists[uri].name;
           }
         }
       }
-      this.props.uiActions.setWindowTitle(
-        `${album.name} by ${artists} (album)`,
-      );
+      setWindowTitle(`${album.name} by ${artists} (album)`);
     } else {
-      this.props.uiActions.setWindowTitle('Album');
+      setWindowTitle('Album');
     }
   }
 
-  handleContextMenu(e) {
-    const data = {
+  handleContextMenu = (e) => {
+    const { album, uri, uiActions: { showContextMenu } } = this.props;
+
+    showContextMenu({
       e,
       context: 'album',
-      items: [this.props.album],
-      uris: [this.props.uri],
-    };
-    this.props.uiActions.showContextMenu(data);
+      items: [album],
+      uris: [uri],
+    });
   }
 
-  loadMore() {
-    this.props.spotifyActions.getMore(
-      this.props.album.tracks_more, {
+  loadMore = () => {
+    const {
+      spotifyActions: {
+        getMore,
+      },
+      album: {
+        uri,
+        name,
+        tracks_more,
+      } = {},
+    } = this.props;
+
+    getMore(
+      tracks_more, {
         parent_type: 'album',
-        parent_key: this.props.album.uri,
+        parent_key: uri,
         records_type: 'track',
       },
       null,
       {
         album: {
-          uri: this.props.album.uri,
-          name: this.props.album.name,
+          uri,
+          name,
         },
       },
     );
   }
 
-  play() {
-    this.props.mopidyActions.playURIs([this.props.uri], this.props.uri);
+  play = () => {
+    const { uri, mopidyActions: { playURIs } } = this.props;    
+    playURIs([uri], uri);
   }
 
-  inLibrary() {
-    const library = `${helpers.uriSource(this.props.uri)}_library_albums`;
-    return (
-      this.props[library] && this.props[library].indexOf(this.props.uri) > -1
-    );
+  inLibrary = () => {
+    const { uri } = this.props;
+    const library = `${uriSource(uri)}_library_albums`;
+    return (this.props[library] && this.props[library].indexOf(this.props.uri) > -1);
   }
 
-  render() {
-    if (!this.props.album) {
+  render = () => {
+    const {
+      uri,
+      album: albumProp,
+      tracks,
+      artists,
+      load_queue,
+    } = this.props;
+
+    if (!albumProp) {
       if (
-        helpers.isLoading(this.props.load_queue, [
-          `spotify_albums/${helpers.getFromUri('albumid', this.props.uri)}`,
+        isLoading(load_queue, [
+          `spotify_albums/${getFromUri('albumid', uri)}`,
         ])
       ) {
         return <Loader body loading />;
@@ -153,18 +191,13 @@ export class Album extends React.Component {
       return (
         <ErrorMessage type="not-found" title="Not found">
           <p>
-              Could not find album with URI "
-            {encodeURIComponent(this.props.uri)}
-"
+            {`Could not find album with URI "${encodeURIComponent(uri)}"`}
           </p>
         </ErrorMessage>
       );
     }
 
-    const album = helpers.collate(this.props.album, {
-      tracks: this.props.tracks,
-      artists: this.props.artists,
-    });
+    const album = collate(albumProp, { tracks, artists });
 
     if (
       !album.tracks_uris
@@ -178,7 +211,7 @@ export class Album extends React.Component {
 
     return (
       <div className="view album-view content-wrapper preserve-3d">
-        <Parallax image={album.images ? album.images.huge : null} blur />
+        <Parallax image={album.images && album.images.huge} blur />
 
         <div className="thumbnail-wrapper">
           <Thumbnail size="large" glow canZoom images={album.images} />
@@ -190,7 +223,7 @@ export class Album extends React.Component {
           <ul className="details">
             {!this.props.slim_mode ? (
               <li className="source">
-                <Icon type="fontawesome" name={helpers.sourceIcon(album.uri)} />
+                <Icon type="fontawesome" name={sourceIcon(album.uri)} />
               </li>
             ) : null}
             {album.artists && album.artists.length > 0 ? (
@@ -236,7 +269,7 @@ listeners
           <button className="button button--primary" onClick={(e) => this.play()}>
             Play
           </button>
-          {helpers.uriSource(this.props.uri) == 'spotify' ? (
+          {uriSource(this.props.uri) == 'spotify' ? (
             <FollowButton
               className="secondary"
               uri={this.props.uri}

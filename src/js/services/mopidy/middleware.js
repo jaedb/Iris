@@ -3,7 +3,25 @@ import ReactGA from 'react-ga';
 import Mopidy from 'mopidy';
 import { sha256 } from 'js-sha256';
 
-import * as helpers from '../../helpers';
+import {
+  generateGuid,
+  uriSource,
+  setFavicon,
+} from '../../util/helpers';
+import {
+  digestMopidyImages,
+  formatImages,
+  formatTrack,
+  formatTracks,
+  getTrackIcon,
+} from '../../util/format';
+import {
+  arrayOf,
+  shuffle,
+  removeDuplicates,
+  applyFilter,
+  sortItems,
+} from '../../util/arrays';
 
 const mopidyActions = require('./actions.js');
 const coreActions = require('../core/actions.js');
@@ -184,7 +202,7 @@ const MopidyMiddleware = (function () {
         reject(error);
       }
 
-      const loader_key = helpers.generateGuid();
+      const loader_key = generateGuid();
       store.dispatch(uiActions.startLoading(loader_key, `mopidy_${property}`));
 
       // Start our 15 second timeout
@@ -256,7 +274,7 @@ const MopidyMiddleware = (function () {
         break;
 
       case 'MOPIDY_DISCONNECTED':
-        helpers.setFavicon('favicon_error.png');
+        setFavicon('favicon_error.png');
         break;
 
       case 'MOPIDY_DEBUG':
@@ -325,9 +343,9 @@ const MopidyMiddleware = (function () {
         store.dispatch(uiActions.setWindowTitle(null, action.play_state));
 
         if (action.play_state == 'playing') {
-          helpers.setFavicon('favicon.png');
+          setFavicon('favicon.png');
         } else {
-          helpers.setFavicon('favicon_paused.png');
+          setFavicon('favicon_paused.png');
         }
         next(action);
         break;
@@ -360,7 +378,7 @@ const MopidyMiddleware = (function () {
           {
             notification: {
               content: `${store.getState().pusher.username + (store.getState().mopidy.play_state == 'paused' ? ' resumed' : ' started')} playback`,
-              icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false),
+              icon: (store.getState().core.current_track ? getTrackIcon(store.getState().core.current_track, store.getState().core) : false),
             },
           },
         ));
@@ -378,7 +396,7 @@ const MopidyMiddleware = (function () {
               {
                 notification: {
                   content: `${store.getState().pusher.username} paused playback`,
-                  icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false),
+                  icon: (store.getState().core.current_track ? getTrackIcon(store.getState().core.current_track, store.getState().core) : false),
                 },
               },
             ));
@@ -406,7 +424,7 @@ const MopidyMiddleware = (function () {
               {
                 notification: {
                   content: `${store.getState().pusher.username} skipped "${store.getState().core.current_track.name}"`,
-                  icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false),
+                  icon: (store.getState().core.current_track ? getTrackIcon(store.getState().core.current_track, store.getState().core) : false),
                 },
               },
             ));
@@ -424,7 +442,7 @@ const MopidyMiddleware = (function () {
               {
                 notification: {
                   content: `${store.getState().pusher.username} stopped playback`,
-                  icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false),
+                  icon: (store.getState().core.current_track ? getTrackIcon(store.getState().core.current_track, store.getState().core) : false),
                 },
               },
             ));
@@ -628,7 +646,7 @@ const MopidyMiddleware = (function () {
           }
 
           // It's a Spotify playlist that we haven't loaded yet, so Spotify HTTP API needs to go get it
-        } else if (helpers.uriSource(action.uri) == 'spotify' && store.getState().spotify.enabled) {
+        } else if (uriSource(action.uri) == 'spotify' && store.getState().spotify.enabled) {
           store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri, action.shuffle, 'play'));
           break;
         }
@@ -641,9 +659,9 @@ const MopidyMiddleware = (function () {
               if (!response || response.tracks === undefined || !response.tracks) {
                 store.dispatch(uiActions.createNotification({ content: 'Failed to load playlist tracks', level: 'error' }));
               } else {
-                let tracks_uris = helpers.arrayOf('uri', response.tracks);
+                let tracks_uris = arrayOf('uri', response.tracks);
                 if (action.shuffle) {
-                  tracks_uris = helpers.shuffle(tracks_uris);
+                  tracks_uris = shuffle(tracks_uris);
                 }
                 store.dispatch(mopidyActions.playURIs(tracks_uris, action.uri));
               }
@@ -667,7 +685,7 @@ const MopidyMiddleware = (function () {
           if (playlist.tracks_total == playlist.tracks_uris.length) {
             let tracks_uris = Object.assign([], playlist.tracks_uris);
             if (action.shuffle) {
-              tracks_uris = helpers.shuffle(tracks_uris);
+              tracks_uris = shuffle(tracks_uris);
             }
             store.dispatch(mopidyActions.enqueueURIs(tracks_uris, action.uri, action.play_next, action.at_position, action.offset));
             break;
@@ -680,7 +698,7 @@ const MopidyMiddleware = (function () {
           }
 
           // It's a Spotify playlist that we haven't loaded yet, so Spotify HTTP API needs to go get it
-        } else if (helpers.uriSource(action.uri) == 'spotify' && store.getState().spotify.enabled) {
+        } else if (uriSource(action.uri) == 'spotify' && store.getState().spotify.enabled) {
           store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri, action.shuffle, 'enqueue', action.play_next));
           break;
         }
@@ -693,9 +711,9 @@ const MopidyMiddleware = (function () {
               if (response.tracks === undefined) {
                 store.dispatch(uiActions.createNotification({ content: 'Failed to load playlist tracks', level: 'error' }));
               } else {
-                let tracks_uris = helpers.arrayOf('uri', response.tracks);
+                let tracks_uris = arrayOf('uri', response.tracks);
                 if (action.shuffle) {
-                  tracks_uris = helpers.shuffle(tracks_uris);
+                  tracks_uris = shuffle(tracks_uris);
                 }
                 store.dispatch(mopidyActions.enqueueURIs(tracks_uris, action.uri, action.play_next, action.at_position, action.offset));
               }
@@ -721,7 +739,7 @@ const MopidyMiddleware = (function () {
           {
             notification: {
               content: `${store.getState().pusher.username} is adding ${action.uris.length} URIs to queue`,
-              icon: (store.getState().core.current_track ? helpers.getTrackIcon(store.getState().core.current_track, store.getState().core) : false),
+              icon: (store.getState().core.current_track ? getTrackIcon(store.getState().core.current_track, store.getState().core) : false),
             },
           },
         ));
@@ -860,7 +878,7 @@ const MopidyMiddleware = (function () {
         }
 
         if (action.shuffle) {
-          urisToPlay = helpers.shuffle(urisToPlay);
+          urisToPlay = shuffle(urisToPlay);
         }
 
         // Stop the radio
@@ -1079,8 +1097,8 @@ const MopidyMiddleware = (function () {
                       }
                     }
 
-                    let albums_uris = helpers.arrayOf('uri', albums);
-                    albums_uris = helpers.removeDuplicates(albums_uris);
+                    let albums_uris = arrayOf('uri', albums);
+                    albums_uris = removeDuplicates(albums_uris);
 
                     store.dispatch(coreActions.albumsLoaded(albums));
 
@@ -1160,7 +1178,7 @@ const MopidyMiddleware = (function () {
                       }
                     }
 
-                    artists_uris = helpers.removeDuplicates(artists_uris);
+                    artists_uris = removeDuplicates(artists_uris);
 
                     // load each artist
                     for (var i = 0; i < artists_uris.length; i++) {
@@ -1215,7 +1233,7 @@ const MopidyMiddleware = (function () {
 
                     for (var i = 0; i < response.length; i++) {
                       const playlist = response[i];
-                      if (playlist.name.includes(action.data.query) && action.data.uri_schemes.includes(`${helpers.uriSource(playlist.uri)}:`)) {
+                      if (playlist.name.includes(action.data.query) && action.data.uri_schemes.includes(`${uriSource(playlist.uri)}:`)) {
                         playlists_uris.push(playlist.uri);
                       }
                     }
@@ -1283,7 +1301,7 @@ const MopidyMiddleware = (function () {
                       type: 'MOPIDY_SEARCH_RESULTS_LOADED',
                       query: action.data.query,
                       context: action.data.context,
-                      results: helpers.formatTracks(tracks),
+                      results: formatTracks(tracks),
                     });
                   }
                   continue_process();
@@ -1328,7 +1346,7 @@ const MopidyMiddleware = (function () {
                         type: 'MOPIDY_SEARCH_RESULTS_LOADED',
                         query: action.data.query,
                         context: 'tracks',
-                        results: helpers.formatTracks(tracks),
+                        results: formatTracks(tracks),
                       });
                     }
 
@@ -1379,8 +1397,8 @@ const MopidyMiddleware = (function () {
                         }
                       }
 
-                      let albums_uris = helpers.arrayOf('uri', albums);
-                      albums_uris = helpers.removeDuplicates(albums_uris);
+                      let albums_uris = arrayOf('uri', albums);
+                      albums_uris = removeDuplicates(albums_uris);
 
                       store.dispatch(coreActions.albumsLoaded(albums));
 
@@ -1447,7 +1465,7 @@ const MopidyMiddleware = (function () {
                         }
                       }
 
-                      artists_uris = helpers.removeDuplicates(artists_uris);
+                      artists_uris = removeDuplicates(artists_uris);
 
                       // load each artist
                       for (var i = 0; i < artists_uris.length; i++) {
@@ -1497,7 +1515,7 @@ const MopidyMiddleware = (function () {
                         let playlists_uris = [];
                         for (var i = 0; i < response.length; i++) {
                           const playlist = response[i];
-                          if (playlist.name.includes(action.data.query) && action.data.uri_schemes.includes(`${helpers.uriSource(playlist.uri)}:`)) {
+                          if (playlist.name.includes(action.data.query) && action.data.uri_schemes.includes(`${uriSource(playlist.uri)}:`)) {
                             playlists_uris.push(playlist.uri);
                           }
                         }
@@ -1565,12 +1583,12 @@ const MopidyMiddleware = (function () {
         request(socket, store, 'playlists.asList')
           .then((response) => {
             // drop in our URI list
-            const playlist_uris = helpers.arrayOf('uri', response);
+            const playlist_uris = arrayOf('uri', response);
             const playlist_uris_filtered = [];
 
             // Remove any Spotify playlists. These will be handled by our Spotify API
             for (var i = 0; i < playlist_uris.length; i++) {
-              if (helpers.uriSource(playlist_uris[i]) != 'spotify') {
+              if (uriSource(playlist_uris[i]) != 'spotify') {
                 playlist_uris_filtered.push(playlist_uris[i]);
               }
             }
@@ -1582,7 +1600,7 @@ const MopidyMiddleware = (function () {
             for (var i = 0; i < playlist_uris_filtered.length; i++) {
               request(socket, store, 'playlists.lookup', { uri: playlist_uris_filtered[i] })
                 .then((response) => {
-                  const source = helpers.uriSource(response.uri);
+                  const source = uriSource(response.uri);
                   const playlist = {
 
                     type: 'playlist',
@@ -1629,7 +1647,7 @@ const MopidyMiddleware = (function () {
 
       case 'MOPIDY_RESOLVE_PLAYLIST_TRACKS':
         var tracks = Object.assign([], action.tracks);
-        var uris = helpers.arrayOf('uri', tracks);
+        var uris = arrayOf('uri', tracks);
 
         request(socket, store, 'library.lookup', { uris })
           .then((response) => {
@@ -1828,7 +1846,7 @@ const MopidyMiddleware = (function () {
             .then((response) => {
               if (response.length <= 0) return;
 
-              const uris = helpers.arrayOf('uri', response);
+              const uris = arrayOf('uri', response);
               store.dispatch({
                 type: 'MOPIDY_LIBRARY_ALBUMS_LOADED',
                 uris,
@@ -1918,7 +1936,6 @@ const MopidyMiddleware = (function () {
               }
             }
 
-            store.dispatch(mopidyActions.getImages('albums', helpers.arrayOf('uri', albums_loaded)));
             store.dispatch(coreActions.albumsLoaded(albums_loaded));
             store.dispatch(coreActions.artistsLoaded(artists_loaded));
             store.dispatch(coreActions.tracksLoaded(tracks_loaded));
@@ -1954,8 +1971,8 @@ const MopidyMiddleware = (function () {
             const album = {
               ...response[0].album,
               source: 'local',
-              artists_uris: helpers.arrayOf('uri', artists),
-              tracks_uris: helpers.arrayOf('uri', response),
+              artists_uris: arrayOf('uri', artists),
+              tracks_uris: arrayOf('uri', response),
               tracks_total: response.length,
             };
 
@@ -2024,7 +2041,7 @@ const MopidyMiddleware = (function () {
                       .then(response => {
                           if (response.length <= 0) return;
 
-                          var uris = helpers.arrayOf('uri',response);
+                          var uris = arrayOf('uri',response);
 
                           store.dispatch({
                               type: 'MOPIDY_LIBRARY_ARTISTS_LOADED',
@@ -2111,7 +2128,7 @@ const MopidyMiddleware = (function () {
             }
 
             // Add our tracks and albums
-            artist.albums_uris = helpers.arrayOf('uri', albums),
+            artist.albums_uris = arrayOf('uri', albums),
               artist.tracks = response;
 
             store.dispatch(coreActions.artistLoaded(artist));
@@ -2220,7 +2237,7 @@ const MopidyMiddleware = (function () {
         // Let the UI know we're finished transition
         store.dispatch(uiActions.setCurrentTrackTransition(false));
 
-        var track = helpers.formatTrack(action.tl_track);
+        var track = formatTrack(action.tl_track);
         if (track.uri) {
           // Deliver the data we've got already
           store.dispatch({
@@ -2232,7 +2249,7 @@ const MopidyMiddleware = (function () {
           // Now attempt to get supporting images
           if (store.getState().core.tracks[track.uri] === undefined || store.getState().core.tracks[track.uri].images === undefined) {
             // We've got Spotify running, and it's a spotify track - go straight to the source!
-            if (store.getState().spotify.enabled && helpers.uriSource(track.uri) == 'spotify') {
+            if (store.getState().spotify.enabled && uriSource(track.uri) == 'spotify') {
               store.dispatch(spotifyActions.getTrack(track.uri));
 
               // Some other source, rely on Mopidy backends to do their work
@@ -2250,7 +2267,7 @@ const MopidyMiddleware = (function () {
               if (response && response >= 0) {
                 // Get the full track object from our tracklist
                 // We know it will be here, as the tlid refers to an item in this list
-                const track = helpers.applyFilter('tlid', response, store.getState().core.queue, true);
+                const track = applyFilter('tlid', response, store.getState().core.queue, true);
 
                 if (track && track.uri) {
                   store.dispatch({
@@ -2261,7 +2278,7 @@ const MopidyMiddleware = (function () {
                   // We don't have the track (including images) already in our index
                   if (store.getState().core.tracks[track.uri] === undefined || store.getState().core.tracks[track.uri].images === undefined) {
                     // We've got Spotify running, and it's a spotify track - go straight to the source!
-                    if (store.getState().spotify.enabled && helpers.uriSource(track.uri) == 'spotify') {
+                    if (store.getState().spotify.enabled && uriSource(track.uri) == 'spotify') {
                       store.dispatch(spotifyActions.getTrack(track.uri));
 
                       // Some other source, rely on Mopidy backends to do their work
@@ -2310,9 +2327,8 @@ const MopidyMiddleware = (function () {
               for (const uri in response) {
                 if (response.hasOwnProperty(uri)) {
                   let images = response[uri];
-                  images = helpers.formatImages(helpers.digestMopidyImages(store.getState().mopidy, images));
-
-                  if (images && images.length > 0) {
+                  if (images.length) {
+                    images = formatImages(digestMopidyImages(store.getState().mopidy, images));
                     records.push({
                       uri,
                       images,
@@ -2359,13 +2375,13 @@ const MopidyMiddleware = (function () {
             }
 
             if (subdirectories.length > 0) {
-              request(socket, store, 'library.getImages', { uris: helpers.arrayOf('uri', subdirectories) })
+              request(socket, store, 'library.getImages', { uris: arrayOf('uri', subdirectories) })
                 .then((response) => {
 
                   const subdirectories_with_images = subdirectories.map((subdir) => {
                     let images = response[subdir.uri] || undefined;
                     if (images) {
-                      images = helpers.formatImages(helpers.digestMopidyImages(store.getState().mopidy, images));
+                      images = formatImages(digestMopidyImages(store.getState().mopidy, images));
                     }
                     return {
                       ...subdir,
@@ -2393,7 +2409,7 @@ const MopidyMiddleware = (function () {
 
                   for (const uri in response) {
                     if (response.hasOwnProperty(uri) && response[uri].length > 0) {
-                      tracks.push(helpers.formatTrack(response[uri][0]));
+                      tracks.push(formatTrack(response[uri][0]));
                     }
                   }
 

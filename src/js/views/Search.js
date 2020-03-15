@@ -3,8 +3,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Switch, Route } from 'react-router-dom';
-
-import Link from '../components/Link';
 import Header from '../components/Header';
 import Icon from '../components/Icon';
 import DropdownField from '../components/Fields/DropdownField';
@@ -15,12 +13,15 @@ import PlaylistGrid from '../components/PlaylistGrid';
 import LazyLoadListener from '../components/LazyLoadListener';
 import SearchForm from '../components/Fields/SearchForm';
 import URILink from '../components/URILink';
-
-import * as helpers from '../helpers';
 import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import * as spotifyActions from '../services/spotify/actions';
+import {
+  titleCase,
+  getIndexedRecords,
+} from '../util/helpers';
+import { sortItems } from '../util/arrays';
 
 class Search extends React.Component {
   constructor(props) {
@@ -46,22 +47,29 @@ class Search extends React.Component {
     });
   }
 
-  componentWillReceiveProps(nextProps) {
-    const { type, term } = this.props;
-    const { type: nextType, term: nextTerm } = nextProps;
-    if (nextType !== type || nextTerm !== term) {
-      this.digestUri({
-        type: nextType,
-        term: nextTerm,
-      });
+  componentDidUpdate = ({
+    type: prevType,
+    term: prevTerm,
+    mopidy_connected: prev_mopidy_connected,
+  }) => {
+    const {
+      type: typeProp,
+      term: termProp,
+      mopidy_connected,
+      uri_schemes_search_enabled,
+    } = this.props;
+    const { type, term } = this.state;
+
+    if (prevType !== typeProp || prevTerm !== termProp) {
+      this.digestUri({ type: typeProp, term: termProp });
     }
 
     // Services came online
-    if (!this.props.mopidy_connected && nextProps.mopidy_connected && nextProps.uri_schemes_search_enabled) {
-      this.search(this.state.type, this.state.term, 'mopidy');
+    if (!prev_mopidy_connected && mopidy_connected && uri_schemes_search_enabled) {
+      this.search(type, term, 'mopidy');
 
-      if (nextProps.uri_schemes_search_enabled.includes('spotify:')) {
-        this.search(this.state.type, this.state.term, 'spotify');
+      if (uri_schemes_search_enabled.includes('spotify:')) {
+        this.search(type, term, 'spotify');
       }
     }
   }
@@ -329,7 +337,7 @@ class Search extends React.Component {
     for (let i = 0; i < this.props.uri_schemes.length; i++) {
       provider_options.push({
         value: this.props.uri_schemes[i],
-        label: helpers.titleCase(this.props.uri_schemes[i].replace(':', '').replace('+', ' ')),
+        label: titleCase(this.props.uri_schemes[i].replace(':', '').replace('+', ' ')),
       });
     }
     const spotify_search_enabled = (this.props.search_settings && this.props.search_settings.spotify);
@@ -352,30 +360,30 @@ class Search extends React.Component {
 
     let artists = [];
     if (this.props.mopidy_search_results.artists) {
-      artists = [...artists, ...helpers.getIndexedRecords(this.props.artists, this.props.mopidy_search_results.artists)];
+      artists = [...artists, ...getIndexedRecords(this.props.artists, this.props.mopidy_search_results.artists)];
     }
     if (this.props.spotify_search_results.artists) {
-      artists = [...artists, ...helpers.getIndexedRecords(this.props.artists, this.props.spotify_search_results.artists)];
+      artists = [...artists, ...getIndexedRecords(this.props.artists, this.props.spotify_search_results.artists)];
     }
-    artists = helpers.sortItems(artists, sort, sort_reverse, sort_map);
+    artists = sortItems(artists, sort, sort_reverse, sort_map);
 
     let albums = [];
     if (this.props.mopidy_search_results.albums) {
-      albums = [...albums, ...helpers.getIndexedRecords(this.props.albums, this.props.mopidy_search_results.albums)];
+      albums = [...albums, ...getIndexedRecords(this.props.albums, this.props.mopidy_search_results.albums)];
     }
     if (this.props.spotify_search_results.albums) {
-      albums = [...albums, ...helpers.getIndexedRecords(this.props.albums, this.props.spotify_search_results.albums)];
+      albums = [...albums, ...getIndexedRecords(this.props.albums, this.props.spotify_search_results.albums)];
     }
-    albums = helpers.sortItems(albums, sort, sort_reverse, sort_map);
+    albums = sortItems(albums, sort, sort_reverse, sort_map);
 
     let playlists = [];
     if (this.props.mopidy_search_results.playlists) {
-      playlists = [...playlists, ...helpers.getIndexedRecords(this.props.playlists, this.props.mopidy_search_results.playlists)];
+      playlists = [...playlists, ...getIndexedRecords(this.props.playlists, this.props.mopidy_search_results.playlists)];
     }
     if (this.props.spotify_search_results.playlists) {
-      playlists = [...playlists, ...helpers.getIndexedRecords(this.props.playlists, this.props.spotify_search_results.playlists)];
+      playlists = [...playlists, ...getIndexedRecords(this.props.playlists, this.props.spotify_search_results.playlists)];
     }
-    playlists = helpers.sortItems(playlists, sort, sort_reverse, sort_map);
+    playlists = sortItems(playlists, sort, sort_reverse, sort_map);
 
     let tracks = [];
     if (this.props.mopidy_search_results.tracks) {
@@ -385,7 +393,7 @@ class Search extends React.Component {
       tracks = [...tracks, ...this.props.spotify_search_results.tracks];
     }
 
-    tracks = helpers.sortItems(tracks, (sort == 'followers' ? 'popularity' : sort), sort_reverse, sort_map);
+    tracks = sortItems(tracks, (sort == 'followers' ? 'popularity' : sort), sort_reverse, sort_map);
 
     const options = (
       <span>

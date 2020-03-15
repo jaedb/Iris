@@ -1,5 +1,5 @@
 
-const helpers = require('./../../helpers');
+import { formatUser } from '../../util/format';
 const coreActions = require('../core/actions');
 const lastfmActions = require('./actions');
 
@@ -7,7 +7,7 @@ const LastfmMiddleware = (function () {
   return (store) => (next) => (action) => {
     switch (action.type) {
       case 'LASTFM_ME_LOADED':
-        var me = helpers.formatUser(action.me);
+        var me = formatUser(action.me);
         Object.assign(
           me,
           {

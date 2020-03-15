@@ -1,32 +1,24 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-
 import { bindActionCreators } from 'redux';
-
 import TrackList from '../components/TrackList';
 import Header from '../components/Header';
 import Icon from '../components/Icon';
-
 import * as uiActions from '../services/ui/actions';
 import * as pusherActions from '../services/pusher/actions';
 import * as spotifyActions from '../services/spotify/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 
 class QueueHistory extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
     this.props.uiActions.setWindowTitle('Queue history');
     this.loadHistory();
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
-      this.loadHistory(nextProps);
-    }
+  componentDidUpdate = ({ mopidy_connected: prev_mopidy_connected }) => {
+    const { mopidy_connected } = this.props;
+    if (!prev_mopidy_connected && mopidy_connected) this.loadHistory();
   }
 
   loadHistory(props = this.props) {

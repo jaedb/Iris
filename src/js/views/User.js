@@ -2,7 +2,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
 import ErrorMessage from '../components/ErrorMessage';
 import Thumbnail from '../components/Thumbnail';
 import PlaylistGrid from '../components/PlaylistGrid';
@@ -12,33 +11,42 @@ import Parallax from '../components/Parallax';
 import NiceNumber from '../components/NiceNumber';
 import Loader from '../components/Loader';
 import Icon from '../components/Icon';
-
-import * as helpers from '../helpers';
 import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
-import * as mopidyActions from '../services/mopidy/actions';
 import * as spotifyActions from '../services/spotify/actions';
+import {
+  isLoading,
+  getFromUri,
+  sourceIcon,
+} from '../util/helpers';
+import { collate } from '../util/format';
 
 class User extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
     this.setWindowTitle();
     this.props.coreActions.loadUser(this.props.uri);
     this.props.coreActions.loadUserPlaylists(this.props.uri);
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.uri != this.props.uri) {
-      this.props.coreActions.loadUser(nextProps.uri);
-      this.props.coreActions.loadUserPlaylists(this.props.uri);
+  componentDidUpdate = ({
+    uri: prevUri,
+    user: prevUser,
+  }) => {
+    const {
+      uri,
+      user,
+      coreActions: {
+        loadUser,
+        loadUserPlaylists,
+      },
+    } = this.props;
+
+    if (prevUri !== uri) {
+      loadUser(uri);
+      loadUserPlaylists(uri);
     }
 
-    if (!this.props.user && nextProps.user) {
-      this.setWindowTitle(nextProps.user);
-    }
+    if (!prevUser && user) this.setWindowTitle(user);
   }
 
   setWindowTitle(user = this.props.user) {
@@ -61,15 +69,15 @@ class User extends React.Component {
   }
 
   isMe() {
-    const userid = helpers.getFromUri('userid', this.props.uri);
+    const userid = getFromUri('userid', this.props.uri);
     return (this.props.me && this.props.me.id && this.props.me.id == userid);
   }
 
   render() {
-    const user_id = helpers.getFromUri('userid', this.props.uri);
+    const user_id = getFromUri('userid', this.props.uri);
 
     if (!this.props.user) {
-      if (helpers.isLoading(this.props.load_queue, [`spotify_users/${user_id}`, `spotify_users/${user_id}/playlists/?`])) {
+      if (isLoading(this.props.load_queue, [`spotify_users/${user_id}`, `spotify_users/${user_id}/playlists/?`])) {
         return <Loader body loading />
       }
       return (
@@ -83,7 +91,7 @@ Could not find user with URI "
       );
     }
 
-    const user = helpers.collate(this.props.user, { playlists: this.props.playlists });
+    const user = collate(this.props.user, { playlists: this.props.playlists });
 
     if (user && user.images) {
       var image = user.images.huge;
@@ -112,7 +120,7 @@ Could not find user with URI "
                   </div>
                   <h2>
                     <ul className="details">
-                  {!this.props.slim_mode ? <li className="source"><Icon type="fontawesome" name={helpers.sourceIcon(user.uri)} /></li> : null}
+                  {!this.props.slim_mode ? <li className="source"><Icon type="fontawesome" name={sourceIcon(user.uri)} /></li> : null}
                   {user.playlists_total ? (
                   <li>
                   <NiceNumber value={user.playlists_total} />

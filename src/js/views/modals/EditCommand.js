@@ -2,24 +2,19 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import ReactGA from 'react-ga';
-
 import Modal from './Modal';
-import Link from '../../components/Link';
-import Icon from '../../components/Icon';
 import ColourField from '../../components/Fields/ColourField';
 import IconField from '../../components/Fields/IconField';
 import TextField from '../../components/Fields/TextField';
-
 import * as pusherActions from '../../services/pusher/actions';
 import * as uiActions from '../../services/ui/actions';
-import * as helpers from '../../helpers';
+import { scrollTo, generateGuid } from '../../util/helpers';
 
 class EditCommand extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      id: helpers.generateGuid(),
+      id: generateGuid(),
       icon: 'power_settings_new',
       name: '',
       colour: '',
@@ -49,7 +44,7 @@ class EditCommand extends React.Component {
     // A bit hacky, but wait for a moment to allow the back navigation
     // and then scroll down to our commands list
     setTimeout(() => {
-      helpers.scrollTo('#commands-setup');
+      scrollTo('#commands-setup');
     },
     10);
 
@@ -63,7 +58,7 @@ class EditCommand extends React.Component {
     // A bit hacky, but wait for a moment to allow the back navigation
     // and then scroll down to our commands list
     setTimeout(() => {
-      helpers.scrollTo('#commands-setup');
+      scrollTo('#commands-setup');
     },
     10);
   }

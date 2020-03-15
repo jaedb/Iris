@@ -2,14 +2,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
 import Modal from './Modal';
-
 import * as coreActions from '../../services/core/actions';
 import * as uiActions from '../../services/ui/actions';
 import * as pusherActions from '../../services/pusher/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
-import * as helpers from '../../helpers';
+import { queryString, isHosted } from '../../util/helpers';
 
 class InitialSetup extends React.Component {
   constructor(props) {
@@ -39,8 +37,8 @@ class InitialSetup extends React.Component {
     } = this.props;
 
     // Check for url-parsed configuration values
-    const customHost = helpers.queryString('host', search);
-    const customPort = helpers.queryString('port', search);
+    const customHost = queryString('host', search);
+    const customPort = queryString('port', search);
     if (customHost) this.setState({ host: customHost });
     if (customPort) this.setState({ port: customPort });
 
@@ -127,7 +125,7 @@ class InitialSetup extends React.Component {
             </div>
           </div>
 
-          {helpers.isHosted() ? null : (
+          {isHosted() ? null : (
             <div className="field checkbox">
               <div className="input">
                 <label>

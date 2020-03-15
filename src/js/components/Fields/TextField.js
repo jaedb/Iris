@@ -11,10 +11,13 @@ export default class TextField extends React.Component {
     };
   }
 
-  componentWillReceiveProps(newProps) {
-    if (!this.state.in_focus) {
-      this.setState({ value: newProps.value });
+  static getDerivedStateFromProps({ value }, state) {
+    if (!state.in_focus && state.value !== value) {
+      return {
+        value,
+      };
     }
+    return null;
   }
 
   handleChange(e) {

@@ -1,6 +1,4 @@
 
-import * as helpers from '../../helpers';
-
 export default function reducer(ui = {}, action) {
   switch (action.type) {
     case 'LAZY_LOADING':

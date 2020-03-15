@@ -2,13 +2,9 @@
 import React from 'react';
 import Sortable from 'react-sortablejs';
 import Icon from '../Icon';
-import * as helpers from '../../helpers';
+import { titleCase } from '../../util/helpers';
 
 export default class SourcesPriority extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   handleSort(order) {
     this.props.uiActions.set({ uri_schemes_priority: order });
   }
@@ -44,7 +40,7 @@ export default class SourcesPriority extends React.Component {
       >
         {
 						ordered_schemes.map((scheme) => {
-						  const name = helpers.titleCase(scheme.replace(':', '').replace('+', ' '));
+						  const name = titleCase(scheme.replace(':', '').replace('+', ' '));
 
 						  return (
   <span className="source flag flag--grey" key={scheme} data-id={scheme}>

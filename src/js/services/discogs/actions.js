@@ -1,7 +1,8 @@
 
+import { generateGuid } from '../../util/helpers';
+
 const coreActions = require('../core/actions');
 const uiActions = require('../ui/actions');
-const helpers = require('../../helpers');
 
 /**
  * Send an ajax request to the LastFM API
@@ -16,7 +17,7 @@ const sendRequest = (dispatch, getState, endpoint, params) => new Promise((resol
   const secret = 'KiEUfwKpebxRnEHlKoXnYIftJxeuqjTK';
   const url = `https://api.discogs.com/${endpoint}?${params}`;
 
-  const loader_key = helpers.generateGuid();
+  const loader_key = generateGuid();
   dispatch(uiActions.startLoading(loader_key, `discogs_${endpoint}`));
 
   const config = {
@@ -56,7 +57,7 @@ export function getArtistImages(uri, artist) {
       .then(
         (response) => {
           if (response) {
-            if (response.results.length > 0 && response.results[0].cover_image !== undefined) {              
+            if (response.results.length > 0 && response.results[0].cover_image !== undefined) {
               const updated_artist = {
                 uri,
                 images: [response.results[0].cover_image],
@@ -84,7 +85,7 @@ export function getArtistImages(uri, artist) {
         helpers.cache.set(`discogs_${artist.name}`, cover_image);
       }
     }
-    
+
     const cached = helpers.cache.get(`discogs_${artist.name}`);
     if (cached) {
       finalise(cached);

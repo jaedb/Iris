@@ -1,8 +1,5 @@
 
 import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-
 import Icon from '../Icon';
 
 export default class Dropzone extends React.Component {

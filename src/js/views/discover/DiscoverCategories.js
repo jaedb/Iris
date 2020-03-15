@@ -2,21 +2,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
 import Header from '../../components/Header';
 import Icon from '../../components/Icon';
 import CategoryGrid from '../../components/CategoryGrid';
 import Loader from '../../components/Loader';
-
-import * as helpers from '../../helpers';
 import * as uiActions from '../../services/ui/actions';
 import * as spotifyActions from '../../services/spotify/actions';
+import {
+  isLoading,
+} from '../../util/helpers';
 
 class DiscoverCategories extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
     // Check for an empty category index, or where we've only got one loaded
     // This would be the case if you've refreshed from within a category and only loaded
@@ -28,7 +24,7 @@ class DiscoverCategories extends React.Component {
   }
 
   render() {
-    if (helpers.isLoading(this.props.load_queue, ['spotify_browse/categories'])) {
+    if (isLoading(this.props.load_queue, ['spotify_browse/categories'])) {
       return (
         <div className="view discover-categories-view">
           <Header icon="grid" title="Genre / Mood" />

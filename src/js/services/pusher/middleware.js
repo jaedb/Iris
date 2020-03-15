@@ -1,15 +1,13 @@
 
 import ReactGA from 'react-ga';
+import { uriType, generateGuid } from '../../util/helpers';
 
-const helpers = require('../../helpers');
 const coreActions = require('../core/actions');
 const uiActions = require('../ui/actions');
-const mopidyActions = require('../mopidy/actions');
 const pusherActions = require('./actions');
 const lastfmActions = require('../lastfm/actions');
 const geniusActions = require('../genius/actions');
 const spotifyActions = require('../spotify/actions');
-const snapcastActions = require('../snapcast/actions');
 
 const PusherMiddleware = (function () {
 
@@ -204,7 +202,7 @@ const PusherMiddleware = (function () {
   };
 
   const request = (store, method, params = null) => new Promise((resolve, reject) => {
-    const id = helpers.generateGuid();
+    const id = generateGuid();
     const message = {
       jsonrpc: '2.0',
       id,
@@ -611,7 +609,7 @@ const PusherMiddleware = (function () {
         };
 
         for (let i = 0; i < action.uris.length; i++) {
-          switch (helpers.uriType(action.uris[i])) {
+          switch (uriType(action.uris[i])) {
             case 'artist':
               data.seed_artists.push(action.uris[i]);
               break;

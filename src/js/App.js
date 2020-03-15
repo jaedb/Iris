@@ -49,7 +49,7 @@ import AddToPlaylist from './views/modals/AddToPlaylist';
 import ImageZoom from './views/modals/ImageZoom';
 import EditCommand from './views/modals/EditCommand';
 
-import * as helpers from './helpers';
+import { scrollTo, isTouchDevice } from './util/helpers';
 import * as coreActions from './services/core/actions';
 import * as uiActions from './services/ui/actions';
 import * as pusherActions from './services/pusher/actions';
@@ -129,7 +129,7 @@ export class App extends React.Component {
         ? this.props.location.state
         : {};
       if (location_state.scroll_position) {
-        helpers.scrollTo(parseInt(location_state.scroll_position), false);
+        scrollTo(parseInt(location_state.scroll_position), false);
       }
 
       // Hide our sidebar
@@ -188,7 +188,7 @@ export class App extends React.Component {
     if (this.props.smooth_scrolling_enabled) {
       className += ' smooth-scrolling-enabled';
     }
-    if (helpers.isTouchDevice()) {
+    if (isTouchDevice()) {
       className += ' touch';
     } else {
       className += ' notouch';

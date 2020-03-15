@@ -1,15 +1,10 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import { createStore, bindActionCreators } from 'redux';
-import Link from '../../components/Link';
-
+import { bindActionCreators } from 'redux';
 import Modal from './Modal';
-import Icon from '../../components/Icon';
-
 import * as uiActions from '../../services/ui/actions';
 import * as pusherActions from '../../services/pusher/actions';
-import * as helpers from '../../helpers';
 
 class ShareConfiguration extends React.Component {
   constructor(props) {
@@ -223,7 +218,7 @@ class ShareConfiguration extends React.Component {
                   </div>
                 </label>
               </div>
-              
+
               <div className="checkbox-group__item">
                 <label>
                   <input

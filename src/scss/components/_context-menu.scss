@@ -64,6 +64,14 @@
 			text-decoration: none;
 			color: inherit;
 
+			&--inactive {
+				cursor: default;
+				opacity: 0.5;
+				&:before {
+					display: none;
+				}
+			}
+
 			.notouch &:hover {
 				&:before {
 					opacity: 0.15;

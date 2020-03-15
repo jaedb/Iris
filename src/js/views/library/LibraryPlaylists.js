@@ -3,7 +3,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Link from '../../components/Link';
-
 import PlaylistGrid from '../../components/PlaylistGrid';
 import List from '../../components/List';
 import DropdownField from '../../components/Fields/DropdownField';
@@ -11,12 +10,11 @@ import Header from '../../components/Header';
 import FilterField from '../../components/Fields/FilterField';
 import LazyLoadListener from '../../components/LazyLoadListener';
 import Icon from '../../components/Icon';
-
-import * as helpers from '../../helpers';
 import * as coreActions from '../../services/core/actions';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
+import { applyFilter, removeDuplicates, sortItems } from '../../util/arrays';
 
 class LibraryPlaylists extends React.Component {
   constructor(props) {
@@ -49,23 +47,30 @@ class LibraryPlaylists extends React.Component {
     }
   }
 
-  componentWillReceiveProps(newProps) {
-    if (newProps.mopidy_connected && (newProps.source == 'all' || newProps.source == 'local')) {
-      // We've just connected
-      if (!this.props.mopidy_connected) {
-        this.props.mopidyActions.getLibraryPlaylists();
-      }
+  componentDidUpdate = ({
+    mopidy_connected: prev_mopidy_connected,
+  }) => {
+    const {
+      source,
+      mopidy_connected,
+      mopidy_library_playlists,
+      spotify_enabled,
+      spotify_library_playlists_status,
+      mopidyActions,
+      spotifyActions,
+    } = this.props;
 
-      // Filter changed, but we haven't got this provider's library yet
-      if (this.props.source != 'all' && this.props.source != 'local' && !newProps.mopidy_library_playlists) {
+    if (mopidy_connected && (source == 'all' || source == 'local')) {
+      if (!prev_mopidy_connected) mopidyActions.getLibraryPlaylists();
+
+      if (source !== 'all' && source !== 'local' && !mopidy_library_playlists) {
         this.props.mopidyActions.getLibraryPlaylists();
       }
     }
 
-    if (newProps.spotify_enabled && (newProps.source == 'all' || newProps.source == 'spotify')) {
-      // Filter changed, but we haven't got this provider's library yet
-      if (newProps.spotify_library_playlists_status != 'finished' && newProps.spotify_library_playlists_status != 'started') {
-        this.props.spotifyActions.getLibraryPlaylists();
+    if (spotify_enabled && (source === 'all' || source === 'spotify')) {
+      if (spotify_library_playlists_status !== 'finished' && spotify_library_playlists_status !== 'started') {
+        spotifyActions.getLibraryPlaylists();
       }
     }
   }
@@ -126,12 +131,12 @@ class LibraryPlaylists extends React.Component {
     }
 
     if (this.props.sort) {
-      playlists = helpers.sortItems(playlists, this.props.sort, this.props.sort_reverse);
+      playlists = sortItems(playlists, this.props.sort, this.props.sort_reverse);
     }
-    playlists = helpers.removeDuplicates(playlists);
+    playlists = removeDuplicates(playlists);
 
     if (this.state.filter !== '') {
-      playlists = helpers.applyFilter('name', this.state.filter, playlists);
+      playlists = applyFilter('name', this.state.filter, playlists);
     }
 
     // Apply our lazy-load-rendering

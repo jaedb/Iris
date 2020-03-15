@@ -2,24 +2,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
 import Loader from '../../components/Loader';
 import TrackList from '../../components/TrackList';
 import Header from '../../components/Header';
 import LazyLoadListener from '../../components/LazyLoadListener';
 import Icon from '../../components/Icon';
-
-import * as helpers from '../../helpers';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
+import { isLoading } from '../../util/helpers';
 
 class LibraryTracks extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
-  // on render
   componentDidMount() {
     this.props.uiActions.setWindowTitle('Tracks');
 
@@ -46,7 +39,7 @@ class LibraryTracks extends React.Component {
 
   render() {
     // Note trailing "?" makes sure our context menu in_library checks doesn't interfere
-    if (helpers.isLoading(this.props.load_queue, ['spotify_me/tracks?'])) {
+    if (isLoading(this.props.load_queue, ['spotify_me/tracks?'])) {
       return (
         <div className="view library-tracks-view">
           <Header icon="music" title="My tracks" />

@@ -3,7 +3,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Route, Switch } from 'react-router-dom';
-
 import ErrorMessage from '../components/ErrorMessage';
 import Link from '../components/Link';
 import LazyLoadListener from '../components/LazyLoadListener';
@@ -18,41 +17,52 @@ import ContextMenuTrigger from '../components/ContextMenuTrigger';
 import DropdownField from '../components/Fields/DropdownField';
 import Icon from '../components/Icon';
 import Loader from '../components/Loader';
-
-import * as helpers from '../helpers';
 import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import * as pusherActions from '../services/pusher/actions';
 import * as lastfmActions from '../services/lastfm/actions';
 import * as spotifyActions from '../services/spotify/actions';
+import {
+  uriSource,
+  getFromUri,
+  isLoading,
+  sourceIcon,
+  titleCase,
+} from '../util/helpers';
+import { collate } from '../util/format';
+import { sortItems, applyFilter } from '../util/arrays';
 
 class Artist extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
     this.setWindowTitle();
     this.props.coreActions.loadArtist(this.props.uri);
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.uri != this.props.uri) {
-      this.props.coreActions.loadArtist(nextProps.uri);
-    } else if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
-      if (helpers.uriSource(this.props.uri) != 'spotify') {
-        this.props.coreActions.loadArtist(nextProps.uri);
+  componentDidUpdate = ({
+    uri: prevUri,
+    mopidy_connected: prev_mopidy_connected,
+    artist: prevArtist,
+  }) => {
+    const {
+      uri,
+      mopidy_connected,
+      artist,
+      coreActions: {
+        loadArtist,
+      },
+    } = this.props;
+  
+    if (uri !== prevUri) {
+      loadArtist(uri);
+    } else if (!prev_mopidy_connected && mopidy_connected) {
+      if (uriSource(uri) != 'spotify') {
+        loadArtist(uri);
       }
     }
 
-    if (!this.props.artist && nextProps.artist) {
-      this.setWindowTitle(nextProps.artist);
-    }
-
-    if (this.props.uri !== nextProps.uri && nextProps.artist) {
-      this.setWindowTitle(nextProps.artist);
-    }
+    if (!prevArtist && artist) this.setWindowTitle(artist);
+    if (prevUri !== uri && artist) this.setWindowTitle(artist);
   }
 
   setWindowTitle(artist = this.props.artist) {
@@ -85,7 +95,7 @@ class Artist extends React.Component {
   }
 
   inLibrary() {
-    const library = `${helpers.uriSource(this.props.uri)}_library_artists`;
+    const library = `${uriSource(this.props.uri)}_library_artists`;
     return (this.props[library] && this.props[library].indexOf(this.props.uri) > -1);
   }
 
@@ -107,7 +117,7 @@ class Artist extends React.Component {
   }
 
   renderOverview() {
-    const artist = helpers.collate(
+    const artist = collate(
       this.props.artist,
       {
         artists: this.props.artists,
@@ -117,11 +127,11 @@ class Artist extends React.Component {
     );
 
     if (this.props.sort && artist.albums) {
-      artist.albums = helpers.sortItems(artist.albums, this.props.sort, this.props.sort_reverse);
+      artist.albums = sortItems(artist.albums, this.props.sort, this.props.sort_reverse);
     }
 
     if (this.props.filter && artist.albums) {
-      artist.albums = helpers.applyFilter('type', this.props.filter, artist.albums);
+      artist.albums = applyFilter('type', this.props.filter, artist.albums);
     }
 
     const sort_options = [
@@ -234,7 +244,7 @@ class Artist extends React.Component {
   }
 
   renderTracks() {
-    const artist = helpers.collate(
+    const artist = collate(
       this.props.artist,
       {
         artists: this.props.artists,
@@ -259,7 +269,7 @@ class Artist extends React.Component {
   }
 
   renderRelatedArtists() {
-    const artist = helpers.collate(
+    const artist = collate(
       this.props.artist,
       {
         artists: this.props.artists,
@@ -276,7 +286,7 @@ class Artist extends React.Component {
   }
 
   renderAbout() {
-    const artist = helpers.collate(
+    const artist = collate(
       this.props.artist,
       {
         artists: this.props.artists,
@@ -305,8 +315,8 @@ class Artist extends React.Component {
           {thumbnails}
           <div className="tile">
             <span className="content">
-              <Icon type="fontawesome" name={helpers.sourceIcon(artist.uri)} />
-              {`${helpers.titleCase(helpers.uriSource(artist.uri))} artist`}
+              <Icon type="fontawesome" name={sourceIcon(artist.uri)} />
+              {`${titleCase(uriSource(artist.uri))} artist`}
             </span>
           </div>
           {artist.followers && (
@@ -358,10 +368,10 @@ class Artist extends React.Component {
   }
 
   render() {
-    const scheme = helpers.uriSource(this.props.uri);
+    const scheme = uriSource(this.props.uri);
 
     if (!this.props.artist) {
-      if (helpers.isLoading(this.props.load_queue, [`spotify_artists/${helpers.getFromUri('artistid', this.props.uri)}`, 'lastfm_method=artist.getInfo'])) {
+      if (isLoading(this.props.load_queue, [`spotify_artists/${getFromUri('artistid', this.props.uri)}`, 'lastfm_method=artist.getInfo'])) {
         return <Loader body loading />;
       }
       return (

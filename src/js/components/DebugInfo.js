@@ -2,15 +2,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
-import * as helpers from '../helpers';
+import { get as getStorage } from '../util/storage';
+import { isTouchDevice } from '../util/helpers';
 import * as uiActions from '../services/ui/actions';
+import { indexToArray } from '../util/arrays';
 
 class DebugInfo extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   localStorageSize() {
     let data = '';
 
@@ -33,37 +30,15 @@ class DebugInfo extends React.Component {
   }
 
   renderLoadQueue() {
-    if (!this.props.ui.load_queue) {
-      return null;
-    }
+    const { ui: { load_queue } } = this.props;
+    if (!load_queue) return <div className="debug-info-item mid_grey-text">Nothing loading</div>;
 
-    const { load_queue } = this.props.ui;
-    const queue = [];
-
-    return (
-      <div className="debug-info-item">
-        {queue}
-      </div>
-    );
-  }
-
-  renderLoadQueue() {
-    if (!this.props.ui.load_queue) {
-      return <div className="debug-info-item mid_grey-text">Nothing loading</div>;
-    }
-
-    const { load_queue } = this.props.ui;
-    const queue = [];
-    for (const key in load_queue) {
-      if (load_queue.hasOwnProperty(key)) {
-        queue.push(<div key={key}>{load_queue[key]}</div>);
-      }
-    }
+    const queue = indexToArray(load_queue);
 
     if (queue.length > 0) {
       return (
         <div className="debug-info-item">
-          {queue}
+          {queue.map((item) => (<div key={item}>{item}</div>))}
         </div>
       );
     }
@@ -134,7 +109,7 @@ class DebugInfo extends React.Component {
           <div className="debug-info-item">
 						Cached URLs:
             {' '}
-            {Object.keys(helpers.getStorage('cache')).length}
+            {Object.keys(getStorage('cache')).length}
           </div>
         </div>
 
@@ -153,7 +128,7 @@ class DebugInfo extends React.Component {
           <div className="debug-info-item">
 						Touch:
             {' '}
-            {helpers.isTouchDevice() ? 'on' : 'off'}
+            {isTouchDevice() ? 'on' : 'off'}
           </div>
           <div className="debug-info-item">
 						LocalStorage usage:

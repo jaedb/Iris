@@ -1,10 +1,7 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import { createStore, bindActionCreators } from 'redux';
-
-import Link from '../Link';
-import * as helpers from '../../helpers';
+import { bindActionCreators } from 'redux';
 import * as uiActions from '../../services/ui/actions';
 import * as lastfmActions from '../../services/lastfm/actions';
 

@@ -1,26 +1,20 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import { createStore, bindActionCreators } from 'redux';
-
-
+import { bindActionCreators } from 'redux';
 import * as pusherActions from '../services/pusher/actions';
+import { indexToArray } from '../util/arrays';
 
 class PusherConnectionList extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
     if (this.props.connected) {
       this.props.pusherActions.getConnections();
     }
   }
 
-  componentWillReceiveProps(newProps) {
-    if (!this.props.connected && newProps.connected) {
-      this.props.pusherActions.getConnections();
-    }
+  componentDidUpdate = ({ connected: prevConnected }) => {
+    const { connected, pusherActions: { getConnections } } = this.props;
+    if (!prevConnected && connected) getConnections();
   }
 
   render() {
@@ -28,13 +22,7 @@ class PusherConnectionList extends React.Component {
       return <div className="pusher-connection-list mid_grey-text">Not connected</div>;
     }
 
-    const connections = [];
-    for (const connection_id in this.props.connections) {
-      if (this.props.connections.hasOwnProperty(connection_id)) {
-        connections.push(this.props.connections[connection_id]);
-      }
-    }
-
+    const connections = indexToArray(this.props.connections);
     if (connections.length <= 0) {
       return <div className="pusher-connection-list mid_grey-text">No connections</div>;
     }

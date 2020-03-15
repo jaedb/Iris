@@ -2,38 +2,23 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Route, Switch } from 'react-router-dom';
-
-import Link from '../../components/Link';
-
 import Header from '../../components/Header';
-import List from '../../components/List';
-import TrackList from '../../components/TrackList';
 import GridItem from '../../components/GridItem';
-import DropdownField from '../../components/Fields/DropdownField';
 import Icon from '../../components/Icon';
-import URILink from '../../components/URILink';
 import ErrorBoundary from '../../components/ErrorBoundary';
-
-import * as helpers from '../../helpers';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
+import { formatImages } from '../../util/format';
 
 class LibraryBrowse extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
     this.loadDirectory();
     this.props.uiActions.setWindowTitle('Browse');
   }
 
-  componentWillReceiveProps(nextProps) {
-    // mopidy goes online
-    if (!this.props.mopidy_connected && nextProps.mopidy_connected) {
-      this.loadDirectory(nextProps);
-    }
+  componentDidUpdate = ({ mopidy_connected: prev_mopidy_connected}) => {
+    const { mopidy_connected } = this.props;
+    if (!prev_mopidy_connected && mopidy_connected) this.loadDirectory();
   }
 
   loadDirectory(props = this.props) {
@@ -93,7 +78,7 @@ class LibraryBrowse extends React.Component {
         grid_items.push({
           name: subdirectory.name,
           link: `/library/browse/${encodeURIComponent(subdirectory.uri)}`,
-          icons: helpers.formatImages(subdirectory.icons),
+          icons: formatImages(subdirectory.icons),
         });
       }
     }
@@ -110,12 +95,13 @@ class LibraryBrowse extends React.Component {
               {
 								grid_items.map(
 								  (item, index) => (
-  <GridItem
-    item={item}
-    key={index}
-    link={item.link}
-    type="browse"
-  />
+                    <GridItem
+                      item={item}
+                      key={index}
+                      link={item.link}
+                      mopidyActions={this.props.mopidyActions}
+                      type="browse"
+                    />
 								  ),
 								)
 							}

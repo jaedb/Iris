@@ -2,15 +2,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
+import { collate } from '../util/format';
+import { sortItems } from '../util/arrays';
 import VolumeControl from './Fields/VolumeControl';
 import MuteControl from './Fields/MuteControl';
 import TextField from './Fields/TextField';
 import SnapcastClients from './SnapcastClients';
 import Icon from './Icon';
 import Link from './Link';
-
-import * as helpers from '../helpers';
 import * as actions from '../services/snapcast/actions';
 import SelectField from './Fields/SelectField';
 
@@ -37,7 +36,7 @@ const SnapcastGroups = (props) => {
       return null;
     }
 
-    const group = helpers.collate(groups[groupId], { clients });
+    const group = collate(groups[groupId], { clients });
 
     return (
       <div className="snapcast__group" key={group.id}>
@@ -149,7 +148,7 @@ const SnapcastGroups = (props) => {
     <div className="snapcast__groups" id="services-snapcast-groups">
       <div className="snapcast__groups__menu menu">
         <div className="menu__inner">
-          {helpers.sortItems(groupsArray, 'name').map((group) => renderMenuItem(group))}
+          {sortItems(groupsArray, 'name').map((group) => renderMenuItem(group))}
         </div>
       </div>
       {renderGroup()}

@@ -3,10 +3,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import InputRange from 'react-input-range';
-
-import Header from '../../components/Header';
-import LinksSentence from '../../components/LinksSentence';
-import ArtistGrid from '../../components/ArtistGrid';
 import AlbumGrid from '../../components/AlbumGrid';
 import TrackList from '../../components/TrackList';
 import Thumbnail from '../../components/Thumbnail';
@@ -17,11 +13,16 @@ import URILink from '../../components/URILink';
 import ContextMenuTrigger from '../../components/ContextMenuTrigger';
 import RelatedArtists from '../../components/RelatedArtists';
 import Icon from '../../components/Icon';
-
-import * as helpers from '../../helpers';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
+import {
+  isLoading,
+  getFromUri,
+  uriType,
+  titleCase,
+} from '../../util/helpers';
+import { arrayOf } from '../../util/arrays';
 
 class Discover extends React.Component {
   constructor(props) {
@@ -157,11 +158,21 @@ class Discover extends React.Component {
     }
   }
 
-  componentWillReceiveProps(newProps, newState) {
-    // New seeds via URL
-    if (newProps.match.params.seeds != this.props.match.params.seeds) {
-      this.handleURLSeeds(newProps.match.params.seeds);
-    }
+  componentDiUpdate = ({
+    match: {
+      params: {
+        seeds: prevSeeds,
+      },
+    },
+  }) => {
+    const {
+      match: {
+        params: {
+          seeds,
+        },
+      },
+    } = this.props;
+    if (prevSeeds !== seeds) this.handleURLSeeds(seeds);
   }
 
   handleContextMenu(e) {
@@ -190,7 +201,7 @@ class Discover extends React.Component {
       e,
       context: 'track',
       items: tracks,
-      uris: helpers.arrayOf('uri', tracks),
+      uris: arrayOf('uri', tracks),
     };
     this.props.uiActions.showContextMenu(data);
   }
@@ -202,7 +213,7 @@ class Discover extends React.Component {
     const seeds = seeds_string.split('_').join(':').split(',');
 
     for (let i = 0; i < seeds.length; i++) {
-      switch (helpers.uriType(seeds[i])) {
+      switch (uriType(seeds[i])) {
         case 'artist':
           this.props.spotifyActions.getArtist(seeds[i]);
           break;
@@ -263,7 +274,7 @@ class Discover extends React.Component {
       for (let i = 0; i < this.state.seeds.length; i++) {
         const uri = this.state.seeds[i];
 
-        switch (helpers.uriType(uri)) {
+        switch (uriType(uri)) {
           case 'track':
             if (typeof (this.props.tracks[uri]) !== 'undefined') {
               seeds_objects.push(this.props.tracks[uri]);
@@ -287,7 +298,7 @@ class Discover extends React.Component {
             break;
 
           case 'genre':
-            var name = helpers.getFromUri('genreid', uri);
+            var name = getFromUri('genreid', uri);
             seeds_objects.push({
               name: (name.charAt(0).toUpperCase() + name.slice(1)).replace('-', ' '),
               uri,
@@ -301,7 +312,7 @@ class Discover extends React.Component {
       <div className="seeds">
         {
 					seeds_objects.map((seed, index) => {
-					  const type = helpers.uriType(seed.uri);
+					  const type = uriType(seed.uri);
 					  let images = null;
 					  if (seed.images) {
 					    if (type == 'artist') {
@@ -318,7 +329,7 @@ class Discover extends React.Component {
                 {images ? <URILink className="thumbnail-wrapper" type={type} uri={seed.uri}><Thumbnail images={images} circle={seed.type == 'artist'} size="small" /></URILink> : null}
                 <div className="seed__details">
                   <div className="seed__label">
-                    <span className="seed__label__text">{helpers.titleCase(type)}</span>
+                    <span className="seed__label__text">{titleCase(type)}</span>
                     <Icon name="close" className="seed__label__remove" onClick={() => this.removeSeed(index)} />
                   </div>
                   <div className="seed__label__name">{seed.name}</div>
@@ -358,7 +369,7 @@ class Discover extends React.Component {
           enabled_tunabilities.push(tunability);
         } else {
           addable_tunabilities.push({
-            label: helpers.titleCase(tunability.name),
+            label: titleCase(tunability.name),
             value: tunability.name,
           });
         }
@@ -370,7 +381,7 @@ class Discover extends React.Component {
         {enabled_tunabilities.map((tunability) => (
           <div className="field tunability range" key={tunability.name}>
             <div className="tunability__label">
-              {helpers.titleCase(tunability.name)}
+              {titleCase(tunability.name)}
               <span className="remove" onClick={(e) => this.toggleTunability(tunability.name)}>
                 <Icon name="close" />
               </span>
@@ -476,7 +487,7 @@ class Discover extends React.Component {
   }
 
   render() {
-    const is_loading = helpers.isLoading(this.props.load_queue, ['spotify_recommendations']);
+    const is_loading = isLoading(this.props.load_queue, ['spotify_recommendations']);
     const addable_tunabilities = [];
     for (const key in this.state.tunabilities) {
       if (this.state.tunabilities.hasOwnProperty(key)) {
@@ -488,7 +499,7 @@ class Discover extends React.Component {
 
         if (!tunability.enabled) {
           addable_tunabilities.push({
-            label: helpers.titleCase(tunability.name),
+            label: titleCase(tunability.name),
             value: tunability.name,
           });
         }

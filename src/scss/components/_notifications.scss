@@ -32,6 +32,14 @@
 			}
 		}
 
+		a {
+			font-style: italic;
+			color: inherit;
+			&:hover {
+				opacity: 0.75;
+			}
+		}
+
 		ul {
 			padding: 4px 0 4px 20px;
 		}

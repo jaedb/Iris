@@ -2,13 +2,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
 import Track from './Track';
-import ContextMenuTrigger from './ContextMenuTrigger';
-
-import * as helpers from '../helpers';
 import * as mopidyActions from '../services/mopidy/actions';
 import * as uiActions from '../services/ui/actions';
+import { isTouchDevice } from '../util/helpers';
+import { arrayOf } from '../util/arrays';
 
 class TrackList extends React.Component {
   constructor(props) {
@@ -95,7 +93,7 @@ class TrackList extends React.Component {
       selected_tracks = this.digestTracksKeys();
     }
 
-    const selected_tracks_indexes = helpers.arrayOf('index', selected_tracks);
+    const selected_tracks_indexes = arrayOf('index', selected_tracks);
 
     this.props.uiActions.dragStart(
       e,
@@ -163,7 +161,7 @@ class TrackList extends React.Component {
         const dropped_at = siblings.index(over);
 
         if (this.props.reorderTracks !== undefined) {
-          this.props.reorderTracks(helpers.arrayOf('index', this.digestTracksKeys()), dropped_at);
+          this.props.reorderTracks(arrayOf('index', this.digestTracksKeys()), dropped_at);
           this.props.uiActions.setSelectedTracks([]);
         }
       }
@@ -211,8 +209,8 @@ class TrackList extends React.Component {
     }
 
     const selected_tracks_digested = this.digestTracksKeys(selected_tracks);
-    const selected_tracks_uris = helpers.arrayOf('uri', selected_tracks_digested);
-    const selected_tracks_indexes = helpers.arrayOf('index', selected_tracks_digested);
+    const selected_tracks_uris = arrayOf('uri', selected_tracks_digested);
+    const selected_tracks_indexes = arrayOf('index', selected_tracks_digested);
 
     const data = {
       e,
@@ -287,7 +285,7 @@ class TrackList extends React.Component {
     } else {
       var selected_tracks = this.digestTracksKeys();
     }
-    const selected_tracks_indexes = helpers.arrayOf('index', selected_tracks);
+    const selected_tracks_indexes = arrayOf('index', selected_tracks);
 
     if (selected_tracks.length <= 0) {
       return this.props.uiActions.createNotification({ content: 'No tracks selected', level: 'error' });
@@ -299,7 +297,7 @@ class TrackList extends React.Component {
 
       // Default to playing the URIs
     }
-    const selected_tracks_uris = helpers.arrayOf('uri', selected_tracks);
+    const selected_tracks_uris = arrayOf('uri', selected_tracks);
     return this.props.mopidyActions.playURIs(selected_tracks_uris, this.props.uri);
   }
 
@@ -308,7 +306,7 @@ class TrackList extends React.Component {
 
     // Our parent has a handler for this
     if (this.props.removeTracks !== undefined) {
-      const selected_tracks_indexes = helpers.arrayOf('index', selected_tracks);
+      const selected_tracks_indexes = arrayOf('index', selected_tracks);
       return this.props.removeTracks(selected_tracks_indexes);
 
       // No handler? We can't really do anything then, so notify user
@@ -402,7 +400,7 @@ class TrackList extends React.Component {
   <Track
     show_source_icon={this.props.show_source_icon}
     key={track_key}
-    mini_zones={this.props.slim_mode || helpers.isTouchDevice()}
+    mini_zones={this.props.slim_mode || isTouchDevice()}
     track={track}
     track_context={this.props.track_context}
     can_sort={this.props.track_context == 'queue' || this.props.track_context == 'editable-playlist'}

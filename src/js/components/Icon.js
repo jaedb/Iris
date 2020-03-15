@@ -2,39 +2,34 @@
 import React, { memo } from 'react';
 import FontAwesome from 'react-fontawesome';
 
-export default memo((props) => {
-  if (!props.name || props.name === '') {
-    return null;
-  }
+export default memo(({ name, type, className, onClick }) => {
+  if (!name || name === '') return null;
 
-  let className = `icon icon--${props.type ? props.type : 'material'}`;
-  if (props.className) {
-    className += ` ${props.className}`;
-  }
+  const fullClassName = `icon icon--${type || 'material'} ${className}`;
 
-  switch (props.type) {
+  switch (type) {
     case 'svg':
-      return <img className={className} src={`/iris/assets/icons/${props.name}.svg`} onClick={(e) => (props.onClick ? props.onClick(e) : null)} />;
+      return <img className={fullClassName} src={`/iris/assets/icons/${name}.svg`} onClick={onClick} />;
 
     case 'gif':
-      return <img className={className} src={`/iris/assets/icons/${props.name}.gif`} onClick={(e) => (props.onClick ? props.onClick(e) : null)} />;
+      return <img className={fullClassName} src={`/iris/assets/icons/${name}.gif`} onClick={onClick} />;
 
     case 'fontawesome':
-      return <FontAwesome className={className} type="fontawesome" name={props.name} onClick={(e) => (props.onClick ? props.onClick(e) : null)} />;
+      return <FontAwesome className={fullClassName} type="fontawesome" name={name} onClick={onClick} />;
 
     case 'css':
-      switch (props.name) {
-        case 'playing':
-          return (
-            <i className={`${className} icon--playing`}>
-              <span />
-              <span />
-              <span />
-            </i>
-          );
+      if (name === 'playing') {
+        return (
+          <i className={`${fullClassName} icon--playing`}>
+            <span />
+            <span />
+            <span />
+          </i>
+        );
       }
+      break;
 
     default:
-      return <i className={className} onClick={(e) => (props.onClick ? props.onClick(e) : null)}>{props.name}</i>;
+      return <i className={fullClassName} onClick={onClick}>{name}</i>;
   }
 });

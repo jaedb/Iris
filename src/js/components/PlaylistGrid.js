@@ -1,18 +1,11 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import { createStore, bindActionCreators } from 'redux';
-
-
-import * as helpers from '../helpers';
+import { bindActionCreators } from 'redux';
 import * as uiActions from '../services/ui/actions';
 import GridItem from './GridItem';
 
 class PlaylistGrid extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   handleContextMenu(e, item) {
     e.preventDefault();
     const data = {

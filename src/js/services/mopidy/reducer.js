@@ -1,5 +1,5 @@
 
-import * as helpers from '../../helpers';
+import { removeDuplicates } from '../../util/arrays';
 
 export default function reducer(mopidy = {}, action) {
   switch (action.type) {
@@ -114,7 +114,7 @@ export default function reducer(mopidy = {}, action) {
       } else {
         var { uris } = action;
       }
-      return { ...mopidy, library_playlists: helpers.removeDuplicates(uris) };
+      return { ...mopidy, library_playlists: removeDuplicates(uris) };
 
     case 'MOPIDY_LIBRARY_PLAYLISTS_LOADED_ALL':
       return { ...mopidy, library_playlists_loaded_all: true };
@@ -141,7 +141,7 @@ export default function reducer(mopidy = {}, action) {
       } else {
         var { uris } = action;
       }
-      return { ...mopidy, library_artists: helpers.removeDuplicates(uris) };
+      return { ...mopidy, library_artists: removeDuplicates(uris) };
 
     case 'MOPIDY_CLEAR_LIBRARY_ARTISTS':
       return { ...mopidy, library_artists: null };
@@ -152,7 +152,7 @@ export default function reducer(mopidy = {}, action) {
       } else {
         var { uris } = action;
       }
-      return { ...mopidy, library_albums: helpers.removeDuplicates(uris) };
+      return { ...mopidy, library_albums: removeDuplicates(uris) };
 
     case 'MOPIDY_CLEAR_LIBRARY_ALBUMS':
       return { ...mopidy, library_albums: null };

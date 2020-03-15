@@ -1,20 +1,18 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import { createStore, bindActionCreators } from 'redux';
+import { bindActionCreators } from 'redux';
 import Link from '../../components/Link';
-
 import Modal from './Modal';
 import Thumbnail from '../../components/Thumbnail';
 import LinksSentence from '../../components/LinksSentence';
 import Loader from '../../components/Loader';
 import Icon from '../../components/Icon';
 import ProgressSlider from '../../components/Fields/ProgressSlider';
-
-import * as helpers from '../../helpers';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as geniusActions from '../../services/genius/actions';
+import { isLoading } from '../../util/helpers';
 
 const LyricsScroller = ({ content = '', time_position = 1, duration = 100 }) => {
   const percent = ((time_position / duration) * 110).toFixed(4);
@@ -46,27 +44,27 @@ class KioskMode extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentDidUpdate = ({
+    current_track: prev_current_track,
+  }) => {
     const {
       current_track,
       show_lyrics,
-      geniusActions,
+      genius_authorized,
+      geniusActions: {
+        findTrackLyrics,
+      },
     } = this.props;
-    const {
-      current_track: next_current_track,
-      show_lyrics: next_show_lyrics,
-      genius_authorized: next_genius_authorized,
-    } = nextProps;
 
-    if (!current_track && next_current_track) {
-      this.setWindowTitle(next_current_track);
+    if (!prev_current_track && current_track) {
+      this.setWindowTitle(current_track);
 
-      if (show_lyrics && next_genius_authorized && next_current_track && next_current_track.artists && !next_current_track.lyrics_results) {
-        geniusActions.findTrackLyrics(next_current_track);
+      if (show_lyrics && genius_authorized && current_track && current_track.artists && !current_track.lyrics_results) {
+        findTrackLyrics(current_track);
       }
-    } else if (show_lyrics !== next_show_lyrics && next_show_lyrics && next_current_track) {
-      if (next_genius_authorized && next_current_track && next_current_track.artists && !next_current_track.lyrics_results) {
-        geniusActions.findTrackLyrics(next_current_track);
+    } else if (show_lyrics !== show_lyrics && show_lyrics && current_track) {
+      if (genius_authorized && current_track && current_track.artists && !current_track.lyrics_results) {
+        findTrackLyrics(current_track);
       }
     }
   }
@@ -123,7 +121,7 @@ class KioskMode extends React.Component {
 
     const { lyrics, duration } = current_track || {};
 
-    if (helpers.isLoading(load_queue, ['genius_'])) {
+    if (isLoading(load_queue, ['genius_'])) {
       return (
         <div className="lyrics">
           <Loader body loading />

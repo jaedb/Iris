@@ -1,7 +1,5 @@
 
 import React from 'react';
-
-import Icon from './Icon';
 import ContextMenuTrigger from './ContextMenuTrigger';
 
 export default class Header extends React.Component {
@@ -13,50 +11,63 @@ export default class Header extends React.Component {
     };
   }
 
-  handleContextMenuTrigger(e, options) {
-    // We have an override trigger (eg Album, Playlist)
-    if (this.props.handleContextMenuTrigger) {
-      return this.props.handleContextMenuTrigger(e);
-    }
+  handleContextMenuTrigger = (e, options) => {
+    const {
+      title,
+      handleContextMenuTrigger,
+      uiActions: {
+        showContextMenu,
+      },
+    } = this.props;
+
+    if (handleContextMenuTrigger) return handleContextMenuTrigger(e);
+
     e.preventDefault();
     const data = {
       e,
       context: 'custom',
-      title: this.props.title,
+      title,
       options,
     };
-    this.props.uiActions.showContextMenu(data);
+    showContextMenu(data);
   }
 
-  renderContextMenuTrigger() {
-    // No custom trigger, nor any options
-    if (!this.props.handleContextMenuTrigger && !this.props.options) {
-      return null;
-    }
+  renderContextMenuTrigger = () => {
+    const {
+      handleContextMenuTrigger,
+      options,
+    } = this.props;
 
-    return <ContextMenuTrigger onTrigger={(e) => this.handleContextMenuTrigger(e, this.props.options)} />;
+    if (!handleContextMenuTrigger && !options) return null;
+
+    return <ContextMenuTrigger onTrigger={(e) => this.handleContextMenuTrigger(e, options)} />;
   }
 
-  renderOptions() {
-    if (!this.props.options && !this.props.handleContextMenuTrigger) {
-      return null;
-    }
+  renderOptions = () => {
+    const {
+      handleContextMenuTrigger,
+      options,
+    } = this.props;
+
+    if (!options && !handleContextMenuTrigger) return null;
 
     return (
       <div className="header__options">
         {this.renderContextMenuTrigger()}
         <div className="header__options__wrapper">
-          {this.props.options || null}
+          {options || null}
         </div>
       </div>
     );
   }
 
-  render() {
+  render = () => {
+    const { className, children } = this.props;
+
     return (
-      <header className={(this.props.className ? this.props.className : null)}>
+      <header className={className}>
         <h1>
-          {this.props.children ? this.props.children : null}
+          {children}
         </h1>
         {this.renderOptions()}
       </header>

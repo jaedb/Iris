@@ -1,5 +1,5 @@
 
-import * as helpers from '../../helpers';
+import { removeDuplicates } from '../../util/arrays';
 
 export default function reducer(google = {}, action) {
   switch (action.type) {
@@ -12,7 +12,7 @@ export default function reducer(google = {}, action) {
       } else {
         var { uris } = action;
       }
-      return { ...google, library_artists: helpers.removeDuplicates(uris) };
+      return { ...google, library_artists: removeDuplicates(uris) };
 
     case 'GOOGLE_CLEAR_LIBRARY_ARTISTS':
       return { ...google, library_artists: null };
@@ -23,7 +23,7 @@ export default function reducer(google = {}, action) {
       } else {
         var { uris } = action;
       }
-      return { ...google, library_albums: helpers.removeDuplicates(uris) };
+      return { ...google, library_albums: removeDuplicates(uris) };
 
     case 'GOOGLE_CLEAR_LIBRARY_ALBUMS':
       return { ...google, library_albums: null };

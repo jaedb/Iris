@@ -1,5 +1,5 @@
 
-const helpers = require('../../helpers.js');
+import storage from '../../util/storage';
 
 const localstorageMiddleware = (function () {
   /**
@@ -28,7 +28,7 @@ const localstorageMiddleware = (function () {
 
     switch (action.type) {
       case 'PUSHER_CONNECTED':
-        helpers.setStorage(
+        storage.set(
           'pusher',
           {
             connection_id: action.connection_id,
@@ -37,7 +37,7 @@ const localstorageMiddleware = (function () {
         break;
 
       case 'PUSHER_SET_PORT':
-        helpers.setStorage(
+        storage.set(
           'pusher',
           {
             port: action.port,
@@ -46,7 +46,7 @@ const localstorageMiddleware = (function () {
         break;
 
       case 'PUSHER_SET_USERNAME':
-        helpers.setStorage(
+        storage.set(
           'pusher',
           {
             username: action.username,
@@ -55,7 +55,7 @@ const localstorageMiddleware = (function () {
         break;
 
       case 'MOPIDY_URISCHEMES_FILTERED':
-        helpers.setStorage(
+        storage.set(
           'mopidy',
           {
             uri_schemes: action.data,
@@ -69,7 +69,7 @@ const localstorageMiddleware = (function () {
         } else if (action.data) {
           var authorization = action.data;
         }
-        helpers.setStorage(
+        storage.set(
           'spotify',
           {
             authorization,
@@ -81,7 +81,7 @@ const localstorageMiddleware = (function () {
         break;
 
       case 'SPOTIFY_IMPORT_AUTHORIZATION':
-        helpers.setStorage(
+        storage.set(
           'spotify',
           {
             authorization: action.authorization,
@@ -94,7 +94,7 @@ const localstorageMiddleware = (function () {
         break;
 
       case 'SPOTIFY_AUTHORIZATION_REVOKED':
-        helpers.setStorage(
+        storage.set(
           'spotify',
           {
             authorization: null,
@@ -107,7 +107,7 @@ const localstorageMiddleware = (function () {
         break;
 
       case 'SPOTIFY_TOKEN_REFRESHED':
-        helpers.setStorage(
+        storage.set(
           'spotify',
           {
             access_token: action.data.access_token,
@@ -118,7 +118,7 @@ const localstorageMiddleware = (function () {
         break;
 
       case 'SPOTIFY_ME_LOADED':
-        helpers.setStorage(
+        storage.set(
           'spotify',
           {
             me: action.me,
@@ -127,7 +127,7 @@ const localstorageMiddleware = (function () {
         break;
 
       case 'LASTFM_ME_LOADED':
-        helpers.setStorage(
+        storage.set(
           'lastfm',
           {
             me: action.me,
@@ -136,7 +136,7 @@ const localstorageMiddleware = (function () {
         break;
 
       case 'LASTFM_AUTHORIZATION_GRANTED':
-        helpers.setStorage(
+        storage.set(
           'lastfm',
           {
             authorization: action.data.session,
@@ -145,7 +145,7 @@ const localstorageMiddleware = (function () {
         break;
 
       case 'LASTFM_AUTHORIZATION_REVOKED':
-        helpers.setStorage(
+        storage.set(
           'lastfm',
           {
             authorization: null,
@@ -155,7 +155,7 @@ const localstorageMiddleware = (function () {
         break;
 
       case 'LASTFM_IMPORT_AUTHORIZATION':
-        helpers.setStorage(
+        storage.set(
           'lastfm',
           {
             authorization: action.authorization,
@@ -165,7 +165,7 @@ const localstorageMiddleware = (function () {
         break;
 
       case 'GENIUS_ME_LOADED':
-        helpers.setStorage(
+        storage.set(
           'genius',
           {
             me: action.me,
@@ -174,7 +174,7 @@ const localstorageMiddleware = (function () {
         break;
 
       case 'GENIUS_AUTHORIZATION_GRANTED':
-        helpers.setStorage(
+        storage.set(
           'genius',
           {
             authorization: action.data,
@@ -185,7 +185,7 @@ const localstorageMiddleware = (function () {
         break;
 
       case 'GENIUS_AUTHORIZATION_REVOKED':
-        helpers.setStorage(
+        storage.set(
           'genius',
           {
             me: null,
@@ -197,7 +197,7 @@ const localstorageMiddleware = (function () {
         break;
 
       case 'GENIUS_IMPORT_AUTHORIZATION':
-        helpers.setStorage(
+        storage.set(
           'genius',
           {
             authorization: action.authorization,
@@ -209,42 +209,42 @@ const localstorageMiddleware = (function () {
         break;
 
       case 'CORE_SET':
-        helpers.setStorage(
+        storage.set(
           'core',
           action.data,
         );
         break;
 
       case 'UI_SET':
-        helpers.setStorage(
+        storage.set(
           'ui',
           action.data,
         );
         break;
 
       case 'MOPIDY_SET':
-        helpers.setStorage(
+        storage.set(
           'mopidy',
           action.data,
         );
         break;
 
       case 'SPOTIFY_SET':
-        helpers.setStorage(
+        storage.set(
           'spotify',
           action.data,
         );
         break;
 
       case 'SNAPCAST_SET':
-        helpers.setStorage(
+        storage.set(
           'snapcast',
           action.data,
         );
         break;
 
       case 'SNAPCAST_COMMANDS_UPDATED':
-        helpers.setStorage(
+        storage.set(
           'snapcast',
           {
                     	commands: action.commands,
@@ -253,7 +253,7 @@ const localstorageMiddleware = (function () {
         break;
 
       case 'SUPPRESS_BROADCAST':
-        var ui = helpers.getStorage('ui');
+        var ui = storage.get('ui');
         if (ui.suppressed_broadcasts !== undefined) {
           var { suppressed_broadcasts } = ui;
         } else {
@@ -262,7 +262,7 @@ const localstorageMiddleware = (function () {
 
         suppressed_broadcasts.push(action.key);
 
-        helpers.setStorage(
+        storage.set(
           'ui',
           {
             suppressed_broadcasts,
@@ -276,23 +276,23 @@ const localstorageMiddleware = (function () {
              * to use the IndexedDB engine instead for storing this quantity of data
 
             case 'UPDATE_TRACKS_INDEX':
-                helpers.setStorage('core', {tracks: action.tracks});
+                storage.set('core', {tracks: action.tracks});
                 next(action);
                 break;
             case 'UPDATE_ALBUMS_INDEX':
-                helpers.setStorage('core', {albums: action.albums});
+                storage.set('core', {albums: action.albums});
                 next(action);
                 break;
             case 'UPDATE_ARTISTS_INDEX':
-                helpers.setStorage('core', {artists: action.artists});
+                storage.set('core', {artists: action.artists});
                 next(action);
                 break;
             case 'UPDATE_PLAYLISTS_INDEX':
-                helpers.setStorage('core', {playlists: action.playlists});
+                storage.set('core', {playlists: action.playlists});
                 next(action);
                 break;
             case 'UPDATE_USERS_INDEX':
-                helpers.setStorage('core', {users: action.users});
+                storage.set('core', {users: action.users});
                 next(action);
                 break;
              */

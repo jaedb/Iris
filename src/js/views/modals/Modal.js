@@ -1,16 +1,9 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-
-import * as helpers from '../../helpers';
 import Icon from '../../components/Icon';
 
 class Modal extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
     $('body').addClass('modal-open');
   }

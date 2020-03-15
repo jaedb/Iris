@@ -1,19 +1,11 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import { createStore, bindActionCreators } from 'redux';
-
+import { bindActionCreators } from 'redux';
 import Modal from './Modal';
-import Thumbnail from '../../components/Thumbnail';
-
-import * as helpers from '../../helpers';
 import * as uiActions from '../../services/ui/actions';
 
 class ImageZoom extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
     this.props.uiActions.setWindowTitle('Zoomed image');
   }

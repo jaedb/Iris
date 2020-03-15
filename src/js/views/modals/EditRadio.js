@@ -2,18 +2,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import ReactGA from 'react-ga';
-import Link from '../../components/Link';
-
 import Modal from './Modal';
 import Icon from '../../components/Icon';
-
 import * as coreActions from '../../services/core/actions';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
 import * as pusherActions from '../../services/pusher/actions';
-import * as helpers from '../../helpers';
+import {
+  uriSource,
+  uriType,
+} from '../../util/helpers';
 
 class EditRadio extends React.Component {
   constructor(props) {
@@ -34,10 +33,9 @@ class EditRadio extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (!this.props.radio && nextProps.radio) {
-      this.loadRadio(nextProps.radio);
-    }
+  componentDidUpdate = ({ radio: prev_radio }) => {
+    const { radio } = this.props;
+    if (!prev_radio && radio) this.loadRadio(radio);
   }
 
   loadRadio(radio) {
@@ -110,7 +108,7 @@ class EditRadio extends React.Component {
     }
 
     for (let i = 0; i < uris.length; i++) {
-      if (helpers.uriSource(uris[i]) !== 'spotify') {
+      if (uriSource(uris[i]) !== 'spotify') {
         this.setState({ error_message: 'Non-Spotify URIs not supported' });
         return;
       } if (seeds.indexOf(uris[i]) > -1) {
@@ -120,7 +118,7 @@ class EditRadio extends React.Component {
       }
 
       // Resolve
-      switch (helpers.uriType(uris[i])) {
+      switch (uriType(uris[i])) {
         case 'track':
           this.props.spotifyActions.getTrack(uris[i]);
           break;
@@ -155,7 +153,7 @@ class EditRadio extends React.Component {
       for (let i = 0; i < this.state.seeds.length && i < 5; i++) {
         const uri = this.state.seeds[i];
         if (uri) {
-          if (helpers.uriType(uri) == 'artist') {
+          if (uriType(uri) == 'artist') {
             if (this.props.artists && this.props.artists.hasOwnProperty(uri)) {
               seeds.push(this.props.artists[uri]);
             } else {
@@ -164,7 +162,7 @@ class EditRadio extends React.Component {
                 uri,
               });
             }
-          } else if (helpers.uriType(uri) == 'track') {
+          } else if (uriType(uri) == 'track') {
             if (this.props.tracks && this.props.tracks.hasOwnProperty(uri)) {
               seeds.push(this.props.tracks[uri]);
             } else {
@@ -195,7 +193,7 @@ class EditRadio extends React.Component {
     {!seed.unresolved ? (
       <span className="mid_grey-text">
 &nbsp;(
-        {helpers.uriType(seed.uri)}
+        {uriType(seed.uri)}
 )
       </span>
     ) : null}

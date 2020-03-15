@@ -11,12 +11,9 @@ import * as snapcastActions from '../services/snapcast/actions';
 
 import Icon from './Icon';
 import Loader from './Loader';
+import { indexToArray } from '../util/arrays';
 
 class Notifications extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   importConfiguration(notification_key, configuration) {
     if (configuration.ui) {
       this.props.uiActions.set(configuration.ui);
@@ -46,12 +43,7 @@ class Notifications extends React.Component {
   renderNotifications() {
     if (!this.props.notifications || this.props.notifications.length <= 0) return null;
 
-    const notifications = [];
-    for (const key in this.props.notifications) {
-      if (this.props.notifications.hasOwnProperty(key)) {
-        notifications.push(this.props.notifications[key]);
-      }
-    }
+    const notifications = indexToArray(this.props.notifications);
 
     return (
       <span>

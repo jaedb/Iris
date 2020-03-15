@@ -2,24 +2,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import Link from '../../components/Link';
-
 import PlaylistGrid from '../../components/PlaylistGrid';
 import Header from '../../components/Header';
 import Icon from '../../components/Icon';
 import Parallax from '../../components/Parallax';
 import Loader from '../../components/Loader';
-
-import * as helpers from '../../helpers';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
+import { isLoading } from '../../util/helpers';
 
 class DiscoverFeatured extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
     this.props.uiActions.setWindowTitle('Featured playlists');
     if (!this.props.featured_playlists) {
@@ -42,23 +35,14 @@ class DiscoverFeatured extends React.Component {
     this.props.uiActions.showContextMenu(data);
   }
 
-  renderIntro(playlist = null) {
-    if (playlist) {
-      return (
-        <div className="intro preserve-3d">
-          <Parallax image={playlist.images ? playlist.images.large : null} blur />
-        </div>
-      );
-    }
-    return (
-      <div className="intro">
-        <Parallax disabled={this.props.disable_parallax} />
-      </div>
-    );
-  }
+  renderIntro = ({ images: { large } = {} } = {}) => (
+    <div className="intro preserve-3d">
+      <Parallax image={large} blur />
+    </div>
+  );
 
   render() {
-    if (helpers.isLoading(this.props.load_queue, ['spotify_browse/featured-playlists'])) {
+    if (isLoading(this.props.load_queue, ['spotify_browse/featured-playlists'])) {
       return (
         <div className="view discover-featured-view preserve-3d">
           <Header className="overlay" uiActions={this.props.uiActions}>

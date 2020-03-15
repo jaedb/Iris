@@ -12,8 +12,7 @@ import Dater from './Dater';
 import LinksSentence from './LinksSentence';
 import Thumbnail from './Thumbnail';
 import Icon from './Icon';
-
-import * as helpers from '../helpers';
+import { scrollTo } from '../util/helpers';
 import * as uiActions from '../services/ui/actions';
 import * as coreActions from '../services/core/actions';
 import * as mopidyActions from '../services/mopidy/actions';
@@ -60,55 +59,50 @@ class PlaybackControls extends React.Component {
     console.log(`Playing stream: ${this.stream.src}`);
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentDidUpdate = ({
+    http_streaming_cachebuster: prev_http_streaming_cachebuster,
+    http_streaming_enabled: prev_http_streaming_enabled,
+    http_streaming_mute: prev_http_streaming_mute,
+    http_streaming_volume: prev_http_streaming_volume,
+  }) => {
+    const {
+      http_streaming_cachebuster,
+      http_streaming_enabled,
+      http_streaming_mute,
+      http_streaming_volume,
+    } = this.props;
+
     // Cachebuster changed
     // This happens when playback changes, so that the stream is "new", rather
     // than the original stream. This prevents the browser cache from starting
     // the stream right from the beginning (which could be hours of continuous playback).
-    if (this.props.http_streaming_cachebuster !== nextProps.http_streaming_cachebuster) {
-      this.playStream(nextProps);
-    }
+    if (prev_http_streaming_cachebuster !== http_streaming_cachebuster) this.playStream();
 
     // Just been enabled
-    if (!this.props.http_streaming_enabled && nextProps.http_streaming_enabled) {
-      this.playStream(nextProps);
-    }
+    if (!prev_http_streaming_enabled && http_streaming_enabled) this.playStream();
 
     if (this.stream) {
-      // Just been muted
-      if (this.props.http_streaming_mute !== nextProps.http_streaming_mute) {
-        this.stream.muted = nextProps.http_streaming_mute;
+      if (http_streaming_mute !== prev_http_streaming_mute) {
+        this.stream.muted = http_streaming_mute;
       }
 
       // Just had volume changed
-      if (this.props.http_streaming_volume !== nextProps.http_streaming_volume) {
-        this.stream.volume = nextProps.http_streaming_volume / 100;
+      if (http_streaming_volume !== prev_http_streaming_volume) {
+        this.stream.volume = http_streaming_volume / 100;
       }
 
       // Just been disabled
-      if (!nextProps.http_streaming_enabled) {
+      if (!http_streaming_enabled) {
         this.stream = null;
       }
     }
+  }
 
-    // Started a track or changed to no track
-    if ((!this.props.current_track && nextProps.current_track) || (this.props.current_track && !nextProps.current_track)) {
-      this.setState({ current_track: nextProps.current_track });
-    }
-
-    // Direct swap-out of a track (with no 'null' intermediate state)
-    // This is precautionary and I've never been able to trigger it, but it's a good safety
-    if (this.props.current_track && nextProps.current_track && this.props.current_track.uri !== nextProps.current_track.uri) {
-      this.setState({ current_track: nextProps.current_track });
-    }
-
-    // Images have just loaded
-    // A bit niggly to have to deeply check this...
-    if (this.props.current_track && nextProps.current_track) {
-      if ((this.props.current_track.images && !nextProps.current_track.images) || (!this.props.current_track.images && nextProps.current_track.images)) {
-        this.setState({ current_track: nextProps.current_track });
-      }
-    }
+  static getDerivedStateFromProps({ current_track }, state) {
+    return {
+      ...state,
+      current_track,
+    };
   }
 
   handleTouchStart(e) {
@@ -141,7 +135,7 @@ class PlaybackControls extends React.Component {
     if (this.start_position.x + tap_distance_threshold > end_position.x
 			&& this.start_position.x - tap_distance_threshold < end_position.x) {
       // Scroll to top (without smooth_scroll)
-      helpers.scrollTo(null, false);
+      scrollTo(null, false);
       this.props.history.push('/queue');
     } else {
       // Swipe to the left = previous track

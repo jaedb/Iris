@@ -1,5 +1,5 @@
 
-import * as helpers from '../../helpers';
+import { createRange } from '../../util/arrays';
 
 export function set(data) {
   return {
@@ -337,7 +337,7 @@ export function removeTracks(tlids) {
 }
 
 export function reorderTracklist(indexes, insert_before) {
-  const range = helpers.createRange(indexes);
+  const range = createRange(indexes);
   if (insert_before > range.start) insert_before -= range.length;
   return {
     type: 'MOPIDY_REORDER_TRACKLIST',

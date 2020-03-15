@@ -1,7 +1,8 @@
 
 import React from 'react';
-
-import * as helpers from '../helpers';
+import {
+  isCached,
+} from '../util/storage';
 
 export default class Parallax extends React.Component {
   constructor(props) {
@@ -20,16 +21,16 @@ export default class Parallax extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.image !== this.state.url) {
-      this.loadImage(nextProps.image);
-    }
+  componentDidUpdate = () => {
+    const { image } = this.props;
+    const { url } = this.state;
+    if (image && image !== url) this.loadImage(image);
   }
 
   loadImage(url) {
     if (url && url !== '') {
       this.setState({
-        loaded: helpers.isCached(url),
+        loaded: isCached(url),
         url,
       });
 
@@ -57,6 +58,7 @@ export default class Parallax extends React.Component {
     const {
       blur,
       fixedHeight,
+      image,
       animate = true,
     } = this.props;
     const {

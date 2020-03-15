@@ -1,5 +1,5 @@
 
-const helpers = require('./../../helpers');
+import { formatUser } from '../../util/format';
 const coreActions = require('../core/actions');
 const geniusActions = require('./actions');
 
@@ -9,7 +9,7 @@ const GeniusMiddleware = (function () {
 
     switch (action.type) {
       case 'GENIUS_ME_LOADED':
-        var me = helpers.formatUser(action.me);
+        var me = formatUser(action.me);
         Object.assign(
           me,
           {
@@ -26,7 +26,7 @@ const GeniusMiddleware = (function () {
             	break;
 
       case 'GENIUS_USER_LOADED':
-        var user = helpers.formatUser(action.user);
+        var user = formatUser(action.user);
         Object.assign(
           user,
           {

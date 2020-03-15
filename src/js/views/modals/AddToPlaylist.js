@@ -2,8 +2,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import ReactGA from 'react-ga';
-
 import Loader from '../../components/Loader';
 import Modal from './Modal';
 import Icon from '../../components/Icon';
@@ -12,24 +10,24 @@ import * as coreActions from '../../services/core/actions';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
-import * as helpers from '../../helpers';
+import { sourceIcon } from '../../util/helpers';
+import { sortItems } from '../../util/arrays';
 
 class AddToPlaylist extends React.Component {
-  constructor(props) {
-    super(props);
+  componentDidMount = () => {
     const {
-      spotify_library_playlists,
-      mopidy_library_playlists,
+      spotify_library_playlists_status,
+      mopidy_library_playlists_status,
       mopidy_connected,
       spotifyActions,
       mopidyActions,
     } = this.props;
 
-    if (!spotify_library_playlists) {
+    if (!spotify_library_playlists_status || spotify_library_playlists_status !== 'finished') {
       spotifyActions.getLibraryPlaylists();
     }
 
-    if (!mopidy_library_playlists && mopidy_connected) {
+    if ((!mopidy_library_playlists_status || mopidy_library_playlists_status !== 'finished') && mopidy_connected) {
       mopidyActions.getLibraryPlaylists();
     }
   }
@@ -50,7 +48,7 @@ class AddToPlaylist extends React.Component {
       if (playlists[uri].can_edit) editablePlaylists.push(playlists[uri]);
     }
 
-    editablePlaylists = helpers.sortItems(editablePlaylists, 'name');
+    editablePlaylists = sortItems(editablePlaylists, 'name');
 
     const isLoading = spotify_library_playlists_status === 'running';
 
@@ -71,7 +69,7 @@ class AddToPlaylist extends React.Component {
               <Thumbnail images={playlist.images} size="small" />
               <h4 className="list__item__name">{ playlist.name }</h4>
               <ul className="list__item__details details">
-                <li><Icon type="fontawesome" className="source" name={helpers.sourceIcon(playlist.uri)} /></li>
+                <li><Icon type="fontawesome" className="source" name={sourceIcon(playlist.uri)} /></li>
                 <li>
                   { playlist.tracks_total ? (
                     <span className="mid_grey-text">
