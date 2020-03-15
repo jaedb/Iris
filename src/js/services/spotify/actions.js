@@ -1,4 +1,5 @@
 
+import React from 'react';
 import {
   arrayOf,
   shuffle,
@@ -15,6 +16,7 @@ import {
   formatUser,
   formatAlbum,
 } from '../../util/format';
+import URILink from '../../components/URILink';
 
 const coreActions = require('../../services/core/actions');
 const uiActions = require('../../services/ui/actions');
@@ -731,6 +733,7 @@ export function following(uri, method = 'GET') {
     let endpoint;
     let data;
     let is_following = null;
+    const asset = getState().core[`${asset_name}s`] && getState().core[`${asset_name}s`][uri];
 
     if (method == 'PUT') {
       is_following = true;
@@ -794,6 +797,16 @@ export function following(uri, method = 'GET') {
             key: uri,
             in_library: is_following,
           });
+
+          if (method === 'DELETE') {
+            dispatch(uiActions.createNotification({
+              content: <span>Removed <URILink uri={uri}>{asset ? asset.name : asset_name}</URILink> from library</span>,
+            }));
+          } else if (method === 'PUT' || method === 'POST') {
+            dispatch(uiActions.createNotification({
+              content: <span>Added <URILink uri={uri}>{asset ? asset.name : asset_name}</URILink> to library</span>,
+            }));
+          }
         },
         (error) => {
           dispatch(coreActions.handleException(

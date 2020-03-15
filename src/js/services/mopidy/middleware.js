@@ -20,6 +20,7 @@ import {
   shuffle,
   removeDuplicates,
   applyFilter,
+  sortItems,
 } from '../../util/arrays';
 
 const mopidyActions = require('./actions.js');

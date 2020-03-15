@@ -237,9 +237,9 @@ const CoreMiddleware = (function () {
         break;
 
       case 'PLAYLIST_TRACKS_ADDED':
+        const asset = store.getState().core.playlists[action.key];
         store.dispatch(uiActions.createNotification({
-          level: 'warning',
-          content: <span>Added {action.tracks_uris.length} tracks to <URILink uri={action.key}>playlist</URILink></span>,
+          content: <span>Added {action.tracks_uris.length} tracks to <URILink uri={action.key}>{asset ? asset.name : 'playlist'}</URILink></span>,
         }));
         switch (uriSource(action.key)) {
           case 'spotify':

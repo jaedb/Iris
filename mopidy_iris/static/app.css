@@ -5727,9 +5727,10 @@ main header {
         margin-bottom: 0;
         margin-top: 5px; }
     .notifications .notification a {
-      text-decoration: none;
-      color: inherit;
-      border-bottom: 2px solid #FFFFFF; }
+      font-style: italic;
+      color: inherit; }
+      .notifications .notification a:hover {
+        opacity: 0.75; }
     .notifications .notification ul {
       padding: 4px 0 4px 20px; }
     .notifications .notification__content {

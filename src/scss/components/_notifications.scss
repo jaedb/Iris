@@ -33,9 +33,11 @@
 		}
 
 		a {
-			text-decoration: none;
+			font-style: italic;
 			color: inherit;
-			border-bottom: 2px solid colour(white);
+			&:hover {
+				opacity: 0.75;
+			}
 		}
 
 		ul {

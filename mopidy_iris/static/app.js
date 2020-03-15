@@ -69897,8 +69897,8 @@ var CoreMiddleware = function () {
             break;
 
           case 'PLAYLIST_TRACKS_ADDED':
+            var asset = store.getState().core.playlists[action.key];
             store.dispatch(uiActions.createNotification({
-              level: 'warning',
               content: _react2.default.createElement(
                 'span',
                 null,
@@ -69908,7 +69908,7 @@ var CoreMiddleware = function () {
                 _react2.default.createElement(
                   _URILink2.default,
                   { uri: action.key },
-                  'playlist'
+                  asset ? asset.name : 'playlist'
                 )
               )
             }));
@@ -77885,11 +77885,21 @@ exports.getLibraryArtistsProcessor = getLibraryArtistsProcessor;
 exports.getLibraryAlbums = getLibraryAlbums;
 exports.getLibraryAlbumsProcessor = getLibraryAlbumsProcessor;
 
+var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
 var _arrays = __webpack_require__(/*! ../../util/arrays */ "./src/js/util/arrays.js");
 
 var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
 
 var _format = __webpack_require__(/*! ../../util/format */ "./src/js/util/format.js");
+
+var _URILink = __webpack_require__(/*! ../../components/URILink */ "./src/js/components/URILink.js");
+
+var _URILink2 = _interopRequireDefault(_URILink);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
@@ -78529,6 +78539,7 @@ function following(uri) {
     var endpoint = void 0;
     var data = void 0;
     var is_following = null;
+    var asset = getState().core[asset_name + 's'] && getState().core[asset_name + 's'][uri];
 
     if (method == 'PUT') {
       is_following = true;
@@ -78590,6 +78601,36 @@ function following(uri) {
         key: uri,
         in_library: is_following
       });
+
+      if (method === 'DELETE') {
+        dispatch(uiActions.createNotification({
+          content: _react2.default.createElement(
+            'span',
+            null,
+            'Removed ',
+            _react2.default.createElement(
+              _URILink2.default,
+              { uri: uri },
+              asset ? asset.name : asset_name
+            ),
+            ' from library'
+          )
+        }));
+      } else if (method === 'PUT' || method === 'POST') {
+        dispatch(uiActions.createNotification({
+          content: _react2.default.createElement(
+            'span',
+            null,
+            'Added ',
+            _react2.default.createElement(
+              _URILink2.default,
+              { uri: uri },
+              asset ? asset.name : asset_name
+            ),
+            ' to library'
+          )
+        }));
+      }
     }, function (error) {
       dispatch(coreActions.handleException('Could not follow/unfollow', error));
     });
