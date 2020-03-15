@@ -81,16 +81,16 @@ let state = {
   },
   lastfm: {
     me: null,
-    authorization_url: 'https://jamesbarnsley.co.nz/iris/auth_lastfm.php',
+    authorization_url: 'https://localhost/iris/auth_lastfm.php',
   },
   genius: {
     me: null,
-    authorization_url: 'https://jamesbarnsley.co.nz/iris/auth_genius.php',
+    authorization_url: 'https://localhost/iris/auth_genius.php',
   },
   spotify: {
     me: null,
     autocomplete_results: {},
-    authorization_url: 'https://jamesbarnsley.co.nz/iris/auth_spotify.php',
+    authorization_url: 'https://localhost/iris/auth_spotify.php',
   },
   google: {
     enabled: false,

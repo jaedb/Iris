@@ -24,8 +24,8 @@ Iris will work for most users out-of-the-box. You can customise some of the conf
 These **optional** values are defined in your `mopidy.conf` file (typically `~/.config/mopidy/mopidy.conf`). They can be set in the `[iris]` section.
 - `country` Spotify-based country code (defaults to `nz`)
 - `locale` Spotify-based locale code (defaults to `en_NZ`)
-- `spotify_authorization_url` URL to use as Spotify authentication proxy (defaults to `https://jamesbarnsley.co.nz/auth_spotify.php`)
-- `lastfm_authorization_url ` URL to use as LastFM authentication proxy (defaults to `https://jamesbarnsley.co.nz/auth_lastfm.php`)
+- `spotify_authorization_url` URL to use as Spotify authentication proxy (defaults to `https://localhost/auth_spotify.php`)
+- `lastfm_authorization_url ` URL to use as LastFM authentication proxy (defaults to `https://localhost/auth_lastfm.php`)
 
 ## Upgrading
 You can upgrade from Iris under _Settings_ > _Upgrade_. This is in beta, and you will need to restart Mopidy for the upgrade to complete. Alternatively run `sudo pip install --upgrade Mopidy-Iris`.
