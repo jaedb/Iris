@@ -2,6 +2,7 @@ import React from 'react';
 import { bindActionCreators } from 'redux';
 import { Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
+import ReactHowler from 'react-howler'
 import ReactGA from 'react-ga';
 
 import Sidebar from './components/Sidebar';
