@@ -33,9 +33,7 @@ RUN wget -q -O - https://apt.mopidy.com/mopidy.gpg \
 # Clone Iris from the repository and install in development mode.
 # This allows a binding at "/iris" to map to your local folder for development, rather than
 # installing using pip.
-COPY . /iris
-
-RUN cd /iris \
+RUN git clone https://github.com/jaedb/Iris.git /iris \
  && python3.7 setup.py develop \
  && mkdir -p /var/lib/mopidy/.config \
  && ln -s /config /var/lib/mopidy/.config/mopidy \
