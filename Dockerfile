@@ -42,7 +42,7 @@ RUN git clone https://github.com/jaedb/Iris.git /iris \
  && echo "mopidy ALL=NOPASSWD: /iris/mopidy_iris/system.sh" >> /etc/sudoers
 
 # Install additional Python dependencies
-RUN python3.7 -m pip install --no-cache tox mopidy-spotify mopidy-local
+RUN python3.7 -m pip install --no-cache tox mopidy-mpd mopidy-spotify mopidy-local
 
 # Start helper script.
 COPY docker/entrypoint.sh /entrypoint.sh
