@@ -45,7 +45,7 @@ export default ({
   // they're otherwise identical
   const link = decodeURIComponent(to);
   const currentLink = decodeURIComponent(history.location.pathname);
-  const isLinkActive = (exact && currentLink === link) || currentLink.startsWith(link);
+  const isLinkActive = exact ? currentLink === link : currentLink.startsWith(link);
 
   // We have an active detector method
   // This is used almost solely by the Sidebar navigation
