@@ -121,6 +121,7 @@ class Queue extends React.Component {
 
   renderArtwork(image) {
     const { current_track } = this.props;
+    const uri = (current_track && current_track.album && current_track.album.uri) ? current_track.album.uri : null;
 
     if (!image) {
       return (
@@ -130,15 +131,18 @@ class Queue extends React.Component {
       );
     }
 
-    let uri = null;
-    if (current_track.album && current_track.album.uri) {
-      uri = current_track.album.uri;
-    }
     return (
       <div className="current-track__artwork">
-        <Link to="/kiosk-mode" >
-          <Thumbnail glow image={image} />
-        </Link>
+        <Thumbnail glow image={image}>
+          <div className="current-track__artwork__actions">
+            <URILink uri={uri} className="current-track__artwork__actions__item">
+              <Icon name="album" />
+            </URILink>
+            <Link to="/kiosk-mode" className="current-track__artwork__actions__item">
+              <Icon name="expand" type="fontawesome" />
+            </Link>
+          </div>
+        </Thumbnail>
       </div>
     );
   }
@@ -274,7 +278,7 @@ class Queue extends React.Component {
                   <li><Dater type="total-time" data={queue_tracks} /></li>
                   {queue_tracks.length > 0 && (
                     <li>
-                      <a onClick={e => this.props.mopidyActions.clearTracklist()}>
+                      <a onClick={this.props.mopidyActions.clearTracklist}>
                         <Icon name="delete_sweep" />
                         Clear queue
                       </a>
@@ -287,6 +291,7 @@ class Queue extends React.Component {
 
           <section className="list-wrapper">
             <TrackList
+              uri="iris:queue"
               show_source_icon
               track_context="queue"
               className="queue-track-list"

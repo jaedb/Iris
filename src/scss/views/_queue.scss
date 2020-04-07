@@ -21,6 +21,47 @@
       .thumbnail {
         width: 30vh;
         display: inline-block;
+
+        &:hover {
+          .current-track__artwork__actions {
+            opacity: 1;
+          }
+        }
+      }
+
+      &__actions {
+        position: absolute;
+        display: flex;
+        opacity: 0;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+
+        &__item {
+          @include animate();
+          display: inline-flex;
+          z-index: 3;
+          width: 4.2rem;
+          height: 4.2rem;
+          align-items: center;
+          justify-content: center;
+          border-radius: 100%;
+          background: rgba(0,0,0,0.4);
+          font-size: 2rem;
+          cursor: pointer;
+          color: colour(white);
+          border: 0 !important;
+          margin: 0 5px;
+
+          &:hover {
+            background: colour(black);
+          }
+        }
       }
     }
 

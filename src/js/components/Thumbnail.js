@@ -61,6 +61,7 @@ export default memo((props) => {
       )}
       {props.glow && image && <div className="thumbnail__image thumbnail__image--glow" style={{ backgroundImage: `url("${image}")` }} />}
       {zoom_icon}
+      {props.children}
     </div>
   );
 });
