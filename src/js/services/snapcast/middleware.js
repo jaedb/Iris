@@ -85,11 +85,11 @@ const SnapcastMiddleware = (function () {
           break;
 
         case 'Client.OnLatencyChanged':
-            store.dispatch(snapcastActions.clientLoaded(message.params));
+          store.dispatch(snapcastActions.clientLoaded(message.params));
           break;
 
         case 'Client.OnNameChanged':
-            store.dispatch(snapcastActions.clientLoaded(message.params));
+          store.dispatch(snapcastActions.clientLoaded(message.params));
           break;
 
         case 'Group.OnMute':
@@ -98,6 +98,9 @@ const SnapcastMiddleware = (function () {
 
         case 'Server.OnUpdate':
           store.dispatch(snapcastActions.serverLoaded(message.param));
+          break;
+
+        default:
           break;
       }
     }

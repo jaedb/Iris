@@ -10,9 +10,11 @@ npm-debug.log
 *sublime*
 .DS_Store
 .idea
+._*
 venv
 docker/mopidy.conf
 docker/data/
+docker/icecast2.xml
 docker-compose.yml
 /.tox/
 /tests/__pycache__/

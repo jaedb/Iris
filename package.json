@@ -18,11 +18,12 @@
     "react-dom": "^16.12.0",
     "react-fontawesome": "^1.7.1",
     "react-ga": "^2.7.0",
+    "react-howler": "^3.7.4",
     "react-input-range": "1.3.0",
     "react-redux": "^6",
+    "react-router": "^5",
     "react-router-dom": "^5.1.2",
-    "react-sortablejs": "^1.5.0",
-    "react-router": "^5"
+    "react-sortablejs": "^1.5.0"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.8.3",

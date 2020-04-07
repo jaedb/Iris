@@ -5237,9 +5237,9 @@ select {
       -moz-transition: all 0.15s ease-in-out;
       -o-transition: all 0.15s ease-in-out;
       transition: all 0.15s ease-in-out;
-      width: 220px;
+      width: 250px;
       left: auto;
-      right: -220px;
+      right: -250px;
       padding-bottom: 0;
       position: fixed;
       z-index: 100; }
@@ -5248,9 +5248,9 @@ select {
       .dark-theme .sidebar {
         background: #121212; }
       .sidebar-open .sidebar {
-        -ms-transform: translate(-220px, 0);
-        -webkit-transform: translate(-220px, 0);
-        transform: translate(-220px, 0); }
+        -ms-transform: translate(-250px, 0);
+        -webkit-transform: translate(-250px, 0);
+        transform: translate(-250px, 0); }
       .sidebar__liner {
         bottom: 0 !important;
         padding-bottom: 30px; }
@@ -5727,7 +5727,6 @@ main header {
         margin-bottom: 0;
         margin-top: 5px; }
     .notifications .notification a {
-      font-style: italic;
       color: inherit; }
       .notifications .notification a:hover {
         opacity: 0.75; }
@@ -6375,6 +6374,8 @@ main header {
     width: 12.5%;
     min-width: 110px;
     max-width: 140px; }
+    .snapcast__groups .menu .menu-item--no-clients {
+      opacity: 0.5 !important; }
     .snapcast__groups .menu .menu-item__inner {
       padding: 20px 10px; }
     .snapcast__groups .menu .menu-item__icon {
@@ -7054,6 +7055,40 @@ main .track-view {
     .queue-view .current-track__artwork .thumbnail {
       width: 30vh;
       display: inline-block; }
+      .queue-view .current-track__artwork .thumbnail:hover .current-track__artwork__actions {
+        opacity: 1; }
+    .queue-view .current-track__artwork__actions {
+      position: absolute;
+      display: flex;
+      opacity: 0;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2; }
+      .queue-view .current-track__artwork__actions__item {
+        -webkit-transition: all 0.2s ease-in-out;
+        -moz-transition: all 0.2s ease-in-out;
+        -o-transition: all 0.2s ease-in-out;
+        transition: all 0.2s ease-in-out;
+        display: inline-flex;
+        z-index: 3;
+        width: 4.2rem;
+        height: 4.2rem;
+        align-items: center;
+        justify-content: center;
+        border-radius: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        font-size: 2rem;
+        cursor: pointer;
+        color: #FFFFFF;
+        border: 0 !important;
+        margin: 0 5px; }
+        .queue-view .current-track__artwork__actions__item:hover {
+          background: #000000; }
   .queue-view .current-track__details {
     width: 48%;
     margin-left: 2%; }

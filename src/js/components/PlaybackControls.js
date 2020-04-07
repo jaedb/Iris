@@ -12,6 +12,7 @@ import Dater from './Dater';
 import LinksSentence from './LinksSentence';
 import Thumbnail from './Thumbnail';
 import Icon from './Icon';
+import Stream from './Stream';
 import { scrollTo } from '../util/helpers';
 import * as uiActions from '../services/ui/actions';
 import * as coreActions from '../services/core/actions';
@@ -29,75 +30,6 @@ class PlaybackControls extends React.Component {
     };
   }
 
-  componentDidMount() {
-    if (this.props.http_streaming_enabled) {
-      // Bust our cache, and by consequence, play our stream
-      this.props.coreActions.cachebustHttpStream();
-    }
-
-    if (this.props.current_track) {
-      this.setState({ current_track: this.props.current_track });
-    }
-  }
-
-  playStream(props = this.props) {
-    if (!this.stream) {
-      this.stream = new Audio();
-    } else {
-      this.stream.src = null;
-    }
-
-    if (!props.http_streaming_enabled || !props.http_streaming_url) {
-      return false;
-    }
-
-    this.stream.src = `${props.http_streaming_url}?cb=${props.http_streaming_cachebuster}`;
-    this.stream.muted = props.http_streaming_mute;
-    this.stream.volume = props.http_streaming_volume / 100;
-    this.stream.play();
-
-    console.log(`Playing stream: ${this.stream.src}`);
-  }
-
-  componentDidUpdate = ({
-    http_streaming_cachebuster: prev_http_streaming_cachebuster,
-    http_streaming_enabled: prev_http_streaming_enabled,
-    http_streaming_mute: prev_http_streaming_mute,
-    http_streaming_volume: prev_http_streaming_volume,
-  }) => {
-    const {
-      http_streaming_cachebuster,
-      http_streaming_enabled,
-      http_streaming_mute,
-      http_streaming_volume,
-    } = this.props;
-
-    // Cachebuster changed
-    // This happens when playback changes, so that the stream is "new", rather
-    // than the original stream. This prevents the browser cache from starting
-    // the stream right from the beginning (which could be hours of continuous playback).
-    if (prev_http_streaming_cachebuster !== http_streaming_cachebuster) this.playStream();
-
-    // Just been enabled
-    if (!prev_http_streaming_enabled && http_streaming_enabled) this.playStream();
-
-    if (this.stream) {
-      if (http_streaming_mute !== prev_http_streaming_mute) {
-        this.stream.muted = http_streaming_mute;
-      }
-
-      // Just had volume changed
-      if (http_streaming_volume !== prev_http_streaming_volume) {
-        this.stream.volume = http_streaming_volume / 100;
-      }
-
-      // Just been disabled
-      if (!http_streaming_enabled) {
-        this.stream = null;
-      }
-    }
-  }
-
   static getDerivedStateFromProps({ current_track }, state) {
     return {
       ...state,
@@ -105,7 +37,10 @@ class PlaybackControls extends React.Component {
     };
   }
 
-  handleTouchStart(e) {
+  handleTouchStart = (e) => {
+    const { touch_enabled } = this.props;
+    if (!touch_enabled) return;
+
     const timestamp = Math.floor(Date.now());
 
     // Save touch start details
@@ -117,7 +52,10 @@ class PlaybackControls extends React.Component {
     return false;
   }
 
-  handleTouchEnd(e) {
+  handleTouchEnd = (e) => {
+    const { touch_enabled } = this.props;
+    if (!touch_enabled) return;
+
     const timestamp = Math.floor(Date.now());
     const tap_distance_threshold = 10;		// Max distance (px) between touchstart and touchend to qualify as a tap
     const tap_time_threshold = 200;			// Max time (ms) between touchstart and touchend to qualify as a tap
@@ -246,6 +184,8 @@ class PlaybackControls extends React.Component {
     return (
       <div className={`playback-controls${expanded ? ' playback-controls--expanded' : ''}${touch_enabled ? ' playback-controls--touch-enabled' : ''}`}>
 
+        <Stream />
+
         {next_track && next_track.images ? <Thumbnail className="hide" size="large" images={next_track.images} /> : null}
 
         {this.state.transition_track && this.state.transition_direction ? (
@@ -265,8 +205,8 @@ class PlaybackControls extends React.Component {
 
         <div
           className={this.state.transition_track && this.state.transition_direction ? 'current-track current-track--transitioning' : 'current-track'}
-          onTouchStart={(e) => touch_enabled && this.handleTouchStart(e)}
-          onTouchEnd={(e) => touch_enabled && this.handleTouchEnd(e)}
+          onTouchStart={this.handleTouchStart}
+          onTouchEnd={this.handleTouchEnd}
           tabIndex="-1"
         >
           <Link className="thumbnail-wrapper" to="/kiosk-mode" tabIndex="-1">
@@ -332,13 +272,8 @@ class PlaybackControls extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state) => ({
   snapcast_enabled: state.pusher.config.snapcast_enabled,
-  http_streaming_enabled: state.core.http_streaming_enabled,
-  http_streaming_volume: state.core.http_streaming_volume >= 0 ? state.core.http_streaming_volume : 50,
-  http_streaming_mute: state.core.http_streaming_mute,
-  http_streaming_url: (state.core.http_streaming_url ? state.core.http_streaming_url : null),
-  http_streaming_cachebuster: state.core.http_streaming_cachebuster,
   current_track: (state.core.current_track && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null),
   next_track: (state.core.next_track_uri && state.core.tracks[state.core.next_track_uri] !== undefined ? state.core.tracks[state.core.next_track_uri] : null),
   radio_enabled: (!!(state.ui.radio && state.ui.radio.enabled)),

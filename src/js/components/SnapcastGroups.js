@@ -31,12 +31,12 @@ const SnapcastGroups = (props) => {
     return null;
   }
 
-  const renderGroup = () => {
-    if (!groupId || !groups[groupId]) {
-      return null;
-    }
+  const group = groupId && groups[groupId]
+    ? collate(groups[groupId], { clients })
+    : null;
 
-    const group = collate(groups[groupId], { clients });
+  const renderGroup = () => {
+    if (!group) return null;
 
     return (
       <div className="snapcast__group" key={group.id}>
@@ -97,20 +97,29 @@ const SnapcastGroups = (props) => {
     );
   }
 
-  const renderMenuItem = (group) => {
+  const renderMenuItem = (simpleGroup) => {
+    const group = collate(simpleGroup, { clients });
+    const anyClients = (
+      !show_disconnected_clients && (
+        !group.clients ||
+        !group.clients.length ||
+        !group.clients.filter((client) => client.connected).length
+      )
+    );
     const icon = () => {
       const iconWords = [
         { icon: 'business', words: ['office', 'work'] },
         { icon: 'king_bed', words: ['bed'] },
-        { icon: 'tv', words: ['lounge', 'tv'] },
+        { icon: 'weekend', words: ['lounge', 'tv', 'sitting room'] },
         { icon: 'directions_car', words: ['garage', 'laundry'] },
         { icon: 'fitness_center', words: ['gym'] },
-        { icon: 'emoji_food_beverage', words: ['kitchen'] },
+        { icon: 'kitchen', words: ['kitchen'] },
         { icon: 'deck', words: ['deck', 'outside'] },
         { icon: 'restaurant_menu', words: ['dining', 'dinner'] },
         { icon: 'laptop', words: ['laptop'] },
         { icon: 'bug_report', words: ['test', 'debug'] },
         { icon: 'child_care', words: ['kids', 'baby'] },
+        { icon: 'smartphone', words: ['phone', 'mobile'] },
       ];
       const name = group.name.toLowerCase();
       for (let item of iconWords) {
@@ -124,7 +133,7 @@ const SnapcastGroups = (props) => {
     }
     return (
       <Link
-        className="snapcast__groups__menu-item menu-item"
+        className={`snapcast__groups__menu-item menu-item${anyClients ? ' menu-item--no-clients' : ''}`}
         activeClassName="menu-item--active"
         key={group.id}
         history={history}

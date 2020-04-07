@@ -500,10 +500,6 @@ class Settings extends React.Component {
               {' '}
               GitHub
             </a>
-            <a className="button button--default" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">
-              <Icon type="fontawesome" name="creative-commons" />
-              &nbsp;Licence
-            </a>
           </div>
 
         </section>
