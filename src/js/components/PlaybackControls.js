@@ -30,17 +30,6 @@ class PlaybackControls extends React.Component {
     };
   }
 
-  componentDidMount() {
-    if (this.props.http_streaming_enabled) {
-      // Bust our cache, and by consequence, play our stream
-      this.props.coreActions.cachebustHttpStream();
-    }
-
-    if (this.props.current_track) {
-      this.setState({ current_track: this.props.current_track });
-    }
-  }
-
   static getDerivedStateFromProps({ current_track }, state) {
     return {
       ...state,
@@ -48,7 +37,10 @@ class PlaybackControls extends React.Component {
     };
   }
 
-  handleTouchStart(e) {
+  handleTouchStart = (e) => {
+    const { touch_enabled } = this.props;
+    if (!touch_enabled) return;
+
     const timestamp = Math.floor(Date.now());
 
     // Save touch start details
@@ -60,7 +52,10 @@ class PlaybackControls extends React.Component {
     return false;
   }
 
-  handleTouchEnd(e) {
+  handleTouchEnd = (e) => {
+    const { touch_enabled } = this.props;
+    if (!touch_enabled) return;
+
     const timestamp = Math.floor(Date.now());
     const tap_distance_threshold = 10;		// Max distance (px) between touchstart and touchend to qualify as a tap
     const tap_time_threshold = 200;			// Max time (ms) between touchstart and touchend to qualify as a tap
@@ -210,8 +205,8 @@ class PlaybackControls extends React.Component {
 
         <div
           className={this.state.transition_track && this.state.transition_direction ? 'current-track current-track--transitioning' : 'current-track'}
-          onTouchStart={(e) => touch_enabled && this.handleTouchStart(e)}
-          onTouchEnd={(e) => touch_enabled && this.handleTouchEnd(e)}
+          onTouchStart={this.handleTouchStart}
+          onTouchEnd={this.handleTouchEnd}
           tabIndex="-1"
         >
           <Link className="thumbnail-wrapper" to="/kiosk-mode" tabIndex="-1">

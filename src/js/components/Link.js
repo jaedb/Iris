@@ -11,7 +11,7 @@ export default ({
   retainScroll,
   scrollTo: scrollToProp,
   onContextMenu,
-  className,
+  className = '',
   activeClassName,
   to,
   exact,

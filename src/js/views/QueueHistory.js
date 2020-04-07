@@ -60,6 +60,7 @@ class QueueHistory extends React.Component {
         </Header>
         <section className="content-wrapper">
           <TrackList
+            uri="iris:queue-history"
             className="queue-history-track-list"
             track_context="history"
             tracks={tracks}

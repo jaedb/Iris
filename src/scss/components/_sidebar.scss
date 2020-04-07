@@ -63,7 +63,7 @@
         }
       }
 
-      &--active { 
+      &--active {
         background: colour(turquoise);
         color: colour(white) !important;
 
@@ -133,9 +133,9 @@
 
   @include responsive($bp_medium) {
     @include animate(0.15s);
-    width: 220px;
+    width: 250px;
     left: auto;
-    right: -220px;
+    right: -250px;
     padding-bottom: 0;
     position: fixed;
     z-index: 100;
@@ -149,9 +149,9 @@
     }
 
     .sidebar-open & {
-      -ms-transform: translate(-220px, 0);
-      -webkit-transform: translate(-220px, 0);
-      transform: translate(-220px, 0);
+      -ms-transform: translate(-250px, 0);
+      -webkit-transform: translate(-250px, 0);
+      transform: translate(-250px, 0);
     }
 
     &__liner {

@@ -65569,6 +65569,8 @@ var snapcastActions = _interopRequireWildcard(_actions3);
 
 var _arrays = __webpack_require__(/*! ../../util/arrays */ "./src/js/util/arrays.js");
 
+var _format = __webpack_require__(/*! ../../util/format */ "./src/js/util/format.js");
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -65636,7 +65638,8 @@ var OutputControl = function (_React$Component) {
       var _props = this.props,
           snapcast_streams = _props.snapcast_streams,
           snapcastActions = _props.snapcastActions,
-          snapcast_groups = _props.snapcast_groups;
+          snapcast_groups = _props.snapcast_groups,
+          clients = _props.snapcast_clients;
 
 
       var groups = (0, _arrays.indexToArray)(snapcast_groups);
@@ -65649,7 +65652,13 @@ var OutputControl = function (_React$Component) {
       return _react2.default.createElement(
         'div',
         null,
-        groups.map(function (group) {
+        groups.map(function (simpleGroup) {
+          var group = (0, _format.collate)(simpleGroup, { clients: clients });
+          if (!group.clients || !group.clients.length || !group.clients.filter(function (client) {
+            return client.connected;
+          }).length) {
+            return null;
+          }
           return _react2.default.createElement(
             'div',
             { className: 'output-control__item outputs__item--snapcast', key: group.id },
@@ -65856,6 +65865,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
     pusher_connected: state.pusher.connected,
     snapcast_enabled: state.pusher.config ? state.pusher.config.snapcast_enabled : null,
     show_disconnected_clients: state.ui.snapcast_show_disconnected_clients !== undefined ? state.ui.snapcast_show_disconnected_clients : false,
+    snapcast_clients: state.snapcast.clients,
     snapcast_groups: state.snapcast.groups,
     snapcast_streams: state.snapcast.streams,
     pusher_commands: state.pusher.commands ? state.pusher.commands : {}
@@ -67489,7 +67499,8 @@ exports.default = function (_ref) {
   var retainScroll = _ref.retainScroll,
       scrollToProp = _ref.scrollTo,
       onContextMenu = _ref.onContextMenu,
-      className = _ref.className,
+      _ref$className = _ref.className,
+      className = _ref$className === undefined ? '' : _ref$className,
       activeClassName = _ref.activeClassName,
       to = _ref.to,
       exact = _ref.exact,
@@ -67522,7 +67533,7 @@ exports.default = function (_ref) {
   // they're otherwise identical
   var link = decodeURIComponent(to);
   var currentLink = decodeURIComponent(history.location.pathname);
-  var isLinkActive = exact && currentLink === link || currentLink.startsWith(link);
+  var isLinkActive = exact ? currentLink === link : currentLink.startsWith(link);
 
   // We have an active detector method
   // This is used almost solely by the Sidebar navigation
@@ -68857,6 +68868,62 @@ var PlaybackControls = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (PlaybackControls.__proto__ || Object.getPrototypeOf(PlaybackControls)).call(this, props));
 
+    _this.handleTouchStart = function (e) {
+      var touch_enabled = _this.props.touch_enabled;
+
+      if (!touch_enabled) return;
+
+      var timestamp = Math.floor(Date.now());
+
+      // Save touch start details
+      _this.start_time = timestamp;
+      _this.start_position = {
+        x: e.touches[0].clientX
+      };
+
+      return false;
+    };
+
+    _this.handleTouchEnd = function (e) {
+      var touch_enabled = _this.props.touch_enabled;
+
+      if (!touch_enabled) return;
+
+      var timestamp = Math.floor(Date.now());
+      var tap_distance_threshold = 10; // Max distance (px) between touchstart and touchend to qualify as a tap
+      var tap_time_threshold = 200; // Max time (ms) between touchstart and touchend to qualify as a tap
+      var end_position = {
+        x: e.changedTouches[0].clientX
+      };
+
+      // Too long between touchstart and touchend
+      if (_this.start_time + tap_time_threshold < timestamp) {
+        return false;
+      }
+
+      // Make sure there's enough distance between start and end before we handle
+      // this event as a 'tap'
+      if (_this.start_position.x + tap_distance_threshold > end_position.x && _this.start_position.x - tap_distance_threshold < end_position.x) {
+        // Scroll to top (without smooth_scroll)
+        (0, _helpers.scrollTo)(null, false);
+        _this.props.history.push('/queue');
+      } else {
+        // Swipe to the left = previous track
+        if (_this.start_position.x < end_position.x) {
+          _this.setTransition('previous');
+          _this.props.mopidyActions.previous();
+
+          // Swipe to the right = skip track
+        } else if (_this.start_position.x > end_position.x) {
+          _this.setTransition('next');
+          _this.props.mopidyActions.next();
+        }
+      }
+
+      _this.end_time = timestamp;
+      e.preventDefault();
+    };
+
     _this.stream = null;
     _this.state = {
       expanded: false,
@@ -68868,68 +68935,6 @@ var PlaybackControls = function (_React$Component) {
   }
 
   _createClass(PlaybackControls, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      if (this.props.http_streaming_enabled) {
-        // Bust our cache, and by consequence, play our stream
-        this.props.coreActions.cachebustHttpStream();
-      }
-
-      if (this.props.current_track) {
-        this.setState({ current_track: this.props.current_track });
-      }
-    }
-  }, {
-    key: 'handleTouchStart',
-    value: function handleTouchStart(e) {
-      var timestamp = Math.floor(Date.now());
-
-      // Save touch start details
-      this.start_time = timestamp;
-      this.start_position = {
-        x: e.touches[0].clientX
-      };
-
-      return false;
-    }
-  }, {
-    key: 'handleTouchEnd',
-    value: function handleTouchEnd(e) {
-      var timestamp = Math.floor(Date.now());
-      var tap_distance_threshold = 10; // Max distance (px) between touchstart and touchend to qualify as a tap
-      var tap_time_threshold = 200; // Max time (ms) between touchstart and touchend to qualify as a tap
-      var end_position = {
-        x: e.changedTouches[0].clientX
-      };
-
-      // Too long between touchstart and touchend
-      if (this.start_time + tap_time_threshold < timestamp) {
-        return false;
-      }
-
-      // Make sure there's enough distance between start and end before we handle
-      // this event as a 'tap'
-      if (this.start_position.x + tap_distance_threshold > end_position.x && this.start_position.x - tap_distance_threshold < end_position.x) {
-        // Scroll to top (without smooth_scroll)
-        (0, _helpers.scrollTo)(null, false);
-        this.props.history.push('/queue');
-      } else {
-        // Swipe to the left = previous track
-        if (this.start_position.x < end_position.x) {
-          this.setTransition('previous');
-          this.props.mopidyActions.previous();
-
-          // Swipe to the right = skip track
-        } else if (this.start_position.x > end_position.x) {
-          this.setTransition('next');
-          this.props.mopidyActions.next();
-        }
-      }
-
-      this.end_time = timestamp;
-      e.preventDefault();
-    }
-  }, {
     key: 'setTransition',
     value: function setTransition(direction) {
       var _this2 = this;
@@ -69119,12 +69124,8 @@ var PlaybackControls = function (_React$Component) {
           'div',
           {
             className: this.state.transition_track && this.state.transition_direction ? 'current-track current-track--transitioning' : 'current-track',
-            onTouchStart: function onTouchStart(e) {
-              return touch_enabled && _this7.handleTouchStart(e);
-            },
-            onTouchEnd: function onTouchEnd(e) {
-              return touch_enabled && _this7.handleTouchEnd(e);
-            },
+            onTouchStart: this.handleTouchStart,
+            onTouchEnd: this.handleTouchEnd,
             tabIndex: '-1'
           },
           _react2.default.createElement(
@@ -71193,12 +71194,10 @@ var SnapcastGroups = function SnapcastGroups(props) {
     return null;
   }
 
-  var renderGroup = function renderGroup() {
-    if (!groupId || !groups[groupId]) {
-      return null;
-    }
+  var group = groupId && groups[groupId] ? (0, _format.collate)(groups[groupId], { clients: clients }) : null;
 
-    var group = (0, _format.collate)(groups[groupId], { clients: clients });
+  var renderGroup = function renderGroup() {
+    if (!group) return null;
 
     return _react2.default.createElement(
       'div',
@@ -71285,9 +71284,13 @@ var SnapcastGroups = function SnapcastGroups(props) {
     );
   };
 
-  var renderMenuItem = function renderMenuItem(group) {
+  var renderMenuItem = function renderMenuItem(simpleGroup) {
+    var group = (0, _format.collate)(simpleGroup, { clients: clients });
+    var anyClients = !show_disconnected_clients && (!group.clients || !group.clients.length || !group.clients.filter(function (client) {
+      return client.connected;
+    }).length);
     var icon = function icon() {
-      var iconWords = [{ icon: 'business', words: ['office', 'work'] }, { icon: 'king_bed', words: ['bed'] }, { icon: 'tv', words: ['lounge', 'tv'] }, { icon: 'directions_car', words: ['garage', 'laundry'] }, { icon: 'fitness_center', words: ['gym'] }, { icon: 'emoji_food_beverage', words: ['kitchen'] }, { icon: 'deck', words: ['deck', 'outside'] }, { icon: 'restaurant_menu', words: ['dining', 'dinner'] }, { icon: 'laptop', words: ['laptop'] }, { icon: 'bug_report', words: ['test', 'debug'] }, { icon: 'child_care', words: ['kids', 'baby'] }];
+      var iconWords = [{ icon: 'business', words: ['office', 'work'] }, { icon: 'king_bed', words: ['bed'] }, { icon: 'weekend', words: ['lounge', 'tv', 'sitting room'] }, { icon: 'directions_car', words: ['garage', 'laundry'] }, { icon: 'fitness_center', words: ['gym'] }, { icon: 'kitchen', words: ['kitchen'] }, { icon: 'deck', words: ['deck', 'outside'] }, { icon: 'restaurant_menu', words: ['dining', 'dinner'] }, { icon: 'laptop', words: ['laptop'] }, { icon: 'bug_report', words: ['test', 'debug'] }, { icon: 'child_care', words: ['kids', 'baby'] }, { icon: 'smartphone', words: ['phone', 'mobile'] }];
       var name = group.name.toLowerCase();
       var _iteratorNormalCompletion = true;
       var _didIteratorError = false;
@@ -71344,7 +71347,7 @@ var SnapcastGroups = function SnapcastGroups(props) {
     return _react2.default.createElement(
       _Link2.default,
       {
-        className: 'snapcast__groups__menu-item menu-item',
+        className: 'snapcast__groups__menu-item menu-item' + (anyClients ? ' menu-item--no-clients' : ''),
         activeClassName: 'menu-item--active',
         key: group.id,
         history: history,
@@ -71459,20 +71462,30 @@ var Stream = function (_React$Component) {
           play_state = _this$props.play_state,
           enabled = _this$props.enabled,
           volume = _this$props.volume,
-          url = _this$props.url;
+          url = _this$props.url,
+          _this$props$current_t = _this$props.current_track;
+      _this$props$current_t = _this$props$current_t === undefined ? {} : _this$props$current_t;
+      var uri = _this$props$current_t.uri;
       var cachebuster = _this.state.cachebuster;
 
 
-      if (!enabled || !url) return null;
+      if (!uri || !enabled || !url) return null;
+
+      console.debug('Attempting to play stream ' + url + '?cb=' + cachebuster);
 
       return _react2.default.createElement(_reactHowler2.default, {
         src: url + '?cb=' + cachebuster,
         playing: play_state === 'playing',
         volume: volume / 100,
+        onPlay: function onPlay() {
+          return console.debug('Playing stream ' + url + '?cb=' + cachebuster);
+        },
         onLoad: function onLoad() {
           return console.debug('Loaded stream ' + url + '?cb=' + cachebuster);
         },
-        html5: true
+        onError: function onError() {
+          return console.error('Failed to play stream ' + url + '?cb=' + cachebuster);
+        }
       });
     };
 
@@ -71492,7 +71505,7 @@ var Stream = function (_React$Component) {
       _ref$current_track = _ref$current_track === undefined ? {} : _ref$current_track;
       var uri = _ref$current_track.uri;
 
-      if (uri === state.uri && play_state === state.play_state) return null;
+      if (uri && uri === state.uri && play_state === state.play_state) return null;
       return _extends({}, state, {
         uri: uri,
         play_state: play_state,
@@ -71503,8 +71516,6 @@ var Stream = function (_React$Component) {
 
   return Stream;
 }(_react2.default.Component);
-
-;
 
 var mapStateToProps = function mapStateToProps(state) {
   return {
@@ -71614,7 +71625,8 @@ exports.default = (0, _react.memo)(function (props) {
     { className: class_name },
     props.useImageTag ? _react2.default.createElement('img', { alt: 'Artwork thumbnail', className: 'thumbnail__image thumbnail__image--use-image-tag', src: '' + (image || '/iris/assets/no-image.svg') }) : _react2.default.createElement('div', { className: 'thumbnail__image', style: { backgroundImage: 'url("' + (image || '/iris/assets/no-image.svg') + '")' } }),
     props.glow && image && _react2.default.createElement('div', { className: 'thumbnail__image thumbnail__image--glow', style: { backgroundImage: 'url("' + image + '")' } }),
-    zoom_icon
+    zoom_icon,
+    props.children
   );
 });
 
@@ -71932,6 +71944,14 @@ var Track = function (_React$Component) {
                 'span',
                 null,
                 'Radio'
+              );
+              break;
+
+            case 'queue-history':
+              var link = _react2.default.createElement(
+                'span',
+                null,
+                'Queue history'
               );
               break;
 
@@ -80763,6 +80783,9 @@ var SnapcastMiddleware = function () {
 
         case 'Server.OnUpdate':
           store.dispatch(snapcastActions.serverLoaded(message.param));
+          break;
+
+        default:
           break;
       }
     }
@@ -90019,6 +90042,7 @@ var Queue = function (_React$Component) {
     value: function renderArtwork(image) {
       var current_track = this.props.current_track;
 
+      var uri = current_track && current_track.album && current_track.album.uri ? current_track.album.uri : null;
 
       if (!image) {
         return _react2.default.createElement(
@@ -90028,17 +90052,26 @@ var Queue = function (_React$Component) {
         );
       }
 
-      var uri = null;
-      if (current_track.album && current_track.album.uri) {
-        uri = current_track.album.uri;
-      }
       return _react2.default.createElement(
         'div',
         { className: 'current-track__artwork' },
         _react2.default.createElement(
-          _Link2.default,
-          { to: '/kiosk-mode' },
-          _react2.default.createElement(_Thumbnail2.default, { glow: true, image: image })
+          _Thumbnail2.default,
+          { glow: true, image: image },
+          _react2.default.createElement(
+            'div',
+            { className: 'current-track__artwork__actions' },
+            _react2.default.createElement(
+              _URILink2.default,
+              { uri: uri, className: 'current-track__artwork__actions__item' },
+              _react2.default.createElement(_Icon2.default, { name: 'album' })
+            ),
+            _react2.default.createElement(
+              _Link2.default,
+              { to: '/kiosk-mode', className: 'current-track__artwork__actions__item' },
+              _react2.default.createElement(_Icon2.default, { name: 'expand', type: 'fontawesome' })
+            )
+          )
         )
       );
     }
@@ -90235,9 +90268,7 @@ var Queue = function (_React$Component) {
                     null,
                     _react2.default.createElement(
                       'a',
-                      { onClick: function onClick(e) {
-                          return _this2.props.mopidyActions.clearTracklist();
-                        } },
+                      { onClick: this.props.mopidyActions.clearTracklist },
                       _react2.default.createElement(_Icon2.default, { name: 'delete_sweep' }),
                       'Clear queue'
                     )
@@ -90250,6 +90281,7 @@ var Queue = function (_React$Component) {
             'section',
             { className: 'list-wrapper' },
             _react2.default.createElement(_TrackList2.default, {
+              uri: 'iris:queue',
               show_source_icon: true,
               track_context: 'queue',
               className: 'queue-track-list',
@@ -90507,6 +90539,7 @@ var QueueHistory = function (_React$Component) {
           'section',
           { className: 'content-wrapper' },
           _react2.default.createElement(_TrackList2.default, {
+            uri: 'iris:queue-history',
             className: 'queue-history-track-list',
             track_context: 'history',
             tracks: tracks,
@@ -92088,12 +92121,6 @@ var Settings = function (_React$Component) {
               _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'github' }),
               ' ',
               'GitHub'
-            ),
-            _react2.default.createElement(
-              'a',
-              { className: 'button button--default', href: 'http://creativecommons.org/licenses/by-nc/4.0/', target: '_blank' },
-              _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'creative-commons' }),
-              '\xA0Licence'
             )
           )
         )

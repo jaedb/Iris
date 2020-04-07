@@ -33,6 +33,10 @@
 				min-width: 110px;
 				max-width: 140px;
 
+				&--no-clients {
+					opacity: 0.5 !important;
+				}
+
 				&__inner {
 					padding: 20px 10px;
 				}

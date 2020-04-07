@@ -17,7 +17,7 @@ class Stream extends React.Component {
   }
 
   static getDerivedStateFromProps({ play_state, current_track: { uri } = {} }, state) {
-    if (uri === state.uri && play_state === state.play_state) return null;
+    if (uri && uri === state.uri && play_state === state.play_state) return null;
     return {
       ...state,
       uri,
@@ -32,22 +32,26 @@ class Stream extends React.Component {
       enabled,
       volume,
       url,
+      current_track: { uri } = {},
     } = this.props;
     const { cachebuster } = this.state;
 
-    if (!enabled || !url) return null;
+    if (!uri || !enabled || !url) return null;
+
+    console.debug(`Attempting to play stream ${url}?cb=${cachebuster}`);
 
     return (
       <ReactHowler
         src={`${url}?cb=${cachebuster}`}
         playing={play_state === 'playing'}
         volume={volume / 100}
+        onPlay={() => console.debug(`Playing stream ${url}?cb=${cachebuster}`)}
         onLoad={() => console.debug(`Loaded stream ${url}?cb=${cachebuster}`)}
-        html5
+        onError={() => console.error(`Failed to play stream ${url}?cb=${cachebuster}`)}
       />
     );
   }
-};
+}
 
 const mapStateToProps = (state) => ({
   current_track: state.core.current_track || {},
