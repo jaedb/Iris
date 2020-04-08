@@ -60,8 +60,10 @@ export default memo((props) => {
         <div className="thumbnail__image" style={{ backgroundImage: `url("${image || '/iris/assets/no-image.svg'}")` }} />
       )}
       {props.glow && image && <div className="thumbnail__image thumbnail__image--glow" style={{ backgroundImage: `url("${image}")` }} />}
-      {zoom_icon}
-      {props.children}
+      <div className="thumbnail__actions">
+        {props.canZoom && image && <Link className="thumbnail__actions__item thumbnail__actions__item--zoom" to={`/image-zoom?url=${image}`}><Icon name="search" /></Link>}
+        {props.children}
+      </div>
     </div>
   );
 });

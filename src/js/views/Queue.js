@@ -134,14 +134,12 @@ class Queue extends React.Component {
     return (
       <div className="current-track__artwork">
         <Thumbnail glow image={image}>
-          <div className="current-track__artwork__actions">
-            <URILink uri={uri} className="current-track__artwork__actions__item">
-              <Icon name="album" />
-            </URILink>
-            <Link to="/kiosk-mode" className="current-track__artwork__actions__item">
-              <Icon name="expand" type="fontawesome" />
-            </Link>
-          </div>
+          <URILink uri={uri} className="thumbnail__actions__item">
+            <Icon name="art_track" />
+          </URILink>
+          <Link to="/kiosk-mode" className="thumbnail__actions__item">
+            <Icon name="expand" type="fontawesome" />
+          </Link>
         </Thumbnail>
       </div>
     );

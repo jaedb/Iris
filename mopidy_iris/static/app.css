@@ -4336,25 +4336,43 @@ select {
       opacity: 0.3;
       transform: rotateX(4deg);
       mix-blend-mode: multiply; }
-  .thumbnail__zoom {
+  .thumbnail__actions {
     -webkit-transition: all 0.2s ease-in-out;
     -moz-transition: all 0.2s ease-in-out;
     -o-transition: all 0.2s ease-in-out;
     transition: all 0.2s ease-in-out;
-    display: none;
     position: absolute;
-    bottom: 5px;
-    right: 5px;
-    z-index: 3;
-    padding: 10px;
-    border-radius: 100%;
-    background: rgba(0, 0, 0, 0.4);
-    font-size: 12px;
-    cursor: pointer;
-    color: #FFFFFF;
-    border: 0 !important; }
-    .thumbnail__zoom:hover {
-      background: #000000; }
+    display: flex;
+    opacity: 0;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transform: translateY(-3px); }
+    .thumbnail__actions__item {
+      -webkit-transition: all 0.2s ease-in-out;
+      -moz-transition: all 0.2s ease-in-out;
+      -o-transition: all 0.2s ease-in-out;
+      transition: all 0.2s ease-in-out;
+      display: inline-flex;
+      z-index: 3;
+      width: 4.2rem;
+      height: 4.2rem;
+      align-items: center;
+      justify-content: center;
+      border-radius: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      font-size: 2rem;
+      cursor: pointer;
+      color: #FFFFFF;
+      border: 0 !important;
+      margin: 0 5px; }
+      .thumbnail__actions__item:hover {
+        background: #000000; }
   .thumbnail--small {
     max-width: 50px; }
   .thumbnail--circle .thumbnail__image {
@@ -4362,8 +4380,9 @@ select {
   .thumbnail--circle .thumbnail__zoom {
     bottom: 0;
     right: 0; }
-  .thumbnail:hover .thumbnail__zoom {
-    display: block; }
+  .thumbnail:hover .thumbnail__actions {
+    opacity: 1;
+    transform: translateY(0px); }
 
 .playback-controls {
   z-index: 3; }
@@ -7055,40 +7074,6 @@ main .track-view {
     .queue-view .current-track__artwork .thumbnail {
       width: 30vh;
       display: inline-block; }
-      .queue-view .current-track__artwork .thumbnail:hover .current-track__artwork__actions {
-        opacity: 1; }
-    .queue-view .current-track__artwork__actions {
-      position: absolute;
-      display: flex;
-      opacity: 0;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      right: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 2; }
-      .queue-view .current-track__artwork__actions__item {
-        -webkit-transition: all 0.2s ease-in-out;
-        -moz-transition: all 0.2s ease-in-out;
-        -o-transition: all 0.2s ease-in-out;
-        transition: all 0.2s ease-in-out;
-        display: inline-flex;
-        z-index: 3;
-        width: 4.2rem;
-        height: 4.2rem;
-        align-items: center;
-        justify-content: center;
-        border-radius: 100%;
-        background: rgba(0, 0, 0, 0.4);
-        font-size: 2rem;
-        cursor: pointer;
-        color: #FFFFFF;
-        border: 0 !important;
-        margin: 0 5px; }
-        .queue-view .current-track__artwork__actions__item:hover {
-          background: #000000; }
   .queue-view .current-track__details {
     width: 48%;
     margin-left: 2%; }

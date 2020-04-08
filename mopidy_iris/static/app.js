@@ -71625,8 +71625,16 @@ exports.default = (0, _react.memo)(function (props) {
     { className: class_name },
     props.useImageTag ? _react2.default.createElement('img', { alt: 'Artwork thumbnail', className: 'thumbnail__image thumbnail__image--use-image-tag', src: '' + (image || '/iris/assets/no-image.svg') }) : _react2.default.createElement('div', { className: 'thumbnail__image', style: { backgroundImage: 'url("' + (image || '/iris/assets/no-image.svg') + '")' } }),
     props.glow && image && _react2.default.createElement('div', { className: 'thumbnail__image thumbnail__image--glow', style: { backgroundImage: 'url("' + image + '")' } }),
-    zoom_icon,
-    props.children
+    _react2.default.createElement(
+      'div',
+      { className: 'thumbnail__actions' },
+      props.canZoom && image && _react2.default.createElement(
+        _Link2.default,
+        { className: 'thumbnail__actions__item thumbnail__actions__item--zoom', to: '/image-zoom?url=' + image },
+        _react2.default.createElement(_Icon2.default, { name: 'search' })
+      ),
+      props.children
+    )
   );
 });
 
@@ -90059,18 +90067,14 @@ var Queue = function (_React$Component) {
           _Thumbnail2.default,
           { glow: true, image: image },
           _react2.default.createElement(
-            'div',
-            { className: 'current-track__artwork__actions' },
-            _react2.default.createElement(
-              _URILink2.default,
-              { uri: uri, className: 'current-track__artwork__actions__item' },
-              _react2.default.createElement(_Icon2.default, { name: 'album' })
-            ),
-            _react2.default.createElement(
-              _Link2.default,
-              { to: '/kiosk-mode', className: 'current-track__artwork__actions__item' },
-              _react2.default.createElement(_Icon2.default, { name: 'expand', type: 'fontawesome' })
-            )
+            _URILink2.default,
+            { uri: uri, className: 'thumbnail__actions__item' },
+            _react2.default.createElement(_Icon2.default, { name: 'art_track' })
+          ),
+          _react2.default.createElement(
+            _Link2.default,
+            { to: '/kiosk-mode', className: 'thumbnail__actions__item' },
+            _react2.default.createElement(_Icon2.default, { name: 'expand', type: 'fontawesome' })
           )
         )
       );
