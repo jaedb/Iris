@@ -5744,7 +5744,8 @@ main header {
       padding-top: 5px; }
       .notifications .notification__actions__item {
         margin-bottom: 0;
-        margin-top: 5px; }
+        margin-top: 5px;
+        font-style: inherit !important; }
     .notifications .notification a {
       color: inherit; }
       .notifications .notification a:hover {

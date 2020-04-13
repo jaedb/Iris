@@ -60569,6 +60569,10 @@ var _EditCommand2 = _interopRequireDefault(_EditCommand);
 
 var _helpers = __webpack_require__(/*! ./util/helpers */ "./src/js/util/helpers.js");
 
+var _storage = __webpack_require__(/*! ./util/storage */ "./src/js/util/storage.js");
+
+var _storage2 = _interopRequireDefault(_storage);
+
 var _actions = __webpack_require__(/*! ./services/core/actions */ "./src/js/services/core/actions.js");
 
 var coreActions = _interopRequireWildcard(_actions);
@@ -60617,7 +60621,29 @@ var App = exports.App = function (_React$Component) {
   function App(props) {
     _classCallCheck(this, App);
 
+    // Load query param settings
     var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
+
+    var configs = ['ui', 'spotify', 'pusher', 'snapcast', 'mopidy', 'google', 'lastfm', 'genius'];
+    var params = new URLSearchParams(window.location.search);
+    var changed = [];
+    var urlParams = params.forEach(function (v, k) {
+      if (!configs.includes(k)) return;
+      try {
+        _storage2.default.set(k, JSON.parse(v));
+        changed.push(k);
+      } catch (error) {
+        console.error(error);
+      }
+    });
+    if (changed.length > 0) {
+      changed.forEach(function (k) {
+        return params.delete(k);
+      });
+      var url = window.location.toString().replace(window.location.search, params.toString());
+      console.log('settings changed:', changed, 'redirect to:', url);
+      window.location.assign(url);
+    }
 
     _this.handleInstallPrompt = _this.handleInstallPrompt.bind(_this);
     _this.handleFocusAndBlur = _this.handleFocusAndBlur.bind(_this);
@@ -75889,9 +75915,16 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _reactGa = __webpack_require__(/*! react-ga */ "./node_modules/react-ga/dist/esm/index.js");
+
+var _reactGa2 = _interopRequireDefault(_reactGa);
+
 var _format = __webpack_require__(/*! ../../util/format */ "./src/js/util/format.js");
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 var coreActions = __webpack_require__(/*! ../core/actions */ "./src/js/services/core/actions.js");
+var uiActions = __webpack_require__(/*! ../ui/actions */ "./src/js/services/ui/actions.js");
 var lastfmActions = __webpack_require__(/*! ./actions */ "./src/js/services/lastfm/actions.js");
 
 var LastfmMiddleware = function () {
@@ -75916,6 +75949,25 @@ var LastfmMiddleware = function () {
             setTimeout(function () {
               store.dispatch(lastfmActions.getMe());
             }, 100);
+
+            next(action);
+            break;
+
+          case 'LASTFM_AUTHORIZATION_REVOKED':
+            if (store.getState().ui.allow_reporting) {
+              _reactGa2.default.event({ category: 'LastFM', action: 'Authorization revoked' });
+            }
+
+            store.dispatch(uiActions.createNotification({
+              content: 'Logout successful',
+              description: 'If you have shared your authorization, make sure you revoke your token',
+              sticky: true,
+              links: [{
+                url: 'https://www.last.fm/settings/applications',
+                text: 'Authorized apps',
+                new_window: true
+              }]
+            }));
 
             next(action);
             break;
@@ -83299,6 +83351,7 @@ var _format = __webpack_require__(/*! ../../util/format */ "./src/js/util/format
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var coreActions = __webpack_require__(/*! ../core/actions */ "./src/js/services/core/actions.js");
+var uiActions = __webpack_require__(/*! ../ui/actions */ "./src/js/services/ui/actions.js");
 var spotifyActions = __webpack_require__(/*! ./actions */ "./src/js/services/spotify/actions.js");
 var pusherActions = __webpack_require__(/*! ../pusher/actions */ "./src/js/services/pusher/actions.js");
 
@@ -83325,6 +83378,17 @@ var SpotifyMiddleware = function () {
             if (store.getState().ui.allow_reporting) {
               _reactGa2.default.event({ category: 'Spotify', action: 'Authorization revoked' });
             }
+
+            store.dispatch(uiActions.createNotification({
+              content: 'Logout successful',
+              description: 'If you have shared your authorization, make sure you revoke your token',
+              sticky: true,
+              links: [{
+                url: 'https://www.spotify.com/nz/account/apps/',
+                text: 'Authorized apps',
+                new_window: true
+              }]
+            }));
 
             next(action);
 
