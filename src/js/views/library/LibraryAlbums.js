@@ -80,7 +80,7 @@ class LibraryAlbums extends React.Component {
       }
     }
 
-    if (google_enabled && (newProps.source == 'all' || newProps.source == 'google')) {
+    if (google_enabled && (source == 'all' || source == 'google')) {
       // Filter changed, but we haven't got this provider's library yet
       if (source !== 'all' && source !== 'google' && google_library_albums_status !== 'finished' && google_library_albums_status !== 'started') {
         googleActions.getLibraryAlbums();
