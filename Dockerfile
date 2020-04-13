@@ -34,6 +34,7 @@ RUN wget -q -O - https://apt.mopidy.com/mopidy.gpg \
 # This allows a binding at "/iris" to map to your local folder for development, rather than
 # installing using pip.
 RUN git clone https://github.com/jaedb/Iris.git /iris \
+ && cd /iris \
  && python3.7 setup.py develop \
  && mkdir -p /var/lib/mopidy/.config \
  && ln -s /config /var/lib/mopidy/.config/mopidy \
@@ -60,6 +61,7 @@ RUN useradd -ms /bin/bash mopidy
 ENV HOME=/var/lib/mopidy
 RUN set -ex \
  && usermod -G audio,sudo mopidy \
+ && mkdir /var/lib/mopidy/local \
  && chown mopidy:audio -R $HOME /entrypoint.sh /iris \
  && chmod go+rwx -R $HOME /entrypoint.sh /iris \
  && echo "1" >> /IS_CONTAINER
@@ -67,7 +69,7 @@ RUN set -ex \
 # Runs as mopidy user by default.
 USER mopidy:audio
 
-VOLUME ["/var/lib/mopidy/local", "/var/lib/mopidy/local-images"]
+VOLUME ["/var/lib/mopidy/local"]
 
 EXPOSE 6600 6680 1704 1705 5555/udp
 
