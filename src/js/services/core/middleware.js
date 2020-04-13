@@ -23,7 +23,7 @@ const CoreMiddleware = (function () {
   /**
      * The actual middleware inteceptor
      * */
-  return (store) => (next) => (action) => {
+  return (store) => (next) => (action = {}) => {
     const { core } = store.getState();
 
     switch (action.type) {

@@ -73318,7 +73318,9 @@ var CoreMiddleware = function () {
      * */
   return function (store) {
     return function (next) {
-      return function (action) {
+      return function () {
+        var action = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
         var _store$getState = store.getState(),
             core = _store$getState.core;
 
@@ -94637,7 +94639,7 @@ var LibraryAlbums = function (_React$Component) {
         }
       }
 
-      if (google_enabled && (newProps.source == 'all' || newProps.source == 'google')) {
+      if (google_enabled && (source == 'all' || source == 'google')) {
         // Filter changed, but we haven't got this provider's library yet
         if (source !== 'all' && source !== 'google' && google_library_albums_status !== 'finished' && google_library_albums_status !== 'started') {
           googleActions.getLibraryAlbums();
