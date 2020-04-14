@@ -11,7 +11,7 @@
   "main": "app.js",
   "dependencies": {
     "history": "^4.10.1",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "logrocket": "^1.0.3",
     "mopidy": "^0.5",
     "react": "^16.12.0",
