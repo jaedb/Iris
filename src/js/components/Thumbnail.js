@@ -52,12 +52,39 @@ export default memo((props) => {
     zoom_icon = <Link className="thumbnail__zoom" to={`/image-zoom?url=${image}`}><Icon name="search" /></Link>;
   }
 
+  const placeholderIcon = () => {
+    switch (props.type) {
+      case 'artist':
+      case 'user':
+        return 'person';
+      case 'album':
+        return 'album';
+      case 'playlist':
+        return 'queue_music';
+      case 'track':
+        return 'audio_track';
+      default:
+        return 'image';
+    };
+  }
+  let placeholder = 'image';
+
   return (
     <div className={class_name}>
-      {props.useImageTag ? (
-        <img alt="Artwork thumbnail" className="thumbnail__image thumbnail__image--use-image-tag" src={`${image || '/iris/assets/no-image.svg'}`} />
+      {!image && (
+        <Icon className="thumbnail__placeholder" name={placeholderIcon()} />
+      )}
+      {props.useImageTag && image ? (
+        <img
+          alt="Artwork thumbnail"
+          className="thumbnail__image thumbnail__image--use-image-tag"
+          src={image}
+        />
       ) : (
-        <div className="thumbnail__image" style={{ backgroundImage: `url("${image || '/iris/assets/no-image.svg'}")` }} />
+        <div
+          className="thumbnail__image"
+          style={{ backgroundImage: `url("${image}")` }}
+        />
       )}
       {props.glow && image && <div className="thumbnail__image thumbnail__image--glow" style={{ backgroundImage: `url("${image}")` }} />}
       <div className="thumbnail__actions">

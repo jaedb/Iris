@@ -66878,7 +66878,8 @@ var GridItem = function (_React$Component) {
           glow: true,
           size: 'medium',
           className: 'grid__item__thumbnail',
-          images: item.images || item.icons
+          images: item.images || item.icons,
+          type: type
         }),
         _react2.default.createElement(
           'div',
@@ -71646,10 +71647,35 @@ exports.default = (0, _react.memo)(function (props) {
     );
   }
 
+  var placeholderIcon = function placeholderIcon() {
+    switch (props.type) {
+      case 'artist':
+      case 'user':
+        return 'person';
+      case 'album':
+        return 'album';
+      case 'playlist':
+        return 'queue_music';
+      case 'track':
+        return 'audio_track';
+      default:
+        return 'image';
+    };
+  };
+  var placeholder = 'image';
+
   return _react2.default.createElement(
     'div',
     { className: class_name },
-    props.useImageTag ? _react2.default.createElement('img', { alt: 'Artwork thumbnail', className: 'thumbnail__image thumbnail__image--use-image-tag', src: '' + (image || '/iris/assets/no-image.svg') }) : _react2.default.createElement('div', { className: 'thumbnail__image', style: { backgroundImage: 'url("' + (image || '/iris/assets/no-image.svg') + '")' } }),
+    !image && _react2.default.createElement(_Icon2.default, { className: 'thumbnail__placeholder', name: placeholderIcon() }),
+    props.useImageTag && image ? _react2.default.createElement('img', {
+      alt: 'Artwork thumbnail',
+      className: 'thumbnail__image thumbnail__image--use-image-tag',
+      src: image
+    }) : _react2.default.createElement('div', {
+      className: 'thumbnail__image',
+      style: { backgroundImage: 'url("' + image + '")' }
+    }),
     props.glow && image && _react2.default.createElement('div', { className: 'thumbnail__image thumbnail__image--glow', style: { backgroundImage: 'url("' + image + '")' } }),
     _react2.default.createElement(
       'div',
@@ -88611,7 +88637,7 @@ var Artist = function (_React$Component) {
               _react2.default.createElement(
                 'div',
                 { className: 'heading__thumbnail' },
-                _react2.default.createElement(_Thumbnail2.default, { size: 'medium', circle: true, canZoom: true, image: image })
+                _react2.default.createElement(_Thumbnail2.default, { size: 'medium', circle: true, canZoom: true, type: 'artist', image: image })
               ),
               _react2.default.createElement(
                 'div',

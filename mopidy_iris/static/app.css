@@ -4308,6 +4308,15 @@ select {
   perspective: 100px;
   width: 100%;
   max-width: 300px; }
+  .thumbnail__placeholder.icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-0.5em, -0.5em);
+    opacity: 0.15;
+    font-size: 3rem;
+    line-height: 1em;
+    width: 1em; }
   .thumbnail__image {
     -webkit-transition: all 0.1s ease-in-out;
     -moz-transition: all 0.1s ease-in-out;

@@ -52,7 +52,7 @@ class Artist extends React.Component {
         loadArtist,
       },
     } = this.props;
-  
+
     if (uri !== prevUri) {
       loadArtist(uri);
     } else if (!prev_mopidy_connected && mopidy_connected) {
@@ -407,7 +407,7 @@ class Artist extends React.Component {
             <div className="heading">
 
               <div className="heading__thumbnail">
-                <Thumbnail size="medium" circle canZoom image={image} />
+                <Thumbnail size="medium" circle canZoom type="artist" image={image} />
               </div>
 
               <div className="heading__content">

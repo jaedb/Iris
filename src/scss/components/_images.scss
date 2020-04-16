@@ -7,6 +7,17 @@
 	width: 100%;
 	max-width: 300px;
 
+	&__placeholder.icon {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-0.5em, -0.5em);
+		opacity: 0.15;
+		font-size: 3rem;
+		line-height: 1em;
+		width: 1em;
+	}
+
 	&__image {
 		@include animate(0.1s);
 		position: relative;
