@@ -593,6 +593,10 @@ footer {
   &--dark {
     background: lighten(colour(dark_grey), 10%);
     color: colour(mid_grey);
+
+    .light-theme & {
+      background: lighten(colour(mid_grey), 25%);
+    }
   }
 
   &--large {

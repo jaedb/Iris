@@ -349,6 +349,10 @@
               color: white;
               font-size: 2.4rem;
               margin: 0 10px;
+
+              .light-theme & {
+                color: colour(darkest_grey);
+              }
             }
           }
           &__progress {

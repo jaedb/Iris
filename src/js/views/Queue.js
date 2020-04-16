@@ -207,7 +207,7 @@ class Queue extends React.Component {
   }
 
   render() {
-    const { current_track, queue_tracks } = this.props;
+    const { current_track, queue_tracks, theme } = this.props;
     const { limit } = this.state;
     const total_queue_tracks = queue_tracks.length;
     const tracks = queue_tracks.slice(0, limit);
@@ -244,7 +244,7 @@ class Queue extends React.Component {
           <Icon name="play_arrow" type="material" />
           Now playing
         </Header>
-        <Parallax image={current_track_image} blur />
+        {theme === 'dark' && <Parallax image={current_track_image} blur />}
         <div className="content-wrapper">
           <div className="current-track">
             {this.renderArtwork(current_track_image)}

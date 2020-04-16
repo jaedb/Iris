@@ -35,12 +35,6 @@ class DiscoverFeatured extends React.Component {
     this.props.uiActions.showContextMenu(data);
   }
 
-  renderIntro = ({ images: { large } = {} } = {}) => (
-    <div className="intro preserve-3d">
-      <Parallax image={large} blur />
-    </div>
-  );
-
   render() {
     if (isLoading(this.props.load_queue, ['spotify_browse/featured-playlists'])) {
       return (
@@ -64,9 +58,6 @@ class DiscoverFeatured extends React.Component {
       }
     }
 
-    // Pull the first playlist out and we'll use this for the parallax artwork
-    const first_playlist = playlists[0];
-
     const options = (
       <a className="button button--no-hover" onClick={(e) => { this.props.uiActions.hideContextMenu(); this.props.spotifyActions.getFeaturedPlaylists(); }}>
         <Icon name="refresh" />
@@ -76,11 +67,10 @@ Refresh
 
     return (
       <div className="view discover-featured-view preserve-3d">
-        <Header className="overlay" options={options}>
+        <Header options={options}>
           <Icon name="star" type="material" />
 					Featured playlists
         </Header>
-        {this.renderIntro(first_playlist)}
         <section className="content-wrapper grid-wrapper">
           {playlists ? <PlaylistGrid playlists={playlists} /> : null }
         </section>

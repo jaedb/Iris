@@ -3106,6 +3106,8 @@ footer {
   .flag--dark {
     background: #323232;
     color: #a3a19f; }
+    .light-theme .flag--dark {
+      background: #e1e1e0; }
   .flag--large {
     padding: 8px 10px 7px;
     font-size: 12px; }
@@ -7780,6 +7782,8 @@ main .track-view {
               animation-duration: 0.2s;
               animation-timing-function: ease-out;
               animation-iteration-count: 1; }
+            .light-theme .modal--kiosk-mode .content .player .playback__controls .control {
+              color: #121212; }
         .modal--kiosk-mode .content .player .playback__progress {
           padding-top: 40px; }
           .modal--kiosk-mode .content .player .playback__progress .slider__track {

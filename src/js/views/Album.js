@@ -101,7 +101,7 @@ export class Album extends React.Component {
 
   setWindowTitle = (album = this.props.album) => {
     const { uiActions: { setWindowTitle } } = this.props;
-  
+
     if (album) {
       let artists = '';
       if (album.artists_uris && artists) {
@@ -161,7 +161,7 @@ export class Album extends React.Component {
   }
 
   play = () => {
-    const { uri, mopidyActions: { playURIs } } = this.props;    
+    const { uri, mopidyActions: { playURIs } } = this.props;
     playURIs([uri], uri);
   }
 
@@ -211,8 +211,6 @@ export class Album extends React.Component {
 
     return (
       <div className="view album-view content-wrapper preserve-3d">
-        <Parallax image={album.images && album.images.huge} blur />
-
         <div className="thumbnail-wrapper">
           <Thumbnail size="large" glow canZoom images={album.images} />
         </div>

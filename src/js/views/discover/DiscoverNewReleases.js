@@ -76,12 +76,6 @@ class DiscoverNewReleases extends React.Component {
       }
     }
 
-    // Pull the first playlist out and we'll use this as a banner
-    let first_album = albums[0];
-    if (first_album) {
-      first_album = collate(first_album, { artists: this.props.artists });
-    }
-
     const options = (
       <a className="button button--no-hover" onClick={(e) => { this.props.uiActions.hideContextMenu(); this.props.spotifyActions.getNewReleases(); }}>
         <Icon name="refresh" />
@@ -91,11 +85,10 @@ Refresh
 
     return (
       <div className="view discover-new-releases-view preserve-3d">
-        <Header className="overlay" options={options} uiActions={this.props.uiActions}>
+        <Header options={options} uiActions={this.props.uiActions}>
           <Icon name="new_releases" type="material" />
 					New releases
         </Header>
-        {this.renderIntro(first_album)}
         <section className="content-wrapper grid-wrapper">
           <AlbumGrid albums={albums} />
         </section>

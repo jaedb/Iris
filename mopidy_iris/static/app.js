@@ -87859,7 +87859,6 @@ var Album = exports.Album = function (_React$Component) {
       return _react2.default.createElement(
         'div',
         { className: 'view album-view content-wrapper preserve-3d' },
-        _react2.default.createElement(_Parallax2.default, { image: album.images && album.images.huge, blur: true }),
         _react2.default.createElement(
           'div',
           { className: 'thumbnail-wrapper' },
@@ -89735,7 +89734,6 @@ var Playlist = function (_React$Component) {
       return _react2.default.createElement(
         'div',
         { className: 'view playlist-view content-wrapper preserve-3d' },
-        _react2.default.createElement(_Parallax2.default, { image: playlist.images ? playlist.images.huge : null, blur: true }),
         _react2.default.createElement(
           'div',
           { className: 'thumbnail-wrapper' },
@@ -90243,7 +90241,8 @@ var Queue = function (_React$Component) {
 
       var _props3 = this.props,
           current_track = _props3.current_track,
-          queue_tracks = _props3.queue_tracks;
+          queue_tracks = _props3.queue_tracks,
+          theme = _props3.theme;
       var limit = this.state.limit;
 
       var total_queue_tracks = queue_tracks.length;
@@ -90288,7 +90287,7 @@ var Queue = function (_React$Component) {
           _react2.default.createElement(_Icon2.default, { name: 'play_arrow', type: 'material' }),
           'Now playing'
         ),
-        _react2.default.createElement(_Parallax2.default, { image: current_track_image, blur: true }),
+        theme === 'dark' && _react2.default.createElement(_Parallax2.default, { image: current_track_image, blur: true }),
         _react2.default.createElement(
           'div',
           { className: 'content-wrapper' },
@@ -93459,28 +93458,9 @@ var DiscoverFeatured = function (_React$Component) {
   _inherits(DiscoverFeatured, _React$Component);
 
   function DiscoverFeatured() {
-    var _ref;
-
-    var _temp, _this, _ret;
-
     _classCallCheck(this, DiscoverFeatured);
 
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = DiscoverFeatured.__proto__ || Object.getPrototypeOf(DiscoverFeatured)).call.apply(_ref, [this].concat(args))), _this), _this.renderIntro = function () {
-      var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-          _ref2$images = _ref2.images;
-
-      _ref2$images = _ref2$images === undefined ? {} : _ref2$images;
-      var large = _ref2$images.large;
-      return _react2.default.createElement(
-        'div',
-        { className: 'intro preserve-3d' },
-        _react2.default.createElement(_Parallax2.default, { image: large, blur: true })
-      );
-    }, _temp), _possibleConstructorReturn(_this, _ret);
+    return _possibleConstructorReturn(this, (DiscoverFeatured.__proto__ || Object.getPrototypeOf(DiscoverFeatured)).apply(this, arguments));
   }
 
   _createClass(DiscoverFeatured, [{
@@ -93537,9 +93517,6 @@ var DiscoverFeatured = function (_React$Component) {
         }
       }
 
-      // Pull the first playlist out and we'll use this for the parallax artwork
-      var first_playlist = playlists[0];
-
       var options = _react2.default.createElement(
         'a',
         { className: 'button button--no-hover', onClick: function onClick(e) {
@@ -93554,11 +93531,10 @@ var DiscoverFeatured = function (_React$Component) {
         { className: 'view discover-featured-view preserve-3d' },
         _react2.default.createElement(
           _Header2.default,
-          { className: 'overlay', options: options },
+          { options: options },
           _react2.default.createElement(_Icon2.default, { name: 'star', type: 'material' }),
           'Featured playlists'
         ),
-        this.renderIntro(first_playlist),
         _react2.default.createElement(
           'section',
           { className: 'content-wrapper grid-wrapper' },
@@ -93776,12 +93752,6 @@ var DiscoverNewReleases = function (_React$Component) {
         }
       }
 
-      // Pull the first playlist out and we'll use this as a banner
-      var first_album = albums[0];
-      if (first_album) {
-        first_album = (0, _format.collate)(first_album, { artists: this.props.artists });
-      }
-
       var options = _react2.default.createElement(
         'a',
         { className: 'button button--no-hover', onClick: function onClick(e) {
@@ -93796,11 +93766,10 @@ var DiscoverNewReleases = function (_React$Component) {
         { className: 'view discover-new-releases-view preserve-3d' },
         _react2.default.createElement(
           _Header2.default,
-          { className: 'overlay', options: options, uiActions: this.props.uiActions },
+          { options: options, uiActions: this.props.uiActions },
           _react2.default.createElement(_Icon2.default, { name: 'new_releases', type: 'material' }),
           'New releases'
         ),
-        this.renderIntro(first_album),
         _react2.default.createElement(
           'section',
           { className: 'content-wrapper grid-wrapper' },
