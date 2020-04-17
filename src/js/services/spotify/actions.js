@@ -442,7 +442,7 @@ export function getCategory(id) {
             type: 'SPOTIFY_CATEGORY_LOADED',
             category: {
               uri: `category:${response.id}`,
-              playlist_uris: [],
+              playlist_uris: null,
               ...response,
             },
           });

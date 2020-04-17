@@ -69158,7 +69158,7 @@ var PlaybackControls = function (_React$Component) {
           _react2.default.createElement(
             _Link2.default,
             { className: 'thumbnail-wrapper', to: '/kiosk-mode', tabIndex: '-1' },
-            _react2.default.createElement(_Thumbnail2.default, { size: 'small', images: images })
+            _react2.default.createElement(_Thumbnail2.default, { size: 'small', images: images, type: 'track' })
           ),
           _react2.default.createElement(
             'div',
@@ -71627,47 +71627,31 @@ exports.default = (0, _react.memo)(function (props) {
 
   var image = mapImageSizes();
   var class_name = 'thumbnail thumbnail--loaded';
+  if (props.size) class_name += ' thumbnail--' + props.size;
+  if (props.circle) class_name += ' thumbnail--circle';
+  if (props.className) class_name += ' ' + props.className;
 
-  if (props.size) {
-    class_name += ' thumbnail--' + props.size;
-  }
-  if (props.circle) {
-    class_name += ' thumbnail--circle';
-  }
-  if (props.className) {
-    class_name += ' ' + props.className;
-  }
-
-  var zoom_icon = null;
-  if (props.canZoom && image) {
-    zoom_icon = _react2.default.createElement(
-      _Link2.default,
-      { className: 'thumbnail__zoom', to: '/image-zoom?url=' + image },
-      _react2.default.createElement(_Icon2.default, { name: 'search' })
-    );
-  }
-
-  var placeholderIcon = function placeholderIcon() {
+  var iconName = function iconName() {
     switch (props.type) {
+      case 'directory':
+        return 'folder';
       case 'artist':
-      case 'user':
-        return 'person';
-      case 'album':
-        return 'album';
+        return 'perm_identity';
       case 'playlist':
         return 'queue_music';
+      case 'album':
+        return 'album';
       case 'track':
-        return 'audio_track';
+        return 'audiotrack';
       default:
         return 'image';
-    };
+    }
   };
-  var placeholder = 'image';
 
   return _react2.default.createElement(
     'div',
     { className: class_name },
-    !image && _react2.default.createElement(_Icon2.default, { className: 'thumbnail__placeholder', name: placeholderIcon() }),
+    !image && _react2.default.createElement(_Icon2.default, { className: 'thumbnail__placeholder', name: iconName() }),
     props.useImageTag && image ? _react2.default.createElement('img', {
       alt: 'Artwork thumbnail',
       className: 'thumbnail__image thumbnail__image--use-image-tag',
@@ -71676,13 +71660,19 @@ exports.default = (0, _react.memo)(function (props) {
       className: 'thumbnail__image',
       style: { backgroundImage: 'url("' + image + '")' }
     }),
-    props.glow && image && _react2.default.createElement('div', { className: 'thumbnail__image thumbnail__image--glow', style: { backgroundImage: 'url("' + image + '")' } }),
+    props.glow && image && _react2.default.createElement('div', {
+      className: 'thumbnail__image thumbnail__image--glow',
+      style: { backgroundImage: 'url("' + image + '")' }
+    }),
     _react2.default.createElement(
       'div',
       { className: 'thumbnail__actions' },
       props.canZoom && image && _react2.default.createElement(
         _Link2.default,
-        { className: 'thumbnail__actions__item thumbnail__actions__item--zoom', to: '/image-zoom?url=' + image },
+        {
+          className: 'thumbnail__actions__item thumbnail__actions__item--zoom',
+          to: '/image-zoom?url=' + image
+        },
         _react2.default.createElement(_Icon2.default, { name: 'search' })
       ),
       props.children
@@ -81986,7 +81976,7 @@ function getCategory(id) {
         type: 'SPOTIFY_CATEGORY_LOADED',
         category: _extends({
           uri: 'category:' + response.id,
-          playlist_uris: []
+          playlist_uris: null
         }, response)
       });
     }, function (error) {
@@ -84086,7 +84076,7 @@ function reducer() {
       var categories = _extends({}, spotify.categories);
       var playlists_uris = [];
 
-      if (categories[action.uri].playlists_uris) {
+      if (categories[action.uri] && categories[action.uri].playlists_uris) {
         playlists_uris = categories[action.uri].playlists_uris;
       }
 
@@ -87888,7 +87878,7 @@ var Album = exports.Album = function (_React$Component) {
         _react2.default.createElement(
           'div',
           { className: 'thumbnail-wrapper' },
-          _react2.default.createElement(_Thumbnail2.default, { size: 'large', glow: true, canZoom: true, images: album.images })
+          _react2.default.createElement(_Thumbnail2.default, { size: 'large', glow: true, canZoom: true, images: album.images, type: 'album' })
         ),
         _react2.default.createElement(
           'div',
@@ -89763,7 +89753,7 @@ var Playlist = function (_React$Component) {
         _react2.default.createElement(
           'div',
           { className: 'thumbnail-wrapper' },
-          _react2.default.createElement(_Thumbnail2.default, { size: 'large', glow: true, canZoom: true, images: playlist.images })
+          _react2.default.createElement(_Thumbnail2.default, { size: 'large', glow: true, canZoom: true, images: playlist.images, type: 'playlist' })
         ),
         _react2.default.createElement(
           'div',
@@ -90146,7 +90136,7 @@ var Queue = function (_React$Component) {
         return _react2.default.createElement(
           'div',
           { className: 'current-track__artwork' },
-          _react2.default.createElement(_Thumbnail2.default, { glow: true })
+          _react2.default.createElement(_Thumbnail2.default, { glow: true, type: 'track' })
         );
       }
 
@@ -90155,7 +90145,7 @@ var Queue = function (_React$Component) {
         { className: 'current-track__artwork' },
         _react2.default.createElement(
           _Thumbnail2.default,
-          { glow: true, image: image },
+          { glow: true, image: image, type: 'track' },
           _react2.default.createElement(
             _URILink2.default,
             { uri: uri, className: 'thumbnail__actions__item' },
@@ -90244,7 +90234,8 @@ var Queue = function (_React$Component) {
           _react2.default.createElement(_Thumbnail2.default, {
             images: items[0].images,
             size: 'small',
-            circle: (0, _helpers.uriType)(items[0].uri) === 'artist'
+            circle: (0, _helpers.uriType)(items[0].uri) === 'artist',
+            type: 'artist'
           })
         ),
         _react2.default.createElement(
@@ -92572,7 +92563,7 @@ var Track = function (_React$Component) {
         _react2.default.createElement(
           'div',
           { className: 'thumbnail-wrapper' },
-          _react2.default.createElement(_Thumbnail2.default, { size: 'large', canZoom: true, images: track.images })
+          _react2.default.createElement(_Thumbnail2.default, { size: 'large', canZoom: true, images: track.images, type: 'album' })
         ),
         _react2.default.createElement(
           'div',
@@ -92949,7 +92940,7 @@ var User = function (_React$Component) {
               _react2.default.createElement(
                 'div',
                 { className: 'heading__thumbnail' },
-                _react2.default.createElement(_Thumbnail2.default, { size: 'medium', circle: true, canZoom: true, image: image })
+                _react2.default.createElement(_Thumbnail2.default, { size: 'medium', circle: true, canZoom: true, image: image, type: 'user' })
               ),
               _react2.default.createElement(
                 'div',
@@ -96057,7 +96048,7 @@ var LibraryBrowseDirectory = function (_React$Component) {
         subdirectories.map(function (subdirectory) {
           return _react2.default.createElement(_GridItem2.default, {
             key: subdirectory.uri,
-            type: 'browse',
+            type: 'directory',
             link: '/library/browse/' + encodeURIComponent(subdirectory.uri),
             item: subdirectory,
             nocontext: true

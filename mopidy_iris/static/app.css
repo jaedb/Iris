@@ -4313,8 +4313,8 @@ select {
     top: 50%;
     left: 50%;
     transform: translate(-0.5em, -0.5em);
-    opacity: 0.15;
-    font-size: 3rem;
+    opacity: 0.05;
+    font-size: 4rem;
     line-height: 1em;
     width: 1em; }
   .thumbnail__image {

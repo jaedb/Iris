@@ -210,7 +210,7 @@ class PlaybackControls extends React.Component {
           tabIndex="-1"
         >
           <Link className="thumbnail-wrapper" to="/kiosk-mode" tabIndex="-1">
-            <Thumbnail size="small" images={images} />
+            <Thumbnail size="small" images={images} type="track" />
           </Link>
           <div className="text">
             <div className="title">

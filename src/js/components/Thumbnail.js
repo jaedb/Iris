@@ -36,43 +36,31 @@ export default memo((props) => {
 
   const image = mapImageSizes();
   let class_name = 'thumbnail thumbnail--loaded';
+  if (props.size) class_name += ` thumbnail--${props.size}`;
+  if (props.circle) class_name += ' thumbnail--circle';
+  if (props.className) class_name += ` ${props.className}`;
 
-  if (props.size) {
-    class_name += ` thumbnail--${props.size}`;
-  }
-  if (props.circle) {
-    class_name += ' thumbnail--circle';
-  }
-  if (props.className) {
-    class_name += ` ${props.className}`;
-  }
-
-  let zoom_icon = null;
-  if (props.canZoom && image) {
-    zoom_icon = <Link className="thumbnail__zoom" to={`/image-zoom?url=${image}`}><Icon name="search" /></Link>;
-  }
-
-  const placeholderIcon = () => {
+  const iconName = () => {
     switch (props.type) {
+      case 'directory':
+        return 'folder';
       case 'artist':
-      case 'user':
-        return 'person';
-      case 'album':
-        return 'album';
+        return 'perm_identity';
       case 'playlist':
         return 'queue_music';
+      case 'album':
+        return 'album';
       case 'track':
-        return 'audio_track';
+        return 'audiotrack';
       default:
         return 'image';
-    };
-  }
-  let placeholder = 'image';
+    }
+  };
 
   return (
     <div className={class_name}>
       {!image && (
-        <Icon className="thumbnail__placeholder" name={placeholderIcon()} />
+        <Icon className="thumbnail__placeholder" name={iconName()} />
       )}
       {props.useImageTag && image ? (
         <img
@@ -86,9 +74,21 @@ export default memo((props) => {
           style={{ backgroundImage: `url("${image}")` }}
         />
       )}
-      {props.glow && image && <div className="thumbnail__image thumbnail__image--glow" style={{ backgroundImage: `url("${image}")` }} />}
+      {props.glow && image && (
+        <div
+          className="thumbnail__image thumbnail__image--glow"
+          style={{ backgroundImage: `url("${image}")`}}
+        />
+      )}
       <div className="thumbnail__actions">
-        {props.canZoom && image && <Link className="thumbnail__actions__item thumbnail__actions__item--zoom" to={`/image-zoom?url=${image}`}><Icon name="search" /></Link>}
+        {props.canZoom && image && (
+          <Link
+            className="thumbnail__actions__item thumbnail__actions__item--zoom"
+            to={`/image-zoom?url=${image}`}
+          >
+            <Icon name="search" />
+          </Link>
+        )}
         {props.children}
       </div>
     </div>

@@ -212,7 +212,7 @@ export class Album extends React.Component {
     return (
       <div className="view album-view content-wrapper preserve-3d">
         <div className="thumbnail-wrapper">
-          <Thumbnail size="large" glow canZoom images={album.images} />
+          <Thumbnail size="large" glow canZoom images={album.images} type="album" />
         </div>
 
         <div className="title">

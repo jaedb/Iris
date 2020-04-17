@@ -126,14 +126,14 @@ class Queue extends React.Component {
     if (!image) {
       return (
         <div className="current-track__artwork">
-          <Thumbnail glow />
+          <Thumbnail glow type="track" />
         </div>
       );
     }
 
     return (
       <div className="current-track__artwork">
-        <Thumbnail glow image={image}>
+        <Thumbnail glow image={image} type="track">
           <URILink uri={uri} className="thumbnail__actions__item">
             <Icon name="art_track" />
           </URILink>
@@ -194,6 +194,7 @@ class Queue extends React.Component {
               images={items[0].images}
               size="small"
               circle={uriType(items[0].uri) === 'artist'}
+              type="artist"
             />
           </URILink>
         )}

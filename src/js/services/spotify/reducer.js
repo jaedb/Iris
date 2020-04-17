@@ -176,12 +176,11 @@ export default function reducer(spotify = {}, action) {
       var categories = { ...spotify.categories };
       var playlists_uris = [];
 
-      if (categories[action.uri].playlists_uris) {
+      if (categories[action.uri] && categories[action.uri].playlists_uris) {
         playlists_uris = categories[action.uri].playlists_uris;
       }
 
       var category = {
-
         ...categories[action.uri],
         playlists_uris: [...playlists_uris, ...action.uris],
         playlists_more: action.more,

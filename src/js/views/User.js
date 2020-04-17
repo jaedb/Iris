@@ -109,7 +109,7 @@ Could not find user with URI "
             <div className="heading">
 
               <div className="heading__thumbnail">
-                <Thumbnail size="medium" circle canZoom image={image} />
+                <Thumbnail size="medium" circle canZoom image={image} type="user" />
               </div>
 
               <div className="heading__content">

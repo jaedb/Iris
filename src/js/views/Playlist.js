@@ -220,7 +220,7 @@ Could not find playlist with URI "
       <div className="view playlist-view content-wrapper preserve-3d">
 
         <div className="thumbnail-wrapper">
-          <Thumbnail size="large" glow canZoom images={playlist.images} />
+          <Thumbnail size="large" glow canZoom images={playlist.images} type="playlist" />
         </div>
 
         <div className="title">

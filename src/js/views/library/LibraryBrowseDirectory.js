@@ -115,7 +115,7 @@ class LibraryBrowseDirectory extends React.Component {
           subdirectories.map((subdirectory) => (
             <GridItem
               key={subdirectory.uri}
-              type="browse"
+              type="directory"
               link={`/library/browse/${encodeURIComponent(subdirectory.uri)}`}
               item={subdirectory}
               nocontext

@@ -215,7 +215,7 @@ class Track extends React.Component {
         ) : null}
 
         <div className="thumbnail-wrapper">
-          <Thumbnail size="large" canZoom images={track.images} />
+          <Thumbnail size="large" canZoom images={track.images} type="album" />
         </div>
 
         <div className="title">
