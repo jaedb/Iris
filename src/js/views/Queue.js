@@ -277,9 +277,17 @@ class Queue extends React.Component {
                   <li><Dater type="total-time" data={queue_tracks} /></li>
                   {queue_tracks.length > 0 && (
                     <li>
+                      <a onClick={this.props.mopidyActions.shuffleTracklist}>
+                        <Icon name="shuffle" />
+                        Shuffle
+                      </a>
+                    </li>
+                  )}
+                  {queue_tracks.length > 0 && (
+                    <li>
                       <a onClick={this.props.mopidyActions.clearTracklist}>
                         <Icon name="delete_sweep" />
-                        Clear queue
+                        Clear
                       </a>
                     </li>
                   )}

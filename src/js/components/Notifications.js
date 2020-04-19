@@ -82,7 +82,7 @@ class Notifications extends React.Component {
 
               default:
                 return (
-                  <div className={`notification notification--${notification.type}${notification.closing ? ' closing' : ''}`} key={notification.key} data-key={notification.key} data-duration={notification.duration}>
+                  <div className={`notification notification--${notification.level}${notification.closing ? ' closing' : ''}`} key={notification.key} data-key={notification.key} data-duration={notification.duration}>
                     <Icon name="close" className="notification__close-button" onClick={(e) => this.props.uiActions.removeNotification(notification.key, true)} />
                     {notification.title ? <h4 className="notification__title">{notification.title}</h4> : null}
                     {notification.content ? <div className="notification__content">{notification.content}</div> : null}

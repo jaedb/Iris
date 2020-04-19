@@ -16,6 +16,7 @@
 		font-size: 4rem;
 		line-height: 1em;
 		width: 1em;
+		z-index: 1;
 	}
 
 	&__image {
@@ -89,18 +90,16 @@
 
 	&--small {
 		max-width: 50px;
+
+		.thumbnail__placeholder.icon {
+			font-size: 2rem;
+		}
 	}
 
 	&--circle {
 		.thumbnail {
-
 			&__image {
 				border-radius: 50%;
-			}
-
-			&__zoom {
-				bottom: 0;
-				right: 0;
 			}
 		}
 	}

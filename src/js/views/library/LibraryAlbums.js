@@ -216,7 +216,7 @@ class LibraryAlbums extends React.Component {
             handleContextMenu={(e, item) => this.handleContextMenu(e, item)}
             rows={albums}
             thumbnail
-            details={['artists', 'tracks_uris.length']}
+            details={['artists', 'tracks_uris.length', 'last_modified']}
             right_column={['added_at']}
             className="albums"
             link_prefix="/album/"
@@ -295,8 +295,8 @@ class LibraryAlbums extends React.Component {
         label: 'Artist',
       },
       {
-        value: 'added_at',
-        label: 'Added',
+        value: 'last_modified',
+        label: 'Updated',
       },
       {
         value: 'tracks_uris.length',

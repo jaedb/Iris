@@ -62790,20 +62790,25 @@ exports.default = (0, _react.memo)(function (props) {
     case 'ago':
       var date = new Date(props.data);
       var diff = new Date() - date;
-
       var seconds = Math.floor(diff / 1000);
       var minutes = Math.floor(diff / (1000 * 60));
       var hours = Math.floor(diff / (1000 * 60 * 60));
       var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      var weeks = Math.floor(diff / (1000 * 60 * 60 * 24 * 7));
+      var years = Math.floor(diff / (1000 * 60 * 60 * 24 * 7 * 52));
 
       if (seconds < 60) {
-        return seconds + ' seconds';
+        return seconds + ' second' + (seconds > 1 ? 's' : '');
       }if (minutes < 60) {
-        return minutes + ' minutes';
+        return minutes + ' minute' + (minutes > 1 ? 's' : '');
       }if (hours < 24) {
-        return hours + ' hours';
+        return hours + ' hour' + (hours > 1 ? 's' : '');
+      }if (days < 7) {
+        return days + ' day' + (days > 1 ? 's' : '');
+      }if (weeks < 54) {
+        return weeks + ' week' + (weeks > 1 ? 's' : '');
       }
-      return days + ' days';
+      return years + ' year' + (years > 1 ? 's' : '');
     default:
       return null;
   }
@@ -67080,6 +67085,10 @@ var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
+var _reactGa = __webpack_require__(/*! react-ga */ "./node_modules/react-ga/dist/esm/index.js");
+
+var _reactGa2 = _interopRequireDefault(_reactGa);
+
 var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
@@ -67135,7 +67144,8 @@ var Hotkeys = function (_React$Component) {
           play_time_position = _props.play_time_position,
           history = _props.history,
           modal = _props.modal,
-          dragging = _props.dragging;
+          dragging = _props.dragging,
+          allow_reporting = _props.allow_reporting;
       var volume = this.props.volume;
 
       var key = e.key.toLowerCase();
@@ -67160,9 +67170,11 @@ var Hotkeys = function (_React$Component) {
           if (play_state == 'playing') {
             mopidyActions.pause();
             uiActions.createNotification({ content: 'pause', type: 'shortcut' });
+            if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Pause' });
           } else {
             mopidyActions.play();
             uiActions.createNotification({ content: 'play_arrow', type: 'shortcut' });
+            if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Play' });
           }
           prevent = true;
           break;
@@ -67171,35 +67183,42 @@ var Hotkeys = function (_React$Component) {
           if (dragging) {
             uiActions.dragEnd();
             prevent = true;
+            if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Dragging' });
           } else if (modal) {
             window.history.back();
             prevent = true;
+            if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Modal' });
           }
           break;
 
         case 's':
           history.push('/search');
           prevent = true;
+          if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Search' });
           break;
 
         case 'q':
           history.push('/queue');
           prevent = true;
+          if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Queue' });
           break;
 
         case 'k':
           history.push('/kiosk-mode');
           prevent = true;
+          if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Kiosk mode' });
           break;
 
         case ',':
           window.history.back();
           prevent = true;
+          if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Back' });
           break;
 
         case '.':
           window.history.forward();
           prevent = true;
+          if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Forward' });
           break;
 
         case '=':
@@ -67215,6 +67234,7 @@ var Hotkeys = function (_React$Component) {
             uiActions.createNotification({ content: 'volume_up', type: 'shortcut' });
           }
           prevent = true;
+          if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Volume up' });
           break;
 
         case '-':
@@ -67230,15 +67250,18 @@ var Hotkeys = function (_React$Component) {
           }
           uiActions.createNotification({ content: 'volume_down', type: 'shortcut' });
           prevent = true;
+          if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Volume down' });
           break;
 
         case '0':
           if (mute) {
             mopidyActions.setMute(false);
             uiActions.createNotification({ content: 'volume_up', type: 'shortcut' });
+            if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Unmute' });
           } else {
             mopidyActions.setMute(true);
             uiActions.createNotification({ content: 'volume_off', type: 'shortcut' });
+            if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Mute' });
           }
           prevent = true;
           break;
@@ -67251,24 +67274,28 @@ var Hotkeys = function (_React$Component) {
           mopidyActions.setTimePosition(new_position);
           uiActions.createNotification({ content: 'fast_rewind', type: 'shortcut' });
           prevent = true;
+          if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Rewind' });
           break;
 
         case "'":
           mopidyActions.setTimePosition(play_time_position + 30000);
           uiActions.createNotification({ content: 'fast_forward', type: 'shortcut' });
           prevent = true;
+          if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Fastforward' });
           break;
 
         case '[':
           mopidyActions.previous();
           uiActions.createNotification({ content: 'skip_previous', type: 'shortcut' });
           prevent = true;
+          if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Previous' });
           break;
 
         case ']':
           mopidyActions.next();
           uiActions.createNotification({ content: 'skip_next', type: 'shortcut' });
           prevent = true;
+          if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Next' });
           break;
 
         default:
@@ -67295,7 +67322,8 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
     mute: state.mopidy.mute,
     play_state: state.mopidy.play_state,
     play_time_position: parseInt(state.mopidy.time_position),
-    dragging: state.ui.dragger && state.ui.dragger.dragging
+    dragging: state.ui.dragger && state.ui.dragger.dragging,
+    allow_reporting: state.ui.allow_reporting
   };
 };
 
@@ -67953,6 +67981,18 @@ var ListItem = function (_React$Component) {
           'span',
           null,
           'Added',
+          ' ',
+          _react2.default.createElement(_Dater2.default, { type: 'ago', data: value }),
+          ' ',
+          'ago'
+        );
+      }
+      if (key_string === 'last_modified') {
+        return _react2.default.createElement(
+          'span',
+          null,
+          'Updated',
+          ' ',
           _react2.default.createElement(_Dater2.default, { type: 'ago', data: value }),
           ' ',
           'ago'
@@ -68475,7 +68515,7 @@ var Notifications = function (_React$Component) {
             default:
               return _react2.default.createElement(
                 'div',
-                { className: 'notification notification--' + notification.type + (notification.closing ? ' closing' : ''), key: notification.key, 'data-key': notification.key, 'data-duration': notification.duration },
+                { className: 'notification notification--' + notification.level + (notification.closing ? ' closing' : ''), key: notification.key, 'data-key': notification.key, 'data-duration': notification.duration },
                 _react2.default.createElement(_Icon2.default, { name: 'close', className: 'notification__close-button', onClick: function onClick(e) {
                     return _this3.props.uiActions.removeNotification(notification.key, true);
                   } }),
@@ -71013,7 +71053,7 @@ var SnapcastClients = function SnapcastClients(_ref) {
     return _react2.default.createElement(
       'p',
       { className: 'no-results' },
-      'No clients'
+      'No connected clients'
     );
   }
 
@@ -71594,6 +71634,9 @@ var _Icon2 = _interopRequireDefault(_Icon);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = (0, _react.memo)(function (props) {
+  var _props$placeholder = props.placeholder,
+      placeholder = _props$placeholder === undefined ? true : _props$placeholder;
+
   var mapImageSizes = function mapImageSizes() {
     // Single image
     if (props.image) {
@@ -71651,7 +71694,7 @@ exports.default = (0, _react.memo)(function (props) {
   return _react2.default.createElement(
     'div',
     { className: class_name },
-    !image && _react2.default.createElement(_Icon2.default, { className: 'thumbnail__placeholder', name: iconName() }),
+    placeholder && _react2.default.createElement(_Icon2.default, { className: 'thumbnail__placeholder', name: iconName() }),
     props.useImageTag && image ? _react2.default.createElement('img', {
       alt: 'Artwork thumbnail',
       className: 'thumbnail__image thumbnail__image--use-image-tag',
@@ -76375,6 +76418,7 @@ exports.enqueueURIsBatchDone = enqueueURIsBatchDone;
 exports.removeTracks = removeTracks;
 exports.reorderTracklist = reorderTracklist;
 exports.clearTracklist = clearTracklist;
+exports.shuffleTracklist = shuffleTracklist;
 exports.getImages = getImages;
 exports.createPlaylist = createPlaylist;
 exports.deletePlaylist = deletePlaylist;
@@ -76768,6 +76812,12 @@ function reorderTracklist(indexes, insert_before) {
 function clearTracklist() {
   return {
     type: 'MOPIDY_CLEAR_TRACKLIST'
+  };
+}
+
+function shuffleTracklist() {
+  return {
+    type: 'MOPIDY_SHUFFLE_TRACKLIST'
   };
 }
 
@@ -77779,7 +77829,7 @@ var MopidyMiddleware = function () {
           case 'MOPIDY_REORDER_TRACKLIST':
 
             // add our first track
-            request(socket, store, 'tracklist.move', { start: action.range_start, end: action.range_start + action.range_length, to_position: action.insert_before }).then(function (response) {
+            request(socket, store, 'tracklist.move', { start: action.range_start, end: action.range_start + action.range_length, to_position: action.insert_before }).then(function () {
               // TODO: when complete, send event to confirm success/failure
             }, function (error) {
               store.dispatch(coreActions.handleException('Mopidy: ' + (error.message ? error.message : 'Reorder failed'), error));
@@ -77787,21 +77837,31 @@ var MopidyMiddleware = function () {
             break;
 
           case 'MOPIDY_CLEAR_TRACKLIST':
-            request(socket, store, 'tracklist.clear').then(function (response) {
+            request(socket, store, 'tracklist.clear').then(function () {
               store.dispatch(coreActions.clearCurrentTrack());
 
               store.dispatch(pusherActions.deliverBroadcast('notification', {
                 notification: {
-                  content: store.getState().pusher.username + ' cleared queue'
+                  content: store.getState().pusher.username + ' cleared the playback queue'
+                }
+              }));
+            });
+            break;
+
+          case 'MOPIDY_SHUFFLE_TRACKLIST':
+            request(socket, store, 'tracklist.shuffle', { start: 1 }).then(function () {
+              store.dispatch(pusherActions.deliverBroadcast('notification', {
+                notification: {
+                  content: store.getState().pusher.username + ' shuffled the playback queue'
                 }
               }));
             });
             break;
 
           /**
-               * =============================================================== SEARCHING ============
-               * ======================================================================================
-               * */
+             * =============================================================== SEARCHING ============
+             * ======================================================================================
+             * */
 
           case 'MOPIDY_GET_SEARCH_RESULTS':
 
@@ -78658,7 +78718,8 @@ var MopidyMiddleware = function () {
                     source: 'local',
                     artists_uris: artists_uris,
                     tracks_uris: _tracks_uris2,
-                    tracks_total: _tracks_uris2.length
+                    tracks_total: _tracks_uris2.length,
+                    last_modified: _tracks3[0].last_modified
                   }, _tracks3[0].album);
 
                   albums_loaded.push(album);
@@ -86098,7 +86159,7 @@ var formatUsers = function formatUsers() {
  * */
 var formatAlbum = function formatAlbum(data) {
   var album = {};
-  var fields = ['uri', 'provider', 'name', 'type', 'added_at', 'release_date', 'listeners', 'play_count', 'wiki', 'wiki_publish_date', 'popularity', 'images', 'artists_uris', 'tracks_uris', 'tracks_total', 'tracks_more', 'artists'];
+  var fields = ['uri', 'provider', 'name', 'type', 'last_modified', 'added_at', 'release_date', 'listeners', 'play_count', 'wiki', 'wiki_publish_date', 'popularity', 'images', 'artists_uris', 'tracks_uris', 'tracks_total', 'tracks_more', 'artists'];
 
   // Loop fields and import from data
   var _iteratorNormalCompletion7 = true;
@@ -86132,6 +86193,11 @@ var formatAlbum = function formatAlbum(data) {
     album.images = formatImages(album.images);
   }
 
+  if (data.last_modified && album.added_at === undefined) {
+    album.added_at = data.last_modified;
+  } else if (data.added_at && album.last_modified === undefined) {
+    album.last_modified = data.added_at;
+  }
   if (data.date && !album.date) {
     album.release_date = data.date;
   }
@@ -86218,7 +86284,7 @@ var formatArtist = function formatArtist(data) {
  * */
 var formatPlaylist = function formatPlaylist(data) {
   var playlist = {};
-  var fields = ['uri', 'snapshot_id', 'provider', 'type', 'collaborative', 'public', 'name', 'description', 'images', 'popularity', 'followers', 'added_at', 'last_modified_date', 'can_edit', 'owner', 'user_uri', 'tracks_uris', 'tracks_total', 'tracks_more'];
+  var fields = ['uri', 'snapshot_id', 'provider', 'type', 'collaborative', 'public', 'name', 'description', 'images', 'popularity', 'followers', 'last_modified', 'can_edit', 'owner', 'user_uri', 'tracks_uris', 'tracks_total', 'tracks_more'];
 
   // Loop fields and import from data
   var _iteratorNormalCompletion9 = true;
@@ -86252,12 +86318,22 @@ var formatPlaylist = function formatPlaylist(data) {
     playlist.images = formatImages(playlist.images);
   }
 
+  if (data.last_modified_date && playlist.last_modified === undefined) {
+    playlist.last_modified = data.last_modified_date;
+  }
+
   if (data.followers && data.followers.total !== undefined) {
     playlist.followers = data.followers.total;
   }
 
   if (data.tracks && data.tracks.total !== undefined) {
     playlist.tracks_total = data.tracks.total;
+  }
+
+  if (playlist.last_modified && playlist.added_at === undefined) {
+    playlist.added_at = data.last_modified;
+  } else if (playlist.added_at && playlist.last_modified === undefined) {
+    playlist.last_modified = data.added_at;
   }
 
   if (data.owner) {
@@ -86352,7 +86428,7 @@ var formatUser = function formatUser(data) {
  * */
 var formatTrack = function formatTrack(data) {
   var track = {};
-  var fields = ['uri', 'tlid', 'provider', 'name', 'images', 'release_date', 'disc_number', 'track_number', 'duration', 'followers', 'popularity', 'userloved', 'is_explicit', 'is_local', 'lyrics', 'lyrics_path', 'lyrics_results', 'artists', // Array of simple records
+  var fields = ['uri', 'tlid', 'provider', 'name', 'images', 'release_date', 'disc_number', 'track_number', 'duration', 'followers', 'popularity', 'userloved', 'last_modified', 'added_at', 'is_explicit', 'is_local', 'lyrics', 'lyrics_path', 'lyrics_results', 'artists', // Array of simple records
   'album'];
 
   // Nested track object (eg in spotify playlist)
@@ -86402,6 +86478,12 @@ var formatTrack = function formatTrack(data) {
 
   if (data.followers && data.followers.total) {
     track.followers = data.followers.total;
+  }
+
+  if (track.last_modified && track.added_at === undefined) {
+    track.added_at = track.last_modified;
+  } else if (track.added_at && track.last_modified === undefined) {
+    track.last_modified = track.added_at;
   }
 
   if (track.duration === undefined && data.duration_ms !== undefined) {
@@ -90354,9 +90436,19 @@ var Queue = function (_React$Component) {
                     null,
                     _react2.default.createElement(
                       'a',
+                      { onClick: this.props.mopidyActions.shuffleTracklist },
+                      _react2.default.createElement(_Icon2.default, { name: 'shuffle' }),
+                      'Shuffle'
+                    )
+                  ),
+                  queue_tracks.length > 0 && _react2.default.createElement(
+                    'li',
+                    null,
+                    _react2.default.createElement(
+                      'a',
                       { onClick: this.props.mopidyActions.clearTracklist },
                       _react2.default.createElement(_Icon2.default, { name: 'delete_sweep' }),
-                      'Clear queue'
+                      'Clear'
                     )
                   )
                 )
@@ -94932,7 +95024,7 @@ var LibraryAlbums = function (_React$Component) {
             },
             rows: albums,
             thumbnail: true,
-            details: ['artists', 'tracks_uris.length'],
+            details: ['artists', 'tracks_uris.length', 'last_modified'],
             right_column: ['added_at'],
             className: 'albums',
             link_prefix: '/album/'
@@ -95009,8 +95101,8 @@ var LibraryAlbums = function (_React$Component) {
         value: 'artists.first.name',
         label: 'Artist'
       }, {
-        value: 'added_at',
-        label: 'Added'
+        value: 'last_modified',
+        label: 'Updated'
       }, {
         value: 'tracks_uris.length',
         label: 'Tracks'
@@ -96420,7 +96512,7 @@ var LibraryPlaylists = function (_React$Component) {
             },
             rows: playlists,
             thumbnail: true,
-            details: ['owner', 'tracks_total'],
+            details: ['owner', 'tracks_total', 'last_modified'],
             right_column: ['source'],
             className: 'playlists',
             link_prefix: '/playlist/'
@@ -96486,6 +96578,9 @@ var LibraryPlaylists = function (_React$Component) {
       }, {
         value: 'name',
         label: 'Name'
+      }, {
+        value: 'last_modified',
+        label: 'Updated'
       }, {
         value: 'can_edit',
         label: 'Editable'
@@ -99362,7 +99457,7 @@ var KioskMode = function (_React$Component) {
           className: 'modal--kiosk-mode',
           extraControls: extraControls
         },
-        _react2.default.createElement(_Thumbnail2.default, { className: 'background', images: images }),
+        _react2.default.createElement(_Thumbnail2.default, { className: 'background', images: images, placeholder: false }),
         _react2.default.createElement(
           'div',
           { className: 'player player--' + (show_lyrics ? 'with' : 'without') + '-lyrics' },

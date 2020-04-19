@@ -4,6 +4,7 @@ import Link from './Link';
 import Icon from './Icon';
 
 export default memo((props) => {
+  const { placeholder = true } = props;
   const mapImageSizes = () => {
     // Single image
     if (props.image) {
@@ -59,9 +60,7 @@ export default memo((props) => {
 
   return (
     <div className={class_name}>
-      {!image && (
-        <Icon className="thumbnail__placeholder" name={iconName()} />
-      )}
+      {placeholder && <Icon className="thumbnail__placeholder" name={iconName()} />}
       {props.useImageTag && image ? (
         <img
           alt="Artwork thumbnail"

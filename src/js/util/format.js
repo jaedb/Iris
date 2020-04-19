@@ -273,6 +273,7 @@ const formatAlbum = function (data) {
     'provider',
     'name',
     'type',
+    'last_modified',
     'added_at',
     'release_date',
     'listeners',
@@ -285,7 +286,7 @@ const formatAlbum = function (data) {
     'tracks_uris',
     'tracks_total',
     'tracks_more',
-    'artists',	// Array of simple records
+    'artists', // Array of simple records
   ];
 
   // Loop fields and import from data
@@ -299,6 +300,11 @@ const formatAlbum = function (data) {
     album.images = formatImages(album.images);
   }
 
+  if (data.last_modified && album.added_at === undefined) {
+    album.added_at = data.last_modified;
+  } else if (data.added_at && album.last_modified === undefined) {
+    album.last_modified = data.added_at;
+  }
   if (data.date && !album.date) {
     album.release_date = data.date;
   }
@@ -398,8 +404,7 @@ const formatPlaylist = function (data) {
     'images',
     'popularity',
     'followers',
-    'added_at',
-    'last_modified_date',
+    'last_modified',
     'can_edit',
     'owner',
     'user_uri',
@@ -419,12 +424,22 @@ const formatPlaylist = function (data) {
     playlist.images = formatImages(playlist.images);
   }
 
+  if (data.last_modified_date && playlist.last_modified === undefined) {
+    playlist.last_modified = data.last_modified_date;
+  }
+
   if (data.followers && data.followers.total !== undefined) {
     playlist.followers = data.followers.total;
   }
 
   if (data.tracks && data.tracks.total !== undefined) {
     playlist.tracks_total = data.tracks.total;
+  }
+
+  if (playlist.last_modified && playlist.added_at === undefined) {
+    playlist.added_at = data.last_modified;
+  } else if (playlist.added_at && playlist.last_modified === undefined) {
+    playlist.last_modified = data.added_at;
   }
 
   if (data.owner) {
@@ -523,13 +538,15 @@ const formatTrack = function (data) {
     'followers',
     'popularity',
     'userloved',
+    'last_modified',
+    'added_at',
     'is_explicit',
     'is_local',
     'lyrics',
     'lyrics_path',
     'lyrics_results',
-    'artists',	// Array of simple records
-    'album',		// Array of simple records
+    'artists', // Array of simple records
+    'album', // Array of simple records
   ];
 
   // Nested track object (eg in spotify playlist)
@@ -558,6 +575,12 @@ const formatTrack = function (data) {
 
   if (data.followers && data.followers.total) {
     track.followers = data.followers.total;
+  }
+
+  if (track.last_modified && track.added_at === undefined) {
+    track.added_at = track.last_modified;
+  } else if (track.added_at && track.last_modified === undefined) {
+    track.last_modified = track.added_at;
   }
 
   if (track.duration === undefined && data.duration_ms !== undefined) {

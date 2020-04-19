@@ -2888,8 +2888,8 @@ p a {
   height: 0px !important;
   position: fixed !important;
   z-index: -99 !important;
-  top: -99px !important;
-  left: -99px !important; }
+  top: -9999px !important;
+  left: -9999px !important; }
 
 .no-results {
   text-align: center;
@@ -4316,7 +4316,8 @@ select {
     opacity: 0.05;
     font-size: 4rem;
     line-height: 1em;
-    width: 1em; }
+    width: 1em;
+    z-index: 1; }
   .thumbnail__image {
     -webkit-transition: all 0.1s ease-in-out;
     -moz-transition: all 0.1s ease-in-out;
@@ -4386,11 +4387,10 @@ select {
         background: #000000; }
   .thumbnail--small {
     max-width: 50px; }
+    .thumbnail--small .thumbnail__placeholder.icon {
+      font-size: 2rem; }
   .thumbnail--circle .thumbnail__image {
     border-radius: 50%; }
-  .thumbnail--circle .thumbnail__zoom {
-    bottom: 0;
-    right: 0; }
   .thumbnail:hover .thumbnail__actions {
     opacity: 1;
     transform: translateY(0px); }
@@ -7720,23 +7720,6 @@ main .track-view {
             align-items: center;
             display: flex;
             flex-flow: column; }
-            .modal--kiosk-mode .content .player .track__artwork .icon {
-              -webkit-transition: all 0.2s ease-in-out;
-              -moz-transition: all 0.2s ease-in-out;
-              -o-transition: all 0.2s ease-in-out;
-              transition: all 0.2s ease-in-out;
-              display: inline-block;
-              position: absolute;
-              color: #121212;
-              font-size: 20rem;
-              top: 25%;
-              left: 0;
-              right: 0;
-              text-align: center;
-              opacity: 0;
-              z-index: 2; }
-            .modal--kiosk-mode .content .player .track__artwork:hover .icon {
-              opacity: 0.75; }
           .modal--kiosk-mode .content .player .track__info {
             font-size: 2rem;
             padding-top: 40px; }

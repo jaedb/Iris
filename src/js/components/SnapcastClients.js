@@ -15,7 +15,7 @@ const SnapcastClients = ({ actions, group, groups, show_disconnected_clients }) 
   }
 
   if (!clients || clients.length <= 0) {
-    return <p className="no-results">No clients</p>;
+    return <p className="no-results">No connected clients</p>;
   }
 
   return (

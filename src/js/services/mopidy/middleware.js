@@ -948,7 +948,7 @@ const MopidyMiddleware = (function () {
         // add our first track
         request(socket, store, 'tracklist.move', { start: action.range_start, end: action.range_start + action.range_length, to_position: action.insert_before })
           .then(
-            (response) => {
+            () => {
               // TODO: when complete, send event to confirm success/failure
             },
             (error) => {
@@ -963,14 +963,30 @@ const MopidyMiddleware = (function () {
       case 'MOPIDY_CLEAR_TRACKLIST':
         request(socket, store, 'tracklist.clear')
           .then(
-            (response) => {
+            () => {
               store.dispatch(coreActions.clearCurrentTrack());
 
               store.dispatch(pusherActions.deliverBroadcast(
                 'notification',
                 {
                   notification: {
-                    content: `${store.getState().pusher.username} cleared queue`,
+                    content: `${store.getState().pusher.username} cleared the playback queue`,
+                  },
+                },
+              ));
+            },
+          );
+        break;
+
+      case 'MOPIDY_SHUFFLE_TRACKLIST':
+        request(socket, store, 'tracklist.shuffle', { start: 1 })
+          .then(
+            () => {
+              store.dispatch(pusherActions.deliverBroadcast(
+                'notification',
+                {
+                  notification: {
+                    content: `${store.getState().pusher.username} shuffled the playback queue`,
                   },
                 },
               ));
@@ -979,7 +995,7 @@ const MopidyMiddleware = (function () {
         break;
 
 
-      /**
+        /**
            * =============================================================== SEARCHING ============
            * ======================================================================================
            * */
@@ -1622,7 +1638,6 @@ const MopidyMiddleware = (function () {
         request(socket, store, 'playlists.lookup', action.data)
           .then((response) => {
             const playlist = {
-
               ...response,
               uri: response.uri,
               type: 'playlist',
@@ -1929,6 +1944,7 @@ const MopidyMiddleware = (function () {
                   artists_uris,
                   tracks_uris,
                   tracks_total: tracks_uris.length,
+                  last_modified: tracks[0].last_modified,
                   ...tracks[0].album,
                 };
 

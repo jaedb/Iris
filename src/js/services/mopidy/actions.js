@@ -353,6 +353,12 @@ export function clearTracklist() {
   };
 }
 
+export function shuffleTracklist() {
+  return {
+    type: 'MOPIDY_SHUFFLE_TRACKLIST',
+  };
+}
+
 
 /**
  * Asset-oriented actions

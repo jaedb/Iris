@@ -84,7 +84,7 @@ export default class ListItem extends React.Component {
         <span>
           {value}
           {' '}
-tracks
+          tracks
         </span>
       );
     }
@@ -93,17 +93,29 @@ tracks
         <span>
           {value.toLocaleString()}
           {' '}
-followers
+          followers
         </span>
       );
     }
     if (key_string === 'added_at') {
       return (
         <span>
-Added
+          Added
+          {' '}
           <Dater type="ago" data={value} />
           {' '}
-ago
+          ago
+        </span>
+      );
+    }
+    if (key_string === 'last_modified') {
+      return (
+        <span>
+          Updated
+          {' '}
+          <Dater type="ago" data={value} />
+          {' '}
+          ago
         </span>
       );
     }
