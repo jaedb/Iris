@@ -95997,6 +95997,10 @@ var _ErrorBoundary = __webpack_require__(/*! ../../components/ErrorBoundary */ "
 
 var _ErrorBoundary2 = _interopRequireDefault(_ErrorBoundary);
 
+var _LazyLoadListener = __webpack_require__(/*! ../../components/LazyLoadListener */ "./src/js/components/LazyLoadListener.js");
+
+var _LazyLoadListener2 = _interopRequireDefault(_LazyLoadListener);
+
 var _actions = __webpack_require__(/*! ../../services/ui/actions */ "./src/js/services/ui/actions.js");
 
 var uiActions = _interopRequireWildcard(_actions);
@@ -96028,20 +96032,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var LibraryBrowseDirectory = function (_React$Component) {
   _inherits(LibraryBrowseDirectory, _React$Component);
 
-  function LibraryBrowseDirectory() {
-    var _ref;
-
-    var _temp, _this, _ret;
-
+  function LibraryBrowseDirectory(props) {
     _classCallCheck(this, LibraryBrowseDirectory);
 
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
+    var _this = _possibleConstructorReturn(this, (LibraryBrowseDirectory.__proto__ || Object.getPrototypeOf(LibraryBrowseDirectory)).call(this, props));
 
-    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = LibraryBrowseDirectory.__proto__ || Object.getPrototypeOf(LibraryBrowseDirectory)).call.apply(_ref, [this].concat(args))), _this), _this.componentDidUpdate = function (_ref2) {
-      var prev_mopidy_connected = _ref2.mopidy_connected,
-          prevUri = _ref2.uri;
+    _this.componentDidUpdate = function (_ref) {
+      var prev_mopidy_connected = _ref.mopidy_connected,
+          prevUri = _ref.uri;
       var _this$props = _this.props,
           uri = _this$props.uri,
           mopidy_connected = _this$props.mopidy_connected;
@@ -96049,12 +96047,27 @@ var LibraryBrowseDirectory = function (_React$Component) {
 
       if (!prev_mopidy_connected && mopidy_connected) _this.loadDirectory();
       if (uri && uri !== prevUri) _this.loadDirectory();
-    }, _temp), _possibleConstructorReturn(_this, _ret);
+    };
+
+    _this.state = {
+      filter: '',
+      limit: 50,
+      per_page: 50
+    };
+    return _this;
   }
 
   _createClass(LibraryBrowseDirectory, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
+      // Restore any limit defined in our location state
+      var state = this.props.location.state ? this.props.location.state : {};
+      if (state.limit) {
+        this.setState({
+          limit: state.limit
+        });
+      }
+
       this.props.uiActions.setWindowTitle('Browse');
       this.loadDirectory();
     }
@@ -96070,6 +96083,18 @@ var LibraryBrowseDirectory = function (_React$Component) {
         }
         this.props.mopidyActions.getDirectory(uri);
       }
+    }
+  }, {
+    key: 'loadMore',
+    value: function loadMore() {
+      var new_limit = this.state.limit + this.state.per_page;
+
+      this.setState({ limit: new_limit });
+
+      // Set our pagination to location state
+      var state = this.props.location && this.props.location.state ? this.props.location.state : {};
+      state.limit = new_limit;
+      this.props.history.replace({ state: state });
     }
   }, {
     key: 'playAll',
@@ -96126,7 +96151,7 @@ var LibraryBrowseDirectory = function (_React$Component) {
   }, {
     key: 'renderSubdirectories',
     value: function renderSubdirectories(subdirectories) {
-      if (this.props.view == 'list') {
+      if (this.props.view === 'list') {
         return _react2.default.createElement(_List2.default, _defineProperty({
           nocontext: true,
           rows: subdirectories,
@@ -96169,11 +96194,19 @@ var LibraryBrowseDirectory = function (_React$Component) {
         );
       }
 
-      var tracks = this.props.directory.tracks && this.props.directory.tracks.length > 0 ? this.props.directory.tracks : null;
-      tracks = (0, _arrays.sortItems)(tracks, 'name');
-
       var subdirectories = this.props.directory.subdirectories && this.props.directory.subdirectories.length > 0 ? this.props.directory.subdirectories : null;
       subdirectories = (0, _arrays.sortItems)(subdirectories, 'name');
+
+      var total_items = (tracks ? tracks.length : 0) + (subdirectories ? subdirectories.length : 0);
+      subdirectories = subdirectories.slice(0, this.state.limit);
+      var all_tracks = null;
+      var tracks = null;
+      var limit_remaining = this.state.limit - subdirectories;
+      if (limit_remaining > 0) {
+        all_tracks = this.props.directory.tracks && this.props.directory.tracks.length > 0 ? this.props.directory.tracks : null;
+        all_tracks = (0, _arrays.sortItems)(all_tracks, 'name');
+        tracks = all_tracks.slice(0, limit_remaining);
+      }
 
       var view_options = [{
         label: 'Thumbnails',
@@ -96199,7 +96232,7 @@ var LibraryBrowseDirectory = function (_React$Component) {
         tracks && _react2.default.createElement(
           'a',
           { className: 'button button--no-hover', onClick: function onClick(e) {
-              _this2.props.uiActions.hideContextMenu();_this2.playAll(e, tracks);
+              _this2.props.uiActions.hideContextMenu();_this2.playAll(e, all_tracks);
             } },
           _react2.default.createElement(_Icon2.default, { name: 'play_circle_filled' }),
           'Play all'
@@ -96232,9 +96265,16 @@ var LibraryBrowseDirectory = function (_React$Component) {
             this.renderBreadcrumbs(),
             subdirectories ? this.renderSubdirectories(subdirectories) : null,
             tracks && _react2.default.createElement(_TrackList2.default, {
-              tracks: this.props.directory.tracks,
+              tracks: tracks,
               uri: 'iris:browse:' + this.props.uri,
               className: 'library-local-track-list'
+            }),
+            _react2.default.createElement(_LazyLoadListener2.default, {
+              loadKey: total_items > this.state.limit ? this.state.limit : total_items,
+              showLoader: this.state.limit < total_items,
+              loadMore: function loadMore() {
+                return _this2.loadMore();
+              }
             })
           )
         )
