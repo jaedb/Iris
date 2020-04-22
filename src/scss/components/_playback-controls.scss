@@ -4,31 +4,43 @@
   bottom: 0;
   right: 0;
   left: 0;
-  height: 60px;
   transform-style: preserve-3d;
-  border-left: 230px solid transparent;
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  align-content: center;
+
+  &__background {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    z-index: -1;
+  }
 
   .dark-theme & {
-    background: colour(grey);
     color: colour(white);
-    box-shadow: 0 -1px 10px rgba(0, 0, 0, 0.6);
-    border-color: colour(grey);
+
+    &__background {
+      background: colour(grey);
+      box-shadow: 0 -1px 10px rgba(0, 0, 0, 0.6);
+    }
   }
 
   .light-theme & {
-    background: colour(white);
     color: colour(darkest_grey);
-    border-color: colour(white);
-    box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.1);
+
+    &__background {
+      background: colour(white);
+      box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.1);
+    }
   }
 
   .current-track {
-    position: absolute;
-    bottom: 0;
     width: 210px;
-    left: -230px;
+    padding-right: 20px;
     z-index: 1;
     text-decoration: none;
+    display: flex;
 
     @keyframes slide_left {
       0% {
@@ -80,7 +92,6 @@
     }
 
     .thumbnail {
-      float: left;
       cursor: pointer;
       width: 44px;
       margin: 8px;
@@ -136,6 +147,7 @@
       line-height: 1.1rem;
       font-size: 0.9rem;
       padding-top: 1.05rem;
+      min-width: 0;
 
       .title {
         @include one_line_text;
@@ -186,14 +198,9 @@
   }
 
   section {
-    position: absolute;
-    bottom: 10px;
-
     &.playback {
-      bottom: 7px;
-      left: 0;
-      width: 10rem;
-
+      display: flex;
+      align-items: center;
       .control {
         padding-left: 4px;
         padding-right: 4px;
@@ -203,8 +210,6 @@
         }
 
         &.play {
-          margin-bottom: -0.8rem;
-
           .light-theme & {
             color: colour(turquoise);
           }
@@ -217,18 +222,12 @@
     }
 
     &.progress {
-      bottom: 13px;
-      left: 10rem;
-      right: 25rem;
-      padding-left: 20px;
-      padding-right: 20px;
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
 
       .slider {
-        position: absolute;
-        bottom: 2px;
-        left: 60px;
-        right: 60px;
-
+        flex-grow: 1;
         &__track {
           &__progress {
             @include animate(0.2s, linear);
@@ -236,40 +235,35 @@
         }
       }
 
-      .current {
+      .time {
         font-size: 11px;
-        position: absolute;
-        bottom: 6px;
-        left: 0;
-        width: 50px;
-        text-align: right;
-      }
+        width: 40px;
 
-      .total {
-        font-size: 11px;
-        position: absolute;
-        bottom: 6px;
-        right: 0;
-        width: 50px;
+        &--current {
+          text-align: right;
+          padding-right: 10px;
+        }
+
+        &--total {
+          padding-left: 10px;
+        }
       }
     }
 
     &.settings {
-      right: 14rem;
-      width: 10rem;
       text-align: center;
+      padding: 0 30px;
     }
 
     &.volume {
-      right: 2rem;
-      width: 10rem;
       font-size: 18px;
+      width: 10rem;
+      padding-right: 30px;
+      display: flex;
+      align-items: center;
 
       .slider__wrapper {
-        position: absolute;
-        bottom: 6px;
-        right: 0;
-        left: 30px;
+        flex-grow: 1;
       }
     }
 
@@ -279,67 +273,63 @@
   }
 
   @include responsive($bp_medium) {
-    border-left: none;
-
     &--touch-enabled .control.next {
       display: none;
     }
 
     .current-track {
-      width: auto;
-      bottom: 0.65rem;
-      left: 80px;
-      right: 80px;
+      order: 2;
+      flex-grow: 1;
       text-align: center;
       font-size: 0.9rem;
       line-height: 1.2em;
-      margin: auto;
+      margin: 0;
+      padding: 0;
+      display: flex;
 
-      .title,
-      .artist {
-        padding-top: 0;
+      .text {
+        padding: 0;
+        flex-grow: 1;
+
+        .title,
+        .artist {
+          padding-top: 0;
+        }
       }
 
-      .thumbnail {
+      .thumbnail-wrapper {
         display: none;
       }
     }
 
     section {
       &.playback {
-        left: 0;
+        order: 1;
         width: 6rem;
 
         .control {
           &.play {
-            margin-bottom: -1rem;
+            padding: 4px;
           }
 
-          &.previous {
-            display: none;
-          }
-
+          &.previous,
           &.stop {
             display: none;
           }
         }
       }
 
-      &.settings {
-        display: none;
-      }
-
-      &.volume {
-        display: none;
-      }
-
+      &.settings,
+      &.volume,
       &.progress {
         display: none;
       }
 
       &.triggers {
         display: block;
-        right: 10px;
+        width: 6rem;
+        order: 3;
+        text-align: center;
 
         .icon {
           font-size: 1.2rem;
@@ -372,12 +362,16 @@
     }
 
     &--expanded {
-      height: 140px;
       max-height: 100%;
+
+      .playback-controls__background {
+        height: 230px;
+      }
 
       section {
         &.settings {
-          display: block;
+          position: absolute;
+          display: flex;
           right: 0;
           bottom: 90px;
           padding-right: 10px;
@@ -386,8 +380,9 @@
         }
 
         &.volume {
+          position: absolute;
           width: auto;
-          display: block;
+          display: flex;
           right: 100px;
           left: 10px;
           bottom: 88px;
@@ -402,10 +397,11 @@
         }
 
         &.progress {
-          display: block;
-          bottom: 55px;
-          left: -15px;
-          right: -15px;
+          position: absolute;
+          display: flex;
+          bottom: 60px;
+          left: 0;
+          right: 0;
         }
       }
     }

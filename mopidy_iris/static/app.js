@@ -69165,6 +69165,7 @@ var PlaybackControls = function (_React$Component) {
       return _react2.default.createElement(
         'div',
         { className: 'playback-controls' + (expanded ? ' playback-controls--expanded' : '') + (touch_enabled ? ' playback-controls--touch-enabled' : '') },
+        _react2.default.createElement('div', { className: 'playback-controls__background' }),
         _react2.default.createElement(_Stream2.default, null),
         next_track && next_track.images ? _react2.default.createElement(_Thumbnail2.default, { className: 'hide', size: 'large', images: next_track.images }) : null,
         this.state.transition_track && this.state.transition_direction ? _react2.default.createElement(
@@ -69241,15 +69242,15 @@ var PlaybackControls = function (_React$Component) {
         _react2.default.createElement(
           'section',
           { className: 'progress' },
-          _react2.default.createElement(_ProgressSlider2.default, null),
           _react2.default.createElement(
-            'span',
-            { className: 'current' },
+            'div',
+            { className: 'time time--current' },
             time_position ? _react2.default.createElement(_Dater2.default, { type: 'length', data: time_position }) : '-'
           ),
+          _react2.default.createElement(_ProgressSlider2.default, null),
           _react2.default.createElement(
-            'span',
-            { className: 'total' },
+            'div',
+            { className: 'time time--total' },
             current_track ? _react2.default.createElement(_Dater2.default, { type: 'length', data: current_track.duration }) : '-'
           )
         ),

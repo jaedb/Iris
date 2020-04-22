@@ -184,6 +184,8 @@ class PlaybackControls extends React.Component {
     return (
       <div className={`playback-controls${expanded ? ' playback-controls--expanded' : ''}${touch_enabled ? ' playback-controls--touch-enabled' : ''}`}>
 
+        <div className="playback-controls__background" />
+
         <Stream />
 
         {next_track && next_track.images ? <Thumbnail className="hide" size="large" images={next_track.images} /> : null}
@@ -233,9 +235,13 @@ class PlaybackControls extends React.Component {
         </section>
 
         <section className="progress">
+          <div className="time time--current">
+            {time_position ? <Dater type="length" data={time_position} /> : '-'}
+          </div>
           <ProgressSlider />
-          <span className="current">{ time_position ? <Dater type="length" data={time_position} /> : '-' }</span>
-          <span className="total">{ current_track ? <Dater type="length" data={current_track.duration} /> : '-' }</span>
+          <div className="time time--total">
+            {current_track ? <Dater type="length" data={current_track.duration} /> : '-'}
+          </div>
         </section>
 
         <section className="settings">
