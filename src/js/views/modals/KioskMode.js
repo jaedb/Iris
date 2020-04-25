@@ -169,8 +169,12 @@ class KioskMode extends React.Component {
     }
 
     const extraControls = (
-      <div className="control" onClick={this.toggleLyrics} style={show_lyrics ? { opacity: 1 } : {}}>
-        <Icon name="queue_music" className={show_lyrics ? 'turquoise-text' : null} />
+      <div className="control" onClick={this.toggleLyrics}>
+        {show_lyrics ? <Icon name="toggle_on" className="turquoise-text" />
+          : <Icon name="toggle_off" />}
+        <div style={{ paddingLeft: '6px', fontWeight: 'bold' }}>
+          Lyrics
+        </div>
       </div>
     );
 

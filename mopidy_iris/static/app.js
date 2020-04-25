@@ -61444,7 +61444,9 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.handleTouchStart = function (e) {
-      var hideContextMenu = _this.props.uiActions.hideContextMenu;
+      var _this$props4 = _this.props,
+          menu = _this$props4.menu,
+          hideContextMenu = _this$props4.uiActions.hideContextMenu;
 
 
       if (menu && $(e.target).closest('.context-menu').length <= 0 && $(e.target).closest('.context-menu-trigger').length <= 0) {
@@ -61456,11 +61458,11 @@ var ContextMenu = function (_React$Component) {
       var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
           uri = _ref.uri;
 
-      var _this$props4 = _this.props,
-          spotify_library_artists = _this$props4.spotify_library_artists,
-          spotify_library_albums = _this$props4.spotify_library_albums,
-          spotify_library_playlists = _this$props4.spotify_library_playlists,
-          spotify_library_tracks = _this$props4.spotify_library_tracks;
+      var _this$props5 = _this.props,
+          spotify_library_artists = _this$props5.spotify_library_artists,
+          spotify_library_albums = _this$props5.spotify_library_albums,
+          spotify_library_playlists = _this$props5.spotify_library_playlists,
+          spotify_library_tracks = _this$props5.spotify_library_tracks;
 
       if (!uri) return false;
 
@@ -61493,21 +61495,21 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.canBeInLibrary = function () {
-      var _this$props5 = _this.props,
-          spotify_authorized = _this$props5.spotify_authorized,
-          items = _this$props5.menu.items;
+      var _this$props6 = _this.props,
+          spotify_authorized = _this$props6.spotify_authorized,
+          items = _this$props6.menu.items;
 
       if (!spotify_authorized) return false;
       return (0, _helpers.uriSource)(items[0].uri) === 'spotify';
     };
 
     _this.toggleInLibrary = function (e, in_library) {
-      var _this$props6 = _this.props,
-          hideContextMenu = _this$props6.uiActions.hideContextMenu,
-          following = _this$props6.spotifyActions.following,
-          _this$props6$menu = _this$props6.menu;
-      _this$props6$menu = _this$props6$menu === undefined ? {} : _this$props6$menu;
-      var items = _this$props6$menu.items;
+      var _this$props7 = _this.props,
+          hideContextMenu = _this$props7.uiActions.hideContextMenu,
+          following = _this$props7.spotifyActions.following,
+          _this$props7$menu = _this$props7.menu;
+      _this$props7$menu = _this$props7$menu === undefined ? {} : _this$props7$menu;
+      var items = _this$props7$menu.items;
 
 
       hideContextMenu();
@@ -61519,12 +61521,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.playQueueItem = function () {
-      var _this$props7 = _this.props,
-          hideContextMenu = _this$props7.uiActions.hideContextMenu,
-          changeTrack = _this$props7.mopidyActions.changeTrack,
-          _this$props7$menu = _this$props7.menu;
-      _this$props7$menu = _this$props7$menu === undefined ? {} : _this$props7$menu;
-      var items = _this$props7$menu.items;
+      var _this$props8 = _this.props,
+          hideContextMenu = _this$props8.uiActions.hideContextMenu,
+          changeTrack = _this$props8.mopidyActions.changeTrack,
+          _this$props8$menu = _this$props8.menu;
+      _this$props8$menu = _this$props8$menu === undefined ? {} : _this$props8$menu;
+      var items = _this$props8$menu.items;
 
 
       hideContextMenu();
@@ -61532,12 +61534,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.removeFromQueue = function () {
-      var _this$props8 = _this.props,
-          hideContextMenu = _this$props8.uiActions.hideContextMenu,
-          removeTracks = _this$props8.mopidyActions.removeTracks,
-          _this$props8$menu = _this$props8.menu;
-      _this$props8$menu = _this$props8$menu === undefined ? {} : _this$props8$menu;
-      var items = _this$props8$menu.items;
+      var _this$props9 = _this.props,
+          hideContextMenu = _this$props9.uiActions.hideContextMenu,
+          removeTracks = _this$props9.mopidyActions.removeTracks,
+          _this$props9$menu = _this$props9.menu;
+      _this$props9$menu = _this$props9$menu === undefined ? {} : _this$props9$menu;
+      var items = _this$props9$menu.items;
 
 
       hideContextMenu();
@@ -61545,13 +61547,13 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.playURIs = function () {
-      var _this$props9 = _this.props,
-          hideContextMenu = _this$props9.uiActions.hideContextMenu,
-          playURIs = _this$props9.mopidyActions.playURIs,
-          _this$props9$menu = _this$props9.menu;
-      _this$props9$menu = _this$props9$menu === undefined ? {} : _this$props9$menu;
-      var uris = _this$props9$menu.uris,
-          tracklist_uri = _this$props9$menu.tracklist_uri;
+      var _this$props10 = _this.props,
+          hideContextMenu = _this$props10.uiActions.hideContextMenu,
+          playURIs = _this$props10.mopidyActions.playURIs,
+          _this$props10$menu = _this$props10.menu;
+      _this$props10$menu = _this$props10$menu === undefined ? {} : _this$props10$menu;
+      var uris = _this$props10$menu.uris,
+          tracklist_uri = _this$props10$menu.tracklist_uri;
 
 
       hideContextMenu();
@@ -61559,12 +61561,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.playPlaylist = function () {
-      var _this$props10 = _this.props,
-          hideContextMenu = _this$props10.uiActions.hideContextMenu,
-          playPlaylist = _this$props10.mopidyActions.playPlaylist,
-          _this$props10$menu = _this$props10.menu;
-      _this$props10$menu = _this$props10$menu === undefined ? {} : _this$props10$menu;
-      var uris = _this$props10$menu.uris;
+      var _this$props11 = _this.props,
+          hideContextMenu = _this$props11.uiActions.hideContextMenu,
+          playPlaylist = _this$props11.mopidyActions.playPlaylist,
+          _this$props11$menu = _this$props11.menu;
+      _this$props11$menu = _this$props11$menu === undefined ? {} : _this$props11$menu;
+      var uris = _this$props11$menu.uris;
 
 
       hideContextMenu();
@@ -61573,12 +61575,12 @@ var ContextMenu = function (_React$Component) {
 
     _this.enqueuePlaylist = function (e) {
       var play_next = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-      var _this$props11 = _this.props,
-          hideContextMenu = _this$props11.uiActions.hideContextMenu,
-          enqueuePlaylist = _this$props11.mopidyActions.enqueuePlaylist,
-          _this$props11$menu = _this$props11.menu;
-      _this$props11$menu = _this$props11$menu === undefined ? {} : _this$props11$menu;
-      var uris = _this$props11$menu.uris;
+      var _this$props12 = _this.props,
+          hideContextMenu = _this$props12.uiActions.hideContextMenu,
+          enqueuePlaylist = _this$props12.mopidyActions.enqueuePlaylist,
+          _this$props12$menu = _this$props12.menu;
+      _this$props12$menu = _this$props12$menu === undefined ? {} : _this$props12$menu;
+      var uris = _this$props12$menu.uris;
 
 
       hideContextMenu();
@@ -61586,12 +61588,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.shufflePlayPlaylist = function () {
-      var _this$props12 = _this.props,
-          hideContextMenu = _this$props12.uiActions.hideContextMenu,
-          playPlaylist = _this$props12.mopidyActions.playPlaylist,
-          _this$props12$menu = _this$props12.menu;
-      _this$props12$menu = _this$props12$menu === undefined ? {} : _this$props12$menu;
-      var uris = _this$props12$menu.uris;
+      var _this$props13 = _this.props,
+          hideContextMenu = _this$props13.uiActions.hideContextMenu,
+          playPlaylist = _this$props13.mopidyActions.playPlaylist,
+          _this$props13$menu = _this$props13.menu;
+      _this$props13$menu = _this$props13$menu === undefined ? {} : _this$props13$menu;
+      var uris = _this$props13$menu.uris;
 
 
       hideContextMenu();
@@ -61599,12 +61601,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.playArtistTopTracks = function () {
-      var _this$props13 = _this.props,
-          hideContextMenu = _this$props13.uiActions.hideContextMenu,
-          playArtistTopTracks = _this$props13.spotifyActions.playArtistTopTracks,
-          _this$props13$menu = _this$props13.menu;
-      _this$props13$menu = _this$props13$menu === undefined ? {} : _this$props13$menu;
-      var uris = _this$props13$menu.uris;
+      var _this$props14 = _this.props,
+          hideContextMenu = _this$props14.uiActions.hideContextMenu,
+          playArtistTopTracks = _this$props14.spotifyActions.playArtistTopTracks,
+          _this$props14$menu = _this$props14.menu;
+      _this$props14$menu = _this$props14$menu === undefined ? {} : _this$props14$menu;
+      var uris = _this$props14$menu.uris;
 
 
       hideContextMenu();
@@ -61613,13 +61615,13 @@ var ContextMenu = function (_React$Component) {
 
     _this.addToQueue = function (e) {
       var play_next = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-      var _this$props14 = _this.props,
-          hideContextMenu = _this$props14.uiActions.hideContextMenu,
-          enqueueURIs = _this$props14.mopidyActions.enqueueURIs,
-          _this$props14$menu = _this$props14.menu;
-      _this$props14$menu = _this$props14$menu === undefined ? {} : _this$props14$menu;
-      var uris = _this$props14$menu.uris,
-          tracklist_uri = _this$props14$menu.tracklist_uri;
+      var _this$props15 = _this.props,
+          hideContextMenu = _this$props15.uiActions.hideContextMenu,
+          enqueueURIs = _this$props15.mopidyActions.enqueueURIs,
+          _this$props15$menu = _this$props15.menu;
+      _this$props15$menu = _this$props15$menu === undefined ? {} : _this$props15$menu;
+      var uris = _this$props15$menu.uris,
+          tracklist_uri = _this$props15$menu.tracklist_uri;
 
 
       hideContextMenu();
@@ -61627,12 +61629,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.addTracksToPlaylist = function (e, playlist_uri) {
-      var _this$props15 = _this.props,
-          hideContextMenu = _this$props15.uiActions.hideContextMenu,
-          addTracksToPlaylist = _this$props15.coreActions.addTracksToPlaylist,
-          _this$props15$menu = _this$props15.menu;
-      _this$props15$menu = _this$props15$menu === undefined ? {} : _this$props15$menu;
-      var uris = _this$props15$menu.uris;
+      var _this$props16 = _this.props,
+          hideContextMenu = _this$props16.uiActions.hideContextMenu,
+          addTracksToPlaylist = _this$props16.coreActions.addTracksToPlaylist,
+          _this$props16$menu = _this$props16.menu;
+      _this$props16$menu = _this$props16$menu === undefined ? {} : _this$props16$menu;
+      var uris = _this$props16$menu.uris;
 
 
       hideContextMenu();
@@ -61640,14 +61642,14 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.toggleLoved = function (e, is_loved) {
-      var _this$props16 = _this.props,
-          hideContextMenu = _this$props16.uiActions.hideContextMenu,
-          _this$props16$lastfmA = _this$props16.lastfmActions,
-          unloveTrack = _this$props16$lastfmA.unloveTrack,
-          loveTrack = _this$props16$lastfmA.loveTrack,
-          _this$props16$menu = _this$props16.menu;
-      _this$props16$menu = _this$props16$menu === undefined ? {} : _this$props16$menu;
-      var uris = _this$props16$menu.uris;
+      var _this$props17 = _this.props,
+          hideContextMenu = _this$props17.uiActions.hideContextMenu,
+          _this$props17$lastfmA = _this$props17.lastfmActions,
+          unloveTrack = _this$props17$lastfmA.unloveTrack,
+          loveTrack = _this$props17$lastfmA.loveTrack,
+          _this$props17$menu = _this$props17.menu;
+      _this$props17$menu = _this$props17$menu === undefined ? {} : _this$props17$menu;
+      var uris = _this$props17$menu.uris;
 
 
       hideContextMenu();
@@ -61659,12 +61661,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.unloveTrack = function () {
-      var _this$props17 = _this.props,
-          hideContextMenu = _this$props17.uiActions.hideContextMenu,
-          unloveTrack = _this$props17.lastfmActions.unloveTrack,
-          _this$props17$menu = _this$props17.menu;
-      _this$props17$menu = _this$props17$menu === undefined ? {} : _this$props17$menu;
-      var items = _this$props17$menu.items;
+      var _this$props18 = _this.props,
+          hideContextMenu = _this$props18.uiActions.hideContextMenu,
+          unloveTrack = _this$props18.lastfmActions.unloveTrack,
+          _this$props18$menu = _this$props18.menu;
+      _this$props18$menu = _this$props18$menu === undefined ? {} : _this$props18$menu;
+      var items = _this$props18$menu.items;
 
 
       hideContextMenu();
@@ -61672,13 +61674,13 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.removeFromPlaylist = function () {
-      var _this$props18 = _this.props,
-          hideContextMenu = _this$props18.uiActions.hideContextMenu,
-          removeTracksFromPlaylist = _this$props18.coreActions.removeTracksFromPlaylist,
-          _this$props18$menu = _this$props18.menu;
-      _this$props18$menu = _this$props18$menu === undefined ? {} : _this$props18$menu;
-      var tracklist_uri = _this$props18$menu.tracklist_uri,
-          indexes = _this$props18$menu.indexes;
+      var _this$props19 = _this.props,
+          hideContextMenu = _this$props19.uiActions.hideContextMenu,
+          removeTracksFromPlaylist = _this$props19.coreActions.removeTracksFromPlaylist,
+          _this$props19$menu = _this$props19.menu;
+      _this$props19$menu = _this$props19$menu === undefined ? {} : _this$props19$menu;
+      var tracklist_uri = _this$props19$menu.tracklist_uri,
+          indexes = _this$props19$menu.indexes;
 
 
       hideContextMenu();
@@ -61686,12 +61688,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.deletePlaylist = function () {
-      var _this$props19 = _this.props,
-          hideContextMenu = _this$props19.uiActions.hideContextMenu,
-          deletePlaylist = _this$props19.coreActions.deletePlaylist,
-          _this$props19$menu = _this$props19.menu;
-      _this$props19$menu = _this$props19$menu === undefined ? {} : _this$props19$menu;
-      var uris = _this$props19$menu.uris;
+      var _this$props20 = _this.props,
+          hideContextMenu = _this$props20.uiActions.hideContextMenu,
+          deletePlaylist = _this$props20.coreActions.deletePlaylist,
+          _this$props20$menu = _this$props20.menu;
+      _this$props20$menu = _this$props20$menu === undefined ? {} : _this$props20$menu;
+      var uris = _this$props20$menu.uris;
 
 
       hideContextMenu();
@@ -61699,12 +61701,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.startRadio = function () {
-      var _this$props20 = _this.props,
-          hideContextMenu = _this$props20.uiActions.hideContextMenu,
-          startRadio = _this$props20.pusherActions.startRadio,
-          _this$props20$menu = _this$props20.menu;
-      _this$props20$menu = _this$props20$menu === undefined ? {} : _this$props20$menu;
-      var uris = _this$props20$menu.uris;
+      var _this$props21 = _this.props,
+          hideContextMenu = _this$props21.uiActions.hideContextMenu,
+          startRadio = _this$props21.pusherActions.startRadio,
+          _this$props21$menu = _this$props21.menu;
+      _this$props21$menu = _this$props21$menu === undefined ? {} : _this$props21$menu;
+      var uris = _this$props21$menu.uris;
 
 
       hideContextMenu();
@@ -61712,12 +61714,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.goToRecommendations = function () {
-      var _this$props21 = _this.props,
-          hideContextMenu = _this$props21.uiActions.hideContextMenu,
-          _this$props21$menu = _this$props21.menu;
-      _this$props21$menu = _this$props21$menu === undefined ? {} : _this$props21$menu;
-      var items = _this$props21$menu.items,
-          push = _this$props21.history.push;
+      var _this$props22 = _this.props,
+          hideContextMenu = _this$props22.uiActions.hideContextMenu,
+          _this$props22$menu = _this$props22.menu;
+      _this$props22$menu = _this$props22$menu === undefined ? {} : _this$props22$menu;
+      var items = _this$props22$menu.items,
+          push = _this$props22.history.push;
 
 
       hideContextMenu();
@@ -61725,12 +61727,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.goToArtist = function () {
-      var _this$props22 = _this.props,
-          hideContextMenu = _this$props22.uiActions.hideContextMenu,
-          _this$props22$menu = _this$props22.menu;
-      _this$props22$menu = _this$props22$menu === undefined ? {} : _this$props22$menu;
-      var items = _this$props22$menu.items,
-          push = _this$props22.history.push;
+      var _this$props23 = _this.props,
+          hideContextMenu = _this$props23.uiActions.hideContextMenu,
+          _this$props23$menu = _this$props23.menu;
+      _this$props23$menu = _this$props23$menu === undefined ? {} : _this$props23$menu;
+      var items = _this$props23$menu.items,
+          push = _this$props23.history.push;
 
 
       if (!items || items.length <= 0 || !items[0].artists_uris || items[0].artists_uris.length <= 0) {
@@ -61743,12 +61745,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.goToUser = function () {
-      var _this$props23 = _this.props,
-          hideContextMenu = _this$props23.uiActions.hideContextMenu,
-          _this$props23$menu = _this$props23.menu;
-      _this$props23$menu = _this$props23$menu === undefined ? {} : _this$props23$menu;
-      var items = _this$props23$menu.items,
-          push = _this$props23.history.push;
+      var _this$props24 = _this.props,
+          hideContextMenu = _this$props24.uiActions.hideContextMenu,
+          _this$props24$menu = _this$props24.menu;
+      _this$props24$menu = _this$props24$menu === undefined ? {} : _this$props24$menu;
+      var items = _this$props24$menu.items,
+          push = _this$props24.history.push;
 
 
       if (!items || items.length <= 0 || !items[0].user_uri) return null;
@@ -61757,12 +61759,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.goToTrack = function () {
-      var _this$props24 = _this.props,
-          hideContextMenu = _this$props24.uiActions.hideContextMenu,
-          _this$props24$menu = _this$props24.menu;
-      _this$props24$menu = _this$props24$menu === undefined ? {} : _this$props24$menu;
-      var uris = _this$props24$menu.uris,
-          push = _this$props24.history.push;
+      var _this$props25 = _this.props,
+          hideContextMenu = _this$props25.uiActions.hideContextMenu,
+          _this$props25$menu = _this$props25.menu;
+      _this$props25$menu = _this$props25$menu === undefined ? {} : _this$props25$menu;
+      var uris = _this$props25$menu.uris,
+          push = _this$props25.history.push;
 
 
       if (!uris) return null;
@@ -61771,13 +61773,13 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.copyURIs = function () {
-      var _this$props25 = _this.props,
-          _this$props25$uiActio = _this$props25.uiActions,
-          hideContextMenu = _this$props25$uiActio.hideContextMenu,
-          createNotification = _this$props25$uiActio.createNotification,
-          _this$props25$menu = _this$props25.menu;
-      _this$props25$menu = _this$props25$menu === undefined ? {} : _this$props25$menu;
-      var uris = _this$props25$menu.uris;
+      var _this$props26 = _this.props,
+          _this$props26$uiActio = _this$props26.uiActions,
+          hideContextMenu = _this$props26$uiActio.hideContextMenu,
+          createNotification = _this$props26$uiActio.createNotification,
+          _this$props26$menu = _this$props26.menu;
+      _this$props26$menu = _this$props26$menu === undefined ? {} : _this$props26$menu;
+      var uris = _this$props26$menu.uris;
 
 
       var temp = $('<input>');
@@ -61791,12 +61793,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.renderTitle = function () {
-      var _this$props26 = _this.props,
-          _this$props26$uiActio = _this$props26.uiActions,
-          hideContextMenu = _this$props26$uiActio.hideContextMenu,
-          setSelectedTracks = _this$props26$uiActio.setSelectedTracks,
-          queue_metadata = _this$props26.queue_metadata,
-          title = _this$props26.menu.title;
+      var _this$props27 = _this.props,
+          _this$props27$uiActio = _this$props27.uiActions,
+          hideContextMenu = _this$props27$uiActio.hideContextMenu,
+          setSelectedTracks = _this$props27$uiActio.setSelectedTracks,
+          queue_metadata = _this$props27.queue_metadata,
+          title = _this$props27.menu.title;
 
 
       var context = _this.getContext();
@@ -61896,11 +61898,11 @@ var ContextMenu = function (_React$Component) {
 
     _this.setSubmenu = function (name) {
       var submenu = _this.state.submenu;
-      var _this$props27 = _this.props,
-          spotify_library_playlists_loaded_all = _this$props27.spotify_library_playlists_loaded_all,
-          mopidy_library_playlists_loaded_all = _this$props27.mopidy_library_playlists_loaded_all,
-          spotifyActions = _this$props27.spotifyActions,
-          mopidyActions = _this$props27.mopidyActions;
+      var _this$props28 = _this.props,
+          spotify_library_playlists_loaded_all = _this$props28.spotify_library_playlists_loaded_all,
+          mopidy_library_playlists_loaded_all = _this$props28.mopidy_library_playlists_loaded_all,
+          spotifyActions = _this$props28.spotifyActions,
+          mopidyActions = _this$props28.mopidyActions;
 
       if (submenu !== name && name == 'add-to-playlist') {
         if (!spotify_library_playlists_loaded_all) spotifyActions.getLibraryPlaylists();
@@ -61916,9 +61918,9 @@ var ContextMenu = function (_React$Component) {
 
     _this.renderSubmenu = function () {
       var submenu = _this.state.submenu;
-      var _this$props28 = _this.props,
-          playlistsIndex = _this$props28.playlists,
-          processes = _this$props28.processes;
+      var _this$props29 = _this.props,
+          playlistsIndex = _this$props29.playlists,
+          processes = _this$props29.processes;
 
 
       var list = null;
@@ -62006,10 +62008,10 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.renderItems = function () {
-      var _this$props29 = _this.props,
-          lastfm_authorized = _this$props29.lastfm_authorized,
-          spotify_authorized = _this$props29.spotify_authorized,
-          load_queue = _this$props29.load_queue;
+      var _this$props30 = _this.props,
+          lastfm_authorized = _this$props30.lastfm_authorized,
+          spotify_authorized = _this$props30.spotify_authorized,
+          load_queue = _this$props30.load_queue;
 
       var context = _this.getContext();
 
@@ -69007,7 +69009,6 @@ var PlaybackControls = function (_React$Component) {
       var _this2 = this;
 
       this.setState({
-        current_track: null,
         transition_track: this.state.current_track,
         transition_direction: direction
       });
@@ -69016,8 +69017,7 @@ var PlaybackControls = function (_React$Component) {
       // the transitioning track from state
       setTimeout(function () {
         _this2.setState({
-          transition_track: null,
-          transition_direction: null
+          transition_track: null
         });
       }, 250);
     }
@@ -69154,13 +69154,10 @@ var PlaybackControls = function (_React$Component) {
           time_position = _props.time_position;
       var _state = this.state,
           current_track = _state.current_track,
-          expanded = _state.expanded;
+          expanded = _state.expanded,
+          transition_track = _state.transition_track,
+          transition_direction = _state.transition_direction;
 
-
-      var images = false;
-      if (current_track && current_track.images) {
-        images = current_track.images;
-      }
 
       return _react2.default.createElement(
         'div',
@@ -69168,55 +69165,89 @@ var PlaybackControls = function (_React$Component) {
         _react2.default.createElement('div', { className: 'playback-controls__background' }),
         _react2.default.createElement(_Stream2.default, null),
         next_track && next_track.images ? _react2.default.createElement(_Thumbnail2.default, { className: 'hide', size: 'large', images: next_track.images }) : null,
-        this.state.transition_track && this.state.transition_direction ? _react2.default.createElement(
-          'div',
-          {
-            className: 'current-track current-track__transition current-track__transition--' + this.state.transition_direction
-          },
-          _react2.default.createElement(
-            'div',
-            { className: 'text' },
-            _react2.default.createElement(
-              'div',
-              { className: 'title' },
-              this.state.transition_track.name
-            ),
-            _react2.default.createElement(
-              'div',
-              { className: 'artist' },
-              _react2.default.createElement(_LinksSentence2.default, { items: this.state.transition_track.artists, nolinks: true })
-            )
-          )
-        ) : null,
         _react2.default.createElement(
           'div',
           {
-            className: this.state.transition_track && this.state.transition_direction ? 'current-track current-track--transitioning' : 'current-track',
-            onTouchStart: this.handleTouchStart,
-            onTouchEnd: this.handleTouchEnd,
-            tabIndex: '-1'
+            className: 'current-track__wrapper',
+            transition: transition_track,
+            direction: transition_direction
           },
-          _react2.default.createElement(
-            _Link2.default,
-            { className: 'thumbnail-wrapper', to: '/kiosk-mode', tabIndex: '-1' },
-            _react2.default.createElement(_Thumbnail2.default, { size: 'small', images: images, type: 'track' })
-          ),
-          _react2.default.createElement(
+          transition_track && transition_direction && _react2.default.createElement(
             'div',
-            { className: 'text' },
+            { className: 'current-track current-track__outgoing' },
             _react2.default.createElement(
               'div',
-              { className: 'title' },
-              current_track ? current_track.name : _react2.default.createElement(
-                'span',
-                null,
-                '-'
+              { className: 'text' },
+              _react2.default.createElement(
+                'div',
+                { className: 'title' },
+                transition_track.name
+              ),
+              _react2.default.createElement(
+                'div',
+                { className: 'artist' },
+                _react2.default.createElement(_LinksSentence2.default, { items: transition_track.artists, nolinks: true })
               )
+            )
+          ),
+          current_track && (!transition_track || transition_track.tlid !== current_track.tlid) ? _react2.default.createElement(
+            'div',
+            {
+              className: 'current-track current-track__incoming',
+              onTouchStart: this.handleTouchStart,
+              onTouchEnd: this.handleTouchEnd,
+              tabIndex: '-1',
+              key: current_track.tlid
+            },
+            _react2.default.createElement(
+              _Link2.default,
+              { className: 'thumbnail-wrapper', to: '/kiosk-mode', tabIndex: '-1' },
+              _react2.default.createElement(_Thumbnail2.default, { size: 'small', images: current_track.images, type: 'track' })
             ),
             _react2.default.createElement(
               'div',
-              { className: 'artist' },
-              current_track ? _react2.default.createElement(_LinksSentence2.default, { items: current_track.artists }) : _react2.default.createElement(_LinksSentence2.default, null)
+              { className: 'text' },
+              _react2.default.createElement(
+                'div',
+                { className: 'title' },
+                current_track ? current_track.name : _react2.default.createElement(
+                  'span',
+                  null,
+                  '-'
+                )
+              ),
+              _react2.default.createElement(
+                'div',
+                { className: 'artist' },
+                current_track ? _react2.default.createElement(_LinksSentence2.default, { items: current_track.artists }) : _react2.default.createElement(_LinksSentence2.default, null)
+              )
+            )
+          ) : _react2.default.createElement(
+            'div',
+            {
+              className: 'current-track',
+              onTouchStart: this.handleTouchStart,
+              onTouchEnd: this.handleTouchEnd,
+              tabIndex: '-1'
+            },
+            _react2.default.createElement(
+              _Link2.default,
+              { className: 'thumbnail-wrapper', to: '/kiosk-mode', tabIndex: '-1' },
+              _react2.default.createElement(_Thumbnail2.default, { size: 'small', type: 'track' })
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: 'text' },
+              _react2.default.createElement(
+                'div',
+                { className: 'title' },
+                '\xA0'
+              ),
+              _react2.default.createElement(
+                'div',
+                { className: 'artist' },
+                '\xA0'
+              )
             )
           )
         ),
@@ -92194,7 +92225,12 @@ var Settings = function (_React$Component) {
                 'span',
                 { className: 'text' },
                 this.props.pusher.version.current,
-                ' installed',
+                ' ',
+                _react2.default.createElement(
+                  'span',
+                  { className: 'mid_grey-text' },
+                  build
+                ),
                 this.props.pusher.version.upgrade_available ? _react2.default.createElement(
                   'span',
                   { className: 'flag flag--dark' },
@@ -99488,8 +99524,13 @@ var KioskMode = function (_React$Component) {
 
       var extraControls = _react2.default.createElement(
         'div',
-        { className: 'control', onClick: this.toggleLyrics, style: show_lyrics ? { opacity: 1 } : {} },
-        _react2.default.createElement(_Icon2.default, { name: 'queue_music', className: show_lyrics ? 'turquoise-text' : null })
+        { className: 'control', onClick: this.toggleLyrics },
+        show_lyrics ? _react2.default.createElement(_Icon2.default, { name: 'toggle_on', className: 'turquoise-text' }) : _react2.default.createElement(_Icon2.default, { name: 'toggle_off' }),
+        _react2.default.createElement(
+          'div',
+          { style: { paddingLeft: '6px', fontWeight: 'bold' } },
+          'Lyrics'
+        )
       );
 
       return _react2.default.createElement(
@@ -99657,14 +99698,14 @@ var Modal = function (_React$Component) {
         _react2.default.createElement(
           'div',
           { className: 'controls' },
+          extraControls,
           !noclose && _react2.default.createElement(
             'div',
             { className: 'control close', onClick: function onClick(e) {
                 return window.history.back();
               } },
             _react2.default.createElement(_Icon2.default, { name: 'close', className: 'white' })
-          ),
-          extraControls
+          )
         ),
         _react2.default.createElement(
           'div',

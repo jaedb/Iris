@@ -94,7 +94,6 @@ class PlaybackControls extends React.Component {
 
   setTransition(direction) {
     this.setState({
-      current_track: null,
       transition_track: this.state.current_track,
       transition_direction: direction,
     });
@@ -104,7 +103,6 @@ class PlaybackControls extends React.Component {
     setTimeout(() => {
       this.setState({
         transition_track: null,
-        transition_direction: null,
       });
     },
     250);
@@ -173,13 +171,17 @@ class PlaybackControls extends React.Component {
   }
 
   render() {
-    const { next_track, touch_enabled, time_position } = this.props;
-    const { current_track, expanded } = this.state;
-
-    let images = false;
-    if (current_track && current_track.images) {
-      images = current_track.images;
-    }
+    const {
+      next_track,
+      touch_enabled,
+      time_position,
+    } = this.props;
+    const {
+      current_track,
+      expanded,
+      transition_track,
+      transition_direction,
+    } = this.state;
 
     return (
       <div className={`playback-controls${expanded ? ' playback-controls--expanded' : ''}${touch_enabled ? ' playback-controls--touch-enabled' : ''}`}>
@@ -190,38 +192,60 @@ class PlaybackControls extends React.Component {
 
         {next_track && next_track.images ? <Thumbnail className="hide" size="large" images={next_track.images} /> : null}
 
-        {this.state.transition_track && this.state.transition_direction ? (
-          <div
-            className={`current-track current-track__transition current-track__transition--${this.state.transition_direction}`}
-          >
-            <div className="text">
-              <div className="title">
-                {this.state.transition_track.name}
-              </div>
-              <div className="artist">
-                <LinksSentence items={this.state.transition_track.artists} nolinks />
-              </div>
-            </div>
-          </div>
-        ) : null}
-
         <div
-          className={this.state.transition_track && this.state.transition_direction ? 'current-track current-track--transitioning' : 'current-track'}
-          onTouchStart={this.handleTouchStart}
-          onTouchEnd={this.handleTouchEnd}
-          tabIndex="-1"
+          className="current-track__wrapper"
+          transition={transition_track}
+          direction={transition_direction}
         >
-          <Link className="thumbnail-wrapper" to="/kiosk-mode" tabIndex="-1">
-            <Thumbnail size="small" images={images} type="track" />
-          </Link>
-          <div className="text">
-            <div className="title">
-              {current_track ? current_track.name : <span>-</span>}
+          {transition_track && transition_direction && (
+            <div className={`current-track current-track__outgoing`}>
+              <div className="text">
+                <div className="title">
+                  {transition_track.name}
+                </div>
+                <div className="artist">
+                  <LinksSentence items={transition_track.artists} nolinks />
+                </div>
+              </div>
             </div>
-            <div className="artist">
-              {current_track ? <LinksSentence items={current_track.artists} /> : <LinksSentence />}
+          )}
+
+          {current_track && (!transition_track || transition_track.tlid !== current_track.tlid) ? (
+            <div
+              className="current-track current-track__incoming"
+              onTouchStart={this.handleTouchStart}
+              onTouchEnd={this.handleTouchEnd}
+              tabIndex="-1"
+              key={current_track.tlid}
+            >
+              <Link className="thumbnail-wrapper" to="/kiosk-mode" tabIndex="-1">
+                <Thumbnail size="small" images={current_track.images} type="track" />
+              </Link>
+              <div className="text">
+                <div className="title">
+                  {current_track ? current_track.name : <span>-</span>}
+                </div>
+                <div className="artist">
+                  {current_track ? <LinksSentence items={current_track.artists} /> : <LinksSentence />}
+                </div>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div
+              className="current-track"
+              onTouchStart={this.handleTouchStart}
+              onTouchEnd={this.handleTouchEnd}
+              tabIndex="-1"
+            >
+              <Link className="thumbnail-wrapper" to="/kiosk-mode" tabIndex="-1">
+                <Thumbnail size="small" type="track" />
+              </Link>
+              <div className="text">
+                <div className="title">&nbsp;</div>
+                <div className="artist">&nbsp;</div>
+              </div>
+            </div>
+          )}
         </div>
 
         <section className="playback">

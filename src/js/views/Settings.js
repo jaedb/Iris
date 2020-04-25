@@ -433,7 +433,10 @@ class Settings extends React.Component {
             <div className="input">
               <span className="text">
                 {this.props.pusher.version.current}
-                {' installed'}
+                {' '}
+                <span className="mid_grey-text">
+                  {build}
+                </span>
                 {this.props.pusher.version.upgrade_available ? (
                   <span className="flag flag--dark">
                     <Icon name="cloud_download" className="blue-text" />
@@ -444,7 +447,7 @@ class Settings extends React.Component {
                       <Icon name="check" className="green-text" />
                       {'  Up-to-date'}
                     </span>
-                  )}
+                )}
               </span>
             </div>
           </div>

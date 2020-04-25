@@ -24,12 +24,12 @@ class Modal extends React.Component {
       <div className={`modal ${className}`}>
 
         <div className="controls">
+          {extraControls}
           {!noclose && (
             <div className="control close" onClick={(e) => window.history.back()}>
               <Icon name="close" className="white" />
             </div>
           )}
-          {extraControls}
         </div>
 
         <div className="content">
