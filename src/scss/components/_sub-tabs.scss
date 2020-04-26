@@ -1,10 +1,10 @@
 
-.services {
+.sub-tabs {
 
-	.menu {
+	&__menu {
 		@include clearfix();
 
-		&__inner {
+		.menu__inner {
 			display: flex;
 			margin: 0 0 0 -5px;
 		}
@@ -89,7 +89,7 @@
 		}
 	}
 
-	.service {
+	&__content {
 		padding: 20px;
 		border-radius: 0 0 3px 3px;
 		background: lighten(colour(dark_grey), 4%);
@@ -107,7 +107,7 @@
 		margin-left: -20px;
 		margin-right: -20px;
 
-		.menu {
+		&__menu {
 			overflow-x: auto;
 
 			&::-webkit-scrollbar{
@@ -135,7 +135,7 @@
 			}
 		}
 
-		.service {
+		&__content {
 			margin-top: 0;
 		}
 	}

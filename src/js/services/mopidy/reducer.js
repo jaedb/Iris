@@ -6,6 +6,11 @@ export default function reducer(mopidy = {}, action) {
     case 'MOPIDY_SET':
       return { ...mopidy, ...action.data };
 
+    case 'MOPIDY_UPDATE_SERVER':
+      const updated = {};
+      updated[action.server.id] = { ...mopidy.servers[action.server.id], ...action.server };
+      return { ...mopidy, servers: { ...mopidy.servers, ...updated } };
+
     case 'MOPIDY_CONNECT':
     case 'MOPIDY_CONNECTING':
       return {

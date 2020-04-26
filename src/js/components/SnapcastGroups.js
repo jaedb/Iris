@@ -137,7 +137,7 @@ const SnapcastGroups = (props) => {
         activeClassName="menu-item--active"
         key={group.id}
         history={history}
-        to={`/settings/snapcast/${group.id}`}
+        to={`/settings/services/snapcast/${group.id}`}
         scrollTo="#services-snapcast-groups"
       >
         <div className="snapcast__groups__menu-item__inner menu-item__inner">
@@ -154,8 +154,8 @@ const SnapcastGroups = (props) => {
   }
 
   return (
-    <div className="snapcast__groups" id="services-snapcast-groups">
-      <div className="snapcast__groups__menu menu">
+    <div className="sub-tabs snapcast__groups" id="services-snapcast-groups">
+      <div className="sub-tabs__menu snapcast__groups__menu menu">
         <div className="menu__inner">
           {sortItems(groupsArray, 'name').map((group) => renderMenuItem(group))}
         </div>

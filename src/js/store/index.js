@@ -61,6 +61,15 @@ let state = {
     host: window.location.hostname,
     port: (window.location.port ? window.location.port : (window.location.protocol === 'https:' ? '443' : '80')),
     ssl: (window.location.protocol === 'https:'),
+    servers: {
+      default: {
+        id: 'default',
+        name: 'Default',
+        host: window.location.hostname,
+        port: (window.location.port ? window.location.port : (window.location.protocol === 'https:' ? '443' : '80')),
+        ssl: (window.location.protocol === 'https:')
+      },
+    },
     mute: false,
     volume: 0,
     progress: 0,

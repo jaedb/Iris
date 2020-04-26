@@ -11,6 +11,7 @@ import TextField from '../components/Fields/TextField';
 import Header from '../components/Header';
 import Icon from '../components/Icon';
 import Services from '../components/Services';
+import Servers from '../components/Servers';
 import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
 import * as pusherActions from '../services/pusher/actions';
@@ -205,34 +206,14 @@ class Settings extends React.Component {
             </div>
           </label>
 
-          <form onSubmit={(e) => this.setConfig(e)}>
-            <label className="field">
-              <div className="name">Host</div>
-              <div className="input">
-                <TextField
-                  value={mopidy.host}
-                  onChange={value => mopidyActions.setConnection({ host: value })}
-                />
-              </div>
-            </label>
-            <label className="field">
-              <div className="name">Port</div>
-              <div className="input">
-                <TextField
-                  type="text"
-                  value={mopidy.port}
-                  onChange={value => mopidyActions.setConnection({ port: value })}
-                />
-              </div>
-            </label>
-          </form>
+          <Route path="/settings/:server?/:id?" component={Servers} />
 
           <h4 className="underline">
             Services
             <a name="services" />
           </h4>
 
-          <Route path="/settings/:service?/:id?" component={Services} />
+          <Route path="/settings/:services?/:service?/:id?" component={Services} />
 
           <h4 className="underline">
             Interface

@@ -7,6 +7,7 @@ import Link from './Link';
 import Thumbnail from './Thumbnail';
 import Icon from './Icon';
 import URILink from './URILink';
+import TextField from './Fields/TextField';
 import SpotifyAuthenticationFrame from './Fields/SpotifyAuthenticationFrame';
 import LastfmAuthenticationFrame from './Fields/LastfmAuthenticationFrame';
 import GeniusAuthenticationFrame from './Fields/GeniusAuthenticationFrame';
@@ -109,11 +110,8 @@ class Services extends React.Component {
         <label className="field">
           <div className="name">Country</div>
           <div className="input">
-            <input
-              type="text"
-              onChange={(e) => this.setState({ country: e.target.value })}
-              onFocus={(e) => this.setState({ input_in_focus: 'country' })}
-              onBlur={(e) => this.props.spotifyActions.set({ country: e.target.value })}
+            <TextField
+              onChange={value => this.props.spotifyActions.set({ country: value })}
               value={this.state.country}
             />
             <div className="description">
@@ -322,9 +320,9 @@ class Services extends React.Component {
     }
 
     return (
-      <div className="menu" id="services-menu">
+      <div className="sub-tabs__menu menu" id="services-menu">
         <div className="menu__inner">
-          <Link history={this.props.history} className="menu-item menu-item--spotify" activeClassName="menu-item--active" to="/settings/spotify" scrollTo="#services-menu">
+          <Link history={this.props.history} className="menu-item menu-item--spotify" activeClassName="menu-item--active" to="/settings/services/spotify" scrollTo="#services-menu">
             <div className="menu-item__inner">
               {spotify_icon}
               <div className="menu-item__title">
@@ -333,7 +331,7 @@ class Services extends React.Component {
               {this.props.spotify.authorization ? <span className="status green-text">Authorized</span> : <span className="status mid_grey-text">Read-only</span>}
             </div>
           </Link>
-          <Link history={this.props.history} className="menu-item menu-item--lastfm" activeClassName="menu-item--active" to="/settings/lastfm" scrollTo="#services-menu">
+          <Link history={this.props.history} className="menu-item menu-item--lastfm" activeClassName="menu-item--active" to="/settings/services/lastfm" scrollTo="#services-menu">
             <div className="menu-item__inner">
               {lastfm_icon}
               <div className="menu-item__title">
@@ -342,7 +340,7 @@ class Services extends React.Component {
               {this.props.lastfm.authorization ? <span className="status green-text">Authorized</span> : <span className="status mid_grey-text">Read-only</span>}
             </div>
           </Link>
-          <Link history={this.props.history} className="menu-item menu-item--genius" activeClassName="menu-item--active" to="/settings/genius" scrollTo="#services-menu">
+          <Link history={this.props.history} className="menu-item menu-item--genius" activeClassName="menu-item--active" to="/settings/services/genius" scrollTo="#services-menu">
             <div className="menu-item__inner">
               {genius_icon}
               <div className="menu-item__title">
@@ -351,7 +349,7 @@ class Services extends React.Component {
               {this.props.genius.authorization ? <span className="status green-text">Authorized</span> : <span className="status mid_grey-text">Unauthorized</span>}
             </div>
           </Link>
-          <Link history={this.props.history} className="menu-item menu-item--snapcast" activeClassName="menu-item--active" to="/settings/snapcast" scrollTo="#services-menu">
+          <Link history={this.props.history} className="menu-item menu-item--snapcast" activeClassName="menu-item--active" to="/settings/services/snapcast" scrollTo="#services-menu">
             <div className="menu-item__inner">
               <Icon className="menu-item__icon" name="devices" />
               <div className="menu-item__title">
@@ -368,7 +366,7 @@ class Services extends React.Component {
               )}
             </div>
           </Link>
-          <Link history={this.props.history} className="menu-item menu-item--icecast" activeClassName="menu-item--active" to="/settings/icecast" scrollTo="#services-menu">
+          <Link history={this.props.history} className="menu-item menu-item--icecast" activeClassName="menu-item--active" to="/settings/services/icecast" scrollTo="#services-menu">
             <div className="menu-item__inner">
               <Icon className="menu-item__icon" name="wifi_tethering" />
               <div className="menu-item__title">
@@ -386,15 +384,15 @@ class Services extends React.Component {
     const { match } = this.props;
     switch (match.params.service) {
       case 'spotify':
-        return <div className="service">{this.renderSpotify()}</div>;
+        return <div className="sub-tabs__content">{this.renderSpotify()}</div>;
       case 'lastfm':
-        return <div className="service">{this.renderLastfm()}</div>;
+        return <div className="sub-tabs__content">{this.renderLastfm()}</div>;
       case 'genius':
-        return <div className="service">{this.renderGenius()}</div>;
+        return <div className="sub-tabs__content">{this.renderGenius()}</div>;
       case 'icecast':
-        return <div className="service">{this.renderIcecast()}</div>;
+        return <div className="sub-tabs__content">{this.renderIcecast()}</div>;
       case 'snapcast':
-        return <div className="service">{<Snapcast match={this.props.match} />}</div>;
+        return <div className="sub-tabs__content">{<Snapcast match={this.props.match} />}</div>;
       default:
         return null;
     }
@@ -402,7 +400,7 @@ class Services extends React.Component {
 
   render() {
     return (
-      <div className="services">
+      <div className="sub-tabs sub-tabs--services">
         {this.renderMenu()}
         {this.renderService()}
       </div>

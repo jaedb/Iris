@@ -8,6 +8,13 @@ export function set(data) {
   };
 }
 
+export function updateServer(server) {
+  return {
+    type: 'MOPIDY_UPDATE_SERVER',
+    server,
+  };
+}
+
 export function setConnection(data) {
   return {
     type: 'MOPIDY_SET_CONNECTION',
