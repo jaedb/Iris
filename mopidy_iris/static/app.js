@@ -70862,6 +70862,8 @@ var _actions3 = __webpack_require__(/*! ../services/mopidy/actions */ "./src/js/
 
 var mopidyActions = _interopRequireWildcard(_actions3);
 
+var _helpers = __webpack_require__(/*! ../util/helpers */ "./src/js/util/helpers.js");
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -70874,7 +70876,20 @@ var Servers = function Servers(_ref) {
   var dispatch = (0, _reactRedux.useDispatch)();
 
   var _store$getState = store.getState(),
-      servers = _store$getState.mopidy.servers;
+      _store$getState$mopid = _store$getState.mopidy,
+      servers = _store$getState$mopid.servers,
+      current_server = _store$getState$mopid.current_server,
+      mopidyConnected = _store$getState$mopid.connected,
+      mopidyConnecting = _store$getState$mopid.connecting,
+      _store$getState$pushe = _store$getState.pusher,
+      pusherConnected = _store$getState$pushe.connected,
+      pusherConnecting = _store$getState$pushe.connecting;
+
+  var addServer = function addServer() {
+    var action = mopidyActions.addServer();
+    dispatch(action);
+    history.push('/settings/servers/' + action.server.id);
+  };
 
   var renderMenu = function renderMenu() {
     return _react2.default.createElement(
@@ -70884,6 +70899,32 @@ var Servers = function Servers(_ref) {
         'div',
         { className: 'menu__inner' },
         (0, _arrays.indexToArray)(servers).map(function (server) {
+          var status = _react2.default.createElement(
+            'span',
+            { className: 'status mid_grey-text' },
+            'Inactive'
+          );
+          if (server.id === current_server) {
+            if (mopidyConnecting || pusherConnecting) {
+              status = _react2.default.createElement(
+                'span',
+                { className: 'status mid_grey-text' },
+                'Connecting'
+              );
+            } else if (!mopidyConnected || !pusherConnected) {
+              status = _react2.default.createElement(
+                'span',
+                { className: 'status red-text' },
+                'Disconnected'
+              );
+            } else if (mopidyConnected && pusherConnected) {
+              status = _react2.default.createElement(
+                'span',
+                { className: 'status green-text' },
+                'Connected'
+              );
+            }
+          }
           return _react2.default.createElement(
             _Link2.default,
             {
@@ -70897,14 +70938,38 @@ var Servers = function Servers(_ref) {
             _react2.default.createElement(
               'div',
               { className: 'menu-item__inner' },
+              _react2.default.createElement(_Icon2.default, { className: 'menu-item__icon', name: (0, _helpers.iconFromKeyword)(server.name) || 'dns' }),
               _react2.default.createElement(
                 'div',
                 { className: 'menu-item__title' },
                 server.name
-              )
+              ),
+              status
             )
           );
-        })
+        }),
+        _react2.default.createElement(
+          'span',
+          {
+            className: 'menu-item menu-item--add',
+            onClick: addServer
+          },
+          _react2.default.createElement(
+            'div',
+            { className: 'menu-item__inner' },
+            _react2.default.createElement(_Icon2.default, { className: 'menu-item__icon', name: 'add' }),
+            _react2.default.createElement(
+              'div',
+              { className: 'menu-item__title' },
+              'Add'
+            ),
+            _react2.default.createElement(
+              'span',
+              { className: 'status mid_grey-text' },
+              'New server'
+            )
+          )
+        )
       )
     );
   };
@@ -70913,6 +70978,14 @@ var Servers = function Servers(_ref) {
     if (!serverId) return null;
     var server = servers[serverId];
     if (!server) return null;
+
+    var remove = function remove() {
+      dispatch(mopidyActions.removeServer(server.id));
+    };
+
+    var setAsCurrent = function setAsCurrent() {
+      dispatch(mopidyActions.setCurrentServer(server));
+    };
 
     return _react2.default.createElement(
       'div',
@@ -70951,7 +71024,7 @@ var Servers = function Servers(_ref) {
           _react2.default.createElement(_TextField2.default, {
             value: server.host,
             onChange: function onChange(value) {
-              return updateServer({ id: server.id, host: value });
+              return dispatch(mopidyActions.updateServer({ id: server.id, host: value }));
             }
           })
         )
@@ -70971,9 +71044,28 @@ var Servers = function Servers(_ref) {
             type: 'text',
             value: server.port,
             onChange: function onChange(value) {
-              return updateServer({ id: server.id, port: value });
+              return dispatch(mopidyActions.updateServer({ id: server.id, port: value }));
             }
           })
+        )
+      ),
+      _react2.default.createElement(
+        'label',
+        { className: 'field' },
+        _react2.default.createElement('div', { className: 'name' }),
+        _react2.default.createElement(
+          'div',
+          { className: 'input' },
+          _react2.default.createElement(
+            'button',
+            { className: 'button button--primary', disabled: server.id === current_server, onClick: setAsCurrent },
+            'Switch to this server'
+          ),
+          _react2.default.createElement(
+            'button',
+            { className: 'button button--destructive', onClick: remove },
+            'Remove'
+          )
         )
       )
     );
@@ -72425,6 +72517,8 @@ var _format = __webpack_require__(/*! ../util/format */ "./src/js/util/format.js
 
 var _arrays = __webpack_require__(/*! ../util/arrays */ "./src/js/util/arrays.js");
 
+var _helpers = __webpack_require__(/*! ../util/helpers */ "./src/js/util/helpers.js");
+
 var _VolumeControl = __webpack_require__(/*! ./Fields/VolumeControl */ "./src/js/components/Fields/VolumeControl.js");
 
 var _VolumeControl2 = _interopRequireDefault(_VolumeControl);
@@ -72577,61 +72671,6 @@ var SnapcastGroups = function SnapcastGroups(props) {
     var anyClients = !show_disconnected_clients && (!group.clients || !group.clients.length || !group.clients.filter(function (client) {
       return client.connected;
     }).length);
-    var icon = function icon() {
-      var iconWords = [{ icon: 'business', words: ['office', 'work'] }, { icon: 'king_bed', words: ['bed'] }, { icon: 'weekend', words: ['lounge', 'tv', 'sitting room'] }, { icon: 'directions_car', words: ['garage', 'laundry'] }, { icon: 'fitness_center', words: ['gym'] }, { icon: 'kitchen', words: ['kitchen'] }, { icon: 'deck', words: ['deck', 'outside'] }, { icon: 'restaurant_menu', words: ['dining', 'dinner'] }, { icon: 'laptop', words: ['laptop'] }, { icon: 'bug_report', words: ['test', 'debug'] }, { icon: 'child_care', words: ['kids', 'baby'] }, { icon: 'smartphone', words: ['phone', 'mobile'] }];
-      var name = group.name.toLowerCase();
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
-
-      try {
-        for (var _iterator = iconWords[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var item = _step.value;
-          var _iteratorNormalCompletion2 = true;
-          var _didIteratorError2 = false;
-          var _iteratorError2 = undefined;
-
-          try {
-            for (var _iterator2 = item.words[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-              var word = _step2.value;
-
-              if (name.match(new RegExp('(' + word + ')', 'gi'))) {
-                return item.icon;
-              }
-            }
-          } catch (err) {
-            _didIteratorError2 = true;
-            _iteratorError2 = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                _iterator2.return();
-              }
-            } finally {
-              if (_didIteratorError2) {
-                throw _iteratorError2;
-              }
-            }
-          }
-        }
-      } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator.return) {
-            _iterator.return();
-          }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
-        }
-      }
-
-      ;
-      return 'speaker_group';
-    };
     return _react2.default.createElement(
       _Link2.default,
       {
@@ -72645,7 +72684,7 @@ var SnapcastGroups = function SnapcastGroups(props) {
       _react2.default.createElement(
         'div',
         { className: 'snapcast__groups__menu-item__inner menu-item__inner' },
-        _react2.default.createElement(_Icon2.default, { className: 'menu-item__icon', name: icon() }),
+        _react2.default.createElement(_Icon2.default, { className: 'menu-item__icon', name: (0, _helpers.iconFromKeyword)(group.name.toLowerCase()) || 'speaker_group' }),
         _react2.default.createElement(
           'div',
           { className: 'menu-item__title' },
@@ -77395,6 +77434,12 @@ var localstorageMiddleware = function () {
             });
             break;
 
+          case 'MOPIDY_UPDATE_SERVERS':
+            _storage2.default.set('mopidy', {
+              servers: action.servers
+            });
+            break;
+
           case 'SPOTIFY_AUTHORIZATION_GRANTED':
             if (action.authorization !== undefined) {
               var authorization = action.authorization;
@@ -77592,6 +77637,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.set = set;
 exports.updateServer = updateServer;
+exports.updateServers = updateServers;
+exports.addServer = addServer;
+exports.setCurrentServer = setCurrentServer;
+exports.removeServer = removeServer;
 exports.setConnection = setConnection;
 exports.request = request;
 exports.connect = connect;
@@ -77665,6 +77714,8 @@ exports.getQueueHistory = getQueueHistory;
 
 var _arrays = __webpack_require__(/*! ../../util/arrays */ "./src/js/util/arrays.js");
 
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
+
 function set(data) {
   return {
     type: 'MOPIDY_SET',
@@ -77676,6 +77727,39 @@ function updateServer(server) {
   return {
     type: 'MOPIDY_UPDATE_SERVER',
     server: server
+  };
+}
+
+function updateServers(servers) {
+  return {
+    type: 'MOPIDY_UPDATE_SERVERS',
+    servers: servers
+  };
+}
+
+function addServer() {
+  return {
+    type: 'MOPIDY_UPDATE_SERVER',
+    server: {
+      id: (0, _helpers.generateGuid)(),
+      name: 'New server',
+      host: window.location.hostname,
+      port: window.location.port ? window.location.port : window.location.protocol === 'https:' ? '443' : '80'
+    }
+  };
+}
+
+function setCurrentServer(server) {
+  return {
+    type: 'MOPIDY_SET_CURRENT_SERVER',
+    server: server
+  };
+}
+
+function removeServer(id) {
+  return {
+    type: 'MOPIDY_REMOVE_SERVER',
+    id: id
   };
 }
 
@@ -78507,14 +78591,30 @@ var MopidyMiddleware = function () {
             });
             break;
 
-          case 'MOPIDY_SET_CONNECTION':
-            store.dispatch(mopidyActions.set(action.data));
+          case 'MOPIDY_UPDATE_SERVER':
+            var servers = store.getState().mopidy.servers;
+            servers[action.server.id] = _extends({}, servers[action.server.id], action.server);
+            store.dispatch(mopidyActions.updateServers(servers));
+            break;
 
-            // Wait 250 ms and then retry connection
+          case 'MOPIDY_SET_CURRENT_SERVER':
+            store.dispatch(mopidyActions.set({
+              current_server: action.server.id,
+              host: action.server.host,
+              port: action.server.port
+            }));
+
+            // Wait a moment for store to update, then attempt connection
             setTimeout(function () {
               store.dispatch(mopidyActions.connect());
               store.dispatch(pusherActions.connect());
             }, 250);
+            break;
+
+          case 'MOPIDY_REMOVE_SERVER':
+            var remaining_servers = store.getState().mopidy.servers;
+            delete remaining_servers[action.id];
+            store.dispatch(mopidyActions.updateServers(remaining_servers));
             break;
 
           case 'SET_WINDOW_FOCUS':
@@ -80511,10 +80611,8 @@ function reducer() {
     case 'MOPIDY_SET':
       return _extends({}, mopidy, action.data);
 
-    case 'MOPIDY_UPDATE_SERVER':
-      var updated = {};
-      updated[action.server.id] = _extends({}, mopidy.servers[action.server.id], action.server);
-      return _extends({}, mopidy, { servers: _extends({}, mopidy.servers, updated) });
+    case 'MOPIDY_UPDATE_SERVERS':
+      return _extends({}, mopidy, { servers: action.servers });
 
     case 'MOPIDY_CONNECT':
     case 'MOPIDY_CONNECTING':
@@ -86546,6 +86644,7 @@ var state = {
     host: window.location.hostname,
     port: window.location.port ? window.location.port : window.location.protocol === 'https:' ? '443' : '80',
     ssl: window.location.protocol === 'https:',
+    current_server: 'default',
     servers: {
       default: {
         id: 'default',
@@ -88642,6 +88741,63 @@ var titleCase = function titleCase(string) {
 };
 
 /**
+ * Use a keyword to return an icon name
+ */
+var iconFromKeyword = function iconFromKeyword(name) {
+  var iconWords = [{ icon: 'business', words: ['office', 'work'] }, { icon: 'king_bed', words: ['bed'] }, { icon: 'weekend', words: ['lounge', 'tv', 'sitting room'] }, { icon: 'directions_car', words: ['garage', 'basement'] }, { icon: 'local_laundry_service', words: ['laundry'] }, { icon: 'fitness_center', words: ['gym'] }, { icon: 'kitchen', words: ['kitchen'] }, { icon: 'deck', words: ['deck', 'outside'] }, { icon: 'restaurant_menu', words: ['dining', 'dinner'] }, { icon: 'laptop', words: ['laptop'] }, { icon: 'bug_report', words: ['test', 'debug'] }, { icon: 'child_care', words: ['kids', 'baby'] }, { icon: 'smartphone', words: ['phone', 'mobile'] }];
+  var _iteratorNormalCompletion2 = true;
+  var _didIteratorError2 = false;
+  var _iteratorError2 = undefined;
+
+  try {
+    for (var _iterator2 = iconWords[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+      var item = _step2.value;
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
+
+      try {
+        for (var _iterator3 = item.words[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var word = _step3.value;
+
+          if (name.match(new RegExp('(' + word + ')', 'gi'))) {
+            return item.icon;
+          }
+        }
+      } catch (err) {
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion3 && _iterator3.return) {
+            _iterator3.return();
+          }
+        } finally {
+          if (_didIteratorError3) {
+            throw _iteratorError3;
+          }
+        }
+      }
+    }
+  } catch (err) {
+    _didIteratorError2 = true;
+    _iteratorError2 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion2 && _iterator2.return) {
+        _iterator2.return();
+      }
+    } finally {
+      if (_didIteratorError2) {
+        throw _iteratorError2;
+      }
+    }
+  }
+
+  ;
+};
+
+/**
  * Scroll to the top of the page
  * Our 'content' is housed in the <main> DOM element
  * We make sure the target supports scrolling before we attempt it
@@ -88706,13 +88862,13 @@ var scrollTo = function scrollTo() {
 var upgradeSpotifyPlaylistUris = function upgradeSpotifyPlaylistUris(uris) {
   var upgraded = [];
 
-  var _iteratorNormalCompletion2 = true;
-  var _didIteratorError2 = false;
-  var _iteratorError2 = undefined;
+  var _iteratorNormalCompletion4 = true;
+  var _didIteratorError4 = false;
+  var _iteratorError4 = undefined;
 
   try {
-    for (var _iterator2 = uris[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-      var uri = _step2.value;
+    for (var _iterator4 = uris[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+      var uri = _step4.value;
 
       if (uri.includes('spotify:user:')) {
         uri = uri.replace(/spotify:user:([^:]*?):/i, 'spotify:');
@@ -88720,16 +88876,16 @@ var upgradeSpotifyPlaylistUris = function upgradeSpotifyPlaylistUris(uris) {
       upgraded.push(uri);
     }
   } catch (err) {
-    _didIteratorError2 = true;
-    _iteratorError2 = err;
+    _didIteratorError4 = true;
+    _iteratorError4 = err;
   } finally {
     try {
-      if (!_iteratorNormalCompletion2 && _iterator2.return) {
-        _iterator2.return();
+      if (!_iteratorNormalCompletion4 && _iterator4.return) {
+        _iterator4.return();
       }
     } finally {
-      if (_didIteratorError2) {
-        throw _iteratorError2;
+      if (_didIteratorError4) {
+        throw _iteratorError4;
       }
     }
   }
@@ -88763,6 +88919,7 @@ exports.titleCase = titleCase;
 exports.scrollTo = scrollTo;
 exports.upgradeSpotifyPlaylistUris = upgradeSpotifyPlaylistUris;
 exports.upgradeSpotifyPlaylistUri = upgradeSpotifyPlaylistUri;
+exports.iconFromKeyword = iconFromKeyword;
 exports.default = {
   debounce: debounce,
   throttle: throttle,
@@ -88784,7 +88941,8 @@ exports.default = {
   titleCase: titleCase,
   scrollTo: scrollTo,
   upgradeSpotifyPlaylistUris: upgradeSpotifyPlaylistUris,
-  upgradeSpotifyPlaylistUri: upgradeSpotifyPlaylistUri
+  upgradeSpotifyPlaylistUri: upgradeSpotifyPlaylistUri,
+  iconFromKeyword: iconFromKeyword
 };
 
 /***/ }),
@@ -92912,52 +93070,18 @@ var Settings = function (_React$Component) {
       }
     }
   }, {
-    key: 'renderServerStatus',
-    value: function renderServerStatus() {
-      var _props = this.props,
-          mopidy = _props.mopidy,
-          pusher = _props.pusher;
-
-      var colour = 'grey';
-      var icon = 'help';
-      var status = 'Unknown';
-      var className = null;
-
-      if (mopidy.connecting || pusher.connecting) {
-        icon = 'autorenew';
-        status = 'Connecting...';
-        className = 'icon--spin';
-      } else if (!mopidy.connected || !pusher.connected) {
-        colour = 'red';
-        icon = 'close';
-        status = 'Disconnected';
-      } else if (mopidy.connected && pusher.connected) {
-        colour = 'green';
-        icon = 'check';
-        status = 'Connected';
-      }
-
-      return _react2.default.createElement(
-        'span',
-        { className: colour + '-text' },
-        _react2.default.createElement(_Icon2.default, { className: className, name: icon }),
-        ' ',
-        status
-      );
-    }
-  }, {
     key: 'render',
     value: function render() {
       var _this2 = this;
 
-      var _props2 = this.props,
-          mopidyActions = _props2.mopidyActions,
-          mopidy = _props2.mopidy,
-          pusherActions = _props2.pusherActions,
-          pusher = _props2.pusher,
-          history = _props2.history,
-          uiActions = _props2.uiActions,
-          ui = _props2.ui;
+      var _props = this.props,
+          mopidyActions = _props.mopidyActions,
+          mopidy = _props.mopidy,
+          pusherActions = _props.pusherActions,
+          pusher = _props.pusher,
+          history = _props.history,
+          uiActions = _props.uiActions,
+          ui = _props.ui;
 
 
       var options = _react2.default.createElement(
@@ -92996,24 +93120,6 @@ var Settings = function (_React$Component) {
             { className: 'underline' },
             'Server',
             _react2.default.createElement('a', { name: 'server' })
-          ),
-          _react2.default.createElement(
-            'div',
-            { className: 'field' },
-            _react2.default.createElement(
-              'div',
-              { className: 'name' },
-              'Status'
-            ),
-            _react2.default.createElement(
-              'div',
-              { className: 'input' },
-              _react2.default.createElement(
-                'div',
-                { className: 'text' },
-                this.renderServerStatus()
-              )
-            )
           ),
           _react2.default.createElement(
             'label',

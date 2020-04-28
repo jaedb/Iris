@@ -6243,7 +6243,8 @@ main header {
   padding: 0 5px;
   display: block;
   box-sizing: border-box;
-  border: none !important; }
+  border: none !important;
+  cursor: pointer; }
   .sub-tabs__menu .menu-item__inner {
     position: relative;
     padding: 30px 10px;

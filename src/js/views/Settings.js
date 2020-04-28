@@ -100,39 +100,6 @@ class Settings extends React.Component {
     }
   }
 
-  renderServerStatus() {
-    const {
-      mopidy,
-      pusher,
-    } = this.props;
-    let colour = 'grey';
-    let icon = 'help';
-    let status = 'Unknown';
-    let className = null;
-
-    if (mopidy.connecting || pusher.connecting) {
-      icon = 'autorenew';
-      status = 'Connecting...';
-      className = 'icon--spin';
-    } else if (!mopidy.connected || !pusher.connected) {
-      colour = 'red';
-      icon = 'close';
-      status = 'Disconnected';
-    } else if (mopidy.connected && pusher.connected) {
-      colour = 'green';
-      icon = 'check';
-      status = 'Connected';
-    }
-
-    return (
-      <span className={`${colour}-text`}>
-        <Icon className={className} name={icon} />
-        {' '}
-        {status}
-      </span>
-    );
-  }
-
   renderLocalScanButton = () => {
     const { processes } = this.props.ui;
     const loading = processes.local_scan && processes.local_scan.status === 'running';
@@ -183,15 +150,6 @@ class Settings extends React.Component {
             Server
             <a name="server" />
           </h4>
-
-          <div className="field">
-            <div className="name">Status</div>
-            <div className="input">
-              <div className="text">
-                {this.renderServerStatus()}
-              </div>
-            </div>
-          </div>
 
           <label className="field">
             <div className="name">Username</div>
