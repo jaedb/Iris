@@ -22,11 +22,13 @@
     top: 10px;
     right: 10px;
     z-index: 99;
+    display: flex;
 
     .control {
+      @include noselect();
       @include animate();
-      display: block;
-      float: right;
+      display: flex;
+      align-items: center;
       opacity: 0.5;
       cursor: pointer;
       padding: 20px;

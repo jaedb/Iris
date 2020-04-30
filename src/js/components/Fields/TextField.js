@@ -7,7 +7,7 @@ export default class TextField extends React.Component {
 
     this.state = {
       in_focus: false,
-      value: (this.props.value ? this.props.value : ''),
+      value: props.value || '',
     };
   }
 
@@ -20,31 +20,40 @@ export default class TextField extends React.Component {
     return null;
   }
 
-  handleChange(e) {
+  handleChange = (e) => {
     this.setState({ value: e.target.value });
   }
 
-  handleFocus(e) {
+  handleFocus = () => {
     this.setState({ in_focus: true });
   }
 
-  handleBlur(e) {
+  handleBlur = () => {
+    const { value, onChange } = this.props;
+    const { value: stateValue } = this.state;
     this.setState({ in_focus: false });
-    if (this.state.value !== this.props.value) {
-      this.props.onChange(this.state.value);
+    if (stateValue !== value) {
+      onChange(stateValue);
     }
   }
 
-  render() {
+  render = () => {
+    const {
+      className,
+      type = 'text',
+      placeholder,
+    } = this.props;
+    const { value } = this.state;
+
     return (
       <input
-        className={this.props.className ? this.props.className : ''}
-        type={this.props.type ? this.props.type : 'text'}
-        onChange={(e) => this.handleChange(e)}
-        onFocus={(e) => this.handleFocus(e)}
-        onBlur={(e) => this.handleBlur(e)}
-        value={this.state.value}
-        placeholder={this.props.placeholder ? this.props.placeholder : null}
+        className={className}
+        type={type}
+        onChange={this.handleChange}
+        onFocus={this.handleFocus}
+        onBlur={this.handleBlur}
+        value={value}
+        placeholder={placeholder}
       />
     );
   }

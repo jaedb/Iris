@@ -63,6 +63,15 @@ const localstorageMiddleware = (function () {
         );
         break;
 
+      case 'MOPIDY_UPDATE_SERVERS':
+        storage.set(
+          'mopidy',
+          {
+            servers: action.servers,
+          },
+        );
+        break;
+
       case 'SPOTIFY_AUTHORIZATION_GRANTED':
         if (action.authorization !== undefined) {
           var { authorization } = action;

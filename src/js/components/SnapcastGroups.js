@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { collate } from '../util/format';
 import { sortItems } from '../util/arrays';
+import { iconFromKeyword } from '../util/helpers';
 import VolumeControl from './Fields/VolumeControl';
 import MuteControl from './Fields/MuteControl';
 import TextField from './Fields/TextField';
@@ -106,42 +107,17 @@ const SnapcastGroups = (props) => {
         !group.clients.filter((client) => client.connected).length
       )
     );
-    const icon = () => {
-      const iconWords = [
-        { icon: 'business', words: ['office', 'work'] },
-        { icon: 'king_bed', words: ['bed'] },
-        { icon: 'weekend', words: ['lounge', 'tv', 'sitting room'] },
-        { icon: 'directions_car', words: ['garage', 'laundry'] },
-        { icon: 'fitness_center', words: ['gym'] },
-        { icon: 'kitchen', words: ['kitchen'] },
-        { icon: 'deck', words: ['deck', 'outside'] },
-        { icon: 'restaurant_menu', words: ['dining', 'dinner'] },
-        { icon: 'laptop', words: ['laptop'] },
-        { icon: 'bug_report', words: ['test', 'debug'] },
-        { icon: 'child_care', words: ['kids', 'baby'] },
-        { icon: 'smartphone', words: ['phone', 'mobile'] },
-      ];
-      const name = group.name.toLowerCase();
-      for (let item of iconWords) {
-        for (let word of item.words) {
-          if (name.match(new RegExp(`(${word})`, 'gi'))) {
-            return item.icon;
-          }
-        }
-      };
-      return 'speaker_group';
-    }
     return (
       <Link
         className={`snapcast__groups__menu-item menu-item${anyClients ? ' menu-item--no-clients' : ''}`}
         activeClassName="menu-item--active"
         key={group.id}
         history={history}
-        to={`/settings/snapcast/${group.id}`}
+        to={`/settings/services/snapcast/${group.id}`}
         scrollTo="#services-snapcast-groups"
       >
         <div className="snapcast__groups__menu-item__inner menu-item__inner">
-          <Icon className="menu-item__icon" name={icon()} />
+          <Icon className="menu-item__icon" name={iconFromKeyword(group.name.toLowerCase()) || 'speaker_group'} />
           <div className="menu-item__title">
             {group.name}
             {group.mute && (
@@ -154,8 +130,8 @@ const SnapcastGroups = (props) => {
   }
 
   return (
-    <div className="snapcast__groups" id="services-snapcast-groups">
-      <div className="snapcast__groups__menu menu">
+    <div className="sub-tabs snapcast__groups" id="services-snapcast-groups">
+      <div className="sub-tabs__menu snapcast__groups__menu menu">
         <div className="menu__inner">
           {sortItems(groupsArray, 'name').map((group) => renderMenuItem(group))}
         </div>

@@ -1,6 +1,5 @@
 
 import { createStore, applyMiddleware, combineReducers } from 'redux';
-
 import thunk from 'redux-thunk';
 
 import { generateGuid } from '../util/helpers';
@@ -60,7 +59,17 @@ let state = {
     connected: false,
     host: window.location.hostname,
     port: (window.location.port ? window.location.port : (window.location.protocol === 'https:' ? '443' : '80')),
-    ssl: (window.location.protocol === 'https:'),
+    ssl: window.location.protocol === 'https:',
+    current_server: 'default',
+    servers: {
+      default: {
+        id: 'default',
+        name: 'Default',
+        host: window.location.hostname,
+        port: (window.location.port ? window.location.port : (window.location.protocol === 'https:' ? '443' : '80')),
+        ssl: window.location.protocol === 'https:',
+      },
+    },
     mute: false,
     volume: 0,
     progress: 0,
