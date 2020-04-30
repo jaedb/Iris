@@ -31,7 +31,8 @@ export function addServer() {
       name: 'New server',
       host: window.location.hostname,
       port: (window.location.port ? window.location.port : (window.location.protocol === 'https:' ? '443' : '80')),
-    }
+      ssl: window.location.protocol === 'https:',
+    },
   };
 }
 

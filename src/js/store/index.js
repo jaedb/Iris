@@ -59,7 +59,7 @@ let state = {
     connected: false,
     host: window.location.hostname,
     port: (window.location.port ? window.location.port : (window.location.protocol === 'https:' ? '443' : '80')),
-    ssl: (window.location.protocol === 'https:'),
+    ssl: window.location.protocol === 'https:',
     current_server: 'default',
     servers: {
       default: {
@@ -67,7 +67,7 @@ let state = {
         name: 'Default',
         host: window.location.hostname,
         port: (window.location.port ? window.location.port : (window.location.protocol === 'https:' ? '443' : '80')),
-        ssl: (window.location.protocol === 'https:')
+        ssl: window.location.protocol === 'https:',
       },
     },
     mute: false,

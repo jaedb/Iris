@@ -24,6 +24,7 @@ const Servers = ({
     mopidy: {
       servers,
       current_server,
+      ssl,
       connected: mopidyConnected,
       connecting: mopidyConnecting,
     },
@@ -132,14 +133,41 @@ const Servers = ({
             />
           </div>
         </label>
-        <label className="field">
-          <div className="name" />
-          <div className="input">
-            <button className="button button--primary" disabled={server.id === current_server} onClick={setAsCurrent}>Switch to this server</button>
-            <button className="button button--destructive" onClick={remove}>Remove</button>
-          </div>
-        </label>
 
+        <div className="field checkbox">
+          <div className="name">Encryption</div>
+          <div className="input">
+            <label>
+              <input
+                type="checkbox"
+                name="ssl"
+                value={server.ssl}
+                checked={server.ssl}
+                onChange={() => dispatch(mopidyActions.updateServer({ id: server.id, ssl: !server.ssl }))}
+              />
+              <span className="label tooltip">
+                Use SSL
+                <span className="tooltip__content">Requires a SSL proxy</span>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          className="button button--primary"
+          onClick={setAsCurrent}
+        >
+          Switch to this server
+        </button>
+        <button
+          type="button"
+          className="button button--destructive"
+          disabled={server.id === current_server}
+          onClick={remove}
+        >
+          Remove
+        </button>
       </div>
     );
   };

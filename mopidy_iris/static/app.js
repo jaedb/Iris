@@ -70879,6 +70879,7 @@ var Servers = function Servers(_ref) {
       _store$getState$mopid = _store$getState.mopidy,
       servers = _store$getState$mopid.servers,
       current_server = _store$getState$mopid.current_server,
+      ssl = _store$getState$mopid.ssl,
       mopidyConnected = _store$getState$mopid.connected,
       mopidyConnecting = _store$getState$mopid.connecting,
       _store$getState$pushe = _store$getState.pusher,
@@ -71050,23 +71051,59 @@ var Servers = function Servers(_ref) {
         )
       ),
       _react2.default.createElement(
-        'label',
-        { className: 'field' },
-        _react2.default.createElement('div', { className: 'name' }),
+        'div',
+        { className: 'field checkbox' },
+        _react2.default.createElement(
+          'div',
+          { className: 'name' },
+          'Encryption'
+        ),
         _react2.default.createElement(
           'div',
           { className: 'input' },
           _react2.default.createElement(
-            'button',
-            { className: 'button button--primary', disabled: server.id === current_server, onClick: setAsCurrent },
-            'Switch to this server'
-          ),
-          _react2.default.createElement(
-            'button',
-            { className: 'button button--destructive', onClick: remove },
-            'Remove'
+            'label',
+            null,
+            _react2.default.createElement('input', {
+              type: 'checkbox',
+              name: 'ssl',
+              value: server.ssl,
+              checked: server.ssl,
+              onChange: function onChange() {
+                return dispatch(mopidyActions.updateServer({ id: server.id, ssl: !server.ssl }));
+              }
+            }),
+            _react2.default.createElement(
+              'span',
+              { className: 'label tooltip' },
+              'Use SSL',
+              _react2.default.createElement(
+                'span',
+                { className: 'tooltip__content' },
+                'Requires a SSL proxy'
+              )
+            )
           )
         )
+      ),
+      _react2.default.createElement(
+        'button',
+        {
+          type: 'button',
+          className: 'button button--primary',
+          onClick: setAsCurrent
+        },
+        'Switch to this server'
+      ),
+      _react2.default.createElement(
+        'button',
+        {
+          type: 'button',
+          className: 'button button--destructive',
+          disabled: server.id === current_server,
+          onClick: remove
+        },
+        'Remove'
       )
     );
   };
@@ -77050,7 +77087,6 @@ function getAlbum(uri, artist, album) {
     sendRequest(dispatch, getState, params).then(function (response) {
       if (response.album) {
         var existing_album = getState().core.albums[uri];
-
         var _album = {
           uri: uri,
           images: response.album.image,
@@ -77120,8 +77156,7 @@ function getImages(context, uri) {
           if (params) {
             sendRequest(dispatch, getState, params).then(function (response) {
               if (response.album) {
-                record = _extends({}, record, { images: response.album.image });
-                dispatch(coreActions.albumLoaded(record));
+                dispatch(coreActions.albumLoaded({ uri: uri, images: response.album.image }));
               }
             });
           }
@@ -77744,7 +77779,8 @@ function addServer() {
       id: (0, _helpers.generateGuid)(),
       name: 'New server',
       host: window.location.hostname,
-      port: window.location.port ? window.location.port : window.location.protocol === 'https:' ? '443' : '80'
+      port: window.location.port ? window.location.port : window.location.protocol === 'https:' ? '443' : '80',
+      ssl: window.location.protocol === 'https:'
     }
   };
 }
@@ -78555,7 +78591,7 @@ var MopidyMiddleware = function () {
             var state = store.getState();
 
             socket = new _mopidy2.default({
-              webSocketUrl: 'ws' + (window.location.protocol === 'https:' ? 's' : '') + '://' + state.mopidy.host + ':' + state.mopidy.port + '/mopidy/ws/',
+              webSocketUrl: 'ws' + (state.mopidy.ssl ? 's' : '') + '://' + state.mopidy.host + ':' + state.mopidy.port + '/mopidy/ws/',
               callingConvention: 'by-position-or-by-name'
             });
 
@@ -78601,7 +78637,10 @@ var MopidyMiddleware = function () {
             store.dispatch(mopidyActions.set({
               current_server: action.server.id,
               host: action.server.host,
-              port: action.server.port
+              port: action.server.port,
+              ssl: action.server.ssl,
+              connected: false,
+              connecting: false
             }));
 
             // Wait a moment for store to update, then attempt connection
@@ -80451,11 +80490,13 @@ var MopidyMiddleware = function () {
                   }
                 }
 
-                var action_data = {
-                  type: (action.context + '_LOADED').toUpperCase()
-                };
-                action_data[action.context] = records;
-                store.dispatch(action_data);
+                if (records.length) {
+                  var action_data = {
+                    type: (action.context + '_LOADED').toUpperCase()
+                  };
+                  action_data[action.context] = records;
+                  store.dispatch(action_data);
+                }
               });
             }
 
@@ -97166,6 +97207,16 @@ var LibraryBrowse = function (_React$Component) {
 
               case 'Soma FM':
                 subdirectory.icons = ['/iris/assets/backgrounds/browse-somafm.jpg'];
+                break;
+
+              case 'Tidal':
+                subdirectory.icons = ['/iris/assets/backgrounds/browse-tidal.jpg'];
+                break;
+
+              case 'Google':
+              case 'Google Play':
+              case 'Google Play Music':
+                subdirectory.icons = ['/iris/assets/backgrounds/browse-google.jpg'];
                 break;
 
               default:

@@ -249,7 +249,7 @@ const MopidyMiddleware = (function () {
         var state = store.getState();
 
         socket = new Mopidy({
-          webSocketUrl: `ws${window.location.protocol === 'https:' ? 's' : ''}://${state.mopidy.host}:${state.mopidy.port}/mopidy/ws/`,
+          webSocketUrl: `ws${state.mopidy.ssl ? 's' : ''}://${state.mopidy.host}:${state.mopidy.port}/mopidy/ws/`,
           callingConvention: 'by-position-or-by-name',
         });
 
@@ -294,7 +294,10 @@ const MopidyMiddleware = (function () {
         store.dispatch(mopidyActions.set({
           current_server: action.server.id,
           host: action.server.host,
-          port: action.server.port
+          port: action.server.port,
+          ssl: action.server.ssl,
+          connected: false,
+          connecting: false,
         }));
 
         // Wait a moment for store to update, then attempt connection
@@ -2371,11 +2374,13 @@ const MopidyMiddleware = (function () {
                 }
               }
 
-              const action_data = {
-                type: (`${action.context}_LOADED`).toUpperCase(),
-              };
-              action_data[action.context] = records;
-              store.dispatch(action_data);
+              if (records.length) {
+                const action_data = {
+                  type: (`${action.context}_LOADED`).toUpperCase(),
+                };
+                action_data[action.context] = records;
+                store.dispatch(action_data);
+              }
             });
         }
 

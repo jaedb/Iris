@@ -71,6 +71,16 @@ class LibraryBrowse extends React.Component {
             subdirectory.icons = ['/iris/assets/backgrounds/browse-somafm.jpg'];
             break;
 
+          case 'Tidal':
+            subdirectory.icons = ['/iris/assets/backgrounds/browse-tidal.jpg'];
+            break;
+
+          case 'Google':
+          case 'Google Play':
+          case 'Google Play Music':
+            subdirectory.icons = ['/iris/assets/backgrounds/browse-google.jpg'];
+            break;
+
           default:
             subdirectory.icons = ['/iris/assets/backgrounds/browse-default.jpg'];
         }
