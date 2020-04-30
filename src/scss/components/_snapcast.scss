@@ -34,7 +34,9 @@
 				max-width: 140px;
 
 				&--no-clients {
-					opacity: 0.5 !important;
+					.menu-item__inner > * {
+						opacity: 0.5 !important;
+					}
 				}
 
 				&__inner {
@@ -72,8 +74,8 @@
 				}
 
 				.light-theme & {
-					.menu-item__inner {
-						&:hover{
+					&:hover{
+						.menu-item__inner {
 							background: darken(colour(faint_grey), 8%);
 						}
 

@@ -6421,7 +6421,7 @@ main header {
     width: 12.5%;
     min-width: 110px;
     max-width: 140px; }
-    .snapcast__groups .menu .menu-item--no-clients {
+    .snapcast__groups .menu .menu-item--no-clients .menu-item__inner > * {
       opacity: 0.5 !important; }
     .snapcast__groups .menu .menu-item__inner {
       padding: 20px 10px; }
@@ -6441,9 +6441,9 @@ main header {
     .snapcast__groups .menu .menu-item--active .menu-item__inner {
       background: #2c2c2c;
       padding-bottom: 30px; }
-    .light-theme .snapcast__groups .menu .menu-item .menu-item__inner:hover {
+    .light-theme .snapcast__groups .menu .menu-item:hover .menu-item__inner {
       background: #e3ded8; }
-    .light-theme .snapcast__groups .menu .menu-item .menu-item__inner:after {
+    .light-theme .snapcast__groups .menu .menu-item:hover:after {
       background: #e3ded8; }
     .light-theme .snapcast__groups .menu .menu-item--active .menu-item__inner {
       background: #e3ded8; }
