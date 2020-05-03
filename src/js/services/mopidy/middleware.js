@@ -1993,9 +1993,10 @@ const MopidyMiddleware = (function () {
         request(socket, store, 'library.lookup', { uris: [action.uri] })
           .then((_response) => {
             if (!_response) return;
-            const response = _response[action.uri];
+            let response = _response[action.uri];
             if (!response || !response.length) return;
 
+            response = sortItems(response, 'track_number');
             const artists = [];
             if (response[0].artists) {
               for (const artist of response[0].artists) {
