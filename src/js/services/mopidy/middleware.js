@@ -13,6 +13,7 @@ import {
   formatImages,
   formatTrack,
   formatTracks,
+  formatSimpleObject,
   getTrackIcon,
 } from '../../util/format';
 import {
@@ -2398,6 +2399,17 @@ const MopidyMiddleware = (function () {
         store.dispatch({
           type: 'MOPIDY_DIRECTORY_FLUSH',
         });
+
+        if (action.uri) {
+          request(socket, store, 'library.lookup', { uris: [action.uri] })
+            .then((response) => {
+              if (!response[action.uri] || !response[action.uri].length) return;
+              store.dispatch({
+                type: 'MOPIDY_DIRECTORY_LOADED',
+                directory: formatSimpleObject(response[action.uri][0]),
+              });
+            });
+        }
 
         request(socket, store, 'library.browse', { uri: action.uri })
           .then((response) => {

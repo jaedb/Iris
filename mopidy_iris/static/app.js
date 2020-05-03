@@ -61693,33 +61693,35 @@ var App = exports.App = function (_React$Component) {
     }
   }, {
     key: 'componentDidUpdate',
-    value: function componentDidUpdate(prevProps) {
+    value: function componentDidUpdate(_ref) {
+      var prevLocation = _ref.location;
+      var _props2 = this.props,
+          _props2$location = _props2.location,
+          location = _props2$location === undefined ? {} : _props2$location,
+          allow_reporting = _props2.allow_reporting,
+          uiActions = _props2.uiActions,
+          context_menu = _props2.context_menu;
+
       // When we have navigated to a new route
-      if (this.props.location !== prevProps.location) {
+
+      if (location !== prevLocation) {
         // Log our pageview
-        if (this.props.allow_reporting) {
-          _reactGa2.default.set({ page: this.props.location.pathname });
-          _reactGa2.default.pageview(this.props.location.pathname);
+        if (allow_reporting) {
+          _reactGa2.default.set({ page: location.pathname });
+          _reactGa2.default.pageview(location.pathname);
         }
 
         // If the location has a "scroll_position" state variable, scroll to it.
         // This is invisibly injected to the history by the Link component when navigating, so
         // hitting back in the browser allows us to restore the position
-        var location_state = this.props.location.state ? this.props.location.state : {};
+        var location_state = location.state || {};
         if (location_state.scroll_position) {
           (0, _helpers.scrollTo)(parseInt(location_state.scroll_position), false);
         }
 
-        // Hide our sidebar
-        this.props.uiActions.toggleSidebar(false);
-
-        // Unselect any tracks
-        this.props.uiActions.setSelectedTracks([]);
-
-        // Close context menu
-        if (this.props.context_menu) {
-          this.props.uiActions.hideContextMenu();
-        }
+        uiActions.toggleSidebar(false);
+        uiActions.setSelectedTracks([]);
+        if (context_menu) uiActions.hideContextMenu();
       }
     }
 
@@ -61735,15 +61737,19 @@ var App = exports.App = function (_React$Component) {
 
   }, {
     key: 'handleFocusAndBlur',
-    value: function handleFocusAndBlur(e) {
-      this.props.uiActions.setWindowFocus(document.hasFocus());
+    value: function handleFocusAndBlur() {
+      var setWindowFocus = this.props.uiActions.setWindowFocus;
+
+      setWindowFocus(document.hasFocus());
     }
   }, {
     key: 'handleInstallPrompt',
     value: function handleInstallPrompt(e) {
+      var installPrompt = this.props.uiActions.installPrompt;
+
       e.preventDefault();
       console.log('Install prompt detected');
-      this.props.uiActions.installPrompt(e);
+      installPrompt(e);
     }
   }, {
     key: 'render',
@@ -68602,7 +68608,10 @@ exports.default = function (_ref) {
     var main = document.getElementById('main');
 
     history.replace(location.pathname, _extends({}, location.state, {
-      scroll_position: main.scrollTop
+      scroll_position: main.scrollTop,
+      previous: {
+        pathname: location.pathname
+      }
     }));
 
     // Allow a link to disable auto-scrolling to the top of the page
@@ -68623,7 +68632,7 @@ exports.default = function (_ref) {
     _reactRouterDom.Link,
     {
       onClick: onClick,
-      onContextMenu: onContextMenu || null,
+      onContextMenu: onContextMenu,
       className: className + ' ' + active,
       to: to
     },
@@ -70746,15 +70755,30 @@ var _URILink2 = _interopRequireDefault(_URILink);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = (0, _react.memo)(function (props) {
-  if (!props.artists) {
-    return null;
-  }
+exports.default = (0, _react.memo)(function (_ref) {
+  var artists = _ref.artists,
+      _ref$uiActions = _ref.uiActions;
+  _ref$uiActions = _ref$uiActions === undefined ? {} : _ref$uiActions;
+  var showContextMenu = _ref$uiActions.showContextMenu;
+
+  if (!artists) return null;
+
+  var onContextMenu = function onContextMenu(e, item) {
+    if (showContextMenu) {
+      e.preventDefault();
+      showContextMenu({
+        e: e,
+        context: 'artist',
+        uris: [item.uri],
+        items: [item]
+      });
+    }
+  };
 
   return _react2.default.createElement(
     'div',
     { className: 'related-artists' },
-    props.artists.map(function (artist, index) {
+    artists.map(function (artist) {
       var images = artist.images;
 
       if (Array.isArray(images)) {
@@ -70764,7 +70788,15 @@ exports.default = (0, _react.memo)(function (props) {
       if (artist.uri) {
         return _react2.default.createElement(
           _URILink2.default,
-          { type: 'artist', uri: artist.uri, key: artist.uri, className: 'related-artists__item related-artists__item--link' },
+          {
+            type: 'artist',
+            uri: artist.uri,
+            key: artist.uri,
+            className: 'related-artists__item related-artists__item--link',
+            handleContextMenu: function handleContextMenu(e) {
+              return onContextMenu(e, artist);
+            }
+          },
           _react2.default.createElement(_Thumbnail2.default, { className: 'related-artists__item__thumbnail', circle: true, size: 'small', images: images }),
           _react2.default.createElement(
             'span',
@@ -70776,7 +70808,12 @@ exports.default = (0, _react.memo)(function (props) {
       return _react2.default.createElement(
         'span',
         { key: artist.uri, className: 'related-artists__item' },
-        _react2.default.createElement(_Thumbnail2.default, { className: 'related-artists__item__thumbnail', circle: true, size: 'small', images: images }),
+        _react2.default.createElement(_Thumbnail2.default, {
+          className: 'related-artists__item__thumbnail',
+          circle: true,
+          size: 'small',
+          images: images
+        }),
         _react2.default.createElement(
           'span',
           { className: 'related-artists__item__name' },
@@ -80542,6 +80579,16 @@ var MopidyMiddleware = function () {
               type: 'MOPIDY_DIRECTORY_FLUSH'
             });
 
+            if (action.uri) {
+              request(socket, store, 'library.lookup', { uris: [action.uri] }).then(function (response) {
+                if (!response[action.uri] || !response[action.uri].length) return;
+                store.dispatch({
+                  type: 'MOPIDY_DIRECTORY_LOADED',
+                  directory: (0, _format.formatSimpleObject)(response[action.uri][0])
+                });
+              });
+            }
+
             request(socket, store, 'library.browse', { uri: action.uri }).then(function (response) {
               var tracks_uris = [];
               var subdirectories = [];
@@ -80772,7 +80819,9 @@ function reducer() {
       return _extends({}, mopidy, { directory: null });
 
     case 'MOPIDY_DIRECTORY_LOADED':
-      return _extends({}, mopidy, { directory: action.directory });
+      return _extends({}, mopidy, {
+        directory: _extends({}, mopidy.directory, action.directory)
+      });
 
     /**
        * Library
@@ -89816,6 +89865,8 @@ var Artist = function (_React$Component) {
     value: function renderOverview() {
       var _this2 = this;
 
+      var uiActions = this.props.uiActions;
+
       var artist = (0, _format.collate)(this.props.artist, {
         artists: this.props.artists,
         albums: this.props.albums,
@@ -89894,11 +89945,18 @@ var Artist = function (_React$Component) {
           _react2.default.createElement(
             'div',
             { className: 'list-wrapper' },
-            _react2.default.createElement(_RelatedArtists2.default, { artists: artist.related_artists.slice(0, 6) })
+            _react2.default.createElement(_RelatedArtists2.default, {
+              artists: artist.related_artists.slice(0, 6),
+              uiActions: uiActions
+            })
           ),
           _react2.default.createElement(
             _Link2.default,
-            { to: '/artist/' + encodeURIComponent(this.props.uri) + '/related-artists', scrollTo: '#sub-views-menu', className: 'button button--default' },
+            {
+              to: '/artist/' + encodeURIComponent(this.props.uri) + '/related-artists',
+              scrollTo: '#sub-views-menu',
+              className: 'button button--default'
+            },
             'All related artists'
           )
         ),
@@ -95940,7 +95998,7 @@ var Discover = function (_React$Component) {
               null,
               'Artists'
             ),
-            _react2.default.createElement(_RelatedArtists2.default, { artists: artists })
+            _react2.default.createElement(_RelatedArtists2.default, { artists: artists, uiActions: this.props.uiActions })
           ),
           _react2.default.createElement('br', null),
           _react2.default.createElement('br', null),
@@ -97463,6 +97521,124 @@ var LibraryBrowseDirectory = function (_React$Component) {
       if (uri && uri !== prevUri) _this.loadDirectory();
     };
 
+    _this.render = function () {
+      var _this$props2 = _this.props,
+          uri = _this$props2.uri,
+          directory = _this$props2.directory,
+          load_queue = _this$props2.load_queue,
+          uiActions = _this$props2.uiActions,
+          view = _this$props2.view;
+      var limit = _this.state.limit;
+
+
+      var title = 'Directory';
+
+      if (!directory || (0, _helpers.isLoading)(load_queue, ['mopidy_browse'])) {
+        return _react2.default.createElement(
+          'div',
+          { className: 'view library-local-view' },
+          _react2.default.createElement(_Header2.default, { icon: 'music', title: title, uiActions: uiActions }),
+          _react2.default.createElement(_Loader2.default, { body: true, loading: true })
+        );
+      }
+
+      if (directory.name) {
+        title = directory.name;
+      } else {
+        var uri_exploded = uri.split(':');
+        if (uri_exploded.length > 0) {
+          title = uri_exploded[0];
+          title = title.charAt(0).toUpperCase() + title.slice(1);
+        }
+      };
+
+      var subdirectories = directory.subdirectories && directory.subdirectories.length > 0 ? directory.subdirectories : null;
+      subdirectories = (0, _arrays.sortItems)(subdirectories, 'name');
+
+      var total_items = (tracks ? tracks.length : 0) + (subdirectories ? subdirectories.length : 0);
+      subdirectories = subdirectories.slice(0, _this.state.limit);
+      var all_tracks = null;
+      var tracks = null;
+      var limit_remaining = _this.state.limit - subdirectories;
+      if (limit_remaining > 0) {
+        all_tracks = directory.tracks && directory.tracks.length > 0 ? directory.tracks : null;
+        all_tracks = (0, _arrays.sortItems)(all_tracks, 'name');
+        tracks = all_tracks.slice(0, limit_remaining);
+      }
+
+      var view_options = [{
+        label: 'Thumbnails',
+        value: 'thumbnails'
+      }, {
+        label: 'List',
+        value: 'list'
+      }];
+
+      var options = _react2.default.createElement(
+        'span',
+        null,
+        _react2.default.createElement(_DropdownField2.default, {
+          icon: 'visibility',
+          name: 'View',
+          value: view,
+          valueAsLabel: true,
+          options: view_options,
+          handleChange: function handleChange(value) {
+            uiActions.set({ library_directory_view: value });uiActions.hideContextMenu();
+          }
+        }),
+        tracks && _react2.default.createElement(
+          'a',
+          { className: 'button button--no-hover', onClick: function onClick(e) {
+              uiActions.hideContextMenu();_this.playAll(e, all_tracks);
+            } },
+          _react2.default.createElement(_Icon2.default, { name: 'play_circle_filled' }),
+          'Play all'
+        ),
+        _react2.default.createElement(
+          'a',
+          { className: 'button button--no-hover', onClick: function onClick(e) {
+              uiActions.hideContextMenu();_this.goBack(e);
+            } },
+          _react2.default.createElement(_Icon2.default, { name: 'keyboard_backspace' }),
+          'Back'
+        )
+      );
+
+      return _react2.default.createElement(
+        'div',
+        { className: 'view library-local-view' },
+        _react2.default.createElement(
+          _Header2.default,
+          { options: options, uiActions: uiActions },
+          _react2.default.createElement(_Icon2.default, { name: 'folder', type: 'material' }),
+          title
+        ),
+        _react2.default.createElement(
+          'section',
+          { className: 'content-wrapper' },
+          _react2.default.createElement(
+            _ErrorBoundary2.default,
+            null,
+            _this.renderBreadcrumbs(),
+            subdirectories ? _this.renderSubdirectories(subdirectories) : null,
+            tracks && _react2.default.createElement(_TrackList2.default, {
+              tracks: tracks,
+              uri: 'iris:browse:' + uri,
+              className: 'library-local-track-list'
+            }),
+            _react2.default.createElement(_LazyLoadListener2.default, {
+              loadKey: total_items > limit ? limit : total_items,
+              showLoader: limit < total_items,
+              loadMore: function loadMore() {
+                return _this.loadMore();
+              }
+            })
+          )
+        )
+      );
+    };
+
     _this.state = {
       filter: '',
       limit: 50,
@@ -97533,30 +97709,17 @@ var LibraryBrowseDirectory = function (_React$Component) {
       }
 
       if (parent_uri.startsWith('file://')) {
-        var uri = parent_uri.replace('file:///', '');
-        var uri_elements = uri.split('/');
+        parent_uri = parent_uri.substring(0, parent_uri.lastIndexOf('/'));
 
         return _react2.default.createElement(
           'h4',
           { className: 'breadcrumbs' },
-          uri_elements.map(function (uri_element, index) {
-            // Reconstruct a URL to this element
-            var uri = 'file://';
-            for (var i = 0; i <= index; i++) {
-              uri += '/' + uri_elements[i];
-            }
-
-            return _react2.default.createElement(
-              'span',
-              { key: uri },
-              index > 0 && _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
-              _react2.default.createElement(
-                _URILink2.default,
-                { type: 'browse', uri: uri },
-                decodeURI(uri_element)
-              )
-            );
-          })
+          _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-left' }),
+          _react2.default.createElement(
+            _URILink2.default,
+            { type: 'browse', uri: parent_uri },
+            decodeURI(parent_uri)
+          )
         );
       }
 
@@ -97585,113 +97748,6 @@ var LibraryBrowseDirectory = function (_React$Component) {
             nocontext: true
           });
         })
-      );
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var _this2 = this;
-
-      var title = 'Directory';
-      var uri_exploded = this.props.uri.split(':');
-      if (uri_exploded.length > 0) {
-        title = uri_exploded[0];
-        title = title.charAt(0).toUpperCase() + title.slice(1);
-      }
-
-      if (!this.props.directory || (0, _helpers.isLoading)(this.props.load_queue, ['mopidy_browse'])) {
-        return _react2.default.createElement(
-          'div',
-          { className: 'view library-local-view' },
-          _react2.default.createElement(_Header2.default, { icon: 'music', title: title, uiActions: this.props.uiActions }),
-          _react2.default.createElement(_Loader2.default, { body: true, loading: true })
-        );
-      }
-
-      var subdirectories = this.props.directory.subdirectories && this.props.directory.subdirectories.length > 0 ? this.props.directory.subdirectories : null;
-      subdirectories = (0, _arrays.sortItems)(subdirectories, 'name');
-
-      var total_items = (tracks ? tracks.length : 0) + (subdirectories ? subdirectories.length : 0);
-      subdirectories = subdirectories.slice(0, this.state.limit);
-      var all_tracks = null;
-      var tracks = null;
-      var limit_remaining = this.state.limit - subdirectories;
-      if (limit_remaining > 0) {
-        all_tracks = this.props.directory.tracks && this.props.directory.tracks.length > 0 ? this.props.directory.tracks : null;
-        all_tracks = (0, _arrays.sortItems)(all_tracks, 'name');
-        tracks = all_tracks.slice(0, limit_remaining);
-      }
-
-      var view_options = [{
-        label: 'Thumbnails',
-        value: 'thumbnails'
-      }, {
-        label: 'List',
-        value: 'list'
-      }];
-
-      var options = _react2.default.createElement(
-        'span',
-        null,
-        _react2.default.createElement(_DropdownField2.default, {
-          icon: 'visibility',
-          name: 'View',
-          value: this.props.view,
-          valueAsLabel: true,
-          options: view_options,
-          handleChange: function handleChange(value) {
-            _this2.props.uiActions.set({ library_directory_view: value });_this2.props.uiActions.hideContextMenu();
-          }
-        }),
-        tracks && _react2.default.createElement(
-          'a',
-          { className: 'button button--no-hover', onClick: function onClick(e) {
-              _this2.props.uiActions.hideContextMenu();_this2.playAll(e, all_tracks);
-            } },
-          _react2.default.createElement(_Icon2.default, { name: 'play_circle_filled' }),
-          'Play all'
-        ),
-        _react2.default.createElement(
-          'a',
-          { className: 'button button--no-hover', onClick: function onClick(e) {
-              _this2.props.uiActions.hideContextMenu();_this2.goBack(e);
-            } },
-          _react2.default.createElement(_Icon2.default, { name: 'keyboard_backspace' }),
-          'Back'
-        )
-      );
-
-      return _react2.default.createElement(
-        'div',
-        { className: 'view library-local-view' },
-        _react2.default.createElement(
-          _Header2.default,
-          { options: options, uiActions: this.props.uiActions },
-          _react2.default.createElement(_Icon2.default, { name: 'folder', type: 'material' }),
-          title
-        ),
-        _react2.default.createElement(
-          'section',
-          { className: 'content-wrapper' },
-          _react2.default.createElement(
-            _ErrorBoundary2.default,
-            null,
-            this.renderBreadcrumbs(),
-            subdirectories ? this.renderSubdirectories(subdirectories) : null,
-            tracks && _react2.default.createElement(_TrackList2.default, {
-              tracks: tracks,
-              uri: 'iris:browse:' + this.props.uri,
-              className: 'library-local-track-list'
-            }),
-            _react2.default.createElement(_LazyLoadListener2.default, {
-              loadKey: total_items > this.state.limit ? this.state.limit : total_items,
-              showLoader: this.state.limit < total_items,
-              loadMore: function loadMore() {
-                return _this2.loadMore();
-              }
-            })
-          )
-        )
       );
     }
   }]);

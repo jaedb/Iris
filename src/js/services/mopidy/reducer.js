@@ -104,7 +104,10 @@ export default function reducer(mopidy = {}, action) {
       return { ...mopidy, directory: null };
 
     case 'MOPIDY_DIRECTORY_LOADED':
-      return { ...mopidy, directory: action.directory };
+      return {
+        ...mopidy,
+        directory: { ...mopidy.directory, ...action.directory },
+      };
 
 
       /**
