@@ -72,7 +72,7 @@ class Playlist extends React.Component {
       loadPlaylist(uri);
     } else if (!prev_mopidy_connected && mopidy_connected) {
       if (uriSource(uri) !== 'spotify') {
-        loadPlaylist(nextProps.uri);
+        loadPlaylist(uri);
       }
     }
 
@@ -275,6 +275,31 @@ Edited
 }
 
 const mapStateToProps = (state, ownProps) => {
+  const {
+    ui: {
+      allow_reporting,
+      slim_mode,
+      theme,
+      load_queue,
+    } = {},
+    core: {
+      users,
+      tracks,
+      playlists,
+    } = {},
+    spotify: {
+      library_playlists: spotify_library_playlists,
+      authorization: spotify_authorized,
+      me: {
+        id: spotify_userid,
+      } = {},
+    } = {},
+    mopidy: {
+      connected: mopidy_connected,
+      library_playlists: local_library_playlists,
+    } = {},
+  } = state;
+
   // Decode the URI, and then re-encode selected characters
   // This is needed as Mopidy encodes *some* characters in playlist URIs (but not other characters)
   // We need to retain ":" because this a reserved URI separator
@@ -288,18 +313,18 @@ const mapStateToProps = (state, ownProps) => {
 
   return {
     uri,
-    allow_reporting: state.ui.allow_reporting,
-    slim_mode: state.ui.slim_mode,
-    theme: state.ui.theme,
-    load_queue: state.ui.load_queue,
-    users: state.core.users,
-    tracks: state.core.tracks,
-    playlist: (state.core.playlists[uri] !== undefined ? state.core.playlists[uri] : false),
-    spotify_library_playlists: state.spotify.library_playlists,
-    local_library_playlists: state.mopidy.library_playlists,
-    mopidy_connected: state.mopidy.connected,
-    spotify_authorized: state.spotify.authorization,
-    spotify_userid: (state.spotify.me && state.spotify.me.id ? state.spotify.me.id : null),
+    allow_reporting,
+    slim_mode,
+    theme,
+    load_queue,
+    users,
+    tracks,
+    playlist: (playlists[uri] !== undefined ? playlists[uri] : false),
+    spotify_library_playlists,
+    local_library_playlists,
+    mopidy_connected,
+    spotify_authorized,
+    spotify_userid,
   };
 };
 

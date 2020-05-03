@@ -3646,6 +3646,34 @@ select {
   .light-theme .field .description {
     color: rgba(0, 0, 0, 0.6); }
 
+.text-field__wrapper {
+  position: relative; }
+
+.text-field__saved {
+  animation-delay: 1s;
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+  animation-name: fadeout;
+  animation-duration: 0.2s;
+  animation-timing-function: linear;
+  animation-iteration-count: 1;
+  position: absolute;
+  top: calc(50% - 0.5em);
+  right: 10px;
+  line-height: 1em;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  font-weight: bold;
+  color: #47af2a; }
+
+@keyframes fadeout {
+  0% {
+    opacity: 1;
+    transform: translateY(0px); }
+  100% {
+    opacity: 0;
+    transform: translateY(5px); } }
+
 @media (max-width: 799px) {
   .field {
     display: block; }

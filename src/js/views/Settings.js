@@ -157,6 +157,7 @@ class Settings extends React.Component {
               <TextField
                 onChange={(value) => pusherActions.setUsername(value.replace(/\W/g, ''))}
                 value={this.state.pusher_username}
+                autosave
               />
               <div className="description">
                 A non-unique string used to identify this client (no special characters)
@@ -331,11 +332,10 @@ class Settings extends React.Component {
           <div className="field">
             <div className="name">Artist library URI</div>
             <div className="input">
-              <input
-                type="text"
+              <TextField
                 value={this.state.mopidy_library_artists_uri}
-                onChange={(e) => this.setState({ mopidy_library_artists_uri: e.target.value })}
-                onBlur={(e) => this.handleBlur('mopidy', 'library_artists_uri', e.target.value)}
+                onChange={(mopidy_library_artists_uri) => this.setState({ mopidy_library_artists_uri })}
+                autosave
               />
               <div className="description">
                 URI used for collecting library artists
@@ -346,11 +346,11 @@ class Settings extends React.Component {
           <label className="field">
             <div className="name">Album library URI</div>
             <div className="input">
-              <input
+              <TextField
                 type="text"
                 value={this.state.mopidy_library_albums_uri}
-                onChange={(e) => this.setState({ mopidy_library_albums_uri: e.target.value })}
-                onBlur={(e) => this.handleBlur('mopidy', 'library_albums_uri', e.target.value)}
+                onChange={(mopidy_library_albums_uri) => this.setState({ mopidy_library_albums_uri })}
+                autosave
               />
               <div className="description">
                 URI used for collecting library albums

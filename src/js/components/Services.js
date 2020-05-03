@@ -68,7 +68,14 @@ class Services extends React.Component {
   }
 
   renderSpotify() {
-    const user_object = (this.props.spotify.me && this.props.core.users[this.props.spotify.me.uri] ? this.props.core.users[this.props.spotify.me.uri] : null);
+    const {
+      core,
+      spotify,
+      mopidy,
+      spotifyActions,
+    } = this.props;
+    const { country, locale } = this.state;
+    const user_object = (spotify.me && core.users[spotify.me.uri] ?core.users[spotify.me.uri] : null);
     if (user_object) {
       var user = (
         <URILink className="user" type="user" uri={user_object.uri}>
@@ -92,7 +99,7 @@ class Services extends React.Component {
 
     let not_installed = null;
 
-    if (!this.props.mopidy.uri_schemes || !this.props.mopidy.uri_schemes.includes('spotify:')) {
+    if (!mopidy.uri_schemes || !mopidy.uri_schemes.includes('spotify:')) {
       not_installed = (
         <div>
           <p className="message warning">
@@ -111,8 +118,9 @@ class Services extends React.Component {
           <div className="name">Country</div>
           <div className="input">
             <TextField
-              onChange={value => this.props.spotifyActions.set({ country: value })}
-              value={this.state.country}
+              onChange={(value) => spotifyActions.set({ country: value })}
+              value={country}
+              autosave
             />
             <div className="description">
               {'An '}
@@ -126,12 +134,10 @@ class Services extends React.Component {
         <label className="field">
           <div className="name">Locale</div>
           <div className="input">
-            <input
-              type="text"
-              onChange={(e) => this.setState({ locale: e.target.value })}
-              onFocus={(e) => this.setState({ input_in_focus: 'locale' })}
-              onBlur={(e) => this.props.spotifyActions.set({ locale: e.target.value })}
-              value={this.state.locale}
+            <TextField
+              onChange={(value) => spotifyActions.set({ locale: value })}
+              value={locale}
+              autosave
             />
             <div className="description">
               {'Lowercase '}
@@ -158,12 +164,12 @@ class Services extends React.Component {
           <div className="name">Authorization</div>
           <div className="input">
             <SpotifyAuthenticationFrame />
-            {this.props.spotify.refreshing_token ? (
+            {spotify.refreshing_token ? (
               <a className="button button--default button--working">Force token refres</a>
             ) : (
               <a
                 className="button button--default"
-                onClick={(e) => this.props.spotifyActions.refreshingToken()}
+                onClick={() => spotifyActions.refreshingToken()}
               >
                 Force token refresh
               </a>
@@ -265,6 +271,7 @@ class Services extends React.Component {
   }
 
   renderIcecast() {
+    const { core, coreActions } = this.props;
     return (
       <div>
         <div className="field checkbox">
@@ -274,8 +281,8 @@ class Services extends React.Component {
               <input
                 type="checkbox"
                 name="ssl"
-                checked={this.props.core.http_streaming_enabled}
-                onChange={(e) => this.props.coreActions.set({ http_streaming_enabled: !this.props.core.http_streaming_enabled })}
+                checked={core.http_streaming_enabled}
+                onChange={() => coreActions.set({ http_streaming_enabled: !core.http_streaming_enabled })}
               />
               <span className="label">
 								Stream audio to this browser
@@ -286,10 +293,10 @@ class Services extends React.Component {
         <label className="field">
           <div className="name">Location</div>
           <div className="input">
-            <input
-              type="text"
-              onChange={(e) => this.props.coreActions.set({ http_streaming_url: e.target.value })}
-              value={this.props.core.http_streaming_url}
+            <TextField
+              onChange={(value) => coreActions.set({ http_streaming_url: value })}
+              value={core.http_streaming_url}
+              autosave
             />
             <div className="description">
 							The full URL to your stream endpoint

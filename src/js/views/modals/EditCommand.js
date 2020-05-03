@@ -64,6 +64,16 @@ class EditCommand extends React.Component {
   }
 
   render() {
+    const { command } = this.props;
+    const {
+      name,
+      colour,
+      icon,
+      url,
+      method,
+      post_data,
+      additional_headers,
+    } = this.state;
     const icons = [
       'power_settings_new',
       'eject',
@@ -110,9 +120,7 @@ class EditCommand extends React.Component {
     return (
       <Modal className="modal--create-command">
         <h1>
-          {this.props.command ? 'Edit' : 'Create'}
-          {' '}
-command
+          {`${command ? 'Edit' : 'Create'} command`}
         </h1>
         <form onSubmit={(e) => this.handleSubmit(e)}>
 
@@ -123,7 +131,7 @@ command
             <div className="input">
               <TextField
                 name="name"
-                value={this.state.name}
+                value={name}
                 onChange={(value) => this.setState({ name: value })}
               />
             </div>
@@ -135,7 +143,7 @@ command
             </div>
             <div className="input">
               <ColourField
-                colour={this.state.colour}
+                colour={colour}
                 onChange={(colour) => this.setState({ colour })}
               />
             </div>
@@ -147,7 +155,7 @@ command
             </div>
             <div className="input">
               <IconField
-                icon={this.state.icon}
+                icon={icon}
                 icons={icons}
                 onChange={(icon) => this.setState({ icon })}
               />
@@ -161,8 +169,8 @@ command
             <div className="input">
               <TextField
                 name="url"
-                value={this.state.url}
-                onChange={(value) => this.setState({ url: value })}
+                value={url}
+                onChange={(url) => this.setState({ url })}
               />
             </div>
           </div>
@@ -177,7 +185,7 @@ command
                   type="radio"
                   name="method"
                   value="GET"
-                  checked={this.state.method == 'GET'}
+                  checked={method === 'GET'}
                   onChange={(e) => this.setState({ method: e.target.value })}
                 />
                 <span className="label">GET</span>
@@ -187,7 +195,7 @@ command
                   type="radio"
                   name="method"
                   value="POST"
-                  checked={this.state.method == 'POST'}
+                  checked={method === 'POST'}
                   onChange={(e) => this.setState({ method: e.target.value })}
                 />
                 <span className="label">POST</span>
@@ -195,7 +203,7 @@ command
             </div>
           </div>
 
-          {this.state.method == 'POST' && (
+          {method === 'POST' && (
           <div className="field textarea white">
             <div className="name">
 							Data
@@ -203,7 +211,7 @@ command
             <div className="input">
               <textarea
                 name="command"
-                value={this.state.post_data}
+                value={post_data}
                 onChange={(e) => this.setState({ post_data: e.target.value })}
               />
             </div>
@@ -217,7 +225,7 @@ command
             <div className="input">
               <textarea
                 name="headers"
-                value={this.state.additional_headers}
+                value={additional_headers}
                 onChange={(e) => this.setState({ additional_headers: e.target.value })}
               />
             </div>
@@ -225,7 +233,15 @@ command
 
 
           <div className="actions centered-text">
-            {this.props.command ? <button type="button" className="button button--destructive button--large" onClick={(e) => this.handleDelete(e)}>Delete</button> : null}
+            {command && (
+              <button
+                type="button"
+                className="button button--destructive button--large"
+                onClick={(e) => this.handleDelete(e)}
+              >
+                Delete
+              </button>
+            )}
             <button type="submit" className="button button--primary button--large">Save</button>
           </div>
 

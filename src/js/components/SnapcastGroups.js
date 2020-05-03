@@ -49,6 +49,7 @@ const SnapcastGroups = (props) => {
             <TextField
               value={group.name}
               onChange={value => actions.setGroupName(group.id, value)}
+              autosave
             />
           </div>
         </div>
@@ -67,6 +68,7 @@ const SnapcastGroups = (props) => {
                   label: `${stream.id} (${stream.status})`,
                 }
               ))}
+              autosave
             />
           </div>
         </div>

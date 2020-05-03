@@ -582,6 +582,24 @@ select {
   }
 }
 
+.text-field {
+  &__wrapper {
+    position: relative;
+  }
+
+  &__saved {
+    @include fadeout($delay: 1s);
+    position: absolute;
+    top: calc(50% - 0.5em);
+    right: 10px;
+    line-height: 1em;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: colour(green);
+  }
+}
+
 @include responsive($bp_medium) {
   .field {
     display: block;

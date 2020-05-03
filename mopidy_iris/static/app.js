@@ -67570,6 +67570,10 @@ var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
+var _Icon = __webpack_require__(/*! ../Icon */ "./src/js/components/Icon.js");
+
+var _Icon2 = _interopRequireDefault(_Icon);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -67591,18 +67595,20 @@ var TextField = function (_React$Component) {
     };
 
     _this.handleFocus = function () {
-      _this.setState({ in_focus: true });
+      _this.setState({ in_focus: true, saved: false });
     };
 
     _this.handleBlur = function () {
       var _this$props = _this.props,
           value = _this$props.value,
-          onChange = _this$props.onChange;
+          onChange = _this$props.onChange,
+          autosave = _this$props.autosave;
       var stateValue = _this.state.value;
 
       _this.setState({ in_focus: false });
       if (stateValue !== value) {
         onChange(stateValue);
+        if (autosave) _this.setState({ saved: true });
       }
     };
 
@@ -67612,23 +67618,30 @@ var TextField = function (_React$Component) {
           _this$props2$type = _this$props2.type,
           type = _this$props2$type === undefined ? 'text' : _this$props2$type,
           placeholder = _this$props2.placeholder;
-      var value = _this.state.value;
+      var _this$state = _this.state,
+          value = _this$state.value,
+          saved = _this$state.saved;
 
 
-      return _react2.default.createElement('input', {
-        className: className,
-        type: type,
-        onChange: _this.handleChange,
-        onFocus: _this.handleFocus,
-        onBlur: _this.handleBlur,
-        value: value,
-        placeholder: placeholder
-      });
+      return _react2.default.createElement(
+        'div',
+        { className: 'text-field__wrapper ' + className },
+        _react2.default.createElement('input', {
+          type: type,
+          onChange: _this.handleChange,
+          onFocus: _this.handleFocus,
+          onBlur: _this.handleBlur,
+          value: value,
+          placeholder: placeholder
+        }),
+        saved && _react2.default.createElement(_Icon2.default, { name: 'check', className: 'text-field__saved' })
+      );
     };
 
     _this.state = {
       in_focus: false,
-      value: props.value || ''
+      value: props.value || '',
+      saved: false
     };
     return _this;
   }
@@ -71007,7 +71020,8 @@ var Servers = function Servers(_ref) {
             value: server.name,
             onChange: function onChange(value) {
               return dispatch(mopidyActions.updateServer({ id: server.id, name: value }));
-            }
+            },
+            autosave: true
           })
         )
       ),
@@ -71026,7 +71040,8 @@ var Servers = function Servers(_ref) {
             value: server.host,
             onChange: function onChange(value) {
               return dispatch(mopidyActions.updateServer({ id: server.id, host: value }));
-            }
+            },
+            autosave: true
           })
         )
       ),
@@ -71046,7 +71061,8 @@ var Servers = function Servers(_ref) {
             value: server.port,
             onChange: function onChange(value) {
               return dispatch(mopidyActions.updateServer({ id: server.id, port: value }));
-            }
+            },
+            autosave: true
           })
         )
       ),
@@ -71258,9 +71274,16 @@ var Services = function (_React$Component) {
   }, {
     key: 'renderSpotify',
     value: function renderSpotify() {
-      var _this2 = this;
+      var _props = this.props,
+          core = _props.core,
+          spotify = _props.spotify,
+          mopidy = _props.mopidy,
+          spotifyActions = _props.spotifyActions;
+      var _state = this.state,
+          country = _state.country,
+          locale = _state.locale;
 
-      var user_object = this.props.spotify.me && this.props.core.users[this.props.spotify.me.uri] ? this.props.core.users[this.props.spotify.me.uri] : null;
+      var user_object = spotify.me && core.users[spotify.me.uri] ? core.users[spotify.me.uri] : null;
       if (user_object) {
         var user = _react2.default.createElement(
           _URILink2.default,
@@ -71292,7 +71315,7 @@ var Services = function (_React$Component) {
 
       var not_installed = null;
 
-      if (!this.props.mopidy.uri_schemes || !this.props.mopidy.uri_schemes.includes('spotify:')) {
+      if (!mopidy.uri_schemes || !mopidy.uri_schemes.includes('spotify:')) {
         not_installed = _react2.default.createElement(
           'div',
           null,
@@ -71327,9 +71350,10 @@ var Services = function (_React$Component) {
             { className: 'input' },
             _react2.default.createElement(_TextField2.default, {
               onChange: function onChange(value) {
-                return _this2.props.spotifyActions.set({ country: value });
+                return spotifyActions.set({ country: value });
               },
-              value: this.state.country
+              value: country,
+              autosave: true
             }),
             _react2.default.createElement(
               'div',
@@ -71361,18 +71385,12 @@ var Services = function (_React$Component) {
           _react2.default.createElement(
             'div',
             { className: 'input' },
-            _react2.default.createElement('input', {
-              type: 'text',
-              onChange: function onChange(e) {
-                return _this2.setState({ locale: e.target.value });
+            _react2.default.createElement(_TextField2.default, {
+              onChange: function onChange(value) {
+                return spotifyActions.set({ locale: value });
               },
-              onFocus: function onFocus(e) {
-                return _this2.setState({ input_in_focus: 'locale' });
-              },
-              onBlur: function onBlur(e) {
-                return _this2.props.spotifyActions.set({ locale: e.target.value });
-              },
-              value: this.state.locale
+              value: locale,
+              autosave: true
             }),
             _react2.default.createElement(
               'div',
@@ -71429,7 +71447,7 @@ var Services = function (_React$Component) {
             'div',
             { className: 'input' },
             _react2.default.createElement(_SpotifyAuthenticationFrame2.default, null),
-            this.props.spotify.refreshing_token ? _react2.default.createElement(
+            spotify.refreshing_token ? _react2.default.createElement(
               'a',
               { className: 'button button--default button--working' },
               'Force token refres'
@@ -71437,8 +71455,8 @@ var Services = function (_React$Component) {
               'a',
               {
                 className: 'button button--default',
-                onClick: function onClick(e) {
-                  return _this2.props.spotifyActions.refreshingToken();
+                onClick: function onClick() {
+                  return spotifyActions.refreshingToken();
                 }
               },
               'Force token refresh'
@@ -71580,7 +71598,9 @@ var Services = function (_React$Component) {
   }, {
     key: 'renderIcecast',
     value: function renderIcecast() {
-      var _this3 = this;
+      var _props2 = this.props,
+          core = _props2.core,
+          coreActions = _props2.coreActions;
 
       return _react2.default.createElement(
         'div',
@@ -71602,9 +71622,9 @@ var Services = function (_React$Component) {
               _react2.default.createElement('input', {
                 type: 'checkbox',
                 name: 'ssl',
-                checked: this.props.core.http_streaming_enabled,
-                onChange: function onChange(e) {
-                  return _this3.props.coreActions.set({ http_streaming_enabled: !_this3.props.core.http_streaming_enabled });
+                checked: core.http_streaming_enabled,
+                onChange: function onChange() {
+                  return coreActions.set({ http_streaming_enabled: !core.http_streaming_enabled });
                 }
               }),
               _react2.default.createElement(
@@ -71626,12 +71646,12 @@ var Services = function (_React$Component) {
           _react2.default.createElement(
             'div',
             { className: 'input' },
-            _react2.default.createElement('input', {
-              type: 'text',
-              onChange: function onChange(e) {
-                return _this3.props.coreActions.set({ http_streaming_url: e.target.value });
+            _react2.default.createElement(_TextField2.default, {
+              onChange: function onChange(value) {
+                return coreActions.set({ http_streaming_url: value });
               },
-              value: this.props.core.http_streaming_url
+              value: core.http_streaming_url,
+              autosave: true
             }),
             _react2.default.createElement(
               'div',
@@ -72298,7 +72318,8 @@ var Snapcast = function Snapcast(props) {
           value: host,
           onChange: function onChange(value) {
             return actions.setConnection({ host: value });
-          }
+          },
+          autosave: true
         })
       )
     ),
@@ -72315,9 +72336,11 @@ var Snapcast = function Snapcast(props) {
         { className: 'input' },
         _react2.default.createElement(_TextField2.default, {
           value: port,
+          name: 'port',
           onChange: function onChange(value) {
             return actions.setConnection({ port: value });
-          }
+          },
+          autosave: true
         })
       )
     ),
@@ -72437,7 +72460,8 @@ var SnapcastClients = function SnapcastClients(_ref) {
               onChange: function onChange(value) {
                 return actions.setClientName(client.id, value);
               },
-              value: client.name
+              value: client.name,
+              autosave: true
             })
           )
         ),
@@ -72467,7 +72491,8 @@ var SnapcastClients = function SnapcastClients(_ref) {
                 key: 'client_' + client.id + '_new_group',
                 value: group.id,
                 label: '+ New group'
-              }])
+              }]),
+              autosave: true
             })
           )
         ),
@@ -72495,7 +72520,8 @@ var SnapcastClients = function SnapcastClients(_ref) {
               onChange: function onChange(value) {
                 return actions.setClientLatency(client.id, parseInt(value));
               },
-              value: String(client.latency)
+              value: String(client.latency),
+              autosave: true
             })
           )
         ),
@@ -72636,7 +72662,8 @@ var SnapcastGroups = function SnapcastGroups(props) {
             value: group.name,
             onChange: function onChange(value) {
               return actions.setGroupName(group.id, value);
-            }
+            },
+            autosave: true
           })
         )
       ),
@@ -72662,7 +72689,8 @@ var SnapcastGroups = function SnapcastGroups(props) {
                 value: stream.id,
                 label: stream.id + ' (' + stream.status + ')'
               };
-            })
+            }),
+            autosave: true
           })
         )
       ),
@@ -80115,6 +80143,7 @@ var MopidyMiddleware = function () {
               var response = _response[action.uri];
               if (!response || !response.length) return;
 
+              response = (0, _arrays.sortItems)(response, 'track_number');
               var artists = [];
               if (response[0].artists) {
                 var _iteratorNormalCompletion3 = true;
@@ -91386,7 +91415,7 @@ var _initialiseProps = function _initialiseProps() {
       loadPlaylist(uri);
     } else if (!prev_mopidy_connected && mopidy_connected) {
       if ((0, _helpers.uriSource)(uri) !== 'spotify') {
-        loadPlaylist(nextProps.uri);
+        loadPlaylist(uri);
       }
     }
 
@@ -91396,9 +91425,33 @@ var _initialiseProps = function _initialiseProps() {
 };
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
+  var _state$ui = state.ui;
+  _state$ui = _state$ui === undefined ? {} : _state$ui;
+  var allow_reporting = _state$ui.allow_reporting,
+      slim_mode = _state$ui.slim_mode,
+      theme = _state$ui.theme,
+      load_queue = _state$ui.load_queue,
+      _state$core = state.core;
+  _state$core = _state$core === undefined ? {} : _state$core;
+  var users = _state$core.users,
+      tracks = _state$core.tracks,
+      playlists = _state$core.playlists,
+      _state$spotify = state.spotify;
+  _state$spotify = _state$spotify === undefined ? {} : _state$spotify;
+  var spotify_library_playlists = _state$spotify.library_playlists,
+      spotify_authorized = _state$spotify.authorization,
+      _state$spotify$me = _state$spotify.me;
+  _state$spotify$me = _state$spotify$me === undefined ? {} : _state$spotify$me;
+  var spotify_userid = _state$spotify$me.id,
+      _state$mopidy = state.mopidy;
+  _state$mopidy = _state$mopidy === undefined ? {} : _state$mopidy;
+  var mopidy_connected = _state$mopidy.connected,
+      local_library_playlists = _state$mopidy.library_playlists;
+
   // Decode the URI, and then re-encode selected characters
   // This is needed as Mopidy encodes *some* characters in playlist URIs (but not other characters)
   // We need to retain ":" because this a reserved URI separator
+
   var uri = decodeURIComponent(ownProps.match.params.uri);
   uri = uri.replace(/\s/g, '%20'); // space
   uri = uri.replace(/\[/g, '%5B'); // [
@@ -91409,18 +91462,18 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
 
   return {
     uri: uri,
-    allow_reporting: state.ui.allow_reporting,
-    slim_mode: state.ui.slim_mode,
-    theme: state.ui.theme,
-    load_queue: state.ui.load_queue,
-    users: state.core.users,
-    tracks: state.core.tracks,
-    playlist: state.core.playlists[uri] !== undefined ? state.core.playlists[uri] : false,
-    spotify_library_playlists: state.spotify.library_playlists,
-    local_library_playlists: state.mopidy.library_playlists,
-    mopidy_connected: state.mopidy.connected,
-    spotify_authorized: state.spotify.authorization,
-    spotify_userid: state.spotify.me && state.spotify.me.id ? state.spotify.me.id : null
+    allow_reporting: allow_reporting,
+    slim_mode: slim_mode,
+    theme: theme,
+    load_queue: load_queue,
+    users: users,
+    tracks: tracks,
+    playlist: playlists[uri] !== undefined ? playlists[uri] : false,
+    spotify_library_playlists: spotify_library_playlists,
+    local_library_playlists: local_library_playlists,
+    mopidy_connected: mopidy_connected,
+    spotify_authorized: spotify_authorized,
+    spotify_userid: spotify_userid
   };
 };
 
@@ -93177,7 +93230,8 @@ var Settings = function (_React$Component) {
                 onChange: function onChange(value) {
                   return pusherActions.setUsername(value.replace(/\W/g, ''));
                 },
-                value: this.state.pusher_username
+                value: this.state.pusher_username,
+                autosave: true
               }),
               _react2.default.createElement(
                 'div',
@@ -93465,15 +93519,12 @@ var Settings = function (_React$Component) {
             _react2.default.createElement(
               'div',
               { className: 'input' },
-              _react2.default.createElement('input', {
-                type: 'text',
+              _react2.default.createElement(_TextField2.default, {
                 value: this.state.mopidy_library_artists_uri,
-                onChange: function onChange(e) {
-                  return _this2.setState({ mopidy_library_artists_uri: e.target.value });
+                onChange: function onChange(mopidy_library_artists_uri) {
+                  return _this2.setState({ mopidy_library_artists_uri: mopidy_library_artists_uri });
                 },
-                onBlur: function onBlur(e) {
-                  return _this2.handleBlur('mopidy', 'library_artists_uri', e.target.value);
-                }
+                autosave: true
               }),
               _react2.default.createElement(
                 'div',
@@ -93493,15 +93544,13 @@ var Settings = function (_React$Component) {
             _react2.default.createElement(
               'div',
               { className: 'input' },
-              _react2.default.createElement('input', {
+              _react2.default.createElement(_TextField2.default, {
                 type: 'text',
                 value: this.state.mopidy_library_albums_uri,
-                onChange: function onChange(e) {
-                  return _this2.setState({ mopidy_library_albums_uri: e.target.value });
+                onChange: function onChange(mopidy_library_albums_uri) {
+                  return _this2.setState({ mopidy_library_albums_uri: mopidy_library_albums_uri });
                 },
-                onBlur: function onBlur(e) {
-                  return _this2.handleBlur('mopidy', 'library_albums_uri', e.target.value);
-                }
+                autosave: true
               }),
               _react2.default.createElement(
                 'div',
@@ -99171,6 +99220,16 @@ var EditCommand = function (_React$Component) {
     value: function render() {
       var _this2 = this;
 
+      var command = this.props.command;
+      var _state = this.state,
+          name = _state.name,
+          colour = _state.colour,
+          icon = _state.icon,
+          url = _state.url,
+          method = _state.method,
+          post_data = _state.post_data,
+          additional_headers = _state.additional_headers;
+
       var icons = ['power_settings_new', 'eject', 'grade', 'query_builder', 'settings_input_component', 'settings_input_hdmi', 'settings_input_svideo', 'forward_5', 'forward_10', 'forward_30', 'replay', 'replay_5', 'replay_10', 'replay_30', 'skip_next', 'skip_previous', 'play_arrow', 'pause', 'stop', 'shuffle', 'snooze', 'volume_off', 'volume_down', 'volume_up', 'arrow_left', 'arrow_drop_up', 'arrow_right', 'arrow_drop_down', 'done', 'done_all', 'add', 'remove', 'clear', 'cast', 'speaker', 'speaker_group', 'audiotrack', 'videogame_asset', 'computer', 'tv'];
 
       return _react2.default.createElement(
@@ -99179,9 +99238,7 @@ var EditCommand = function (_React$Component) {
         _react2.default.createElement(
           'h1',
           null,
-          this.props.command ? 'Edit' : 'Create',
-          ' ',
-          'command'
+          (command ? 'Edit' : 'Create') + ' command'
         ),
         _react2.default.createElement(
           'form',
@@ -99201,7 +99258,7 @@ var EditCommand = function (_React$Component) {
               { className: 'input' },
               _react2.default.createElement(_TextField2.default, {
                 name: 'name',
-                value: this.state.name,
+                value: name,
                 onChange: function onChange(value) {
                   return _this2.setState({ name: value });
                 }
@@ -99220,7 +99277,7 @@ var EditCommand = function (_React$Component) {
               'div',
               { className: 'input' },
               _react2.default.createElement(_ColourField2.default, {
-                colour: this.state.colour,
+                colour: colour,
                 onChange: function onChange(colour) {
                   return _this2.setState({ colour: colour });
                 }
@@ -99239,7 +99296,7 @@ var EditCommand = function (_React$Component) {
               'div',
               { className: 'input' },
               _react2.default.createElement(_IconField2.default, {
-                icon: this.state.icon,
+                icon: icon,
                 icons: icons,
                 onChange: function onChange(icon) {
                   return _this2.setState({ icon: icon });
@@ -99260,9 +99317,9 @@ var EditCommand = function (_React$Component) {
               { className: 'input' },
               _react2.default.createElement(_TextField2.default, {
                 name: 'url',
-                value: this.state.url,
-                onChange: function onChange(value) {
-                  return _this2.setState({ url: value });
+                value: url,
+                onChange: function onChange(url) {
+                  return _this2.setState({ url: url });
                 }
               })
             )
@@ -99285,7 +99342,7 @@ var EditCommand = function (_React$Component) {
                   type: 'radio',
                   name: 'method',
                   value: 'GET',
-                  checked: this.state.method == 'GET',
+                  checked: method === 'GET',
                   onChange: function onChange(e) {
                     return _this2.setState({ method: e.target.value });
                   }
@@ -99303,7 +99360,7 @@ var EditCommand = function (_React$Component) {
                   type: 'radio',
                   name: 'method',
                   value: 'POST',
-                  checked: this.state.method == 'POST',
+                  checked: method === 'POST',
                   onChange: function onChange(e) {
                     return _this2.setState({ method: e.target.value });
                   }
@@ -99316,7 +99373,7 @@ var EditCommand = function (_React$Component) {
               )
             )
           ),
-          this.state.method == 'POST' && _react2.default.createElement(
+          method === 'POST' && _react2.default.createElement(
             'div',
             { className: 'field textarea white' },
             _react2.default.createElement(
@@ -99329,7 +99386,7 @@ var EditCommand = function (_React$Component) {
               { className: 'input' },
               _react2.default.createElement('textarea', {
                 name: 'command',
-                value: this.state.post_data,
+                value: post_data,
                 onChange: function onChange(e) {
                   return _this2.setState({ post_data: e.target.value });
                 }
@@ -99349,7 +99406,7 @@ var EditCommand = function (_React$Component) {
               { className: 'input' },
               _react2.default.createElement('textarea', {
                 name: 'headers',
-                value: this.state.additional_headers,
+                value: additional_headers,
                 onChange: function onChange(e) {
                   return _this2.setState({ additional_headers: e.target.value });
                 }
@@ -99359,13 +99416,17 @@ var EditCommand = function (_React$Component) {
           _react2.default.createElement(
             'div',
             { className: 'actions centered-text' },
-            this.props.command ? _react2.default.createElement(
+            command && _react2.default.createElement(
               'button',
-              { type: 'button', className: 'button button--destructive button--large', onClick: function onClick(e) {
+              {
+                type: 'button',
+                className: 'button button--destructive button--large',
+                onClick: function onClick(e) {
                   return _this2.handleDelete(e);
-                } },
+                }
+              },
               'Delete'
-            ) : null,
+            ),
             _react2.default.createElement(
               'button',
               { type: 'submit', className: 'button button--primary button--large' },
