@@ -216,7 +216,7 @@
     overflow: hidden;
     border-radius: 3px;
 
-    .light-theme & {
+    @include theme('light') {
       color: colour(darkest_grey);
     }
 
@@ -244,7 +244,7 @@
       background: lighten(colour(dark_grey), 2%);
       z-index: -2;
 
-      .light-theme & {
+      @include theme('light') {
         background: darken(colour(faint_grey), 5%);
       }
     }

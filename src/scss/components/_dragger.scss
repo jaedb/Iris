@@ -30,7 +30,7 @@
 	z-index: 98;
 	background: darken(colour(dark_grey), 1%);
 
-	.light-theme & {
+	@include theme('light') {
 		background: colour(faint_grey);
 	}
 
@@ -46,7 +46,7 @@
 		font-size: 18px;
 		text-align: center;
 
-		.light-theme & {
+		@include theme('light') {
 			background: colour(light_grey);
 			color: colour(darkest_grey);
 		}

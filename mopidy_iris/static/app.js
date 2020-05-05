@@ -86746,7 +86746,7 @@ var state = {
     http_streaming_url: 'http://' + window.location.hostname + ':8000/mopidy'
   },
   ui: {
-    theme: 'dark',
+    theme: 'auto',
     smooth_scrolling_enabled: true,
     hotkeys_enabled: true,
     playback_controls_touch_enabled: true,
@@ -93329,8 +93329,31 @@ var Settings = function (_React$Component) {
                 _react2.default.createElement('input', {
                   type: 'radio',
                   name: 'theme',
+                  value: 'auto',
+                  checked: ui.theme === 'auto',
+                  onChange: function onChange(e) {
+                    return uiActions.set({ theme: e.target.value });
+                  }
+                }),
+                _react2.default.createElement(
+                  'span',
+                  { className: 'label tooltip' },
+                  'Auto',
+                  _react2.default.createElement(
+                    'span',
+                    { className: 'tooltip__content' },
+                    'Detects your browser or OS preference'
+                  )
+                )
+              ),
+              _react2.default.createElement(
+                'label',
+                null,
+                _react2.default.createElement('input', {
+                  type: 'radio',
+                  name: 'theme',
                   value: 'dark',
-                  checked: ui.theme == 'dark',
+                  checked: ui.theme === 'dark',
                   onChange: function onChange(e) {
                     return uiActions.set({ theme: e.target.value });
                   }
@@ -93348,7 +93371,7 @@ var Settings = function (_React$Component) {
                   type: 'radio',
                   name: 'theme',
                   value: 'light',
-                  checked: ui.theme == 'light',
+                  checked: ui.theme === 'light',
                   onChange: function onChange(e) {
                     return uiActions.set({ theme: e.target.value });
                   }

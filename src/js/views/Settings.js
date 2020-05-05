@@ -188,8 +188,21 @@ class Settings extends React.Component {
                 <input
                   type="radio"
                   name="theme"
+                  value="auto"
+                  checked={ui.theme === 'auto'}
+                  onChange={(e) => uiActions.set({ theme: e.target.value })}
+                />
+                <span className="label tooltip">
+                  Auto
+                  <span className="tooltip__content">Detects your browser or OS preference</span>
+                </span>
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="theme"
                   value="dark"
-                  checked={ui.theme == 'dark'}
+                  checked={ui.theme === 'dark'}
                   onChange={(e) => uiActions.set({ theme: e.target.value })}
                 />
                 <span className="label">Dark</span>
@@ -199,7 +212,7 @@ class Settings extends React.Component {
                   type="radio"
                   name="theme"
                   value="light"
-                  checked={ui.theme == 'light'}
+                  checked={ui.theme === 'light'}
                   onChange={(e) => uiActions.set({ theme: e.target.value })}
                 />
                 <span className="label">Light</span>

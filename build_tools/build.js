@@ -53,6 +53,12 @@ copydir('src/assets', 'mopidy_iris/static/assets', function(error){
 		fs.writeFileSync(html_file, html_file_content, 'utf8');
 		console.log('Setting version in HTML');
 
+		console.log('Setting version in manifest.json');
+		var manifest_file = "mopidy_iris/static/manifest.json";
+		var manifest_file_content = fs.readFileSync(manifest_file, "utf8");
+		manifest_file_content = manifest_file_content.replace(/(?:\"manifest_version\"\:\ \")(?:.*)"/, '"manifest_version": "'+version+'"');
+		fs.writeFileSync(manifest_file, manifest_file_content, 'utf8');
+
 		console.log('Setting version in __init__.py');
 		var init_file = "mopidy_iris/__init__.py";
 		var init_file_content = fs.readFileSync(init_file, "utf8");

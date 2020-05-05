@@ -14,7 +14,7 @@
 		&__name {
 			display: none;
 		}
-		
+
 		.icon {
 			padding-right: 8px;
 		}
@@ -74,7 +74,7 @@
 			top: -3px;
 			right: 9px;
 
-			.light-theme & {
+			@include theme('light') {
 				background: colour(white);
 			}
 		}
@@ -87,7 +87,7 @@
 			overflow-y: auto;
 			border-radius: 3px;
 
-			.light-theme & {
+			@include theme('light') {
 				background: colour(white);
 			}
 		}
@@ -118,7 +118,7 @@
 	}
 }
 
-#context-menu {	
+#context-menu {
 	.dropdown-field {
 		padding: 16px 0;
 		display: block;
@@ -147,7 +147,7 @@
 			&:hover {
 				color: colour(white);
 
-				.light-theme & {
+				@include theme('light') {
 					color: colour(dark_grey) !important;
 				}
 			}
@@ -172,7 +172,7 @@
 				color: colour(white) !important;
 				margin: -3px -5px;
 
-				.light-theme & {
+				@include theme('light') {
 					color: colour(dark_grey) !important;
 				}
 
@@ -187,7 +187,7 @@
 				border-radius: 0;
 				color: colour(white) !important;
 
-				.light-theme & {
+				@include theme('light') {
 					color: colour(dark_grey) !important;
 				}
 
@@ -204,5 +204,5 @@
 				}
 			}
 		}
-	}	
+	}
 }

@@ -18,7 +18,7 @@
 		@include animate();
 		overflow-y: scroll;
 
-		&--submenu {			
+		&--submenu {
 			z-index: 3;
 			border-radius: 3px;
 			transform: translateX(100%);
@@ -125,11 +125,11 @@
 		border-radius: 3px;
 		box-shadow: 2px 3px 6px rgba(0,0,0,0.2);
 
-		.light-theme & {
+		@include theme('light') {
 			background: colour(white);
 		}
 
-		.dark-theme & {
+		@include theme('dark') & {
 			background: colour(grey);
 		}
 
@@ -148,11 +148,11 @@
 				right: 0;
 				bottom: 0;
 
-				.dark-theme & {
+				@include theme('dark') & {
 					background: colour(grey);
 				}
-	
-				.light-theme & {
+
+				@include theme('light') {
 					background: colour(white);
 				}
 			}
@@ -185,7 +185,7 @@
 			background-image: linear-gradient(rgba(24,24,24,0) 0%, rgba(24,24,24,1) 20%);
 			z-index: 1;
 
-			.light-theme & {
+			@include theme('light') {
 				background-image: linear-gradient(rgba(255,255,255,0) 0%, rgba(255,255,255,1) 20%);
 			}
 		}
@@ -195,7 +195,7 @@
 			color: colour(mid_grey);
 			padding: 16px 22px;
 
-			.light-theme & {
+			@include theme('light') {
 				color: colour(darkest_grey);
 			}
 
@@ -268,12 +268,12 @@
 					transform: none;
 					padding: 16px 22px;
 
-					.light-theme & {
+					@include theme('light') {
 						color: colour(darkest_grey);
 					}
 
 					.icon {
-						display: none;					
+						display: none;
 					}
 
 					&:before {
@@ -304,7 +304,7 @@
 				padding: 16px 22px;
 				box-sizing: border-box;
 
-				.light-theme & {
+				@include theme('light') {
 					color: colour(darkest_grey);
 				}
 
