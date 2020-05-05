@@ -28,7 +28,7 @@
 			background: rgba(255,255,255,0.2);
 		}
 
-		.light-theme & {
+		@include theme('light') {
 			background: colour(faint_grey);
 			color: inherit;
 

@@ -41,7 +41,7 @@ $module: 'tooltip';
 			left: 9px;
 		}
 
-		.light-theme & {
+		@include theme('light') {
 			background: colour(dark_grey);
 			color: colour(white);
 

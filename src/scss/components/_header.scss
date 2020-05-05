@@ -55,7 +55,7 @@ main {
 					}
 				}
 
-				.light-theme & {
+				@include theme('light') {
 					color: colour(darkest_grey);
 
 					&:hover {

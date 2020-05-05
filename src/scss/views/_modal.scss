@@ -12,7 +12,7 @@
   min-height: 100%;
   z-index: 98;
 
-  .light-theme & {
+  @include theme('light') {
     background: darken(colour(faint_grey), 6%);
     color: colour(darkest_grey);
   }
@@ -42,7 +42,7 @@
         font-size: 35px;
       }
 
-      .light-theme & {
+      @include theme('light') {
         color: colour(darkest_grey);
       }
     }
@@ -334,7 +334,7 @@
               font-size: 2.4rem;
               margin: 0 10px;
 
-              .light-theme & {
+              @include theme('light') {
                 color: colour(darkest_grey);
               }
             }

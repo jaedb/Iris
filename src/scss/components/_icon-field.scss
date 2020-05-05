@@ -15,7 +15,7 @@
 			&:after {
 				background: colour(grey) !important;
 
-				.light-theme & {
+				@include theme('light') {
 					background: rgba(128,128,128,0.4) !important;
 				}
 			}

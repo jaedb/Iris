@@ -13,7 +13,7 @@
 		color: colour(white);
 		background: transparent;
 
-		.light-theme & {
+		@include theme('light') {
 			color: colour(darkest_grey);
 		}
 	}
@@ -73,7 +73,7 @@
 					}
 				}
 
-				.light-theme & {
+				@include theme('light') {
 					&:hover{
 						.menu-item__inner {
 							background: darken(colour(faint_grey), 8%);
@@ -109,7 +109,7 @@
 			font-size: 1rem;
 		}
 
-		.light-theme & {
+		@include theme('light') {
 			background: darken(colour(faint_grey), 8%);
 		}
 

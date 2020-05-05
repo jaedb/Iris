@@ -43,7 +43,7 @@ let state = {
     http_streaming_url: `http://${window.location.hostname}:8000/mopidy`,
   },
   ui: {
-    theme: 'dark',
+    theme: 'auto',
     smooth_scrolling_enabled: true,
     hotkeys_enabled: true,
     playback_controls_touch_enabled: true,

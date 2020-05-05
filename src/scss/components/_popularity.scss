@@ -17,7 +17,7 @@
 				opacity: 1;
 			}
 
-			.light-theme & {
+			@include theme('light') {
 				background: colour(darkest_grey);
 			}
 		}

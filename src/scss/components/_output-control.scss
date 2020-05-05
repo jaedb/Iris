@@ -21,7 +21,7 @@
 		box-shadow: 2px 3px 6px rgba(0,0,0,0.2);
 		z-index: 9;
 
-		.dark-theme & {
+		@include theme('dark') & {
 			color: colour(white);
 			background: lighten(colour(grey), 4%);
 
@@ -30,7 +30,7 @@
 			}
 		}
 
-		.light-theme & {
+		@include theme('light') {
 			color: colour(darkest_grey);
 			background: colour(white);
 
@@ -144,11 +144,11 @@
 			border-radius: 0;
 			max-height: 50vh;
 
-			.dark-theme & {
+			@include theme('dark') & {
 				box-shadow: 0 -5px 5px rgba(0, 0, 0, 0.6);
 			}
-			
-			.light-theme & {
+
+			@include theme('light') {
 				box-shadow: 0 -5px 5px rgba(0, 0, 0, 0.1);
 			}
 
