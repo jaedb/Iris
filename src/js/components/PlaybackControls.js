@@ -12,7 +12,6 @@ import Dater from './Dater';
 import LinksSentence from './LinksSentence';
 import Thumbnail from './Thumbnail';
 import Icon from './Icon';
-import Stream from './Stream';
 import { scrollTo } from '../util/helpers';
 import * as uiActions from '../services/ui/actions';
 import * as coreActions from '../services/core/actions';
@@ -187,8 +186,6 @@ class PlaybackControls extends React.Component {
       <div className={`playback-controls${expanded ? ' playback-controls--expanded' : ''}${touch_enabled ? ' playback-controls--touch-enabled' : ''}`}>
 
         <div className="playback-controls__background" />
-
-        <Stream />
 
         {next_track && next_track.images ? <Thumbnail className="hide" size="large" images={next_track.images} /> : null}
 

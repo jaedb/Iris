@@ -1,6 +1,5 @@
 
 import React from 'react';
-import ReactHowler from 'react-howler';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as coreActions from '../services/core/actions';
@@ -40,15 +39,15 @@ class Stream extends React.Component {
 
     console.debug(`Attempting to play stream ${url}?cb=${cachebuster}`);
 
+    if (play_state !== 'playing') return null;
+
     return (
-      <ReactHowler
-        src={`${url}?cb=${cachebuster}`}
-        playing={play_state === 'playing'}
-        volume={volume / 100}
-        onPlay={() => console.debug(`Playing stream ${url}?cb=${cachebuster}`)}
-        onLoad={() => console.debug(`Loaded stream ${url}?cb=${cachebuster}`)}
-        onError={() => console.error(`Failed to play stream ${url}?cb=${cachebuster}`)}
-      />
+      <audio
+        autoPlay
+        volume={volume / 100} // TODO: Needs to be set by script, not DOM
+      >
+        <source src={`${url}?cb=${cachebuster}`} />
+      </audio>
     );
   }
 }
