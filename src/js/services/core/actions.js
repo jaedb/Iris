@@ -55,16 +55,23 @@ export function startSearch(search_type, query, only_mopidy = false) {
 }
 
 export function handleException(message, data = {}, description = null, show_notification = true) {
-  if (!message && data.message) {
-    message = data.message;
-  } else if (!message && data.error.message) {
-    message = data.error.message;
+  if (!message) {
+    if (data.message) {
+      message = data.message;
+    } else if (data.error.message) {
+      message = data.error.message;
+    }
   }
-  if (!description && data.description) {
-    description = data.description;
-  } else if (!description && data.error && data.error.description) {
-    description = data.error.description;
+  if (!description) {
+    if (data.description) {
+      description = data.description;
+    } else if (data.error && data.error.message) {
+      description = data.error.message;
+    } else if (data.error && data.error.description) {
+      description = data.error.description;
+    }
   }
+
   return {
     type: 'HANDLE_EXCEPTION',
     message,

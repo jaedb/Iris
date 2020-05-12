@@ -196,7 +196,6 @@ export default function reducer(spotify = {}, action) {
 
     case 'SPOTIFY_FLUSH_LIBRARY':
       return {
-
         ...spotify,
         library_playlists: null,
         library_playlists_loaded_all: null,
