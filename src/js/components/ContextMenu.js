@@ -60,7 +60,7 @@ class ContextMenu extends React.Component {
       menu,
       tracks,
       lastfm_authorized,
-      spotify_authorized,
+      spotify_available,
       spotifyActions,
       lastfmActions,
     } = this.props;
@@ -72,7 +72,7 @@ class ContextMenu extends React.Component {
       const context = this.getContext(this.props);
 
       // if we're able to be in the library, run a check
-      if (spotify_authorized && context.source === 'spotify') {
+      if (spotify_available && context.source === 'spotify') {
         switch (menu.context) {
           case 'artist':
           case 'album':
@@ -207,8 +207,8 @@ class ContextMenu extends React.Component {
   }
 
   canBeInLibrary = () => {
-    const { spotify_authorized, menu: { items } } = this.props;
-    if (!spotify_authorized) return false;
+    const { spotify_available, menu: { items } } = this.props;
+    if (!spotify_available) return false;
     return (uriSource(items[0].uri) === 'spotify');
   }
 
@@ -661,13 +661,14 @@ class ContextMenu extends React.Component {
   setSubmenu = (name) => {
     const { submenu } = this.state;
     const {
+      spotify_available,
       spotify_library_playlists_loaded_all,
       mopidy_library_playlists_loaded_all,
       spotifyActions,
       mopidyActions,
     } = this.props;
-    if (submenu !== name && name == 'add-to-playlist') {
-      if (!spotify_library_playlists_loaded_all) spotifyActions.getLibraryPlaylists();
+    if (submenu !== name && name === 'add-to-playlist') {
+      if (spotify_available && !spotify_library_playlists_loaded_all) spotifyActions.getLibraryPlaylists();
       if (!mopidy_library_playlists_loaded_all) mopidyActions.getLibraryPlaylists();
     }
 
@@ -746,7 +747,7 @@ class ContextMenu extends React.Component {
   renderItems = () => {
     const {
       lastfm_authorized,
-      spotify_authorized,
+      spotify_available,
       load_queue,
     } = this.props;
     const context = this.getContext();
@@ -842,7 +843,7 @@ class ContextMenu extends React.Component {
       </div>
     );
 
-    if (!spotify_authorized) {
+    if (!spotify_available) {
       toggle_in_library = null;
     } else if (
       isLoading(
@@ -1135,18 +1136,18 @@ const mapStateToProps = (state) => ({
   current_track: state.core.current_track,
   current_tracklist: state.core.current_tracklist,
   queue_metadata: state.core.queue_metadata,
+  spotify_available: state.spotify.access_token,
   spotify_library_playlists: state.spotify.library_playlists,
   spotify_library_playlists_loaded_all: state.spotify.library_playlists_loaded_all,
+  spotify_library_artists: state.spotify.library_artists,
+  spotify_library_albums: state.spotify.library_albums,
+  spotify_library_tracks: state.spotify.library_tracks,
   mopidy_library_playlists: state.mopidy.library_playlists,
   mopidy_library_playlists_loaded_all: state.mopidy.library_playlists_loaded_all,
-  spotify_library_artists: state.spotify.library_artists,
   mopidy_library_artists: state.mopidy.library_artists,
-  spotify_library_albums: state.spotify.library_albums,
   mopidy_library_albums: state.mopidy.library_albums,
-  spotify_library_tracks: state.spotify.library_tracks,
   playlists: state.core.playlists,
   tracks: state.core.tracks,
-  spotify_authorized: state.spotify.authorization,
   lastfm_authorized: state.lastfm.authorization,
 });
 

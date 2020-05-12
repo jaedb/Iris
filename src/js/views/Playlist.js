@@ -25,6 +25,7 @@ import {
   getFromUri,
   isLoading,
   sourceIcon,
+  decodeMopidyUri,
 } from '../util/helpers';
 import { collate } from '../util/format';
 
@@ -290,9 +291,7 @@ const mapStateToProps = (state, ownProps) => {
     spotify: {
       library_playlists: spotify_library_playlists,
       authorization: spotify_authorized,
-      me: {
-        id: spotify_userid,
-      } = {},
+      me = {},
     } = {},
     mopidy: {
       connected: mopidy_connected,
@@ -300,16 +299,7 @@ const mapStateToProps = (state, ownProps) => {
     } = {},
   } = state;
 
-  // Decode the URI, and then re-encode selected characters
-  // This is needed as Mopidy encodes *some* characters in playlist URIs (but not other characters)
-  // We need to retain ":" because this a reserved URI separator
-  let uri = decodeURIComponent(ownProps.match.params.uri);
-  uri = uri.replace(/\s/g, '%20');	// space
-  uri = uri.replace(/\[/g, '%5B');	// [
-  uri = uri.replace(/\]/g, '%5D');	// ]
-  uri = uri.replace(/\(/g, '%28');	// (
-  uri = uri.replace(/\)/g, '%29');	// )
-  uri = uri.replace(/\#/g, '%23');	// #
+  const uri = decodeMopidyUri(ownProps.match.params.uri);
 
   return {
     uri,
@@ -324,7 +314,7 @@ const mapStateToProps = (state, ownProps) => {
     local_library_playlists,
     mopidy_connected,
     spotify_authorized,
-    spotify_userid,
+    spotify_userid: (me && me.id) || null,
   };
 };
 

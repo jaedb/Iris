@@ -1,5 +1,3 @@
-
-
 /**
  * Returns a function, that, as long as it continues to be invoked, will not
  * be triggered. The function will be called after it stops being called for
@@ -9,7 +7,8 @@
 const debounce = function (fn, wait, immediate) {
   let timeout;
   return function () {
-    const context = this; const
+    const context = this;
+    const
       args = arguments;
 
     const later = function () {
@@ -76,7 +75,7 @@ const setFavicon = function (filename) {
  * @param string String = the locaion.search string
  */
 const queryString = (key, string, compact = true) => {
-  const elements = string.replace('?','').split('&');
+  const elements = string.replace('?', '').split('&');
   const results = elements.reduce((accumulator, current) => {
     const subElements = current.split('=');
     let results = [];
@@ -107,7 +106,8 @@ const generateGuid = function (type = 'numeric', length = 12) {
   }
   const format = 'x'.repeat(length);
   return format.replace(/[xy]/g, (c) => {
-    const r = Math.random() * 16 | 0; const
+    const r = Math.random() * 16 | 0;
+    const
       v = c == 'x' ? r : (r & 0x3 | 0x8);
     return v.toString(length);
   });
@@ -211,9 +211,9 @@ const getFromUri = function (element, uri = '') {
 
   switch (element) {
     case 'mbid':
-        var index = exploded.indexOf('mbid');
-        if (index > -1) return exploded[index + 1];
-        break;
+      var index = exploded.indexOf('mbid');
+      if (index > -1) return exploded[index + 1];
+      break;
 
     case 'artistid':
       if (exploded[1] == 'artist') {
@@ -230,7 +230,8 @@ const getFromUri = function (element, uri = '') {
     case 'playlistid':
       if (exploded[1] == 'playlist') {
         return exploded[2];
-      } if (exploded[1] == 'user' && exploded[3] == 'playlist') {
+      }
+      if (exploded[1] == 'user' && exploded[3] == 'playlist') {
         return exploded[4];
       }
       break;
@@ -264,7 +265,7 @@ const getFromUri = function (element, uri = '') {
         return exploded[2];
       } else if (exploded[1] === 'radio') {
         const seeds = exploded[2].split(',');
-        return seeds.map(seed => seed.replace(/_/gi,':'));
+        return seeds.map(seed => seed.replace(/_/gi, ':'));
       }
       break;
 
@@ -370,7 +371,9 @@ const isLoading = function (load_queue = [], keys = []) {
  * @return Boolean
  * */
 const isHosted = function (hosts = ['jaedb.github.io']) {
-  const { hostname } = window.location;
+  const {
+    hostname
+  } = window.location;
   return hosts.includes(hostname);
 };
 
@@ -414,20 +417,58 @@ const titleCase = function (string) {
  * Use a keyword to return an icon name
  */
 const iconFromKeyword = (name) => {
-  const iconWords = [
-    { icon: 'business', words: ['office', 'work'] },
-    { icon: 'king_bed', words: ['bed'] },
-    { icon: 'weekend', words: ['lounge', 'tv', 'sitting room'] },
-    { icon: 'directions_car', words: ['garage', 'basement'] },
-    { icon: 'local_laundry_service', words: ['laundry'] },
-    { icon: 'fitness_center', words: ['gym'] },
-    { icon: 'kitchen', words: ['kitchen'] },
-    { icon: 'deck', words: ['deck', 'outside'] },
-    { icon: 'restaurant_menu', words: ['dining', 'dinner'] },
-    { icon: 'laptop', words: ['laptop'] },
-    { icon: 'bug_report', words: ['test', 'debug'] },
-    { icon: 'child_care', words: ['kids', 'baby'] },
-    { icon: 'smartphone', words: ['phone', 'mobile'] },
+  const iconWords = [{
+      icon: 'business',
+      words: ['office', 'work']
+    },
+    {
+      icon: 'king_bed',
+      words: ['bed']
+    },
+    {
+      icon: 'weekend',
+      words: ['lounge', 'tv', 'sitting room']
+    },
+    {
+      icon: 'directions_car',
+      words: ['garage', 'basement']
+    },
+    {
+      icon: 'local_laundry_service',
+      words: ['laundry']
+    },
+    {
+      icon: 'fitness_center',
+      words: ['gym']
+    },
+    {
+      icon: 'kitchen',
+      words: ['kitchen']
+    },
+    {
+      icon: 'deck',
+      words: ['deck', 'outside']
+    },
+    {
+      icon: 'restaurant_menu',
+      words: ['dining', 'dinner']
+    },
+    {
+      icon: 'laptop',
+      words: ['laptop']
+    },
+    {
+      icon: 'bug_report',
+      words: ['test', 'debug']
+    },
+    {
+      icon: 'child_care',
+      words: ['kids', 'baby']
+    },
+    {
+      icon: 'smartphone',
+      words: ['phone', 'mobile']
+    },
   ];
   for (let item of iconWords) {
     for (let word of item.words) {
@@ -513,8 +554,36 @@ const upgradeSpotifyPlaylistUris = function (uris) {
 };
 
 // As above, but for a single URI
-let upgradeSpotifyPlaylistUri = function (uri) {
+const upgradeSpotifyPlaylistUri = function (uri) {
   return upgradeSpotifyPlaylistUris([uri])[0];
+};
+
+
+/**
+ * Decode and encode Mopidy playlist URIs
+ * This is needed as Mopidy encodes *some* characters in playlist URIs (but not other characters)
+ * We need to retain ":" because this a reserved URI separator
+ */
+const decodeMopidyUri = function (uri, decodeComponent = true) {
+  let decoded = decodeComponent ? decodeURIComponent(uri) : uri;
+  decoded = decoded.replace(/\s/g, '%20'); // space
+  decoded = decoded.replace(/\[/g, '%5B'); // [
+  decoded = decoded.replace(/\]/g, '%5D'); // ]
+  decoded = decoded.replace(/\(/g, '%28'); // (
+  decoded = decoded.replace(/\)/g, '%29'); // )
+  decoded = decoded.replace(/\#/g, '%23'); // #
+  return decoded;
+};
+
+const encodeMopidyUri = function (uri, encodeComponent = true) {
+  let encoded = encodeComponent ? encodeURIComponent(uri) : uri;
+  encoded = encoded.replace(/\%20/g, ' '); // space
+  encoded = encoded.replace(/\%5B/g, '['); // [
+  encoded = encoded.replace(/\%5D/g, ']'); // ]
+  encoded = encoded.replace(/\%28/g, '('); // (
+  encoded = encoded.replace(/\%29/g, ')'); // )
+  encoded = encoded.replace(/\%23/g, '#'); // #
+  return encoded;
 };
 
 export {
@@ -540,6 +609,8 @@ export {
   upgradeSpotifyPlaylistUris,
   upgradeSpotifyPlaylistUri,
   iconFromKeyword,
+  decodeMopidyUri,
+  encodeMopidyUri,
 };
 
 export default {
@@ -565,4 +636,6 @@ export default {
   upgradeSpotifyPlaylistUris,
   upgradeSpotifyPlaylistUri,
   iconFromKeyword,
+  decodeMopidyUri,
+  encodeMopidyUri,
 };

@@ -504,6 +504,11 @@ select {
         display: inline-block;
         padding: 0.25rem 0;
 
+        input:disabled + .label {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
         &:not(:last-child) {
           padding-right: 1rem;
         }

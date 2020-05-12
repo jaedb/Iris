@@ -62391,7 +62391,7 @@ var ContextMenu = function (_React$Component) {
           menu = _this$props.menu,
           tracks = _this$props.tracks,
           lastfm_authorized = _this$props.lastfm_authorized,
-          spotify_authorized = _this$props.spotify_authorized,
+          spotify_available = _this$props.spotify_available,
           spotifyActions = _this$props.spotifyActions,
           lastfmActions = _this$props.lastfmActions;
 
@@ -62403,7 +62403,7 @@ var ContextMenu = function (_React$Component) {
         var context = _this.getContext(_this.props);
 
         // if we're able to be in the library, run a check
-        if (spotify_authorized && context.source === 'spotify') {
+        if (spotify_available && context.source === 'spotify') {
           switch (menu.context) {
             case 'artist':
             case 'album':
@@ -62502,10 +62502,10 @@ var ContextMenu = function (_React$Component) {
 
     _this.canBeInLibrary = function () {
       var _this$props6 = _this.props,
-          spotify_authorized = _this$props6.spotify_authorized,
+          spotify_available = _this$props6.spotify_available,
           items = _this$props6.menu.items;
 
-      if (!spotify_authorized) return false;
+      if (!spotify_available) return false;
       return (0, _helpers.uriSource)(items[0].uri) === 'spotify';
     };
 
@@ -62905,13 +62905,14 @@ var ContextMenu = function (_React$Component) {
     _this.setSubmenu = function (name) {
       var submenu = _this.state.submenu;
       var _this$props28 = _this.props,
+          spotify_available = _this$props28.spotify_available,
           spotify_library_playlists_loaded_all = _this$props28.spotify_library_playlists_loaded_all,
           mopidy_library_playlists_loaded_all = _this$props28.mopidy_library_playlists_loaded_all,
           spotifyActions = _this$props28.spotifyActions,
           mopidyActions = _this$props28.mopidyActions;
 
-      if (submenu !== name && name == 'add-to-playlist') {
-        if (!spotify_library_playlists_loaded_all) spotifyActions.getLibraryPlaylists();
+      if (submenu !== name && name === 'add-to-playlist') {
+        if (spotify_available && !spotify_library_playlists_loaded_all) spotifyActions.getLibraryPlaylists();
         if (!mopidy_library_playlists_loaded_all) mopidyActions.getLibraryPlaylists();
       }
 
@@ -63016,7 +63017,7 @@ var ContextMenu = function (_React$Component) {
     _this.renderItems = function () {
       var _this$props30 = _this.props,
           lastfm_authorized = _this$props30.lastfm_authorized,
-          spotify_authorized = _this$props30.spotify_authorized,
+          spotify_available = _this$props30.spotify_available,
           load_queue = _this$props30.load_queue;
 
       var context = _this.getContext();
@@ -63184,7 +63185,7 @@ var ContextMenu = function (_React$Component) {
         )
       );
 
-      if (!spotify_authorized) {
+      if (!spotify_available) {
         toggle_in_library = null;
       } else if ((0, _helpers.isLoading)(load_queue, ['spotify_me/tracks/contains', 'spotify_me/playlists/contains', 'spotify_me/albums/contains', 'spotify_me/artists/contains'])) {
         toggle_in_library = _react2.default.createElement(
@@ -63614,18 +63615,18 @@ var mapStateToProps = function mapStateToProps(state) {
     current_track: state.core.current_track,
     current_tracklist: state.core.current_tracklist,
     queue_metadata: state.core.queue_metadata,
+    spotify_available: state.spotify.access_token,
     spotify_library_playlists: state.spotify.library_playlists,
     spotify_library_playlists_loaded_all: state.spotify.library_playlists_loaded_all,
+    spotify_library_artists: state.spotify.library_artists,
+    spotify_library_albums: state.spotify.library_albums,
+    spotify_library_tracks: state.spotify.library_tracks,
     mopidy_library_playlists: state.mopidy.library_playlists,
     mopidy_library_playlists_loaded_all: state.mopidy.library_playlists_loaded_all,
-    spotify_library_artists: state.spotify.library_artists,
     mopidy_library_artists: state.mopidy.library_artists,
-    spotify_library_albums: state.spotify.library_albums,
     mopidy_library_albums: state.mopidy.library_albums,
-    spotify_library_tracks: state.spotify.library_tracks,
     playlists: state.core.playlists,
     tracks: state.core.tracks,
-    spotify_authorized: state.spotify.authorization,
     lastfm_authorized: state.lastfm.authorization
   };
 };
@@ -65337,6 +65338,38 @@ var Dropzone = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (Dropzone.__proto__ || Object.getPrototypeOf(Dropzone)).call(this, props));
 
+    _this.handleMouseOver = function () {
+      _this.setState({ hover: true });
+    };
+
+    _this.handleMouseOut = function () {
+      _this.setState({ hover: false });
+    };
+
+    _this.render = function () {
+      var _this$props = _this.props,
+          data = _this$props.data,
+          handleMouseUp = _this$props.handleMouseUp;
+      var hover = _this.state.hover;
+
+
+      if (!data) return null;
+
+      return _react2.default.createElement(
+        'div',
+        {
+          className: hover ? 'dropzone hover' : 'dropzone',
+          onMouseUp: handleMouseUp
+        },
+        _react2.default.createElement(_Icon2.default, { name: data.icon }),
+        _react2.default.createElement(
+          'span',
+          { className: 'title' },
+          data.title
+        )
+      );
+    };
+
     _this.state = {
       hover: false
     };
@@ -65357,36 +65390,6 @@ var Dropzone = function (_React$Component) {
     value: function componentWillUnmount() {
       window.removeEventListener('mouseover', this.handleMouseOver, false);
       window.removeEventListener('mouseout', this.handleMouseOut, false);
-    }
-  }, {
-    key: 'handleMouseOver',
-    value: function handleMouseOver(e) {
-      this.setState({ hover: true });
-    }
-  }, {
-    key: 'handleMouseOut',
-    value: function handleMouseOut(e) {
-      this.setState({ hover: false });
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var _this2 = this;
-
-      if (!this.props.data) return null;
-
-      return _react2.default.createElement(
-        'div',
-        { className: this.state.hover ? 'dropzone hover' : 'dropzone', onMouseUp: function onMouseUp(e) {
-            return _this2.props.handleMouseUp(e);
-          } },
-        _react2.default.createElement(_Icon2.default, { name: this.props.data.icon }),
-        _react2.default.createElement(
-          'span',
-          { className: 'title' },
-          this.props.data.title
-        )
-      );
     }
   }]);
 
@@ -65410,8 +65413,6 @@ exports.default = Dropzone;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
@@ -65439,6 +65440,10 @@ var _actions3 = __webpack_require__(/*! ../../services/spotify/actions */ "./src
 
 var spotifyActions = _interopRequireWildcard(_actions3);
 
+var _arrays = __webpack_require__(/*! ../../util/arrays */ "./src/js/util/arrays.js");
+
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -65457,6 +65462,64 @@ var Dropzones = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (Dropzones.__proto__ || Object.getPrototypeOf(Dropzones)).call(this, props));
 
+    _this.handleMouseMove = function (e) {
+      var _this$props = _this.props,
+          _this$props$dragger = _this$props.dragger,
+          dragger = _this$props$dragger === undefined ? {} : _this$props$dragger,
+          dragMove = _this$props.uiActions.dragMove;
+
+      if (!dragger || !dragger.active) return null;
+      return dragMove(e);
+    };
+
+    _this.handleMouseUp = function (zone) {
+      var _this$props2 = _this.props,
+          _this$props2$dragger = _this$props2.dragger,
+          _this$props2$dragger$ = _this$props2$dragger.victims,
+          victims = _this$props2$dragger$ === undefined ? [] : _this$props2$dragger$,
+          from_uri = _this$props2$dragger.from_uri,
+          enqueueURIs = _this$props2.mopidyActions.enqueueURIs,
+          history = _this$props2.history;
+
+      var uris = (0, _arrays.arrayOf)('uri', victims);
+
+      switch (zone.action) {
+        case 'enqueue':
+          enqueueURIs(uris, from_uri);
+          break;
+        case 'enqueue_next':
+          enqueueURIs(uris, from_uri, true);
+          break;
+        case 'add_to_playlist':
+          history.push('/add-to-playlist/' + encodeURIComponent(uris.join(',')));
+          // uris
+          break;
+        default:
+          break;
+      }
+    };
+
+    _this.render = function () {
+      var _this$props$dragger2 = _this.props.dragger,
+          dragger = _this$props$dragger2 === undefined ? {} : _this$props$dragger2;
+
+      if (!dragger || !dragger.active) return null;
+
+      return _react2.default.createElement(
+        'div',
+        { className: 'dropzones' },
+        _this._zones.map(function (zone) {
+          return _react2.default.createElement(_Dropzone2.default, {
+            key: zone.action,
+            data: zone,
+            handleMouseUp: function handleMouseUp() {
+              return _this.handleMouseUp(zone);
+            }
+          });
+        })
+      );
+    };
+
     _this._zones = [{
       title: 'Add to queue',
       icon: 'play_arrow',
@@ -65473,57 +65536,6 @@ var Dropzones = function (_React$Component) {
     }];
     return _this;
   }
-
-  _createClass(Dropzones, [{
-    key: 'handleMouseMove',
-    value: function handleMouseMove(e) {
-      if (!this.props.dragger || !this.props.dragger.active) return null;
-      this.props.uiActions.dragMove(e);
-    }
-  }, {
-    key: 'handleMouseUp',
-    value: function handleMouseUp(e, index) {
-      var target = this._zones[index];
-      var victims = this.props.dragger.victims;
-
-      var uris = [];
-      for (var i = 0; i < victims.length; i++) {
-        uris.push(victims[i].uri);
-      }
-
-      switch (target.action) {
-        case 'enqueue':
-          this.props.mopidyActions.enqueueURIs(uris, this.props.dragger.from_uri);
-          break;
-
-        case 'enqueue_next':
-          this.props.mopidyActions.enqueueURIs(uris, this.props.dragger.from_uri, true);
-          break;
-
-        case 'add_to_playlist':
-          this.props.history.push('/add-to-playlist/' + encodeURIComponent(uris.join(',')));
-          // uris
-          break;
-      }
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var _this2 = this;
-
-      if (!this.props.dragger || !this.props.dragger.active) return null;
-
-      return _react2.default.createElement(
-        'div',
-        { className: 'dropzones' },
-        this._zones.map(function (zone, index) {
-          return _react2.default.createElement(_Dropzone2.default, { key: index, data: zone, handleMouseUp: function handleMouseUp(e) {
-              return _this2.handleMouseUp(e, index);
-            } });
-        })
-      );
-    }
-  }]);
 
   return Dropzones;
 }(_react2.default.Component);
@@ -72081,7 +72093,7 @@ var Sidebar = function (_React$Component) {
     value: function render() {
       var _props2 = this.props,
           history = _props2.history,
-          spotify_enabled = _props2.spotify_enabled,
+          spotify_available = _props2.spotify_available,
           uiActions = _props2.uiActions;
 
 
@@ -72110,7 +72122,7 @@ var Sidebar = function (_React$Component) {
                 'Search'
               )
             ),
-            spotify_enabled && _react2.default.createElement(
+            spotify_available && _react2.default.createElement(
               'section',
               { className: 'sidebar__menu__section' },
               _react2.default.createElement(
@@ -72214,7 +72226,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
   return {
     mopidy_connected: state.mopidy.connected,
     pusher_connected: state.pusher.connected,
-    spotify_enabled: state.spotify.enabled,
+    spotify_available: state.spotify.access_token,
     spotify_authorized: state.spotify.authorization,
     snapcast_connected: state.snapcast.connected,
     snapcast_enabled: state.snapcast.enabled,
@@ -80004,7 +80016,7 @@ var MopidyMiddleware = function () {
 
           case 'MOPIDY_CREATE_PLAYLIST':
             request(socket, store, 'playlists.create', { name: action.name, uri_scheme: action.scheme }).then(function (response) {
-              store.dispatch(uiActions.createNotification({ level: 'warning', content: 'Created playlist' }));
+              store.dispatch(uiActions.createNotification({ content: 'Created playlist' }));
               store.dispatch(coreActions.playlistLoaded(response));
               store.dispatch({
                 type: 'MOPIDY_LIBRARY_PLAYLIST_CREATED',
@@ -84349,7 +84361,7 @@ function createPlaylist(name, description, is_public, is_collaborative) {
         uris: [response.uri]
       });
 
-      dispatch(uiActions.createNotification({ level: 'warning', content: 'Created playlist' }));
+      dispatch(uiActions.createNotification({ content: 'Created playlist' }));
     }, function (error) {
       dispatch(coreActions.handleException('Could not create playlist', error));
     });
@@ -88438,7 +88450,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 var debounce = function debounce(fn, wait, immediate) {
   var timeout = void 0;
   return function () {
-    var context = this;var args = arguments;
+    var context = this;
+    var args = arguments;
 
     var later = function later() {
       timeout = null;
@@ -88554,7 +88567,8 @@ var generateGuid = function generateGuid() {
   }
   var format = 'x'.repeat(length);
   return format.replace(/[xy]/g, function (c) {
-    var r = Math.random() * 16 | 0;var v = c == 'x' ? r : r & 0x3 | 0x8;
+    var r = Math.random() * 16 | 0;
+    var v = c == 'x' ? r : r & 0x3 | 0x8;
     return v.toString(length);
   });
 };
@@ -88678,7 +88692,8 @@ var getFromUri = function getFromUri(element) {
     case 'playlistid':
       if (exploded[1] == 'playlist') {
         return exploded[2];
-      }if (exploded[1] == 'user' && exploded[3] == 'playlist') {
+      }
+      if (exploded[1] == 'user' && exploded[3] == 'playlist') {
         return exploded[4];
       }
       break;
@@ -88863,7 +88878,46 @@ var titleCase = function titleCase(string) {
  * Use a keyword to return an icon name
  */
 var iconFromKeyword = function iconFromKeyword(name) {
-  var iconWords = [{ icon: 'business', words: ['office', 'work'] }, { icon: 'king_bed', words: ['bed'] }, { icon: 'weekend', words: ['lounge', 'tv', 'sitting room'] }, { icon: 'directions_car', words: ['garage', 'basement'] }, { icon: 'local_laundry_service', words: ['laundry'] }, { icon: 'fitness_center', words: ['gym'] }, { icon: 'kitchen', words: ['kitchen'] }, { icon: 'deck', words: ['deck', 'outside'] }, { icon: 'restaurant_menu', words: ['dining', 'dinner'] }, { icon: 'laptop', words: ['laptop'] }, { icon: 'bug_report', words: ['test', 'debug'] }, { icon: 'child_care', words: ['kids', 'baby'] }, { icon: 'smartphone', words: ['phone', 'mobile'] }];
+  var iconWords = [{
+    icon: 'business',
+    words: ['office', 'work']
+  }, {
+    icon: 'king_bed',
+    words: ['bed']
+  }, {
+    icon: 'weekend',
+    words: ['lounge', 'tv', 'sitting room']
+  }, {
+    icon: 'directions_car',
+    words: ['garage', 'basement']
+  }, {
+    icon: 'local_laundry_service',
+    words: ['laundry']
+  }, {
+    icon: 'fitness_center',
+    words: ['gym']
+  }, {
+    icon: 'kitchen',
+    words: ['kitchen']
+  }, {
+    icon: 'deck',
+    words: ['deck', 'outside']
+  }, {
+    icon: 'restaurant_menu',
+    words: ['dining', 'dinner']
+  }, {
+    icon: 'laptop',
+    words: ['laptop']
+  }, {
+    icon: 'bug_report',
+    words: ['test', 'debug']
+  }, {
+    icon: 'child_care',
+    words: ['kids', 'baby']
+  }, {
+    icon: 'smartphone',
+    words: ['phone', 'mobile']
+  }];
   var _iteratorNormalCompletion2 = true;
   var _didIteratorError2 = false;
   var _iteratorError2 = undefined;
@@ -89017,6 +89071,37 @@ var upgradeSpotifyPlaylistUri = function upgradeSpotifyPlaylistUri(uri) {
   return upgradeSpotifyPlaylistUris([uri])[0];
 };
 
+/**
+ * Decode and encode Mopidy playlist URIs
+ * This is needed as Mopidy encodes *some* characters in playlist URIs (but not other characters)
+ * We need to retain ":" because this a reserved URI separator
+ */
+var decodeMopidyUri = function decodeMopidyUri(uri) {
+  var decodeComponent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+  var decoded = decodeComponent ? decodeURIComponent(uri) : uri;
+  decoded = decoded.replace(/\s/g, '%20'); // space
+  decoded = decoded.replace(/\[/g, '%5B'); // [
+  decoded = decoded.replace(/\]/g, '%5D'); // ]
+  decoded = decoded.replace(/\(/g, '%28'); // (
+  decoded = decoded.replace(/\)/g, '%29'); // )
+  decoded = decoded.replace(/\#/g, '%23'); // #
+  return decoded;
+};
+
+var encodeMopidyUri = function encodeMopidyUri(uri) {
+  var encodeComponent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+  var encoded = encodeComponent ? encodeURIComponent(uri) : uri;
+  encoded = encoded.replace(/\%20/g, ' '); // space
+  encoded = encoded.replace(/\%5B/g, '['); // [
+  encoded = encoded.replace(/\%5D/g, ']'); // ]
+  encoded = encoded.replace(/\%28/g, '('); // (
+  encoded = encoded.replace(/\%29/g, ')'); // )
+  encoded = encoded.replace(/\%23/g, '#'); // #
+  return encoded;
+};
+
 exports.debounce = debounce;
 exports.throttle = throttle;
 exports.setFavicon = setFavicon;
@@ -89039,6 +89124,8 @@ exports.scrollTo = scrollTo;
 exports.upgradeSpotifyPlaylistUris = upgradeSpotifyPlaylistUris;
 exports.upgradeSpotifyPlaylistUri = upgradeSpotifyPlaylistUri;
 exports.iconFromKeyword = iconFromKeyword;
+exports.decodeMopidyUri = decodeMopidyUri;
+exports.encodeMopidyUri = encodeMopidyUri;
 exports.default = {
   debounce: debounce,
   throttle: throttle,
@@ -89061,7 +89148,9 @@ exports.default = {
   scrollTo: scrollTo,
   upgradeSpotifyPlaylistUris: upgradeSpotifyPlaylistUris,
   upgradeSpotifyPlaylistUri: upgradeSpotifyPlaylistUri,
-  iconFromKeyword: iconFromKeyword
+  iconFromKeyword: iconFromKeyword,
+  decodeMopidyUri: decodeMopidyUri,
+  encodeMopidyUri: encodeMopidyUri
 };
 
 /***/ }),
@@ -91498,25 +91587,15 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
   _state$spotify = _state$spotify === undefined ? {} : _state$spotify;
   var spotify_library_playlists = _state$spotify.library_playlists,
       spotify_authorized = _state$spotify.authorization,
-      _state$spotify$me = _state$spotify.me;
-  _state$spotify$me = _state$spotify$me === undefined ? {} : _state$spotify$me;
-  var spotify_userid = _state$spotify$me.id,
+      _state$spotify$me = _state$spotify.me,
+      me = _state$spotify$me === undefined ? {} : _state$spotify$me,
       _state$mopidy = state.mopidy;
   _state$mopidy = _state$mopidy === undefined ? {} : _state$mopidy;
   var mopidy_connected = _state$mopidy.connected,
       local_library_playlists = _state$mopidy.library_playlists;
 
-  // Decode the URI, and then re-encode selected characters
-  // This is needed as Mopidy encodes *some* characters in playlist URIs (but not other characters)
-  // We need to retain ":" because this a reserved URI separator
 
-  var uri = decodeURIComponent(ownProps.match.params.uri);
-  uri = uri.replace(/\s/g, '%20'); // space
-  uri = uri.replace(/\[/g, '%5B'); // [
-  uri = uri.replace(/\]/g, '%5D'); // ]
-  uri = uri.replace(/\(/g, '%28'); // (
-  uri = uri.replace(/\)/g, '%29'); // )
-  uri = uri.replace(/\#/g, '%23'); // #
+  var uri = (0, _helpers.decodeMopidyUri)(ownProps.match.params.uri);
 
   return {
     uri: uri,
@@ -91531,7 +91610,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
     local_library_playlists: local_library_playlists,
     mopidy_connected: mopidy_connected,
     spotify_authorized: spotify_authorized,
-    spotify_userid: spotify_userid
+    spotify_userid: me && me.id || null
   };
 };
 
@@ -96246,8 +96325,8 @@ var LibraryAlbums = function (_React$Component) {
       var prev_mopidy_connected = _ref.mopidy_connected;
       var _this$props = _this.props,
           mopidy_connected = _this$props.mopidy_connected,
-          google_enabled = _this$props.google_enabled,
-          spotify_enabled = _this$props.spotify_enabled,
+          google_available = _this$props.google_available,
+          spotify_available = _this$props.spotify_available,
           source = _this$props.source,
           mopidyActions = _this$props.mopidyActions,
           googleActions = _this$props.googleActions,
@@ -96266,14 +96345,14 @@ var LibraryAlbums = function (_React$Component) {
         }
       }
 
-      if (google_enabled && (source == 'all' || source == 'google')) {
+      if (google_available && (source == 'all' || source == 'google')) {
         // Filter changed, but we haven't got this provider's library yet
         if (source !== 'all' && source !== 'google' && google_library_albums_status !== 'finished' && google_library_albums_status !== 'started') {
           googleActions.getLibraryAlbums();
         }
       }
 
-      if (spotify_enabled && (source === 'all' || source === 'spotify')) {
+      if (spotify_available && (source === 'all' || source === 'spotify')) {
         // Filter changed, but we haven't got this provider's library yet
         if (spotify_library_albums_status !== 'finished' && spotify_library_albums_status !== 'started') {
           spotifyActions.getLibraryAlbums();
@@ -96306,11 +96385,11 @@ var LibraryAlbums = function (_React$Component) {
         this.props.mopidyActions.getLibraryAlbums();
       }
 
-      if (this.props.google_enabled && this.props.google_library_albums_status != 'finished' && this.props.google_library_albums_status != 'started' && (this.props.source == 'all' || this.props.source == 'google')) {
+      if (this.props.google_available && this.props.google_library_albums_status != 'finished' && this.props.google_library_albums_status != 'started' && (this.props.source == 'all' || this.props.source == 'google')) {
         this.props.googleActions.getLibraryAlbums();
       }
 
-      if (this.props.spotify_enabled && this.props.spotify_library_albums_status != 'finished' && this.props.spotify_library_albums_status != 'started' && (this.props.source == 'all' || this.props.source == 'spotify')) {
+      if (this.props.spotify_available && this.props.spotify_library_albums_status != 'finished' && this.props.spotify_library_albums_status != 'started' && (this.props.source == 'all' || this.props.source == 'spotify')) {
         this.props.spotifyActions.getLibraryAlbums();
       }
     }
@@ -96554,14 +96633,14 @@ var LibraryAlbums = function (_React$Component) {
         label: 'Local'
       }];
 
-      if (this.props.spotify_enabled) {
+      if (this.props.spotify_available) {
         source_options.push({
           value: 'spotify',
           label: 'Spotify'
         });
       }
 
-      if (this.props.google_enabled) {
+      if (this.props.google_available) {
         source_options.push({
           value: 'google',
           label: 'Google'
@@ -96667,10 +96746,10 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
     albums: state.core.albums,
     mopidy_library_albums: state.mopidy.library_albums,
     mopidy_library_albums_status: state.ui.processes.MOPIDY_LIBRARY_ALBUMS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_ALBUMS_PROCESSOR.status : null,
-    google_enabled: state.google.enabled,
+    google_available: state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('gmusic:'),
     google_library_albums: state.google.library_albums,
     google_library_albums_status: state.ui.processes.GOOGLE_LIBRARY_ALBUMS_PROCESSOR !== undefined ? state.ui.processes.GOOGLE_LIBRARY_ALBUMS_PROCESSOR.status : null,
-    spotify_enabled: state.spotify.enabled,
+    spotify_available: state.spotify.access_token,
     spotify_library_albums: state.spotify.library_albums,
     spotify_library_albums_status: state.ui.processes.SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR !== undefined ? state.ui.processes.SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR.status : null,
     view: state.ui.library_albums_view,
@@ -96789,8 +96868,8 @@ var LibraryArtists = function (_React$Component) {
       var _this$props = _this.props,
           source = _this$props.source,
           mopidy_connected = _this$props.mopidy_connected,
-          google_enabled = _this$props.google_enabled,
-          spotify_enabled = _this$props.spotify_enabled,
+          google_available = _this$props.google_available,
+          spotify_available = _this$props.spotify_available,
           mopidyActions = _this$props.mopidyActions,
           googleActions = _this$props.googleActions,
           spotifyActions = _this$props.spotifyActions,
@@ -96807,13 +96886,13 @@ var LibraryArtists = function (_React$Component) {
         }
       }
 
-      if (mopidy_connected && google_enabled && (source === 'all' || source === 'google')) {
+      if (mopidy_connected && google_available && (source === 'all' || source === 'google')) {
         if (source !== 'all' && source !== 'google' && !google_library_artists) {
           googleActions.getLibraryArtists();
         }
       }
 
-      if (spotify_enabled && (source === 'all' || source === 'spotify')) {
+      if (spotify_available && (source === 'all' || source === 'spotify')) {
         if (spotify_library_artists_status !== 'finished' && spotify_library_artists_status !== 'started') {
           spotifyActions.getLibraryArtists();
         }
@@ -96845,11 +96924,11 @@ var LibraryArtists = function (_React$Component) {
         this.props.mopidyActions.getLibraryArtists();
       }
 
-      if (this.props.google_enabled && !this.props.google_library_artists && this.props.mopidy_connected && (this.props.source == 'all' || this.props.source == 'google')) {
+      if (this.props.google_available && !this.props.google_library_artists && this.props.mopidy_connected && (this.props.source == 'all' || this.props.source == 'google')) {
         this.props.googleActions.getLibraryArtists();
       }
 
-      if (this.props.spotify_enabled && this.props.spotify_library_artists_status != 'finished' && (this.props.source == 'all' || this.props.source == 'spotify')) {
+      if (this.props.spotify_available && this.props.spotify_library_artists_status != 'finished' && (this.props.source == 'all' || this.props.source == 'spotify')) {
         this.props.spotifyActions.getLibraryArtists();
       }
     }
@@ -97052,14 +97131,14 @@ var LibraryArtists = function (_React$Component) {
         label: 'Local'
       }];
 
-      if (this.props.spotify_enabled) {
+      if (this.props.spotify_available) {
         source_options.push({
           value: 'spotify',
           label: 'Spotify'
         });
       }
 
-      if (this.props.google_enabled) {
+      if (this.props.google_available) {
         source_options.push({
           value: 'google',
           label: 'Google'
@@ -97150,20 +97229,14 @@ var LibraryArtists = function (_React$Component) {
   return LibraryArtists;
 }(_react2.default.Component);
 
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- * */
-
 var mapStateToProps = function mapStateToProps(state, ownProps) {
   return {
     mopidy_connected: state.mopidy.connected,
     mopidy_uri_schemes: state.mopidy.uri_schemes,
     mopidy_library_artists: state.mopidy.library_artists,
-    google_enabled: state.google.enabled,
+    google_available: state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('gmusic:'),
     google_library_artists: state.google.library_artists,
-    spotify_enabled: state.spotify.enabled,
+    spotify_available: state.spotify.access_token,
     spotify_library_artists: state.spotify.library_artists,
     spotify_library_artists_status: state.ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR !== undefined ? state.ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR.status : null,
     artists: state.core.artists,
@@ -97910,7 +97983,7 @@ var LibraryPlaylists = function (_React$Component) {
           source = _this$props.source,
           mopidy_connected = _this$props.mopidy_connected,
           mopidy_library_playlists = _this$props.mopidy_library_playlists,
-          spotify_enabled = _this$props.spotify_enabled,
+          spotify_available = _this$props.spotify_available,
           spotify_library_playlists_status = _this$props.spotify_library_playlists_status,
           mopidyActions = _this$props.mopidyActions,
           spotifyActions = _this$props.spotifyActions;
@@ -97924,7 +97997,7 @@ var LibraryPlaylists = function (_React$Component) {
         }
       }
 
-      if (spotify_enabled && (source === 'all' || source === 'spotify')) {
+      if (spotify_available && (source === 'all' || source === 'spotify')) {
         if (spotify_library_playlists_status !== 'finished' && spotify_library_playlists_status !== 'started') {
           spotifyActions.getLibraryPlaylists();
         }
@@ -97956,7 +98029,7 @@ var LibraryPlaylists = function (_React$Component) {
         this.props.mopidyActions.getLibraryPlaylists();
       }
 
-      if (this.props.spotify_enabled && this.props.spotify_library_playlists_status !== 'finished' && (this.props.source == 'all' || this.props.source == 'spotify')) {
+      if (this.props.spotify_available && this.props.spotify_library_playlists_status !== 'finished' && (this.props.source == 'all' || this.props.source == 'spotify')) {
         this.props.spotifyActions.getLibraryPlaylists();
       }
     }
@@ -98090,7 +98163,7 @@ var LibraryPlaylists = function (_React$Component) {
         label: 'Local'
       }];
 
-      if (this.props.spotify_enabled) {
+      if (this.props.spotify_available) {
         source_options.push({
           value: 'spotify',
           label: 'Spotify'
@@ -98203,7 +98276,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
     mopidy_uri_schemes: state.mopidy.uri_schemes,
     mopidy_library_playlists: state.mopidy.library_playlists,
     mopidy_library_playlists_status: state.ui.processes.MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR.status : null,
-    spotify_enabled: state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('spotify:'),
+    spotify_available: state.spotify.access_token,
     spotify_library_playlists: state.spotify.library_playlists,
     spotify_library_playlists_status: state.ui.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR !== undefined ? state.ui.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR.status : null,
     load_queue: state.ui.load_queue,
@@ -98311,7 +98384,7 @@ var LibraryTracks = function (_React$Component) {
     value: function componentDidMount() {
       this.props.uiActions.setWindowTitle('Tracks');
 
-      if (!this.props.spotify_me) {
+      if (!this.props.spotify_available) {
         this.props.uiActions.createNotification({ level: 'warning', content: 'Enable Spotify to browse tracks' });
       } else if (this.props.library_tracks === undefined) {
         this.props.spotifyActions.getLibraryTracks();
@@ -98401,7 +98474,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
   return {
     load_queue: state.ui.load_queue,
     tracks: state.core.tracks,
-    spotify_me: state.spotify.me,
+    spotify_available: state.spotify.access_token,
     library_tracks: state.spotify.library_tracks,
     library_tracks_more: state.spotify.library_tracks_more
   };
@@ -98432,8 +98505,6 @@ exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
@@ -98508,39 +98579,33 @@ var AddToPlaylist = function (_React$Component) {
           spotify_library_playlists_status = _this$props.spotify_library_playlists_status,
           mopidy_library_playlists_status = _this$props.mopidy_library_playlists_status,
           mopidy_connected = _this$props.mopidy_connected,
+          spotify_available = _this$props.spotify_available,
           spotifyActions = _this$props.spotifyActions,
           mopidyActions = _this$props.mopidyActions;
 
 
-      if (!spotify_library_playlists_status || spotify_library_playlists_status !== 'finished') {
+      if ((!spotify_library_playlists_status || spotify_library_playlists_status !== 'finished') && spotify_available) {
         spotifyActions.getLibraryPlaylists();
       }
 
       if ((!mopidy_library_playlists_status || mopidy_library_playlists_status !== 'finished') && mopidy_connected) {
         mopidyActions.getLibraryPlaylists();
       }
-    }, _temp), _possibleConstructorReturn(_this, _ret);
-  }
+    }, _this.playlistSelected = function (playlist_uri) {
+      var _this$props2 = _this.props,
+          addTracksToPlaylist = _this$props2.coreActions.addTracksToPlaylist,
+          uris = _this$props2.uris;
 
-  _createClass(AddToPlaylist, [{
-    key: 'playlistSelected',
-    value: function playlistSelected(playlist_uri) {
-      var _props = this.props,
-          coreActions = _props.coreActions,
-          uris = _props.uris;
-
-      coreActions.addTracksToPlaylist(playlist_uri, uris);
+      var encodedUris = uris.map(function (uri) {
+        return (0, _helpers.decodeMopidyUri)(uri);
+      });
+      addTracksToPlaylist(playlist_uri, encodedUris);
       window.history.back();
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var _this2 = this;
-
-      var _props2 = this.props,
-          playlists = _props2.playlists,
-          uris = _props2.uris,
-          spotify_library_playlists_status = _props2.spotify_library_playlists_status;
+    }, _this.render = function () {
+      var _this$props3 = _this.props,
+          playlists = _this$props3.playlists,
+          uris = _this$props3.uris,
+          spotify_library_playlists_status = _this$props3.spotify_library_playlists_status;
 
 
       if (!playlists) return _react2.default.createElement(
@@ -98586,7 +98651,7 @@ var AddToPlaylist = function (_React$Component) {
                 className: 'list__item',
                 key: playlist.uri,
                 onClick: function onClick() {
-                  return _this2.playlistSelected(playlist.uri);
+                  return _this.playlistSelected(playlist.uri);
                 }
               },
               _react2.default.createElement(_Thumbnail2.default, { images: playlist.images, size: 'small' }),
@@ -98606,13 +98671,11 @@ var AddToPlaylist = function (_React$Component) {
                 _react2.default.createElement(
                   'li',
                   null,
-                  playlist.tracks_total ? _react2.default.createElement(
+                  playlist.tracks_total && _react2.default.createElement(
                     'span',
                     { className: 'mid_grey-text' },
-                    playlist.tracks_total,
-                    ' ',
-                    'tracks'
-                  ) : null
+                    playlist.tracks_total + ' tracks'
+                  )
                 )
               )
             );
@@ -98620,8 +98683,8 @@ var AddToPlaylist = function (_React$Component) {
         ),
         isLoading && _react2.default.createElement(_Loader2.default, { body: true, lazy: true, loading: true })
       );
-    }
-  }]);
+    }, _temp), _possibleConstructorReturn(_this, _ret);
+  }
 
   return AddToPlaylist;
 }(_react2.default.Component);
@@ -98633,6 +98696,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
     mopidy_uri_schemes: state.mopidy.uri_schemes,
     mopidy_library_playlists: state.mopidy.library_playlists,
     mopidy_library_playlists_status: state.ui.processes.MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR.status : null,
+    spotify_available: state.spotify.access_token,
     spotify_library_playlists: state.spotify.library_playlists,
     spotify_library_playlists_status: state.ui.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR !== undefined ? state.ui.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR.status : null,
     load_queue: state.ui.load_queue,
@@ -98918,10 +98982,91 @@ var CreatePlaylist = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (CreatePlaylist.__proto__ || Object.getPrototypeOf(CreatePlaylist)).call(this, props));
 
+    _this.render = function () {
+      var spotify_available = _this.props.spotify_available;
+
+
+      return _react2.default.createElement(
+        _Modal2.default,
+        { className: 'modal--create-playlist' },
+        _react2.default.createElement(
+          'h1',
+          null,
+          'Create playlist'
+        ),
+        _react2.default.createElement(
+          'form',
+          { onSubmit: function onSubmit(e) {
+              return _this.createPlaylist(e);
+            } },
+          _react2.default.createElement(
+            'div',
+            { className: 'field radio white' },
+            _react2.default.createElement(
+              'div',
+              { className: 'name' },
+              'Provider'
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: 'input' },
+              _react2.default.createElement(
+                'label',
+                null,
+                _react2.default.createElement('input', {
+                  type: 'radio',
+                  name: 'scheme',
+                  value: 'm3u',
+                  checked: _this.state.scheme === 'm3u',
+                  onChange: function onChange(e) {
+                    return _this.setState({ scheme: e.target.value });
+                  }
+                }),
+                _react2.default.createElement(
+                  'span',
+                  { className: 'label' },
+                  'Mopidy'
+                )
+              ),
+              _react2.default.createElement(
+                'label',
+                null,
+                _react2.default.createElement('input', {
+                  type: 'radio',
+                  name: 'scheme',
+                  value: 'spotify',
+                  disabled: !spotify_available,
+                  checked: _this.state.scheme === 'spotify',
+                  onChange: function onChange(e) {
+                    return _this.setState({ scheme: e.target.value });
+                  }
+                }),
+                _react2.default.createElement(
+                  'span',
+                  { className: 'label' },
+                  'Spotify'
+                )
+              )
+            )
+          ),
+          _this.renderFields(),
+          _react2.default.createElement(
+            'div',
+            { className: 'actions centered-text' },
+            _react2.default.createElement(
+              'button',
+              { type: 'submit', className: 'button button--primary button--large' },
+              'Create playlist'
+            )
+          )
+        )
+      );
+    };
+
     _this.state = {
       name: '',
       description: '',
-      scheme: 'spotify',
+      scheme: 'm3u',
       is_public: true,
       is_collaborative: false
     };
@@ -99074,93 +99219,15 @@ var CreatePlaylist = function (_React$Component) {
           );
       }
     }
-  }, {
-    key: 'render',
-    value: function render() {
-      var _this3 = this;
-
-      return _react2.default.createElement(
-        _Modal2.default,
-        { className: 'modal--create-playlist' },
-        _react2.default.createElement(
-          'h1',
-          null,
-          'Create playlist'
-        ),
-        _react2.default.createElement(
-          'form',
-          { onSubmit: function onSubmit(e) {
-              return _this3.createPlaylist(e);
-            } },
-          _react2.default.createElement(
-            'div',
-            { className: 'field radio white' },
-            _react2.default.createElement(
-              'div',
-              { className: 'name' },
-              'Provider'
-            ),
-            _react2.default.createElement(
-              'div',
-              { className: 'input' },
-              _react2.default.createElement(
-                'label',
-                null,
-                _react2.default.createElement('input', {
-                  type: 'radio',
-                  name: 'scheme',
-                  value: 'spotify',
-                  checked: this.state.scheme == 'spotify',
-                  onChange: function onChange(e) {
-                    return _this3.setState({ scheme: e.target.value });
-                  }
-                }),
-                _react2.default.createElement(
-                  'span',
-                  { className: 'label' },
-                  'Spotify'
-                )
-              ),
-              _react2.default.createElement(
-                'label',
-                null,
-                _react2.default.createElement('input', {
-                  type: 'radio',
-                  name: 'scheme',
-                  value: 'm3u',
-                  checked: this.state.scheme == 'm3u',
-                  onChange: function onChange(e) {
-                    return _this3.setState({ scheme: e.target.value });
-                  }
-                }),
-                _react2.default.createElement(
-                  'span',
-                  { className: 'label' },
-                  'Mopidy'
-                )
-              )
-            )
-          ),
-          this.renderFields(),
-          _react2.default.createElement(
-            'div',
-            { className: 'actions centered-text' },
-            _react2.default.createElement(
-              'button',
-              { type: 'submit', className: 'button button--primary button--large' },
-              'Create playlist'
-            )
-          )
-        )
-      );
-    }
   }]);
 
   return CreatePlaylist;
 }(_react2.default.Component);
 
 var mapStateToProps = function mapStateToProps(state, ownProps) {
-  return {};
+  return {
+    spotify_available: state.spotify.access_token
+  };
 };
 
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {

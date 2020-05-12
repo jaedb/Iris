@@ -10,7 +10,7 @@ import * as coreActions from '../../services/core/actions';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
-import { sourceIcon } from '../../util/helpers';
+import { sourceIcon, decodeMopidyUri } from '../../util/helpers';
 import { sortItems } from '../../util/arrays';
 
 class AddToPlaylist extends React.Component {
@@ -19,11 +19,12 @@ class AddToPlaylist extends React.Component {
       spotify_library_playlists_status,
       mopidy_library_playlists_status,
       mopidy_connected,
+      spotify_available,
       spotifyActions,
       mopidyActions,
     } = this.props;
 
-    if (!spotify_library_playlists_status || spotify_library_playlists_status !== 'finished') {
+    if ((!spotify_library_playlists_status || spotify_library_playlists_status !== 'finished') && spotify_available) {
       spotifyActions.getLibraryPlaylists();
     }
 
@@ -32,13 +33,19 @@ class AddToPlaylist extends React.Component {
     }
   }
 
-  playlistSelected(playlist_uri) {
-    const { coreActions, uris } = this.props;
-    coreActions.addTracksToPlaylist(playlist_uri, uris);
+  playlistSelected = (playlist_uri) => {
+    const {
+      coreActions: {
+        addTracksToPlaylist,
+      },
+      uris,
+    } = this.props;
+    const encodedUris = uris.map((uri) => decodeMopidyUri(uri));
+    addTracksToPlaylist(playlist_uri, encodedUris);
     window.history.back();
   }
 
-  render() {
+  render = () =>{
     const { playlists, uris, spotify_library_playlists_status } = this.props;
 
     if (!playlists) return <div className="empty">No editable playlists</div>;
@@ -71,13 +78,11 @@ class AddToPlaylist extends React.Component {
               <ul className="list__item__details details">
                 <li><Icon type="fontawesome" className="source" name={sourceIcon(playlist.uri)} /></li>
                 <li>
-                  { playlist.tracks_total ? (
+                  {playlist.tracks_total && (
                     <span className="mid_grey-text">
-                      { playlist.tracks_total }
-                      {' '}
-            tracks
+                      {`${playlist.tracks_total} tracks`}
                     </span>
-                  ) : null }
+                  )}
                 </li>
               </ul>
             </div>
@@ -95,6 +100,7 @@ const mapStateToProps = (state, ownProps) => ({
   mopidy_uri_schemes: state.mopidy.uri_schemes,
   mopidy_library_playlists: state.mopidy.library_playlists,
   mopidy_library_playlists_status: (state.ui.processes.MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR.status : null),
+  spotify_available: state.spotify.access_token,
   spotify_library_playlists: state.spotify.library_playlists,
   spotify_library_playlists_status: (state.ui.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR !== undefined ? state.ui.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR.status : null),
   load_queue: state.ui.load_queue,
