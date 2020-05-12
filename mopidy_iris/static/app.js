@@ -74363,16 +74363,23 @@ function handleException(message) {
   var description = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
   var show_notification = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
 
-  if (!message && data.message) {
-    message = data.message;
-  } else if (!message && data.error.message) {
-    message = data.error.message;
+  if (!message) {
+    if (data.message) {
+      message = data.message;
+    } else if (data.error.message) {
+      message = data.error.message;
+    }
   }
-  if (!description && data.description) {
-    description = data.description;
-  } else if (!description && data.error && data.error.description) {
-    description = data.error.description;
+  if (!description) {
+    if (data.description) {
+      description = data.description;
+    } else if (data.error && data.error.message) {
+      description = data.error.message;
+    } else if (data.error && data.error.description) {
+      description = data.error.description;
+    }
   }
+
   return {
     type: 'HANDLE_EXCEPTION',
     message: message,
@@ -83192,8 +83199,12 @@ var request = function request(dispatch, getState, endpoint) {
       fetch(url, config).then(status).then(function (data) {
         // TODO: Instead of allowing request to fail before renewing the token, once refreshed
         // we should retry the original request(s)
-        if (data && data.error && data.error.message === 'The access token expired') {
-          dispatch(refreshToken(dispatch, getState));
+        if (data && data.error) {
+          if (data.error.message === 'The access token expired') {
+            dispatch(refreshToken(dispatch, getState));
+          } else {
+            reject(data);
+          }
         }
 
         resolve(data);

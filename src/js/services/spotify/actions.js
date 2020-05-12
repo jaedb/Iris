@@ -86,8 +86,12 @@ const request = (dispatch, getState, endpoint, method = 'GET', data = false, cac
             .then(data => {
               // TODO: Instead of allowing request to fail before renewing the token, once refreshed
               // we should retry the original request(s)
-              if (data && data.error && data.error.message === 'The access token expired') {
-                dispatch(refreshToken(dispatch, getState));
+              if (data && data.error) {
+                if (data.error.message === 'The access token expired') {
+                  dispatch(refreshToken(dispatch, getState));
+                } else {
+                  reject(data);
+                }
               }
 
               resolve(data);
