@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { createRef } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as coreActions from '../services/core/actions';
@@ -11,43 +11,70 @@ class Stream extends React.Component {
     this.state = {
       uri: '',
       play_state: '',
-      cachebuster: '',
+      cachebuster: `${Date.now()}`,
+      url: null,
+    };
+
+    this.audioRef = createRef();
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    const {
+      volume,
+      enabled: propEnabled,
+      play_state: propPlayState,
+      url: propUrl,
+      current_track: {
+        uri: propUri,
+      } = {},
+    } = props;
+    const {
+      play_state: statePlayState,
+      uri: stateUri,
+      cachebuster,
+    } = state;
+
+    // Same track as before, and still playing
+    if (
+      propUri
+      && propUri === stateUri
+      && propPlayState === statePlayState
+    ) {
+      return null;
+    }
+
+    let url = null;
+    if (propEnabled && propUrl && propUri) {
+      url = `${propUrl}?cb=${cachebuster}_${propUri}`;
+      console.log(`Playing stream: ${url}`);
+    }
+
+    return {
+      ...state,
+      enabled: propEnabled,
+      uri: propUri,
+      play_state: propPlayState,
+      volume,
+      url,
     };
   }
 
-  static getDerivedStateFromProps({ play_state, current_track: { uri } = {} }, state) {
-    if (uri && uri === state.uri && play_state === state.play_state) return null;
-    return {
-      ...state,
-      uri,
-      play_state,
-      cachebuster: `${Date.now()}`,
-    };
+  componentDidUpdate = () => {
+    const { volume } = this.props;
+    if (this.audioRef.current) {
+      this.audioRef.current.volume = volume / 100;
+    }
   }
 
   render = () => {
-    const {
-      play_state,
-      enabled,
-      volume,
-      url,
-      current_track: { uri } = {},
-    } = this.props;
-    const { cachebuster } = this.state;
-
-    if (!uri || !enabled || !url) return null;
-
-    console.debug(`Attempting to play stream ${url}?cb=${cachebuster}`);
-
-    if (play_state !== 'playing') return null;
-
+    const { url } = this.state;
+    if (!url) return null;
     return (
-      <audio
-        autoPlay
-        volume={volume / 100} // TODO: Needs to be set by script, not DOM
-      >
-        <source src={`${url}?cb=${cachebuster}`} />
-      </audio>
+      <div key={url}>
+        <audio autoPlay ref={this.audioRef}>
+          <source src={url} />
+        </audio>
+      </div>
     );
   }
 }
@@ -58,7 +85,6 @@ const mapStateToProps = (state) => ({
   enabled: state.core.http_streaming_enabled,
   volume: state.core.http_streaming_volume >= 0 ? state.core.http_streaming_volume : 50,
   url: (state.core.http_streaming_url ? state.core.http_streaming_url : null),
-  cachebuster: state.core.http_streaming_cachebuster,
 });
 
 const mapDispatchToProps = (dispatch) => ({

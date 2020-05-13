@@ -69308,55 +69308,72 @@ var Stream = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (Stream.__proto__ || Object.getPrototypeOf(Stream)).call(this, props));
 
+    _this.componentDidUpdate = function () {
+      var volume = _this.props.volume;
+
+      if (_this.audioRef.current) {
+        _this.audioRef.current.volume = volume / 100;
+      }
+    };
+
     _this.render = function () {
-      var _this$props = _this.props,
-          play_state = _this$props.play_state,
-          enabled = _this$props.enabled,
-          volume = _this$props.volume,
-          url = _this$props.url,
-          _this$props$current_t = _this$props.current_track;
-      _this$props$current_t = _this$props$current_t === undefined ? {} : _this$props$current_t;
-      var uri = _this$props$current_t.uri;
-      var cachebuster = _this.state.cachebuster;
+      var url = _this.state.url;
 
-
-      if (!uri || !enabled || !url) return null;
-
-      console.debug('Attempting to play stream ' + url + '?cb=' + cachebuster);
-
-      if (play_state !== 'playing') return null;
-
+      if (!url) return null;
       return _react2.default.createElement(
-        'audio',
-        {
-          autoPlay: true,
-          volume: volume / 100 // TODO: Needs to be set by script, not DOM
-        },
-        _react2.default.createElement('source', { src: url + '?cb=' + cachebuster })
+        'div',
+        { key: url },
+        _react2.default.createElement(
+          'audio',
+          { autoPlay: true, ref: _this.audioRef },
+          _react2.default.createElement('source', { src: url })
+        )
       );
     };
 
     _this.state = {
       uri: '',
       play_state: '',
-      cachebuster: ''
+      cachebuster: '' + Date.now(),
+      url: null
     };
+
+    _this.audioRef = (0, _react.createRef)();
     return _this;
   }
 
   _createClass(Stream, null, [{
     key: 'getDerivedStateFromProps',
-    value: function getDerivedStateFromProps(_ref, state) {
-      var play_state = _ref.play_state,
-          _ref$current_track = _ref.current_track;
-      _ref$current_track = _ref$current_track === undefined ? {} : _ref$current_track;
-      var uri = _ref$current_track.uri;
+    value: function getDerivedStateFromProps(props, state) {
+      var volume = props.volume,
+          propEnabled = props.enabled,
+          propPlayState = props.play_state,
+          propUrl = props.url,
+          _props$current_track = props.current_track;
+      _props$current_track = _props$current_track === undefined ? {} : _props$current_track;
+      var propUri = _props$current_track.uri;
+      var statePlayState = state.play_state,
+          stateUri = state.uri,
+          cachebuster = state.cachebuster;
 
-      if (uri && uri === state.uri && play_state === state.play_state) return null;
+      // Same track as before, and still playing
+
+      if (propUri && propUri === stateUri && propPlayState === statePlayState) {
+        return null;
+      }
+
+      var url = null;
+      if (propEnabled && propUrl && propUri) {
+        url = propUrl + '?cb=' + cachebuster + '_' + propUri;
+        console.log('Playing stream: ' + url);
+      }
+
       return _extends({}, state, {
-        uri: uri,
-        play_state: play_state,
-        cachebuster: '' + Date.now()
+        enabled: propEnabled,
+        uri: propUri,
+        play_state: propPlayState,
+        volume: volume,
+        url: url
       });
     }
   }]);
@@ -69370,8 +69387,7 @@ var mapStateToProps = function mapStateToProps(state) {
     play_state: state.mopidy.play_state,
     enabled: state.core.http_streaming_enabled,
     volume: state.core.http_streaming_volume >= 0 ? state.core.http_streaming_volume : 50,
-    url: state.core.http_streaming_url ? state.core.http_streaming_url : null,
-    cachebuster: state.core.http_streaming_cachebuster
+    url: state.core.http_streaming_url ? state.core.http_streaming_url : null
   };
 };
 
