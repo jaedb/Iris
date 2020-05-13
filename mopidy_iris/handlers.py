@@ -335,7 +335,7 @@ class HttpHandler(tornado.web.RequestHandler):
 ##
 class ReactRouterHandler(tornado.web.StaticFileHandler):
     def initialize(self, path):
-        self.path = path
+        self.path = str(path)
         self.absolute_path = path
         self.dirname = path.parent
         self.filename = path.name

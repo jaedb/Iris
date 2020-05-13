@@ -13,6 +13,7 @@ import {
   formatImages,
   formatTrack,
   formatTracks,
+  formatSimpleObject,
   getTrackIcon,
 } from '../../util/format';
 import {
@@ -1845,7 +1846,7 @@ const MopidyMiddleware = (function () {
       case 'MOPIDY_CREATE_PLAYLIST':
         request(socket, store, 'playlists.create', { name: action.name, uri_scheme: action.scheme })
           .then((response) => {
-            store.dispatch(uiActions.createNotification({ level: 'warning', content: 'Created playlist' }));
+            store.dispatch(uiActions.createNotification({ content: 'Created playlist' }));
             store.dispatch(coreActions.playlistLoaded(response));
             store.dispatch({
               type: 'MOPIDY_LIBRARY_PLAYLIST_CREATED',
@@ -1993,9 +1994,10 @@ const MopidyMiddleware = (function () {
         request(socket, store, 'library.lookup', { uris: [action.uri] })
           .then((_response) => {
             if (!_response) return;
-            const response = _response[action.uri];
+            let response = _response[action.uri];
             if (!response || !response.length) return;
 
+            response = sortItems(response, 'track_number');
             const artists = [];
             if (response[0].artists) {
               for (const artist of response[0].artists) {
@@ -2397,6 +2399,17 @@ const MopidyMiddleware = (function () {
         store.dispatch({
           type: 'MOPIDY_DIRECTORY_FLUSH',
         });
+
+        if (action.uri) {
+          request(socket, store, 'library.lookup', { uris: [action.uri] })
+            .then((response) => {
+              if (!response[action.uri] || !response[action.uri].length) return;
+              store.dispatch({
+                type: 'MOPIDY_DIRECTORY_LOADED',
+                directory: formatSimpleObject(response[action.uri][0]),
+              });
+            });
+        }
 
         request(socket, store, 'library.browse', { uri: action.uri })
           .then((response) => {

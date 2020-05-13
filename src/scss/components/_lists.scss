@@ -35,7 +35,7 @@
 		&:not(:first-child){
 			border-top: 1px solid rgba(128,128,128,0.05);
 
-			.light-theme & {
+			@include theme('light') {
 				border-top-color: rgba(128,128,128,0.1);
 			}
 		}
@@ -101,7 +101,7 @@
 		&--selected {
 			background: rgba(125, 125, 125, 0.15) !important;
 
-			.light-theme & {
+			@include theme('light') {
 				background: rgba(255, 239, 61, 0.35) !important;
 			}
 		}
@@ -247,7 +247,7 @@
 					}
 				}
 
-				.light-theme & .flag {
+				@include theme('light') .flag {
 					background: colour(light_grey);
 					color: colour(white);
 				}

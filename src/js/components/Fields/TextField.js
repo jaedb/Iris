@@ -1,5 +1,6 @@
 
 import React from 'react';
+import Icon from '../Icon';
 
 export default class TextField extends React.Component {
   constructor(props) {
@@ -8,6 +9,7 @@ export default class TextField extends React.Component {
     this.state = {
       in_focus: false,
       value: props.value || '',
+      saved: false,
     };
   }
 
@@ -25,15 +27,16 @@ export default class TextField extends React.Component {
   }
 
   handleFocus = () => {
-    this.setState({ in_focus: true });
+    this.setState({ in_focus: true, saved: false, });
   }
 
   handleBlur = () => {
-    const { value, onChange } = this.props;
+    const { value, onChange, autosave } = this.props;
     const { value: stateValue } = this.state;
     this.setState({ in_focus: false });
     if (stateValue !== value) {
       onChange(stateValue);
+      if (autosave) this.setState({ saved: true });
     }
   }
 
@@ -43,18 +46,20 @@ export default class TextField extends React.Component {
       type = 'text',
       placeholder,
     } = this.props;
-    const { value } = this.state;
+    const { value, saved } = this.state;
 
     return (
-      <input
-        className={className}
-        type={type}
-        onChange={this.handleChange}
-        onFocus={this.handleFocus}
-        onBlur={this.handleBlur}
-        value={value}
-        placeholder={placeholder}
-      />
+      <div className={`text-field__wrapper ${className}`}>
+        <input
+          type={type}
+          onChange={this.handleChange}
+          onFocus={this.handleFocus}
+          onBlur={this.handleBlur}
+          value={value}
+          placeholder={placeholder}
+        />
+        {saved && <Icon name="check" className="text-field__saved" />}
+      </div>
     );
   }
 }

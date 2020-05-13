@@ -96,7 +96,7 @@ $parallax: 'parallax';
 		}
 	}
 
-	.light-theme & {
+	@include theme('light') {
 		&__stage {
 			background-color: colour(faint_grey);
 		}

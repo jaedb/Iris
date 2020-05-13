@@ -58,7 +58,8 @@ const Snapcast = (props) => {
         <div className="input">
           <TextField
             value={host}
-            onChange={value => actions.setConnection({ host: value })}
+            onChange={(value) => actions.setConnection({ host: value })}
+            autosave
           />
         </div>
       </div>
@@ -68,7 +69,9 @@ const Snapcast = (props) => {
         <div className="input">
           <TextField
             value={port}
-            onChange={value => actions.setConnection({ port: value })}
+            name="port"
+            onChange={(value) => actions.setConnection({ port: value })}
+            autosave
           />
         </div>
       </div>

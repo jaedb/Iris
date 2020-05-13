@@ -24,21 +24,30 @@ export default class Dropzone extends React.Component {
     window.removeEventListener('mouseout', this.handleMouseOut, false);
   }
 
-  handleMouseOver(e) {
+  handleMouseOver = () => {
     this.setState({ hover: true });
   }
 
-  handleMouseOut(e) {
+  handleMouseOut = () => {
     this.setState({ hover: false });
   }
 
-  render() {
-    if (!this.props.data) return null;
+  render = () => {
+    const {
+      data,
+      handleMouseUp,
+    } = this.props;
+    const { hover } = this.state;
+
+    if (!data) return null;
 
     return (
-      <div className={this.state.hover ? 'dropzone hover' : 'dropzone'} onMouseUp={(e) => this.props.handleMouseUp(e)}>
-        <Icon name={this.props.data.icon} />
-        <span className="title">{ this.props.data.title }</span>
+      <div
+        className={hover ? 'dropzone hover' : 'dropzone'}
+        onMouseUp={handleMouseUp}
+      >
+        <Icon name={data.icon} />
+        <span className="title">{ data.title }</span>
       </div>
     );
   }

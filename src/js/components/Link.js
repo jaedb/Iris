@@ -32,6 +32,9 @@ export default ({
       {
         ...location.state,
         scroll_position: main.scrollTop,
+        previous: {
+          pathname: location.pathname,
+        },
       },
     );
 
@@ -53,7 +56,7 @@ export default ({
   return (
     <Link
       onClick={onClick}
-      onContextMenu={onContextMenu || null}
+      onContextMenu={onContextMenu}
       className={`${className} ${active}`}
       to={to}
     >

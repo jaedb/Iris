@@ -17,7 +17,7 @@
     z-index: -1;
   }
 
-  .dark-theme & {
+  @include theme('dark') & {
     color: colour(white);
 
     &__background {
@@ -26,7 +26,7 @@
     }
   }
 
-  .light-theme & {
+  @include theme('light') {
     color: colour(darkest_grey);
 
     &__background {
@@ -220,7 +220,7 @@
     background: none;
     color: colour(white);
 
-    .light-theme & {
+    @include theme('light') {
       color: colour(darkest_grey);
     }
 
@@ -251,7 +251,7 @@
         }
 
         &.play {
-          .light-theme & {
+          @include theme('light') {
             color: colour(turquoise);
           }
 

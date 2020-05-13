@@ -2,7 +2,6 @@ import React from 'react';
 import { bindActionCreators } from 'redux';
 import { Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
-import ReactHowler from 'react-howler'
 import ReactGA from 'react-ga';
 
 import Sidebar from './components/Sidebar';
@@ -14,6 +13,7 @@ import ResizeListener from './components/ResizeListener';
 import Hotkeys from './components/Hotkeys';
 import DebugInfo from './components/DebugInfo';
 import ErrorMessage from './components/ErrorMessage';
+import Stream from './components/Stream';
 
 import Album from './views/Album';
 import Artist from './views/Artist';
@@ -136,35 +136,35 @@ export class App extends React.Component {
     }
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate({
+    location: prevLocation,
+  }) {
+    const {
+      location = {},
+      allow_reporting,
+      uiActions,
+      context_menu,
+    } = this.props;
+
     // When we have navigated to a new route
-    if (this.props.location !== prevProps.location) {
+    if (location !== prevLocation) {
       // Log our pageview
-      if (this.props.allow_reporting) {
-        ReactGA.set({ page: this.props.location.pathname });
-        ReactGA.pageview(this.props.location.pathname);
+      if (allow_reporting) {
+        ReactGA.set({ page: location.pathname });
+        ReactGA.pageview(location.pathname);
       }
 
       // If the location has a "scroll_position" state variable, scroll to it.
       // This is invisibly injected to the history by the Link component when navigating, so
       // hitting back in the browser allows us to restore the position
-      const location_state = this.props.location.state
-        ? this.props.location.state
-        : {};
+      const location_state = location.state || {};
       if (location_state.scroll_position) {
         scrollTo(parseInt(location_state.scroll_position), false);
       }
 
-      // Hide our sidebar
-      this.props.uiActions.toggleSidebar(false);
-
-      // Unselect any tracks
-      this.props.uiActions.setSelectedTracks([]);
-
-      // Close context menu
-      if (this.props.context_menu) {
-        this.props.uiActions.hideContextMenu();
-      }
+      uiActions.toggleSidebar(false);
+      uiActions.setSelectedTracks([]);
+      if (context_menu) uiActions.hideContextMenu();
     }
   }
 
@@ -177,14 +177,16 @@ export class App extends React.Component {
    *
    * @param e Event
    * */
-  handleFocusAndBlur(e) {
-    this.props.uiActions.setWindowFocus(document.hasFocus());
+  handleFocusAndBlur() {
+    const { uiActions: { setWindowFocus } } = this.props;
+    setWindowFocus(document.hasFocus());
   }
 
   handleInstallPrompt(e) {
+    const { uiActions: { installPrompt } } = this.props;
     e.preventDefault();
     console.log('Install prompt detected');
-    this.props.uiActions.installPrompt(e);
+    installPrompt(e);
   }
 
   render() {
@@ -351,6 +353,7 @@ export class App extends React.Component {
         <ContextMenu />
         <Dragger />
         <Notifications />
+        <Stream />
 
         {this.props.debug_info ? <DebugInfo /> : null}
       </div>

@@ -133,7 +133,7 @@
         }
       }
 
-      .light-theme & {
+      @include theme('light') {
         color: colour(darkest_grey);
       }
     }
@@ -156,7 +156,7 @@
         font-size: 12px;
         text-transform: uppercase;
 
-        .light-theme & {
+        @include theme('light') {
           color: colour(darkest_grey);
         }
       }

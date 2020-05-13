@@ -472,7 +472,7 @@ class Discover extends React.Component {
         <div className="col col--w25 others">
           <section>
             <h4>Artists</h4>
-            <RelatedArtists artists={artists} />
+            <RelatedArtists artists={artists} uiActions={this.props.uiActions} />
           </section>
           <br />
           <br />

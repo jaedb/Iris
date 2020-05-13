@@ -299,6 +299,28 @@ $bp_shallow: 650px;
   }
 }
 
+@mixin theme($theme: 'dark', $apply_to_self: false) {
+  @if $apply_to_self {
+    &.#{$theme}-theme {
+      @content
+    }
+    &.auto-theme {
+      @media (prefers-color-scheme: $theme) {
+        @content
+      }
+    }
+  } @else {
+    @at-root .#{$theme}-theme & {
+      @content
+    }
+    @at-root .auto-theme & {
+      @media (prefers-color-scheme: $theme) {
+        @content
+      }
+    }
+  }
+}
+
 @mixin blur($size: 10px) {
   -webkit-filter: blur($size);
   filter: blur($size);

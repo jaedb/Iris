@@ -111,6 +111,7 @@ const Servers = ({
               type="text"
               value={server.name}
               onChange={value => dispatch(mopidyActions.updateServer({ id: server.id, name: value }))}
+              autosave
             />
           </div>
         </label>
@@ -120,6 +121,7 @@ const Servers = ({
             <TextField
               value={server.host}
               onChange={value => dispatch(mopidyActions.updateServer({ id: server.id, host: value }))}
+              autosave
             />
           </div>
         </label>
@@ -130,6 +132,7 @@ const Servers = ({
               type="text"
               value={server.port}
               onChange={value => dispatch(mopidyActions.updateServer({ id: server.id, port: value }))}
+              autosave
             />
           </div>
         </label>
