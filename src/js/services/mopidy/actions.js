@@ -1,10 +1,52 @@
 
 import { createRange } from '../../util/arrays';
+import { generateGuid } from '../../util/helpers';
 
 export function set(data) {
   return {
     type: 'MOPIDY_SET',
     data,
+  };
+}
+
+export function updateServer(server) {
+  return {
+    type: 'MOPIDY_UPDATE_SERVER',
+    server,
+  };
+}
+
+export function updateServers(servers) {
+  return {
+    type: 'MOPIDY_UPDATE_SERVERS',
+    servers,
+  };
+}
+
+export function addServer() {
+  return {
+    type: 'MOPIDY_UPDATE_SERVER',
+    server: {
+      id: generateGuid(),
+      name: 'New server',
+      host: window.location.hostname,
+      port: (window.location.port ? window.location.port : (window.location.protocol === 'https:' ? '443' : '80')),
+      ssl: window.location.protocol === 'https:',
+    },
+  };
+}
+
+export function setCurrentServer(server) {
+  return {
+    type: 'MOPIDY_SET_CURRENT_SERVER',
+    server,
+  };
+}
+
+export function removeServer(id) {
+  return {
+    type: 'MOPIDY_REMOVE_SERVER',
+    id,
   };
 }
 
@@ -350,6 +392,12 @@ export function reorderTracklist(indexes, insert_before) {
 export function clearTracklist() {
   return {
     type: 'MOPIDY_CLEAR_TRACKLIST',
+  };
+}
+
+export function shuffleTracklist() {
+  return {
+    type: 'MOPIDY_SHUFFLE_TRACKLIST',
   };
 }
 

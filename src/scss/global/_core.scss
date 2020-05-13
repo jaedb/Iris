@@ -93,7 +93,7 @@ main {
   position: absolute;
   top: 0;
   left: 0;
-  bottom: 60px;
+  bottom: 50px;
   right: 0;
   padding-left: 220px;
   perspective: 1000px;
@@ -322,8 +322,8 @@ p {
   height: 0px !important;
   position: fixed !important;
   z-index: -99 !important;
-  top: -99px !important;
-  left: -99px !important;
+  top: -9999px !important;
+  left: -9999px !important;
 }
 
 .no-results {
@@ -593,6 +593,10 @@ footer {
   &--dark {
     background: lighten(colour(dark_grey), 10%);
     color: colour(mid_grey);
+
+    .light-theme & {
+      background: lighten(colour(mid_grey), 25%);
+    }
   }
 
   &--large {

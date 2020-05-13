@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { collate } from '../util/format';
 import { sortItems } from '../util/arrays';
+import { iconFromKeyword } from '../util/helpers';
 import VolumeControl from './Fields/VolumeControl';
 import MuteControl from './Fields/MuteControl';
 import TextField from './Fields/TextField';
@@ -31,12 +32,12 @@ const SnapcastGroups = (props) => {
     return null;
   }
 
-  const renderGroup = () => {
-    if (!groupId || !groups[groupId]) {
-      return null;
-    }
+  const group = groupId && groups[groupId]
+    ? collate(groups[groupId], { clients })
+    : null;
 
-    const group = collate(groups[groupId], { clients });
+  const renderGroup = () => {
+    if (!group) return null;
 
     return (
       <div className="snapcast__group" key={group.id}>
@@ -97,42 +98,26 @@ const SnapcastGroups = (props) => {
     );
   }
 
-  const renderMenuItem = (group) => {
-    const icon = () => {
-      const iconWords = [
-        { icon: 'business', words: ['office', 'work'] },
-        { icon: 'king_bed', words: ['bed'] },
-        { icon: 'tv', words: ['lounge', 'tv'] },
-        { icon: 'directions_car', words: ['garage', 'laundry'] },
-        { icon: 'fitness_center', words: ['gym'] },
-        { icon: 'emoji_food_beverage', words: ['kitchen'] },
-        { icon: 'deck', words: ['deck', 'outside'] },
-        { icon: 'restaurant_menu', words: ['dining', 'dinner'] },
-        { icon: 'laptop', words: ['laptop'] },
-        { icon: 'bug_report', words: ['test', 'debug'] },
-        { icon: 'child_care', words: ['kids', 'baby'] },
-      ];
-      const name = group.name.toLowerCase();
-      for (let item of iconWords) {
-        for (let word of item.words) {
-          if (name.match(new RegExp(`(${word})`, 'gi'))) {
-            return item.icon;
-          }
-        }
-      };
-      return 'speaker_group';
-    }
+  const renderMenuItem = (simpleGroup) => {
+    const group = collate(simpleGroup, { clients });
+    const anyClients = (
+      !show_disconnected_clients && (
+        !group.clients ||
+        !group.clients.length ||
+        !group.clients.filter((client) => client.connected).length
+      )
+    );
     return (
       <Link
-        className="snapcast__groups__menu-item menu-item"
+        className={`snapcast__groups__menu-item menu-item${anyClients ? ' menu-item--no-clients' : ''}`}
         activeClassName="menu-item--active"
         key={group.id}
         history={history}
-        to={`/settings/snapcast/${group.id}`}
+        to={`/settings/services/snapcast/${group.id}`}
         scrollTo="#services-snapcast-groups"
       >
         <div className="snapcast__groups__menu-item__inner menu-item__inner">
-          <Icon className="menu-item__icon" name={icon()} />
+          <Icon className="menu-item__icon" name={iconFromKeyword(group.name.toLowerCase()) || 'speaker_group'} />
           <div className="menu-item__title">
             {group.name}
             {group.mute && (
@@ -145,8 +130,8 @@ const SnapcastGroups = (props) => {
   }
 
   return (
-    <div className="snapcast__groups" id="services-snapcast-groups">
-      <div className="snapcast__groups__menu menu">
+    <div className="sub-tabs snapcast__groups" id="services-snapcast-groups">
+      <div className="sub-tabs__menu snapcast__groups__menu menu">
         <div className="menu__inner">
           {sortItems(groupsArray, 'name').map((group) => renderMenuItem(group))}
         </div>

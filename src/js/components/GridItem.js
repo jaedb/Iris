@@ -118,6 +118,7 @@ export default class GridItem extends React.Component {
           size="medium"
           className="grid__item__thumbnail"
           images={item.images || item.icons}
+          type={type}
         />
         <div className="grid__item__name">
           {item.name ? item.name : <span className="opaque-text">{item.uri}</span>}

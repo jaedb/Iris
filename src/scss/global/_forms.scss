@@ -398,9 +398,9 @@ select {
   }
 
   @include responsive($bp_medium) {
-    padding-left: 30px;
-    padding-right: 30px;
-    
+    padding-left: 28px;
+    padding-right: 28px;
+
     &--large {
       width: 100%;
       display: block;

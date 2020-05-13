@@ -29,11 +29,11 @@
 			&__item {
 				margin-bottom: 0;
 				margin-top: 5px;
+				font-style: inherit !important;
 			}
 		}
 
 		a {
-			font-style: italic;
 			color: inherit;
 			&:hover {
 				opacity: 0.75;

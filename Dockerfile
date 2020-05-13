@@ -42,7 +42,14 @@ RUN git clone https://github.com/jaedb/Iris.git /iris \
  && echo "mopidy ALL=NOPASSWD: /iris/mopidy_iris/system.sh" >> /etc/sudoers
 
 # Install additional Python dependencies
-RUN python3.7 -m pip install --no-cache tox mopidy-spotify mopidy-local
+RUN python3.7 -m pip install --no-cache \
+  tox \
+  mopidy-mpd \
+  mopidy-spotify \
+  mopidy-local \
+  Mopidy-GMusic \
+  # pip not up-to-date for Mopidy-Tidal (https://github.com/tehkillerbee/mopidy-tidal/issues/14)
+  git+https://github.com/tehkillerbee/mopidy-tidal.git@master
 
 # Start helper script.
 COPY docker/entrypoint.sh /entrypoint.sh
@@ -61,6 +68,7 @@ RUN useradd -ms /bin/bash mopidy
 ENV HOME=/var/lib/mopidy
 RUN set -ex \
  && usermod -G audio,sudo mopidy \
+ && mkdir /var/lib/mopidy/local \
  && chown mopidy:audio -R $HOME /entrypoint.sh /iris \
  && chmod go+rwx -R $HOME /entrypoint.sh /iris \
  && echo "1" >> /IS_CONTAINER
@@ -68,7 +76,7 @@ RUN set -ex \
 # Runs as mopidy user by default.
 USER mopidy:audio
 
-VOLUME ["/var/lib/mopidy/local", "/var/lib/mopidy/local-images"]
+VOLUME ["/var/lib/mopidy/local"]
 
 EXPOSE 6600 6680 1704 1705 5555/udp
 

@@ -160,7 +160,7 @@ class ContextMenu extends React.Component {
   }
 
   handleTouchStart = (e) => {
-    const { uiActions: { hideContextMenu } } = this.props;
+    const { menu, uiActions: { hideContextMenu } } = this.props;
 
     if (menu && $(e.target).closest('.context-menu').length <= 0 && $(e.target).closest('.context-menu-trigger').length <= 0) {
       hideContextMenu();

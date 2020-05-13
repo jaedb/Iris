@@ -150,7 +150,7 @@ class LibraryPlaylists extends React.Component {
             handleContextMenu={(e, item) => this.handleContextMenu(e, item)}
             rows={playlists}
             thumbnail
-            details={['owner', 'tracks_total']}
+            details={['owner', 'tracks_total', 'last_modified']}
             right_column={['source']}
             className="playlists"
             link_prefix="/playlist/"
@@ -216,6 +216,10 @@ class LibraryPlaylists extends React.Component {
       {
         value: 'name',
         label: 'Name',
+      },
+      {
+        value: 'last_modified',
+        label: 'Updated',
       },
       {
         value: 'can_edit',

@@ -2,6 +2,7 @@ import React from 'react';
 import { bindActionCreators } from 'redux';
 import { Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
+import ReactHowler from 'react-howler'
 import ReactGA from 'react-ga';
 
 import Sidebar from './components/Sidebar';
@@ -50,6 +51,7 @@ import ImageZoom from './views/modals/ImageZoom';
 import EditCommand from './views/modals/EditCommand';
 
 import { scrollTo, isTouchDevice } from './util/helpers';
+import storage from './util/storage';
 import * as coreActions from './services/core/actions';
 import * as uiActions from './services/ui/actions';
 import * as pusherActions from './services/pusher/actions';
@@ -62,6 +64,27 @@ import * as snapcastActions from './services/snapcast/actions';
 export class App extends React.Component {
   constructor(props) {
     super(props);
+
+    // Load query param settings
+    const configs = ['ui', 'spotify', 'pusher', 'snapcast', 'mopidy', 'google', 'lastfm', 'genius']
+    const params = new URLSearchParams(window.location.search)
+    var changed = []
+    var urlParams = params.forEach((v, k) => {
+      if (!configs.includes(k)) return;
+      try {
+        storage.set(k, JSON.parse(v))
+        changed.push(k)
+      } catch (error) {
+        console.error(error)
+      }
+    })
+    if (changed.length > 0) {
+      changed.forEach((k) => params.delete(k))
+      const url = window.location.toString().replace(window.location.search, params.toString())
+      console.log('settings changed:', changed, 'redirect to:', url)
+      window.location.assign(url)
+    }
+
     this.handleInstallPrompt = this.handleInstallPrompt.bind(this);
     this.handleFocusAndBlur = this.handleFocusAndBlur.bind(this);
   }

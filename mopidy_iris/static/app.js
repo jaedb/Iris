@@ -86,26 +86,6 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "./node_modules/@babel/runtime/helpers/esm/assertThisInitialized.js":
-/*!**************************************************************************!*\
-  !*** ./node_modules/@babel/runtime/helpers/esm/assertThisInitialized.js ***!
-  \**************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return _assertThisInitialized; });
-function _assertThisInitialized(self) {
-  if (self === void 0) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-
-  return self;
-}
-
-/***/ }),
-
 /***/ "./node_modules/@babel/runtime/helpers/esm/extends.js":
 /*!************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/esm/extends.js ***!
@@ -1522,14 +1502,11 @@ var MEMO_STATICS = {
 };
 var TYPE_STATICS = {};
 TYPE_STATICS[reactIs.ForwardRef] = FORWARD_REF_STATICS;
-TYPE_STATICS[reactIs.Memo] = MEMO_STATICS;
 
 function getStatics(component) {
-  // React v16.11 and below
   if (reactIs.isMemo(component)) {
     return MEMO_STATICS;
-  } // React v16.12 and above
-
+  }
 
   return TYPE_STATICS[component['$$typeof']] || REACT_STATICS;
 }
@@ -1582,64 +1559,3172 @@ module.exports = hoistNonReactStatics;
 
 /***/ }),
 
-/***/ "./node_modules/invariant/browser.js":
-/*!*******************************************!*\
-  !*** ./node_modules/invariant/browser.js ***!
-  \*******************************************/
+/***/ "./node_modules/howler/dist/howler.js":
+/*!********************************************!*\
+  !*** ./node_modules/howler/dist/howler.js ***!
+  \********************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-/**
- * Copyright (c) 2013-present, Facebook, Inc.
+/* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+ *  howler.js v2.1.3
+ *  howlerjs.com
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ *  (c) 2013-2019, James Simpson of GoldFire Studios
+ *  goldfirestudios.com
+ *
+ *  MIT License
  */
 
+(function() {
 
+  'use strict';
 
-/**
- * Use invariant() to assert state which your program assumes to be true.
- *
- * Provide sprintf-style format (only %s is supported) and arguments
- * to provide information about what broke and what you were
- * expecting.
- *
- * The invariant message will be stripped in production, but the invariant
- * will remain to ensure logic does not differ in production.
- */
+  /** Global Methods **/
+  /***************************************************************************/
 
-var invariant = function(condition, format, a, b, c, d, e, f) {
-  if (true) {
-    if (format === undefined) {
-      throw new Error('invariant requires an error message argument');
+  /**
+   * Create the global controller. All contained methods and properties apply
+   * to all sounds that are currently playing or will be in the future.
+   */
+  var HowlerGlobal = function() {
+    this.init();
+  };
+  HowlerGlobal.prototype = {
+    /**
+     * Initialize the global Howler object.
+     * @return {Howler}
+     */
+    init: function() {
+      var self = this || Howler;
+
+      // Create a global ID counter.
+      self._counter = 1000;
+
+      // Pool of unlocked HTML5 Audio objects.
+      self._html5AudioPool = [];
+      self.html5PoolSize = 10;
+
+      // Internal properties.
+      self._codecs = {};
+      self._howls = [];
+      self._muted = false;
+      self._volume = 1;
+      self._canPlayEvent = 'canplaythrough';
+      self._navigator = (typeof window !== 'undefined' && window.navigator) ? window.navigator : null;
+
+      // Public properties.
+      self.masterGain = null;
+      self.noAudio = false;
+      self.usingWebAudio = true;
+      self.autoSuspend = true;
+      self.ctx = null;
+
+      // Set to false to disable the auto audio unlocker.
+      self.autoUnlock = true;
+
+      // Setup the various state values for global tracking.
+      self._setup();
+
+      return self;
+    },
+
+    /**
+     * Get/set the global volume for all sounds.
+     * @param  {Float} vol Volume from 0.0 to 1.0.
+     * @return {Howler/Float}     Returns self or current volume.
+     */
+    volume: function(vol) {
+      var self = this || Howler;
+      vol = parseFloat(vol);
+
+      // If we don't have an AudioContext created yet, run the setup.
+      if (!self.ctx) {
+        setupAudioContext();
+      }
+
+      if (typeof vol !== 'undefined' && vol >= 0 && vol <= 1) {
+        self._volume = vol;
+
+        // Don't update any of the nodes if we are muted.
+        if (self._muted) {
+          return self;
+        }
+
+        // When using Web Audio, we just need to adjust the master gain.
+        if (self.usingWebAudio) {
+          self.masterGain.gain.setValueAtTime(vol, Howler.ctx.currentTime);
+        }
+
+        // Loop through and change volume for all HTML5 audio nodes.
+        for (var i=0; i<self._howls.length; i++) {
+          if (!self._howls[i]._webAudio) {
+            // Get all of the sounds in this Howl group.
+            var ids = self._howls[i]._getSoundIds();
+
+            // Loop through all sounds and change the volumes.
+            for (var j=0; j<ids.length; j++) {
+              var sound = self._howls[i]._soundById(ids[j]);
+
+              if (sound && sound._node) {
+                sound._node.volume = sound._volume * vol;
+              }
+            }
+          }
+        }
+
+        return self;
+      }
+
+      return self._volume;
+    },
+
+    /**
+     * Handle muting and unmuting globally.
+     * @param  {Boolean} muted Is muted or not.
+     */
+    mute: function(muted) {
+      var self = this || Howler;
+
+      // If we don't have an AudioContext created yet, run the setup.
+      if (!self.ctx) {
+        setupAudioContext();
+      }
+
+      self._muted = muted;
+
+      // With Web Audio, we just need to mute the master gain.
+      if (self.usingWebAudio) {
+        self.masterGain.gain.setValueAtTime(muted ? 0 : self._volume, Howler.ctx.currentTime);
+      }
+
+      // Loop through and mute all HTML5 Audio nodes.
+      for (var i=0; i<self._howls.length; i++) {
+        if (!self._howls[i]._webAudio) {
+          // Get all of the sounds in this Howl group.
+          var ids = self._howls[i]._getSoundIds();
+
+          // Loop through all sounds and mark the audio node as muted.
+          for (var j=0; j<ids.length; j++) {
+            var sound = self._howls[i]._soundById(ids[j]);
+
+            if (sound && sound._node) {
+              sound._node.muted = (muted) ? true : sound._muted;
+            }
+          }
+        }
+      }
+
+      return self;
+    },
+
+    /**
+     * Unload and destroy all currently loaded Howl objects.
+     * @return {Howler}
+     */
+    unload: function() {
+      var self = this || Howler;
+
+      for (var i=self._howls.length-1; i>=0; i--) {
+        self._howls[i].unload();
+      }
+
+      // Create a new AudioContext to make sure it is fully reset.
+      if (self.usingWebAudio && self.ctx && typeof self.ctx.close !== 'undefined') {
+        self.ctx.close();
+        self.ctx = null;
+        setupAudioContext();
+      }
+
+      return self;
+    },
+
+    /**
+     * Check for codec support of specific extension.
+     * @param  {String} ext Audio file extention.
+     * @return {Boolean}
+     */
+    codecs: function(ext) {
+      return (this || Howler)._codecs[ext.replace(/^x-/, '')];
+    },
+
+    /**
+     * Setup various state values for global tracking.
+     * @return {Howler}
+     */
+    _setup: function() {
+      var self = this || Howler;
+
+      // Keeps track of the suspend/resume state of the AudioContext.
+      self.state = self.ctx ? self.ctx.state || 'suspended' : 'suspended';
+
+      // Automatically begin the 30-second suspend process
+      self._autoSuspend();
+
+      // Check if audio is available.
+      if (!self.usingWebAudio) {
+        // No audio is available on this system if noAudio is set to true.
+        if (typeof Audio !== 'undefined') {
+          try {
+            var test = new Audio();
+
+            // Check if the canplaythrough event is available.
+            if (typeof test.oncanplaythrough === 'undefined') {
+              self._canPlayEvent = 'canplay';
+            }
+          } catch(e) {
+            self.noAudio = true;
+          }
+        } else {
+          self.noAudio = true;
+        }
+      }
+
+      // Test to make sure audio isn't disabled in Internet Explorer.
+      try {
+        var test = new Audio();
+        if (test.muted) {
+          self.noAudio = true;
+        }
+      } catch (e) {}
+
+      // Check for supported codecs.
+      if (!self.noAudio) {
+        self._setupCodecs();
+      }
+
+      return self;
+    },
+
+    /**
+     * Check for browser support for various codecs and cache the results.
+     * @return {Howler}
+     */
+    _setupCodecs: function() {
+      var self = this || Howler;
+      var audioTest = null;
+
+      // Must wrap in a try/catch because IE11 in server mode throws an error.
+      try {
+        audioTest = (typeof Audio !== 'undefined') ? new Audio() : null;
+      } catch (err) {
+        return self;
+      }
+
+      if (!audioTest || typeof audioTest.canPlayType !== 'function') {
+        return self;
+      }
+
+      var mpegTest = audioTest.canPlayType('audio/mpeg;').replace(/^no$/, '');
+
+      // Opera version <33 has mixed MP3 support, so we need to check for and block it.
+      var checkOpera = self._navigator && self._navigator.userAgent.match(/OPR\/([0-6].)/g);
+      var isOldOpera = (checkOpera && parseInt(checkOpera[0].split('/')[1], 10) < 33);
+
+      self._codecs = {
+        mp3: !!(!isOldOpera && (mpegTest || audioTest.canPlayType('audio/mp3;').replace(/^no$/, ''))),
+        mpeg: !!mpegTest,
+        opus: !!audioTest.canPlayType('audio/ogg; codecs="opus"').replace(/^no$/, ''),
+        ogg: !!audioTest.canPlayType('audio/ogg; codecs="vorbis"').replace(/^no$/, ''),
+        oga: !!audioTest.canPlayType('audio/ogg; codecs="vorbis"').replace(/^no$/, ''),
+        wav: !!audioTest.canPlayType('audio/wav; codecs="1"').replace(/^no$/, ''),
+        aac: !!audioTest.canPlayType('audio/aac;').replace(/^no$/, ''),
+        caf: !!audioTest.canPlayType('audio/x-caf;').replace(/^no$/, ''),
+        m4a: !!(audioTest.canPlayType('audio/x-m4a;') || audioTest.canPlayType('audio/m4a;') || audioTest.canPlayType('audio/aac;')).replace(/^no$/, ''),
+        mp4: !!(audioTest.canPlayType('audio/x-mp4;') || audioTest.canPlayType('audio/mp4;') || audioTest.canPlayType('audio/aac;')).replace(/^no$/, ''),
+        weba: !!audioTest.canPlayType('audio/webm; codecs="vorbis"').replace(/^no$/, ''),
+        webm: !!audioTest.canPlayType('audio/webm; codecs="vorbis"').replace(/^no$/, ''),
+        dolby: !!audioTest.canPlayType('audio/mp4; codecs="ec-3"').replace(/^no$/, ''),
+        flac: !!(audioTest.canPlayType('audio/x-flac;') || audioTest.canPlayType('audio/flac;')).replace(/^no$/, '')
+      };
+
+      return self;
+    },
+
+    /**
+     * Some browsers/devices will only allow audio to be played after a user interaction.
+     * Attempt to automatically unlock audio on the first user interaction.
+     * Concept from: http://paulbakaus.com/tutorials/html5/web-audio-on-ios/
+     * @return {Howler}
+     */
+    _unlockAudio: function() {
+      var self = this || Howler;
+
+      // Only run this if Web Audio is supported and it hasn't already been unlocked.
+      if (self._audioUnlocked || !self.ctx) {
+        return;
+      }
+
+      self._audioUnlocked = false;
+      self.autoUnlock = false;
+
+      // Some mobile devices/platforms have distortion issues when opening/closing tabs and/or web views.
+      // Bugs in the browser (especially Mobile Safari) can cause the sampleRate to change from 44100 to 48000.
+      // By calling Howler.unload(), we create a new AudioContext with the correct sampleRate.
+      if (!self._mobileUnloaded && self.ctx.sampleRate !== 44100) {
+        self._mobileUnloaded = true;
+        self.unload();
+      }
+
+      // Scratch buffer for enabling iOS to dispose of web audio buffers correctly, as per:
+      // http://stackoverflow.com/questions/24119684
+      self._scratchBuffer = self.ctx.createBuffer(1, 1, 22050);
+
+      // Call this method on touch start to create and play a buffer,
+      // then check if the audio actually played to determine if
+      // audio has now been unlocked on iOS, Android, etc.
+      var unlock = function(e) {
+        // Create a pool of unlocked HTML5 Audio objects that can
+        // be used for playing sounds without user interaction. HTML5
+        // Audio objects must be individually unlocked, as opposed
+        // to the WebAudio API which only needs a single activation.
+        // This must occur before WebAudio setup or the source.onended
+        // event will not fire.
+        for (var i=0; i<self.html5PoolSize; i++) {
+          try {
+            var audioNode = new Audio();
+
+            // Mark this Audio object as unlocked to ensure it can get returned
+            // to the unlocked pool when released.
+            audioNode._unlocked = true;
+
+            // Add the audio node to the pool.
+            self._releaseHtml5Audio(audioNode);
+          } catch (e) {
+            self.noAudio = true;
+          }
+        }
+
+        // Loop through any assigned audio nodes and unlock them.
+        for (var i=0; i<self._howls.length; i++) {
+          if (!self._howls[i]._webAudio) {
+            // Get all of the sounds in this Howl group.
+            var ids = self._howls[i]._getSoundIds();
+
+            // Loop through all sounds and unlock the audio nodes.
+            for (var j=0; j<ids.length; j++) {
+              var sound = self._howls[i]._soundById(ids[j]);
+
+              if (sound && sound._node && !sound._node._unlocked) {
+                sound._node._unlocked = true;
+                sound._node.load();
+              }
+            }
+          }
+        }
+
+        // Fix Android can not play in suspend state.
+        self._autoResume();
+
+        // Create an empty buffer.
+        var source = self.ctx.createBufferSource();
+        source.buffer = self._scratchBuffer;
+        source.connect(self.ctx.destination);
+
+        // Play the empty buffer.
+        if (typeof source.start === 'undefined') {
+          source.noteOn(0);
+        } else {
+          source.start(0);
+        }
+
+        // Calling resume() on a stack initiated by user gesture is what actually unlocks the audio on Android Chrome >= 55.
+        if (typeof self.ctx.resume === 'function') {
+          self.ctx.resume();
+        }
+
+        // Setup a timeout to check that we are unlocked on the next event loop.
+        source.onended = function() {
+          source.disconnect(0);
+
+          // Update the unlocked state and prevent this check from happening again.
+          self._audioUnlocked = true;
+
+          // Remove the touch start listener.
+          document.removeEventListener('touchstart', unlock, true);
+          document.removeEventListener('touchend', unlock, true);
+          document.removeEventListener('click', unlock, true);
+
+          // Let all sounds know that audio has been unlocked.
+          for (var i=0; i<self._howls.length; i++) {
+            self._howls[i]._emit('unlock');
+          }
+        };
+      };
+
+      // Setup a touch start listener to attempt an unlock in.
+      document.addEventListener('touchstart', unlock, true);
+      document.addEventListener('touchend', unlock, true);
+      document.addEventListener('click', unlock, true);
+
+      return self;
+    },
+
+    /**
+     * Get an unlocked HTML5 Audio object from the pool. If none are left,
+     * return a new Audio object and throw a warning.
+     * @return {Audio} HTML5 Audio object.
+     */
+    _obtainHtml5Audio: function() {
+      var self = this || Howler;
+
+      // Return the next object from the pool if one exists.
+      if (self._html5AudioPool.length) {
+        return self._html5AudioPool.pop();
+      }
+
+      //.Check if the audio is locked and throw a warning.
+      var testPlay = new Audio().play();
+      if (testPlay && typeof Promise !== 'undefined' && (testPlay instanceof Promise || typeof testPlay.then === 'function')) {
+        testPlay.catch(function() {
+          console.warn('HTML5 Audio pool exhausted, returning potentially locked audio object.');
+        });
+      }
+
+      return new Audio();
+    },
+
+    /**
+     * Return an activated HTML5 Audio object to the pool.
+     * @return {Howler}
+     */
+    _releaseHtml5Audio: function(audio) {
+      var self = this || Howler;
+
+      // Don't add audio to the pool if we don't know if it has been unlocked.
+      if (audio._unlocked) {
+        self._html5AudioPool.push(audio);
+      }
+
+      return self;
+    },
+
+    /**
+     * Automatically suspend the Web Audio AudioContext after no sound has played for 30 seconds.
+     * This saves processing/energy and fixes various browser-specific bugs with audio getting stuck.
+     * @return {Howler}
+     */
+    _autoSuspend: function() {
+      var self = this;
+
+      if (!self.autoSuspend || !self.ctx || typeof self.ctx.suspend === 'undefined' || !Howler.usingWebAudio) {
+        return;
+      }
+
+      // Check if any sounds are playing.
+      for (var i=0; i<self._howls.length; i++) {
+        if (self._howls[i]._webAudio) {
+          for (var j=0; j<self._howls[i]._sounds.length; j++) {
+            if (!self._howls[i]._sounds[j]._paused) {
+              return self;
+            }
+          }
+        }
+      }
+
+      if (self._suspendTimer) {
+        clearTimeout(self._suspendTimer);
+      }
+
+      // If no sound has played after 30 seconds, suspend the context.
+      self._suspendTimer = setTimeout(function() {
+        if (!self.autoSuspend) {
+          return;
+        }
+
+        self._suspendTimer = null;
+        self.state = 'suspending';
+        self.ctx.suspend().then(function() {
+          self.state = 'suspended';
+
+          if (self._resumeAfterSuspend) {
+            delete self._resumeAfterSuspend;
+            self._autoResume();
+          }
+        });
+      }, 30000);
+
+      return self;
+    },
+
+    /**
+     * Automatically resume the Web Audio AudioContext when a new sound is played.
+     * @return {Howler}
+     */
+    _autoResume: function() {
+      var self = this;
+
+      if (!self.ctx || typeof self.ctx.resume === 'undefined' || !Howler.usingWebAudio) {
+        return;
+      }
+
+      if (self.state === 'running' && self._suspendTimer) {
+        clearTimeout(self._suspendTimer);
+        self._suspendTimer = null;
+      } else if (self.state === 'suspended') {
+        self.ctx.resume().then(function() {
+          self.state = 'running';
+
+          // Emit to all Howls that the audio has resumed.
+          for (var i=0; i<self._howls.length; i++) {
+            self._howls[i]._emit('resume');
+          }
+        });
+
+        if (self._suspendTimer) {
+          clearTimeout(self._suspendTimer);
+          self._suspendTimer = null;
+        }
+      } else if (self.state === 'suspending') {
+        self._resumeAfterSuspend = true;
+      }
+
+      return self;
     }
-  }
+  };
 
-  if (!condition) {
-    var error;
-    if (format === undefined) {
-      error = new Error(
-        'Minified exception occurred; use the non-minified dev environment ' +
-        'for the full error message and additional helpful warnings.'
-      );
+  // Setup the global audio controller.
+  var Howler = new HowlerGlobal();
+
+  /** Group Methods **/
+  /***************************************************************************/
+
+  /**
+   * Create an audio group controller.
+   * @param {Object} o Passed in properties for this group.
+   */
+  var Howl = function(o) {
+    var self = this;
+
+    // Throw an error if no source is provided.
+    if (!o.src || o.src.length === 0) {
+      console.error('An array of source files must be passed with any new Howl.');
+      return;
+    }
+
+    self.init(o);
+  };
+  Howl.prototype = {
+    /**
+     * Initialize a new Howl group object.
+     * @param  {Object} o Passed in properties for this group.
+     * @return {Howl}
+     */
+    init: function(o) {
+      var self = this;
+
+      // If we don't have an AudioContext created yet, run the setup.
+      if (!Howler.ctx) {
+        setupAudioContext();
+      }
+
+      // Setup user-defined default properties.
+      self._autoplay = o.autoplay || false;
+      self._format = (typeof o.format !== 'string') ? o.format : [o.format];
+      self._html5 = o.html5 || false;
+      self._muted = o.mute || false;
+      self._loop = o.loop || false;
+      self._pool = o.pool || 5;
+      self._preload = (typeof o.preload === 'boolean') ? o.preload : true;
+      self._rate = o.rate || 1;
+      self._sprite = o.sprite || {};
+      self._src = (typeof o.src !== 'string') ? o.src : [o.src];
+      self._volume = o.volume !== undefined ? o.volume : 1;
+      self._xhrWithCredentials = o.xhrWithCredentials || false;
+
+      // Setup all other default properties.
+      self._duration = 0;
+      self._state = 'unloaded';
+      self._sounds = [];
+      self._endTimers = {};
+      self._queue = [];
+      self._playLock = false;
+
+      // Setup event listeners.
+      self._onend = o.onend ? [{fn: o.onend}] : [];
+      self._onfade = o.onfade ? [{fn: o.onfade}] : [];
+      self._onload = o.onload ? [{fn: o.onload}] : [];
+      self._onloaderror = o.onloaderror ? [{fn: o.onloaderror}] : [];
+      self._onplayerror = o.onplayerror ? [{fn: o.onplayerror}] : [];
+      self._onpause = o.onpause ? [{fn: o.onpause}] : [];
+      self._onplay = o.onplay ? [{fn: o.onplay}] : [];
+      self._onstop = o.onstop ? [{fn: o.onstop}] : [];
+      self._onmute = o.onmute ? [{fn: o.onmute}] : [];
+      self._onvolume = o.onvolume ? [{fn: o.onvolume}] : [];
+      self._onrate = o.onrate ? [{fn: o.onrate}] : [];
+      self._onseek = o.onseek ? [{fn: o.onseek}] : [];
+      self._onunlock = o.onunlock ? [{fn: o.onunlock}] : [];
+      self._onresume = [];
+
+      // Web Audio or HTML5 Audio?
+      self._webAudio = Howler.usingWebAudio && !self._html5;
+
+      // Automatically try to enable audio.
+      if (typeof Howler.ctx !== 'undefined' && Howler.ctx && Howler.autoUnlock) {
+        Howler._unlockAudio();
+      }
+
+      // Keep track of this Howl group in the global controller.
+      Howler._howls.push(self);
+
+      // If they selected autoplay, add a play event to the load queue.
+      if (self._autoplay) {
+        self._queue.push({
+          event: 'play',
+          action: function() {
+            self.play();
+          }
+        });
+      }
+
+      // Load the source file unless otherwise specified.
+      if (self._preload) {
+        self.load();
+      }
+
+      return self;
+    },
+
+    /**
+     * Load the audio file.
+     * @return {Howler}
+     */
+    load: function() {
+      var self = this;
+      var url = null;
+
+      // If no audio is available, quit immediately.
+      if (Howler.noAudio) {
+        self._emit('loaderror', null, 'No audio support.');
+        return;
+      }
+
+      // Make sure our source is in an array.
+      if (typeof self._src === 'string') {
+        self._src = [self._src];
+      }
+
+      // Loop through the sources and pick the first one that is compatible.
+      for (var i=0; i<self._src.length; i++) {
+        var ext, str;
+
+        if (self._format && self._format[i]) {
+          // If an extension was specified, use that instead.
+          ext = self._format[i];
+        } else {
+          // Make sure the source is a string.
+          str = self._src[i];
+          if (typeof str !== 'string') {
+            self._emit('loaderror', null, 'Non-string found in selected audio sources - ignoring.');
+            continue;
+          }
+
+          // Extract the file extension from the URL or base64 data URI.
+          ext = /^data:audio\/([^;,]+);/i.exec(str);
+          if (!ext) {
+            ext = /\.([^.]+)$/.exec(str.split('?', 1)[0]);
+          }
+
+          if (ext) {
+            ext = ext[1].toLowerCase();
+          }
+        }
+
+        // Log a warning if no extension was found.
+        if (!ext) {
+          console.warn('No file extension was found. Consider using the "format" property or specify an extension.');
+        }
+
+        // Check if this extension is available.
+        if (ext && Howler.codecs(ext)) {
+          url = self._src[i];
+          break;
+        }
+      }
+
+      if (!url) {
+        self._emit('loaderror', null, 'No codec support for selected audio sources.');
+        return;
+      }
+
+      self._src = url;
+      self._state = 'loading';
+
+      // If the hosting page is HTTPS and the source isn't,
+      // drop down to HTML5 Audio to avoid Mixed Content errors.
+      if (window.location.protocol === 'https:' && url.slice(0, 5) === 'http:') {
+        self._html5 = true;
+        self._webAudio = false;
+      }
+
+      // Create a new sound object and add it to the pool.
+      new Sound(self);
+
+      // Load and decode the audio data for playback.
+      if (self._webAudio) {
+        loadBuffer(self);
+      }
+
+      return self;
+    },
+
+    /**
+     * Play a sound or resume previous playback.
+     * @param  {String/Number} sprite   Sprite name for sprite playback or sound id to continue previous.
+     * @param  {Boolean} internal Internal Use: true prevents event firing.
+     * @return {Number}          Sound ID.
+     */
+    play: function(sprite, internal) {
+      var self = this;
+      var id = null;
+
+      // Determine if a sprite, sound id or nothing was passed
+      if (typeof sprite === 'number') {
+        id = sprite;
+        sprite = null;
+      } else if (typeof sprite === 'string' && self._state === 'loaded' && !self._sprite[sprite]) {
+        // If the passed sprite doesn't exist, do nothing.
+        return null;
+      } else if (typeof sprite === 'undefined') {
+        // Use the default sound sprite (plays the full audio length).
+        sprite = '__default';
+
+        // Check if there is a single paused sound that isn't ended. 
+        // If there is, play that sound. If not, continue as usual.  
+        if (!self._playLock) {
+          var num = 0;
+          for (var i=0; i<self._sounds.length; i++) {
+            if (self._sounds[i]._paused && !self._sounds[i]._ended) {
+              num++;
+              id = self._sounds[i]._id;
+            }
+          }
+
+          if (num === 1) {
+            sprite = null;
+          } else {
+            id = null;
+          }
+        }
+      }
+
+      // Get the selected node, or get one from the pool.
+      var sound = id ? self._soundById(id) : self._inactiveSound();
+
+      // If the sound doesn't exist, do nothing.
+      if (!sound) {
+        return null;
+      }
+
+      // Select the sprite definition.
+      if (id && !sprite) {
+        sprite = sound._sprite || '__default';
+      }
+
+      // If the sound hasn't loaded, we must wait to get the audio's duration.
+      // We also need to wait to make sure we don't run into race conditions with
+      // the order of function calls.
+      if (self._state !== 'loaded') {
+        // Set the sprite value on this sound.
+        sound._sprite = sprite;
+
+        // Mark this sound as not ended in case another sound is played before this one loads.
+        sound._ended = false;
+
+        // Add the sound to the queue to be played on load.
+        var soundId = sound._id;
+        self._queue.push({
+          event: 'play',
+          action: function() {
+            self.play(soundId);
+          }
+        });
+
+        return soundId;
+      }
+
+      // Don't play the sound if an id was passed and it is already playing.
+      if (id && !sound._paused) {
+        // Trigger the play event, in order to keep iterating through queue.
+        if (!internal) {
+          self._loadQueue('play');
+        }
+
+        return sound._id;
+      }
+
+      // Make sure the AudioContext isn't suspended, and resume it if it is.
+      if (self._webAudio) {
+        Howler._autoResume();
+      }
+
+      // Determine how long to play for and where to start playing.
+      var seek = Math.max(0, sound._seek > 0 ? sound._seek : self._sprite[sprite][0] / 1000);
+      var duration = Math.max(0, ((self._sprite[sprite][0] + self._sprite[sprite][1]) / 1000) - seek);
+      var timeout = (duration * 1000) / Math.abs(sound._rate);
+      var start = self._sprite[sprite][0] / 1000;
+      var stop = (self._sprite[sprite][0] + self._sprite[sprite][1]) / 1000;
+      sound._sprite = sprite;
+
+      // Mark the sound as ended instantly so that this async playback
+      // doesn't get grabbed by another call to play while this one waits to start.
+      sound._ended = false;
+
+      // Update the parameters of the sound.
+      var setParams = function() {
+        sound._paused = false;
+        sound._seek = seek;
+        sound._start = start;
+        sound._stop = stop;
+        sound._loop = !!(sound._loop || self._sprite[sprite][2]);
+      };
+
+      // End the sound instantly if seek is at the end.
+      if (seek >= stop) {
+        self._ended(sound);
+        return;
+      }
+
+      // Begin the actual playback.
+      var node = sound._node;
+      if (self._webAudio) {
+        // Fire this when the sound is ready to play to begin Web Audio playback.
+        var playWebAudio = function() {
+          self._playLock = false;
+          setParams();
+          self._refreshBuffer(sound);
+
+          // Setup the playback params.
+          var vol = (sound._muted || self._muted) ? 0 : sound._volume;
+          node.gain.setValueAtTime(vol, Howler.ctx.currentTime);
+          sound._playStart = Howler.ctx.currentTime;
+
+          // Play the sound using the supported method.
+          if (typeof node.bufferSource.start === 'undefined') {
+            sound._loop ? node.bufferSource.noteGrainOn(0, seek, 86400) : node.bufferSource.noteGrainOn(0, seek, duration);
+          } else {
+            sound._loop ? node.bufferSource.start(0, seek, 86400) : node.bufferSource.start(0, seek, duration);
+          }
+
+          // Start a new timer if none is present.
+          if (timeout !== Infinity) {
+            self._endTimers[sound._id] = setTimeout(self._ended.bind(self, sound), timeout);
+          }
+
+          if (!internal) {
+            setTimeout(function() {
+              self._emit('play', sound._id);
+              self._loadQueue();
+            }, 0);
+          }
+        };
+
+        if (Howler.state === 'running') {
+          playWebAudio();
+        } else {
+          self._playLock = true;
+
+          // Wait for the audio context to resume before playing.
+          self.once('resume', playWebAudio);
+
+          // Cancel the end timer.
+          self._clearTimer(sound._id);
+        }
+      } else {
+        // Fire this when the sound is ready to play to begin HTML5 Audio playback.
+        var playHtml5 = function() {
+          node.currentTime = seek;
+          node.muted = sound._muted || self._muted || Howler._muted || node.muted;
+          node.volume = sound._volume * Howler.volume();
+          node.playbackRate = sound._rate;
+
+          // Some browsers will throw an error if this is called without user interaction.
+          try {
+            var play = node.play();
+
+            // Support older browsers that don't support promises, and thus don't have this issue.
+            if (play && typeof Promise !== 'undefined' && (play instanceof Promise || typeof play.then === 'function')) {
+              // Implements a lock to prevent DOMException: The play() request was interrupted by a call to pause().
+              self._playLock = true;
+
+              // Set param values immediately.
+              setParams();
+
+              // Releases the lock and executes queued actions.
+              play
+                .then(function() {
+                  self._playLock = false;
+                  node._unlocked = true;
+                  if (!internal) {
+                    self._emit('play', sound._id);
+                    self._loadQueue();
+                  }
+                })
+                .catch(function() {
+                  self._playLock = false;
+                  self._emit('playerror', sound._id, 'Playback was unable to start. This is most commonly an issue ' +
+                    'on mobile devices and Chrome where playback was not within a user interaction.');
+
+                  // Reset the ended and paused values.
+                  sound._ended = true;
+                  sound._paused = true;
+                });
+            } else if (!internal) {
+              self._playLock = false;
+              setParams();
+              self._emit('play', sound._id);
+              self._loadQueue();
+            }
+
+            // Setting rate before playing won't work in IE, so we set it again here.
+            node.playbackRate = sound._rate;
+
+            // If the node is still paused, then we can assume there was a playback issue.
+            if (node.paused) {
+              self._emit('playerror', sound._id, 'Playback was unable to start. This is most commonly an issue ' +
+                'on mobile devices and Chrome where playback was not within a user interaction.');
+              return;
+            }
+
+            // Setup the end timer on sprites or listen for the ended event.
+            if (sprite !== '__default' || sound._loop) {
+              self._endTimers[sound._id] = setTimeout(self._ended.bind(self, sound), timeout);
+            } else {
+              self._endTimers[sound._id] = function() {
+                // Fire ended on this audio node.
+                self._ended(sound);
+
+                // Clear this listener.
+                node.removeEventListener('ended', self._endTimers[sound._id], false);
+              };
+              node.addEventListener('ended', self._endTimers[sound._id], false);
+            }
+          } catch (err) {
+            self._emit('playerror', sound._id, err);
+          }
+        };
+
+        // If this is streaming audio, make sure the src is set and load again.
+        if (node.src === 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA') {
+          node.src = self._src;
+          node.load();
+        }
+
+        // Play immediately if ready, or wait for the 'canplaythrough'e vent.
+        var loadedNoReadyState = (window && window.ejecta) || (!node.readyState && Howler._navigator.isCocoonJS);
+        if (node.readyState >= 3 || loadedNoReadyState) {
+          playHtml5();
+        } else {
+          self._playLock = true;
+
+          var listener = function() {
+            // Begin playback.
+            playHtml5();
+
+            // Clear this listener.
+            node.removeEventListener(Howler._canPlayEvent, listener, false);
+          };
+          node.addEventListener(Howler._canPlayEvent, listener, false);
+
+          // Cancel the end timer.
+          self._clearTimer(sound._id);
+        }
+      }
+
+      return sound._id;
+    },
+
+    /**
+     * Pause playback and save current position.
+     * @param  {Number} id The sound ID (empty to pause all in group).
+     * @return {Howl}
+     */
+    pause: function(id) {
+      var self = this;
+
+      // If the sound hasn't loaded or a play() promise is pending, add it to the load queue to pause when capable.
+      if (self._state !== 'loaded' || self._playLock) {
+        self._queue.push({
+          event: 'pause',
+          action: function() {
+            self.pause(id);
+          }
+        });
+
+        return self;
+      }
+
+      // If no id is passed, get all ID's to be paused.
+      var ids = self._getSoundIds(id);
+
+      for (var i=0; i<ids.length; i++) {
+        // Clear the end timer.
+        self._clearTimer(ids[i]);
+
+        // Get the sound.
+        var sound = self._soundById(ids[i]);
+
+        if (sound && !sound._paused) {
+          // Reset the seek position.
+          sound._seek = self.seek(ids[i]);
+          sound._rateSeek = 0;
+          sound._paused = true;
+
+          // Stop currently running fades.
+          self._stopFade(ids[i]);
+
+          if (sound._node) {
+            if (self._webAudio) {
+              // Make sure the sound has been created.
+              if (!sound._node.bufferSource) {
+                continue;
+              }
+
+              if (typeof sound._node.bufferSource.stop === 'undefined') {
+                sound._node.bufferSource.noteOff(0);
+              } else {
+                sound._node.bufferSource.stop(0);
+              }
+
+              // Clean up the buffer source.
+              self._cleanBuffer(sound._node);
+            } else if (!isNaN(sound._node.duration) || sound._node.duration === Infinity) {
+              sound._node.pause();
+            }
+          }
+        }
+
+        // Fire the pause event, unless `true` is passed as the 2nd argument.
+        if (!arguments[1]) {
+          self._emit('pause', sound ? sound._id : null);
+        }
+      }
+
+      return self;
+    },
+
+    /**
+     * Stop playback and reset to start.
+     * @param  {Number} id The sound ID (empty to stop all in group).
+     * @param  {Boolean} internal Internal Use: true prevents event firing.
+     * @return {Howl}
+     */
+    stop: function(id, internal) {
+      var self = this;
+
+      // If the sound hasn't loaded, add it to the load queue to stop when capable.
+      if (self._state !== 'loaded' || self._playLock) {
+        self._queue.push({
+          event: 'stop',
+          action: function() {
+            self.stop(id);
+          }
+        });
+
+        return self;
+      }
+
+      // If no id is passed, get all ID's to be stopped.
+      var ids = self._getSoundIds(id);
+
+      for (var i=0; i<ids.length; i++) {
+        // Clear the end timer.
+        self._clearTimer(ids[i]);
+
+        // Get the sound.
+        var sound = self._soundById(ids[i]);
+
+        if (sound) {
+          // Reset the seek position.
+          sound._seek = sound._start || 0;
+          sound._rateSeek = 0;
+          sound._paused = true;
+          sound._ended = true;
+
+          // Stop currently running fades.
+          self._stopFade(ids[i]);
+
+          if (sound._node) {
+            if (self._webAudio) {
+              // Make sure the sound's AudioBufferSourceNode has been created.
+              if (sound._node.bufferSource) {
+                if (typeof sound._node.bufferSource.stop === 'undefined') {
+                  sound._node.bufferSource.noteOff(0);
+                } else {
+                  sound._node.bufferSource.stop(0);
+                }
+
+                // Clean up the buffer source.
+                self._cleanBuffer(sound._node);
+              }
+            } else if (!isNaN(sound._node.duration) || sound._node.duration === Infinity) {
+              sound._node.currentTime = sound._start || 0;
+              sound._node.pause();
+
+              // If this is a live stream, stop download once the audio is stopped.
+              if (sound._node.duration === Infinity) {
+                self._clearSound(sound._node);
+              }
+            }
+          }
+
+          if (!internal) {
+            self._emit('stop', sound._id);
+          }
+        }
+      }
+
+      return self;
+    },
+
+    /**
+     * Mute/unmute a single sound or all sounds in this Howl group.
+     * @param  {Boolean} muted Set to true to mute and false to unmute.
+     * @param  {Number} id    The sound ID to update (omit to mute/unmute all).
+     * @return {Howl}
+     */
+    mute: function(muted, id) {
+      var self = this;
+
+      // If the sound hasn't loaded, add it to the load queue to mute when capable.
+      if (self._state !== 'loaded'|| self._playLock) {
+        self._queue.push({
+          event: 'mute',
+          action: function() {
+            self.mute(muted, id);
+          }
+        });
+
+        return self;
+      }
+
+      // If applying mute/unmute to all sounds, update the group's value.
+      if (typeof id === 'undefined') {
+        if (typeof muted === 'boolean') {
+          self._muted = muted;
+        } else {
+          return self._muted;
+        }
+      }
+
+      // If no id is passed, get all ID's to be muted.
+      var ids = self._getSoundIds(id);
+
+      for (var i=0; i<ids.length; i++) {
+        // Get the sound.
+        var sound = self._soundById(ids[i]);
+
+        if (sound) {
+          sound._muted = muted;
+
+          // Cancel active fade and set the volume to the end value.
+          if (sound._interval) {
+            self._stopFade(sound._id);
+          }
+
+          if (self._webAudio && sound._node) {
+            sound._node.gain.setValueAtTime(muted ? 0 : sound._volume, Howler.ctx.currentTime);
+          } else if (sound._node) {
+            sound._node.muted = Howler._muted ? true : muted;
+          }
+
+          self._emit('mute', sound._id);
+        }
+      }
+
+      return self;
+    },
+
+    /**
+     * Get/set the volume of this sound or of the Howl group. This method can optionally take 0, 1 or 2 arguments.
+     *   volume() -> Returns the group's volume value.
+     *   volume(id) -> Returns the sound id's current volume.
+     *   volume(vol) -> Sets the volume of all sounds in this Howl group.
+     *   volume(vol, id) -> Sets the volume of passed sound id.
+     * @return {Howl/Number} Returns self or current volume.
+     */
+    volume: function() {
+      var self = this;
+      var args = arguments;
+      var vol, id;
+
+      // Determine the values based on arguments.
+      if (args.length === 0) {
+        // Return the value of the groups' volume.
+        return self._volume;
+      } else if (args.length === 1 || args.length === 2 && typeof args[1] === 'undefined') {
+        // First check if this is an ID, and if not, assume it is a new volume.
+        var ids = self._getSoundIds();
+        var index = ids.indexOf(args[0]);
+        if (index >= 0) {
+          id = parseInt(args[0], 10);
+        } else {
+          vol = parseFloat(args[0]);
+        }
+      } else if (args.length >= 2) {
+        vol = parseFloat(args[0]);
+        id = parseInt(args[1], 10);
+      }
+
+      // Update the volume or return the current volume.
+      var sound;
+      if (typeof vol !== 'undefined' && vol >= 0 && vol <= 1) {
+        // If the sound hasn't loaded, add it to the load queue to change volume when capable.
+        if (self._state !== 'loaded'|| self._playLock) {
+          self._queue.push({
+            event: 'volume',
+            action: function() {
+              self.volume.apply(self, args);
+            }
+          });
+
+          return self;
+        }
+
+        // Set the group volume.
+        if (typeof id === 'undefined') {
+          self._volume = vol;
+        }
+
+        // Update one or all volumes.
+        id = self._getSoundIds(id);
+        for (var i=0; i<id.length; i++) {
+          // Get the sound.
+          sound = self._soundById(id[i]);
+
+          if (sound) {
+            sound._volume = vol;
+
+            // Stop currently running fades.
+            if (!args[2]) {
+              self._stopFade(id[i]);
+            }
+
+            if (self._webAudio && sound._node && !sound._muted) {
+              sound._node.gain.setValueAtTime(vol, Howler.ctx.currentTime);
+            } else if (sound._node && !sound._muted) {
+              sound._node.volume = vol * Howler.volume();
+            }
+
+            self._emit('volume', sound._id);
+          }
+        }
+      } else {
+        sound = id ? self._soundById(id) : self._sounds[0];
+        return sound ? sound._volume : 0;
+      }
+
+      return self;
+    },
+
+    /**
+     * Fade a currently playing sound between two volumes (if no id is passed, all sounds will fade).
+     * @param  {Number} from The value to fade from (0.0 to 1.0).
+     * @param  {Number} to   The volume to fade to (0.0 to 1.0).
+     * @param  {Number} len  Time in milliseconds to fade.
+     * @param  {Number} id   The sound id (omit to fade all sounds).
+     * @return {Howl}
+     */
+    fade: function(from, to, len, id) {
+      var self = this;
+
+      // If the sound hasn't loaded, add it to the load queue to fade when capable.
+      if (self._state !== 'loaded' || self._playLock) {
+        self._queue.push({
+          event: 'fade',
+          action: function() {
+            self.fade(from, to, len, id);
+          }
+        });
+
+        return self;
+      }
+
+      // Make sure the to/from/len values are numbers.
+      from = parseFloat(from);
+      to = parseFloat(to);
+      len = parseFloat(len);
+
+      // Set the volume to the start position.
+      self.volume(from, id);
+
+      // Fade the volume of one or all sounds.
+      var ids = self._getSoundIds(id);
+      for (var i=0; i<ids.length; i++) {
+        // Get the sound.
+        var sound = self._soundById(ids[i]);
+
+        // Create a linear fade or fall back to timeouts with HTML5 Audio.
+        if (sound) {
+          // Stop the previous fade if no sprite is being used (otherwise, volume handles this).
+          if (!id) {
+            self._stopFade(ids[i]);
+          }
+
+          // If we are using Web Audio, let the native methods do the actual fade.
+          if (self._webAudio && !sound._muted) {
+            var currentTime = Howler.ctx.currentTime;
+            var end = currentTime + (len / 1000);
+            sound._volume = from;
+            sound._node.gain.setValueAtTime(from, currentTime);
+            sound._node.gain.linearRampToValueAtTime(to, end);
+          }
+
+          self._startFadeInterval(sound, from, to, len, ids[i], typeof id === 'undefined');
+        }
+      }
+
+      return self;
+    },
+
+    /**
+     * Starts the internal interval to fade a sound.
+     * @param  {Object} sound Reference to sound to fade.
+     * @param  {Number} from The value to fade from (0.0 to 1.0).
+     * @param  {Number} to   The volume to fade to (0.0 to 1.0).
+     * @param  {Number} len  Time in milliseconds to fade.
+     * @param  {Number} id   The sound id to fade.
+     * @param  {Boolean} isGroup   If true, set the volume on the group.
+     */
+    _startFadeInterval: function(sound, from, to, len, id, isGroup) {
+      var self = this;
+      var vol = from;
+      var diff = to - from;
+      var steps = Math.abs(diff / 0.01);
+      var stepLen = Math.max(4, (steps > 0) ? len / steps : len);
+      var lastTick = Date.now();
+
+      // Store the value being faded to.
+      sound._fadeTo = to;
+
+      // Update the volume value on each interval tick.
+      sound._interval = setInterval(function() {
+        // Update the volume based on the time since the last tick.
+        var tick = (Date.now() - lastTick) / len;
+        lastTick = Date.now();
+        vol += diff * tick;
+
+        // Make sure the volume is in the right bounds.
+        vol = Math.max(0, vol);
+        vol = Math.min(1, vol);
+
+        // Round to within 2 decimal points.
+        vol = Math.round(vol * 100) / 100;
+
+        // Change the volume.
+        if (self._webAudio) {
+          sound._volume = vol;
+        } else {
+          self.volume(vol, sound._id, true);
+        }
+
+        // Set the group's volume.
+        if (isGroup) {
+          self._volume = vol;
+        }
+
+        // When the fade is complete, stop it and fire event.
+        if ((to < from && vol <= to) || (to > from && vol >= to)) {
+          clearInterval(sound._interval);
+          sound._interval = null;
+          sound._fadeTo = null;
+          self.volume(to, sound._id);
+          self._emit('fade', sound._id);
+        }
+      }, stepLen);
+    },
+
+    /**
+     * Internal method that stops the currently playing fade when
+     * a new fade starts, volume is changed or the sound is stopped.
+     * @param  {Number} id The sound id.
+     * @return {Howl}
+     */
+    _stopFade: function(id) {
+      var self = this;
+      var sound = self._soundById(id);
+
+      if (sound && sound._interval) {
+        if (self._webAudio) {
+          sound._node.gain.cancelScheduledValues(Howler.ctx.currentTime);
+        }
+
+        clearInterval(sound._interval);
+        sound._interval = null;
+        self.volume(sound._fadeTo, id);
+        sound._fadeTo = null;
+        self._emit('fade', id);
+      }
+
+      return self;
+    },
+
+    /**
+     * Get/set the loop parameter on a sound. This method can optionally take 0, 1 or 2 arguments.
+     *   loop() -> Returns the group's loop value.
+     *   loop(id) -> Returns the sound id's loop value.
+     *   loop(loop) -> Sets the loop value for all sounds in this Howl group.
+     *   loop(loop, id) -> Sets the loop value of passed sound id.
+     * @return {Howl/Boolean} Returns self or current loop value.
+     */
+    loop: function() {
+      var self = this;
+      var args = arguments;
+      var loop, id, sound;
+
+      // Determine the values for loop and id.
+      if (args.length === 0) {
+        // Return the grou's loop value.
+        return self._loop;
+      } else if (args.length === 1) {
+        if (typeof args[0] === 'boolean') {
+          loop = args[0];
+          self._loop = loop;
+        } else {
+          // Return this sound's loop value.
+          sound = self._soundById(parseInt(args[0], 10));
+          return sound ? sound._loop : false;
+        }
+      } else if (args.length === 2) {
+        loop = args[0];
+        id = parseInt(args[1], 10);
+      }
+
+      // If no id is passed, get all ID's to be looped.
+      var ids = self._getSoundIds(id);
+      for (var i=0; i<ids.length; i++) {
+        sound = self._soundById(ids[i]);
+
+        if (sound) {
+          sound._loop = loop;
+          if (self._webAudio && sound._node && sound._node.bufferSource) {
+            sound._node.bufferSource.loop = loop;
+            if (loop) {
+              sound._node.bufferSource.loopStart = sound._start || 0;
+              sound._node.bufferSource.loopEnd = sound._stop;
+            }
+          }
+        }
+      }
+
+      return self;
+    },
+
+    /**
+     * Get/set the playback rate of a sound. This method can optionally take 0, 1 or 2 arguments.
+     *   rate() -> Returns the first sound node's current playback rate.
+     *   rate(id) -> Returns the sound id's current playback rate.
+     *   rate(rate) -> Sets the playback rate of all sounds in this Howl group.
+     *   rate(rate, id) -> Sets the playback rate of passed sound id.
+     * @return {Howl/Number} Returns self or the current playback rate.
+     */
+    rate: function() {
+      var self = this;
+      var args = arguments;
+      var rate, id;
+
+      // Determine the values based on arguments.
+      if (args.length === 0) {
+        // We will simply return the current rate of the first node.
+        id = self._sounds[0]._id;
+      } else if (args.length === 1) {
+        // First check if this is an ID, and if not, assume it is a new rate value.
+        var ids = self._getSoundIds();
+        var index = ids.indexOf(args[0]);
+        if (index >= 0) {
+          id = parseInt(args[0], 10);
+        } else {
+          rate = parseFloat(args[0]);
+        }
+      } else if (args.length === 2) {
+        rate = parseFloat(args[0]);
+        id = parseInt(args[1], 10);
+      }
+
+      // Update the playback rate or return the current value.
+      var sound;
+      if (typeof rate === 'number') {
+        // If the sound hasn't loaded, add it to the load queue to change playback rate when capable.
+        if (self._state !== 'loaded' || self._playLock) {
+          self._queue.push({
+            event: 'rate',
+            action: function() {
+              self.rate.apply(self, args);
+            }
+          });
+
+          return self;
+        }
+
+        // Set the group rate.
+        if (typeof id === 'undefined') {
+          self._rate = rate;
+        }
+
+        // Update one or all volumes.
+        id = self._getSoundIds(id);
+        for (var i=0; i<id.length; i++) {
+          // Get the sound.
+          sound = self._soundById(id[i]);
+
+          if (sound) {
+            // Keep track of our position when the rate changed and update the playback
+            // start position so we can properly adjust the seek position for time elapsed.
+            if (self.playing(id[i])) {
+              sound._rateSeek = self.seek(id[i]);
+              sound._playStart = self._webAudio ? Howler.ctx.currentTime : sound._playStart;
+            }
+            sound._rate = rate;
+
+            // Change the playback rate.
+            if (self._webAudio && sound._node && sound._node.bufferSource) {
+              sound._node.bufferSource.playbackRate.setValueAtTime(rate, Howler.ctx.currentTime);
+            } else if (sound._node) {
+              sound._node.playbackRate = rate;
+            }
+
+            // Reset the timers.
+            var seek = self.seek(id[i]);
+            var duration = ((self._sprite[sound._sprite][0] + self._sprite[sound._sprite][1]) / 1000) - seek;
+            var timeout = (duration * 1000) / Math.abs(sound._rate);
+
+            // Start a new end timer if sound is already playing.
+            if (self._endTimers[id[i]] || !sound._paused) {
+              self._clearTimer(id[i]);
+              self._endTimers[id[i]] = setTimeout(self._ended.bind(self, sound), timeout);
+            }
+
+            self._emit('rate', sound._id);
+          }
+        }
+      } else {
+        sound = self._soundById(id);
+        return sound ? sound._rate : self._rate;
+      }
+
+      return self;
+    },
+
+    /**
+     * Get/set the seek position of a sound. This method can optionally take 0, 1 or 2 arguments.
+     *   seek() -> Returns the first sound node's current seek position.
+     *   seek(id) -> Returns the sound id's current seek position.
+     *   seek(seek) -> Sets the seek position of the first sound node.
+     *   seek(seek, id) -> Sets the seek position of passed sound id.
+     * @return {Howl/Number} Returns self or the current seek position.
+     */
+    seek: function() {
+      var self = this;
+      var args = arguments;
+      var seek, id;
+
+      // Determine the values based on arguments.
+      if (args.length === 0) {
+        // We will simply return the current position of the first node.
+        id = self._sounds[0]._id;
+      } else if (args.length === 1) {
+        // First check if this is an ID, and if not, assume it is a new seek position.
+        var ids = self._getSoundIds();
+        var index = ids.indexOf(args[0]);
+        if (index >= 0) {
+          id = parseInt(args[0], 10);
+        } else if (self._sounds.length) {
+          id = self._sounds[0]._id;
+          seek = parseFloat(args[0]);
+        }
+      } else if (args.length === 2) {
+        seek = parseFloat(args[0]);
+        id = parseInt(args[1], 10);
+      }
+
+      // If there is no ID, bail out.
+      if (typeof id === 'undefined') {
+        return self;
+      }
+
+      // If the sound hasn't loaded, add it to the load queue to seek when capable.
+      if (self._state !== 'loaded' || self._playLock) {
+        self._queue.push({
+          event: 'seek',
+          action: function() {
+            self.seek.apply(self, args);
+          }
+        });
+
+        return self;
+      }
+
+      // Get the sound.
+      var sound = self._soundById(id);
+
+      if (sound) {
+        if (typeof seek === 'number' && seek >= 0) {
+          // Pause the sound and update position for restarting playback.
+          var playing = self.playing(id);
+          if (playing) {
+            self.pause(id, true);
+          }
+
+          // Move the position of the track and cancel timer.
+          sound._seek = seek;
+          sound._ended = false;
+          self._clearTimer(id);
+
+          // Update the seek position for HTML5 Audio.
+          if (!self._webAudio && sound._node && !isNaN(sound._node.duration)) {
+            sound._node.currentTime = seek;
+          }
+
+          // Seek and emit when ready.
+          var seekAndEmit = function() {
+            self._emit('seek', id);
+
+            // Restart the playback if the sound was playing.
+            if (playing) {
+              self.play(id, true);
+            }
+          };
+
+          // Wait for the play lock to be unset before emitting (HTML5 Audio).
+          if (playing && !self._webAudio) {
+            var emitSeek = function() {
+              if (!self._playLock) {
+                seekAndEmit();
+              } else {
+                setTimeout(emitSeek, 0);
+              }
+            };
+            setTimeout(emitSeek, 0);
+          } else {
+            seekAndEmit();
+          }
+        } else {
+          if (self._webAudio) {
+            var realTime = self.playing(id) ? Howler.ctx.currentTime - sound._playStart : 0;
+            var rateSeek = sound._rateSeek ? sound._rateSeek - sound._seek : 0;
+            return sound._seek + (rateSeek + realTime * Math.abs(sound._rate));
+          } else {
+            return sound._node.currentTime;
+          }
+        }
+      }
+
+      return self;
+    },
+
+    /**
+     * Check if a specific sound is currently playing or not (if id is provided), or check if at least one of the sounds in the group is playing or not.
+     * @param  {Number}  id The sound id to check. If none is passed, the whole sound group is checked.
+     * @return {Boolean} True if playing and false if not.
+     */
+    playing: function(id) {
+      var self = this;
+
+      // Check the passed sound ID (if any).
+      if (typeof id === 'number') {
+        var sound = self._soundById(id);
+        return sound ? !sound._paused : false;
+      }
+
+      // Otherwise, loop through all sounds and check if any are playing.
+      for (var i=0; i<self._sounds.length; i++) {
+        if (!self._sounds[i]._paused) {
+          return true;
+        }
+      }
+
+      return false;
+    },
+
+    /**
+     * Get the duration of this sound. Passing a sound id will return the sprite duration.
+     * @param  {Number} id The sound id to check. If none is passed, return full source duration.
+     * @return {Number} Audio duration in seconds.
+     */
+    duration: function(id) {
+      var self = this;
+      var duration = self._duration;
+
+      // If we pass an ID, get the sound and return the sprite length.
+      var sound = self._soundById(id);
+      if (sound) {
+        duration = self._sprite[sound._sprite][1] / 1000;
+      }
+
+      return duration;
+    },
+
+    /**
+     * Returns the current loaded state of this Howl.
+     * @return {String} 'unloaded', 'loading', 'loaded'
+     */
+    state: function() {
+      return this._state;
+    },
+
+    /**
+     * Unload and destroy the current Howl object.
+     * This will immediately stop all sound instances attached to this group.
+     */
+    unload: function() {
+      var self = this;
+
+      // Stop playing any active sounds.
+      var sounds = self._sounds;
+      for (var i=0; i<sounds.length; i++) {
+        // Stop the sound if it is currently playing.
+        if (!sounds[i]._paused) {
+          self.stop(sounds[i]._id);
+        }
+
+        // Remove the source or disconnect.
+        if (!self._webAudio) {
+          // Set the source to 0-second silence to stop any downloading (except in IE).
+          self._clearSound(sounds[i]._node);
+
+          // Remove any event listeners.
+          sounds[i]._node.removeEventListener('error', sounds[i]._errorFn, false);
+          sounds[i]._node.removeEventListener(Howler._canPlayEvent, sounds[i]._loadFn, false);
+
+          // Release the Audio object back to the pool.
+          Howler._releaseHtml5Audio(sounds[i]._node);
+        }
+
+        // Empty out all of the nodes.
+        delete sounds[i]._node;
+
+        // Make sure all timers are cleared out.
+        self._clearTimer(sounds[i]._id);
+      }
+
+      // Remove the references in the global Howler object.
+      var index = Howler._howls.indexOf(self);
+      if (index >= 0) {
+        Howler._howls.splice(index, 1);
+      }
+
+      // Delete this sound from the cache (if no other Howl is using it).
+      var remCache = true;
+      for (i=0; i<Howler._howls.length; i++) {
+        if (Howler._howls[i]._src === self._src || self._src.indexOf(Howler._howls[i]._src) >= 0) {
+          remCache = false;
+          break;
+        }
+      }
+
+      if (cache && remCache) {
+        delete cache[self._src];
+      }
+
+      // Clear global errors.
+      Howler.noAudio = false;
+
+      // Clear out `self`.
+      self._state = 'unloaded';
+      self._sounds = [];
+      self = null;
+
+      return null;
+    },
+
+    /**
+     * Listen to a custom event.
+     * @param  {String}   event Event name.
+     * @param  {Function} fn    Listener to call.
+     * @param  {Number}   id    (optional) Only listen to events for this sound.
+     * @param  {Number}   once  (INTERNAL) Marks event to fire only once.
+     * @return {Howl}
+     */
+    on: function(event, fn, id, once) {
+      var self = this;
+      var events = self['_on' + event];
+
+      if (typeof fn === 'function') {
+        events.push(once ? {id: id, fn: fn, once: once} : {id: id, fn: fn});
+      }
+
+      return self;
+    },
+
+    /**
+     * Remove a custom event. Call without parameters to remove all events.
+     * @param  {String}   event Event name.
+     * @param  {Function} fn    Listener to remove. Leave empty to remove all.
+     * @param  {Number}   id    (optional) Only remove events for this sound.
+     * @return {Howl}
+     */
+    off: function(event, fn, id) {
+      var self = this;
+      var events = self['_on' + event];
+      var i = 0;
+
+      // Allow passing just an event and ID.
+      if (typeof fn === 'number') {
+        id = fn;
+        fn = null;
+      }
+
+      if (fn || id) {
+        // Loop through event store and remove the passed function.
+        for (i=0; i<events.length; i++) {
+          var isId = (id === events[i].id);
+          if (fn === events[i].fn && isId || !fn && isId) {
+            events.splice(i, 1);
+            break;
+          }
+        }
+      } else if (event) {
+        // Clear out all events of this type.
+        self['_on' + event] = [];
+      } else {
+        // Clear out all events of every type.
+        var keys = Object.keys(self);
+        for (i=0; i<keys.length; i++) {
+          if ((keys[i].indexOf('_on') === 0) && Array.isArray(self[keys[i]])) {
+            self[keys[i]] = [];
+          }
+        }
+      }
+
+      return self;
+    },
+
+    /**
+     * Listen to a custom event and remove it once fired.
+     * @param  {String}   event Event name.
+     * @param  {Function} fn    Listener to call.
+     * @param  {Number}   id    (optional) Only listen to events for this sound.
+     * @return {Howl}
+     */
+    once: function(event, fn, id) {
+      var self = this;
+
+      // Setup the event listener.
+      self.on(event, fn, id, 1);
+
+      return self;
+    },
+
+    /**
+     * Emit all events of a specific type and pass the sound id.
+     * @param  {String} event Event name.
+     * @param  {Number} id    Sound ID.
+     * @param  {Number} msg   Message to go with event.
+     * @return {Howl}
+     */
+    _emit: function(event, id, msg) {
+      var self = this;
+      var events = self['_on' + event];
+
+      // Loop through event store and fire all functions.
+      for (var i=events.length-1; i>=0; i--) {
+        // Only fire the listener if the correct ID is used.
+        if (!events[i].id || events[i].id === id || event === 'load') {
+          setTimeout(function(fn) {
+            fn.call(this, id, msg);
+          }.bind(self, events[i].fn), 0);
+
+          // If this event was setup with `once`, remove it.
+          if (events[i].once) {
+            self.off(event, events[i].fn, events[i].id);
+          }
+        }
+      }
+
+      // Pass the event type into load queue so that it can continue stepping.
+      self._loadQueue(event);
+
+      return self;
+    },
+
+    /**
+     * Queue of actions initiated before the sound has loaded.
+     * These will be called in sequence, with the next only firing
+     * after the previous has finished executing (even if async like play).
+     * @return {Howl}
+     */
+    _loadQueue: function(event) {
+      var self = this;
+
+      if (self._queue.length > 0) {
+        var task = self._queue[0];
+
+        // Remove this task if a matching event was passed.
+        if (task.event === event) {
+          self._queue.shift();
+          self._loadQueue();
+        }
+
+        // Run the task if no event type is passed.
+        if (!event) {
+          task.action();
+        }
+      }
+
+      return self;
+    },
+
+    /**
+     * Fired when playback ends at the end of the duration.
+     * @param  {Sound} sound The sound object to work with.
+     * @return {Howl}
+     */
+    _ended: function(sound) {
+      var self = this;
+      var sprite = sound._sprite;
+
+      // If we are using IE and there was network latency we may be clipping
+      // audio before it completes playing. Lets check the node to make sure it
+      // believes it has completed, before ending the playback.
+      if (!self._webAudio && sound._node && !sound._node.paused && !sound._node.ended && sound._node.currentTime < sound._stop) {
+        setTimeout(self._ended.bind(self, sound), 100);
+        return self;
+      }
+
+      // Should this sound loop?
+      var loop = !!(sound._loop || self._sprite[sprite][2]);
+
+      // Fire the ended event.
+      self._emit('end', sound._id);
+
+      // Restart the playback for HTML5 Audio loop.
+      if (!self._webAudio && loop) {
+        self.stop(sound._id, true).play(sound._id);
+      }
+
+      // Restart this timer if on a Web Audio loop.
+      if (self._webAudio && loop) {
+        self._emit('play', sound._id);
+        sound._seek = sound._start || 0;
+        sound._rateSeek = 0;
+        sound._playStart = Howler.ctx.currentTime;
+
+        var timeout = ((sound._stop - sound._start) * 1000) / Math.abs(sound._rate);
+        self._endTimers[sound._id] = setTimeout(self._ended.bind(self, sound), timeout);
+      }
+
+      // Mark the node as paused.
+      if (self._webAudio && !loop) {
+        sound._paused = true;
+        sound._ended = true;
+        sound._seek = sound._start || 0;
+        sound._rateSeek = 0;
+        self._clearTimer(sound._id);
+
+        // Clean up the buffer source.
+        self._cleanBuffer(sound._node);
+
+        // Attempt to auto-suspend AudioContext if no sounds are still playing.
+        Howler._autoSuspend();
+      }
+
+      // When using a sprite, end the track.
+      if (!self._webAudio && !loop) {
+        self.stop(sound._id, true);
+      }
+
+      return self;
+    },
+
+    /**
+     * Clear the end timer for a sound playback.
+     * @param  {Number} id The sound ID.
+     * @return {Howl}
+     */
+    _clearTimer: function(id) {
+      var self = this;
+
+      if (self._endTimers[id]) {
+        // Clear the timeout or remove the ended listener.
+        if (typeof self._endTimers[id] !== 'function') {
+          clearTimeout(self._endTimers[id]);
+        } else {
+          var sound = self._soundById(id);
+          if (sound && sound._node) {
+            sound._node.removeEventListener('ended', self._endTimers[id], false);
+          }
+        }
+
+        delete self._endTimers[id];
+      }
+
+      return self;
+    },
+
+    /**
+     * Return the sound identified by this ID, or return null.
+     * @param  {Number} id Sound ID
+     * @return {Object}    Sound object or null.
+     */
+    _soundById: function(id) {
+      var self = this;
+
+      // Loop through all sounds and find the one with this ID.
+      for (var i=0; i<self._sounds.length; i++) {
+        if (id === self._sounds[i]._id) {
+          return self._sounds[i];
+        }
+      }
+
+      return null;
+    },
+
+    /**
+     * Return an inactive sound from the pool or create a new one.
+     * @return {Sound} Sound playback object.
+     */
+    _inactiveSound: function() {
+      var self = this;
+
+      self._drain();
+
+      // Find the first inactive node to recycle.
+      for (var i=0; i<self._sounds.length; i++) {
+        if (self._sounds[i]._ended) {
+          return self._sounds[i].reset();
+        }
+      }
+
+      // If no inactive node was found, create a new one.
+      return new Sound(self);
+    },
+
+    /**
+     * Drain excess inactive sounds from the pool.
+     */
+    _drain: function() {
+      var self = this;
+      var limit = self._pool;
+      var cnt = 0;
+      var i = 0;
+
+      // If there are less sounds than the max pool size, we are done.
+      if (self._sounds.length < limit) {
+        return;
+      }
+
+      // Count the number of inactive sounds.
+      for (i=0; i<self._sounds.length; i++) {
+        if (self._sounds[i]._ended) {
+          cnt++;
+        }
+      }
+
+      // Remove excess inactive sounds, going in reverse order.
+      for (i=self._sounds.length - 1; i>=0; i--) {
+        if (cnt <= limit) {
+          return;
+        }
+
+        if (self._sounds[i]._ended) {
+          // Disconnect the audio source when using Web Audio.
+          if (self._webAudio && self._sounds[i]._node) {
+            self._sounds[i]._node.disconnect(0);
+          }
+
+          // Remove sounds until we have the pool size.
+          self._sounds.splice(i, 1);
+          cnt--;
+        }
+      }
+    },
+
+    /**
+     * Get all ID's from the sounds pool.
+     * @param  {Number} id Only return one ID if one is passed.
+     * @return {Array}    Array of IDs.
+     */
+    _getSoundIds: function(id) {
+      var self = this;
+
+      if (typeof id === 'undefined') {
+        var ids = [];
+        for (var i=0; i<self._sounds.length; i++) {
+          ids.push(self._sounds[i]._id);
+        }
+
+        return ids;
+      } else {
+        return [id];
+      }
+    },
+
+    /**
+     * Load the sound back into the buffer source.
+     * @param  {Sound} sound The sound object to work with.
+     * @return {Howl}
+     */
+    _refreshBuffer: function(sound) {
+      var self = this;
+
+      // Setup the buffer source for playback.
+      sound._node.bufferSource = Howler.ctx.createBufferSource();
+      sound._node.bufferSource.buffer = cache[self._src];
+
+      // Connect to the correct node.
+      if (sound._panner) {
+        sound._node.bufferSource.connect(sound._panner);
+      } else {
+        sound._node.bufferSource.connect(sound._node);
+      }
+
+      // Setup looping and playback rate.
+      sound._node.bufferSource.loop = sound._loop;
+      if (sound._loop) {
+        sound._node.bufferSource.loopStart = sound._start || 0;
+        sound._node.bufferSource.loopEnd = sound._stop || 0;
+      }
+      sound._node.bufferSource.playbackRate.setValueAtTime(sound._rate, Howler.ctx.currentTime);
+
+      return self;
+    },
+
+    /**
+     * Prevent memory leaks by cleaning up the buffer source after playback.
+     * @param  {Object} node Sound's audio node containing the buffer source.
+     * @return {Howl}
+     */
+    _cleanBuffer: function(node) {
+      var self = this;
+      var isIOS = Howler._navigator && Howler._navigator.vendor.indexOf('Apple') >= 0;
+
+      if (Howler._scratchBuffer && node.bufferSource) {
+        node.bufferSource.onended = null;
+        node.bufferSource.disconnect(0);
+        if (isIOS) {
+          try { node.bufferSource.buffer = Howler._scratchBuffer; } catch(e) {}
+        }
+      }
+      node.bufferSource = null;
+
+      return self;
+    },
+
+    /**
+     * Set the source to a 0-second silence to stop any downloading (except in IE).
+     * @param  {Object} node Audio node to clear.
+     */
+    _clearSound: function(node) {
+      var checkIE = /MSIE |Trident\//.test(Howler._navigator && Howler._navigator.userAgent);
+      if (!checkIE) {
+        node.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
+      }
+    }
+  };
+
+  /** Single Sound Methods **/
+  /***************************************************************************/
+
+  /**
+   * Setup the sound object, which each node attached to a Howl group is contained in.
+   * @param {Object} howl The Howl parent group.
+   */
+  var Sound = function(howl) {
+    this._parent = howl;
+    this.init();
+  };
+  Sound.prototype = {
+    /**
+     * Initialize a new Sound object.
+     * @return {Sound}
+     */
+    init: function() {
+      var self = this;
+      var parent = self._parent;
+
+      // Setup the default parameters.
+      self._muted = parent._muted;
+      self._loop = parent._loop;
+      self._volume = parent._volume;
+      self._rate = parent._rate;
+      self._seek = 0;
+      self._paused = true;
+      self._ended = true;
+      self._sprite = '__default';
+
+      // Generate a unique ID for this sound.
+      self._id = ++Howler._counter;
+
+      // Add itself to the parent's pool.
+      parent._sounds.push(self);
+
+      // Create the new node.
+      self.create();
+
+      return self;
+    },
+
+    /**
+     * Create and setup a new sound object, whether HTML5 Audio or Web Audio.
+     * @return {Sound}
+     */
+    create: function() {
+      var self = this;
+      var parent = self._parent;
+      var volume = (Howler._muted || self._muted || self._parent._muted) ? 0 : self._volume;
+
+      if (parent._webAudio) {
+        // Create the gain node for controlling volume (the source will connect to this).
+        self._node = (typeof Howler.ctx.createGain === 'undefined') ? Howler.ctx.createGainNode() : Howler.ctx.createGain();
+        self._node.gain.setValueAtTime(volume, Howler.ctx.currentTime);
+        self._node.paused = true;
+        self._node.connect(Howler.masterGain);
+      } else if (!Howler.noAudio) {
+        // Get an unlocked Audio object from the pool.
+        self._node = Howler._obtainHtml5Audio();
+
+        // Listen for errors (http://dev.w3.org/html5/spec-author-view/spec.html#mediaerror).
+        self._errorFn = self._errorListener.bind(self);
+        self._node.addEventListener('error', self._errorFn, false);
+
+        // Listen for 'canplaythrough' event to let us know the sound is ready.
+        self._loadFn = self._loadListener.bind(self);
+        self._node.addEventListener(Howler._canPlayEvent, self._loadFn, false);
+
+        // Setup the new audio node.
+        self._node.src = parent._src;
+        self._node.preload = 'auto';
+        self._node.volume = volume * Howler.volume();
+
+        // Begin loading the source.
+        self._node.load();
+      }
+
+      return self;
+    },
+
+    /**
+     * Reset the parameters of this sound to the original state (for recycle).
+     * @return {Sound}
+     */
+    reset: function() {
+      var self = this;
+      var parent = self._parent;
+
+      // Reset all of the parameters of this sound.
+      self._muted = parent._muted;
+      self._loop = parent._loop;
+      self._volume = parent._volume;
+      self._rate = parent._rate;
+      self._seek = 0;
+      self._rateSeek = 0;
+      self._paused = true;
+      self._ended = true;
+      self._sprite = '__default';
+
+      // Generate a new ID so that it isn't confused with the previous sound.
+      self._id = ++Howler._counter;
+
+      return self;
+    },
+
+    /**
+     * HTML5 Audio error listener callback.
+     */
+    _errorListener: function() {
+      var self = this;
+
+      // Fire an error event and pass back the code.
+      self._parent._emit('loaderror', self._id, self._node.error ? self._node.error.code : 0);
+
+      // Clear the event listener.
+      self._node.removeEventListener('error', self._errorFn, false);
+    },
+
+    /**
+     * HTML5 Audio canplaythrough listener callback.
+     */
+    _loadListener: function() {
+      var self = this;
+      var parent = self._parent;
+
+      // Round up the duration to account for the lower precision in HTML5 Audio.
+      parent._duration = Math.ceil(self._node.duration * 10) / 10;
+
+      // Setup a sprite if none is defined.
+      if (Object.keys(parent._sprite).length === 0) {
+        parent._sprite = {__default: [0, parent._duration * 1000]};
+      }
+
+      if (parent._state !== 'loaded') {
+        parent._state = 'loaded';
+        parent._emit('load');
+        parent._loadQueue();
+      }
+
+      // Clear the event listener.
+      self._node.removeEventListener(Howler._canPlayEvent, self._loadFn, false);
+    }
+  };
+
+  /** Helper Methods **/
+  /***************************************************************************/
+
+  var cache = {};
+
+  /**
+   * Buffer a sound from URL, Data URI or cache and decode to audio source (Web Audio API).
+   * @param  {Howl} self
+   */
+  var loadBuffer = function(self) {
+    var url = self._src;
+
+    // Check if the buffer has already been cached and use it instead.
+    if (cache[url]) {
+      // Set the duration from the cache.
+      self._duration = cache[url].duration;
+
+      // Load the sound into this Howl.
+      loadSound(self);
+
+      return;
+    }
+
+    if (/^data:[^;]+;base64,/.test(url)) {
+      // Decode the base64 data URI without XHR, since some browsers don't support it.
+      var data = atob(url.split(',')[1]);
+      var dataView = new Uint8Array(data.length);
+      for (var i=0; i<data.length; ++i) {
+        dataView[i] = data.charCodeAt(i);
+      }
+
+      decodeAudioData(dataView.buffer, self);
     } else {
-      var args = [a, b, c, d, e, f];
-      var argIndex = 0;
-      error = new Error(
-        format.replace(/%s/g, function() { return args[argIndex++]; })
-      );
-      error.name = 'Invariant Violation';
+      // Load the buffer from the URL.
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', url, true);
+      xhr.withCredentials = self._xhrWithCredentials;
+      xhr.responseType = 'arraybuffer';
+      xhr.onload = function() {
+        // Make sure we get a successful response back.
+        var code = (xhr.status + '')[0];
+        if (code !== '0' && code !== '2' && code !== '3') {
+          self._emit('loaderror', null, 'Failed loading audio file with status: ' + xhr.status + '.');
+          return;
+        }
+
+        decodeAudioData(xhr.response, self);
+      };
+      xhr.onerror = function() {
+        // If there is an error, switch to HTML5 Audio.
+        if (self._webAudio) {
+          self._html5 = true;
+          self._webAudio = false;
+          self._sounds = [];
+          delete cache[url];
+          self.load();
+        }
+      };
+      safeXhrSend(xhr);
+    }
+  };
+
+  /**
+   * Send the XHR request wrapped in a try/catch.
+   * @param  {Object} xhr XHR to send.
+   */
+  var safeXhrSend = function(xhr) {
+    try {
+      xhr.send();
+    } catch (e) {
+      xhr.onerror();
+    }
+  };
+
+  /**
+   * Decode audio data from an array buffer.
+   * @param  {ArrayBuffer} arraybuffer The audio data.
+   * @param  {Howl}        self
+   */
+  var decodeAudioData = function(arraybuffer, self) {
+    // Fire a load error if something broke.
+    var error = function() {
+      self._emit('loaderror', null, 'Decoding audio data failed.');
+    };
+
+    // Load the sound on success.
+    var success = function(buffer) {
+      if (buffer && self._sounds.length > 0) {
+        cache[self._src] = buffer;
+        loadSound(self, buffer);
+      } else {
+        error();
+      }
+    };
+
+    // Decode the buffer into an audio source.
+    if (typeof Promise !== 'undefined' && Howler.ctx.decodeAudioData.length === 1) {
+      Howler.ctx.decodeAudioData(arraybuffer).then(success).catch(error);
+    } else {
+      Howler.ctx.decodeAudioData(arraybuffer, success, error);
+    }
+  }
+
+  /**
+   * Sound is now loaded, so finish setting everything up and fire the loaded event.
+   * @param  {Howl} self
+   * @param  {Object} buffer The decoded buffer sound source.
+   */
+  var loadSound = function(self, buffer) {
+    // Set the duration.
+    if (buffer && !self._duration) {
+      self._duration = buffer.duration;
     }
 
-    error.framesToPop = 1; // we don't care about invariant's own frame
-    throw error;
+    // Setup a sprite if none is defined.
+    if (Object.keys(self._sprite).length === 0) {
+      self._sprite = {__default: [0, self._duration * 1000]};
+    }
+
+    // Fire the loaded event.
+    if (self._state !== 'loaded') {
+      self._state = 'loaded';
+      self._emit('load');
+      self._loadQueue();
+    }
+  };
+
+  /**
+   * Setup the audio context when available, or switch to HTML5 Audio mode.
+   */
+  var setupAudioContext = function() {
+    // If we have already detected that Web Audio isn't supported, don't run this step again.
+    if (!Howler.usingWebAudio) {
+      return;
+    }
+
+    // Check if we are using Web Audio and setup the AudioContext if we are.
+    try {
+      if (typeof AudioContext !== 'undefined') {
+        Howler.ctx = new AudioContext();
+      } else if (typeof webkitAudioContext !== 'undefined') {
+        Howler.ctx = new webkitAudioContext();
+      } else {
+        Howler.usingWebAudio = false;
+      }
+    } catch(e) {
+      Howler.usingWebAudio = false;
+    }
+
+    // If the audio context creation still failed, set using web audio to false.
+    if (!Howler.ctx) {
+      Howler.usingWebAudio = false;
+    }
+
+    // Check if a webview is being used on iOS8 or earlier (rather than the browser).
+    // If it is, disable Web Audio as it causes crashing.
+    var iOS = (/iP(hone|od|ad)/.test(Howler._navigator && Howler._navigator.platform));
+    var appVersion = Howler._navigator && Howler._navigator.appVersion.match(/OS (\d+)_(\d+)_?(\d+)?/);
+    var version = appVersion ? parseInt(appVersion[1], 10) : null;
+    if (iOS && version && version < 9) {
+      var safari = /safari/.test(Howler._navigator && Howler._navigator.userAgent.toLowerCase());
+      if (Howler._navigator && Howler._navigator.standalone && !safari || Howler._navigator && !Howler._navigator.standalone && !safari) {
+        Howler.usingWebAudio = false;
+      }
+    }
+
+    // Create and expose the master GainNode when using Web Audio (useful for plugins or advanced usage).
+    if (Howler.usingWebAudio) {
+      Howler.masterGain = (typeof Howler.ctx.createGain === 'undefined') ? Howler.ctx.createGainNode() : Howler.ctx.createGain();
+      Howler.masterGain.gain.setValueAtTime(Howler._muted ? 0 : Howler._volume, Howler.ctx.currentTime);
+      Howler.masterGain.connect(Howler.ctx.destination);
+    }
+
+    // Re-run the setup on Howler.
+    Howler._setup();
+  };
+
+  // Add support for AMD (Asynchronous Module Definition) libraries such as require.js.
+  if (true) {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = (function() {
+      return {
+        Howler: Howler,
+        Howl: Howl
+      };
+    }).apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
   }
-};
 
-module.exports = invariant;
+  // Add support for CommonJS libraries such as browserify.
+  if (true) {
+    exports.Howler = Howler;
+    exports.Howl = Howl;
+  }
 
+  // Define globally in case AMD is not available or unused.
+  if (typeof window !== 'undefined') {
+    window.HowlerGlobal = HowlerGlobal;
+    window.Howler = Howler;
+    window.Howl = Howl;
+    window.Sound = Sound;
+  } else if (typeof global !== 'undefined') { // Add to global in Node.js (for testing, etc).
+    global.HowlerGlobal = HowlerGlobal;
+    global.Howler = Howler;
+    global.Howl = Howl;
+    global.Sound = Sound;
+  }
+})();
+
+
+/*!
+ *  Spatial Plugin - Adds support for stereo and 3D audio where Web Audio is supported.
+ *  
+ *  howler.js v2.1.3
+ *  howlerjs.com
+ *
+ *  (c) 2013-2019, James Simpson of GoldFire Studios
+ *  goldfirestudios.com
+ *
+ *  MIT License
+ */
+
+(function() {
+
+  'use strict';
+
+  // Setup default properties.
+  HowlerGlobal.prototype._pos = [0, 0, 0];
+  HowlerGlobal.prototype._orientation = [0, 0, -1, 0, 1, 0];
+
+  /** Global Methods **/
+  /***************************************************************************/
+
+  /**
+   * Helper method to update the stereo panning position of all current Howls.
+   * Future Howls will not use this value unless explicitly set.
+   * @param  {Number} pan A value of -1.0 is all the way left and 1.0 is all the way right.
+   * @return {Howler/Number}     Self or current stereo panning value.
+   */
+  HowlerGlobal.prototype.stereo = function(pan) {
+    var self = this;
+
+    // Stop right here if not using Web Audio.
+    if (!self.ctx || !self.ctx.listener) {
+      return self;
+    }
+
+    // Loop through all Howls and update their stereo panning.
+    for (var i=self._howls.length-1; i>=0; i--) {
+      self._howls[i].stereo(pan);
+    }
+
+    return self;
+  };
+
+  /**
+   * Get/set the position of the listener in 3D cartesian space. Sounds using
+   * 3D position will be relative to the listener's position.
+   * @param  {Number} x The x-position of the listener.
+   * @param  {Number} y The y-position of the listener.
+   * @param  {Number} z The z-position of the listener.
+   * @return {Howler/Array}   Self or current listener position.
+   */
+  HowlerGlobal.prototype.pos = function(x, y, z) {
+    var self = this;
+
+    // Stop right here if not using Web Audio.
+    if (!self.ctx || !self.ctx.listener) {
+      return self;
+    }
+
+    // Set the defaults for optional 'y' & 'z'.
+    y = (typeof y !== 'number') ? self._pos[1] : y;
+    z = (typeof z !== 'number') ? self._pos[2] : z;
+
+    if (typeof x === 'number') {
+      self._pos = [x, y, z];
+
+      if (typeof self.ctx.listener.positionX !== 'undefined') {
+        self.ctx.listener.positionX.setTargetAtTime(self._pos[0], Howler.ctx.currentTime, 0.1);
+        self.ctx.listener.positionY.setTargetAtTime(self._pos[1], Howler.ctx.currentTime, 0.1);
+        self.ctx.listener.positionZ.setTargetAtTime(self._pos[2], Howler.ctx.currentTime, 0.1);
+      } else {
+        self.ctx.listener.setPosition(self._pos[0], self._pos[1], self._pos[2]);
+      }
+    } else {
+      return self._pos;
+    }
+
+    return self;
+  };
+
+  /**
+   * Get/set the direction the listener is pointing in the 3D cartesian space.
+   * A front and up vector must be provided. The front is the direction the
+   * face of the listener is pointing, and up is the direction the top of the
+   * listener is pointing. Thus, these values are expected to be at right angles
+   * from each other.
+   * @param  {Number} x   The x-orientation of the listener.
+   * @param  {Number} y   The y-orientation of the listener.
+   * @param  {Number} z   The z-orientation of the listener.
+   * @param  {Number} xUp The x-orientation of the top of the listener.
+   * @param  {Number} yUp The y-orientation of the top of the listener.
+   * @param  {Number} zUp The z-orientation of the top of the listener.
+   * @return {Howler/Array}     Returns self or the current orientation vectors.
+   */
+  HowlerGlobal.prototype.orientation = function(x, y, z, xUp, yUp, zUp) {
+    var self = this;
+
+    // Stop right here if not using Web Audio.
+    if (!self.ctx || !self.ctx.listener) {
+      return self;
+    }
+
+    // Set the defaults for optional 'y' & 'z'.
+    var or = self._orientation;
+    y = (typeof y !== 'number') ? or[1] : y;
+    z = (typeof z !== 'number') ? or[2] : z;
+    xUp = (typeof xUp !== 'number') ? or[3] : xUp;
+    yUp = (typeof yUp !== 'number') ? or[4] : yUp;
+    zUp = (typeof zUp !== 'number') ? or[5] : zUp;
+
+    if (typeof x === 'number') {
+      self._orientation = [x, y, z, xUp, yUp, zUp];
+
+      if (typeof self.ctx.listener.forwardX !== 'undefined') {
+        self.ctx.listener.forwardX.setTargetAtTime(x, Howler.ctx.currentTime, 0.1);
+        self.ctx.listener.forwardY.setTargetAtTime(y, Howler.ctx.currentTime, 0.1);
+        self.ctx.listener.forwardZ.setTargetAtTime(z, Howler.ctx.currentTime, 0.1);
+        self.ctx.listener.upX.setTargetAtTime(xUp, Howler.ctx.currentTime, 0.1);
+        self.ctx.listener.upY.setTargetAtTime(yUp, Howler.ctx.currentTime, 0.1);
+        self.ctx.listener.upZ.setTargetAtTime(zUp, Howler.ctx.currentTime, 0.1);
+      } else {
+        self.ctx.listener.setOrientation(x, y, z, xUp, yUp, zUp);
+      }
+    } else {
+      return or;
+    }
+
+    return self;
+  };
+
+  /** Group Methods **/
+  /***************************************************************************/
+
+  /**
+   * Add new properties to the core init.
+   * @param  {Function} _super Core init method.
+   * @return {Howl}
+   */
+  Howl.prototype.init = (function(_super) {
+    return function(o) {
+      var self = this;
+
+      // Setup user-defined default properties.
+      self._orientation = o.orientation || [1, 0, 0];
+      self._stereo = o.stereo || null;
+      self._pos = o.pos || null;
+      self._pannerAttr = {
+        coneInnerAngle: typeof o.coneInnerAngle !== 'undefined' ? o.coneInnerAngle : 360,
+        coneOuterAngle: typeof o.coneOuterAngle !== 'undefined' ? o.coneOuterAngle : 360,
+        coneOuterGain: typeof o.coneOuterGain !== 'undefined' ? o.coneOuterGain : 0,
+        distanceModel: typeof o.distanceModel !== 'undefined' ? o.distanceModel : 'inverse',
+        maxDistance: typeof o.maxDistance !== 'undefined' ? o.maxDistance : 10000,
+        panningModel: typeof o.panningModel !== 'undefined' ? o.panningModel : 'HRTF',
+        refDistance: typeof o.refDistance !== 'undefined' ? o.refDistance : 1,
+        rolloffFactor: typeof o.rolloffFactor !== 'undefined' ? o.rolloffFactor : 1
+      };
+
+      // Setup event listeners.
+      self._onstereo = o.onstereo ? [{fn: o.onstereo}] : [];
+      self._onpos = o.onpos ? [{fn: o.onpos}] : [];
+      self._onorientation = o.onorientation ? [{fn: o.onorientation}] : [];
+
+      // Complete initilization with howler.js core's init function.
+      return _super.call(this, o);
+    };
+  })(Howl.prototype.init);
+
+  /**
+   * Get/set the stereo panning of the audio source for this sound or all in the group.
+   * @param  {Number} pan  A value of -1.0 is all the way left and 1.0 is all the way right.
+   * @param  {Number} id (optional) The sound ID. If none is passed, all in group will be updated.
+   * @return {Howl/Number}    Returns self or the current stereo panning value.
+   */
+  Howl.prototype.stereo = function(pan, id) {
+    var self = this;
+
+    // Stop right here if not using Web Audio.
+    if (!self._webAudio) {
+      return self;
+    }
+
+    // If the sound hasn't loaded, add it to the load queue to change stereo pan when capable.
+    if (self._state !== 'loaded') {
+      self._queue.push({
+        event: 'stereo',
+        action: function() {
+          self.stereo(pan, id);
+        }
+      });
+
+      return self;
+    }
+
+    // Check for PannerStereoNode support and fallback to PannerNode if it doesn't exist.
+    var pannerType = (typeof Howler.ctx.createStereoPanner === 'undefined') ? 'spatial' : 'stereo';
+
+    // Setup the group's stereo panning if no ID is passed.
+    if (typeof id === 'undefined') {
+      // Return the group's stereo panning if no parameters are passed.
+      if (typeof pan === 'number') {
+        self._stereo = pan;
+        self._pos = [pan, 0, 0];
+      } else {
+        return self._stereo;
+      }
+    }
+
+    // Change the streo panning of one or all sounds in group.
+    var ids = self._getSoundIds(id);
+    for (var i=0; i<ids.length; i++) {
+      // Get the sound.
+      var sound = self._soundById(ids[i]);
+
+      if (sound) {
+        if (typeof pan === 'number') {
+          sound._stereo = pan;
+          sound._pos = [pan, 0, 0];
+
+          if (sound._node) {
+            // If we are falling back, make sure the panningModel is equalpower.
+            sound._pannerAttr.panningModel = 'equalpower';
+
+            // Check if there is a panner setup and create a new one if not.
+            if (!sound._panner || !sound._panner.pan) {
+              setupPanner(sound, pannerType);
+            }
+
+            if (pannerType === 'spatial') {
+              if (typeof sound._panner.positionX !== 'undefined') {
+                sound._panner.positionX.setValueAtTime(pan, Howler.ctx.currentTime);
+                sound._panner.positionY.setValueAtTime(0, Howler.ctx.currentTime);
+                sound._panner.positionZ.setValueAtTime(0, Howler.ctx.currentTime);
+              } else {
+                sound._panner.setPosition(pan, 0, 0);
+              }
+            } else {
+              sound._panner.pan.setValueAtTime(pan, Howler.ctx.currentTime);
+            }
+          }
+
+          self._emit('stereo', sound._id);
+        } else {
+          return sound._stereo;
+        }
+      }
+    }
+
+    return self;
+  };
+
+  /**
+   * Get/set the 3D spatial position of the audio source for this sound or group relative to the global listener.
+   * @param  {Number} x  The x-position of the audio source.
+   * @param  {Number} y  The y-position of the audio source.
+   * @param  {Number} z  The z-position of the audio source.
+   * @param  {Number} id (optional) The sound ID. If none is passed, all in group will be updated.
+   * @return {Howl/Array}    Returns self or the current 3D spatial position: [x, y, z].
+   */
+  Howl.prototype.pos = function(x, y, z, id) {
+    var self = this;
+
+    // Stop right here if not using Web Audio.
+    if (!self._webAudio) {
+      return self;
+    }
+
+    // If the sound hasn't loaded, add it to the load queue to change position when capable.
+    if (self._state !== 'loaded') {
+      self._queue.push({
+        event: 'pos',
+        action: function() {
+          self.pos(x, y, z, id);
+        }
+      });
+
+      return self;
+    }
+
+    // Set the defaults for optional 'y' & 'z'.
+    y = (typeof y !== 'number') ? 0 : y;
+    z = (typeof z !== 'number') ? -0.5 : z;
+
+    // Setup the group's spatial position if no ID is passed.
+    if (typeof id === 'undefined') {
+      // Return the group's spatial position if no parameters are passed.
+      if (typeof x === 'number') {
+        self._pos = [x, y, z];
+      } else {
+        return self._pos;
+      }
+    }
+
+    // Change the spatial position of one or all sounds in group.
+    var ids = self._getSoundIds(id);
+    for (var i=0; i<ids.length; i++) {
+      // Get the sound.
+      var sound = self._soundById(ids[i]);
+
+      if (sound) {
+        if (typeof x === 'number') {
+          sound._pos = [x, y, z];
+
+          if (sound._node) {
+            // Check if there is a panner setup and create a new one if not.
+            if (!sound._panner || sound._panner.pan) {
+              setupPanner(sound, 'spatial');
+            }
+
+            if (typeof sound._panner.positionX !== 'undefined') {
+              sound._panner.positionX.setValueAtTime(x, Howler.ctx.currentTime);
+              sound._panner.positionY.setValueAtTime(y, Howler.ctx.currentTime);
+              sound._panner.positionZ.setValueAtTime(z, Howler.ctx.currentTime);
+            } else {
+              sound._panner.setPosition(x, y, z);
+            }
+          }
+
+          self._emit('pos', sound._id);
+        } else {
+          return sound._pos;
+        }
+      }
+    }
+
+    return self;
+  };
+
+  /**
+   * Get/set the direction the audio source is pointing in the 3D cartesian coordinate
+   * space. Depending on how direction the sound is, based on the `cone` attributes,
+   * a sound pointing away from the listener can be quiet or silent.
+   * @param  {Number} x  The x-orientation of the source.
+   * @param  {Number} y  The y-orientation of the source.
+   * @param  {Number} z  The z-orientation of the source.
+   * @param  {Number} id (optional) The sound ID. If none is passed, all in group will be updated.
+   * @return {Howl/Array}    Returns self or the current 3D spatial orientation: [x, y, z].
+   */
+  Howl.prototype.orientation = function(x, y, z, id) {
+    var self = this;
+
+    // Stop right here if not using Web Audio.
+    if (!self._webAudio) {
+      return self;
+    }
+
+    // If the sound hasn't loaded, add it to the load queue to change orientation when capable.
+    if (self._state !== 'loaded') {
+      self._queue.push({
+        event: 'orientation',
+        action: function() {
+          self.orientation(x, y, z, id);
+        }
+      });
+
+      return self;
+    }
+
+    // Set the defaults for optional 'y' & 'z'.
+    y = (typeof y !== 'number') ? self._orientation[1] : y;
+    z = (typeof z !== 'number') ? self._orientation[2] : z;
+
+    // Setup the group's spatial orientation if no ID is passed.
+    if (typeof id === 'undefined') {
+      // Return the group's spatial orientation if no parameters are passed.
+      if (typeof x === 'number') {
+        self._orientation = [x, y, z];
+      } else {
+        return self._orientation;
+      }
+    }
+
+    // Change the spatial orientation of one or all sounds in group.
+    var ids = self._getSoundIds(id);
+    for (var i=0; i<ids.length; i++) {
+      // Get the sound.
+      var sound = self._soundById(ids[i]);
+
+      if (sound) {
+        if (typeof x === 'number') {
+          sound._orientation = [x, y, z];
+
+          if (sound._node) {
+            // Check if there is a panner setup and create a new one if not.
+            if (!sound._panner) {
+              // Make sure we have a position to setup the node with.
+              if (!sound._pos) {
+                sound._pos = self._pos || [0, 0, -0.5];
+              }
+
+              setupPanner(sound, 'spatial');
+            }
+
+            if (typeof sound._panner.orientationX !== 'undefined') {
+              sound._panner.orientationX.setValueAtTime(x, Howler.ctx.currentTime);
+              sound._panner.orientationY.setValueAtTime(y, Howler.ctx.currentTime);
+              sound._panner.orientationZ.setValueAtTime(z, Howler.ctx.currentTime);
+            } else {
+              sound._panner.setOrientation(x, y, z);
+            }
+          }
+
+          self._emit('orientation', sound._id);
+        } else {
+          return sound._orientation;
+        }
+      }
+    }
+
+    return self;
+  };
+
+  /**
+   * Get/set the panner node's attributes for a sound or group of sounds.
+   * This method can optionall take 0, 1 or 2 arguments.
+   *   pannerAttr() -> Returns the group's values.
+   *   pannerAttr(id) -> Returns the sound id's values.
+   *   pannerAttr(o) -> Set's the values of all sounds in this Howl group.
+   *   pannerAttr(o, id) -> Set's the values of passed sound id.
+   *
+   *   Attributes:
+   *     coneInnerAngle - (360 by default) A parameter for directional audio sources, this is an angle, in degrees,
+   *                      inside of which there will be no volume reduction.
+   *     coneOuterAngle - (360 by default) A parameter for directional audio sources, this is an angle, in degrees,
+   *                      outside of which the volume will be reduced to a constant value of `coneOuterGain`.
+   *     coneOuterGain - (0 by default) A parameter for directional audio sources, this is the gain outside of the
+   *                     `coneOuterAngle`. It is a linear value in the range `[0, 1]`.
+   *     distanceModel - ('inverse' by default) Determines algorithm used to reduce volume as audio moves away from
+   *                     listener. Can be `linear`, `inverse` or `exponential.
+   *     maxDistance - (10000 by default) The maximum distance between source and listener, after which the volume
+   *                   will not be reduced any further.
+   *     refDistance - (1 by default) A reference distance for reducing volume as source moves further from the listener.
+   *                   This is simply a variable of the distance model and has a different effect depending on which model
+   *                   is used and the scale of your coordinates. Generally, volume will be equal to 1 at this distance.
+   *     rolloffFactor - (1 by default) How quickly the volume reduces as source moves from listener. This is simply a
+   *                     variable of the distance model and can be in the range of `[0, 1]` with `linear` and `[0, ∞]`
+   *                     with `inverse` and `exponential`.
+   *     panningModel - ('HRTF' by default) Determines which spatialization algorithm is used to position audio.
+   *                     Can be `HRTF` or `equalpower`.
+   *
+   * @return {Howl/Object} Returns self or current panner attributes.
+   */
+  Howl.prototype.pannerAttr = function() {
+    var self = this;
+    var args = arguments;
+    var o, id, sound;
+
+    // Stop right here if not using Web Audio.
+    if (!self._webAudio) {
+      return self;
+    }
+
+    // Determine the values based on arguments.
+    if (args.length === 0) {
+      // Return the group's panner attribute values.
+      return self._pannerAttr;
+    } else if (args.length === 1) {
+      if (typeof args[0] === 'object') {
+        o = args[0];
+
+        // Set the grou's panner attribute values.
+        if (typeof id === 'undefined') {
+          if (!o.pannerAttr) {
+            o.pannerAttr = {
+              coneInnerAngle: o.coneInnerAngle,
+              coneOuterAngle: o.coneOuterAngle,
+              coneOuterGain: o.coneOuterGain,
+              distanceModel: o.distanceModel,
+              maxDistance: o.maxDistance,
+              refDistance: o.refDistance,
+              rolloffFactor: o.rolloffFactor,
+              panningModel: o.panningModel
+            };
+          }
+
+          self._pannerAttr = {
+            coneInnerAngle: typeof o.pannerAttr.coneInnerAngle !== 'undefined' ? o.pannerAttr.coneInnerAngle : self._coneInnerAngle,
+            coneOuterAngle: typeof o.pannerAttr.coneOuterAngle !== 'undefined' ? o.pannerAttr.coneOuterAngle : self._coneOuterAngle,
+            coneOuterGain: typeof o.pannerAttr.coneOuterGain !== 'undefined' ? o.pannerAttr.coneOuterGain : self._coneOuterGain,
+            distanceModel: typeof o.pannerAttr.distanceModel !== 'undefined' ? o.pannerAttr.distanceModel : self._distanceModel,
+            maxDistance: typeof o.pannerAttr.maxDistance !== 'undefined' ? o.pannerAttr.maxDistance : self._maxDistance,
+            refDistance: typeof o.pannerAttr.refDistance !== 'undefined' ? o.pannerAttr.refDistance : self._refDistance,
+            rolloffFactor: typeof o.pannerAttr.rolloffFactor !== 'undefined' ? o.pannerAttr.rolloffFactor : self._rolloffFactor,
+            panningModel: typeof o.pannerAttr.panningModel !== 'undefined' ? o.pannerAttr.panningModel : self._panningModel
+          };
+        }
+      } else {
+        // Return this sound's panner attribute values.
+        sound = self._soundById(parseInt(args[0], 10));
+        return sound ? sound._pannerAttr : self._pannerAttr;
+      }
+    } else if (args.length === 2) {
+      o = args[0];
+      id = parseInt(args[1], 10);
+    }
+
+    // Update the values of the specified sounds.
+    var ids = self._getSoundIds(id);
+    for (var i=0; i<ids.length; i++) {
+      sound = self._soundById(ids[i]);
+
+      if (sound) {
+        // Merge the new values into the sound.
+        var pa = sound._pannerAttr;
+        pa = {
+          coneInnerAngle: typeof o.coneInnerAngle !== 'undefined' ? o.coneInnerAngle : pa.coneInnerAngle,
+          coneOuterAngle: typeof o.coneOuterAngle !== 'undefined' ? o.coneOuterAngle : pa.coneOuterAngle,
+          coneOuterGain: typeof o.coneOuterGain !== 'undefined' ? o.coneOuterGain : pa.coneOuterGain,
+          distanceModel: typeof o.distanceModel !== 'undefined' ? o.distanceModel : pa.distanceModel,
+          maxDistance: typeof o.maxDistance !== 'undefined' ? o.maxDistance : pa.maxDistance,
+          refDistance: typeof o.refDistance !== 'undefined' ? o.refDistance : pa.refDistance,
+          rolloffFactor: typeof o.rolloffFactor !== 'undefined' ? o.rolloffFactor : pa.rolloffFactor,
+          panningModel: typeof o.panningModel !== 'undefined' ? o.panningModel : pa.panningModel
+        };
+
+        // Update the panner values or create a new panner if none exists.
+        var panner = sound._panner;
+        if (panner) {
+          panner.coneInnerAngle = pa.coneInnerAngle;
+          panner.coneOuterAngle = pa.coneOuterAngle;
+          panner.coneOuterGain = pa.coneOuterGain;
+          panner.distanceModel = pa.distanceModel;
+          panner.maxDistance = pa.maxDistance;
+          panner.refDistance = pa.refDistance;
+          panner.rolloffFactor = pa.rolloffFactor;
+          panner.panningModel = pa.panningModel;
+        } else {
+          // Make sure we have a position to setup the node with.
+          if (!sound._pos) {
+            sound._pos = self._pos || [0, 0, -0.5];
+          }
+
+          // Create a new panner node.
+          setupPanner(sound, 'spatial');
+        }
+      }
+    }
+
+    return self;
+  };
+
+  /** Single Sound Methods **/
+  /***************************************************************************/
+
+  /**
+   * Add new properties to the core Sound init.
+   * @param  {Function} _super Core Sound init method.
+   * @return {Sound}
+   */
+  Sound.prototype.init = (function(_super) {
+    return function() {
+      var self = this;
+      var parent = self._parent;
+
+      // Setup user-defined default properties.
+      self._orientation = parent._orientation;
+      self._stereo = parent._stereo;
+      self._pos = parent._pos;
+      self._pannerAttr = parent._pannerAttr;
+
+      // Complete initilization with howler.js core Sound's init function.
+      _super.call(this);
+
+      // If a stereo or position was specified, set it up.
+      if (self._stereo) {
+        parent.stereo(self._stereo);
+      } else if (self._pos) {
+        parent.pos(self._pos[0], self._pos[1], self._pos[2], self._id);
+      }
+    };
+  })(Sound.prototype.init);
+
+  /**
+   * Override the Sound.reset method to clean up properties from the spatial plugin.
+   * @param  {Function} _super Sound reset method.
+   * @return {Sound}
+   */
+  Sound.prototype.reset = (function(_super) {
+    return function() {
+      var self = this;
+      var parent = self._parent;
+
+      // Reset all spatial plugin properties on this sound.
+      self._orientation = parent._orientation;
+      self._stereo = parent._stereo;
+      self._pos = parent._pos;
+      self._pannerAttr = parent._pannerAttr;
+
+      // If a stereo or position was specified, set it up.
+      if (self._stereo) {
+        parent.stereo(self._stereo);
+      } else if (self._pos) {
+        parent.pos(self._pos[0], self._pos[1], self._pos[2], self._id);
+      } else if (self._panner) {
+        // Disconnect the panner.
+        self._panner.disconnect(0);
+        self._panner = undefined;
+        parent._refreshBuffer(self);
+      }
+
+      // Complete resetting of the sound.
+      return _super.call(this);
+    };
+  })(Sound.prototype.reset);
+
+  /** Helper Methods **/
+  /***************************************************************************/
+
+  /**
+   * Create a new panner node and save it on the sound.
+   * @param  {Sound} sound Specific sound to setup panning on.
+   * @param {String} type Type of panner to create: 'stereo' or 'spatial'.
+   */
+  var setupPanner = function(sound, type) {
+    type = type || 'spatial';
+
+    // Create the new panner node.
+    if (type === 'spatial') {
+      sound._panner = Howler.ctx.createPanner();
+      sound._panner.coneInnerAngle = sound._pannerAttr.coneInnerAngle;
+      sound._panner.coneOuterAngle = sound._pannerAttr.coneOuterAngle;
+      sound._panner.coneOuterGain = sound._pannerAttr.coneOuterGain;
+      sound._panner.distanceModel = sound._pannerAttr.distanceModel;
+      sound._panner.maxDistance = sound._pannerAttr.maxDistance;
+      sound._panner.refDistance = sound._pannerAttr.refDistance;
+      sound._panner.rolloffFactor = sound._pannerAttr.rolloffFactor;
+      sound._panner.panningModel = sound._pannerAttr.panningModel;
+
+      if (typeof sound._panner.positionX !== 'undefined') {
+        sound._panner.positionX.setValueAtTime(sound._pos[0], Howler.ctx.currentTime);
+        sound._panner.positionY.setValueAtTime(sound._pos[1], Howler.ctx.currentTime);
+        sound._panner.positionZ.setValueAtTime(sound._pos[2], Howler.ctx.currentTime);
+      } else {
+        sound._panner.setPosition(sound._pos[0], sound._pos[1], sound._pos[2]);
+      }
+
+      if (typeof sound._panner.orientationX !== 'undefined') {
+        sound._panner.orientationX.setValueAtTime(sound._orientation[0], Howler.ctx.currentTime);
+        sound._panner.orientationY.setValueAtTime(sound._orientation[1], Howler.ctx.currentTime);
+        sound._panner.orientationZ.setValueAtTime(sound._orientation[2], Howler.ctx.currentTime);
+      } else {
+        sound._panner.setOrientation(sound._orientation[0], sound._orientation[1], sound._orientation[2]);
+      }
+    } else {
+      sound._panner = Howler.ctx.createStereoPanner();
+      sound._panner.pan.setValueAtTime(sound._stereo, Howler.ctx.currentTime);
+    }
+
+    sound._panner.connect(sound._node);
+
+    // Update the connections.
+    if (!sound._paused) {
+      sound._parent.pause(sound._id, true).play(sound._id, true);
+    }
+  };
+})();
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
 
 /***/ }),
 
@@ -1665,7 +4750,7 @@ module.exports = Array.isArray || function (arr) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
- * jQuery JavaScript Library v3.4.1
+ * jQuery JavaScript Library v3.5.0
  * https://jquery.com/
  *
  * Includes Sizzle.js
@@ -1675,7 +4760,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
  * Released under the MIT license
  * https://jquery.org/license
  *
- * Date: 2019-05-01T21:04Z
+ * Date: 2020-04-10T15:07Z
  */
 ( function( global, factory ) {
 
@@ -1713,13 +4798,16 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 var arr = [];
 
-var document = window.document;
-
 var getProto = Object.getPrototypeOf;
 
 var slice = arr.slice;
 
-var concat = arr.concat;
+var flat = arr.flat ? function( array ) {
+	return arr.flat.call( array );
+} : function( array ) {
+	return arr.concat.apply( [], array );
+};
+
 
 var push = arr.push;
 
@@ -1751,6 +4839,8 @@ var isWindow = function isWindow( obj ) {
 		return obj != null && obj === obj.window;
 	};
 
+
+var document = window.document;
 
 
 
@@ -1808,7 +4898,7 @@ function toType( obj ) {
 
 
 var
-	version = "3.4.1",
+	version = "3.5.0",
 
 	// Define a local copy of jQuery
 	jQuery = function( selector, context ) {
@@ -1816,11 +4906,7 @@ var
 		// The jQuery object is actually just the init constructor 'enhanced'
 		// Need init if jQuery is called (just allow error to be thrown if not included)
 		return new jQuery.fn.init( selector, context );
-	},
-
-	// Support: Android <=4.0 only
-	// Make sure we trim BOM and NBSP
-	rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
+	};
 
 jQuery.fn = jQuery.prototype = {
 
@@ -1884,6 +4970,18 @@ jQuery.fn = jQuery.prototype = {
 
 	last: function() {
 		return this.eq( -1 );
+	},
+
+	even: function() {
+		return this.pushStack( jQuery.grep( this, function( _elem, i ) {
+			return ( i + 1 ) % 2;
+		} ) );
+	},
+
+	odd: function() {
+		return this.pushStack( jQuery.grep( this, function( _elem, i ) {
+			return i % 2;
+		} ) );
 	},
 
 	eq: function( i ) {
@@ -2019,9 +5117,10 @@ jQuery.extend( {
 		return true;
 	},
 
-	// Evaluates a script in a global context
-	globalEval: function( code, options ) {
-		DOMEval( code, { nonce: options && options.nonce } );
+	// Evaluates a script in a provided context; falls back to the global one
+	// if not specified.
+	globalEval: function( code, options, doc ) {
+		DOMEval( code, { nonce: options && options.nonce }, doc );
 	},
 
 	each: function( obj, callback ) {
@@ -2043,13 +5142,6 @@ jQuery.extend( {
 		}
 
 		return obj;
-	},
-
-	// Support: Android <=4.0 only
-	trim: function( text ) {
-		return text == null ?
-			"" :
-			( text + "" ).replace( rtrim, "" );
 	},
 
 	// results is for internal usage only
@@ -2138,7 +5230,7 @@ jQuery.extend( {
 		}
 
 		// Flatten any nested arrays
-		return concat.apply( [], ret );
+		return flat( ret );
 	},
 
 	// A global GUID counter for objects
@@ -2155,7 +5247,7 @@ if ( typeof Symbol === "function" ) {
 
 // Populate the class2type map
 jQuery.each( "Boolean Number String Function Array Date RegExp Object Error Symbol".split( " " ),
-function( i, name ) {
+function( _i, name ) {
 	class2type[ "[object " + name + "]" ] = name.toLowerCase();
 } );
 
@@ -2177,17 +5269,16 @@ function isArrayLike( obj ) {
 }
 var Sizzle =
 /*!
- * Sizzle CSS Selector Engine v2.3.4
+ * Sizzle CSS Selector Engine v2.3.5
  * https://sizzlejs.com/
  *
  * Copyright JS Foundation and other contributors
  * Released under the MIT license
  * https://js.foundation/
  *
- * Date: 2019-04-08
+ * Date: 2020-03-14
  */
-(function( window ) {
-
+( function( window ) {
 var i,
 	support,
 	Expr,
@@ -2227,59 +5318,70 @@ var i,
 	},
 
 	// Instance methods
-	hasOwn = ({}).hasOwnProperty,
+	hasOwn = ( {} ).hasOwnProperty,
 	arr = [],
 	pop = arr.pop,
-	push_native = arr.push,
+	pushNative = arr.push,
 	push = arr.push,
 	slice = arr.slice,
+
 	// Use a stripped-down indexOf as it's faster than native
 	// https://jsperf.com/thor-indexof-vs-for/5
 	indexOf = function( list, elem ) {
 		var i = 0,
 			len = list.length;
 		for ( ; i < len; i++ ) {
-			if ( list[i] === elem ) {
+			if ( list[ i ] === elem ) {
 				return i;
 			}
 		}
 		return -1;
 	},
 
-	booleans = "checked|selected|async|autofocus|autoplay|controls|defer|disabled|hidden|ismap|loop|multiple|open|readonly|required|scoped",
+	booleans = "checked|selected|async|autofocus|autoplay|controls|defer|disabled|hidden|" +
+		"ismap|loop|multiple|open|readonly|required|scoped",
 
 	// Regular expressions
 
 	// http://www.w3.org/TR/css3-selectors/#whitespace
 	whitespace = "[\\x20\\t\\r\\n\\f]",
 
-	// http://www.w3.org/TR/CSS21/syndata.html#value-def-identifier
-	identifier = "(?:\\\\.|[\\w-]|[^\0-\\xa0])+",
+	// https://www.w3.org/TR/css-syntax-3/#ident-token-diagram
+	identifier = "(?:\\\\[\\da-fA-F]{1,6}" + whitespace +
+		"?|\\\\[^\\r\\n\\f]|[\\w-]|[^\0-\\x7f])+",
 
 	// Attribute selectors: http://www.w3.org/TR/selectors/#attribute-selectors
 	attributes = "\\[" + whitespace + "*(" + identifier + ")(?:" + whitespace +
+
 		// Operator (capture 2)
 		"*([*^$|!~]?=)" + whitespace +
-		// "Attribute values must be CSS identifiers [capture 5] or strings [capture 3 or capture 4]"
-		"*(?:'((?:\\\\.|[^\\\\'])*)'|\"((?:\\\\.|[^\\\\\"])*)\"|(" + identifier + "))|)" + whitespace +
-		"*\\]",
+
+		// "Attribute values must be CSS identifiers [capture 5]
+		// or strings [capture 3 or capture 4]"
+		"*(?:'((?:\\\\.|[^\\\\'])*)'|\"((?:\\\\.|[^\\\\\"])*)\"|(" + identifier + "))|)" +
+		whitespace + "*\\]",
 
 	pseudos = ":(" + identifier + ")(?:\\((" +
+
 		// To reduce the number of selectors needing tokenize in the preFilter, prefer arguments:
 		// 1. quoted (capture 3; capture 4 or capture 5)
 		"('((?:\\\\.|[^\\\\'])*)'|\"((?:\\\\.|[^\\\\\"])*)\")|" +
+
 		// 2. simple (capture 6)
 		"((?:\\\\.|[^\\\\()[\\]]|" + attributes + ")*)|" +
+
 		// 3. anything else (capture 2)
 		".*" +
 		")\\)|)",
 
 	// Leading and non-escaped trailing whitespace, capturing some non-whitespace characters preceding the latter
 	rwhitespace = new RegExp( whitespace + "+", "g" ),
-	rtrim = new RegExp( "^" + whitespace + "+|((?:^|[^\\\\])(?:\\\\.)*)" + whitespace + "+$", "g" ),
+	rtrim = new RegExp( "^" + whitespace + "+|((?:^|[^\\\\])(?:\\\\.)*)" +
+		whitespace + "+$", "g" ),
 
 	rcomma = new RegExp( "^" + whitespace + "*," + whitespace + "*" ),
-	rcombinators = new RegExp( "^" + whitespace + "*([>+~]|" + whitespace + ")" + whitespace + "*" ),
+	rcombinators = new RegExp( "^" + whitespace + "*([>+~]|" + whitespace + ")" + whitespace +
+		"*" ),
 	rdescend = new RegExp( whitespace + "|>" ),
 
 	rpseudo = new RegExp( pseudos ),
@@ -2291,14 +5393,16 @@ var i,
 		"TAG": new RegExp( "^(" + identifier + "|[*])" ),
 		"ATTR": new RegExp( "^" + attributes ),
 		"PSEUDO": new RegExp( "^" + pseudos ),
-		"CHILD": new RegExp( "^:(only|first|last|nth|nth-last)-(child|of-type)(?:\\(" + whitespace +
-			"*(even|odd|(([+-]|)(\\d*)n|)" + whitespace + "*(?:([+-]|)" + whitespace +
-			"*(\\d+)|))" + whitespace + "*\\)|)", "i" ),
+		"CHILD": new RegExp( "^:(only|first|last|nth|nth-last)-(child|of-type)(?:\\(" +
+			whitespace + "*(even|odd|(([+-]|)(\\d*)n|)" + whitespace + "*(?:([+-]|)" +
+			whitespace + "*(\\d+)|))" + whitespace + "*\\)|)", "i" ),
 		"bool": new RegExp( "^(?:" + booleans + ")$", "i" ),
+
 		// For use in libraries implementing .is()
 		// We use this for POS matching in `select`
-		"needsContext": new RegExp( "^" + whitespace + "*[>+~]|:(even|odd|eq|gt|lt|nth|first|last)(?:\\(" +
-			whitespace + "*((?:-\\d)?\\d*)" + whitespace + "*\\)|)(?=[^-]|$)", "i" )
+		"needsContext": new RegExp( "^" + whitespace +
+			"*[>+~]|:(even|odd|eq|gt|lt|nth|first|last)(?:\\(" + whitespace +
+			"*((?:-\\d)?\\d*)" + whitespace + "*\\)|)(?=[^-]|$)", "i" )
 	},
 
 	rhtml = /HTML$/i,
@@ -2314,18 +5418,21 @@ var i,
 
 	// CSS escapes
 	// http://www.w3.org/TR/CSS21/syndata.html#escaped-characters
-	runescape = new RegExp( "\\\\([\\da-f]{1,6}" + whitespace + "?|(" + whitespace + ")|.)", "ig" ),
-	funescape = function( _, escaped, escapedWhitespace ) {
-		var high = "0x" + escaped - 0x10000;
-		// NaN means non-codepoint
-		// Support: Firefox<24
-		// Workaround erroneous numeric interpretation of +"0x"
-		return high !== high || escapedWhitespace ?
-			escaped :
+	runescape = new RegExp( "\\\\[\\da-fA-F]{1,6}" + whitespace + "?|\\\\([^\\r\\n\\f])", "g" ),
+	funescape = function( escape, nonHex ) {
+		var high = "0x" + escape.slice( 1 ) - 0x10000;
+
+		return nonHex ?
+
+			// Strip the backslash prefix from a non-hex escape sequence
+			nonHex :
+
+			// Replace a hexadecimal escape sequence with the encoded Unicode code point
+			// Support: IE <=11+
+			// For values outside the Basic Multilingual Plane (BMP), manually construct a
+			// surrogate pair
 			high < 0 ?
-				// BMP codepoint
 				String.fromCharCode( high + 0x10000 ) :
-				// Supplemental Plane codepoint (surrogate pair)
 				String.fromCharCode( high >> 10 | 0xD800, high & 0x3FF | 0xDC00 );
 	},
 
@@ -2341,7 +5448,8 @@ var i,
 			}
 
 			// Control characters and (dependent upon position) numbers get escaped as code points
-			return ch.slice( 0, -1 ) + "\\" + ch.charCodeAt( ch.length - 1 ).toString( 16 ) + " ";
+			return ch.slice( 0, -1 ) + "\\" +
+				ch.charCodeAt( ch.length - 1 ).toString( 16 ) + " ";
 		}
 
 		// Other potentially-special ASCII characters get backslash-escaped
@@ -2366,18 +5474,20 @@ var i,
 // Optimize for push.apply( _, NodeList )
 try {
 	push.apply(
-		(arr = slice.call( preferredDoc.childNodes )),
+		( arr = slice.call( preferredDoc.childNodes ) ),
 		preferredDoc.childNodes
 	);
+
 	// Support: Android<4.0
 	// Detect silently failing push.apply
+	// eslint-disable-next-line no-unused-expressions
 	arr[ preferredDoc.childNodes.length ].nodeType;
 } catch ( e ) {
 	push = { apply: arr.length ?
 
 		// Leverage slice if possible
 		function( target, els ) {
-			push_native.apply( target, slice.call(els) );
+			pushNative.apply( target, slice.call( els ) );
 		} :
 
 		// Support: IE<9
@@ -2385,8 +5495,9 @@ try {
 		function( target, els ) {
 			var j = target.length,
 				i = 0;
+
 			// Can't trust NodeList.length
-			while ( (target[j++] = els[i++]) ) {}
+			while ( ( target[ j++ ] = els[ i++ ] ) ) {}
 			target.length = j - 1;
 		}
 	};
@@ -2410,24 +5521,21 @@ function Sizzle( selector, context, results, seed ) {
 
 	// Try to shortcut find operations (as opposed to filters) in HTML documents
 	if ( !seed ) {
-
-		if ( ( context ? context.ownerDocument || context : preferredDoc ) !== document ) {
-			setDocument( context );
-		}
+		setDocument( context );
 		context = context || document;
 
 		if ( documentIsHTML ) {
 
 			// If the selector is sufficiently simple, try using a "get*By*" DOM method
 			// (excepting DocumentFragment context, where the methods don't exist)
-			if ( nodeType !== 11 && (match = rquickExpr.exec( selector )) ) {
+			if ( nodeType !== 11 && ( match = rquickExpr.exec( selector ) ) ) {
 
 				// ID selector
-				if ( (m = match[1]) ) {
+				if ( ( m = match[ 1 ] ) ) {
 
 					// Document context
 					if ( nodeType === 9 ) {
-						if ( (elem = context.getElementById( m )) ) {
+						if ( ( elem = context.getElementById( m ) ) ) {
 
 							// Support: IE, Opera, Webkit
 							// TODO: identify versions
@@ -2446,7 +5554,7 @@ function Sizzle( selector, context, results, seed ) {
 						// Support: IE, Opera, Webkit
 						// TODO: identify versions
 						// getElementById can match elements by name instead of ID
-						if ( newContext && (elem = newContext.getElementById( m )) &&
+						if ( newContext && ( elem = newContext.getElementById( m ) ) &&
 							contains( context, elem ) &&
 							elem.id === m ) {
 
@@ -2456,12 +5564,12 @@ function Sizzle( selector, context, results, seed ) {
 					}
 
 				// Type selector
-				} else if ( match[2] ) {
+				} else if ( match[ 2 ] ) {
 					push.apply( results, context.getElementsByTagName( selector ) );
 					return results;
 
 				// Class selector
-				} else if ( (m = match[3]) && support.getElementsByClassName &&
+				} else if ( ( m = match[ 3 ] ) && support.getElementsByClassName &&
 					context.getElementsByClassName ) {
 
 					push.apply( results, context.getElementsByClassName( m ) );
@@ -2472,11 +5580,11 @@ function Sizzle( selector, context, results, seed ) {
 			// Take advantage of querySelectorAll
 			if ( support.qsa &&
 				!nonnativeSelectorCache[ selector + " " ] &&
-				(!rbuggyQSA || !rbuggyQSA.test( selector )) &&
+				( !rbuggyQSA || !rbuggyQSA.test( selector ) ) &&
 
 				// Support: IE 8 only
 				// Exclude object elements
-				(nodeType !== 1 || context.nodeName.toLowerCase() !== "object") ) {
+				( nodeType !== 1 || context.nodeName.toLowerCase() !== "object" ) ) {
 
 				newSelector = selector;
 				newContext = context;
@@ -2485,27 +5593,36 @@ function Sizzle( selector, context, results, seed ) {
 				// descendant combinators, which is not what we want.
 				// In such cases, we work around the behavior by prefixing every selector in the
 				// list with an ID selector referencing the scope context.
+				// The technique has to be used as well when a leading combinator is used
+				// as such selectors are not recognized by querySelectorAll.
 				// Thanks to Andrew Dupont for this technique.
-				if ( nodeType === 1 && rdescend.test( selector ) ) {
+				if ( nodeType === 1 &&
+					( rdescend.test( selector ) || rcombinators.test( selector ) ) ) {
 
-					// Capture the context ID, setting it first if necessary
-					if ( (nid = context.getAttribute( "id" )) ) {
-						nid = nid.replace( rcssescape, fcssescape );
-					} else {
-						context.setAttribute( "id", (nid = expando) );
+					// Expand context for sibling selectors
+					newContext = rsibling.test( selector ) && testContext( context.parentNode ) ||
+						context;
+
+					// We can use :scope instead of the ID hack if the browser
+					// supports it & if we're not changing the context.
+					if ( newContext !== context || !support.scope ) {
+
+						// Capture the context ID, setting it first if necessary
+						if ( ( nid = context.getAttribute( "id" ) ) ) {
+							nid = nid.replace( rcssescape, fcssescape );
+						} else {
+							context.setAttribute( "id", ( nid = expando ) );
+						}
 					}
 
 					// Prefix every selector in the list
 					groups = tokenize( selector );
 					i = groups.length;
 					while ( i-- ) {
-						groups[i] = "#" + nid + " " + toSelector( groups[i] );
+						groups[ i ] = ( nid ? "#" + nid : ":scope" ) + " " +
+							toSelector( groups[ i ] );
 					}
 					newSelector = groups.join( "," );
-
-					// Expand context for sibling selectors
-					newContext = rsibling.test( selector ) && testContext( context.parentNode ) ||
-						context;
 				}
 
 				try {
@@ -2538,12 +5655,14 @@ function createCache() {
 	var keys = [];
 
 	function cache( key, value ) {
+
 		// Use (key + " ") to avoid collision with native prototype properties (see Issue #157)
 		if ( keys.push( key + " " ) > Expr.cacheLength ) {
+
 			// Only keep the most recent entries
 			delete cache[ keys.shift() ];
 		}
-		return (cache[ key + " " ] = value);
+		return ( cache[ key + " " ] = value );
 	}
 	return cache;
 }
@@ -2562,17 +5681,19 @@ function markFunction( fn ) {
  * @param {Function} fn Passed the created element and returns a boolean result
  */
 function assert( fn ) {
-	var el = document.createElement("fieldset");
+	var el = document.createElement( "fieldset" );
 
 	try {
 		return !!fn( el );
-	} catch (e) {
+	} catch ( e ) {
 		return false;
 	} finally {
+
 		// Remove from its parent by default
 		if ( el.parentNode ) {
 			el.parentNode.removeChild( el );
 		}
+
 		// release memory in IE
 		el = null;
 	}
@@ -2584,11 +5705,11 @@ function assert( fn ) {
  * @param {Function} handler The method that will be applied
  */
 function addHandle( attrs, handler ) {
-	var arr = attrs.split("|"),
+	var arr = attrs.split( "|" ),
 		i = arr.length;
 
 	while ( i-- ) {
-		Expr.attrHandle[ arr[i] ] = handler;
+		Expr.attrHandle[ arr[ i ] ] = handler;
 	}
 }
 
@@ -2610,7 +5731,7 @@ function siblingCheck( a, b ) {
 
 	// Check if b follows a
 	if ( cur ) {
-		while ( (cur = cur.nextSibling) ) {
+		while ( ( cur = cur.nextSibling ) ) {
 			if ( cur === b ) {
 				return -1;
 			}
@@ -2638,7 +5759,7 @@ function createInputPseudo( type ) {
 function createButtonPseudo( type ) {
 	return function( elem ) {
 		var name = elem.nodeName.toLowerCase();
-		return (name === "input" || name === "button") && elem.type === type;
+		return ( name === "input" || name === "button" ) && elem.type === type;
 	};
 }
 
@@ -2681,7 +5802,7 @@ function createDisabledPseudo( disabled ) {
 					// Where there is no isDisabled, check manually
 					/* jshint -W018 */
 					elem.isDisabled !== !disabled &&
-						inDisabledFieldset( elem ) === disabled;
+					inDisabledFieldset( elem ) === disabled;
 			}
 
 			return elem.disabled === disabled;
@@ -2703,21 +5824,21 @@ function createDisabledPseudo( disabled ) {
  * @param {Function} fn
  */
 function createPositionalPseudo( fn ) {
-	return markFunction(function( argument ) {
+	return markFunction( function( argument ) {
 		argument = +argument;
-		return markFunction(function( seed, matches ) {
+		return markFunction( function( seed, matches ) {
 			var j,
 				matchIndexes = fn( [], seed.length, argument ),
 				i = matchIndexes.length;
 
 			// Match elements found at the specified indexes
 			while ( i-- ) {
-				if ( seed[ (j = matchIndexes[i]) ] ) {
-					seed[j] = !(matches[j] = seed[j]);
+				if ( seed[ ( j = matchIndexes[ i ] ) ] ) {
+					seed[ j ] = !( matches[ j ] = seed[ j ] );
 				}
 			}
-		});
-	});
+		} );
+	} );
 }
 
 /**
@@ -2739,7 +5860,7 @@ support = Sizzle.support = {};
  */
 isXML = Sizzle.isXML = function( elem ) {
 	var namespace = elem.namespaceURI,
-		docElem = (elem.ownerDocument || elem).documentElement;
+		docElem = ( elem.ownerDocument || elem ).documentElement;
 
 	// Support: IE <=8
 	// Assume HTML when documentElement doesn't yet exist, such as inside loading iframes
@@ -2757,7 +5878,11 @@ setDocument = Sizzle.setDocument = function( node ) {
 		doc = node ? node.ownerDocument || node : preferredDoc;
 
 	// Return early if doc is invalid or already selected
-	if ( doc === document || doc.nodeType !== 9 || !doc.documentElement ) {
+	// Support: IE 11+, Edge 17 - 18+
+	// IE/Edge sometimes throw a "Permission denied" error when strict-comparing
+	// two documents; shallow comparisons work.
+	// eslint-disable-next-line eqeqeq
+	if ( doc == document || doc.nodeType !== 9 || !doc.documentElement ) {
 		return document;
 	}
 
@@ -2766,10 +5891,14 @@ setDocument = Sizzle.setDocument = function( node ) {
 	docElem = document.documentElement;
 	documentIsHTML = !isXML( document );
 
-	// Support: IE 9-11, Edge
+	// Support: IE 9 - 11+, Edge 12 - 18+
 	// Accessing iframe documents after unload throws "permission denied" errors (jQuery #13936)
-	if ( preferredDoc !== document &&
-		(subWindow = document.defaultView) && subWindow.top !== subWindow ) {
+	// Support: IE 11+, Edge 17 - 18+
+	// IE/Edge sometimes throw a "Permission denied" error when strict-comparing
+	// two documents; shallow comparisons work.
+	// eslint-disable-next-line eqeqeq
+	if ( preferredDoc != document &&
+		( subWindow = document.defaultView ) && subWindow.top !== subWindow ) {
 
 		// Support: IE 11, Edge
 		if ( subWindow.addEventListener ) {
@@ -2781,25 +5910,36 @@ setDocument = Sizzle.setDocument = function( node ) {
 		}
 	}
 
+	// Support: IE 8 - 11+, Edge 12 - 18+, Chrome <=16 - 25 only, Firefox <=3.6 - 31 only,
+	// Safari 4 - 5 only, Opera <=11.6 - 12.x only
+	// IE/Edge & older browsers don't support the :scope pseudo-class.
+	// Support: Safari 6.0 only
+	// Safari 6.0 supports :scope but it's an alias of :root there.
+	support.scope = assert( function( el ) {
+		docElem.appendChild( el ).appendChild( document.createElement( "div" ) );
+		return typeof el.querySelectorAll !== "undefined" &&
+			!el.querySelectorAll( ":scope fieldset div" ).length;
+	} );
+
 	/* Attributes
 	---------------------------------------------------------------------- */
 
 	// Support: IE<8
 	// Verify that getAttribute really returns attributes and not properties
 	// (excepting IE8 booleans)
-	support.attributes = assert(function( el ) {
+	support.attributes = assert( function( el ) {
 		el.className = "i";
-		return !el.getAttribute("className");
-	});
+		return !el.getAttribute( "className" );
+	} );
 
 	/* getElement(s)By*
 	---------------------------------------------------------------------- */
 
 	// Check if getElementsByTagName("*") returns only elements
-	support.getElementsByTagName = assert(function( el ) {
-		el.appendChild( document.createComment("") );
-		return !el.getElementsByTagName("*").length;
-	});
+	support.getElementsByTagName = assert( function( el ) {
+		el.appendChild( document.createComment( "" ) );
+		return !el.getElementsByTagName( "*" ).length;
+	} );
 
 	// Support: IE<9
 	support.getElementsByClassName = rnative.test( document.getElementsByClassName );
@@ -2808,38 +5948,38 @@ setDocument = Sizzle.setDocument = function( node ) {
 	// Check if getElementById returns elements by name
 	// The broken getElementById methods don't pick up programmatically-set names,
 	// so use a roundabout getElementsByName test
-	support.getById = assert(function( el ) {
+	support.getById = assert( function( el ) {
 		docElem.appendChild( el ).id = expando;
 		return !document.getElementsByName || !document.getElementsByName( expando ).length;
-	});
+	} );
 
 	// ID filter and find
 	if ( support.getById ) {
-		Expr.filter["ID"] = function( id ) {
+		Expr.filter[ "ID" ] = function( id ) {
 			var attrId = id.replace( runescape, funescape );
 			return function( elem ) {
-				return elem.getAttribute("id") === attrId;
+				return elem.getAttribute( "id" ) === attrId;
 			};
 		};
-		Expr.find["ID"] = function( id, context ) {
+		Expr.find[ "ID" ] = function( id, context ) {
 			if ( typeof context.getElementById !== "undefined" && documentIsHTML ) {
 				var elem = context.getElementById( id );
 				return elem ? [ elem ] : [];
 			}
 		};
 	} else {
-		Expr.filter["ID"] =  function( id ) {
+		Expr.filter[ "ID" ] =  function( id ) {
 			var attrId = id.replace( runescape, funescape );
 			return function( elem ) {
 				var node = typeof elem.getAttributeNode !== "undefined" &&
-					elem.getAttributeNode("id");
+					elem.getAttributeNode( "id" );
 				return node && node.value === attrId;
 			};
 		};
 
 		// Support: IE 6 - 7 only
 		// getElementById is not reliable as a find shortcut
-		Expr.find["ID"] = function( id, context ) {
+		Expr.find[ "ID" ] = function( id, context ) {
 			if ( typeof context.getElementById !== "undefined" && documentIsHTML ) {
 				var node, i, elems,
 					elem = context.getElementById( id );
@@ -2847,7 +5987,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 				if ( elem ) {
 
 					// Verify the id attribute
-					node = elem.getAttributeNode("id");
+					node = elem.getAttributeNode( "id" );
 					if ( node && node.value === id ) {
 						return [ elem ];
 					}
@@ -2855,8 +5995,8 @@ setDocument = Sizzle.setDocument = function( node ) {
 					// Fall back on getElementsByName
 					elems = context.getElementsByName( id );
 					i = 0;
-					while ( (elem = elems[i++]) ) {
-						node = elem.getAttributeNode("id");
+					while ( ( elem = elems[ i++ ] ) ) {
+						node = elem.getAttributeNode( "id" );
 						if ( node && node.value === id ) {
 							return [ elem ];
 						}
@@ -2869,7 +6009,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 	}
 
 	// Tag
-	Expr.find["TAG"] = support.getElementsByTagName ?
+	Expr.find[ "TAG" ] = support.getElementsByTagName ?
 		function( tag, context ) {
 			if ( typeof context.getElementsByTagName !== "undefined" ) {
 				return context.getElementsByTagName( tag );
@@ -2884,12 +6024,13 @@ setDocument = Sizzle.setDocument = function( node ) {
 			var elem,
 				tmp = [],
 				i = 0,
+
 				// By happy coincidence, a (broken) gEBTN appears on DocumentFragment nodes too
 				results = context.getElementsByTagName( tag );
 
 			// Filter out possible comments
 			if ( tag === "*" ) {
-				while ( (elem = results[i++]) ) {
+				while ( ( elem = results[ i++ ] ) ) {
 					if ( elem.nodeType === 1 ) {
 						tmp.push( elem );
 					}
@@ -2901,7 +6042,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 		};
 
 	// Class
-	Expr.find["CLASS"] = support.getElementsByClassName && function( className, context ) {
+	Expr.find[ "CLASS" ] = support.getElementsByClassName && function( className, context ) {
 		if ( typeof context.getElementsByClassName !== "undefined" && documentIsHTML ) {
 			return context.getElementsByClassName( className );
 		}
@@ -2922,10 +6063,14 @@ setDocument = Sizzle.setDocument = function( node ) {
 	// See https://bugs.jquery.com/ticket/13378
 	rbuggyQSA = [];
 
-	if ( (support.qsa = rnative.test( document.querySelectorAll )) ) {
+	if ( ( support.qsa = rnative.test( document.querySelectorAll ) ) ) {
+
 		// Build QSA regex
 		// Regex strategy adopted from Diego Perini
-		assert(function( el ) {
+		assert( function( el ) {
+
+			var input;
+
 			// Select is set to empty string on purpose
 			// This is to test IE's treatment of not explicitly
 			// setting a boolean content attribute,
@@ -2939,78 +6084,98 @@ setDocument = Sizzle.setDocument = function( node ) {
 			// Nothing should be selected when empty strings follow ^= or $= or *=
 			// The test attribute must be unknown in Opera but "safe" for WinRT
 			// https://msdn.microsoft.com/en-us/library/ie/hh465388.aspx#attribute_section
-			if ( el.querySelectorAll("[msallowcapture^='']").length ) {
+			if ( el.querySelectorAll( "[msallowcapture^='']" ).length ) {
 				rbuggyQSA.push( "[*^$]=" + whitespace + "*(?:''|\"\")" );
 			}
 
 			// Support: IE8
 			// Boolean attributes and "value" are not treated correctly
-			if ( !el.querySelectorAll("[selected]").length ) {
+			if ( !el.querySelectorAll( "[selected]" ).length ) {
 				rbuggyQSA.push( "\\[" + whitespace + "*(?:value|" + booleans + ")" );
 			}
 
 			// Support: Chrome<29, Android<4.4, Safari<7.0+, iOS<7.0+, PhantomJS<1.9.8+
 			if ( !el.querySelectorAll( "[id~=" + expando + "-]" ).length ) {
-				rbuggyQSA.push("~=");
+				rbuggyQSA.push( "~=" );
+			}
+
+			// Support: IE 11+, Edge 15 - 18+
+			// IE 11/Edge don't find elements on a `[name='']` query in some cases.
+			// Adding a temporary attribute to the document before the selection works
+			// around the issue.
+			// Interestingly, IE 10 & older don't seem to have the issue.
+			input = document.createElement( "input" );
+			input.setAttribute( "name", "" );
+			el.appendChild( input );
+			if ( !el.querySelectorAll( "[name='']" ).length ) {
+				rbuggyQSA.push( "\\[" + whitespace + "*name" + whitespace + "*=" +
+					whitespace + "*(?:''|\"\")" );
 			}
 
 			// Webkit/Opera - :checked should return selected option elements
 			// http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
 			// IE8 throws error here and will not see later tests
-			if ( !el.querySelectorAll(":checked").length ) {
-				rbuggyQSA.push(":checked");
+			if ( !el.querySelectorAll( ":checked" ).length ) {
+				rbuggyQSA.push( ":checked" );
 			}
 
 			// Support: Safari 8+, iOS 8+
 			// https://bugs.webkit.org/show_bug.cgi?id=136851
 			// In-page `selector#id sibling-combinator selector` fails
 			if ( !el.querySelectorAll( "a#" + expando + "+*" ).length ) {
-				rbuggyQSA.push(".#.+[+~]");
+				rbuggyQSA.push( ".#.+[+~]" );
 			}
-		});
 
-		assert(function( el ) {
+			// Support: Firefox <=3.6 - 5 only
+			// Old Firefox doesn't throw on a badly-escaped identifier.
+			el.querySelectorAll( "\\\f" );
+			rbuggyQSA.push( "[\\r\\n\\f]" );
+		} );
+
+		assert( function( el ) {
 			el.innerHTML = "<a href='' disabled='disabled'></a>" +
 				"<select disabled='disabled'><option/></select>";
 
 			// Support: Windows 8 Native Apps
 			// The type and name attributes are restricted during .innerHTML assignment
-			var input = document.createElement("input");
+			var input = document.createElement( "input" );
 			input.setAttribute( "type", "hidden" );
 			el.appendChild( input ).setAttribute( "name", "D" );
 
 			// Support: IE8
 			// Enforce case-sensitivity of name attribute
-			if ( el.querySelectorAll("[name=d]").length ) {
+			if ( el.querySelectorAll( "[name=d]" ).length ) {
 				rbuggyQSA.push( "name" + whitespace + "*[*^$|!~]?=" );
 			}
 
 			// FF 3.5 - :enabled/:disabled and hidden elements (hidden elements are still enabled)
 			// IE8 throws error here and will not see later tests
-			if ( el.querySelectorAll(":enabled").length !== 2 ) {
+			if ( el.querySelectorAll( ":enabled" ).length !== 2 ) {
 				rbuggyQSA.push( ":enabled", ":disabled" );
 			}
 
 			// Support: IE9-11+
 			// IE's :disabled selector does not pick up the children of disabled fieldsets
 			docElem.appendChild( el ).disabled = true;
-			if ( el.querySelectorAll(":disabled").length !== 2 ) {
+			if ( el.querySelectorAll( ":disabled" ).length !== 2 ) {
 				rbuggyQSA.push( ":enabled", ":disabled" );
 			}
 
+			// Support: Opera 10 - 11 only
 			// Opera 10-11 does not throw on post-comma invalid pseudos
-			el.querySelectorAll("*,:x");
-			rbuggyQSA.push(",.*:");
-		});
+			el.querySelectorAll( "*,:x" );
+			rbuggyQSA.push( ",.*:" );
+		} );
 	}
 
-	if ( (support.matchesSelector = rnative.test( (matches = docElem.matches ||
+	if ( ( support.matchesSelector = rnative.test( ( matches = docElem.matches ||
 		docElem.webkitMatchesSelector ||
 		docElem.mozMatchesSelector ||
 		docElem.oMatchesSelector ||
-		docElem.msMatchesSelector) )) ) {
+		docElem.msMatchesSelector ) ) ) ) {
 
-		assert(function( el ) {
+		assert( function( el ) {
+
 			// Check to see if it's possible to do matchesSelector
 			// on a disconnected node (IE 9)
 			support.disconnectedMatch = matches.call( el, "*" );
@@ -3019,11 +6184,11 @@ setDocument = Sizzle.setDocument = function( node ) {
 			// Gecko does not error, returns false instead
 			matches.call( el, "[s!='']:x" );
 			rbuggyMatches.push( "!=", pseudos );
-		});
+		} );
 	}
 
-	rbuggyQSA = rbuggyQSA.length && new RegExp( rbuggyQSA.join("|") );
-	rbuggyMatches = rbuggyMatches.length && new RegExp( rbuggyMatches.join("|") );
+	rbuggyQSA = rbuggyQSA.length && new RegExp( rbuggyQSA.join( "|" ) );
+	rbuggyMatches = rbuggyMatches.length && new RegExp( rbuggyMatches.join( "|" ) );
 
 	/* Contains
 	---------------------------------------------------------------------- */
@@ -3040,11 +6205,11 @@ setDocument = Sizzle.setDocument = function( node ) {
 				adown.contains ?
 					adown.contains( bup ) :
 					a.compareDocumentPosition && a.compareDocumentPosition( bup ) & 16
-			));
+			) );
 		} :
 		function( a, b ) {
 			if ( b ) {
-				while ( (b = b.parentNode) ) {
+				while ( ( b = b.parentNode ) ) {
 					if ( b === a ) {
 						return true;
 					}
@@ -3073,7 +6238,11 @@ setDocument = Sizzle.setDocument = function( node ) {
 		}
 
 		// Calculate position if both inputs belong to the same document
-		compare = ( a.ownerDocument || a ) === ( b.ownerDocument || b ) ?
+		// Support: IE 11+, Edge 17 - 18+
+		// IE/Edge sometimes throw a "Permission denied" error when strict-comparing
+		// two documents; shallow comparisons work.
+		// eslint-disable-next-line eqeqeq
+		compare = ( a.ownerDocument || a ) == ( b.ownerDocument || b ) ?
 			a.compareDocumentPosition( b ) :
 
 			// Otherwise we know they are disconnected
@@ -3081,13 +6250,24 @@ setDocument = Sizzle.setDocument = function( node ) {
 
 		// Disconnected nodes
 		if ( compare & 1 ||
-			(!support.sortDetached && b.compareDocumentPosition( a ) === compare) ) {
+			( !support.sortDetached && b.compareDocumentPosition( a ) === compare ) ) {
 
 			// Choose the first element that is related to our preferred document
-			if ( a === document || a.ownerDocument === preferredDoc && contains(preferredDoc, a) ) {
+			// Support: IE 11+, Edge 17 - 18+
+			// IE/Edge sometimes throw a "Permission denied" error when strict-comparing
+			// two documents; shallow comparisons work.
+			// eslint-disable-next-line eqeqeq
+			if ( a == document || a.ownerDocument == preferredDoc &&
+				contains( preferredDoc, a ) ) {
 				return -1;
 			}
-			if ( b === document || b.ownerDocument === preferredDoc && contains(preferredDoc, b) ) {
+
+			// Support: IE 11+, Edge 17 - 18+
+			// IE/Edge sometimes throw a "Permission denied" error when strict-comparing
+			// two documents; shallow comparisons work.
+			// eslint-disable-next-line eqeqeq
+			if ( b == document || b.ownerDocument == preferredDoc &&
+				contains( preferredDoc, b ) ) {
 				return 1;
 			}
 
@@ -3100,6 +6280,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 		return compare & 4 ? -1 : 1;
 	} :
 	function( a, b ) {
+
 		// Exit early if the nodes are identical
 		if ( a === b ) {
 			hasDuplicate = true;
@@ -3115,8 +6296,14 @@ setDocument = Sizzle.setDocument = function( node ) {
 
 		// Parentless nodes are either documents or disconnected
 		if ( !aup || !bup ) {
-			return a === document ? -1 :
-				b === document ? 1 :
+
+			// Support: IE 11+, Edge 17 - 18+
+			// IE/Edge sometimes throw a "Permission denied" error when strict-comparing
+			// two documents; shallow comparisons work.
+			/* eslint-disable eqeqeq */
+			return a == document ? -1 :
+				b == document ? 1 :
+				/* eslint-enable eqeqeq */
 				aup ? -1 :
 				bup ? 1 :
 				sortInput ?
@@ -3130,26 +6317,32 @@ setDocument = Sizzle.setDocument = function( node ) {
 
 		// Otherwise we need full lists of their ancestors for comparison
 		cur = a;
-		while ( (cur = cur.parentNode) ) {
+		while ( ( cur = cur.parentNode ) ) {
 			ap.unshift( cur );
 		}
 		cur = b;
-		while ( (cur = cur.parentNode) ) {
+		while ( ( cur = cur.parentNode ) ) {
 			bp.unshift( cur );
 		}
 
 		// Walk down the tree looking for a discrepancy
-		while ( ap[i] === bp[i] ) {
+		while ( ap[ i ] === bp[ i ] ) {
 			i++;
 		}
 
 		return i ?
+
 			// Do a sibling check if the nodes have a common ancestor
-			siblingCheck( ap[i], bp[i] ) :
+			siblingCheck( ap[ i ], bp[ i ] ) :
 
 			// Otherwise nodes in our document sort first
-			ap[i] === preferredDoc ? -1 :
-			bp[i] === preferredDoc ? 1 :
+			// Support: IE 11+, Edge 17 - 18+
+			// IE/Edge sometimes throw a "Permission denied" error when strict-comparing
+			// two documents; shallow comparisons work.
+			/* eslint-disable eqeqeq */
+			ap[ i ] == preferredDoc ? -1 :
+			bp[ i ] == preferredDoc ? 1 :
+			/* eslint-enable eqeqeq */
 			0;
 	};
 
@@ -3161,10 +6354,7 @@ Sizzle.matches = function( expr, elements ) {
 };
 
 Sizzle.matchesSelector = function( elem, expr ) {
-	// Set document vars if needed
-	if ( ( elem.ownerDocument || elem ) !== document ) {
-		setDocument( elem );
-	}
+	setDocument( elem );
 
 	if ( support.matchesSelector && documentIsHTML &&
 		!nonnativeSelectorCache[ expr + " " ] &&
@@ -3176,12 +6366,13 @@ Sizzle.matchesSelector = function( elem, expr ) {
 
 			// IE 9's matchesSelector returns false on disconnected nodes
 			if ( ret || support.disconnectedMatch ||
-					// As well, disconnected nodes are said to be in a document
-					// fragment in IE 9
-					elem.document && elem.document.nodeType !== 11 ) {
+
+				// As well, disconnected nodes are said to be in a document
+				// fragment in IE 9
+				elem.document && elem.document.nodeType !== 11 ) {
 				return ret;
 			}
-		} catch (e) {
+		} catch ( e ) {
 			nonnativeSelectorCache( expr, true );
 		}
 	}
@@ -3190,20 +6381,31 @@ Sizzle.matchesSelector = function( elem, expr ) {
 };
 
 Sizzle.contains = function( context, elem ) {
+
 	// Set document vars if needed
-	if ( ( context.ownerDocument || context ) !== document ) {
+	// Support: IE 11+, Edge 17 - 18+
+	// IE/Edge sometimes throw a "Permission denied" error when strict-comparing
+	// two documents; shallow comparisons work.
+	// eslint-disable-next-line eqeqeq
+	if ( ( context.ownerDocument || context ) != document ) {
 		setDocument( context );
 	}
 	return contains( context, elem );
 };
 
 Sizzle.attr = function( elem, name ) {
+
 	// Set document vars if needed
-	if ( ( elem.ownerDocument || elem ) !== document ) {
+	// Support: IE 11+, Edge 17 - 18+
+	// IE/Edge sometimes throw a "Permission denied" error when strict-comparing
+	// two documents; shallow comparisons work.
+	// eslint-disable-next-line eqeqeq
+	if ( ( elem.ownerDocument || elem ) != document ) {
 		setDocument( elem );
 	}
 
 	var fn = Expr.attrHandle[ name.toLowerCase() ],
+
 		// Don't get fooled by Object.prototype properties (jQuery #13807)
 		val = fn && hasOwn.call( Expr.attrHandle, name.toLowerCase() ) ?
 			fn( elem, name, !documentIsHTML ) :
@@ -3213,13 +6415,13 @@ Sizzle.attr = function( elem, name ) {
 		val :
 		support.attributes || !documentIsHTML ?
 			elem.getAttribute( name ) :
-			(val = elem.getAttributeNode(name)) && val.specified ?
+			( val = elem.getAttributeNode( name ) ) && val.specified ?
 				val.value :
 				null;
 };
 
 Sizzle.escape = function( sel ) {
-	return (sel + "").replace( rcssescape, fcssescape );
+	return ( sel + "" ).replace( rcssescape, fcssescape );
 };
 
 Sizzle.error = function( msg ) {
@@ -3242,7 +6444,7 @@ Sizzle.uniqueSort = function( results ) {
 	results.sort( sortOrder );
 
 	if ( hasDuplicate ) {
-		while ( (elem = results[i++]) ) {
+		while ( ( elem = results[ i++ ] ) ) {
 			if ( elem === results[ i ] ) {
 				j = duplicates.push( i );
 			}
@@ -3270,17 +6472,21 @@ getText = Sizzle.getText = function( elem ) {
 		nodeType = elem.nodeType;
 
 	if ( !nodeType ) {
+
 		// If no nodeType, this is expected to be an array
-		while ( (node = elem[i++]) ) {
+		while ( ( node = elem[ i++ ] ) ) {
+
 			// Do not traverse comment nodes
 			ret += getText( node );
 		}
 	} else if ( nodeType === 1 || nodeType === 9 || nodeType === 11 ) {
+
 		// Use textContent for elements
 		// innerText usage removed for consistency of new lines (jQuery #11153)
 		if ( typeof elem.textContent === "string" ) {
 			return elem.textContent;
 		} else {
+
 			// Traverse its children
 			for ( elem = elem.firstChild; elem; elem = elem.nextSibling ) {
 				ret += getText( elem );
@@ -3289,6 +6495,7 @@ getText = Sizzle.getText = function( elem ) {
 	} else if ( nodeType === 3 || nodeType === 4 ) {
 		return elem.nodeValue;
 	}
+
 	// Do not include comment or processing instruction nodes
 
 	return ret;
@@ -3316,19 +6523,21 @@ Expr = Sizzle.selectors = {
 
 	preFilter: {
 		"ATTR": function( match ) {
-			match[1] = match[1].replace( runescape, funescape );
+			match[ 1 ] = match[ 1 ].replace( runescape, funescape );
 
 			// Move the given value to match[3] whether quoted or unquoted
-			match[3] = ( match[3] || match[4] || match[5] || "" ).replace( runescape, funescape );
+			match[ 3 ] = ( match[ 3 ] || match[ 4 ] ||
+				match[ 5 ] || "" ).replace( runescape, funescape );
 
-			if ( match[2] === "~=" ) {
-				match[3] = " " + match[3] + " ";
+			if ( match[ 2 ] === "~=" ) {
+				match[ 3 ] = " " + match[ 3 ] + " ";
 			}
 
 			return match.slice( 0, 4 );
 		},
 
 		"CHILD": function( match ) {
+
 			/* matches from matchExpr["CHILD"]
 				1 type (only|nth|...)
 				2 what (child|of-type)
@@ -3339,22 +6548,25 @@ Expr = Sizzle.selectors = {
 				7 sign of y-component
 				8 y of y-component
 			*/
-			match[1] = match[1].toLowerCase();
+			match[ 1 ] = match[ 1 ].toLowerCase();
 
-			if ( match[1].slice( 0, 3 ) === "nth" ) {
+			if ( match[ 1 ].slice( 0, 3 ) === "nth" ) {
+
 				// nth-* requires argument
-				if ( !match[3] ) {
-					Sizzle.error( match[0] );
+				if ( !match[ 3 ] ) {
+					Sizzle.error( match[ 0 ] );
 				}
 
 				// numeric x and y parameters for Expr.filter.CHILD
 				// remember that false/true cast respectively to 0/1
-				match[4] = +( match[4] ? match[5] + (match[6] || 1) : 2 * ( match[3] === "even" || match[3] === "odd" ) );
-				match[5] = +( ( match[7] + match[8] ) || match[3] === "odd" );
+				match[ 4 ] = +( match[ 4 ] ?
+					match[ 5 ] + ( match[ 6 ] || 1 ) :
+					2 * ( match[ 3 ] === "even" || match[ 3 ] === "odd" ) );
+				match[ 5 ] = +( ( match[ 7 ] + match[ 8 ] ) || match[ 3 ] === "odd" );
 
-			// other types prohibit arguments
-			} else if ( match[3] ) {
-				Sizzle.error( match[0] );
+				// other types prohibit arguments
+			} else if ( match[ 3 ] ) {
+				Sizzle.error( match[ 0 ] );
 			}
 
 			return match;
@@ -3362,26 +6574,28 @@ Expr = Sizzle.selectors = {
 
 		"PSEUDO": function( match ) {
 			var excess,
-				unquoted = !match[6] && match[2];
+				unquoted = !match[ 6 ] && match[ 2 ];
 
-			if ( matchExpr["CHILD"].test( match[0] ) ) {
+			if ( matchExpr[ "CHILD" ].test( match[ 0 ] ) ) {
 				return null;
 			}
 
 			// Accept quoted arguments as-is
-			if ( match[3] ) {
-				match[2] = match[4] || match[5] || "";
+			if ( match[ 3 ] ) {
+				match[ 2 ] = match[ 4 ] || match[ 5 ] || "";
 
 			// Strip excess characters from unquoted arguments
 			} else if ( unquoted && rpseudo.test( unquoted ) &&
+
 				// Get excess from tokenize (recursively)
-				(excess = tokenize( unquoted, true )) &&
+				( excess = tokenize( unquoted, true ) ) &&
+
 				// advance to the next closing parenthesis
-				(excess = unquoted.indexOf( ")", unquoted.length - excess ) - unquoted.length) ) {
+				( excess = unquoted.indexOf( ")", unquoted.length - excess ) - unquoted.length ) ) {
 
 				// excess is a negative index
-				match[0] = match[0].slice( 0, excess );
-				match[2] = unquoted.slice( 0, excess );
+				match[ 0 ] = match[ 0 ].slice( 0, excess );
+				match[ 2 ] = unquoted.slice( 0, excess );
 			}
 
 			// Return only captures needed by the pseudo filter method (type and argument)
@@ -3394,7 +6608,9 @@ Expr = Sizzle.selectors = {
 		"TAG": function( nodeNameSelector ) {
 			var nodeName = nodeNameSelector.replace( runescape, funescape ).toLowerCase();
 			return nodeNameSelector === "*" ?
-				function() { return true; } :
+				function() {
+					return true;
+				} :
 				function( elem ) {
 					return elem.nodeName && elem.nodeName.toLowerCase() === nodeName;
 				};
@@ -3404,10 +6620,16 @@ Expr = Sizzle.selectors = {
 			var pattern = classCache[ className + " " ];
 
 			return pattern ||
-				(pattern = new RegExp( "(^|" + whitespace + ")" + className + "(" + whitespace + "|$)" )) &&
-				classCache( className, function( elem ) {
-					return pattern.test( typeof elem.className === "string" && elem.className || typeof elem.getAttribute !== "undefined" && elem.getAttribute("class") || "" );
-				});
+				( pattern = new RegExp( "(^|" + whitespace +
+					")" + className + "(" + whitespace + "|$)" ) ) && classCache(
+						className, function( elem ) {
+							return pattern.test(
+								typeof elem.className === "string" && elem.className ||
+								typeof elem.getAttribute !== "undefined" &&
+									elem.getAttribute( "class" ) ||
+								""
+							);
+				} );
 		},
 
 		"ATTR": function( name, operator, check ) {
@@ -3423,6 +6645,8 @@ Expr = Sizzle.selectors = {
 
 				result += "";
 
+				/* eslint-disable max-len */
+
 				return operator === "=" ? result === check :
 					operator === "!=" ? result !== check :
 					operator === "^=" ? check && result.indexOf( check ) === 0 :
@@ -3431,10 +6655,12 @@ Expr = Sizzle.selectors = {
 					operator === "~=" ? ( " " + result.replace( rwhitespace, " " ) + " " ).indexOf( check ) > -1 :
 					operator === "|=" ? result === check || result.slice( 0, check.length + 1 ) === check + "-" :
 					false;
+				/* eslint-enable max-len */
+
 			};
 		},
 
-		"CHILD": function( type, what, argument, first, last ) {
+		"CHILD": function( type, what, _argument, first, last ) {
 			var simple = type.slice( 0, 3 ) !== "nth",
 				forward = type.slice( -4 ) !== "last",
 				ofType = what === "of-type";
@@ -3446,7 +6672,7 @@ Expr = Sizzle.selectors = {
 					return !!elem.parentNode;
 				} :
 
-				function( elem, context, xml ) {
+				function( elem, _context, xml ) {
 					var cache, uniqueCache, outerCache, node, nodeIndex, start,
 						dir = simple !== forward ? "nextSibling" : "previousSibling",
 						parent = elem.parentNode,
@@ -3460,7 +6686,7 @@ Expr = Sizzle.selectors = {
 						if ( simple ) {
 							while ( dir ) {
 								node = elem;
-								while ( (node = node[ dir ]) ) {
+								while ( ( node = node[ dir ] ) ) {
 									if ( ofType ?
 										node.nodeName.toLowerCase() === name :
 										node.nodeType === 1 ) {
@@ -3468,6 +6694,7 @@ Expr = Sizzle.selectors = {
 										return false;
 									}
 								}
+
 								// Reverse direction for :only-* (if we haven't yet done so)
 								start = dir = type === "only" && !start && "nextSibling";
 							}
@@ -3483,22 +6710,22 @@ Expr = Sizzle.selectors = {
 
 							// ...in a gzip-friendly way
 							node = parent;
-							outerCache = node[ expando ] || (node[ expando ] = {});
+							outerCache = node[ expando ] || ( node[ expando ] = {} );
 
 							// Support: IE <9 only
 							// Defend against cloned attroperties (jQuery gh-1709)
 							uniqueCache = outerCache[ node.uniqueID ] ||
-								(outerCache[ node.uniqueID ] = {});
+								( outerCache[ node.uniqueID ] = {} );
 
 							cache = uniqueCache[ type ] || [];
 							nodeIndex = cache[ 0 ] === dirruns && cache[ 1 ];
 							diff = nodeIndex && cache[ 2 ];
 							node = nodeIndex && parent.childNodes[ nodeIndex ];
 
-							while ( (node = ++nodeIndex && node && node[ dir ] ||
+							while ( ( node = ++nodeIndex && node && node[ dir ] ||
 
 								// Fallback to seeking `elem` from the start
-								(diff = nodeIndex = 0) || start.pop()) ) {
+								( diff = nodeIndex = 0 ) || start.pop() ) ) {
 
 								// When found, cache indexes on `parent` and break
 								if ( node.nodeType === 1 && ++diff && node === elem ) {
@@ -3508,16 +6735,18 @@ Expr = Sizzle.selectors = {
 							}
 
 						} else {
+
 							// Use previously-cached element index if available
 							if ( useCache ) {
+
 								// ...in a gzip-friendly way
 								node = elem;
-								outerCache = node[ expando ] || (node[ expando ] = {});
+								outerCache = node[ expando ] || ( node[ expando ] = {} );
 
 								// Support: IE <9 only
 								// Defend against cloned attroperties (jQuery gh-1709)
 								uniqueCache = outerCache[ node.uniqueID ] ||
-									(outerCache[ node.uniqueID ] = {});
+									( outerCache[ node.uniqueID ] = {} );
 
 								cache = uniqueCache[ type ] || [];
 								nodeIndex = cache[ 0 ] === dirruns && cache[ 1 ];
@@ -3527,9 +6756,10 @@ Expr = Sizzle.selectors = {
 							// xml :nth-child(...)
 							// or :nth-last-child(...) or :nth(-last)?-of-type(...)
 							if ( diff === false ) {
+
 								// Use the same loop as above to seek `elem` from the start
-								while ( (node = ++nodeIndex && node && node[ dir ] ||
-									(diff = nodeIndex = 0) || start.pop()) ) {
+								while ( ( node = ++nodeIndex && node && node[ dir ] ||
+									( diff = nodeIndex = 0 ) || start.pop() ) ) {
 
 									if ( ( ofType ?
 										node.nodeName.toLowerCase() === name :
@@ -3538,12 +6768,13 @@ Expr = Sizzle.selectors = {
 
 										// Cache the index of each encountered element
 										if ( useCache ) {
-											outerCache = node[ expando ] || (node[ expando ] = {});
+											outerCache = node[ expando ] ||
+												( node[ expando ] = {} );
 
 											// Support: IE <9 only
 											// Defend against cloned attroperties (jQuery gh-1709)
 											uniqueCache = outerCache[ node.uniqueID ] ||
-												(outerCache[ node.uniqueID ] = {});
+												( outerCache[ node.uniqueID ] = {} );
 
 											uniqueCache[ type ] = [ dirruns, diff ];
 										}
@@ -3564,6 +6795,7 @@ Expr = Sizzle.selectors = {
 		},
 
 		"PSEUDO": function( pseudo, argument ) {
+
 			// pseudo-class names are case-insensitive
 			// http://www.w3.org/TR/selectors/#pseudo-classes
 			// Prioritize by case sensitivity in case custom pseudos are added with uppercase letters
@@ -3583,15 +6815,15 @@ Expr = Sizzle.selectors = {
 			if ( fn.length > 1 ) {
 				args = [ pseudo, pseudo, "", argument ];
 				return Expr.setFilters.hasOwnProperty( pseudo.toLowerCase() ) ?
-					markFunction(function( seed, matches ) {
+					markFunction( function( seed, matches ) {
 						var idx,
 							matched = fn( seed, argument ),
 							i = matched.length;
 						while ( i-- ) {
-							idx = indexOf( seed, matched[i] );
-							seed[ idx ] = !( matches[ idx ] = matched[i] );
+							idx = indexOf( seed, matched[ i ] );
+							seed[ idx ] = !( matches[ idx ] = matched[ i ] );
 						}
-					}) :
+					} ) :
 					function( elem ) {
 						return fn( elem, 0, args );
 					};
@@ -3602,8 +6834,10 @@ Expr = Sizzle.selectors = {
 	},
 
 	pseudos: {
+
 		// Potentially complex pseudos
-		"not": markFunction(function( selector ) {
+		"not": markFunction( function( selector ) {
+
 			// Trim the selector passed to compile
 			// to avoid treating leading and trailing
 			// spaces as combinators
@@ -3612,39 +6846,40 @@ Expr = Sizzle.selectors = {
 				matcher = compile( selector.replace( rtrim, "$1" ) );
 
 			return matcher[ expando ] ?
-				markFunction(function( seed, matches, context, xml ) {
+				markFunction( function( seed, matches, _context, xml ) {
 					var elem,
 						unmatched = matcher( seed, null, xml, [] ),
 						i = seed.length;
 
 					// Match elements unmatched by `matcher`
 					while ( i-- ) {
-						if ( (elem = unmatched[i]) ) {
-							seed[i] = !(matches[i] = elem);
+						if ( ( elem = unmatched[ i ] ) ) {
+							seed[ i ] = !( matches[ i ] = elem );
 						}
 					}
-				}) :
-				function( elem, context, xml ) {
-					input[0] = elem;
+				} ) :
+				function( elem, _context, xml ) {
+					input[ 0 ] = elem;
 					matcher( input, null, xml, results );
+
 					// Don't keep the element (issue #299)
-					input[0] = null;
+					input[ 0 ] = null;
 					return !results.pop();
 				};
-		}),
+		} ),
 
-		"has": markFunction(function( selector ) {
+		"has": markFunction( function( selector ) {
 			return function( elem ) {
 				return Sizzle( selector, elem ).length > 0;
 			};
-		}),
+		} ),
 
-		"contains": markFunction(function( text ) {
+		"contains": markFunction( function( text ) {
 			text = text.replace( runescape, funescape );
 			return function( elem ) {
 				return ( elem.textContent || getText( elem ) ).indexOf( text ) > -1;
 			};
-		}),
+		} ),
 
 		// "Whether an element is represented by a :lang() selector
 		// is based solely on the element's language value
@@ -3654,25 +6889,26 @@ Expr = Sizzle.selectors = {
 		// The identifier C does not have to be a valid language name."
 		// http://www.w3.org/TR/selectors/#lang-pseudo
 		"lang": markFunction( function( lang ) {
+
 			// lang value must be a valid identifier
-			if ( !ridentifier.test(lang || "") ) {
+			if ( !ridentifier.test( lang || "" ) ) {
 				Sizzle.error( "unsupported lang: " + lang );
 			}
 			lang = lang.replace( runescape, funescape ).toLowerCase();
 			return function( elem ) {
 				var elemLang;
 				do {
-					if ( (elemLang = documentIsHTML ?
+					if ( ( elemLang = documentIsHTML ?
 						elem.lang :
-						elem.getAttribute("xml:lang") || elem.getAttribute("lang")) ) {
+						elem.getAttribute( "xml:lang" ) || elem.getAttribute( "lang" ) ) ) {
 
 						elemLang = elemLang.toLowerCase();
 						return elemLang === lang || elemLang.indexOf( lang + "-" ) === 0;
 					}
-				} while ( (elem = elem.parentNode) && elem.nodeType === 1 );
+				} while ( ( elem = elem.parentNode ) && elem.nodeType === 1 );
 				return false;
 			};
-		}),
+		} ),
 
 		// Miscellaneous
 		"target": function( elem ) {
@@ -3685,7 +6921,9 @@ Expr = Sizzle.selectors = {
 		},
 
 		"focus": function( elem ) {
-			return elem === document.activeElement && (!document.hasFocus || document.hasFocus()) && !!(elem.type || elem.href || ~elem.tabIndex);
+			return elem === document.activeElement &&
+				( !document.hasFocus || document.hasFocus() ) &&
+				!!( elem.type || elem.href || ~elem.tabIndex );
 		},
 
 		// Boolean properties
@@ -3693,16 +6931,20 @@ Expr = Sizzle.selectors = {
 		"disabled": createDisabledPseudo( true ),
 
 		"checked": function( elem ) {
+
 			// In CSS3, :checked should return both checked and selected elements
 			// http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
 			var nodeName = elem.nodeName.toLowerCase();
-			return (nodeName === "input" && !!elem.checked) || (nodeName === "option" && !!elem.selected);
+			return ( nodeName === "input" && !!elem.checked ) ||
+				( nodeName === "option" && !!elem.selected );
 		},
 
 		"selected": function( elem ) {
+
 			// Accessing this property makes selected-by-default
 			// options in Safari work properly
 			if ( elem.parentNode ) {
+				// eslint-disable-next-line no-unused-expressions
 				elem.parentNode.selectedIndex;
 			}
 
@@ -3711,6 +6953,7 @@ Expr = Sizzle.selectors = {
 
 		// Contents
 		"empty": function( elem ) {
+
 			// http://www.w3.org/TR/selectors/#empty-pseudo
 			// :empty is negated by element (1) or content nodes (text: 3; cdata: 4; entity ref: 5),
 			//   but not by others (comment: 8; processing instruction: 7; etc.)
@@ -3724,7 +6967,7 @@ Expr = Sizzle.selectors = {
 		},
 
 		"parent": function( elem ) {
-			return !Expr.pseudos["empty"]( elem );
+			return !Expr.pseudos[ "empty" ]( elem );
 		},
 
 		// Element/input types
@@ -3748,39 +6991,40 @@ Expr = Sizzle.selectors = {
 
 				// Support: IE<8
 				// New HTML5 attribute values (e.g., "search") appear with elem.type === "text"
-				( (attr = elem.getAttribute("type")) == null || attr.toLowerCase() === "text" );
+				( ( attr = elem.getAttribute( "type" ) ) == null ||
+					attr.toLowerCase() === "text" );
 		},
 
 		// Position-in-collection
-		"first": createPositionalPseudo(function() {
+		"first": createPositionalPseudo( function() {
 			return [ 0 ];
-		}),
+		} ),
 
-		"last": createPositionalPseudo(function( matchIndexes, length ) {
+		"last": createPositionalPseudo( function( _matchIndexes, length ) {
 			return [ length - 1 ];
-		}),
+		} ),
 
-		"eq": createPositionalPseudo(function( matchIndexes, length, argument ) {
+		"eq": createPositionalPseudo( function( _matchIndexes, length, argument ) {
 			return [ argument < 0 ? argument + length : argument ];
-		}),
+		} ),
 
-		"even": createPositionalPseudo(function( matchIndexes, length ) {
+		"even": createPositionalPseudo( function( matchIndexes, length ) {
 			var i = 0;
 			for ( ; i < length; i += 2 ) {
 				matchIndexes.push( i );
 			}
 			return matchIndexes;
-		}),
+		} ),
 
-		"odd": createPositionalPseudo(function( matchIndexes, length ) {
+		"odd": createPositionalPseudo( function( matchIndexes, length ) {
 			var i = 1;
 			for ( ; i < length; i += 2 ) {
 				matchIndexes.push( i );
 			}
 			return matchIndexes;
-		}),
+		} ),
 
-		"lt": createPositionalPseudo(function( matchIndexes, length, argument ) {
+		"lt": createPositionalPseudo( function( matchIndexes, length, argument ) {
 			var i = argument < 0 ?
 				argument + length :
 				argument > length ?
@@ -3790,19 +7034,19 @@ Expr = Sizzle.selectors = {
 				matchIndexes.push( i );
 			}
 			return matchIndexes;
-		}),
+		} ),
 
-		"gt": createPositionalPseudo(function( matchIndexes, length, argument ) {
+		"gt": createPositionalPseudo( function( matchIndexes, length, argument ) {
 			var i = argument < 0 ? argument + length : argument;
 			for ( ; ++i < length; ) {
 				matchIndexes.push( i );
 			}
 			return matchIndexes;
-		})
+		} )
 	}
 };
 
-Expr.pseudos["nth"] = Expr.pseudos["eq"];
+Expr.pseudos[ "nth" ] = Expr.pseudos[ "eq" ];
 
 // Add button/input type pseudos
 for ( i in { radio: true, checkbox: true, file: true, password: true, image: true } ) {
@@ -3833,37 +7077,39 @@ tokenize = Sizzle.tokenize = function( selector, parseOnly ) {
 	while ( soFar ) {
 
 		// Comma and first run
-		if ( !matched || (match = rcomma.exec( soFar )) ) {
+		if ( !matched || ( match = rcomma.exec( soFar ) ) ) {
 			if ( match ) {
+
 				// Don't consume trailing commas as valid
-				soFar = soFar.slice( match[0].length ) || soFar;
+				soFar = soFar.slice( match[ 0 ].length ) || soFar;
 			}
-			groups.push( (tokens = []) );
+			groups.push( ( tokens = [] ) );
 		}
 
 		matched = false;
 
 		// Combinators
-		if ( (match = rcombinators.exec( soFar )) ) {
+		if ( ( match = rcombinators.exec( soFar ) ) ) {
 			matched = match.shift();
-			tokens.push({
+			tokens.push( {
 				value: matched,
+
 				// Cast descendant combinators to space
-				type: match[0].replace( rtrim, " " )
-			});
+				type: match[ 0 ].replace( rtrim, " " )
+			} );
 			soFar = soFar.slice( matched.length );
 		}
 
 		// Filters
 		for ( type in Expr.filter ) {
-			if ( (match = matchExpr[ type ].exec( soFar )) && (!preFilters[ type ] ||
-				(match = preFilters[ type ]( match ))) ) {
+			if ( ( match = matchExpr[ type ].exec( soFar ) ) && ( !preFilters[ type ] ||
+				( match = preFilters[ type ]( match ) ) ) ) {
 				matched = match.shift();
-				tokens.push({
+				tokens.push( {
 					value: matched,
 					type: type,
 					matches: match
-				});
+				} );
 				soFar = soFar.slice( matched.length );
 			}
 		}
@@ -3880,6 +7126,7 @@ tokenize = Sizzle.tokenize = function( selector, parseOnly ) {
 		soFar.length :
 		soFar ?
 			Sizzle.error( selector ) :
+
 			// Cache the tokens
 			tokenCache( selector, groups ).slice( 0 );
 };
@@ -3889,7 +7136,7 @@ function toSelector( tokens ) {
 		len = tokens.length,
 		selector = "";
 	for ( ; i < len; i++ ) {
-		selector += tokens[i].value;
+		selector += tokens[ i ].value;
 	}
 	return selector;
 }
@@ -3902,9 +7149,10 @@ function addCombinator( matcher, combinator, base ) {
 		doneName = done++;
 
 	return combinator.first ?
+
 		// Check against closest ancestor/preceding element
 		function( elem, context, xml ) {
-			while ( (elem = elem[ dir ]) ) {
+			while ( ( elem = elem[ dir ] ) ) {
 				if ( elem.nodeType === 1 || checkNonElements ) {
 					return matcher( elem, context, xml );
 				}
@@ -3919,7 +7167,7 @@ function addCombinator( matcher, combinator, base ) {
 
 			// We can't set arbitrary data on XML nodes, so they don't benefit from combinator caching
 			if ( xml ) {
-				while ( (elem = elem[ dir ]) ) {
+				while ( ( elem = elem[ dir ] ) ) {
 					if ( elem.nodeType === 1 || checkNonElements ) {
 						if ( matcher( elem, context, xml ) ) {
 							return true;
@@ -3927,27 +7175,29 @@ function addCombinator( matcher, combinator, base ) {
 					}
 				}
 			} else {
-				while ( (elem = elem[ dir ]) ) {
+				while ( ( elem = elem[ dir ] ) ) {
 					if ( elem.nodeType === 1 || checkNonElements ) {
-						outerCache = elem[ expando ] || (elem[ expando ] = {});
+						outerCache = elem[ expando ] || ( elem[ expando ] = {} );
 
 						// Support: IE <9 only
 						// Defend against cloned attroperties (jQuery gh-1709)
-						uniqueCache = outerCache[ elem.uniqueID ] || (outerCache[ elem.uniqueID ] = {});
+						uniqueCache = outerCache[ elem.uniqueID ] ||
+							( outerCache[ elem.uniqueID ] = {} );
 
 						if ( skip && skip === elem.nodeName.toLowerCase() ) {
 							elem = elem[ dir ] || elem;
-						} else if ( (oldCache = uniqueCache[ key ]) &&
+						} else if ( ( oldCache = uniqueCache[ key ] ) &&
 							oldCache[ 0 ] === dirruns && oldCache[ 1 ] === doneName ) {
 
 							// Assign to newCache so results back-propagate to previous elements
-							return (newCache[ 2 ] = oldCache[ 2 ]);
+							return ( newCache[ 2 ] = oldCache[ 2 ] );
 						} else {
+
 							// Reuse newcache so results back-propagate to previous elements
 							uniqueCache[ key ] = newCache;
 
 							// A match means we're done; a fail means we have to keep checking
-							if ( (newCache[ 2 ] = matcher( elem, context, xml )) ) {
+							if ( ( newCache[ 2 ] = matcher( elem, context, xml ) ) ) {
 								return true;
 							}
 						}
@@ -3963,20 +7213,20 @@ function elementMatcher( matchers ) {
 		function( elem, context, xml ) {
 			var i = matchers.length;
 			while ( i-- ) {
-				if ( !matchers[i]( elem, context, xml ) ) {
+				if ( !matchers[ i ]( elem, context, xml ) ) {
 					return false;
 				}
 			}
 			return true;
 		} :
-		matchers[0];
+		matchers[ 0 ];
 }
 
 function multipleContexts( selector, contexts, results ) {
 	var i = 0,
 		len = contexts.length;
 	for ( ; i < len; i++ ) {
-		Sizzle( selector, contexts[i], results );
+		Sizzle( selector, contexts[ i ], results );
 	}
 	return results;
 }
@@ -3989,7 +7239,7 @@ function condense( unmatched, map, filter, context, xml ) {
 		mapped = map != null;
 
 	for ( ; i < len; i++ ) {
-		if ( (elem = unmatched[i]) ) {
+		if ( ( elem = unmatched[ i ] ) ) {
 			if ( !filter || filter( elem, context, xml ) ) {
 				newUnmatched.push( elem );
 				if ( mapped ) {
@@ -4009,14 +7259,18 @@ function setMatcher( preFilter, selector, matcher, postFilter, postFinder, postS
 	if ( postFinder && !postFinder[ expando ] ) {
 		postFinder = setMatcher( postFinder, postSelector );
 	}
-	return markFunction(function( seed, results, context, xml ) {
+	return markFunction( function( seed, results, context, xml ) {
 		var temp, i, elem,
 			preMap = [],
 			postMap = [],
 			preexisting = results.length,
 
 			// Get initial elements from seed or context
-			elems = seed || multipleContexts( selector || "*", context.nodeType ? [ context ] : context, [] ),
+			elems = seed || multipleContexts(
+				selector || "*",
+				context.nodeType ? [ context ] : context,
+				[]
+			),
 
 			// Prefilter to get matcher input, preserving a map for seed-results synchronization
 			matcherIn = preFilter && ( seed || !selector ) ?
@@ -4024,6 +7278,7 @@ function setMatcher( preFilter, selector, matcher, postFilter, postFinder, postS
 				elems,
 
 			matcherOut = matcher ?
+
 				// If we have a postFinder, or filtered seed, or non-seed postFilter or preexisting results,
 				postFinder || ( seed ? preFilter : preexisting || postFilter ) ?
 
@@ -4047,8 +7302,8 @@ function setMatcher( preFilter, selector, matcher, postFilter, postFinder, postS
 			// Un-match failing elements by moving them back to matcherIn
 			i = temp.length;
 			while ( i-- ) {
-				if ( (elem = temp[i]) ) {
-					matcherOut[ postMap[i] ] = !(matcherIn[ postMap[i] ] = elem);
+				if ( ( elem = temp[ i ] ) ) {
+					matcherOut[ postMap[ i ] ] = !( matcherIn[ postMap[ i ] ] = elem );
 				}
 			}
 		}
@@ -4056,25 +7311,27 @@ function setMatcher( preFilter, selector, matcher, postFilter, postFinder, postS
 		if ( seed ) {
 			if ( postFinder || preFilter ) {
 				if ( postFinder ) {
+
 					// Get the final matcherOut by condensing this intermediate into postFinder contexts
 					temp = [];
 					i = matcherOut.length;
 					while ( i-- ) {
-						if ( (elem = matcherOut[i]) ) {
+						if ( ( elem = matcherOut[ i ] ) ) {
+
 							// Restore matcherIn since elem is not yet a final match
-							temp.push( (matcherIn[i] = elem) );
+							temp.push( ( matcherIn[ i ] = elem ) );
 						}
 					}
-					postFinder( null, (matcherOut = []), temp, xml );
+					postFinder( null, ( matcherOut = [] ), temp, xml );
 				}
 
 				// Move matched elements from seed to results to keep them synchronized
 				i = matcherOut.length;
 				while ( i-- ) {
-					if ( (elem = matcherOut[i]) &&
-						(temp = postFinder ? indexOf( seed, elem ) : preMap[i]) > -1 ) {
+					if ( ( elem = matcherOut[ i ] ) &&
+						( temp = postFinder ? indexOf( seed, elem ) : preMap[ i ] ) > -1 ) {
 
-						seed[temp] = !(results[temp] = elem);
+						seed[ temp ] = !( results[ temp ] = elem );
 					}
 				}
 			}
@@ -4092,14 +7349,14 @@ function setMatcher( preFilter, selector, matcher, postFilter, postFinder, postS
 				push.apply( results, matcherOut );
 			}
 		}
-	});
+	} );
 }
 
 function matcherFromTokens( tokens ) {
 	var checkContext, matcher, j,
 		len = tokens.length,
-		leadingRelative = Expr.relative[ tokens[0].type ],
-		implicitRelative = leadingRelative || Expr.relative[" "],
+		leadingRelative = Expr.relative[ tokens[ 0 ].type ],
+		implicitRelative = leadingRelative || Expr.relative[ " " ],
 		i = leadingRelative ? 1 : 0,
 
 		// The foundational matcher ensures that elements are reachable from top-level context(s)
@@ -4111,38 +7368,43 @@ function matcherFromTokens( tokens ) {
 		}, implicitRelative, true ),
 		matchers = [ function( elem, context, xml ) {
 			var ret = ( !leadingRelative && ( xml || context !== outermostContext ) ) || (
-				(checkContext = context).nodeType ?
+				( checkContext = context ).nodeType ?
 					matchContext( elem, context, xml ) :
 					matchAnyContext( elem, context, xml ) );
+
 			// Avoid hanging onto element (issue #299)
 			checkContext = null;
 			return ret;
 		} ];
 
 	for ( ; i < len; i++ ) {
-		if ( (matcher = Expr.relative[ tokens[i].type ]) ) {
-			matchers = [ addCombinator(elementMatcher( matchers ), matcher) ];
+		if ( ( matcher = Expr.relative[ tokens[ i ].type ] ) ) {
+			matchers = [ addCombinator( elementMatcher( matchers ), matcher ) ];
 		} else {
-			matcher = Expr.filter[ tokens[i].type ].apply( null, tokens[i].matches );
+			matcher = Expr.filter[ tokens[ i ].type ].apply( null, tokens[ i ].matches );
 
 			// Return special upon seeing a positional matcher
 			if ( matcher[ expando ] ) {
+
 				// Find the next relative operator (if any) for proper handling
 				j = ++i;
 				for ( ; j < len; j++ ) {
-					if ( Expr.relative[ tokens[j].type ] ) {
+					if ( Expr.relative[ tokens[ j ].type ] ) {
 						break;
 					}
 				}
 				return setMatcher(
 					i > 1 && elementMatcher( matchers ),
 					i > 1 && toSelector(
-						// If the preceding token was a descendant combinator, insert an implicit any-element `*`
-						tokens.slice( 0, i - 1 ).concat({ value: tokens[ i - 2 ].type === " " ? "*" : "" })
+
+					// If the preceding token was a descendant combinator, insert an implicit any-element `*`
+					tokens
+						.slice( 0, i - 1 )
+						.concat( { value: tokens[ i - 2 ].type === " " ? "*" : "" } )
 					).replace( rtrim, "$1" ),
 					matcher,
 					i < j && matcherFromTokens( tokens.slice( i, j ) ),
-					j < len && matcherFromTokens( (tokens = tokens.slice( j )) ),
+					j < len && matcherFromTokens( ( tokens = tokens.slice( j ) ) ),
 					j < len && toSelector( tokens )
 				);
 			}
@@ -4163,28 +7425,40 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 				unmatched = seed && [],
 				setMatched = [],
 				contextBackup = outermostContext,
+
 				// We must always have either seed elements or outermost context
-				elems = seed || byElement && Expr.find["TAG"]( "*", outermost ),
+				elems = seed || byElement && Expr.find[ "TAG" ]( "*", outermost ),
+
 				// Use integer dirruns iff this is the outermost matcher
-				dirrunsUnique = (dirruns += contextBackup == null ? 1 : Math.random() || 0.1),
+				dirrunsUnique = ( dirruns += contextBackup == null ? 1 : Math.random() || 0.1 ),
 				len = elems.length;
 
 			if ( outermost ) {
-				outermostContext = context === document || context || outermost;
+
+				// Support: IE 11+, Edge 17 - 18+
+				// IE/Edge sometimes throw a "Permission denied" error when strict-comparing
+				// two documents; shallow comparisons work.
+				// eslint-disable-next-line eqeqeq
+				outermostContext = context == document || context || outermost;
 			}
 
 			// Add elements passing elementMatchers directly to results
 			// Support: IE<9, Safari
 			// Tolerate NodeList properties (IE: "length"; Safari: <number>) matching elements by id
-			for ( ; i !== len && (elem = elems[i]) != null; i++ ) {
+			for ( ; i !== len && ( elem = elems[ i ] ) != null; i++ ) {
 				if ( byElement && elem ) {
 					j = 0;
-					if ( !context && elem.ownerDocument !== document ) {
+
+					// Support: IE 11+, Edge 17 - 18+
+					// IE/Edge sometimes throw a "Permission denied" error when strict-comparing
+					// two documents; shallow comparisons work.
+					// eslint-disable-next-line eqeqeq
+					if ( !context && elem.ownerDocument != document ) {
 						setDocument( elem );
 						xml = !documentIsHTML;
 					}
-					while ( (matcher = elementMatchers[j++]) ) {
-						if ( matcher( elem, context || document, xml) ) {
+					while ( ( matcher = elementMatchers[ j++ ] ) ) {
+						if ( matcher( elem, context || document, xml ) ) {
 							results.push( elem );
 							break;
 						}
@@ -4196,8 +7470,9 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 
 				// Track unmatched elements for set filters
 				if ( bySet ) {
+
 					// They will have gone through all possible matchers
-					if ( (elem = !matcher && elem) ) {
+					if ( ( elem = !matcher && elem ) ) {
 						matchedCount--;
 					}
 
@@ -4221,16 +7496,17 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 			// numerically zero.
 			if ( bySet && i !== matchedCount ) {
 				j = 0;
-				while ( (matcher = setMatchers[j++]) ) {
+				while ( ( matcher = setMatchers[ j++ ] ) ) {
 					matcher( unmatched, setMatched, context, xml );
 				}
 
 				if ( seed ) {
+
 					// Reintegrate element matches to eliminate the need for sorting
 					if ( matchedCount > 0 ) {
 						while ( i-- ) {
-							if ( !(unmatched[i] || setMatched[i]) ) {
-								setMatched[i] = pop.call( results );
+							if ( !( unmatched[ i ] || setMatched[ i ] ) ) {
+								setMatched[ i ] = pop.call( results );
 							}
 						}
 					}
@@ -4271,13 +7547,14 @@ compile = Sizzle.compile = function( selector, match /* Internal Use Only */ ) {
 		cached = compilerCache[ selector + " " ];
 
 	if ( !cached ) {
+
 		// Generate a function of recursive functions that can be used to check each element
 		if ( !match ) {
 			match = tokenize( selector );
 		}
 		i = match.length;
 		while ( i-- ) {
-			cached = matcherFromTokens( match[i] );
+			cached = matcherFromTokens( match[ i ] );
 			if ( cached[ expando ] ) {
 				setMatchers.push( cached );
 			} else {
@@ -4286,7 +7563,10 @@ compile = Sizzle.compile = function( selector, match /* Internal Use Only */ ) {
 		}
 
 		// Cache the compiled function
-		cached = compilerCache( selector, matcherFromGroupMatchers( elementMatchers, setMatchers ) );
+		cached = compilerCache(
+			selector,
+			matcherFromGroupMatchers( elementMatchers, setMatchers )
+		);
 
 		// Save selector and tokenization
 		cached.selector = selector;
@@ -4306,7 +7586,7 @@ compile = Sizzle.compile = function( selector, match /* Internal Use Only */ ) {
 select = Sizzle.select = function( selector, context, results, seed ) {
 	var i, tokens, token, type, find,
 		compiled = typeof selector === "function" && selector,
-		match = !seed && tokenize( (selector = compiled.selector || selector) );
+		match = !seed && tokenize( ( selector = compiled.selector || selector ) );
 
 	results = results || [];
 
@@ -4315,11 +7595,12 @@ select = Sizzle.select = function( selector, context, results, seed ) {
 	if ( match.length === 1 ) {
 
 		// Reduce context if the leading compound selector is an ID
-		tokens = match[0] = match[0].slice( 0 );
-		if ( tokens.length > 2 && (token = tokens[0]).type === "ID" &&
-				context.nodeType === 9 && documentIsHTML && Expr.relative[ tokens[1].type ] ) {
+		tokens = match[ 0 ] = match[ 0 ].slice( 0 );
+		if ( tokens.length > 2 && ( token = tokens[ 0 ] ).type === "ID" &&
+			context.nodeType === 9 && documentIsHTML && Expr.relative[ tokens[ 1 ].type ] ) {
 
-			context = ( Expr.find["ID"]( token.matches[0].replace(runescape, funescape), context ) || [] )[0];
+			context = ( Expr.find[ "ID" ]( token.matches[ 0 ]
+				.replace( runescape, funescape ), context ) || [] )[ 0 ];
 			if ( !context ) {
 				return results;
 
@@ -4332,20 +7613,22 @@ select = Sizzle.select = function( selector, context, results, seed ) {
 		}
 
 		// Fetch a seed set for right-to-left matching
-		i = matchExpr["needsContext"].test( selector ) ? 0 : tokens.length;
+		i = matchExpr[ "needsContext" ].test( selector ) ? 0 : tokens.length;
 		while ( i-- ) {
-			token = tokens[i];
+			token = tokens[ i ];
 
 			// Abort if we hit a combinator
-			if ( Expr.relative[ (type = token.type) ] ) {
+			if ( Expr.relative[ ( type = token.type ) ] ) {
 				break;
 			}
-			if ( (find = Expr.find[ type ]) ) {
+			if ( ( find = Expr.find[ type ] ) ) {
+
 				// Search, expanding context for leading sibling combinators
-				if ( (seed = find(
-					token.matches[0].replace( runescape, funescape ),
-					rsibling.test( tokens[0].type ) && testContext( context.parentNode ) || context
-				)) ) {
+				if ( ( seed = find(
+					token.matches[ 0 ].replace( runescape, funescape ),
+					rsibling.test( tokens[ 0 ].type ) && testContext( context.parentNode ) ||
+						context
+				) ) ) {
 
 					// If seed is empty or no tokens remain, we can return early
 					tokens.splice( i, 1 );
@@ -4376,7 +7659,7 @@ select = Sizzle.select = function( selector, context, results, seed ) {
 // One-time assignments
 
 // Sort stability
-support.sortStable = expando.split("").sort( sortOrder ).join("") === expando;
+support.sortStable = expando.split( "" ).sort( sortOrder ).join( "" ) === expando;
 
 // Support: Chrome 14-35+
 // Always assume duplicates if they aren't passed to the comparison function
@@ -4387,58 +7670,59 @@ setDocument();
 
 // Support: Webkit<537.32 - Safari 6.0.3/Chrome 25 (fixed in Chrome 27)
 // Detached nodes confoundingly follow *each other*
-support.sortDetached = assert(function( el ) {
+support.sortDetached = assert( function( el ) {
+
 	// Should return 1, but returns 4 (following)
-	return el.compareDocumentPosition( document.createElement("fieldset") ) & 1;
-});
+	return el.compareDocumentPosition( document.createElement( "fieldset" ) ) & 1;
+} );
 
 // Support: IE<8
 // Prevent attribute/property "interpolation"
 // https://msdn.microsoft.com/en-us/library/ms536429%28VS.85%29.aspx
-if ( !assert(function( el ) {
+if ( !assert( function( el ) {
 	el.innerHTML = "<a href='#'></a>";
-	return el.firstChild.getAttribute("href") === "#" ;
-}) ) {
+	return el.firstChild.getAttribute( "href" ) === "#";
+} ) ) {
 	addHandle( "type|href|height|width", function( elem, name, isXML ) {
 		if ( !isXML ) {
 			return elem.getAttribute( name, name.toLowerCase() === "type" ? 1 : 2 );
 		}
-	});
+	} );
 }
 
 // Support: IE<9
 // Use defaultValue in place of getAttribute("value")
-if ( !support.attributes || !assert(function( el ) {
+if ( !support.attributes || !assert( function( el ) {
 	el.innerHTML = "<input/>";
 	el.firstChild.setAttribute( "value", "" );
 	return el.firstChild.getAttribute( "value" ) === "";
-}) ) {
-	addHandle( "value", function( elem, name, isXML ) {
+} ) ) {
+	addHandle( "value", function( elem, _name, isXML ) {
 		if ( !isXML && elem.nodeName.toLowerCase() === "input" ) {
 			return elem.defaultValue;
 		}
-	});
+	} );
 }
 
 // Support: IE<9
 // Use getAttributeNode to fetch booleans when getAttribute lies
-if ( !assert(function( el ) {
-	return el.getAttribute("disabled") == null;
-}) ) {
+if ( !assert( function( el ) {
+	return el.getAttribute( "disabled" ) == null;
+} ) ) {
 	addHandle( booleans, function( elem, name, isXML ) {
 		var val;
 		if ( !isXML ) {
 			return elem[ name ] === true ? name.toLowerCase() :
-					(val = elem.getAttributeNode( name )) && val.specified ?
+				( val = elem.getAttributeNode( name ) ) && val.specified ?
 					val.value :
-				null;
+					null;
 		}
-	});
+	} );
 }
 
 return Sizzle;
 
-})( window );
+} )( window );
 
 
 
@@ -4807,7 +8091,7 @@ jQuery.each( {
 	parents: function( elem ) {
 		return dir( elem, "parentNode" );
 	},
-	parentsUntil: function( elem, i, until ) {
+	parentsUntil: function( elem, _i, until ) {
 		return dir( elem, "parentNode", until );
 	},
 	next: function( elem ) {
@@ -4822,10 +8106,10 @@ jQuery.each( {
 	prevAll: function( elem ) {
 		return dir( elem, "previousSibling" );
 	},
-	nextUntil: function( elem, i, until ) {
+	nextUntil: function( elem, _i, until ) {
 		return dir( elem, "nextSibling", until );
 	},
-	prevUntil: function( elem, i, until ) {
+	prevUntil: function( elem, _i, until ) {
 		return dir( elem, "previousSibling", until );
 	},
 	siblings: function( elem ) {
@@ -4835,7 +8119,13 @@ jQuery.each( {
 		return siblings( elem.firstChild );
 	},
 	contents: function( elem ) {
-		if ( typeof elem.contentDocument !== "undefined" ) {
+		if ( elem.contentDocument != null &&
+
+			// Support: IE 11+
+			// <object> elements with no `data` attribute has an object
+			// `contentDocument` with a `null` prototype.
+			getProto( elem.contentDocument ) ) {
+
 			return elem.contentDocument;
 		}
 
@@ -5178,7 +8468,7 @@ jQuery.extend( {
 					var fns = arguments;
 
 					return jQuery.Deferred( function( newDefer ) {
-						jQuery.each( tuples, function( i, tuple ) {
+						jQuery.each( tuples, function( _i, tuple ) {
 
 							// Map tuples (progress, done, fail) to arguments (done, fail, progress)
 							var fn = isFunction( fns[ tuple[ 4 ] ] ) && fns[ tuple[ 4 ] ];
@@ -5631,7 +8921,7 @@ var access = function( elems, fn, key, value, chainable, emptyGet, raw ) {
 			// ...except when executing function values
 			} else {
 				bulk = fn;
-				fn = function( elem, key, value ) {
+				fn = function( elem, _key, value ) {
 					return bulk.call( jQuery( elem ), value );
 				};
 			}
@@ -5666,7 +8956,7 @@ var rmsPrefix = /^-ms-/,
 	rdashAlpha = /-([a-z])/g;
 
 // Used by camelCase as callback to replace()
-function fcamelCase( all, letter ) {
+function fcamelCase( _all, letter ) {
 	return letter.toUpperCase();
 }
 
@@ -5705,7 +8995,7 @@ Data.prototype = {
 
 		// If not, create one
 		if ( !value ) {
-			value = {};
+			value = Object.create( null );
 
 			// We can accept data for non-element nodes in modern browsers,
 			// but we should not, see #8335.
@@ -6194,27 +9484,6 @@ var isHiddenWithinTree = function( elem, el ) {
 			jQuery.css( elem, "display" ) === "none";
 	};
 
-var swap = function( elem, options, callback, args ) {
-	var ret, name,
-		old = {};
-
-	// Remember the old values, and insert the new ones
-	for ( name in options ) {
-		old[ name ] = elem.style[ name ];
-		elem.style[ name ] = options[ name ];
-	}
-
-	ret = callback.apply( elem, args || [] );
-
-	// Revert the old values
-	for ( name in options ) {
-		elem.style[ name ] = old[ name ];
-	}
-
-	return ret;
-};
-
-
 
 
 function adjustCSS( elem, prop, valueParts, tween ) {
@@ -6385,11 +9654,40 @@ var rscriptType = ( /^$|^module$|\/(?:java|ecma)script/i );
 
 
 
-// We have to close these tags to support XHTML (#13200)
-var wrapMap = {
+( function() {
+	var fragment = document.createDocumentFragment(),
+		div = fragment.appendChild( document.createElement( "div" ) ),
+		input = document.createElement( "input" );
+
+	// Support: Android 4.0 - 4.3 only
+	// Check state lost if the name is set (#11217)
+	// Support: Windows Web Apps (WWA)
+	// `name` and `type` must use .setAttribute for WWA (#14901)
+	input.setAttribute( "type", "radio" );
+	input.setAttribute( "checked", "checked" );
+	input.setAttribute( "name", "t" );
+
+	div.appendChild( input );
+
+	// Support: Android <=4.1 only
+	// Older WebKit doesn't clone checked state correctly in fragments
+	support.checkClone = div.cloneNode( true ).cloneNode( true ).lastChild.checked;
+
+	// Support: IE <=11 only
+	// Make sure textarea (and checkbox) defaultValue is properly cloned
+	div.innerHTML = "<textarea>x</textarea>";
+	support.noCloneChecked = !!div.cloneNode( true ).lastChild.defaultValue;
 
 	// Support: IE <=9 only
-	option: [ 1, "<select multiple='multiple'>", "</select>" ],
+	// IE <=9 replaces <option> tags with their contents when inserted outside of
+	// the select element.
+	div.innerHTML = "<option></option>";
+	support.option = !!div.lastChild;
+} )();
+
+
+// We have to close these tags to support XHTML (#13200)
+var wrapMap = {
 
 	// XHTML parsers do not magically insert elements in the
 	// same way that tag soup parsers do. So we cannot shorten
@@ -6402,11 +9700,13 @@ var wrapMap = {
 	_default: [ 0, "", "" ]
 };
 
-// Support: IE <=9 only
-wrapMap.optgroup = wrapMap.option;
-
 wrapMap.tbody = wrapMap.tfoot = wrapMap.colgroup = wrapMap.caption = wrapMap.thead;
 wrapMap.th = wrapMap.td;
+
+// Support: IE <=9 only
+if ( !support.option ) {
+	wrapMap.optgroup = wrapMap.option = [ 1, "<select multiple='multiple'>", "</select>" ];
+}
 
 
 function getAll( context, tag ) {
@@ -6540,32 +9840,6 @@ function buildFragment( elems, context, scripts, selection, ignored ) {
 }
 
 
-( function() {
-	var fragment = document.createDocumentFragment(),
-		div = fragment.appendChild( document.createElement( "div" ) ),
-		input = document.createElement( "input" );
-
-	// Support: Android 4.0 - 4.3 only
-	// Check state lost if the name is set (#11217)
-	// Support: Windows Web Apps (WWA)
-	// `name` and `type` must use .setAttribute for WWA (#14901)
-	input.setAttribute( "type", "radio" );
-	input.setAttribute( "checked", "checked" );
-	input.setAttribute( "name", "t" );
-
-	div.appendChild( input );
-
-	// Support: Android <=4.1 only
-	// Older WebKit doesn't clone checked state correctly in fragments
-	support.checkClone = div.cloneNode( true ).cloneNode( true ).lastChild.checked;
-
-	// Support: IE <=11 only
-	// Make sure textarea (and checkbox) defaultValue is properly cloned
-	div.innerHTML = "<textarea>x</textarea>";
-	support.noCloneChecked = !!div.cloneNode( true ).lastChild.defaultValue;
-} )();
-
-
 var
 	rkeyEvent = /^key/,
 	rmouseEvent = /^(?:mouse|pointer|contextmenu|drag|drop)|click/,
@@ -6674,8 +9948,8 @@ jQuery.event = {
 			special, handlers, type, namespaces, origType,
 			elemData = dataPriv.get( elem );
 
-		// Don't attach events to noData or text/comment nodes (but allow plain objects)
-		if ( !elemData ) {
+		// Only attach events to objects that accept data
+		if ( !acceptData( elem ) ) {
 			return;
 		}
 
@@ -6699,7 +9973,7 @@ jQuery.event = {
 
 		// Init the element's event structure and main handler, if this is the first
 		if ( !( events = elemData.events ) ) {
-			events = elemData.events = {};
+			events = elemData.events = Object.create( null );
 		}
 		if ( !( eventHandle = elemData.handle ) ) {
 			eventHandle = elemData.handle = function( e ) {
@@ -6857,12 +10131,15 @@ jQuery.event = {
 
 	dispatch: function( nativeEvent ) {
 
-		// Make a writable jQuery.Event from the native event object
-		var event = jQuery.event.fix( nativeEvent );
-
 		var i, j, ret, matched, handleObj, handlerQueue,
 			args = new Array( arguments.length ),
-			handlers = ( dataPriv.get( this, "events" ) || {} )[ event.type ] || [],
+
+			// Make a writable jQuery.Event from the native event object
+			event = jQuery.event.fix( nativeEvent ),
+
+			handlers = (
+					dataPriv.get( this, "events" ) || Object.create( null )
+				)[ event.type ] || [],
 			special = jQuery.event.special[ event.type ] || {};
 
 		// Use the fix-ed jQuery.Event rather than the (read-only) native event
@@ -7437,13 +10714,6 @@ jQuery.fn.extend( {
 
 var
 
-	/* eslint-disable max-len */
-
-	// See https://github.com/eslint/eslint/issues/3229
-	rxhtmlTag = /<(?!area|br|col|embed|hr|img|input|link|meta|param)(([a-z][^\/\0>\x20\t\r\n\f]*)[^>]*)\/>/gi,
-
-	/* eslint-enable */
-
 	// Support: IE <=10 - 11, Edge 12 - 13 only
 	// In IE/Edge using regex groups here causes severe slowdowns.
 	// See https://connect.microsoft.com/IE/feedback/details/1736512/
@@ -7480,7 +10750,7 @@ function restoreScript( elem ) {
 }
 
 function cloneCopyEvent( src, dest ) {
-	var i, l, type, pdataOld, pdataCur, udataOld, udataCur, events;
+	var i, l, type, pdataOld, udataOld, udataCur, events;
 
 	if ( dest.nodeType !== 1 ) {
 		return;
@@ -7488,13 +10758,11 @@ function cloneCopyEvent( src, dest ) {
 
 	// 1. Copy private data: events, handlers, etc.
 	if ( dataPriv.hasData( src ) ) {
-		pdataOld = dataPriv.access( src );
-		pdataCur = dataPriv.set( dest, pdataOld );
+		pdataOld = dataPriv.get( src );
 		events = pdataOld.events;
 
 		if ( events ) {
-			delete pdataCur.handle;
-			pdataCur.events = {};
+			dataPriv.remove( dest, "handle events" );
 
 			for ( type in events ) {
 				for ( i = 0, l = events[ type ].length; i < l; i++ ) {
@@ -7530,7 +10798,7 @@ function fixInput( src, dest ) {
 function domManip( collection, args, callback, ignored ) {
 
 	// Flatten any nested arrays
-	args = concat.apply( [], args );
+	args = flat( args );
 
 	var fragment, first, scripts, hasScripts, node, doc,
 		i = 0,
@@ -7605,7 +10873,7 @@ function domManip( collection, args, callback, ignored ) {
 							if ( jQuery._evalUrl && !node.noModule ) {
 								jQuery._evalUrl( node.src, {
 									nonce: node.nonce || node.getAttribute( "nonce" )
-								} );
+								}, doc );
 							}
 						} else {
 							DOMEval( node.textContent.replace( rcleanScript, "" ), node, doc );
@@ -7642,7 +10910,7 @@ function remove( elem, selector, keepData ) {
 
 jQuery.extend( {
 	htmlPrefilter: function( html ) {
-		return html.replace( rxhtmlTag, "<$1></$2>" );
+		return html;
 	},
 
 	clone: function( elem, dataAndEvents, deepDataAndEvents ) {
@@ -7904,6 +11172,27 @@ var getStyles = function( elem ) {
 		return view.getComputedStyle( elem );
 	};
 
+var swap = function( elem, options, callback ) {
+	var ret, name,
+		old = {};
+
+	// Remember the old values, and insert the new ones
+	for ( name in options ) {
+		old[ name ] = elem.style[ name ];
+		elem.style[ name ] = options[ name ];
+	}
+
+	ret = callback.call( elem );
+
+	// Revert the old values
+	for ( name in options ) {
+		elem.style[ name ] = old[ name ];
+	}
+
+	return ret;
+};
+
+
 var rboxStyle = new RegExp( cssExpand.join( "|" ), "i" );
 
 
@@ -7961,7 +11250,7 @@ var rboxStyle = new RegExp( cssExpand.join( "|" ), "i" );
 	}
 
 	var pixelPositionVal, boxSizingReliableVal, scrollboxSizeVal, pixelBoxStylesVal,
-		reliableMarginLeftVal,
+		reliableTrDimensionsVal, reliableMarginLeftVal,
 		container = document.createElement( "div" ),
 		div = document.createElement( "div" );
 
@@ -7996,6 +11285,35 @@ var rboxStyle = new RegExp( cssExpand.join( "|" ), "i" );
 		scrollboxSize: function() {
 			computeStyleTests();
 			return scrollboxSizeVal;
+		},
+
+		// Support: IE 9 - 11+, Edge 15 - 18+
+		// IE/Edge misreport `getComputedStyle` of table rows with width/height
+		// set in CSS while `offset*` properties report correct values.
+		// Behavior in IE 9 is more subtle than in newer versions & it passes
+		// some versions of this test; make sure not to make it pass there!
+		reliableTrDimensions: function() {
+			var table, tr, trChild, trStyle;
+			if ( reliableTrDimensionsVal == null ) {
+				table = document.createElement( "table" );
+				tr = document.createElement( "tr" );
+				trChild = document.createElement( "div" );
+
+				table.style.cssText = "position:absolute;left:-11111px";
+				tr.style.height = "1px";
+				trChild.style.height = "9px";
+
+				documentElement
+					.appendChild( table )
+					.appendChild( tr )
+					.appendChild( trChild );
+
+				trStyle = window.getComputedStyle( tr );
+				reliableTrDimensionsVal = parseInt( trStyle.height ) > 3;
+
+				documentElement.removeChild( table );
+			}
+			return reliableTrDimensionsVal;
 		}
 	} );
 } )();
@@ -8120,7 +11438,7 @@ var
 		fontWeight: "400"
 	};
 
-function setPositiveNumber( elem, value, subtract ) {
+function setPositiveNumber( _elem, value, subtract ) {
 
 	// Any relative (+/-) values have already been
 	// normalized at this point
@@ -8225,17 +11543,26 @@ function getWidthOrHeight( elem, dimension, extra ) {
 	}
 
 
-	// Fall back to offsetWidth/offsetHeight when value is "auto"
-	// This happens for inline elements with no explicit setting (gh-3571)
-	// Support: Android <=4.1 - 4.3 only
-	// Also use offsetWidth/offsetHeight for misreported inline dimensions (gh-3602)
-	// Support: IE 9-11 only
-	// Also use offsetWidth/offsetHeight for when box sizing is unreliable
-	// We use getClientRects() to check for hidden/disconnected.
-	// In those cases, the computed value can be trusted to be border-box
+	// Support: IE 9 - 11 only
+	// Use offsetWidth/offsetHeight for when box sizing is unreliable.
+	// In those cases, the computed value can be trusted to be border-box.
 	if ( ( !support.boxSizingReliable() && isBorderBox ||
+
+		// Support: IE 10 - 11+, Edge 15 - 18+
+		// IE/Edge misreport `getComputedStyle` of table rows with width/height
+		// set in CSS while `offset*` properties report correct values.
+		// Interestingly, in some cases IE 9 doesn't suffer from this issue.
+		!support.reliableTrDimensions() && nodeName( elem, "tr" ) ||
+
+		// Fall back to offsetWidth/offsetHeight when value is "auto"
+		// This happens for inline elements with no explicit setting (gh-3571)
 		val === "auto" ||
+
+		// Support: Android <=4.1 - 4.3 only
+		// Also use offsetWidth/offsetHeight for misreported inline dimensions (gh-3602)
 		!parseFloat( val ) && jQuery.css( elem, "display", false, styles ) === "inline" ) &&
+
+		// Make sure the element is visible & connected
 		elem.getClientRects().length ) {
 
 		isBorderBox = jQuery.css( elem, "boxSizing", false, styles ) === "border-box";
@@ -8430,7 +11757,7 @@ jQuery.extend( {
 	}
 } );
 
-jQuery.each( [ "height", "width" ], function( i, dimension ) {
+jQuery.each( [ "height", "width" ], function( _i, dimension ) {
 	jQuery.cssHooks[ dimension ] = {
 		get: function( elem, computed, extra ) {
 			if ( computed ) {
@@ -9203,7 +12530,7 @@ jQuery.fn.extend( {
 			clearQueue = type;
 			type = undefined;
 		}
-		if ( clearQueue && type !== false ) {
+		if ( clearQueue ) {
 			this.queue( type || "fx", [] );
 		}
 
@@ -9286,7 +12613,7 @@ jQuery.fn.extend( {
 	}
 } );
 
-jQuery.each( [ "toggle", "show", "hide" ], function( i, name ) {
+jQuery.each( [ "toggle", "show", "hide" ], function( _i, name ) {
 	var cssFn = jQuery.fn[ name ];
 	jQuery.fn[ name ] = function( speed, easing, callback ) {
 		return speed == null || typeof speed === "boolean" ?
@@ -9507,7 +12834,7 @@ boolHook = {
 	}
 };
 
-jQuery.each( jQuery.expr.match.bool.source.match( /\w+/g ), function( i, name ) {
+jQuery.each( jQuery.expr.match.bool.source.match( /\w+/g ), function( _i, name ) {
 	var getter = attrHandle[ name ] || jQuery.find.attr;
 
 	attrHandle[ name ] = function( elem, name, isXML ) {
@@ -10131,7 +13458,9 @@ jQuery.extend( jQuery.event, {
 				special.bindType || type;
 
 			// jQuery handler
-			handle = ( dataPriv.get( cur, "events" ) || {} )[ event.type ] &&
+			handle = (
+					dataPriv.get( cur, "events" ) || Object.create( null )
+				)[ event.type ] &&
 				dataPriv.get( cur, "handle" );
 			if ( handle ) {
 				handle.apply( cur, data );
@@ -10242,7 +13571,10 @@ if ( !support.focusin ) {
 
 		jQuery.event.special[ fix ] = {
 			setup: function() {
-				var doc = this.ownerDocument || this,
+
+				// Handle: regular nodes (via `this.ownerDocument`), window
+				// (via `this.document`) & document (via `this`).
+				var doc = this.ownerDocument || this.document || this,
 					attaches = dataPriv.access( doc, fix );
 
 				if ( !attaches ) {
@@ -10251,7 +13583,7 @@ if ( !support.focusin ) {
 				dataPriv.access( doc, fix, ( attaches || 0 ) + 1 );
 			},
 			teardown: function() {
-				var doc = this.ownerDocument || this,
+				var doc = this.ownerDocument || this.document || this,
 					attaches = dataPriv.access( doc, fix ) - 1;
 
 				if ( !attaches ) {
@@ -10267,7 +13599,7 @@ if ( !support.focusin ) {
 }
 var location = window.location;
 
-var nonce = Date.now();
+var nonce = { guid: Date.now() };
 
 var rquery = ( /\?/ );
 
@@ -10399,7 +13731,7 @@ jQuery.fn.extend( {
 				rsubmittable.test( this.nodeName ) && !rsubmitterTypes.test( type ) &&
 				( this.checked || !rcheckableType.test( type ) );
 		} )
-		.map( function( i, elem ) {
+		.map( function( _i, elem ) {
 			var val = jQuery( this ).val();
 
 			if ( val == null ) {
@@ -11012,7 +14344,8 @@ jQuery.extend( {
 			// Add or update anti-cache param if needed
 			if ( s.cache === false ) {
 				cacheURL = cacheURL.replace( rantiCache, "$1" );
-				uncached = ( rquery.test( cacheURL ) ? "&" : "?" ) + "_=" + ( nonce++ ) + uncached;
+				uncached = ( rquery.test( cacheURL ) ? "&" : "?" ) + "_=" + ( nonce.guid++ ) +
+					uncached;
 			}
 
 			// Put hash and anti-cache on the URL that will be requested (gh-1732)
@@ -11145,6 +14478,11 @@ jQuery.extend( {
 				response = ajaxHandleResponses( s, jqXHR, responses );
 			}
 
+			// Use a noop converter for missing script
+			if ( !isSuccess && jQuery.inArray( "script", s.dataTypes ) > -1 ) {
+				s.converters[ "text script" ] = function() {};
+			}
+
 			// Convert no matter what (that way responseXXX fields are always set)
 			response = ajaxConvert( s, response, jqXHR, isSuccess );
 
@@ -11235,7 +14573,7 @@ jQuery.extend( {
 	}
 } );
 
-jQuery.each( [ "get", "post" ], function( i, method ) {
+jQuery.each( [ "get", "post" ], function( _i, method ) {
 	jQuery[ method ] = function( url, data, callback, type ) {
 
 		// Shift arguments if data argument was omitted
@@ -11256,8 +14594,17 @@ jQuery.each( [ "get", "post" ], function( i, method ) {
 	};
 } );
 
+jQuery.ajaxPrefilter( function( s ) {
+	var i;
+	for ( i in s.headers ) {
+		if ( i.toLowerCase() === "content-type" ) {
+			s.contentType = s.headers[ i ] || "";
+		}
+	}
+} );
 
-jQuery._evalUrl = function( url, options ) {
+
+jQuery._evalUrl = function( url, options, doc ) {
 	return jQuery.ajax( {
 		url: url,
 
@@ -11275,7 +14622,7 @@ jQuery._evalUrl = function( url, options ) {
 			"text script": function() {}
 		},
 		dataFilter: function( response ) {
-			jQuery.globalEval( response, options );
+			jQuery.globalEval( response, options, doc );
 		}
 	} );
 };
@@ -11597,7 +14944,7 @@ var oldCallbacks = [],
 jQuery.ajaxSetup( {
 	jsonp: "callback",
 	jsonpCallback: function() {
-		var callback = oldCallbacks.pop() || ( jQuery.expando + "_" + ( nonce++ ) );
+		var callback = oldCallbacks.pop() || ( jQuery.expando + "_" + ( nonce.guid++ ) );
 		this[ callback ] = true;
 		return callback;
 	}
@@ -11814,23 +15161,6 @@ jQuery.fn.load = function( url, params, callback ) {
 
 
 
-// Attach a bunch of functions for handling common AJAX events
-jQuery.each( [
-	"ajaxStart",
-	"ajaxStop",
-	"ajaxComplete",
-	"ajaxError",
-	"ajaxSuccess",
-	"ajaxSend"
-], function( i, type ) {
-	jQuery.fn[ type ] = function( fn ) {
-		return this.on( type, fn );
-	};
-} );
-
-
-
-
 jQuery.expr.pseudos.animated = function( elem ) {
 	return jQuery.grep( jQuery.timers, function( fn ) {
 		return elem === fn.elem;
@@ -11887,6 +15217,12 @@ jQuery.offset = {
 			options.using.call( elem, props );
 
 		} else {
+			if ( typeof props.top === "number" ) {
+				props.top += "px";
+			}
+			if ( typeof props.left === "number" ) {
+				props.left += "px";
+			}
 			curElem.css( props );
 		}
 	}
@@ -12037,7 +15373,7 @@ jQuery.each( { scrollLeft: "pageXOffset", scrollTop: "pageYOffset" }, function( 
 // Blink bug: https://bugs.chromium.org/p/chromium/issues/detail?id=589347
 // getComputedStyle returns percent when specified for top/left/bottom/right;
 // rather than make the css module depend on the offset module, just check for it here
-jQuery.each( [ "top", "left" ], function( i, prop ) {
+jQuery.each( [ "top", "left" ], function( _i, prop ) {
 	jQuery.cssHooks[ prop ] = addGetHookIf( support.pixelPosition,
 		function( elem, computed ) {
 			if ( computed ) {
@@ -12100,23 +15436,17 @@ jQuery.each( { Height: "height", Width: "width" }, function( name, type ) {
 } );
 
 
-jQuery.each( ( "blur focus focusin focusout resize scroll click dblclick " +
-	"mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave " +
-	"change select submit keydown keypress keyup contextmenu" ).split( " " ),
-	function( i, name ) {
-
-	// Handle event binding
-	jQuery.fn[ name ] = function( data, fn ) {
-		return arguments.length > 0 ?
-			this.on( name, null, data, fn ) :
-			this.trigger( name );
+jQuery.each( [
+	"ajaxStart",
+	"ajaxStop",
+	"ajaxComplete",
+	"ajaxError",
+	"ajaxSuccess",
+	"ajaxSend"
+], function( _i, type ) {
+	jQuery.fn[ type ] = function( fn ) {
+		return this.on( type, fn );
 	};
-} );
-
-jQuery.fn.extend( {
-	hover: function( fnOver, fnOut ) {
-		return this.mouseenter( fnOver ).mouseleave( fnOut || fnOver );
-	}
 } );
 
 
@@ -12140,8 +15470,32 @@ jQuery.fn.extend( {
 		return arguments.length === 1 ?
 			this.off( selector, "**" ) :
 			this.off( types, selector || "**", fn );
+	},
+
+	hover: function( fnOver, fnOut ) {
+		return this.mouseenter( fnOver ).mouseleave( fnOut || fnOver );
 	}
 } );
+
+jQuery.each( ( "blur focus focusin focusout resize scroll click dblclick " +
+	"mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave " +
+	"change select submit keydown keypress keyup contextmenu" ).split( " " ),
+	function( _i, name ) {
+
+		// Handle event binding
+		jQuery.fn[ name ] = function( data, fn ) {
+			return arguments.length > 0 ?
+				this.on( name, null, data, fn ) :
+				this.trigger( name );
+		};
+	} );
+
+
+
+
+// Support: Android <=4.0 only
+// Make sure we trim BOM and NBSP
+var rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
 
 // Bind a function to a context, optionally partially applying any
 // arguments.
@@ -12205,6 +15559,11 @@ jQuery.isNumeric = function( obj ) {
 		!isNaN( obj - parseFloat( obj ) );
 };
 
+jQuery.trim = function( text ) {
+	return text == null ?
+		"" :
+		( text + "" ).replace( rtrim, "" );
+};
 
 
 
@@ -12254,7 +15613,7 @@ jQuery.noConflict = function( deep ) {
 // Expose jQuery and $ identifiers, even in AMD
 // (#7102#comment:10, https://github.com/jquery/jquery/pull/557)
 // and CommonJS for browser emulators (#13566)
-if ( !noGlobal ) {
+if ( typeof noGlobal === "undefined" ) {
 	window.jQuery = window.$ = jQuery;
 }
 
@@ -14862,7 +18221,7 @@ module.exports = ReactPropTypesSecret;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/** @license React v16.13.0
+/** @license React v16.13.1
  * react-dom.development.js
  *
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -14881,9 +18240,9 @@ if (true) {
 
 var React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 var _assign = __webpack_require__(/*! object-assign */ "./node_modules/object-assign/index.js");
-var Scheduler = __webpack_require__(/*! scheduler */ "./node_modules/react-dom/node_modules/scheduler/index.js");
+var Scheduler = __webpack_require__(/*! scheduler */ "./node_modules/scheduler/index.js");
 var checkPropTypes = __webpack_require__(/*! prop-types/checkPropTypes */ "./node_modules/prop-types/checkPropTypes.js");
-var tracing = __webpack_require__(/*! scheduler/tracing */ "./node_modules/react-dom/node_modules/scheduler/tracing.js");
+var tracing = __webpack_require__(/*! scheduler/tracing */ "./node_modules/scheduler/tracing.js");
 
 var ReactSharedInternals = React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED; // Prevent newer renderers from RTE when used with older react package versions.
 // Current owner and dispatcher used to share the same ref,
@@ -15308,271 +18667,6 @@ var SuspenseListComponent = 19;
 var FundamentalComponent = 20;
 var ScopeComponent = 21;
 var Block = 22;
-
-var BEFORE_SLASH_RE = /^(.*)[\\\/]/;
-function describeComponentFrame (name, source, ownerName) {
-  var sourceInfo = '';
-
-  if (source) {
-    var path = source.fileName;
-    var fileName = path.replace(BEFORE_SLASH_RE, '');
-
-    {
-      // In DEV, include code for a common special case:
-      // prefer "folder/index.js" instead of just "index.js".
-      if (/^index\./.test(fileName)) {
-        var match = path.match(BEFORE_SLASH_RE);
-
-        if (match) {
-          var pathBeforeSlash = match[1];
-
-          if (pathBeforeSlash) {
-            var folderName = pathBeforeSlash.replace(BEFORE_SLASH_RE, '');
-            fileName = folderName + '/' + fileName;
-          }
-        }
-      }
-    }
-
-    sourceInfo = ' (at ' + fileName + ':' + source.lineNumber + ')';
-  } else if (ownerName) {
-    sourceInfo = ' (created by ' + ownerName + ')';
-  }
-
-  return '\n    in ' + (name || 'Unknown') + sourceInfo;
-}
-
-// The Symbol used to tag the ReactElement-like types. If there is no native Symbol
-// nor polyfill, then a plain number is used for performance.
-var hasSymbol = typeof Symbol === 'function' && Symbol.for;
-var REACT_ELEMENT_TYPE = hasSymbol ? Symbol.for('react.element') : 0xeac7;
-var REACT_PORTAL_TYPE = hasSymbol ? Symbol.for('react.portal') : 0xeaca;
-var REACT_FRAGMENT_TYPE = hasSymbol ? Symbol.for('react.fragment') : 0xeacb;
-var REACT_STRICT_MODE_TYPE = hasSymbol ? Symbol.for('react.strict_mode') : 0xeacc;
-var REACT_PROFILER_TYPE = hasSymbol ? Symbol.for('react.profiler') : 0xead2;
-var REACT_PROVIDER_TYPE = hasSymbol ? Symbol.for('react.provider') : 0xeacd;
-var REACT_CONTEXT_TYPE = hasSymbol ? Symbol.for('react.context') : 0xeace; // TODO: We don't use AsyncMode or ConcurrentMode anymore. They were temporary
-var REACT_CONCURRENT_MODE_TYPE = hasSymbol ? Symbol.for('react.concurrent_mode') : 0xeacf;
-var REACT_FORWARD_REF_TYPE = hasSymbol ? Symbol.for('react.forward_ref') : 0xead0;
-var REACT_SUSPENSE_TYPE = hasSymbol ? Symbol.for('react.suspense') : 0xead1;
-var REACT_SUSPENSE_LIST_TYPE = hasSymbol ? Symbol.for('react.suspense_list') : 0xead8;
-var REACT_MEMO_TYPE = hasSymbol ? Symbol.for('react.memo') : 0xead3;
-var REACT_LAZY_TYPE = hasSymbol ? Symbol.for('react.lazy') : 0xead4;
-var REACT_BLOCK_TYPE = hasSymbol ? Symbol.for('react.block') : 0xead9;
-var MAYBE_ITERATOR_SYMBOL = typeof Symbol === 'function' && Symbol.iterator;
-var FAUX_ITERATOR_SYMBOL = '@@iterator';
-function getIteratorFn(maybeIterable) {
-  if (maybeIterable === null || typeof maybeIterable !== 'object') {
-    return null;
-  }
-
-  var maybeIterator = MAYBE_ITERATOR_SYMBOL && maybeIterable[MAYBE_ITERATOR_SYMBOL] || maybeIterable[FAUX_ITERATOR_SYMBOL];
-
-  if (typeof maybeIterator === 'function') {
-    return maybeIterator;
-  }
-
-  return null;
-}
-
-var Uninitialized = -1;
-var Pending = 0;
-var Resolved = 1;
-var Rejected = 2;
-function refineResolvedLazyComponent(lazyComponent) {
-  return lazyComponent._status === Resolved ? lazyComponent._result : null;
-}
-function initializeLazyComponentType(lazyComponent) {
-  if (lazyComponent._status === Uninitialized) {
-    lazyComponent._status = Pending;
-    var ctor = lazyComponent._ctor;
-    var thenable = ctor();
-    lazyComponent._result = thenable;
-    thenable.then(function (moduleObject) {
-      if (lazyComponent._status === Pending) {
-        var defaultExport = moduleObject.default;
-
-        {
-          if (defaultExport === undefined) {
-            error('lazy: Expected the result of a dynamic import() call. ' + 'Instead received: %s\n\nYour code should look like: \n  ' + "const MyComponent = lazy(() => import('./MyComponent'))", moduleObject);
-          }
-        }
-
-        lazyComponent._status = Resolved;
-        lazyComponent._result = defaultExport;
-      }
-    }, function (error) {
-      if (lazyComponent._status === Pending) {
-        lazyComponent._status = Rejected;
-        lazyComponent._result = error;
-      }
-    });
-  }
-}
-
-function getWrappedName(outerType, innerType, wrapperName) {
-  var functionName = innerType.displayName || innerType.name || '';
-  return outerType.displayName || (functionName !== '' ? wrapperName + "(" + functionName + ")" : wrapperName);
-}
-
-function getComponentName(type) {
-  if (type == null) {
-    // Host root, text node or just invalid type.
-    return null;
-  }
-
-  {
-    if (typeof type.tag === 'number') {
-      error('Received an unexpected object in getComponentName(). ' + 'This is likely a bug in React. Please file an issue.');
-    }
-  }
-
-  if (typeof type === 'function') {
-    return type.displayName || type.name || null;
-  }
-
-  if (typeof type === 'string') {
-    return type;
-  }
-
-  switch (type) {
-    case REACT_FRAGMENT_TYPE:
-      return 'Fragment';
-
-    case REACT_PORTAL_TYPE:
-      return 'Portal';
-
-    case REACT_PROFILER_TYPE:
-      return "Profiler";
-
-    case REACT_STRICT_MODE_TYPE:
-      return 'StrictMode';
-
-    case REACT_SUSPENSE_TYPE:
-      return 'Suspense';
-
-    case REACT_SUSPENSE_LIST_TYPE:
-      return 'SuspenseList';
-  }
-
-  if (typeof type === 'object') {
-    switch (type.$$typeof) {
-      case REACT_CONTEXT_TYPE:
-        return 'Context.Consumer';
-
-      case REACT_PROVIDER_TYPE:
-        return 'Context.Provider';
-
-      case REACT_FORWARD_REF_TYPE:
-        return getWrappedName(type, type.render, 'ForwardRef');
-
-      case REACT_MEMO_TYPE:
-        return getComponentName(type.type);
-
-      case REACT_BLOCK_TYPE:
-        return getComponentName(type.render);
-
-      case REACT_LAZY_TYPE:
-        {
-          var thenable = type;
-          var resolvedThenable = refineResolvedLazyComponent(thenable);
-
-          if (resolvedThenable) {
-            return getComponentName(resolvedThenable);
-          }
-
-          break;
-        }
-    }
-  }
-
-  return null;
-}
-
-var ReactDebugCurrentFrame = ReactSharedInternals.ReactDebugCurrentFrame;
-
-function describeFiber(fiber) {
-  switch (fiber.tag) {
-    case HostRoot:
-    case HostPortal:
-    case HostText:
-    case Fragment:
-    case ContextProvider:
-    case ContextConsumer:
-      return '';
-
-    default:
-      var owner = fiber._debugOwner;
-      var source = fiber._debugSource;
-      var name = getComponentName(fiber.type);
-      var ownerName = null;
-
-      if (owner) {
-        ownerName = getComponentName(owner.type);
-      }
-
-      return describeComponentFrame(name, source, ownerName);
-  }
-}
-
-function getStackByFiberInDevAndProd(workInProgress) {
-  var info = '';
-  var node = workInProgress;
-
-  do {
-    info += describeFiber(node);
-    node = node.return;
-  } while (node);
-
-  return info;
-}
-var current = null;
-var phase = null;
-function getCurrentFiberOwnerNameInDevOrNull() {
-  {
-    if (current === null) {
-      return null;
-    }
-
-    var owner = current._debugOwner;
-
-    if (owner !== null && typeof owner !== 'undefined') {
-      return getComponentName(owner.type);
-    }
-  }
-
-  return null;
-}
-function getCurrentFiberStackInDev() {
-  {
-    if (current === null) {
-      return '';
-    } // Safe because if current fiber exists, we are reconciling,
-    // and it is guaranteed to be the work-in-progress version.
-
-
-    return getStackByFiberInDevAndProd(current);
-  }
-}
-function resetCurrentFiber() {
-  {
-    ReactDebugCurrentFrame.getCurrentStack = null;
-    current = null;
-    phase = null;
-  }
-}
-function setCurrentFiber(fiber) {
-  {
-    ReactDebugCurrentFrame.getCurrentStack = getCurrentFiberStackInDev;
-    current = fiber;
-    phase = null;
-  }
-}
-function setCurrentPhase(lifeCyclePhase) {
-  {
-    phase = lifeCyclePhase;
-  }
-}
 
 /**
  * Injectable ordering of event plugins.
@@ -16273,10 +19367,10 @@ properties[xlinkHref] = new PropertyInfoRecord('xlinkHref', STRING, false, // mu
   true);
 });
 
-var ReactDebugCurrentFrame$1 = null;
+var ReactDebugCurrentFrame = null;
 
 {
-  ReactDebugCurrentFrame$1 = ReactSharedInternals.ReactDebugCurrentFrame;
+  ReactDebugCurrentFrame = ReactSharedInternals.ReactDebugCurrentFrame;
 } // A javascript: URL can contain leading C0 control or \u0020 SPACE,
 // and any newline or tab are filtered out as if they're not part of the URL.
 // https://url.spec.whatwg.org/#url-parsing
@@ -16478,6 +19572,271 @@ function setValueForProperty(node, name, value, isCustomComponentTag) {
     } else {
       node.setAttribute(attributeName, attributeValue);
     }
+  }
+}
+
+var BEFORE_SLASH_RE = /^(.*)[\\\/]/;
+function describeComponentFrame (name, source, ownerName) {
+  var sourceInfo = '';
+
+  if (source) {
+    var path = source.fileName;
+    var fileName = path.replace(BEFORE_SLASH_RE, '');
+
+    {
+      // In DEV, include code for a common special case:
+      // prefer "folder/index.js" instead of just "index.js".
+      if (/^index\./.test(fileName)) {
+        var match = path.match(BEFORE_SLASH_RE);
+
+        if (match) {
+          var pathBeforeSlash = match[1];
+
+          if (pathBeforeSlash) {
+            var folderName = pathBeforeSlash.replace(BEFORE_SLASH_RE, '');
+            fileName = folderName + '/' + fileName;
+          }
+        }
+      }
+    }
+
+    sourceInfo = ' (at ' + fileName + ':' + source.lineNumber + ')';
+  } else if (ownerName) {
+    sourceInfo = ' (created by ' + ownerName + ')';
+  }
+
+  return '\n    in ' + (name || 'Unknown') + sourceInfo;
+}
+
+// The Symbol used to tag the ReactElement-like types. If there is no native Symbol
+// nor polyfill, then a plain number is used for performance.
+var hasSymbol = typeof Symbol === 'function' && Symbol.for;
+var REACT_ELEMENT_TYPE = hasSymbol ? Symbol.for('react.element') : 0xeac7;
+var REACT_PORTAL_TYPE = hasSymbol ? Symbol.for('react.portal') : 0xeaca;
+var REACT_FRAGMENT_TYPE = hasSymbol ? Symbol.for('react.fragment') : 0xeacb;
+var REACT_STRICT_MODE_TYPE = hasSymbol ? Symbol.for('react.strict_mode') : 0xeacc;
+var REACT_PROFILER_TYPE = hasSymbol ? Symbol.for('react.profiler') : 0xead2;
+var REACT_PROVIDER_TYPE = hasSymbol ? Symbol.for('react.provider') : 0xeacd;
+var REACT_CONTEXT_TYPE = hasSymbol ? Symbol.for('react.context') : 0xeace; // TODO: We don't use AsyncMode or ConcurrentMode anymore. They were temporary
+var REACT_CONCURRENT_MODE_TYPE = hasSymbol ? Symbol.for('react.concurrent_mode') : 0xeacf;
+var REACT_FORWARD_REF_TYPE = hasSymbol ? Symbol.for('react.forward_ref') : 0xead0;
+var REACT_SUSPENSE_TYPE = hasSymbol ? Symbol.for('react.suspense') : 0xead1;
+var REACT_SUSPENSE_LIST_TYPE = hasSymbol ? Symbol.for('react.suspense_list') : 0xead8;
+var REACT_MEMO_TYPE = hasSymbol ? Symbol.for('react.memo') : 0xead3;
+var REACT_LAZY_TYPE = hasSymbol ? Symbol.for('react.lazy') : 0xead4;
+var REACT_BLOCK_TYPE = hasSymbol ? Symbol.for('react.block') : 0xead9;
+var MAYBE_ITERATOR_SYMBOL = typeof Symbol === 'function' && Symbol.iterator;
+var FAUX_ITERATOR_SYMBOL = '@@iterator';
+function getIteratorFn(maybeIterable) {
+  if (maybeIterable === null || typeof maybeIterable !== 'object') {
+    return null;
+  }
+
+  var maybeIterator = MAYBE_ITERATOR_SYMBOL && maybeIterable[MAYBE_ITERATOR_SYMBOL] || maybeIterable[FAUX_ITERATOR_SYMBOL];
+
+  if (typeof maybeIterator === 'function') {
+    return maybeIterator;
+  }
+
+  return null;
+}
+
+var Uninitialized = -1;
+var Pending = 0;
+var Resolved = 1;
+var Rejected = 2;
+function refineResolvedLazyComponent(lazyComponent) {
+  return lazyComponent._status === Resolved ? lazyComponent._result : null;
+}
+function initializeLazyComponentType(lazyComponent) {
+  if (lazyComponent._status === Uninitialized) {
+    lazyComponent._status = Pending;
+    var ctor = lazyComponent._ctor;
+    var thenable = ctor();
+    lazyComponent._result = thenable;
+    thenable.then(function (moduleObject) {
+      if (lazyComponent._status === Pending) {
+        var defaultExport = moduleObject.default;
+
+        {
+          if (defaultExport === undefined) {
+            error('lazy: Expected the result of a dynamic import() call. ' + 'Instead received: %s\n\nYour code should look like: \n  ' + "const MyComponent = lazy(() => import('./MyComponent'))", moduleObject);
+          }
+        }
+
+        lazyComponent._status = Resolved;
+        lazyComponent._result = defaultExport;
+      }
+    }, function (error) {
+      if (lazyComponent._status === Pending) {
+        lazyComponent._status = Rejected;
+        lazyComponent._result = error;
+      }
+    });
+  }
+}
+
+function getWrappedName(outerType, innerType, wrapperName) {
+  var functionName = innerType.displayName || innerType.name || '';
+  return outerType.displayName || (functionName !== '' ? wrapperName + "(" + functionName + ")" : wrapperName);
+}
+
+function getComponentName(type) {
+  if (type == null) {
+    // Host root, text node or just invalid type.
+    return null;
+  }
+
+  {
+    if (typeof type.tag === 'number') {
+      error('Received an unexpected object in getComponentName(). ' + 'This is likely a bug in React. Please file an issue.');
+    }
+  }
+
+  if (typeof type === 'function') {
+    return type.displayName || type.name || null;
+  }
+
+  if (typeof type === 'string') {
+    return type;
+  }
+
+  switch (type) {
+    case REACT_FRAGMENT_TYPE:
+      return 'Fragment';
+
+    case REACT_PORTAL_TYPE:
+      return 'Portal';
+
+    case REACT_PROFILER_TYPE:
+      return "Profiler";
+
+    case REACT_STRICT_MODE_TYPE:
+      return 'StrictMode';
+
+    case REACT_SUSPENSE_TYPE:
+      return 'Suspense';
+
+    case REACT_SUSPENSE_LIST_TYPE:
+      return 'SuspenseList';
+  }
+
+  if (typeof type === 'object') {
+    switch (type.$$typeof) {
+      case REACT_CONTEXT_TYPE:
+        return 'Context.Consumer';
+
+      case REACT_PROVIDER_TYPE:
+        return 'Context.Provider';
+
+      case REACT_FORWARD_REF_TYPE:
+        return getWrappedName(type, type.render, 'ForwardRef');
+
+      case REACT_MEMO_TYPE:
+        return getComponentName(type.type);
+
+      case REACT_BLOCK_TYPE:
+        return getComponentName(type.render);
+
+      case REACT_LAZY_TYPE:
+        {
+          var thenable = type;
+          var resolvedThenable = refineResolvedLazyComponent(thenable);
+
+          if (resolvedThenable) {
+            return getComponentName(resolvedThenable);
+          }
+
+          break;
+        }
+    }
+  }
+
+  return null;
+}
+
+var ReactDebugCurrentFrame$1 = ReactSharedInternals.ReactDebugCurrentFrame;
+
+function describeFiber(fiber) {
+  switch (fiber.tag) {
+    case HostRoot:
+    case HostPortal:
+    case HostText:
+    case Fragment:
+    case ContextProvider:
+    case ContextConsumer:
+      return '';
+
+    default:
+      var owner = fiber._debugOwner;
+      var source = fiber._debugSource;
+      var name = getComponentName(fiber.type);
+      var ownerName = null;
+
+      if (owner) {
+        ownerName = getComponentName(owner.type);
+      }
+
+      return describeComponentFrame(name, source, ownerName);
+  }
+}
+
+function getStackByFiberInDevAndProd(workInProgress) {
+  var info = '';
+  var node = workInProgress;
+
+  do {
+    info += describeFiber(node);
+    node = node.return;
+  } while (node);
+
+  return info;
+}
+var current = null;
+var isRendering = false;
+function getCurrentFiberOwnerNameInDevOrNull() {
+  {
+    if (current === null) {
+      return null;
+    }
+
+    var owner = current._debugOwner;
+
+    if (owner !== null && typeof owner !== 'undefined') {
+      return getComponentName(owner.type);
+    }
+  }
+
+  return null;
+}
+function getCurrentFiberStackInDev() {
+  {
+    if (current === null) {
+      return '';
+    } // Safe because if current fiber exists, we are reconciling,
+    // and it is guaranteed to be the work-in-progress version.
+
+
+    return getStackByFiberInDevAndProd(current);
+  }
+}
+function resetCurrentFiber() {
+  {
+    ReactDebugCurrentFrame$1.getCurrentStack = null;
+    current = null;
+    isRendering = false;
+  }
+}
+function setCurrentFiber(fiber) {
+  {
+    ReactDebugCurrentFrame$1.getCurrentStack = getCurrentFiberStackInDev;
+    current = fiber;
+    isRendering = false;
+  }
+}
+function setIsRendering(rendering) {
+  {
+    isRendering = rendering;
   }
 }
 
@@ -20484,7 +23843,6 @@ function validateProperties$2(type, props, canUseEventSystem) {
 }
 
 var didWarnInvalidHydration = false;
-var didWarnShadyDOM = false;
 var DANGEROUSLY_SET_INNER_HTML = 'dangerouslySetInnerHTML';
 var SUPPRESS_CONTENT_EDITABLE_WARNING = 'suppressContentEditableWarning';
 var SUPPRESS_HYDRATION_WARNING = 'suppressHydrationWarning';
@@ -20804,12 +24162,6 @@ function setInitialProperties(domElement, tag, rawProps, rootContainerElement) {
 
   {
     validatePropertiesInDevelopment(tag, rawProps);
-
-    if (isCustomComponentTag && !didWarnShadyDOM && domElement.shadyRoot) {
-      error('%s is using shady DOM. Using shady DOM with React can ' + 'cause things to break subtly.', getCurrentFiberOwnerNameInDevOrNull() || 'A component');
-
-      didWarnShadyDOM = true;
-    }
   } // TODO: Make sure that we check isMounted before firing any of these events.
 
 
@@ -21163,12 +24515,6 @@ function diffHydratedProperties(domElement, tag, rawProps, parentNamespace, root
     suppressHydrationWarning = rawProps[SUPPRESS_HYDRATION_WARNING] === true;
     isCustomComponentTag = isCustomComponent(tag, rawProps);
     validatePropertiesInDevelopment(tag, rawProps);
-
-    if (isCustomComponentTag && !didWarnShadyDOM && domElement.shadyRoot) {
-      error('%s is using shady DOM. Using shady DOM with React can ' + 'cause things to break subtly.', getCurrentFiberOwnerNameInDevOrNull() || 'A component');
-
-      didWarnShadyDOM = true;
-    }
   } // TODO: Make sure that we check isMounted before firing any of these events.
 
 
@@ -25689,18 +29035,9 @@ function processChildContext(fiber, type, parentContext) {
     }
 
     var childContext;
-
-    {
-      setCurrentPhase('getChildContext');
-    }
-
     startPhaseTimer(fiber, 'getChildContext');
     childContext = instance.getChildContext();
     stopPhaseTimer();
-
-    {
-      setCurrentPhase(null);
-    }
 
     for (var contextKey in childContext) {
       if (!(contextKey in childContextTypes)) {
@@ -31625,7 +34962,6 @@ var didWarnAboutContextTypeOnFunctionComponent;
 var didWarnAboutGetDerivedStateOnFunctionComponent;
 var didWarnAboutFunctionRefs;
 var didWarnAboutReassigningProps;
-var didWarnAboutMaxDuration;
 var didWarnAboutRevealOrder;
 var didWarnAboutTailOptions;
 
@@ -31636,7 +34972,6 @@ var didWarnAboutTailOptions;
   didWarnAboutGetDerivedStateOnFunctionComponent = {};
   didWarnAboutFunctionRefs = {};
   didWarnAboutReassigningProps = false;
-  didWarnAboutMaxDuration = false;
   didWarnAboutRevealOrder = {};
   didWarnAboutTailOptions = {};
 }
@@ -31700,7 +35035,7 @@ function updateForwardRef(current, workInProgress, Component, nextProps, renderE
 
   {
     ReactCurrentOwner$1.current = workInProgress;
-    setCurrentPhase('render');
+    setIsRendering(true);
     nextChildren = renderWithHooks(current, workInProgress, render, nextProps, ref, renderExpirationTime);
 
     if ( workInProgress.mode & StrictMode) {
@@ -31710,7 +35045,7 @@ function updateForwardRef(current, workInProgress, Component, nextProps, renderE
       }
     }
 
-    setCurrentPhase(null);
+    setIsRendering(false);
   }
 
   if (current !== null && !didReceiveUpdate) {
@@ -31918,7 +35253,7 @@ function updateFunctionComponent(current, workInProgress, Component, nextProps, 
 
   {
     ReactCurrentOwner$1.current = workInProgress;
-    setCurrentPhase('render');
+    setIsRendering(true);
     nextChildren = renderWithHooks(current, workInProgress, Component, nextProps, context, renderExpirationTime);
 
     if ( workInProgress.mode & StrictMode) {
@@ -31928,7 +35263,7 @@ function updateFunctionComponent(current, workInProgress, Component, nextProps, 
       }
     }
 
-    setCurrentPhase(null);
+    setIsRendering(false);
   }
 
   if (current !== null && !didReceiveUpdate) {
@@ -32044,14 +35379,14 @@ function finishClassComponent(current, workInProgress, Component, shouldUpdate, 
     }
   } else {
     {
-      setCurrentPhase('render');
+      setIsRendering(true);
       nextChildren = instance.render();
 
       if ( workInProgress.mode & StrictMode) {
         instance.render();
       }
 
-      setCurrentPhase(null);
+      setIsRendering(false);
     }
   } // React DevTools reads this flag.
 
@@ -32365,8 +35700,10 @@ function mountIndeterminateComponent(_current, workInProgress, Component, render
       ReactStrictModeWarnings.recordLegacyContextWarning(workInProgress, null);
     }
 
+    setIsRendering(true);
     ReactCurrentOwner$1.current = workInProgress;
     value = renderWithHooks(null, workInProgress, Component, props, context, renderExpirationTime);
+    setIsRendering(false);
   } // React DevTools reads this flag.
 
 
@@ -32532,17 +35869,7 @@ function updateSuspenseComponent(current, workInProgress, renderExpirationTime) 
   }
 
   suspenseContext = setDefaultShallowSuspenseContext(suspenseContext);
-  pushSuspenseContext(workInProgress, suspenseContext);
-
-  {
-    if ('maxDuration' in nextProps) {
-      if (!didWarnAboutMaxDuration) {
-        didWarnAboutMaxDuration = true;
-
-        error('maxDuration has been removed from React. ' + 'Remove the maxDuration prop.');
-      }
-    }
-  } // This next part is a bit confusing. If the children timeout, we switch to
+  pushSuspenseContext(workInProgress, suspenseContext); // This next part is a bit confusing. If the children timeout, we switch to
   // showing the fallback children in place of the "primary" children.
   // However, we don't want to delete the primary children because then their
   // state will be lost (both the React state and the host state, e.g.
@@ -32563,7 +35890,6 @@ function updateSuspenseComponent(current, workInProgress, renderExpirationTime) 
   // Otherwise, we render the primary children directly. This requires some
   // custom reconciliation logic to preserve the state of the primary
   // children. It's essentially a very basic form of re-parenting.
-
 
   if (current === null) {
     // If we're currently hydrating, try to hydrate this boundary.
@@ -33197,9 +36523,9 @@ function updateContextConsumer(current, workInProgress, renderExpirationTime) {
 
   {
     ReactCurrentOwner$1.current = workInProgress;
-    setCurrentPhase('render');
+    setIsRendering(true);
     newChildren = render(newValue);
-    setCurrentPhase(null);
+    setIsRendering(false);
   } // React DevTools reads this flag.
 
 
@@ -35711,9 +39037,11 @@ function throwException(root, returnFiber, sourceFiber, value, renderExpirationT
       var currentSource = sourceFiber.alternate;
 
       if (currentSource) {
+        sourceFiber.updateQueue = currentSource.updateQueue;
         sourceFiber.memoizedState = currentSource.memoizedState;
         sourceFiber.expirationTime = currentSource.expirationTime;
       } else {
+        sourceFiber.updateQueue = null;
         sourceFiber.memoizedState = null;
       }
     }
@@ -38111,43 +41439,40 @@ var beginWork$1;
 }
 
 var didWarnAboutUpdateInRender = false;
-var didWarnAboutUpdateInGetChildContext = false;
+var didWarnAboutUpdateInRenderForAnotherComponent;
+
+{
+  didWarnAboutUpdateInRenderForAnotherComponent = new Set();
+}
 
 function warnAboutRenderPhaseUpdatesInDEV(fiber) {
   {
-    if ((executionContext & RenderContext) !== NoContext) {
+    if (isRendering && (executionContext & RenderContext) !== NoContext) {
       switch (fiber.tag) {
         case FunctionComponent:
         case ForwardRef:
         case SimpleMemoComponent:
           {
-            error('Cannot update a component from inside the function body of a ' + 'different component.');
+            var renderingComponentName = workInProgress && getComponentName(workInProgress.type) || 'Unknown'; // Dedupe by the rendering component because it's the one that needs to be fixed.
+
+            var dedupeKey = renderingComponentName;
+
+            if (!didWarnAboutUpdateInRenderForAnotherComponent.has(dedupeKey)) {
+              didWarnAboutUpdateInRenderForAnotherComponent.add(dedupeKey);
+              var setStateComponentName = getComponentName(fiber.type) || 'Unknown';
+
+              error('Cannot update a component (`%s`) while rendering a ' + 'different component (`%s`). To locate the bad setState() call inside `%s`, ' + 'follow the stack trace as described in https://fb.me/setstate-in-render', setStateComponentName, renderingComponentName, renderingComponentName);
+            }
 
             break;
           }
 
         case ClassComponent:
           {
-            switch (phase) {
-              case 'getChildContext':
-                if (didWarnAboutUpdateInGetChildContext) {
-                  return;
-                }
+            if (!didWarnAboutUpdateInRender) {
+              error('Cannot update during an existing state transition (such as ' + 'within `render`). Render methods should be a pure ' + 'function of props and state.');
 
-                error('setState(...): Cannot call setState() inside getChildContext()');
-
-                didWarnAboutUpdateInGetChildContext = true;
-                break;
-
-              case 'render':
-                if (didWarnAboutUpdateInRender) {
-                  return;
-                }
-
-                error('Cannot update during an existing state transition (such as ' + 'within `render`). Render methods should be a pure ' + 'function of props and state.');
-
-                didWarnAboutUpdateInRender = true;
-                break;
+              didWarnAboutUpdateInRender = true;
             }
 
             break;
@@ -39242,7 +42567,7 @@ function updateContainer(element, container, parentComponent, callback) {
   }
 
   {
-    if (phase === 'render' && current !== null && !didWarnAboutNestedUpdates) {
+    if (isRendering && current !== null && !didWarnAboutNestedUpdates) {
       didWarnAboutNestedUpdates = true;
 
       error('Render methods should be a pure function of props and state; ' + 'triggering nested component updates from render is not allowed. ' + 'If necessary, trigger nested updates in componentDidUpdate.\n\n' + 'Check the render method of %s.', getComponentName(current.type) || 'Unknown');
@@ -39818,7 +43143,7 @@ implementation) {
   };
 }
 
-var ReactVersion = '16.13.0';
+var ReactVersion = '16.13.1';
 
 setAttemptUserBlockingHydration(attemptUserBlockingHydration$1);
 setAttemptContinuousHydration(attemptContinuousHydration$1);
@@ -39952,1271 +43277,6 @@ function checkDCE() {
 
 if (false) {} else {
   module.exports = __webpack_require__(/*! ./cjs/react-dom.development.js */ "./node_modules/react-dom/cjs/react-dom.development.js");
-}
-
-
-/***/ }),
-
-/***/ "./node_modules/react-dom/node_modules/scheduler/cjs/scheduler-tracing.development.js":
-/*!********************************************************************************************!*\
-  !*** ./node_modules/react-dom/node_modules/scheduler/cjs/scheduler-tracing.development.js ***!
-  \********************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/** @license React v0.19.0
- * scheduler-tracing.development.js
- *
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-
-
-
-
-if (true) {
-  (function() {
-'use strict';
-
-var DEFAULT_THREAD_ID = 0; // Counters used to generate unique IDs.
-
-var interactionIDCounter = 0;
-var threadIDCounter = 0; // Set of currently traced interactions.
-// Interactions "stack"–
-// Meaning that newly traced interactions are appended to the previously active set.
-// When an interaction goes out of scope, the previous set (if any) is restored.
-
-exports.__interactionsRef = null; // Listener(s) to notify when interactions begin and end.
-
-exports.__subscriberRef = null;
-
-{
-  exports.__interactionsRef = {
-    current: new Set()
-  };
-  exports.__subscriberRef = {
-    current: null
-  };
-}
-function unstable_clear(callback) {
-
-  var prevInteractions = exports.__interactionsRef.current;
-  exports.__interactionsRef.current = new Set();
-
-  try {
-    return callback();
-  } finally {
-    exports.__interactionsRef.current = prevInteractions;
-  }
-}
-function unstable_getCurrent() {
-  {
-    return exports.__interactionsRef.current;
-  }
-}
-function unstable_getThreadID() {
-  return ++threadIDCounter;
-}
-function unstable_trace(name, timestamp, callback) {
-  var threadID = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : DEFAULT_THREAD_ID;
-
-  var interaction = {
-    __count: 1,
-    id: interactionIDCounter++,
-    name: name,
-    timestamp: timestamp
-  };
-  var prevInteractions = exports.__interactionsRef.current; // Traced interactions should stack/accumulate.
-  // To do that, clone the current interactions.
-  // The previous set will be restored upon completion.
-
-  var interactions = new Set(prevInteractions);
-  interactions.add(interaction);
-  exports.__interactionsRef.current = interactions;
-  var subscriber = exports.__subscriberRef.current;
-  var returnValue;
-
-  try {
-    if (subscriber !== null) {
-      subscriber.onInteractionTraced(interaction);
-    }
-  } finally {
-    try {
-      if (subscriber !== null) {
-        subscriber.onWorkStarted(interactions, threadID);
-      }
-    } finally {
-      try {
-        returnValue = callback();
-      } finally {
-        exports.__interactionsRef.current = prevInteractions;
-
-        try {
-          if (subscriber !== null) {
-            subscriber.onWorkStopped(interactions, threadID);
-          }
-        } finally {
-          interaction.__count--; // If no async work was scheduled for this interaction,
-          // Notify subscribers that it's completed.
-
-          if (subscriber !== null && interaction.__count === 0) {
-            subscriber.onInteractionScheduledWorkCompleted(interaction);
-          }
-        }
-      }
-    }
-  }
-
-  return returnValue;
-}
-function unstable_wrap(callback) {
-  var threadID = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_THREAD_ID;
-
-  var wrappedInteractions = exports.__interactionsRef.current;
-  var subscriber = exports.__subscriberRef.current;
-
-  if (subscriber !== null) {
-    subscriber.onWorkScheduled(wrappedInteractions, threadID);
-  } // Update the pending async work count for the current interactions.
-  // Update after calling subscribers in case of error.
-
-
-  wrappedInteractions.forEach(function (interaction) {
-    interaction.__count++;
-  });
-  var hasRun = false;
-
-  function wrapped() {
-    var prevInteractions = exports.__interactionsRef.current;
-    exports.__interactionsRef.current = wrappedInteractions;
-    subscriber = exports.__subscriberRef.current;
-
-    try {
-      var returnValue;
-
-      try {
-        if (subscriber !== null) {
-          subscriber.onWorkStarted(wrappedInteractions, threadID);
-        }
-      } finally {
-        try {
-          returnValue = callback.apply(undefined, arguments);
-        } finally {
-          exports.__interactionsRef.current = prevInteractions;
-
-          if (subscriber !== null) {
-            subscriber.onWorkStopped(wrappedInteractions, threadID);
-          }
-        }
-      }
-
-      return returnValue;
-    } finally {
-      if (!hasRun) {
-        // We only expect a wrapped function to be executed once,
-        // But in the event that it's executed more than once–
-        // Only decrement the outstanding interaction counts once.
-        hasRun = true; // Update pending async counts for all wrapped interactions.
-        // If this was the last scheduled async work for any of them,
-        // Mark them as completed.
-
-        wrappedInteractions.forEach(function (interaction) {
-          interaction.__count--;
-
-          if (subscriber !== null && interaction.__count === 0) {
-            subscriber.onInteractionScheduledWorkCompleted(interaction);
-          }
-        });
-      }
-    }
-  }
-
-  wrapped.cancel = function cancel() {
-    subscriber = exports.__subscriberRef.current;
-
-    try {
-      if (subscriber !== null) {
-        subscriber.onWorkCanceled(wrappedInteractions, threadID);
-      }
-    } finally {
-      // Update pending async counts for all wrapped interactions.
-      // If this was the last scheduled async work for any of them,
-      // Mark them as completed.
-      wrappedInteractions.forEach(function (interaction) {
-        interaction.__count--;
-
-        if (subscriber && interaction.__count === 0) {
-          subscriber.onInteractionScheduledWorkCompleted(interaction);
-        }
-      });
-    }
-  };
-
-  return wrapped;
-}
-
-var subscribers = null;
-
-{
-  subscribers = new Set();
-}
-
-function unstable_subscribe(subscriber) {
-  {
-    subscribers.add(subscriber);
-
-    if (subscribers.size === 1) {
-      exports.__subscriberRef.current = {
-        onInteractionScheduledWorkCompleted: onInteractionScheduledWorkCompleted,
-        onInteractionTraced: onInteractionTraced,
-        onWorkCanceled: onWorkCanceled,
-        onWorkScheduled: onWorkScheduled,
-        onWorkStarted: onWorkStarted,
-        onWorkStopped: onWorkStopped
-      };
-    }
-  }
-}
-function unstable_unsubscribe(subscriber) {
-  {
-    subscribers.delete(subscriber);
-
-    if (subscribers.size === 0) {
-      exports.__subscriberRef.current = null;
-    }
-  }
-}
-
-function onInteractionTraced(interaction) {
-  var didCatchError = false;
-  var caughtError = null;
-  subscribers.forEach(function (subscriber) {
-    try {
-      subscriber.onInteractionTraced(interaction);
-    } catch (error) {
-      if (!didCatchError) {
-        didCatchError = true;
-        caughtError = error;
-      }
-    }
-  });
-
-  if (didCatchError) {
-    throw caughtError;
-  }
-}
-
-function onInteractionScheduledWorkCompleted(interaction) {
-  var didCatchError = false;
-  var caughtError = null;
-  subscribers.forEach(function (subscriber) {
-    try {
-      subscriber.onInteractionScheduledWorkCompleted(interaction);
-    } catch (error) {
-      if (!didCatchError) {
-        didCatchError = true;
-        caughtError = error;
-      }
-    }
-  });
-
-  if (didCatchError) {
-    throw caughtError;
-  }
-}
-
-function onWorkScheduled(interactions, threadID) {
-  var didCatchError = false;
-  var caughtError = null;
-  subscribers.forEach(function (subscriber) {
-    try {
-      subscriber.onWorkScheduled(interactions, threadID);
-    } catch (error) {
-      if (!didCatchError) {
-        didCatchError = true;
-        caughtError = error;
-      }
-    }
-  });
-
-  if (didCatchError) {
-    throw caughtError;
-  }
-}
-
-function onWorkStarted(interactions, threadID) {
-  var didCatchError = false;
-  var caughtError = null;
-  subscribers.forEach(function (subscriber) {
-    try {
-      subscriber.onWorkStarted(interactions, threadID);
-    } catch (error) {
-      if (!didCatchError) {
-        didCatchError = true;
-        caughtError = error;
-      }
-    }
-  });
-
-  if (didCatchError) {
-    throw caughtError;
-  }
-}
-
-function onWorkStopped(interactions, threadID) {
-  var didCatchError = false;
-  var caughtError = null;
-  subscribers.forEach(function (subscriber) {
-    try {
-      subscriber.onWorkStopped(interactions, threadID);
-    } catch (error) {
-      if (!didCatchError) {
-        didCatchError = true;
-        caughtError = error;
-      }
-    }
-  });
-
-  if (didCatchError) {
-    throw caughtError;
-  }
-}
-
-function onWorkCanceled(interactions, threadID) {
-  var didCatchError = false;
-  var caughtError = null;
-  subscribers.forEach(function (subscriber) {
-    try {
-      subscriber.onWorkCanceled(interactions, threadID);
-    } catch (error) {
-      if (!didCatchError) {
-        didCatchError = true;
-        caughtError = error;
-      }
-    }
-  });
-
-  if (didCatchError) {
-    throw caughtError;
-  }
-}
-
-exports.unstable_clear = unstable_clear;
-exports.unstable_getCurrent = unstable_getCurrent;
-exports.unstable_getThreadID = unstable_getThreadID;
-exports.unstable_subscribe = unstable_subscribe;
-exports.unstable_trace = unstable_trace;
-exports.unstable_unsubscribe = unstable_unsubscribe;
-exports.unstable_wrap = unstable_wrap;
-  })();
-}
-
-
-/***/ }),
-
-/***/ "./node_modules/react-dom/node_modules/scheduler/cjs/scheduler.development.js":
-/*!************************************************************************************!*\
-  !*** ./node_modules/react-dom/node_modules/scheduler/cjs/scheduler.development.js ***!
-  \************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/** @license React v0.19.0
- * scheduler.development.js
- *
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-
-
-
-
-if (true) {
-  (function() {
-'use strict';
-
-var enableSchedulerDebugging = false;
-var enableProfiling = true;
-
-var requestHostCallback;
-var requestHostTimeout;
-var cancelHostTimeout;
-var shouldYieldToHost;
-var requestPaint;
-
-if ( // If Scheduler runs in a non-DOM environment, it falls back to a naive
-// implementation using setTimeout.
-typeof window === 'undefined' || // Check if MessageChannel is supported, too.
-typeof MessageChannel !== 'function') {
-  // If this accidentally gets imported in a non-browser environment, e.g. JavaScriptCore,
-  // fallback to a naive implementation.
-  var _callback = null;
-  var _timeoutID = null;
-
-  var _flushCallback = function () {
-    if (_callback !== null) {
-      try {
-        var currentTime = exports.unstable_now();
-        var hasRemainingTime = true;
-
-        _callback(hasRemainingTime, currentTime);
-
-        _callback = null;
-      } catch (e) {
-        setTimeout(_flushCallback, 0);
-        throw e;
-      }
-    }
-  };
-
-  var initialTime = Date.now();
-
-  exports.unstable_now = function () {
-    return Date.now() - initialTime;
-  };
-
-  requestHostCallback = function (cb) {
-    if (_callback !== null) {
-      // Protect against re-entrancy.
-      setTimeout(requestHostCallback, 0, cb);
-    } else {
-      _callback = cb;
-      setTimeout(_flushCallback, 0);
-    }
-  };
-
-  requestHostTimeout = function (cb, ms) {
-    _timeoutID = setTimeout(cb, ms);
-  };
-
-  cancelHostTimeout = function () {
-    clearTimeout(_timeoutID);
-  };
-
-  shouldYieldToHost = function () {
-    return false;
-  };
-
-  requestPaint = exports.unstable_forceFrameRate = function () {};
-} else {
-  // Capture local references to native APIs, in case a polyfill overrides them.
-  var performance = window.performance;
-  var _Date = window.Date;
-  var _setTimeout = window.setTimeout;
-  var _clearTimeout = window.clearTimeout;
-
-  if (typeof console !== 'undefined') {
-    // TODO: Scheduler no longer requires these methods to be polyfilled. But
-    // maybe we want to continue warning if they don't exist, to preserve the
-    // option to rely on it in the future?
-    var requestAnimationFrame = window.requestAnimationFrame;
-    var cancelAnimationFrame = window.cancelAnimationFrame; // TODO: Remove fb.me link
-
-    if (typeof requestAnimationFrame !== 'function') {
-      // Using console['error'] to evade Babel and ESLint
-      console['error']("This browser doesn't support requestAnimationFrame. " + 'Make sure that you load a ' + 'polyfill in older browsers. https://fb.me/react-polyfills');
-    }
-
-    if (typeof cancelAnimationFrame !== 'function') {
-      // Using console['error'] to evade Babel and ESLint
-      console['error']("This browser doesn't support cancelAnimationFrame. " + 'Make sure that you load a ' + 'polyfill in older browsers. https://fb.me/react-polyfills');
-    }
-  }
-
-  if (typeof performance === 'object' && typeof performance.now === 'function') {
-    exports.unstable_now = function () {
-      return performance.now();
-    };
-  } else {
-    var _initialTime = _Date.now();
-
-    exports.unstable_now = function () {
-      return _Date.now() - _initialTime;
-    };
-  }
-
-  var isMessageLoopRunning = false;
-  var scheduledHostCallback = null;
-  var taskTimeoutID = -1; // Scheduler periodically yields in case there is other work on the main
-  // thread, like user events. By default, it yields multiple times per frame.
-  // It does not attempt to align with frame boundaries, since most tasks don't
-  // need to be frame aligned; for those that do, use requestAnimationFrame.
-
-  var yieldInterval = 5;
-  var deadline = 0; // TODO: Make this configurable
-
-  {
-    // `isInputPending` is not available. Since we have no way of knowing if
-    // there's pending input, always yield at the end of the frame.
-    shouldYieldToHost = function () {
-      return exports.unstable_now() >= deadline;
-    }; // Since we yield every frame regardless, `requestPaint` has no effect.
-
-
-    requestPaint = function () {};
-  }
-
-  exports.unstable_forceFrameRate = function (fps) {
-    if (fps < 0 || fps > 125) {
-      // Using console['error'] to evade Babel and ESLint
-      console['error']('forceFrameRate takes a positive int between 0 and 125, ' + 'forcing framerates higher than 125 fps is not unsupported');
-      return;
-    }
-
-    if (fps > 0) {
-      yieldInterval = Math.floor(1000 / fps);
-    } else {
-      // reset the framerate
-      yieldInterval = 5;
-    }
-  };
-
-  var performWorkUntilDeadline = function () {
-    if (scheduledHostCallback !== null) {
-      var currentTime = exports.unstable_now(); // Yield after `yieldInterval` ms, regardless of where we are in the vsync
-      // cycle. This means there's always time remaining at the beginning of
-      // the message event.
-
-      deadline = currentTime + yieldInterval;
-      var hasTimeRemaining = true;
-
-      try {
-        var hasMoreWork = scheduledHostCallback(hasTimeRemaining, currentTime);
-
-        if (!hasMoreWork) {
-          isMessageLoopRunning = false;
-          scheduledHostCallback = null;
-        } else {
-          // If there's more work, schedule the next message event at the end
-          // of the preceding one.
-          port.postMessage(null);
-        }
-      } catch (error) {
-        // If a scheduler task throws, exit the current browser task so the
-        // error can be observed.
-        port.postMessage(null);
-        throw error;
-      }
-    } else {
-      isMessageLoopRunning = false;
-    } // Yielding to the browser will give it a chance to paint, so we can
-  };
-
-  var channel = new MessageChannel();
-  var port = channel.port2;
-  channel.port1.onmessage = performWorkUntilDeadline;
-
-  requestHostCallback = function (callback) {
-    scheduledHostCallback = callback;
-
-    if (!isMessageLoopRunning) {
-      isMessageLoopRunning = true;
-      port.postMessage(null);
-    }
-  };
-
-  requestHostTimeout = function (callback, ms) {
-    taskTimeoutID = _setTimeout(function () {
-      callback(exports.unstable_now());
-    }, ms);
-  };
-
-  cancelHostTimeout = function () {
-    _clearTimeout(taskTimeoutID);
-
-    taskTimeoutID = -1;
-  };
-}
-
-function push(heap, node) {
-  var index = heap.length;
-  heap.push(node);
-  siftUp(heap, node, index);
-}
-function peek(heap) {
-  var first = heap[0];
-  return first === undefined ? null : first;
-}
-function pop(heap) {
-  var first = heap[0];
-
-  if (first !== undefined) {
-    var last = heap.pop();
-
-    if (last !== first) {
-      heap[0] = last;
-      siftDown(heap, last, 0);
-    }
-
-    return first;
-  } else {
-    return null;
-  }
-}
-
-function siftUp(heap, node, i) {
-  var index = i;
-
-  while (true) {
-    var parentIndex = index - 1 >>> 1;
-    var parent = heap[parentIndex];
-
-    if (parent !== undefined && compare(parent, node) > 0) {
-      // The parent is larger. Swap positions.
-      heap[parentIndex] = node;
-      heap[index] = parent;
-      index = parentIndex;
-    } else {
-      // The parent is smaller. Exit.
-      return;
-    }
-  }
-}
-
-function siftDown(heap, node, i) {
-  var index = i;
-  var length = heap.length;
-
-  while (index < length) {
-    var leftIndex = (index + 1) * 2 - 1;
-    var left = heap[leftIndex];
-    var rightIndex = leftIndex + 1;
-    var right = heap[rightIndex]; // If the left or right node is smaller, swap with the smaller of those.
-
-    if (left !== undefined && compare(left, node) < 0) {
-      if (right !== undefined && compare(right, left) < 0) {
-        heap[index] = right;
-        heap[rightIndex] = node;
-        index = rightIndex;
-      } else {
-        heap[index] = left;
-        heap[leftIndex] = node;
-        index = leftIndex;
-      }
-    } else if (right !== undefined && compare(right, node) < 0) {
-      heap[index] = right;
-      heap[rightIndex] = node;
-      index = rightIndex;
-    } else {
-      // Neither child is smaller. Exit.
-      return;
-    }
-  }
-}
-
-function compare(a, b) {
-  // Compare sort index first, then task id.
-  var diff = a.sortIndex - b.sortIndex;
-  return diff !== 0 ? diff : a.id - b.id;
-}
-
-// TODO: Use symbols?
-var NoPriority = 0;
-var ImmediatePriority = 1;
-var UserBlockingPriority = 2;
-var NormalPriority = 3;
-var LowPriority = 4;
-var IdlePriority = 5;
-
-var runIdCounter = 0;
-var mainThreadIdCounter = 0;
-var profilingStateSize = 4;
-var sharedProfilingBuffer =  // $FlowFixMe Flow doesn't know about SharedArrayBuffer
-typeof SharedArrayBuffer === 'function' ? new SharedArrayBuffer(profilingStateSize * Int32Array.BYTES_PER_ELEMENT) : // $FlowFixMe Flow doesn't know about ArrayBuffer
-typeof ArrayBuffer === 'function' ? new ArrayBuffer(profilingStateSize * Int32Array.BYTES_PER_ELEMENT) : null // Don't crash the init path on IE9
-;
-var profilingState =  sharedProfilingBuffer !== null ? new Int32Array(sharedProfilingBuffer) : []; // We can't read this but it helps save bytes for null checks
-
-var PRIORITY = 0;
-var CURRENT_TASK_ID = 1;
-var CURRENT_RUN_ID = 2;
-var QUEUE_SIZE = 3;
-
-{
-  profilingState[PRIORITY] = NoPriority; // This is maintained with a counter, because the size of the priority queue
-  // array might include canceled tasks.
-
-  profilingState[QUEUE_SIZE] = 0;
-  profilingState[CURRENT_TASK_ID] = 0;
-} // Bytes per element is 4
-
-
-var INITIAL_EVENT_LOG_SIZE = 131072;
-var MAX_EVENT_LOG_SIZE = 524288; // Equivalent to 2 megabytes
-
-var eventLogSize = 0;
-var eventLogBuffer = null;
-var eventLog = null;
-var eventLogIndex = 0;
-var TaskStartEvent = 1;
-var TaskCompleteEvent = 2;
-var TaskErrorEvent = 3;
-var TaskCancelEvent = 4;
-var TaskRunEvent = 5;
-var TaskYieldEvent = 6;
-var SchedulerSuspendEvent = 7;
-var SchedulerResumeEvent = 8;
-
-function logEvent(entries) {
-  if (eventLog !== null) {
-    var offset = eventLogIndex;
-    eventLogIndex += entries.length;
-
-    if (eventLogIndex + 1 > eventLogSize) {
-      eventLogSize *= 2;
-
-      if (eventLogSize > MAX_EVENT_LOG_SIZE) {
-        // Using console['error'] to evade Babel and ESLint
-        console['error']("Scheduler Profiling: Event log exceeded maximum size. Don't " + 'forget to call `stopLoggingProfilingEvents()`.');
-        stopLoggingProfilingEvents();
-        return;
-      }
-
-      var newEventLog = new Int32Array(eventLogSize * 4);
-      newEventLog.set(eventLog);
-      eventLogBuffer = newEventLog.buffer;
-      eventLog = newEventLog;
-    }
-
-    eventLog.set(entries, offset);
-  }
-}
-
-function startLoggingProfilingEvents() {
-  eventLogSize = INITIAL_EVENT_LOG_SIZE;
-  eventLogBuffer = new ArrayBuffer(eventLogSize * 4);
-  eventLog = new Int32Array(eventLogBuffer);
-  eventLogIndex = 0;
-}
-function stopLoggingProfilingEvents() {
-  var buffer = eventLogBuffer;
-  eventLogSize = 0;
-  eventLogBuffer = null;
-  eventLog = null;
-  eventLogIndex = 0;
-  return buffer;
-}
-function markTaskStart(task, ms) {
-  {
-    profilingState[QUEUE_SIZE]++;
-
-    if (eventLog !== null) {
-      // performance.now returns a float, representing milliseconds. When the
-      // event is logged, it's coerced to an int. Convert to microseconds to
-      // maintain extra degrees of precision.
-      logEvent([TaskStartEvent, ms * 1000, task.id, task.priorityLevel]);
-    }
-  }
-}
-function markTaskCompleted(task, ms) {
-  {
-    profilingState[PRIORITY] = NoPriority;
-    profilingState[CURRENT_TASK_ID] = 0;
-    profilingState[QUEUE_SIZE]--;
-
-    if (eventLog !== null) {
-      logEvent([TaskCompleteEvent, ms * 1000, task.id]);
-    }
-  }
-}
-function markTaskCanceled(task, ms) {
-  {
-    profilingState[QUEUE_SIZE]--;
-
-    if (eventLog !== null) {
-      logEvent([TaskCancelEvent, ms * 1000, task.id]);
-    }
-  }
-}
-function markTaskErrored(task, ms) {
-  {
-    profilingState[PRIORITY] = NoPriority;
-    profilingState[CURRENT_TASK_ID] = 0;
-    profilingState[QUEUE_SIZE]--;
-
-    if (eventLog !== null) {
-      logEvent([TaskErrorEvent, ms * 1000, task.id]);
-    }
-  }
-}
-function markTaskRun(task, ms) {
-  {
-    runIdCounter++;
-    profilingState[PRIORITY] = task.priorityLevel;
-    profilingState[CURRENT_TASK_ID] = task.id;
-    profilingState[CURRENT_RUN_ID] = runIdCounter;
-
-    if (eventLog !== null) {
-      logEvent([TaskRunEvent, ms * 1000, task.id, runIdCounter]);
-    }
-  }
-}
-function markTaskYield(task, ms) {
-  {
-    profilingState[PRIORITY] = NoPriority;
-    profilingState[CURRENT_TASK_ID] = 0;
-    profilingState[CURRENT_RUN_ID] = 0;
-
-    if (eventLog !== null) {
-      logEvent([TaskYieldEvent, ms * 1000, task.id, runIdCounter]);
-    }
-  }
-}
-function markSchedulerSuspended(ms) {
-  {
-    mainThreadIdCounter++;
-
-    if (eventLog !== null) {
-      logEvent([SchedulerSuspendEvent, ms * 1000, mainThreadIdCounter]);
-    }
-  }
-}
-function markSchedulerUnsuspended(ms) {
-  {
-    if (eventLog !== null) {
-      logEvent([SchedulerResumeEvent, ms * 1000, mainThreadIdCounter]);
-    }
-  }
-}
-
-/* eslint-disable no-var */
-// Math.pow(2, 30) - 1
-// 0b111111111111111111111111111111
-
-var maxSigned31BitInt = 1073741823; // Times out immediately
-
-var IMMEDIATE_PRIORITY_TIMEOUT = -1; // Eventually times out
-
-var USER_BLOCKING_PRIORITY = 250;
-var NORMAL_PRIORITY_TIMEOUT = 5000;
-var LOW_PRIORITY_TIMEOUT = 10000; // Never times out
-
-var IDLE_PRIORITY = maxSigned31BitInt; // Tasks are stored on a min heap
-
-var taskQueue = [];
-var timerQueue = []; // Incrementing id counter. Used to maintain insertion order.
-
-var taskIdCounter = 1; // Pausing the scheduler is useful for debugging.
-var currentTask = null;
-var currentPriorityLevel = NormalPriority; // This is set while performing work, to prevent re-entrancy.
-
-var isPerformingWork = false;
-var isHostCallbackScheduled = false;
-var isHostTimeoutScheduled = false;
-
-function advanceTimers(currentTime) {
-  // Check for tasks that are no longer delayed and add them to the queue.
-  var timer = peek(timerQueue);
-
-  while (timer !== null) {
-    if (timer.callback === null) {
-      // Timer was cancelled.
-      pop(timerQueue);
-    } else if (timer.startTime <= currentTime) {
-      // Timer fired. Transfer to the task queue.
-      pop(timerQueue);
-      timer.sortIndex = timer.expirationTime;
-      push(taskQueue, timer);
-
-      {
-        markTaskStart(timer, currentTime);
-        timer.isQueued = true;
-      }
-    } else {
-      // Remaining timers are pending.
-      return;
-    }
-
-    timer = peek(timerQueue);
-  }
-}
-
-function handleTimeout(currentTime) {
-  isHostTimeoutScheduled = false;
-  advanceTimers(currentTime);
-
-  if (!isHostCallbackScheduled) {
-    if (peek(taskQueue) !== null) {
-      isHostCallbackScheduled = true;
-      requestHostCallback(flushWork);
-    } else {
-      var firstTimer = peek(timerQueue);
-
-      if (firstTimer !== null) {
-        requestHostTimeout(handleTimeout, firstTimer.startTime - currentTime);
-      }
-    }
-  }
-}
-
-function flushWork(hasTimeRemaining, initialTime) {
-  {
-    markSchedulerUnsuspended(initialTime);
-  } // We'll need a host callback the next time work is scheduled.
-
-
-  isHostCallbackScheduled = false;
-
-  if (isHostTimeoutScheduled) {
-    // We scheduled a timeout but it's no longer needed. Cancel it.
-    isHostTimeoutScheduled = false;
-    cancelHostTimeout();
-  }
-
-  isPerformingWork = true;
-  var previousPriorityLevel = currentPriorityLevel;
-
-  try {
-    if (enableProfiling) {
-      try {
-        return workLoop(hasTimeRemaining, initialTime);
-      } catch (error) {
-        if (currentTask !== null) {
-          var currentTime = exports.unstable_now();
-          markTaskErrored(currentTask, currentTime);
-          currentTask.isQueued = false;
-        }
-
-        throw error;
-      }
-    } else {
-      // No catch in prod codepath.
-      return workLoop(hasTimeRemaining, initialTime);
-    }
-  } finally {
-    currentTask = null;
-    currentPriorityLevel = previousPriorityLevel;
-    isPerformingWork = false;
-
-    {
-      var _currentTime = exports.unstable_now();
-
-      markSchedulerSuspended(_currentTime);
-    }
-  }
-}
-
-function workLoop(hasTimeRemaining, initialTime) {
-  var currentTime = initialTime;
-  advanceTimers(currentTime);
-  currentTask = peek(taskQueue);
-
-  while (currentTask !== null && !(enableSchedulerDebugging )) {
-    if (currentTask.expirationTime > currentTime && (!hasTimeRemaining || shouldYieldToHost())) {
-      // This currentTask hasn't expired, and we've reached the deadline.
-      break;
-    }
-
-    var callback = currentTask.callback;
-
-    if (callback !== null) {
-      currentTask.callback = null;
-      currentPriorityLevel = currentTask.priorityLevel;
-      var didUserCallbackTimeout = currentTask.expirationTime <= currentTime;
-      markTaskRun(currentTask, currentTime);
-      var continuationCallback = callback(didUserCallbackTimeout);
-      currentTime = exports.unstable_now();
-
-      if (typeof continuationCallback === 'function') {
-        currentTask.callback = continuationCallback;
-        markTaskYield(currentTask, currentTime);
-      } else {
-        {
-          markTaskCompleted(currentTask, currentTime);
-          currentTask.isQueued = false;
-        }
-
-        if (currentTask === peek(taskQueue)) {
-          pop(taskQueue);
-        }
-      }
-
-      advanceTimers(currentTime);
-    } else {
-      pop(taskQueue);
-    }
-
-    currentTask = peek(taskQueue);
-  } // Return whether there's additional work
-
-
-  if (currentTask !== null) {
-    return true;
-  } else {
-    var firstTimer = peek(timerQueue);
-
-    if (firstTimer !== null) {
-      requestHostTimeout(handleTimeout, firstTimer.startTime - currentTime);
-    }
-
-    return false;
-  }
-}
-
-function unstable_runWithPriority(priorityLevel, eventHandler) {
-  switch (priorityLevel) {
-    case ImmediatePriority:
-    case UserBlockingPriority:
-    case NormalPriority:
-    case LowPriority:
-    case IdlePriority:
-      break;
-
-    default:
-      priorityLevel = NormalPriority;
-  }
-
-  var previousPriorityLevel = currentPriorityLevel;
-  currentPriorityLevel = priorityLevel;
-
-  try {
-    return eventHandler();
-  } finally {
-    currentPriorityLevel = previousPriorityLevel;
-  }
-}
-
-function unstable_next(eventHandler) {
-  var priorityLevel;
-
-  switch (currentPriorityLevel) {
-    case ImmediatePriority:
-    case UserBlockingPriority:
-    case NormalPriority:
-      // Shift down to normal priority
-      priorityLevel = NormalPriority;
-      break;
-
-    default:
-      // Anything lower than normal priority should remain at the current level.
-      priorityLevel = currentPriorityLevel;
-      break;
-  }
-
-  var previousPriorityLevel = currentPriorityLevel;
-  currentPriorityLevel = priorityLevel;
-
-  try {
-    return eventHandler();
-  } finally {
-    currentPriorityLevel = previousPriorityLevel;
-  }
-}
-
-function unstable_wrapCallback(callback) {
-  var parentPriorityLevel = currentPriorityLevel;
-  return function () {
-    // This is a fork of runWithPriority, inlined for performance.
-    var previousPriorityLevel = currentPriorityLevel;
-    currentPriorityLevel = parentPriorityLevel;
-
-    try {
-      return callback.apply(this, arguments);
-    } finally {
-      currentPriorityLevel = previousPriorityLevel;
-    }
-  };
-}
-
-function timeoutForPriorityLevel(priorityLevel) {
-  switch (priorityLevel) {
-    case ImmediatePriority:
-      return IMMEDIATE_PRIORITY_TIMEOUT;
-
-    case UserBlockingPriority:
-      return USER_BLOCKING_PRIORITY;
-
-    case IdlePriority:
-      return IDLE_PRIORITY;
-
-    case LowPriority:
-      return LOW_PRIORITY_TIMEOUT;
-
-    case NormalPriority:
-    default:
-      return NORMAL_PRIORITY_TIMEOUT;
-  }
-}
-
-function unstable_scheduleCallback(priorityLevel, callback, options) {
-  var currentTime = exports.unstable_now();
-  var startTime;
-  var timeout;
-
-  if (typeof options === 'object' && options !== null) {
-    var delay = options.delay;
-
-    if (typeof delay === 'number' && delay > 0) {
-      startTime = currentTime + delay;
-    } else {
-      startTime = currentTime;
-    }
-
-    timeout = typeof options.timeout === 'number' ? options.timeout : timeoutForPriorityLevel(priorityLevel);
-  } else {
-    timeout = timeoutForPriorityLevel(priorityLevel);
-    startTime = currentTime;
-  }
-
-  var expirationTime = startTime + timeout;
-  var newTask = {
-    id: taskIdCounter++,
-    callback: callback,
-    priorityLevel: priorityLevel,
-    startTime: startTime,
-    expirationTime: expirationTime,
-    sortIndex: -1
-  };
-
-  {
-    newTask.isQueued = false;
-  }
-
-  if (startTime > currentTime) {
-    // This is a delayed task.
-    newTask.sortIndex = startTime;
-    push(timerQueue, newTask);
-
-    if (peek(taskQueue) === null && newTask === peek(timerQueue)) {
-      // All tasks are delayed, and this is the task with the earliest delay.
-      if (isHostTimeoutScheduled) {
-        // Cancel an existing timeout.
-        cancelHostTimeout();
-      } else {
-        isHostTimeoutScheduled = true;
-      } // Schedule a timeout.
-
-
-      requestHostTimeout(handleTimeout, startTime - currentTime);
-    }
-  } else {
-    newTask.sortIndex = expirationTime;
-    push(taskQueue, newTask);
-
-    {
-      markTaskStart(newTask, currentTime);
-      newTask.isQueued = true;
-    } // Schedule a host callback, if needed. If we're already performing work,
-    // wait until the next time we yield.
-
-
-    if (!isHostCallbackScheduled && !isPerformingWork) {
-      isHostCallbackScheduled = true;
-      requestHostCallback(flushWork);
-    }
-  }
-
-  return newTask;
-}
-
-function unstable_pauseExecution() {
-}
-
-function unstable_continueExecution() {
-
-  if (!isHostCallbackScheduled && !isPerformingWork) {
-    isHostCallbackScheduled = true;
-    requestHostCallback(flushWork);
-  }
-}
-
-function unstable_getFirstCallbackNode() {
-  return peek(taskQueue);
-}
-
-function unstable_cancelCallback(task) {
-  {
-    if (task.isQueued) {
-      var currentTime = exports.unstable_now();
-      markTaskCanceled(task, currentTime);
-      task.isQueued = false;
-    }
-  } // Null out the callback to indicate the task has been canceled. (Can't
-  // remove from the queue because you can't remove arbitrary nodes from an
-  // array based heap, only the first one.)
-
-
-  task.callback = null;
-}
-
-function unstable_getCurrentPriorityLevel() {
-  return currentPriorityLevel;
-}
-
-function unstable_shouldYield() {
-  var currentTime = exports.unstable_now();
-  advanceTimers(currentTime);
-  var firstTask = peek(taskQueue);
-  return firstTask !== currentTask && currentTask !== null && firstTask !== null && firstTask.callback !== null && firstTask.startTime <= currentTime && firstTask.expirationTime < currentTask.expirationTime || shouldYieldToHost();
-}
-
-var unstable_requestPaint = requestPaint;
-var unstable_Profiling =  {
-  startLoggingProfilingEvents: startLoggingProfilingEvents,
-  stopLoggingProfilingEvents: stopLoggingProfilingEvents,
-  sharedProfilingBuffer: sharedProfilingBuffer
-} ;
-
-exports.unstable_IdlePriority = IdlePriority;
-exports.unstable_ImmediatePriority = ImmediatePriority;
-exports.unstable_LowPriority = LowPriority;
-exports.unstable_NormalPriority = NormalPriority;
-exports.unstable_Profiling = unstable_Profiling;
-exports.unstable_UserBlockingPriority = UserBlockingPriority;
-exports.unstable_cancelCallback = unstable_cancelCallback;
-exports.unstable_continueExecution = unstable_continueExecution;
-exports.unstable_getCurrentPriorityLevel = unstable_getCurrentPriorityLevel;
-exports.unstable_getFirstCallbackNode = unstable_getFirstCallbackNode;
-exports.unstable_next = unstable_next;
-exports.unstable_pauseExecution = unstable_pauseExecution;
-exports.unstable_requestPaint = unstable_requestPaint;
-exports.unstable_runWithPriority = unstable_runWithPriority;
-exports.unstable_scheduleCallback = unstable_scheduleCallback;
-exports.unstable_shouldYield = unstable_shouldYield;
-exports.unstable_wrapCallback = unstable_wrapCallback;
-  })();
-}
-
-
-/***/ }),
-
-/***/ "./node_modules/react-dom/node_modules/scheduler/index.js":
-/*!****************************************************************!*\
-  !*** ./node_modules/react-dom/node_modules/scheduler/index.js ***!
-  \****************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-if (false) {} else {
-  module.exports = __webpack_require__(/*! ./cjs/scheduler.development.js */ "./node_modules/react-dom/node_modules/scheduler/cjs/scheduler.development.js");
-}
-
-
-/***/ }),
-
-/***/ "./node_modules/react-dom/node_modules/scheduler/tracing.js":
-/*!******************************************************************!*\
-  !*** ./node_modules/react-dom/node_modules/scheduler/tracing.js ***!
-  \******************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-if (false) {} else {
-  module.exports = __webpack_require__(/*! ./cjs/scheduler-tracing.development.js */ "./node_modules/react-dom/node_modules/scheduler/cjs/scheduler-tracing.development.js");
 }
 
 
@@ -42436,6 +44496,419 @@ __webpack_require__.r(__webpack_exports__);
 function trim(s) {
   return s.replace(/^\s+|\s+$/g, '');
 }
+
+/***/ }),
+
+/***/ "./node_modules/react-howler/lib/ReactHowler.js":
+/*!******************************************************!*\
+  !*** ./node_modules/react-howler/lib/ReactHowler.js ***!
+  \******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js");
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _howler4 = __webpack_require__(/*! ./howler */ "./node_modules/react-howler/lib/howler.js");
+
+var _utils = __webpack_require__(/*! ./utils */ "./node_modules/react-howler/lib/utils.js");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var ReactHowler = function (_Component) {
+  _inherits(ReactHowler, _Component);
+
+  function ReactHowler(props) {
+    _classCallCheck(this, ReactHowler);
+
+    var _this = _possibleConstructorReturn(this, (ReactHowler.__proto__ || Object.getPrototypeOf(ReactHowler)).call(this, props));
+
+    _this.initHowler = _this.initHowler.bind(_this);
+    return _this;
+  }
+
+  _createClass(ReactHowler, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      this.initHowler();
+    }
+  }, {
+    key: 'componentWillReceiveProps',
+    value: function componentWillReceiveProps(props) {
+      // The src prop must be either a string or an array of strings
+      // Because of this, we can use it's JSON representation to check for changes
+      if (JSON.stringify(props.src) !== JSON.stringify(this.props.src)) {
+        this.initHowler(props);
+      } else {
+        this.toggleHowler(props);
+      }
+    }
+  }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      this.destroyHowler();
+    }
+    /**
+     * Create howler object with given props
+     */
+
+  }, {
+    key: 'initHowler',
+    value: function initHowler() {
+      var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props;
+
+      this.destroyHowler();
+      if (typeof _howler4.Howl !== 'undefined') {
+        // Check if window is available
+        this.howler = new _howler4.Howl({
+          src: props.src,
+          format: props.format,
+          mute: props.mute,
+          loop: props.loop,
+          preload: props.preload,
+          volume: props.volume,
+          onend: props.onEnd,
+          onplay: props.onPlay,
+          onpause: props.onPause,
+          onvolume: props.onVolume,
+          onstop: props.onStop,
+          onload: props.onLoad,
+          onloaderror: props.onLoadError,
+          html5: props.html5
+        });
+
+        if (props.playing) {
+          this.play();
+        }
+      }
+    }
+
+    /**
+     * Stop, unload and destroy howler object
+     */
+
+  }, {
+    key: 'destroyHowler',
+    value: function destroyHowler() {
+      if (this.howler) {
+        this.howler.off(); // Remove event listener
+        this.howler.stop(); // Stop playback
+        this.howler.unload(); // Remove sound from pool
+        this.howler = null; // Destroy it
+      }
+    }
+  }, {
+    key: 'toggleHowler',
+    value: function toggleHowler(props) {
+      props.playing ? this.play() : this.pause();
+      this.loop(props.loop);
+
+      if (props.mute !== this.props.mute) {
+        this.mute(props.mute);
+      }
+
+      if (props.volume !== this.props.volume) {
+        this.volume(props.volume);
+      }
+
+      if (typeof props.seek !== 'undefined' && props.seek !== this.seek()) {
+        this.seek(props.seek);
+      }
+
+      if (props.preload && this.howlerState() === 'unloaded') {
+        this.load();
+      }
+    }
+  }, {
+    key: 'play',
+
+
+    /**
+     * Begins playback of a sound when not playing
+     */
+    value: function play() {
+      var playing = this.howler.playing();
+
+      if (!playing) {
+        // Automatically load if we're trying to play
+        // and the howl is not loaded
+        if (this.howlerState() === 'unloaded') {
+          this.load();
+        }
+
+        this.howler.play();
+      }
+    }
+
+    /**
+     * Pauses playback of sound or group
+     * If no id given, pauses all playback
+     * @param {Number} id = undefined [sound of group to pause]
+     */
+
+  }, {
+    key: 'pause',
+    value: function pause() {
+      var id = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : undefined;
+
+      if (id) {
+        this.howler.pause(id);
+      } else {
+        this.howler.pause();
+      }
+    }
+
+    /**
+     * Check the load status of the Howl
+     * @return {String} [unloaded, loading or loaded]
+     */
+
+  }, {
+    key: 'howlerState',
+    value: function howlerState() {
+      return this.howler.state();
+    }
+
+    /**
+     * Stops playback of sound or group
+     * If no id given, stops all playback
+     * @param {Number} id = undefined [sound of group to pause]
+     */
+
+  }, {
+    key: 'stop',
+    value: function stop() {
+      var id = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : undefined;
+
+      if (id) {
+        this.howler.stop(id);
+      } else {
+        this.howler.stop();
+      }
+    }
+
+    /**
+     * Mutes the sound, but doesn't pause the playback.
+     * @param {Boolean} [muted] [True to mute and false to unmute]
+     * @param {Number} [id] [The sound ID. If none is passed, all sounds in group are muted]
+     */
+
+  }, {
+    key: 'mute',
+    value: function mute() {
+      var _howler;
+
+      (_howler = this.howler).mute.apply(_howler, arguments);
+    }
+
+    /**
+     * Get/set volume of this sound or the group. This method optionally takes 0, 1 or 2 arguments.
+     * @param {Number} [volume] [Volume from 0.0 to 1.0]
+     * @param {Number} [id] [The sound ID. If none is passed, all sounds in group are muted]
+     */
+
+  }, {
+    key: 'volume',
+    value: function volume() {
+      var _howler2;
+
+      return (_howler2 = this.howler).volume.apply(_howler2, arguments);
+    }
+
+    /**
+     * Get/set whether to loop the sound or group. This method can optionally take 0, 1 or 2 arguments.
+     * @param {Boolean} [loop] [To loop or not to loop, that is the question]
+     * @param {Number} [id] [The sound ID. If none is passed, all sounds in group will have their loop property updated]
+     */
+
+  }, {
+    key: 'loop',
+    value: function loop() {
+      var _howler3;
+
+      return (_howler3 = this.howler).loop.apply(_howler3, arguments);
+    }
+
+    /**
+     * Set/get current position of player
+     * @param  {Number} pos [seek player to position]
+     * @return {Number}     [return current position]
+     */
+
+  }, {
+    key: 'seek',
+    value: function seek() {
+      var pos = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+
+      if (!this.howler) {
+        return 0;
+      }
+
+      if (!pos && pos !== 0) {
+        return this.howler.seek();
+      }
+
+      if (pos || pos === 0) {
+        this.howler.seek(pos);
+        return pos;
+      }
+    }
+
+    /**
+     * Get the duration of the audio source
+     * @return {Number} [Audio length in seconds. Will return 0 until after the load event fires]
+     */
+
+  }, {
+    key: 'duration',
+    value: function duration() {
+      return this.howler.duration();
+    }
+
+    /**
+     * load audio file
+     */
+
+  }, {
+    key: 'load',
+    value: function load() {
+      this.howler.load();
+    }
+
+    /**
+     * Only render a placeholder
+     */
+
+  }, {
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement('div', null);
+    }
+  }, {
+    key: 'howler',
+    set: function set(howl) {
+      if (howl) {
+        this._howler = howl;
+      }
+    },
+    get: function get() {
+      return this._howler;
+    }
+  }]);
+
+  return ReactHowler;
+}(_react.Component);
+
+ReactHowler.propTypes = {
+  src: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.arrayOf(_propTypes2.default.string)]).isRequired,
+  format: _propTypes2.default.arrayOf(_propTypes2.default.string),
+  playing: _propTypes2.default.bool,
+  mute: _propTypes2.default.bool,
+  loop: _propTypes2.default.bool,
+  preload: _propTypes2.default.bool,
+  volume: _propTypes2.default.number,
+  onEnd: _propTypes2.default.func,
+  onPause: _propTypes2.default.func,
+  onPlay: _propTypes2.default.func,
+  onVolume: _propTypes2.default.func,
+  onStop: _propTypes2.default.func,
+  onLoad: _propTypes2.default.func,
+  onLoadError: _propTypes2.default.func,
+  html5: _propTypes2.default.bool
+};
+
+ReactHowler.defaultProps = {
+  playing: true, // Enable autoplay by default
+  format: [],
+  mute: false,
+  preload: true,
+  loop: false,
+  volume: 1.0,
+  onEnd: _utils.noop,
+  onPause: _utils.noop,
+  onPlay: _utils.noop,
+  onVolume: _utils.noop,
+  onStop: _utils.noop,
+  onLoad: _utils.noop,
+  onLoadError: _utils.noop,
+  html5: false
+};
+
+exports.default = ReactHowler;
+
+/***/ }),
+
+/***/ "./node_modules/react-howler/lib/howler.js":
+/*!*************************************************!*\
+  !*** ./node_modules/react-howler/lib/howler.js ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var Howler = void 0;
+
+if (typeof window !== 'undefined') {
+  Howler = __webpack_require__(/*! howler */ "./node_modules/howler/dist/howler.js");
+}
+
+module.exports = Howler;
+
+/***/ }),
+
+/***/ "./node_modules/react-howler/lib/index.js":
+/*!************************************************!*\
+  !*** ./node_modules/react-howler/lib/index.js ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = __webpack_require__(/*! ./ReactHowler */ "./node_modules/react-howler/lib/ReactHowler.js").default;
+
+/***/ }),
+
+/***/ "./node_modules/react-howler/lib/utils.js":
+/*!************************************************!*\
+  !*** ./node_modules/react-howler/lib/utils.js ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Noop function (do nothing)
+ */
+var noop = exports.noop = function noop() {};
 
 /***/ }),
 
@@ -44821,7 +47294,7 @@ module.exports = exports["default"];
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/** @license React v16.8.6
+/** @license React v16.8.5
  * react-is.development.js
  *
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -45082,7 +47555,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 
-var ReactReduxContext = react__WEBPACK_IMPORTED_MODULE_0___default.a.createContext(null);
+var ReactReduxContext =
+/*#__PURE__*/
+react__WEBPACK_IMPORTED_MODULE_0___default.a.createContext(null);
+
+if (true) {
+  ReactReduxContext.displayName = 'ReactRedux';
+}
+
 /* harmony default export */ __webpack_exports__["default"] = (ReactReduxContext);
 
 /***/ }),
@@ -45096,104 +47576,63 @@ var ReactReduxContext = react__WEBPACK_IMPORTED_MODULE_0___default.a.createConte
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_helpers_esm_inheritsLoose__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/inheritsLoose */ "./node_modules/@babel/runtime/helpers/esm/inheritsLoose.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js");
-/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _Context__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Context */ "./node_modules/react-redux/es/components/Context.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _Context__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Context */ "./node_modules/react-redux/es/components/Context.js");
+/* harmony import */ var _utils_Subscription__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/Subscription */ "./node_modules/react-redux/es/utils/Subscription.js");
 
 
 
 
 
-var Provider =
-/*#__PURE__*/
-function (_Component) {
-  Object(_babel_runtime_helpers_esm_inheritsLoose__WEBPACK_IMPORTED_MODULE_0__["default"])(Provider, _Component);
-
-  function Provider(props) {
-    var _this;
-
-    _this = _Component.call(this, props) || this;
-    var store = props.store;
-    _this.state = {
-      storeState: store.getState(),
-      store: store
+function Provider(_ref) {
+  var store = _ref.store,
+      context = _ref.context,
+      children = _ref.children;
+  var contextValue = Object(react__WEBPACK_IMPORTED_MODULE_0__["useMemo"])(function () {
+    var subscription = new _utils_Subscription__WEBPACK_IMPORTED_MODULE_3__["default"](store);
+    subscription.onStateChange = subscription.notifyNestedSubs;
+    return {
+      store: store,
+      subscription: subscription
     };
-    return _this;
-  }
+  }, [store]);
+  var previousState = Object(react__WEBPACK_IMPORTED_MODULE_0__["useMemo"])(function () {
+    return store.getState();
+  }, [store]);
+  Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(function () {
+    var subscription = contextValue.subscription;
+    subscription.trySubscribe();
 
-  var _proto = Provider.prototype;
-
-  _proto.componentDidMount = function componentDidMount() {
-    this._isMounted = true;
-    this.subscribe();
-  };
-
-  _proto.componentWillUnmount = function componentWillUnmount() {
-    if (this.unsubscribe) this.unsubscribe();
-    this._isMounted = false;
-  };
-
-  _proto.componentDidUpdate = function componentDidUpdate(prevProps) {
-    if (this.props.store !== prevProps.store) {
-      if (this.unsubscribe) this.unsubscribe();
-      this.subscribe();
+    if (previousState !== store.getState()) {
+      subscription.notifyNestedSubs();
     }
+
+    return function () {
+      subscription.tryUnsubscribe();
+      subscription.onStateChange = null;
+    };
+  }, [contextValue, previousState]);
+  var Context = context || _Context__WEBPACK_IMPORTED_MODULE_2__["ReactReduxContext"];
+  return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Context.Provider, {
+    value: contextValue
+  }, children);
+}
+
+if (true) {
+  Provider.propTypes = {
+    store: prop_types__WEBPACK_IMPORTED_MODULE_1___default.a.shape({
+      subscribe: prop_types__WEBPACK_IMPORTED_MODULE_1___default.a.func.isRequired,
+      dispatch: prop_types__WEBPACK_IMPORTED_MODULE_1___default.a.func.isRequired,
+      getState: prop_types__WEBPACK_IMPORTED_MODULE_1___default.a.func.isRequired
+    }),
+    context: prop_types__WEBPACK_IMPORTED_MODULE_1___default.a.object,
+    children: prop_types__WEBPACK_IMPORTED_MODULE_1___default.a.any
   };
+}
 
-  _proto.subscribe = function subscribe() {
-    var _this2 = this;
-
-    var store = this.props.store;
-    this.unsubscribe = store.subscribe(function () {
-      var newStoreState = store.getState();
-
-      if (!_this2._isMounted) {
-        return;
-      }
-
-      _this2.setState(function (providerState) {
-        // If the value is the same, skip the unnecessary state update.
-        if (providerState.storeState === newStoreState) {
-          return null;
-        }
-
-        return {
-          storeState: newStoreState
-        };
-      });
-    }); // Actions might have been dispatched between render and mount - handle those
-
-    var postMountStoreState = store.getState();
-
-    if (postMountStoreState !== this.state.storeState) {
-      this.setState({
-        storeState: postMountStoreState
-      });
-    }
-  };
-
-  _proto.render = function render() {
-    var Context = this.props.context || _Context__WEBPACK_IMPORTED_MODULE_3__["ReactReduxContext"];
-    return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(Context.Provider, {
-      value: this.state
-    }, this.props.children);
-  };
-
-  return Provider;
-}(react__WEBPACK_IMPORTED_MODULE_1__["Component"]);
-
-Provider.propTypes = {
-  store: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.shape({
-    subscribe: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired,
-    dispatch: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired,
-    getState: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.func.isRequired
-  }),
-  context: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.object,
-  children: prop_types__WEBPACK_IMPORTED_MODULE_2___default.a.any
-};
 /* harmony default export */ __webpack_exports__["default"] = (Provider);
 
 /***/ }),
@@ -45208,19 +47647,17 @@ Provider.propTypes = {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return connectAdvanced; });
-/* harmony import */ var _babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/assertThisInitialized */ "./node_modules/@babel/runtime/helpers/esm/assertThisInitialized.js");
-/* harmony import */ var _babel_runtime_helpers_esm_inheritsLoose__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/esm/inheritsLoose */ "./node_modules/@babel/runtime/helpers/esm/inheritsLoose.js");
-/* harmony import */ var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/esm/extends */ "./node_modules/@babel/runtime/helpers/esm/extends.js");
-/* harmony import */ var _babel_runtime_helpers_esm_objectWithoutPropertiesLoose__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/esm/objectWithoutPropertiesLoose */ "./node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js");
-/* harmony import */ var hoist_non_react_statics__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! hoist-non-react-statics */ "./node_modules/react-redux/node_modules/hoist-non-react-statics/dist/hoist-non-react-statics.cjs.js");
-/* harmony import */ var hoist_non_react_statics__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(hoist_non_react_statics__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var invariant__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! invariant */ "./node_modules/invariant/browser.js");
-/* harmony import */ var invariant__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(invariant__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var react_is__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! react-is */ "./node_modules/react-is/index.js");
-/* harmony import */ var react_is__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(react_is__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var _Context__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Context */ "./node_modules/react-redux/es/components/Context.js");
+/* harmony import */ var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/extends */ "./node_modules/react-redux/node_modules/@babel/runtime/helpers/esm/extends.js");
+/* harmony import */ var _babel_runtime_helpers_esm_objectWithoutPropertiesLoose__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/esm/objectWithoutPropertiesLoose */ "./node_modules/react-redux/node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js");
+/* harmony import */ var hoist_non_react_statics__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! hoist-non-react-statics */ "./node_modules/hoist-non-react-statics/dist/hoist-non-react-statics.cjs.js");
+/* harmony import */ var hoist_non_react_statics__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(hoist_non_react_statics__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var react_is__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-is */ "./node_modules/react-redux/node_modules/react-is/index.js");
+/* harmony import */ var react_is__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(react_is__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _utils_Subscription__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../utils/Subscription */ "./node_modules/react-redux/es/utils/Subscription.js");
+/* harmony import */ var _utils_useIsomorphicLayoutEffect__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../utils/useIsomorphicLayoutEffect */ "./node_modules/react-redux/es/utils/useIsomorphicLayoutEffect.js");
+/* harmony import */ var _Context__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Context */ "./node_modules/react-redux/es/components/Context.js");
 
 
 
@@ -45228,8 +47665,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+ // Define some constant arrays just to avoid re-creating these
 
-
+var EMPTY_ARRAY = [];
+var NO_SUBSCRIPTION_ARRAY = [null, null];
 
 var stringifyComponent = function stringifyComponent(Comp) {
   try {
@@ -45239,18 +47678,123 @@ var stringifyComponent = function stringifyComponent(Comp) {
   }
 };
 
+function storeStateUpdatesReducer(state, action) {
+  var updateCount = state[1];
+  return [action.payload, updateCount + 1];
+}
+
+function useIsomorphicLayoutEffectWithArgs(effectFunc, effectArgs, dependencies) {
+  Object(_utils_useIsomorphicLayoutEffect__WEBPACK_IMPORTED_MODULE_6__["useIsomorphicLayoutEffect"])(function () {
+    return effectFunc.apply(void 0, effectArgs);
+  }, dependencies);
+}
+
+function captureWrapperProps(lastWrapperProps, lastChildProps, renderIsScheduled, wrapperProps, actualChildProps, childPropsFromStoreUpdate, notifyNestedSubs) {
+  // We want to capture the wrapper props and child props we used for later comparisons
+  lastWrapperProps.current = wrapperProps;
+  lastChildProps.current = actualChildProps;
+  renderIsScheduled.current = false; // If the render was from a store update, clear out that reference and cascade the subscriber update
+
+  if (childPropsFromStoreUpdate.current) {
+    childPropsFromStoreUpdate.current = null;
+    notifyNestedSubs();
+  }
+}
+
+function subscribeUpdates(shouldHandleStateChanges, store, subscription, childPropsSelector, lastWrapperProps, lastChildProps, renderIsScheduled, childPropsFromStoreUpdate, notifyNestedSubs, forceComponentUpdateDispatch) {
+  // If we're not subscribed to the store, nothing to do here
+  if (!shouldHandleStateChanges) return; // Capture values for checking if and when this component unmounts
+
+  var didUnsubscribe = false;
+  var lastThrownError = null; // We'll run this callback every time a store subscription update propagates to this component
+
+  var checkForUpdates = function checkForUpdates() {
+    if (didUnsubscribe) {
+      // Don't run stale listeners.
+      // Redux doesn't guarantee unsubscriptions happen until next dispatch.
+      return;
+    }
+
+    var latestStoreState = store.getState();
+    var newChildProps, error;
+
+    try {
+      // Actually run the selector with the most recent store state and wrapper props
+      // to determine what the child props should be
+      newChildProps = childPropsSelector(latestStoreState, lastWrapperProps.current);
+    } catch (e) {
+      error = e;
+      lastThrownError = e;
+    }
+
+    if (!error) {
+      lastThrownError = null;
+    } // If the child props haven't changed, nothing to do here - cascade the subscription update
+
+
+    if (newChildProps === lastChildProps.current) {
+      if (!renderIsScheduled.current) {
+        notifyNestedSubs();
+      }
+    } else {
+      // Save references to the new child props.  Note that we track the "child props from store update"
+      // as a ref instead of a useState/useReducer because we need a way to determine if that value has
+      // been processed.  If this went into useState/useReducer, we couldn't clear out the value without
+      // forcing another re-render, which we don't want.
+      lastChildProps.current = newChildProps;
+      childPropsFromStoreUpdate.current = newChildProps;
+      renderIsScheduled.current = true; // If the child props _did_ change (or we caught an error), this wrapper component needs to re-render
+
+      forceComponentUpdateDispatch({
+        type: 'STORE_UPDATED',
+        payload: {
+          error: error
+        }
+      });
+    }
+  }; // Actually subscribe to the nearest connected ancestor (or store)
+
+
+  subscription.onStateChange = checkForUpdates;
+  subscription.trySubscribe(); // Pull data from the store after first render in case the store has
+  // changed since we began.
+
+  checkForUpdates();
+
+  var unsubscribeWrapper = function unsubscribeWrapper() {
+    didUnsubscribe = true;
+    subscription.tryUnsubscribe();
+    subscription.onStateChange = null;
+
+    if (lastThrownError) {
+      // It's possible that we caught an error due to a bad mapState function, but the
+      // parent re-rendered without this component and we're about to unmount.
+      // This shouldn't happen as long as we do top-down subscriptions correctly, but
+      // if we ever do those wrong, this throw will surface the error in our tests.
+      // In that case, throw the error from here so it doesn't get lost.
+      throw lastThrownError;
+    }
+  };
+
+  return unsubscribeWrapper;
+}
+
+var initStateUpdates = function initStateUpdates() {
+  return [null, 0];
+};
+
 function connectAdvanced(
 /*
   selectorFactory is a func that is responsible for returning the selector function used to
   compute new props from state, props, and dispatch. For example:
-     export default connectAdvanced((dispatch, options) => (state, props) => ({
+      export default connectAdvanced((dispatch, options) => (state, props) => ({
       thing: state.things[props.thingId],
       saveThing: fields => dispatch(actionCreators.saveThing(props.thingId, fields)),
     }))(YourComponent)
-   Access to dispatch is provided to the factory so selectorFactories can bind actionCreators
+    Access to dispatch is provided to the factory so selectorFactories can bind actionCreators
   outside of their selector as an optimization. Options passed to connectAdvanced are passed to
   the selectorFactory, along with displayName and WrappedComponent, as the second argument.
-   Note that selectorFactory is responsible for all caching/memoization of inbound and outbound
+    Note that selectorFactory is responsible for all caching/memoization of inbound and outbound
   props. Do not use connectAdvanced directly without memoizing results between calls to your
   selector, otherwise the Connect component will re-render on every state or props change.
 */
@@ -45278,23 +47822,35 @@ _ref) {
       _ref2$forwardRef = _ref2.forwardRef,
       forwardRef = _ref2$forwardRef === void 0 ? false : _ref2$forwardRef,
       _ref2$context = _ref2.context,
-      context = _ref2$context === void 0 ? _Context__WEBPACK_IMPORTED_MODULE_8__["ReactReduxContext"] : _ref2$context,
-      connectOptions = Object(_babel_runtime_helpers_esm_objectWithoutPropertiesLoose__WEBPACK_IMPORTED_MODULE_3__["default"])(_ref2, ["getDisplayName", "methodName", "renderCountProp", "shouldHandleStateChanges", "storeKey", "withRef", "forwardRef", "context"]);
+      context = _ref2$context === void 0 ? _Context__WEBPACK_IMPORTED_MODULE_7__["ReactReduxContext"] : _ref2$context,
+      connectOptions = Object(_babel_runtime_helpers_esm_objectWithoutPropertiesLoose__WEBPACK_IMPORTED_MODULE_1__["default"])(_ref2, ["getDisplayName", "methodName", "renderCountProp", "shouldHandleStateChanges", "storeKey", "withRef", "forwardRef", "context"]);
 
-  invariant__WEBPACK_IMPORTED_MODULE_5___default()(renderCountProp === undefined, "renderCountProp is removed. render counting is built into the latest React dev tools profiling extension");
-  invariant__WEBPACK_IMPORTED_MODULE_5___default()(!withRef, 'withRef is removed. To access the wrapped instance, use a ref on the connected component');
-  var customStoreWarningMessage = 'To use a custom Redux store for specific components,  create a custom React context with ' + "React.createContext(), and pass the context object to React Redux's Provider and specific components" + ' like:  <Provider context={MyContext}><ConnectedComponent context={MyContext} /></Provider>. ' + 'You may also pass a {context : MyContext} option to connect';
-  invariant__WEBPACK_IMPORTED_MODULE_5___default()(storeKey === 'store', 'storeKey has been removed and does not do anything. ' + customStoreWarningMessage);
+  if (true) {
+    if (renderCountProp !== undefined) {
+      throw new Error("renderCountProp is removed. render counting is built into the latest React Dev Tools profiling extension");
+    }
+
+    if (withRef) {
+      throw new Error('withRef is removed. To access the wrapped instance, use a ref on the connected component');
+    }
+
+    var customStoreWarningMessage = 'To use a custom Redux store for specific components, create a custom React context with ' + "React.createContext(), and pass the context object to React Redux's Provider and specific components" + ' like: <Provider context={MyContext}><ConnectedComponent context={MyContext} /></Provider>. ' + 'You may also pass a {context : MyContext} option to connect';
+
+    if (storeKey !== 'store') {
+      throw new Error('storeKey has been removed and does not do anything. ' + customStoreWarningMessage);
+    }
+  }
+
   var Context = context;
   return function wrapWithConnect(WrappedComponent) {
-    if (true) {
-      invariant__WEBPACK_IMPORTED_MODULE_5___default()(Object(react_is__WEBPACK_IMPORTED_MODULE_7__["isValidElementType"])(WrappedComponent), "You must pass a component to the function returned by " + (methodName + ". Instead received " + stringifyComponent(WrappedComponent)));
+    if ( true && !Object(react_is__WEBPACK_IMPORTED_MODULE_4__["isValidElementType"])(WrappedComponent)) {
+      throw new Error("You must pass a component to the function returned by " + (methodName + ". Instead received " + stringifyComponent(WrappedComponent)));
     }
 
     var wrappedComponentName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
     var displayName = getDisplayName(wrappedComponentName);
 
-    var selectorFactoryOptions = Object(_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_2__["default"])({}, connectOptions, {
+    var selectorFactoryOptions = Object(_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, connectOptions, {
       getDisplayName: getDisplayName,
       methodName: methodName,
       renderCountProp: renderCountProp,
@@ -45306,117 +47862,169 @@ _ref) {
     });
 
     var pure = connectOptions.pure;
-    var OuterBaseComponent = react__WEBPACK_IMPORTED_MODULE_6__["Component"];
 
-    if (pure) {
-      OuterBaseComponent = react__WEBPACK_IMPORTED_MODULE_6__["PureComponent"];
-    }
+    function createChildSelector(store) {
+      return selectorFactory(store.dispatch, selectorFactoryOptions);
+    } // If we aren't running in "pure" mode, we don't want to memoize values.
+    // To avoid conditionally calling hooks, we fall back to a tiny wrapper
+    // that just executes the given callback immediately.
 
-    function makeDerivedPropsSelector() {
-      var lastProps;
-      var lastState;
-      var lastDerivedProps;
-      var lastStore;
-      var lastSelectorFactoryOptions;
-      var sourceSelector;
-      return function selectDerivedProps(state, props, store, selectorFactoryOptions) {
-        if (pure && lastProps === props && lastState === state) {
-          return lastDerivedProps;
+
+    var usePureOnlyMemo = pure ? react__WEBPACK_IMPORTED_MODULE_3__["useMemo"] : function (callback) {
+      return callback();
+    };
+
+    function ConnectFunction(props) {
+      var _useMemo = Object(react__WEBPACK_IMPORTED_MODULE_3__["useMemo"])(function () {
+        // Distinguish between actual "data" props that were passed to the wrapper component,
+        // and values needed to control behavior (forwarded refs, alternate context instances).
+        // To maintain the wrapperProps object reference, memoize this destructuring.
+        var forwardedRef = props.forwardedRef,
+            wrapperProps = Object(_babel_runtime_helpers_esm_objectWithoutPropertiesLoose__WEBPACK_IMPORTED_MODULE_1__["default"])(props, ["forwardedRef"]);
+
+        return [props.context, forwardedRef, wrapperProps];
+      }, [props]),
+          propsContext = _useMemo[0],
+          forwardedRef = _useMemo[1],
+          wrapperProps = _useMemo[2];
+
+      var ContextToUse = Object(react__WEBPACK_IMPORTED_MODULE_3__["useMemo"])(function () {
+        // Users may optionally pass in a custom context instance to use instead of our ReactReduxContext.
+        // Memoize the check that determines which context instance we should use.
+        return propsContext && propsContext.Consumer && Object(react_is__WEBPACK_IMPORTED_MODULE_4__["isContextConsumer"])(react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement(propsContext.Consumer, null)) ? propsContext : Context;
+      }, [propsContext, Context]); // Retrieve the store and ancestor subscription via context, if available
+
+      var contextValue = Object(react__WEBPACK_IMPORTED_MODULE_3__["useContext"])(ContextToUse); // The store _must_ exist as either a prop or in context.
+      // We'll check to see if it _looks_ like a Redux store first.
+      // This allows us to pass through a `store` prop that is just a plain value.
+
+      var didStoreComeFromProps = Boolean(props.store) && Boolean(props.store.getState) && Boolean(props.store.dispatch);
+      var didStoreComeFromContext = Boolean(contextValue) && Boolean(contextValue.store);
+
+      if ( true && !didStoreComeFromProps && !didStoreComeFromContext) {
+        throw new Error("Could not find \"store\" in the context of " + ("\"" + displayName + "\". Either wrap the root component in a <Provider>, ") + "or pass a custom React context provider to <Provider> and the corresponding " + ("React context consumer to " + displayName + " in connect options."));
+      } // Based on the previous check, one of these must be true
+
+
+      var store = didStoreComeFromProps ? props.store : contextValue.store;
+      var childPropsSelector = Object(react__WEBPACK_IMPORTED_MODULE_3__["useMemo"])(function () {
+        // The child props selector needs the store reference as an input.
+        // Re-create this selector whenever the store changes.
+        return createChildSelector(store);
+      }, [store]);
+
+      var _useMemo2 = Object(react__WEBPACK_IMPORTED_MODULE_3__["useMemo"])(function () {
+        if (!shouldHandleStateChanges) return NO_SUBSCRIPTION_ARRAY; // This Subscription's source should match where store came from: props vs. context. A component
+        // connected to the store via props shouldn't use subscription from context, or vice versa.
+
+        var subscription = new _utils_Subscription__WEBPACK_IMPORTED_MODULE_5__["default"](store, didStoreComeFromProps ? null : contextValue.subscription); // `notifyNestedSubs` is duplicated to handle the case where the component is unmounted in
+        // the middle of the notification loop, where `subscription` will then be null. This can
+        // probably be avoided if Subscription's listeners logic is changed to not call listeners
+        // that have been unsubscribed in the  middle of the notification loop.
+
+        var notifyNestedSubs = subscription.notifyNestedSubs.bind(subscription);
+        return [subscription, notifyNestedSubs];
+      }, [store, didStoreComeFromProps, contextValue]),
+          subscription = _useMemo2[0],
+          notifyNestedSubs = _useMemo2[1]; // Determine what {store, subscription} value should be put into nested context, if necessary,
+      // and memoize that value to avoid unnecessary context updates.
+
+
+      var overriddenContextValue = Object(react__WEBPACK_IMPORTED_MODULE_3__["useMemo"])(function () {
+        if (didStoreComeFromProps) {
+          // This component is directly subscribed to a store from props.
+          // We don't want descendants reading from this store - pass down whatever
+          // the existing context value is from the nearest connected ancestor.
+          return contextValue;
+        } // Otherwise, put this component's subscription instance into context, so that
+        // connected descendants won't update until after this component is done
+
+
+        return Object(_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, contextValue, {
+          subscription: subscription
+        });
+      }, [didStoreComeFromProps, contextValue, subscription]); // We need to force this wrapper component to re-render whenever a Redux store update
+      // causes a change to the calculated child component props (or we caught an error in mapState)
+
+      var _useReducer = Object(react__WEBPACK_IMPORTED_MODULE_3__["useReducer"])(storeStateUpdatesReducer, EMPTY_ARRAY, initStateUpdates),
+          _useReducer$ = _useReducer[0],
+          previousStateUpdateResult = _useReducer$[0],
+          forceComponentUpdateDispatch = _useReducer[1]; // Propagate any mapState/mapDispatch errors upwards
+
+
+      if (previousStateUpdateResult && previousStateUpdateResult.error) {
+        throw previousStateUpdateResult.error;
+      } // Set up refs to coordinate values between the subscription effect and the render logic
+
+
+      var lastChildProps = Object(react__WEBPACK_IMPORTED_MODULE_3__["useRef"])();
+      var lastWrapperProps = Object(react__WEBPACK_IMPORTED_MODULE_3__["useRef"])(wrapperProps);
+      var childPropsFromStoreUpdate = Object(react__WEBPACK_IMPORTED_MODULE_3__["useRef"])();
+      var renderIsScheduled = Object(react__WEBPACK_IMPORTED_MODULE_3__["useRef"])(false);
+      var actualChildProps = usePureOnlyMemo(function () {
+        // Tricky logic here:
+        // - This render may have been triggered by a Redux store update that produced new child props
+        // - However, we may have gotten new wrapper props after that
+        // If we have new child props, and the same wrapper props, we know we should use the new child props as-is.
+        // But, if we have new wrapper props, those might change the child props, so we have to recalculate things.
+        // So, we'll use the child props from store update only if the wrapper props are the same as last time.
+        if (childPropsFromStoreUpdate.current && wrapperProps === lastWrapperProps.current) {
+          return childPropsFromStoreUpdate.current;
+        } // TODO We're reading the store directly in render() here. Bad idea?
+        // This will likely cause Bad Things (TM) to happen in Concurrent Mode.
+        // Note that we do this because on renders _not_ caused by store updates, we need the latest store state
+        // to determine what the child props should be.
+
+
+        return childPropsSelector(store.getState(), wrapperProps);
+      }, [store, previousStateUpdateResult, wrapperProps]); // We need this to execute synchronously every time we re-render. However, React warns
+      // about useLayoutEffect in SSR, so we try to detect environment and fall back to
+      // just useEffect instead to avoid the warning, since neither will run anyway.
+
+      useIsomorphicLayoutEffectWithArgs(captureWrapperProps, [lastWrapperProps, lastChildProps, renderIsScheduled, wrapperProps, actualChildProps, childPropsFromStoreUpdate, notifyNestedSubs]); // Our re-subscribe logic only runs when the store/subscription setup changes
+
+      useIsomorphicLayoutEffectWithArgs(subscribeUpdates, [shouldHandleStateChanges, store, subscription, childPropsSelector, lastWrapperProps, lastChildProps, renderIsScheduled, childPropsFromStoreUpdate, notifyNestedSubs, forceComponentUpdateDispatch], [store, subscription, childPropsSelector]); // Now that all that's done, we can finally try to actually render the child component.
+      // We memoize the elements for the rendered child component as an optimization.
+
+      var renderedWrappedComponent = Object(react__WEBPACK_IMPORTED_MODULE_3__["useMemo"])(function () {
+        return react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement(WrappedComponent, Object(_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, actualChildProps, {
+          ref: forwardedRef
+        }));
+      }, [forwardedRef, WrappedComponent, actualChildProps]); // If React sees the exact same element reference as last time, it bails out of re-rendering
+      // that child, same as if it was wrapped in React.memo() or returned false from shouldComponentUpdate.
+
+      var renderedChild = Object(react__WEBPACK_IMPORTED_MODULE_3__["useMemo"])(function () {
+        if (shouldHandleStateChanges) {
+          // If this component is subscribed to store updates, we need to pass its own
+          // subscription instance down to our descendants. That means rendering the same
+          // Context instance, and putting a different value into the context.
+          return react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement(ContextToUse.Provider, {
+            value: overriddenContextValue
+          }, renderedWrappedComponent);
         }
 
-        if (store !== lastStore || lastSelectorFactoryOptions !== selectorFactoryOptions) {
-          lastStore = store;
-          lastSelectorFactoryOptions = selectorFactoryOptions;
-          sourceSelector = selectorFactory(store.dispatch, selectorFactoryOptions);
-        }
+        return renderedWrappedComponent;
+      }, [ContextToUse, renderedWrappedComponent, overriddenContextValue]);
+      return renderedChild;
+    } // If we're in "pure" mode, ensure our wrapper component only re-renders when incoming props have changed.
 
-        lastProps = props;
-        lastState = state;
-        var nextProps = sourceSelector(state, props);
-        lastDerivedProps = nextProps;
-        return lastDerivedProps;
-      };
-    }
 
-    function makeChildElementSelector() {
-      var lastChildProps, lastForwardRef, lastChildElement, lastComponent;
-      return function selectChildElement(WrappedComponent, childProps, forwardRef) {
-        if (childProps !== lastChildProps || forwardRef !== lastForwardRef || lastComponent !== WrappedComponent) {
-          lastChildProps = childProps;
-          lastForwardRef = forwardRef;
-          lastComponent = WrappedComponent;
-          lastChildElement = react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(WrappedComponent, Object(_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_2__["default"])({}, childProps, {
-            ref: forwardRef
-          }));
-        }
-
-        return lastChildElement;
-      };
-    }
-
-    var Connect =
-    /*#__PURE__*/
-    function (_OuterBaseComponent) {
-      Object(_babel_runtime_helpers_esm_inheritsLoose__WEBPACK_IMPORTED_MODULE_1__["default"])(Connect, _OuterBaseComponent);
-
-      function Connect(props) {
-        var _this;
-
-        _this = _OuterBaseComponent.call(this, props) || this;
-        invariant__WEBPACK_IMPORTED_MODULE_5___default()(forwardRef ? !props.wrapperProps[storeKey] : !props[storeKey], 'Passing redux store in props has been removed and does not do anything. ' + customStoreWarningMessage);
-        _this.selectDerivedProps = makeDerivedPropsSelector();
-        _this.selectChildElement = makeChildElementSelector();
-        _this.indirectRenderWrappedComponent = _this.indirectRenderWrappedComponent.bind(Object(_babel_runtime_helpers_esm_assertThisInitialized__WEBPACK_IMPORTED_MODULE_0__["default"])(_this));
-        return _this;
-      }
-
-      var _proto = Connect.prototype;
-
-      _proto.indirectRenderWrappedComponent = function indirectRenderWrappedComponent(value) {
-        // calling renderWrappedComponent on prototype from indirectRenderWrappedComponent bound to `this`
-        return this.renderWrappedComponent(value);
-      };
-
-      _proto.renderWrappedComponent = function renderWrappedComponent(value) {
-        invariant__WEBPACK_IMPORTED_MODULE_5___default()(value, "Could not find \"store\" in the context of " + ("\"" + displayName + "\". Either wrap the root component in a <Provider>, ") + "or pass a custom React context provider to <Provider> and the corresponding " + ("React context consumer to " + displayName + " in connect options."));
-        var storeState = value.storeState,
-            store = value.store;
-        var wrapperProps = this.props;
-        var forwardedRef;
-
-        if (forwardRef) {
-          wrapperProps = this.props.wrapperProps;
-          forwardedRef = this.props.forwardedRef;
-        }
-
-        var derivedProps = this.selectDerivedProps(storeState, wrapperProps, store, selectorFactoryOptions);
-        return this.selectChildElement(WrappedComponent, derivedProps, forwardedRef);
-      };
-
-      _proto.render = function render() {
-        var ContextToUse = this.props.context && this.props.context.Consumer && Object(react_is__WEBPACK_IMPORTED_MODULE_7__["isContextConsumer"])(react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(this.props.context.Consumer, null)) ? this.props.context : Context;
-        return react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(ContextToUse.Consumer, null, this.indirectRenderWrappedComponent);
-      };
-
-      return Connect;
-    }(OuterBaseComponent);
-
+    var Connect = pure ? react__WEBPACK_IMPORTED_MODULE_3___default.a.memo(ConnectFunction) : ConnectFunction;
     Connect.WrappedComponent = WrappedComponent;
     Connect.displayName = displayName;
 
     if (forwardRef) {
-      var forwarded = react__WEBPACK_IMPORTED_MODULE_6___default.a.forwardRef(function forwardConnectRef(props, ref) {
-        return react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(Connect, {
-          wrapperProps: props,
+      var forwarded = react__WEBPACK_IMPORTED_MODULE_3___default.a.forwardRef(function forwardConnectRef(props, ref) {
+        return react__WEBPACK_IMPORTED_MODULE_3___default.a.createElement(Connect, Object(_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, props, {
           forwardedRef: ref
-        });
+        }));
       });
       forwarded.displayName = displayName;
       forwarded.WrappedComponent = WrappedComponent;
-      return hoist_non_react_statics__WEBPACK_IMPORTED_MODULE_4___default()(forwarded, WrappedComponent);
+      return hoist_non_react_statics__WEBPACK_IMPORTED_MODULE_2___default()(forwarded, WrappedComponent);
     }
 
-    return hoist_non_react_statics__WEBPACK_IMPORTED_MODULE_4___default()(Connect, WrappedComponent);
+    return hoist_non_react_statics__WEBPACK_IMPORTED_MODULE_2___default()(Connect, WrappedComponent);
   };
 }
 
@@ -45432,8 +48040,8 @@ _ref) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createConnect", function() { return createConnect; });
-/* harmony import */ var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/extends */ "./node_modules/@babel/runtime/helpers/esm/extends.js");
-/* harmony import */ var _babel_runtime_helpers_esm_objectWithoutPropertiesLoose__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/esm/objectWithoutPropertiesLoose */ "./node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js");
+/* harmony import */ var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/extends */ "./node_modules/react-redux/node_modules/@babel/runtime/helpers/esm/extends.js");
+/* harmony import */ var _babel_runtime_helpers_esm_objectWithoutPropertiesLoose__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/esm/objectWithoutPropertiesLoose */ "./node_modules/react-redux/node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js");
 /* harmony import */ var _components_connectAdvanced__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/connectAdvanced */ "./node_modules/react-redux/es/components/connectAdvanced.js");
 /* harmony import */ var _utils_shallowEqual__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/shallowEqual */ "./node_modules/react-redux/es/utils/shallowEqual.js");
 /* harmony import */ var _mapDispatchToProps__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./mapDispatchToProps */ "./node_modules/react-redux/es/connect/mapDispatchToProps.js");
@@ -45537,7 +48145,7 @@ function createConnect(_temp) {
     }, extraOptions));
   };
 }
-/* harmony default export */ __webpack_exports__["default"] = (createConnect());
+/* harmony default export */ __webpack_exports__["default"] = (/*#__PURE__*/createConnect());
 
 /***/ }),
 
@@ -45614,12 +48222,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "wrapMergePropsFunc", function() { return wrapMergePropsFunc; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "whenMergePropsIsFunction", function() { return whenMergePropsIsFunction; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "whenMergePropsIsOmitted", function() { return whenMergePropsIsOmitted; });
-/* harmony import */ var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/extends */ "./node_modules/@babel/runtime/helpers/esm/extends.js");
+/* harmony import */ var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/extends */ "./node_modules/react-redux/node_modules/@babel/runtime/helpers/esm/extends.js");
 /* harmony import */ var _utils_verifyPlainObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/verifyPlainObject */ "./node_modules/react-redux/es/utils/verifyPlainObject.js");
 
 
 function defaultMergeProps(stateProps, dispatchProps, ownProps) {
-  return Object(_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, ownProps, stateProps, dispatchProps);
+  return Object(_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, ownProps, {}, stateProps, {}, dispatchProps);
 }
 function wrapMergePropsFunc(mergeProps) {
   return function initMergePropsProxy(dispatch, _ref) {
@@ -45667,7 +48275,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "impureFinalPropsSelectorFactory", function() { return impureFinalPropsSelectorFactory; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "pureFinalPropsSelectorFactory", function() { return pureFinalPropsSelectorFactory; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return finalPropsSelectorFactory; });
-/* harmony import */ var _babel_runtime_helpers_esm_objectWithoutPropertiesLoose__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/objectWithoutPropertiesLoose */ "./node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js");
+/* harmony import */ var _babel_runtime_helpers_esm_objectWithoutPropertiesLoose__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/objectWithoutPropertiesLoose */ "./node_modules/react-redux/node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js");
 /* harmony import */ var _verifySubselectors__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./verifySubselectors */ "./node_modules/react-redux/es/connect/verifySubselectors.js");
 
 
@@ -45776,7 +48384,7 @@ function verify(selector, methodName, displayName) {
   if (!selector) {
     throw new Error("Unexpected value for " + methodName + " in " + displayName + ".");
   } else if (methodName === 'mapStateToProps' || methodName === 'mapDispatchToProps') {
-    if (!selector.hasOwnProperty('dependsOnOwnProps')) {
+    if (!Object.prototype.hasOwnProperty.call(selector, 'dependsOnOwnProps')) {
       Object(_utils_warning__WEBPACK_IMPORTED_MODULE_0__["default"])("The selector for " + methodName + " of " + displayName + " did not specify a value for dependsOnOwnProps.");
     }
   }
@@ -45870,11 +48478,330 @@ function wrapMapToPropsFunc(mapToProps, methodName) {
 
 /***/ }),
 
+/***/ "./node_modules/react-redux/es/hooks/useDispatch.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/react-redux/es/hooks/useDispatch.js ***!
+  \**********************************************************/
+/*! exports provided: createDispatchHook, useDispatch */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createDispatchHook", function() { return createDispatchHook; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "useDispatch", function() { return useDispatch; });
+/* harmony import */ var _components_Context__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/Context */ "./node_modules/react-redux/es/components/Context.js");
+/* harmony import */ var _useStore__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./useStore */ "./node_modules/react-redux/es/hooks/useStore.js");
+
+
+/**
+ * Hook factory, which creates a `useDispatch` hook bound to a given context.
+ *
+ * @param {React.Context} [context=ReactReduxContext] Context passed to your `<Provider>`.
+ * @returns {Function} A `useDispatch` hook bound to the specified context.
+ */
+
+function createDispatchHook(context) {
+  if (context === void 0) {
+    context = _components_Context__WEBPACK_IMPORTED_MODULE_0__["ReactReduxContext"];
+  }
+
+  var useStore = context === _components_Context__WEBPACK_IMPORTED_MODULE_0__["ReactReduxContext"] ? _useStore__WEBPACK_IMPORTED_MODULE_1__["useStore"] : Object(_useStore__WEBPACK_IMPORTED_MODULE_1__["createStoreHook"])(context);
+  return function useDispatch() {
+    var store = useStore();
+    return store.dispatch;
+  };
+}
+/**
+ * A hook to access the redux `dispatch` function.
+ *
+ * @returns {any|function} redux store's `dispatch` function
+ *
+ * @example
+ *
+ * import React, { useCallback } from 'react'
+ * import { useDispatch } from 'react-redux'
+ *
+ * export const CounterComponent = ({ value }) => {
+ *   const dispatch = useDispatch()
+ *   const increaseCounter = useCallback(() => dispatch({ type: 'increase-counter' }), [])
+ *   return (
+ *     <div>
+ *       <span>{value}</span>
+ *       <button onClick={increaseCounter}>Increase counter</button>
+ *     </div>
+ *   )
+ * }
+ */
+
+var useDispatch =
+/*#__PURE__*/
+createDispatchHook();
+
+/***/ }),
+
+/***/ "./node_modules/react-redux/es/hooks/useReduxContext.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/react-redux/es/hooks/useReduxContext.js ***!
+  \**************************************************************/
+/*! exports provided: useReduxContext */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "useReduxContext", function() { return useReduxContext; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _components_Context__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/Context */ "./node_modules/react-redux/es/components/Context.js");
+
+
+/**
+ * A hook to access the value of the `ReactReduxContext`. This is a low-level
+ * hook that you should usually not need to call directly.
+ *
+ * @returns {any} the value of the `ReactReduxContext`
+ *
+ * @example
+ *
+ * import React from 'react'
+ * import { useReduxContext } from 'react-redux'
+ *
+ * export const CounterComponent = ({ value }) => {
+ *   const { store } = useReduxContext()
+ *   return <div>{store.getState()}</div>
+ * }
+ */
+
+function useReduxContext() {
+  var contextValue = Object(react__WEBPACK_IMPORTED_MODULE_0__["useContext"])(_components_Context__WEBPACK_IMPORTED_MODULE_1__["ReactReduxContext"]);
+
+  if ( true && !contextValue) {
+    throw new Error('could not find react-redux context value; please ensure the component is wrapped in a <Provider>');
+  }
+
+  return contextValue;
+}
+
+/***/ }),
+
+/***/ "./node_modules/react-redux/es/hooks/useSelector.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/react-redux/es/hooks/useSelector.js ***!
+  \**********************************************************/
+/*! exports provided: createSelectorHook, useSelector */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createSelectorHook", function() { return createSelectorHook; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "useSelector", function() { return useSelector; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _useReduxContext__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./useReduxContext */ "./node_modules/react-redux/es/hooks/useReduxContext.js");
+/* harmony import */ var _utils_Subscription__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/Subscription */ "./node_modules/react-redux/es/utils/Subscription.js");
+/* harmony import */ var _utils_useIsomorphicLayoutEffect__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/useIsomorphicLayoutEffect */ "./node_modules/react-redux/es/utils/useIsomorphicLayoutEffect.js");
+/* harmony import */ var _components_Context__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/Context */ "./node_modules/react-redux/es/components/Context.js");
+
+
+
+
+
+
+var refEquality = function refEquality(a, b) {
+  return a === b;
+};
+
+function useSelectorWithStoreAndSubscription(selector, equalityFn, store, contextSub) {
+  var _useReducer = Object(react__WEBPACK_IMPORTED_MODULE_0__["useReducer"])(function (s) {
+    return s + 1;
+  }, 0),
+      forceRender = _useReducer[1];
+
+  var subscription = Object(react__WEBPACK_IMPORTED_MODULE_0__["useMemo"])(function () {
+    return new _utils_Subscription__WEBPACK_IMPORTED_MODULE_2__["default"](store, contextSub);
+  }, [store, contextSub]);
+  var latestSubscriptionCallbackError = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])();
+  var latestSelector = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])();
+  var latestSelectedState = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])();
+  var selectedState;
+
+  try {
+    if (selector !== latestSelector.current || latestSubscriptionCallbackError.current) {
+      selectedState = selector(store.getState());
+    } else {
+      selectedState = latestSelectedState.current;
+    }
+  } catch (err) {
+    if (latestSubscriptionCallbackError.current) {
+      err.message += "\nThe error may be correlated with this previous error:\n" + latestSubscriptionCallbackError.current.stack + "\n\n";
+    }
+
+    throw err;
+  }
+
+  Object(_utils_useIsomorphicLayoutEffect__WEBPACK_IMPORTED_MODULE_3__["useIsomorphicLayoutEffect"])(function () {
+    latestSelector.current = selector;
+    latestSelectedState.current = selectedState;
+    latestSubscriptionCallbackError.current = undefined;
+  });
+  Object(_utils_useIsomorphicLayoutEffect__WEBPACK_IMPORTED_MODULE_3__["useIsomorphicLayoutEffect"])(function () {
+    function checkForUpdates() {
+      try {
+        var newSelectedState = latestSelector.current(store.getState());
+
+        if (equalityFn(newSelectedState, latestSelectedState.current)) {
+          return;
+        }
+
+        latestSelectedState.current = newSelectedState;
+      } catch (err) {
+        // we ignore all errors here, since when the component
+        // is re-rendered, the selectors are called again, and
+        // will throw again, if neither props nor store state
+        // changed
+        latestSubscriptionCallbackError.current = err;
+      }
+
+      forceRender({});
+    }
+
+    subscription.onStateChange = checkForUpdates;
+    subscription.trySubscribe();
+    checkForUpdates();
+    return function () {
+      return subscription.tryUnsubscribe();
+    };
+  }, [store, subscription]);
+  return selectedState;
+}
+/**
+ * Hook factory, which creates a `useSelector` hook bound to a given context.
+ *
+ * @param {React.Context} [context=ReactReduxContext] Context passed to your `<Provider>`.
+ * @returns {Function} A `useSelector` hook bound to the specified context.
+ */
+
+
+function createSelectorHook(context) {
+  if (context === void 0) {
+    context = _components_Context__WEBPACK_IMPORTED_MODULE_4__["ReactReduxContext"];
+  }
+
+  var useReduxContext = context === _components_Context__WEBPACK_IMPORTED_MODULE_4__["ReactReduxContext"] ? _useReduxContext__WEBPACK_IMPORTED_MODULE_1__["useReduxContext"] : function () {
+    return Object(react__WEBPACK_IMPORTED_MODULE_0__["useContext"])(context);
+  };
+  return function useSelector(selector, equalityFn) {
+    if (equalityFn === void 0) {
+      equalityFn = refEquality;
+    }
+
+    if ( true && !selector) {
+      throw new Error("You must pass a selector to useSelectors");
+    }
+
+    var _useReduxContext = useReduxContext(),
+        store = _useReduxContext.store,
+        contextSub = _useReduxContext.subscription;
+
+    return useSelectorWithStoreAndSubscription(selector, equalityFn, store, contextSub);
+  };
+}
+/**
+ * A hook to access the redux store's state. This hook takes a selector function
+ * as an argument. The selector is called with the store state.
+ *
+ * This hook takes an optional equality comparison function as the second parameter
+ * that allows you to customize the way the selected state is compared to determine
+ * whether the component needs to be re-rendered.
+ *
+ * @param {Function} selector the selector function
+ * @param {Function=} equalityFn the function that will be used to determine equality
+ *
+ * @returns {any} the selected state
+ *
+ * @example
+ *
+ * import React from 'react'
+ * import { useSelector } from 'react-redux'
+ *
+ * export const CounterComponent = () => {
+ *   const counter = useSelector(state => state.counter)
+ *   return <div>{counter}</div>
+ * }
+ */
+
+var useSelector =
+/*#__PURE__*/
+createSelectorHook();
+
+/***/ }),
+
+/***/ "./node_modules/react-redux/es/hooks/useStore.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/react-redux/es/hooks/useStore.js ***!
+  \*******************************************************/
+/*! exports provided: createStoreHook, useStore */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createStoreHook", function() { return createStoreHook; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "useStore", function() { return useStore; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _components_Context__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/Context */ "./node_modules/react-redux/es/components/Context.js");
+/* harmony import */ var _useReduxContext__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./useReduxContext */ "./node_modules/react-redux/es/hooks/useReduxContext.js");
+
+
+
+/**
+ * Hook factory, which creates a `useStore` hook bound to a given context.
+ *
+ * @param {React.Context} [context=ReactReduxContext] Context passed to your `<Provider>`.
+ * @returns {Function} A `useStore` hook bound to the specified context.
+ */
+
+function createStoreHook(context) {
+  if (context === void 0) {
+    context = _components_Context__WEBPACK_IMPORTED_MODULE_1__["ReactReduxContext"];
+  }
+
+  var useReduxContext = context === _components_Context__WEBPACK_IMPORTED_MODULE_1__["ReactReduxContext"] ? _useReduxContext__WEBPACK_IMPORTED_MODULE_2__["useReduxContext"] : function () {
+    return Object(react__WEBPACK_IMPORTED_MODULE_0__["useContext"])(context);
+  };
+  return function useStore() {
+    var _useReduxContext = useReduxContext(),
+        store = _useReduxContext.store;
+
+    return store;
+  };
+}
+/**
+ * A hook to access the redux store.
+ *
+ * @returns {any} the redux store
+ *
+ * @example
+ *
+ * import React from 'react'
+ * import { useStore } from 'react-redux'
+ *
+ * export const ExampleComponent = () => {
+ *   const store = useStore()
+ *   return <div>{store.getState()}</div>
+ * }
+ */
+
+var useStore =
+/*#__PURE__*/
+createStoreHook();
+
+/***/ }),
+
 /***/ "./node_modules/react-redux/es/index.js":
 /*!**********************************************!*\
   !*** ./node_modules/react-redux/es/index.js ***!
   \**********************************************/
-/*! exports provided: Provider, connectAdvanced, ReactReduxContext, connect */
+/*! exports provided: Provider, connectAdvanced, ReactReduxContext, connect, batch, useDispatch, createDispatchHook, useSelector, createSelectorHook, useStore, createStoreHook, shallowEqual */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -45891,11 +48818,206 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _connect_connect__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./connect/connect */ "./node_modules/react-redux/es/connect/connect.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "connect", function() { return _connect_connect__WEBPACK_IMPORTED_MODULE_3__["default"]; });
 
+/* harmony import */ var _hooks_useDispatch__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./hooks/useDispatch */ "./node_modules/react-redux/es/hooks/useDispatch.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "useDispatch", function() { return _hooks_useDispatch__WEBPACK_IMPORTED_MODULE_4__["useDispatch"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "createDispatchHook", function() { return _hooks_useDispatch__WEBPACK_IMPORTED_MODULE_4__["createDispatchHook"]; });
+
+/* harmony import */ var _hooks_useSelector__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./hooks/useSelector */ "./node_modules/react-redux/es/hooks/useSelector.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "useSelector", function() { return _hooks_useSelector__WEBPACK_IMPORTED_MODULE_5__["useSelector"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "createSelectorHook", function() { return _hooks_useSelector__WEBPACK_IMPORTED_MODULE_5__["createSelectorHook"]; });
+
+/* harmony import */ var _hooks_useStore__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./hooks/useStore */ "./node_modules/react-redux/es/hooks/useStore.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "useStore", function() { return _hooks_useStore__WEBPACK_IMPORTED_MODULE_6__["useStore"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "createStoreHook", function() { return _hooks_useStore__WEBPACK_IMPORTED_MODULE_6__["createStoreHook"]; });
+
+/* harmony import */ var _utils_batch__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./utils/batch */ "./node_modules/react-redux/es/utils/batch.js");
+/* harmony import */ var _utils_reactBatchedUpdates__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./utils/reactBatchedUpdates */ "./node_modules/react-redux/es/utils/reactBatchedUpdates.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "batch", function() { return _utils_reactBatchedUpdates__WEBPACK_IMPORTED_MODULE_8__["unstable_batchedUpdates"]; });
+
+/* harmony import */ var _utils_shallowEqual__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./utils/shallowEqual */ "./node_modules/react-redux/es/utils/shallowEqual.js");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "shallowEqual", function() { return _utils_shallowEqual__WEBPACK_IMPORTED_MODULE_9__["default"]; });
 
 
 
 
 
+
+
+
+
+
+
+Object(_utils_batch__WEBPACK_IMPORTED_MODULE_7__["setBatch"])(_utils_reactBatchedUpdates__WEBPACK_IMPORTED_MODULE_8__["unstable_batchedUpdates"]);
+
+
+/***/ }),
+
+/***/ "./node_modules/react-redux/es/utils/Subscription.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/react-redux/es/utils/Subscription.js ***!
+  \***********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Subscription; });
+/* harmony import */ var _batch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./batch */ "./node_modules/react-redux/es/utils/batch.js");
+ // encapsulates the subscription logic for connecting a component to the redux store, as
+// well as nesting subscriptions of descendant components, so that we can ensure the
+// ancestor components re-render before descendants
+
+var nullListeners = {
+  notify: function notify() {}
+};
+
+function createListenerCollection() {
+  var batch = Object(_batch__WEBPACK_IMPORTED_MODULE_0__["getBatch"])();
+  var first = null;
+  var last = null;
+  return {
+    clear: function clear() {
+      first = null;
+      last = null;
+    },
+    notify: function notify() {
+      batch(function () {
+        var listener = first;
+
+        while (listener) {
+          listener.callback();
+          listener = listener.next;
+        }
+      });
+    },
+    get: function get() {
+      var listeners = [];
+      var listener = first;
+
+      while (listener) {
+        listeners.push(listener);
+        listener = listener.next;
+      }
+
+      return listeners;
+    },
+    subscribe: function subscribe(callback) {
+      var isSubscribed = true;
+      var listener = last = {
+        callback: callback,
+        next: null,
+        prev: last
+      };
+
+      if (listener.prev) {
+        listener.prev.next = listener;
+      } else {
+        first = listener;
+      }
+
+      return function unsubscribe() {
+        if (!isSubscribed || first === null) return;
+        isSubscribed = false;
+
+        if (listener.next) {
+          listener.next.prev = listener.prev;
+        } else {
+          last = listener.prev;
+        }
+
+        if (listener.prev) {
+          listener.prev.next = listener.next;
+        } else {
+          first = listener.next;
+        }
+      };
+    }
+  };
+}
+
+var Subscription =
+/*#__PURE__*/
+function () {
+  function Subscription(store, parentSub) {
+    this.store = store;
+    this.parentSub = parentSub;
+    this.unsubscribe = null;
+    this.listeners = nullListeners;
+    this.handleChangeWrapper = this.handleChangeWrapper.bind(this);
+  }
+
+  var _proto = Subscription.prototype;
+
+  _proto.addNestedSub = function addNestedSub(listener) {
+    this.trySubscribe();
+    return this.listeners.subscribe(listener);
+  };
+
+  _proto.notifyNestedSubs = function notifyNestedSubs() {
+    this.listeners.notify();
+  };
+
+  _proto.handleChangeWrapper = function handleChangeWrapper() {
+    if (this.onStateChange) {
+      this.onStateChange();
+    }
+  };
+
+  _proto.isSubscribed = function isSubscribed() {
+    return Boolean(this.unsubscribe);
+  };
+
+  _proto.trySubscribe = function trySubscribe() {
+    if (!this.unsubscribe) {
+      this.unsubscribe = this.parentSub ? this.parentSub.addNestedSub(this.handleChangeWrapper) : this.store.subscribe(this.handleChangeWrapper);
+      this.listeners = createListenerCollection();
+    }
+  };
+
+  _proto.tryUnsubscribe = function tryUnsubscribe() {
+    if (this.unsubscribe) {
+      this.unsubscribe();
+      this.unsubscribe = null;
+      this.listeners.clear();
+      this.listeners = nullListeners;
+    }
+  };
+
+  return Subscription;
+}();
+
+
+
+/***/ }),
+
+/***/ "./node_modules/react-redux/es/utils/batch.js":
+/*!****************************************************!*\
+  !*** ./node_modules/react-redux/es/utils/batch.js ***!
+  \****************************************************/
+/*! exports provided: setBatch, getBatch */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setBatch", function() { return setBatch; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getBatch", function() { return getBatch; });
+// Default to a dummy "batch" implementation that just runs the callback
+function defaultNoopBatch(callback) {
+  callback();
+}
+
+var batch = defaultNoopBatch; // Allow injecting another batching function later
+
+var setBatch = function setBatch(newBatch) {
+  return batch = newBatch;
+}; // Supply a getter just to skip dealing with ESM bindings
+
+var getBatch = function getBatch() {
+  return batch;
+};
 
 /***/ }),
 
@@ -45928,6 +49050,24 @@ function isPlainObject(obj) {
 
 /***/ }),
 
+/***/ "./node_modules/react-redux/es/utils/reactBatchedUpdates.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/react-redux/es/utils/reactBatchedUpdates.js ***!
+  \******************************************************************/
+/*! exports provided: unstable_batchedUpdates */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "unstable_batchedUpdates", function() { return react_dom__WEBPACK_IMPORTED_MODULE_0__["unstable_batchedUpdates"]; });
+
+/* eslint-disable import/no-unresolved */
+
+
+/***/ }),
+
 /***/ "./node_modules/react-redux/es/utils/shallowEqual.js":
 /*!***********************************************************!*\
   !*** ./node_modules/react-redux/es/utils/shallowEqual.js ***!
@@ -45938,8 +49078,6 @@ function isPlainObject(obj) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return shallowEqual; });
-var hasOwn = Object.prototype.hasOwnProperty;
-
 function is(x, y) {
   if (x === y) {
     return x !== 0 || y !== 0 || 1 / x === 1 / y;
@@ -45960,13 +49098,38 @@ function shallowEqual(objA, objB) {
   if (keysA.length !== keysB.length) return false;
 
   for (var i = 0; i < keysA.length; i++) {
-    if (!hasOwn.call(objB, keysA[i]) || !is(objA[keysA[i]], objB[keysA[i]])) {
+    if (!Object.prototype.hasOwnProperty.call(objB, keysA[i]) || !is(objA[keysA[i]], objB[keysA[i]])) {
       return false;
     }
   }
 
   return true;
 }
+
+/***/ }),
+
+/***/ "./node_modules/react-redux/es/utils/useIsomorphicLayoutEffect.js":
+/*!************************************************************************!*\
+  !*** ./node_modules/react-redux/es/utils/useIsomorphicLayoutEffect.js ***!
+  \************************************************************************/
+/*! exports provided: useIsomorphicLayoutEffect */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "useIsomorphicLayoutEffect", function() { return useIsomorphicLayoutEffect; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+ // React currently throws a warning when using useLayoutEffect on the server.
+// To get around it, we can conditionally useEffect on the server (no-op) and
+// useLayoutEffect in the browser. We need useLayoutEffect to ensure the store
+// subscription callback always has the selector from the latest render commit
+// available, otherwise a store update may happen between render and the effect,
+// which may cause missed updates; we also must ensure the store subscription
+// is created synchronously, otherwise a store update may occur before the
+// subscription is created and an inconsistent state may be observed
+
+var useIsomorphicLayoutEffect = typeof window !== 'undefined' && typeof window.document !== 'undefined' && typeof window.document.createElement !== 'undefined' ? react__WEBPACK_IMPORTED_MODULE_0__["useLayoutEffect"] : react__WEBPACK_IMPORTED_MODULE_0__["useEffect"];
 
 /***/ }),
 
@@ -46029,117 +49192,269 @@ function warning(message) {
 
 /***/ }),
 
-/***/ "./node_modules/react-redux/node_modules/hoist-non-react-statics/dist/hoist-non-react-statics.cjs.js":
-/*!***********************************************************************************************************!*\
-  !*** ./node_modules/react-redux/node_modules/hoist-non-react-statics/dist/hoist-non-react-statics.cjs.js ***!
-  \***********************************************************************************************************/
+/***/ "./node_modules/react-redux/node_modules/@babel/runtime/helpers/esm/extends.js":
+/*!*************************************************************************************!*\
+  !*** ./node_modules/react-redux/node_modules/@babel/runtime/helpers/esm/extends.js ***!
+  \*************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return _extends; });
+function _extends() {
+  _extends = Object.assign || function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+
+    return target;
+  };
+
+  return _extends.apply(this, arguments);
+}
+
+/***/ }),
+
+/***/ "./node_modules/react-redux/node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js":
+/*!**********************************************************************************************************!*\
+  !*** ./node_modules/react-redux/node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js ***!
+  \**********************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return _objectWithoutPropertiesLoose; });
+function _objectWithoutPropertiesLoose(source, excluded) {
+  if (source == null) return {};
+  var target = {};
+  var sourceKeys = Object.keys(source);
+  var key, i;
+
+  for (i = 0; i < sourceKeys.length; i++) {
+    key = sourceKeys[i];
+    if (excluded.indexOf(key) >= 0) continue;
+    target[key] = source[key];
+  }
+
+  return target;
+}
+
+/***/ }),
+
+/***/ "./node_modules/react-redux/node_modules/react-is/cjs/react-is.development.js":
+/*!************************************************************************************!*\
+  !*** ./node_modules/react-redux/node_modules/react-is/cjs/react-is.development.js ***!
+  \************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/** @license React v16.13.1
+ * react-is.development.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+
+
+
+
+if (true) {
+  (function() {
+'use strict';
+
+// The Symbol used to tag the ReactElement-like types. If there is no native Symbol
+// nor polyfill, then a plain number is used for performance.
+var hasSymbol = typeof Symbol === 'function' && Symbol.for;
+var REACT_ELEMENT_TYPE = hasSymbol ? Symbol.for('react.element') : 0xeac7;
+var REACT_PORTAL_TYPE = hasSymbol ? Symbol.for('react.portal') : 0xeaca;
+var REACT_FRAGMENT_TYPE = hasSymbol ? Symbol.for('react.fragment') : 0xeacb;
+var REACT_STRICT_MODE_TYPE = hasSymbol ? Symbol.for('react.strict_mode') : 0xeacc;
+var REACT_PROFILER_TYPE = hasSymbol ? Symbol.for('react.profiler') : 0xead2;
+var REACT_PROVIDER_TYPE = hasSymbol ? Symbol.for('react.provider') : 0xeacd;
+var REACT_CONTEXT_TYPE = hasSymbol ? Symbol.for('react.context') : 0xeace; // TODO: We don't use AsyncMode or ConcurrentMode anymore. They were temporary
+// (unstable) APIs that have been removed. Can we remove the symbols?
+
+var REACT_ASYNC_MODE_TYPE = hasSymbol ? Symbol.for('react.async_mode') : 0xeacf;
+var REACT_CONCURRENT_MODE_TYPE = hasSymbol ? Symbol.for('react.concurrent_mode') : 0xeacf;
+var REACT_FORWARD_REF_TYPE = hasSymbol ? Symbol.for('react.forward_ref') : 0xead0;
+var REACT_SUSPENSE_TYPE = hasSymbol ? Symbol.for('react.suspense') : 0xead1;
+var REACT_SUSPENSE_LIST_TYPE = hasSymbol ? Symbol.for('react.suspense_list') : 0xead8;
+var REACT_MEMO_TYPE = hasSymbol ? Symbol.for('react.memo') : 0xead3;
+var REACT_LAZY_TYPE = hasSymbol ? Symbol.for('react.lazy') : 0xead4;
+var REACT_BLOCK_TYPE = hasSymbol ? Symbol.for('react.block') : 0xead9;
+var REACT_FUNDAMENTAL_TYPE = hasSymbol ? Symbol.for('react.fundamental') : 0xead5;
+var REACT_RESPONDER_TYPE = hasSymbol ? Symbol.for('react.responder') : 0xead6;
+var REACT_SCOPE_TYPE = hasSymbol ? Symbol.for('react.scope') : 0xead7;
+
+function isValidElementType(type) {
+  return typeof type === 'string' || typeof type === 'function' || // Note: its typeof might be other than 'symbol' or 'number' if it's a polyfill.
+  type === REACT_FRAGMENT_TYPE || type === REACT_CONCURRENT_MODE_TYPE || type === REACT_PROFILER_TYPE || type === REACT_STRICT_MODE_TYPE || type === REACT_SUSPENSE_TYPE || type === REACT_SUSPENSE_LIST_TYPE || typeof type === 'object' && type !== null && (type.$$typeof === REACT_LAZY_TYPE || type.$$typeof === REACT_MEMO_TYPE || type.$$typeof === REACT_PROVIDER_TYPE || type.$$typeof === REACT_CONTEXT_TYPE || type.$$typeof === REACT_FORWARD_REF_TYPE || type.$$typeof === REACT_FUNDAMENTAL_TYPE || type.$$typeof === REACT_RESPONDER_TYPE || type.$$typeof === REACT_SCOPE_TYPE || type.$$typeof === REACT_BLOCK_TYPE);
+}
+
+function typeOf(object) {
+  if (typeof object === 'object' && object !== null) {
+    var $$typeof = object.$$typeof;
+
+    switch ($$typeof) {
+      case REACT_ELEMENT_TYPE:
+        var type = object.type;
+
+        switch (type) {
+          case REACT_ASYNC_MODE_TYPE:
+          case REACT_CONCURRENT_MODE_TYPE:
+          case REACT_FRAGMENT_TYPE:
+          case REACT_PROFILER_TYPE:
+          case REACT_STRICT_MODE_TYPE:
+          case REACT_SUSPENSE_TYPE:
+            return type;
+
+          default:
+            var $$typeofType = type && type.$$typeof;
+
+            switch ($$typeofType) {
+              case REACT_CONTEXT_TYPE:
+              case REACT_FORWARD_REF_TYPE:
+              case REACT_LAZY_TYPE:
+              case REACT_MEMO_TYPE:
+              case REACT_PROVIDER_TYPE:
+                return $$typeofType;
+
+              default:
+                return $$typeof;
+            }
+
+        }
+
+      case REACT_PORTAL_TYPE:
+        return $$typeof;
+    }
+  }
+
+  return undefined;
+} // AsyncMode is deprecated along with isAsyncMode
+
+var AsyncMode = REACT_ASYNC_MODE_TYPE;
+var ConcurrentMode = REACT_CONCURRENT_MODE_TYPE;
+var ContextConsumer = REACT_CONTEXT_TYPE;
+var ContextProvider = REACT_PROVIDER_TYPE;
+var Element = REACT_ELEMENT_TYPE;
+var ForwardRef = REACT_FORWARD_REF_TYPE;
+var Fragment = REACT_FRAGMENT_TYPE;
+var Lazy = REACT_LAZY_TYPE;
+var Memo = REACT_MEMO_TYPE;
+var Portal = REACT_PORTAL_TYPE;
+var Profiler = REACT_PROFILER_TYPE;
+var StrictMode = REACT_STRICT_MODE_TYPE;
+var Suspense = REACT_SUSPENSE_TYPE;
+var hasWarnedAboutDeprecatedIsAsyncMode = false; // AsyncMode should be deprecated
+
+function isAsyncMode(object) {
+  {
+    if (!hasWarnedAboutDeprecatedIsAsyncMode) {
+      hasWarnedAboutDeprecatedIsAsyncMode = true; // Using console['warn'] to evade Babel and ESLint
+
+      console['warn']('The ReactIs.isAsyncMode() alias has been deprecated, ' + 'and will be removed in React 17+. Update your code to use ' + 'ReactIs.isConcurrentMode() instead. It has the exact same API.');
+    }
+  }
+
+  return isConcurrentMode(object) || typeOf(object) === REACT_ASYNC_MODE_TYPE;
+}
+function isConcurrentMode(object) {
+  return typeOf(object) === REACT_CONCURRENT_MODE_TYPE;
+}
+function isContextConsumer(object) {
+  return typeOf(object) === REACT_CONTEXT_TYPE;
+}
+function isContextProvider(object) {
+  return typeOf(object) === REACT_PROVIDER_TYPE;
+}
+function isElement(object) {
+  return typeof object === 'object' && object !== null && object.$$typeof === REACT_ELEMENT_TYPE;
+}
+function isForwardRef(object) {
+  return typeOf(object) === REACT_FORWARD_REF_TYPE;
+}
+function isFragment(object) {
+  return typeOf(object) === REACT_FRAGMENT_TYPE;
+}
+function isLazy(object) {
+  return typeOf(object) === REACT_LAZY_TYPE;
+}
+function isMemo(object) {
+  return typeOf(object) === REACT_MEMO_TYPE;
+}
+function isPortal(object) {
+  return typeOf(object) === REACT_PORTAL_TYPE;
+}
+function isProfiler(object) {
+  return typeOf(object) === REACT_PROFILER_TYPE;
+}
+function isStrictMode(object) {
+  return typeOf(object) === REACT_STRICT_MODE_TYPE;
+}
+function isSuspense(object) {
+  return typeOf(object) === REACT_SUSPENSE_TYPE;
+}
+
+exports.AsyncMode = AsyncMode;
+exports.ConcurrentMode = ConcurrentMode;
+exports.ContextConsumer = ContextConsumer;
+exports.ContextProvider = ContextProvider;
+exports.Element = Element;
+exports.ForwardRef = ForwardRef;
+exports.Fragment = Fragment;
+exports.Lazy = Lazy;
+exports.Memo = Memo;
+exports.Portal = Portal;
+exports.Profiler = Profiler;
+exports.StrictMode = StrictMode;
+exports.Suspense = Suspense;
+exports.isAsyncMode = isAsyncMode;
+exports.isConcurrentMode = isConcurrentMode;
+exports.isContextConsumer = isContextConsumer;
+exports.isContextProvider = isContextProvider;
+exports.isElement = isElement;
+exports.isForwardRef = isForwardRef;
+exports.isFragment = isFragment;
+exports.isLazy = isLazy;
+exports.isMemo = isMemo;
+exports.isPortal = isPortal;
+exports.isProfiler = isProfiler;
+exports.isStrictMode = isStrictMode;
+exports.isSuspense = isSuspense;
+exports.isValidElementType = isValidElementType;
+exports.typeOf = typeOf;
+  })();
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/react-redux/node_modules/react-is/index.js":
+/*!*****************************************************************!*\
+  !*** ./node_modules/react-redux/node_modules/react-is/index.js ***!
+  \*****************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-/**
- * Copyright 2015, Yahoo! Inc.
- * Copyrights licensed under the New BSD License. See the accompanying LICENSE file for terms.
- */
-var ReactIs = __webpack_require__(/*! react-is */ "./node_modules/react-is/index.js");
-var REACT_STATICS = {
-    childContextTypes: true,
-    contextType: true,
-    contextTypes: true,
-    defaultProps: true,
-    displayName: true,
-    getDefaultProps: true,
-    getDerivedStateFromError: true,
-    getDerivedStateFromProps: true,
-    mixins: true,
-    propTypes: true,
-    type: true
-};
-
-var KNOWN_STATICS = {
-    name: true,
-    length: true,
-    prototype: true,
-    caller: true,
-    callee: true,
-    arguments: true,
-    arity: true
-};
-
-var FORWARD_REF_STATICS = {
-    '$$typeof': true,
-    render: true,
-    defaultProps: true,
-    displayName: true,
-    propTypes: true
-};
-
-var MEMO_STATICS = {
-    '$$typeof': true,
-    compare: true,
-    defaultProps: true,
-    displayName: true,
-    propTypes: true,
-    type: true
-};
-
-var TYPE_STATICS = {};
-TYPE_STATICS[ReactIs.ForwardRef] = FORWARD_REF_STATICS;
-
-function getStatics(component) {
-    if (ReactIs.isMemo(component)) {
-        return MEMO_STATICS;
-    }
-    return TYPE_STATICS[component['$$typeof']] || REACT_STATICS;
+if (false) {} else {
+  module.exports = __webpack_require__(/*! ./cjs/react-is.development.js */ "./node_modules/react-redux/node_modules/react-is/cjs/react-is.development.js");
 }
-
-var defineProperty = Object.defineProperty;
-var getOwnPropertyNames = Object.getOwnPropertyNames;
-var getOwnPropertySymbols = Object.getOwnPropertySymbols;
-var getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
-var getPrototypeOf = Object.getPrototypeOf;
-var objectPrototype = Object.prototype;
-
-function hoistNonReactStatics(targetComponent, sourceComponent, blacklist) {
-    if (typeof sourceComponent !== 'string') {
-        // don't hoist over string (html) components
-
-        if (objectPrototype) {
-            var inheritedComponent = getPrototypeOf(sourceComponent);
-            if (inheritedComponent && inheritedComponent !== objectPrototype) {
-                hoistNonReactStatics(targetComponent, inheritedComponent, blacklist);
-            }
-        }
-
-        var keys = getOwnPropertyNames(sourceComponent);
-
-        if (getOwnPropertySymbols) {
-            keys = keys.concat(getOwnPropertySymbols(sourceComponent));
-        }
-
-        var targetStatics = getStatics(targetComponent);
-        var sourceStatics = getStatics(sourceComponent);
-
-        for (var i = 0; i < keys.length; ++i) {
-            var key = keys[i];
-            if (!KNOWN_STATICS[key] && !(blacklist && blacklist[key]) && !(sourceStatics && sourceStatics[key]) && !(targetStatics && targetStatics[key])) {
-                var descriptor = getOwnPropertyDescriptor(sourceComponent, key);
-                try {
-                    // Avoid failures from read-only properties
-                    defineProperty(targetComponent, key, descriptor);
-                } catch (e) {}
-            }
-        }
-
-        return targetComponent;
-    }
-
-    return targetComponent;
-}
-
-module.exports = hoistNonReactStatics;
 
 
 /***/ }),
@@ -47533,7 +50848,7 @@ module.exports = Sortable;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/** @license React v16.13.0
+/** @license React v16.13.1
  * react.development.js
  *
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -47553,7 +50868,7 @@ if (true) {
 var _assign = __webpack_require__(/*! object-assign */ "./node_modules/object-assign/index.js");
 var checkPropTypes = __webpack_require__(/*! prop-types/checkPropTypes */ "./node_modules/prop-types/checkPropTypes.js");
 
-var ReactVersion = '16.13.0';
+var ReactVersion = '16.13.1';
 
 // The Symbol used to tag the ReactElement-like types. If there is no native Symbol
 // nor polyfill, then a plain number is used for performance.
@@ -50265,6 +53580,1271 @@ function resolvePathname(to, from) {
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (resolvePathname);
+
+
+/***/ }),
+
+/***/ "./node_modules/scheduler/cjs/scheduler-tracing.development.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/scheduler/cjs/scheduler-tracing.development.js ***!
+  \*********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/** @license React v0.19.1
+ * scheduler-tracing.development.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+
+
+
+
+if (true) {
+  (function() {
+'use strict';
+
+var DEFAULT_THREAD_ID = 0; // Counters used to generate unique IDs.
+
+var interactionIDCounter = 0;
+var threadIDCounter = 0; // Set of currently traced interactions.
+// Interactions "stack"–
+// Meaning that newly traced interactions are appended to the previously active set.
+// When an interaction goes out of scope, the previous set (if any) is restored.
+
+exports.__interactionsRef = null; // Listener(s) to notify when interactions begin and end.
+
+exports.__subscriberRef = null;
+
+{
+  exports.__interactionsRef = {
+    current: new Set()
+  };
+  exports.__subscriberRef = {
+    current: null
+  };
+}
+function unstable_clear(callback) {
+
+  var prevInteractions = exports.__interactionsRef.current;
+  exports.__interactionsRef.current = new Set();
+
+  try {
+    return callback();
+  } finally {
+    exports.__interactionsRef.current = prevInteractions;
+  }
+}
+function unstable_getCurrent() {
+  {
+    return exports.__interactionsRef.current;
+  }
+}
+function unstable_getThreadID() {
+  return ++threadIDCounter;
+}
+function unstable_trace(name, timestamp, callback) {
+  var threadID = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : DEFAULT_THREAD_ID;
+
+  var interaction = {
+    __count: 1,
+    id: interactionIDCounter++,
+    name: name,
+    timestamp: timestamp
+  };
+  var prevInteractions = exports.__interactionsRef.current; // Traced interactions should stack/accumulate.
+  // To do that, clone the current interactions.
+  // The previous set will be restored upon completion.
+
+  var interactions = new Set(prevInteractions);
+  interactions.add(interaction);
+  exports.__interactionsRef.current = interactions;
+  var subscriber = exports.__subscriberRef.current;
+  var returnValue;
+
+  try {
+    if (subscriber !== null) {
+      subscriber.onInteractionTraced(interaction);
+    }
+  } finally {
+    try {
+      if (subscriber !== null) {
+        subscriber.onWorkStarted(interactions, threadID);
+      }
+    } finally {
+      try {
+        returnValue = callback();
+      } finally {
+        exports.__interactionsRef.current = prevInteractions;
+
+        try {
+          if (subscriber !== null) {
+            subscriber.onWorkStopped(interactions, threadID);
+          }
+        } finally {
+          interaction.__count--; // If no async work was scheduled for this interaction,
+          // Notify subscribers that it's completed.
+
+          if (subscriber !== null && interaction.__count === 0) {
+            subscriber.onInteractionScheduledWorkCompleted(interaction);
+          }
+        }
+      }
+    }
+  }
+
+  return returnValue;
+}
+function unstable_wrap(callback) {
+  var threadID = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_THREAD_ID;
+
+  var wrappedInteractions = exports.__interactionsRef.current;
+  var subscriber = exports.__subscriberRef.current;
+
+  if (subscriber !== null) {
+    subscriber.onWorkScheduled(wrappedInteractions, threadID);
+  } // Update the pending async work count for the current interactions.
+  // Update after calling subscribers in case of error.
+
+
+  wrappedInteractions.forEach(function (interaction) {
+    interaction.__count++;
+  });
+  var hasRun = false;
+
+  function wrapped() {
+    var prevInteractions = exports.__interactionsRef.current;
+    exports.__interactionsRef.current = wrappedInteractions;
+    subscriber = exports.__subscriberRef.current;
+
+    try {
+      var returnValue;
+
+      try {
+        if (subscriber !== null) {
+          subscriber.onWorkStarted(wrappedInteractions, threadID);
+        }
+      } finally {
+        try {
+          returnValue = callback.apply(undefined, arguments);
+        } finally {
+          exports.__interactionsRef.current = prevInteractions;
+
+          if (subscriber !== null) {
+            subscriber.onWorkStopped(wrappedInteractions, threadID);
+          }
+        }
+      }
+
+      return returnValue;
+    } finally {
+      if (!hasRun) {
+        // We only expect a wrapped function to be executed once,
+        // But in the event that it's executed more than once–
+        // Only decrement the outstanding interaction counts once.
+        hasRun = true; // Update pending async counts for all wrapped interactions.
+        // If this was the last scheduled async work for any of them,
+        // Mark them as completed.
+
+        wrappedInteractions.forEach(function (interaction) {
+          interaction.__count--;
+
+          if (subscriber !== null && interaction.__count === 0) {
+            subscriber.onInteractionScheduledWorkCompleted(interaction);
+          }
+        });
+      }
+    }
+  }
+
+  wrapped.cancel = function cancel() {
+    subscriber = exports.__subscriberRef.current;
+
+    try {
+      if (subscriber !== null) {
+        subscriber.onWorkCanceled(wrappedInteractions, threadID);
+      }
+    } finally {
+      // Update pending async counts for all wrapped interactions.
+      // If this was the last scheduled async work for any of them,
+      // Mark them as completed.
+      wrappedInteractions.forEach(function (interaction) {
+        interaction.__count--;
+
+        if (subscriber && interaction.__count === 0) {
+          subscriber.onInteractionScheduledWorkCompleted(interaction);
+        }
+      });
+    }
+  };
+
+  return wrapped;
+}
+
+var subscribers = null;
+
+{
+  subscribers = new Set();
+}
+
+function unstable_subscribe(subscriber) {
+  {
+    subscribers.add(subscriber);
+
+    if (subscribers.size === 1) {
+      exports.__subscriberRef.current = {
+        onInteractionScheduledWorkCompleted: onInteractionScheduledWorkCompleted,
+        onInteractionTraced: onInteractionTraced,
+        onWorkCanceled: onWorkCanceled,
+        onWorkScheduled: onWorkScheduled,
+        onWorkStarted: onWorkStarted,
+        onWorkStopped: onWorkStopped
+      };
+    }
+  }
+}
+function unstable_unsubscribe(subscriber) {
+  {
+    subscribers.delete(subscriber);
+
+    if (subscribers.size === 0) {
+      exports.__subscriberRef.current = null;
+    }
+  }
+}
+
+function onInteractionTraced(interaction) {
+  var didCatchError = false;
+  var caughtError = null;
+  subscribers.forEach(function (subscriber) {
+    try {
+      subscriber.onInteractionTraced(interaction);
+    } catch (error) {
+      if (!didCatchError) {
+        didCatchError = true;
+        caughtError = error;
+      }
+    }
+  });
+
+  if (didCatchError) {
+    throw caughtError;
+  }
+}
+
+function onInteractionScheduledWorkCompleted(interaction) {
+  var didCatchError = false;
+  var caughtError = null;
+  subscribers.forEach(function (subscriber) {
+    try {
+      subscriber.onInteractionScheduledWorkCompleted(interaction);
+    } catch (error) {
+      if (!didCatchError) {
+        didCatchError = true;
+        caughtError = error;
+      }
+    }
+  });
+
+  if (didCatchError) {
+    throw caughtError;
+  }
+}
+
+function onWorkScheduled(interactions, threadID) {
+  var didCatchError = false;
+  var caughtError = null;
+  subscribers.forEach(function (subscriber) {
+    try {
+      subscriber.onWorkScheduled(interactions, threadID);
+    } catch (error) {
+      if (!didCatchError) {
+        didCatchError = true;
+        caughtError = error;
+      }
+    }
+  });
+
+  if (didCatchError) {
+    throw caughtError;
+  }
+}
+
+function onWorkStarted(interactions, threadID) {
+  var didCatchError = false;
+  var caughtError = null;
+  subscribers.forEach(function (subscriber) {
+    try {
+      subscriber.onWorkStarted(interactions, threadID);
+    } catch (error) {
+      if (!didCatchError) {
+        didCatchError = true;
+        caughtError = error;
+      }
+    }
+  });
+
+  if (didCatchError) {
+    throw caughtError;
+  }
+}
+
+function onWorkStopped(interactions, threadID) {
+  var didCatchError = false;
+  var caughtError = null;
+  subscribers.forEach(function (subscriber) {
+    try {
+      subscriber.onWorkStopped(interactions, threadID);
+    } catch (error) {
+      if (!didCatchError) {
+        didCatchError = true;
+        caughtError = error;
+      }
+    }
+  });
+
+  if (didCatchError) {
+    throw caughtError;
+  }
+}
+
+function onWorkCanceled(interactions, threadID) {
+  var didCatchError = false;
+  var caughtError = null;
+  subscribers.forEach(function (subscriber) {
+    try {
+      subscriber.onWorkCanceled(interactions, threadID);
+    } catch (error) {
+      if (!didCatchError) {
+        didCatchError = true;
+        caughtError = error;
+      }
+    }
+  });
+
+  if (didCatchError) {
+    throw caughtError;
+  }
+}
+
+exports.unstable_clear = unstable_clear;
+exports.unstable_getCurrent = unstable_getCurrent;
+exports.unstable_getThreadID = unstable_getThreadID;
+exports.unstable_subscribe = unstable_subscribe;
+exports.unstable_trace = unstable_trace;
+exports.unstable_unsubscribe = unstable_unsubscribe;
+exports.unstable_wrap = unstable_wrap;
+  })();
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/scheduler/cjs/scheduler.development.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/scheduler/cjs/scheduler.development.js ***!
+  \*************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/** @license React v0.19.1
+ * scheduler.development.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+
+
+
+
+if (true) {
+  (function() {
+'use strict';
+
+var enableSchedulerDebugging = false;
+var enableProfiling = true;
+
+var requestHostCallback;
+var requestHostTimeout;
+var cancelHostTimeout;
+var shouldYieldToHost;
+var requestPaint;
+
+if ( // If Scheduler runs in a non-DOM environment, it falls back to a naive
+// implementation using setTimeout.
+typeof window === 'undefined' || // Check if MessageChannel is supported, too.
+typeof MessageChannel !== 'function') {
+  // If this accidentally gets imported in a non-browser environment, e.g. JavaScriptCore,
+  // fallback to a naive implementation.
+  var _callback = null;
+  var _timeoutID = null;
+
+  var _flushCallback = function () {
+    if (_callback !== null) {
+      try {
+        var currentTime = exports.unstable_now();
+        var hasRemainingTime = true;
+
+        _callback(hasRemainingTime, currentTime);
+
+        _callback = null;
+      } catch (e) {
+        setTimeout(_flushCallback, 0);
+        throw e;
+      }
+    }
+  };
+
+  var initialTime = Date.now();
+
+  exports.unstable_now = function () {
+    return Date.now() - initialTime;
+  };
+
+  requestHostCallback = function (cb) {
+    if (_callback !== null) {
+      // Protect against re-entrancy.
+      setTimeout(requestHostCallback, 0, cb);
+    } else {
+      _callback = cb;
+      setTimeout(_flushCallback, 0);
+    }
+  };
+
+  requestHostTimeout = function (cb, ms) {
+    _timeoutID = setTimeout(cb, ms);
+  };
+
+  cancelHostTimeout = function () {
+    clearTimeout(_timeoutID);
+  };
+
+  shouldYieldToHost = function () {
+    return false;
+  };
+
+  requestPaint = exports.unstable_forceFrameRate = function () {};
+} else {
+  // Capture local references to native APIs, in case a polyfill overrides them.
+  var performance = window.performance;
+  var _Date = window.Date;
+  var _setTimeout = window.setTimeout;
+  var _clearTimeout = window.clearTimeout;
+
+  if (typeof console !== 'undefined') {
+    // TODO: Scheduler no longer requires these methods to be polyfilled. But
+    // maybe we want to continue warning if they don't exist, to preserve the
+    // option to rely on it in the future?
+    var requestAnimationFrame = window.requestAnimationFrame;
+    var cancelAnimationFrame = window.cancelAnimationFrame; // TODO: Remove fb.me link
+
+    if (typeof requestAnimationFrame !== 'function') {
+      // Using console['error'] to evade Babel and ESLint
+      console['error']("This browser doesn't support requestAnimationFrame. " + 'Make sure that you load a ' + 'polyfill in older browsers. https://fb.me/react-polyfills');
+    }
+
+    if (typeof cancelAnimationFrame !== 'function') {
+      // Using console['error'] to evade Babel and ESLint
+      console['error']("This browser doesn't support cancelAnimationFrame. " + 'Make sure that you load a ' + 'polyfill in older browsers. https://fb.me/react-polyfills');
+    }
+  }
+
+  if (typeof performance === 'object' && typeof performance.now === 'function') {
+    exports.unstable_now = function () {
+      return performance.now();
+    };
+  } else {
+    var _initialTime = _Date.now();
+
+    exports.unstable_now = function () {
+      return _Date.now() - _initialTime;
+    };
+  }
+
+  var isMessageLoopRunning = false;
+  var scheduledHostCallback = null;
+  var taskTimeoutID = -1; // Scheduler periodically yields in case there is other work on the main
+  // thread, like user events. By default, it yields multiple times per frame.
+  // It does not attempt to align with frame boundaries, since most tasks don't
+  // need to be frame aligned; for those that do, use requestAnimationFrame.
+
+  var yieldInterval = 5;
+  var deadline = 0; // TODO: Make this configurable
+
+  {
+    // `isInputPending` is not available. Since we have no way of knowing if
+    // there's pending input, always yield at the end of the frame.
+    shouldYieldToHost = function () {
+      return exports.unstable_now() >= deadline;
+    }; // Since we yield every frame regardless, `requestPaint` has no effect.
+
+
+    requestPaint = function () {};
+  }
+
+  exports.unstable_forceFrameRate = function (fps) {
+    if (fps < 0 || fps > 125) {
+      // Using console['error'] to evade Babel and ESLint
+      console['error']('forceFrameRate takes a positive int between 0 and 125, ' + 'forcing framerates higher than 125 fps is not unsupported');
+      return;
+    }
+
+    if (fps > 0) {
+      yieldInterval = Math.floor(1000 / fps);
+    } else {
+      // reset the framerate
+      yieldInterval = 5;
+    }
+  };
+
+  var performWorkUntilDeadline = function () {
+    if (scheduledHostCallback !== null) {
+      var currentTime = exports.unstable_now(); // Yield after `yieldInterval` ms, regardless of where we are in the vsync
+      // cycle. This means there's always time remaining at the beginning of
+      // the message event.
+
+      deadline = currentTime + yieldInterval;
+      var hasTimeRemaining = true;
+
+      try {
+        var hasMoreWork = scheduledHostCallback(hasTimeRemaining, currentTime);
+
+        if (!hasMoreWork) {
+          isMessageLoopRunning = false;
+          scheduledHostCallback = null;
+        } else {
+          // If there's more work, schedule the next message event at the end
+          // of the preceding one.
+          port.postMessage(null);
+        }
+      } catch (error) {
+        // If a scheduler task throws, exit the current browser task so the
+        // error can be observed.
+        port.postMessage(null);
+        throw error;
+      }
+    } else {
+      isMessageLoopRunning = false;
+    } // Yielding to the browser will give it a chance to paint, so we can
+  };
+
+  var channel = new MessageChannel();
+  var port = channel.port2;
+  channel.port1.onmessage = performWorkUntilDeadline;
+
+  requestHostCallback = function (callback) {
+    scheduledHostCallback = callback;
+
+    if (!isMessageLoopRunning) {
+      isMessageLoopRunning = true;
+      port.postMessage(null);
+    }
+  };
+
+  requestHostTimeout = function (callback, ms) {
+    taskTimeoutID = _setTimeout(function () {
+      callback(exports.unstable_now());
+    }, ms);
+  };
+
+  cancelHostTimeout = function () {
+    _clearTimeout(taskTimeoutID);
+
+    taskTimeoutID = -1;
+  };
+}
+
+function push(heap, node) {
+  var index = heap.length;
+  heap.push(node);
+  siftUp(heap, node, index);
+}
+function peek(heap) {
+  var first = heap[0];
+  return first === undefined ? null : first;
+}
+function pop(heap) {
+  var first = heap[0];
+
+  if (first !== undefined) {
+    var last = heap.pop();
+
+    if (last !== first) {
+      heap[0] = last;
+      siftDown(heap, last, 0);
+    }
+
+    return first;
+  } else {
+    return null;
+  }
+}
+
+function siftUp(heap, node, i) {
+  var index = i;
+
+  while (true) {
+    var parentIndex = index - 1 >>> 1;
+    var parent = heap[parentIndex];
+
+    if (parent !== undefined && compare(parent, node) > 0) {
+      // The parent is larger. Swap positions.
+      heap[parentIndex] = node;
+      heap[index] = parent;
+      index = parentIndex;
+    } else {
+      // The parent is smaller. Exit.
+      return;
+    }
+  }
+}
+
+function siftDown(heap, node, i) {
+  var index = i;
+  var length = heap.length;
+
+  while (index < length) {
+    var leftIndex = (index + 1) * 2 - 1;
+    var left = heap[leftIndex];
+    var rightIndex = leftIndex + 1;
+    var right = heap[rightIndex]; // If the left or right node is smaller, swap with the smaller of those.
+
+    if (left !== undefined && compare(left, node) < 0) {
+      if (right !== undefined && compare(right, left) < 0) {
+        heap[index] = right;
+        heap[rightIndex] = node;
+        index = rightIndex;
+      } else {
+        heap[index] = left;
+        heap[leftIndex] = node;
+        index = leftIndex;
+      }
+    } else if (right !== undefined && compare(right, node) < 0) {
+      heap[index] = right;
+      heap[rightIndex] = node;
+      index = rightIndex;
+    } else {
+      // Neither child is smaller. Exit.
+      return;
+    }
+  }
+}
+
+function compare(a, b) {
+  // Compare sort index first, then task id.
+  var diff = a.sortIndex - b.sortIndex;
+  return diff !== 0 ? diff : a.id - b.id;
+}
+
+// TODO: Use symbols?
+var NoPriority = 0;
+var ImmediatePriority = 1;
+var UserBlockingPriority = 2;
+var NormalPriority = 3;
+var LowPriority = 4;
+var IdlePriority = 5;
+
+var runIdCounter = 0;
+var mainThreadIdCounter = 0;
+var profilingStateSize = 4;
+var sharedProfilingBuffer =  // $FlowFixMe Flow doesn't know about SharedArrayBuffer
+typeof SharedArrayBuffer === 'function' ? new SharedArrayBuffer(profilingStateSize * Int32Array.BYTES_PER_ELEMENT) : // $FlowFixMe Flow doesn't know about ArrayBuffer
+typeof ArrayBuffer === 'function' ? new ArrayBuffer(profilingStateSize * Int32Array.BYTES_PER_ELEMENT) : null // Don't crash the init path on IE9
+;
+var profilingState =  sharedProfilingBuffer !== null ? new Int32Array(sharedProfilingBuffer) : []; // We can't read this but it helps save bytes for null checks
+
+var PRIORITY = 0;
+var CURRENT_TASK_ID = 1;
+var CURRENT_RUN_ID = 2;
+var QUEUE_SIZE = 3;
+
+{
+  profilingState[PRIORITY] = NoPriority; // This is maintained with a counter, because the size of the priority queue
+  // array might include canceled tasks.
+
+  profilingState[QUEUE_SIZE] = 0;
+  profilingState[CURRENT_TASK_ID] = 0;
+} // Bytes per element is 4
+
+
+var INITIAL_EVENT_LOG_SIZE = 131072;
+var MAX_EVENT_LOG_SIZE = 524288; // Equivalent to 2 megabytes
+
+var eventLogSize = 0;
+var eventLogBuffer = null;
+var eventLog = null;
+var eventLogIndex = 0;
+var TaskStartEvent = 1;
+var TaskCompleteEvent = 2;
+var TaskErrorEvent = 3;
+var TaskCancelEvent = 4;
+var TaskRunEvent = 5;
+var TaskYieldEvent = 6;
+var SchedulerSuspendEvent = 7;
+var SchedulerResumeEvent = 8;
+
+function logEvent(entries) {
+  if (eventLog !== null) {
+    var offset = eventLogIndex;
+    eventLogIndex += entries.length;
+
+    if (eventLogIndex + 1 > eventLogSize) {
+      eventLogSize *= 2;
+
+      if (eventLogSize > MAX_EVENT_LOG_SIZE) {
+        // Using console['error'] to evade Babel and ESLint
+        console['error']("Scheduler Profiling: Event log exceeded maximum size. Don't " + 'forget to call `stopLoggingProfilingEvents()`.');
+        stopLoggingProfilingEvents();
+        return;
+      }
+
+      var newEventLog = new Int32Array(eventLogSize * 4);
+      newEventLog.set(eventLog);
+      eventLogBuffer = newEventLog.buffer;
+      eventLog = newEventLog;
+    }
+
+    eventLog.set(entries, offset);
+  }
+}
+
+function startLoggingProfilingEvents() {
+  eventLogSize = INITIAL_EVENT_LOG_SIZE;
+  eventLogBuffer = new ArrayBuffer(eventLogSize * 4);
+  eventLog = new Int32Array(eventLogBuffer);
+  eventLogIndex = 0;
+}
+function stopLoggingProfilingEvents() {
+  var buffer = eventLogBuffer;
+  eventLogSize = 0;
+  eventLogBuffer = null;
+  eventLog = null;
+  eventLogIndex = 0;
+  return buffer;
+}
+function markTaskStart(task, ms) {
+  {
+    profilingState[QUEUE_SIZE]++;
+
+    if (eventLog !== null) {
+      // performance.now returns a float, representing milliseconds. When the
+      // event is logged, it's coerced to an int. Convert to microseconds to
+      // maintain extra degrees of precision.
+      logEvent([TaskStartEvent, ms * 1000, task.id, task.priorityLevel]);
+    }
+  }
+}
+function markTaskCompleted(task, ms) {
+  {
+    profilingState[PRIORITY] = NoPriority;
+    profilingState[CURRENT_TASK_ID] = 0;
+    profilingState[QUEUE_SIZE]--;
+
+    if (eventLog !== null) {
+      logEvent([TaskCompleteEvent, ms * 1000, task.id]);
+    }
+  }
+}
+function markTaskCanceled(task, ms) {
+  {
+    profilingState[QUEUE_SIZE]--;
+
+    if (eventLog !== null) {
+      logEvent([TaskCancelEvent, ms * 1000, task.id]);
+    }
+  }
+}
+function markTaskErrored(task, ms) {
+  {
+    profilingState[PRIORITY] = NoPriority;
+    profilingState[CURRENT_TASK_ID] = 0;
+    profilingState[QUEUE_SIZE]--;
+
+    if (eventLog !== null) {
+      logEvent([TaskErrorEvent, ms * 1000, task.id]);
+    }
+  }
+}
+function markTaskRun(task, ms) {
+  {
+    runIdCounter++;
+    profilingState[PRIORITY] = task.priorityLevel;
+    profilingState[CURRENT_TASK_ID] = task.id;
+    profilingState[CURRENT_RUN_ID] = runIdCounter;
+
+    if (eventLog !== null) {
+      logEvent([TaskRunEvent, ms * 1000, task.id, runIdCounter]);
+    }
+  }
+}
+function markTaskYield(task, ms) {
+  {
+    profilingState[PRIORITY] = NoPriority;
+    profilingState[CURRENT_TASK_ID] = 0;
+    profilingState[CURRENT_RUN_ID] = 0;
+
+    if (eventLog !== null) {
+      logEvent([TaskYieldEvent, ms * 1000, task.id, runIdCounter]);
+    }
+  }
+}
+function markSchedulerSuspended(ms) {
+  {
+    mainThreadIdCounter++;
+
+    if (eventLog !== null) {
+      logEvent([SchedulerSuspendEvent, ms * 1000, mainThreadIdCounter]);
+    }
+  }
+}
+function markSchedulerUnsuspended(ms) {
+  {
+    if (eventLog !== null) {
+      logEvent([SchedulerResumeEvent, ms * 1000, mainThreadIdCounter]);
+    }
+  }
+}
+
+/* eslint-disable no-var */
+// Math.pow(2, 30) - 1
+// 0b111111111111111111111111111111
+
+var maxSigned31BitInt = 1073741823; // Times out immediately
+
+var IMMEDIATE_PRIORITY_TIMEOUT = -1; // Eventually times out
+
+var USER_BLOCKING_PRIORITY = 250;
+var NORMAL_PRIORITY_TIMEOUT = 5000;
+var LOW_PRIORITY_TIMEOUT = 10000; // Never times out
+
+var IDLE_PRIORITY = maxSigned31BitInt; // Tasks are stored on a min heap
+
+var taskQueue = [];
+var timerQueue = []; // Incrementing id counter. Used to maintain insertion order.
+
+var taskIdCounter = 1; // Pausing the scheduler is useful for debugging.
+var currentTask = null;
+var currentPriorityLevel = NormalPriority; // This is set while performing work, to prevent re-entrancy.
+
+var isPerformingWork = false;
+var isHostCallbackScheduled = false;
+var isHostTimeoutScheduled = false;
+
+function advanceTimers(currentTime) {
+  // Check for tasks that are no longer delayed and add them to the queue.
+  var timer = peek(timerQueue);
+
+  while (timer !== null) {
+    if (timer.callback === null) {
+      // Timer was cancelled.
+      pop(timerQueue);
+    } else if (timer.startTime <= currentTime) {
+      // Timer fired. Transfer to the task queue.
+      pop(timerQueue);
+      timer.sortIndex = timer.expirationTime;
+      push(taskQueue, timer);
+
+      {
+        markTaskStart(timer, currentTime);
+        timer.isQueued = true;
+      }
+    } else {
+      // Remaining timers are pending.
+      return;
+    }
+
+    timer = peek(timerQueue);
+  }
+}
+
+function handleTimeout(currentTime) {
+  isHostTimeoutScheduled = false;
+  advanceTimers(currentTime);
+
+  if (!isHostCallbackScheduled) {
+    if (peek(taskQueue) !== null) {
+      isHostCallbackScheduled = true;
+      requestHostCallback(flushWork);
+    } else {
+      var firstTimer = peek(timerQueue);
+
+      if (firstTimer !== null) {
+        requestHostTimeout(handleTimeout, firstTimer.startTime - currentTime);
+      }
+    }
+  }
+}
+
+function flushWork(hasTimeRemaining, initialTime) {
+  {
+    markSchedulerUnsuspended(initialTime);
+  } // We'll need a host callback the next time work is scheduled.
+
+
+  isHostCallbackScheduled = false;
+
+  if (isHostTimeoutScheduled) {
+    // We scheduled a timeout but it's no longer needed. Cancel it.
+    isHostTimeoutScheduled = false;
+    cancelHostTimeout();
+  }
+
+  isPerformingWork = true;
+  var previousPriorityLevel = currentPriorityLevel;
+
+  try {
+    if (enableProfiling) {
+      try {
+        return workLoop(hasTimeRemaining, initialTime);
+      } catch (error) {
+        if (currentTask !== null) {
+          var currentTime = exports.unstable_now();
+          markTaskErrored(currentTask, currentTime);
+          currentTask.isQueued = false;
+        }
+
+        throw error;
+      }
+    } else {
+      // No catch in prod codepath.
+      return workLoop(hasTimeRemaining, initialTime);
+    }
+  } finally {
+    currentTask = null;
+    currentPriorityLevel = previousPriorityLevel;
+    isPerformingWork = false;
+
+    {
+      var _currentTime = exports.unstable_now();
+
+      markSchedulerSuspended(_currentTime);
+    }
+  }
+}
+
+function workLoop(hasTimeRemaining, initialTime) {
+  var currentTime = initialTime;
+  advanceTimers(currentTime);
+  currentTask = peek(taskQueue);
+
+  while (currentTask !== null && !(enableSchedulerDebugging )) {
+    if (currentTask.expirationTime > currentTime && (!hasTimeRemaining || shouldYieldToHost())) {
+      // This currentTask hasn't expired, and we've reached the deadline.
+      break;
+    }
+
+    var callback = currentTask.callback;
+
+    if (callback !== null) {
+      currentTask.callback = null;
+      currentPriorityLevel = currentTask.priorityLevel;
+      var didUserCallbackTimeout = currentTask.expirationTime <= currentTime;
+      markTaskRun(currentTask, currentTime);
+      var continuationCallback = callback(didUserCallbackTimeout);
+      currentTime = exports.unstable_now();
+
+      if (typeof continuationCallback === 'function') {
+        currentTask.callback = continuationCallback;
+        markTaskYield(currentTask, currentTime);
+      } else {
+        {
+          markTaskCompleted(currentTask, currentTime);
+          currentTask.isQueued = false;
+        }
+
+        if (currentTask === peek(taskQueue)) {
+          pop(taskQueue);
+        }
+      }
+
+      advanceTimers(currentTime);
+    } else {
+      pop(taskQueue);
+    }
+
+    currentTask = peek(taskQueue);
+  } // Return whether there's additional work
+
+
+  if (currentTask !== null) {
+    return true;
+  } else {
+    var firstTimer = peek(timerQueue);
+
+    if (firstTimer !== null) {
+      requestHostTimeout(handleTimeout, firstTimer.startTime - currentTime);
+    }
+
+    return false;
+  }
+}
+
+function unstable_runWithPriority(priorityLevel, eventHandler) {
+  switch (priorityLevel) {
+    case ImmediatePriority:
+    case UserBlockingPriority:
+    case NormalPriority:
+    case LowPriority:
+    case IdlePriority:
+      break;
+
+    default:
+      priorityLevel = NormalPriority;
+  }
+
+  var previousPriorityLevel = currentPriorityLevel;
+  currentPriorityLevel = priorityLevel;
+
+  try {
+    return eventHandler();
+  } finally {
+    currentPriorityLevel = previousPriorityLevel;
+  }
+}
+
+function unstable_next(eventHandler) {
+  var priorityLevel;
+
+  switch (currentPriorityLevel) {
+    case ImmediatePriority:
+    case UserBlockingPriority:
+    case NormalPriority:
+      // Shift down to normal priority
+      priorityLevel = NormalPriority;
+      break;
+
+    default:
+      // Anything lower than normal priority should remain at the current level.
+      priorityLevel = currentPriorityLevel;
+      break;
+  }
+
+  var previousPriorityLevel = currentPriorityLevel;
+  currentPriorityLevel = priorityLevel;
+
+  try {
+    return eventHandler();
+  } finally {
+    currentPriorityLevel = previousPriorityLevel;
+  }
+}
+
+function unstable_wrapCallback(callback) {
+  var parentPriorityLevel = currentPriorityLevel;
+  return function () {
+    // This is a fork of runWithPriority, inlined for performance.
+    var previousPriorityLevel = currentPriorityLevel;
+    currentPriorityLevel = parentPriorityLevel;
+
+    try {
+      return callback.apply(this, arguments);
+    } finally {
+      currentPriorityLevel = previousPriorityLevel;
+    }
+  };
+}
+
+function timeoutForPriorityLevel(priorityLevel) {
+  switch (priorityLevel) {
+    case ImmediatePriority:
+      return IMMEDIATE_PRIORITY_TIMEOUT;
+
+    case UserBlockingPriority:
+      return USER_BLOCKING_PRIORITY;
+
+    case IdlePriority:
+      return IDLE_PRIORITY;
+
+    case LowPriority:
+      return LOW_PRIORITY_TIMEOUT;
+
+    case NormalPriority:
+    default:
+      return NORMAL_PRIORITY_TIMEOUT;
+  }
+}
+
+function unstable_scheduleCallback(priorityLevel, callback, options) {
+  var currentTime = exports.unstable_now();
+  var startTime;
+  var timeout;
+
+  if (typeof options === 'object' && options !== null) {
+    var delay = options.delay;
+
+    if (typeof delay === 'number' && delay > 0) {
+      startTime = currentTime + delay;
+    } else {
+      startTime = currentTime;
+    }
+
+    timeout = typeof options.timeout === 'number' ? options.timeout : timeoutForPriorityLevel(priorityLevel);
+  } else {
+    timeout = timeoutForPriorityLevel(priorityLevel);
+    startTime = currentTime;
+  }
+
+  var expirationTime = startTime + timeout;
+  var newTask = {
+    id: taskIdCounter++,
+    callback: callback,
+    priorityLevel: priorityLevel,
+    startTime: startTime,
+    expirationTime: expirationTime,
+    sortIndex: -1
+  };
+
+  {
+    newTask.isQueued = false;
+  }
+
+  if (startTime > currentTime) {
+    // This is a delayed task.
+    newTask.sortIndex = startTime;
+    push(timerQueue, newTask);
+
+    if (peek(taskQueue) === null && newTask === peek(timerQueue)) {
+      // All tasks are delayed, and this is the task with the earliest delay.
+      if (isHostTimeoutScheduled) {
+        // Cancel an existing timeout.
+        cancelHostTimeout();
+      } else {
+        isHostTimeoutScheduled = true;
+      } // Schedule a timeout.
+
+
+      requestHostTimeout(handleTimeout, startTime - currentTime);
+    }
+  } else {
+    newTask.sortIndex = expirationTime;
+    push(taskQueue, newTask);
+
+    {
+      markTaskStart(newTask, currentTime);
+      newTask.isQueued = true;
+    } // Schedule a host callback, if needed. If we're already performing work,
+    // wait until the next time we yield.
+
+
+    if (!isHostCallbackScheduled && !isPerformingWork) {
+      isHostCallbackScheduled = true;
+      requestHostCallback(flushWork);
+    }
+  }
+
+  return newTask;
+}
+
+function unstable_pauseExecution() {
+}
+
+function unstable_continueExecution() {
+
+  if (!isHostCallbackScheduled && !isPerformingWork) {
+    isHostCallbackScheduled = true;
+    requestHostCallback(flushWork);
+  }
+}
+
+function unstable_getFirstCallbackNode() {
+  return peek(taskQueue);
+}
+
+function unstable_cancelCallback(task) {
+  {
+    if (task.isQueued) {
+      var currentTime = exports.unstable_now();
+      markTaskCanceled(task, currentTime);
+      task.isQueued = false;
+    }
+  } // Null out the callback to indicate the task has been canceled. (Can't
+  // remove from the queue because you can't remove arbitrary nodes from an
+  // array based heap, only the first one.)
+
+
+  task.callback = null;
+}
+
+function unstable_getCurrentPriorityLevel() {
+  return currentPriorityLevel;
+}
+
+function unstable_shouldYield() {
+  var currentTime = exports.unstable_now();
+  advanceTimers(currentTime);
+  var firstTask = peek(taskQueue);
+  return firstTask !== currentTask && currentTask !== null && firstTask !== null && firstTask.callback !== null && firstTask.startTime <= currentTime && firstTask.expirationTime < currentTask.expirationTime || shouldYieldToHost();
+}
+
+var unstable_requestPaint = requestPaint;
+var unstable_Profiling =  {
+  startLoggingProfilingEvents: startLoggingProfilingEvents,
+  stopLoggingProfilingEvents: stopLoggingProfilingEvents,
+  sharedProfilingBuffer: sharedProfilingBuffer
+} ;
+
+exports.unstable_IdlePriority = IdlePriority;
+exports.unstable_ImmediatePriority = ImmediatePriority;
+exports.unstable_LowPriority = LowPriority;
+exports.unstable_NormalPriority = NormalPriority;
+exports.unstable_Profiling = unstable_Profiling;
+exports.unstable_UserBlockingPriority = UserBlockingPriority;
+exports.unstable_cancelCallback = unstable_cancelCallback;
+exports.unstable_continueExecution = unstable_continueExecution;
+exports.unstable_getCurrentPriorityLevel = unstable_getCurrentPriorityLevel;
+exports.unstable_getFirstCallbackNode = unstable_getFirstCallbackNode;
+exports.unstable_next = unstable_next;
+exports.unstable_pauseExecution = unstable_pauseExecution;
+exports.unstable_requestPaint = unstable_requestPaint;
+exports.unstable_runWithPriority = unstable_runWithPriority;
+exports.unstable_scheduleCallback = unstable_scheduleCallback;
+exports.unstable_shouldYield = unstable_shouldYield;
+exports.unstable_wrapCallback = unstable_wrapCallback;
+  })();
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/scheduler/index.js":
+/*!*****************************************!*\
+  !*** ./node_modules/scheduler/index.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+if (false) {} else {
+  module.exports = __webpack_require__(/*! ./cjs/scheduler.development.js */ "./node_modules/scheduler/cjs/scheduler.development.js");
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/scheduler/tracing.js":
+/*!*******************************************!*\
+  !*** ./node_modules/scheduler/tracing.js ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+if (false) {} else {
+  module.exports = __webpack_require__(/*! ./cjs/scheduler-tracing.development.js */ "./node_modules/scheduler/cjs/scheduler-tracing.development.js");
+}
 
 
 /***/ }),
@@ -54060,13 +58640,15 @@ __webpack_require__.r(__webpack_exports__);
 var isProduction = "development" === 'production';
 var prefix = 'Invariant failed';
 function invariant(condition, message) {
-    if (condition) {
-        return;
-    }
-    if (isProduction) {
-        throw new Error(prefix);
-    }
+  if (condition) {
+    return;
+  }
+
+  if (isProduction) {
+    throw new Error(prefix);
+  } else {
     throw new Error(prefix + ": " + (message || ''));
+  }
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (invariant);
@@ -56817,6 +61399,10 @@ var _reactRouterDom = __webpack_require__(/*! react-router-dom */ "./node_module
 
 var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
 
+var _reactHowler = __webpack_require__(/*! react-howler */ "./node_modules/react-howler/lib/index.js");
+
+var _reactHowler2 = _interopRequireDefault(_reactHowler);
+
 var _reactGa = __webpack_require__(/*! react-ga */ "./node_modules/react-ga/dist/esm/index.js");
 
 var _reactGa2 = _interopRequireDefault(_reactGa);
@@ -56983,6 +61569,10 @@ var _EditCommand2 = _interopRequireDefault(_EditCommand);
 
 var _helpers = __webpack_require__(/*! ./util/helpers */ "./src/js/util/helpers.js");
 
+var _storage = __webpack_require__(/*! ./util/storage */ "./src/js/util/storage.js");
+
+var _storage2 = _interopRequireDefault(_storage);
+
 var _actions = __webpack_require__(/*! ./services/core/actions */ "./src/js/services/core/actions.js");
 
 var coreActions = _interopRequireWildcard(_actions);
@@ -57031,7 +61621,29 @@ var App = exports.App = function (_React$Component) {
   function App(props) {
     _classCallCheck(this, App);
 
+    // Load query param settings
     var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
+
+    var configs = ['ui', 'spotify', 'pusher', 'snapcast', 'mopidy', 'google', 'lastfm', 'genius'];
+    var params = new URLSearchParams(window.location.search);
+    var changed = [];
+    var urlParams = params.forEach(function (v, k) {
+      if (!configs.includes(k)) return;
+      try {
+        _storage2.default.set(k, JSON.parse(v));
+        changed.push(k);
+      } catch (error) {
+        console.error(error);
+      }
+    });
+    if (changed.length > 0) {
+      changed.forEach(function (k) {
+        return params.delete(k);
+      });
+      var url = window.location.toString().replace(window.location.search, params.toString());
+      console.log('settings changed:', changed, 'redirect to:', url);
+      window.location.assign(url);
+    }
 
     _this.handleInstallPrompt = _this.handleInstallPrompt.bind(_this);
     _this.handleFocusAndBlur = _this.handleFocusAndBlur.bind(_this);
@@ -57832,7 +62444,9 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.handleTouchStart = function (e) {
-      var hideContextMenu = _this.props.uiActions.hideContextMenu;
+      var _this$props4 = _this.props,
+          menu = _this$props4.menu,
+          hideContextMenu = _this$props4.uiActions.hideContextMenu;
 
 
       if (menu && $(e.target).closest('.context-menu').length <= 0 && $(e.target).closest('.context-menu-trigger').length <= 0) {
@@ -57844,11 +62458,11 @@ var ContextMenu = function (_React$Component) {
       var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
           uri = _ref.uri;
 
-      var _this$props4 = _this.props,
-          spotify_library_artists = _this$props4.spotify_library_artists,
-          spotify_library_albums = _this$props4.spotify_library_albums,
-          spotify_library_playlists = _this$props4.spotify_library_playlists,
-          spotify_library_tracks = _this$props4.spotify_library_tracks;
+      var _this$props5 = _this.props,
+          spotify_library_artists = _this$props5.spotify_library_artists,
+          spotify_library_albums = _this$props5.spotify_library_albums,
+          spotify_library_playlists = _this$props5.spotify_library_playlists,
+          spotify_library_tracks = _this$props5.spotify_library_tracks;
 
       if (!uri) return false;
 
@@ -57881,21 +62495,21 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.canBeInLibrary = function () {
-      var _this$props5 = _this.props,
-          spotify_authorized = _this$props5.spotify_authorized,
-          items = _this$props5.menu.items;
+      var _this$props6 = _this.props,
+          spotify_authorized = _this$props6.spotify_authorized,
+          items = _this$props6.menu.items;
 
       if (!spotify_authorized) return false;
       return (0, _helpers.uriSource)(items[0].uri) === 'spotify';
     };
 
     _this.toggleInLibrary = function (e, in_library) {
-      var _this$props6 = _this.props,
-          hideContextMenu = _this$props6.uiActions.hideContextMenu,
-          following = _this$props6.spotifyActions.following,
-          _this$props6$menu = _this$props6.menu;
-      _this$props6$menu = _this$props6$menu === undefined ? {} : _this$props6$menu;
-      var items = _this$props6$menu.items;
+      var _this$props7 = _this.props,
+          hideContextMenu = _this$props7.uiActions.hideContextMenu,
+          following = _this$props7.spotifyActions.following,
+          _this$props7$menu = _this$props7.menu;
+      _this$props7$menu = _this$props7$menu === undefined ? {} : _this$props7$menu;
+      var items = _this$props7$menu.items;
 
 
       hideContextMenu();
@@ -57907,12 +62521,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.playQueueItem = function () {
-      var _this$props7 = _this.props,
-          hideContextMenu = _this$props7.uiActions.hideContextMenu,
-          changeTrack = _this$props7.mopidyActions.changeTrack,
-          _this$props7$menu = _this$props7.menu;
-      _this$props7$menu = _this$props7$menu === undefined ? {} : _this$props7$menu;
-      var items = _this$props7$menu.items;
+      var _this$props8 = _this.props,
+          hideContextMenu = _this$props8.uiActions.hideContextMenu,
+          changeTrack = _this$props8.mopidyActions.changeTrack,
+          _this$props8$menu = _this$props8.menu;
+      _this$props8$menu = _this$props8$menu === undefined ? {} : _this$props8$menu;
+      var items = _this$props8$menu.items;
 
 
       hideContextMenu();
@@ -57920,12 +62534,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.removeFromQueue = function () {
-      var _this$props8 = _this.props,
-          hideContextMenu = _this$props8.uiActions.hideContextMenu,
-          removeTracks = _this$props8.mopidyActions.removeTracks,
-          _this$props8$menu = _this$props8.menu;
-      _this$props8$menu = _this$props8$menu === undefined ? {} : _this$props8$menu;
-      var items = _this$props8$menu.items;
+      var _this$props9 = _this.props,
+          hideContextMenu = _this$props9.uiActions.hideContextMenu,
+          removeTracks = _this$props9.mopidyActions.removeTracks,
+          _this$props9$menu = _this$props9.menu;
+      _this$props9$menu = _this$props9$menu === undefined ? {} : _this$props9$menu;
+      var items = _this$props9$menu.items;
 
 
       hideContextMenu();
@@ -57933,13 +62547,13 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.playURIs = function () {
-      var _this$props9 = _this.props,
-          hideContextMenu = _this$props9.uiActions.hideContextMenu,
-          playURIs = _this$props9.mopidyActions.playURIs,
-          _this$props9$menu = _this$props9.menu;
-      _this$props9$menu = _this$props9$menu === undefined ? {} : _this$props9$menu;
-      var uris = _this$props9$menu.uris,
-          tracklist_uri = _this$props9$menu.tracklist_uri;
+      var _this$props10 = _this.props,
+          hideContextMenu = _this$props10.uiActions.hideContextMenu,
+          playURIs = _this$props10.mopidyActions.playURIs,
+          _this$props10$menu = _this$props10.menu;
+      _this$props10$menu = _this$props10$menu === undefined ? {} : _this$props10$menu;
+      var uris = _this$props10$menu.uris,
+          tracklist_uri = _this$props10$menu.tracklist_uri;
 
 
       hideContextMenu();
@@ -57947,12 +62561,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.playPlaylist = function () {
-      var _this$props10 = _this.props,
-          hideContextMenu = _this$props10.uiActions.hideContextMenu,
-          playPlaylist = _this$props10.mopidyActions.playPlaylist,
-          _this$props10$menu = _this$props10.menu;
-      _this$props10$menu = _this$props10$menu === undefined ? {} : _this$props10$menu;
-      var uris = _this$props10$menu.uris;
+      var _this$props11 = _this.props,
+          hideContextMenu = _this$props11.uiActions.hideContextMenu,
+          playPlaylist = _this$props11.mopidyActions.playPlaylist,
+          _this$props11$menu = _this$props11.menu;
+      _this$props11$menu = _this$props11$menu === undefined ? {} : _this$props11$menu;
+      var uris = _this$props11$menu.uris;
 
 
       hideContextMenu();
@@ -57961,12 +62575,12 @@ var ContextMenu = function (_React$Component) {
 
     _this.enqueuePlaylist = function (e) {
       var play_next = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-      var _this$props11 = _this.props,
-          hideContextMenu = _this$props11.uiActions.hideContextMenu,
-          enqueuePlaylist = _this$props11.mopidyActions.enqueuePlaylist,
-          _this$props11$menu = _this$props11.menu;
-      _this$props11$menu = _this$props11$menu === undefined ? {} : _this$props11$menu;
-      var uris = _this$props11$menu.uris;
+      var _this$props12 = _this.props,
+          hideContextMenu = _this$props12.uiActions.hideContextMenu,
+          enqueuePlaylist = _this$props12.mopidyActions.enqueuePlaylist,
+          _this$props12$menu = _this$props12.menu;
+      _this$props12$menu = _this$props12$menu === undefined ? {} : _this$props12$menu;
+      var uris = _this$props12$menu.uris;
 
 
       hideContextMenu();
@@ -57974,12 +62588,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.shufflePlayPlaylist = function () {
-      var _this$props12 = _this.props,
-          hideContextMenu = _this$props12.uiActions.hideContextMenu,
-          playPlaylist = _this$props12.mopidyActions.playPlaylist,
-          _this$props12$menu = _this$props12.menu;
-      _this$props12$menu = _this$props12$menu === undefined ? {} : _this$props12$menu;
-      var uris = _this$props12$menu.uris;
+      var _this$props13 = _this.props,
+          hideContextMenu = _this$props13.uiActions.hideContextMenu,
+          playPlaylist = _this$props13.mopidyActions.playPlaylist,
+          _this$props13$menu = _this$props13.menu;
+      _this$props13$menu = _this$props13$menu === undefined ? {} : _this$props13$menu;
+      var uris = _this$props13$menu.uris;
 
 
       hideContextMenu();
@@ -57987,12 +62601,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.playArtistTopTracks = function () {
-      var _this$props13 = _this.props,
-          hideContextMenu = _this$props13.uiActions.hideContextMenu,
-          playArtistTopTracks = _this$props13.spotifyActions.playArtistTopTracks,
-          _this$props13$menu = _this$props13.menu;
-      _this$props13$menu = _this$props13$menu === undefined ? {} : _this$props13$menu;
-      var uris = _this$props13$menu.uris;
+      var _this$props14 = _this.props,
+          hideContextMenu = _this$props14.uiActions.hideContextMenu,
+          playArtistTopTracks = _this$props14.spotifyActions.playArtistTopTracks,
+          _this$props14$menu = _this$props14.menu;
+      _this$props14$menu = _this$props14$menu === undefined ? {} : _this$props14$menu;
+      var uris = _this$props14$menu.uris;
 
 
       hideContextMenu();
@@ -58001,13 +62615,13 @@ var ContextMenu = function (_React$Component) {
 
     _this.addToQueue = function (e) {
       var play_next = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-      var _this$props14 = _this.props,
-          hideContextMenu = _this$props14.uiActions.hideContextMenu,
-          enqueueURIs = _this$props14.mopidyActions.enqueueURIs,
-          _this$props14$menu = _this$props14.menu;
-      _this$props14$menu = _this$props14$menu === undefined ? {} : _this$props14$menu;
-      var uris = _this$props14$menu.uris,
-          tracklist_uri = _this$props14$menu.tracklist_uri;
+      var _this$props15 = _this.props,
+          hideContextMenu = _this$props15.uiActions.hideContextMenu,
+          enqueueURIs = _this$props15.mopidyActions.enqueueURIs,
+          _this$props15$menu = _this$props15.menu;
+      _this$props15$menu = _this$props15$menu === undefined ? {} : _this$props15$menu;
+      var uris = _this$props15$menu.uris,
+          tracklist_uri = _this$props15$menu.tracklist_uri;
 
 
       hideContextMenu();
@@ -58015,12 +62629,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.addTracksToPlaylist = function (e, playlist_uri) {
-      var _this$props15 = _this.props,
-          hideContextMenu = _this$props15.uiActions.hideContextMenu,
-          addTracksToPlaylist = _this$props15.coreActions.addTracksToPlaylist,
-          _this$props15$menu = _this$props15.menu;
-      _this$props15$menu = _this$props15$menu === undefined ? {} : _this$props15$menu;
-      var uris = _this$props15$menu.uris;
+      var _this$props16 = _this.props,
+          hideContextMenu = _this$props16.uiActions.hideContextMenu,
+          addTracksToPlaylist = _this$props16.coreActions.addTracksToPlaylist,
+          _this$props16$menu = _this$props16.menu;
+      _this$props16$menu = _this$props16$menu === undefined ? {} : _this$props16$menu;
+      var uris = _this$props16$menu.uris;
 
 
       hideContextMenu();
@@ -58028,14 +62642,14 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.toggleLoved = function (e, is_loved) {
-      var _this$props16 = _this.props,
-          hideContextMenu = _this$props16.uiActions.hideContextMenu,
-          _this$props16$lastfmA = _this$props16.lastfmActions,
-          unloveTrack = _this$props16$lastfmA.unloveTrack,
-          loveTrack = _this$props16$lastfmA.loveTrack,
-          _this$props16$menu = _this$props16.menu;
-      _this$props16$menu = _this$props16$menu === undefined ? {} : _this$props16$menu;
-      var uris = _this$props16$menu.uris;
+      var _this$props17 = _this.props,
+          hideContextMenu = _this$props17.uiActions.hideContextMenu,
+          _this$props17$lastfmA = _this$props17.lastfmActions,
+          unloveTrack = _this$props17$lastfmA.unloveTrack,
+          loveTrack = _this$props17$lastfmA.loveTrack,
+          _this$props17$menu = _this$props17.menu;
+      _this$props17$menu = _this$props17$menu === undefined ? {} : _this$props17$menu;
+      var uris = _this$props17$menu.uris;
 
 
       hideContextMenu();
@@ -58047,12 +62661,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.unloveTrack = function () {
-      var _this$props17 = _this.props,
-          hideContextMenu = _this$props17.uiActions.hideContextMenu,
-          unloveTrack = _this$props17.lastfmActions.unloveTrack,
-          _this$props17$menu = _this$props17.menu;
-      _this$props17$menu = _this$props17$menu === undefined ? {} : _this$props17$menu;
-      var items = _this$props17$menu.items;
+      var _this$props18 = _this.props,
+          hideContextMenu = _this$props18.uiActions.hideContextMenu,
+          unloveTrack = _this$props18.lastfmActions.unloveTrack,
+          _this$props18$menu = _this$props18.menu;
+      _this$props18$menu = _this$props18$menu === undefined ? {} : _this$props18$menu;
+      var items = _this$props18$menu.items;
 
 
       hideContextMenu();
@@ -58060,13 +62674,13 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.removeFromPlaylist = function () {
-      var _this$props18 = _this.props,
-          hideContextMenu = _this$props18.uiActions.hideContextMenu,
-          removeTracksFromPlaylist = _this$props18.coreActions.removeTracksFromPlaylist,
-          _this$props18$menu = _this$props18.menu;
-      _this$props18$menu = _this$props18$menu === undefined ? {} : _this$props18$menu;
-      var tracklist_uri = _this$props18$menu.tracklist_uri,
-          indexes = _this$props18$menu.indexes;
+      var _this$props19 = _this.props,
+          hideContextMenu = _this$props19.uiActions.hideContextMenu,
+          removeTracksFromPlaylist = _this$props19.coreActions.removeTracksFromPlaylist,
+          _this$props19$menu = _this$props19.menu;
+      _this$props19$menu = _this$props19$menu === undefined ? {} : _this$props19$menu;
+      var tracklist_uri = _this$props19$menu.tracklist_uri,
+          indexes = _this$props19$menu.indexes;
 
 
       hideContextMenu();
@@ -58074,12 +62688,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.deletePlaylist = function () {
-      var _this$props19 = _this.props,
-          hideContextMenu = _this$props19.uiActions.hideContextMenu,
-          deletePlaylist = _this$props19.coreActions.deletePlaylist,
-          _this$props19$menu = _this$props19.menu;
-      _this$props19$menu = _this$props19$menu === undefined ? {} : _this$props19$menu;
-      var uris = _this$props19$menu.uris;
+      var _this$props20 = _this.props,
+          hideContextMenu = _this$props20.uiActions.hideContextMenu,
+          deletePlaylist = _this$props20.coreActions.deletePlaylist,
+          _this$props20$menu = _this$props20.menu;
+      _this$props20$menu = _this$props20$menu === undefined ? {} : _this$props20$menu;
+      var uris = _this$props20$menu.uris;
 
 
       hideContextMenu();
@@ -58087,12 +62701,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.startRadio = function () {
-      var _this$props20 = _this.props,
-          hideContextMenu = _this$props20.uiActions.hideContextMenu,
-          startRadio = _this$props20.pusherActions.startRadio,
-          _this$props20$menu = _this$props20.menu;
-      _this$props20$menu = _this$props20$menu === undefined ? {} : _this$props20$menu;
-      var uris = _this$props20$menu.uris;
+      var _this$props21 = _this.props,
+          hideContextMenu = _this$props21.uiActions.hideContextMenu,
+          startRadio = _this$props21.pusherActions.startRadio,
+          _this$props21$menu = _this$props21.menu;
+      _this$props21$menu = _this$props21$menu === undefined ? {} : _this$props21$menu;
+      var uris = _this$props21$menu.uris;
 
 
       hideContextMenu();
@@ -58100,12 +62714,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.goToRecommendations = function () {
-      var _this$props21 = _this.props,
-          hideContextMenu = _this$props21.uiActions.hideContextMenu,
-          _this$props21$menu = _this$props21.menu;
-      _this$props21$menu = _this$props21$menu === undefined ? {} : _this$props21$menu;
-      var items = _this$props21$menu.items,
-          push = _this$props21.history.push;
+      var _this$props22 = _this.props,
+          hideContextMenu = _this$props22.uiActions.hideContextMenu,
+          _this$props22$menu = _this$props22.menu;
+      _this$props22$menu = _this$props22$menu === undefined ? {} : _this$props22$menu;
+      var items = _this$props22$menu.items,
+          push = _this$props22.history.push;
 
 
       hideContextMenu();
@@ -58113,12 +62727,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.goToArtist = function () {
-      var _this$props22 = _this.props,
-          hideContextMenu = _this$props22.uiActions.hideContextMenu,
-          _this$props22$menu = _this$props22.menu;
-      _this$props22$menu = _this$props22$menu === undefined ? {} : _this$props22$menu;
-      var items = _this$props22$menu.items,
-          push = _this$props22.history.push;
+      var _this$props23 = _this.props,
+          hideContextMenu = _this$props23.uiActions.hideContextMenu,
+          _this$props23$menu = _this$props23.menu;
+      _this$props23$menu = _this$props23$menu === undefined ? {} : _this$props23$menu;
+      var items = _this$props23$menu.items,
+          push = _this$props23.history.push;
 
 
       if (!items || items.length <= 0 || !items[0].artists_uris || items[0].artists_uris.length <= 0) {
@@ -58131,12 +62745,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.goToUser = function () {
-      var _this$props23 = _this.props,
-          hideContextMenu = _this$props23.uiActions.hideContextMenu,
-          _this$props23$menu = _this$props23.menu;
-      _this$props23$menu = _this$props23$menu === undefined ? {} : _this$props23$menu;
-      var items = _this$props23$menu.items,
-          push = _this$props23.history.push;
+      var _this$props24 = _this.props,
+          hideContextMenu = _this$props24.uiActions.hideContextMenu,
+          _this$props24$menu = _this$props24.menu;
+      _this$props24$menu = _this$props24$menu === undefined ? {} : _this$props24$menu;
+      var items = _this$props24$menu.items,
+          push = _this$props24.history.push;
 
 
       if (!items || items.length <= 0 || !items[0].user_uri) return null;
@@ -58145,12 +62759,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.goToTrack = function () {
-      var _this$props24 = _this.props,
-          hideContextMenu = _this$props24.uiActions.hideContextMenu,
-          _this$props24$menu = _this$props24.menu;
-      _this$props24$menu = _this$props24$menu === undefined ? {} : _this$props24$menu;
-      var uris = _this$props24$menu.uris,
-          push = _this$props24.history.push;
+      var _this$props25 = _this.props,
+          hideContextMenu = _this$props25.uiActions.hideContextMenu,
+          _this$props25$menu = _this$props25.menu;
+      _this$props25$menu = _this$props25$menu === undefined ? {} : _this$props25$menu;
+      var uris = _this$props25$menu.uris,
+          push = _this$props25.history.push;
 
 
       if (!uris) return null;
@@ -58159,13 +62773,13 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.copyURIs = function () {
-      var _this$props25 = _this.props,
-          _this$props25$uiActio = _this$props25.uiActions,
-          hideContextMenu = _this$props25$uiActio.hideContextMenu,
-          createNotification = _this$props25$uiActio.createNotification,
-          _this$props25$menu = _this$props25.menu;
-      _this$props25$menu = _this$props25$menu === undefined ? {} : _this$props25$menu;
-      var uris = _this$props25$menu.uris;
+      var _this$props26 = _this.props,
+          _this$props26$uiActio = _this$props26.uiActions,
+          hideContextMenu = _this$props26$uiActio.hideContextMenu,
+          createNotification = _this$props26$uiActio.createNotification,
+          _this$props26$menu = _this$props26.menu;
+      _this$props26$menu = _this$props26$menu === undefined ? {} : _this$props26$menu;
+      var uris = _this$props26$menu.uris;
 
 
       var temp = $('<input>');
@@ -58179,12 +62793,12 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.renderTitle = function () {
-      var _this$props26 = _this.props,
-          _this$props26$uiActio = _this$props26.uiActions,
-          hideContextMenu = _this$props26$uiActio.hideContextMenu,
-          setSelectedTracks = _this$props26$uiActio.setSelectedTracks,
-          queue_metadata = _this$props26.queue_metadata,
-          title = _this$props26.menu.title;
+      var _this$props27 = _this.props,
+          _this$props27$uiActio = _this$props27.uiActions,
+          hideContextMenu = _this$props27$uiActio.hideContextMenu,
+          setSelectedTracks = _this$props27$uiActio.setSelectedTracks,
+          queue_metadata = _this$props27.queue_metadata,
+          title = _this$props27.menu.title;
 
 
       var context = _this.getContext();
@@ -58284,11 +62898,11 @@ var ContextMenu = function (_React$Component) {
 
     _this.setSubmenu = function (name) {
       var submenu = _this.state.submenu;
-      var _this$props27 = _this.props,
-          spotify_library_playlists_loaded_all = _this$props27.spotify_library_playlists_loaded_all,
-          mopidy_library_playlists_loaded_all = _this$props27.mopidy_library_playlists_loaded_all,
-          spotifyActions = _this$props27.spotifyActions,
-          mopidyActions = _this$props27.mopidyActions;
+      var _this$props28 = _this.props,
+          spotify_library_playlists_loaded_all = _this$props28.spotify_library_playlists_loaded_all,
+          mopidy_library_playlists_loaded_all = _this$props28.mopidy_library_playlists_loaded_all,
+          spotifyActions = _this$props28.spotifyActions,
+          mopidyActions = _this$props28.mopidyActions;
 
       if (submenu !== name && name == 'add-to-playlist') {
         if (!spotify_library_playlists_loaded_all) spotifyActions.getLibraryPlaylists();
@@ -58304,9 +62918,9 @@ var ContextMenu = function (_React$Component) {
 
     _this.renderSubmenu = function () {
       var submenu = _this.state.submenu;
-      var _this$props28 = _this.props,
-          playlistsIndex = _this$props28.playlists,
-          processes = _this$props28.processes;
+      var _this$props29 = _this.props,
+          playlistsIndex = _this$props29.playlists,
+          processes = _this$props29.processes;
 
 
       var list = null;
@@ -58394,10 +63008,10 @@ var ContextMenu = function (_React$Component) {
     };
 
     _this.renderItems = function () {
-      var _this$props29 = _this.props,
-          lastfm_authorized = _this$props29.lastfm_authorized,
-          spotify_authorized = _this$props29.spotify_authorized,
-          load_queue = _this$props29.load_queue;
+      var _this$props30 = _this.props,
+          lastfm_authorized = _this$props30.lastfm_authorized,
+          spotify_authorized = _this$props30.spotify_authorized,
+          load_queue = _this$props30.load_queue;
 
       var context = _this.getContext();
 
@@ -59178,20 +63792,25 @@ exports.default = (0, _react.memo)(function (props) {
     case 'ago':
       var date = new Date(props.data);
       var diff = new Date() - date;
-
       var seconds = Math.floor(diff / 1000);
       var minutes = Math.floor(diff / (1000 * 60));
       var hours = Math.floor(diff / (1000 * 60 * 60));
       var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      var weeks = Math.floor(diff / (1000 * 60 * 60 * 24 * 7));
+      var years = Math.floor(diff / (1000 * 60 * 60 * 24 * 7 * 52));
 
       if (seconds < 60) {
-        return seconds + ' seconds';
+        return seconds + ' second' + (seconds > 1 ? 's' : '');
       }if (minutes < 60) {
-        return minutes + ' minutes';
+        return minutes + ' minute' + (minutes > 1 ? 's' : '');
       }if (hours < 24) {
-        return hours + ' hours';
+        return hours + ' hour' + (hours > 1 ? 's' : '');
+      }if (days < 7) {
+        return days + ' day' + (days > 1 ? 's' : '');
+      }if (weeks < 54) {
+        return weeks + ' week' + (weeks > 1 ? 's' : '');
       }
-      return days + ' days';
+      return years + ' year' + (years > 1 ? 's' : '');
     default:
       return null;
   }
@@ -61983,6 +66602,8 @@ var snapcastActions = _interopRequireWildcard(_actions3);
 
 var _arrays = __webpack_require__(/*! ../../util/arrays */ "./src/js/util/arrays.js");
 
+var _format = __webpack_require__(/*! ../../util/format */ "./src/js/util/format.js");
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -62050,7 +66671,8 @@ var OutputControl = function (_React$Component) {
       var _props = this.props,
           snapcast_streams = _props.snapcast_streams,
           snapcastActions = _props.snapcastActions,
-          snapcast_groups = _props.snapcast_groups;
+          snapcast_groups = _props.snapcast_groups,
+          clients = _props.snapcast_clients;
 
 
       var groups = (0, _arrays.indexToArray)(snapcast_groups);
@@ -62063,7 +66685,13 @@ var OutputControl = function (_React$Component) {
       return _react2.default.createElement(
         'div',
         null,
-        groups.map(function (group) {
+        groups.map(function (simpleGroup) {
+          var group = (0, _format.collate)(simpleGroup, { clients: clients });
+          if (!group.clients || !group.clients.length || !group.clients.filter(function (client) {
+            return client.connected;
+          }).length) {
+            return null;
+          }
           return _react2.default.createElement(
             'div',
             { className: 'output-control__item outputs__item--snapcast', key: group.id },
@@ -62270,6 +66898,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
     pusher_connected: state.pusher.connected,
     snapcast_enabled: state.pusher.config ? state.pusher.config.snapcast_enabled : null,
     show_disconnected_clients: state.ui.snapcast_show_disconnected_clients !== undefined ? state.ui.snapcast_show_disconnected_clients : false,
+    snapcast_clients: state.snapcast.clients,
     snapcast_groups: state.snapcast.groups,
     snapcast_streams: state.snapcast.streams,
     pusher_commands: state.pusher.commands ? state.pusher.commands : {}
@@ -62957,53 +67586,54 @@ var TextField = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (TextField.__proto__ || Object.getPrototypeOf(TextField)).call(this, props));
 
+    _this.handleChange = function (e) {
+      _this.setState({ value: e.target.value });
+    };
+
+    _this.handleFocus = function () {
+      _this.setState({ in_focus: true });
+    };
+
+    _this.handleBlur = function () {
+      var _this$props = _this.props,
+          value = _this$props.value,
+          onChange = _this$props.onChange;
+      var stateValue = _this.state.value;
+
+      _this.setState({ in_focus: false });
+      if (stateValue !== value) {
+        onChange(stateValue);
+      }
+    };
+
+    _this.render = function () {
+      var _this$props2 = _this.props,
+          className = _this$props2.className,
+          _this$props2$type = _this$props2.type,
+          type = _this$props2$type === undefined ? 'text' : _this$props2$type,
+          placeholder = _this$props2.placeholder;
+      var value = _this.state.value;
+
+
+      return _react2.default.createElement('input', {
+        className: className,
+        type: type,
+        onChange: _this.handleChange,
+        onFocus: _this.handleFocus,
+        onBlur: _this.handleBlur,
+        value: value,
+        placeholder: placeholder
+      });
+    };
+
     _this.state = {
       in_focus: false,
-      value: _this.props.value ? _this.props.value : ''
+      value: props.value || ''
     };
     return _this;
   }
 
-  _createClass(TextField, [{
-    key: 'handleChange',
-    value: function handleChange(e) {
-      this.setState({ value: e.target.value });
-    }
-  }, {
-    key: 'handleFocus',
-    value: function handleFocus(e) {
-      this.setState({ in_focus: true });
-    }
-  }, {
-    key: 'handleBlur',
-    value: function handleBlur(e) {
-      this.setState({ in_focus: false });
-      if (this.state.value !== this.props.value) {
-        this.props.onChange(this.state.value);
-      }
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var _this2 = this;
-
-      return _react2.default.createElement('input', {
-        className: this.props.className ? this.props.className : '',
-        type: this.props.type ? this.props.type : 'text',
-        onChange: function onChange(e) {
-          return _this2.handleChange(e);
-        },
-        onFocus: function onFocus(e) {
-          return _this2.handleFocus(e);
-        },
-        onBlur: function onBlur(e) {
-          return _this2.handleBlur(e);
-        },
-        value: this.state.value,
-        placeholder: this.props.placeholder ? this.props.placeholder : null
-      });
-    }
-  }], [{
+  _createClass(TextField, null, [{
     key: 'getDerivedStateFromProps',
     value: function getDerivedStateFromProps(_ref, state) {
       var value = _ref.value;
@@ -63256,7 +67886,8 @@ var GridItem = function (_React$Component) {
           glow: true,
           size: 'medium',
           className: 'grid__item__thumbnail',
-          images: item.images || item.icons
+          images: item.images || item.icons,
+          type: type
         }),
         _react2.default.createElement(
           'div',
@@ -63457,6 +68088,10 @@ var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
+var _reactGa = __webpack_require__(/*! react-ga */ "./node_modules/react-ga/dist/esm/index.js");
+
+var _reactGa2 = _interopRequireDefault(_reactGa);
+
 var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
@@ -63512,7 +68147,8 @@ var Hotkeys = function (_React$Component) {
           play_time_position = _props.play_time_position,
           history = _props.history,
           modal = _props.modal,
-          dragging = _props.dragging;
+          dragging = _props.dragging,
+          allow_reporting = _props.allow_reporting;
       var volume = this.props.volume;
 
       var key = e.key.toLowerCase();
@@ -63537,49 +68173,64 @@ var Hotkeys = function (_React$Component) {
           if (play_state == 'playing') {
             mopidyActions.pause();
             uiActions.createNotification({ content: 'pause', type: 'shortcut' });
+            if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Pause' });
           } else {
             mopidyActions.play();
             uiActions.createNotification({ content: 'play_arrow', type: 'shortcut' });
+            if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Play' });
           }
           prevent = true;
-          break;
-
-        case 'escape':
-          if (dragging) {
-            uiActions.dragEnd();
-            prevent = true;
-          } else if (modal) {
-            window.history.back();
-            prevent = true;
-          }
           break;
 
         case 's':
-          history.push('/search');
+          // Stop
+          mopidyActions.stop();
+          uiActions.createNotification({ content: 'stop', type: 'shortcut' });
           prevent = true;
+          if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Stop' });
           break;
 
-        case 'q':
-          history.push('/queue');
+        case 'b':
+          // Seek backwards 30 sec
+          var new_position = play_time_position - 30000;
+          if (new_position < 0) {
+            new_position = 0;
+          }
+          mopidyActions.setTimePosition(new_position);
+          uiActions.createNotification({ content: 'fast_rewind', type: 'shortcut' });
           prevent = true;
+          if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Rewind' });
           break;
 
-        case 'k':
-          history.push('/kiosk-mode');
+        case 'f':
+          // Seek forwards 30 sec
+          mopidyActions.setTimePosition(play_time_position + 30000);
+          uiActions.createNotification({ content: 'fast_forward', type: 'shortcut' });
           prevent = true;
+          if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Fastforward' });
           break;
 
         case ',':
-          window.history.back();
+        case '<':
+          // Previous track
+          mopidyActions.previous();
+          uiActions.createNotification({ content: 'skip_previous', type: 'shortcut' });
           prevent = true;
+          if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Previous' });
           break;
 
         case '.':
-          window.history.forward();
+        case '>':
+          // Next track
+          mopidyActions.next();
+          uiActions.createNotification({ content: 'skip_next', type: 'shortcut' });
           prevent = true;
+          if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Next' });
           break;
 
         case '=':
+        case '+':
+          // Volume up
           if (volume !== 'false') {
             volume += 5;
             if (volume > 100) {
@@ -63592,9 +68243,11 @@ var Hotkeys = function (_React$Component) {
             uiActions.createNotification({ content: 'volume_up', type: 'shortcut' });
           }
           prevent = true;
+          if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Volume up' });
           break;
 
         case '-':
+          // Volume down
           if (volume !== 'false') {
             volume -= 5;
             if (volume < 0) {
@@ -63607,45 +68260,55 @@ var Hotkeys = function (_React$Component) {
           }
           uiActions.createNotification({ content: 'volume_down', type: 'shortcut' });
           prevent = true;
+          if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Volume down' });
           break;
 
         case '0':
+          // Mute
           if (mute) {
             mopidyActions.setMute(false);
             uiActions.createNotification({ content: 'volume_up', type: 'shortcut' });
+            if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Unmute' });
           } else {
             mopidyActions.setMute(true);
             uiActions.createNotification({ content: 'volume_off', type: 'shortcut' });
+            if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Mute' });
           }
           prevent = true;
           break;
 
-        case ';':
-          var new_position = play_time_position - 30000;
-          if (new_position < 0) {
-            new_position = 0;
+        case 'escape':
+          // Cancel current action/context
+          if (dragging) {
+            uiActions.dragEnd();
+            prevent = true;
+            if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Dragging' });
+          } else if (modal) {
+            window.history.back();
+            prevent = true;
+            if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Modal' });
           }
-          mopidyActions.setTimePosition(new_position);
-          uiActions.createNotification({ content: 'fast_rewind', type: 'shortcut' });
-          prevent = true;
           break;
 
-        case "'":
-          mopidyActions.setTimePosition(play_time_position + 30000);
-          uiActions.createNotification({ content: 'fast_forward', type: 'shortcut' });
+        case '1':
+          // Navigation: Queue
+          history.push('/queue');
           prevent = true;
+          if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Queue' });
           break;
 
-        case '[':
-          mopidyActions.previous();
-          uiActions.createNotification({ content: 'skip_previous', type: 'shortcut' });
+        case '2':
+          // Navigation: Search
+          history.push('/search');
           prevent = true;
+          if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Search' });
           break;
 
-        case ']':
-          mopidyActions.next();
-          uiActions.createNotification({ content: 'skip_next', type: 'shortcut' });
+        case '3':
+          // Navigation: Kiosk mode
+          history.push('/kiosk-mode');
           prevent = true;
+          if (allow_reporting) _reactGa2.default.event({ category: 'Hotkey', action: key, label: 'Kiosk mode' });
           break;
 
         default:
@@ -63672,7 +68335,8 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
     mute: state.mopidy.mute,
     play_state: state.mopidy.play_state,
     play_time_position: parseInt(state.mopidy.time_position),
-    dragging: state.ui.dragger && state.ui.dragger.dragging
+    dragging: state.ui.dragger && state.ui.dragger.dragging,
+    allow_reporting: state.ui.allow_reporting
   };
 };
 
@@ -63889,116 +68553,70 @@ var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRouter = __webpack_require__(/*! react-router */ "./node_modules/react-router/esm/react-router.js");
-
 var _reactRouterDom = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/esm/react-router-dom.js");
 
 var _helpers = __webpack_require__(/*! ../util/helpers */ "./src/js/util/helpers.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
 /**
  * Extends react-router's Link but provides the ability to hook in to the navigation event
  * which lets us scroll to the top of our <main> for a more traditional navigation experience
  * */
-var CustomLink = function (_React$Component) {
-  _inherits(CustomLink, _React$Component);
+exports.default = function (_ref) {
+  var retainScroll = _ref.retainScroll,
+      scrollToProp = _ref.scrollTo,
+      onContextMenu = _ref.onContextMenu,
+      _ref$className = _ref.className,
+      className = _ref$className === undefined ? '' : _ref$className,
+      activeClassName = _ref.activeClassName,
+      to = _ref.to,
+      exact = _ref.exact,
+      children = _ref.children;
 
-  function CustomLink() {
-    var _ref;
+  if (!to) return _react2.default.createElement(
+    'span',
+    { className: className },
+    children
+  );
+  var history = (0, _reactRouterDom.useHistory)();
+  var location = (0, _reactRouterDom.useLocation)();
 
-    var _temp, _this, _ret;
+  var onClick = function onClick() {
+    // Fetch the current scroll position of our #main element and save to our history's state, so
+    // clicking 'back' etc will restore the previous scroll position.
+    // This doesn't trigger lazy-load elements (unless scrolling exposes the LazyLoader component).
+    var main = document.getElementById('main');
 
-    _classCallCheck(this, CustomLink);
+    history.replace(location.pathname, _extends({}, location.state, {
+      scroll_position: main.scrollTop
+    }));
 
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
+    // Allow a link to disable auto-scrolling to the top of the page
+    // on navigation. Useful for tabs, etc.
+    if (!retainScroll) (0, _helpers.scrollTo)(scrollToProp, scrollToProp);
+  };
 
-    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = CustomLink.__proto__ || Object.getPrototypeOf(CustomLink)).call.apply(_ref, [this].concat(args))), _this), _this.handleClick = function () {
-      var _this$props = _this.props,
-          state = _this$props.location.state,
-          history = _this$props.history,
-          retainScroll = _this$props.retainScroll,
-          scrollToProp = _this$props.scrollTo;
+  // Decode both links. This handles issues where one link is encoded and the other isn't, but
+  // they're otherwise identical
+  var link = decodeURIComponent(to);
+  var currentLink = decodeURIComponent(history.location.pathname);
+  var isLinkActive = exact ? currentLink === link : currentLink.startsWith(link);
 
-      // Fetch the current scroll position of our #main element and save to our history's state, so
-      // clicking 'back' etc will restore the previous scroll position.
-      // This doesn't trigger lazy-load elements (unless scrolling exposes the LazyLoader component).
-
-      var main = document.getElementById('main');
-
-      history.replace(_extends({}, state, {
-        scroll_position: main.scrollTop
-      }));
-
-      // Allow a link to disable auto-scrolling to the top of the page
-      // on navigation. Useful for tabs, etc.
-      if (!retainScroll) (0, _helpers.scrollTo)(scrollToProp, scrollToProp);
-    }, _this.handleContextMenu = function (e) {
-      var onContextMenu = _this.props.onContextMenu;
-
-
-      if (onContextMenu) onContextMenu(e);
-    }, _this.isLinkActive = function (link) {
-      var _this$props2 = _this.props,
-          exact = _this$props2.exact,
-          _this$props2$history = _this$props2.history;
-      _this$props2$history = _this$props2$history === undefined ? {} : _this$props2$history;
-      var _this$props2$history$ = _this$props2$history.location;
-      _this$props2$history$ = _this$props2$history$ === undefined ? {} : _this$props2$history$;
-      var pathname = _this$props2$history$.pathname;
-
-      // Decode both links. This handles issues where one link is encoded and the other isn't, but
-      // they're otherwise identical
-
-      link = decodeURIComponent(link);
-      var current_link = decodeURIComponent(pathname);
-
-      if (exact) return current_link === link;
-      return current_link.startsWith(link);
-    }, _this.render = function () {
-      var _this$props3 = _this.props,
-          className = _this$props3.className,
-          activeClassName = _this$props3.activeClassName,
-          to = _this$props3.to,
-          children = _this$props3.children,
-          history = _this$props3.history;
-
-
-      if (!to) return _react2.default.createElement(
-        'span',
-        { className: className },
-        children
-      );
-
-      // We have an active detector method
-      // This is used almost solely by the Sidebar navigation
-      var active = history && _this.isLinkActive(to) ? activeClassName || 'active' : '';
-
-      return _react2.default.createElement(
-        _reactRouterDom.Link,
-        {
-          onClick: _this.handleClick,
-          onContextMenu: _this.handleContextMenu,
-          className: className + ' ' + active,
-          to: to
-        },
-        children
-      );
-    }, _temp), _possibleConstructorReturn(_this, _ret);
-  }
-
-  return CustomLink;
-}(_react2.default.Component);
-
-exports.default = (0, _reactRouter.withRouter)(CustomLink);
+  // We have an active detector method
+  // This is used almost solely by the Sidebar navigation
+  var active = history && isLinkActive ? activeClassName || 'active' : '';
+  return _react2.default.createElement(
+    _reactRouterDom.Link,
+    {
+      onClick: onClick,
+      onContextMenu: onContextMenu || null,
+      className: className + ' ' + active,
+      to: to
+    },
+    children
+  );
+};
 
 /***/ }),
 
@@ -64376,6 +68994,18 @@ var ListItem = function (_React$Component) {
           'span',
           null,
           'Added',
+          ' ',
+          _react2.default.createElement(_Dater2.default, { type: 'ago', data: value }),
+          ' ',
+          'ago'
+        );
+      }
+      if (key_string === 'last_modified') {
+        return _react2.default.createElement(
+          'span',
+          null,
+          'Updated',
+          ' ',
           _react2.default.createElement(_Dater2.default, { type: 'ago', data: value }),
           ' ',
           'ago'
@@ -64898,7 +69528,7 @@ var Notifications = function (_React$Component) {
             default:
               return _react2.default.createElement(
                 'div',
-                { className: 'notification notification--' + notification.type + (notification.closing ? ' closing' : ''), key: notification.key, 'data-key': notification.key, 'data-duration': notification.duration },
+                { className: 'notification notification--' + notification.level + (notification.closing ? ' closing' : ''), key: notification.key, 'data-key': notification.key, 'data-duration': notification.duration },
                 _react2.default.createElement(_Icon2.default, { name: 'close', className: 'notification__close-button', onClick: function onClick(e) {
                     return _this3.props.uiActions.removeNotification(notification.key, true);
                   } }),
@@ -65282,6 +69912,10 @@ var _Icon = __webpack_require__(/*! ./Icon */ "./src/js/components/Icon.js");
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
+var _Stream = __webpack_require__(/*! ./Stream */ "./src/js/components/Stream.js");
+
+var _Stream2 = _interopRequireDefault(_Stream);
+
 var _helpers = __webpack_require__(/*! ../util/helpers */ "./src/js/util/helpers.js");
 
 var _actions = __webpack_require__(/*! ../services/ui/actions */ "./src/js/services/ui/actions.js");
@@ -65314,42 +69948,60 @@ var PlaybackControls = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (PlaybackControls.__proto__ || Object.getPrototypeOf(PlaybackControls)).call(this, props));
 
-    _this.componentDidUpdate = function (_ref) {
-      var prev_http_streaming_cachebuster = _ref.http_streaming_cachebuster,
-          prev_http_streaming_enabled = _ref.http_streaming_enabled,
-          prev_http_streaming_mute = _ref.http_streaming_mute,
-          prev_http_streaming_volume = _ref.http_streaming_volume;
-      var _this$props = _this.props,
-          http_streaming_cachebuster = _this$props.http_streaming_cachebuster,
-          http_streaming_enabled = _this$props.http_streaming_enabled,
-          http_streaming_mute = _this$props.http_streaming_mute,
-          http_streaming_volume = _this$props.http_streaming_volume;
+    _this.handleTouchStart = function (e) {
+      var touch_enabled = _this.props.touch_enabled;
 
-      // Cachebuster changed
-      // This happens when playback changes, so that the stream is "new", rather
-      // than the original stream. This prevents the browser cache from starting
-      // the stream right from the beginning (which could be hours of continuous playback).
+      if (!touch_enabled) return;
 
-      if (prev_http_streaming_cachebuster !== http_streaming_cachebuster) _this.playStream();
+      var timestamp = Math.floor(Date.now());
 
-      // Just been enabled
-      if (!prev_http_streaming_enabled && http_streaming_enabled) _this.playStream();
+      // Save touch start details
+      _this.start_time = timestamp;
+      _this.start_position = {
+        x: e.touches[0].clientX
+      };
 
-      if (_this.stream) {
-        if (http_streaming_mute !== prev_http_streaming_mute) {
-          _this.stream.muted = http_streaming_mute;
-        }
+      return false;
+    };
 
-        // Just had volume changed
-        if (http_streaming_volume !== prev_http_streaming_volume) {
-          _this.stream.volume = http_streaming_volume / 100;
-        }
+    _this.handleTouchEnd = function (e) {
+      var touch_enabled = _this.props.touch_enabled;
 
-        // Just been disabled
-        if (!http_streaming_enabled) {
-          _this.stream = null;
+      if (!touch_enabled) return;
+
+      var timestamp = Math.floor(Date.now());
+      var tap_distance_threshold = 10; // Max distance (px) between touchstart and touchend to qualify as a tap
+      var tap_time_threshold = 200; // Max time (ms) between touchstart and touchend to qualify as a tap
+      var end_position = {
+        x: e.changedTouches[0].clientX
+      };
+
+      // Too long between touchstart and touchend
+      if (_this.start_time + tap_time_threshold < timestamp) {
+        return false;
+      }
+
+      // Make sure there's enough distance between start and end before we handle
+      // this event as a 'tap'
+      if (_this.start_position.x + tap_distance_threshold > end_position.x && _this.start_position.x - tap_distance_threshold < end_position.x) {
+        // Scroll to top (without smooth_scroll)
+        (0, _helpers.scrollTo)(null, false);
+        _this.props.history.push('/queue');
+      } else {
+        // Swipe to the left = previous track
+        if (_this.start_position.x < end_position.x) {
+          _this.setTransition('previous');
+          _this.props.mopidyActions.previous();
+
+          // Swipe to the right = skip track
+        } else if (_this.start_position.x > end_position.x) {
+          _this.setTransition('next');
+          _this.props.mopidyActions.next();
         }
       }
+
+      _this.end_time = timestamp;
+      e.preventDefault();
     };
 
     _this.stream = null;
@@ -65363,96 +70015,11 @@ var PlaybackControls = function (_React$Component) {
   }
 
   _createClass(PlaybackControls, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      if (this.props.http_streaming_enabled) {
-        // Bust our cache, and by consequence, play our stream
-        this.props.coreActions.cachebustHttpStream();
-      }
-
-      if (this.props.current_track) {
-        this.setState({ current_track: this.props.current_track });
-      }
-    }
-  }, {
-    key: 'playStream',
-    value: function playStream() {
-      var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props;
-
-      if (!this.stream) {
-        this.stream = new Audio();
-      } else {
-        this.stream.src = null;
-      }
-
-      if (!props.http_streaming_enabled || !props.http_streaming_url) {
-        return false;
-      }
-
-      this.stream.src = props.http_streaming_url + '?cb=' + props.http_streaming_cachebuster;
-      this.stream.muted = props.http_streaming_mute;
-      this.stream.volume = props.http_streaming_volume / 100;
-      this.stream.play();
-
-      console.log('Playing stream: ' + this.stream.src);
-    }
-  }, {
-    key: 'handleTouchStart',
-    value: function handleTouchStart(e) {
-      var timestamp = Math.floor(Date.now());
-
-      // Save touch start details
-      this.start_time = timestamp;
-      this.start_position = {
-        x: e.touches[0].clientX
-      };
-
-      return false;
-    }
-  }, {
-    key: 'handleTouchEnd',
-    value: function handleTouchEnd(e) {
-      var timestamp = Math.floor(Date.now());
-      var tap_distance_threshold = 10; // Max distance (px) between touchstart and touchend to qualify as a tap
-      var tap_time_threshold = 200; // Max time (ms) between touchstart and touchend to qualify as a tap
-      var end_position = {
-        x: e.changedTouches[0].clientX
-      };
-
-      // Too long between touchstart and touchend
-      if (this.start_time + tap_time_threshold < timestamp) {
-        return false;
-      }
-
-      // Make sure there's enough distance between start and end before we handle
-      // this event as a 'tap'
-      if (this.start_position.x + tap_distance_threshold > end_position.x && this.start_position.x - tap_distance_threshold < end_position.x) {
-        // Scroll to top (without smooth_scroll)
-        (0, _helpers.scrollTo)(null, false);
-        this.props.history.push('/queue');
-      } else {
-        // Swipe to the left = previous track
-        if (this.start_position.x < end_position.x) {
-          this.setTransition('previous');
-          this.props.mopidyActions.previous();
-
-          // Swipe to the right = skip track
-        } else if (this.start_position.x > end_position.x) {
-          this.setTransition('next');
-          this.props.mopidyActions.next();
-        }
-      }
-
-      this.end_time = timestamp;
-      e.preventDefault();
-    }
-  }, {
     key: 'setTransition',
     value: function setTransition(direction) {
       var _this2 = this;
 
       this.setState({
-        current_track: null,
         transition_track: this.state.current_track,
         transition_direction: direction
       });
@@ -65461,8 +70028,7 @@ var PlaybackControls = function (_React$Component) {
       // the transitioning track from state
       setTimeout(function () {
         _this2.setState({
-          transition_track: null,
-          transition_direction: null
+          transition_track: null
         });
       }, 250);
     }
@@ -65599,71 +70165,100 @@ var PlaybackControls = function (_React$Component) {
           time_position = _props.time_position;
       var _state = this.state,
           current_track = _state.current_track,
-          expanded = _state.expanded;
+          expanded = _state.expanded,
+          transition_track = _state.transition_track,
+          transition_direction = _state.transition_direction;
 
-
-      var images = false;
-      if (current_track && current_track.images) {
-        images = current_track.images;
-      }
 
       return _react2.default.createElement(
         'div',
         { className: 'playback-controls' + (expanded ? ' playback-controls--expanded' : '') + (touch_enabled ? ' playback-controls--touch-enabled' : '') },
+        _react2.default.createElement('div', { className: 'playback-controls__background' }),
+        _react2.default.createElement(_Stream2.default, null),
         next_track && next_track.images ? _react2.default.createElement(_Thumbnail2.default, { className: 'hide', size: 'large', images: next_track.images }) : null,
-        this.state.transition_track && this.state.transition_direction ? _react2.default.createElement(
-          'div',
-          {
-            className: 'current-track current-track__transition current-track__transition--' + this.state.transition_direction
-          },
-          _react2.default.createElement(
-            'div',
-            { className: 'text' },
-            _react2.default.createElement(
-              'div',
-              { className: 'title' },
-              this.state.transition_track.name
-            ),
-            _react2.default.createElement(
-              'div',
-              { className: 'artist' },
-              _react2.default.createElement(_LinksSentence2.default, { items: this.state.transition_track.artists, nolinks: true })
-            )
-          )
-        ) : null,
         _react2.default.createElement(
           'div',
           {
-            className: this.state.transition_track && this.state.transition_direction ? 'current-track current-track--transitioning' : 'current-track',
-            onTouchStart: function onTouchStart(e) {
-              return touch_enabled && _this7.handleTouchStart(e);
-            },
-            onTouchEnd: function onTouchEnd(e) {
-              return touch_enabled && _this7.handleTouchEnd(e);
-            },
-            tabIndex: '-1'
+            className: 'current-track__wrapper',
+            transition: transition_track,
+            direction: transition_direction
           },
-          _react2.default.createElement(
-            _Link2.default,
-            { className: 'thumbnail-wrapper', to: '/kiosk-mode', tabIndex: '-1' },
-            _react2.default.createElement(_Thumbnail2.default, { size: 'small', images: images })
-          ),
-          _react2.default.createElement(
+          transition_track && transition_direction && _react2.default.createElement(
             'div',
-            { className: 'text' },
+            { className: 'current-track current-track__outgoing' },
             _react2.default.createElement(
               'div',
-              { className: 'title' },
-              current_track ? current_track.name : _react2.default.createElement(
-                'span',
-                null,
-                '-'
+              { className: 'text' },
+              _react2.default.createElement(
+                'div',
+                { className: 'title' },
+                transition_track.name
+              ),
+              _react2.default.createElement(
+                'div',
+                { className: 'artist' },
+                _react2.default.createElement(_LinksSentence2.default, { items: transition_track.artists, nolinks: true })
               )
+            )
+          ),
+          current_track && (!transition_track || transition_track.tlid !== current_track.tlid) ? _react2.default.createElement(
+            'div',
+            {
+              className: 'current-track current-track__incoming',
+              onTouchStart: this.handleTouchStart,
+              onTouchEnd: this.handleTouchEnd,
+              tabIndex: '-1',
+              key: current_track.tlid
+            },
+            _react2.default.createElement(
+              _Link2.default,
+              { className: 'thumbnail-wrapper', to: '/kiosk-mode', tabIndex: '-1' },
+              _react2.default.createElement(_Thumbnail2.default, { size: 'small', images: current_track.images, type: 'track' })
             ),
             _react2.default.createElement(
               'div',
-              { className: 'artist' },
-              current_track ? _react2.default.createElement(_LinksSentence2.default, { items: current_track.artists }) : _react2.default.createElement(_LinksSentence2.default, null)
+              { className: 'text' },
+              _react2.default.createElement(
+                'div',
+                { className: 'title' },
+                current_track ? current_track.name : _react2.default.createElement(
+                  'span',
+                  null,
+                  '-'
+                )
+              ),
+              _react2.default.createElement(
+                'div',
+                { className: 'artist' },
+                current_track ? _react2.default.createElement(_LinksSentence2.default, { items: current_track.artists }) : _react2.default.createElement(_LinksSentence2.default, null)
+              )
+            )
+          ) : _react2.default.createElement(
+            'div',
+            {
+              className: 'current-track',
+              onTouchStart: this.handleTouchStart,
+              onTouchEnd: this.handleTouchEnd,
+              tabIndex: '-1'
+            },
+            _react2.default.createElement(
+              _Link2.default,
+              { className: 'thumbnail-wrapper', to: '/kiosk-mode', tabIndex: '-1' },
+              _react2.default.createElement(_Thumbnail2.default, { size: 'small', type: 'track' })
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: 'text' },
+              _react2.default.createElement(
+                'div',
+                { className: 'title' },
+                '\xA0'
+              ),
+              _react2.default.createElement(
+                'div',
+                { className: 'artist' },
+                '\xA0'
+              )
             )
           )
         ),
@@ -65689,15 +70284,15 @@ var PlaybackControls = function (_React$Component) {
         _react2.default.createElement(
           'section',
           { className: 'progress' },
-          _react2.default.createElement(_ProgressSlider2.default, null),
           _react2.default.createElement(
-            'span',
-            { className: 'current' },
+            'div',
+            { className: 'time time--current' },
             time_position ? _react2.default.createElement(_Dater2.default, { type: 'length', data: time_position }) : '-'
           ),
+          _react2.default.createElement(_ProgressSlider2.default, null),
           _react2.default.createElement(
-            'span',
-            { className: 'total' },
+            'div',
+            { className: 'time time--total' },
             current_track ? _react2.default.createElement(_Dater2.default, { type: 'length', data: current_track.duration }) : '-'
           )
         ),
@@ -65749,8 +70344,8 @@ var PlaybackControls = function (_React$Component) {
     }
   }], [{
     key: 'getDerivedStateFromProps',
-    value: function getDerivedStateFromProps(_ref2, state) {
-      var current_track = _ref2.current_track;
+    value: function getDerivedStateFromProps(_ref, state) {
+      var current_track = _ref.current_track;
 
       return _extends({}, state, {
         current_track: current_track
@@ -65761,14 +70356,9 @@ var PlaybackControls = function (_React$Component) {
   return PlaybackControls;
 }(_react2.default.Component);
 
-var mapStateToProps = function mapStateToProps(state, ownProps) {
+var mapStateToProps = function mapStateToProps(state) {
   return {
     snapcast_enabled: state.pusher.config.snapcast_enabled,
-    http_streaming_enabled: state.core.http_streaming_enabled,
-    http_streaming_volume: state.core.http_streaming_volume >= 0 ? state.core.http_streaming_volume : 50,
-    http_streaming_mute: state.core.http_streaming_mute,
-    http_streaming_url: state.core.http_streaming_url ? state.core.http_streaming_url : null,
-    http_streaming_cachebuster: state.core.http_streaming_cachebuster,
     current_track: state.core.current_track && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null,
     next_track: state.core.next_track_uri && state.core.tracks[state.core.next_track_uri] !== undefined ? state.core.tracks[state.core.next_track_uri] : null,
     radio_enabled: !!(state.ui.radio && state.ui.radio.enabled),
@@ -66220,6 +70810,316 @@ exports.default = function (props) {
 
 /***/ }),
 
+/***/ "./src/js/components/Servers.js":
+/*!**************************************!*\
+  !*** ./src/js/components/Servers.js ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+
+var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
+
+var _Link = __webpack_require__(/*! ./Link */ "./src/js/components/Link.js");
+
+var _Link2 = _interopRequireDefault(_Link);
+
+var _Icon = __webpack_require__(/*! ./Icon */ "./src/js/components/Icon.js");
+
+var _Icon2 = _interopRequireDefault(_Icon);
+
+var _URILink = __webpack_require__(/*! ./URILink */ "./src/js/components/URILink.js");
+
+var _URILink2 = _interopRequireDefault(_URILink);
+
+var _TextField = __webpack_require__(/*! ./Fields/TextField */ "./src/js/components/Fields/TextField.js");
+
+var _TextField2 = _interopRequireDefault(_TextField);
+
+var _arrays = __webpack_require__(/*! ../util/arrays */ "./src/js/util/arrays.js");
+
+var _actions = __webpack_require__(/*! ../services/ui/actions */ "./src/js/services/ui/actions.js");
+
+var uiActions = _interopRequireWildcard(_actions);
+
+var _actions2 = __webpack_require__(/*! ../services/core/actions */ "./src/js/services/core/actions.js");
+
+var coreActions = _interopRequireWildcard(_actions2);
+
+var _actions3 = __webpack_require__(/*! ../services/mopidy/actions */ "./src/js/services/mopidy/actions.js");
+
+var mopidyActions = _interopRequireWildcard(_actions3);
+
+var _helpers = __webpack_require__(/*! ../util/helpers */ "./src/js/util/helpers.js");
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Servers = function Servers(_ref) {
+  var serverId = _ref.match.params.id,
+      history = _ref.history;
+
+  var store = (0, _reactRedux.useStore)();
+  var dispatch = (0, _reactRedux.useDispatch)();
+
+  var _store$getState = store.getState(),
+      _store$getState$mopid = _store$getState.mopidy,
+      servers = _store$getState$mopid.servers,
+      current_server = _store$getState$mopid.current_server,
+      ssl = _store$getState$mopid.ssl,
+      mopidyConnected = _store$getState$mopid.connected,
+      mopidyConnecting = _store$getState$mopid.connecting,
+      _store$getState$pushe = _store$getState.pusher,
+      pusherConnected = _store$getState$pushe.connected,
+      pusherConnecting = _store$getState$pushe.connecting;
+
+  var addServer = function addServer() {
+    var action = mopidyActions.addServer();
+    dispatch(action);
+    history.push('/settings/servers/' + action.server.id);
+  };
+
+  var renderMenu = function renderMenu() {
+    return _react2.default.createElement(
+      'div',
+      { className: 'sub-tabs__menu', id: 'servers-menu' },
+      _react2.default.createElement(
+        'div',
+        { className: 'menu__inner' },
+        (0, _arrays.indexToArray)(servers).map(function (server) {
+          var status = _react2.default.createElement(
+            'span',
+            { className: 'status mid_grey-text' },
+            'Inactive'
+          );
+          if (server.id === current_server) {
+            if (mopidyConnecting || pusherConnecting) {
+              status = _react2.default.createElement(
+                'span',
+                { className: 'status mid_grey-text' },
+                'Connecting'
+              );
+            } else if (!mopidyConnected || !pusherConnected) {
+              status = _react2.default.createElement(
+                'span',
+                { className: 'status red-text' },
+                'Disconnected'
+              );
+            } else if (mopidyConnected && pusherConnected) {
+              status = _react2.default.createElement(
+                'span',
+                { className: 'status green-text' },
+                'Connected'
+              );
+            }
+          }
+          return _react2.default.createElement(
+            _Link2.default,
+            {
+              history: history,
+              className: 'menu-item',
+              activeClassName: 'menu-item--active',
+              to: '/settings/servers/' + server.id,
+              scrollTo: '#servers-menu',
+              key: server.id
+            },
+            _react2.default.createElement(
+              'div',
+              { className: 'menu-item__inner' },
+              _react2.default.createElement(_Icon2.default, { className: 'menu-item__icon', name: (0, _helpers.iconFromKeyword)(server.name) || 'dns' }),
+              _react2.default.createElement(
+                'div',
+                { className: 'menu-item__title' },
+                server.name
+              ),
+              status
+            )
+          );
+        }),
+        _react2.default.createElement(
+          'span',
+          {
+            className: 'menu-item menu-item--add',
+            onClick: addServer
+          },
+          _react2.default.createElement(
+            'div',
+            { className: 'menu-item__inner' },
+            _react2.default.createElement(_Icon2.default, { className: 'menu-item__icon', name: 'add' }),
+            _react2.default.createElement(
+              'div',
+              { className: 'menu-item__title' },
+              'Add'
+            ),
+            _react2.default.createElement(
+              'span',
+              { className: 'status mid_grey-text' },
+              'New server'
+            )
+          )
+        )
+      )
+    );
+  };
+
+  var renderServer = function renderServer() {
+    if (!serverId) return null;
+    var server = servers[serverId];
+    if (!server) return null;
+
+    var remove = function remove() {
+      dispatch(mopidyActions.removeServer(server.id));
+    };
+
+    var setAsCurrent = function setAsCurrent() {
+      dispatch(mopidyActions.setCurrentServer(server));
+    };
+
+    return _react2.default.createElement(
+      'div',
+      { className: 'sub-tabs__content' },
+      _react2.default.createElement(
+        'label',
+        { className: 'field' },
+        _react2.default.createElement(
+          'div',
+          { className: 'name' },
+          'Name'
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'input' },
+          _react2.default.createElement(_TextField2.default, {
+            type: 'text',
+            value: server.name,
+            onChange: function onChange(value) {
+              return dispatch(mopidyActions.updateServer({ id: server.id, name: value }));
+            }
+          })
+        )
+      ),
+      _react2.default.createElement(
+        'label',
+        { className: 'field' },
+        _react2.default.createElement(
+          'div',
+          { className: 'name' },
+          'Host'
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'input' },
+          _react2.default.createElement(_TextField2.default, {
+            value: server.host,
+            onChange: function onChange(value) {
+              return dispatch(mopidyActions.updateServer({ id: server.id, host: value }));
+            }
+          })
+        )
+      ),
+      _react2.default.createElement(
+        'label',
+        { className: 'field' },
+        _react2.default.createElement(
+          'div',
+          { className: 'name' },
+          'Port'
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'input' },
+          _react2.default.createElement(_TextField2.default, {
+            type: 'text',
+            value: server.port,
+            onChange: function onChange(value) {
+              return dispatch(mopidyActions.updateServer({ id: server.id, port: value }));
+            }
+          })
+        )
+      ),
+      _react2.default.createElement(
+        'div',
+        { className: 'field checkbox' },
+        _react2.default.createElement(
+          'div',
+          { className: 'name' },
+          'Encryption'
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'input' },
+          _react2.default.createElement(
+            'label',
+            null,
+            _react2.default.createElement('input', {
+              type: 'checkbox',
+              name: 'ssl',
+              value: server.ssl,
+              checked: server.ssl,
+              onChange: function onChange() {
+                return dispatch(mopidyActions.updateServer({ id: server.id, ssl: !server.ssl }));
+              }
+            }),
+            _react2.default.createElement(
+              'span',
+              { className: 'label tooltip' },
+              'Use SSL',
+              _react2.default.createElement(
+                'span',
+                { className: 'tooltip__content' },
+                'Requires a SSL proxy'
+              )
+            )
+          )
+        )
+      ),
+      _react2.default.createElement(
+        'button',
+        {
+          type: 'button',
+          className: 'button button--primary',
+          onClick: setAsCurrent
+        },
+        'Switch to this server'
+      ),
+      _react2.default.createElement(
+        'button',
+        {
+          type: 'button',
+          className: 'button button--destructive',
+          disabled: server.id === current_server,
+          onClick: remove
+        },
+        'Remove'
+      )
+    );
+  };
+
+  return _react2.default.createElement(
+    'div',
+    { className: 'sub-tabs sub-tabs--servers' },
+    renderMenu(),
+    renderServer()
+  );
+};
+
+exports.default = Servers;
+
+/***/ }),
+
 /***/ "./src/js/components/Services.js":
 /*!***************************************!*\
   !*** ./src/js/components/Services.js ***!
@@ -66259,6 +71159,10 @@ var _Icon2 = _interopRequireDefault(_Icon);
 var _URILink = __webpack_require__(/*! ./URILink */ "./src/js/components/URILink.js");
 
 var _URILink2 = _interopRequireDefault(_URILink);
+
+var _TextField = __webpack_require__(/*! ./Fields/TextField */ "./src/js/components/Fields/TextField.js");
+
+var _TextField2 = _interopRequireDefault(_TextField);
 
 var _SpotifyAuthenticationFrame = __webpack_require__(/*! ./Fields/SpotifyAuthenticationFrame */ "./src/js/components/Fields/SpotifyAuthenticationFrame.js");
 
@@ -66421,16 +71325,9 @@ var Services = function (_React$Component) {
           _react2.default.createElement(
             'div',
             { className: 'input' },
-            _react2.default.createElement('input', {
-              type: 'text',
-              onChange: function onChange(e) {
-                return _this2.setState({ country: e.target.value });
-              },
-              onFocus: function onFocus(e) {
-                return _this2.setState({ input_in_focus: 'country' });
-              },
-              onBlur: function onBlur(e) {
-                return _this2.props.spotifyActions.set({ country: e.target.value });
+            _react2.default.createElement(_TextField2.default, {
+              onChange: function onChange(value) {
+                return _this2.props.spotifyActions.set({ country: value });
               },
               value: this.state.country
             }),
@@ -66768,13 +71665,13 @@ var Services = function (_React$Component) {
 
       return _react2.default.createElement(
         'div',
-        { className: 'menu', id: 'services-menu' },
+        { className: 'sub-tabs__menu menu', id: 'services-menu' },
         _react2.default.createElement(
           'div',
           { className: 'menu__inner' },
           _react2.default.createElement(
             _Link2.default,
-            { history: this.props.history, className: 'menu-item menu-item--spotify', activeClassName: 'menu-item--active', to: '/settings/spotify', scrollTo: '#services-menu' },
+            { history: this.props.history, className: 'menu-item menu-item--spotify', activeClassName: 'menu-item--active', to: '/settings/services/spotify', scrollTo: '#services-menu' },
             _react2.default.createElement(
               'div',
               { className: 'menu-item__inner' },
@@ -66797,7 +71694,7 @@ var Services = function (_React$Component) {
           ),
           _react2.default.createElement(
             _Link2.default,
-            { history: this.props.history, className: 'menu-item menu-item--lastfm', activeClassName: 'menu-item--active', to: '/settings/lastfm', scrollTo: '#services-menu' },
+            { history: this.props.history, className: 'menu-item menu-item--lastfm', activeClassName: 'menu-item--active', to: '/settings/services/lastfm', scrollTo: '#services-menu' },
             _react2.default.createElement(
               'div',
               { className: 'menu-item__inner' },
@@ -66820,7 +71717,7 @@ var Services = function (_React$Component) {
           ),
           _react2.default.createElement(
             _Link2.default,
-            { history: this.props.history, className: 'menu-item menu-item--genius', activeClassName: 'menu-item--active', to: '/settings/genius', scrollTo: '#services-menu' },
+            { history: this.props.history, className: 'menu-item menu-item--genius', activeClassName: 'menu-item--active', to: '/settings/services/genius', scrollTo: '#services-menu' },
             _react2.default.createElement(
               'div',
               { className: 'menu-item__inner' },
@@ -66843,7 +71740,7 @@ var Services = function (_React$Component) {
           ),
           _react2.default.createElement(
             _Link2.default,
-            { history: this.props.history, className: 'menu-item menu-item--snapcast', activeClassName: 'menu-item--active', to: '/settings/snapcast', scrollTo: '#services-menu' },
+            { history: this.props.history, className: 'menu-item menu-item--snapcast', activeClassName: 'menu-item--active', to: '/settings/services/snapcast', scrollTo: '#services-menu' },
             _react2.default.createElement(
               'div',
               { className: 'menu-item__inner' },
@@ -66872,7 +71769,7 @@ var Services = function (_React$Component) {
           ),
           _react2.default.createElement(
             _Link2.default,
-            { history: this.props.history, className: 'menu-item menu-item--icecast', activeClassName: 'menu-item--active', to: '/settings/icecast', scrollTo: '#services-menu' },
+            { history: this.props.history, className: 'menu-item menu-item--icecast', activeClassName: 'menu-item--active', to: '/settings/services/icecast', scrollTo: '#services-menu' },
             _react2.default.createElement(
               'div',
               { className: 'menu-item__inner' },
@@ -66905,31 +71802,31 @@ var Services = function (_React$Component) {
         case 'spotify':
           return _react2.default.createElement(
             'div',
-            { className: 'service' },
+            { className: 'sub-tabs__content' },
             this.renderSpotify()
           );
         case 'lastfm':
           return _react2.default.createElement(
             'div',
-            { className: 'service' },
+            { className: 'sub-tabs__content' },
             this.renderLastfm()
           );
         case 'genius':
           return _react2.default.createElement(
             'div',
-            { className: 'service' },
+            { className: 'sub-tabs__content' },
             this.renderGenius()
           );
         case 'icecast':
           return _react2.default.createElement(
             'div',
-            { className: 'service' },
+            { className: 'sub-tabs__content' },
             this.renderIcecast()
           );
         case 'snapcast':
           return _react2.default.createElement(
             'div',
-            { className: 'service' },
+            { className: 'sub-tabs__content' },
             _react2.default.createElement(_Snapcast2.default, { match: this.props.match })
           );
         default:
@@ -66941,7 +71838,7 @@ var Services = function (_React$Component) {
     value: function render() {
       return _react2.default.createElement(
         'div',
-        { className: 'services' },
+        { className: 'sub-tabs sub-tabs--services' },
         this.renderMenu(),
         this.renderService()
       );
@@ -67506,7 +72403,7 @@ var SnapcastClients = function SnapcastClients(_ref) {
     return _react2.default.createElement(
       'p',
       { className: 'no-results' },
-      'No clients'
+      'No connected clients'
     );
   }
 
@@ -67657,6 +72554,8 @@ var _format = __webpack_require__(/*! ../util/format */ "./src/js/util/format.js
 
 var _arrays = __webpack_require__(/*! ../util/arrays */ "./src/js/util/arrays.js");
 
+var _helpers = __webpack_require__(/*! ../util/helpers */ "./src/js/util/helpers.js");
+
 var _VolumeControl = __webpack_require__(/*! ./Fields/VolumeControl */ "./src/js/components/Fields/VolumeControl.js");
 
 var _VolumeControl2 = _interopRequireDefault(_VolumeControl);
@@ -67714,12 +72613,10 @@ var SnapcastGroups = function SnapcastGroups(props) {
     return null;
   }
 
-  var renderGroup = function renderGroup() {
-    if (!groupId || !groups[groupId]) {
-      return null;
-    }
+  var group = groupId && groups[groupId] ? (0, _format.collate)(groups[groupId], { clients: clients }) : null;
 
-    var group = (0, _format.collate)(groups[groupId], { clients: clients });
+  var renderGroup = function renderGroup() {
+    if (!group) return null;
 
     return _react2.default.createElement(
       'div',
@@ -67806,76 +72703,25 @@ var SnapcastGroups = function SnapcastGroups(props) {
     );
   };
 
-  var renderMenuItem = function renderMenuItem(group) {
-    var icon = function icon() {
-      var iconWords = [{ icon: 'business', words: ['office', 'work'] }, { icon: 'king_bed', words: ['bed'] }, { icon: 'tv', words: ['lounge', 'tv'] }, { icon: 'directions_car', words: ['garage', 'laundry'] }, { icon: 'fitness_center', words: ['gym'] }, { icon: 'emoji_food_beverage', words: ['kitchen'] }, { icon: 'deck', words: ['deck', 'outside'] }, { icon: 'restaurant_menu', words: ['dining', 'dinner'] }, { icon: 'laptop', words: ['laptop'] }, { icon: 'bug_report', words: ['test', 'debug'] }, { icon: 'child_care', words: ['kids', 'baby'] }];
-      var name = group.name.toLowerCase();
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
-
-      try {
-        for (var _iterator = iconWords[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var item = _step.value;
-          var _iteratorNormalCompletion2 = true;
-          var _didIteratorError2 = false;
-          var _iteratorError2 = undefined;
-
-          try {
-            for (var _iterator2 = item.words[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-              var word = _step2.value;
-
-              if (name.match(new RegExp('(' + word + ')', 'gi'))) {
-                return item.icon;
-              }
-            }
-          } catch (err) {
-            _didIteratorError2 = true;
-            _iteratorError2 = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                _iterator2.return();
-              }
-            } finally {
-              if (_didIteratorError2) {
-                throw _iteratorError2;
-              }
-            }
-          }
-        }
-      } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator.return) {
-            _iterator.return();
-          }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
-        }
-      }
-
-      ;
-      return 'speaker_group';
-    };
+  var renderMenuItem = function renderMenuItem(simpleGroup) {
+    var group = (0, _format.collate)(simpleGroup, { clients: clients });
+    var anyClients = !show_disconnected_clients && (!group.clients || !group.clients.length || !group.clients.filter(function (client) {
+      return client.connected;
+    }).length);
     return _react2.default.createElement(
       _Link2.default,
       {
-        className: 'snapcast__groups__menu-item menu-item',
+        className: 'snapcast__groups__menu-item menu-item' + (anyClients ? ' menu-item--no-clients' : ''),
         activeClassName: 'menu-item--active',
         key: group.id,
         history: history,
-        to: '/settings/snapcast/' + group.id,
+        to: '/settings/services/snapcast/' + group.id,
         scrollTo: '#services-snapcast-groups'
       },
       _react2.default.createElement(
         'div',
         { className: 'snapcast__groups__menu-item__inner menu-item__inner' },
-        _react2.default.createElement(_Icon2.default, { className: 'menu-item__icon', name: icon() }),
+        _react2.default.createElement(_Icon2.default, { className: 'menu-item__icon', name: (0, _helpers.iconFromKeyword)(group.name.toLowerCase()) || 'speaker_group' }),
         _react2.default.createElement(
           'div',
           { className: 'menu-item__title' },
@@ -67888,10 +72734,10 @@ var SnapcastGroups = function SnapcastGroups(props) {
 
   return _react2.default.createElement(
     'div',
-    { className: 'snapcast__groups', id: 'services-snapcast-groups' },
+    { className: 'sub-tabs snapcast__groups', id: 'services-snapcast-groups' },
     _react2.default.createElement(
       'div',
-      { className: 'snapcast__groups__menu menu' },
+      { className: 'sub-tabs__menu snapcast__groups__menu menu' },
       _react2.default.createElement(
         'div',
         { className: 'menu__inner' },
@@ -67920,6 +72766,139 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 };
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(SnapcastGroups);
+
+/***/ }),
+
+/***/ "./src/js/components/Stream.js":
+/*!*************************************!*\
+  !*** ./src/js/components/Stream.js ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactHowler = __webpack_require__(/*! react-howler */ "./node_modules/react-howler/lib/index.js");
+
+var _reactHowler2 = _interopRequireDefault(_reactHowler);
+
+var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+
+var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
+
+var _actions = __webpack_require__(/*! ../services/core/actions */ "./src/js/services/core/actions.js");
+
+var coreActions = _interopRequireWildcard(_actions);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Stream = function (_React$Component) {
+  _inherits(Stream, _React$Component);
+
+  function Stream(props) {
+    _classCallCheck(this, Stream);
+
+    var _this = _possibleConstructorReturn(this, (Stream.__proto__ || Object.getPrototypeOf(Stream)).call(this, props));
+
+    _this.render = function () {
+      var _this$props = _this.props,
+          play_state = _this$props.play_state,
+          enabled = _this$props.enabled,
+          volume = _this$props.volume,
+          url = _this$props.url,
+          _this$props$current_t = _this$props.current_track;
+      _this$props$current_t = _this$props$current_t === undefined ? {} : _this$props$current_t;
+      var uri = _this$props$current_t.uri;
+      var cachebuster = _this.state.cachebuster;
+
+
+      if (!uri || !enabled || !url) return null;
+
+      console.debug('Attempting to play stream ' + url + '?cb=' + cachebuster);
+
+      return _react2.default.createElement(_reactHowler2.default, {
+        src: url + '?cb=' + cachebuster,
+        playing: play_state === 'playing',
+        volume: volume / 100,
+        onPlay: function onPlay() {
+          return console.debug('Playing stream ' + url + '?cb=' + cachebuster);
+        },
+        onLoad: function onLoad() {
+          return console.debug('Loaded stream ' + url + '?cb=' + cachebuster);
+        },
+        onError: function onError() {
+          return console.error('Failed to play stream ' + url + '?cb=' + cachebuster);
+        }
+      });
+    };
+
+    _this.state = {
+      uri: '',
+      play_state: '',
+      cachebuster: ''
+    };
+    return _this;
+  }
+
+  _createClass(Stream, null, [{
+    key: 'getDerivedStateFromProps',
+    value: function getDerivedStateFromProps(_ref, state) {
+      var play_state = _ref.play_state,
+          _ref$current_track = _ref.current_track;
+      _ref$current_track = _ref$current_track === undefined ? {} : _ref$current_track;
+      var uri = _ref$current_track.uri;
+
+      if (uri && uri === state.uri && play_state === state.play_state) return null;
+      return _extends({}, state, {
+        uri: uri,
+        play_state: play_state,
+        cachebuster: '' + Date.now()
+      });
+    }
+  }]);
+
+  return Stream;
+}(_react2.default.Component);
+
+var mapStateToProps = function mapStateToProps(state) {
+  return {
+    current_track: state.core.current_track || {},
+    play_state: state.mopidy.play_state,
+    enabled: state.core.http_streaming_enabled,
+    volume: state.core.http_streaming_volume >= 0 ? state.core.http_streaming_volume : 50,
+    url: state.core.http_streaming_url ? state.core.http_streaming_url : null,
+    cachebuster: state.core.http_streaming_cachebuster
+  };
+};
+
+var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+  return {
+    coreActions: (0, _redux.bindActionCreators)(coreActions, dispatch)
+  };
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Stream);
 
 /***/ }),
 
@@ -67952,6 +72931,9 @@ var _Icon2 = _interopRequireDefault(_Icon);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = (0, _react.memo)(function (props) {
+  var _props$placeholder = props.placeholder,
+      placeholder = _props$placeholder === undefined ? true : _props$placeholder;
+
   var mapImageSizes = function mapImageSizes() {
     // Single image
     if (props.image) {
@@ -67985,32 +72967,56 @@ exports.default = (0, _react.memo)(function (props) {
 
   var image = mapImageSizes();
   var class_name = 'thumbnail thumbnail--loaded';
+  if (props.size) class_name += ' thumbnail--' + props.size;
+  if (props.circle) class_name += ' thumbnail--circle';
+  if (props.className) class_name += ' ' + props.className;
 
-  if (props.size) {
-    class_name += ' thumbnail--' + props.size;
-  }
-  if (props.circle) {
-    class_name += ' thumbnail--circle';
-  }
-  if (props.className) {
-    class_name += ' ' + props.className;
-  }
-
-  var zoom_icon = null;
-  if (props.canZoom && image) {
-    zoom_icon = _react2.default.createElement(
-      _Link2.default,
-      { className: 'thumbnail__zoom', to: '/image-zoom?url=' + image },
-      _react2.default.createElement(_Icon2.default, { name: 'search' })
-    );
-  }
+  var iconName = function iconName() {
+    switch (props.type) {
+      case 'directory':
+        return 'folder';
+      case 'artist':
+        return 'perm_identity';
+      case 'playlist':
+        return 'queue_music';
+      case 'album':
+        return 'album';
+      case 'track':
+        return 'audiotrack';
+      default:
+        return 'image';
+    }
+  };
 
   return _react2.default.createElement(
     'div',
     { className: class_name },
-    props.useImageTag ? _react2.default.createElement('img', { alt: 'Artwork thumbnail', className: 'thumbnail__image thumbnail__image--use-image-tag', src: '' + (image || '/iris/assets/no-image.svg') }) : _react2.default.createElement('div', { className: 'thumbnail__image', style: { backgroundImage: 'url("' + (image || '/iris/assets/no-image.svg') + '")' } }),
-    props.glow && image && _react2.default.createElement('div', { className: 'thumbnail__image thumbnail__image--glow', style: { backgroundImage: 'url("' + image + '")' } }),
-    zoom_icon
+    placeholder && _react2.default.createElement(_Icon2.default, { className: 'thumbnail__placeholder', name: iconName() }),
+    props.useImageTag && image ? _react2.default.createElement('img', {
+      alt: 'Artwork thumbnail',
+      className: 'thumbnail__image thumbnail__image--use-image-tag',
+      src: image
+    }) : _react2.default.createElement('div', {
+      className: 'thumbnail__image',
+      style: { backgroundImage: 'url("' + image + '")' }
+    }),
+    props.glow && image && _react2.default.createElement('div', {
+      className: 'thumbnail__image thumbnail__image--glow',
+      style: { backgroundImage: 'url("' + image + '")' }
+    }),
+    _react2.default.createElement(
+      'div',
+      { className: 'thumbnail__actions' },
+      props.canZoom && image && _react2.default.createElement(
+        _Link2.default,
+        {
+          className: 'thumbnail__actions__item thumbnail__actions__item--zoom',
+          to: '/image-zoom?url=' + image
+        },
+        _react2.default.createElement(_Icon2.default, { name: 'search' })
+      ),
+      props.children
+    )
   );
 });
 
@@ -68328,6 +73334,14 @@ var Track = function (_React$Component) {
                 'span',
                 null,
                 'Radio'
+              );
+              break;
+
+            case 'queue-history':
+              var link = _react2.default.createElement(
+                'span',
+                null,
+                'Queue history'
               );
               break;
 
@@ -69686,7 +74700,9 @@ var CoreMiddleware = function () {
      * */
   return function (store) {
     return function (next) {
-      return function (action) {
+      return function () {
+        var action = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
         var _store$getState = store.getState(),
             core = _store$getState.core;
 
@@ -72071,7 +77087,6 @@ function getAlbum(uri, artist, album) {
     sendRequest(dispatch, getState, params).then(function (response) {
       if (response.album) {
         var existing_album = getState().core.albums[uri];
-
         var _album = {
           uri: uri,
           images: response.album.image,
@@ -72141,8 +77156,7 @@ function getImages(context, uri) {
           if (params) {
             sendRequest(dispatch, getState, params).then(function (response) {
               if (response.album) {
-                record = _extends({}, record, { images: response.album.image });
-                dispatch(coreActions.albumLoaded(record));
+                dispatch(coreActions.albumLoaded({ uri: uri, images: response.album.image }));
               }
             });
           }
@@ -72255,9 +77269,16 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _reactGa = __webpack_require__(/*! react-ga */ "./node_modules/react-ga/dist/esm/index.js");
+
+var _reactGa2 = _interopRequireDefault(_reactGa);
+
 var _format = __webpack_require__(/*! ../../util/format */ "./src/js/util/format.js");
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 var coreActions = __webpack_require__(/*! ../core/actions */ "./src/js/services/core/actions.js");
+var uiActions = __webpack_require__(/*! ../ui/actions */ "./src/js/services/ui/actions.js");
 var lastfmActions = __webpack_require__(/*! ./actions */ "./src/js/services/lastfm/actions.js");
 
 var LastfmMiddleware = function () {
@@ -72282,6 +77303,25 @@ var LastfmMiddleware = function () {
             setTimeout(function () {
               store.dispatch(lastfmActions.getMe());
             }, 100);
+
+            next(action);
+            break;
+
+          case 'LASTFM_AUTHORIZATION_REVOKED':
+            if (store.getState().ui.allow_reporting) {
+              _reactGa2.default.event({ category: 'LastFM', action: 'Authorization revoked' });
+            }
+
+            store.dispatch(uiActions.createNotification({
+              content: 'Logout successful',
+              description: 'If you have shared your authorization, make sure you revoke your token',
+              sticky: true,
+              links: [{
+                url: 'https://www.last.fm/settings/applications',
+                text: 'Authorized apps',
+                new_window: true
+              }]
+            }));
 
             next(action);
             break;
@@ -72426,6 +77466,12 @@ var localstorageMiddleware = function () {
           case 'MOPIDY_URISCHEMES_FILTERED':
             _storage2.default.set('mopidy', {
               uri_schemes: action.data
+            });
+            break;
+
+          case 'MOPIDY_UPDATE_SERVERS':
+            _storage2.default.set('mopidy', {
+              servers: action.servers
             });
             break;
 
@@ -72625,6 +77671,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.set = set;
+exports.updateServer = updateServer;
+exports.updateServers = updateServers;
+exports.addServer = addServer;
+exports.setCurrentServer = setCurrentServer;
+exports.removeServer = removeServer;
 exports.setConnection = setConnection;
 exports.request = request;
 exports.connect = connect;
@@ -72673,6 +77724,7 @@ exports.enqueueURIsBatchDone = enqueueURIsBatchDone;
 exports.removeTracks = removeTracks;
 exports.reorderTracklist = reorderTracklist;
 exports.clearTracklist = clearTracklist;
+exports.shuffleTracklist = shuffleTracklist;
 exports.getImages = getImages;
 exports.createPlaylist = createPlaylist;
 exports.deletePlaylist = deletePlaylist;
@@ -72697,10 +77749,53 @@ exports.getQueueHistory = getQueueHistory;
 
 var _arrays = __webpack_require__(/*! ../../util/arrays */ "./src/js/util/arrays.js");
 
+var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
+
 function set(data) {
   return {
     type: 'MOPIDY_SET',
     data: data
+  };
+}
+
+function updateServer(server) {
+  return {
+    type: 'MOPIDY_UPDATE_SERVER',
+    server: server
+  };
+}
+
+function updateServers(servers) {
+  return {
+    type: 'MOPIDY_UPDATE_SERVERS',
+    servers: servers
+  };
+}
+
+function addServer() {
+  return {
+    type: 'MOPIDY_UPDATE_SERVER',
+    server: {
+      id: (0, _helpers.generateGuid)(),
+      name: 'New server',
+      host: window.location.hostname,
+      port: window.location.port ? window.location.port : window.location.protocol === 'https:' ? '443' : '80',
+      ssl: window.location.protocol === 'https:'
+    }
+  };
+}
+
+function setCurrentServer(server) {
+  return {
+    type: 'MOPIDY_SET_CURRENT_SERVER',
+    server: server
+  };
+}
+
+function removeServer(id) {
+  return {
+    type: 'MOPIDY_REMOVE_SERVER',
+    id: id
   };
 }
 
@@ -73066,6 +78161,12 @@ function reorderTracklist(indexes, insert_before) {
 function clearTracklist() {
   return {
     type: 'MOPIDY_CLEAR_TRACKLIST'
+  };
+}
+
+function shuffleTracklist() {
+  return {
+    type: 'MOPIDY_SHUFFLE_TRACKLIST'
   };
 }
 
@@ -73490,7 +78591,7 @@ var MopidyMiddleware = function () {
             var state = store.getState();
 
             socket = new _mopidy2.default({
-              webSocketUrl: 'ws' + (window.location.protocol === 'https:' ? 's' : '') + '://' + state.mopidy.host + ':' + state.mopidy.port + '/mopidy/ws/',
+              webSocketUrl: 'ws' + (state.mopidy.ssl ? 's' : '') + '://' + state.mopidy.host + ':' + state.mopidy.port + '/mopidy/ws/',
               callingConvention: 'by-position-or-by-name'
             });
 
@@ -73526,14 +78627,33 @@ var MopidyMiddleware = function () {
             });
             break;
 
-          case 'MOPIDY_SET_CONNECTION':
-            store.dispatch(mopidyActions.set(action.data));
+          case 'MOPIDY_UPDATE_SERVER':
+            var servers = store.getState().mopidy.servers;
+            servers[action.server.id] = _extends({}, servers[action.server.id], action.server);
+            store.dispatch(mopidyActions.updateServers(servers));
+            break;
 
-            // Wait 250 ms and then retry connection
+          case 'MOPIDY_SET_CURRENT_SERVER':
+            store.dispatch(mopidyActions.set({
+              current_server: action.server.id,
+              host: action.server.host,
+              port: action.server.port,
+              ssl: action.server.ssl,
+              connected: false,
+              connecting: false
+            }));
+
+            // Wait a moment for store to update, then attempt connection
             setTimeout(function () {
               store.dispatch(mopidyActions.connect());
               store.dispatch(pusherActions.connect());
             }, 250);
+            break;
+
+          case 'MOPIDY_REMOVE_SERVER':
+            var remaining_servers = store.getState().mopidy.servers;
+            delete remaining_servers[action.id];
+            store.dispatch(mopidyActions.updateServers(remaining_servers));
             break;
 
           case 'SET_WINDOW_FOCUS':
@@ -74077,7 +79197,7 @@ var MopidyMiddleware = function () {
           case 'MOPIDY_REORDER_TRACKLIST':
 
             // add our first track
-            request(socket, store, 'tracklist.move', { start: action.range_start, end: action.range_start + action.range_length, to_position: action.insert_before }).then(function (response) {
+            request(socket, store, 'tracklist.move', { start: action.range_start, end: action.range_start + action.range_length, to_position: action.insert_before }).then(function () {
               // TODO: when complete, send event to confirm success/failure
             }, function (error) {
               store.dispatch(coreActions.handleException('Mopidy: ' + (error.message ? error.message : 'Reorder failed'), error));
@@ -74085,21 +79205,31 @@ var MopidyMiddleware = function () {
             break;
 
           case 'MOPIDY_CLEAR_TRACKLIST':
-            request(socket, store, 'tracklist.clear').then(function (response) {
+            request(socket, store, 'tracklist.clear').then(function () {
               store.dispatch(coreActions.clearCurrentTrack());
 
               store.dispatch(pusherActions.deliverBroadcast('notification', {
                 notification: {
-                  content: store.getState().pusher.username + ' cleared queue'
+                  content: store.getState().pusher.username + ' cleared the playback queue'
+                }
+              }));
+            });
+            break;
+
+          case 'MOPIDY_SHUFFLE_TRACKLIST':
+            request(socket, store, 'tracklist.shuffle', { start: 1 }).then(function () {
+              store.dispatch(pusherActions.deliverBroadcast('notification', {
+                notification: {
+                  content: store.getState().pusher.username + ' shuffled the playback queue'
                 }
               }));
             });
             break;
 
           /**
-               * =============================================================== SEARCHING ============
-               * ======================================================================================
-               * */
+             * =============================================================== SEARCHING ============
+             * ======================================================================================
+             * */
 
           case 'MOPIDY_GET_SEARCH_RESULTS':
 
@@ -74956,7 +80086,8 @@ var MopidyMiddleware = function () {
                     source: 'local',
                     artists_uris: artists_uris,
                     tracks_uris: _tracks_uris2,
-                    tracks_total: _tracks_uris2.length
+                    tracks_total: _tracks_uris2.length,
+                    last_modified: _tracks3[0].last_modified
                   }, _tracks3[0].album);
 
                   albums_loaded.push(album);
@@ -75359,11 +80490,13 @@ var MopidyMiddleware = function () {
                   }
                 }
 
-                var action_data = {
-                  type: (action.context + '_LOADED').toUpperCase()
-                };
-                action_data[action.context] = records;
-                store.dispatch(action_data);
+                if (records.length) {
+                  var action_data = {
+                    type: (action.context + '_LOADED').toUpperCase()
+                  };
+                  action_data[action.context] = records;
+                  store.dispatch(action_data);
+                }
               });
             }
 
@@ -75518,6 +80651,9 @@ function reducer() {
   switch (action.type) {
     case 'MOPIDY_SET':
       return _extends({}, mopidy, action.data);
+
+    case 'MOPIDY_UPDATE_SERVERS':
+      return _extends({}, mopidy, { servers: action.servers });
 
     case 'MOPIDY_CONNECT':
     case 'MOPIDY_CONNECTING':
@@ -77160,6 +82296,9 @@ var SnapcastMiddleware = function () {
         case 'Server.OnUpdate':
           store.dispatch(snapcastActions.serverLoaded(message.param));
           break;
+
+        default:
+          break;
       }
     }
   };
@@ -78271,7 +83410,7 @@ function getCategory(id) {
         type: 'SPOTIFY_CATEGORY_LOADED',
         category: _extends({
           uri: 'category:' + response.id,
-          playlist_uris: []
+          playlist_uris: null
         }, response)
       });
     }, function (error) {
@@ -79662,6 +84801,7 @@ var _format = __webpack_require__(/*! ../../util/format */ "./src/js/util/format
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var coreActions = __webpack_require__(/*! ../core/actions */ "./src/js/services/core/actions.js");
+var uiActions = __webpack_require__(/*! ../ui/actions */ "./src/js/services/ui/actions.js");
 var spotifyActions = __webpack_require__(/*! ./actions */ "./src/js/services/spotify/actions.js");
 var pusherActions = __webpack_require__(/*! ../pusher/actions */ "./src/js/services/pusher/actions.js");
 
@@ -79688,6 +84828,17 @@ var SpotifyMiddleware = function () {
             if (store.getState().ui.allow_reporting) {
               _reactGa2.default.event({ category: 'Spotify', action: 'Authorization revoked' });
             }
+
+            store.dispatch(uiActions.createNotification({
+              content: 'Logout successful',
+              description: 'If you have shared your authorization, make sure you revoke your token',
+              sticky: true,
+              links: [{
+                url: 'https://www.spotify.com/nz/account/apps/',
+                text: 'Authorized apps',
+                new_window: true
+              }]
+            }));
 
             next(action);
 
@@ -80359,7 +85510,7 @@ function reducer() {
       var categories = _extends({}, spotify.categories);
       var playlists_uris = [];
 
-      if (categories[action.uri].playlists_uris) {
+      if (categories[action.uri] && categories[action.uri].playlists_uris) {
         playlists_uris = categories[action.uri].playlists_uris;
       }
 
@@ -81534,6 +86685,16 @@ var state = {
     host: window.location.hostname,
     port: window.location.port ? window.location.port : window.location.protocol === 'https:' ? '443' : '80',
     ssl: window.location.protocol === 'https:',
+    current_server: 'default',
+    servers: {
+      default: {
+        id: 'default',
+        name: 'Default',
+        host: window.location.hostname,
+        port: window.location.port ? window.location.port : window.location.protocol === 'https:' ? '443' : '80',
+        ssl: window.location.protocol === 'https:'
+      }
+    },
     mute: false,
     volume: 0,
     progress: 0,
@@ -82381,7 +87542,7 @@ var formatUsers = function formatUsers() {
  * */
 var formatAlbum = function formatAlbum(data) {
   var album = {};
-  var fields = ['uri', 'provider', 'name', 'type', 'added_at', 'release_date', 'listeners', 'play_count', 'wiki', 'wiki_publish_date', 'popularity', 'images', 'artists_uris', 'tracks_uris', 'tracks_total', 'tracks_more', 'artists'];
+  var fields = ['uri', 'provider', 'name', 'type', 'last_modified', 'added_at', 'release_date', 'listeners', 'play_count', 'wiki', 'wiki_publish_date', 'popularity', 'images', 'artists_uris', 'tracks_uris', 'tracks_total', 'tracks_more', 'artists'];
 
   // Loop fields and import from data
   var _iteratorNormalCompletion7 = true;
@@ -82415,6 +87576,11 @@ var formatAlbum = function formatAlbum(data) {
     album.images = formatImages(album.images);
   }
 
+  if (data.last_modified && album.added_at === undefined) {
+    album.added_at = data.last_modified;
+  } else if (data.added_at && album.last_modified === undefined) {
+    album.last_modified = data.added_at;
+  }
   if (data.date && !album.date) {
     album.release_date = data.date;
   }
@@ -82501,7 +87667,7 @@ var formatArtist = function formatArtist(data) {
  * */
 var formatPlaylist = function formatPlaylist(data) {
   var playlist = {};
-  var fields = ['uri', 'snapshot_id', 'provider', 'type', 'collaborative', 'public', 'name', 'description', 'images', 'popularity', 'followers', 'added_at', 'last_modified_date', 'can_edit', 'owner', 'user_uri', 'tracks_uris', 'tracks_total', 'tracks_more'];
+  var fields = ['uri', 'snapshot_id', 'provider', 'type', 'collaborative', 'public', 'name', 'description', 'images', 'popularity', 'followers', 'last_modified', 'can_edit', 'owner', 'user_uri', 'tracks_uris', 'tracks_total', 'tracks_more'];
 
   // Loop fields and import from data
   var _iteratorNormalCompletion9 = true;
@@ -82535,12 +87701,22 @@ var formatPlaylist = function formatPlaylist(data) {
     playlist.images = formatImages(playlist.images);
   }
 
+  if (data.last_modified_date && playlist.last_modified === undefined) {
+    playlist.last_modified = data.last_modified_date;
+  }
+
   if (data.followers && data.followers.total !== undefined) {
     playlist.followers = data.followers.total;
   }
 
   if (data.tracks && data.tracks.total !== undefined) {
     playlist.tracks_total = data.tracks.total;
+  }
+
+  if (playlist.last_modified && playlist.added_at === undefined) {
+    playlist.added_at = data.last_modified;
+  } else if (playlist.added_at && playlist.last_modified === undefined) {
+    playlist.last_modified = data.added_at;
   }
 
   if (data.owner) {
@@ -82635,7 +87811,7 @@ var formatUser = function formatUser(data) {
  * */
 var formatTrack = function formatTrack(data) {
   var track = {};
-  var fields = ['uri', 'tlid', 'provider', 'name', 'images', 'release_date', 'disc_number', 'track_number', 'duration', 'followers', 'popularity', 'userloved', 'is_explicit', 'is_local', 'lyrics', 'lyrics_path', 'lyrics_results', 'artists', // Array of simple records
+  var fields = ['uri', 'tlid', 'provider', 'name', 'images', 'release_date', 'disc_number', 'track_number', 'duration', 'followers', 'popularity', 'userloved', 'last_modified', 'added_at', 'is_explicit', 'is_local', 'lyrics', 'lyrics_path', 'lyrics_results', 'artists', // Array of simple records
   'album'];
 
   // Nested track object (eg in spotify playlist)
@@ -82685,6 +87861,12 @@ var formatTrack = function formatTrack(data) {
 
   if (data.followers && data.followers.total) {
     track.followers = data.followers.total;
+  }
+
+  if (track.last_modified && track.added_at === undefined) {
+    track.added_at = track.last_modified;
+  } else if (track.added_at && track.last_modified === undefined) {
+    track.last_modified = track.added_at;
   }
 
   if (track.duration === undefined && data.duration_ms !== undefined) {
@@ -83600,6 +88782,63 @@ var titleCase = function titleCase(string) {
 };
 
 /**
+ * Use a keyword to return an icon name
+ */
+var iconFromKeyword = function iconFromKeyword(name) {
+  var iconWords = [{ icon: 'business', words: ['office', 'work'] }, { icon: 'king_bed', words: ['bed'] }, { icon: 'weekend', words: ['lounge', 'tv', 'sitting room'] }, { icon: 'directions_car', words: ['garage', 'basement'] }, { icon: 'local_laundry_service', words: ['laundry'] }, { icon: 'fitness_center', words: ['gym'] }, { icon: 'kitchen', words: ['kitchen'] }, { icon: 'deck', words: ['deck', 'outside'] }, { icon: 'restaurant_menu', words: ['dining', 'dinner'] }, { icon: 'laptop', words: ['laptop'] }, { icon: 'bug_report', words: ['test', 'debug'] }, { icon: 'child_care', words: ['kids', 'baby'] }, { icon: 'smartphone', words: ['phone', 'mobile'] }];
+  var _iteratorNormalCompletion2 = true;
+  var _didIteratorError2 = false;
+  var _iteratorError2 = undefined;
+
+  try {
+    for (var _iterator2 = iconWords[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+      var item = _step2.value;
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
+
+      try {
+        for (var _iterator3 = item.words[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var word = _step3.value;
+
+          if (name.match(new RegExp('(' + word + ')', 'gi'))) {
+            return item.icon;
+          }
+        }
+      } catch (err) {
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion3 && _iterator3.return) {
+            _iterator3.return();
+          }
+        } finally {
+          if (_didIteratorError3) {
+            throw _iteratorError3;
+          }
+        }
+      }
+    }
+  } catch (err) {
+    _didIteratorError2 = true;
+    _iteratorError2 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion2 && _iterator2.return) {
+        _iterator2.return();
+      }
+    } finally {
+      if (_didIteratorError2) {
+        throw _iteratorError2;
+      }
+    }
+  }
+
+  ;
+};
+
+/**
  * Scroll to the top of the page
  * Our 'content' is housed in the <main> DOM element
  * We make sure the target supports scrolling before we attempt it
@@ -83664,13 +88903,13 @@ var scrollTo = function scrollTo() {
 var upgradeSpotifyPlaylistUris = function upgradeSpotifyPlaylistUris(uris) {
   var upgraded = [];
 
-  var _iteratorNormalCompletion2 = true;
-  var _didIteratorError2 = false;
-  var _iteratorError2 = undefined;
+  var _iteratorNormalCompletion4 = true;
+  var _didIteratorError4 = false;
+  var _iteratorError4 = undefined;
 
   try {
-    for (var _iterator2 = uris[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-      var uri = _step2.value;
+    for (var _iterator4 = uris[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+      var uri = _step4.value;
 
       if (uri.includes('spotify:user:')) {
         uri = uri.replace(/spotify:user:([^:]*?):/i, 'spotify:');
@@ -83678,16 +88917,16 @@ var upgradeSpotifyPlaylistUris = function upgradeSpotifyPlaylistUris(uris) {
       upgraded.push(uri);
     }
   } catch (err) {
-    _didIteratorError2 = true;
-    _iteratorError2 = err;
+    _didIteratorError4 = true;
+    _iteratorError4 = err;
   } finally {
     try {
-      if (!_iteratorNormalCompletion2 && _iterator2.return) {
-        _iterator2.return();
+      if (!_iteratorNormalCompletion4 && _iterator4.return) {
+        _iterator4.return();
       }
     } finally {
-      if (_didIteratorError2) {
-        throw _iteratorError2;
+      if (_didIteratorError4) {
+        throw _iteratorError4;
       }
     }
   }
@@ -83721,6 +88960,7 @@ exports.titleCase = titleCase;
 exports.scrollTo = scrollTo;
 exports.upgradeSpotifyPlaylistUris = upgradeSpotifyPlaylistUris;
 exports.upgradeSpotifyPlaylistUri = upgradeSpotifyPlaylistUri;
+exports.iconFromKeyword = iconFromKeyword;
 exports.default = {
   debounce: debounce,
   throttle: throttle,
@@ -83742,7 +88982,8 @@ exports.default = {
   titleCase: titleCase,
   scrollTo: scrollTo,
   upgradeSpotifyPlaylistUris: upgradeSpotifyPlaylistUris,
-  upgradeSpotifyPlaylistUri: upgradeSpotifyPlaylistUri
+  upgradeSpotifyPlaylistUri: upgradeSpotifyPlaylistUri,
+  iconFromKeyword: iconFromKeyword
 };
 
 /***/ }),
@@ -84158,11 +89399,10 @@ var Album = exports.Album = function (_React$Component) {
       return _react2.default.createElement(
         'div',
         { className: 'view album-view content-wrapper preserve-3d' },
-        _react2.default.createElement(_Parallax2.default, { image: album.images && album.images.huge, blur: true }),
         _react2.default.createElement(
           'div',
           { className: 'thumbnail-wrapper' },
-          _react2.default.createElement(_Thumbnail2.default, { size: 'large', glow: true, canZoom: true, images: album.images })
+          _react2.default.createElement(_Thumbnail2.default, { size: 'large', glow: true, canZoom: true, images: album.images, type: 'album' })
         ),
         _react2.default.createElement(
           'div',
@@ -84911,7 +90151,7 @@ var Artist = function (_React$Component) {
               _react2.default.createElement(
                 'div',
                 { className: 'heading__thumbnail' },
-                _react2.default.createElement(_Thumbnail2.default, { size: 'medium', circle: true, canZoom: true, image: image })
+                _react2.default.createElement(_Thumbnail2.default, { size: 'medium', circle: true, canZoom: true, type: 'artist', image: image })
               ),
               _react2.default.createElement(
                 'div',
@@ -86034,11 +91274,10 @@ var Playlist = function (_React$Component) {
       return _react2.default.createElement(
         'div',
         { className: 'view playlist-view content-wrapper preserve-3d' },
-        _react2.default.createElement(_Parallax2.default, { image: playlist.images ? playlist.images.huge : null, blur: true }),
         _react2.default.createElement(
           'div',
           { className: 'thumbnail-wrapper' },
-          _react2.default.createElement(_Thumbnail2.default, { size: 'large', glow: true, canZoom: true, images: playlist.images })
+          _react2.default.createElement(_Thumbnail2.default, { size: 'large', glow: true, canZoom: true, images: playlist.images, type: 'playlist' })
         ),
         _react2.default.createElement(
           'div',
@@ -86415,26 +91654,32 @@ var Queue = function (_React$Component) {
     value: function renderArtwork(image) {
       var current_track = this.props.current_track;
 
+      var uri = current_track && current_track.album && current_track.album.uri ? current_track.album.uri : null;
 
       if (!image) {
         return _react2.default.createElement(
           'div',
           { className: 'current-track__artwork' },
-          _react2.default.createElement(_Thumbnail2.default, { glow: true })
+          _react2.default.createElement(_Thumbnail2.default, { glow: true, type: 'track' })
         );
       }
 
-      var uri = null;
-      if (current_track.album && current_track.album.uri) {
-        uri = current_track.album.uri;
-      }
       return _react2.default.createElement(
         'div',
         { className: 'current-track__artwork' },
         _react2.default.createElement(
-          _Link2.default,
-          { to: '/kiosk-mode' },
-          _react2.default.createElement(_Thumbnail2.default, { glow: true, image: image })
+          _Thumbnail2.default,
+          { glow: true, image: image, type: 'track' },
+          _react2.default.createElement(
+            _URILink2.default,
+            { uri: uri, className: 'thumbnail__actions__item' },
+            _react2.default.createElement(_Icon2.default, { name: 'art_track' })
+          ),
+          _react2.default.createElement(
+            _Link2.default,
+            { to: '/kiosk-mode', className: 'thumbnail__actions__item' },
+            _react2.default.createElement(_Icon2.default, { name: 'expand', type: 'fontawesome' })
+          )
         )
       );
     }
@@ -86513,7 +91758,8 @@ var Queue = function (_React$Component) {
           _react2.default.createElement(_Thumbnail2.default, {
             images: items[0].images,
             size: 'small',
-            circle: (0, _helpers.uriType)(items[0].uri) === 'artist'
+            circle: (0, _helpers.uriType)(items[0].uri) === 'artist',
+            type: 'artist'
           })
         ),
         _react2.default.createElement(
@@ -86536,7 +91782,8 @@ var Queue = function (_React$Component) {
 
       var _props3 = this.props,
           current_track = _props3.current_track,
-          queue_tracks = _props3.queue_tracks;
+          queue_tracks = _props3.queue_tracks,
+          theme = _props3.theme;
       var limit = this.state.limit;
 
       var total_queue_tracks = queue_tracks.length;
@@ -86581,7 +91828,7 @@ var Queue = function (_React$Component) {
           _react2.default.createElement(_Icon2.default, { name: 'play_arrow', type: 'material' }),
           'Now playing'
         ),
-        _react2.default.createElement(_Parallax2.default, { image: current_track_image, blur: true }),
+        theme === 'dark' && _react2.default.createElement(_Parallax2.default, { image: current_track_image, blur: true }),
         _react2.default.createElement(
           'div',
           { className: 'content-wrapper' },
@@ -86631,11 +91878,19 @@ var Queue = function (_React$Component) {
                     null,
                     _react2.default.createElement(
                       'a',
-                      { onClick: function onClick(e) {
-                          return _this2.props.mopidyActions.clearTracklist();
-                        } },
+                      { onClick: this.props.mopidyActions.shuffleTracklist },
+                      _react2.default.createElement(_Icon2.default, { name: 'shuffle' }),
+                      'Shuffle'
+                    )
+                  ),
+                  queue_tracks.length > 0 && _react2.default.createElement(
+                    'li',
+                    null,
+                    _react2.default.createElement(
+                      'a',
+                      { onClick: this.props.mopidyActions.clearTracklist },
                       _react2.default.createElement(_Icon2.default, { name: 'delete_sweep' }),
-                      'Clear queue'
+                      'Clear'
                     )
                   )
                 )
@@ -86646,6 +91901,7 @@ var Queue = function (_React$Component) {
             'section',
             { className: 'list-wrapper' },
             _react2.default.createElement(_TrackList2.default, {
+              uri: 'iris:queue',
               show_source_icon: true,
               track_context: 'queue',
               className: 'queue-track-list',
@@ -86903,6 +92159,7 @@ var QueueHistory = function (_React$Component) {
           'section',
           { className: 'content-wrapper' },
           _react2.default.createElement(_TrackList2.default, {
+            uri: 'iris:queue-history',
             className: 'queue-history-track-list',
             track_context: 'history',
             tracks: tracks,
@@ -87685,6 +92942,10 @@ var _Services = __webpack_require__(/*! ../components/Services */ "./src/js/comp
 
 var _Services2 = _interopRequireDefault(_Services);
 
+var _Servers = __webpack_require__(/*! ../components/Servers */ "./src/js/components/Servers.js");
+
+var _Servers2 = _interopRequireDefault(_Servers);
+
 var _actions = __webpack_require__(/*! ../services/core/actions */ "./src/js/services/core/actions.js");
 
 var coreActions = _interopRequireWildcard(_actions);
@@ -87850,52 +93111,18 @@ var Settings = function (_React$Component) {
       }
     }
   }, {
-    key: 'renderServerStatus',
-    value: function renderServerStatus() {
-      var _props = this.props,
-          mopidy = _props.mopidy,
-          pusher = _props.pusher;
-
-      var colour = 'grey';
-      var icon = 'help';
-      var status = 'Unknown';
-      var className = null;
-
-      if (mopidy.connecting || pusher.connecting) {
-        icon = 'autorenew';
-        status = 'Connecting...';
-        className = 'icon--spin';
-      } else if (!mopidy.connected || !pusher.connected) {
-        colour = 'red';
-        icon = 'close';
-        status = 'Disconnected';
-      } else if (mopidy.connected && pusher.connected) {
-        colour = 'green';
-        icon = 'check';
-        status = 'Connected';
-      }
-
-      return _react2.default.createElement(
-        'span',
-        { className: colour + '-text' },
-        _react2.default.createElement(_Icon2.default, { className: className, name: icon }),
-        ' ',
-        status
-      );
-    }
-  }, {
     key: 'render',
     value: function render() {
       var _this2 = this;
 
-      var _props2 = this.props,
-          mopidyActions = _props2.mopidyActions,
-          mopidy = _props2.mopidy,
-          pusherActions = _props2.pusherActions,
-          pusher = _props2.pusher,
-          history = _props2.history,
-          uiActions = _props2.uiActions,
-          ui = _props2.ui;
+      var _props = this.props,
+          mopidyActions = _props.mopidyActions,
+          mopidy = _props.mopidy,
+          pusherActions = _props.pusherActions,
+          pusher = _props.pusher,
+          history = _props.history,
+          uiActions = _props.uiActions,
+          ui = _props.ui;
 
 
       var options = _react2.default.createElement(
@@ -87936,24 +93163,6 @@ var Settings = function (_React$Component) {
             _react2.default.createElement('a', { name: 'server' })
           ),
           _react2.default.createElement(
-            'div',
-            { className: 'field' },
-            _react2.default.createElement(
-              'div',
-              { className: 'name' },
-              'Status'
-            ),
-            _react2.default.createElement(
-              'div',
-              { className: 'input' },
-              _react2.default.createElement(
-                'div',
-                { className: 'text' },
-                this.renderServerStatus()
-              )
-            )
-          ),
-          _react2.default.createElement(
             'label',
             { className: 'field' },
             _react2.default.createElement(
@@ -87977,58 +93186,14 @@ var Settings = function (_React$Component) {
               )
             )
           ),
-          _react2.default.createElement(
-            'form',
-            { onSubmit: function onSubmit(e) {
-                return _this2.setConfig(e);
-              } },
-            _react2.default.createElement(
-              'label',
-              { className: 'field' },
-              _react2.default.createElement(
-                'div',
-                { className: 'name' },
-                'Host'
-              ),
-              _react2.default.createElement(
-                'div',
-                { className: 'input' },
-                _react2.default.createElement(_TextField2.default, {
-                  value: mopidy.host,
-                  onChange: function onChange(value) {
-                    return mopidyActions.setConnection({ host: value });
-                  }
-                })
-              )
-            ),
-            _react2.default.createElement(
-              'label',
-              { className: 'field' },
-              _react2.default.createElement(
-                'div',
-                { className: 'name' },
-                'Port'
-              ),
-              _react2.default.createElement(
-                'div',
-                { className: 'input' },
-                _react2.default.createElement(_TextField2.default, {
-                  type: 'text',
-                  value: mopidy.port,
-                  onChange: function onChange(value) {
-                    return mopidyActions.setConnection({ port: value });
-                  }
-                })
-              )
-            )
-          ),
+          _react2.default.createElement(_reactRouterDom.Route, { path: '/settings/:server?/:id?', component: _Servers2.default }),
           _react2.default.createElement(
             'h4',
             { className: 'underline' },
             'Services',
             _react2.default.createElement('a', { name: 'services' })
           ),
-          _react2.default.createElement(_reactRouterDom.Route, { path: '/settings/:service?/:id?', component: _Services2.default }),
+          _react2.default.createElement(_reactRouterDom.Route, { path: '/settings/:services?/:service?/:id?', component: _Services2.default }),
           _react2.default.createElement(
             'h4',
             { className: 'underline' },
@@ -88378,7 +93543,12 @@ var Settings = function (_React$Component) {
                 'span',
                 { className: 'text' },
                 this.props.pusher.version.current,
-                ' installed',
+                ' ',
+                _react2.default.createElement(
+                  'span',
+                  { className: 'mid_grey-text' },
+                  build
+                ),
                 this.props.pusher.version.upgrade_available ? _react2.default.createElement(
                   'span',
                   { className: 'flag flag--dark' },
@@ -88484,12 +93654,6 @@ var Settings = function (_React$Component) {
               _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'github' }),
               ' ',
               'GitHub'
-            ),
-            _react2.default.createElement(
-              'a',
-              { className: 'button button--default', href: 'http://creativecommons.org/licenses/by-nc/4.0/', target: '_blank' },
-              _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'creative-commons' }),
-              '\xA0Licence'
             )
           )
         )
@@ -88846,7 +94010,7 @@ var Track = function (_React$Component) {
         _react2.default.createElement(
           'div',
           { className: 'thumbnail-wrapper' },
-          _react2.default.createElement(_Thumbnail2.default, { size: 'large', canZoom: true, images: track.images })
+          _react2.default.createElement(_Thumbnail2.default, { size: 'large', canZoom: true, images: track.images, type: 'album' })
         ),
         _react2.default.createElement(
           'div',
@@ -89223,7 +94387,7 @@ var User = function (_React$Component) {
               _react2.default.createElement(
                 'div',
                 { className: 'heading__thumbnail' },
-                _react2.default.createElement(_Thumbnail2.default, { size: 'medium', circle: true, canZoom: true, image: image })
+                _react2.default.createElement(_Thumbnail2.default, { size: 'medium', circle: true, canZoom: true, image: image, type: 'user' })
               ),
               _react2.default.createElement(
                 'div',
@@ -89758,28 +94922,9 @@ var DiscoverFeatured = function (_React$Component) {
   _inherits(DiscoverFeatured, _React$Component);
 
   function DiscoverFeatured() {
-    var _ref;
-
-    var _temp, _this, _ret;
-
     _classCallCheck(this, DiscoverFeatured);
 
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = DiscoverFeatured.__proto__ || Object.getPrototypeOf(DiscoverFeatured)).call.apply(_ref, [this].concat(args))), _this), _this.renderIntro = function () {
-      var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-          _ref2$images = _ref2.images;
-
-      _ref2$images = _ref2$images === undefined ? {} : _ref2$images;
-      var large = _ref2$images.large;
-      return _react2.default.createElement(
-        'div',
-        { className: 'intro preserve-3d' },
-        _react2.default.createElement(_Parallax2.default, { image: large, blur: true })
-      );
-    }, _temp), _possibleConstructorReturn(_this, _ret);
+    return _possibleConstructorReturn(this, (DiscoverFeatured.__proto__ || Object.getPrototypeOf(DiscoverFeatured)).apply(this, arguments));
   }
 
   _createClass(DiscoverFeatured, [{
@@ -89836,9 +94981,6 @@ var DiscoverFeatured = function (_React$Component) {
         }
       }
 
-      // Pull the first playlist out and we'll use this for the parallax artwork
-      var first_playlist = playlists[0];
-
       var options = _react2.default.createElement(
         'a',
         { className: 'button button--no-hover', onClick: function onClick(e) {
@@ -89853,11 +94995,10 @@ var DiscoverFeatured = function (_React$Component) {
         { className: 'view discover-featured-view preserve-3d' },
         _react2.default.createElement(
           _Header2.default,
-          { className: 'overlay', options: options },
+          { options: options },
           _react2.default.createElement(_Icon2.default, { name: 'star', type: 'material' }),
           'Featured playlists'
         ),
-        this.renderIntro(first_playlist),
         _react2.default.createElement(
           'section',
           { className: 'content-wrapper grid-wrapper' },
@@ -90075,12 +95216,6 @@ var DiscoverNewReleases = function (_React$Component) {
         }
       }
 
-      // Pull the first playlist out and we'll use this as a banner
-      var first_album = albums[0];
-      if (first_album) {
-        first_album = (0, _format.collate)(first_album, { artists: this.props.artists });
-      }
-
       var options = _react2.default.createElement(
         'a',
         { className: 'button button--no-hover', onClick: function onClick(e) {
@@ -90095,11 +95230,10 @@ var DiscoverNewReleases = function (_React$Component) {
         { className: 'view discover-new-releases-view preserve-3d' },
         _react2.default.createElement(
           _Header2.default,
-          { className: 'overlay', options: options, uiActions: this.props.uiActions },
+          { options: options, uiActions: this.props.uiActions },
           _react2.default.createElement(_Icon2.default, { name: 'new_releases', type: 'material' }),
           'New releases'
         ),
-        this.renderIntro(first_album),
         _react2.default.createElement(
           'section',
           { className: 'content-wrapper grid-wrapper' },
@@ -91002,7 +96136,7 @@ var LibraryAlbums = function (_React$Component) {
         }
       }
 
-      if (google_enabled && (newProps.source == 'all' || newProps.source == 'google')) {
+      if (google_enabled && (source == 'all' || source == 'google')) {
         // Filter changed, but we haven't got this provider's library yet
         if (source !== 'all' && source !== 'google' && google_library_albums_status !== 'finished' && google_library_albums_status !== 'started') {
           googleActions.getLibraryAlbums();
@@ -91245,7 +96379,7 @@ var LibraryAlbums = function (_React$Component) {
             },
             rows: albums,
             thumbnail: true,
-            details: ['artists', 'tracks_uris.length'],
+            details: ['artists', 'tracks_uris.length', 'last_modified'],
             right_column: ['added_at'],
             className: 'albums',
             link_prefix: '/album/'
@@ -91322,8 +96456,8 @@ var LibraryAlbums = function (_React$Component) {
         value: 'artists.first.name',
         label: 'Artist'
       }, {
-        value: 'added_at',
-        label: 'Added'
+        value: 'last_modified',
+        label: 'Updated'
       }, {
         value: 'tracks_uris.length',
         label: 'Tracks'
@@ -92075,6 +97209,16 @@ var LibraryBrowse = function (_React$Component) {
                 subdirectory.icons = ['/iris/assets/backgrounds/browse-somafm.jpg'];
                 break;
 
+              case 'Tidal':
+                subdirectory.icons = ['/iris/assets/backgrounds/browse-tidal.jpg'];
+                break;
+
+              case 'Google':
+              case 'Google Play':
+              case 'Google Play Music':
+                subdirectory.icons = ['/iris/assets/backgrounds/browse-google.jpg'];
+                break;
+
               default:
                 subdirectory.icons = ['/iris/assets/backgrounds/browse-default.jpg'];
             }
@@ -92218,6 +97362,10 @@ var _ErrorBoundary = __webpack_require__(/*! ../../components/ErrorBoundary */ "
 
 var _ErrorBoundary2 = _interopRequireDefault(_ErrorBoundary);
 
+var _LazyLoadListener = __webpack_require__(/*! ../../components/LazyLoadListener */ "./src/js/components/LazyLoadListener.js");
+
+var _LazyLoadListener2 = _interopRequireDefault(_LazyLoadListener);
+
 var _actions = __webpack_require__(/*! ../../services/ui/actions */ "./src/js/services/ui/actions.js");
 
 var uiActions = _interopRequireWildcard(_actions);
@@ -92249,20 +97397,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var LibraryBrowseDirectory = function (_React$Component) {
   _inherits(LibraryBrowseDirectory, _React$Component);
 
-  function LibraryBrowseDirectory() {
-    var _ref;
-
-    var _temp, _this, _ret;
-
+  function LibraryBrowseDirectory(props) {
     _classCallCheck(this, LibraryBrowseDirectory);
 
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
+    var _this = _possibleConstructorReturn(this, (LibraryBrowseDirectory.__proto__ || Object.getPrototypeOf(LibraryBrowseDirectory)).call(this, props));
 
-    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = LibraryBrowseDirectory.__proto__ || Object.getPrototypeOf(LibraryBrowseDirectory)).call.apply(_ref, [this].concat(args))), _this), _this.componentDidUpdate = function (_ref2) {
-      var prev_mopidy_connected = _ref2.mopidy_connected,
-          prevUri = _ref2.uri;
+    _this.componentDidUpdate = function (_ref) {
+      var prev_mopidy_connected = _ref.mopidy_connected,
+          prevUri = _ref.uri;
       var _this$props = _this.props,
           uri = _this$props.uri,
           mopidy_connected = _this$props.mopidy_connected;
@@ -92270,12 +97412,27 @@ var LibraryBrowseDirectory = function (_React$Component) {
 
       if (!prev_mopidy_connected && mopidy_connected) _this.loadDirectory();
       if (uri && uri !== prevUri) _this.loadDirectory();
-    }, _temp), _possibleConstructorReturn(_this, _ret);
+    };
+
+    _this.state = {
+      filter: '',
+      limit: 50,
+      per_page: 50
+    };
+    return _this;
   }
 
   _createClass(LibraryBrowseDirectory, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
+      // Restore any limit defined in our location state
+      var state = this.props.location.state ? this.props.location.state : {};
+      if (state.limit) {
+        this.setState({
+          limit: state.limit
+        });
+      }
+
       this.props.uiActions.setWindowTitle('Browse');
       this.loadDirectory();
     }
@@ -92291,6 +97448,18 @@ var LibraryBrowseDirectory = function (_React$Component) {
         }
         this.props.mopidyActions.getDirectory(uri);
       }
+    }
+  }, {
+    key: 'loadMore',
+    value: function loadMore() {
+      var new_limit = this.state.limit + this.state.per_page;
+
+      this.setState({ limit: new_limit });
+
+      // Set our pagination to location state
+      var state = this.props.location && this.props.location.state ? this.props.location.state : {};
+      state.limit = new_limit;
+      this.props.history.replace({ state: state });
     }
   }, {
     key: 'playAll',
@@ -92347,7 +97516,7 @@ var LibraryBrowseDirectory = function (_React$Component) {
   }, {
     key: 'renderSubdirectories',
     value: function renderSubdirectories(subdirectories) {
-      if (this.props.view == 'list') {
+      if (this.props.view === 'list') {
         return _react2.default.createElement(_List2.default, _defineProperty({
           nocontext: true,
           rows: subdirectories,
@@ -92361,7 +97530,7 @@ var LibraryBrowseDirectory = function (_React$Component) {
         subdirectories.map(function (subdirectory) {
           return _react2.default.createElement(_GridItem2.default, {
             key: subdirectory.uri,
-            type: 'browse',
+            type: 'directory',
             link: '/library/browse/' + encodeURIComponent(subdirectory.uri),
             item: subdirectory,
             nocontext: true
@@ -92390,11 +97559,19 @@ var LibraryBrowseDirectory = function (_React$Component) {
         );
       }
 
-      var tracks = this.props.directory.tracks && this.props.directory.tracks.length > 0 ? this.props.directory.tracks : null;
-      tracks = (0, _arrays.sortItems)(tracks, 'name');
-
       var subdirectories = this.props.directory.subdirectories && this.props.directory.subdirectories.length > 0 ? this.props.directory.subdirectories : null;
       subdirectories = (0, _arrays.sortItems)(subdirectories, 'name');
+
+      var total_items = (tracks ? tracks.length : 0) + (subdirectories ? subdirectories.length : 0);
+      subdirectories = subdirectories.slice(0, this.state.limit);
+      var all_tracks = null;
+      var tracks = null;
+      var limit_remaining = this.state.limit - subdirectories;
+      if (limit_remaining > 0) {
+        all_tracks = this.props.directory.tracks && this.props.directory.tracks.length > 0 ? this.props.directory.tracks : null;
+        all_tracks = (0, _arrays.sortItems)(all_tracks, 'name');
+        tracks = all_tracks.slice(0, limit_remaining);
+      }
 
       var view_options = [{
         label: 'Thumbnails',
@@ -92420,7 +97597,7 @@ var LibraryBrowseDirectory = function (_React$Component) {
         tracks && _react2.default.createElement(
           'a',
           { className: 'button button--no-hover', onClick: function onClick(e) {
-              _this2.props.uiActions.hideContextMenu();_this2.playAll(e, tracks);
+              _this2.props.uiActions.hideContextMenu();_this2.playAll(e, all_tracks);
             } },
           _react2.default.createElement(_Icon2.default, { name: 'play_circle_filled' }),
           'Play all'
@@ -92453,9 +97630,16 @@ var LibraryBrowseDirectory = function (_React$Component) {
             this.renderBreadcrumbs(),
             subdirectories ? this.renderSubdirectories(subdirectories) : null,
             tracks && _react2.default.createElement(_TrackList2.default, {
-              tracks: this.props.directory.tracks,
+              tracks: tracks,
               uri: 'iris:browse:' + this.props.uri,
               className: 'library-local-track-list'
+            }),
+            _react2.default.createElement(_LazyLoadListener2.default, {
+              loadKey: total_items > this.state.limit ? this.state.limit : total_items,
+              showLoader: this.state.limit < total_items,
+              loadMore: function loadMore() {
+                return _this2.loadMore();
+              }
             })
           )
         )
@@ -92733,7 +97917,7 @@ var LibraryPlaylists = function (_React$Component) {
             },
             rows: playlists,
             thumbnail: true,
-            details: ['owner', 'tracks_total'],
+            details: ['owner', 'tracks_total', 'last_modified'],
             right_column: ['source'],
             className: 'playlists',
             link_prefix: '/playlist/'
@@ -92799,6 +97983,9 @@ var LibraryPlaylists = function (_React$Component) {
       }, {
         value: 'name',
         label: 'Name'
+      }, {
+        value: 'last_modified',
+        label: 'Updated'
       }, {
         value: 'can_edit',
         label: 'Editable'
@@ -95665,8 +100852,13 @@ var KioskMode = function (_React$Component) {
 
       var extraControls = _react2.default.createElement(
         'div',
-        { className: 'control', onClick: this.toggleLyrics, style: show_lyrics ? { opacity: 1 } : {} },
-        _react2.default.createElement(_Icon2.default, { name: 'queue_music', className: show_lyrics ? 'turquoise-text' : null })
+        { className: 'control', onClick: this.toggleLyrics },
+        show_lyrics ? _react2.default.createElement(_Icon2.default, { name: 'toggle_on', className: 'turquoise-text' }) : _react2.default.createElement(_Icon2.default, { name: 'toggle_off' }),
+        _react2.default.createElement(
+          'div',
+          { style: { paddingLeft: '6px', fontWeight: 'bold' } },
+          'Lyrics'
+        )
       );
 
       return _react2.default.createElement(
@@ -95675,7 +100867,7 @@ var KioskMode = function (_React$Component) {
           className: 'modal--kiosk-mode',
           extraControls: extraControls
         },
-        _react2.default.createElement(_Thumbnail2.default, { className: 'background', images: images }),
+        _react2.default.createElement(_Thumbnail2.default, { className: 'background', images: images, placeholder: false }),
         _react2.default.createElement(
           'div',
           { className: 'player player--' + (show_lyrics ? 'with' : 'without') + '-lyrics' },
@@ -95834,14 +101026,14 @@ var Modal = function (_React$Component) {
         _react2.default.createElement(
           'div',
           { className: 'controls' },
+          extraControls,
           !noclose && _react2.default.createElement(
             'div',
             { className: 'control close', onClick: function onClick(e) {
                 return window.history.back();
               } },
             _react2.default.createElement(_Icon2.default, { name: 'close', className: 'white' })
-          ),
-          extraControls
+          )
         ),
         _react2.default.createElement(
           'div',

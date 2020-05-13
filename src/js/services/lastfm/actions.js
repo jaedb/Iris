@@ -264,8 +264,7 @@ export function getAlbum(uri, artist, album, mbid = false) {
         (response) => {
           if (response.album) {
             const existing_album = getState().core.albums[uri];
-
-                    	const album = {
+            const album = {
               uri,
               images: response.album.image,
               listeners: parseInt(response.album.listeners),
@@ -342,8 +341,7 @@ export function getImages(context, uri) {
               .then(
                 (response) => {
                   if (response.album) {
-                    record = { ...record, images: response.album.image };
-                    dispatch(coreActions.albumLoaded(record));
+                    dispatch(coreActions.albumLoaded({ uri, images: response.album.image }));
                   }
                 },
               );

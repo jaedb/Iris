@@ -236,6 +236,10 @@ export default class Track extends React.Component {
             var link = <span>Radio</span>;
             break;
 
+          case 'queue-history':
+            var link = <span>Queue history</span>;
+            break;
+
           default:
             var link = <URILink type={type} uri={track.added_from}>{titleCase(type)}</URILink>;
         }

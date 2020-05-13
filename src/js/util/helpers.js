@@ -410,6 +410,33 @@ const titleCase = function (string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 };
 
+/**
+ * Use a keyword to return an icon name
+ */
+const iconFromKeyword = (name) => {
+  const iconWords = [
+    { icon: 'business', words: ['office', 'work'] },
+    { icon: 'king_bed', words: ['bed'] },
+    { icon: 'weekend', words: ['lounge', 'tv', 'sitting room'] },
+    { icon: 'directions_car', words: ['garage', 'basement'] },
+    { icon: 'local_laundry_service', words: ['laundry'] },
+    { icon: 'fitness_center', words: ['gym'] },
+    { icon: 'kitchen', words: ['kitchen'] },
+    { icon: 'deck', words: ['deck', 'outside'] },
+    { icon: 'restaurant_menu', words: ['dining', 'dinner'] },
+    { icon: 'laptop', words: ['laptop'] },
+    { icon: 'bug_report', words: ['test', 'debug'] },
+    { icon: 'child_care', words: ['kids', 'baby'] },
+    { icon: 'smartphone', words: ['phone', 'mobile'] },
+  ];
+  for (let item of iconWords) {
+    for (let word of item.words) {
+      if (name.match(new RegExp(`(${word})`, 'gi'))) {
+        return item.icon;
+      }
+    }
+  };
+}
 
 /**
  * Scroll to the top of the page
@@ -512,6 +539,7 @@ export {
   scrollTo,
   upgradeSpotifyPlaylistUris,
   upgradeSpotifyPlaylistUri,
+  iconFromKeyword,
 };
 
 export default {
@@ -536,4 +564,5 @@ export default {
   scrollTo,
   upgradeSpotifyPlaylistUris,
   upgradeSpotifyPlaylistUri,
+  iconFromKeyword,
 };

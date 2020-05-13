@@ -90,20 +90,25 @@ export default memo((props) => {
     case 'ago':
       var date = new Date(props.data);
       var diff = new Date() - date;
-
       var seconds = Math.floor(diff / 1000);
       var minutes = Math.floor(diff / (1000 * 60));
       var hours = Math.floor(diff / (1000 * 60 * 60));
       var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      var weeks = Math.floor(diff / (1000 * 60 * 60 * 24 * 7));
+      var years = Math.floor(diff / (1000 * 60 * 60 * 24 * 7 * 52));
 
       if (seconds < 60) {
-        return `${seconds} seconds`;
+        return `${seconds} second${seconds > 1 ? 's' : ''}`;
       } if (minutes < 60) {
-        return `${minutes} minutes`;
+        return `${minutes} minute${minutes > 1 ? 's' : ''}`;
       } if (hours < 24) {
-        return `${hours} hours`;
+        return `${hours} hour${hours > 1 ? 's' : ''}`;
+      } if (days < 7) {
+        return `${days} day${days > 1 ? 's' : ''}`;
+      } if (weeks < 54) {
+        return `${weeks} week${weeks > 1 ? 's' : ''}`;
       }
-      return `${days} days`;
+      return `${years} year${years > 1 ? 's' : ''}`;
     default:
       return null;
   }

@@ -22,11 +22,13 @@
     top: 10px;
     right: 10px;
     z-index: 99;
+    display: flex;
 
     .control {
+      @include noselect();
       @include animate();
-      display: block;
-      float: right;
+      display: flex;
+      align-items: center;
       opacity: 0.5;
       cursor: pointer;
       padding: 20px;
@@ -308,24 +310,6 @@
             align-items: center;
             display: flex;
             flex-flow: column;
-            .icon {
-              @include animate();
-              display: inline-block;
-              position: absolute;
-              color: colour(darkest_grey);
-              font-size: 20rem;
-              top: 25%;
-              left: 0;
-              right: 0;
-              text-align: center;
-              opacity: 0;
-              z-index: 2;
-            }
-            &:hover {
-              .icon {
-                opacity: 0.75;
-              }
-            }
           }
 
           &__info {
@@ -349,6 +333,10 @@
               color: white;
               font-size: 2.4rem;
               margin: 0 10px;
+
+              .light-theme & {
+                color: colour(darkest_grey);
+              }
             }
           }
           &__progress {

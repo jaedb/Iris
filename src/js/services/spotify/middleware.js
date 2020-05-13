@@ -10,6 +10,7 @@ import {
   formatUser,
 } from '../../util/format';
 const coreActions = require('../core/actions');
+const uiActions = require('../ui/actions');
 const spotifyActions = require('./actions');
 const pusherActions = require('../pusher/actions');
 
@@ -31,8 +32,21 @@ const SpotifyMiddleware = (function () {
 
       case 'SPOTIFY_AUTHORIZATION_REVOKED':
         if (store.getState().ui.allow_reporting) {
-	                ReactGA.event({ category: 'Spotify', action: 'Authorization revoked' });
-	            }
+          ReactGA.event({ category: 'Spotify', action: 'Authorization revoked' });
+        }
+
+        store.dispatch(uiActions.createNotification({
+          content: 'Logout successful',
+          description: 'If you have shared your authorization, make sure you revoke your token',
+          sticky: true,
+          links: [
+            {
+              url: 'https://www.spotify.com/nz/account/apps/',
+              text: 'Authorized apps',
+              new_window: true,
+            },
+          ],
+        }));
 
         next(action);
 

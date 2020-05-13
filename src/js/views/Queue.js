@@ -121,24 +121,26 @@ class Queue extends React.Component {
 
   renderArtwork(image) {
     const { current_track } = this.props;
+    const uri = (current_track && current_track.album && current_track.album.uri) ? current_track.album.uri : null;
 
     if (!image) {
       return (
         <div className="current-track__artwork">
-          <Thumbnail glow />
+          <Thumbnail glow type="track" />
         </div>
       );
     }
 
-    let uri = null;
-    if (current_track.album && current_track.album.uri) {
-      uri = current_track.album.uri;
-    }
     return (
       <div className="current-track__artwork">
-        <Link to="/kiosk-mode" >
-          <Thumbnail glow image={image} />
-        </Link>
+        <Thumbnail glow image={image} type="track">
+          <URILink uri={uri} className="thumbnail__actions__item">
+            <Icon name="art_track" />
+          </URILink>
+          <Link to="/kiosk-mode" className="thumbnail__actions__item">
+            <Icon name="expand" type="fontawesome" />
+          </Link>
+        </Thumbnail>
       </div>
     );
   }
@@ -192,6 +194,7 @@ class Queue extends React.Component {
               images={items[0].images}
               size="small"
               circle={uriType(items[0].uri) === 'artist'}
+              type="artist"
             />
           </URILink>
         )}
@@ -205,7 +208,7 @@ class Queue extends React.Component {
   }
 
   render() {
-    const { current_track, queue_tracks } = this.props;
+    const { current_track, queue_tracks, theme } = this.props;
     const { limit } = this.state;
     const total_queue_tracks = queue_tracks.length;
     const tracks = queue_tracks.slice(0, limit);
@@ -242,7 +245,7 @@ class Queue extends React.Component {
           <Icon name="play_arrow" type="material" />
           Now playing
         </Header>
-        <Parallax image={current_track_image} blur />
+        {theme === 'dark' && <Parallax image={current_track_image} blur />}
         <div className="content-wrapper">
           <div className="current-track">
             {this.renderArtwork(current_track_image)}
@@ -274,9 +277,17 @@ class Queue extends React.Component {
                   <li><Dater type="total-time" data={queue_tracks} /></li>
                   {queue_tracks.length > 0 && (
                     <li>
-                      <a onClick={e => this.props.mopidyActions.clearTracklist()}>
+                      <a onClick={this.props.mopidyActions.shuffleTracklist}>
+                        <Icon name="shuffle" />
+                        Shuffle
+                      </a>
+                    </li>
+                  )}
+                  {queue_tracks.length > 0 && (
+                    <li>
+                      <a onClick={this.props.mopidyActions.clearTracklist}>
                         <Icon name="delete_sweep" />
-                        Clear queue
+                        Clear
                       </a>
                     </li>
                   )}
@@ -287,6 +298,7 @@ class Queue extends React.Component {
 
           <section className="list-wrapper">
             <TrackList
+              uri="iris:queue"
               show_source_icon
               track_context="queue"
               className="queue-track-list"

@@ -63,7 +63,7 @@ class Playlist extends React.Component {
         push,
       },
     } = this.props;
-  
+
     if (prevPlaylist && playlist && prevPlaylist.moved_to !== playlist.moved_to) {
       push(`/playlist/${encodeURIComponent(playlist.moved_to)}`);
     }
@@ -219,10 +219,8 @@ Could not find playlist with URI "
     return (
       <div className="view playlist-view content-wrapper preserve-3d">
 
-        <Parallax image={playlist.images ? playlist.images.huge : null} blur />
-
         <div className="thumbnail-wrapper">
-          <Thumbnail size="large" glow canZoom images={playlist.images} />
+          <Thumbnail size="large" glow canZoom images={playlist.images} type="playlist" />
         </div>
 
         <div className="title">
