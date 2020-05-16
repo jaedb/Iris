@@ -483,10 +483,10 @@ const SnapcastMiddleware = (function () {
 
         request(store, 'Group.SetClients', params)
           .then(
-            response => {
+            (response) => {
               store.dispatch(snapcastActions.groupsLoaded(response.server.groups, true));
             },
-            error => {
+            (error) => {
               store.dispatch(coreActions.handleException(
                 'Error',
                 error,
@@ -497,19 +497,19 @@ const SnapcastMiddleware = (function () {
         break;
 
       case 'SNAPCAST_DELETE_CLIENT':
-        var params = {
+        const params = {
           id: action.id,
         };
 
         request(store, 'Server.DeleteClient', params)
           .then(
-            response => {
+            () => {
               store.dispatch({
                 type: 'SNAPCAST_CLIENT_REMOVED',
                 key: action.data.params.id,
               });
             },
-            error => {
+            (error) => {
               store.dispatch(coreActions.handleException(
                 'Error',
                 error,

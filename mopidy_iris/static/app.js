@@ -78691,7 +78691,8 @@ function groupsLoaded(groups) {
 
   return {
     type: 'SNAPCAST_GROUPS_LOADED',
-    groups: groups
+    groups: groups,
+    flush: flush
   };
 }
 

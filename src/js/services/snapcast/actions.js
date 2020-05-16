@@ -177,6 +177,7 @@ export function groupsLoaded(groups, flush = false) {
   return {
     type: 'SNAPCAST_GROUPS_LOADED',
     groups,
+    flush,
   };
 }
 
