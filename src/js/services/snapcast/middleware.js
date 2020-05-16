@@ -306,7 +306,6 @@ const SnapcastMiddleware = (function () {
           if (raw_group.clients) {
             group.clients_ids = arrayOf('id', raw_group.clients);
             clients_loaded = [...clients_loaded, ...raw_group.clients];
-            store.dispatch(snapcastActions.calculateGroupVolume(group.id, raw_group.clients));
           }
 
           // Create a name (display only) based on it's ID
@@ -324,18 +323,6 @@ const SnapcastMiddleware = (function () {
         }
 
         next(action);
-        break;
-
-      case 'SNAPCAST_CALCULATE_GROUP_VOLUME':
-        const totalVolume = action.clients.reduce((accumulator, client) =>
-          accumulator += formatClient(client).volume,
-          0,
-        );
-
-        store.dispatch(snapcastActions.groupLoaded({
-          id: action.id,
-          volume: totalVolume / action.clients.length,
-        }));
         break;
 
       case 'SNAPCAST_CLIENTS_LOADED':

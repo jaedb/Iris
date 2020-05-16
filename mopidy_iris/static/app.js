@@ -63075,13 +63075,6 @@ var OutputControl = function (_React$Component) {
   }
 
   _createClass(OutputControl, [{
-    key: 'handleClick',
-    value: function handleClick(e) {
-      if (!this.props.force_expanded && $(e.target).closest('.output-control').length <= 0) {
-        this.setExpanded(false);
-      }
-    }
-  }, {
     key: 'setExpanded',
     value: function setExpanded() {
       var expanded = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : !this.state.expanded;
@@ -63103,13 +63096,21 @@ var OutputControl = function (_React$Component) {
       }
     }
   }, {
+    key: 'handleClick',
+    value: function handleClick(e) {
+      if (!this.props.force_expanded && $(e.target).closest('.output-control').length <= 0) {
+        this.setExpanded(false);
+      }
+    }
+  }, {
     key: 'snapcastGroups',
     value: function snapcastGroups() {
       var _props = this.props,
           snapcast_streams = _props.snapcast_streams,
           snapcastActions = _props.snapcastActions,
           snapcast_groups = _props.snapcast_groups,
-          clients = _props.snapcast_clients;
+          clients = _props.snapcast_clients,
+          show_disconnected_clients = _props.show_disconnected_clients;
 
 
       var groups = (0, _arrays.indexToArray)(snapcast_groups);
@@ -63124,11 +63125,19 @@ var OutputControl = function (_React$Component) {
         null,
         groups.map(function (simpleGroup) {
           var group = (0, _format.collate)(simpleGroup, { clients: clients });
-          if (!group.clients || !group.clients.length || !group.clients.filter(function (client) {
-            return client.connected;
-          }).length) {
-            return null;
+          var _group$clients = group.clients,
+              groupClients = _group$clients === undefined ? [] : _group$clients;
+
+          if (!show_disconnected_clients) {
+            groupClients = (0, _arrays.applyFilter)('connected', true, groupClients);
           }
+
+          if (!groupClients.length) return null;
+
+          var volume = groupClients.reduce(function (acc, client) {
+            return acc + (client.volume || 0);
+          }, 0) / groupClients.length;
+
           return _react2.default.createElement(
             'div',
             { className: 'output-control__item outputs__item--snapcast', key: group.id },
@@ -63160,7 +63169,7 @@ var OutputControl = function (_React$Component) {
               }),
               _react2.default.createElement(_VolumeControl2.default, {
                 className: 'output-control__item__volume',
-                volume: group.volume,
+                volume: volume,
                 mute: group.mute,
                 onVolumeChange: function onVolumeChange(percent, previousPercent) {
                   return snapcastActions.setGroupVolume(group.id, percent, previousPercent);
@@ -68847,8 +68856,6 @@ var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
-var _arrays = __webpack_require__(/*! ../util/arrays */ "./src/js/util/arrays.js");
-
 var _VolumeControl = __webpack_require__(/*! ./Fields/VolumeControl */ "./src/js/components/Fields/VolumeControl.js");
 
 var _VolumeControl2 = _interopRequireDefault(_VolumeControl);
@@ -68876,14 +68883,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 var SnapcastClients = function SnapcastClients(_ref) {
   var actions = _ref.actions,
       group = _ref.group,
-      groups = _ref.groups,
-      show_disconnected_clients = _ref.show_disconnected_clients;
-
-  if (!show_disconnected_clients && group.clients) {
-    var clients = (0, _arrays.applyFilter)('connected', true, group.clients);
-  } else {
-    var clients = group.clients;
-  }
+      clients = _ref.clients,
+      groups = _ref.groups;
 
   if (!clients || clients.length <= 0) {
     return _react2.default.createElement(
@@ -69107,6 +69108,20 @@ var SnapcastGroups = function SnapcastGroups(props) {
   var renderGroup = function renderGroup() {
     if (!group) return null;
 
+    var _group$clients = group.clients,
+        groupClients = _group$clients === undefined ? [] : _group$clients;
+
+    if (!show_disconnected_clients) {
+      groupClients = (0, _arrays.applyFilter)('connected', true, groupClients);
+    }
+
+    var volume = 0;
+    if (groupClients.length) {
+      volume = groupClients.reduce(function (acc, client) {
+        return acc + (client.volume || 0);
+      }, 0) / groupClients.length;
+    };
+
     return _react2.default.createElement(
       'div',
       { className: 'snapcast__group', key: group.id },
@@ -69177,7 +69192,7 @@ var SnapcastGroups = function SnapcastGroups(props) {
           }),
           _react2.default.createElement(_VolumeControl2.default, {
             className: 'snapcast__group__volume-control snapcast__volume-control',
-            volume: group.volume,
+            volume: volume,
             mute: group.mute,
             onVolumeChange: function onVolumeChange(percent, previousPercent) {
               return actions.setGroupVolume(group.id, percent, previousPercent);
@@ -69186,10 +69201,10 @@ var SnapcastGroups = function SnapcastGroups(props) {
         )
       ),
       _react2.default.createElement(_SnapcastClients2.default, {
+        clients: groupClients,
         group: group,
         groups: groupsArray,
-        actions: actions,
-        show_disconnected_clients: show_disconnected_clients
+        actions: actions
       })
     );
   };
@@ -78992,7 +79007,6 @@ var SnapcastMiddleware = function () {
               if (raw_group.clients) {
                 group.clients_ids = (0, _arrays.arrayOf)('id', raw_group.clients);
                 clients_loaded = [].concat(_toConsumableArray(clients_loaded), _toConsumableArray(raw_group.clients));
-                store.dispatch(snapcastActions.calculateGroupVolume(group.id, raw_group.clients));
               }
 
               // Create a name (display only) based on it's ID
@@ -79010,17 +79024,6 @@ var SnapcastMiddleware = function () {
             }
 
             next(action);
-            break;
-
-          case 'SNAPCAST_CALCULATE_GROUP_VOLUME':
-            var totalVolume = action.clients.reduce(function (accumulator, client) {
-              return accumulator += (0, _format.formatClient)(client).volume;
-            }, 0);
-
-            store.dispatch(snapcastActions.groupLoaded({
-              id: action.id,
-              volume: totalVolume / action.clients.length
-            }));
             break;
 
           case 'SNAPCAST_CLIENTS_LOADED':
@@ -84512,7 +84515,7 @@ var formatClient = function formatClient(data) {
  * */
 var formatGroup = function formatGroup(data) {
   var group = {};
-  var fields = ['id', 'name', 'mute', 'volume', 'stream_id', 'clients_ids'];
+  var fields = ['id', 'name', 'mute', 'stream_id', 'clients_ids'];
 
   var _iteratorNormalCompletion13 = true;
   var _didIteratorError13 = false;

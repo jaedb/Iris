@@ -9,7 +9,7 @@ import DropdownField from './DropdownField';
 import * as coreActions from '../../services/core/actions';
 import * as pusherActions from '../../services/pusher/actions';
 import * as snapcastActions from '../../services/snapcast/actions';
-import { sortItems, indexToArray } from '../../util/arrays';
+import { sortItems, indexToArray, applyFilter } from '../../util/arrays';
 import { collate } from '../../util/format';
 
 class OutputControl extends React.Component {
@@ -21,12 +21,6 @@ class OutputControl extends React.Component {
     };
 
     this.handleClick = this.handleClick.bind(this);
-  }
-
-  handleClick(e) {
-    if (!this.props.force_expanded && $(e.target).closest('.output-control').length <= 0) {
-      this.setExpanded(false);
-    }
   }
 
   componentDidUpdate = ({
@@ -53,12 +47,19 @@ class OutputControl extends React.Component {
     }
   }
 
+  handleClick(e) {
+    if (!this.props.force_expanded && $(e.target).closest('.output-control').length <= 0) {
+      this.setExpanded(false);
+    }
+  }
+
   snapcastGroups() {
     const {
       snapcast_streams,
       snapcastActions,
       snapcast_groups,
       snapcast_clients: clients,
+      show_disconnected_clients
     } = this.props;
 
     const groups = indexToArray(snapcast_groups);
@@ -73,13 +74,18 @@ class OutputControl extends React.Component {
         {
           groups.map((simpleGroup) => {
             const group = collate(simpleGroup, { clients });
-            if (
-              !group.clients ||
-              !group.clients.length ||
-              !group.clients.filter((client) => client.connected).length
-            ) {
-              return null;
+            let { clients: groupClients = [] } = group;
+            if (!show_disconnected_clients) {
+              groupClients = applyFilter('connected', true, groupClients);
             }
+
+            if (!groupClients.length) return null;
+
+            const volume = groupClients.reduce(
+              (acc, client) => acc + (client.volume || 0),
+              0,
+            ) / groupClients.length;
+
             return (
               <div className="output-control__item outputs__item--snapcast" key={group.id}>
                 <div className="output-control__item__name">
@@ -102,7 +108,7 @@ class OutputControl extends React.Component {
                   />
                   <VolumeControl
                     className="output-control__item__volume"
-                    volume={group.volume}
+                    volume={volume}
                     mute={group.mute}
                     onVolumeChange={(percent, previousPercent) => snapcastActions.setGroupVolume(group.id, percent, previousPercent)}
                   />
