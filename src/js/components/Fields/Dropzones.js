@@ -9,6 +9,8 @@ import Dropzone from './Dropzone';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
+import { arrayOf } from '../../util/arrays';
+import { decodeMopidyUri } from '../../util/helpers';
 
 class Dropzones extends React.Component {
   constructor(props) {
@@ -34,43 +36,58 @@ class Dropzones extends React.Component {
     ];
   }
 
-  handleMouseMove(e) {
-    if (!this.props.dragger || !this.props.dragger.active) return null;
-    this.props.uiActions.dragMove(e);
+  handleMouseMove = (e) => {
+    const { dragger = {}, uiActions: { dragMove } } = this.props;
+    if (!dragger || !dragger.active) return null;
+    return dragMove(e);
   }
 
-  handleMouseUp(e, index) {
-    const target = this._zones[index];
-    const { victims } = this.props.dragger;
-    const uris = [];
-    for (let i = 0; i < victims.length; i++) {
-      uris.push(victims[i].uri);
-    }
+  handleMouseUp = (zone) => {
+    const {
+      dragger: {
+        victims = [],
+        from_uri,
+      },
+      mopidyActions: {
+        enqueueURIs,
+      },
+      history,
+    } = this.props;
+    const uris = arrayOf('uri', victims);
 
-    switch (target.action) {
+    switch (zone.action) {
       case 'enqueue':
-        this.props.mopidyActions.enqueueURIs(uris, this.props.dragger.from_uri);
+        enqueueURIs(uris, from_uri);
         break;
-
       case 'enqueue_next':
-        this.props.mopidyActions.enqueueURIs(uris, this.props.dragger.from_uri, true);
+        enqueueURIs(uris, from_uri, true);
         break;
-
       case 'add_to_playlist':
-        this.props.history.push(`/add-to-playlist/${encodeURIComponent(uris.join(','))}`);
+        history.push(`/add-to-playlist/${encodeURIComponent(uris.join(','))}`);
         // uris
         break;
+      default:
+        break;
     }
   }
 
-  render() {
-    if (!this.props.dragger || !this.props.dragger.active) return null;
+  render = () => {
+    const {
+      dragger = {},
+    } = this.props;
+    if (!dragger || !dragger.active) return null;
 
     return (
       <div className="dropzones">
         {
-					this._zones.map((zone, index) => <Dropzone key={index} data={zone} handleMouseUp={(e) => this.handleMouseUp(e, index)} />)
-				}
+          this._zones.map((zone) => (
+            <Dropzone
+              key={zone.action}
+              data={zone}
+              handleMouseUp={() => this.handleMouseUp(zone)}
+            />
+          ))
+        }
       </div>
     );
   }

@@ -2,7 +2,6 @@ import React from 'react';
 import { bindActionCreators } from 'redux';
 import { Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
-import ReactHowler from 'react-howler'
 import ReactGA from 'react-ga';
 
 import Sidebar from './components/Sidebar';
@@ -14,6 +13,7 @@ import ResizeListener from './components/ResizeListener';
 import Hotkeys from './components/Hotkeys';
 import DebugInfo from './components/DebugInfo';
 import ErrorMessage from './components/ErrorMessage';
+import Stream from './components/Stream';
 
 import Album from './views/Album';
 import Artist from './views/Artist';
@@ -353,6 +353,7 @@ export class App extends React.Component {
         <ContextMenu />
         <Dragger />
         <Notifications />
+        <Stream />
 
         {this.props.debug_info ? <DebugInfo /> : null}
       </div>

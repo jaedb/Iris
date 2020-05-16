@@ -3656,6 +3656,9 @@ select {
   .field.radio .input label, .field.checkbox .input label {
     display: inline-block;
     padding: 0.25rem 0; }
+    .field.radio .input label input:disabled + .label, .field.checkbox .input label input:disabled + .label {
+      opacity: 0.5;
+      cursor: not-allowed; }
     .field.radio .input label:not(:last-child), .field.checkbox .input label:not(:last-child) {
       padding-right: 1rem; }
   .field.radio .label, .field.checkbox .label {

@@ -16,7 +16,7 @@ class LibraryTracks extends React.Component {
   componentDidMount() {
     this.props.uiActions.setWindowTitle('Tracks');
 
-    if (!this.props.spotify_me) {
+    if (!this.props.spotify_available) {
       this.props.uiActions.createNotification({ level: 'warning', content: 'Enable Spotify to browse tracks' });
     } else if (this.props.library_tracks === undefined) {
       this.props.spotifyActions.getLibraryTracks();
@@ -94,7 +94,7 @@ Play all
 const mapStateToProps = (state, ownProps) => ({
   load_queue: state.ui.load_queue,
   tracks: state.core.tracks,
-  spotify_me: state.spotify.me,
+  spotify_available: state.spotify.access_token,
   library_tracks: state.spotify.library_tracks,
   library_tracks_more: state.spotify.library_tracks_more,
 });

@@ -12,7 +12,7 @@ class CreatePlaylist extends React.Component {
     this.state = {
       name: '',
       description: '',
-      scheme: 'spotify',
+      scheme: 'm3u',
       is_public: true,
       is_collaborative: false,
     };
@@ -116,7 +116,9 @@ class CreatePlaylist extends React.Component {
     }
   }
 
-  render() {
+  render = () => {
+    const { spotify_available } = this.props;
+
     return (
       <Modal className="modal--create-playlist">
         <h1>Create playlist</h1>
@@ -131,21 +133,22 @@ class CreatePlaylist extends React.Component {
                 <input
                   type="radio"
                   name="scheme"
-                  value="spotify"
-                  checked={this.state.scheme == 'spotify'}
+                  value="m3u"
+                  checked={this.state.scheme === 'm3u'}
                   onChange={(e) => this.setState({ scheme: e.target.value })}
                 />
-                <span className="label">Spotify</span>
+                <span className="label">Mopidy</span>
               </label>
               <label>
                 <input
                   type="radio"
                   name="scheme"
-                  value="m3u"
-                  checked={this.state.scheme == 'm3u'}
+                  value="spotify"
+                  disabled={!spotify_available }
+                  checked={this.state.scheme === 'spotify'}
                   onChange={(e) => this.setState({ scheme: e.target.value })}
                 />
-                <span className="label">Mopidy</span>
+                <span className="label">Spotify</span>
               </label>
             </div>
           </div>
@@ -162,7 +165,9 @@ class CreatePlaylist extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({});
+const mapStateToProps = (state, ownProps) => ({
+  spotify_available: state.spotify.access_token,
+});
 
 const mapDispatchToProps = (dispatch) => ({
   coreActions: bindActionCreators(coreActions, dispatch),

@@ -44,11 +44,11 @@ class LibraryArtists extends React.Component {
       this.props.mopidyActions.getLibraryArtists();
     }
 
-    if (this.props.google_enabled && !this.props.google_library_artists && this.props.mopidy_connected && (this.props.source == 'all' || this.props.source == 'google')) {
+    if (this.props.google_available && !this.props.google_library_artists && this.props.mopidy_connected && (this.props.source == 'all' || this.props.source == 'google')) {
       this.props.googleActions.getLibraryArtists();
     }
 
-    if (this.props.spotify_enabled && this.props.spotify_library_artists_status != 'finished' && (this.props.source == 'all' || this.props.source == 'spotify')) {
+    if (this.props.spotify_available && this.props.spotify_library_artists_status != 'finished' && (this.props.source == 'all' || this.props.source == 'spotify')) {
       this.props.spotifyActions.getLibraryArtists();
     }
   }
@@ -59,8 +59,8 @@ class LibraryArtists extends React.Component {
     const {
       source,
       mopidy_connected,
-      google_enabled,
-      spotify_enabled,
+      google_available,
+      spotify_available,
       mopidyActions,
       googleActions,
       spotifyActions,
@@ -68,7 +68,7 @@ class LibraryArtists extends React.Component {
       google_library_artists,
       spotify_library_artists_status,
     } = this.props;
-  
+
     if (mopidy_connected && (source === 'all' || source === 'local')) {
       if (!prev_mopidy_connected) mopidyActions.getLibraryArtists();
 
@@ -77,13 +77,13 @@ class LibraryArtists extends React.Component {
       }
     }
 
-    if (mopidy_connected && google_enabled && (source === 'all' || source === 'google')) {
+    if (mopidy_connected && google_available && (source === 'all' || source === 'google')) {
       if (source !== 'all' && source !== 'google' && !google_library_artists) {
         googleActions.getLibraryArtists();
       }
     }
 
-    if (spotify_enabled && (source === 'all' || source === 'spotify')) {
+    if (spotify_available && (source === 'all' || source === 'spotify')) {
       if (spotify_library_artists_status !== 'finished' && spotify_library_artists_status !== 'started') {
         spotifyActions.getLibraryArtists();
       }
@@ -232,14 +232,14 @@ class LibraryArtists extends React.Component {
       },
     ];
 
-    if (this.props.spotify_enabled) {
+    if (this.props.spotify_available) {
       source_options.push({
         value: 'spotify',
         label: 'Spotify',
       });
     }
 
-    if (this.props.google_enabled) {
+    if (this.props.google_available) {
       source_options.push({
         value: 'google',
         label: 'Google',
@@ -323,20 +323,13 @@ class LibraryArtists extends React.Component {
   }
 }
 
-
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- * */
-
 const mapStateToProps = (state, ownProps) => ({
   mopidy_connected: state.mopidy.connected,
   mopidy_uri_schemes: state.mopidy.uri_schemes,
   mopidy_library_artists: state.mopidy.library_artists,
-  google_enabled: state.google.enabled,
+  google_available: (state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('gmusic:')),
   google_library_artists: state.google.library_artists,
-  spotify_enabled: state.spotify.enabled,
+  spotify_available: state.spotify.access_token,
   spotify_library_artists: state.spotify.library_artists,
   spotify_library_artists_status: (state.ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR !== undefined ? state.ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR.status : null),
   artists: state.core.artists,

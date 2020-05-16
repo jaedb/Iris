@@ -57,7 +57,7 @@ class Sidebar extends React.Component {
   render() {
     const {
       history,
-      spotify_enabled,
+      spotify_available,
       uiActions,
     } = this.props;
 
@@ -77,7 +77,7 @@ class Sidebar extends React.Component {
               </Link>
             </section>
 
-            {spotify_enabled && (
+            {spotify_available && (
               <section className="sidebar__menu__section">
                 <title className="sidebar__menu__section__title">Discover</title>
                 <Link to="/discover/recommendations" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
@@ -148,7 +148,7 @@ class Sidebar extends React.Component {
 const mapStateToProps = (state, ownProps) => ({
   mopidy_connected: state.mopidy.connected,
   pusher_connected: state.pusher.connected,
-  spotify_enabled: state.spotify.enabled,
+  spotify_available: state.spotify.access_token,
   spotify_authorized: state.spotify.authorization,
   snapcast_connected: state.snapcast.connected,
   snapcast_enabled: state.snapcast.enabled,

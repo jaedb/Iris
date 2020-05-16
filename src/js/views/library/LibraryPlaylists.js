@@ -42,7 +42,7 @@ class LibraryPlaylists extends React.Component {
       this.props.mopidyActions.getLibraryPlaylists();
     }
 
-    if (this.props.spotify_enabled && this.props.spotify_library_playlists_status !== 'finished' && (this.props.source == 'all' || this.props.source == 'spotify')) {
+    if (this.props.spotify_available && this.props.spotify_library_playlists_status !== 'finished' && (this.props.source == 'all' || this.props.source == 'spotify')) {
       this.props.spotifyActions.getLibraryPlaylists();
     }
   }
@@ -54,7 +54,7 @@ class LibraryPlaylists extends React.Component {
       source,
       mopidy_connected,
       mopidy_library_playlists,
-      spotify_enabled,
+      spotify_available,
       spotify_library_playlists_status,
       mopidyActions,
       spotifyActions,
@@ -68,7 +68,7 @@ class LibraryPlaylists extends React.Component {
       }
     }
 
-    if (spotify_enabled && (source === 'all' || source === 'spotify')) {
+    if (spotify_available && (source === 'all' || source === 'spotify')) {
       if (spotify_library_playlists_status !== 'finished' && spotify_library_playlists_status !== 'started') {
         spotifyActions.getLibraryPlaylists();
       }
@@ -190,7 +190,7 @@ class LibraryPlaylists extends React.Component {
       },
     ];
 
-    if (this.props.spotify_enabled) {
+    if (this.props.spotify_available) {
       source_options.push({
         value: 'spotify',
         label: 'Spotify',
@@ -296,7 +296,7 @@ const mapStateToProps = (state, ownProps) => ({
   mopidy_uri_schemes: state.mopidy.uri_schemes,
   mopidy_library_playlists: state.mopidy.library_playlists,
   mopidy_library_playlists_status: (state.ui.processes.MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR.status : null),
-  spotify_enabled: (state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('spotify:')),
+  spotify_available: state.spotify.access_token,
   spotify_library_playlists: state.spotify.library_playlists,
   spotify_library_playlists_status: (state.ui.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR !== undefined ? state.ui.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR.status : null),
   load_queue: state.ui.load_queue,

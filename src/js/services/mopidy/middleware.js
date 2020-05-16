@@ -1846,7 +1846,7 @@ const MopidyMiddleware = (function () {
       case 'MOPIDY_CREATE_PLAYLIST':
         request(socket, store, 'playlists.create', { name: action.name, uri_scheme: action.scheme })
           .then((response) => {
-            store.dispatch(uiActions.createNotification({ level: 'warning', content: 'Created playlist' }));
+            store.dispatch(uiActions.createNotification({ content: 'Created playlist' }));
             store.dispatch(coreActions.playlistLoaded(response));
             store.dispatch({
               type: 'MOPIDY_LIBRARY_PLAYLIST_CREATED',
