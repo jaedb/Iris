@@ -13,8 +13,6 @@ class Stream extends React.Component {
       play_state: '',
       cachebuster: `${Date.now()}`,
       url: null,
-      loaded: false,
-      retryCount: 0,
     };
 
     this.audio = new Audio();
@@ -39,7 +37,6 @@ class Stream extends React.Component {
       url: stateUrl,
       cachebuster,
     } = state;
-    let { retryCount } = state;
 
     // Same track as before, and still playing
     if (
@@ -55,7 +52,6 @@ class Stream extends React.Component {
     let fullUrl = null;
     if (propEnabled && propUrl && propUri) {
       fullUrl = `${propUrl}?cb=${cachebuster}_${propUri}`;
-      retryCount = 0;
     }
 
     return {
@@ -66,8 +62,6 @@ class Stream extends React.Component {
       volume,
       mute,
       fullUrl,
-      loaded: false,
-      retryCount,
     };
   }
 
@@ -76,31 +70,29 @@ class Stream extends React.Component {
       fullUrl,
       volume,
     } = this.state;
-    const { mute } = this.props;
-    if (!fullUrl) return null;
+    const { enabled, mute } = this.props;
 
     this.audio.muted = mute;
-    this.audio.volume = volume / 100;
+    this.audio.volume = volume ? (volume / 100) : 0.5;
 
     // Only update URL if it's changed. This prevents re-loading the stream when something unrelated
     // (like volume) was changed
-    if (prevState.fullUrl !== fullUrl) {
+    if ((prevProps.enabled && !enabled)) {
+      this.stop();
+    } else if (fullUrl && ((prevState.fullUrl !== fullUrl) || (!prevProps.enabled && enabled))) {
       this.play(fullUrl);
     }
   }
 
   onError = (error) => {
-    const { retryCount } = this.state;
-    if (retryCount < 3) {
-      console.error(`Audio failed to load. Retrying ${retryCount+1}/3`, error);
-      setTimeout(
-        () => {
-          this.play();
-          this.setState({ retryCount: retryCount + 1 });
-        },
-        250,
-      );
-    }
+    const { enabled, play_state } = this.props;
+    if (!enabled || play_state !== 'playing') return;
+
+    console.error('Audio failed to load, retrying...', error);
+    setTimeout(
+      () => this.play(),
+      250,
+    );
   }
 
   play = (url = null) => {
@@ -108,6 +100,12 @@ class Stream extends React.Component {
     console.info(`Playing stream: ${url || fullUrl}`);
     this.audio.src = url || fullUrl;
     this.audio.play();
+  }
+
+  stop = () => {
+    console.info('Stopping stream');
+    this.audio.pause();
+    this.audio.src = '';
   }
 
   render = () => null;

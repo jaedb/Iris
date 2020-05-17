@@ -69307,30 +69307,34 @@ var Stream = function (_React$Component) {
       var _this$state = _this.state,
           fullUrl = _this$state.fullUrl,
           volume = _this$state.volume;
-      var mute = _this.props.mute;
+      var _this$props = _this.props,
+          enabled = _this$props.enabled,
+          mute = _this$props.mute;
 
-      if (!fullUrl) return null;
 
       _this.audio.muted = mute;
-      _this.audio.volume = volume / 100;
+      _this.audio.volume = volume ? volume / 100 : 0.5;
 
       // Only update URL if it's changed. This prevents re-loading the stream when something unrelated
       // (like volume) was changed
-      if (prevState.fullUrl !== fullUrl) {
+      if (prevProps.enabled && !enabled) {
+        _this.stop();
+      } else if (fullUrl && (prevState.fullUrl !== fullUrl || !prevProps.enabled && enabled)) {
         _this.play(fullUrl);
       }
     };
 
     _this.onError = function (error) {
-      var retryCount = _this.state.retryCount;
+      var _this$props2 = _this.props,
+          enabled = _this$props2.enabled,
+          play_state = _this$props2.play_state;
 
-      if (retryCount < 3) {
-        console.error('Audio failed to load. Retrying ' + (retryCount + 1) + '/3', error);
-        setTimeout(function () {
-          _this.play();
-          _this.setState({ retryCount: retryCount + 1 });
-        }, 250);
-      }
+      if (!enabled || play_state !== 'playing') return;
+
+      console.error('Audio failed to load, retrying...', error);
+      setTimeout(function () {
+        return _this.play();
+      }, 250);
     };
 
     _this.play = function () {
@@ -69342,6 +69346,12 @@ var Stream = function (_React$Component) {
       _this.audio.play();
     };
 
+    _this.stop = function () {
+      console.info('Stopping stream');
+      _this.audio.pause();
+      _this.audio.src = '';
+    };
+
     _this.render = function () {
       return null;
     };
@@ -69350,9 +69360,7 @@ var Stream = function (_React$Component) {
       uri: '',
       play_state: '',
       cachebuster: '' + Date.now(),
-      url: null,
-      loaded: false,
-      retryCount: 0
+      url: null
     };
 
     _this.audio = new Audio();
@@ -69378,7 +69386,6 @@ var Stream = function (_React$Component) {
           stateUri = state.uri,
           stateUrl = state.url,
           cachebuster = state.cachebuster;
-      var retryCount = state.retryCount;
 
       // Same track as before, and still playing
 
@@ -69389,7 +69396,6 @@ var Stream = function (_React$Component) {
       var fullUrl = null;
       if (propEnabled && propUrl && propUri) {
         fullUrl = propUrl + '?cb=' + cachebuster + '_' + propUri;
-        retryCount = 0;
       }
 
       return _extends({}, state, {
@@ -69398,9 +69404,7 @@ var Stream = function (_React$Component) {
         play_state: propPlayState,
         volume: volume,
         mute: mute,
-        fullUrl: fullUrl,
-        loaded: false,
-        retryCount: retryCount
+        fullUrl: fullUrl
       });
     }
   }]);
