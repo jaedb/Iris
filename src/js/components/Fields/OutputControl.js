@@ -162,18 +162,17 @@ class OutputControl extends React.Component {
           Local browser
         </div>
         <div className="output-control__item__controls">
-          <span
-            className="output-control__item__action"
-            onClick={(e) => coreActions.cachebustHttpStream()}
-          >
-            <Icon name="refresh" />
-          </span>
+          <MuteControl
+            className="output-control__item__mute"
+            noTooltip
+            mute={http_streaming_mute}
+            onMuteChange={(mute) => coreActions.set({ http_streaming_mute: mute })}
+          />
           <VolumeControl
             className="output-control__item__volume"
             volume={http_streaming_volume}
             mute={http_streaming_mute}
             onVolumeChange={(percent) => coreActions.set({ http_streaming_volume: percent })}
-            onMuteChange={(mute) => coreActions.set({ http_streaming_mute: mute })}
           />
         </div>
       </div>

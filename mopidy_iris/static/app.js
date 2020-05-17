@@ -63228,25 +63228,20 @@ var OutputControl = function (_React$Component) {
         _react2.default.createElement(
           'div',
           { className: 'output-control__item__controls' },
-          _react2.default.createElement(
-            'span',
-            {
-              className: 'output-control__item__action',
-              onClick: function onClick(e) {
-                return coreActions.cachebustHttpStream();
-              }
-            },
-            _react2.default.createElement(_Icon2.default, { name: 'refresh' })
-          ),
+          _react2.default.createElement(_MuteControl2.default, {
+            className: 'output-control__item__mute',
+            noTooltip: true,
+            mute: http_streaming_mute,
+            onMuteChange: function onMuteChange(mute) {
+              return coreActions.set({ http_streaming_mute: mute });
+            }
+          }),
           _react2.default.createElement(_VolumeControl2.default, {
             className: 'output-control__item__volume',
             volume: http_streaming_volume,
             mute: http_streaming_mute,
             onVolumeChange: function onVolumeChange(percent) {
               return coreActions.set({ http_streaming_volume: percent });
-            },
-            onMuteChange: function onMuteChange(mute) {
-              return coreActions.set({ http_streaming_mute: mute });
             }
           })
         )
@@ -69308,37 +69303,62 @@ var Stream = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (Stream.__proto__ || Object.getPrototypeOf(Stream)).call(this, props));
 
-    _this.componentDidUpdate = function () {
-      var volume = _this.props.volume;
+    _this.componentDidUpdate = function (prevProps, prevState) {
+      var _this$state = _this.state,
+          fullUrl = _this$state.fullUrl,
+          volume = _this$state.volume;
+      var mute = _this.props.mute;
 
-      if (_this.audioRef.current) {
-        _this.audioRef.current.volume = volume / 100;
+      if (!fullUrl) return null;
+
+      _this.audio.muted = mute;
+      _this.audio.volume = volume / 100;
+
+      // Only update URL if it's changed. This prevents re-loading the stream when something unrelated
+      // (like volume) was changed
+      if (prevState.fullUrl !== fullUrl) {
+        _this.play(fullUrl);
       }
     };
 
-    _this.render = function () {
-      var url = _this.state.url;
+    _this.onError = function (error) {
+      var retryCount = _this.state.retryCount;
 
-      if (!url) return null;
-      return _react2.default.createElement(
-        'div',
-        { key: url },
-        _react2.default.createElement(
-          'audio',
-          { autoPlay: true, ref: _this.audioRef },
-          _react2.default.createElement('source', { src: url })
-        )
-      );
+      if (retryCount < 3) {
+        console.error('Audio failed to load. Retrying ' + (retryCount + 1) + '/3', error);
+        setTimeout(function () {
+          _this.play();
+          _this.setState({ retryCount: retryCount + 1 });
+        }, 250);
+      }
+    };
+
+    _this.play = function () {
+      var url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+      var fullUrl = _this.state.fullUrl;
+
+      console.info('Playing stream: ' + (url || fullUrl));
+      _this.audio.src = url || fullUrl;
+      _this.audio.play();
+    };
+
+    _this.render = function () {
+      return null;
     };
 
     _this.state = {
       uri: '',
       play_state: '',
       cachebuster: '' + Date.now(),
-      url: null
+      url: null,
+      loaded: false,
+      retryCount: 0
     };
 
-    _this.audioRef = (0, _react.createRef)();
+    _this.audio = new Audio();
+    _this.audio.onerror = function (error) {
+      return _this.onError(error);
+    };
     return _this;
   }
 
@@ -69346,6 +69366,7 @@ var Stream = function (_React$Component) {
     key: 'getDerivedStateFromProps',
     value: function getDerivedStateFromProps(props, state) {
       var volume = props.volume,
+          mute = props.mute,
           propEnabled = props.enabled,
           propPlayState = props.play_state,
           propUrl = props.url,
@@ -69353,19 +69374,22 @@ var Stream = function (_React$Component) {
       _props$current_track = _props$current_track === undefined ? {} : _props$current_track;
       var propUri = _props$current_track.uri;
       var statePlayState = state.play_state,
+          stateEnabled = state.enabled,
           stateUri = state.uri,
+          stateUrl = state.url,
           cachebuster = state.cachebuster;
+      var retryCount = state.retryCount;
 
       // Same track as before, and still playing
 
-      if (propUri && propUri === stateUri && propPlayState === statePlayState) {
+      if (propUri && propUri === stateUri && propPlayState === statePlayState && propEnabled === stateEnabled && propUrl === stateUrl) {
         return null;
       }
 
-      var url = null;
+      var fullUrl = null;
       if (propEnabled && propUrl && propUri) {
-        url = propUrl + '?cb=' + cachebuster + '_' + propUri;
-        console.log('Playing stream: ' + url);
+        fullUrl = propUrl + '?cb=' + cachebuster + '_' + propUri;
+        retryCount = 0;
       }
 
       return _extends({}, state, {
@@ -69373,7 +69397,10 @@ var Stream = function (_React$Component) {
         uri: propUri,
         play_state: propPlayState,
         volume: volume,
-        url: url
+        mute: mute,
+        fullUrl: fullUrl,
+        loaded: false,
+        retryCount: retryCount
       });
     }
   }]);
@@ -69386,6 +69413,7 @@ var mapStateToProps = function mapStateToProps(state) {
     current_track: state.core.current_track || {},
     play_state: state.mopidy.play_state,
     enabled: state.core.http_streaming_enabled,
+    mute: state.core.http_streaming_mute || false,
     volume: state.core.http_streaming_volume >= 0 ? state.core.http_streaming_volume : 50,
     url: state.core.http_streaming_url ? state.core.http_streaming_url : null
   };
