@@ -3,6 +3,7 @@ import { bindActionCreators } from 'redux';
 import { Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
 import ReactGA from 'react-ga';
+import * as Sentry from '@sentry/browser';
 
 import Sidebar from './components/Sidebar';
 import PlaybackControls from './components/PlaybackControls';
@@ -121,6 +122,9 @@ export class App extends React.Component {
 
     if (allow_reporting) {
       ReactGA.initialize('UA-64701652-3');
+      Sentry.init({
+        dsn: 'https://ca99fb6662fe40ae8ec4c18a466e4b4b@o99789.ingest.sentry.io/219026',
+      });
     }
 
     // Fire up our services
