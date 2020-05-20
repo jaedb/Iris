@@ -68,6 +68,18 @@ workflows:
           filters:
             branches:
               only: deploy/release
+  build_and_release:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: deploy/force-release
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: deploy/force-release
 
 jobs:
   py38: &test-template

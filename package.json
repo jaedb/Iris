@@ -10,6 +10,7 @@
   },
   "main": "app.js",
   "dependencies": {
+    "@sentry/browser": "^5.15.5",
     "fast-average-color": "^6.0.2",
     "history": "^4.10.1",
     "jquery": "^3.5.0",
