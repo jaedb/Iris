@@ -152,9 +152,12 @@ export default function reducer(ui = {}, action) {
 
     case 'START_PROCESS':
     case 'UPDATE_PROCESS':
-      var processes = { ...(ui.processes ? ui.processes : []) };
-      if (processes[action.key]) {
-        var data = { ...processes[action.key].data, ...action.data };
+      var processes = { ...(ui.processes || []) };
+      var last_run = processes[action.key];
+      var status = 'running';
+      if (last_run) {
+        var data = { ...last_run.data, ...action.data };
+        status = last_run.status;
       } else {
         var { data } = action;
       }
@@ -162,8 +165,8 @@ export default function reducer(ui = {}, action) {
         key: action.key,
         content: action.content,
         description: action.description,
-        status: 'running',
         level: action.level,
+        status,
         data,
       };
       return { ...ui, processes };

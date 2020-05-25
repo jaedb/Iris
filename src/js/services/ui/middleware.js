@@ -208,6 +208,7 @@ const UIMiddleware = (function () {
         store.dispatch({
           type: `${action.key}_CANCELLED`,
         });
+        store.dispatch(uiActions.closeProcess(action.key));
         next(action);
         break;
 

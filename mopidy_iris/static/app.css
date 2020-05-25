@@ -5926,7 +5926,7 @@ main header {
   right: 15px;
   z-index: 97;
   pointer-events: none;
-  width: 300px; }
+  width: 300; }
   .notifications .notification {
     animation-delay: 0;
     -webkit-animation-fill-mode: forwards;
@@ -5935,7 +5935,6 @@ main header {
     animation-duration: 0.2s;
     animation-timing-function: linear;
     animation-iteration-count: 1;
-    display: block;
     position: relative;
     padding: 0.9rem 1rem;
     margin: 0.5rem;
@@ -5952,6 +5951,10 @@ main header {
   100% {
     opacity: 1;
     transform: translateY(0px); } }
+    .notifications .notification__wrapper {
+      display: flex;
+      justify-content: flex-end;
+      flex-flow: row; }
     .notifications .notification__title {
       padding-top: 0; }
     .notifications .notification__actions {
@@ -6051,10 +6054,11 @@ main header {
       padding-right: 18px;
       padding-left: 50px; }
       .notifications .notification--process.cancelling {
-        color: rgba(255, 255, 255, 0.5); }
+        opacity: 0.5 !important;
+        pointer-events: none; }
       .notifications .notification--process .loader {
         position: absolute;
-        top: 13px;
+        top: 11px;
         left: 13px; }
     .notifications .notification.closing, .notifications .notification.finishing {
       animation-delay: 0;

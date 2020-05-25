@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -46,58 +46,64 @@ class Notifications extends React.Component {
     const notifications = indexToArray(this.props.notifications);
 
     return (
-      <span>
+      <Fragment>
         {
           notifications.map((notification) => {
             switch (notification.type) {
               case 'shortcut':
                 return (
-                  <div className={`notification notification--shortcut${notification.closing ? ' closing' : ''}`} key={notification.key} data-duration={notification.duration}>
-                    <Icon name={notification.content} />
+                  <div className="notification__wrapper" key={notification.key}>
+                    <div className={`notification notification--shortcut${notification.closing ? ' closing' : ''}`} data-duration={notification.duration}>
+                      <Icon name={notification.content} />
+                    </div>
                   </div>
                 );
 
               case 'share-configuration-received':
                 return (
-                  <div className="notification notification--info" key={notification.key} data-key={notification.key} data-duration={notification.duration}>
-                    <Icon name="close" className="notification__close-button" onClick={(e) => this.props.uiActions.removeNotification(notification.key, true)} />
+                  <div className="notification__wrapper" key={notification.key}>
+                    <div className="notification notification--info" key={notification.key} data-duration={notification.duration}>
+                      <Icon name="close" className="notification__close-button" onClick={(e) => this.props.uiActions.removeNotification(notification.key, true)} />
 
-                    <h4 className="notification__title">Configuration shared</h4>
-                    <div className="notification__content">
-                      <p>Another user has shared their configuration with you. This includes:</p>
-                      <ul>
-                        {notification.configuration.ui ? <li>User interface</li> : null}
-                        {notification.configuration.spotify ? <li>Spotify</li> : null}
-                        {notification.configuration.lastfm ? <li>LastFM</li> : null}
-                        {notification.configuration.genius ? <li>Genius</li> : null}
-                        {notification.configuration.snapcast ? <li>Snapcast</li> : null}
-                      </ul>
-                      <p>Do you want to import this?</p>
-                    </div>
-                    <div className="notification__actions">
-                      <a className="notification__actions__item button button--default" onClick={(e) => this.importConfiguration(notification.key, notification.configuration)}>Import now</a>
+                      <h4 className="notification__title">Configuration shared</h4>
+                      <div className="notification__content">
+                        <p>Another user has shared their configuration with you. This includes:</p>
+                        <ul>
+                          {notification.configuration.ui ? <li>User interface</li> : null}
+                          {notification.configuration.spotify ? <li>Spotify</li> : null}
+                          {notification.configuration.lastfm ? <li>LastFM</li> : null}
+                          {notification.configuration.genius ? <li>Genius</li> : null}
+                          {notification.configuration.snapcast ? <li>Snapcast</li> : null}
+                        </ul>
+                        <p>Do you want to import this?</p>
+                      </div>
+                      <div className="notification__actions">
+                        <a className="notification__actions__item button button--default" onClick={(e) => this.importConfiguration(notification.key, notification.configuration)}>Import now</a>
+                      </div>
                     </div>
                   </div>
                 );
 
               default:
                 return (
-                  <div className={`notification notification--${notification.level}${notification.closing ? ' closing' : ''}`} key={notification.key} data-key={notification.key} data-duration={notification.duration}>
-                    <Icon name="close" className="notification__close-button" onClick={(e) => this.props.uiActions.removeNotification(notification.key, true)} />
-                    {notification.title ? <h4 className="notification__title">{notification.title}</h4> : null}
-                    {notification.content ? <div className="notification__content">{notification.content}</div> : null}
-                    {notification.description ? <div className="notification__description">{notification.description}</div> : null}
-                    {notification.links ? (
-                      <div className="notification__actions">
-                        {notification.links.map((link, i) => <a className="notification__actions__item button button--secondary" href={link.url} target={link.new_window ? '_blank' : 'self'} key={i}>{link.text}</a>)}
-                      </div>
-                    ) : null}
+                  <div className="notification__wrapper" key={notification.key}>
+                    <div className={`notification notification--${notification.level}${notification.closing ? ' closing' : ''}`} data-key={notification.key} data-duration={notification.duration}>
+                      <Icon name="close" className="notification__close-button" onClick={(e) => this.props.uiActions.removeNotification(notification.key, true)} />
+                      {notification.title ? <h4 className="notification__title">{notification.title}</h4> : null}
+                      {notification.content ? <div className="notification__content">{notification.content}</div> : null}
+                      {notification.description ? <div className="notification__description">{notification.description}</div> : null}
+                      {notification.links ? (
+                        <div className="notification__actions">
+                          {notification.links.map((link, i) => <a className="notification__actions__item button button--secondary" href={link.url} target={link.new_window ? '_blank' : 'self'} key={i}>{link.text}</a>)}
+                        </div>
+                      ) : null}
+                    </div>
                   </div>
                 );
             }
           })
         }
-      </span>
+      </Fragment>
     );
   }
 
@@ -120,50 +126,59 @@ class Notifications extends React.Component {
     switch (status) {
       case 'running':
         return (
-          <div
-            className={
-              `notification notification--${level} notification--process${closing ? ' closing' : ''}`
-            }
-            key={key}
-          >
-            <Loader
-              progress={progress}
-              loading
-              mini
-              white
-            />
-            {content && content !== '' && <div className="notification__content">{content}</div>}
-            {description && description !== '' && <div className="notification__description">{description}</div>}
-            <Icon name="close" className="notification__close-button" onClick={() => { uiActions.cancelProcess(key); }} />
+          <div className="notification__wrapper" key={key}>
+            <div
+              className={
+                `notification notification--${level} notification--process${closing ? ' closing' : ''}`
+              }
+            >
+              <Loader
+                progress={progress}
+                loading
+                mini
+                white
+              />
+              {content && content !== '' && <div className="notification__content">{content}</div>}
+              {description && description !== '' && <div className="notification__description">{description}</div>}
+              <Icon name="close" className="notification__close-button" onClick={() => { uiActions.cancelProcess(key); }} />
+            </div>
           </div>
         );
 
       case 'finished':
         return (
-          <div
-            className={
-              `notification notification--${level} notification--process${closing ? ' closing' : ''}`
-            }
-            key={key}
-          >
-            <Icon className="notification__icon" name={level === 'error' ? 'close' : 'check'} />
-            {content && content !== '' && <div className="notification__content">{content}</div>}
-            {description && description !== '' && <div className="notification__description">{description}</div>}
-            <Icon name="close" className="notification__close-button" onClick={() => { uiActions.closeProcess(key); }} />
+          <div className="notification__wrapper" key={key}>
+            <div
+              className={
+                `notification notification--${level} notification--process${closing ? ' closing' : ''}`
+              }
+            >
+              <Icon className="notification__icon" name={level === 'error' ? 'close' : 'check'} />
+              {content && content !== '' && <div className="notification__content">{content}</div>}
+              {description && description !== '' && <div className="notification__description">{description}</div>}
+              <Icon name="close" className="notification__close-button" onClick={() => { uiActions.closeProcess(key); }} />
+            </div>
           </div>
         );
 
       case 'cancelling':
         return (
-          <div
-            className={
-              `notification notification--${level} notification--process cancelling${closing ? ' closing' : ''}`
-            }
-            key={key}
-          >
-            <Loader />
-            {content && content !== '' && <div className="notification__content">{content}</div>}
-            {description && description !== '' && <div className="notification__description">{description}</div>}
+          <div className="notification__wrapper" key={key}>
+            <div
+              className={
+                `notification notification--${level} notification--process cancelling${closing ? ' closing' : ''}`
+              }
+            >
+              <Loader
+                progress={progress}
+                loading
+                mini
+                white
+              />
+              {content && content !== '' && <div className="notification__content">{content}</div>}
+              {description && description !== '' && <div className="notification__description">{description}</div>}
+              <Icon name="close" className="notification__close-button" />
+            </div>
           </div>
         );
 
@@ -180,9 +195,9 @@ class Notifications extends React.Component {
     if (!processes.length) return null;
 
     return (
-      <span>
+      <Fragment>
         {processes.map((process) => this.renderProcess(process))}
-      </span>
+      </Fragment>
     );
   }
 

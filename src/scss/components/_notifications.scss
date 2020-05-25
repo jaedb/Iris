@@ -5,11 +5,10 @@
 	right: 15px;
 	z-index: 97;
 	pointer-events: none;
-	width: 300px;
+	width: 300;
 
 	.notification {
 		@include fadein();
-		display: block;
 		position: relative;
 		padding: 0.9rem 1rem;
 		margin: 0.5rem;
@@ -18,6 +17,12 @@
 		pointer-events: all;
 		border-radius: 3px;
 		font-size: 0.9rem;
+
+		&__wrapper {
+			display: flex;
+			justify-content: flex-end;
+			flex-flow: row;
+		}
 
 		&__title {
 			padding-top: 0;
@@ -121,12 +126,13 @@
 			padding-left: 50px;
 
 			&.cancelling {
-				color: rgba(255,255,255,0.5);
+				opacity: 0.5 !important;
+				pointer-events: none;
 			}
 
 			.loader {
 				position: absolute;
-				top: 13px;
+				top: 11px;
 				left: 13px;
 			}
 		}

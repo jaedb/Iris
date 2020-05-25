@@ -408,21 +408,22 @@ const CoreMiddleware = (function () {
         break;
 
       case 'LOAD_PLAYLIST':
-            	if (
-            		!action.force_reload
-            		&& store.getState().core.playlists[action.uri]
-            		&& store.getState().core.playlists[action.uri].tracks_uris) {
-	            		console.info(`Loading "${action.uri}" from index`);
-	            		break;
-            	}
+        if (
+          !action.force_reload
+          && store.getState().core.playlists[action.uri]
+          && store.getState().core.playlists[action.uri].tracks_uris !== undefined
+        ) {
+          console.info(`Loading "${action.uri}" from index`);
+          break;
+        }
 
         switch (uriSource(action.uri)) {
           case 'spotify':
             store.dispatch(spotifyActions.getPlaylist(action.uri));
 
             if (store.getState().spotify.me) {
-	                        store.dispatch(spotifyActions.following(action.uri));
-	                    }
+              store.dispatch(spotifyActions.following(action.uri));
+            }
             break;
 
           default:

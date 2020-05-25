@@ -44,8 +44,9 @@ class Playlist extends React.Component {
   }
 
   componentDidMount() {
+    const { coreActions: { loadPlaylist }, uri } = this.props;
     this.setWindowTitle();
-    this.props.coreActions.loadPlaylist(this.props.uri);
+    loadPlaylist(uri);
   }
 
   componentDidUpdate = ({

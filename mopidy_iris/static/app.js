@@ -73410,81 +73410,89 @@ var Notifications = function (_React$Component) {
       var notifications = (0, _arrays.indexToArray)(this.props.notifications);
 
       return _react2.default.createElement(
-        'span',
+        _react.Fragment,
         null,
         notifications.map(function (notification) {
           switch (notification.type) {
             case 'shortcut':
               return _react2.default.createElement(
                 'div',
-                { className: 'notification notification--shortcut' + (notification.closing ? ' closing' : ''), key: notification.key, 'data-duration': notification.duration },
-                _react2.default.createElement(_Icon2.default, { name: notification.content })
+                { className: 'notification__wrapper', key: notification.key },
+                _react2.default.createElement(
+                  'div',
+                  { className: 'notification notification--shortcut' + (notification.closing ? ' closing' : ''), 'data-duration': notification.duration },
+                  _react2.default.createElement(_Icon2.default, { name: notification.content })
+                )
               );
 
             case 'share-configuration-received':
               return _react2.default.createElement(
                 'div',
-                { className: 'notification notification--info', key: notification.key, 'data-key': notification.key, 'data-duration': notification.duration },
-                _react2.default.createElement(_Icon2.default, { name: 'close', className: 'notification__close-button', onClick: function onClick(e) {
-                    return _this3.props.uiActions.removeNotification(notification.key, true);
-                  } }),
-                _react2.default.createElement(
-                  'h4',
-                  { className: 'notification__title' },
-                  'Configuration shared'
-                ),
+                { className: 'notification__wrapper', key: notification.key },
                 _react2.default.createElement(
                   'div',
-                  { className: 'notification__content' },
+                  { className: 'notification notification--info', key: notification.key, 'data-duration': notification.duration },
+                  _react2.default.createElement(_Icon2.default, { name: 'close', className: 'notification__close-button', onClick: function onClick(e) {
+                      return _this3.props.uiActions.removeNotification(notification.key, true);
+                    } }),
                   _react2.default.createElement(
-                    'p',
-                    null,
-                    'Another user has shared their configuration with you. This includes:'
+                    'h4',
+                    { className: 'notification__title' },
+                    'Configuration shared'
                   ),
                   _react2.default.createElement(
-                    'ul',
-                    null,
-                    notification.configuration.ui ? _react2.default.createElement(
-                      'li',
+                    'div',
+                    { className: 'notification__content' },
+                    _react2.default.createElement(
+                      'p',
                       null,
-                      'User interface'
-                    ) : null,
-                    notification.configuration.spotify ? _react2.default.createElement(
-                      'li',
+                      'Another user has shared their configuration with you. This includes:'
+                    ),
+                    _react2.default.createElement(
+                      'ul',
                       null,
-                      'Spotify'
-                    ) : null,
-                    notification.configuration.lastfm ? _react2.default.createElement(
-                      'li',
+                      notification.configuration.ui ? _react2.default.createElement(
+                        'li',
+                        null,
+                        'User interface'
+                      ) : null,
+                      notification.configuration.spotify ? _react2.default.createElement(
+                        'li',
+                        null,
+                        'Spotify'
+                      ) : null,
+                      notification.configuration.lastfm ? _react2.default.createElement(
+                        'li',
+                        null,
+                        'LastFM'
+                      ) : null,
+                      notification.configuration.genius ? _react2.default.createElement(
+                        'li',
+                        null,
+                        'Genius'
+                      ) : null,
+                      notification.configuration.snapcast ? _react2.default.createElement(
+                        'li',
+                        null,
+                        'Snapcast'
+                      ) : null
+                    ),
+                    _react2.default.createElement(
+                      'p',
                       null,
-                      'LastFM'
-                    ) : null,
-                    notification.configuration.genius ? _react2.default.createElement(
-                      'li',
-                      null,
-                      'Genius'
-                    ) : null,
-                    notification.configuration.snapcast ? _react2.default.createElement(
-                      'li',
-                      null,
-                      'Snapcast'
-                    ) : null
+                      'Do you want to import this?'
+                    )
                   ),
                   _react2.default.createElement(
-                    'p',
-                    null,
-                    'Do you want to import this?'
-                  )
-                ),
-                _react2.default.createElement(
-                  'div',
-                  { className: 'notification__actions' },
-                  _react2.default.createElement(
-                    'a',
-                    { className: 'notification__actions__item button button--default', onClick: function onClick(e) {
-                        return _this3.importConfiguration(notification.key, notification.configuration);
-                      } },
-                    'Import now'
+                    'div',
+                    { className: 'notification__actions' },
+                    _react2.default.createElement(
+                      'a',
+                      { className: 'notification__actions__item button button--default', onClick: function onClick(e) {
+                          return _this3.importConfiguration(notification.key, notification.configuration);
+                        } },
+                      'Import now'
+                    )
                   )
                 )
               );
@@ -73492,36 +73500,40 @@ var Notifications = function (_React$Component) {
             default:
               return _react2.default.createElement(
                 'div',
-                { className: 'notification notification--' + notification.level + (notification.closing ? ' closing' : ''), key: notification.key, 'data-key': notification.key, 'data-duration': notification.duration },
-                _react2.default.createElement(_Icon2.default, { name: 'close', className: 'notification__close-button', onClick: function onClick(e) {
-                    return _this3.props.uiActions.removeNotification(notification.key, true);
-                  } }),
-                notification.title ? _react2.default.createElement(
-                  'h4',
-                  { className: 'notification__title' },
-                  notification.title
-                ) : null,
-                notification.content ? _react2.default.createElement(
+                { className: 'notification__wrapper', key: notification.key },
+                _react2.default.createElement(
                   'div',
-                  { className: 'notification__content' },
-                  notification.content
-                ) : null,
-                notification.description ? _react2.default.createElement(
-                  'div',
-                  { className: 'notification__description' },
-                  notification.description
-                ) : null,
-                notification.links ? _react2.default.createElement(
-                  'div',
-                  { className: 'notification__actions' },
-                  notification.links.map(function (link, i) {
-                    return _react2.default.createElement(
-                      'a',
-                      { className: 'notification__actions__item button button--secondary', href: link.url, target: link.new_window ? '_blank' : 'self', key: i },
-                      link.text
-                    );
-                  })
-                ) : null
+                  { className: 'notification notification--' + notification.level + (notification.closing ? ' closing' : ''), 'data-key': notification.key, 'data-duration': notification.duration },
+                  _react2.default.createElement(_Icon2.default, { name: 'close', className: 'notification__close-button', onClick: function onClick(e) {
+                      return _this3.props.uiActions.removeNotification(notification.key, true);
+                    } }),
+                  notification.title ? _react2.default.createElement(
+                    'h4',
+                    { className: 'notification__title' },
+                    notification.title
+                  ) : null,
+                  notification.content ? _react2.default.createElement(
+                    'div',
+                    { className: 'notification__content' },
+                    notification.content
+                  ) : null,
+                  notification.description ? _react2.default.createElement(
+                    'div',
+                    { className: 'notification__description' },
+                    notification.description
+                  ) : null,
+                  notification.links ? _react2.default.createElement(
+                    'div',
+                    { className: 'notification__actions' },
+                    notification.links.map(function (link, i) {
+                      return _react2.default.createElement(
+                        'a',
+                        { className: 'notification__actions__item button button--secondary', href: link.url, target: link.new_window ? '_blank' : 'self', key: i },
+                        link.text
+                      );
+                    })
+                  ) : null
+                )
               );
           }
         })
@@ -73552,71 +73564,86 @@ var Notifications = function (_React$Component) {
         case 'running':
           return _react2.default.createElement(
             'div',
-            {
-              className: 'notification notification--' + level + ' notification--process' + (closing ? ' closing' : ''),
-              key: key
-            },
-            _react2.default.createElement(_Loader2.default, {
-              progress: progress,
-              loading: true,
-              mini: true,
-              white: true
-            }),
-            content && content !== '' && _react2.default.createElement(
+            { className: 'notification__wrapper', key: key },
+            _react2.default.createElement(
               'div',
-              { className: 'notification__content' },
-              content
-            ),
-            description && description !== '' && _react2.default.createElement(
-              'div',
-              { className: 'notification__description' },
-              description
-            ),
-            _react2.default.createElement(_Icon2.default, { name: 'close', className: 'notification__close-button', onClick: function onClick() {
-                uiActions.cancelProcess(key);
-              } })
+              {
+                className: 'notification notification--' + level + ' notification--process' + (closing ? ' closing' : '')
+              },
+              _react2.default.createElement(_Loader2.default, {
+                progress: progress,
+                loading: true,
+                mini: true,
+                white: true
+              }),
+              content && content !== '' && _react2.default.createElement(
+                'div',
+                { className: 'notification__content' },
+                content
+              ),
+              description && description !== '' && _react2.default.createElement(
+                'div',
+                { className: 'notification__description' },
+                description
+              ),
+              _react2.default.createElement(_Icon2.default, { name: 'close', className: 'notification__close-button', onClick: function onClick() {
+                  uiActions.cancelProcess(key);
+                } })
+            )
           );
 
         case 'finished':
           return _react2.default.createElement(
             'div',
-            {
-              className: 'notification notification--' + level + ' notification--process' + (closing ? ' closing' : ''),
-              key: key
-            },
-            _react2.default.createElement(_Icon2.default, { className: 'notification__icon', name: level === 'error' ? 'close' : 'check' }),
-            content && content !== '' && _react2.default.createElement(
+            { className: 'notification__wrapper', key: key },
+            _react2.default.createElement(
               'div',
-              { className: 'notification__content' },
-              content
-            ),
-            description && description !== '' && _react2.default.createElement(
-              'div',
-              { className: 'notification__description' },
-              description
-            ),
-            _react2.default.createElement(_Icon2.default, { name: 'close', className: 'notification__close-button', onClick: function onClick() {
-                uiActions.closeProcess(key);
-              } })
+              {
+                className: 'notification notification--' + level + ' notification--process' + (closing ? ' closing' : '')
+              },
+              _react2.default.createElement(_Icon2.default, { className: 'notification__icon', name: level === 'error' ? 'close' : 'check' }),
+              content && content !== '' && _react2.default.createElement(
+                'div',
+                { className: 'notification__content' },
+                content
+              ),
+              description && description !== '' && _react2.default.createElement(
+                'div',
+                { className: 'notification__description' },
+                description
+              ),
+              _react2.default.createElement(_Icon2.default, { name: 'close', className: 'notification__close-button', onClick: function onClick() {
+                  uiActions.closeProcess(key);
+                } })
+            )
           );
 
         case 'cancelling':
           return _react2.default.createElement(
             'div',
-            {
-              className: 'notification notification--' + level + ' notification--process cancelling' + (closing ? ' closing' : ''),
-              key: key
-            },
-            _react2.default.createElement(_Loader2.default, null),
-            content && content !== '' && _react2.default.createElement(
+            { className: 'notification__wrapper', key: key },
+            _react2.default.createElement(
               'div',
-              { className: 'notification__content' },
-              content
-            ),
-            description && description !== '' && _react2.default.createElement(
-              'div',
-              { className: 'notification__description' },
-              description
+              {
+                className: 'notification notification--' + level + ' notification--process cancelling' + (closing ? ' closing' : '')
+              },
+              _react2.default.createElement(_Loader2.default, {
+                progress: progress,
+                loading: true,
+                mini: true,
+                white: true
+              }),
+              content && content !== '' && _react2.default.createElement(
+                'div',
+                { className: 'notification__content' },
+                content
+              ),
+              description && description !== '' && _react2.default.createElement(
+                'div',
+                { className: 'notification__description' },
+                description
+              ),
+              _react2.default.createElement(_Icon2.default, { name: 'close', className: 'notification__close-button' })
             )
           );
 
@@ -73640,7 +73667,7 @@ var Notifications = function (_React$Component) {
       if (!processes.length) return null;
 
       return _react2.default.createElement(
-        'span',
+        _react.Fragment,
         null,
         processes.map(function (process) {
           return _this4.renderProcess(process);
@@ -79148,7 +79175,7 @@ var CoreMiddleware = function () {
             break;
 
           case 'LOAD_PLAYLIST':
-            if (!action.force_reload && store.getState().core.playlists[action.uri] && store.getState().core.playlists[action.uri].tracks_uris) {
+            if (!action.force_reload && store.getState().core.playlists[action.uri] && store.getState().core.playlists[action.uri].tracks_uris !== undefined) {
               console.info('Loading "' + action.uri + '" from index');
               break;
             }
@@ -86608,12 +86635,12 @@ var SnapcastMiddleware = function () {
 
           case 'SNAPCAST_SET_CLIENT_NAME':
             var client = snapcast.clients[action.id];
-            var params = {
+            var _params = {
               id: action.id,
               name: action.name
             };
 
-            request(store, 'Client.SetName', params).then(function (response) {
+            request(store, 'Client.SetName', _params).then(function (response) {
               store.dispatch(snapcastActions.clientLoaded({
                 id: action.id,
                 name: response.name
@@ -86623,7 +86650,7 @@ var SnapcastMiddleware = function () {
 
           case 'SNAPCAST_SET_CLIENT_MUTE':
             var client = store.getState().snapcast.clients[action.id];
-            var params = {
+            var _params = {
               id: action.id,
               volume: {
                 muted: action.mute,
@@ -86631,7 +86658,7 @@ var SnapcastMiddleware = function () {
               }
             };
 
-            request(store, 'Client.SetVolume', params).then(function (response) {
+            request(store, 'Client.SetVolume', _params).then(function (response) {
               store.dispatch(snapcastActions.clientLoaded({
                 id: action.id,
                 volume: response.volume.percent,
@@ -86644,7 +86671,7 @@ var SnapcastMiddleware = function () {
 
           case 'SNAPCAST_SET_CLIENT_VOLUME':
             var client = snapcast.clients[action.id];
-            var params = {
+            var _params = {
               id: action.id,
               volume: {
                 muted: client.mute,
@@ -86652,7 +86679,7 @@ var SnapcastMiddleware = function () {
               }
             };
 
-            request(store, 'Client.SetVolume', params).then(function (response) {
+            request(store, 'Client.SetVolume', _params).then(function (response) {
               store.dispatch(snapcastActions.clientLoaded({
                 id: action.id,
                 volume: response.volume.percent
@@ -86673,12 +86700,12 @@ var SnapcastMiddleware = function () {
 
           case 'SNAPCAST_SET_CLIENT_LATENCY':
             var client = store.getState().snapcast.clients[action.id];
-            var params = {
+            var _params = {
               id: action.id,
               latency: action.latency
             };
 
-            request(store, 'Client.SetLatency', params).then(function (response) {
+            request(store, 'Client.SetLatency', _params).then(function (response) {
               store.dispatch(snapcastActions.clientLoaded({
                 id: action.id,
                 latency: response.latency
@@ -86704,12 +86731,12 @@ var SnapcastMiddleware = function () {
               clients_ids.splice(clients_ids_index, 1);
             }
 
-            var params = {
+            var _params = {
               id: action.group_id,
               clients: clients_ids
             };
 
-            request(store, 'Group.SetClients', params).then(function (response) {
+            request(store, 'Group.SetClients', _params).then(function (response) {
               store.dispatch(snapcastActions.groupsLoaded(response.server.groups, true));
             }, function (error) {
               store.dispatch(coreActions.handleException('Error', error, error.message));
@@ -86717,11 +86744,11 @@ var SnapcastMiddleware = function () {
             break;
 
           case 'SNAPCAST_DELETE_CLIENT':
-            var params = {
+            var _params = {
               id: action.id
             };
 
-            request(store, 'Server.DeleteClient', params).then(function (response) {
+            request(store, 'Server.DeleteClient', _params).then(function () {
               store.dispatch({
                 type: 'SNAPCAST_CLIENT_REMOVED',
                 key: action.data.params.id
@@ -86733,12 +86760,12 @@ var SnapcastMiddleware = function () {
 
           case 'SNAPCAST_SET_GROUP_NAME':
             var group = snapcast.groups[action.id];
-            var params = {
+            var _params = {
               id: action.id,
               name: action.name
             };
 
-            request(store, 'Group.SetName', params).then(function (response) {
+            request(store, 'Group.SetName', _params).then(function (response) {
               store.dispatch(snapcastActions.groupLoaded({
                 id: action.id,
                 name: response.name
@@ -86748,12 +86775,12 @@ var SnapcastMiddleware = function () {
 
           case 'SNAPCAST_SET_GROUP_STREAM':
             var group = store.getState().snapcast.groups[action.id];
-            var params = {
+            var _params = {
               id: action.id,
               stream_id: action.stream_id
             };
 
-            request(store, 'Group.SetStream', params).then(function (response) {
+            request(store, 'Group.SetStream', _params).then(function (response) {
               store.dispatch(snapcastActions.groupLoaded({
                 id: action.id,
                 stream_id: action.stream_id
@@ -86765,12 +86792,12 @@ var SnapcastMiddleware = function () {
 
           case 'SNAPCAST_SET_GROUP_MUTE':
             var group = store.getState().snapcast.groups[action.id];
-            var params = {
+            var _params = {
               id: action.id,
               mute: action.mute
             };
 
-            request(store, 'Group.SetMute', params).then(function (response) {
+            request(store, 'Group.SetMute', _params).then(function (response) {
               store.dispatch(snapcastActions.groupLoaded({
                 id: action.id,
                 mute: response.mute
@@ -88742,17 +88769,6 @@ function getLibraryArtistsProcessor(data) {
         type: 'SPOTIFY_LIBRARY_ARTISTS_LOADED',
         artists: response.artists.items
       });
-
-      // Check to see if we've been cancelled
-      if (getState().ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR !== undefined) {
-        var processor = getState().ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR;
-
-        if (processor.status == 'cancelling') {
-          dispatch(uiActions.processCancelled('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'));
-          return false;
-        }
-      }
-
       // We got a next link, so we've got more work to be done
       if (response.artists.next) {
         var total = response.artists.total;
@@ -89124,7 +89140,19 @@ var SpotifyMiddleware = function () {
             break;
 
           case 'SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR':
-            store.dispatch(spotifyActions.getLibraryPlaylistsProcessor(action.data));
+            var playlistProcessor = store.getState().ui.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR || {};
+            switch (playlistProcessor.status) {
+              case 'cancelling':
+                store.dispatch(uiActions.processCancelled('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'));
+                break;
+
+              case 'cancelled':
+                break;
+
+              default:
+                store.dispatch(spotifyActions.getLibraryPlaylistsProcessor(action.data));
+                break;
+            }
             break;
 
           case 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED':
@@ -89176,7 +89204,19 @@ var SpotifyMiddleware = function () {
             break;
 
           case 'SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR':
-            store.dispatch(spotifyActions.getLibraryArtistsProcessor(action.data));
+            var artistsProcessor = store.getState().ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR || {};
+            switch (artistsProcessor.status) {
+              case 'cancelling':
+                store.dispatch(uiActions.processCancelled('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'));
+                break;
+
+              case 'cancelled':
+                break;
+
+              default:
+                store.dispatch(spotifyActions.getLibraryArtistsProcessor(action.data));
+                break;
+            }
             break;
 
           case 'SPOTIFY_LIBRARY_ARTISTS_LOADED':
@@ -89199,7 +89239,19 @@ var SpotifyMiddleware = function () {
             break;
 
           case 'SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR':
-            store.dispatch(spotifyActions.getLibraryAlbumsProcessor(action.data));
+            var albumsProcessor = store.getState().ui.processes.SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR || {};
+            switch (albumsProcessor.status) {
+              case 'cancelling':
+                store.dispatch(uiActions.processCancelled('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'));
+                break;
+
+              case 'cancelled':
+                break;
+
+              default:
+                store.dispatch(spotifyActions.getLibraryAlbumsProcessor(action.data));
+                break;
+            }
             break;
 
           case 'SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR':
@@ -90336,6 +90388,7 @@ var UIMiddleware = function () {
             store.dispatch({
               type: action.key + '_CANCELLED'
             });
+            store.dispatch(uiActions.closeProcess(action.key));
             next(action);
             break;
 
@@ -90543,9 +90596,12 @@ function reducer() {
 
     case 'START_PROCESS':
     case 'UPDATE_PROCESS':
-      var processes = _extends({}, ui.processes ? ui.processes : []);
-      if (processes[action.key]) {
-        var data = _extends({}, processes[action.key].data, action.data);
+      var processes = _extends({}, ui.processes || []);
+      var last_run = processes[action.key];
+      var status = 'running';
+      if (last_run) {
+        var data = _extends({}, last_run.data, action.data);
+        status = last_run.status;
       } else {
         var data = action.data;
       }
@@ -90553,8 +90609,8 @@ function reducer() {
         key: action.key,
         content: action.content,
         description: action.description,
-        status: 'running',
         level: action.level,
+        status: status,
         data: data
       };
       return _extends({}, ui, { processes: processes });
@@ -95222,8 +95278,12 @@ var Playlist = function (_React$Component) {
   _createClass(Playlist, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
+      var _props = this.props,
+          loadPlaylist = _props.coreActions.loadPlaylist,
+          uri = _props.uri;
+
       this.setWindowTitle();
-      this.props.coreActions.loadPlaylist(this.props.uri);
+      loadPlaylist(uri);
     }
   }, {
     key: 'setWindowTitle',
@@ -95522,12 +95582,12 @@ var _initialiseProps = function _initialiseProps() {
     var prevUri = _ref.uri,
         prevPlaylist = _ref.playlist,
         prev_mopidy_connected = _ref.mopidy_connected;
-    var _props = _this4.props,
-        uri = _props.uri,
-        playlist = _props.playlist,
-        mopidy_connected = _props.mopidy_connected,
-        loadPlaylist = _props.coreActions.loadPlaylist,
-        push = _props.history.push;
+    var _props2 = _this4.props,
+        uri = _props2.uri,
+        playlist = _props2.playlist,
+        mopidy_connected = _props2.mopidy_connected,
+        loadPlaylist = _props2.coreActions.loadPlaylist,
+        push = _props2.history.push;
 
 
     if (prevPlaylist && playlist && prevPlaylist.moved_to !== playlist.moved_to) {

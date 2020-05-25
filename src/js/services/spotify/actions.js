@@ -1895,7 +1895,7 @@ export function getLibraryArtists() {
 }
 
 export function getLibraryArtistsProcessor(data) {
-  return (dispatch, getState) => {
+  return (dispatch, getState) => {  
     request(dispatch, getState, data.next)
       .then(
         (response) => {
@@ -1903,17 +1903,6 @@ export function getLibraryArtistsProcessor(data) {
             type: 'SPOTIFY_LIBRARY_ARTISTS_LOADED',
             artists: response.artists.items,
           });
-
-          // Check to see if we've been cancelled
-          if (getState().ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR !== undefined) {
-            const processor = getState().ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR;
-
-            if (processor.status == 'cancelling') {
-              dispatch(uiActions.processCancelled('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'));
-              return false;
-            }
-          }
-
           // We got a next link, so we've got more work to be done
           if (response.artists.next) {
             const { total } = response.artists;
