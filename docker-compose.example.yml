@@ -22,6 +22,7 @@ services:
       # Uncomment these lines to use a host-managed development build
       #- ./mopidy_iris:/iris/mopidy_iris
       #- ./IRIS_VERSION:/iris/IRIS_VERSION
+      - ./docker/data:/var/lib/mopidy/iris
       - ./docker/mopidy.conf:/config/mopidy.conf
       - HOST_MUSIC_DIRECTORY:/var/lib/mopidy/media
       - HOST_SNAPCAST_TEMP:/tmp
