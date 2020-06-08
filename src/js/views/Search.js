@@ -13,6 +13,7 @@ import PlaylistGrid from '../components/PlaylistGrid';
 import LazyLoadListener from '../components/LazyLoadListener';
 import SearchForm from '../components/Fields/SearchForm';
 import URILink from '../components/URILink';
+import SearchResults from '../components/SearchResults';
 import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
@@ -74,7 +75,9 @@ class Search extends React.Component {
     }
   }
 
-  handleSubmit(term) {
+  handleSubmit = (term) => {
+    const { type } = this.state;
+    const { history, term: propTerm } = this.props;
     const encodedTerm = encodeURIComponent(term);
 
     this.setState(
@@ -82,10 +85,10 @@ class Search extends React.Component {
         // Unchanged term, so this is a forced re-search
         // Often the other search parameters have changed instead, but we can't
         // push a URL change when the term hasn't changed
-        if (this.props.term == term) {
+        if (propTerm === term) {
           this.search();
         } else {
-          this.props.history.push(`/search/${this.state.type}/${encodedTerm}`);
+          history.push(`/search/${type}/${encodedTerm}`);
         }
       },
     );
@@ -309,7 +312,19 @@ class Search extends React.Component {
     );
   }
 
-  render() {
+  render = () => {
+    const {
+      term,
+      type,
+    } = this.state;
+    const {
+      search_settings,
+      uri_schemes,
+      sort,
+      uri_schemes_priority,
+      mopidy_search_results,
+      spotify_search_results,
+    } = this.props;
     const sort_options = [
       {
         value: 'followers',
@@ -334,21 +349,19 @@ class Search extends React.Component {
     ];
 
     const provider_options = [];
-    for (let i = 0; i < this.props.uri_schemes.length; i++) {
+    for (let i = 0; i < uri_schemes.length; i++) {
       provider_options.push({
-        value: this.props.uri_schemes[i],
-        label: titleCase(this.props.uri_schemes[i].replace(':', '').replace('+', ' ')),
+        value: uri_schemes[i],
+        label: titleCase(uri_schemes[i].replace(':', '').replace('+', ' ')),
       });
     }
-    const spotify_search_enabled = (this.props.search_settings && this.props.search_settings.spotify);
-
-    const { sort } = this.props;
+    const spotify_search_enabled = (search_settings && search_settings.spotify);
     let { sort_reverse } = this.props;
     let sort_map = null;
 
-    switch (this.props.sort) {
+    switch (sort) {
       case 'uri':
-        sort_map = this.props.uri_schemes_priority;
+        sort_map = uri_schemes_priority;
         break;
 
         // Followers (aka popularlity works in reverse-numerical order)
@@ -359,40 +372,42 @@ class Search extends React.Component {
     }
 
     let artists = [];
-    if (this.props.mopidy_search_results.artists) {
-      artists = [...artists, ...getIndexedRecords(this.props.artists, this.props.mopidy_search_results.artists)];
-    }
-    if (this.props.spotify_search_results.artists) {
-      artists = [...artists, ...getIndexedRecords(this.props.artists, this.props.spotify_search_results.artists)];
-    }
-    artists = sortItems(artists, sort, sort_reverse, sort_map);
-
     let albums = [];
-    if (this.props.mopidy_search_results.albums) {
-      albums = [...albums, ...getIndexedRecords(this.props.albums, this.props.mopidy_search_results.albums)];
-    }
-    if (this.props.spotify_search_results.albums) {
-      albums = [...albums, ...getIndexedRecords(this.props.albums, this.props.spotify_search_results.albums)];
-    }
-    albums = sortItems(albums, sort, sort_reverse, sort_map);
-
     let playlists = [];
-    if (this.props.mopidy_search_results.playlists) {
-      playlists = [...playlists, ...getIndexedRecords(this.props.playlists, this.props.mopidy_search_results.playlists)];
-    }
-    if (this.props.spotify_search_results.playlists) {
-      playlists = [...playlists, ...getIndexedRecords(this.props.playlists, this.props.spotify_search_results.playlists)];
-    }
-    playlists = sortItems(playlists, sort, sort_reverse, sort_map);
-
     let tracks = [];
-    if (this.props.mopidy_search_results.tracks) {
-      tracks = [...tracks, ...this.props.mopidy_search_results.tracks];
-    }
-    if (this.props.spotify_search_results.tracks) {
-      tracks = [...tracks, ...this.props.spotify_search_results.tracks];
+    if (mopidy_search_results.query === term) {
+      if (mopidy_search_results.artists && mopidy_search_results.query === term) {
+        artists = [...artists, ...getIndexedRecords(this.props.artists, mopidy_search_results.artists)];
+      }
+      if (mopidy_search_results.albums) {
+        albums = [...albums, ...getIndexedRecords(this.props.albums, mopidy_search_results.albums)];
+      }
+      if (mopidy_search_results.playlists) {
+        playlists = [...playlists, ...getIndexedRecords(this.props.playlists, mopidy_search_results.playlists)];
+      }
+      if (mopidy_search_results.tracks) {
+        tracks = [...tracks, ...mopidy_search_results.tracks];
+      }
     }
 
+    if (spotify_search_results.query === term) {
+      if (spotify_search_results.artists) {
+        artists = [...artists, ...getIndexedRecords(this.props.artists, spotify_search_results.artists)];
+      }
+      if (spotify_search_results.albums) {
+        albums = [...albums, ...getIndexedRecords(this.props.albums, spotify_search_results.albums)];
+      }
+      if (spotify_search_results.playlists) {
+        playlists = [...playlists, ...getIndexedRecords(this.props.playlists, spotify_search_results.playlists)];
+      }
+      if (spotify_search_results.tracks) {
+        tracks = [...tracks, ...spotify_search_results.tracks];
+      }
+    }
+
+    albums = sortItems(albums, sort, sort_reverse, sort_map);
+    playlists = sortItems(playlists, sort, sort_reverse, sort_map);
+    artists = sortItems(artists, sort, sort_reverse, sort_map);
     tracks = sortItems(tracks, (sort == 'followers' ? 'popularity' : sort), sort_reverse, sort_map);
 
     const options = (
@@ -400,7 +415,7 @@ class Search extends React.Component {
         <DropdownField
           icon="swap_vert"
           name="Sort"
-          value={this.props.sort}
+          value={sort}
           valueAsLabel
           options={sort_options}
           selected_icon={this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}
@@ -436,24 +451,29 @@ class Search extends React.Component {
         <div className="content-wrapper">
           <Switch>
 
-            <Route path="/search/artist/:term">
-              {this.renderArtists(artists, spotify_search_enabled)}
+            <Route path="/search/artists/:term">
+              <SearchResults type="artists" query={{ term, type }} />
             </Route>
 
-            <Route path="/search/album/:term">
-              {this.renderAlbums(albums, spotify_search_enabled)}
+            <Route path="/search/albums/:term">
+              <SearchResults type="albums" query={{ term, type }} />
             </Route>
 
-            <Route path="/search/playlist/:term">
-              {this.renderPlaylists(playlists, spotify_search_enabled)}
+            <Route path="/search/playlists/:term">
+              <SearchResults type="playlists" query={{ term, type }} />
             </Route>
 
-            <Route path="/search/track/:term">
-              {this.renderTracks(tracks, spotify_search_enabled)}
+            <Route path="/search/tracks/:term">
+              <SearchResults type="tracks" query={{ term, type }} />
             </Route>
 
             <Route path="/search">
-              {this.renderAll(artists, albums, playlists, tracks, spotify_search_enabled)}
+              <div className="search-result-sections cf">
+                <SearchResults type="artists" query={{ term, type }} all />
+                <SearchResults type="albums" query={{ term, type }} all />
+                <SearchResults type="playlists" query={{ term, type }} all />
+              </div>
+              <SearchResults type="tracks" query={{ term, type }} all />
             </Route>
 
           </Switch>

@@ -34,7 +34,7 @@ class SearchForm extends React.Component {
     return false;
   }
 
-  handleBlur() {
+  handleBlur = () => {
     const { onBlur } = this.props;
     const { term } = this.state;
     this.setState({ pristine: false });
@@ -43,11 +43,11 @@ class SearchForm extends React.Component {
     }
   }
 
-  handleFocus(e) {
+  handleFocus = () => {
     this.setState({ pristine: false });
   }
 
-  handleSubmit(e) {
+  handleSubmit = (e) => {
     e.preventDefault();
 
     // check for uri type matching
@@ -84,8 +84,8 @@ class SearchForm extends React.Component {
             type="text"
             placeholder="Search..."
             onChange={(e) => this.setState({ term: e.target.value, pristine: false })}
-            onBlur={(e) => this.handleBlur}
-            onFocus={(e) => this.handleFocus}
+            onBlur={this.handleBlur}
+            onFocus={this.handleFocus}
             value={this.state.term}
           />
         </label>
