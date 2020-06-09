@@ -71017,6 +71017,14 @@ var uiActions = _interopRequireWildcard(_actions);
 
 var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
 
+var _Icon = __webpack_require__(/*! ../Icon */ "./src/js/components/Icon.js");
+
+var _Icon2 = _interopRequireDefault(_Icon);
+
+var _Link = __webpack_require__(/*! ../Link */ "./src/js/components/Link.js");
+
+var _Link2 = _interopRequireDefault(_Link);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -71037,12 +71045,89 @@ var SearchForm = function (_React$Component) {
 
     _this.shouldComponentUpdate = function (nextProps, nextState) {
       var termProp = _this.props.term;
-      var termState = _this.props.term;
+      var termState = _this.state.term;
 
       if (nextProps.term !== termProp) return true;
       if (nextState.term !== termState) return true;
 
       return false;
+    };
+
+    _this.onChange = function (e) {
+      _this.setState({
+        term: e.target.value,
+        pristine: false
+      });
+    };
+
+    _this.onBlur = function () {
+      var onBlur = _this.props.onBlur;
+      var term = _this.state.term;
+
+      _this.setState({ pristine: false });
+      if (onBlur) {
+        onBlur(term);
+      }
+    };
+
+    _this.onFocus = function () {
+      _this.setState({ pristine: false });
+    };
+
+    _this.onSubmit = function (e) {
+      var term = _this.state.term;
+      var history = _this.props.history;
+
+      e.preventDefault();
+
+      // check for uri type matching
+      switch ((0, _helpers.uriType)(term)) {
+        case 'album':
+          history.push('/album/' + encodeURIComponent(term));
+          break;
+
+        case 'artist':
+          history.push('/artist/' + encodeURIComponent(term));
+          break;
+
+        case 'playlist':
+          history.push('/playlist/' + encodeURIComponent(term));
+          break;
+
+        case 'track':
+          history.push('/track/' + encodeURIComponent(term));
+          break;
+
+        default:
+          _this.props.onSubmit(term);
+          break;
+      }
+
+      return false;
+    };
+
+    _this.render = function () {
+      var term = _this.state.term;
+      var onReset = _this.props.onReset;
+
+
+      return _react2.default.createElement(
+        'form',
+        { className: 'search-form', onSubmit: _this.onSubmit },
+        _react2.default.createElement(
+          'label',
+          null,
+          _react2.default.createElement('input', {
+            type: 'text',
+            placeholder: 'Search...',
+            onChange: _this.onChange,
+            onBlur: _this.onBlur,
+            onFocus: _this.onFocus,
+            value: term
+          })
+        ),
+        term && _react2.default.createElement(_Icon2.default, { name: 'close', className: 'search-form__reset', onClick: onReset })
+      );
     };
 
     _this.state = {
@@ -71052,83 +71137,7 @@ var SearchForm = function (_React$Component) {
     return _this;
   }
 
-  _createClass(SearchForm, [{
-    key: 'handleBlur',
-    value: function handleBlur() {
-      var onBlur = this.props.onBlur;
-      var term = this.state.term;
-
-      this.setState({ pristine: false });
-      if (onBlur) {
-        onBlur(term);
-      }
-    }
-  }, {
-    key: 'handleFocus',
-    value: function handleFocus(e) {
-      this.setState({ pristine: false });
-    }
-  }, {
-    key: 'handleSubmit',
-    value: function handleSubmit(e) {
-      e.preventDefault();
-
-      // check for uri type matching
-      switch ((0, _helpers.uriType)(this.state.term)) {
-        case 'album':
-          this.props.history.push('/album/' + encodeURIComponent(this.state.term));
-          break;
-
-        case 'artist':
-          this.props.history.push('/artist/' + encodeURIComponent(this.state.term));
-          break;
-
-        case 'playlist':
-          this.props.history.push('/playlist/' + encodeURIComponent(this.state.term));
-          break;
-
-        case 'track':
-          this.props.history.push('/track/' + encodeURIComponent(this.state.term));
-          break;
-
-        default:
-          this.props.onSubmit(this.state.term);
-          break;
-      }
-
-      return false;
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var _this2 = this;
-
-      return _react2.default.createElement(
-        'form',
-        { className: 'search-form', onSubmit: function onSubmit(e) {
-            return _this2.handleSubmit(e);
-          } },
-        _react2.default.createElement(
-          'label',
-          null,
-          _react2.default.createElement('input', {
-            type: 'text',
-            placeholder: 'Search...',
-            onChange: function onChange(e) {
-              return _this2.setState({ term: e.target.value, pristine: false });
-            },
-            onBlur: function onBlur(e) {
-              return _this2.handleBlur;
-            },
-            onFocus: function onFocus(e) {
-              return _this2.handleFocus;
-            },
-            value: this.state.term
-          })
-        )
-      );
-    }
-  }], [{
+  _createClass(SearchForm, null, [{
     key: 'getDerivedStateFromProps',
     value: function getDerivedStateFromProps(props, state) {
       var pristine = state.pristine,
@@ -72344,7 +72353,7 @@ exports.default = (0, _react.memo)(function (_ref) {
 
   if (!name || name === '') return null;
 
-  var fullClassName = 'icon icon--' + (type || 'material') + ' ' + className;
+  var fullClassName = 'icon icon--' + (type || 'material') + ' ' + (className || '');
 
   switch (type) {
     case 'svg':
@@ -74821,6 +74830,166 @@ exports.default = function (props) {
 
   return null;
 };
+
+/***/ }),
+
+/***/ "./src/js/components/SearchResults.js":
+/*!********************************************!*\
+  !*** ./src/js/components/SearchResults.js ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+
+var _helpers = __webpack_require__(/*! ../util/helpers */ "./src/js/util/helpers.js");
+
+var _arrays = __webpack_require__(/*! ../util/arrays */ "./src/js/util/arrays.js");
+
+var _URILink = __webpack_require__(/*! ./URILink */ "./src/js/components/URILink.js");
+
+var _URILink2 = _interopRequireDefault(_URILink);
+
+var _Icon = __webpack_require__(/*! ./Icon */ "./src/js/components/Icon.js");
+
+var _Icon2 = _interopRequireDefault(_Icon);
+
+var _AlbumGrid = __webpack_require__(/*! ./AlbumGrid */ "./src/js/components/AlbumGrid.js");
+
+var _AlbumGrid2 = _interopRequireDefault(_AlbumGrid);
+
+var _ArtistGrid = __webpack_require__(/*! ./ArtistGrid */ "./src/js/components/ArtistGrid.js");
+
+var _ArtistGrid2 = _interopRequireDefault(_ArtistGrid);
+
+var _PlaylistGrid = __webpack_require__(/*! ./PlaylistGrid */ "./src/js/components/PlaylistGrid.js");
+
+var _PlaylistGrid2 = _interopRequireDefault(_PlaylistGrid);
+
+var _TrackList = __webpack_require__(/*! ./TrackList */ "./src/js/components/TrackList.js");
+
+var _TrackList2 = _interopRequireDefault(_TrackList);
+
+var _LazyLoadListener = __webpack_require__(/*! ./LazyLoadListener */ "./src/js/components/LazyLoadListener.js");
+
+var _LazyLoadListener2 = _interopRequireDefault(_LazyLoadListener);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+var SearchResults = function SearchResults(_ref) {
+  var type = _ref.type,
+      query = _ref.query,
+      loadMore = _ref.loadMore,
+      index = _ref.index,
+      mopidy_search_results = _ref.mopidy_search_results,
+      spotify_search_results = _ref.spotify_search_results,
+      sort = _ref.sort,
+      sort_reverse = _ref.sort_reverse,
+      uri_schemes_priority = _ref.uri_schemes_priority,
+      all = _ref.all;
+
+  var encodedTerm = encodeURIComponent(query.term);
+
+  var results = [];
+  if (mopidy_search_results.query === query.term && mopidy_search_results[type]) {
+    results = [].concat(_toConsumableArray(results), _toConsumableArray(type === 'tracks' ? mopidy_search_results[type] : (0, _helpers.getIndexedRecords)(index, mopidy_search_results[type])));
+  }
+
+  if (spotify_search_results.query === query.term && spotify_search_results[type]) {
+    results = [].concat(_toConsumableArray(results), _toConsumableArray(type === 'tracks' ? spotify_search_results[type] : (0, _helpers.getIndexedRecords)(index, spotify_search_results[type])));
+  }
+
+  var sort_map = null;
+  switch (sort) {
+    case 'uri':
+      sort_map = uri_schemes_priority;
+      break;
+    case 'followers':
+      // Followers (aka popularlity works in reverse-numerical order)
+      // Ie "more popular" is a bigger number
+      sort_reverse = !sort_reverse;
+      break;
+    default:
+      break;
+  }
+
+  results = (0, _arrays.sortItems)(results, type === 'tracks' && sort === 'followers' ? 'popularity' : sort, sort_reverse, sort_map);
+
+  var resultsCount = results.length;
+  if (all && type !== 'tracks' && results.length > 5) {
+    results = results.slice(0, 6);
+  }
+
+  if (results.length <= 0) return null;
+
+  return _react2.default.createElement(
+    'div',
+    null,
+    _react2.default.createElement(
+      'h4',
+      null,
+      !all && _react2.default.createElement(
+        'span',
+        null,
+        _react2.default.createElement(
+          _URILink2.default,
+          { uri: 'iris:search:all:' + encodedTerm },
+          'Search '
+        ),
+        _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
+        ' ' + (0, _helpers.titleCase)(type)
+      ),
+      all && _react2.default.createElement(
+        _URILink2.default,
+        { uri: 'iris:search:' + type + ':' + encodedTerm },
+        (0, _helpers.titleCase)(type)
+      )
+    ),
+    _react2.default.createElement(
+      'section',
+      { className: 'grid-wrapper' },
+      type === 'artists' && _react2.default.createElement(_ArtistGrid2.default, { artists: results, show_source_icon: true, mini: all }),
+      type === 'albums' && _react2.default.createElement(_AlbumGrid2.default, { albums: results, show_source_icon: true, mini: all }),
+      type === 'playlists' && _react2.default.createElement(_PlaylistGrid2.default, { playlists: results, show_source_icon: true, mini: all }),
+      type === 'tracks' && _react2.default.createElement(_TrackList2.default, { tracks: results, uri: 'iris:search:' + query.type + ':' + encodedTerm, show_source_icon: true }),
+      resultsCount > results.length && _react2.default.createElement(
+        _URILink2.default,
+        { uri: 'iris:search:' + type + ':' + encodedTerm, className: 'button button--default' },
+        'All ' + type + ' (' + resultsCount + ')'
+      )
+    )
+  );
+};
+
+var mapStateToProps = function mapStateToProps(state, ownProps) {
+  return {
+    index: state.core[ownProps.type] || [],
+    uri_schemes_priority: state.ui.uri_schemes_priority || [],
+    mopidy_search_results: state.mopidy.search_results || {},
+    spotify_search_results: state.spotify.search_results || {},
+    sort: state.ui.search_results_sort || 'followers.total',
+    sort_reverse: !!state.ui.search_results_sort_reverse
+  };
+};
+
+var mapDispatchToProps = function mapDispatchToProps() {
+  return {};
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(SearchResults);
 
 /***/ }),
 
@@ -96494,6 +96663,10 @@ var _URILink = __webpack_require__(/*! ../components/URILink */ "./src/js/compon
 
 var _URILink2 = _interopRequireDefault(_URILink);
 
+var _SearchResults = __webpack_require__(/*! ../components/SearchResults */ "./src/js/components/SearchResults.js");
+
+var _SearchResults2 = _interopRequireDefault(_SearchResults);
+
 var _actions = __webpack_require__(/*! ../services/core/actions */ "./src/js/services/core/actions.js");
 
 var coreActions = _interopRequireWildcard(_actions);
@@ -96517,8 +96690,6 @@ var _arrays = __webpack_require__(/*! ../util/arrays */ "./src/js/util/arrays.js
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -96562,9 +96733,231 @@ var Search = function (_React$Component) {
       }
     };
 
+    _this.handleSubmit = function (term) {
+      var type = _this.state.type;
+      var _this$props2 = _this.props,
+          history = _this$props2.history,
+          propTerm = _this$props2.term;
+
+      var encodedTerm = encodeURIComponent(term);
+
+      _this.setState({ term: term }, function () {
+        // Unchanged term, so this is a forced re-search
+        // Often the other search parameters have changed instead, but we can't
+        // push a URL change when the term hasn't changed
+        if (propTerm === term) {
+          _this.search();
+        } else {
+          history.push('/search/' + type + '/' + encodedTerm);
+        }
+      });
+    };
+
+    _this.onReset = function () {
+      var history = _this.props.history;
+
+      _this.setState({ term: '', type: 'all' });
+      history.push('/search');
+    };
+
+    _this.digestUri = function () {
+      var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _this.props,
+          type = _ref2.type,
+          term = _ref2.term;
+
+      if (type && term) {
+        _this.setState({ type: type, term: term });
+
+        _this.search(type, term);
+      } else if (!term || term === '') {
+        _this.props.spotifyActions.clearSearchResults();
+        _this.props.mopidyActions.clearSearchResults();
+      }
+    };
+
+    _this.search = function () {
+      var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _this.state.type;
+      var term = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _this.state.term;
+      var provider = arguments[2];
+
+      _this.props.uiActions.setWindowTitle('Search: ' + decodeURIComponent(term));
+
+      if (type && term) {
+        if (provider == 'mopidy' || _this.props.mopidy_connected && _this.props.uri_schemes_search_enabled) {
+          if (_this.props.mopidy_search_results.query === undefined || _this.props.mopidy_search_results.query != term) {
+            _this.props.mopidyActions.clearSearchResults();
+            _this.props.mopidyActions.getSearchResults(type, term);
+          }
+        }
+
+        if (provider == 'spotify' || _this.props.mopidy_connected && _this.props.uri_schemes_search_enabled && _this.props.uri_schemes_search_enabled.includes('spotify:')) {
+          if (_this.props.spotify_search_results.query === undefined || _this.props.spotify_search_results.query != term) {
+            _this.props.spotifyActions.clearSearchResults();
+            _this.props.spotifyActions.getSearchResults(type, term);
+          }
+        }
+      }
+    };
+
+    _this.render = function () {
+      var _this$state2 = _this.state,
+          term = _this$state2.term,
+          type = _this$state2.type;
+      var _this$props3 = _this.props,
+          search_settings = _this$props3.search_settings,
+          uri_schemes = _this$props3.uri_schemes,
+          sort = _this$props3.sort,
+          sort_reverse = _this$props3.sort_reverse,
+          history = _this$props3.history,
+          uri_schemes_priority = _this$props3.uri_schemes_priority,
+          uri_schemes_search_enabled = _this$props3.uri_schemes_search_enabled,
+          mopidy_search_results = _this$props3.mopidy_search_results,
+          spotify_search_results = _this$props3.spotify_search_results,
+          spotifyActions = _this$props3.spotifyActions,
+          mopidyActions = _this$props3.mopidyActions;
+
+      var sort_options = [{
+        value: 'followers',
+        label: 'Popularity'
+      }, {
+        value: 'name',
+        label: 'Name'
+      }, {
+        value: 'artists.name',
+        label: 'Artist'
+      }, {
+        value: 'duration',
+        label: 'Duration'
+      }, {
+        value: 'uri',
+        label: 'Source'
+      }];
+
+      var provider_options = [];
+      for (var i = 0; i < uri_schemes.length; i++) {
+        provider_options.push({
+          value: uri_schemes[i],
+          label: (0, _helpers.titleCase)(uri_schemes[i].replace(':', '').replace('+', ' '))
+        });
+      }
+
+      var options = _react2.default.createElement(
+        'span',
+        null,
+        _react2.default.createElement(_DropdownField2.default, {
+          icon: 'swap_vert',
+          name: 'Sort',
+          value: sort,
+          valueAsLabel: true,
+          options: sort_options,
+          selected_icon: sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down',
+          handleChange: function handleChange(value) {
+            _this.setSort(value);uiActions.hideContextMenu();
+          }
+        }),
+        _react2.default.createElement(_DropdownField2.default, {
+          icon: 'cloud',
+          name: 'Sources',
+          value: uri_schemes_search_enabled,
+          options: provider_options,
+          handleChange: function handleChange(value) {
+            return _this.handleSourceChange(value);
+          },
+          onClose: function onClose() {
+            spotifyActions.clearSearchResults();
+            mopidyActions.clearSearchResults();
+            _this.search();
+          }
+        })
+      );
+
+      return _react2.default.createElement(
+        'div',
+        { className: 'view search-view' },
+        _react2.default.createElement(
+          _Header2.default,
+          { options: options, uiActions: uiActions },
+          _react2.default.createElement(_Icon2.default, { name: 'search', type: 'material' })
+        ),
+        _react2.default.createElement(_SearchForm2.default, {
+          key: 'search_form_' + type + '_' + term,
+          history: history,
+          term: term,
+          onSubmit: function onSubmit(term) {
+            return _this.handleSubmit(term);
+          },
+          onReset: _this.onReset
+        }),
+        _react2.default.createElement(
+          'div',
+          { className: 'content-wrapper' },
+          _react2.default.createElement(
+            _reactRouterDom.Switch,
+            null,
+            _react2.default.createElement(
+              _reactRouterDom.Route,
+              { path: '/search/artists/:term' },
+              _react2.default.createElement(_SearchResults2.default, { type: 'artists', query: { term: term, type: type } })
+            ),
+            _react2.default.createElement(
+              _reactRouterDom.Route,
+              { path: '/search/albums/:term' },
+              _react2.default.createElement(_SearchResults2.default, { type: 'albums', query: { term: term, type: type } })
+            ),
+            _react2.default.createElement(
+              _reactRouterDom.Route,
+              { path: '/search/playlists/:term' },
+              _react2.default.createElement(_SearchResults2.default, { type: 'playlists', query: { term: term, type: type } })
+            ),
+            _react2.default.createElement(
+              _reactRouterDom.Route,
+              { path: '/search/tracks/:term' },
+              _react2.default.createElement(_SearchResults2.default, { type: 'tracks', query: { term: term, type: type } })
+            ),
+            _react2.default.createElement(
+              _reactRouterDom.Route,
+              { path: '/search' },
+              _react2.default.createElement(
+                'div',
+                { className: 'search-result-sections cf' },
+                _react2.default.createElement(
+                  'section',
+                  { className: 'search-result-sections__item' },
+                  _react2.default.createElement(
+                    'div',
+                    { className: 'inner' },
+                    _react2.default.createElement(_SearchResults2.default, { type: 'artists', query: { term: term, type: type }, all: true })
+                  )
+                ),
+                _react2.default.createElement(
+                  'section',
+                  { className: 'search-result-sections__item' },
+                  _react2.default.createElement(
+                    'div',
+                    { className: 'inner' },
+                    _react2.default.createElement(_SearchResults2.default, { type: 'albums', query: { term: term, type: type }, all: true })
+                  )
+                ),
+                _react2.default.createElement(
+                  'section',
+                  { className: 'search-result-sections__item' },
+                  _react2.default.createElement(
+                    'div',
+                    { className: 'inner' },
+                    _react2.default.createElement(_SearchResults2.default, { type: 'playlists', query: { term: term, type: type }, all: true })
+                  )
+                )
+              ),
+              _react2.default.createElement(_SearchResults2.default, { type: 'tracks', query: { term: term, type: type }, all: true })
+            )
+          )
+        )
+      );
+    };
+
     _this.state = {
-      type: 'all',
-      term: ''
+      type: props.type || 'all',
+      term: props.term || ''
     };
     return _this;
   }
@@ -96583,70 +96976,10 @@ var Search = function (_React$Component) {
         term: decodeURIComponent(this.props.term)
       }));
     }
-  }, {
-    key: 'handleSubmit',
-    value: function handleSubmit(term) {
-      var _this2 = this;
-
-      var encodedTerm = encodeURIComponent(term);
-
-      this.setState({ term: term }, function () {
-        // Unchanged term, so this is a forced re-search
-        // Often the other search parameters have changed instead, but we can't
-        // push a URL change when the term hasn't changed
-        if (_this2.props.term == term) {
-          _this2.search();
-        } else {
-          _this2.props.history.push('/search/' + _this2.state.type + '/' + encodedTerm);
-        }
-      });
-    }
 
     // Digest the URI query property
     // Triggered when the URL changes
 
-  }, {
-    key: 'digestUri',
-    value: function digestUri() {
-      var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props;
-
-      if (props.type && props.term) {
-        this.setState({
-          type: props.type,
-          term: props.term
-        });
-
-        this.search(props.type, props.term);
-      } else if (!props.term || props.term == '') {
-        this.props.spotifyActions.clearSearchResults();
-        this.props.mopidyActions.clearSearchResults();
-      }
-    }
-  }, {
-    key: 'search',
-    value: function search() {
-      var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.state.type;
-      var term = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.state.term;
-      var provider = arguments[2];
-
-      this.props.uiActions.setWindowTitle('Search: ' + decodeURIComponent(term));
-
-      if (type && term) {
-        if (provider == 'mopidy' || this.props.mopidy_connected && this.props.uri_schemes_search_enabled) {
-          if (this.props.mopidy_search_results.query === undefined || this.props.mopidy_search_results.query != term) {
-            this.props.mopidyActions.clearSearchResults();
-            this.props.mopidyActions.getSearchResults(type, term);
-          }
-        }
-
-        if (provider == 'spotify' || this.props.mopidy_connected && this.props.uri_schemes_search_enabled && this.props.uri_schemes_search_enabled.includes('spotify:')) {
-          if (this.props.spotify_search_results.query === undefined || this.props.spotify_search_results.query != term) {
-            this.props.spotifyActions.clearSearchResults();
-            this.props.spotifyActions.getSearchResults(type, term);
-          }
-        }
-      }
-    }
   }, {
     key: 'loadMore',
     value: function loadMore(type) {
@@ -96670,407 +97003,6 @@ var Search = function (_React$Component) {
     value: function handleSourceChange(value) {
       this.props.uiActions.set({ uri_schemes_search_enabled: value });
       this.props.uiActions.hideContextMenu();
-    }
-  }, {
-    key: 'renderArtists',
-    value: function renderArtists(artists, spotify_search_enabled) {
-      var _this3 = this;
-
-      var encodedTerm = encodeURIComponent(this.state.term);
-      return _react2.default.createElement(
-        'div',
-        null,
-        _react2.default.createElement(
-          'h4',
-          null,
-          _react2.default.createElement(
-            _URILink2.default,
-            { uri: 'iris:search:all:' + encodedTerm },
-            'Search '
-          ),
-          _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
-          ' Artists'
-        ),
-        _react2.default.createElement(
-          'section',
-          { className: 'grid-wrapper' },
-          _react2.default.createElement(_ArtistGrid2.default, { artists: artists, show_source_icon: true }),
-          _react2.default.createElement(_LazyLoadListener2.default, { enabled: this.props.artists_more && spotify_search_enabled, loadMore: function loadMore() {
-              return _this3.loadMore('artists');
-            } })
-        )
-      );
-    }
-  }, {
-    key: 'renderAlbums',
-    value: function renderAlbums(albums, spotify_search_enabled) {
-      var _this4 = this;
-
-      var encodedTerm = encodeURIComponent(this.state.term);
-      return _react2.default.createElement(
-        'div',
-        null,
-        _react2.default.createElement(
-          'h4',
-          null,
-          _react2.default.createElement(
-            _URILink2.default,
-            { uri: 'iris:search:all:' + encodedTerm },
-            'Search '
-          ),
-          _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
-          ' Albums'
-        ),
-        _react2.default.createElement(
-          'section',
-          { className: 'grid-wrapper' },
-          _react2.default.createElement(_AlbumGrid2.default, { albums: albums, show_source_icon: true }),
-          _react2.default.createElement(_LazyLoadListener2.default, { enabled: this.props.albums_more && spotify_search_enabled, loadMore: function loadMore() {
-              return _this4.loadMore('albums');
-            } })
-        )
-      );
-    }
-  }, {
-    key: 'renderPlaylists',
-    value: function renderPlaylists(playlists, spotify_search_enabled) {
-      var _this5 = this;
-
-      var encodedTerm = encodeURIComponent(this.state.term);
-      return _react2.default.createElement(
-        'div',
-        null,
-        _react2.default.createElement(
-          'h4',
-          null,
-          _react2.default.createElement(
-            _URILink2.default,
-            { uri: 'iris:search:all:' + encodedTerm },
-            'Search '
-          ),
-          _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
-          ' Playlists'
-        ),
-        _react2.default.createElement(
-          'section',
-          { className: 'grid-wrapper' },
-          _react2.default.createElement(_PlaylistGrid2.default, { playlists: playlists, show_source_icon: true }),
-          _react2.default.createElement(_LazyLoadListener2.default, { enabled: this.props.playlists_more && spotify_search_enabled, loadMore: function loadMore() {
-              return _this5.loadMore('playlists');
-            } })
-        )
-      );
-    }
-  }, {
-    key: 'renderTracks',
-    value: function renderTracks(tracks, spotify_search_enabled) {
-      var _this6 = this;
-
-      var encodedTerm = encodeURIComponent(this.state.term);
-      return _react2.default.createElement(
-        'div',
-        null,
-        _react2.default.createElement(
-          'h4',
-          null,
-          _react2.default.createElement(
-            _URILink2.default,
-            { uri: 'iris:search:all:' + encodedTerm },
-            'Search '
-          ),
-          _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
-          ' Tracks'
-        ),
-        _react2.default.createElement(
-          'section',
-          { className: 'list-wrapper' },
-          _react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: 'iris:search:' + this.state.type + ':' + encodedTerm, show_source_icon: true }),
-          _react2.default.createElement(_LazyLoadListener2.default, { enabled: this.props.tracks_more && spotify_search_enabled, loadMore: function loadMore() {
-              return _this6.loadMore('tracks');
-            } })
-        )
-      );
-    }
-  }, {
-    key: 'renderAll',
-    value: function renderAll(artists, albums, playlists, tracks, spotify_search_enabled) {
-      var _this7 = this;
-
-      var encodedTerm = encodeURIComponent(this.state.term);
-      if (artists.length > 0) {
-        var artists_section = _react2.default.createElement(
-          'section',
-          null,
-          _react2.default.createElement(
-            'div',
-            { className: 'inner' },
-            _react2.default.createElement(
-              _URILink2.default,
-              { uri: 'iris:search:artist:' + encodedTerm },
-              _react2.default.createElement(
-                'h4',
-                null,
-                'Artists'
-              )
-            ),
-            _react2.default.createElement(_ArtistGrid2.default, { mini: true, show_source_icon: true, artists: artists.slice(0, 6) }),
-            artists.length >= 6 && _react2.default.createElement(
-              _URILink2.default,
-              { uri: 'iris:search:artist:' + encodedTerm, className: 'button button--default' },
-              'All artists (' + artists.length + ')'
-            )
-          )
-        );
-      } else {
-        var artists_section = null;
-      }
-
-      if (albums.length > 0) {
-        var albums_section = _react2.default.createElement(
-          'section',
-          null,
-          _react2.default.createElement(
-            'div',
-            { className: 'inner' },
-            _react2.default.createElement(
-              _URILink2.default,
-              { uri: 'iris:search:album:' + encodedTerm },
-              _react2.default.createElement(
-                'h4',
-                null,
-                'Albums'
-              )
-            ),
-            _react2.default.createElement(_AlbumGrid2.default, { mini: true, show_source_icon: true, albums: albums.slice(0, 6) }),
-            albums.length >= 6 && _react2.default.createElement(
-              _URILink2.default,
-              { uri: 'iris:search:album:' + encodedTerm, className: 'button button--default' },
-              'All albums (' + albums.length + ')'
-            )
-          )
-        );
-      } else {
-        var albums_section = null;
-      }
-
-      if (playlists.length > 0) {
-        var playlists_section = _react2.default.createElement(
-          'section',
-          null,
-          _react2.default.createElement(
-            'div',
-            { className: 'inner' },
-            _react2.default.createElement(
-              _URILink2.default,
-              { uri: 'iris:search:playlist:' + encodedTerm },
-              _react2.default.createElement(
-                'h4',
-                null,
-                'Playlists'
-              )
-            ),
-            _react2.default.createElement(_PlaylistGrid2.default, { mini: true, show_source_icon: true, playlists: playlists.slice(0, 6) }),
-            playlists.length >= 6 && _react2.default.createElement(
-              _URILink2.default,
-              { uri: 'iris:search:playlist:' + encodedTerm, className: 'button button--default' },
-              'All playlists (' + playlists.length + ')'
-            )
-          )
-        );
-      } else {
-        var playlists_section = null;
-      }
-
-      if (tracks.length > 0) {
-        var tracks_section = _react2.default.createElement(
-          'section',
-          { className: 'list-wrapper' },
-          _react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: 'iris:search:' + this.state.type + ':' + encodedTerm, show_source_icon: true }),
-          _react2.default.createElement(_LazyLoadListener2.default, { loading: this.props.tracks_more && spotify_search_enabled, loadMore: function loadMore() {
-              return _this7.loadMore('tracks');
-            } })
-        );
-      } else {
-        var tracks_section = null;
-      }
-
-      return _react2.default.createElement(
-        'div',
-        null,
-        _react2.default.createElement(
-          'div',
-          { className: 'search-result-sections cf' },
-          artists_section,
-          albums_section,
-          playlists_section
-        ),
-        tracks_section
-      );
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var _this8 = this;
-
-      var sort_options = [{
-        value: 'followers',
-        label: 'Popularity'
-      }, {
-        value: 'name',
-        label: 'Name'
-      }, {
-        value: 'artists.name',
-        label: 'Artist'
-      }, {
-        value: 'duration',
-        label: 'Duration'
-      }, {
-        value: 'uri',
-        label: 'Source'
-      }];
-
-      var provider_options = [];
-      for (var i = 0; i < this.props.uri_schemes.length; i++) {
-        provider_options.push({
-          value: this.props.uri_schemes[i],
-          label: (0, _helpers.titleCase)(this.props.uri_schemes[i].replace(':', '').replace('+', ' '))
-        });
-      }
-      var spotify_search_enabled = this.props.search_settings && this.props.search_settings.spotify;
-
-      var sort = this.props.sort;
-      var sort_reverse = this.props.sort_reverse;
-
-      var sort_map = null;
-
-      switch (this.props.sort) {
-        case 'uri':
-          sort_map = this.props.uri_schemes_priority;
-          break;
-
-        // Followers (aka popularlity works in reverse-numerical order)
-        // Ie "more popular" is a bigger number
-        case 'followers':
-          sort_reverse = !sort_reverse;
-          break;
-      }
-
-      var artists = [];
-      if (this.props.mopidy_search_results.artists) {
-        artists = [].concat(_toConsumableArray(artists), _toConsumableArray((0, _helpers.getIndexedRecords)(this.props.artists, this.props.mopidy_search_results.artists)));
-      }
-      if (this.props.spotify_search_results.artists) {
-        artists = [].concat(_toConsumableArray(artists), _toConsumableArray((0, _helpers.getIndexedRecords)(this.props.artists, this.props.spotify_search_results.artists)));
-      }
-      artists = (0, _arrays.sortItems)(artists, sort, sort_reverse, sort_map);
-
-      var albums = [];
-      if (this.props.mopidy_search_results.albums) {
-        albums = [].concat(_toConsumableArray(albums), _toConsumableArray((0, _helpers.getIndexedRecords)(this.props.albums, this.props.mopidy_search_results.albums)));
-      }
-      if (this.props.spotify_search_results.albums) {
-        albums = [].concat(_toConsumableArray(albums), _toConsumableArray((0, _helpers.getIndexedRecords)(this.props.albums, this.props.spotify_search_results.albums)));
-      }
-      albums = (0, _arrays.sortItems)(albums, sort, sort_reverse, sort_map);
-
-      var playlists = [];
-      if (this.props.mopidy_search_results.playlists) {
-        playlists = [].concat(_toConsumableArray(playlists), _toConsumableArray((0, _helpers.getIndexedRecords)(this.props.playlists, this.props.mopidy_search_results.playlists)));
-      }
-      if (this.props.spotify_search_results.playlists) {
-        playlists = [].concat(_toConsumableArray(playlists), _toConsumableArray((0, _helpers.getIndexedRecords)(this.props.playlists, this.props.spotify_search_results.playlists)));
-      }
-      playlists = (0, _arrays.sortItems)(playlists, sort, sort_reverse, sort_map);
-
-      var tracks = [];
-      if (this.props.mopidy_search_results.tracks) {
-        tracks = [].concat(_toConsumableArray(tracks), _toConsumableArray(this.props.mopidy_search_results.tracks));
-      }
-      if (this.props.spotify_search_results.tracks) {
-        tracks = [].concat(_toConsumableArray(tracks), _toConsumableArray(this.props.spotify_search_results.tracks));
-      }
-
-      tracks = (0, _arrays.sortItems)(tracks, sort == 'followers' ? 'popularity' : sort, sort_reverse, sort_map);
-
-      var options = _react2.default.createElement(
-        'span',
-        null,
-        _react2.default.createElement(_DropdownField2.default, {
-          icon: 'swap_vert',
-          name: 'Sort',
-          value: this.props.sort,
-          valueAsLabel: true,
-          options: sort_options,
-          selected_icon: this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down',
-          handleChange: function handleChange(value) {
-            _this8.setSort(value);_this8.props.uiActions.hideContextMenu();
-          }
-        }),
-        _react2.default.createElement(_DropdownField2.default, {
-          icon: 'cloud',
-          name: 'Sources',
-          value: this.props.uri_schemes_search_enabled,
-          options: provider_options,
-          handleChange: function handleChange(value) {
-            return _this8.handleSourceChange(value);
-          },
-          onClose: function onClose() {
-            _this8.props.spotifyActions.clearSearchResults();
-            _this8.props.mopidyActions.clearSearchResults();
-            _this8.search();
-          }
-        })
-      );
-
-      return _react2.default.createElement(
-        'div',
-        { className: 'view search-view' },
-        _react2.default.createElement(
-          _Header2.default,
-          { options: options, uiActions: this.props.uiActions },
-          _react2.default.createElement(_Icon2.default, { name: 'search', type: 'material' })
-        ),
-        _react2.default.createElement(_SearchForm2.default, {
-          history: this.props.history,
-          term: this.state.term,
-          onSubmit: function onSubmit(term) {
-            return _this8.handleSubmit(term);
-          }
-        }),
-        _react2.default.createElement(
-          'div',
-          { className: 'content-wrapper' },
-          _react2.default.createElement(
-            _reactRouterDom.Switch,
-            null,
-            _react2.default.createElement(
-              _reactRouterDom.Route,
-              { path: '/search/artist/:term' },
-              this.renderArtists(artists, spotify_search_enabled)
-            ),
-            _react2.default.createElement(
-              _reactRouterDom.Route,
-              { path: '/search/album/:term' },
-              this.renderAlbums(albums, spotify_search_enabled)
-            ),
-            _react2.default.createElement(
-              _reactRouterDom.Route,
-              { path: '/search/playlist/:term' },
-              this.renderPlaylists(playlists, spotify_search_enabled)
-            ),
-            _react2.default.createElement(
-              _reactRouterDom.Route,
-              { path: '/search/track/:term' },
-              this.renderTracks(tracks, spotify_search_enabled)
-            ),
-            _react2.default.createElement(
-              _reactRouterDom.Route,
-              { path: '/search' },
-              this.renderAll(artists, albums, playlists, tracks, spotify_search_enabled)
-            )
-          )
-        )
-      );
     }
   }]);
 
