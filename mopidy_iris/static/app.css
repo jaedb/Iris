@@ -7447,13 +7447,13 @@ main .track-view {
         background: transparent; }
   .search-view .search-result-sections {
     padding-bottom: 30px; }
-    .search-view .search-result-sections section {
+    .search-view .search-result-sections__item {
       width: 31%;
       float: left;
       margin-right: 3.5%; }
-      .search-view .search-result-sections section:last-child {
+      .search-view .search-result-sections__item:last-child {
         margin-right: 0; }
-      .search-view .search-result-sections section .button {
+      .search-view .search-result-sections__item .button {
         margin-top: 10px; }
   @media (max-width: 1849px) {
     .search-view .search-result-sections .grid__item:nth-child(1n + 5) {

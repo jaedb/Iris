@@ -37,7 +37,7 @@
   .search-result-sections {
     padding-bottom: 30px;
 
-    section {
+    &__item {
       width: 31%;
       float: left;
       margin-right: 3.5%;

@@ -10,7 +10,6 @@ import ArtistGrid from './ArtistGrid';
 import PlaylistGrid from './PlaylistGrid';
 import TrackList from './TrackList';
 import LazyLoadListener from './LazyLoadListener';
-import { pseudoRandomBytes } from 'crypto';
 
 const SearchResults = ({
   type,
@@ -21,21 +20,54 @@ const SearchResults = ({
   spotify_search_results,
   sort,
   sort_reverse,
-  sort_map,
   all,
 }) => {
   const encodedTerm = encodeURIComponent(query.term);
 
   let results = [];
   if (mopidy_search_results.query === query.term && mopidy_search_results[type]) {
-    results = [...results, ...getIndexedRecords(index, mopidy_search_results[type])];
+    results = [
+      ...results,
+      ...(
+        type === 'tracks'
+          ? mopidy_search_results[type]
+          : getIndexedRecords(index, mopidy_search_results[type])
+      ),
+    ];
   }
 
   if (spotify_search_results.query === query.term && spotify_search_results[type]) {
-    results = [...results, ...getIndexedRecords(index, spotify_search_results[type])];
+    results = [
+      ...results,
+      ...(
+        type === 'tracks'
+          ? spotify_search_results[type]
+          : getIndexedRecords(index, spotify_search_results[type])
+      ),
+    ];
   }
 
-  results = sortItems(results, sort, sort_reverse, sort_map);
+  let sort_map = null;
+  switch (sort) {
+    case 'uri':
+      sort_map = uri_schemes_priority;
+      break;
+    case 'followers':
+      // Followers (aka popularlity works in reverse-numerical order)
+      // Ie "more popular" is a bigger number
+      sort_reverse = !sort_reverse;
+      break;
+    default:
+      break;
+  }
+
+  results = sortItems(
+    results,
+    (type === 'tracks' && sort === 'followers' ? 'popularity' : sort),
+    sort_reverse,
+    sort_map,
+  );
+
   const resultsCount = results.length;
   if (all && type !== 'tracks' && results.length > 5) {
     results = results.slice(0, 6);

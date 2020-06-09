@@ -321,9 +321,14 @@ class Search extends React.Component {
       search_settings,
       uri_schemes,
       sort,
+      sort_reverse,
+      history,
       uri_schemes_priority,
+      uri_schemes_search_enabled,
       mopidy_search_results,
       spotify_search_results,
+      spotifyActions,
+      mopidyActions,
     } = this.props;
     const sort_options = [
       {
@@ -355,60 +360,6 @@ class Search extends React.Component {
         label: titleCase(uri_schemes[i].replace(':', '').replace('+', ' ')),
       });
     }
-    const spotify_search_enabled = (search_settings && search_settings.spotify);
-    let { sort_reverse } = this.props;
-    let sort_map = null;
-
-    switch (sort) {
-      case 'uri':
-        sort_map = uri_schemes_priority;
-        break;
-
-        // Followers (aka popularlity works in reverse-numerical order)
-        // Ie "more popular" is a bigger number
-      case 'followers':
-        sort_reverse = !sort_reverse;
-        break;
-    }
-
-    let artists = [];
-    let albums = [];
-    let playlists = [];
-    let tracks = [];
-    if (mopidy_search_results.query === term) {
-      if (mopidy_search_results.artists && mopidy_search_results.query === term) {
-        artists = [...artists, ...getIndexedRecords(this.props.artists, mopidy_search_results.artists)];
-      }
-      if (mopidy_search_results.albums) {
-        albums = [...albums, ...getIndexedRecords(this.props.albums, mopidy_search_results.albums)];
-      }
-      if (mopidy_search_results.playlists) {
-        playlists = [...playlists, ...getIndexedRecords(this.props.playlists, mopidy_search_results.playlists)];
-      }
-      if (mopidy_search_results.tracks) {
-        tracks = [...tracks, ...mopidy_search_results.tracks];
-      }
-    }
-
-    if (spotify_search_results.query === term) {
-      if (spotify_search_results.artists) {
-        artists = [...artists, ...getIndexedRecords(this.props.artists, spotify_search_results.artists)];
-      }
-      if (spotify_search_results.albums) {
-        albums = [...albums, ...getIndexedRecords(this.props.albums, spotify_search_results.albums)];
-      }
-      if (spotify_search_results.playlists) {
-        playlists = [...playlists, ...getIndexedRecords(this.props.playlists, spotify_search_results.playlists)];
-      }
-      if (spotify_search_results.tracks) {
-        tracks = [...tracks, ...spotify_search_results.tracks];
-      }
-    }
-
-    albums = sortItems(albums, sort, sort_reverse, sort_map);
-    playlists = sortItems(playlists, sort, sort_reverse, sort_map);
-    artists = sortItems(artists, sort, sort_reverse, sort_map);
-    tracks = sortItems(tracks, (sort == 'followers' ? 'popularity' : sort), sort_reverse, sort_map);
 
     const options = (
       <span>
@@ -418,18 +369,18 @@ class Search extends React.Component {
           value={sort}
           valueAsLabel
           options={sort_options}
-          selected_icon={this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}
-          handleChange={(value) => { this.setSort(value); this.props.uiActions.hideContextMenu(); }}
+          selected_icon={sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}
+          handleChange={(value) => { this.setSort(value); uiActions.hideContextMenu(); }}
         />
         <DropdownField
           icon="cloud"
           name="Sources"
-          value={this.props.uri_schemes_search_enabled}
+          value={uri_schemes_search_enabled}
           options={provider_options}
           handleChange={(value) => this.handleSourceChange(value)}
           onClose={() => {
-            this.props.spotifyActions.clearSearchResults();
-            this.props.mopidyActions.clearSearchResults();
+            spotifyActions.clearSearchResults();
+            mopidyActions.clearSearchResults();
             this.search()
           }}
         />
@@ -438,13 +389,13 @@ class Search extends React.Component {
 
     return (
       <div className="view search-view">
-        <Header options={options} uiActions={this.props.uiActions}>
+        <Header options={options} uiActions={uiActions}>
           <Icon name="search" type="material" />
         </Header>
 
         <SearchForm
-          history={this.props.history}
-          term={this.state.term}
+          history={history}
+          term={term}
           onSubmit={(term) => this.handleSubmit(term)}
         />
 
@@ -469,9 +420,21 @@ class Search extends React.Component {
 
             <Route path="/search">
               <div className="search-result-sections cf">
-                <SearchResults type="artists" query={{ term, type }} all />
-                <SearchResults type="albums" query={{ term, type }} all />
-                <SearchResults type="playlists" query={{ term, type }} all />
+                <section className="search-result-sections__item">
+                  <div className="inner">
+                    <SearchResults type="artists" query={{ term, type }} all />
+                  </div>
+                </section>
+                <section className="search-result-sections__item">
+                  <div className="inner">
+                    <SearchResults type="albums" query={{ term, type }} all />
+                  </div>
+                </section>
+                <section className="search-result-sections__item">
+                  <div className="inner">
+                    <SearchResults type="playlists" query={{ term, type }} all />
+                  </div>
+                </section>
               </div>
               <SearchResults type="tracks" query={{ term, type }} all />
             </Route>
