@@ -32,6 +32,19 @@
         background: transparent;
       }
     }
+
+    &__reset {
+      position: absolute;
+      top: 0;
+      right: 0;
+      font-size: 2rem;
+      padding: 1rem 0.25rem 0 0;
+      cursor: pointer;
+
+      &:hover {
+        color: colour(red);
+      }
+    }
   }
 
   .search-result-sections {

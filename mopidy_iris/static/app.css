@@ -7445,6 +7445,15 @@ main .track-view {
       .search-view .search-form input:focus, .search-view .search-form input:active {
         border-color: #08d58f;
         background: transparent; }
+    .search-view .search-form__reset {
+      position: absolute;
+      top: 0;
+      right: 0;
+      font-size: 2rem;
+      padding: 1rem 0.25rem 0 0;
+      cursor: pointer; }
+      .search-view .search-form__reset:hover {
+        color: #cf2d2d; }
   .search-view .search-result-sections {
     padding-bottom: 30px; }
     .search-view .search-result-sections__item {

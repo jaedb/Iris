@@ -5,7 +5,7 @@ import FontAwesome from 'react-fontawesome';
 export default memo(({ name, type, className, onClick }) => {
   if (!name || name === '') return null;
 
-  const fullClassName = `icon icon--${type || 'material'} ${className}`;
+  const fullClassName = `icon icon--${type || 'material'} ${className || ''}`;
 
   switch (type) {
     case 'svg':

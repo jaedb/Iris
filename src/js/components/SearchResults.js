@@ -20,6 +20,7 @@ const SearchResults = ({
   spotify_search_results,
   sort,
   sort_reverse,
+  uri_schemes_priority,
   all,
 }) => {
   const encodedTerm = encodeURIComponent(query.term);

@@ -29,8 +29,8 @@ class Search extends React.Component {
     super(props);
 
     this.state = {
-      type: 'all',
-      term: '',
+      type: props.type || 'all',
+      term: props.term || '',
     };
   }
 
@@ -94,23 +94,26 @@ class Search extends React.Component {
     );
   }
 
+  onReset = () => {
+    const { history } = this.props;
+    this.setState({ term: '', type: 'all' });
+    history.push('/search');
+  }
+
   // Digest the URI query property
   // Triggered when the URL changes
-  digestUri(props = this.props) {
-    if (props.type && props.term) {
-      this.setState({
-        type: props.type,
-        term: props.term,
-      });
+  digestUri = ({ type, term } = this.props) => {
+    if (type && term) {
+      this.setState({ type, term });
 
-      this.search(props.type, props.term);
-    } else if (!props.term || props.term == '') {
+      this.search(type, term);
+    } else if (!term || term === '') {
       this.props.spotifyActions.clearSearchResults();
       this.props.mopidyActions.clearSearchResults();
     }
   }
 
-  search(type = this.state.type, term = this.state.term, provider) {
+  search = (type = this.state.type, term = this.state.term, provider) => {
     this.props.uiActions.setWindowTitle(`Search: ${decodeURIComponent(term)}`);
 
     if (type && term) {
@@ -149,167 +152,6 @@ class Search extends React.Component {
   handleSourceChange(value) {
     this.props.uiActions.set({ uri_schemes_search_enabled: value });
     this.props.uiActions.hideContextMenu();
-  }
-
-  renderArtists(artists, spotify_search_enabled) {
-    const encodedTerm = encodeURIComponent(this.state.term);
-    return (
-      <div>
-        <h4>
-          <URILink uri={`iris:search:all:${encodedTerm}`}>
-						{`Search `}
-          </URILink>
-          <Icon type="fontawesome" name="angle-right" />
-          {` Artists`}
-        </h4>
-        <section className="grid-wrapper">
-          <ArtistGrid artists={artists} show_source_icon />
-          <LazyLoadListener enabled={this.props.artists_more && spotify_search_enabled} loadMore={() => this.loadMore('artists')} />
-        </section>
-      </div>
-    );
-  }
-
-  renderAlbums(albums, spotify_search_enabled) {
-    const encodedTerm = encodeURIComponent(this.state.term);
-    return (
-      <div>
-        <h4>
-          <URILink uri={`iris:search:all:${encodedTerm}`}>
-						{`Search `}
-          </URILink>
-          <Icon type="fontawesome" name="angle-right" />
-          {` Albums`}
-        </h4>
-        <section className="grid-wrapper">
-          <AlbumGrid albums={albums} show_source_icon />
-          <LazyLoadListener enabled={this.props.albums_more && spotify_search_enabled} loadMore={() => this.loadMore('albums')} />
-        </section>
-      </div>
-    );
-  }
-
-  renderPlaylists(playlists, spotify_search_enabled) {
-    const encodedTerm = encodeURIComponent(this.state.term);
-    return (
-      <div>
-        <h4>
-          <URILink uri={`iris:search:all:${encodedTerm}`}>
-						{`Search `}
-          </URILink>
-          <Icon type="fontawesome" name="angle-right" />
-          {` Playlists`}
-        </h4>
-        <section className="grid-wrapper">
-          <PlaylistGrid playlists={playlists} show_source_icon />
-          <LazyLoadListener enabled={this.props.playlists_more && spotify_search_enabled} loadMore={() => this.loadMore('playlists')} />
-        </section>
-      </div>
-    );
-  }
-
-  renderTracks(tracks, spotify_search_enabled) {
-    const encodedTerm = encodeURIComponent(this.state.term);
-    return (
-      <div>
-        <h4>
-          <URILink uri={`iris:search:all:${encodedTerm}`}>
-						{`Search `}
-          </URILink>
-          <Icon type="fontawesome" name="angle-right" />
-          {` Tracks`}
-        </h4>
-        <section className="list-wrapper">
-          <TrackList tracks={tracks} uri={`iris:search:${this.state.type}:${encodedTerm}`} show_source_icon />
-          <LazyLoadListener enabled={this.props.tracks_more && spotify_search_enabled} loadMore={() => this.loadMore('tracks')} />
-        </section>
-      </div>
-    );
-  }
-
-  renderAll(artists, albums, playlists, tracks, spotify_search_enabled) {
-    const encodedTerm = encodeURIComponent(this.state.term);
-    if (artists.length > 0) {
-      var artists_section = (
-        <section>
-          <div className="inner">
-            <URILink uri={`iris:search:artist:${encodedTerm}`}>
-              <h4>Artists</h4>
-            </URILink>
-            <ArtistGrid mini show_source_icon artists={artists.slice(0, 6)} />
-            {artists.length >= 6 && (
-              <URILink uri={`iris:search:artist:${encodedTerm}`} className="button button--default">
-							{`All artists (${artists.length})`}
-              </URILink>
-            )}
-          </div>
-        </section>
-      );
-    } else {
-      var artists_section = null;
-    }
-
-    if (albums.length > 0) {
-      var albums_section = (
-        <section>
-          <div className="inner">
-            <URILink uri={`iris:search:album:${encodedTerm}`}>
-              <h4>Albums</h4>
-            </URILink>
-            <AlbumGrid mini show_source_icon albums={albums.slice(0, 6)} />
-            {albums.length >= 6 && (
-              <URILink uri={`iris:search:album:${encodedTerm}`} className="button button--default">
-							{`All albums (${albums.length})`}
-              </URILink>
-            )}
-          </div>
-        </section>
-      );
-    } else {
-      var albums_section = null;
-    }
-
-    if (playlists.length > 0) {
-      var playlists_section = (
-        <section>
-          <div className="inner">
-            <URILink uri={`iris:search:playlist:${encodedTerm}`}>
-              <h4>Playlists</h4>
-            </URILink>
-            <PlaylistGrid mini show_source_icon playlists={playlists.slice(0, 6)} />
-            {playlists.length >= 6 && (
-              <URILink uri={`iris:search:playlist:${encodedTerm}`} className="button button--default">
-							{`All playlists (${playlists.length})`}
-              </URILink>
-            )}
-          </div>
-        </section>
-      );
-    } else {
-      var playlists_section = null;
-    }
-
-    if (tracks.length > 0) {
-      var tracks_section = (
-        <section className="list-wrapper">
-          <TrackList tracks={tracks} uri={`iris:search:${this.state.type}:${encodedTerm}`} show_source_icon />
-          <LazyLoadListener loading={this.props.tracks_more && spotify_search_enabled} loadMore={() => this.loadMore('tracks')} />
-        </section>
-      );
-    } else {
-      var tracks_section = null;
-    }
-
-    return (
-      <div>
-        <div className="search-result-sections cf">
-          {artists_section}
-          {albums_section}
-          {playlists_section}
-        </div>
-        {tracks_section}
-      </div>
-    );
   }
 
   render = () => {
@@ -381,7 +223,7 @@ class Search extends React.Component {
           onClose={() => {
             spotifyActions.clearSearchResults();
             mopidyActions.clearSearchResults();
-            this.search()
+            this.search();
           }}
         />
       </span>
@@ -394,9 +236,11 @@ class Search extends React.Component {
         </Header>
 
         <SearchForm
+          key={`search_form_${type}_${term}`}
           history={history}
           term={term}
           onSubmit={(term) => this.handleSubmit(term)}
+          onReset={this.onReset}
         />
 
         <div className="content-wrapper">
