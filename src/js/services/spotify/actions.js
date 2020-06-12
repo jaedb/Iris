@@ -131,27 +131,27 @@ function getToken(dispatch, getState) {
 
     // We've already got a refresh in progress
     if (getState().ui.load_queue.spotify_refresh_token !== undefined) {
-        	console.log("Already refreshing token, we'll wait 1000ms and try again");
+      console.log("Already refreshing token, we'll wait 1000ms and try again");
 
-        	// Re-check the queue periodically to see if it's finished yet
-        	// TODO: Look at properly hooking up with the ajax finish event
-        	setTimeout(
-        		() =>
-        			// Return myself for a re-check
-        			 getToken(dispatch, getState),
-        		1000,
-        	);
+      // Re-check the queue periodically to see if it's finished yet
+      // TODO: Look at properly hooking up with the ajax finish event
+      setTimeout(
+        () =>
+          // Return myself for a re-check
+          getToken(dispatch, getState),
+        1000,
+      );
     } else {
-	        refreshToken(dispatch, getState)
-	            .then(
-	                (response) => {
-	                    resolve(response.access_token);
-	                },
-	                (error) => {
-	                    reject(error);
-	                },
-	            );
-	    }
+      refreshToken(dispatch, getState)
+        .then(
+          (response) => {
+            resolve(response.access_token);
+          },
+          (error) => {
+            reject(error);
+          },
+        );
+    }
   });
 }
 
@@ -1206,14 +1206,14 @@ export function getArtistImages(artist) {
   return (dispatch, getState) => {
     request(dispatch, getState, `search?q=${artist.name}&type=artist`)
       .then(response => {
-          if (response.artists.items.length > 0) {
-            const updatedArtist = {
-              uri: artist.uri,
-              images: response.artists.items[0].images,
-            }
-            dispatch(coreActions.artistLoaded(updatedArtist));
+        if (response.artists.items.length > 0) {
+          const updatedArtist = {
+            uri: artist.uri,
+            images: response.artists.items[0].images,
           }
-        },
+          dispatch(coreActions.artistLoaded(updatedArtist));
+        }
+      },
         error => {
           dispatch(coreActions.handleException(
             'Could not load artists',
@@ -1658,56 +1658,65 @@ export function getAllPlaylistTracksProcessor(data) {
           }
 
           // Add on our new batch of loaded tracks
-          let uris = [];
-          const new_uris = [];
+          let tracks = [];
+          const new_tracks = [];
           for (const item of response.items) {
-                    	if (item.track) {
-	                        new_uris.push(item.track.uri);
-	                    }
+            if (item.track) {
+              new_tracks.push(item.track);
+            }
           }
-          if (data.uris) {
-            uris = [...data.uris, ...new_uris];
+          if (data.tracks) {
+            tracks = [...data.tracks, ...new_tracks];
           } else {
-            uris = new_uris;
+            tracks = new_tracks;
           }
 
           // We got a next link, so we've got more work to be done
           if (response.next) {
             dispatch(uiActions.updateProcess(
               'SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR',
-              `Loading ${response.total - uris.length} playlist tracks`,
+              `Loading ${response.total - tracks.length} playlist tracks`,
               {
-
-                            	...data,
-                            	next: response.next,
-	                                total: response.total,
-	                                remaining: response.total - uris.length,
+                ...data,
+                next: response.next,
+                total: response.total,
+                remaining: response.total - tracks.length,
               },
             ));
             dispatch(uiActions.runProcess(
               'SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR',
               {
-
-                            	...data,
-                            	next: response.next,
-                                	uris,
+                ...data,
+                next: response.next,
+                tracks,
               },
             ));
           } else {
-                    	if (data.shuffle) {
-                    		uris = shuffle(uris);
-                    	}
+            // Seeing as we now have all the playlist's tracks, add them to the playlist we have
+            // in our index for quicker reuse next time
+            dispatch(coreActions.loadedMore(
+              'playlist',
+              data.uri,
+              'track',
+              { tracks },
+            ));
 
-                    	// We don't bother "finishing", we just want it "finished" immediately
-                    	// This bypasses the fade transition for a more smooth transition between two
-                    	// processes that flow together
+            let uris = arrayOf('uri', tracks);
+
+            if (data.shuffle) {
+              uris = shuffle(uris);
+            }
+
+            // We don't bother "finishing", we just want it "finished" immediately
+            // This bypasses the fade transition for a more smooth transition between two
+            // processes that flow together
             dispatch(uiActions.removeProcess('SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR'));
 
-                    	if (data.callback_action == 'enqueue') {
-                        	dispatch(mopidyActions.enqueueURIs(uris, data.uri, data.play_next, data.at_position, data.offset));
-                    	} else {
-                        	dispatch(mopidyActions.playURIs(uris, data.uri));
-                    	}
+            if (data.callback_action == 'enqueue') {
+              dispatch(mopidyActions.enqueueURIs(uris, data.uri, data.play_next, data.at_position, data.offset));
+            } else {
+              dispatch(mopidyActions.playURIs(uris, data.uri));
+            }
           }
         },
         (error) => {
@@ -1895,7 +1904,7 @@ export function getLibraryArtists() {
 }
 
 export function getLibraryArtistsProcessor(data) {
-  return (dispatch, getState) => {  
+  return (dispatch, getState) => {
     request(dispatch, getState, data.next)
       .then(
         (response) => {

@@ -43,8 +43,8 @@ const UIMiddleware = (function () {
 
       case 'OPEN_MODAL':
         if (store.getState().ui.allow_reporting) {
-	                ReactGA.event({ category: 'Modal', action: 'Opened', label: action.modal.name });
-	            }
+          ReactGA.event({ category: 'Modal', action: 'Opened', label: action.modal.name });
+        }
         $('body').addClass('modal-open');
         store.dispatch(uiActions.hideContextMenu());
         store.dispatch(uiActions.hideTouchContextMenu());
@@ -87,7 +87,7 @@ const UIMiddleware = (function () {
 
         var notification = window.Notification || window.mozNotification || window.webkitNotification;
         if (typeof notification === 'undefined') return false;
-        if (typeof notification !== 'undefined') notification.requestPermission((permission) => {});
+        if (typeof notification !== 'undefined') notification.requestPermission((permission) => { });
 
         // handle nested data objects
         var data = {};

@@ -88723,8 +88723,8 @@ function getAllPlaylistTracksProcessor(data) {
       }
 
       // Add on our new batch of loaded tracks
-      var uris = [];
-      var new_uris = [];
+      var tracks = [];
+      var new_tracks = [];
       var _iteratorNormalCompletion3 = true;
       var _didIteratorError3 = false;
       var _iteratorError3 = undefined;
@@ -88734,7 +88734,7 @@ function getAllPlaylistTracksProcessor(data) {
           var item = _step3.value;
 
           if (item.track) {
-            new_uris.push(item.track.uri);
+            new_tracks.push(item.track);
           }
         }
       } catch (err) {
@@ -88752,24 +88752,30 @@ function getAllPlaylistTracksProcessor(data) {
         }
       }
 
-      if (data.uris) {
-        uris = [].concat(_toConsumableArray(data.uris), new_uris);
+      if (data.tracks) {
+        tracks = [].concat(_toConsumableArray(data.tracks), new_tracks);
       } else {
-        uris = new_uris;
+        tracks = new_tracks;
       }
 
       // We got a next link, so we've got more work to be done
       if (response.next) {
-        dispatch(uiActions.updateProcess('SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR', 'Loading ' + (response.total - uris.length) + ' playlist tracks', _extends({}, data, {
+        dispatch(uiActions.updateProcess('SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR', 'Loading ' + (response.total - tracks.length) + ' playlist tracks', _extends({}, data, {
           next: response.next,
           total: response.total,
-          remaining: response.total - uris.length
+          remaining: response.total - tracks.length
         })));
         dispatch(uiActions.runProcess('SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR', _extends({}, data, {
           next: response.next,
-          uris: uris
+          tracks: tracks
         })));
       } else {
+        // Seeing as we now have all the playlist's tracks, add them to the playlist we have
+        // in our index for quicker reuse next time
+        dispatch(coreActions.loadedMore('playlist', data.uri, 'track', { tracks: tracks }));
+
+        var uris = (0, _arrays.arrayOf)('uri', tracks);
+
         if (data.shuffle) {
           uris = (0, _arrays.shuffle)(uris);
         }
@@ -90770,7 +90776,7 @@ function reducer() {
       var status = 'running';
       if (last_run) {
         var data = _extends({}, last_run.data, action.data);
-        status = last_run.status;
+        if (action.type === 'UPDATE_PROCESS') status = last_run.status;
       } else {
         var data = action.data;
       }

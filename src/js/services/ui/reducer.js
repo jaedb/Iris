@@ -157,7 +157,7 @@ export default function reducer(ui = {}, action) {
       var status = 'running';
       if (last_run) {
         var data = { ...last_run.data, ...action.data };
-        status = last_run.status;
+        if (action.type === 'UPDATE_PROCESS') status = last_run.status;
       } else {
         var { data } = action;
       }
