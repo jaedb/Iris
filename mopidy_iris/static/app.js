@@ -71941,100 +71941,48 @@ var _ContextMenuTrigger2 = _interopRequireDefault(_ContextMenuTrigger);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+exports.default = (0, _react.memo)(function (_ref) {
+  var handleContextMenuTrigger = _ref.handleContextMenuTrigger,
+      options = _ref.options,
+      title = _ref.title,
+      uiActions = _ref.uiActions,
+      className = _ref.className,
+      children = _ref.children;
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+  var onTrigger = function onTrigger(e) {
+    if (handleContextMenuTrigger) return handleContextMenuTrigger(e);
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Header = function (_React$Component) {
-  _inherits(Header, _React$Component);
-
-  function Header(props) {
-    _classCallCheck(this, Header);
-
-    var _this = _possibleConstructorReturn(this, (Header.__proto__ || Object.getPrototypeOf(Header)).call(this, props));
-
-    _this.handleContextMenuTrigger = function (e, options) {
-      var _this$props = _this.props,
-          title = _this$props.title,
-          handleContextMenuTrigger = _this$props.handleContextMenuTrigger,
-          showContextMenu = _this$props.uiActions.showContextMenu;
-
-
-      if (handleContextMenuTrigger) return handleContextMenuTrigger(e);
-
-      e.preventDefault();
-      var data = {
-        e: e,
-        context: 'custom',
-        title: title,
-        options: options
-      };
-      showContextMenu(data);
+    e.preventDefault();
+    var data = {
+      e: e,
+      context: 'custom',
+      title: title,
+      options: options
     };
+    uiActions.showContextMenu(data);
+    return true;
+  };
 
-    _this.renderContextMenuTrigger = function () {
-      var _this$props2 = _this.props,
-          handleContextMenuTrigger = _this$props2.handleContextMenuTrigger,
-          options = _this$props2.options;
-
-
-      if (!handleContextMenuTrigger && !options) return null;
-
-      return _react2.default.createElement(_ContextMenuTrigger2.default, { onTrigger: function onTrigger(e) {
-          return _this.handleContextMenuTrigger(e, options);
-        } });
-    };
-
-    _this.renderOptions = function () {
-      var _this$props3 = _this.props,
-          handleContextMenuTrigger = _this$props3.handleContextMenuTrigger,
-          options = _this$props3.options;
-
-
-      if (!options && !handleContextMenuTrigger) return null;
-
-      return _react2.default.createElement(
+  return _react2.default.createElement(
+    'header',
+    { className: className },
+    _react2.default.createElement(
+      'h1',
+      null,
+      children
+    ),
+    (options || handleContextMenuTrigger) && _react2.default.createElement(
+      'div',
+      { className: 'header__options' },
+      _react2.default.createElement(_ContextMenuTrigger2.default, { onTrigger: onTrigger }),
+      _react2.default.createElement(
         'div',
-        { className: 'header__options' },
-        _this.renderContextMenuTrigger(),
-        _react2.default.createElement(
-          'div',
-          { className: 'header__options__wrapper' },
-          options || null
-        )
-      );
-    };
-
-    _this.render = function () {
-      var _this$props4 = _this.props,
-          className = _this$props4.className,
-          children = _this$props4.children;
-
-
-      return _react2.default.createElement(
-        'header',
-        { className: className },
-        _react2.default.createElement(
-          'h1',
-          null,
-          children
-        ),
-        _this.renderOptions()
-      );
-    };
-
-    _this.state = {
-      expanded: false
-    };
-    return _this;
-  }
-
-  return Header;
-}(_react2.default.Component);
-
-exports.default = Header;
+        { className: 'header__options__wrapper' },
+        options || null
+      )
+    )
+  );
+});
 
 /***/ }),
 
@@ -74902,13 +74850,18 @@ var SearchResults = function SearchResults(_ref) {
       all = _ref.all;
 
   var encodedTerm = encodeURIComponent(query.term);
-
+  var resultsMatchQuery = function resultsMatchQuery(results) {
+    if (!results.query) return false;
+    if (results.query.term !== query.term) return false;
+    if (results.query.type !== query.type) return false;
+    return true;
+  };
   var results = [];
-  if (mopidy_search_results.query === query.term && mopidy_search_results[type]) {
+  if (resultsMatchQuery(mopidy_search_results) && mopidy_search_results[type]) {
     results = [].concat(_toConsumableArray(results), _toConsumableArray(type === 'tracks' ? mopidy_search_results[type] : (0, _helpers.getIndexedRecords)(index, mopidy_search_results[type])));
   }
 
-  if (spotify_search_results.query === query.term && spotify_search_results[type]) {
+  if (resultsMatchQuery(spotify_search_results) && spotify_search_results[type]) {
     results = [].concat(_toConsumableArray(results), _toConsumableArray(type === 'tracks' ? spotify_search_results[type] : (0, _helpers.getIndexedRecords)(index, spotify_search_results[type])));
   }
 
@@ -74980,7 +74933,7 @@ var mapStateToProps = function mapStateToProps(state, ownProps) {
     uri_schemes_priority: state.ui.uri_schemes_priority || [],
     mopidy_search_results: state.mopidy.search_results || {},
     spotify_search_results: state.spotify.search_results || {},
-    sort: state.ui.search_results_sort || 'followers.total',
+    sort: state.ui.search_results_sort || 'followers',
     sort_reverse: !!state.ui.search_results_sort_reverse
   };
 };
@@ -79157,7 +79110,6 @@ var CoreMiddleware = function () {
           /**
                * Playlist manipulation
                * */
-
           case 'PLAYLIST_TRACKS':
             var tracks = (0, _format.formatTracks)(action.tracks);
             action.tracks_uris = (0, _arrays.arrayOf)('uri', tracks);
@@ -79190,9 +79142,10 @@ var CoreMiddleware = function () {
               case 'spotify':
                 store.dispatch(spotifyActions.getPlaylist(action.key));
                 break;
-
               case 'm3u':
                 if (store.getState().mopidy.connected) store.dispatch(mopidyActions.getPlaylist(action.key));
+                break;
+              default:
                 break;
             }
             next(action);
@@ -82574,13 +82527,12 @@ function clearSearchResults() {
   };
 }
 
-function getSearchResults(context, query) {
+function getSearchResults(type, term) {
   var limit = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 100;
 
   return {
     type: 'MOPIDY_GET_SEARCH_RESULTS',
-    context: context,
-    query: query,
+    query: { type: type, term: term },
     limit: limit
   };
 }
@@ -83506,7 +83458,6 @@ var MopidyMiddleware = function () {
               store.dispatch(uiActions.createNotification({ content: 'No sources selected', level: 'warning' }));
             } else {
               store.dispatch(uiActions.startProcess('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR', 'Searching ' + uri_schemes_total + ' Mopidy providers', {
-                context: action.context,
                 query: action.query,
                 limit: action.limit,
                 total: uri_schemes_total,
@@ -83541,13 +83492,10 @@ var MopidyMiddleware = function () {
               remaining: action.data.uri_schemes.length
             }));
 
-            switch (action.data.context) {
-              // Albums
+            switch (action.data.query.type) {
               case 'albums':
-
-                // Quick check to see if we should be cancelling
                 var last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR;
-                if (last_run && last_run.status == 'cancelling') {
+                if (last_run && last_run.status === 'cancelling') {
                   store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
                   return;
                 }
@@ -83556,7 +83504,6 @@ var MopidyMiddleware = function () {
 
                 var continue_process = function continue_process() {
                   store.dispatch(uiActions.runProcess('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR', {
-                    context: action.data.context,
                     query: action.data.query,
                     limit: action.data.limit,
                     uri_scheme: next_uri_scheme,
@@ -83564,7 +83511,7 @@ var MopidyMiddleware = function () {
                   }));
                 };
 
-                request(socket, store, 'library.search', { query: { album: [action.data.query] }, uris: [action.data.uri_scheme] }).then(function (response) {
+                request(socket, store, 'library.search', { query: { album: [action.data.query.term] }, uris: [action.data.uri_scheme] }).then(function (response) {
                   if (response.length > 0) {
                     var albums = [];
 
@@ -83591,8 +83538,8 @@ var MopidyMiddleware = function () {
                     store.dispatch({
                       type: 'MOPIDY_SEARCH_RESULTS_LOADED',
                       query: action.data.query,
-                      context: action.data.context,
-                      results: albums_uris
+                      results: albums_uris,
+                      context: 'albums'
                     });
                   }
 
@@ -83603,12 +83550,9 @@ var MopidyMiddleware = function () {
                 });
                 break;
 
-              // Artists
               case 'artists':
-
-                // Quick check to see if we should be cancelling
                 var last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR;
-                if (last_run && last_run.status == 'cancelling') {
+                if (last_run && last_run.status === 'cancelling') {
                   store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
                   return;
                 }
@@ -83617,7 +83561,6 @@ var MopidyMiddleware = function () {
 
                 var continue_process = function continue_process() {
                   store.dispatch(uiActions.runProcess('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR', {
-                    context: action.data.context,
                     query: action.data.query,
                     limit: action.data.limit,
                     uri_scheme: next_uri_scheme,
@@ -83625,7 +83568,7 @@ var MopidyMiddleware = function () {
                   }));
                 };
 
-                request(socket, store, 'library.search', { query: { artist: [action.data.query] }, uris: [action.data.uri_scheme] }).then(function (response) {
+                request(socket, store, 'library.search', { query: { artist: [action.data.query.term] }, uris: [action.data.uri_scheme] }).then(function (response) {
                   if (response.length > 0) {
                     var artists_uris = [];
 
@@ -83661,7 +83604,7 @@ var MopidyMiddleware = function () {
                     store.dispatch({
                       type: 'MOPIDY_SEARCH_RESULTS_LOADED',
                       query: action.data.query,
-                      context: action.data.context,
+                      context: 'artists',
                       results: artists_uris
                     });
                   }
@@ -83673,12 +83616,9 @@ var MopidyMiddleware = function () {
                 });
                 break;
 
-              // Playlists
               case 'playlists':
-
-                // Quick check to see if we should be cancelling
                 var last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR;
-                if (last_run && last_run.status == 'cancelling') {
+                if (last_run && last_run.status === 'cancelling') {
                   store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
                   return;
                 }
@@ -83709,7 +83649,7 @@ var MopidyMiddleware = function () {
                     store.dispatch({
                       type: 'MOPIDY_SEARCH_RESULTS_LOADED',
                       query: action.data.query,
-                      context: action.data.context,
+                      context: 'playlists',
                       results: playlists_uris
                     });
                   }
@@ -83720,12 +83660,9 @@ var MopidyMiddleware = function () {
                 });
                 break;
 
-              // Tracks
               case 'tracks':
-
-                // Quick check to see if we should be cancelling
                 var last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR;
-                if (last_run && last_run.status == 'cancelling') {
+                if (last_run && last_run.status === 'cancelling') {
                   store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
                   return;
                 }
@@ -83734,7 +83671,6 @@ var MopidyMiddleware = function () {
 
                 var continue_process = function continue_process() {
                   store.dispatch(uiActions.runProcess('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR', {
-                    context: action.data.context,
                     query: action.data.query,
                     limit: action.data.limit,
                     uri_scheme: next_uri_scheme,
@@ -83742,7 +83678,7 @@ var MopidyMiddleware = function () {
                   }));
                 };
 
-                request(socket, store, 'library.search', { query: { any: [action.data.query] }, uris: [action.data.uri_scheme] }).then(function (response) {
+                request(socket, store, 'library.search', { query: { any: [action.data.query.term] }, uris: [action.data.uri_scheme] }).then(function (response) {
                   if (response.length > 0 && response[0].tracks !== undefined) {
                     var _tracks = response[0].tracks;
 
@@ -83750,7 +83686,7 @@ var MopidyMiddleware = function () {
                     store.dispatch({
                       type: 'MOPIDY_SEARCH_RESULTS_LOADED',
                       query: action.data.query,
-                      context: action.data.context,
+                      context: 'tracks',
                       results: (0, _format.formatTracks)(_tracks)
                     });
                   }
@@ -83762,12 +83698,9 @@ var MopidyMiddleware = function () {
 
                 break;
 
-              // Search for all types
               case 'all':
               default:
-
                 var process_tracks = function process_tracks() {
-                  // Quick check to see if we should be cancelling
                   var last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR;
                   if (last_run && last_run.status == 'cancelling') {
                     store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
@@ -83777,7 +83710,7 @@ var MopidyMiddleware = function () {
                   store.dispatch(uiActions.updateProcess('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR', 'Searching ' + action.data.uri_scheme.replace(':', '') + ' tracks', {
                     remaining: action.data.uri_schemes.length + 1
                   }));
-                  request(socket, store, 'library.search', { query: { any: [action.data.query] }, uris: [action.data.uri_scheme] }).then(function (response) {
+                  request(socket, store, 'library.search', { query: { any: [action.data.query.term] }, uris: [action.data.uri_scheme] }).then(function (response) {
                     if (response.length > 0 && response[0].tracks !== undefined) {
                       var _tracks2 = response[0].tracks;
 
@@ -83808,7 +83741,7 @@ var MopidyMiddleware = function () {
                   store.dispatch(uiActions.updateProcess('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR', 'Searching ' + action.data.uri_scheme.replace(':', '') + ' albums', {
                     remaining: action.data.uri_schemes.length + 0.75
                   }));
-                  request(socket, store, 'library.search', { query: { album: [action.data.query] }, uris: [action.data.uri_scheme] }).then(function (response) {
+                  request(socket, store, 'library.search', { query: { album: [action.data.query.term] }, uris: [action.data.uri_scheme] }).then(function (response) {
                     if (response.length > 0) {
                       var albums = [];
 
@@ -83858,7 +83791,7 @@ var MopidyMiddleware = function () {
                   store.dispatch(uiActions.updateProcess('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR', 'Searching ' + action.data.uri_scheme.replace(':', '') + ' artists', {
                     remaining: action.data.uri_schemes.length + 0.5
                   }));
-                  request(socket, store, 'library.search', { query: { artist: [action.data.query] }, uris: [action.data.uri_scheme] }).then(function (response) {
+                  request(socket, store, 'library.search', { query: { artist: [action.data.query.term] }, uris: [action.data.uri_scheme] }).then(function (response) {
                     if (response.length > 0) {
                       var artists_uris = [];
 
@@ -83922,7 +83855,7 @@ var MopidyMiddleware = function () {
                         var playlists_uris = [];
                         for (var i = 0; i < response.length; i++) {
                           var _playlist2 = response[i];
-                          if (_playlist2.name.includes(action.data.query) && action.data.uri_schemes.includes((0, _helpers.uriSource)(_playlist2.uri) + ':')) {
+                          if (_playlist2.name.includes(action.data.query.term) && action.data.uri_schemes.includes((0, _helpers.uriSource)(_playlist2.uri) + ':')) {
                             playlists_uris.push(_playlist2.uri);
                           }
                         }
@@ -83957,7 +83890,6 @@ var MopidyMiddleware = function () {
                   // We're finally done searching for types on this provider
                   // On to the next scheme!
                   store.dispatch(uiActions.runProcess('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR', {
-                    context: action.data.context,
                     query: action.data.query,
                     limit: action.data.limit,
                     uri_scheme: next_uri_scheme,
@@ -85075,6 +85007,7 @@ function reducer() {
       return _extends({}, mopidy, { search_results: {} });
 
     case 'MOPIDY_SEARCH_RESULTS_LOADED':
+      console.log(action);
 
       // Fetch or create our container
       if (mopidy.search_results) {
@@ -85083,7 +85016,9 @@ function reducer() {
         var search_results = {};
       }
 
-      search_results.query = action.query;
+      search_results = _extends({}, search_results, {
+        query: action.query
+      });
 
       if (search_results[action.context]) {
         search_results[action.context] = [].concat(_toConsumableArray(search_results[action.context]), _toConsumableArray(action.results));
@@ -87751,20 +87686,20 @@ function clearSearchResults() {
   };
 }
 
-function getSearchResults(type, query) {
+function getSearchResults(type, term) {
   var limit = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 50;
   var offset = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
 
   return function (dispatch, getState) {
     dispatch(uiActions.startProcess('SPOTIFY_GET_SEARCH_RESULTS_PROCESSOR', 'Searching Spotify'));
 
-    type = type.replace(/s+$/, '');
-    if (type == 'all') {
-      type = 'album,artist,playlist,track';
+    var typeString = type.replace(/s+$/, '');
+    if (typeString === 'all') {
+      typeString = 'album,artist,playlist,track';
     }
 
-    var url = 'search?q=' + query;
-    url += '&type=' + type;
+    var url = 'search?q=' + term;
+    url += '&type=' + typeString;
     url += '&country=' + getState().spotify.country;
     url += '&limit=' + limit;
     url += '&offset=' + offset;
@@ -87774,7 +87709,7 @@ function getSearchResults(type, query) {
         dispatch({
           type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
           context: 'tracks',
-          query: query,
+          query: { type: type, term: term },
           results: (0, _format.formatTracks)(response.tracks.items),
           more: response.tracks.next
         });
@@ -87788,7 +87723,7 @@ function getSearchResults(type, query) {
         dispatch({
           type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
           context: 'artists',
-          query: query,
+          query: { type: type, term: term },
           results: (0, _arrays.arrayOf)('uri', response.artists.items),
           more: response.artists.next
         });
@@ -87802,42 +87737,19 @@ function getSearchResults(type, query) {
         dispatch({
           type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
           context: 'albums',
-          query: query,
+          query: { type: type, term: term },
           results: (0, _arrays.arrayOf)('uri', response.albums.items),
           more: response.albums.next
         });
       }
 
       if (response.playlists !== undefined) {
-        var playlists = [];
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
-
-        try {
-          for (var _iterator = response.playlists.items[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            var playlist = _step.value;
-
-            playlists.push(_extends({}, (0, _format.formatPlaylist)(playlist), {
-              can_edit: getState().spotify.me && playlist.owner.id == getState().spotify.me.id,
-              tracks_total: playlist.tracks.total
-            }));
-          }
-        } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion && _iterator.return) {
-              _iterator.return();
-            }
-          } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
-            }
-          }
-        }
-
+        var playlists = response.playlists.items.map(function (item) {
+          return _extends({}, (0, _format.formatPlaylist)(item), {
+            can_edit: getState().spotify.me && item.owner.id === getState().spotify.me.id,
+            tracks_total: item.tracks.total
+          });
+        });
         dispatch({
           type: 'PLAYLISTS_LOADED',
           playlists: playlists
@@ -87846,7 +87758,7 @@ function getSearchResults(type, query) {
         dispatch({
           type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
           context: 'playlists',
-          query: query,
+          query: { type: type, term: term },
           results: (0, _arrays.arrayOf)('uri', playlists),
           more: response.playlists.next
         });
@@ -88404,13 +88316,13 @@ function getUserPlaylists(uri) {
     // get the first page of playlists
     request(dispatch, getState, 'users/' + (0, _helpers.getFromUri)('userid', uri) + '/playlists?limit=40').then(function (response) {
       var playlists = [];
-      var _iteratorNormalCompletion2 = true;
-      var _didIteratorError2 = false;
-      var _iteratorError2 = undefined;
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
 
       try {
-        for (var _iterator2 = response.items[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-          var raw_playlist = _step2.value;
+        for (var _iterator = response.items[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var raw_playlist = _step.value;
 
           var can_edit = false;
           if (getState().spotify.me && raw_playlist.owner.id == getState().spotify.me.id) {
@@ -88425,16 +88337,16 @@ function getUserPlaylists(uri) {
           playlists.push(playlist);
         }
       } catch (err) {
-        _didIteratorError2 = true;
-        _iteratorError2 = err;
+        _didIteratorError = true;
+        _iteratorError = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion2 && _iterator2.return) {
-            _iterator2.return();
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
           }
         } finally {
-          if (_didIteratorError2) {
-            throw _iteratorError2;
+          if (_didIteratorError) {
+            throw _iteratorError;
           }
         }
       }
@@ -88725,29 +88637,29 @@ function getAllPlaylistTracksProcessor(data) {
       // Add on our new batch of loaded tracks
       var tracks = [];
       var new_tracks = [];
-      var _iteratorNormalCompletion3 = true;
-      var _didIteratorError3 = false;
-      var _iteratorError3 = undefined;
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
 
       try {
-        for (var _iterator3 = response.items[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-          var item = _step3.value;
+        for (var _iterator2 = response.items[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          var item = _step2.value;
 
           if (item.track) {
             new_tracks.push(item.track);
           }
         }
       } catch (err) {
-        _didIteratorError3 = true;
-        _iteratorError3 = err;
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion3 && _iterator3.return) {
-            _iterator3.return();
+          if (!_iteratorNormalCompletion2 && _iterator2.return) {
+            _iterator2.return();
           }
         } finally {
-          if (_didIteratorError3) {
-            throw _iteratorError3;
+          if (_didIteratorError2) {
+            throw _iteratorError2;
           }
         }
       }
@@ -89945,7 +89857,9 @@ function reducer() {
         var search_results = {};
       }
 
-      search_results.query = action.query;
+      search_results = _extends({}, search_results, {
+        query: action.query
+      });
 
       if (search_results.results) {
         search_results[action.context] = [].concat(_toConsumableArray(search_results[action.context]), _toConsumableArray(action.results));
@@ -90674,14 +90588,11 @@ function reducer() {
     /**
        * Context menu
        * */
-
     case 'SHOW_CONTEXT_MENU':
       return _extends({}, ui, { context_menu: action.data });
 
     case 'HIDE_CONTEXT_MENU':
-      return _extends({}, ui, {
-        context_menu: _extends({}, ui.context_menu, { closing: true })
-      });
+      return _extends({}, ui, { context_menu: _extends({}, ui.context_menu, { closing: true }) });
 
     case 'REMOVE_CONTEXT_MENU':
       return _extends({}, ui, { context_menu: null });
@@ -90690,9 +90601,7 @@ function reducer() {
       return _extends({}, ui, { touch_context_menu: action.data });
 
     case 'HIDE_TOUCH_CONTEXT_MENU':
-      return _extends({}, ui, {
-        touch_context_menu: _extends({}, ui.touch_context_menu, { closing: true })
-      });
+      return _extends({}, ui, { touch_context_menu: _extends({}, ui.touch_context_menu, { closing: true }) });
 
     case 'REMOVE_TOUCH_CONTEXT_MENU':
       return _extends({}, ui, { touch_context_menu: null });
@@ -90700,7 +90609,6 @@ function reducer() {
     /**
        * Dragging
        * */
-
     case 'DRAG_START':
       return _extends({}, ui, {
         dragger: {
@@ -90725,7 +90633,6 @@ function reducer() {
     /**
        * Modals
        * */
-
     case 'OPEN_MODAL':
       return _extends({}, ui, { modal: action.modal });
 
@@ -90735,7 +90642,6 @@ function reducer() {
     /**
        * Notifications
        * */
-
     case 'CREATE_NOTIFICATION':
       var notifications = _extends({}, ui.notifications);
       notifications[action.notification.key] = action.notification;
@@ -96615,10 +96521,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
@@ -96711,6 +96613,16 @@ var Search = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (Search.__proto__ || Object.getPrototypeOf(Search)).call(this, props));
 
+    _this.componentDidMount = function () {
+      var setWindowTitle = _this.props.uiActions.setWindowTitle;
+
+
+      setWindowTitle('Search');
+
+      // Auto-focus on the input field
+      $(document).find('.search-form input').focus();
+    };
+
     _this.componentDidUpdate = function (_ref) {
       var prevType = _ref.type,
           prevTerm = _ref.term,
@@ -96724,120 +96636,158 @@ var Search = function (_React$Component) {
           type = _this$state.type,
           term = _this$state.term;
 
+      // Already connected, but search properties changed
 
-      if (prevType !== typeProp || prevTerm !== termProp) {
-        _this.digestUri({ type: typeProp, term: termProp });
-      }
-
-      // Services came online
-      if (!prev_mopidy_connected && mopidy_connected && uri_schemes_search_enabled) {
-        _this.search(type, term, 'mopidy');
-
-        if (uri_schemes_search_enabled.includes('spotify:')) {
-          _this.search(type, term, 'spotify');
+      if (prev_mopidy_connected && mopidy_connected) {
+        if (prevType !== typeProp || prevTerm !== termProp) {
+          _this.digestUri();
         }
+        // Connected
+      } else if (!prev_mopidy_connected && mopidy_connected && uri_schemes_search_enabled) {
+        _this.search(type, term);
       }
     };
 
-    _this.handleSubmit = function (term) {
+    _this.onSubmit = function (term) {
       var type = _this.state.type;
-      var _this$props2 = _this.props,
-          history = _this$props2.history,
-          propTerm = _this$props2.term;
+      var history = _this.props.history;
 
       var encodedTerm = encodeURIComponent(term);
 
       _this.setState({ term: term }, function () {
-        // Unchanged term, so this is a forced re-search
-        // Often the other search parameters have changed instead, but we can't
-        // push a URL change when the term hasn't changed
-        if (propTerm === term) {
-          _this.search();
-        } else {
-          history.push('/search/' + type + '/' + encodedTerm);
-        }
+        history.push('/search/' + type + '/' + encodedTerm);
       });
     };
 
     _this.onReset = function () {
       var history = _this.props.history;
 
-      _this.setState({ term: '', type: 'all' });
       history.push('/search');
     };
 
+    _this.onSortChange = function (value) {
+      var hideContextMenu = _this.props.uiActions.hideContextMenu;
+
+      _this.setSort(value);
+      hideContextMenu();
+    };
+
+    _this.onSourceChange = function (value) {
+      var _this$props$uiActions = _this.props.uiActions,
+          set = _this$props$uiActions.set,
+          hideContextMenu = _this$props$uiActions.hideContextMenu;
+
+      set({ uri_schemes_search_enabled: value });
+      hideContextMenu();
+    };
+
+    _this.onSourceClose = function () {
+      spotifyActions.clearSearchResults();
+      mopidyActions.clearSearchResults();
+      _this.search();
+    };
+
     _this.digestUri = function () {
-      var _ref2 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _this.props,
-          type = _ref2.type,
-          term = _ref2.term;
+      var _this$props2 = _this.props,
+          type = _this$props2.type,
+          term = _this$props2.term;
+
 
       if (type && term) {
-        _this.setState({ type: type, term: term });
-
-        _this.search(type, term);
+        _this.setState({ type: type, term: term }, function () {
+          _this.search();
+        });
       } else if (!term || term === '') {
-        _this.props.spotifyActions.clearSearchResults();
-        _this.props.mopidyActions.clearSearchResults();
+        _this.clearSearch();
       }
+    };
+
+    _this.clearSearch = function () {
+      var _this$props3 = _this.props,
+          spotifyActions = _this$props3.spotifyActions,
+          mopidyActions = _this$props3.mopidyActions,
+          setWindowTitle = _this$props3.uiActions.setWindowTitle;
+
+
+      spotifyActions.clearSearchResults();
+      mopidyActions.clearSearchResults();
+      setWindowTitle('Search');
+      _this.setState({ term: '' });
     };
 
     _this.search = function () {
-      var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _this.state.type;
-      var term = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _this.state.term;
-      var provider = arguments[2];
+      var _this$props4 = _this.props,
+          setWindowTitle = _this$props4.uiActions.setWindowTitle,
+          mopidy_connected = _this$props4.mopidy_connected,
+          uri_schemes_search_enabled = _this$props4.uri_schemes_search_enabled,
+          mopidyActions = _this$props4.mopidyActions,
+          spotifyActions = _this$props4.spotifyActions,
+          _this$props4$mopidy_s = _this$props4.mopidy_search_results.query;
+      _this$props4$mopidy_s = _this$props4$mopidy_s === undefined ? {} : _this$props4$mopidy_s;
+      var mopidyTerm = _this$props4$mopidy_s.term,
+          mopidyType = _this$props4$mopidy_s.type,
+          _this$props4$spotify_ = _this$props4.spotify_search_results.query;
+      _this$props4$spotify_ = _this$props4$spotify_ === undefined ? {} : _this$props4$spotify_;
+      var spotifyTerm = _this$props4$spotify_.term,
+          spotifyType = _this$props4$spotify_.type;
+      var _this$state2 = _this.state,
+          type = _this$state2.type,
+          term = _this$state2.term;
 
-      _this.props.uiActions.setWindowTitle('Search: ' + decodeURIComponent(term));
 
-      if (type && term) {
-        if (provider == 'mopidy' || _this.props.mopidy_connected && _this.props.uri_schemes_search_enabled) {
-          if (_this.props.mopidy_search_results.query === undefined || _this.props.mopidy_search_results.query != term) {
-            _this.props.mopidyActions.clearSearchResults();
-            _this.props.mopidyActions.getSearchResults(type, term);
-          }
+      console.info('Searching for ' + type + ' matching "' + term + '"');
+
+      setWindowTitle('Search: ' + decodeURIComponent(term));
+
+      if (type && term && mopidy_connected && uri_schemes_search_enabled) {
+        if (mopidyTerm !== term || mopidyType !== type) {
+          mopidyActions.clearSearchResults();
+          mopidyActions.getSearchResults(type, term);
         }
 
-        if (provider == 'spotify' || _this.props.mopidy_connected && _this.props.uri_schemes_search_enabled && _this.props.uri_schemes_search_enabled.includes('spotify:')) {
-          if (_this.props.spotify_search_results.query === undefined || _this.props.spotify_search_results.query != term) {
-            _this.props.spotifyActions.clearSearchResults();
-            _this.props.spotifyActions.getSearchResults(type, term);
-          }
+        if ((spotifyTerm !== term || spotifyType !== type) && uri_schemes_search_enabled.includes('spotify:')) {
+          spotifyActions.clearSearchResults();
+          spotifyActions.getSearchResults(type, term);
         }
       }
     };
 
-    _this.render = function () {
-      var _this$state2 = _this.state,
-          term = _this$state2.term,
-          type = _this$state2.type;
-      var _this$props3 = _this.props,
-          search_settings = _this$props3.search_settings,
-          uri_schemes = _this$props3.uri_schemes,
-          sort = _this$props3.sort,
-          sort_reverse = _this$props3.sort_reverse,
-          history = _this$props3.history,
-          uri_schemes_priority = _this$props3.uri_schemes_priority,
-          uri_schemes_search_enabled = _this$props3.uri_schemes_search_enabled,
-          mopidy_search_results = _this$props3.mopidy_search_results,
-          spotify_search_results = _this$props3.spotify_search_results,
-          spotifyActions = _this$props3.spotifyActions,
-          mopidyActions = _this$props3.mopidyActions;
+    _this.loadMore = function (type) {
+      alert('load more: ' + type);
+      // this.props.spotifyActions.getURL(this.props['spotify_'+type+'_more'], 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_'+type.toUpperCase());
+    };
 
-      var sort_options = [{
-        value: 'followers',
-        label: 'Popularity'
-      }, {
-        value: 'name',
-        label: 'Name'
-      }, {
-        value: 'artists.name',
-        label: 'Artist'
-      }, {
-        value: 'duration',
-        label: 'Duration'
-      }, {
-        value: 'uri',
-        label: 'Source'
-      }];
+    _this.setSort = function (value) {
+      var _this$props5 = _this.props,
+          sort = _this$props5.sort,
+          sort_reverse = _this$props5.sort_reverse,
+          set = _this$props5.uiActions.set;
+
+
+      var reverse = false;
+      if (sort === value) reverse = !sort_reverse;
+
+      var data = {
+        search_results_sort_reverse: reverse,
+        search_results_sort: value
+      };
+      set(data);
+    };
+
+    _this.render = function () {
+      var _this$state3 = _this.state,
+          term = _this$state3.term,
+          type = _this$state3.type;
+      var _this$props6 = _this.props,
+          uri_schemes = _this$props6.uri_schemes,
+          sort = _this$props6.sort,
+          sort_reverse = _this$props6.sort_reverse,
+          history = _this$props6.history,
+          uri_schemes_search_enabled = _this$props6.uri_schemes_search_enabled,
+          uiActions = _this$props6.uiActions;
+
+
+      var sort_options = [{ value: 'followers', label: 'Popularity' }, { value: 'name', label: 'Name' }, { value: 'artists.name', label: 'Artist' }, { value: 'duration', label: 'Duration' }, { value: 'uri', label: 'Source' }];
 
       var provider_options = [];
       for (var i = 0; i < uri_schemes.length; i++) {
@@ -96857,23 +96807,15 @@ var Search = function (_React$Component) {
           valueAsLabel: true,
           options: sort_options,
           selected_icon: sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down',
-          handleChange: function handleChange(value) {
-            _this.setSort(value);uiActions.hideContextMenu();
-          }
+          handleChange: _this.onSortChange
         }),
         _react2.default.createElement(_DropdownField2.default, {
           icon: 'cloud',
           name: 'Sources',
           value: uri_schemes_search_enabled,
           options: provider_options,
-          handleChange: function handleChange(value) {
-            return _this.handleSourceChange(value);
-          },
-          onClose: function onClose() {
-            spotifyActions.clearSearchResults();
-            mopidyActions.clearSearchResults();
-            _this.search();
-          }
+          handleChange: _this.onSourceChange,
+          onClose: _this.onSourceClose
         })
       );
 
@@ -96889,9 +96831,7 @@ var Search = function (_React$Component) {
           key: 'search_form_' + type + '_' + term,
           history: history,
           term: term,
-          onSubmit: function onSubmit(term) {
-            return _this.handleSubmit(term);
-          },
+          onSubmit: _this.onSubmit,
           onReset: _this.onReset
         }),
         _react2.default.createElement(
@@ -96967,50 +96907,6 @@ var Search = function (_React$Component) {
     };
     return _this;
   }
-
-  _createClass(Search, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      this.props.uiActions.setWindowTitle('Search');
-
-      // Auto-focus on the input field
-      $(document).find('.search-form input').focus();
-
-      // Listen for a query baked-in to the URL
-      // This would be the case when we've clicked from a link elsewhere
-      this.digestUri(_extends({}, this.props, {
-        term: decodeURIComponent(this.props.term)
-      }));
-    }
-
-    // Digest the URI query property
-    // Triggered when the URL changes
-
-  }, {
-    key: 'loadMore',
-    value: function loadMore(type) {
-      alert('load more: ' + type);
-      // this.props.spotifyActions.getURL(this.props['spotify_'+type+'_more'], 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_'+type.toUpperCase());
-    }
-  }, {
-    key: 'setSort',
-    value: function setSort(value) {
-      var reverse = false;
-      if (this.props.sort == value) reverse = !this.props.sort_reverse;
-
-      var data = {
-        search_results_sort_reverse: reverse,
-        search_results_sort: value
-      };
-      this.props.uiActions.set(data);
-    }
-  }, {
-    key: 'handleSourceChange',
-    value: function handleSourceChange(value) {
-      this.props.uiActions.set({ uri_schemes_search_enabled: value });
-      this.props.uiActions.hideContextMenu();
-    }
-  }]);
 
   return Search;
 }(_react2.default.Component);
@@ -99069,10 +98965,6 @@ var _Icon = __webpack_require__(/*! ../../components/Icon */ "./src/js/component
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _Parallax = __webpack_require__(/*! ../../components/Parallax */ "./src/js/components/Parallax.js");
-
-var _Parallax2 = _interopRequireDefault(_Parallax);
-
 var _Loader = __webpack_require__(/*! ../../components/Loader */ "./src/js/components/Loader.js");
 
 var _Loader2 = _interopRequireDefault(_Loader);
@@ -99105,48 +98997,38 @@ var DiscoverFeatured = function (_React$Component) {
   _inherits(DiscoverFeatured, _React$Component);
 
   function DiscoverFeatured() {
+    var _ref;
+
+    var _temp, _this, _ret;
+
     _classCallCheck(this, DiscoverFeatured);
 
-    return _possibleConstructorReturn(this, (DiscoverFeatured.__proto__ || Object.getPrototypeOf(DiscoverFeatured)).apply(this, arguments));
-  }
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
 
-  _createClass(DiscoverFeatured, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      this.props.uiActions.setWindowTitle('Featured playlists');
-      if (!this.props.featured_playlists) {
-        this.props.spotifyActions.getFeaturedPlaylists();
-      }
-    }
-  }, {
-    key: 'playPlaylist',
-    value: function playPlaylist(e, playlist) {
-      this.props.mopidyActions.playPlaylist(playlist.uri);
-    }
-  }, {
-    key: 'handleContextMenu',
-    value: function handleContextMenu(e, item) {
-      e.preventDefault();
-      var data = {
-        e: e,
-        context: 'playlist',
-        uris: [item.uri],
-        items: [item]
-      };
-      this.props.uiActions.showContextMenu(data);
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var _this2 = this;
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = DiscoverFeatured.__proto__ || Object.getPrototypeOf(DiscoverFeatured)).call.apply(_ref, [this].concat(args))), _this), _this.onRefresh = function () {
+      var _this$props = _this.props,
+          hideContextMenu = _this$props.uiActions.hideContextMenu,
+          getFeaturedPlaylists = _this$props.spotifyActions.getFeaturedPlaylists;
 
-      if ((0, _helpers.isLoading)(this.props.load_queue, ['spotify_browse/featured-playlists'])) {
+      hideContextMenu();
+      getFeaturedPlaylists();
+    }, _this.render = function () {
+      var _this$props2 = _this.props,
+          load_queue = _this$props2.load_queue,
+          uiActions = _this$props2.uiActions,
+          featured_playlists = _this$props2.featured_playlists,
+          playlists = _this$props2.playlists;
+
+
+      if ((0, _helpers.isLoading)(load_queue, ['spotify_browse/featured-playlists'])) {
         return _react2.default.createElement(
           'div',
           { className: 'view discover-featured-view preserve-3d' },
           _react2.default.createElement(
             _Header2.default,
-            { className: 'overlay', uiActions: this.props.uiActions },
+            { className: 'overlay', uiActions: uiActions },
             _react2.default.createElement(_Icon2.default, { name: 'star', type: 'material' }),
             'Featured playlists'
           ),
@@ -99154,21 +99036,19 @@ var DiscoverFeatured = function (_React$Component) {
         );
       }
 
-      var playlists = [];
-      if (this.props.featured_playlists) {
-        for (var i = 0; i < this.props.featured_playlists.playlists.length; i++) {
-          var uri = this.props.featured_playlists.playlists[i];
-          if (this.props.playlists.hasOwnProperty(uri)) {
-            playlists.push(this.props.playlists[uri]);
+      var items = [];
+      if (featured_playlists) {
+        for (var i = 0; i < featured_playlists.playlists.length; i++) {
+          var uri = featured_playlists.playlists[i];
+          if (playlists.hasOwnProperty(uri)) {
+            items.push(playlists[uri]);
           }
         }
       }
 
       var options = _react2.default.createElement(
         'a',
-        { className: 'button button--no-hover', onClick: function onClick(e) {
-            _this2.props.uiActions.hideContextMenu();_this2.props.spotifyActions.getFeaturedPlaylists();
-          } },
+        { className: 'button button--no-hover', onClick: _this.onRefresh },
         _react2.default.createElement(_Icon2.default, { name: 'refresh' }),
         'Refresh'
       );
@@ -99178,23 +99058,52 @@ var DiscoverFeatured = function (_React$Component) {
         { className: 'view discover-featured-view preserve-3d' },
         _react2.default.createElement(
           _Header2.default,
-          { options: options },
+          { uiActions: uiActions, options: options },
           _react2.default.createElement(_Icon2.default, { name: 'star', type: 'material' }),
           'Featured playlists'
         ),
         _react2.default.createElement(
           'section',
           { className: 'content-wrapper grid-wrapper' },
-          playlists ? _react2.default.createElement(_PlaylistGrid2.default, { playlists: playlists }) : null
+          items && _react2.default.createElement(_PlaylistGrid2.default, { playlists: items })
         )
       );
+    }, _temp), _possibleConstructorReturn(_this, _ret);
+  }
+
+  _createClass(DiscoverFeatured, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var _props = this.props,
+          featured_playlists = _props.featured_playlists,
+          setWindowTitle = _props.uiActions.setWindowTitle,
+          getFeaturedPlaylists = _props.spotifyActions.getFeaturedPlaylists;
+
+
+      setWindowTitle('Featured playlists');
+      if (!featured_playlists) getFeaturedPlaylists();
+    }
+  }, {
+    key: 'handleContextMenu',
+    value: function handleContextMenu(e, item) {
+      var showContextMenu = this.props.uiActions.showContextMenu;
+
+
+      e.preventDefault();
+      var data = {
+        e: e,
+        context: 'playlist',
+        uris: [item.uri],
+        items: [item]
+      };
+      showContextMenu(data);
     }
   }]);
 
   return DiscoverFeatured;
 }(_react2.default.Component);
 
-var mapStateToProps = function mapStateToProps(state, ownProps) {
+var mapStateToProps = function mapStateToProps(state) {
   return {
     theme: state.ui.theme,
     load_queue: state.ui.load_queue,

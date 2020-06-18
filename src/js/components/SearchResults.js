@@ -24,9 +24,14 @@ const SearchResults = ({
   all,
 }) => {
   const encodedTerm = encodeURIComponent(query.term);
-
+  const resultsMatchQuery = (results) => {
+    if (!results.query) return false;
+    if (results.query.term !== query.term) return false;
+    if (results.query.type !== query.type) return false;
+    return true;
+  };
   let results = [];
-  if (mopidy_search_results.query === query.term && mopidy_search_results[type]) {
+  if (resultsMatchQuery(mopidy_search_results) && mopidy_search_results[type]) {
     results = [
       ...results,
       ...(
@@ -37,7 +42,7 @@ const SearchResults = ({
     ];
   }
 
-  if (spotify_search_results.query === query.term && spotify_search_results[type]) {
+  if (resultsMatchQuery(spotify_search_results) && spotify_search_results[type]) {
     results = [
       ...results,
       ...(
@@ -116,7 +121,7 @@ const mapStateToProps = (state, ownProps) => ({
   uri_schemes_priority: state.ui.uri_schemes_priority || [],
   mopidy_search_results: state.mopidy.search_results || {},
   spotify_search_results: state.spotify.search_results || {},
-  sort: state.ui.search_results_sort || 'followers.total',
+  sort: state.ui.search_results_sort || 'followers',
   sort_reverse: !!state.ui.search_results_sort_reverse,
 });
 

@@ -561,17 +561,17 @@ export function clearSearchResults() {
   };
 }
 
-export function getSearchResults(type, query, limit = 50, offset = 0) {
+export function getSearchResults(type, term, limit = 50, offset = 0) {
   return (dispatch, getState) => {
     dispatch(uiActions.startProcess('SPOTIFY_GET_SEARCH_RESULTS_PROCESSOR', 'Searching Spotify'));
 
-    type = type.replace(/s+$/, '');
-    if (type == 'all') {
-      type = 'album,artist,playlist,track';
+    let typeString = type.replace(/s+$/, '');
+    if (typeString === 'all') {
+      typeString = 'album,artist,playlist,track';
     }
 
-    let url = `search?q=${query}`;
-    url += `&type=${type}`;
+    let url = `search?q=${term}`;
+    url += `&type=${typeString}`;
     url += `&country=${getState().spotify.country}`;
     url += `&limit=${limit}`;
     url += `&offset=${offset}`;
@@ -583,7 +583,7 @@ export function getSearchResults(type, query, limit = 50, offset = 0) {
             dispatch({
               type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
               context: 'tracks',
-              query,
+              query: { type, term },
               results: formatTracks(response.tracks.items),
               more: response.tracks.next,
             });
@@ -597,7 +597,7 @@ export function getSearchResults(type, query, limit = 50, offset = 0) {
             dispatch({
               type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
               context: 'artists',
-              query,
+              query: { type, term },
               results: arrayOf('uri', response.artists.items),
               more: response.artists.next,
             });
@@ -611,22 +611,18 @@ export function getSearchResults(type, query, limit = 50, offset = 0) {
             dispatch({
               type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
               context: 'albums',
-              query,
+              query: { type, term },
               results: arrayOf('uri', response.albums.items),
               more: response.albums.next,
             });
           }
 
           if (response.playlists !== undefined) {
-            const playlists = [];
-            for (const playlist of response.playlists.items) {
-              playlists.push({
-
-                ...formatPlaylist(playlist),
-                can_edit: (getState().spotify.me && playlist.owner.id == getState().spotify.me.id),
-                tracks_total: playlist.tracks.total,
-              });
-            }
+            const playlists = response.playlists.items.map((item) => ({
+              ...formatPlaylist(item),
+              can_edit: (getState().spotify.me && item.owner.id === getState().spotify.me.id),
+              tracks_total: item.tracks.total,
+            }));
             dispatch({
               type: 'PLAYLISTS_LOADED',
               playlists,
@@ -635,7 +631,7 @@ export function getSearchResults(type, query, limit = 50, offset = 0) {
             dispatch({
               type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
               context: 'playlists',
-              query,
+              query: { type, term },
               results: arrayOf('uri', playlists),
               more: response.playlists.next,
             });

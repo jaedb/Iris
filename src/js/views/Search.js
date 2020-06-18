@@ -34,18 +34,17 @@ class Search extends React.Component {
     };
   }
 
-  componentDidMount() {
-    this.props.uiActions.setWindowTitle('Search');
+  componentDidMount = () => {
+    const {
+      uiActions: {
+        setWindowTitle,
+      },
+    } = this.props;
+
+    setWindowTitle('Search');
 
     // Auto-focus on the input field
     $(document).find('.search-form input').focus();
-
-    // Listen for a query baked-in to the URL
-    // This would be the case when we've clicked from a link elsewhere
-    this.digestUri({
-      ...this.props,
-      term: decodeURIComponent(this.props.term),
-    });
   }
 
   componentDidUpdate = ({
@@ -61,97 +60,154 @@ class Search extends React.Component {
     } = this.props;
     const { type, term } = this.state;
 
-    if (prevType !== typeProp || prevTerm !== termProp) {
-      this.digestUri({ type: typeProp, term: termProp });
-    }
-
-    // Services came online
-    if (!prev_mopidy_connected && mopidy_connected && uri_schemes_search_enabled) {
-      this.search(type, term, 'mopidy');
-
-      if (uri_schemes_search_enabled.includes('spotify:')) {
-        this.search(type, term, 'spotify');
+    // Already connected, but search properties changed
+    if (prev_mopidy_connected && mopidy_connected) {
+      if (prevType !== typeProp || prevTerm !== termProp) {
+        this.digestUri();
       }
+    // Connected
+    } else if (!prev_mopidy_connected && mopidy_connected && uri_schemes_search_enabled) {
+      this.search(type, term);
     }
   }
 
-  handleSubmit = (term) => {
+  onSubmit = (term) => {
     const { type } = this.state;
-    const { history, term: propTerm } = this.props;
+    const { history } = this.props;
     const encodedTerm = encodeURIComponent(term);
 
     this.setState(
-      { term }, () => {
-        // Unchanged term, so this is a forced re-search
-        // Often the other search parameters have changed instead, but we can't
-        // push a URL change when the term hasn't changed
-        if (propTerm === term) {
-          this.search();
-        } else {
-          history.push(`/search/${type}/${encodedTerm}`);
-        }
+      { term },
+      () => {
+        history.push(`/search/${type}/${encodedTerm}`);
       },
     );
   }
 
   onReset = () => {
     const { history } = this.props;
-    this.setState({ term: '', type: 'all' });
     history.push('/search');
   }
 
-  // Digest the URI query property
-  // Triggered when the URL changes
-  digestUri = ({ type, term } = this.props) => {
-    if (type && term) {
-      this.setState({ type, term });
+  onSortChange = (value) => {
+    const { uiActions: { hideContextMenu } } = this.props;
+    this.setSort(value);
+    hideContextMenu();
+  }
 
-      this.search(type, term);
+  onSourceChange = (value) => {
+    const {
+      uiActions: {
+        set,
+        hideContextMenu,
+      },
+    } = this.props;
+    set({ uri_schemes_search_enabled: value });
+    hideContextMenu();
+  }
+
+  onSourceClose = () => {
+    spotifyActions.clearSearchResults();
+    mopidyActions.clearSearchResults();
+    this.search();
+  };
+
+  digestUri = () => {
+    const {
+      type,
+      term,
+    } = this.props;
+
+    if (type && term) {
+      this.setState({ type, term }, () => {
+        this.search();
+      });
     } else if (!term || term === '') {
-      this.props.spotifyActions.clearSearchResults();
-      this.props.mopidyActions.clearSearchResults();
+      this.clearSearch();
     }
   }
 
-  search = (type = this.state.type, term = this.state.term, provider) => {
-    this.props.uiActions.setWindowTitle(`Search: ${decodeURIComponent(term)}`);
+  clearSearch = () => {
+    const {
+      spotifyActions,
+      mopidyActions,
+      uiActions: {
+        setWindowTitle,
+      },
+    } = this.props;
 
-    if (type && term) {
-      if (provider == 'mopidy' || (this.props.mopidy_connected && this.props.uri_schemes_search_enabled)) {
-        if (this.props.mopidy_search_results.query === undefined || this.props.mopidy_search_results.query != term) {
-          this.props.mopidyActions.clearSearchResults();
-          this.props.mopidyActions.getSearchResults(type, term);
-        }
+    spotifyActions.clearSearchResults();
+    mopidyActions.clearSearchResults();
+    setWindowTitle('Search');
+    this.setState({ term: '' });
+  }
+
+  search = () => {
+    const {
+      uiActions: {
+        setWindowTitle,
+      },
+      mopidy_connected,
+      uri_schemes_search_enabled,
+      mopidyActions,
+      spotifyActions,
+      mopidy_search_results: {
+        query: {
+          term: mopidyTerm,
+          type: mopidyType,
+        } = {},
+      },
+      spotify_search_results: {
+        query: {
+          term: spotifyTerm,
+          type: spotifyType,
+        } = {},
+      },
+    } = this.props;
+    const {
+      type,
+      term,
+    } = this.state;
+
+    console.info(`Searching for ${type} matching "${term}"`);
+
+    setWindowTitle(`Search: ${decodeURIComponent(term)}`);
+
+    if (type && term && mopidy_connected && uri_schemes_search_enabled) {
+      if (mopidyTerm !== term || mopidyType !== type) {
+        mopidyActions.clearSearchResults();
+        mopidyActions.getSearchResults(type, term);
       }
 
-      if (provider == 'spotify' || (this.props.mopidy_connected && this.props.uri_schemes_search_enabled && this.props.uri_schemes_search_enabled.includes('spotify:'))) {
-        if (this.props.spotify_search_results.query === undefined || this.props.spotify_search_results.query != term) {
-          this.props.spotifyActions.clearSearchResults();
-          this.props.spotifyActions.getSearchResults(type, term);
-        }
+      if ((spotifyTerm !== term || spotifyType !== type) && uri_schemes_search_enabled.includes('spotify:')) {
+        spotifyActions.clearSearchResults();
+        spotifyActions.getSearchResults(type, term);
       }
     }
   }
 
-  loadMore(type) {
+  loadMore = (type) => {
     alert(`load more: ${type}`);
     // this.props.spotifyActions.getURL(this.props['spotify_'+type+'_more'], 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_'+type.toUpperCase());
   }
 
-  setSort(value) {
+  setSort = (value) => {
+    const {
+      sort,
+      sort_reverse,
+      uiActions: {
+        set,
+      },
+    } = this.props;
+
     let reverse = false;
-    if (this.props.sort == value) reverse = !this.props.sort_reverse;
+    if (sort === value) reverse = !sort_reverse;
 
     const data = {
       search_results_sort_reverse: reverse,
       search_results_sort: value,
     };
-    this.props.uiActions.set(data);
-  }
-
-  handleSourceChange(value) {
-    this.props.uiActions.set({ uri_schemes_search_enabled: value });
-    this.props.uiActions.hideContextMenu();
+    set(data);
   }
 
   render = () => {
@@ -160,39 +216,20 @@ class Search extends React.Component {
       type,
     } = this.state;
     const {
-      search_settings,
       uri_schemes,
       sort,
       sort_reverse,
       history,
-      uri_schemes_priority,
       uri_schemes_search_enabled,
-      mopidy_search_results,
-      spotify_search_results,
-      spotifyActions,
-      mopidyActions,
+      uiActions,
     } = this.props;
+
     const sort_options = [
-      {
-        value: 'followers',
-        label: 'Popularity',
-      },
-      {
-        value: 'name',
-        label: 'Name',
-      },
-      {
-        value: 'artists.name',
-        label: 'Artist',
-      },
-      {
-        value: 'duration',
-        label: 'Duration',
-      },
-      {
-        value: 'uri',
-        label: 'Source',
-      },
+      { value: 'followers', label: 'Popularity' },
+      { value: 'name', label: 'Name' },
+      { value: 'artists.name', label: 'Artist' },
+      { value: 'duration', label: 'Duration' },
+      { value: 'uri', label: 'Source' },
     ];
 
     const provider_options = [];
@@ -212,19 +249,15 @@ class Search extends React.Component {
           valueAsLabel
           options={sort_options}
           selected_icon={sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}
-          handleChange={(value) => { this.setSort(value); uiActions.hideContextMenu(); }}
+          handleChange={this.onSortChange}
         />
         <DropdownField
           icon="cloud"
           name="Sources"
           value={uri_schemes_search_enabled}
           options={provider_options}
-          handleChange={(value) => this.handleSourceChange(value)}
-          onClose={() => {
-            spotifyActions.clearSearchResults();
-            mopidyActions.clearSearchResults();
-            this.search();
-          }}
+          handleChange={this.onSourceChange}
+          onClose={this.onSourceClose}
         />
       </span>
     );
@@ -239,7 +272,7 @@ class Search extends React.Component {
           key={`search_form_${type}_${term}`}
           history={history}
           term={term}
-          onSubmit={(term) => this.handleSubmit(term)}
+          onSubmit={this.onSubmit}
           onReset={this.onReset}
         />
 

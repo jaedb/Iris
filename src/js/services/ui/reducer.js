@@ -22,7 +22,6 @@ export default function reducer(ui = {}, action) {
       }
       return ui;
 
-
     case 'TOGGLE_SIDEBAR':
       var new_state = !ui.sidebar_open;
       if (typeof (action.new_state) !== 'undefined') new_state = action.new_state;
@@ -42,20 +41,14 @@ export default function reducer(ui = {}, action) {
     case 'INSTALL_PROMPT':
       return { ...ui, install_prompt: action.event };
 
-
       /**
          * Context menu
          * */
-
     case 'SHOW_CONTEXT_MENU':
       return { ...ui, context_menu: action.data };
 
     case 'HIDE_CONTEXT_MENU':
-      return {
-
-        ...ui,
-        context_menu: { ...ui.context_menu, closing: true },
-      };
+      return { ...ui, context_menu: { ...ui.context_menu, closing: true } };
 
     case 'REMOVE_CONTEXT_MENU':
       return { ...ui, context_menu: null };
@@ -64,20 +57,14 @@ export default function reducer(ui = {}, action) {
       return { ...ui, touch_context_menu: action.data };
 
     case 'HIDE_TOUCH_CONTEXT_MENU':
-      return {
-
-        ...ui,
-        touch_context_menu: { ...ui.touch_context_menu, closing: true },
-      };
+      return { ...ui, touch_context_menu: { ...ui.touch_context_menu, closing: true } };
 
     case 'REMOVE_TOUCH_CONTEXT_MENU':
       return { ...ui, touch_context_menu: null };
 
-
       /**
          * Dragging
          * */
-
     case 'DRAG_START':
       return {
         ...ui,
@@ -100,11 +87,9 @@ export default function reducer(ui = {}, action) {
     case 'DRAG_END':
       return { ...ui, dragger: false };
 
-
       /**
          * Modals
          * */
-
     case 'OPEN_MODAL':
       return { ...ui, modal: action.modal };
 
@@ -115,7 +100,6 @@ export default function reducer(ui = {}, action) {
       /**
          * Notifications
          * */
-
     case 'CREATE_NOTIFICATION':
       var notifications = { ...ui.notifications };
       notifications[action.notification.key] = action.notification;
