@@ -85616,7 +85616,7 @@ var PusherMiddleware = function () {
             };
 
             socket.onerror = function (e) {
-              if (socket.readyState == 1) {
+              if (socket.readyState === 1) {
                 store.dispatch(coreActions.handleException('Pusher websocket error', e, e.type));
               }
             };

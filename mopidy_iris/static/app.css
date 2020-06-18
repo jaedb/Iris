@@ -3164,7 +3164,7 @@ footer {
     font-size: 2rem;
     line-height: 2rem;
     display: block;
-    letter-spacing: 0.08rem; }
+    letter-spacing: -0.08rem; }
   h2 {
     font-size: 1.6rem;
     line-height: 1.7rem; }
@@ -7480,7 +7480,7 @@ main .track-view {
       .search-view .search-form input {
         font-size: 1.8rem;
         height: 2.5rem;
-        letter-spacing: 0.08rem; }
+        letter-spacing: -0.08rem; }
       .search-view .search-form__reset {
         padding: 0.25rem 0 0 0; }
     .search-view .search-result-sections {
