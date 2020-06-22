@@ -9,7 +9,6 @@ const state = require('../state');
 
 // Test subjects
 import { Album } from '../../src/js/views/Album';
-import * as helpers from '../../src/js/helpers';
 import * as uiActions from '../../src/js/services/ui/actions';
 import * as coreActions from '../../src/js/services/core/actions';
 
