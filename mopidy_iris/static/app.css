@@ -2725,10 +2725,9 @@ body {
   .app-inner.dark-theme {
     color: #cecac4;
     background: #181818; }
-  @media (prefers-color-scheme: dark) {
-    .app-inner.auto-theme {
-      color: #cecac4;
-      background: #181818; } }
+  .app-inner.auto-theme {
+    color: #cecac4;
+    background: #181818; }
   .app-inner.light-theme {
     color: #121212;
     background: #f4f2f0; }
@@ -7917,6 +7916,13 @@ main .track-view {
         .modal .content .add-uri:hover.remove-uri,
         .modal .content .remove-uri:hover.remove-uri {
           color: #cf2d2d; }
+      .light-theme .modal .content .add-uri:not(:hover), .light-theme
+      .modal .content .remove-uri:not(:hover) {
+        color: #121212; }
+      @media (prefers-color-scheme: light) {
+        .auto-theme .modal .content .add-uri:not(:hover), .auto-theme
+        .modal .content .remove-uri:not(:hover) {
+          color: #121212; } }
     @media (max-width: 799px) {
       .modal .content .add-uri {
         top: 36px; } }
