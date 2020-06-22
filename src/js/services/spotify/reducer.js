@@ -196,7 +196,6 @@ export default function reducer(spotify = {}, action) {
 
     case 'SPOTIFY_FLUSH_LIBRARY':
       return {
-
         ...spotify,
         library_playlists: null,
         library_playlists_loaded_all: null,
@@ -326,7 +325,10 @@ export default function reducer(spotify = {}, action) {
         var search_results = {};
       }
 
-      search_results.query = action.query;
+      search_results = {
+        ...search_results,
+        query: action.query,
+      };
 
       if (search_results.results) {
         search_results[action.context] = [...search_results[action.context], ...action.results];

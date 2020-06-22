@@ -3,7 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { collate } from '../util/format';
-import { sortItems } from '../util/arrays';
+import { sortItems, applyFilter } from '../util/arrays';
 import { iconFromKeyword } from '../util/helpers';
 import VolumeControl from './Fields/VolumeControl';
 import MuteControl from './Fields/MuteControl';
@@ -39,6 +39,19 @@ const SnapcastGroups = (props) => {
   const renderGroup = () => {
     if (!group) return null;
 
+    let { clients: groupClients = [] } = group;
+    if (!show_disconnected_clients) {
+      groupClients = applyFilter('connected', true, groupClients);
+    }
+
+    let volume = 0;
+    if (groupClients.length) {
+      volume = groupClients.reduce(
+        (acc, client) => acc + (client.volume || 0),
+        0,
+      ) / groupClients.length;
+    };
+
     return (
       <div className="snapcast__group" key={group.id}>
         <div className="field text">
@@ -48,7 +61,7 @@ const SnapcastGroups = (props) => {
           <div className="input">
             <TextField
               value={group.name}
-              onChange={value => actions.setGroupName(group.id, value)}
+              onChange={(value) => actions.setGroupName(group.id, value)}
               autosave
             />
           </div>
@@ -84,17 +97,17 @@ const SnapcastGroups = (props) => {
             />
             <VolumeControl
               className="snapcast__group__volume-control snapcast__volume-control"
-              volume={group.volume}
+              volume={volume}
               mute={group.mute}
               onVolumeChange={(percent, previousPercent) => actions.setGroupVolume(group.id, percent, previousPercent)}
             />
           </div>
         </div>
         <SnapcastClients
+          clients={groupClients}
           group={group}
           groups={groupsArray}
           actions={actions}
-          show_disconnected_clients={show_disconnected_clients}
         />
       </div>
     );

@@ -305,8 +305,12 @@ $bp_shallow: 650px;
       @content
     }
     &.auto-theme {
-      @media (prefers-color-scheme: $theme) {
+      @if $theme == 'dark' {
         @content
+      } @else {
+        @media (prefers-color-scheme: $theme) {
+          @content
+        }
       }
     }
   } @else {

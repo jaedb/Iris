@@ -32,12 +32,25 @@
         background: transparent;
       }
     }
+
+    &__reset {
+      position: absolute;
+      top: 0;
+      right: 0;
+      font-size: 2rem;
+      padding: 1rem 0.25rem 0 0;
+      cursor: pointer;
+
+      &:hover {
+        color: colour(red);
+      }
+    }
   }
 
   .search-result-sections {
     padding-bottom: 30px;
 
-    section {
+    &__item {
       width: 31%;
       float: left;
       margin-right: 3.5%;
@@ -71,6 +84,10 @@
       input {
         font-size: 1.8rem;
         height: 2.5rem;
+        letter-spacing: -0.08rem;
+      }
+      &__reset {
+        padding: 0.25rem 0 0 0;
       }
     }
 

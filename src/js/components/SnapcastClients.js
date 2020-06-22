@@ -1,19 +1,12 @@
 
 import React from 'react';
-import { applyFilter } from '../util/arrays';
 import VolumeControl from './Fields/VolumeControl';
 import MuteControl from './Fields/MuteControl';
 import LatencyControl from './Fields/LatencyControl';
 import TextField from './Fields/TextField';
 import SelectField from './Fields/SelectField';
 
-const SnapcastClients = ({ actions, group, groups, show_disconnected_clients }) => {
-  if (!show_disconnected_clients && group.clients) {
-    var clients = applyFilter('connected', true, group.clients);
-  } else {
-    var { clients } = group;
-  }
-
+const SnapcastClients = ({ actions, group, clients, groups }) => {
   if (!clients || clients.length <= 0) {
     return <p className="no-results">No connected clients</p>;
   }

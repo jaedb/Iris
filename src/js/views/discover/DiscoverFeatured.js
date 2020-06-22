@@ -5,7 +5,6 @@ import { bindActionCreators } from 'redux';
 import PlaylistGrid from '../../components/PlaylistGrid';
 import Header from '../../components/Header';
 import Icon from '../../components/Icon';
-import Parallax from '../../components/Parallax';
 import Loader from '../../components/Loader';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
@@ -14,17 +13,40 @@ import { isLoading } from '../../util/helpers';
 
 class DiscoverFeatured extends React.Component {
   componentDidMount() {
-    this.props.uiActions.setWindowTitle('Featured playlists');
-    if (!this.props.featured_playlists) {
-      this.props.spotifyActions.getFeaturedPlaylists();
-    }
+    const {
+      featured_playlists,
+      uiActions: {
+        setWindowTitle,
+      },
+      spotifyActions: {
+        getFeaturedPlaylists,
+      },
+    } = this.props;
+
+    setWindowTitle('Featured playlists');
+    if (!featured_playlists) getFeaturedPlaylists();
   }
 
-  playPlaylist(e, playlist) {
-    this.props.mopidyActions.playPlaylist(playlist.uri);
+  onRefresh = () => {
+    const {
+      uiActions: {
+        hideContextMenu,
+      },
+      spotifyActions: {
+        getFeaturedPlaylists,
+      },
+    } = this.props;
+    hideContextMenu();
+    getFeaturedPlaylists();
   }
 
   handleContextMenu(e, item) {
+    const {
+      uiActions: {
+        showContextMenu,
+      },
+    } = this.props;
+
     e.preventDefault();
     const data = {
       e,
@@ -32,14 +54,21 @@ class DiscoverFeatured extends React.Component {
       uris: [item.uri],
       items: [item],
     };
-    this.props.uiActions.showContextMenu(data);
+    showContextMenu(data);
   }
 
-  render() {
-    if (isLoading(this.props.load_queue, ['spotify_browse/featured-playlists'])) {
+  render = () => {
+    const {
+      load_queue,
+      uiActions,
+      featured_playlists,
+      playlists,
+    } = this.props;
+
+    if (isLoading(load_queue, ['spotify_browse/featured-playlists'])) {
       return (
         <div className="view discover-featured-view preserve-3d">
-          <Header className="overlay" uiActions={this.props.uiActions}>
+          <Header className="overlay" uiActions={uiActions}>
             <Icon name="star" type="material" />
 						Featured playlists
           </Header>
@@ -48,38 +77,38 @@ class DiscoverFeatured extends React.Component {
       );
     }
 
-    const playlists = [];
-    if (this.props.featured_playlists) {
-      for (let i = 0; i < this.props.featured_playlists.playlists.length; i++) {
-        const uri = this.props.featured_playlists.playlists[i];
-        if (this.props.playlists.hasOwnProperty(uri)) {
-          playlists.push(this.props.playlists[uri]);
+    const items = [];
+    if (featured_playlists) {
+      for (let i = 0; i < featured_playlists.playlists.length; i++) {
+        const uri = featured_playlists.playlists[i];
+        if (playlists.hasOwnProperty(uri)) {
+          items.push(playlists[uri]);
         }
       }
     }
 
     const options = (
-      <a className="button button--no-hover" onClick={(e) => { this.props.uiActions.hideContextMenu(); this.props.spotifyActions.getFeaturedPlaylists(); }}>
+      <a className="button button--no-hover" onClick={this.onRefresh}>
         <Icon name="refresh" />
-Refresh
+        Refresh
       </a>
     );
 
     return (
       <div className="view discover-featured-view preserve-3d">
-        <Header options={options}>
+        <Header uiActions={uiActions} options={options}>
           <Icon name="star" type="material" />
-					Featured playlists
+          Featured playlists
         </Header>
         <section className="content-wrapper grid-wrapper">
-          {playlists ? <PlaylistGrid playlists={playlists} /> : null }
+          {items && <PlaylistGrid playlists={items} />}
         </section>
       </div>
     );
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state) => ({
   theme: state.ui.theme,
   load_queue: state.ui.load_queue,
   featured_playlists: state.spotify.featured_playlists,

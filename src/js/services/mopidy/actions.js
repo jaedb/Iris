@@ -541,11 +541,10 @@ export function clearSearchResults() {
   };
 }
 
-export function getSearchResults(context, query, limit = 100) {
+export function getSearchResults(type, term, limit = 100) {
   return {
     type: 'MOPIDY_GET_SEARCH_RESULTS',
-    context,
-    query,
+    query: { type, term },
     limit,
   };
 }

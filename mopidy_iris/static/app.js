@@ -70582,13 +70582,6 @@ var OutputControl = function (_React$Component) {
   }
 
   _createClass(OutputControl, [{
-    key: 'handleClick',
-    value: function handleClick(e) {
-      if (!this.props.force_expanded && $(e.target).closest('.output-control').length <= 0) {
-        this.setExpanded(false);
-      }
-    }
-  }, {
     key: 'setExpanded',
     value: function setExpanded() {
       var expanded = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : !this.state.expanded;
@@ -70610,13 +70603,21 @@ var OutputControl = function (_React$Component) {
       }
     }
   }, {
+    key: 'handleClick',
+    value: function handleClick(e) {
+      if (!this.props.force_expanded && $(e.target).closest('.output-control').length <= 0) {
+        this.setExpanded(false);
+      }
+    }
+  }, {
     key: 'snapcastGroups',
     value: function snapcastGroups() {
       var _props = this.props,
           snapcast_streams = _props.snapcast_streams,
           snapcastActions = _props.snapcastActions,
           snapcast_groups = _props.snapcast_groups,
-          clients = _props.snapcast_clients;
+          clients = _props.snapcast_clients,
+          show_disconnected_clients = _props.show_disconnected_clients;
 
 
       var groups = (0, _arrays.indexToArray)(snapcast_groups);
@@ -70631,11 +70632,19 @@ var OutputControl = function (_React$Component) {
         null,
         groups.map(function (simpleGroup) {
           var group = (0, _format.collate)(simpleGroup, { clients: clients });
-          if (!group.clients || !group.clients.length || !group.clients.filter(function (client) {
-            return client.connected;
-          }).length) {
-            return null;
+          var _group$clients = group.clients,
+              groupClients = _group$clients === undefined ? [] : _group$clients;
+
+          if (!show_disconnected_clients) {
+            groupClients = (0, _arrays.applyFilter)('connected', true, groupClients);
           }
+
+          if (!groupClients.length) return null;
+
+          var volume = groupClients.reduce(function (acc, client) {
+            return acc + (client.volume || 0);
+          }, 0) / groupClients.length;
+
           return _react2.default.createElement(
             'div',
             { className: 'output-control__item outputs__item--snapcast', key: group.id },
@@ -70667,7 +70676,7 @@ var OutputControl = function (_React$Component) {
               }),
               _react2.default.createElement(_VolumeControl2.default, {
                 className: 'output-control__item__volume',
-                volume: group.volume,
+                volume: volume,
                 mute: group.mute,
                 onVolumeChange: function onVolumeChange(percent, previousPercent) {
                   return snapcastActions.setGroupVolume(group.id, percent, previousPercent);
@@ -71008,6 +71017,14 @@ var uiActions = _interopRequireWildcard(_actions);
 
 var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/helpers.js");
 
+var _Icon = __webpack_require__(/*! ../Icon */ "./src/js/components/Icon.js");
+
+var _Icon2 = _interopRequireDefault(_Icon);
+
+var _Link = __webpack_require__(/*! ../Link */ "./src/js/components/Link.js");
+
+var _Link2 = _interopRequireDefault(_Link);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -71028,12 +71045,89 @@ var SearchForm = function (_React$Component) {
 
     _this.shouldComponentUpdate = function (nextProps, nextState) {
       var termProp = _this.props.term;
-      var termState = _this.props.term;
+      var termState = _this.state.term;
 
       if (nextProps.term !== termProp) return true;
       if (nextState.term !== termState) return true;
 
       return false;
+    };
+
+    _this.onChange = function (e) {
+      _this.setState({
+        term: e.target.value,
+        pristine: false
+      });
+    };
+
+    _this.onBlur = function () {
+      var onBlur = _this.props.onBlur;
+      var term = _this.state.term;
+
+      _this.setState({ pristine: false });
+      if (onBlur) {
+        onBlur(term);
+      }
+    };
+
+    _this.onFocus = function () {
+      _this.setState({ pristine: false });
+    };
+
+    _this.onSubmit = function (e) {
+      var term = _this.state.term;
+      var history = _this.props.history;
+
+      e.preventDefault();
+
+      // check for uri type matching
+      switch ((0, _helpers.uriType)(term)) {
+        case 'album':
+          history.push('/album/' + encodeURIComponent(term));
+          break;
+
+        case 'artist':
+          history.push('/artist/' + encodeURIComponent(term));
+          break;
+
+        case 'playlist':
+          history.push('/playlist/' + encodeURIComponent(term));
+          break;
+
+        case 'track':
+          history.push('/track/' + encodeURIComponent(term));
+          break;
+
+        default:
+          _this.props.onSubmit(term);
+          break;
+      }
+
+      return false;
+    };
+
+    _this.render = function () {
+      var term = _this.state.term;
+      var onReset = _this.props.onReset;
+
+
+      return _react2.default.createElement(
+        'form',
+        { className: 'search-form', onSubmit: _this.onSubmit },
+        _react2.default.createElement(
+          'label',
+          null,
+          _react2.default.createElement('input', {
+            type: 'text',
+            placeholder: 'Search...',
+            onChange: _this.onChange,
+            onBlur: _this.onBlur,
+            onFocus: _this.onFocus,
+            value: term
+          })
+        ),
+        term && _react2.default.createElement(_Icon2.default, { name: 'close', className: 'search-form__reset', onClick: onReset })
+      );
     };
 
     _this.state = {
@@ -71043,83 +71137,7 @@ var SearchForm = function (_React$Component) {
     return _this;
   }
 
-  _createClass(SearchForm, [{
-    key: 'handleBlur',
-    value: function handleBlur() {
-      var onBlur = this.props.onBlur;
-      var term = this.state.term;
-
-      this.setState({ pristine: false });
-      if (onBlur) {
-        onBlur(term);
-      }
-    }
-  }, {
-    key: 'handleFocus',
-    value: function handleFocus(e) {
-      this.setState({ pristine: false });
-    }
-  }, {
-    key: 'handleSubmit',
-    value: function handleSubmit(e) {
-      e.preventDefault();
-
-      // check for uri type matching
-      switch ((0, _helpers.uriType)(this.state.term)) {
-        case 'album':
-          this.props.history.push('/album/' + encodeURIComponent(this.state.term));
-          break;
-
-        case 'artist':
-          this.props.history.push('/artist/' + encodeURIComponent(this.state.term));
-          break;
-
-        case 'playlist':
-          this.props.history.push('/playlist/' + encodeURIComponent(this.state.term));
-          break;
-
-        case 'track':
-          this.props.history.push('/track/' + encodeURIComponent(this.state.term));
-          break;
-
-        default:
-          this.props.onSubmit(this.state.term);
-          break;
-      }
-
-      return false;
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var _this2 = this;
-
-      return _react2.default.createElement(
-        'form',
-        { className: 'search-form', onSubmit: function onSubmit(e) {
-            return _this2.handleSubmit(e);
-          } },
-        _react2.default.createElement(
-          'label',
-          null,
-          _react2.default.createElement('input', {
-            type: 'text',
-            placeholder: 'Search...',
-            onChange: function onChange(e) {
-              return _this2.setState({ term: e.target.value, pristine: false });
-            },
-            onBlur: function onBlur(e) {
-              return _this2.handleBlur;
-            },
-            onFocus: function onFocus(e) {
-              return _this2.handleFocus;
-            },
-            value: this.state.term
-          })
-        )
-      );
-    }
-  }], [{
+  _createClass(SearchForm, null, [{
     key: 'getDerivedStateFromProps',
     value: function getDerivedStateFromProps(props, state) {
       var pristine = state.pristine,
@@ -71923,100 +71941,48 @@ var _ContextMenuTrigger2 = _interopRequireDefault(_ContextMenuTrigger);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+exports.default = (0, _react.memo)(function (_ref) {
+  var handleContextMenuTrigger = _ref.handleContextMenuTrigger,
+      options = _ref.options,
+      title = _ref.title,
+      uiActions = _ref.uiActions,
+      className = _ref.className,
+      children = _ref.children;
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+  var onTrigger = function onTrigger(e) {
+    if (handleContextMenuTrigger) return handleContextMenuTrigger(e);
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Header = function (_React$Component) {
-  _inherits(Header, _React$Component);
-
-  function Header(props) {
-    _classCallCheck(this, Header);
-
-    var _this = _possibleConstructorReturn(this, (Header.__proto__ || Object.getPrototypeOf(Header)).call(this, props));
-
-    _this.handleContextMenuTrigger = function (e, options) {
-      var _this$props = _this.props,
-          title = _this$props.title,
-          handleContextMenuTrigger = _this$props.handleContextMenuTrigger,
-          showContextMenu = _this$props.uiActions.showContextMenu;
-
-
-      if (handleContextMenuTrigger) return handleContextMenuTrigger(e);
-
-      e.preventDefault();
-      var data = {
-        e: e,
-        context: 'custom',
-        title: title,
-        options: options
-      };
-      showContextMenu(data);
+    e.preventDefault();
+    var data = {
+      e: e,
+      context: 'custom',
+      title: title,
+      options: options
     };
+    uiActions.showContextMenu(data);
+    return true;
+  };
 
-    _this.renderContextMenuTrigger = function () {
-      var _this$props2 = _this.props,
-          handleContextMenuTrigger = _this$props2.handleContextMenuTrigger,
-          options = _this$props2.options;
-
-
-      if (!handleContextMenuTrigger && !options) return null;
-
-      return _react2.default.createElement(_ContextMenuTrigger2.default, { onTrigger: function onTrigger(e) {
-          return _this.handleContextMenuTrigger(e, options);
-        } });
-    };
-
-    _this.renderOptions = function () {
-      var _this$props3 = _this.props,
-          handleContextMenuTrigger = _this$props3.handleContextMenuTrigger,
-          options = _this$props3.options;
-
-
-      if (!options && !handleContextMenuTrigger) return null;
-
-      return _react2.default.createElement(
+  return _react2.default.createElement(
+    'header',
+    { className: className },
+    _react2.default.createElement(
+      'h1',
+      null,
+      children
+    ),
+    (options || handleContextMenuTrigger) && _react2.default.createElement(
+      'div',
+      { className: 'header__options' },
+      _react2.default.createElement(_ContextMenuTrigger2.default, { onTrigger: onTrigger }),
+      _react2.default.createElement(
         'div',
-        { className: 'header__options' },
-        _this.renderContextMenuTrigger(),
-        _react2.default.createElement(
-          'div',
-          { className: 'header__options__wrapper' },
-          options || null
-        )
-      );
-    };
-
-    _this.render = function () {
-      var _this$props4 = _this.props,
-          className = _this$props4.className,
-          children = _this$props4.children;
-
-
-      return _react2.default.createElement(
-        'header',
-        { className: className },
-        _react2.default.createElement(
-          'h1',
-          null,
-          children
-        ),
-        _this.renderOptions()
-      );
-    };
-
-    _this.state = {
-      expanded: false
-    };
-    return _this;
-  }
-
-  return Header;
-}(_react2.default.Component);
-
-exports.default = Header;
+        { className: 'header__options__wrapper' },
+        options || null
+      )
+    )
+  );
+});
 
 /***/ }),
 
@@ -72335,7 +72301,7 @@ exports.default = (0, _react.memo)(function (_ref) {
 
   if (!name || name === '') return null;
 
-  var fullClassName = 'icon icon--' + (type || 'material') + ' ' + className;
+  var fullClassName = 'icon icon--' + (type || 'material') + ' ' + (className || '');
 
   switch (type) {
     case 'svg':
@@ -73401,81 +73367,89 @@ var Notifications = function (_React$Component) {
       var notifications = (0, _arrays.indexToArray)(this.props.notifications);
 
       return _react2.default.createElement(
-        'span',
+        _react.Fragment,
         null,
         notifications.map(function (notification) {
           switch (notification.type) {
             case 'shortcut':
               return _react2.default.createElement(
                 'div',
-                { className: 'notification notification--shortcut' + (notification.closing ? ' closing' : ''), key: notification.key, 'data-duration': notification.duration },
-                _react2.default.createElement(_Icon2.default, { name: notification.content })
+                { className: 'notification__wrapper', key: notification.key },
+                _react2.default.createElement(
+                  'div',
+                  { className: 'notification notification--shortcut' + (notification.closing ? ' closing' : ''), 'data-duration': notification.duration },
+                  _react2.default.createElement(_Icon2.default, { name: notification.content })
+                )
               );
 
             case 'share-configuration-received':
               return _react2.default.createElement(
                 'div',
-                { className: 'notification notification--info', key: notification.key, 'data-key': notification.key, 'data-duration': notification.duration },
-                _react2.default.createElement(_Icon2.default, { name: 'close', className: 'notification__close-button', onClick: function onClick(e) {
-                    return _this3.props.uiActions.removeNotification(notification.key, true);
-                  } }),
-                _react2.default.createElement(
-                  'h4',
-                  { className: 'notification__title' },
-                  'Configuration shared'
-                ),
+                { className: 'notification__wrapper', key: notification.key },
                 _react2.default.createElement(
                   'div',
-                  { className: 'notification__content' },
+                  { className: 'notification notification--info', key: notification.key, 'data-duration': notification.duration },
+                  _react2.default.createElement(_Icon2.default, { name: 'close', className: 'notification__close-button', onClick: function onClick(e) {
+                      return _this3.props.uiActions.removeNotification(notification.key, true);
+                    } }),
                   _react2.default.createElement(
-                    'p',
-                    null,
-                    'Another user has shared their configuration with you. This includes:'
+                    'h4',
+                    { className: 'notification__title' },
+                    'Configuration shared'
                   ),
                   _react2.default.createElement(
-                    'ul',
-                    null,
-                    notification.configuration.ui ? _react2.default.createElement(
-                      'li',
+                    'div',
+                    { className: 'notification__content' },
+                    _react2.default.createElement(
+                      'p',
                       null,
-                      'User interface'
-                    ) : null,
-                    notification.configuration.spotify ? _react2.default.createElement(
-                      'li',
+                      'Another user has shared their configuration with you. This includes:'
+                    ),
+                    _react2.default.createElement(
+                      'ul',
                       null,
-                      'Spotify'
-                    ) : null,
-                    notification.configuration.lastfm ? _react2.default.createElement(
-                      'li',
+                      notification.configuration.ui ? _react2.default.createElement(
+                        'li',
+                        null,
+                        'User interface'
+                      ) : null,
+                      notification.configuration.spotify ? _react2.default.createElement(
+                        'li',
+                        null,
+                        'Spotify'
+                      ) : null,
+                      notification.configuration.lastfm ? _react2.default.createElement(
+                        'li',
+                        null,
+                        'LastFM'
+                      ) : null,
+                      notification.configuration.genius ? _react2.default.createElement(
+                        'li',
+                        null,
+                        'Genius'
+                      ) : null,
+                      notification.configuration.snapcast ? _react2.default.createElement(
+                        'li',
+                        null,
+                        'Snapcast'
+                      ) : null
+                    ),
+                    _react2.default.createElement(
+                      'p',
                       null,
-                      'LastFM'
-                    ) : null,
-                    notification.configuration.genius ? _react2.default.createElement(
-                      'li',
-                      null,
-                      'Genius'
-                    ) : null,
-                    notification.configuration.snapcast ? _react2.default.createElement(
-                      'li',
-                      null,
-                      'Snapcast'
-                    ) : null
+                      'Do you want to import this?'
+                    )
                   ),
                   _react2.default.createElement(
-                    'p',
-                    null,
-                    'Do you want to import this?'
-                  )
-                ),
-                _react2.default.createElement(
-                  'div',
-                  { className: 'notification__actions' },
-                  _react2.default.createElement(
-                    'a',
-                    { className: 'notification__actions__item button button--default', onClick: function onClick(e) {
-                        return _this3.importConfiguration(notification.key, notification.configuration);
-                      } },
-                    'Import now'
+                    'div',
+                    { className: 'notification__actions' },
+                    _react2.default.createElement(
+                      'a',
+                      { className: 'notification__actions__item button button--default', onClick: function onClick(e) {
+                          return _this3.importConfiguration(notification.key, notification.configuration);
+                        } },
+                      'Import now'
+                    )
                   )
                 )
               );
@@ -73483,36 +73457,40 @@ var Notifications = function (_React$Component) {
             default:
               return _react2.default.createElement(
                 'div',
-                { className: 'notification notification--' + notification.level + (notification.closing ? ' closing' : ''), key: notification.key, 'data-key': notification.key, 'data-duration': notification.duration },
-                _react2.default.createElement(_Icon2.default, { name: 'close', className: 'notification__close-button', onClick: function onClick(e) {
-                    return _this3.props.uiActions.removeNotification(notification.key, true);
-                  } }),
-                notification.title ? _react2.default.createElement(
-                  'h4',
-                  { className: 'notification__title' },
-                  notification.title
-                ) : null,
-                notification.content ? _react2.default.createElement(
+                { className: 'notification__wrapper', key: notification.key },
+                _react2.default.createElement(
                   'div',
-                  { className: 'notification__content' },
-                  notification.content
-                ) : null,
-                notification.description ? _react2.default.createElement(
-                  'div',
-                  { className: 'notification__description' },
-                  notification.description
-                ) : null,
-                notification.links ? _react2.default.createElement(
-                  'div',
-                  { className: 'notification__actions' },
-                  notification.links.map(function (link, i) {
-                    return _react2.default.createElement(
-                      'a',
-                      { className: 'notification__actions__item button button--secondary', href: link.url, target: link.new_window ? '_blank' : 'self', key: i },
-                      link.text
-                    );
-                  })
-                ) : null
+                  { className: 'notification notification--' + notification.level + (notification.closing ? ' closing' : ''), 'data-key': notification.key, 'data-duration': notification.duration },
+                  _react2.default.createElement(_Icon2.default, { name: 'close', className: 'notification__close-button', onClick: function onClick(e) {
+                      return _this3.props.uiActions.removeNotification(notification.key, true);
+                    } }),
+                  notification.title ? _react2.default.createElement(
+                    'h4',
+                    { className: 'notification__title' },
+                    notification.title
+                  ) : null,
+                  notification.content ? _react2.default.createElement(
+                    'div',
+                    { className: 'notification__content' },
+                    notification.content
+                  ) : null,
+                  notification.description ? _react2.default.createElement(
+                    'div',
+                    { className: 'notification__description' },
+                    notification.description
+                  ) : null,
+                  notification.links ? _react2.default.createElement(
+                    'div',
+                    { className: 'notification__actions' },
+                    notification.links.map(function (link, i) {
+                      return _react2.default.createElement(
+                        'a',
+                        { className: 'notification__actions__item button button--secondary', href: link.url, target: link.new_window ? '_blank' : 'self', key: i },
+                        link.text
+                      );
+                    })
+                  ) : null
+                )
               );
           }
         })
@@ -73543,71 +73521,86 @@ var Notifications = function (_React$Component) {
         case 'running':
           return _react2.default.createElement(
             'div',
-            {
-              className: 'notification notification--' + level + ' notification--process' + (closing ? ' closing' : ''),
-              key: key
-            },
-            _react2.default.createElement(_Loader2.default, {
-              progress: progress,
-              loading: true,
-              mini: true,
-              white: true
-            }),
-            content && content !== '' && _react2.default.createElement(
+            { className: 'notification__wrapper', key: key },
+            _react2.default.createElement(
               'div',
-              { className: 'notification__content' },
-              content
-            ),
-            description && description !== '' && _react2.default.createElement(
-              'div',
-              { className: 'notification__description' },
-              description
-            ),
-            _react2.default.createElement(_Icon2.default, { name: 'close', className: 'notification__close-button', onClick: function onClick() {
-                uiActions.cancelProcess(key);
-              } })
+              {
+                className: 'notification notification--' + level + ' notification--process' + (closing ? ' closing' : '')
+              },
+              _react2.default.createElement(_Loader2.default, {
+                progress: progress,
+                loading: true,
+                mini: true,
+                white: true
+              }),
+              content && content !== '' && _react2.default.createElement(
+                'div',
+                { className: 'notification__content' },
+                content
+              ),
+              description && description !== '' && _react2.default.createElement(
+                'div',
+                { className: 'notification__description' },
+                description
+              ),
+              _react2.default.createElement(_Icon2.default, { name: 'close', className: 'notification__close-button', onClick: function onClick() {
+                  uiActions.cancelProcess(key);
+                } })
+            )
           );
 
         case 'finished':
           return _react2.default.createElement(
             'div',
-            {
-              className: 'notification notification--' + level + ' notification--process' + (closing ? ' closing' : ''),
-              key: key
-            },
-            _react2.default.createElement(_Icon2.default, { className: 'notification__icon', name: level === 'error' ? 'close' : 'check' }),
-            content && content !== '' && _react2.default.createElement(
+            { className: 'notification__wrapper', key: key },
+            _react2.default.createElement(
               'div',
-              { className: 'notification__content' },
-              content
-            ),
-            description && description !== '' && _react2.default.createElement(
-              'div',
-              { className: 'notification__description' },
-              description
-            ),
-            _react2.default.createElement(_Icon2.default, { name: 'close', className: 'notification__close-button', onClick: function onClick() {
-                uiActions.closeProcess(key);
-              } })
+              {
+                className: 'notification notification--' + level + ' notification--process' + (closing ? ' closing' : '')
+              },
+              _react2.default.createElement(_Icon2.default, { className: 'notification__icon', name: level === 'error' ? 'close' : 'check' }),
+              content && content !== '' && _react2.default.createElement(
+                'div',
+                { className: 'notification__content' },
+                content
+              ),
+              description && description !== '' && _react2.default.createElement(
+                'div',
+                { className: 'notification__description' },
+                description
+              ),
+              _react2.default.createElement(_Icon2.default, { name: 'close', className: 'notification__close-button', onClick: function onClick() {
+                  uiActions.closeProcess(key);
+                } })
+            )
           );
 
         case 'cancelling':
           return _react2.default.createElement(
             'div',
-            {
-              className: 'notification notification--' + level + ' notification--process cancelling' + (closing ? ' closing' : ''),
-              key: key
-            },
-            _react2.default.createElement(_Loader2.default, null),
-            content && content !== '' && _react2.default.createElement(
+            { className: 'notification__wrapper', key: key },
+            _react2.default.createElement(
               'div',
-              { className: 'notification__content' },
-              content
-            ),
-            description && description !== '' && _react2.default.createElement(
-              'div',
-              { className: 'notification__description' },
-              description
+              {
+                className: 'notification notification--' + level + ' notification--process cancelling' + (closing ? ' closing' : '')
+              },
+              _react2.default.createElement(_Loader2.default, {
+                progress: progress,
+                loading: true,
+                mini: true,
+                white: true
+              }),
+              content && content !== '' && _react2.default.createElement(
+                'div',
+                { className: 'notification__content' },
+                content
+              ),
+              description && description !== '' && _react2.default.createElement(
+                'div',
+                { className: 'notification__description' },
+                description
+              ),
+              _react2.default.createElement(_Icon2.default, { name: 'close', className: 'notification__close-button' })
             )
           );
 
@@ -73631,7 +73624,7 @@ var Notifications = function (_React$Component) {
       if (!processes.length) return null;
 
       return _react2.default.createElement(
-        'span',
+        _react.Fragment,
         null,
         processes.map(function (process) {
           return _this4.renderProcess(process);
@@ -74785,6 +74778,171 @@ exports.default = function (props) {
 
   return null;
 };
+
+/***/ }),
+
+/***/ "./src/js/components/SearchResults.js":
+/*!********************************************!*\
+  !*** ./src/js/components/SearchResults.js ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+
+var _helpers = __webpack_require__(/*! ../util/helpers */ "./src/js/util/helpers.js");
+
+var _arrays = __webpack_require__(/*! ../util/arrays */ "./src/js/util/arrays.js");
+
+var _URILink = __webpack_require__(/*! ./URILink */ "./src/js/components/URILink.js");
+
+var _URILink2 = _interopRequireDefault(_URILink);
+
+var _Icon = __webpack_require__(/*! ./Icon */ "./src/js/components/Icon.js");
+
+var _Icon2 = _interopRequireDefault(_Icon);
+
+var _AlbumGrid = __webpack_require__(/*! ./AlbumGrid */ "./src/js/components/AlbumGrid.js");
+
+var _AlbumGrid2 = _interopRequireDefault(_AlbumGrid);
+
+var _ArtistGrid = __webpack_require__(/*! ./ArtistGrid */ "./src/js/components/ArtistGrid.js");
+
+var _ArtistGrid2 = _interopRequireDefault(_ArtistGrid);
+
+var _PlaylistGrid = __webpack_require__(/*! ./PlaylistGrid */ "./src/js/components/PlaylistGrid.js");
+
+var _PlaylistGrid2 = _interopRequireDefault(_PlaylistGrid);
+
+var _TrackList = __webpack_require__(/*! ./TrackList */ "./src/js/components/TrackList.js");
+
+var _TrackList2 = _interopRequireDefault(_TrackList);
+
+var _LazyLoadListener = __webpack_require__(/*! ./LazyLoadListener */ "./src/js/components/LazyLoadListener.js");
+
+var _LazyLoadListener2 = _interopRequireDefault(_LazyLoadListener);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+var SearchResults = function SearchResults(_ref) {
+  var type = _ref.type,
+      query = _ref.query,
+      loadMore = _ref.loadMore,
+      index = _ref.index,
+      mopidy_search_results = _ref.mopidy_search_results,
+      spotify_search_results = _ref.spotify_search_results,
+      sort = _ref.sort,
+      sort_reverse = _ref.sort_reverse,
+      uri_schemes_priority = _ref.uri_schemes_priority,
+      all = _ref.all;
+
+  var encodedTerm = encodeURIComponent(query.term);
+  var resultsMatchQuery = function resultsMatchQuery(results) {
+    if (!results.query) return false;
+    if (results.query.term !== query.term) return false;
+    if (results.query.type !== query.type) return false;
+    return true;
+  };
+  var results = [];
+  if (resultsMatchQuery(mopidy_search_results) && mopidy_search_results[type]) {
+    results = [].concat(_toConsumableArray(results), _toConsumableArray(type === 'tracks' ? mopidy_search_results[type] : (0, _helpers.getIndexedRecords)(index, mopidy_search_results[type])));
+  }
+
+  if (resultsMatchQuery(spotify_search_results) && spotify_search_results[type]) {
+    results = [].concat(_toConsumableArray(results), _toConsumableArray(type === 'tracks' ? spotify_search_results[type] : (0, _helpers.getIndexedRecords)(index, spotify_search_results[type])));
+  }
+
+  var sort_map = null;
+  switch (sort) {
+    case 'uri':
+      sort_map = uri_schemes_priority;
+      break;
+    case 'followers':
+      // Followers (aka popularlity works in reverse-numerical order)
+      // Ie "more popular" is a bigger number
+      sort_reverse = !sort_reverse;
+      break;
+    default:
+      break;
+  }
+
+  results = (0, _arrays.sortItems)(results, type === 'tracks' && sort === 'followers' ? 'popularity' : sort, sort_reverse, sort_map);
+
+  var resultsCount = results.length;
+  if (all && type !== 'tracks' && results.length > 5) {
+    results = results.slice(0, 6);
+  }
+
+  if (results.length <= 0) return null;
+
+  return _react2.default.createElement(
+    'div',
+    null,
+    _react2.default.createElement(
+      'h4',
+      null,
+      !all && _react2.default.createElement(
+        'span',
+        null,
+        _react2.default.createElement(
+          _URILink2.default,
+          { uri: 'iris:search:all:' + encodedTerm },
+          'Search '
+        ),
+        _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
+        ' ' + (0, _helpers.titleCase)(type)
+      ),
+      all && _react2.default.createElement(
+        _URILink2.default,
+        { uri: 'iris:search:' + type + ':' + encodedTerm },
+        (0, _helpers.titleCase)(type)
+      )
+    ),
+    _react2.default.createElement(
+      'section',
+      { className: 'grid-wrapper' },
+      type === 'artists' && _react2.default.createElement(_ArtistGrid2.default, { artists: results, show_source_icon: true, mini: all }),
+      type === 'albums' && _react2.default.createElement(_AlbumGrid2.default, { albums: results, show_source_icon: true, mini: all }),
+      type === 'playlists' && _react2.default.createElement(_PlaylistGrid2.default, { playlists: results, show_source_icon: true, mini: all }),
+      type === 'tracks' && _react2.default.createElement(_TrackList2.default, { tracks: results, uri: 'iris:search:' + query.type + ':' + encodedTerm, show_source_icon: true }),
+      resultsCount > results.length && _react2.default.createElement(
+        _URILink2.default,
+        { uri: 'iris:search:' + type + ':' + encodedTerm, className: 'button button--default' },
+        'All ' + type + ' (' + resultsCount + ')'
+      )
+    )
+  );
+};
+
+var mapStateToProps = function mapStateToProps(state, ownProps) {
+  return {
+    index: state.core[ownProps.type] || [],
+    uri_schemes_priority: state.ui.uri_schemes_priority || [],
+    mopidy_search_results: state.mopidy.search_results || {},
+    spotify_search_results: state.spotify.search_results || {},
+    sort: state.ui.search_results_sort || 'followers',
+    sort_reverse: !!state.ui.search_results_sort_reverse
+  };
+};
+
+var mapDispatchToProps = function mapDispatchToProps() {
+  return {};
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(SearchResults);
 
 /***/ }),
 
@@ -76349,8 +76507,6 @@ var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
 
-var _arrays = __webpack_require__(/*! ../util/arrays */ "./src/js/util/arrays.js");
-
 var _VolumeControl = __webpack_require__(/*! ./Fields/VolumeControl */ "./src/js/components/Fields/VolumeControl.js");
 
 var _VolumeControl2 = _interopRequireDefault(_VolumeControl);
@@ -76378,14 +76534,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 var SnapcastClients = function SnapcastClients(_ref) {
   var actions = _ref.actions,
       group = _ref.group,
-      groups = _ref.groups,
-      show_disconnected_clients = _ref.show_disconnected_clients;
-
-  if (!show_disconnected_clients && group.clients) {
-    var clients = (0, _arrays.applyFilter)('connected', true, group.clients);
-  } else {
-    var clients = group.clients;
-  }
+      clients = _ref.clients,
+      groups = _ref.groups;
 
   if (!clients || clients.length <= 0) {
     return _react2.default.createElement(
@@ -76609,6 +76759,20 @@ var SnapcastGroups = function SnapcastGroups(props) {
   var renderGroup = function renderGroup() {
     if (!group) return null;
 
+    var _group$clients = group.clients,
+        groupClients = _group$clients === undefined ? [] : _group$clients;
+
+    if (!show_disconnected_clients) {
+      groupClients = (0, _arrays.applyFilter)('connected', true, groupClients);
+    }
+
+    var volume = 0;
+    if (groupClients.length) {
+      volume = groupClients.reduce(function (acc, client) {
+        return acc + (client.volume || 0);
+      }, 0) / groupClients.length;
+    };
+
     return _react2.default.createElement(
       'div',
       { className: 'snapcast__group', key: group.id },
@@ -76679,7 +76843,7 @@ var SnapcastGroups = function SnapcastGroups(props) {
           }),
           _react2.default.createElement(_VolumeControl2.default, {
             className: 'snapcast__group__volume-control snapcast__volume-control',
-            volume: group.volume,
+            volume: volume,
             mute: group.mute,
             onVolumeChange: function onVolumeChange(percent, previousPercent) {
               return actions.setGroupVolume(group.id, percent, previousPercent);
@@ -76688,10 +76852,10 @@ var SnapcastGroups = function SnapcastGroups(props) {
         )
       ),
       _react2.default.createElement(_SnapcastClients2.default, {
+        clients: groupClients,
         group: group,
         groups: groupsArray,
-        actions: actions,
-        show_disconnected_clients: show_disconnected_clients
+        actions: actions
       })
     );
   };
@@ -78336,16 +78500,23 @@ function handleException(message) {
   var description = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
   var show_notification = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
 
-  if (!message && data.message) {
-    message = data.message;
-  } else if (!message && data.error.message) {
-    message = data.error.message;
+  if (!message) {
+    if (data.message) {
+      message = data.message;
+    } else if (data.error.message) {
+      message = data.error.message;
+    }
   }
-  if (!description && data.description) {
-    description = data.description;
-  } else if (!description && data.error && data.error.description) {
-    description = data.error.description;
+  if (!description) {
+    if (data.description) {
+      description = data.description;
+    } else if (data.error && data.error.message) {
+      description = data.error.message;
+    } else if (data.error && data.error.description) {
+      description = data.error.description;
+    }
   }
+
   return {
     type: 'HANDLE_EXCEPTION',
     message: message,
@@ -78939,7 +79110,6 @@ var CoreMiddleware = function () {
           /**
                * Playlist manipulation
                * */
-
           case 'PLAYLIST_TRACKS':
             var tracks = (0, _format.formatTracks)(action.tracks);
             action.tracks_uris = (0, _arrays.arrayOf)('uri', tracks);
@@ -78972,9 +79142,10 @@ var CoreMiddleware = function () {
               case 'spotify':
                 store.dispatch(spotifyActions.getPlaylist(action.key));
                 break;
-
               case 'm3u':
                 if (store.getState().mopidy.connected) store.dispatch(mopidyActions.getPlaylist(action.key));
+                break;
+              default:
                 break;
             }
             next(action);
@@ -79126,7 +79297,7 @@ var CoreMiddleware = function () {
             break;
 
           case 'LOAD_PLAYLIST':
-            if (!action.force_reload && store.getState().core.playlists[action.uri] && store.getState().core.playlists[action.uri].tracks_uris) {
+            if (!action.force_reload && store.getState().core.playlists[action.uri] && store.getState().core.playlists[action.uri].tracks_uris !== undefined) {
               console.info('Loading "' + action.uri + '" from index');
               break;
             }
@@ -82356,13 +82527,12 @@ function clearSearchResults() {
   };
 }
 
-function getSearchResults(context, query) {
+function getSearchResults(type, term) {
   var limit = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 100;
 
   return {
     type: 'MOPIDY_GET_SEARCH_RESULTS',
-    context: context,
-    query: query,
+    query: { type: type, term: term },
     limit: limit
   };
 }
@@ -83288,7 +83458,6 @@ var MopidyMiddleware = function () {
               store.dispatch(uiActions.createNotification({ content: 'No sources selected', level: 'warning' }));
             } else {
               store.dispatch(uiActions.startProcess('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR', 'Searching ' + uri_schemes_total + ' Mopidy providers', {
-                context: action.context,
                 query: action.query,
                 limit: action.limit,
                 total: uri_schemes_total,
@@ -83323,13 +83492,10 @@ var MopidyMiddleware = function () {
               remaining: action.data.uri_schemes.length
             }));
 
-            switch (action.data.context) {
-              // Albums
+            switch (action.data.query.type) {
               case 'albums':
-
-                // Quick check to see if we should be cancelling
                 var last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR;
-                if (last_run && last_run.status == 'cancelling') {
+                if (last_run && last_run.status === 'cancelling') {
                   store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
                   return;
                 }
@@ -83338,7 +83504,6 @@ var MopidyMiddleware = function () {
 
                 var continue_process = function continue_process() {
                   store.dispatch(uiActions.runProcess('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR', {
-                    context: action.data.context,
                     query: action.data.query,
                     limit: action.data.limit,
                     uri_scheme: next_uri_scheme,
@@ -83346,7 +83511,7 @@ var MopidyMiddleware = function () {
                   }));
                 };
 
-                request(socket, store, 'library.search', { query: { album: [action.data.query] }, uris: [action.data.uri_scheme] }).then(function (response) {
+                request(socket, store, 'library.search', { query: { album: [action.data.query.term] }, uris: [action.data.uri_scheme] }).then(function (response) {
                   if (response.length > 0) {
                     var albums = [];
 
@@ -83373,8 +83538,8 @@ var MopidyMiddleware = function () {
                     store.dispatch({
                       type: 'MOPIDY_SEARCH_RESULTS_LOADED',
                       query: action.data.query,
-                      context: action.data.context,
-                      results: albums_uris
+                      results: albums_uris,
+                      context: 'albums'
                     });
                   }
 
@@ -83385,12 +83550,9 @@ var MopidyMiddleware = function () {
                 });
                 break;
 
-              // Artists
               case 'artists':
-
-                // Quick check to see if we should be cancelling
                 var last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR;
-                if (last_run && last_run.status == 'cancelling') {
+                if (last_run && last_run.status === 'cancelling') {
                   store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
                   return;
                 }
@@ -83399,7 +83561,6 @@ var MopidyMiddleware = function () {
 
                 var continue_process = function continue_process() {
                   store.dispatch(uiActions.runProcess('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR', {
-                    context: action.data.context,
                     query: action.data.query,
                     limit: action.data.limit,
                     uri_scheme: next_uri_scheme,
@@ -83407,7 +83568,7 @@ var MopidyMiddleware = function () {
                   }));
                 };
 
-                request(socket, store, 'library.search', { query: { artist: [action.data.query] }, uris: [action.data.uri_scheme] }).then(function (response) {
+                request(socket, store, 'library.search', { query: { artist: [action.data.query.term] }, uris: [action.data.uri_scheme] }).then(function (response) {
                   if (response.length > 0) {
                     var artists_uris = [];
 
@@ -83443,7 +83604,7 @@ var MopidyMiddleware = function () {
                     store.dispatch({
                       type: 'MOPIDY_SEARCH_RESULTS_LOADED',
                       query: action.data.query,
-                      context: action.data.context,
+                      context: 'artists',
                       results: artists_uris
                     });
                   }
@@ -83455,12 +83616,9 @@ var MopidyMiddleware = function () {
                 });
                 break;
 
-              // Playlists
               case 'playlists':
-
-                // Quick check to see if we should be cancelling
                 var last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR;
-                if (last_run && last_run.status == 'cancelling') {
+                if (last_run && last_run.status === 'cancelling') {
                   store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
                   return;
                 }
@@ -83491,7 +83649,7 @@ var MopidyMiddleware = function () {
                     store.dispatch({
                       type: 'MOPIDY_SEARCH_RESULTS_LOADED',
                       query: action.data.query,
-                      context: action.data.context,
+                      context: 'playlists',
                       results: playlists_uris
                     });
                   }
@@ -83502,12 +83660,9 @@ var MopidyMiddleware = function () {
                 });
                 break;
 
-              // Tracks
               case 'tracks':
-
-                // Quick check to see if we should be cancelling
                 var last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR;
-                if (last_run && last_run.status == 'cancelling') {
+                if (last_run && last_run.status === 'cancelling') {
                   store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
                   return;
                 }
@@ -83516,7 +83671,6 @@ var MopidyMiddleware = function () {
 
                 var continue_process = function continue_process() {
                   store.dispatch(uiActions.runProcess('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR', {
-                    context: action.data.context,
                     query: action.data.query,
                     limit: action.data.limit,
                     uri_scheme: next_uri_scheme,
@@ -83524,7 +83678,7 @@ var MopidyMiddleware = function () {
                   }));
                 };
 
-                request(socket, store, 'library.search', { query: { any: [action.data.query] }, uris: [action.data.uri_scheme] }).then(function (response) {
+                request(socket, store, 'library.search', { query: { any: [action.data.query.term] }, uris: [action.data.uri_scheme] }).then(function (response) {
                   if (response.length > 0 && response[0].tracks !== undefined) {
                     var _tracks = response[0].tracks;
 
@@ -83532,7 +83686,7 @@ var MopidyMiddleware = function () {
                     store.dispatch({
                       type: 'MOPIDY_SEARCH_RESULTS_LOADED',
                       query: action.data.query,
-                      context: action.data.context,
+                      context: 'tracks',
                       results: (0, _format.formatTracks)(_tracks)
                     });
                   }
@@ -83544,12 +83698,9 @@ var MopidyMiddleware = function () {
 
                 break;
 
-              // Search for all types
               case 'all':
               default:
-
                 var process_tracks = function process_tracks() {
-                  // Quick check to see if we should be cancelling
                   var last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR;
                   if (last_run && last_run.status == 'cancelling') {
                     store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
@@ -83559,7 +83710,7 @@ var MopidyMiddleware = function () {
                   store.dispatch(uiActions.updateProcess('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR', 'Searching ' + action.data.uri_scheme.replace(':', '') + ' tracks', {
                     remaining: action.data.uri_schemes.length + 1
                   }));
-                  request(socket, store, 'library.search', { query: { any: [action.data.query] }, uris: [action.data.uri_scheme] }).then(function (response) {
+                  request(socket, store, 'library.search', { query: { any: [action.data.query.term] }, uris: [action.data.uri_scheme] }).then(function (response) {
                     if (response.length > 0 && response[0].tracks !== undefined) {
                       var _tracks2 = response[0].tracks;
 
@@ -83590,7 +83741,7 @@ var MopidyMiddleware = function () {
                   store.dispatch(uiActions.updateProcess('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR', 'Searching ' + action.data.uri_scheme.replace(':', '') + ' albums', {
                     remaining: action.data.uri_schemes.length + 0.75
                   }));
-                  request(socket, store, 'library.search', { query: { album: [action.data.query] }, uris: [action.data.uri_scheme] }).then(function (response) {
+                  request(socket, store, 'library.search', { query: { album: [action.data.query.term] }, uris: [action.data.uri_scheme] }).then(function (response) {
                     if (response.length > 0) {
                       var albums = [];
 
@@ -83640,7 +83791,7 @@ var MopidyMiddleware = function () {
                   store.dispatch(uiActions.updateProcess('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR', 'Searching ' + action.data.uri_scheme.replace(':', '') + ' artists', {
                     remaining: action.data.uri_schemes.length + 0.5
                   }));
-                  request(socket, store, 'library.search', { query: { artist: [action.data.query] }, uris: [action.data.uri_scheme] }).then(function (response) {
+                  request(socket, store, 'library.search', { query: { artist: [action.data.query.term] }, uris: [action.data.uri_scheme] }).then(function (response) {
                     if (response.length > 0) {
                       var artists_uris = [];
 
@@ -83704,7 +83855,7 @@ var MopidyMiddleware = function () {
                         var playlists_uris = [];
                         for (var i = 0; i < response.length; i++) {
                           var _playlist2 = response[i];
-                          if (_playlist2.name.includes(action.data.query) && action.data.uri_schemes.includes((0, _helpers.uriSource)(_playlist2.uri) + ':')) {
+                          if (_playlist2.name.includes(action.data.query.term) && action.data.uri_schemes.includes((0, _helpers.uriSource)(_playlist2.uri) + ':')) {
                             playlists_uris.push(_playlist2.uri);
                           }
                         }
@@ -83739,7 +83890,6 @@ var MopidyMiddleware = function () {
                   // We're finally done searching for types on this provider
                   // On to the next scheme!
                   store.dispatch(uiActions.runProcess('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR', {
-                    context: action.data.context,
                     query: action.data.query,
                     limit: action.data.limit,
                     uri_scheme: next_uri_scheme,
@@ -84857,6 +85007,7 @@ function reducer() {
       return _extends({}, mopidy, { search_results: {} });
 
     case 'MOPIDY_SEARCH_RESULTS_LOADED':
+      console.log(action);
 
       // Fetch or create our container
       if (mopidy.search_results) {
@@ -84865,7 +85016,9 @@ function reducer() {
         var search_results = {};
       }
 
-      search_results.query = action.query;
+      search_results = _extends({}, search_results, {
+        query: action.query
+      });
 
       if (search_results[action.context]) {
         search_results[action.context] = [].concat(_toConsumableArray(search_results[action.context]), _toConsumableArray(action.results));
@@ -85463,7 +85616,7 @@ var PusherMiddleware = function () {
             };
 
             socket.onerror = function (e) {
-              if (socket.readyState == 1) {
+              if (socket.readyState === 1) {
                 store.dispatch(coreActions.handleException('Pusher websocket error', e, e.type));
               }
             };
@@ -86208,7 +86361,8 @@ function groupsLoaded(groups) {
 
   return {
     type: 'SNAPCAST_GROUPS_LOADED',
-    groups: groups
+    groups: groups,
+    flush: flush
   };
 }
 
@@ -86524,7 +86678,6 @@ var SnapcastMiddleware = function () {
               if (raw_group.clients) {
                 group.clients_ids = (0, _arrays.arrayOf)('id', raw_group.clients);
                 clients_loaded = [].concat(_toConsumableArray(clients_loaded), _toConsumableArray(raw_group.clients));
-                store.dispatch(snapcastActions.calculateGroupVolume(group.id, raw_group.clients));
               }
 
               // Create a name (display only) based on it's ID
@@ -86542,17 +86695,6 @@ var SnapcastMiddleware = function () {
             }
 
             next(action);
-            break;
-
-          case 'SNAPCAST_CALCULATE_GROUP_VOLUME':
-            var totalVolume = action.clients.reduce(function (accumulator, client) {
-              return accumulator += (0, _format.formatClient)(client).volume;
-            }, 0);
-
-            store.dispatch(snapcastActions.groupLoaded({
-              id: action.id,
-              volume: totalVolume / action.clients.length
-            }));
             break;
 
           case 'SNAPCAST_CLIENTS_LOADED':
@@ -86597,12 +86739,12 @@ var SnapcastMiddleware = function () {
 
           case 'SNAPCAST_SET_CLIENT_NAME':
             var client = snapcast.clients[action.id];
-            var params = {
+            var _params = {
               id: action.id,
               name: action.name
             };
 
-            request(store, 'Client.SetName', params).then(function (response) {
+            request(store, 'Client.SetName', _params).then(function (response) {
               store.dispatch(snapcastActions.clientLoaded({
                 id: action.id,
                 name: response.name
@@ -86612,7 +86754,7 @@ var SnapcastMiddleware = function () {
 
           case 'SNAPCAST_SET_CLIENT_MUTE':
             var client = store.getState().snapcast.clients[action.id];
-            var params = {
+            var _params = {
               id: action.id,
               volume: {
                 muted: action.mute,
@@ -86620,7 +86762,7 @@ var SnapcastMiddleware = function () {
               }
             };
 
-            request(store, 'Client.SetVolume', params).then(function (response) {
+            request(store, 'Client.SetVolume', _params).then(function (response) {
               store.dispatch(snapcastActions.clientLoaded({
                 id: action.id,
                 volume: response.volume.percent,
@@ -86633,7 +86775,7 @@ var SnapcastMiddleware = function () {
 
           case 'SNAPCAST_SET_CLIENT_VOLUME':
             var client = snapcast.clients[action.id];
-            var params = {
+            var _params = {
               id: action.id,
               volume: {
                 muted: client.mute,
@@ -86641,7 +86783,7 @@ var SnapcastMiddleware = function () {
               }
             };
 
-            request(store, 'Client.SetVolume', params).then(function (response) {
+            request(store, 'Client.SetVolume', _params).then(function (response) {
               store.dispatch(snapcastActions.clientLoaded({
                 id: action.id,
                 volume: response.volume.percent
@@ -86662,12 +86804,12 @@ var SnapcastMiddleware = function () {
 
           case 'SNAPCAST_SET_CLIENT_LATENCY':
             var client = store.getState().snapcast.clients[action.id];
-            var params = {
+            var _params = {
               id: action.id,
               latency: action.latency
             };
 
-            request(store, 'Client.SetLatency', params).then(function (response) {
+            request(store, 'Client.SetLatency', _params).then(function (response) {
               store.dispatch(snapcastActions.clientLoaded({
                 id: action.id,
                 latency: response.latency
@@ -86693,12 +86835,12 @@ var SnapcastMiddleware = function () {
               clients_ids.splice(clients_ids_index, 1);
             }
 
-            var params = {
+            var _params = {
               id: action.group_id,
               clients: clients_ids
             };
 
-            request(store, 'Group.SetClients', params).then(function (response) {
+            request(store, 'Group.SetClients', _params).then(function (response) {
               store.dispatch(snapcastActions.groupsLoaded(response.server.groups, true));
             }, function (error) {
               store.dispatch(coreActions.handleException('Error', error, error.message));
@@ -86706,11 +86848,11 @@ var SnapcastMiddleware = function () {
             break;
 
           case 'SNAPCAST_DELETE_CLIENT':
-            var params = {
+            var _params = {
               id: action.id
             };
 
-            request(store, 'Server.DeleteClient', params).then(function (response) {
+            request(store, 'Server.DeleteClient', _params).then(function () {
               store.dispatch({
                 type: 'SNAPCAST_CLIENT_REMOVED',
                 key: action.data.params.id
@@ -86722,12 +86864,12 @@ var SnapcastMiddleware = function () {
 
           case 'SNAPCAST_SET_GROUP_NAME':
             var group = snapcast.groups[action.id];
-            var params = {
+            var _params = {
               id: action.id,
               name: action.name
             };
 
-            request(store, 'Group.SetName', params).then(function (response) {
+            request(store, 'Group.SetName', _params).then(function (response) {
               store.dispatch(snapcastActions.groupLoaded({
                 id: action.id,
                 name: response.name
@@ -86737,12 +86879,12 @@ var SnapcastMiddleware = function () {
 
           case 'SNAPCAST_SET_GROUP_STREAM':
             var group = store.getState().snapcast.groups[action.id];
-            var params = {
+            var _params = {
               id: action.id,
               stream_id: action.stream_id
             };
 
-            request(store, 'Group.SetStream', params).then(function (response) {
+            request(store, 'Group.SetStream', _params).then(function (response) {
               store.dispatch(snapcastActions.groupLoaded({
                 id: action.id,
                 stream_id: action.stream_id
@@ -86754,12 +86896,12 @@ var SnapcastMiddleware = function () {
 
           case 'SNAPCAST_SET_GROUP_MUTE':
             var group = store.getState().snapcast.groups[action.id];
-            var params = {
+            var _params = {
               id: action.id,
               mute: action.mute
             };
 
-            request(store, 'Group.SetMute', params).then(function (response) {
+            request(store, 'Group.SetMute', _params).then(function (response) {
               store.dispatch(snapcastActions.groupLoaded({
                 id: action.id,
                 mute: response.mute
@@ -87165,8 +87307,12 @@ var request = function request(dispatch, getState, endpoint) {
       fetch(url, config).then(status).then(function (data) {
         // TODO: Instead of allowing request to fail before renewing the token, once refreshed
         // we should retry the original request(s)
-        if (data && data.error && data.error.message === 'The access token expired') {
-          dispatch(refreshToken(dispatch, getState));
+        if (data && data.error) {
+          if (data.error.message === 'The access token expired') {
+            dispatch(refreshToken(dispatch, getState));
+          } else {
+            reject(data);
+          }
         }
 
         resolve(data);
@@ -87540,20 +87686,20 @@ function clearSearchResults() {
   };
 }
 
-function getSearchResults(type, query) {
+function getSearchResults(type, term) {
   var limit = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 50;
   var offset = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
 
   return function (dispatch, getState) {
     dispatch(uiActions.startProcess('SPOTIFY_GET_SEARCH_RESULTS_PROCESSOR', 'Searching Spotify'));
 
-    type = type.replace(/s+$/, '');
-    if (type == 'all') {
-      type = 'album,artist,playlist,track';
+    var typeString = type.replace(/s+$/, '');
+    if (typeString === 'all') {
+      typeString = 'album,artist,playlist,track';
     }
 
-    var url = 'search?q=' + query;
-    url += '&type=' + type;
+    var url = 'search?q=' + term;
+    url += '&type=' + typeString;
     url += '&country=' + getState().spotify.country;
     url += '&limit=' + limit;
     url += '&offset=' + offset;
@@ -87563,7 +87709,7 @@ function getSearchResults(type, query) {
         dispatch({
           type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
           context: 'tracks',
-          query: query,
+          query: { type: type, term: term },
           results: (0, _format.formatTracks)(response.tracks.items),
           more: response.tracks.next
         });
@@ -87577,7 +87723,7 @@ function getSearchResults(type, query) {
         dispatch({
           type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
           context: 'artists',
-          query: query,
+          query: { type: type, term: term },
           results: (0, _arrays.arrayOf)('uri', response.artists.items),
           more: response.artists.next
         });
@@ -87591,42 +87737,19 @@ function getSearchResults(type, query) {
         dispatch({
           type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
           context: 'albums',
-          query: query,
+          query: { type: type, term: term },
           results: (0, _arrays.arrayOf)('uri', response.albums.items),
           more: response.albums.next
         });
       }
 
       if (response.playlists !== undefined) {
-        var playlists = [];
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
-
-        try {
-          for (var _iterator = response.playlists.items[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            var playlist = _step.value;
-
-            playlists.push(_extends({}, (0, _format.formatPlaylist)(playlist), {
-              can_edit: getState().spotify.me && playlist.owner.id == getState().spotify.me.id,
-              tracks_total: playlist.tracks.total
-            }));
-          }
-        } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion && _iterator.return) {
-              _iterator.return();
-            }
-          } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
-            }
-          }
-        }
-
+        var playlists = response.playlists.items.map(function (item) {
+          return _extends({}, (0, _format.formatPlaylist)(item), {
+            can_edit: getState().spotify.me && item.owner.id === getState().spotify.me.id,
+            tracks_total: item.tracks.total
+          });
+        });
         dispatch({
           type: 'PLAYLISTS_LOADED',
           playlists: playlists
@@ -87635,7 +87758,7 @@ function getSearchResults(type, query) {
         dispatch({
           type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
           context: 'playlists',
-          query: query,
+          query: { type: type, term: term },
           results: (0, _arrays.arrayOf)('uri', playlists),
           more: response.playlists.next
         });
@@ -88193,13 +88316,13 @@ function getUserPlaylists(uri) {
     // get the first page of playlists
     request(dispatch, getState, 'users/' + (0, _helpers.getFromUri)('userid', uri) + '/playlists?limit=40').then(function (response) {
       var playlists = [];
-      var _iteratorNormalCompletion2 = true;
-      var _didIteratorError2 = false;
-      var _iteratorError2 = undefined;
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
 
       try {
-        for (var _iterator2 = response.items[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-          var raw_playlist = _step2.value;
+        for (var _iterator = response.items[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var raw_playlist = _step.value;
 
           var can_edit = false;
           if (getState().spotify.me && raw_playlist.owner.id == getState().spotify.me.id) {
@@ -88214,16 +88337,16 @@ function getUserPlaylists(uri) {
           playlists.push(playlist);
         }
       } catch (err) {
-        _didIteratorError2 = true;
-        _iteratorError2 = err;
+        _didIteratorError = true;
+        _iteratorError = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion2 && _iterator2.return) {
-            _iterator2.return();
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
           }
         } finally {
-          if (_didIteratorError2) {
-            throw _iteratorError2;
+          if (_didIteratorError) {
+            throw _iteratorError;
           }
         }
       }
@@ -88512,53 +88635,59 @@ function getAllPlaylistTracksProcessor(data) {
       }
 
       // Add on our new batch of loaded tracks
-      var uris = [];
-      var new_uris = [];
-      var _iteratorNormalCompletion3 = true;
-      var _didIteratorError3 = false;
-      var _iteratorError3 = undefined;
+      var tracks = [];
+      var new_tracks = [];
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
 
       try {
-        for (var _iterator3 = response.items[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-          var item = _step3.value;
+        for (var _iterator2 = response.items[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          var item = _step2.value;
 
           if (item.track) {
-            new_uris.push(item.track.uri);
+            new_tracks.push(item.track);
           }
         }
       } catch (err) {
-        _didIteratorError3 = true;
-        _iteratorError3 = err;
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion3 && _iterator3.return) {
-            _iterator3.return();
+          if (!_iteratorNormalCompletion2 && _iterator2.return) {
+            _iterator2.return();
           }
         } finally {
-          if (_didIteratorError3) {
-            throw _iteratorError3;
+          if (_didIteratorError2) {
+            throw _iteratorError2;
           }
         }
       }
 
-      if (data.uris) {
-        uris = [].concat(_toConsumableArray(data.uris), new_uris);
+      if (data.tracks) {
+        tracks = [].concat(_toConsumableArray(data.tracks), new_tracks);
       } else {
-        uris = new_uris;
+        tracks = new_tracks;
       }
 
       // We got a next link, so we've got more work to be done
       if (response.next) {
-        dispatch(uiActions.updateProcess('SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR', 'Loading ' + (response.total - uris.length) + ' playlist tracks', _extends({}, data, {
+        dispatch(uiActions.updateProcess('SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR', 'Loading ' + (response.total - tracks.length) + ' playlist tracks', _extends({}, data, {
           next: response.next,
           total: response.total,
-          remaining: response.total - uris.length
+          remaining: response.total - tracks.length
         })));
         dispatch(uiActions.runProcess('SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR', _extends({}, data, {
           next: response.next,
-          uris: uris
+          tracks: tracks
         })));
       } else {
+        // Seeing as we now have all the playlist's tracks, add them to the playlist we have
+        // in our index for quicker reuse next time
+        dispatch(coreActions.loadedMore('playlist', data.uri, 'track', { tracks: tracks }));
+
+        var uris = (0, _arrays.arrayOf)('uri', tracks);
+
         if (data.shuffle) {
           uris = (0, _arrays.shuffle)(uris);
         }
@@ -88727,17 +88856,6 @@ function getLibraryArtistsProcessor(data) {
         type: 'SPOTIFY_LIBRARY_ARTISTS_LOADED',
         artists: response.artists.items
       });
-
-      // Check to see if we've been cancelled
-      if (getState().ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR !== undefined) {
-        var processor = getState().ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR;
-
-        if (processor.status == 'cancelling') {
-          dispatch(uiActions.processCancelled('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'));
-          return false;
-        }
-      }
-
       // We got a next link, so we've got more work to be done
       if (response.artists.next) {
         var total = response.artists.total;
@@ -89109,7 +89227,19 @@ var SpotifyMiddleware = function () {
             break;
 
           case 'SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR':
-            store.dispatch(spotifyActions.getLibraryPlaylistsProcessor(action.data));
+            var playlistProcessor = store.getState().ui.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR || {};
+            switch (playlistProcessor.status) {
+              case 'cancelling':
+                store.dispatch(uiActions.processCancelled('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'));
+                break;
+
+              case 'cancelled':
+                break;
+
+              default:
+                store.dispatch(spotifyActions.getLibraryPlaylistsProcessor(action.data));
+                break;
+            }
             break;
 
           case 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED':
@@ -89161,7 +89291,19 @@ var SpotifyMiddleware = function () {
             break;
 
           case 'SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR':
-            store.dispatch(spotifyActions.getLibraryArtistsProcessor(action.data));
+            var artistsProcessor = store.getState().ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR || {};
+            switch (artistsProcessor.status) {
+              case 'cancelling':
+                store.dispatch(uiActions.processCancelled('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'));
+                break;
+
+              case 'cancelled':
+                break;
+
+              default:
+                store.dispatch(spotifyActions.getLibraryArtistsProcessor(action.data));
+                break;
+            }
             break;
 
           case 'SPOTIFY_LIBRARY_ARTISTS_LOADED':
@@ -89184,7 +89326,19 @@ var SpotifyMiddleware = function () {
             break;
 
           case 'SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR':
-            store.dispatch(spotifyActions.getLibraryAlbumsProcessor(action.data));
+            var albumsProcessor = store.getState().ui.processes.SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR || {};
+            switch (albumsProcessor.status) {
+              case 'cancelling':
+                store.dispatch(uiActions.processCancelled('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'));
+                break;
+
+              case 'cancelled':
+                break;
+
+              default:
+                store.dispatch(spotifyActions.getLibraryAlbumsProcessor(action.data));
+                break;
+            }
             break;
 
           case 'SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR':
@@ -89703,7 +89857,9 @@ function reducer() {
         var search_results = {};
       }
 
-      search_results.query = action.query;
+      search_results = _extends({}, search_results, {
+        query: action.query
+      });
 
       if (search_results.results) {
         search_results[action.context] = [].concat(_toConsumableArray(search_results[action.context]), _toConsumableArray(action.results));
@@ -90321,6 +90477,7 @@ var UIMiddleware = function () {
             store.dispatch({
               type: action.key + '_CANCELLED'
             });
+            store.dispatch(uiActions.closeProcess(action.key));
             next(action);
             break;
 
@@ -90431,14 +90588,11 @@ function reducer() {
     /**
        * Context menu
        * */
-
     case 'SHOW_CONTEXT_MENU':
       return _extends({}, ui, { context_menu: action.data });
 
     case 'HIDE_CONTEXT_MENU':
-      return _extends({}, ui, {
-        context_menu: _extends({}, ui.context_menu, { closing: true })
-      });
+      return _extends({}, ui, { context_menu: _extends({}, ui.context_menu, { closing: true }) });
 
     case 'REMOVE_CONTEXT_MENU':
       return _extends({}, ui, { context_menu: null });
@@ -90447,9 +90601,7 @@ function reducer() {
       return _extends({}, ui, { touch_context_menu: action.data });
 
     case 'HIDE_TOUCH_CONTEXT_MENU':
-      return _extends({}, ui, {
-        touch_context_menu: _extends({}, ui.touch_context_menu, { closing: true })
-      });
+      return _extends({}, ui, { touch_context_menu: _extends({}, ui.touch_context_menu, { closing: true }) });
 
     case 'REMOVE_TOUCH_CONTEXT_MENU':
       return _extends({}, ui, { touch_context_menu: null });
@@ -90457,7 +90609,6 @@ function reducer() {
     /**
        * Dragging
        * */
-
     case 'DRAG_START':
       return _extends({}, ui, {
         dragger: {
@@ -90482,7 +90633,6 @@ function reducer() {
     /**
        * Modals
        * */
-
     case 'OPEN_MODAL':
       return _extends({}, ui, { modal: action.modal });
 
@@ -90492,7 +90642,6 @@ function reducer() {
     /**
        * Notifications
        * */
-
     case 'CREATE_NOTIFICATION':
       var notifications = _extends({}, ui.notifications);
       notifications[action.notification.key] = action.notification;
@@ -90528,9 +90677,12 @@ function reducer() {
 
     case 'START_PROCESS':
     case 'UPDATE_PROCESS':
-      var processes = _extends({}, ui.processes ? ui.processes : []);
-      if (processes[action.key]) {
-        var data = _extends({}, processes[action.key].data, action.data);
+      var processes = _extends({}, ui.processes || []);
+      var last_run = processes[action.key];
+      var status = 'running';
+      if (last_run) {
+        var data = _extends({}, last_run.data, action.data);
+        if (action.type === 'UPDATE_PROCESS') status = last_run.status;
       } else {
         var data = action.data;
       }
@@ -90538,8 +90690,8 @@ function reducer() {
         key: action.key,
         content: action.content,
         description: action.description,
-        status: 'running',
         level: action.level,
+        status: status,
         data: data
       };
       return _extends({}, ui, { processes: processes });
@@ -92040,7 +92192,7 @@ var formatClient = function formatClient(data) {
  * */
 var formatGroup = function formatGroup(data) {
   var group = {};
-  var fields = ['id', 'name', 'mute', 'volume', 'stream_id', 'clients_ids'];
+  var fields = ['id', 'name', 'mute', 'stream_id', 'clients_ids'];
 
   var _iteratorNormalCompletion13 = true;
   var _didIteratorError13 = false;
@@ -95207,8 +95359,12 @@ var Playlist = function (_React$Component) {
   _createClass(Playlist, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
+      var _props = this.props,
+          loadPlaylist = _props.coreActions.loadPlaylist,
+          uri = _props.uri;
+
       this.setWindowTitle();
-      this.props.coreActions.loadPlaylist(this.props.uri);
+      loadPlaylist(uri);
     }
   }, {
     key: 'setWindowTitle',
@@ -95507,12 +95663,12 @@ var _initialiseProps = function _initialiseProps() {
     var prevUri = _ref.uri,
         prevPlaylist = _ref.playlist,
         prev_mopidy_connected = _ref.mopidy_connected;
-    var _props = _this4.props,
-        uri = _props.uri,
-        playlist = _props.playlist,
-        mopidy_connected = _props.mopidy_connected,
-        loadPlaylist = _props.coreActions.loadPlaylist,
-        push = _props.history.push;
+    var _props2 = _this4.props,
+        uri = _props2.uri,
+        playlist = _props2.playlist,
+        mopidy_connected = _props2.mopidy_connected,
+        loadPlaylist = _props2.coreActions.loadPlaylist,
+        push = _props2.history.push;
 
 
     if (prevPlaylist && playlist && prevPlaylist.moved_to !== playlist.moved_to) {
@@ -96365,10 +96521,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 var _react2 = _interopRequireDefault(_react);
@@ -96419,6 +96571,10 @@ var _URILink = __webpack_require__(/*! ../components/URILink */ "./src/js/compon
 
 var _URILink2 = _interopRequireDefault(_URILink);
 
+var _SearchResults = __webpack_require__(/*! ../components/SearchResults */ "./src/js/components/SearchResults.js");
+
+var _SearchResults2 = _interopRequireDefault(_SearchResults);
+
 var _actions = __webpack_require__(/*! ../services/core/actions */ "./src/js/services/core/actions.js");
 
 var coreActions = _interopRequireWildcard(_actions);
@@ -96443,8 +96599,6 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -96459,6 +96613,16 @@ var Search = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (Search.__proto__ || Object.getPrototypeOf(Search)).call(this, props));
 
+    _this.componentDidMount = function () {
+      var setWindowTitle = _this.props.uiActions.setWindowTitle;
+
+
+      setWindowTitle('Search');
+
+      // Auto-focus on the input field
+      $(document).find('.search-form input').focus();
+    };
+
     _this.componentDidUpdate = function (_ref) {
       var prevType = _ref.type,
           prevTerm = _ref.term,
@@ -96472,450 +96636,166 @@ var Search = function (_React$Component) {
           type = _this$state.type,
           term = _this$state.term;
 
+      // Already connected, but search properties changed
 
-      if (prevType !== typeProp || prevTerm !== termProp) {
-        _this.digestUri({ type: typeProp, term: termProp });
-      }
-
-      // Services came online
-      if (!prev_mopidy_connected && mopidy_connected && uri_schemes_search_enabled) {
-        _this.search(type, term, 'mopidy');
-
-        if (uri_schemes_search_enabled.includes('spotify:')) {
-          _this.search(type, term, 'spotify');
+      if (prev_mopidy_connected && mopidy_connected) {
+        if (prevType !== typeProp || prevTerm !== termProp) {
+          _this.digestUri();
         }
+        // Connected
+      } else if (!prev_mopidy_connected && mopidy_connected && uri_schemes_search_enabled) {
+        _this.search(type, term);
       }
     };
 
-    _this.state = {
-      type: 'all',
-      term: ''
-    };
-    return _this;
-  }
-
-  _createClass(Search, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      this.props.uiActions.setWindowTitle('Search');
-
-      // Auto-focus on the input field
-      $(document).find('.search-form input').focus();
-
-      // Listen for a query baked-in to the URL
-      // This would be the case when we've clicked from a link elsewhere
-      this.digestUri(_extends({}, this.props, {
-        term: decodeURIComponent(this.props.term)
-      }));
-    }
-  }, {
-    key: 'handleSubmit',
-    value: function handleSubmit(term) {
-      var _this2 = this;
+    _this.onSubmit = function (term) {
+      var type = _this.state.type;
+      var history = _this.props.history;
 
       var encodedTerm = encodeURIComponent(term);
 
-      this.setState({ term: term }, function () {
-        // Unchanged term, so this is a forced re-search
-        // Often the other search parameters have changed instead, but we can't
-        // push a URL change when the term hasn't changed
-        if (_this2.props.term == term) {
-          _this2.search();
-        } else {
-          _this2.props.history.push('/search/' + _this2.state.type + '/' + encodedTerm);
-        }
+      _this.setState({ term: term }, function () {
+        history.push('/search/' + type + '/' + encodedTerm);
       });
-    }
+    };
 
-    // Digest the URI query property
-    // Triggered when the URL changes
+    _this.onReset = function () {
+      var history = _this.props.history;
 
-  }, {
-    key: 'digestUri',
-    value: function digestUri() {
-      var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.props;
+      history.push('/search');
+    };
 
-      if (props.type && props.term) {
-        this.setState({
-          type: props.type,
-          term: props.term
-        });
+    _this.onSortChange = function (value) {
+      var hideContextMenu = _this.props.uiActions.hideContextMenu;
 
-        this.search(props.type, props.term);
-      } else if (!props.term || props.term == '') {
-        this.props.spotifyActions.clearSearchResults();
-        this.props.mopidyActions.clearSearchResults();
-      }
-    }
-  }, {
-    key: 'search',
-    value: function search() {
-      var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.state.type;
-      var term = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.state.term;
-      var provider = arguments[2];
+      _this.setSort(value);
+      hideContextMenu();
+    };
 
-      this.props.uiActions.setWindowTitle('Search: ' + decodeURIComponent(term));
+    _this.onSourceChange = function (value) {
+      var _this$props$uiActions = _this.props.uiActions,
+          set = _this$props$uiActions.set,
+          hideContextMenu = _this$props$uiActions.hideContextMenu;
+
+      set({ uri_schemes_search_enabled: value });
+      hideContextMenu();
+    };
+
+    _this.onSourceClose = function () {
+      spotifyActions.clearSearchResults();
+      mopidyActions.clearSearchResults();
+      _this.search();
+    };
+
+    _this.digestUri = function () {
+      var _this$props2 = _this.props,
+          type = _this$props2.type,
+          term = _this$props2.term;
+
 
       if (type && term) {
-        if (provider == 'mopidy' || this.props.mopidy_connected && this.props.uri_schemes_search_enabled) {
-          if (this.props.mopidy_search_results.query === undefined || this.props.mopidy_search_results.query != term) {
-            this.props.mopidyActions.clearSearchResults();
-            this.props.mopidyActions.getSearchResults(type, term);
-          }
+        _this.setState({ type: type, term: term }, function () {
+          _this.search();
+        });
+      } else if (!term || term === '') {
+        _this.clearSearch();
+      }
+    };
+
+    _this.clearSearch = function () {
+      var _this$props3 = _this.props,
+          spotifyActions = _this$props3.spotifyActions,
+          mopidyActions = _this$props3.mopidyActions,
+          setWindowTitle = _this$props3.uiActions.setWindowTitle;
+
+
+      spotifyActions.clearSearchResults();
+      mopidyActions.clearSearchResults();
+      setWindowTitle('Search');
+      _this.setState({ term: '' });
+    };
+
+    _this.search = function () {
+      var _this$props4 = _this.props,
+          setWindowTitle = _this$props4.uiActions.setWindowTitle,
+          mopidy_connected = _this$props4.mopidy_connected,
+          uri_schemes_search_enabled = _this$props4.uri_schemes_search_enabled,
+          mopidyActions = _this$props4.mopidyActions,
+          spotifyActions = _this$props4.spotifyActions,
+          _this$props4$mopidy_s = _this$props4.mopidy_search_results.query;
+      _this$props4$mopidy_s = _this$props4$mopidy_s === undefined ? {} : _this$props4$mopidy_s;
+      var mopidyTerm = _this$props4$mopidy_s.term,
+          mopidyType = _this$props4$mopidy_s.type,
+          _this$props4$spotify_ = _this$props4.spotify_search_results.query;
+      _this$props4$spotify_ = _this$props4$spotify_ === undefined ? {} : _this$props4$spotify_;
+      var spotifyTerm = _this$props4$spotify_.term,
+          spotifyType = _this$props4$spotify_.type;
+      var _this$state2 = _this.state,
+          type = _this$state2.type,
+          term = _this$state2.term;
+
+
+      console.info('Searching for ' + type + ' matching "' + term + '"');
+
+      setWindowTitle('Search: ' + decodeURIComponent(term));
+
+      if (type && term && mopidy_connected && uri_schemes_search_enabled) {
+        if (mopidyTerm !== term || mopidyType !== type) {
+          mopidyActions.clearSearchResults();
+          mopidyActions.getSearchResults(type, term);
         }
 
-        if (provider == 'spotify' || this.props.mopidy_connected && this.props.uri_schemes_search_enabled && this.props.uri_schemes_search_enabled.includes('spotify:')) {
-          if (this.props.spotify_search_results.query === undefined || this.props.spotify_search_results.query != term) {
-            this.props.spotifyActions.clearSearchResults();
-            this.props.spotifyActions.getSearchResults(type, term);
-          }
+        if ((spotifyTerm !== term || spotifyType !== type) && uri_schemes_search_enabled.includes('spotify:')) {
+          spotifyActions.clearSearchResults();
+          spotifyActions.getSearchResults(type, term);
         }
       }
-    }
-  }, {
-    key: 'loadMore',
-    value: function loadMore(type) {
+    };
+
+    _this.loadMore = function (type) {
       alert('load more: ' + type);
       // this.props.spotifyActions.getURL(this.props['spotify_'+type+'_more'], 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_'+type.toUpperCase());
-    }
-  }, {
-    key: 'setSort',
-    value: function setSort(value) {
+    };
+
+    _this.setSort = function (value) {
+      var _this$props5 = _this.props,
+          sort = _this$props5.sort,
+          sort_reverse = _this$props5.sort_reverse,
+          set = _this$props5.uiActions.set;
+
+
       var reverse = false;
-      if (this.props.sort == value) reverse = !this.props.sort_reverse;
+      if (sort === value) reverse = !sort_reverse;
 
       var data = {
         search_results_sort_reverse: reverse,
         search_results_sort: value
       };
-      this.props.uiActions.set(data);
-    }
-  }, {
-    key: 'handleSourceChange',
-    value: function handleSourceChange(value) {
-      this.props.uiActions.set({ uri_schemes_search_enabled: value });
-      this.props.uiActions.hideContextMenu();
-    }
-  }, {
-    key: 'renderArtists',
-    value: function renderArtists(artists, spotify_search_enabled) {
-      var _this3 = this;
+      set(data);
+    };
 
-      var encodedTerm = encodeURIComponent(this.state.term);
-      return _react2.default.createElement(
-        'div',
-        null,
-        _react2.default.createElement(
-          'h4',
-          null,
-          _react2.default.createElement(
-            _URILink2.default,
-            { uri: 'iris:search:all:' + encodedTerm },
-            'Search '
-          ),
-          _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
-          ' Artists'
-        ),
-        _react2.default.createElement(
-          'section',
-          { className: 'grid-wrapper' },
-          _react2.default.createElement(_ArtistGrid2.default, { artists: artists, show_source_icon: true }),
-          _react2.default.createElement(_LazyLoadListener2.default, { enabled: this.props.artists_more && spotify_search_enabled, loadMore: function loadMore() {
-              return _this3.loadMore('artists');
-            } })
-        )
-      );
-    }
-  }, {
-    key: 'renderAlbums',
-    value: function renderAlbums(albums, spotify_search_enabled) {
-      var _this4 = this;
+    _this.render = function () {
+      var _this$state3 = _this.state,
+          term = _this$state3.term,
+          type = _this$state3.type;
+      var _this$props6 = _this.props,
+          uri_schemes = _this$props6.uri_schemes,
+          sort = _this$props6.sort,
+          sort_reverse = _this$props6.sort_reverse,
+          history = _this$props6.history,
+          uri_schemes_search_enabled = _this$props6.uri_schemes_search_enabled,
+          uiActions = _this$props6.uiActions;
 
-      var encodedTerm = encodeURIComponent(this.state.term);
-      return _react2.default.createElement(
-        'div',
-        null,
-        _react2.default.createElement(
-          'h4',
-          null,
-          _react2.default.createElement(
-            _URILink2.default,
-            { uri: 'iris:search:all:' + encodedTerm },
-            'Search '
-          ),
-          _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
-          ' Albums'
-        ),
-        _react2.default.createElement(
-          'section',
-          { className: 'grid-wrapper' },
-          _react2.default.createElement(_AlbumGrid2.default, { albums: albums, show_source_icon: true }),
-          _react2.default.createElement(_LazyLoadListener2.default, { enabled: this.props.albums_more && spotify_search_enabled, loadMore: function loadMore() {
-              return _this4.loadMore('albums');
-            } })
-        )
-      );
-    }
-  }, {
-    key: 'renderPlaylists',
-    value: function renderPlaylists(playlists, spotify_search_enabled) {
-      var _this5 = this;
 
-      var encodedTerm = encodeURIComponent(this.state.term);
-      return _react2.default.createElement(
-        'div',
-        null,
-        _react2.default.createElement(
-          'h4',
-          null,
-          _react2.default.createElement(
-            _URILink2.default,
-            { uri: 'iris:search:all:' + encodedTerm },
-            'Search '
-          ),
-          _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
-          ' Playlists'
-        ),
-        _react2.default.createElement(
-          'section',
-          { className: 'grid-wrapper' },
-          _react2.default.createElement(_PlaylistGrid2.default, { playlists: playlists, show_source_icon: true }),
-          _react2.default.createElement(_LazyLoadListener2.default, { enabled: this.props.playlists_more && spotify_search_enabled, loadMore: function loadMore() {
-              return _this5.loadMore('playlists');
-            } })
-        )
-      );
-    }
-  }, {
-    key: 'renderTracks',
-    value: function renderTracks(tracks, spotify_search_enabled) {
-      var _this6 = this;
-
-      var encodedTerm = encodeURIComponent(this.state.term);
-      return _react2.default.createElement(
-        'div',
-        null,
-        _react2.default.createElement(
-          'h4',
-          null,
-          _react2.default.createElement(
-            _URILink2.default,
-            { uri: 'iris:search:all:' + encodedTerm },
-            'Search '
-          ),
-          _react2.default.createElement(_Icon2.default, { type: 'fontawesome', name: 'angle-right' }),
-          ' Tracks'
-        ),
-        _react2.default.createElement(
-          'section',
-          { className: 'list-wrapper' },
-          _react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: 'iris:search:' + this.state.type + ':' + encodedTerm, show_source_icon: true }),
-          _react2.default.createElement(_LazyLoadListener2.default, { enabled: this.props.tracks_more && spotify_search_enabled, loadMore: function loadMore() {
-              return _this6.loadMore('tracks');
-            } })
-        )
-      );
-    }
-  }, {
-    key: 'renderAll',
-    value: function renderAll(artists, albums, playlists, tracks, spotify_search_enabled) {
-      var _this7 = this;
-
-      var encodedTerm = encodeURIComponent(this.state.term);
-      if (artists.length > 0) {
-        var artists_section = _react2.default.createElement(
-          'section',
-          null,
-          _react2.default.createElement(
-            'div',
-            { className: 'inner' },
-            _react2.default.createElement(
-              _URILink2.default,
-              { uri: 'iris:search:artist:' + encodedTerm },
-              _react2.default.createElement(
-                'h4',
-                null,
-                'Artists'
-              )
-            ),
-            _react2.default.createElement(_ArtistGrid2.default, { mini: true, show_source_icon: true, artists: artists.slice(0, 6) }),
-            artists.length >= 6 && _react2.default.createElement(
-              _URILink2.default,
-              { uri: 'iris:search:artist:' + encodedTerm, className: 'button button--default' },
-              'All artists (' + artists.length + ')'
-            )
-          )
-        );
-      } else {
-        var artists_section = null;
-      }
-
-      if (albums.length > 0) {
-        var albums_section = _react2.default.createElement(
-          'section',
-          null,
-          _react2.default.createElement(
-            'div',
-            { className: 'inner' },
-            _react2.default.createElement(
-              _URILink2.default,
-              { uri: 'iris:search:album:' + encodedTerm },
-              _react2.default.createElement(
-                'h4',
-                null,
-                'Albums'
-              )
-            ),
-            _react2.default.createElement(_AlbumGrid2.default, { mini: true, show_source_icon: true, albums: albums.slice(0, 6) }),
-            albums.length >= 6 && _react2.default.createElement(
-              _URILink2.default,
-              { uri: 'iris:search:album:' + encodedTerm, className: 'button button--default' },
-              'All albums (' + albums.length + ')'
-            )
-          )
-        );
-      } else {
-        var albums_section = null;
-      }
-
-      if (playlists.length > 0) {
-        var playlists_section = _react2.default.createElement(
-          'section',
-          null,
-          _react2.default.createElement(
-            'div',
-            { className: 'inner' },
-            _react2.default.createElement(
-              _URILink2.default,
-              { uri: 'iris:search:playlist:' + encodedTerm },
-              _react2.default.createElement(
-                'h4',
-                null,
-                'Playlists'
-              )
-            ),
-            _react2.default.createElement(_PlaylistGrid2.default, { mini: true, show_source_icon: true, playlists: playlists.slice(0, 6) }),
-            playlists.length >= 6 && _react2.default.createElement(
-              _URILink2.default,
-              { uri: 'iris:search:playlist:' + encodedTerm, className: 'button button--default' },
-              'All playlists (' + playlists.length + ')'
-            )
-          )
-        );
-      } else {
-        var playlists_section = null;
-      }
-
-      if (tracks.length > 0) {
-        var tracks_section = _react2.default.createElement(
-          'section',
-          { className: 'list-wrapper' },
-          _react2.default.createElement(_TrackList2.default, { tracks: tracks, uri: 'iris:search:' + this.state.type + ':' + encodedTerm, show_source_icon: true }),
-          _react2.default.createElement(_LazyLoadListener2.default, { loading: this.props.tracks_more && spotify_search_enabled, loadMore: function loadMore() {
-              return _this7.loadMore('tracks');
-            } })
-        );
-      } else {
-        var tracks_section = null;
-      }
-
-      return _react2.default.createElement(
-        'div',
-        null,
-        _react2.default.createElement(
-          'div',
-          { className: 'search-result-sections cf' },
-          artists_section,
-          albums_section,
-          playlists_section
-        ),
-        tracks_section
-      );
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var _this8 = this;
-
-      var sort_options = [{
-        value: 'followers',
-        label: 'Popularity'
-      }, {
-        value: 'name',
-        label: 'Name'
-      }, {
-        value: 'artists.name',
-        label: 'Artist'
-      }, {
-        value: 'duration',
-        label: 'Duration'
-      }, {
-        value: 'uri',
-        label: 'Source'
-      }];
+      var sort_options = [{ value: 'followers', label: 'Popularity' }, { value: 'name', label: 'Name' }, { value: 'artists.name', label: 'Artist' }, { value: 'duration', label: 'Duration' }, { value: 'uri', label: 'Source' }];
 
       var provider_options = [];
-      for (var i = 0; i < this.props.uri_schemes.length; i++) {
+      for (var i = 0; i < uri_schemes.length; i++) {
         provider_options.push({
-          value: this.props.uri_schemes[i],
-          label: (0, _helpers.titleCase)(this.props.uri_schemes[i].replace(':', '').replace('+', ' '))
+          value: uri_schemes[i],
+          label: (0, _helpers.titleCase)(uri_schemes[i].replace(':', '').replace('+', ' '))
         });
       }
-      var spotify_search_enabled = this.props.search_settings && this.props.search_settings.spotify;
-
-      var sort = this.props.sort;
-      var sort_reverse = this.props.sort_reverse;
-
-      var sort_map = null;
-
-      switch (this.props.sort) {
-        case 'uri':
-          sort_map = this.props.uri_schemes_priority;
-          break;
-
-        // Followers (aka popularlity works in reverse-numerical order)
-        // Ie "more popular" is a bigger number
-        case 'followers':
-          sort_reverse = !sort_reverse;
-          break;
-      }
-
-      var artists = [];
-      if (this.props.mopidy_search_results.artists) {
-        artists = [].concat(_toConsumableArray(artists), _toConsumableArray((0, _helpers.getIndexedRecords)(this.props.artists, this.props.mopidy_search_results.artists)));
-      }
-      if (this.props.spotify_search_results.artists) {
-        artists = [].concat(_toConsumableArray(artists), _toConsumableArray((0, _helpers.getIndexedRecords)(this.props.artists, this.props.spotify_search_results.artists)));
-      }
-      artists = (0, _arrays.sortItems)(artists, sort, sort_reverse, sort_map);
-
-      var albums = [];
-      if (this.props.mopidy_search_results.albums) {
-        albums = [].concat(_toConsumableArray(albums), _toConsumableArray((0, _helpers.getIndexedRecords)(this.props.albums, this.props.mopidy_search_results.albums)));
-      }
-      if (this.props.spotify_search_results.albums) {
-        albums = [].concat(_toConsumableArray(albums), _toConsumableArray((0, _helpers.getIndexedRecords)(this.props.albums, this.props.spotify_search_results.albums)));
-      }
-      albums = (0, _arrays.sortItems)(albums, sort, sort_reverse, sort_map);
-
-      var playlists = [];
-      if (this.props.mopidy_search_results.playlists) {
-        playlists = [].concat(_toConsumableArray(playlists), _toConsumableArray((0, _helpers.getIndexedRecords)(this.props.playlists, this.props.mopidy_search_results.playlists)));
-      }
-      if (this.props.spotify_search_results.playlists) {
-        playlists = [].concat(_toConsumableArray(playlists), _toConsumableArray((0, _helpers.getIndexedRecords)(this.props.playlists, this.props.spotify_search_results.playlists)));
-      }
-      playlists = (0, _arrays.sortItems)(playlists, sort, sort_reverse, sort_map);
-
-      var tracks = [];
-      if (this.props.mopidy_search_results.tracks) {
-        tracks = [].concat(_toConsumableArray(tracks), _toConsumableArray(this.props.mopidy_search_results.tracks));
-      }
-      if (this.props.spotify_search_results.tracks) {
-        tracks = [].concat(_toConsumableArray(tracks), _toConsumableArray(this.props.spotify_search_results.tracks));
-      }
-
-      tracks = (0, _arrays.sortItems)(tracks, sort == 'followers' ? 'popularity' : sort, sort_reverse, sort_map);
 
       var options = _react2.default.createElement(
         'span',
@@ -96923,27 +96803,19 @@ var Search = function (_React$Component) {
         _react2.default.createElement(_DropdownField2.default, {
           icon: 'swap_vert',
           name: 'Sort',
-          value: this.props.sort,
+          value: sort,
           valueAsLabel: true,
           options: sort_options,
-          selected_icon: this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down',
-          handleChange: function handleChange(value) {
-            _this8.setSort(value);_this8.props.uiActions.hideContextMenu();
-          }
+          selected_icon: sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down',
+          handleChange: _this.onSortChange
         }),
         _react2.default.createElement(_DropdownField2.default, {
           icon: 'cloud',
           name: 'Sources',
-          value: this.props.uri_schemes_search_enabled,
+          value: uri_schemes_search_enabled,
           options: provider_options,
-          handleChange: function handleChange(value) {
-            return _this8.handleSourceChange(value);
-          },
-          onClose: function onClose() {
-            _this8.props.spotifyActions.clearSearchResults();
-            _this8.props.mopidyActions.clearSearchResults();
-            _this8.search();
-          }
+          handleChange: _this.onSourceChange,
+          onClose: _this.onSourceClose
         })
       );
 
@@ -96952,15 +96824,15 @@ var Search = function (_React$Component) {
         { className: 'view search-view' },
         _react2.default.createElement(
           _Header2.default,
-          { options: options, uiActions: this.props.uiActions },
+          { options: options, uiActions: uiActions },
           _react2.default.createElement(_Icon2.default, { name: 'search', type: 'material' })
         ),
         _react2.default.createElement(_SearchForm2.default, {
-          history: this.props.history,
-          term: this.state.term,
-          onSubmit: function onSubmit(term) {
-            return _this8.handleSubmit(term);
-          }
+          key: 'search_form_' + type + '_' + term,
+          history: history,
+          term: term,
+          onSubmit: _this.onSubmit,
+          onReset: _this.onReset
         }),
         _react2.default.createElement(
           'div',
@@ -96970,34 +96842,71 @@ var Search = function (_React$Component) {
             null,
             _react2.default.createElement(
               _reactRouterDom.Route,
-              { path: '/search/artist/:term' },
-              this.renderArtists(artists, spotify_search_enabled)
+              { path: '/search/artists/:term' },
+              _react2.default.createElement(_SearchResults2.default, { type: 'artists', query: { term: term, type: type } })
             ),
             _react2.default.createElement(
               _reactRouterDom.Route,
-              { path: '/search/album/:term' },
-              this.renderAlbums(albums, spotify_search_enabled)
+              { path: '/search/albums/:term' },
+              _react2.default.createElement(_SearchResults2.default, { type: 'albums', query: { term: term, type: type } })
             ),
             _react2.default.createElement(
               _reactRouterDom.Route,
-              { path: '/search/playlist/:term' },
-              this.renderPlaylists(playlists, spotify_search_enabled)
+              { path: '/search/playlists/:term' },
+              _react2.default.createElement(_SearchResults2.default, { type: 'playlists', query: { term: term, type: type } })
             ),
             _react2.default.createElement(
               _reactRouterDom.Route,
-              { path: '/search/track/:term' },
-              this.renderTracks(tracks, spotify_search_enabled)
+              { path: '/search/tracks/:term' },
+              _react2.default.createElement(_SearchResults2.default, { type: 'tracks', query: { term: term, type: type } })
             ),
             _react2.default.createElement(
               _reactRouterDom.Route,
               { path: '/search' },
-              this.renderAll(artists, albums, playlists, tracks, spotify_search_enabled)
+              _react2.default.createElement(
+                'div',
+                { className: 'search-result-sections cf' },
+                _react2.default.createElement(
+                  'section',
+                  { className: 'search-result-sections__item' },
+                  _react2.default.createElement(
+                    'div',
+                    { className: 'inner' },
+                    _react2.default.createElement(_SearchResults2.default, { type: 'artists', query: { term: term, type: type }, all: true })
+                  )
+                ),
+                _react2.default.createElement(
+                  'section',
+                  { className: 'search-result-sections__item' },
+                  _react2.default.createElement(
+                    'div',
+                    { className: 'inner' },
+                    _react2.default.createElement(_SearchResults2.default, { type: 'albums', query: { term: term, type: type }, all: true })
+                  )
+                ),
+                _react2.default.createElement(
+                  'section',
+                  { className: 'search-result-sections__item' },
+                  _react2.default.createElement(
+                    'div',
+                    { className: 'inner' },
+                    _react2.default.createElement(_SearchResults2.default, { type: 'playlists', query: { term: term, type: type }, all: true })
+                  )
+                )
+              ),
+              _react2.default.createElement(_SearchResults2.default, { type: 'tracks', query: { term: term, type: type }, all: true })
             )
           )
         )
       );
-    }
-  }]);
+    };
+
+    _this.state = {
+      type: props.type || 'all',
+      term: props.term || ''
+    };
+    return _this;
+  }
 
   return Search;
 }(_react2.default.Component);
@@ -99056,10 +98965,6 @@ var _Icon = __webpack_require__(/*! ../../components/Icon */ "./src/js/component
 
 var _Icon2 = _interopRequireDefault(_Icon);
 
-var _Parallax = __webpack_require__(/*! ../../components/Parallax */ "./src/js/components/Parallax.js");
-
-var _Parallax2 = _interopRequireDefault(_Parallax);
-
 var _Loader = __webpack_require__(/*! ../../components/Loader */ "./src/js/components/Loader.js");
 
 var _Loader2 = _interopRequireDefault(_Loader);
@@ -99092,48 +98997,38 @@ var DiscoverFeatured = function (_React$Component) {
   _inherits(DiscoverFeatured, _React$Component);
 
   function DiscoverFeatured() {
+    var _ref;
+
+    var _temp, _this, _ret;
+
     _classCallCheck(this, DiscoverFeatured);
 
-    return _possibleConstructorReturn(this, (DiscoverFeatured.__proto__ || Object.getPrototypeOf(DiscoverFeatured)).apply(this, arguments));
-  }
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
 
-  _createClass(DiscoverFeatured, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      this.props.uiActions.setWindowTitle('Featured playlists');
-      if (!this.props.featured_playlists) {
-        this.props.spotifyActions.getFeaturedPlaylists();
-      }
-    }
-  }, {
-    key: 'playPlaylist',
-    value: function playPlaylist(e, playlist) {
-      this.props.mopidyActions.playPlaylist(playlist.uri);
-    }
-  }, {
-    key: 'handleContextMenu',
-    value: function handleContextMenu(e, item) {
-      e.preventDefault();
-      var data = {
-        e: e,
-        context: 'playlist',
-        uris: [item.uri],
-        items: [item]
-      };
-      this.props.uiActions.showContextMenu(data);
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var _this2 = this;
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = DiscoverFeatured.__proto__ || Object.getPrototypeOf(DiscoverFeatured)).call.apply(_ref, [this].concat(args))), _this), _this.onRefresh = function () {
+      var _this$props = _this.props,
+          hideContextMenu = _this$props.uiActions.hideContextMenu,
+          getFeaturedPlaylists = _this$props.spotifyActions.getFeaturedPlaylists;
 
-      if ((0, _helpers.isLoading)(this.props.load_queue, ['spotify_browse/featured-playlists'])) {
+      hideContextMenu();
+      getFeaturedPlaylists();
+    }, _this.render = function () {
+      var _this$props2 = _this.props,
+          load_queue = _this$props2.load_queue,
+          uiActions = _this$props2.uiActions,
+          featured_playlists = _this$props2.featured_playlists,
+          playlists = _this$props2.playlists;
+
+
+      if ((0, _helpers.isLoading)(load_queue, ['spotify_browse/featured-playlists'])) {
         return _react2.default.createElement(
           'div',
           { className: 'view discover-featured-view preserve-3d' },
           _react2.default.createElement(
             _Header2.default,
-            { className: 'overlay', uiActions: this.props.uiActions },
+            { className: 'overlay', uiActions: uiActions },
             _react2.default.createElement(_Icon2.default, { name: 'star', type: 'material' }),
             'Featured playlists'
           ),
@@ -99141,21 +99036,19 @@ var DiscoverFeatured = function (_React$Component) {
         );
       }
 
-      var playlists = [];
-      if (this.props.featured_playlists) {
-        for (var i = 0; i < this.props.featured_playlists.playlists.length; i++) {
-          var uri = this.props.featured_playlists.playlists[i];
-          if (this.props.playlists.hasOwnProperty(uri)) {
-            playlists.push(this.props.playlists[uri]);
+      var items = [];
+      if (featured_playlists) {
+        for (var i = 0; i < featured_playlists.playlists.length; i++) {
+          var uri = featured_playlists.playlists[i];
+          if (playlists.hasOwnProperty(uri)) {
+            items.push(playlists[uri]);
           }
         }
       }
 
       var options = _react2.default.createElement(
         'a',
-        { className: 'button button--no-hover', onClick: function onClick(e) {
-            _this2.props.uiActions.hideContextMenu();_this2.props.spotifyActions.getFeaturedPlaylists();
-          } },
+        { className: 'button button--no-hover', onClick: _this.onRefresh },
         _react2.default.createElement(_Icon2.default, { name: 'refresh' }),
         'Refresh'
       );
@@ -99165,23 +99058,52 @@ var DiscoverFeatured = function (_React$Component) {
         { className: 'view discover-featured-view preserve-3d' },
         _react2.default.createElement(
           _Header2.default,
-          { options: options },
+          { uiActions: uiActions, options: options },
           _react2.default.createElement(_Icon2.default, { name: 'star', type: 'material' }),
           'Featured playlists'
         ),
         _react2.default.createElement(
           'section',
           { className: 'content-wrapper grid-wrapper' },
-          playlists ? _react2.default.createElement(_PlaylistGrid2.default, { playlists: playlists }) : null
+          items && _react2.default.createElement(_PlaylistGrid2.default, { playlists: items })
         )
       );
+    }, _temp), _possibleConstructorReturn(_this, _ret);
+  }
+
+  _createClass(DiscoverFeatured, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var _props = this.props,
+          featured_playlists = _props.featured_playlists,
+          setWindowTitle = _props.uiActions.setWindowTitle,
+          getFeaturedPlaylists = _props.spotifyActions.getFeaturedPlaylists;
+
+
+      setWindowTitle('Featured playlists');
+      if (!featured_playlists) getFeaturedPlaylists();
+    }
+  }, {
+    key: 'handleContextMenu',
+    value: function handleContextMenu(e, item) {
+      var showContextMenu = this.props.uiActions.showContextMenu;
+
+
+      e.preventDefault();
+      var data = {
+        e: e,
+        context: 'playlist',
+        uris: [item.uri],
+        items: [item]
+      };
+      showContextMenu(data);
     }
   }]);
 
   return DiscoverFeatured;
 }(_react2.default.Component);
 
-var mapStateToProps = function mapStateToProps(state, ownProps) {
+var mapStateToProps = function mapStateToProps(state) {
   return {
     theme: state.ui.theme,
     load_queue: state.ui.load_queue,

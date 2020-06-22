@@ -3,7 +3,7 @@ import pathlib
 
 from mopidy import config, ext
 
-__version__ = "3.49.0"
+__version__ = "3.50.0"
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +30,7 @@ class Extension(ext.Extension):
         schema["spotify_authorization_url"] = config.String()
         schema["lastfm_authorization_url"] = config.String()
         schema["genius_authorization_url"] = config.String()
-        schema["data_dir"] = config.String()
+        schema["data_dir"] = config.String() # Deprecated
         return schema
 
     def setup(self, registry):

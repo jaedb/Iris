@@ -86,8 +86,12 @@ const request = (dispatch, getState, endpoint, method = 'GET', data = false, cac
             .then(data => {
               // TODO: Instead of allowing request to fail before renewing the token, once refreshed
               // we should retry the original request(s)
-              if (data && data.error && data.error.message === 'The access token expired') {
-                dispatch(refreshToken(dispatch, getState));
+              if (data && data.error) {
+                if (data.error.message === 'The access token expired') {
+                  dispatch(refreshToken(dispatch, getState));
+                } else {
+                  reject(data);
+                }
               }
 
               resolve(data);
@@ -127,27 +131,27 @@ function getToken(dispatch, getState) {
 
     // We've already got a refresh in progress
     if (getState().ui.load_queue.spotify_refresh_token !== undefined) {
-        	console.log("Already refreshing token, we'll wait 1000ms and try again");
+      console.log("Already refreshing token, we'll wait 1000ms and try again");
 
-        	// Re-check the queue periodically to see if it's finished yet
-        	// TODO: Look at properly hooking up with the ajax finish event
-        	setTimeout(
-        		() =>
-        			// Return myself for a re-check
-        			 getToken(dispatch, getState),
-        		1000,
-        	);
+      // Re-check the queue periodically to see if it's finished yet
+      // TODO: Look at properly hooking up with the ajax finish event
+      setTimeout(
+        () =>
+          // Return myself for a re-check
+          getToken(dispatch, getState),
+        1000,
+      );
     } else {
-	        refreshToken(dispatch, getState)
-	            .then(
-	                (response) => {
-	                    resolve(response.access_token);
-	                },
-	                (error) => {
-	                    reject(error);
-	                },
-	            );
-	    }
+      refreshToken(dispatch, getState)
+        .then(
+          (response) => {
+            resolve(response.access_token);
+          },
+          (error) => {
+            reject(error);
+          },
+        );
+    }
   });
 }
 
@@ -557,17 +561,17 @@ export function clearSearchResults() {
   };
 }
 
-export function getSearchResults(type, query, limit = 50, offset = 0) {
+export function getSearchResults(type, term, limit = 50, offset = 0) {
   return (dispatch, getState) => {
     dispatch(uiActions.startProcess('SPOTIFY_GET_SEARCH_RESULTS_PROCESSOR', 'Searching Spotify'));
 
-    type = type.replace(/s+$/, '');
-    if (type == 'all') {
-      type = 'album,artist,playlist,track';
+    let typeString = type.replace(/s+$/, '');
+    if (typeString === 'all') {
+      typeString = 'album,artist,playlist,track';
     }
 
-    let url = `search?q=${query}`;
-    url += `&type=${type}`;
+    let url = `search?q=${term}`;
+    url += `&type=${typeString}`;
     url += `&country=${getState().spotify.country}`;
     url += `&limit=${limit}`;
     url += `&offset=${offset}`;
@@ -579,7 +583,7 @@ export function getSearchResults(type, query, limit = 50, offset = 0) {
             dispatch({
               type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
               context: 'tracks',
-              query,
+              query: { type, term },
               results: formatTracks(response.tracks.items),
               more: response.tracks.next,
             });
@@ -593,7 +597,7 @@ export function getSearchResults(type, query, limit = 50, offset = 0) {
             dispatch({
               type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
               context: 'artists',
-              query,
+              query: { type, term },
               results: arrayOf('uri', response.artists.items),
               more: response.artists.next,
             });
@@ -607,22 +611,18 @@ export function getSearchResults(type, query, limit = 50, offset = 0) {
             dispatch({
               type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
               context: 'albums',
-              query,
+              query: { type, term },
               results: arrayOf('uri', response.albums.items),
               more: response.albums.next,
             });
           }
 
           if (response.playlists !== undefined) {
-            const playlists = [];
-            for (const playlist of response.playlists.items) {
-              playlists.push({
-
-                ...formatPlaylist(playlist),
-                can_edit: (getState().spotify.me && playlist.owner.id == getState().spotify.me.id),
-                tracks_total: playlist.tracks.total,
-              });
-            }
+            const playlists = response.playlists.items.map((item) => ({
+              ...formatPlaylist(item),
+              can_edit: (getState().spotify.me && item.owner.id === getState().spotify.me.id),
+              tracks_total: item.tracks.total,
+            }));
             dispatch({
               type: 'PLAYLISTS_LOADED',
               playlists,
@@ -631,7 +631,7 @@ export function getSearchResults(type, query, limit = 50, offset = 0) {
             dispatch({
               type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
               context: 'playlists',
-              query,
+              query: { type, term },
               results: arrayOf('uri', playlists),
               more: response.playlists.next,
             });
@@ -1202,14 +1202,14 @@ export function getArtistImages(artist) {
   return (dispatch, getState) => {
     request(dispatch, getState, `search?q=${artist.name}&type=artist`)
       .then(response => {
-          if (response.artists.items.length > 0) {
-            const updatedArtist = {
-              uri: artist.uri,
-              images: response.artists.items[0].images,
-            }
-            dispatch(coreActions.artistLoaded(updatedArtist));
+        if (response.artists.items.length > 0) {
+          const updatedArtist = {
+            uri: artist.uri,
+            images: response.artists.items[0].images,
           }
-        },
+          dispatch(coreActions.artistLoaded(updatedArtist));
+        }
+      },
         error => {
           dispatch(coreActions.handleException(
             'Could not load artists',
@@ -1654,56 +1654,65 @@ export function getAllPlaylistTracksProcessor(data) {
           }
 
           // Add on our new batch of loaded tracks
-          let uris = [];
-          const new_uris = [];
+          let tracks = [];
+          const new_tracks = [];
           for (const item of response.items) {
-                    	if (item.track) {
-	                        new_uris.push(item.track.uri);
-	                    }
+            if (item.track) {
+              new_tracks.push(item.track);
+            }
           }
-          if (data.uris) {
-            uris = [...data.uris, ...new_uris];
+          if (data.tracks) {
+            tracks = [...data.tracks, ...new_tracks];
           } else {
-            uris = new_uris;
+            tracks = new_tracks;
           }
 
           // We got a next link, so we've got more work to be done
           if (response.next) {
             dispatch(uiActions.updateProcess(
               'SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR',
-              `Loading ${response.total - uris.length} playlist tracks`,
+              `Loading ${response.total - tracks.length} playlist tracks`,
               {
-
-                            	...data,
-                            	next: response.next,
-	                                total: response.total,
-	                                remaining: response.total - uris.length,
+                ...data,
+                next: response.next,
+                total: response.total,
+                remaining: response.total - tracks.length,
               },
             ));
             dispatch(uiActions.runProcess(
               'SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR',
               {
-
-                            	...data,
-                            	next: response.next,
-                                	uris,
+                ...data,
+                next: response.next,
+                tracks,
               },
             ));
           } else {
-                    	if (data.shuffle) {
-                    		uris = shuffle(uris);
-                    	}
+            // Seeing as we now have all the playlist's tracks, add them to the playlist we have
+            // in our index for quicker reuse next time
+            dispatch(coreActions.loadedMore(
+              'playlist',
+              data.uri,
+              'track',
+              { tracks },
+            ));
 
-                    	// We don't bother "finishing", we just want it "finished" immediately
-                    	// This bypasses the fade transition for a more smooth transition between two
-                    	// processes that flow together
+            let uris = arrayOf('uri', tracks);
+
+            if (data.shuffle) {
+              uris = shuffle(uris);
+            }
+
+            // We don't bother "finishing", we just want it "finished" immediately
+            // This bypasses the fade transition for a more smooth transition between two
+            // processes that flow together
             dispatch(uiActions.removeProcess('SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR'));
 
-                    	if (data.callback_action == 'enqueue') {
-                        	dispatch(mopidyActions.enqueueURIs(uris, data.uri, data.play_next, data.at_position, data.offset));
-                    	} else {
-                        	dispatch(mopidyActions.playURIs(uris, data.uri));
-                    	}
+            if (data.callback_action == 'enqueue') {
+              dispatch(mopidyActions.enqueueURIs(uris, data.uri, data.play_next, data.at_position, data.offset));
+            } else {
+              dispatch(mopidyActions.playURIs(uris, data.uri));
+            }
           }
         },
         (error) => {
@@ -1899,17 +1908,6 @@ export function getLibraryArtistsProcessor(data) {
             type: 'SPOTIFY_LIBRARY_ARTISTS_LOADED',
             artists: response.artists.items,
           });
-
-          // Check to see if we've been cancelled
-          if (getState().ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR !== undefined) {
-            const processor = getState().ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR;
-
-            if (processor.status == 'cancelling') {
-              dispatch(uiActions.processCancelled('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'));
-              return false;
-            }
-          }
-
           // We got a next link, so we've got more work to be done
           if (response.artists.next) {
             const { total } = response.artists;

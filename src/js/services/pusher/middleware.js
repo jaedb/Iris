@@ -274,7 +274,7 @@ const PusherMiddleware = (function () {
         };
 
         socket.onerror = (e) => {
-          if (socket.readyState == 1) {
+          if (socket.readyState === 1) {
             store.dispatch(coreActions.handleException(
               'Pusher websocket error',
               e,
