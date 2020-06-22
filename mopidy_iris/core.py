@@ -13,7 +13,6 @@ import pickle
 from pkg_resources import parse_version
 from tornado.escape import json_encode
 from tornado.httpclient import AsyncHTTPClient, HTTPRequest
-from pathlib import Path
 
 from . import Extension
 from .system import IrisSystemThread
