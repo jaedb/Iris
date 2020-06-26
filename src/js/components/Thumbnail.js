@@ -37,6 +37,7 @@ export default memo((props) => {
 
   const image = mapImageSizes();
   let class_name = 'thumbnail thumbnail--loaded';
+  if (props.fill) class_name += ` thumbnail--fill`;
   if (props.size) class_name += ` thumbnail--${props.size}`;
   if (props.circle) class_name += ' thumbnail--circle';
   if (props.className) class_name += ` ${props.className}`;

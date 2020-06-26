@@ -4520,6 +4520,8 @@ select {
     max-width: 50px; }
     .thumbnail--small .thumbnail__placeholder.icon {
       font-size: 2rem; }
+  .thumbnail--fill {
+    max-width: none; }
   .thumbnail--circle .thumbnail__image {
     border-radius: 50%; }
   .thumbnail:hover .thumbnail__actions {
@@ -7367,8 +7369,11 @@ main .track-view {
       border: 0 !important;
       position: relative; }
     .queue-view .current-track__artwork .thumbnail {
-      width: 30vh;
+      width: 35vh;
       display: inline-block; }
+      @media (min-width: 1850px) {
+        .queue-view .current-track__artwork .thumbnail {
+          max-width: none; } }
   .queue-view .current-track__details {
     width: 48%;
     margin-left: 2%; }
