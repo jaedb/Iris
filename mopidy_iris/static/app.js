@@ -77169,6 +77169,7 @@ exports.default = (0, _react.memo)(function (props) {
 
   var image = mapImageSizes();
   var class_name = 'thumbnail thumbnail--loaded';
+  if (props.fill) class_name += ' thumbnail--fill';
   if (props.size) class_name += ' thumbnail--' + props.size;
   if (props.circle) class_name += ' thumbnail--circle';
   if (props.className) class_name += ' ' + props.className;
@@ -94284,7 +94285,7 @@ var Artist = function (_React$Component) {
               thumbnails.push(_react2.default.createElement(
                 'div',
                 { className: 'tile thumbnail-wrapper', key: images.huge },
-                _react2.default.createElement(_Thumbnail2.default, { size: 'huge', canZoom: true, images: images })
+                _react2.default.createElement(_Thumbnail2.default, { size: 'huge', canZoom: true, fill: true, images: images })
               ));
             }
           }

@@ -313,7 +313,7 @@ class Artist extends React.Component {
         if (images.huge) {
           thumbnails.push(
             <div className="tile thumbnail-wrapper" key={images.huge}>
-              <Thumbnail size="huge" canZoom images={images} />
+              <Thumbnail size="huge" canZoom fill images={images} />
             </div>,
           );
         }

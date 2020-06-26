@@ -101,6 +101,10 @@
 		}
 	}
 
+	&--fill {
+		max-width: none;
+	}
+
 	&--circle {
 		.thumbnail {
 			&__image {

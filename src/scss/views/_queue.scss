@@ -19,8 +19,12 @@
       }
 
       .thumbnail {
-        width: 30vh;
+        width: 35vh;
         display: inline-block;
+
+        @include responsive(null, $bp_huge) {
+          max-width: none;
+        }
       }
     }
 
