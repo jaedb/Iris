@@ -222,6 +222,9 @@ export class App extends React.Component {
     } else {
       className += ' notouch';
     }
+    if (this.props.hide_scrollbars) {
+      className += ' hide-scrollbars';
+    }
 
     return (
       <div className={className}>
@@ -368,6 +371,7 @@ export class App extends React.Component {
 const mapStateToProps = (state, ownProps) => ({
   theme: state.ui.theme,
   wide_scrollbar_enabled: state.ui.wide_scrollbar_enabled,
+  hide_scrollbars: state.ui.hide_scrollbars,
   smooth_scrolling_enabled: state.ui.smooth_scrolling_enabled,
   hotkeys_enabled: state.ui.hotkeys_enabled,
   allow_reporting: state.ui.allow_reporting,

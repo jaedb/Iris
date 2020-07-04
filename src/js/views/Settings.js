@@ -280,6 +280,17 @@ class Settings extends React.Component {
                   Use wide scrollbars
                 </span>
               </label>
+              <label>
+                <input
+                  type="checkbox"
+                  name="hide_scrollbars"
+                  checked={ui.hide_scrollbars}
+                  onChange={(e) => uiActions.set({ hide_scrollbars: !ui.hide_scrollbars })}
+                />
+                <span className="label">
+                  Hide scrollbars
+                </span>
+              </label>
             </div>
           </div>
 

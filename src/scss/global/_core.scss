@@ -66,6 +66,10 @@ body {
   }
 }
 
+.hide-scrollbars * ::-webkit-scrollbar {
+  display: none;
+}
+
 .smooth-scroll {
   &.smooth-scrolling-enabled,
   .smooth-scrolling-enabled & {
