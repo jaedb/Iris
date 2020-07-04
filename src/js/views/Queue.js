@@ -20,6 +20,7 @@ import {
   getFromUri,
   uriType,
 } from '../util/helpers';
+import { content } from '../locale';
 
 class Queue extends React.Component {
   constructor(props) {
@@ -243,7 +244,7 @@ class Queue extends React.Component {
       <div className="view queue-view preserve-3d">
         <Header options={options} uiActions={this.props.uiActions}>
           <Icon name="play_arrow" type="material" />
-          Now playing
+          {content('now_playing.title')}
         </Header>
         {theme === 'dark' && <Parallax image={current_track_image} blur />}
         <div className="content-wrapper">

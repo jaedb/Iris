@@ -56,6 +56,11 @@ const config = {
 				]
 			},
 			{
+        test: /\.ya?ml$/,
+        type: 'json',
+        use: 'yaml-loader'
+			},
+			{
 				// load external resources (ie Google fonts)
 				test: /.(gif|png|woff(2)?|eot|ttf|svg)(\?[a-z0-9=\.]+)?$/,
 				use: [

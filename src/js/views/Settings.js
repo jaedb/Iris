@@ -8,6 +8,7 @@ import PusherConnectionList from '../components/PusherConnectionList';
 import SourcesPriority from '../components/Fields/SourcesPriority';
 import Commands from '../components/Fields/Commands';
 import TextField from '../components/Fields/TextField';
+import SelectField from '../components/Fields/SelectField';
 import Header from '../components/Header';
 import Icon from '../components/Icon';
 import Services from '../components/Services';
@@ -47,6 +48,11 @@ class Settings extends React.Component {
     }
 
     if (new_username) this.setState({ pusher_username: new_username });
+  }
+
+  onLanguageChange = (language) => {
+    const { uiActions: { set } } = this.props;
+    set({ language });
   }
 
   resetAllSettings() {
@@ -178,6 +184,20 @@ class Settings extends React.Component {
             Interface
             <a name="interface" />
           </h4>
+          
+          <div className="field dropdown">
+            <div className="name">Language</div>
+            <div className="input">
+              <SelectField
+                onChange={this.onLanguageChange}
+                options={[
+                  { value: 'en', label: 'English (EN)' },
+                  { value: 'de', label: 'German (DE)' },
+                ]}
+                value={ui.language}
+              />
+            </div>
+          </div>
 
           <div className="field radio">
             <div className="name">

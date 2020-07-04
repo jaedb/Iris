@@ -1,0 +1,25 @@
+sidebar:
+  now_playing: Now playing
+  search: Search
+  discover: Discover
+  genre: Genre / Mood
+  featured_playlists: Featured playlists
+  new_releases: New releases
+  my_music: My music
+  playlists: Playlists
+  artists: Artists
+  albums: Albums
+  tracks: Tracks
+  browse: Browse
+  settings: Settings
+  not_connected: %{name} not connected
+now_playing:
+  title: Now playing
+  context_actions:
+    radio: Radio
+    history: History
+    add_uri: Add URI
+  current_track:
+    playing_from: Playling from
+    shuffle: Shuffle
+    clear: Clear

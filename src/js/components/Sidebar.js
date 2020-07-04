@@ -8,6 +8,7 @@ import Icon from './Icon';
 import Dropzones from './Fields/Dropzones';
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
+import { content, Content } from '../locale';
 
 class Sidebar extends React.Component {
   renderStatusIcon() {
@@ -43,9 +44,21 @@ class Sidebar extends React.Component {
         <span className="status tooltip tooltip--right">
           <Icon name="warning" className="red-text" />
           <span className="tooltip__content">
-            {!mopidy_connected && (<span>Mopidy not connected<br /></span>)}
-            {!pusher_connected && (<span>Pusher not connected<br /></span>)}
-            {!snapcast_connected && snapcast_enabled && (<span>Snapcast not connected<br /></span>)}
+            {!mopidy_connected && (
+              <Content path="sidebar.not_connected" params={{ name: 'Mopidy' }}>
+                <br />
+              </Content>
+            )}
+            {!pusher_connected && (
+              <Content path="sidebar.not_connected" params={{ name: 'Pusher' }}>
+                <br />
+              </Content>
+            )}
+            {!snapcast_connected && snapcast_enabled && (
+              <Content path="sidebar.not_connected" params={{ name: 'Snapcast' }}>
+                <br />
+              </Content>
+            )}
           </span>
         </span>
       );
@@ -69,64 +82,68 @@ class Sidebar extends React.Component {
             <section className="sidebar__menu__section">
               <Link to="/queue" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="play_arrow" type="material" />
-								Now playing
+                <Content path="sidebar.now_playing" />
               </Link>
               <Link to="/search" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="search" type="material" />
-								Search
+                <Content path="sidebar.search" />
               </Link>
             </section>
 
             {spotify_available && (
               <section className="sidebar__menu__section">
-                <title className="sidebar__menu__section__title">Discover</title>
+                <title className="sidebar__menu__section__title">
+                  {content('sidebar.discover')}
+                </title>
                 <Link to="/discover/recommendations" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                   <Icon name="explore" type="material" />
-								Discover
+                  {content('sidebar.discover')}
                 </Link>
                 <Link to="/discover/categories" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                   <Icon name="mood" type="material" />
-								Genre / Mood
+                  {content('sidebar.genre')}
                 </Link>
                 <Link to="/discover/featured" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                   <Icon name="star" type="material" />
-								Featured playlists
+                  {content('sidebar.featured_playlists')}
                 </Link>
                 <Link to="/discover/new-releases" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                   <Icon name="new_releases" type="material" />
-								New releases
+                  {content('sidebar.new_releases')}
                 </Link>
               </section>
             )}
 
             <section className="sidebar__menu__section">
-              <title className="sidebar__menu__section__title">My Music</title>
+              <title className="sidebar__menu__section__title">
+                {content('sidebar.my_music')}
+              </title>
               <Link to="/library/playlists" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="queue_music" type="material" />
-								Playlists
+                {content('sidebar.playlists')}
               </Link>
               <Link to="/library/artists" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="recent_actors" type="material" />
-								Artists
+                {content('sidebar.artists')}
               </Link>
               <Link to="/library/albums" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="album" type="material" />
-								Albums
+                {content('sidebar.albums')}
               </Link>
               <Link to="/library/tracks" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="music_note" type="material" />
-								Tracks
+                {content('sidebar.tracks')}
               </Link>
               <Link to="/library/browse" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="folder" type="material" />
-								Browse
+                {content('sidebar.browse')}
               </Link>
             </section>
 
             <section className="sidebar__menu__section">
               <Link to="/settings" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="settings" type="material" />
-								Settings
+                {content('sidebar.settings')}
                 {this.renderStatusIcon()}
               </Link>
             </section>

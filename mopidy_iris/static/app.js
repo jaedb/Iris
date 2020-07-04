@@ -20240,6 +20240,1825 @@ return jQuery;
 
 /***/ }),
 
+/***/ "./node_modules/lodash/_Hash.js":
+/*!**************************************!*\
+  !*** ./node_modules/lodash/_Hash.js ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var hashClear = __webpack_require__(/*! ./_hashClear */ "./node_modules/lodash/_hashClear.js"),
+    hashDelete = __webpack_require__(/*! ./_hashDelete */ "./node_modules/lodash/_hashDelete.js"),
+    hashGet = __webpack_require__(/*! ./_hashGet */ "./node_modules/lodash/_hashGet.js"),
+    hashHas = __webpack_require__(/*! ./_hashHas */ "./node_modules/lodash/_hashHas.js"),
+    hashSet = __webpack_require__(/*! ./_hashSet */ "./node_modules/lodash/_hashSet.js");
+
+/**
+ * Creates a hash object.
+ *
+ * @private
+ * @constructor
+ * @param {Array} [entries] The key-value pairs to cache.
+ */
+function Hash(entries) {
+  var index = -1,
+      length = entries == null ? 0 : entries.length;
+
+  this.clear();
+  while (++index < length) {
+    var entry = entries[index];
+    this.set(entry[0], entry[1]);
+  }
+}
+
+// Add methods to `Hash`.
+Hash.prototype.clear = hashClear;
+Hash.prototype['delete'] = hashDelete;
+Hash.prototype.get = hashGet;
+Hash.prototype.has = hashHas;
+Hash.prototype.set = hashSet;
+
+module.exports = Hash;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_ListCache.js":
+/*!*******************************************!*\
+  !*** ./node_modules/lodash/_ListCache.js ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var listCacheClear = __webpack_require__(/*! ./_listCacheClear */ "./node_modules/lodash/_listCacheClear.js"),
+    listCacheDelete = __webpack_require__(/*! ./_listCacheDelete */ "./node_modules/lodash/_listCacheDelete.js"),
+    listCacheGet = __webpack_require__(/*! ./_listCacheGet */ "./node_modules/lodash/_listCacheGet.js"),
+    listCacheHas = __webpack_require__(/*! ./_listCacheHas */ "./node_modules/lodash/_listCacheHas.js"),
+    listCacheSet = __webpack_require__(/*! ./_listCacheSet */ "./node_modules/lodash/_listCacheSet.js");
+
+/**
+ * Creates an list cache object.
+ *
+ * @private
+ * @constructor
+ * @param {Array} [entries] The key-value pairs to cache.
+ */
+function ListCache(entries) {
+  var index = -1,
+      length = entries == null ? 0 : entries.length;
+
+  this.clear();
+  while (++index < length) {
+    var entry = entries[index];
+    this.set(entry[0], entry[1]);
+  }
+}
+
+// Add methods to `ListCache`.
+ListCache.prototype.clear = listCacheClear;
+ListCache.prototype['delete'] = listCacheDelete;
+ListCache.prototype.get = listCacheGet;
+ListCache.prototype.has = listCacheHas;
+ListCache.prototype.set = listCacheSet;
+
+module.exports = ListCache;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_Map.js":
+/*!*************************************!*\
+  !*** ./node_modules/lodash/_Map.js ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var getNative = __webpack_require__(/*! ./_getNative */ "./node_modules/lodash/_getNative.js"),
+    root = __webpack_require__(/*! ./_root */ "./node_modules/lodash/_root.js");
+
+/* Built-in method references that are verified to be native. */
+var Map = getNative(root, 'Map');
+
+module.exports = Map;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_MapCache.js":
+/*!******************************************!*\
+  !*** ./node_modules/lodash/_MapCache.js ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var mapCacheClear = __webpack_require__(/*! ./_mapCacheClear */ "./node_modules/lodash/_mapCacheClear.js"),
+    mapCacheDelete = __webpack_require__(/*! ./_mapCacheDelete */ "./node_modules/lodash/_mapCacheDelete.js"),
+    mapCacheGet = __webpack_require__(/*! ./_mapCacheGet */ "./node_modules/lodash/_mapCacheGet.js"),
+    mapCacheHas = __webpack_require__(/*! ./_mapCacheHas */ "./node_modules/lodash/_mapCacheHas.js"),
+    mapCacheSet = __webpack_require__(/*! ./_mapCacheSet */ "./node_modules/lodash/_mapCacheSet.js");
+
+/**
+ * Creates a map cache object to store key-value pairs.
+ *
+ * @private
+ * @constructor
+ * @param {Array} [entries] The key-value pairs to cache.
+ */
+function MapCache(entries) {
+  var index = -1,
+      length = entries == null ? 0 : entries.length;
+
+  this.clear();
+  while (++index < length) {
+    var entry = entries[index];
+    this.set(entry[0], entry[1]);
+  }
+}
+
+// Add methods to `MapCache`.
+MapCache.prototype.clear = mapCacheClear;
+MapCache.prototype['delete'] = mapCacheDelete;
+MapCache.prototype.get = mapCacheGet;
+MapCache.prototype.has = mapCacheHas;
+MapCache.prototype.set = mapCacheSet;
+
+module.exports = MapCache;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_Symbol.js":
+/*!****************************************!*\
+  !*** ./node_modules/lodash/_Symbol.js ***!
+  \****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var root = __webpack_require__(/*! ./_root */ "./node_modules/lodash/_root.js");
+
+/** Built-in value references. */
+var Symbol = root.Symbol;
+
+module.exports = Symbol;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_arrayMap.js":
+/*!******************************************!*\
+  !*** ./node_modules/lodash/_arrayMap.js ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+/**
+ * A specialized version of `_.map` for arrays without support for iteratee
+ * shorthands.
+ *
+ * @private
+ * @param {Array} [array] The array to iterate over.
+ * @param {Function} iteratee The function invoked per iteration.
+ * @returns {Array} Returns the new mapped array.
+ */
+function arrayMap(array, iteratee) {
+  var index = -1,
+      length = array == null ? 0 : array.length,
+      result = Array(length);
+
+  while (++index < length) {
+    result[index] = iteratee(array[index], index, array);
+  }
+  return result;
+}
+
+module.exports = arrayMap;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_assocIndexOf.js":
+/*!**********************************************!*\
+  !*** ./node_modules/lodash/_assocIndexOf.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var eq = __webpack_require__(/*! ./eq */ "./node_modules/lodash/eq.js");
+
+/**
+ * Gets the index at which the `key` is found in `array` of key-value pairs.
+ *
+ * @private
+ * @param {Array} array The array to inspect.
+ * @param {*} key The key to search for.
+ * @returns {number} Returns the index of the matched value, else `-1`.
+ */
+function assocIndexOf(array, key) {
+  var length = array.length;
+  while (length--) {
+    if (eq(array[length][0], key)) {
+      return length;
+    }
+  }
+  return -1;
+}
+
+module.exports = assocIndexOf;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_baseGet.js":
+/*!*****************************************!*\
+  !*** ./node_modules/lodash/_baseGet.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var castPath = __webpack_require__(/*! ./_castPath */ "./node_modules/lodash/_castPath.js"),
+    toKey = __webpack_require__(/*! ./_toKey */ "./node_modules/lodash/_toKey.js");
+
+/**
+ * The base implementation of `_.get` without support for default values.
+ *
+ * @private
+ * @param {Object} object The object to query.
+ * @param {Array|string} path The path of the property to get.
+ * @returns {*} Returns the resolved value.
+ */
+function baseGet(object, path) {
+  path = castPath(path, object);
+
+  var index = 0,
+      length = path.length;
+
+  while (object != null && index < length) {
+    object = object[toKey(path[index++])];
+  }
+  return (index && index == length) ? object : undefined;
+}
+
+module.exports = baseGet;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_baseGetTag.js":
+/*!********************************************!*\
+  !*** ./node_modules/lodash/_baseGetTag.js ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var Symbol = __webpack_require__(/*! ./_Symbol */ "./node_modules/lodash/_Symbol.js"),
+    getRawTag = __webpack_require__(/*! ./_getRawTag */ "./node_modules/lodash/_getRawTag.js"),
+    objectToString = __webpack_require__(/*! ./_objectToString */ "./node_modules/lodash/_objectToString.js");
+
+/** `Object#toString` result references. */
+var nullTag = '[object Null]',
+    undefinedTag = '[object Undefined]';
+
+/** Built-in value references. */
+var symToStringTag = Symbol ? Symbol.toStringTag : undefined;
+
+/**
+ * The base implementation of `getTag` without fallbacks for buggy environments.
+ *
+ * @private
+ * @param {*} value The value to query.
+ * @returns {string} Returns the `toStringTag`.
+ */
+function baseGetTag(value) {
+  if (value == null) {
+    return value === undefined ? undefinedTag : nullTag;
+  }
+  return (symToStringTag && symToStringTag in Object(value))
+    ? getRawTag(value)
+    : objectToString(value);
+}
+
+module.exports = baseGetTag;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_baseIsNative.js":
+/*!**********************************************!*\
+  !*** ./node_modules/lodash/_baseIsNative.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var isFunction = __webpack_require__(/*! ./isFunction */ "./node_modules/lodash/isFunction.js"),
+    isMasked = __webpack_require__(/*! ./_isMasked */ "./node_modules/lodash/_isMasked.js"),
+    isObject = __webpack_require__(/*! ./isObject */ "./node_modules/lodash/isObject.js"),
+    toSource = __webpack_require__(/*! ./_toSource */ "./node_modules/lodash/_toSource.js");
+
+/**
+ * Used to match `RegExp`
+ * [syntax characters](http://ecma-international.org/ecma-262/7.0/#sec-patterns).
+ */
+var reRegExpChar = /[\\^$.*+?()[\]{}|]/g;
+
+/** Used to detect host constructors (Safari). */
+var reIsHostCtor = /^\[object .+?Constructor\]$/;
+
+/** Used for built-in method references. */
+var funcProto = Function.prototype,
+    objectProto = Object.prototype;
+
+/** Used to resolve the decompiled source of functions. */
+var funcToString = funcProto.toString;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty = objectProto.hasOwnProperty;
+
+/** Used to detect if a method is native. */
+var reIsNative = RegExp('^' +
+  funcToString.call(hasOwnProperty).replace(reRegExpChar, '\\$&')
+  .replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?') + '$'
+);
+
+/**
+ * The base implementation of `_.isNative` without bad shim checks.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a native function,
+ *  else `false`.
+ */
+function baseIsNative(value) {
+  if (!isObject(value) || isMasked(value)) {
+    return false;
+  }
+  var pattern = isFunction(value) ? reIsNative : reIsHostCtor;
+  return pattern.test(toSource(value));
+}
+
+module.exports = baseIsNative;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_baseToString.js":
+/*!**********************************************!*\
+  !*** ./node_modules/lodash/_baseToString.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var Symbol = __webpack_require__(/*! ./_Symbol */ "./node_modules/lodash/_Symbol.js"),
+    arrayMap = __webpack_require__(/*! ./_arrayMap */ "./node_modules/lodash/_arrayMap.js"),
+    isArray = __webpack_require__(/*! ./isArray */ "./node_modules/lodash/isArray.js"),
+    isSymbol = __webpack_require__(/*! ./isSymbol */ "./node_modules/lodash/isSymbol.js");
+
+/** Used as references for various `Number` constants. */
+var INFINITY = 1 / 0;
+
+/** Used to convert symbols to primitives and strings. */
+var symbolProto = Symbol ? Symbol.prototype : undefined,
+    symbolToString = symbolProto ? symbolProto.toString : undefined;
+
+/**
+ * The base implementation of `_.toString` which doesn't convert nullish
+ * values to empty strings.
+ *
+ * @private
+ * @param {*} value The value to process.
+ * @returns {string} Returns the string.
+ */
+function baseToString(value) {
+  // Exit early for strings to avoid a performance hit in some environments.
+  if (typeof value == 'string') {
+    return value;
+  }
+  if (isArray(value)) {
+    // Recursively convert values (susceptible to call stack limits).
+    return arrayMap(value, baseToString) + '';
+  }
+  if (isSymbol(value)) {
+    return symbolToString ? symbolToString.call(value) : '';
+  }
+  var result = (value + '');
+  return (result == '0' && (1 / value) == -INFINITY) ? '-0' : result;
+}
+
+module.exports = baseToString;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_castPath.js":
+/*!******************************************!*\
+  !*** ./node_modules/lodash/_castPath.js ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var isArray = __webpack_require__(/*! ./isArray */ "./node_modules/lodash/isArray.js"),
+    isKey = __webpack_require__(/*! ./_isKey */ "./node_modules/lodash/_isKey.js"),
+    stringToPath = __webpack_require__(/*! ./_stringToPath */ "./node_modules/lodash/_stringToPath.js"),
+    toString = __webpack_require__(/*! ./toString */ "./node_modules/lodash/toString.js");
+
+/**
+ * Casts `value` to a path array if it's not one.
+ *
+ * @private
+ * @param {*} value The value to inspect.
+ * @param {Object} [object] The object to query keys on.
+ * @returns {Array} Returns the cast property path array.
+ */
+function castPath(value, object) {
+  if (isArray(value)) {
+    return value;
+  }
+  return isKey(value, object) ? [value] : stringToPath(toString(value));
+}
+
+module.exports = castPath;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_coreJsData.js":
+/*!********************************************!*\
+  !*** ./node_modules/lodash/_coreJsData.js ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var root = __webpack_require__(/*! ./_root */ "./node_modules/lodash/_root.js");
+
+/** Used to detect overreaching core-js shims. */
+var coreJsData = root['__core-js_shared__'];
+
+module.exports = coreJsData;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_freeGlobal.js":
+/*!********************************************!*\
+  !*** ./node_modules/lodash/_freeGlobal.js ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global) {/** Detect free variable `global` from Node.js. */
+var freeGlobal = typeof global == 'object' && global && global.Object === Object && global;
+
+module.exports = freeGlobal;
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_getMapData.js":
+/*!********************************************!*\
+  !*** ./node_modules/lodash/_getMapData.js ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var isKeyable = __webpack_require__(/*! ./_isKeyable */ "./node_modules/lodash/_isKeyable.js");
+
+/**
+ * Gets the data for `map`.
+ *
+ * @private
+ * @param {Object} map The map to query.
+ * @param {string} key The reference key.
+ * @returns {*} Returns the map data.
+ */
+function getMapData(map, key) {
+  var data = map.__data__;
+  return isKeyable(key)
+    ? data[typeof key == 'string' ? 'string' : 'hash']
+    : data.map;
+}
+
+module.exports = getMapData;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_getNative.js":
+/*!*******************************************!*\
+  !*** ./node_modules/lodash/_getNative.js ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var baseIsNative = __webpack_require__(/*! ./_baseIsNative */ "./node_modules/lodash/_baseIsNative.js"),
+    getValue = __webpack_require__(/*! ./_getValue */ "./node_modules/lodash/_getValue.js");
+
+/**
+ * Gets the native function at `key` of `object`.
+ *
+ * @private
+ * @param {Object} object The object to query.
+ * @param {string} key The key of the method to get.
+ * @returns {*} Returns the function if it's native, else `undefined`.
+ */
+function getNative(object, key) {
+  var value = getValue(object, key);
+  return baseIsNative(value) ? value : undefined;
+}
+
+module.exports = getNative;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_getRawTag.js":
+/*!*******************************************!*\
+  !*** ./node_modules/lodash/_getRawTag.js ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var Symbol = __webpack_require__(/*! ./_Symbol */ "./node_modules/lodash/_Symbol.js");
+
+/** Used for built-in method references. */
+var objectProto = Object.prototype;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty = objectProto.hasOwnProperty;
+
+/**
+ * Used to resolve the
+ * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+ * of values.
+ */
+var nativeObjectToString = objectProto.toString;
+
+/** Built-in value references. */
+var symToStringTag = Symbol ? Symbol.toStringTag : undefined;
+
+/**
+ * A specialized version of `baseGetTag` which ignores `Symbol.toStringTag` values.
+ *
+ * @private
+ * @param {*} value The value to query.
+ * @returns {string} Returns the raw `toStringTag`.
+ */
+function getRawTag(value) {
+  var isOwn = hasOwnProperty.call(value, symToStringTag),
+      tag = value[symToStringTag];
+
+  try {
+    value[symToStringTag] = undefined;
+    var unmasked = true;
+  } catch (e) {}
+
+  var result = nativeObjectToString.call(value);
+  if (unmasked) {
+    if (isOwn) {
+      value[symToStringTag] = tag;
+    } else {
+      delete value[symToStringTag];
+    }
+  }
+  return result;
+}
+
+module.exports = getRawTag;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_getValue.js":
+/*!******************************************!*\
+  !*** ./node_modules/lodash/_getValue.js ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+/**
+ * Gets the value at `key` of `object`.
+ *
+ * @private
+ * @param {Object} [object] The object to query.
+ * @param {string} key The key of the property to get.
+ * @returns {*} Returns the property value.
+ */
+function getValue(object, key) {
+  return object == null ? undefined : object[key];
+}
+
+module.exports = getValue;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_hashClear.js":
+/*!*******************************************!*\
+  !*** ./node_modules/lodash/_hashClear.js ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var nativeCreate = __webpack_require__(/*! ./_nativeCreate */ "./node_modules/lodash/_nativeCreate.js");
+
+/**
+ * Removes all key-value entries from the hash.
+ *
+ * @private
+ * @name clear
+ * @memberOf Hash
+ */
+function hashClear() {
+  this.__data__ = nativeCreate ? nativeCreate(null) : {};
+  this.size = 0;
+}
+
+module.exports = hashClear;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_hashDelete.js":
+/*!********************************************!*\
+  !*** ./node_modules/lodash/_hashDelete.js ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+/**
+ * Removes `key` and its value from the hash.
+ *
+ * @private
+ * @name delete
+ * @memberOf Hash
+ * @param {Object} hash The hash to modify.
+ * @param {string} key The key of the value to remove.
+ * @returns {boolean} Returns `true` if the entry was removed, else `false`.
+ */
+function hashDelete(key) {
+  var result = this.has(key) && delete this.__data__[key];
+  this.size -= result ? 1 : 0;
+  return result;
+}
+
+module.exports = hashDelete;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_hashGet.js":
+/*!*****************************************!*\
+  !*** ./node_modules/lodash/_hashGet.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var nativeCreate = __webpack_require__(/*! ./_nativeCreate */ "./node_modules/lodash/_nativeCreate.js");
+
+/** Used to stand-in for `undefined` hash values. */
+var HASH_UNDEFINED = '__lodash_hash_undefined__';
+
+/** Used for built-in method references. */
+var objectProto = Object.prototype;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty = objectProto.hasOwnProperty;
+
+/**
+ * Gets the hash value for `key`.
+ *
+ * @private
+ * @name get
+ * @memberOf Hash
+ * @param {string} key The key of the value to get.
+ * @returns {*} Returns the entry value.
+ */
+function hashGet(key) {
+  var data = this.__data__;
+  if (nativeCreate) {
+    var result = data[key];
+    return result === HASH_UNDEFINED ? undefined : result;
+  }
+  return hasOwnProperty.call(data, key) ? data[key] : undefined;
+}
+
+module.exports = hashGet;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_hashHas.js":
+/*!*****************************************!*\
+  !*** ./node_modules/lodash/_hashHas.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var nativeCreate = __webpack_require__(/*! ./_nativeCreate */ "./node_modules/lodash/_nativeCreate.js");
+
+/** Used for built-in method references. */
+var objectProto = Object.prototype;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty = objectProto.hasOwnProperty;
+
+/**
+ * Checks if a hash value for `key` exists.
+ *
+ * @private
+ * @name has
+ * @memberOf Hash
+ * @param {string} key The key of the entry to check.
+ * @returns {boolean} Returns `true` if an entry for `key` exists, else `false`.
+ */
+function hashHas(key) {
+  var data = this.__data__;
+  return nativeCreate ? (data[key] !== undefined) : hasOwnProperty.call(data, key);
+}
+
+module.exports = hashHas;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_hashSet.js":
+/*!*****************************************!*\
+  !*** ./node_modules/lodash/_hashSet.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var nativeCreate = __webpack_require__(/*! ./_nativeCreate */ "./node_modules/lodash/_nativeCreate.js");
+
+/** Used to stand-in for `undefined` hash values. */
+var HASH_UNDEFINED = '__lodash_hash_undefined__';
+
+/**
+ * Sets the hash `key` to `value`.
+ *
+ * @private
+ * @name set
+ * @memberOf Hash
+ * @param {string} key The key of the value to set.
+ * @param {*} value The value to set.
+ * @returns {Object} Returns the hash instance.
+ */
+function hashSet(key, value) {
+  var data = this.__data__;
+  this.size += this.has(key) ? 0 : 1;
+  data[key] = (nativeCreate && value === undefined) ? HASH_UNDEFINED : value;
+  return this;
+}
+
+module.exports = hashSet;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_isKey.js":
+/*!***************************************!*\
+  !*** ./node_modules/lodash/_isKey.js ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var isArray = __webpack_require__(/*! ./isArray */ "./node_modules/lodash/isArray.js"),
+    isSymbol = __webpack_require__(/*! ./isSymbol */ "./node_modules/lodash/isSymbol.js");
+
+/** Used to match property names within property paths. */
+var reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/,
+    reIsPlainProp = /^\w*$/;
+
+/**
+ * Checks if `value` is a property name and not a property path.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @param {Object} [object] The object to query keys on.
+ * @returns {boolean} Returns `true` if `value` is a property name, else `false`.
+ */
+function isKey(value, object) {
+  if (isArray(value)) {
+    return false;
+  }
+  var type = typeof value;
+  if (type == 'number' || type == 'symbol' || type == 'boolean' ||
+      value == null || isSymbol(value)) {
+    return true;
+  }
+  return reIsPlainProp.test(value) || !reIsDeepProp.test(value) ||
+    (object != null && value in Object(object));
+}
+
+module.exports = isKey;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_isKeyable.js":
+/*!*******************************************!*\
+  !*** ./node_modules/lodash/_isKeyable.js ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+/**
+ * Checks if `value` is suitable for use as unique object key.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is suitable, else `false`.
+ */
+function isKeyable(value) {
+  var type = typeof value;
+  return (type == 'string' || type == 'number' || type == 'symbol' || type == 'boolean')
+    ? (value !== '__proto__')
+    : (value === null);
+}
+
+module.exports = isKeyable;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_isMasked.js":
+/*!******************************************!*\
+  !*** ./node_modules/lodash/_isMasked.js ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var coreJsData = __webpack_require__(/*! ./_coreJsData */ "./node_modules/lodash/_coreJsData.js");
+
+/** Used to detect methods masquerading as native. */
+var maskSrcKey = (function() {
+  var uid = /[^.]+$/.exec(coreJsData && coreJsData.keys && coreJsData.keys.IE_PROTO || '');
+  return uid ? ('Symbol(src)_1.' + uid) : '';
+}());
+
+/**
+ * Checks if `func` has its source masked.
+ *
+ * @private
+ * @param {Function} func The function to check.
+ * @returns {boolean} Returns `true` if `func` is masked, else `false`.
+ */
+function isMasked(func) {
+  return !!maskSrcKey && (maskSrcKey in func);
+}
+
+module.exports = isMasked;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_listCacheClear.js":
+/*!************************************************!*\
+  !*** ./node_modules/lodash/_listCacheClear.js ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+/**
+ * Removes all key-value entries from the list cache.
+ *
+ * @private
+ * @name clear
+ * @memberOf ListCache
+ */
+function listCacheClear() {
+  this.__data__ = [];
+  this.size = 0;
+}
+
+module.exports = listCacheClear;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_listCacheDelete.js":
+/*!*************************************************!*\
+  !*** ./node_modules/lodash/_listCacheDelete.js ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var assocIndexOf = __webpack_require__(/*! ./_assocIndexOf */ "./node_modules/lodash/_assocIndexOf.js");
+
+/** Used for built-in method references. */
+var arrayProto = Array.prototype;
+
+/** Built-in value references. */
+var splice = arrayProto.splice;
+
+/**
+ * Removes `key` and its value from the list cache.
+ *
+ * @private
+ * @name delete
+ * @memberOf ListCache
+ * @param {string} key The key of the value to remove.
+ * @returns {boolean} Returns `true` if the entry was removed, else `false`.
+ */
+function listCacheDelete(key) {
+  var data = this.__data__,
+      index = assocIndexOf(data, key);
+
+  if (index < 0) {
+    return false;
+  }
+  var lastIndex = data.length - 1;
+  if (index == lastIndex) {
+    data.pop();
+  } else {
+    splice.call(data, index, 1);
+  }
+  --this.size;
+  return true;
+}
+
+module.exports = listCacheDelete;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_listCacheGet.js":
+/*!**********************************************!*\
+  !*** ./node_modules/lodash/_listCacheGet.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var assocIndexOf = __webpack_require__(/*! ./_assocIndexOf */ "./node_modules/lodash/_assocIndexOf.js");
+
+/**
+ * Gets the list cache value for `key`.
+ *
+ * @private
+ * @name get
+ * @memberOf ListCache
+ * @param {string} key The key of the value to get.
+ * @returns {*} Returns the entry value.
+ */
+function listCacheGet(key) {
+  var data = this.__data__,
+      index = assocIndexOf(data, key);
+
+  return index < 0 ? undefined : data[index][1];
+}
+
+module.exports = listCacheGet;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_listCacheHas.js":
+/*!**********************************************!*\
+  !*** ./node_modules/lodash/_listCacheHas.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var assocIndexOf = __webpack_require__(/*! ./_assocIndexOf */ "./node_modules/lodash/_assocIndexOf.js");
+
+/**
+ * Checks if a list cache value for `key` exists.
+ *
+ * @private
+ * @name has
+ * @memberOf ListCache
+ * @param {string} key The key of the entry to check.
+ * @returns {boolean} Returns `true` if an entry for `key` exists, else `false`.
+ */
+function listCacheHas(key) {
+  return assocIndexOf(this.__data__, key) > -1;
+}
+
+module.exports = listCacheHas;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_listCacheSet.js":
+/*!**********************************************!*\
+  !*** ./node_modules/lodash/_listCacheSet.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var assocIndexOf = __webpack_require__(/*! ./_assocIndexOf */ "./node_modules/lodash/_assocIndexOf.js");
+
+/**
+ * Sets the list cache `key` to `value`.
+ *
+ * @private
+ * @name set
+ * @memberOf ListCache
+ * @param {string} key The key of the value to set.
+ * @param {*} value The value to set.
+ * @returns {Object} Returns the list cache instance.
+ */
+function listCacheSet(key, value) {
+  var data = this.__data__,
+      index = assocIndexOf(data, key);
+
+  if (index < 0) {
+    ++this.size;
+    data.push([key, value]);
+  } else {
+    data[index][1] = value;
+  }
+  return this;
+}
+
+module.exports = listCacheSet;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_mapCacheClear.js":
+/*!***********************************************!*\
+  !*** ./node_modules/lodash/_mapCacheClear.js ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var Hash = __webpack_require__(/*! ./_Hash */ "./node_modules/lodash/_Hash.js"),
+    ListCache = __webpack_require__(/*! ./_ListCache */ "./node_modules/lodash/_ListCache.js"),
+    Map = __webpack_require__(/*! ./_Map */ "./node_modules/lodash/_Map.js");
+
+/**
+ * Removes all key-value entries from the map.
+ *
+ * @private
+ * @name clear
+ * @memberOf MapCache
+ */
+function mapCacheClear() {
+  this.size = 0;
+  this.__data__ = {
+    'hash': new Hash,
+    'map': new (Map || ListCache),
+    'string': new Hash
+  };
+}
+
+module.exports = mapCacheClear;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_mapCacheDelete.js":
+/*!************************************************!*\
+  !*** ./node_modules/lodash/_mapCacheDelete.js ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var getMapData = __webpack_require__(/*! ./_getMapData */ "./node_modules/lodash/_getMapData.js");
+
+/**
+ * Removes `key` and its value from the map.
+ *
+ * @private
+ * @name delete
+ * @memberOf MapCache
+ * @param {string} key The key of the value to remove.
+ * @returns {boolean} Returns `true` if the entry was removed, else `false`.
+ */
+function mapCacheDelete(key) {
+  var result = getMapData(this, key)['delete'](key);
+  this.size -= result ? 1 : 0;
+  return result;
+}
+
+module.exports = mapCacheDelete;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_mapCacheGet.js":
+/*!*********************************************!*\
+  !*** ./node_modules/lodash/_mapCacheGet.js ***!
+  \*********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var getMapData = __webpack_require__(/*! ./_getMapData */ "./node_modules/lodash/_getMapData.js");
+
+/**
+ * Gets the map value for `key`.
+ *
+ * @private
+ * @name get
+ * @memberOf MapCache
+ * @param {string} key The key of the value to get.
+ * @returns {*} Returns the entry value.
+ */
+function mapCacheGet(key) {
+  return getMapData(this, key).get(key);
+}
+
+module.exports = mapCacheGet;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_mapCacheHas.js":
+/*!*********************************************!*\
+  !*** ./node_modules/lodash/_mapCacheHas.js ***!
+  \*********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var getMapData = __webpack_require__(/*! ./_getMapData */ "./node_modules/lodash/_getMapData.js");
+
+/**
+ * Checks if a map value for `key` exists.
+ *
+ * @private
+ * @name has
+ * @memberOf MapCache
+ * @param {string} key The key of the entry to check.
+ * @returns {boolean} Returns `true` if an entry for `key` exists, else `false`.
+ */
+function mapCacheHas(key) {
+  return getMapData(this, key).has(key);
+}
+
+module.exports = mapCacheHas;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_mapCacheSet.js":
+/*!*********************************************!*\
+  !*** ./node_modules/lodash/_mapCacheSet.js ***!
+  \*********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var getMapData = __webpack_require__(/*! ./_getMapData */ "./node_modules/lodash/_getMapData.js");
+
+/**
+ * Sets the map `key` to `value`.
+ *
+ * @private
+ * @name set
+ * @memberOf MapCache
+ * @param {string} key The key of the value to set.
+ * @param {*} value The value to set.
+ * @returns {Object} Returns the map cache instance.
+ */
+function mapCacheSet(key, value) {
+  var data = getMapData(this, key),
+      size = data.size;
+
+  data.set(key, value);
+  this.size += data.size == size ? 0 : 1;
+  return this;
+}
+
+module.exports = mapCacheSet;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_memoizeCapped.js":
+/*!***********************************************!*\
+  !*** ./node_modules/lodash/_memoizeCapped.js ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var memoize = __webpack_require__(/*! ./memoize */ "./node_modules/lodash/memoize.js");
+
+/** Used as the maximum memoize cache size. */
+var MAX_MEMOIZE_SIZE = 500;
+
+/**
+ * A specialized version of `_.memoize` which clears the memoized function's
+ * cache when it exceeds `MAX_MEMOIZE_SIZE`.
+ *
+ * @private
+ * @param {Function} func The function to have its output memoized.
+ * @returns {Function} Returns the new memoized function.
+ */
+function memoizeCapped(func) {
+  var result = memoize(func, function(key) {
+    if (cache.size === MAX_MEMOIZE_SIZE) {
+      cache.clear();
+    }
+    return key;
+  });
+
+  var cache = result.cache;
+  return result;
+}
+
+module.exports = memoizeCapped;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_nativeCreate.js":
+/*!**********************************************!*\
+  !*** ./node_modules/lodash/_nativeCreate.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var getNative = __webpack_require__(/*! ./_getNative */ "./node_modules/lodash/_getNative.js");
+
+/* Built-in method references that are verified to be native. */
+var nativeCreate = getNative(Object, 'create');
+
+module.exports = nativeCreate;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_objectToString.js":
+/*!************************************************!*\
+  !*** ./node_modules/lodash/_objectToString.js ***!
+  \************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+/** Used for built-in method references. */
+var objectProto = Object.prototype;
+
+/**
+ * Used to resolve the
+ * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+ * of values.
+ */
+var nativeObjectToString = objectProto.toString;
+
+/**
+ * Converts `value` to a string using `Object.prototype.toString`.
+ *
+ * @private
+ * @param {*} value The value to convert.
+ * @returns {string} Returns the converted string.
+ */
+function objectToString(value) {
+  return nativeObjectToString.call(value);
+}
+
+module.exports = objectToString;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_root.js":
+/*!**************************************!*\
+  !*** ./node_modules/lodash/_root.js ***!
+  \**************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var freeGlobal = __webpack_require__(/*! ./_freeGlobal */ "./node_modules/lodash/_freeGlobal.js");
+
+/** Detect free variable `self`. */
+var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
+
+/** Used as a reference to the global object. */
+var root = freeGlobal || freeSelf || Function('return this')();
+
+module.exports = root;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_stringToPath.js":
+/*!**********************************************!*\
+  !*** ./node_modules/lodash/_stringToPath.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var memoizeCapped = __webpack_require__(/*! ./_memoizeCapped */ "./node_modules/lodash/_memoizeCapped.js");
+
+/** Used to match property names within property paths. */
+var rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
+
+/** Used to match backslashes in property paths. */
+var reEscapeChar = /\\(\\)?/g;
+
+/**
+ * Converts `string` to a property path array.
+ *
+ * @private
+ * @param {string} string The string to convert.
+ * @returns {Array} Returns the property path array.
+ */
+var stringToPath = memoizeCapped(function(string) {
+  var result = [];
+  if (string.charCodeAt(0) === 46 /* . */) {
+    result.push('');
+  }
+  string.replace(rePropName, function(match, number, quote, subString) {
+    result.push(quote ? subString.replace(reEscapeChar, '$1') : (number || match));
+  });
+  return result;
+});
+
+module.exports = stringToPath;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_toKey.js":
+/*!***************************************!*\
+  !*** ./node_modules/lodash/_toKey.js ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var isSymbol = __webpack_require__(/*! ./isSymbol */ "./node_modules/lodash/isSymbol.js");
+
+/** Used as references for various `Number` constants. */
+var INFINITY = 1 / 0;
+
+/**
+ * Converts `value` to a string key if it's not a string or symbol.
+ *
+ * @private
+ * @param {*} value The value to inspect.
+ * @returns {string|symbol} Returns the key.
+ */
+function toKey(value) {
+  if (typeof value == 'string' || isSymbol(value)) {
+    return value;
+  }
+  var result = (value + '');
+  return (result == '0' && (1 / value) == -INFINITY) ? '-0' : result;
+}
+
+module.exports = toKey;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/_toSource.js":
+/*!******************************************!*\
+  !*** ./node_modules/lodash/_toSource.js ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+/** Used for built-in method references. */
+var funcProto = Function.prototype;
+
+/** Used to resolve the decompiled source of functions. */
+var funcToString = funcProto.toString;
+
+/**
+ * Converts `func` to its source code.
+ *
+ * @private
+ * @param {Function} func The function to convert.
+ * @returns {string} Returns the source code.
+ */
+function toSource(func) {
+  if (func != null) {
+    try {
+      return funcToString.call(func);
+    } catch (e) {}
+    try {
+      return (func + '');
+    } catch (e) {}
+  }
+  return '';
+}
+
+module.exports = toSource;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/eq.js":
+/*!***********************************!*\
+  !*** ./node_modules/lodash/eq.js ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+/**
+ * Performs a
+ * [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
+ * comparison between two values to determine if they are equivalent.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to compare.
+ * @param {*} other The other value to compare.
+ * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
+ * @example
+ *
+ * var object = { 'a': 1 };
+ * var other = { 'a': 1 };
+ *
+ * _.eq(object, object);
+ * // => true
+ *
+ * _.eq(object, other);
+ * // => false
+ *
+ * _.eq('a', 'a');
+ * // => true
+ *
+ * _.eq('a', Object('a'));
+ * // => false
+ *
+ * _.eq(NaN, NaN);
+ * // => true
+ */
+function eq(value, other) {
+  return value === other || (value !== value && other !== other);
+}
+
+module.exports = eq;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/get.js":
+/*!************************************!*\
+  !*** ./node_modules/lodash/get.js ***!
+  \************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var baseGet = __webpack_require__(/*! ./_baseGet */ "./node_modules/lodash/_baseGet.js");
+
+/**
+ * Gets the value at `path` of `object`. If the resolved value is
+ * `undefined`, the `defaultValue` is returned in its place.
+ *
+ * @static
+ * @memberOf _
+ * @since 3.7.0
+ * @category Object
+ * @param {Object} object The object to query.
+ * @param {Array|string} path The path of the property to get.
+ * @param {*} [defaultValue] The value returned for `undefined` resolved values.
+ * @returns {*} Returns the resolved value.
+ * @example
+ *
+ * var object = { 'a': [{ 'b': { 'c': 3 } }] };
+ *
+ * _.get(object, 'a[0].b.c');
+ * // => 3
+ *
+ * _.get(object, ['a', '0', 'b', 'c']);
+ * // => 3
+ *
+ * _.get(object, 'a.b.c', 'default');
+ * // => 'default'
+ */
+function get(object, path, defaultValue) {
+  var result = object == null ? undefined : baseGet(object, path);
+  return result === undefined ? defaultValue : result;
+}
+
+module.exports = get;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/isArray.js":
+/*!****************************************!*\
+  !*** ./node_modules/lodash/isArray.js ***!
+  \****************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+/**
+ * Checks if `value` is classified as an `Array` object.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an array, else `false`.
+ * @example
+ *
+ * _.isArray([1, 2, 3]);
+ * // => true
+ *
+ * _.isArray(document.body.children);
+ * // => false
+ *
+ * _.isArray('abc');
+ * // => false
+ *
+ * _.isArray(_.noop);
+ * // => false
+ */
+var isArray = Array.isArray;
+
+module.exports = isArray;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/isFunction.js":
+/*!*******************************************!*\
+  !*** ./node_modules/lodash/isFunction.js ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var baseGetTag = __webpack_require__(/*! ./_baseGetTag */ "./node_modules/lodash/_baseGetTag.js"),
+    isObject = __webpack_require__(/*! ./isObject */ "./node_modules/lodash/isObject.js");
+
+/** `Object#toString` result references. */
+var asyncTag = '[object AsyncFunction]',
+    funcTag = '[object Function]',
+    genTag = '[object GeneratorFunction]',
+    proxyTag = '[object Proxy]';
+
+/**
+ * Checks if `value` is classified as a `Function` object.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a function, else `false`.
+ * @example
+ *
+ * _.isFunction(_);
+ * // => true
+ *
+ * _.isFunction(/abc/);
+ * // => false
+ */
+function isFunction(value) {
+  if (!isObject(value)) {
+    return false;
+  }
+  // The use of `Object#toString` avoids issues with the `typeof` operator
+  // in Safari 9 which returns 'object' for typed arrays and other constructors.
+  var tag = baseGetTag(value);
+  return tag == funcTag || tag == genTag || tag == asyncTag || tag == proxyTag;
+}
+
+module.exports = isFunction;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/isObject.js":
+/*!*****************************************!*\
+  !*** ./node_modules/lodash/isObject.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+/**
+ * Checks if `value` is the
+ * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
+ * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an object, else `false`.
+ * @example
+ *
+ * _.isObject({});
+ * // => true
+ *
+ * _.isObject([1, 2, 3]);
+ * // => true
+ *
+ * _.isObject(_.noop);
+ * // => true
+ *
+ * _.isObject(null);
+ * // => false
+ */
+function isObject(value) {
+  var type = typeof value;
+  return value != null && (type == 'object' || type == 'function');
+}
+
+module.exports = isObject;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/isObjectLike.js":
+/*!*********************************************!*\
+  !*** ./node_modules/lodash/isObjectLike.js ***!
+  \*********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+/**
+ * Checks if `value` is object-like. A value is object-like if it's not `null`
+ * and has a `typeof` result of "object".
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+ * @example
+ *
+ * _.isObjectLike({});
+ * // => true
+ *
+ * _.isObjectLike([1, 2, 3]);
+ * // => true
+ *
+ * _.isObjectLike(_.noop);
+ * // => false
+ *
+ * _.isObjectLike(null);
+ * // => false
+ */
+function isObjectLike(value) {
+  return value != null && typeof value == 'object';
+}
+
+module.exports = isObjectLike;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/isSymbol.js":
+/*!*****************************************!*\
+  !*** ./node_modules/lodash/isSymbol.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var baseGetTag = __webpack_require__(/*! ./_baseGetTag */ "./node_modules/lodash/_baseGetTag.js"),
+    isObjectLike = __webpack_require__(/*! ./isObjectLike */ "./node_modules/lodash/isObjectLike.js");
+
+/** `Object#toString` result references. */
+var symbolTag = '[object Symbol]';
+
+/**
+ * Checks if `value` is classified as a `Symbol` primitive or object.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a symbol, else `false`.
+ * @example
+ *
+ * _.isSymbol(Symbol.iterator);
+ * // => true
+ *
+ * _.isSymbol('abc');
+ * // => false
+ */
+function isSymbol(value) {
+  return typeof value == 'symbol' ||
+    (isObjectLike(value) && baseGetTag(value) == symbolTag);
+}
+
+module.exports = isSymbol;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/memoize.js":
+/*!****************************************!*\
+  !*** ./node_modules/lodash/memoize.js ***!
+  \****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var MapCache = __webpack_require__(/*! ./_MapCache */ "./node_modules/lodash/_MapCache.js");
+
+/** Error message constants. */
+var FUNC_ERROR_TEXT = 'Expected a function';
+
+/**
+ * Creates a function that memoizes the result of `func`. If `resolver` is
+ * provided, it determines the cache key for storing the result based on the
+ * arguments provided to the memoized function. By default, the first argument
+ * provided to the memoized function is used as the map cache key. The `func`
+ * is invoked with the `this` binding of the memoized function.
+ *
+ * **Note:** The cache is exposed as the `cache` property on the memoized
+ * function. Its creation may be customized by replacing the `_.memoize.Cache`
+ * constructor with one whose instances implement the
+ * [`Map`](http://ecma-international.org/ecma-262/7.0/#sec-properties-of-the-map-prototype-object)
+ * method interface of `clear`, `delete`, `get`, `has`, and `set`.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Function
+ * @param {Function} func The function to have its output memoized.
+ * @param {Function} [resolver] The function to resolve the cache key.
+ * @returns {Function} Returns the new memoized function.
+ * @example
+ *
+ * var object = { 'a': 1, 'b': 2 };
+ * var other = { 'c': 3, 'd': 4 };
+ *
+ * var values = _.memoize(_.values);
+ * values(object);
+ * // => [1, 2]
+ *
+ * values(other);
+ * // => [3, 4]
+ *
+ * object.a = 2;
+ * values(object);
+ * // => [1, 2]
+ *
+ * // Modify the result cache.
+ * values.cache.set(object, ['a', 'b']);
+ * values(object);
+ * // => ['a', 'b']
+ *
+ * // Replace `_.memoize.Cache`.
+ * _.memoize.Cache = WeakMap;
+ */
+function memoize(func, resolver) {
+  if (typeof func != 'function' || (resolver != null && typeof resolver != 'function')) {
+    throw new TypeError(FUNC_ERROR_TEXT);
+  }
+  var memoized = function() {
+    var args = arguments,
+        key = resolver ? resolver.apply(this, args) : args[0],
+        cache = memoized.cache;
+
+    if (cache.has(key)) {
+      return cache.get(key);
+    }
+    var result = func.apply(this, args);
+    memoized.cache = cache.set(key, result) || cache;
+    return result;
+  };
+  memoized.cache = new (memoize.Cache || MapCache);
+  return memoized;
+}
+
+// Expose `MapCache`.
+memoize.Cache = MapCache;
+
+module.exports = memoize;
+
+
+/***/ }),
+
+/***/ "./node_modules/lodash/toString.js":
+/*!*****************************************!*\
+  !*** ./node_modules/lodash/toString.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var baseToString = __webpack_require__(/*! ./_baseToString */ "./node_modules/lodash/_baseToString.js");
+
+/**
+ * Converts `value` to a string. An empty string is returned for `null`
+ * and `undefined` values. The sign of `-0` is preserved.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to convert.
+ * @returns {string} Returns the converted string.
+ * @example
+ *
+ * _.toString(null);
+ * // => ''
+ *
+ * _.toString(-0);
+ * // => '-0'
+ *
+ * _.toString([1, 2, 3]);
+ * // => '1,2,3'
+ */
+function toString(value) {
+  return value == null ? '' : baseToString(value);
+}
+
+module.exports = toString;
+
+
+/***/ }),
+
 /***/ "./node_modules/mini-create-react-context/dist/esm/index.js":
 /*!******************************************************************!*\
   !*** ./node_modules/mini-create-react-context/dist/esm/index.js ***!
@@ -76075,6 +77894,8 @@ var _actions2 = __webpack_require__(/*! ../services/mopidy/actions */ "./src/js/
 
 var mopidyActions = _interopRequireWildcard(_actions2);
 
+var _locale = __webpack_require__(/*! ../locale */ "./src/js/locale/index.js");
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -76139,21 +77960,18 @@ var Sidebar = function (_React$Component) {
             'span',
             { className: 'tooltip__content' },
             !mopidy_connected && _react2.default.createElement(
-              'span',
-              null,
-              'Mopidy not connected',
+              _locale.Content,
+              { path: 'sidebar.not_connected', params: { name: 'Mopidy' } },
               _react2.default.createElement('br', null)
             ),
             !pusher_connected && _react2.default.createElement(
-              'span',
-              null,
-              'Pusher not connected',
+              _locale.Content,
+              { path: 'sidebar.not_connected', params: { name: 'Pusher' } },
               _react2.default.createElement('br', null)
             ),
             !snapcast_connected && snapcast_enabled && _react2.default.createElement(
-              'span',
-              null,
-              'Snapcast not connected',
+              _locale.Content,
+              { path: 'sidebar.not_connected', params: { name: 'Snapcast' } },
               _react2.default.createElement('br', null)
             )
           )
@@ -76187,13 +78005,13 @@ var Sidebar = function (_React$Component) {
                 _Link2.default,
                 { to: '/queue', history: history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
                 _react2.default.createElement(_Icon2.default, { name: 'play_arrow', type: 'material' }),
-                'Now playing'
+                _react2.default.createElement(_locale.Content, { path: 'sidebar.now_playing' })
               ),
               _react2.default.createElement(
                 _Link2.default,
                 { to: '/search', history: history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
                 _react2.default.createElement(_Icon2.default, { name: 'search', type: 'material' }),
-                'Search'
+                _react2.default.createElement(_locale.Content, { path: 'sidebar.search' })
               )
             ),
             spotify_available && _react2.default.createElement(
@@ -76202,31 +78020,31 @@ var Sidebar = function (_React$Component) {
               _react2.default.createElement(
                 'title',
                 { className: 'sidebar__menu__section__title' },
-                'Discover'
+                (0, _locale.content)('sidebar.discover')
               ),
               _react2.default.createElement(
                 _Link2.default,
                 { to: '/discover/recommendations', history: history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
                 _react2.default.createElement(_Icon2.default, { name: 'explore', type: 'material' }),
-                'Discover'
+                (0, _locale.content)('sidebar.discover')
               ),
               _react2.default.createElement(
                 _Link2.default,
                 { to: '/discover/categories', history: history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
                 _react2.default.createElement(_Icon2.default, { name: 'mood', type: 'material' }),
-                'Genre / Mood'
+                (0, _locale.content)('sidebar.genre')
               ),
               _react2.default.createElement(
                 _Link2.default,
                 { to: '/discover/featured', history: history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
                 _react2.default.createElement(_Icon2.default, { name: 'star', type: 'material' }),
-                'Featured playlists'
+                (0, _locale.content)('sidebar.featured_playlists')
               ),
               _react2.default.createElement(
                 _Link2.default,
                 { to: '/discover/new-releases', history: history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
                 _react2.default.createElement(_Icon2.default, { name: 'new_releases', type: 'material' }),
-                'New releases'
+                (0, _locale.content)('sidebar.new_releases')
               )
             ),
             _react2.default.createElement(
@@ -76235,37 +78053,37 @@ var Sidebar = function (_React$Component) {
               _react2.default.createElement(
                 'title',
                 { className: 'sidebar__menu__section__title' },
-                'My Music'
+                (0, _locale.content)('sidebar.my_music')
               ),
               _react2.default.createElement(
                 _Link2.default,
                 { to: '/library/playlists', history: history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
                 _react2.default.createElement(_Icon2.default, { name: 'queue_music', type: 'material' }),
-                'Playlists'
+                (0, _locale.content)('sidebar.playlists')
               ),
               _react2.default.createElement(
                 _Link2.default,
                 { to: '/library/artists', history: history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
                 _react2.default.createElement(_Icon2.default, { name: 'recent_actors', type: 'material' }),
-                'Artists'
+                (0, _locale.content)('sidebar.artists')
               ),
               _react2.default.createElement(
                 _Link2.default,
                 { to: '/library/albums', history: history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
                 _react2.default.createElement(_Icon2.default, { name: 'album', type: 'material' }),
-                'Albums'
+                (0, _locale.content)('sidebar.albums')
               ),
               _react2.default.createElement(
                 _Link2.default,
                 { to: '/library/tracks', history: history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
                 _react2.default.createElement(_Icon2.default, { name: 'music_note', type: 'material' }),
-                'Tracks'
+                (0, _locale.content)('sidebar.tracks')
               ),
               _react2.default.createElement(
                 _Link2.default,
                 { to: '/library/browse', history: history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
                 _react2.default.createElement(_Icon2.default, { name: 'folder', type: 'material' }),
-                'Browse'
+                (0, _locale.content)('sidebar.browse')
               )
             ),
             _react2.default.createElement(
@@ -76275,7 +78093,7 @@ var Sidebar = function (_React$Component) {
                 _Link2.default,
                 { to: '/settings', history: history, className: 'sidebar__menu__item', activeClassName: 'sidebar__menu__item--active' },
                 _react2.default.createElement(_Icon2.default, { name: 'settings', type: 'material' }),
-                'Settings',
+                (0, _locale.content)('sidebar.settings'),
                 this.renderStatusIcon()
               )
             )
@@ -78399,6 +80217,154 @@ _reactDom2.default.render(_react2.default.createElement(
 
 /***/ }),
 
+/***/ "./src/js/locale/de.yaml":
+/*!*******************************!*\
+  !*** ./src/js/locale/de.yaml ***!
+  \*******************************/
+/*! exports provided: sidebar, default */
+/***/ (function(module) {
+
+module.exports = JSON.parse("{\"sidebar\":{\"now_playing\":\"GERMAN\",\"search\":\"GERMAN\"}}");
+
+/***/ }),
+
+/***/ "./src/js/locale/dictionaries.js":
+/*!***************************************!*\
+  !*** ./src/js/locale/dictionaries.js ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.de = exports.en = undefined;
+
+var _en = __webpack_require__(/*! ./en.yaml */ "./src/js/locale/en.yaml");
+
+var _en2 = _interopRequireDefault(_en);
+
+var _de = __webpack_require__(/*! ./de.yaml */ "./src/js/locale/de.yaml");
+
+var _de2 = _interopRequireDefault(_de);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = {
+  en: _en2.default,
+  de: _de2.default
+};
+exports.en = _en2.default;
+exports.de = _de2.default;
+
+/***/ }),
+
+/***/ "./src/js/locale/en.yaml":
+/*!*******************************!*\
+  !*** ./src/js/locale/en.yaml ***!
+  \*******************************/
+/*! exports provided: sidebar, now_playing, default */
+/***/ (function(module) {
+
+module.exports = JSON.parse("{\"sidebar\":{\"now_playing\":\"Now playing\",\"search\":\"Search\",\"discover\":\"Discover\",\"genre\":\"Genre / Mood\",\"featured_playlists\":\"Featured playlists\",\"new_releases\":\"New releases\",\"my_music\":\"My music\",\"playlists\":\"Playlists\",\"artists\":\"Artists\",\"albums\":\"Albums\",\"tracks\":\"Tracks\",\"browse\":\"Browse\",\"settings\":\"Settings\",\"not_connected\":\"%{name} not connected\"},\"now_playing\":{\"title\":\"Now playing\",\"context_actions\":{\"radio\":\"Radio\",\"history\":\"History\",\"add_uri\":\"Add URI\"},\"current_track\":{\"playing_from\":\"Playling from\",\"shuffle\":\"Shuffle\",\"clear\":\"Clear\"}}}");
+
+/***/ }),
+
+/***/ "./src/js/locale/index.js":
+/*!********************************!*\
+  !*** ./src/js/locale/index.js ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.content = exports.Content = undefined;
+
+var _react = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+
+var _get = __webpack_require__(/*! lodash/get */ "./node_modules/lodash/get.js");
+
+var _get2 = _interopRequireDefault(_get);
+
+var _dictionaries = __webpack_require__(/*! ./dictionaries */ "./src/js/locale/dictionaries.js");
+
+var _dictionaries2 = _interopRequireDefault(_dictionaries);
+
+var _helpers = __webpack_require__(/*! ../util/helpers */ "./src/js/util/helpers.js");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var PARAMS_REG_EXP = '%{(.*?)}';
+var paramsRegExp = new RegExp(PARAMS_REG_EXP, 'g');
+
+var content = function content(path) {
+  var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var transform = arguments[2];
+  var dictionary = arguments[3];
+
+
+  var value = (0, _get2.default)(dictionary || _dictionaries2.default.en, path, '');
+  value = value.replace(paramsRegExp, function (replaceText, key) {
+    return params.hasOwnProperty(key) ? params[key] : '';
+  });
+
+  switch (transform) {
+    case 'upper':
+      value = value.toUpperCase();
+      break;
+    case 'lower':
+      value = value.toLowerCase();
+      break;
+    case 'title':
+      value = (0, _helpers.titleCase)(value);
+      break;
+    default:
+      break;
+  }
+
+  return value;
+};
+
+var Content = function Content(_ref) {
+  var path = _ref.path,
+      _ref$params = _ref.params,
+      params = _ref$params === undefined ? {} : _ref$params,
+      transform = _ref.transform,
+      children = _ref.children;
+
+  var language = (0, _reactRedux.useSelector)(function (state) {
+    return state.ui.language;
+  });
+  var dictionary = _dictionaries2.default[language];
+  return _react2.default.createElement(
+    _react.Fragment,
+    null,
+    content(path, params, transform, dictionary),
+    children
+  );
+};
+
+exports.default = {
+  Content: Content,
+  content: content
+};
+exports.Content = Content;
+exports.content = content;
+
+/***/ }),
+
 /***/ "./src/js/services/core/actions.js":
 /*!*****************************************!*\
   !*** ./src/js/services/core/actions.js ***!
@@ -78733,12 +80699,19 @@ function reorderPlaylistTracks(uri, indexes, insert_before) {
       };
 
     case 'm3u':
+    case 'gmusic':
       return {
         type: 'MOPIDY_REORDER_PLAYLIST_TRACKS',
         key: uri,
         range_start: range.start,
         range_length: range.length,
         insert_before: insert_before
+      };
+
+    default:
+      return {
+        type: 'UNSUPPORTED_ACTION',
+        name: 'reorderPlaylistTracks'
       };
   }
 }
@@ -78762,13 +80735,19 @@ function savePlaylist(uri, name) {
       };
 
     case 'm3u':
+    case 'gmusic':
       return {
         type: 'MOPIDY_SAVE_PLAYLIST',
         key: uri,
         name: name
       };
+
+    default:
+      return {
+        type: 'UNSUPPORTED_ACTION',
+        name: 'savePlaylist'
+      };
   }
-  return false;
 }
 
 function createPlaylist(scheme, name) {
@@ -78786,7 +80765,6 @@ function createPlaylist(scheme, name) {
     default:
       return mopidyActions.createPlaylist(name, scheme);
   }
-  return false;
 }
 
 function deletePlaylist(uri) {
@@ -78797,7 +80775,6 @@ function deletePlaylist(uri) {
     default:
       return mopidyActions.deletePlaylist(uri);
   }
-  return false;
 }
 
 function removeTracksFromPlaylist(uri, tracks_indexes) {
@@ -78810,10 +80787,17 @@ function removeTracksFromPlaylist(uri, tracks_indexes) {
       };
 
     case 'm3u':
+    case 'gmusic':
       return {
         type: 'MOPIDY_REMOVE_PLAYLIST_TRACKS',
         key: uri,
         tracks_indexes: tracks_indexes
+      };
+
+    default:
+      return {
+        type: 'UNSUPPORTED_ACTION',
+        name: 'removeTracksFromPlaylist'
       };
   }
 }
@@ -78828,10 +80812,17 @@ function addTracksToPlaylist(uri, tracks_uris) {
       };
 
     case 'm3u':
+    case 'gmusic':
       return {
         type: 'MOPIDY_ADD_PLAYLIST_TRACKS',
         key: uri,
         tracks_uris: tracks_uris
+      };
+
+    default:
+      return {
+        type: 'UNSUPPORTED_ACTION',
+        name: 'addTracksToPlaylist'
       };
   }
 }
@@ -78895,6 +80886,8 @@ var _helpers = __webpack_require__(/*! ../../util/helpers */ "./src/js/util/help
 
 var _format = __webpack_require__(/*! ../../util/format */ "./src/js/util/format.js");
 
+var _actions = __webpack_require__(/*! ./actions */ "./src/js/services/core/actions.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -78914,28 +80907,13 @@ var CoreMiddleware = function () {
         var action = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
         var _store$getState = store.getState(),
-            core = _store$getState.core;
+            core = _store$getState.core,
+            ui = _store$getState.ui,
+            mopidy = _store$getState.mopidy,
+            spotify = _store$getState.spotify;
 
         switch (action.type) {
           case 'HANDLE_EXCEPTION':
-
-            // Construct meaningful message and description
-            var message = action.message;
-
-            if (action.description) {
-              var description = action.description;
-            } else if (action.data.xhr && action.data.xhr.responseText) {
-              var xhr_response = JSON.parse(action.data.xhr.responseText);
-              if (xhr_response.error && xhr_response.error.message) {
-                var description = xhr_response.error.message;
-              }
-            } else if (action.data.xhr) {
-              var description = action.data.xhr.status + ' ' + action.data.xhr.statusText;
-            } else {
-              var description = null;
-            }
-
-            // Prepare a summary dump of our state
             var state = store.getState();
             var exported_state = {
               core: _extends({}, state.core),
@@ -78944,6 +80922,21 @@ var CoreMiddleware = function () {
               mopidy: _extends({}, state.mopidy),
               pusher: _extends({}, state.pusher)
             };
+            var message = action.message;
+            var description = action.description;
+
+            // Construct meaningful message and description
+
+            if (!description) {
+              if (action.data.xhr && action.data.xhr.responseText) {
+                var xhr_response = JSON.parse(action.data.xhr.responseText);
+                if (xhr_response.error && xhr_response.error.message) {
+                  description = xhr_response.error.message;
+                }
+              } else if (action.data.xhr) {
+                description = action.data.xhr.status + ' ' + action.data.xhr.statusText;
+              }
+            }
 
             // Strip out non-essential store info
             delete exported_state.core.albums;
@@ -78967,7 +80960,7 @@ var CoreMiddleware = function () {
             });
 
             // Log with Analytics
-            if (store.getState().ui.allow_reporting) {
+            if (ui.allow_reporting) {
               _reactGa2.default.event({
                 category: 'Error',
                 action: message,
@@ -78984,88 +80977,82 @@ var CoreMiddleware = function () {
 
             break;
 
+          case 'UNSUPPORTED_ACTION':
+            store.dispatch((0, _actions.handleException)('Action failed (' + action.name + ')', { description: 'Not supported on this type of object' }));
+            break;
+
           case 'PLAY_PLAYLIST':
-            if (store.getState().ui.allow_reporting) {
+            if (ui.allow_reporting) {
               _reactGa2.default.event({ category: 'Playlist', action: 'Play', label: action.uri });
             }
             next(action);
             break;
 
           case 'SAVE_PLAYLIST':
-            if (store.getState().ui.allow_reporting) {
+            if (ui.allow_reporting) {
               _reactGa2.default.event({ category: 'Playlist', action: 'Save', label: action.key });
             }
             next(action);
             break;
 
           case 'CREATE_PLAYLIST':
-            if (store.getState().ui.allow_reporting) {
+            if (ui.allow_reporting) {
               _reactGa2.default.event({ category: 'Playlist', action: 'Create', label: +action.name });
             }
             next(action);
             break;
 
           case 'REORDER_PLAYLIST_TRACKS':
-            if (store.getState().ui.allow_reporting) {
+            if (ui.allow_reporting) {
               _reactGa2.default.event({ category: 'Playlist', action: 'Reorder tracks', label: action.key });
             }
             next(action);
             break;
 
           case 'ADD_PLAYLIST_TRACKS':
-            if (store.getState().ui.allow_reporting) {
+            if (ui.allow_reporting) {
               _reactGa2.default.event({ category: 'Playlist', action: 'Add tracks', label: action.playlist_uri });
             }
             next(action);
             break;
 
           case 'REMOVE_PLAYLIST_TRACKS':
-            if (store.getState().ui.allow_reporting) {
+            if (ui.allow_reporting) {
               _reactGa2.default.event({ category: 'Playlist', action: 'Remove tracks', label: action.playlist_uri });
             }
             next(action);
             break;
 
           case 'DELETE_PLAYLIST':
-            if (store.getState().ui.allow_reporting) {
+            if (ui.allow_reporting) {
               _reactGa2.default.event({ category: 'Playlist', action: 'Delete', label: action.uri });
             }
             next(action);
             break;
 
           case 'SEARCH_STARTED':
-            if (store.getState().ui.allow_reporting) {
+            if (ui.allow_reporting) {
               _reactGa2.default.event({ category: 'Search', action: 'Started', label: action.type + ': ' + action.query });
             }
             next(action);
 
-            var state = store.getState();
-            if (state.ui.search_uri_schemes) {
-              var uri_schemes = state.ui.search_uri_schemes;
-            } else {
-              var uri_schemes = state.mopidy.uri_schemes;
-            }
-
             // backends that can handle more than just track results
             // make sure they are available and respect our settings
+            var uri_schemes = ui.search_uri_schemes || mopidy.uri_schemes;
             var available_full_uri_schemes = ['local:', 'file:', 'gmusic:'];
-            var full_uri_schemes = [];
-            for (var i = 0; i < available_full_uri_schemes.length; i++) {
-              var index = uri_schemes.indexOf(available_full_uri_schemes[i]);
-              if (index > -1) {
-                full_uri_schemes.push(available_full_uri_schemes[i]);
-              }
-            }
+            var full_uri_schemes = available_full_uri_schemes.filter(function (full_uri_scheme) {
+              return uri_schemes.indexOf(full_uri_scheme) > -1;
+            });
 
             // initiate spotify searching
             if (!action.only_mopidy) {
-              if (!state.ui.search_settings || state.ui.search_settings.spotify) {
+              if (!ui.search_settings || ui.search_settings.spotify) {
                 store.dispatch(spotifyActions.getSearchResults(action.query));
               }
             }
 
             // backend searching (mopidy)
-            if (state.mopidy.connected) {
+            if (mopidy.connected) {
               store.dispatch(mopidyActions.getSearchResults(action.search_type, action.query, 100, full_uri_schemes));
             }
 
@@ -79073,7 +81060,7 @@ var CoreMiddleware = function () {
 
           // Get assets from all of our providers
           case 'GET_LIBRARY_PLAYLISTS':
-            if (store.getState().spotify.connected) {
+            if (spotify.connected) {
               store.dispatch(spotifyActions.getLibraryPlaylists());
             }
             if (store.getState().mopidy.connected) {
@@ -79084,7 +81071,7 @@ var CoreMiddleware = function () {
 
           // Get assets from all of our providers
           case 'GET_LIBRARY_ALBUMS':
-            if (store.getState().spotify.connected) {
+            if (spotify.connected) {
               store.dispatch(spotifyActions.getLibraryAlbums());
             }
             if (store.getState().mopidy.connected) {
@@ -79095,7 +81082,7 @@ var CoreMiddleware = function () {
 
           // Get assets from all of our providers
           case 'GET_LIBRARY_ARTISTS':
-            if (store.getState().spotify.connected) {
+            if (spotify.connected) {
               store.dispatch(spotifyActions.getLibraryArtists());
             }
             if (store.getState().mopidy.connected) {
@@ -79112,15 +81099,14 @@ var CoreMiddleware = function () {
                * Playlist manipulation
                * */
           case 'PLAYLIST_TRACKS':
-            var tracks = (0, _format.formatTracks)(action.tracks);
-            action.tracks_uris = (0, _arrays.arrayOf)('uri', tracks);
+            var _tracks = (0, _format.formatTracks)(action.tracks);
 
             store.dispatch({
               type: 'TRACKS_LOADED',
-              tracks: tracks
+              tracks: _tracks
             });
 
-            next(action);
+            next(_extends({}, action, { tracks_uris: (0, _arrays.arrayOf)('uri', _tracks) }));
             break;
 
           case 'PLAYLIST_TRACKS_ADDED':
@@ -79232,7 +81218,7 @@ var CoreMiddleware = function () {
               case 'spotify':
                 store.dispatch(spotifyActions.getTrack(action.uri));
 
-                if (store.getState().spotify.me) {
+                if (spotify.me) {
                   store.dispatch(spotifyActions.following(action.uri));
                 }
                 break;
@@ -79257,7 +81243,7 @@ var CoreMiddleware = function () {
               case 'spotify':
                 store.dispatch(spotifyActions.getAlbum(action.uri));
 
-                if (store.getState().spotify.me) {
+                if (spotify.me) {
                   store.dispatch(spotifyActions.following(action.uri));
                 }
                 break;
@@ -79282,7 +81268,7 @@ var CoreMiddleware = function () {
               case 'spotify':
                 store.dispatch(spotifyActions.getArtist(action.uri, true));
 
-                if (store.getState().spotify.me) {
+                if (spotify.me) {
                   store.dispatch(spotifyActions.following(action.uri));
                 }
                 break;
@@ -79307,7 +81293,7 @@ var CoreMiddleware = function () {
               case 'spotify':
                 store.dispatch(spotifyActions.getPlaylist(action.uri));
 
-                if (store.getState().spotify.me) {
+                if (spotify.me) {
                   store.dispatch(spotifyActions.following(action.uri));
                 }
                 break;
@@ -79332,7 +81318,7 @@ var CoreMiddleware = function () {
               case 'spotify':
                 store.dispatch(spotifyActions.getUser(action.uri));
 
-                if (store.getState().spotify.me) {
+                if (spotify.me) {
                   store.dispatch(spotifyActions.following(action.uri));
                 }
                 break;
@@ -79627,10 +81613,10 @@ var CoreMiddleware = function () {
 
                 // Migrate nested tracks objects into references to our tracks index
                 if (raw_artist.tracks) {
-                  var tracks = (0, _format.formatTracks)(raw_artist.tracks);
-                  var tracks_uris = (0, _arrays.arrayOf)('uri', tracks);
+                  var _tracks = (0, _format.formatTracks)(raw_artist.tracks);
+                  var tracks_uris = (0, _arrays.arrayOf)('uri', _tracks);
                   artist.tracks_uris = tracks_uris;
-                  tracks_loaded = [].concat(_toConsumableArray(tracks_loaded), _toConsumableArray(tracks));
+                  tracks_loaded = [].concat(_toConsumableArray(tracks_loaded), _toConsumableArray(_tracks));
                 }
 
                 artists_loaded.push(artist);
@@ -79681,8 +81667,8 @@ var CoreMiddleware = function () {
                     break;
 
                   case 'spotify':
-                    if (store.getState().spotify.authorization && store.getState().spotify.me) {
-                      playlist.can_edit = playlist.owner.id == store.getState().spotify.me.id;
+                    if (spotify.authorization && spotify.me) {
+                      playlist.can_edit = playlist.owner.id == spotify.me.id;
                     }
                 }
 
@@ -79698,11 +81684,11 @@ var CoreMiddleware = function () {
 
                 // Load our tracks
                 if (playlist.tracks) {
-                  var tracks = (0, _format.formatTracks)(playlist.tracks);
-                  var tracks_uris = (0, _arrays.arrayOf)('uri', tracks);
+                  var _tracks = (0, _format.formatTracks)(playlist.tracks);
+                  var tracks_uris = (0, _arrays.arrayOf)('uri', _tracks);
                   playlist.tracks_uris = tracks_uris;
                   delete playlist.tracks;
-                  tracks_loaded = [].concat(_toConsumableArray(tracks_loaded), _toConsumableArray(tracks));
+                  tracks_loaded = [].concat(_toConsumableArray(tracks_loaded), _toConsumableArray(_tracks));
                 }
 
                 // Update index
@@ -90872,6 +92858,7 @@ var state = {
     http_streaming_url: 'http://' + window.location.hostname + ':8000/mopidy'
   },
   ui: {
+    language: 'en',
     theme: 'auto',
     smooth_scrolling_enabled: true,
     hotkeys_enabled: true,
@@ -95833,6 +97820,8 @@ var mopidyActions = _interopRequireWildcard(_actions5);
 
 var _helpers = __webpack_require__(/*! ../util/helpers */ "./src/js/util/helpers.js");
 
+var _locale = __webpack_require__(/*! ../locale */ "./src/js/locale/index.js");
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -96134,7 +98123,7 @@ var Queue = function (_React$Component) {
           _Header2.default,
           { options: options, uiActions: this.props.uiActions },
           _react2.default.createElement(_Icon2.default, { name: 'play_arrow', type: 'material' }),
-          'Now playing'
+          (0, _locale.content)('now_playing.title')
         ),
         theme === 'dark' && _react2.default.createElement(_Parallax2.default, { image: current_track_image, blur: true }),
         _react2.default.createElement(
@@ -96991,6 +98980,10 @@ var _TextField = __webpack_require__(/*! ../components/Fields/TextField */ "./sr
 
 var _TextField2 = _interopRequireDefault(_TextField);
 
+var _SelectField = __webpack_require__(/*! ../components/Fields/SelectField */ "./src/js/components/Fields/SelectField.js");
+
+var _SelectField2 = _interopRequireDefault(_SelectField);
+
 var _Header = __webpack_require__(/*! ../components/Header */ "./src/js/components/Header.js");
 
 var _Header2 = _interopRequireDefault(_Header);
@@ -97064,6 +99057,12 @@ var Settings = function (_React$Component) {
       }
 
       if (new_username) _this.setState({ pusher_username: new_username });
+    };
+
+    _this.onLanguageChange = function (language) {
+      var set = _this.props.uiActions.set;
+
+      set({ language: language });
     };
 
     _this.renderLocalScanButton = function () {
@@ -97261,6 +99260,24 @@ var Settings = function (_React$Component) {
             { className: 'underline' },
             'Interface',
             _react2.default.createElement('a', { name: 'interface' })
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: 'field dropdown' },
+            _react2.default.createElement(
+              'div',
+              { className: 'name' },
+              'Language'
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: 'input' },
+              _react2.default.createElement(_SelectField2.default, {
+                onChange: this.onLanguageChange,
+                options: [{ value: 'en', label: 'English (EN)' }, { value: 'de', label: 'German (DE)' }],
+                value: ui.language
+              })
+            )
           ),
           _react2.default.createElement(
             'div',

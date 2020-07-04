@@ -11,9 +11,9 @@
   "main": "app.js",
   "dependencies": {
     "@sentry/browser": "^5.15.5",
-    "fast-average-color": "^6.0.2",
     "history": "^4.10.1",
     "jquery": "^3.5.0",
+    "lodash": "^4.17.15",
     "logrocket": "^1.0.7",
     "mopidy": "^0.5",
     "react": "^16.13.1",
@@ -24,7 +24,10 @@
     "react-redux": "^7",
     "react-router": "^5",
     "react-router-dom": "^5.1.2",
-    "react-sortablejs": "^1.5.0"
+    "react-sortablejs": "^1.5.0",
+    "redux": "^4.0.5",
+    "redux-thunk": "^2.3.0",
+    "yaml-loader": "^0.6.0"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.8.3",
@@ -55,8 +58,6 @@
     "mini-css-extract-plugin": "^0.6.0",
     "node-sass": "^4.14.1",
     "react-test-renderer": "^16.13.1",
-    "redux": "^4.0.5",
-    "redux-thunk": "^2.3.0",
     "sass-loader": "^7.3.1",
     "sortablejs": "^1.10.2",
     "style-loader": "^0.23",
