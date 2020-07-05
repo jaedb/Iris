@@ -69,6 +69,13 @@ export function setWindowFocus(window_focus) {
   };
 }
 
+export function setLanguage(language) {
+  return {
+    type: 'SET_LANGUAGE',
+    language,
+  };
+}
+
 export function hideContextMenu() {
   return {
     type: 'HIDE_CONTEXT_MENU',

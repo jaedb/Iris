@@ -7,9 +7,11 @@ import { titleCase } from '../util/helpers';
 const PARAMS_REG_EXP = '%{(.*?)}';
 const paramsRegExp = new RegExp(PARAMS_REG_EXP, 'g');
 
-const content = (path, params = {}, transform, dictionary) => {
+const content = (path, params = {}, transform) => {
+  console.log(window.language);
+  const dictionary = dictionaries[window.language || 'en'] || dictionaries.en;
 
-  let value = get((dictionary || dictionaries.en), path, '');
+  let value = get((dictionary), path, '');
   value = value.replace(
     paramsRegExp,
     (replaceText, key) => params.hasOwnProperty(key) ? params[key] : '',
@@ -32,16 +34,12 @@ const content = (path, params = {}, transform, dictionary) => {
   return value;
 };
 
-const Content = ({ path, params = {}, transform, children }) => {
-  const language = useSelector((state) => state.ui.language);
-  const dictionary = dictionaries[language];
-  return (
-    <Fragment>
-      {content(path, params, transform, dictionary)}
-      {children}
-    </Fragment>
-  );
-}
+const Content = ({ path, params = {}, transform, children }) => (
+  <Fragment>
+    {content(path, params, transform)}
+    {children}
+  </Fragment>
+);
 
 export default {
   Content,

@@ -20,7 +20,7 @@ import {
   getFromUri,
   uriType,
 } from '../util/helpers';
-import { content } from '../locale';
+import { content, Content } from '../locale';
 
 class Queue extends React.Component {
   constructor(props) {
@@ -33,15 +33,14 @@ class Queue extends React.Component {
   }
 
   componentDidMount() {
-    // Restore any limit defined in our location state
-    const state = this.props.location.state ? this.props.location.state : {};
-    if (state.limit) {
-      this.setState({
-        limit: state.limit,
-      });
+    const {
+      uiActions: { setWindowTitle },
+      location: { limit } = {},
+    } = this.props;
+    if (limit) {
+      this.setState({ limit });
     }
-
-    this.props.uiActions.setWindowTitle('Now playing');
+    setWindowTitle(content('now_playing.title'));
   }
 
   shouldComponentUpdate(nextProps) {

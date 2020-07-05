@@ -23,3 +23,22 @@ now_playing:
     playing_from: Playling from
     shuffle: Shuffle
     clear: Clear
+search:
+  title: 'Search: %{term}'
+  context_actions:
+    sort: Sort
+    source: Sources (%{count})
+  placeholder: Search
+  artists:
+    title: Artists
+    more: All artists (%{count})
+  albums:
+    title: Albums
+    more: All albums (%{count})
+  playlists:
+    title: Playlists
+    more: All playlists (%{count})
+  tracks:
+    title: Tracks
+settings:
+  title: Settings

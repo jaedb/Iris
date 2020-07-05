@@ -11,6 +11,8 @@ import * as mopidyActions from '../services/mopidy/actions';
 import { content, Content } from '../locale';
 
 class Sidebar extends React.Component {
+  closeSidebar = () => uiActions.toggleSidebar(false);
+
   renderStatusIcon() {
     const {
       update_available,
@@ -93,57 +95,57 @@ class Sidebar extends React.Component {
             {spotify_available && (
               <section className="sidebar__menu__section">
                 <title className="sidebar__menu__section__title">
-                  {content('sidebar.discover')}
+                  <Content path="sidebar.discover" />
                 </title>
                 <Link to="/discover/recommendations" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                   <Icon name="explore" type="material" />
-                  {content('sidebar.discover')}
+                  <Content path="sidebar.discover" />
                 </Link>
                 <Link to="/discover/categories" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                   <Icon name="mood" type="material" />
-                  {content('sidebar.genre')}
+                  <Content path="sidebar.genre" />
                 </Link>
                 <Link to="/discover/featured" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                   <Icon name="star" type="material" />
-                  {content('sidebar.featured_playlists')}
+                  <Content path="sidebar.featured_playlists" />
                 </Link>
                 <Link to="/discover/new-releases" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                   <Icon name="new_releases" type="material" />
-                  {content('sidebar.new_releases')}
+                  <Content path="sidebar.new_releases" />
                 </Link>
               </section>
             )}
 
             <section className="sidebar__menu__section">
               <title className="sidebar__menu__section__title">
-                {content('sidebar.my_music')}
+                <Content path="sidebar.my_music" />
               </title>
               <Link to="/library/playlists" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="queue_music" type="material" />
-                {content('sidebar.playlists')}
+                <Content path="sidebar.playlists" />
               </Link>
               <Link to="/library/artists" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="recent_actors" type="material" />
-                {content('sidebar.artists')}
+                <Content path="sidebar.artists" />
               </Link>
               <Link to="/library/albums" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="album" type="material" />
-                {content('sidebar.albums')}
+                <Content path="sidebar.albums" />
               </Link>
               <Link to="/library/tracks" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="music_note" type="material" />
-                {content('sidebar.tracks')}
+                <Content path="sidebar.tracks" />
               </Link>
               <Link to="/library/browse" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="folder" type="material" />
-                {content('sidebar.browse')}
+                <Content path="sidebar.browse" />
               </Link>
             </section>
 
             <section className="sidebar__menu__section">
               <Link to="/settings" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="settings" type="material" />
-                {content('sidebar.settings')}
+                <Content path="sidebar.settings" />
                 {this.renderStatusIcon()}
               </Link>
             </section>
@@ -153,7 +155,7 @@ class Sidebar extends React.Component {
 
         <Dropzones />
 
-        <div className="close" onClick={(e) => uiActions.toggleSidebar(false)}>
+        <div className="close" onClick={this.closeSidebar}>
           <Icon name="close" />
         </div>
 
@@ -162,7 +164,7 @@ class Sidebar extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state) => ({
   mopidy_connected: state.mopidy.connected,
   pusher_connected: state.pusher.connected,
   spotify_available: state.spotify.access_token,

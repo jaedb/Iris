@@ -20,6 +20,7 @@ import * as mopidyActions from '../services/mopidy/actions';
 import * as lastfmActions from '../services/lastfm/actions';
 import * as spotifyActions from '../services/spotify/actions';
 import { isHosted } from '../util/helpers';
+import { content } from '../locale';
 
 class Settings extends React.Component {
   constructor(props) {
@@ -35,7 +36,8 @@ class Settings extends React.Component {
   }
 
   componentDidMount() {
-    this.props.uiActions.setWindowTitle('Settings');
+    const { uiActions: { setWindowTitle } } = this.props;
+    setWindowTitle(content('settings.title'));
   }
 
   componentDidUpdate = () => {
@@ -51,8 +53,8 @@ class Settings extends React.Component {
   }
 
   onLanguageChange = (language) => {
-    const { uiActions: { set } } = this.props;
-    set({ language });
+    const { uiActions: { setLanguage } } = this.props;
+    setLanguage(language);
   }
 
   resetAllSettings() {

@@ -1,3 +1,7 @@
 sidebar:
-  now_playing: GERMAN
-  search: GERMAN
+  now_playing: Läuft gerade
+  settings: Einstellungen
+now_playing:
+  title: Läuft gerade
+settings:
+  title: Einstellungen
