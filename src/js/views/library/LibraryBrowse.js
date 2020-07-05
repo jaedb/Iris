@@ -63,6 +63,10 @@ class LibraryBrowse extends React.Component {
             subdirectory.icons = ['/iris/assets/backgrounds/browse-soundcloud.jpg'];
             break;
 
+          case 'Mixcloud':
+            subdirectory.icons = ['/iris/assets/backgrounds/browse-mixcloud.jpg'];
+            break;
+
           case 'iTunes Store: Podcasts':
             subdirectory.icons = ['/iris/assets/backgrounds/browse-itunes.jpg'];
             break;
