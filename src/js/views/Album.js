@@ -3,18 +3,17 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import ErrorMessage from '../components/ErrorMessage';
-import Header from '../components/Header';
 import TrackList from '../components/TrackList';
 import Thumbnail from '../components/Thumbnail';
-import Parallax from '../components/Parallax';
 import LinksSentence from '../components/LinksSentence';
 import Loader from '../components/Loader';
 import FollowButton from '../components/Fields/FollowButton';
-import NiceNumber from '../components/NiceNumber';
+import NiceNumber, { nice_number } from '../components/NiceNumber';
 import Dater from '../components/Dater';
 import LazyLoadListener from '../components/LazyLoadListener';
 import ContextMenuTrigger from '../components/ContextMenuTrigger';
 import Icon from '../components/Icon';
+import { content } from '../locale';
 import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
@@ -100,24 +99,21 @@ export class Album extends React.Component {
   }
 
   setWindowTitle = (album = this.props.album) => {
-    const { uiActions: { setWindowTitle } } = this.props;
+    const { uiActions: { setWindowTitle }, artists } = this.props;
 
     if (album) {
-      let artists = '';
+      let artistNames = [];
       if (album.artists_uris && artists) {
         for (let i = 0; i < album.artists_uris.length; i++) {
           const uri = album.artists_uris[i];
           if (artists.hasOwnProperty(uri)) {
-            if (artists != '') {
-              artists += ', ';
-            }
-            artists += artists[uri].name;
+            artistNames.push(artists[uri].name);
           }
         }
       }
-      setWindowTitle(`${album.name} by ${artists} (album)`);
+      setWindowTitle(content('album.title_window', { name: album.name, artist: artistNames.join() }));
     } else {
-      setWindowTitle('Album');
+      setWindowTitle(content('album.title'));
     }
   }
 
@@ -191,7 +187,7 @@ export class Album extends React.Component {
       return (
         <ErrorMessage type="not-found" title="Not found">
           <p>
-            {`Could not find album with URI "${encodeURIComponent(uri)}"`}
+            {content('errors.uri_not_found', { uri: encodeURIComponent(uri) })}
           </p>
         </ErrorMessage>
       );
@@ -236,9 +232,10 @@ export class Album extends React.Component {
             ) : null}
             {album.tracks ? (
               <li>
-                {album.tracks_total || album.tracks.length}
-                {' '}
-tracks
+                {content(
+                  'specs.tracks',
+                  { count: album.tracks_total || album.tracks.length },
+                )}
               </li>
             ) : null}
             {!this.props.slim_mode && album.tracks ? (
@@ -248,31 +245,33 @@ tracks
             ) : null}
             {!this.props.slim_mode && album.play_count ? (
               <li>
-                <NiceNumber value={album.play_count} />
-                {' '}
-plays
+                {content(
+                  'specs.plays',
+                  { count: nice_number(album.play_count) },
+                )}
               </li>
             ) : null}
             {!this.props.slim_mode && album.listeners ? (
               <li>
-                <NiceNumber value={album.listeners} />
-                {' '}
-listeners
+                {content(
+                  'specs.plays',
+                  { count: nice_number(album.listeners) },
+                )}
               </li>
             ) : null}
           </ul>
         </div>
 
         <div className="actions">
-          <button className="button button--primary" onClick={(e) => this.play()}>
-            Play
+          <button type="button" className="button button--primary" onClick={(e) => this.play()}>
+            {content('actions.play')}
           </button>
           {uriSource(this.props.uri) == 'spotify' ? (
             <FollowButton
               className="secondary"
               uri={this.props.uri}
-              addText="Add to library"
-              removeText="Remove from library"
+              addText={content('actions.add_to_library')}
+              removeText={content('actions.remove_from_library')}
               is_following={this.inLibrary()}
             />
           ) : null}
@@ -294,14 +293,15 @@ listeners
 
         {album.wiki ? (
           <section className="wiki">
-            <h4 className="wiki__title">About</h4>
+            <h4 className="wiki__title">{content('album.wiki.title')}</h4>
             <div className="wiki__text">
               <p>{album.wiki}</p>
               <br />
               <div className="mid_grey-text">
-                Published:
-                {' '}
-                {album.wiki_publish_date}
+                {content(
+                  'album.wiki.published',
+                  { date: album.wiki_publish_date },
+                )}
               </div>
             </div>
           </section>

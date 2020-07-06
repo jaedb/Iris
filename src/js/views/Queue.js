@@ -201,7 +201,11 @@ class Queue extends React.Component {
         <div className="current-track__added-from__text">
           {'Playing from '}
           <LinksSentence items={items} />
-          {uri_type === 'radio' && <span className="flag flag--blue">Radio</span>}
+          {uri_type === 'radio' && (
+            <span className="flag flag--blue">
+              {content('now_playing.current_track.radio')}
+            </span>
+          )}
         </div>
       </div>
     );
@@ -225,16 +229,16 @@ class Queue extends React.Component {
         {this.props.spotify_enabled && (
           <Link className="button button--no-hover" to="/queue/radio">
             <Icon name="radio" />
-            Radio
+            {content('now_playing.context_actions.radio')}
           </Link>
         )}
         <Link className="button button--no-hover" to="/queue/history">
           <Icon name="history" />
-          History
+          {content('now_playing.context_actions.history')}
         </Link>
         <Link className="button button--no-hover" to="/queue/add-uri">
           <Icon name="playlist_add" />
-          Add URI
+          {content('now_playing.context_actions.add_uri')}
         </Link>
       </span>
     );
@@ -279,7 +283,7 @@ class Queue extends React.Component {
                     <li>
                       <a onClick={this.props.mopidyActions.shuffleTracklist}>
                         <Icon name="shuffle" />
-                        Shuffle
+                        {content('now_playing.current_track.shuffle')}
                       </a>
                     </li>
                   )}
@@ -287,7 +291,7 @@ class Queue extends React.Component {
                     <li>
                       <a onClick={this.props.mopidyActions.clearTracklist}>
                         <Icon name="delete_sweep" />
-                        Clear
+                        {content('now_playing.current_track.clear')}
                       </a>
                     </li>
                   )}

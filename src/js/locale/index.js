@@ -8,7 +8,6 @@ const PARAMS_REG_EXP = '%{(.*?)}';
 const paramsRegExp = new RegExp(PARAMS_REG_EXP, 'g');
 
 const content = (path, params = {}, transform) => {
-  console.log(window.language);
   const dictionary = dictionaries[window.language || 'en'] || dictionaries.en;
 
   let value = get((dictionary), path, '');

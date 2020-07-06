@@ -1,3 +1,41 @@
+errors:
+  uri_not_found: Could not find anything with URI %{uri}
+specs:
+  tracks: %{count} tracks
+  followers: %{count} followers
+  listeners: %{count} listeners
+  plays: %{count} plays
+actions:
+  play: Play
+  pause: Pause
+  stop: Stop
+  add_to_library: Add to library
+  remove_from_library: Remove from library
+time:
+  seconds: 
+    short: secs
+    singular: second
+    plural: seconds
+  minutes: 
+    short: mins
+    singular: minute
+    plural: minutes
+  hours: 
+    short: hrs
+    singular: hour
+    plural: hours
+  days: 
+    short: days
+    singular: day
+    plural: days
+  weeks: 
+    short: wks
+    singular: week
+    plural: weeks
+  years: 
+    short: yrs
+    singular: year
+    plural: years
 sidebar:
   now_playing: Now playing
   search: Search
@@ -20,9 +58,16 @@ now_playing:
     history: History
     add_uri: Add URI
   current_track:
-    playing_from: Playling from
+    playing_from: Playing from
     shuffle: Shuffle
     clear: Clear
+    radio: Radio
+album:
+  title: Album
+  title_window: %{name} by %{artist} (album)
+  wiki:
+    title: About
+    published: 'Published: %{date}'
 search:
   title: 'Search: %{term}'
   context_actions:
