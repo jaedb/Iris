@@ -8,7 +8,7 @@ import Icon from './Icon';
 import Dropzones from './Fields/Dropzones';
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
-import { content, Content } from '../locale';
+import { I18n } from '../locale';
 
 class Sidebar extends React.Component {
   closeSidebar = () => uiActions.toggleSidebar(false);
@@ -47,19 +47,19 @@ class Sidebar extends React.Component {
           <Icon name="warning" className="red-text" />
           <span className="tooltip__content">
             {!mopidy_connected && (
-              <Content path="sidebar.not_connected" params={{ name: 'Mopidy' }}>
+              <I18n path="sidebar.not_connected" params={{ name: 'Mopidy' }}>
                 <br />
-              </Content>
+              </I18n>
             )}
             {!pusher_connected && (
-              <Content path="sidebar.not_connected" params={{ name: 'Pusher' }}>
+              <I18n path="sidebar.not_connected" params={{ name: 'Pusher' }}>
                 <br />
-              </Content>
+              </I18n>
             )}
             {!snapcast_connected && snapcast_enabled && (
-              <Content path="sidebar.not_connected" params={{ name: 'Snapcast' }}>
+              <I18n path="sidebar.not_connected" params={{ name: 'Snapcast' }}>
                 <br />
-              </Content>
+              </I18n>
             )}
           </span>
         </span>
@@ -84,68 +84,68 @@ class Sidebar extends React.Component {
             <section className="sidebar__menu__section">
               <Link to="/queue" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="play_arrow" type="material" />
-                <Content path="sidebar.now_playing" />
+                <I18n path="sidebar.now_playing" />
               </Link>
               <Link to="/search" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="search" type="material" />
-                <Content path="sidebar.search" />
+                <I18n path="sidebar.search" />
               </Link>
             </section>
 
             {spotify_available && (
               <section className="sidebar__menu__section">
                 <title className="sidebar__menu__section__title">
-                  <Content path="sidebar.discover" />
+                  <I18n path="sidebar.discover" />
                 </title>
                 <Link to="/discover/recommendations" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                   <Icon name="explore" type="material" />
-                  <Content path="sidebar.discover" />
+                  <I18n path="sidebar.discover" />
                 </Link>
                 <Link to="/discover/categories" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                   <Icon name="mood" type="material" />
-                  <Content path="sidebar.genre" />
+                  <I18n path="sidebar.genre" />
                 </Link>
                 <Link to="/discover/featured" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                   <Icon name="star" type="material" />
-                  <Content path="sidebar.featured_playlists" />
+                  <I18n path="sidebar.featured_playlists" />
                 </Link>
                 <Link to="/discover/new-releases" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                   <Icon name="new_releases" type="material" />
-                  <Content path="sidebar.new_releases" />
+                  <I18n path="sidebar.new_releases" />
                 </Link>
               </section>
             )}
 
             <section className="sidebar__menu__section">
               <title className="sidebar__menu__section__title">
-                <Content path="sidebar.my_music" />
+                <I18n path="sidebar.my_music" />
               </title>
               <Link to="/library/playlists" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="queue_music" type="material" />
-                <Content path="sidebar.playlists" />
+                <I18n path="sidebar.playlists" />
               </Link>
               <Link to="/library/artists" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="recent_actors" type="material" />
-                <Content path="sidebar.artists" />
+                <I18n path="sidebar.artists" />
               </Link>
               <Link to="/library/albums" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="album" type="material" />
-                <Content path="sidebar.albums" />
+                <I18n path="sidebar.albums" />
               </Link>
               <Link to="/library/tracks" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="music_note" type="material" />
-                <Content path="sidebar.tracks" />
+                <I18n path="sidebar.tracks" />
               </Link>
               <Link to="/library/browse" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="folder" type="material" />
-                <Content path="sidebar.browse" />
+                <I18n path="sidebar.browse" />
               </Link>
             </section>
 
             <section className="sidebar__menu__section">
               <Link to="/settings" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="settings" type="material" />
-                <Content path="sidebar.settings" />
+                <I18n path="sidebar.settings" />
                 {this.renderStatusIcon()}
               </Link>
             </section>

@@ -9,7 +9,7 @@ import TrackList from '../components/TrackList';
 import Thumbnail from '../components/Thumbnail';
 import Parallax from '../components/Parallax';
 import NiceNumber from '../components/NiceNumber';
-import Dater from '../components/Dater';
+import { Dater } from '../components/Dater';
 import LazyLoadListener from '../components/LazyLoadListener';
 import FollowButton from '../components/Fields/FollowButton';
 import Loader from '../components/Loader';

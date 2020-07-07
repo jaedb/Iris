@@ -1,5 +1,4 @@
 import React, { Fragment } from 'react';
-import { useSelector } from 'react-redux';
 import get from 'lodash/get';
 import dictionaries from './dictionaries';
 import { titleCase } from '../util/helpers';
@@ -7,7 +6,7 @@ import { titleCase } from '../util/helpers';
 const PARAMS_REG_EXP = '%{(.*?)}';
 const paramsRegExp = new RegExp(PARAMS_REG_EXP, 'g');
 
-const content = (path, params = {}, transform) => {
+const i18n = (path, params = {}, transform) => {
   const dictionary = dictionaries[window.language || 'en'] || dictionaries.en;
 
   let value = get((dictionary), path, '');
@@ -33,19 +32,19 @@ const content = (path, params = {}, transform) => {
   return value;
 };
 
-const Content = ({ path, params = {}, transform, children }) => (
+const I18n = ({ path, transform, children, ...params }) => (
   <Fragment>
-    {content(path, params, transform)}
+    {i18n(path, params, transform)}
     {children}
   </Fragment>
 );
 
 export default {
-  Content,
-  content,
+  I18n,
+  i18n,
 };
 
 export {
-  Content,
-  content,
+  I18n,
+  i18n,
 };

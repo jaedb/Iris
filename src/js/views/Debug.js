@@ -9,6 +9,7 @@ import * as pusherActions from '../services/pusher/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import * as spotifyActions from '../services/spotify/actions';
 import * as snapcastActions from '../services/snapcast/actions';
+import { I18n, i18n } from '../locale';
 
 class Debug extends React.Component {
   constructor(props) {
@@ -24,152 +25,196 @@ class Debug extends React.Component {
   }
 
   componentDidMount() {
-    this.props.uiActions.setWindowTitle('Debug');
+    const { uiActions: { setWindowTitle } } = this.props;
+    setWindowTitle(i18n('debug.title'));
   }
 
-  callMopidy(e) {
+  onBack = () => {
+    const { history } = this.props;
+    history.push('/settings');
+  }
+
+  callMopidy = (e) => {
+    const { mopidyActions: { debug } } = this.props;
+    const { mopidy_call, mopidy_data } = this.state;
     e.preventDefault();
-    this.props.mopidyActions.debug(this.state.mopidy_call, JSON.parse(this.state.mopidy_data));
+    debug(mopidy_call, JSON.parse(mopidy_data));
   }
 
-  callPusher(e) {
+  callPusher = (e) => {
+    const { pusherActions: { debug } } = this.props;
+    const { pusher_data } = this.state;
     e.preventDefault();
-    this.props.pusherActions.debug(JSON.parse(this.state.pusher_data));
+    debug(JSON.parse(pusher_data));
   }
 
-  callSnapcast(e) {
+  callSnapcast = (e) => {
+    const { snapcastActions: { debug } } = this.props;
+    const { snapcast_data } = this.state;
     e.preventDefault();
-    this.props.snapcastActions.debug(JSON.parse(this.state.snapcast_data));
+    debug(JSON.parse(snapcast_data));
   }
 
-  toggleTestMode(e) {
+  toggleTestMode = (e) => {
+    const { uiActions: { set }, test_mode } = this.props;
     this.setState({ toggling_test_mode: true });
-    this.props.uiActions.set({ test_mode: !this.props.test_mode });
+    set({ test_mode: !test_mode });
 
     // Wait a second to allow state to update, and then refresh
     setTimeout(location.reload(), 1000);
   }
 
-  render() {
+  render = () => {
+    const {
+      uiActions,
+      spotifyActions,
+      history,
+      test_mode,
+      debug_response,
+      debug_info,
+      log_actions,
+      log_mopidy,
+      log_pusher,
+      log_snapcast,
+      access_token,
+    } = this.props;
+    const {
+      toggling_test_mode,
+      mopidy_call,
+      mopidy_data,
+      pusher_data,
+      snapcast_data,
+    } = this.state;
+  
     const options = (
-      <a className="button button--discrete button--no-hover" onClick={(e) => this.props.history.push('/settings')}>
+      <a className="button button--discrete button--no-hover" onClick={this.onBack}>
         <Icon name="keyboard_backspace" />
-Back
+        <I18n path="actions.back" />
       </a>
     );
 
     return (
       <div className="view debugger-view">
-        <Header options={options} uiActions={this.props.uiActions}>
+        <Header options={options} uiActions={uiActions}>
           <Icon name="settings" type="material" />
-					Debug
+					<I18n path="debug.title" />
         </Header>
 
         <div className="content-wrapper">
 
-          <h4 className="underline">User interface</h4>
+          <h4 className="underline"><I18n path="debug.ui.title" /></h4>
           <form>
             <div className="field checkbox">
               <div className="name">Test mode</div>
               <div className="input">
-                {this.state.toggling_test_mode ? <span className="button button--working">Applying...</span> : (this.props.test_mode ? <span className="button button--destructive" onClick={(e) => this.toggleTestMode(e)}>Disable</span> : <span className="button button--primary" onClick={(e) => this.toggleTestMode(e)}>Enable</span>)}
+                {toggling_test_mode && (
+                  <span className="button button--working">Applying...</span>
+                )}
+                {!toggling_test_mode && (
+                  <span
+                    className={`button button--${test_mode ? 'destructive' : 'default'}`}
+                    onClick={this.toggleTestMode}
+                  >
+                    <I18n path={`actions.${test_mode ? 'disable' : 'enable'}`} />
+                  </span>
+                )}
               </div>
             </div>
             <div className="field checkbox">
-              <div className="name">Debug</div>
+              <div className="name"><I18n path="debug.debug.title" /></div>
               <div className="input">
                 <label>
                   <input
                     type="checkbox"
                     name="debug_info"
-                    checked={this.props.debug_info}
-                    onChange={(e) => this.props.uiActions.set({ debug_info: !this.props.debug_info })}
+                    checked={debug_info}
+                    onChange={() => uiActions.set({ debug_info: !debug_info })}
                   />
-                  <span className="label">Show debug overlay</span>
+                  <span className="label"><I18n path="debug.debug.overlay" /></span>
                 </label>
               </div>
             </div>
             <div className="field checkbox">
-              <div className="name">Logging</div>
+              <div className="name"><I18n path="debug.logging.title" /></div>
               <div className="input">
                 <label>
                   <input
                     type="checkbox"
                     name="log_actions"
-                    checked={this.props.log_actions}
-                    onChange={(e) => this.props.uiActions.set({ log_actions: !this.props.log_actions })}
+                    checked={log_actions}
+                    onChange={() => uiActions.set({ log_actions: !log_actions })}
                   />
-                  <span className="label">Log actions</span>
+                  <span className="label"><I18n path="debug.logging.actions" /></span>
                 </label>
                 <label>
                   <input
                     type="checkbox"
                     name="log_mopidy"
-                    checked={this.props.log_mopidy}
-                    onChange={(e) => this.props.uiActions.set({ log_mopidy: !this.props.log_mopidy })}
+                    checked={log_mopidy}
+                    onChange={() => uiActions.set({ log_mopidy: !log_mopidy })}
                   />
-                  <span className="label">Log Mopidy</span>
+                  <span className="label"><I18n path="debug.logging.mopidy" /></span>
                 </label>
                 <label>
                   <input
                     type="checkbox"
                     name="log_pusher"
-                    checked={this.props.log_pusher}
-                    onChange={(e) => this.props.uiActions.set({ log_pusher: !this.props.log_pusher })}
+                    checked={log_pusher}
+                    onChange={() => uiActions.set({ log_pusher: !log_pusher })}
                   />
-                  <span className="label">Log Pusher</span>
+                  <span className="label"><I18n path="debug.logging.pusher" /></span>
                 </label>
                 <label>
                   <input
                     type="checkbox"
                     name="log_pusher"
-                    checked={this.props.log_snapcast}
-                    onChange={(e) => this.props.uiActions.set({ log_snapcast: !this.props.log_snapcast })}
+                    checked={log_snapcast}
+                    onChange={() => uiActions.set({ log_snapcast: !log_snapcast })}
                   />
-                  <span className="label">Log Snapcast</span>
+                  <span className="label"><I18n path="debug.logging.snapcast" /></span>
                 </label>
               </div>
             </div>
             <div className="field">
               <div className="name" />
               <div className="input">
-                <a className="button button--default" onClick={(e) => this.props.uiActions.createNotification({ content: 'Test notification' })}>Create notification</a>
-                <a className="button button--default" onClick={(e) => this.props.uiActions.startProcess('test_process', "Test process", {remaining: 68, total: 100})}>Create process notification</a>
-                <a className="button button--default" onClick={(e) => this.props.pusherActions.request('test')}>Run test process</a>
+                <a className="button button--default" onClick={(e) => this.props.uiActions.createNotification({ content: 'Test notification' })}><I18n path="debug.create_notification" /></a>
+                <a className="button button--default" onClick={(e) => this.props.uiActions.startProcess('test_process', "Test process", {remaining: 68, total: 100})}><I18n path="debug.create_process" /></a>
+                <a className="button button--default" onClick={(e) => this.props.pusherActions.request('test')}><I18n path="debug.run_test" /></a>
               </div>
             </div>
           </form>
 
           <h4 className="underline">Spotify</h4>
           <label className="field">
-            <div className="name">Access token</div>
+            <div className="name"><I18n path="debug.access_token" /></div>
             <div className="input">
               <input
                 type="text"
-                onChange={(e) => this.props.spotifyActions.authorizationGranted({ access_token: e.target.value })}
-                value={this.state.access_token}
+                onChange={(e) => spotifyActions.authorizationGranted({ access_token: e.target.value })}
+                value={access_token}
               />
             </div>
           </label>
 
-          <h4 className="underline">Mopidy</h4>
-          <form onSubmit={(e) => this.callMopidy(e)}>
+          <h4 className="underline"><I18n path="services.mopidy.title" /></h4>
+          <form onSubmit={this.callMopidy}>
             <label className="field">
-              <div className="name">Call</div>
+              <div className="name"><I18n path="debug.call" /></div>
               <div className="input">
                 <input
                   type="text"
                   onChange={(e) => this.setState({ mopidy_call: e.target.value })}
-                  value={this.state.mopidy_call}
+                  value={mopidy_call}
                 />
               </div>
             </label>
             <label className="field">
-              <div className="name">Data</div>
+              <div className="name"><I18n path="debug.data" /></div>
               <div className="input">
                 <textarea
                   onChange={(e) => this.setState({ mopidy_data: e.target.value })}
-                  value={this.state.mopidy_data}
+                  value={mopidy_data}
                 />
               </div>
             </label>
@@ -181,10 +226,10 @@ Back
             </div>
           </form>
 
-          <h4 className="underline">Pusher</h4>
-          <form onSubmit={(e) => this.callPusher(e)}>
+          <h4 className="underline"><I18n path="services.pusher.title" /></h4>
+          <form onSubmit={this.callPusher}>
             <label className="field">
-              <div className="name">Examples</div>
+              <div className="name"><I18n path="debug.examples" /></div>
               <div className="input">
                 <select onChange={(e) => this.setState({ pusher_data: e.target.value })}>
                   <option value='{"method":"get_config"}'>Get config</option>
@@ -202,44 +247,44 @@ Back
               </div>
             </label>
             <label className="field">
-              <div className="name">Data</div>
+              <div className="name"><I18n path="debug.data" /></div>
               <div className="input">
                 <textarea
                   onChange={(e) => this.setState({ pusher_data: e.target.value })}
-                  value={this.state.pusher_data}
+                  value={pusher_data}
                 />
               </div>
             </label>
             <div className="field">
               <div className="name" />
               <div className="input">
-                <button type="submit" className="button button--default">Send</button>
+                <button type="submit" className="button button--default"><I18n path="actions.send" /></button>
               </div>
             </div>
           </form>
 
-          <h4 className="underline">Snapcast</h4>
+          <h4 className="underline"><I18n path="services.snapcast.title" /></h4>
           <form onSubmit={(e) => this.callSnapcast(e)}>
             <label className="field">
-              <div className="name">Data</div>
+              <div className="name"><I18n path="debug.data" /></div>
               <div className="input">
                 <textarea
                   onChange={(e) => this.setState({ snapcast_data: e.target.value })}
-                  value={this.state.snapcast_data}
+                  value={snapcast_data}
                 />
               </div>
             </label>
             <div className="field">
               <div className="name" />
               <div className="input">
-                <button type="submit" className="button button--default">Send</button>
+                <button type="submit" className="button button--default"><I18n path="actions.send" /></button>
               </div>
             </div>
           </form>
 
-          <h4 className="underline">Response</h4>
+          <h4 className="underline"><I18n path="debug.response" /></h4>
           <pre>
-            { this.props.debug_response ? JSON.stringify(this.props.debug_response, null, 2) : null }
+            {debug_response && JSON.stringify(debug_response, null, 2)}
           </pre>
 
         </div>
@@ -248,7 +293,7 @@ Back
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state) => ({
   connection_id: state.pusher.connection_id,
   access_token: (state.spotify.access_token ? state.spotify.access_token : ''),
   log_actions: (state.ui.log_actions ? state.ui.log_actions : false),

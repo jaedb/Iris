@@ -1,16 +1,22 @@
 errors:
   uri_not_found: Could not find anything with URI %{uri}
 specs:
-  tracks: %{count} tracks
-  followers: %{count} followers
-  listeners: %{count} listeners
-  plays: %{count} plays
+  tracks: '%{count} tracks'
+  followers: '%{count} followers'
+  listeners: '%{count} listeners'
+  plays: '%{count} plays'
+  popularity: '%{percent}% popularity'
 actions:
   play: Play
   pause: Pause
   stop: Stop
   add_to_library: Add to library
   remove_from_library: Remove from library
+  reset: Reset
+  back: Back
+  enable: Enable
+  disable: Disable
+  send: Send
 time:
   seconds: 
     short: secs
@@ -36,6 +42,13 @@ time:
     short: yrs
     singular: year
     plural: years
+services:
+  mopidy:
+    title: Mopidy
+  pusher:
+    title: Pusher
+  snapcast:
+    title: Snapcast
 sidebar:
   now_playing: Now playing
   search: Search
@@ -50,7 +63,7 @@ sidebar:
   tracks: Tracks
   browse: Browse
   settings: Settings
-  not_connected: %{name} not connected
+  not_connected: '%{name} not connected'
 now_playing:
   title: Now playing
   context_actions:
@@ -64,25 +77,63 @@ now_playing:
     radio: Radio
 album:
   title: Album
-  title_window: %{name} by %{artist} (album)
+  title_window: '%{name} by %{artist} (album)'
   wiki:
     title: About
     published: 'Published: %{date}'
+artist:
+  title: Artist
+  title_window: '%{name} (artist)'
+  overview:
+    title: Overview
+    top_tracks: Top tracks
+    related_artists:
+      title: Related artists
+      more: All related artists
+  tracks:
+    title: Tracks
+  related_artists:
+    title: Related artists
+  about:
+    title: About
+    source: '%{source} artist'
+    wiki:
+      published: 'Published: %{date}'
+      origin: 'Origin: '
+debug:
+  title: Debug
+  ui:
+    title: User interface
+  debug:
+    title: Debug
+    overlay: Show debug overlay
+  logging:
+    title: Logging
+    mopidy: Log Mopidy
+    pusher: Log Pusher
+    actions: Log Actions
+    snapcast: Log Snapcast
+  create_notification: Create notification
+  create_process: Create process notification
+  run_test: Run test process
+  call: Call
+  data: Data
+  examples: Examples
 search:
   title: 'Search: %{term}'
   context_actions:
     sort: Sort
-    source: Sources (%{count})
+    source: 'Sources (%{count})'
   placeholder: Search
   artists:
     title: Artists
-    more: All artists (%{count})
+    more: 'All artists (%{count})'
   albums:
     title: Albums
-    more: All albums (%{count})
+    more: 'All albums (%{count})'
   playlists:
     title: Playlists
-    more: All playlists (%{count})
+    more: 'All playlists (%{count})'
   tracks:
     title: Tracks
 settings:

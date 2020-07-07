@@ -2,7 +2,7 @@
 import React from 'react';
 import Icon from './Icon';
 import LinksSentence from './LinksSentence';
-import Dater from './Dater';
+import { Dater } from './Dater';
 import URILink from './URILink';
 import ContextMenuTrigger from './ContextMenuTrigger';
 import ErrorBoundary from './ErrorBoundary';

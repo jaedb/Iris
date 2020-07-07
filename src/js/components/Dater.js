@@ -1,6 +1,6 @@
 
 import { memo } from 'react';
-import { content } from '../locale';
+import { i18n } from '../locale';
 
 /**
  * Format time duration
@@ -51,10 +51,10 @@ const durationSentence = (milliseconds = null) => {
   const totalMinutes = Math.floor(milliseconds / (1000 * 60));
   const totalHours = Math.floor(milliseconds / (1000 * 60 * 60));
 
-  if (totalHours > 1) return `${totalHours}+ ${content('time.hours.short')}`;
-  if (totalMinutes > 1) return `${totalMinutes} ${content('time.minutes.short')}`;
-  if (totalSeconds) return `${totalSeconds} ${content('time.seconds.short')}`;
-  return `0 ${content('time.minutes.short')}`;
+  if (totalHours > 1) return `${totalHours}+ ${i18n('time.hours.short')}`;
+  if (totalMinutes > 1) return `${totalMinutes} ${i18n('time.minutes.short')}`;
+  if (totalSeconds) return `${totalSeconds} ${i18n('time.seconds.short')}`;
+  return `0 ${i18n('time.minutes.short')}`;
 };
 
 const dater = (type, data) => {
@@ -99,17 +99,17 @@ const dater = (type, data) => {
       var years = Math.floor(diff / (1000 * 60 * 60 * 24 * 7 * 52));
 
       if (seconds < 60) {
-        return `${seconds} ${content(`time.seconds.${seconds > 1 ? 'singular' : 'plural'}`)}`;
+        return `${seconds} ${i18n(`time.seconds.${seconds > 1 ? 'singular' : 'plural'}`)}`;
       } if (minutes < 60) {
-        return `${minutes} ${content(`time.minutes.${minutes > 1 ? 'singular' : 'plural'}`)}`;
+        return `${minutes} ${i18n(`time.minutes.${minutes > 1 ? 'singular' : 'plural'}`)}`;
       } if (hours < 24) {
-        return `${hours} ${content(`time.hours.${hours > 1 ? 'singular' : 'plural'}`)}`;
+        return `${hours} ${i18n(`time.hours.${hours > 1 ? 'singular' : 'plural'}`)}`;
       } if (days < 7) {
-        return `${days} ${content(`time.days.${days > 1 ? 'singular' : 'plural'}`)}`;
+        return `${days} ${i18n(`time.days.${days > 1 ? 'singular' : 'plural'}`)}`;
       } if (weeks < 54) {
-        return `${weeks} ${content(`time.weeks.${weeks > 1 ? 'singular' : 'plural'}`)}`;
+        return `${weeks} ${i18n(`time.weeks.${weeks > 1 ? 'singular' : 'plural'}`)}`;
       }
-      return `${years} ${content(`time.years.${years > 1 ? 'singular' : 'plural'}`)}`;
+      return `${years} ${i18n(`time.years.${years > 1 ? 'singular' : 'plural'}`)}`;
     default:
       return null;
   }

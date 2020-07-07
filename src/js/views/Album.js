@@ -8,12 +8,12 @@ import Thumbnail from '../components/Thumbnail';
 import LinksSentence from '../components/LinksSentence';
 import Loader from '../components/Loader';
 import FollowButton from '../components/Fields/FollowButton';
-import NiceNumber, { nice_number } from '../components/NiceNumber';
-import Dater from '../components/Dater';
+import { nice_number } from '../components/NiceNumber';
+import { Dater } from '../components/Dater';
 import LazyLoadListener from '../components/LazyLoadListener';
 import ContextMenuTrigger from '../components/ContextMenuTrigger';
 import Icon from '../components/Icon';
-import { content } from '../locale';
+import { i18n, I18n } from '../locale';
 import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
@@ -111,9 +111,9 @@ export class Album extends React.Component {
           }
         }
       }
-      setWindowTitle(content('album.title_window', { name: album.name, artist: artistNames.join() }));
+      setWindowTitle(i18n('album.title_window', { name: album.name, artist: artistNames.join() }));
     } else {
-      setWindowTitle(content('album.title'));
+      setWindowTitle(i18n('album.title'));
     }
   }
 
@@ -174,6 +174,7 @@ export class Album extends React.Component {
       tracks,
       artists,
       load_queue,
+      slim_mode,
     } = this.props;
 
     if (!albumProp) {
@@ -187,7 +188,7 @@ export class Album extends React.Component {
       return (
         <ErrorMessage type="not-found" title="Not found">
           <p>
-            {content('errors.uri_not_found', { uri: encodeURIComponent(uri) })}
+            {i18n('errors.uri_not_found', { uri: encodeURIComponent(uri) })}
           </p>
         </ErrorMessage>
       );
@@ -195,15 +196,11 @@ export class Album extends React.Component {
 
     const album = collate(albumProp, { tracks, artists });
 
-    if (
+    const is_loading_tracks = (
       !album.tracks_uris
       || (album.tracks_uris && !album.tracks)
       || album.tracks_uris.length !== album.tracks.length
-    ) {
-      var is_loading_tracks = true;
-    } else {
-      var is_loading_tracks = false;
-    }
+    );
 
     return (
       <div className="view album-view content-wrapper preserve-3d">
@@ -215,7 +212,7 @@ export class Album extends React.Component {
           <h1>{album.name}</h1>
 
           <ul className="details">
-            {!this.props.slim_mode ? (
+            {!slim_mode ? (
               <li className="source">
                 <Icon type="fontawesome" name={sourceIcon(album.uri)} />
               </li>
@@ -232,28 +229,28 @@ export class Album extends React.Component {
             ) : null}
             {album.tracks ? (
               <li>
-                {content(
+                {i18n(
                   'specs.tracks',
                   { count: album.tracks_total || album.tracks.length },
                 )}
               </li>
             ) : null}
-            {!this.props.slim_mode && album.tracks ? (
+            {!slim_mode && album.tracks ? (
               <li>
                 <Dater type="total-time" data={album.tracks} />
               </li>
             ) : null}
-            {!this.props.slim_mode && album.play_count ? (
+            {!slim_mode && album.play_count ? (
               <li>
-                {content(
+                {i18n(
                   'specs.plays',
                   { count: nice_number(album.play_count) },
                 )}
               </li>
             ) : null}
-            {!this.props.slim_mode && album.listeners ? (
+            {!slim_mode && album.listeners ? (
               <li>
-                {content(
+                {i18n(
                   'specs.plays',
                   { count: nice_number(album.listeners) },
                 )}
@@ -263,19 +260,17 @@ export class Album extends React.Component {
         </div>
 
         <div className="actions">
-          <button type="button" className="button button--primary" onClick={(e) => this.play()}>
-            {content('actions.play')}
+          <button type="button" className="button button--primary" onClick={this.play}>
+            <I18n path="actions.play" />
           </button>
-          {uriSource(this.props.uri) == 'spotify' ? (
+          {uriSource(uri) === 'spotify' && (
             <FollowButton
               className="secondary"
-              uri={this.props.uri}
-              addText={content('actions.add_to_library')}
-              removeText={content('actions.remove_from_library')}
+              uri={uri}
               is_following={this.inLibrary()}
             />
-          ) : null}
-          <ContextMenuTrigger onTrigger={(e) => this.handleContextMenu(e)} />
+          )}
+          <ContextMenuTrigger onTrigger={this.handleContextMenu} />
         </div>
 
         <section className="list-wrapper">
@@ -287,21 +282,18 @@ export class Album extends React.Component {
           <LazyLoadListener
             loadKey={album.tracks_more}
             showLoader={is_loading_tracks}
-            loadMore={() => this.loadMore()}
+            loadMore={this.loadMore}
           />
         </section>
 
         {album.wiki ? (
           <section className="wiki">
-            <h4 className="wiki__title">{content('album.wiki.title')}</h4>
+            <h4 className="wiki__title">{i18n('album.wiki.title')}</h4>
             <div className="wiki__text">
               <p>{album.wiki}</p>
               <br />
               <div className="mid_grey-text">
-                {content(
-                  'album.wiki.published',
-                  { date: album.wiki_publish_date },
-                )}
+                <I18n path="album.wiki.published" params={{ date: album.wiki_publish_date }} />
               </div>
             </div>
           </section>

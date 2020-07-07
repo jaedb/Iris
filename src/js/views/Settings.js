@@ -20,7 +20,7 @@ import * as mopidyActions from '../services/mopidy/actions';
 import * as lastfmActions from '../services/lastfm/actions';
 import * as spotifyActions from '../services/spotify/actions';
 import { isHosted } from '../util/helpers';
-import { content } from '../locale';
+import { i18n } from '../locale';
 
 class Settings extends React.Component {
   constructor(props) {
@@ -37,7 +37,7 @@ class Settings extends React.Component {
 
   componentDidMount() {
     const { uiActions: { setWindowTitle } } = this.props;
-    setWindowTitle(content('settings.title'));
+    setWindowTitle(i18n('settings.title'));
   }
 
   componentDidUpdate = () => {
