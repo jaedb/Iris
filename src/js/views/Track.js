@@ -8,7 +8,7 @@ import Header from '../components/Header';
 import Thumbnail from '../components/Thumbnail';
 import LinksSentence from '../components/LinksSentence';
 import LastfmLoveButton from '../components/Fields/LastfmLoveButton';
-import Dater from '../components/Dater';
+import { Dater } from '../components/Dater';
 import SelectField from '../components/Fields/SelectField';
 import ContextMenuTrigger from '../components/ContextMenuTrigger';
 import Icon from '../components/Icon';

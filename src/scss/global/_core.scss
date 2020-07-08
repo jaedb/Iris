@@ -565,6 +565,7 @@ footer {
 }
 
 .flag {
+  @include gradient_overlay(3px);
   font-size: 9px;
   font-weight: bold;
   display: inline-block;
@@ -574,6 +575,17 @@ footer {
   border-radius: 3px;
   vertical-align: bottom;
   margin: 0 8px 1px;
+
+  &[href] {
+    border: 0 !important;
+    overflow: hidden;
+
+    &:hover {
+      &:before {
+        opacity: 0.5;
+      }
+    }
+  }
 
   &--blue {
     background: colour(blue);

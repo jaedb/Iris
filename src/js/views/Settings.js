@@ -8,6 +8,7 @@ import PusherConnectionList from '../components/PusherConnectionList';
 import SourcesPriority from '../components/Fields/SourcesPriority';
 import Commands from '../components/Fields/Commands';
 import TextField from '../components/Fields/TextField';
+import SelectField from '../components/Fields/SelectField';
 import Header from '../components/Header';
 import Icon from '../components/Icon';
 import Services from '../components/Services';
@@ -19,6 +20,7 @@ import * as mopidyActions from '../services/mopidy/actions';
 import * as lastfmActions from '../services/lastfm/actions';
 import * as spotifyActions from '../services/spotify/actions';
 import { isHosted } from '../util/helpers';
+import { i18n } from '../locale';
 
 class Settings extends React.Component {
   constructor(props) {
@@ -34,7 +36,8 @@ class Settings extends React.Component {
   }
 
   componentDidMount() {
-    this.props.uiActions.setWindowTitle('Settings');
+    const { uiActions: { setWindowTitle } } = this.props;
+    setWindowTitle(i18n('settings.title'));
   }
 
   componentDidUpdate = () => {
@@ -47,6 +50,11 @@ class Settings extends React.Component {
     }
 
     if (new_username) this.setState({ pusher_username: new_username });
+  }
+
+  onLanguageChange = (language) => {
+    const { uiActions: { setLanguage } } = this.props;
+    setLanguage(language);
   }
 
   resetAllSettings() {
@@ -178,6 +186,20 @@ class Settings extends React.Component {
             Interface
             <a name="interface" />
           </h4>
+          
+          <div className="field dropdown">
+            <div className="name">Language</div>
+            <div className="input">
+              <SelectField
+                onChange={this.onLanguageChange}
+                options={[
+                  { value: 'en', label: 'English (EN)' },
+                  { value: 'de', label: 'German (DE)' },
+                ]}
+                value={ui.language}
+              />
+            </div>
+          </div>
 
           <div className="field radio">
             <div className="name">
@@ -384,16 +406,27 @@ class Settings extends React.Component {
             <div className="name">Version</div>
             <div className="input">
               <span className="text">
-                {this.props.pusher.version.current}
+                <a
+                  target="_blank"
+                  rel="noopener noref"
+                  href={`https://github.com/jaedb/Iris/releases/tag/${this.props.pusher.version.current}`}
+                >
+                  {this.props.pusher.version.current}
+                </a>
                 {' '}
                 <span className="mid_grey-text">
                   {build}
                 </span>
                 {this.props.pusher.version.upgrade_available ? (
-                  <span className="flag flag--dark">
+                  <a
+                    target="_blank"
+                    rel="noopener noref"
+                    className="flag flag--dark"
+                    href={`https://github.com/jaedb/Iris/releases/tag/${this.props.pusher.version.latest}`}
+                  >
                     <Icon name="cloud_download" className="blue-text" />
-                    {'  Upgrade available'}
-                  </span>
+                    {`  Upgrade available (${this.props.pusher.version.latest})`}
+                  </a>
                 ) : (
                     <span className="flag flag--dark">
                       <Icon name="check" className="green-text" />

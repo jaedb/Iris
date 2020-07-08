@@ -8,8 +8,8 @@ import Link from '../components/Link';
 import TrackList from '../components/TrackList';
 import Thumbnail from '../components/Thumbnail';
 import Parallax from '../components/Parallax';
-import NiceNumber from '../components/NiceNumber';
-import Dater from '../components/Dater';
+import NiceNumber, { nice_number } from '../components/NiceNumber';
+import { Dater, dater } from '../components/Dater';
 import LazyLoadListener from '../components/LazyLoadListener';
 import FollowButton from '../components/Fields/FollowButton';
 import Loader from '../components/Loader';
@@ -28,6 +28,7 @@ import {
   decodeMopidyUri,
 } from '../util/helpers';
 import { collate } from '../util/format';
+import { i18n, I18n } from '../locale';
 
 class Playlist extends React.Component {
   constructor(props) {
@@ -82,141 +83,213 @@ class Playlist extends React.Component {
     if (prevUri !== uri && playlist) this.setWindowTitle(playlist);
   }
 
-  setWindowTitle(playlist = this.props.playlist) {
-    if (playlist) {
-      this.props.uiActions.setWindowTitle(`${playlist.name} (playlist)`);
-    } else {
-      this.props.uiActions.setWindowTitle('Playlist');
-    }
+  setWindowTitle = (playlist = this.props.playlist) => {
+    const { uiActions: { setWindowTitle } } = this.props;
+    setWindowTitle(
+      playlist ? i18n('playlist.title_window', { name: playlist.name }) : i18n('playlist.title')
+    );
   }
 
-  loadMore() {
-    this.props.spotifyActions.getMore(
-      this.props.playlist.tracks_more,
+  loadMore = () => {
+    const {
+      spotifyActions: {
+        getMore,
+      },
+      playlist: {
+        uri,
+        tracks_more,
+      },
+    } = this.props;
+
+    getMore(
+      tracks_more,
       {
         parent_type: 'playlist',
-        parent_key: this.props.playlist.uri,
+        parent_key: uri,
         records_type: 'track',
       },
     );
   }
 
-  handleContextMenu(e) {
-    const data = {
+  handleContextMenu = (e) => {
+    const {
+      uiActions: {
+        showContextMenu,
+      },
+      playlist,
+      uri,
+    } = this.props;
+
+    showContextMenu({
       e,
       context: 'playlist',
-      items: [this.props.playlist],
-      uris: [this.props.uri],
-    };
-    this.props.uiActions.showContextMenu(data);
+      items: [playlist],
+      uris: [uri],
+    });
   }
 
-  play() {
-    this.props.mopidyActions.playPlaylist(this.props.playlist.uri);
-  }
+  play = () => {
+    const {
+      mopidyActions: {
+        playPlaylist,
+      },
+      playlist: {
+        uri,
+      },
+    } = this.props;
 
-  follow() {
-    if (this.props.allow_reporting) {
-	        ReactGA.event({ category: 'Playlist', action: 'Follow', label: this.props.playlist.uri });
-	    }
-    this.props.spotifyActions.toggleFollowingPlaylist(this.props.playlist.uri, 'PUT');
-  }
-
-  // TODO: Once unfollowing occurs, remove playlist from global playlists list
-  unfollow() {
-    if (this.props.allow_reporting) {
-	        ReactGA.event({ category: 'Playlist', action: 'Unfollow', label: this.props.playlist.uri });
-	    }
-    this.props.spotifyActions.toggleFollowingPlaylist(this.props.playlist.uri, 'DELETE');
+    playPlaylist(uri);
   }
 
   // TODO: Once deletion occurs, remove playlist from global playlists list
-  delete() {
-    this.props.mopidyActions.deletePlaylist(this.props.playlist.uri);
+  delete = () => {
+    const {
+      mopidyActions: {
+        deletePlaylist,
+      },
+      playlist: {
+        uri,
+      },
+    } = this.props;
+
+    deletePlaylist(uri);
   }
 
-  reorderTracks(indexes, index) {
-    this.props.coreActions.reorderPlaylistTracks(this.props.playlist.uri, indexes, index, this.props.playlist.snapshot_id);
+  reorderTracks = (indexes, index) => {
+    const {
+      coreActions: {
+        reorderPlaylistTracks,
+      },
+      playlist: {
+        uri,
+        snapshot_id,
+      },
+    } = this.props;
+
+    reorderPlaylistTracks(uri, indexes, index, snapshot_id);
   }
 
-  removeTracks(tracks_indexes) {
+  removeTracks = (tracks_indexes) => {
     this.props.coreActions.removeTracksFromPlaylist(this.props.playlist.uri, tracks_indexes);
   }
 
-  inLibrary() {
-    const library = `${uriSource(this.props.uri)}_library_playlists`;
-    return (this.props[library] && this.props[library].indexOf(this.props.uri) > -1);
+  inLibrary = () => {
+    const { uri } = this.props;
+    const libraryName = `${uriSource(uri)}_library_playlists`;
+    const { [libraryName]: library = [] } = this.props;
+    return library.indexOf(uri) > -1;
   }
 
-  renderActions() {
+  renderActions = () => {
+    const {
+      uri,
+      playlist: {
+        can_edit,
+      },
+    } = this.props;
+
     switch (uriSource(this.props.uri)) {
       case 'm3u':
         return (
           <div className="actions">
-            <button className="button button--primary" onClick={(e) => this.play()}>Play</button>
-            <Link className="button button--default" to={`/playlist/${encodeURIComponent(this.props.uri)}/edit`}>Edit</Link>
-            <ContextMenuTrigger onTrigger={(e) => this.handleContextMenu(e)} />
+            <button className="button button--primary" onClick={this.play}>
+              <I18n path="actions.play" />
+            </button>
+            <Link
+              className="button button--default"
+              to={`/playlist/${encodeURIComponent(uri)}/edit`}
+            >
+              <I18n path="actions.edit" />
+            </Link>
+            <ContextMenuTrigger onTrigger={this.handleContextMenu} />
           </div>
         );
 
       case 'spotify':
-        if (this.props.playlist.can_edit) {
+        if (can_edit) {
           return (
             <div className="actions">
-              <button className="button button--primary" onClick={(e) => this.play()}>Play</button>
-              <Link className="button button--default" to={`/playlist/${encodeURIComponent(this.props.uri)}/edit`}>Edit</Link>
-              <ContextMenuTrigger onTrigger={(e) => this.handleContextMenu(e)} />
+              <button className="button button--primary" onClick={this.play}>
+                <I18n path="actions.play" />
+              </button>
+              <Link
+                className="button button--default"
+                to={`/playlist/${encodeURIComponent(uri)}/edit`}
+              >
+                <I18n path="actions.edit" />
+              </Link>
+              <ContextMenuTrigger onTrigger={this.handleContextMenu} />
             </div>
           );
         }
         return (
           <div className="actions">
-            <button className="button button--primary" onClick={(e) => this.play()}>Play</button>
-            <FollowButton uri={this.props.uri} addText="Add to library" removeText="Remove from library" is_following={this.inLibrary()} />
-            <ContextMenuTrigger onTrigger={(e) => this.handleContextMenu(e)} />
+            <button className="button button--primary" onClick={this.play}>
+              <I18n path="actions.play" />
+            </button>
+            <FollowButton
+              uri={uri}
+              is_following={this.inLibrary()}
+            />
+            <ContextMenuTrigger onTrigger={this.handleContextMenu} />
           </div>
         );
 
       default:
         return (
           <div className="actions">
-            <button className="button button--primary" onClick={(e) => this.play()}>Play</button>
-            <ContextMenuTrigger onTrigger={(e) => this.handleContextMenu(e)} />
+            <button
+              className="button button--primary"
+              onClick={this.play}
+            >
+              <I18n path="actions.play" />
+            </button>
+            <ContextMenuTrigger onTrigger={this.handleContextMenu} />
           </div>
         );
     }
   }
 
-  render() {
-    const playlist_id = getFromUri('playlistid', this.props.uri);
+  render = () => {
+    const {
+      uri,
+      playlist: playlistProp,
+      load_queue,
+      tracks,
+      users,
+      slim_mode,
+    } = this.props;
 
-    if (!this.props.playlist) {
-      if (isLoading(this.props.load_queue, [`spotify_playlists/${playlist_id}?`])) {
+    const playlist_id = getFromUri('playlistid', uri);
+
+    if (!playlistProp) {
+      if (isLoading(load_queue, [`spotify_playlists/${playlist_id}?`])) {
         return <Loader body loading />
       }
       return (
         <ErrorMessage type="not-found" title="Not found">
           <p>
-Could not find playlist with URI "
-            {encodeURIComponent(this.props.uri)}
-"
+            <I18n path="errors.uri_not_found" uri={uri} />
           </p>
         </ErrorMessage>
       );
     }
 
-    const playlist = collate(this.props.playlist, { tracks: this.props.tracks, users: this.props.users });
+    const playlist = collate(playlistProp, { tracks, users });
 
     let context = 'playlist';
     if (playlist.can_edit) {
       context = 'editable-playlist';
     }
 
-    if (playlist.tracks_total !== 0 && (!playlist.tracks_uris || (playlist.tracks_uris && !playlist.tracks) || (playlist.tracks_uris.length !== playlist.tracks.length))) {
-      var is_loading_tracks = true;
-    } else {
-      var is_loading_tracks = false;
-    }
+    const is_loading_tracks = (
+      playlist.tracks_total !== 0
+      && (
+        !playlist.tracks_uris
+        || (playlist.tracks_uris && !playlist.tracks)
+        || (playlist.tracks_uris.length !== playlist.tracks.length)
+      )
+    );
 
     return (
       <div className="view playlist-view content-wrapper preserve-3d">
@@ -227,30 +300,45 @@ Could not find playlist with URI "
 
         <div className="title">
           <h1>{playlist.name}</h1>
-          {playlist.description ? <h2 className="description" dangerouslySetInnerHTML={{ __html: playlist.description }} /> : null }
+          {playlist.description && (
+            <h2
+              className="description"
+              dangerouslySetInnerHTML={{ __html: playlist.description }}
+            />
+          )}
 
           <ul className="details">
-            {!this.props.slim_mode ? <li className="source"><Icon type="fontawesome" name={sourceIcon(playlist.uri)} /></li> : null }
-            {playlist.user_uri ? <li><URILink type="user" uri={playlist.user_uri}>{playlist.user ? playlist.user.name : getFromUri('userid', playlist.user_uri)}</URILink></li> : null }
+            {!slim_mode && (
+              <li className="source">
+                <Icon type="fontawesome" name={sourceIcon(playlist.uri)} />
+              </li>
+            )}
+            {playlist.user_uri && (
+              <li>
+                <URILink
+                  type="user"
+                  uri={playlist.user_uri}
+                >
+                  {playlist.user ? playlist.user.name : getFromUri('userid', playlist.user_uri)}
+                </URILink>
+              </li>
+            )}
             <li>
-              {playlist.tracks_total ? playlist.tracks_total : '0'}
-              {' '}
-tracks
+              <I18n path="specs.tracks" count={playlist.tracks_total || 0} />
             </li>
-            {!this.props.slim_mode && playlist.tracks && playlist.tracks_total > 0 ? <li><Dater type="total-time" data={playlist.tracks} /></li> : null }
-            {!this.props.slim_mode && playlist.followers !== undefined ? (
+            {!slim_mode && playlist.tracks && playlist.tracks_total > 0 && (
+              <li><Dater type="total-time" data={playlist.tracks} /></li>
+            )}
+            {!slim_mode && playlist.followers !== undefined && (
               <li>
-                <NiceNumber value={playlist.followers} />
-                {' '}
-followers
+                <I18n path="specs.followers" count={nice_number(playlist.followers)} />
               </li>
-            ) : null }
-            {!this.props.slim_mode && playlist.last_modified_date ? (
+            )}
+            {!slim_mode && playlist.last_modified_date && (
               <li>
-Edited
-                <Dater type="ago" data={playlist.last_modified_date} />
+                <I18n path="specs.edited" date={dater('ago', playlist.last_modified_date)} />
               </li>
-            ) : null }
+            )}
           </ul>
         </div>
 
@@ -262,13 +350,13 @@ Edited
             className="playlist-track-list"
             track_context={context}
             tracks={playlist.tracks}
-            removeTracks={(tracks_indexes) => this.removeTracks(tracks_indexes)}
-            reorderTracks={(indexes, index) => this.reorderTracks(indexes, index)}
+            removeTracks={this.removeTracks}
+            reorderTracks={this.reorderTracks}
           />
           <LazyLoadListener
             loadKey={playlist.tracks_more}
             showLoader={is_loading_tracks || playlist.tracks_more}
-            loadMore={() => this.loadMore()}
+            loadMore={this.loadMore}
           />
         </section>
       </div>

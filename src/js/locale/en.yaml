@@ -1,0 +1,145 @@
+errors:
+  uri_not_found: Could not find anything with URI %{uri}
+specs:
+  tracks: '%{count} tracks'
+  followers: '%{count} followers'
+  listeners: '%{count} listeners'
+  plays: '%{count} plays'
+  popularity: '%{percent}% popularity'
+  edited: 'Edited '
+actions:
+  play: Play
+  pause: Pause
+  stop: Stop
+  add_to_library: Add to library
+  remove_from_library: Remove from library
+  reset: Reset
+  back: Back
+  enable: Enable
+  disable: Disable
+  send: Send
+  edit: Edit
+time:
+  seconds: 
+    short: secs
+    singular: second
+    plural: seconds
+  minutes: 
+    short: mins
+    singular: minute
+    plural: minutes
+  hours: 
+    short: hrs
+    singular: hour
+    plural: hours
+  days: 
+    short: days
+    singular: day
+    plural: days
+  weeks: 
+    short: wks
+    singular: week
+    plural: weeks
+  years: 
+    short: yrs
+    singular: year
+    plural: years
+services:
+  mopidy:
+    title: Mopidy
+  pusher:
+    title: Pusher
+  snapcast:
+    title: Snapcast
+sidebar:
+  now_playing: Now playing
+  search: Search
+  discover: Discover
+  genre: Genre / Mood
+  featured_playlists: Featured playlists
+  new_releases: New releases
+  my_music: My music
+  playlists: Playlists
+  artists: Artists
+  albums: Albums
+  tracks: Tracks
+  browse: Browse
+  settings: Settings
+  not_connected: '%{name} not connected'
+now_playing:
+  title: Now playing
+  context_actions:
+    radio: Radio
+    history: History
+    add_uri: Add URI
+  current_track:
+    playing_from: Playing from
+    shuffle: Shuffle
+    clear: Clear
+    radio: Radio
+album:
+  title: Album
+  title_window: '%{name} by %{artist} (album)'
+  wiki:
+    title: About
+    published: 'Published: %{date}'
+artist:
+  title: Artist
+  title_window: '%{name} (artist)'
+  overview:
+    title: Overview
+    top_tracks: Top tracks
+    related_artists:
+      title: Related artists
+      more: All related artists
+  tracks:
+    title: Tracks
+  related_artists:
+    title: Related artists
+  about:
+    title: About
+    source: '%{source} artist'
+    wiki:
+      published: 'Published: %{date}'
+      origin: 'Origin: '
+debug:
+  title: Debug
+  ui:
+    title: User interface
+  debug:
+    title: Debug
+    overlay: Show debug overlay
+  logging:
+    title: Logging
+    mopidy: Log Mopidy
+    pusher: Log Pusher
+    actions: Log Actions
+    snapcast: Log Snapcast
+  create_notification: Create notification
+  create_process: Create process notification
+  run_test: Run test process
+  call: Call
+  data: Data
+  examples: Examples
+playlist:
+  title: Playlist
+  title_window: '%{name} (playlist)'
+search:
+  title: 'Search: %{term}'
+  context_actions:
+    sort: Sort
+    source: 'Sources (%{count})'
+  placeholder: Search
+  artists:
+    title: Artists
+    more: 'All artists (%{count})'
+  albums:
+    title: Albums
+    more: 'All albums (%{count})'
+  playlists:
+    title: Playlists
+    more: 'All playlists (%{count})'
+  tracks:
+    title: Tracks
+settings:
+  title: Settings

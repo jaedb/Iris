@@ -88,6 +88,7 @@ export class App extends React.Component {
 
     this.handleInstallPrompt = this.handleInstallPrompt.bind(this);
     this.handleFocusAndBlur = this.handleFocusAndBlur.bind(this);
+    window.language = props.language;
   }
 
   componentWillUnmount() {
@@ -366,6 +367,7 @@ export class App extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
+  language: state.ui.language,
   theme: state.ui.theme,
   wide_scrollbar_enabled: state.ui.wide_scrollbar_enabled,
   smooth_scrolling_enabled: state.ui.smooth_scrolling_enabled,

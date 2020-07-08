@@ -8,7 +8,7 @@ import ProgressSlider from './Fields/ProgressSlider';
 import VolumeControl from './Fields/VolumeControl';
 import MuteControl from './Fields/MuteControl';
 import OutputControl from './Fields/OutputControl';
-import Dater from './Dater';
+import { Dater } from './Dater';
 import LinksSentence from './LinksSentence';
 import Thumbnail from './Thumbnail';
 import Icon from './Icon';
