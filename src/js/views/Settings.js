@@ -406,16 +406,27 @@ class Settings extends React.Component {
             <div className="name">Version</div>
             <div className="input">
               <span className="text">
-                {this.props.pusher.version.current}
+                <a
+                  target="_blank"
+                  rel="noopener noref"
+                  href={`https://github.com/jaedb/Iris/releases/tag/${this.props.pusher.version.current}`}
+                >
+                  {this.props.pusher.version.current}
+                </a>
                 {' '}
                 <span className="mid_grey-text">
                   {build}
                 </span>
                 {this.props.pusher.version.upgrade_available ? (
-                  <span className="flag flag--dark">
+                  <a
+                    target="_blank"
+                    rel="noopener noref"
+                    className="flag flag--dark"
+                    href={`https://github.com/jaedb/Iris/releases/tag/${this.props.pusher.version.latest}`}
+                  >
                     <Icon name="cloud_download" className="blue-text" />
-                    {'  Upgrade available'}
-                  </span>
+                    {`  Upgrade available (${this.props.pusher.version.latest})`}
+                  </a>
                 ) : (
                     <span className="flag flag--dark">
                       <Icon name="check" className="green-text" />

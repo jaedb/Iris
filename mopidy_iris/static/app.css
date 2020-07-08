@@ -3100,6 +3100,8 @@ footer {
       margin-right: 0.25em; }
 
 .flag {
+  position: relative;
+  border-radius: 3px;
   font-size: 9px;
   font-weight: bold;
   display: inline-block;
@@ -3109,6 +3111,31 @@ footer {
   border-radius: 3px;
   vertical-align: bottom;
   margin: 0 8px 1px; }
+  .flag:before {
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+    border-radius: 3px;
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    opacity: 0;
+    z-index: 9;
+    pointer-events: none;
+    background: -webkit-linear-gradient(to bottom right, rgba(200, 200, 200, 0.75), #646464);
+    background: -moz-linear-gradient(to bottom right, rgba(200, 200, 200, 0.75), #646464);
+    background: -o-linear-gradient(to bottom right, rgba(200, 200, 200, 0.75), #646464);
+    background: linear-gradient(to bottom right, rgba(200, 200, 200, 0.75), #646464); }
+  .flag[href] {
+    border: 0 !important;
+    overflow: hidden; }
+    .flag[href]:hover:before {
+      opacity: 0.5; }
   .flag--blue {
     background: #32b5f2;
     color: #FFFFFF; }
