@@ -6,6 +6,7 @@ specs:
   listeners: '%{count} listeners'
   plays: '%{count} plays'
   popularity: '%{percent}% popularity'
+  edited: 'Edited '
 actions:
   play: Play
   pause: Pause
@@ -17,6 +18,7 @@ actions:
   enable: Enable
   disable: Disable
   send: Send
+  edit: Edit
 time:
   seconds: 
     short: secs
@@ -119,6 +121,9 @@ debug:
   call: Call
   data: Data
   examples: Examples
+playlist:
+  title: Playlist
+  title_window: '%{name} (playlist)'
 search:
   title: 'Search: %{term}'
   context_actions:

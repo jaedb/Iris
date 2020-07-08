@@ -123,7 +123,7 @@ class Queue extends React.Component {
   }
 
   renderArtwork = (image) => {
-    const { current_track: { album: { uri } = {} } = {} } = this.props;
+    const { current_track_uri } = this.props;
 
     if (!image) {
       return (
@@ -136,7 +136,7 @@ class Queue extends React.Component {
     return (
       <div className="current-track__artwork">
         <Thumbnail glow image={image} type="track">
-          <URILink uri={uri} className="thumbnail__actions__item">
+          <URILink uri={current_track_uri} className="thumbnail__actions__item">
             <Icon name="art_track" />
           </URILink>
           <Link to="/kiosk-mode" className="thumbnail__actions__item">
