@@ -20,7 +20,7 @@ import * as mopidyActions from '../services/mopidy/actions';
 import * as lastfmActions from '../services/lastfm/actions';
 import * as spotifyActions from '../services/spotify/actions';
 import { isHosted } from '../util/helpers';
-import { i18n } from '../locale';
+import { i18n, I18n } from '../locale';
 
 class Settings extends React.Component {
   constructor(props) {
@@ -57,14 +57,14 @@ class Settings extends React.Component {
     setLanguage(language);
   }
 
-  resetAllSettings() {
+  resetAllSettings = () => {
     localStorage.clear();
     window.location = '#';
     window.location.reload(true);
     return false;
   }
 
-  resetServiceWorkerAndCache() {
+  resetServiceWorkerAndCache = () => {
     if ('serviceWorker' in navigator) {
 
       // Hose out all our caches
@@ -108,39 +108,76 @@ class Settings extends React.Component {
     }
   }
 
+  doRestart = () => {
+    const { pusherActions: { restart } } = this.props;
+    restart();
+  }
+
+  doUpgrade = () => {
+    const { pusherActions: { upgrade } } = this.props;
+    upgrade();
+  }
+
+  doLocalScan = () => {
+    const { pusherActions: { localScan } } = this.props;
+    localScan();
+  }
+
   renderLocalScanButton = () => {
-    const { processes } = this.props.ui;
+    const {
+      ui: { processes },
+    } = this.props;
+
     const loading = processes.local_scan && processes.local_scan.status === 'running';
+
     return (
       <button
         className={`button button--default ${loading ? 'button--working' : ''}`}
-        onClick={(e) => this.props.pusherActions.localScan()}
+        onClick={this.doLocalScan}
+        type="button"
       >
-        Run local scan
+        <I18n path="settings.advanced.start_local_scan" />
       </button>
     );
   }
 
-  render() {
+  render = () => {
     const {
       mopidyActions,
       mopidy,
-      pusherActions,
+      pusherActions: {
+        setUsername,
+        runCommand,
+        setCommands,
+      },
       pusher,
       history,
       uiActions,
       ui,
     } = this.props;
+    const {
+      pusher_username,
+    } = this.state;
 
     const options = (
       <span>
-        <a className="button button--discrete button--no-hover" onClick={(e) => history.push('/settings/debug')}>
-          <Icon name="code" />
-          Debug
-        </a>
-        <a className="button button--discrete button--no-hover" href="https://github.com/jaedb/Iris/wiki" target="_blank">
-          <Icon name="help" />
-          Help
+        <Link
+          className="button button--discrete button--no-hover"
+          to="/settings/debug"
+        >
+          <I18n path="debug.title">
+            <Icon name="code" />
+          </I18n>
+        </Link>
+        <a
+          className="button button--discrete button--no-hover"
+          href="https://github.com/jaedb/Iris/wiki"
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          <I18n path="settings.help">
+            <Icon name="help" />
+          </I18n>
         </a>
       </span>
     );
@@ -148,27 +185,28 @@ class Settings extends React.Component {
     return (
       <div className="view settings-view">
         <Header options={options} uiActions={uiActions}>
-          <Icon name="settings" type="material" />
-          Settings
+          <I18n path="settings.title">
+            <Icon name="settings" type="material" />
+          </I18n>
         </Header>
 
         <section className="content-wrapper">
 
           <h4 className="underline">
-            Server
+            <I18n path="settings.server.title" />
             <a name="server" />
           </h4>
 
           <label className="field">
-            <div className="name">Username</div>
+            <div className="name"><I18n path="settings.server.username.label" /></div>
             <div className="input">
               <TextField
-                onChange={(value) => pusherActions.setUsername(value.replace(/\W/g, ''))}
-                value={this.state.pusher_username}
+                onChange={(value) => setUsername(value.replace(/\W/g, ''))}
+                value={pusher_username}
                 autosave
               />
               <div className="description">
-                A non-unique string used to identify this client (no special characters)
+                <I18n path="settings.server.username.description" />
               </div>
             </div>
           </label>
@@ -176,19 +214,19 @@ class Settings extends React.Component {
           <Route path="/settings/:server?/:id?" component={Servers} />
 
           <h4 className="underline">
-            Services
+            <I18n path="settings.services.title" />
             <a name="services" />
           </h4>
 
           <Route path="/settings/:services?/:service?/:id?" component={Services} />
 
           <h4 className="underline">
-            Interface
+            <I18n path="settings.interface.title" />
             <a name="interface" />
           </h4>
           
           <div className="field dropdown">
-            <div className="name">Language</div>
+            <div className="name"><I18n path="settings.interface.language.label" /></div>
             <div className="input">
               <SelectField
                 onChange={this.onLanguageChange}
@@ -203,7 +241,7 @@ class Settings extends React.Component {
 
           <div className="field radio">
             <div className="name">
-              Theme
+              <I18n path="settings.interface.theme.label" />
             </div>
             <div className="input">
               <label>
@@ -215,8 +253,10 @@ class Settings extends React.Component {
                   onChange={(e) => uiActions.set({ theme: e.target.value })}
                 />
                 <span className="label tooltip">
-                  Auto
-                  <span className="tooltip__content">Detects your browser or OS preference</span>
+                  <I18n path="settings.interface.theme.auto" />
+                  <span className="tooltip__content">
+                    <I18n path="settings.interface.theme.auto_tooltip" />
+                  </span>
                 </span>
               </label>
               <label>
@@ -227,7 +267,9 @@ class Settings extends React.Component {
                   checked={ui.theme === 'dark'}
                   onChange={(e) => uiActions.set({ theme: e.target.value })}
                 />
-                <span className="label">Dark</span>
+                <span className="label">
+                  <I18n path="settings.interface.theme.dark" />
+                </span>
               </label>
               <label>
                 <input
@@ -237,24 +279,28 @@ class Settings extends React.Component {
                   checked={ui.theme === 'light'}
                   onChange={(e) => uiActions.set({ theme: e.target.value })}
                 />
-                <span className="label">Light</span>
+                <span className="label">
+                  <I18n path="settings.interface.theme.light" />
+                </span>
               </label>
             </div>
           </div>
 
           <div className="field checkbox">
-            <div className="name">Behavior</div>
+            <div className="name"><I18n path="settings.interface.behavior.label" /></div>
             <div className="input">
               <label>
                 <input
                   type="checkbox"
                   name="log_actions"
                   checked={ui.clear_tracklist_on_play}
-                  onChange={(e) => uiActions.set({ clear_tracklist_on_play: !ui.clear_tracklist_on_play })}
+                  onChange={() => uiActions.set({ clear_tracklist_on_play: !ui.clear_tracklist_on_play })}
                 />
                 <span className="label tooltip">
-                  Clear tracklist on play of URI(s)
-                  <span className="tooltip__content">Playing one or more URIs will clear the current play queue first</span>
+                  <I18n path="settings.interface.behavior.clear_tracklist" />
+                  <span className="tooltip__content">
+                    <I18n path="settings.interface.behavior.clear_tracklist_tooltip" />
+                  </span>
                 </span>
               </label>
               <label>
@@ -262,10 +308,10 @@ class Settings extends React.Component {
                   type="checkbox"
                   name="hotkeys_enabled"
                   checked={ui.hotkeys_enabled}
-                  onChange={(e) => uiActions.set({ hotkeys_enabled: !ui.hotkeys_enabled })}
+                  onChange={() => uiActions.set({ hotkeys_enabled: !ui.hotkeys_enabled })}
                 />
                 <span className="label">
-                  Enable hotkeys
+                <I18n path="settings.interface.behavior.hotkeys" />
                 </span>
               </label>
               <label>
@@ -276,7 +322,7 @@ class Settings extends React.Component {
                   onChange={(e) => uiActions.set({ smooth_scrolling_enabled: !ui.smooth_scrolling_enabled })}
                 />
                 <span className="label">
-                  Enable smooth scrolling
+                  <I18n path="settings.interface.behavior.smooth_scrolling" />
                 </span>
               </label>
               <label>
@@ -287,8 +333,10 @@ class Settings extends React.Component {
                   onChange={(e) => uiActions.set({ playback_controls_touch_enabled: !ui.playback_controls_touch_enabled })}
                 />
                 <span className="label tooltip">
-                  Enable touch events on play controls
-                  <span className="tooltip__content">Allows left- and right-swipe to change tracks</span>
+                  <I18n path="settings.interface.behavior.touch_events" />
+                  <span className="tooltip__content">
+                    <I18n path="settings.interface.behavior.touch_events_tooltip" />
+                  </span>
                 </span>
               </label>
               <label>
@@ -296,10 +344,10 @@ class Settings extends React.Component {
                   type="checkbox"
                   name="wide_scrollbar_enabled"
                   checked={ui.wide_scrollbar_enabled}
-                  onChange={(e) => uiActions.set({ wide_scrollbar_enabled: !ui.wide_scrollbar_enabled })}
+                  onChange={() => uiActions.set({ wide_scrollbar_enabled: !ui.wide_scrollbar_enabled })}
                 />
                 <span className="label">
-                  Use wide scrollbars
+                  <I18n path="settings.interface.behavior.wide_scrollbars" />
                 </span>
               </label>
             </div>
@@ -307,7 +355,7 @@ class Settings extends React.Component {
 
           <div className="field sources-priority">
             <div className="name">
-              Sources priority
+              <I18n path="settings.interface.sources_priority.label" />
             </div>
             <div className="input">
               <SourcesPriority
@@ -316,29 +364,31 @@ class Settings extends React.Component {
                 uiActions={uiActions}
               />
               <div className="description">
-                Drag-and-drop to prioritize search providers and results
+                <I18n path="settings.interface.sources_priority.description" />
               </div>
             </div>
           </div>
 
           {isHosted() ? null : (
             <div className="field checkbox">
-              <div className="name">Reporting</div>
+              <div className="name">
+                <I18n path="settings.interface.reporting.label" />
+              </div>
               <div className="input">
                 <label>
                   <input
                     type="checkbox"
                     name="allow_reporting"
                     checked={ui.allow_reporting}
-                    onChange={(e) => uiActions.set({ allow_reporting: !ui.allow_reporting })}
+                    onChange={() => uiActions.set({ allow_reporting: !ui.allow_reporting })}
                   />
                   <span className="label">
-                    Allow reporting of anonymous usage statistics
+                    <I18n path="settings.interface.reporting.sublabel" />
                   </span>
                 </label>
                 <div className="description">
-                  This helps identify errors and potential features that make Iris better for everyone. See
-                  <a href="https://github.com/jaedb/Iris/wiki/Terms-of-use#privacy-policy" target="_blank">privacy policy</a>
+                  <I18n path="settings.interface.reporting.description" />
+                  <a href="https://github.com/jaedb/Iris/wiki/Terms-of-use#privacy-policy" target="_blank"><I18n path="settings.interface.reporting.privacy_policy" /></a>
                   .
                 </div>
               </div>
@@ -347,25 +397,29 @@ class Settings extends React.Component {
 
           <div className="field commands-setup" id="commands-setup">
             <div className="name">
-              Commands
+              <I18n path="settings.interface.commands.label" />
             </div>
             <div className="input">
               <Commands
-                commands={this.props.pusher.commands}
-                runCommand={(id, notify) => this.props.pusherActions.runCommand(id, notify)}
-                onChange={(commands) => this.props.pusherActions.setCommands(commands)}
+                commands={pusher.commands}
+                runCommand={(id, notify) => runCommand(id, notify)}
+                onChange={(commands) => setCommands(commands)}
               />
-              <Link to="/edit-command" className="button button--default">Add new</Link>
+              <Link to="/edit-command" className="button button--default">
+                <I18n path="actions.add" />
+              </Link>
             </div>
           </div>
 
           <h4 className="underline">
-            Advanced
+            <I18n path="settings.advanced.title" />
             <a name="advanced" />
           </h4>
 
           <div className="field">
-            <div className="name">Artist library URI</div>
+            <div className="name">
+              <I18n path="settings.advanced.artist_uri.label" />
+            </div>
             <div className="input">
               <TextField
                 value={this.state.mopidy_library_artists_uri}
@@ -373,13 +427,15 @@ class Settings extends React.Component {
                 autosave
               />
               <div className="description">
-                URI used for collecting library artists
+                <I18n path="settings.advanced.artist_uri.description" />
               </div>
             </div>
           </div>
 
           <label className="field">
-            <div className="name">Album library URI</div>
+            <div className="name">
+              <I18n path="settings.advanced.album_uri.label" />
+            </div>
             <div className="input">
               <TextField
                 type="text"
@@ -388,13 +444,15 @@ class Settings extends React.Component {
                 autosave
               />
               <div className="description">
-                URI used for collecting library albums
+                <I18n path="settings.advanced.album_uri.description" />
               </div>
             </div>
           </label>
 
           <div className="field pusher-connections">
-            <div className="name">Connections</div>
+            <div className="name">
+              <I18n path="settings.advanced.connections.label" />
+            </div>
             <div className="input">
               <div className="text">
                 <PusherConnectionList />
@@ -403,35 +461,44 @@ class Settings extends React.Component {
           </div>
 
           <div className="field">
-            <div className="name">Version</div>
+            <div className="name">
+              <I18n path="settings.advanced.version.label" />
+            </div>
             <div className="input">
               <span className="text">
                 <a
                   target="_blank"
-                  rel="noopener noref"
-                  href={`https://github.com/jaedb/Iris/releases/tag/${this.props.pusher.version.current}`}
+                  rel="noopener noreferrer"
+                  href={`https://github.com/jaedb/Iris/releases/tag/${pusher.version.current}`}
                 >
-                  {this.props.pusher.version.current}
+                  {pusher.version.current}
                 </a>
                 {' '}
                 <span className="mid_grey-text">
                   {build}
                 </span>
-                {this.props.pusher.version.upgrade_available ? (
+                {pusher.version.upgrade_available ? (
                   <a
                     target="_blank"
-                    rel="noopener noref"
+                    rel="noopener noreferrer"
                     className="flag flag--dark"
-                    href={`https://github.com/jaedb/Iris/releases/tag/${this.props.pusher.version.latest}`}
+                    href={`https://github.com/jaedb/Iris/releases/tag/${pusher.version.latest}`}
                   >
                     <Icon name="cloud_download" className="blue-text" />
-                    {`  Upgrade available (${this.props.pusher.version.latest})`}
+                    <I18n
+                      path="settings.advanced.version.upgrade_available"
+                      version={pusher.version.latest}
+                    >
+                      {' '}
+                    </I18n>
                   </a>
                 ) : (
-                    <span className="flag flag--dark">
-                      <Icon name="check" className="green-text" />
-                      {'  Up-to-date'}
-                    </span>
+                  <span className="flag flag--dark">
+                    <Icon name="check" className="green-text" />
+                    <I18n path="settings.advanced.version.up_to_date">
+                      {' '}
+                    </I18n>
+                  </span>
                 )}
               </span>
             </div>
@@ -439,54 +506,76 @@ class Settings extends React.Component {
 
           <div className="field">
             {this.renderLocalScanButton()}
-            <Link className="button button--default" to="/share-configuration">Share configuration</Link>
+            <Link
+              className="button button--default"
+              to="/share-configuration"
+            >
+              <I18n path="settings.advanced.share_configuration" />
+            </Link>
           </div>
 
           <div className="field">
-            {this.props.pusher.version.upgrade_available ? (
-              <button className="button button--secondary" onClick={(e) => this.props.pusherActions.upgrade()}>
-                {`Upgrade to ${this.props.pusher.version.latest}`}
+            {pusher.version.upgrade_available && (
+              <button
+                className="button button--secondary"
+                onClick={this.doUpgrade}
+                type="button"
+              >
+                <I18n path="settings.advanced.version.upgrade" version={pusher.version.latest} />
               </button>
-            ) : null}
-            <button className={`button button--destructive${this.props.mopidy.restarting ? ' button--working' : ''}`} onClick={(e) => this.props.pusherActions.restart()}>Restart server</button>
+            )}
+            <button
+              className={`button button--destructive${mopidy.restarting ? ' button--working' : ''}`}
+              onClick={this.doRestart}
+              type="button"
+            >
+              <I18n path="settings.advanced.restart" />
+            </button>
             <ConfirmationButton
               className="button--destructive"
-              content="Reset all settings"
-              confirmingContent="Are you sure?"
-              onConfirm={() => this.resetAllSettings()}
+              content={i18n('settings.advanced.reset')}
+              onConfirm={this.resetAllSettings}
             />
             <button
               className="button button--destructive"
-              onClick={() => this.resetServiceWorkerAndCache()}
+              onClick={this.resetServiceWorkerAndCache}
+              type="button"
             >
-              Reset cache
+              <I18n path="settings.advanced.reset_cache" />
             </button>
           </div>
 
           <h4 className="underline">
-            About
+            <I18n path="settings.about.title" />
             <a name="about" />
           </h4>
 
           <div>
             <em><a href="https://github.com/jaedb/Iris" target="_blank">Iris</a></em>
-            {' '}
-            is an open-source project by
-            <a href="https://github.com/jaedb" target="_blank">James Barnsley</a>
-            . It is provided free and with absolutely no warranty. If you paid someone for this software, please let me know.
+            <I18n path="settings.about.blurb_1" />
+            <a
+              href="https://github.com/jaedb"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              James Barnsley
+            </a>
+            <I18n path="settings.about.blurb_2" />
           </div>
           <br />
           <br />
           <div>
             <a className="button button--default" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=james%40barnsley%2enz&lc=NZ&item_name=James%20Barnsley&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted" target="_blank">
-              <Icon type="fontawesome" name="paypal" />
-              {' '}
-              Donate
+              <I18n path="settings.about.donate">
+                <Icon type="fontawesome" name="paypal" />
+                {' '}
+              </I18n>
             </a>
             <a className="button button--default" href="https://github.com/jaedb/Iris" target="_blank">
-              <Icon type="fontawesome" name="github" />
-              {' '}
-              GitHub
+              <I18n path="settings.about.github">
+                <Icon type="fontawesome" name="github" />
+                {' '}
+              </I18n>
             </a>
           </div>
 

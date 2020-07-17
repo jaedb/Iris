@@ -1,9 +1,13 @@
 errors:
-  uri_not_found: Could not find anything with URI %{uri}
+  uri_not_found: 'Could not find anything with URI %{uri}'
+  could_not_load: Could not load
+  no_results: No results found
+  authorization_required: 'You must authorize %{provider} first'
 specs:
   tracks: '%{count} tracks'
   followers: '%{count} followers'
   listeners: '%{count} listeners'
+  playlists: '%{count} playlists'
   plays: '%{count} plays'
   popularity: '%{percent}% popularity'
   edited: 'Edited '
@@ -19,6 +23,18 @@ actions:
   disable: Disable
   send: Send
   edit: Edit
+  add: Add
+  confirm: Are you sure?
+common:
+  popularity: Popularity
+  name: Name
+  artist: Artist
+  duration: Duration
+  source: Source
+  sources: Sources
+  sort: Sort
+  filter: Filter
+  by: ' by '
 time:
   seconds: 
     short: secs
@@ -51,6 +67,13 @@ services:
     title: Pusher
   snapcast:
     title: Snapcast
+  genius:
+    title: Genius
+    switch_lyrics_result: Switch to another lyrics seach result
+  lastfm:
+    title: LastFM
+    love: Love
+    unlove: Unlove
 sidebar:
   now_playing: Now playing
   search: Search
@@ -124,8 +147,12 @@ debug:
 playlist:
   title: Playlist
   title_window: '%{name} (playlist)'
+  title_plural: Playlists
+queue_history:
+  title: Playback history
 search:
-  title: 'Search: %{term}'
+  title: 'Search'
+  title_window: 'Search: %{term}'
   context_actions:
     sort: Sort
     source: 'Sources (%{count})'
@@ -141,5 +168,81 @@ search:
     more: 'All playlists (%{count})'
   tracks:
     title: Tracks
+track:
+  title: Track
+  title_window: '%{name} by %{artists} (track)'
+  lyrics_origin: 'Origin: '
+  explicit: Explicit
+  disc_number: 'Disc %{number}'
+  track_number: 'Track %{number}'
+  unknown_album: Unknown album
+  want_lyrics: 'Want track lyrics? Authorize Genius under '
 settings:
   title: Settings
+  help: Help
+  server:
+    title: Server
+    username:
+      label: Username
+      description: A non-unique string used to identify this client (no special characters)
+  services:
+    title: Services
+  interface:
+    title: Interface
+    language:
+      label: Language
+    theme:
+      label: Theme
+      auto: Auto
+      auto_toolip: Detects your browser or OS preference
+      dark: Dark
+      light: Light
+    behavior:
+      label: Behavior
+      clear_tracklist: Clear tracklist on play of URI(s)
+      clear_tracklist_tooltip: Playing one or more URIs will clear the current play queue first
+      hotkeys: Enable hotkeys
+      smooth_scrolling: Enable smooth scrolling
+      touch_events: Enable touch events on play controls
+      touch_events_tooltip: Allows left- and right-swipe to change tracks
+      wide_scrollbars: Use wide scrollbars
+    sources_priority:
+      label: Sources priority
+      description: Drag-and-drop to prioritize search providers and results
+    reporting:
+      label: Reporting
+      sublabel: Allow reporting of anonymous usage statistics
+      description: 'This helps identify errors and potential features that make Iris better for everyone. See '
+      privacy_policy: privacy policy
+    commands:
+      label: Commands
+  advanced:
+    title: Advanced
+    start_local_scan: Start local scan
+    artist_uri:
+      label: Artist library URI
+      description: URI used for collecting library artists
+    album_uri:
+      label: Album library URI
+      description: URI used for collecting library albums
+    connections:
+      label: Connections
+    version:
+      label: Version
+      upgrade_available: 'Upgrade available (%{version})'
+      upgrade: 'Upgrade to %{version}'
+      up_to_date: Up to date
+    share_configuration: Share configuration
+    restart: Restart server
+    reset_cache: Reset cache
+    reset: Reset all settings
+  about:
+    title: About
+    blurb_1: ' is an open-source project by '
+    blurb_2: '. It is provided free and with absolutely no warranty. If you paid someone for this software, please let me know.'
+    donate: Donate
+    github: GitHub
+user:
+  title: User
+  title_window: '%{name} (user)'
+  you: You

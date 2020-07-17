@@ -32,10 +32,17 @@ const i18n = (path, params = {}, transform) => {
   return value;
 };
 
-const I18n = ({ path, transform, children, ...params }) => (
+const I18n = ({
+  path,
+  transform,
+  children,
+  contentAfter,
+  ...params
+}) => (
   <Fragment>
+    {!contentAfter && children}
     {i18n(path, params, transform)}
-    {children}
+    {contentAfter && children}
   </Fragment>
 );
 

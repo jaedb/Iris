@@ -47,17 +47,17 @@ class Sidebar extends React.Component {
           <Icon name="warning" className="red-text" />
           <span className="tooltip__content">
             {!mopidy_connected && (
-              <I18n path="sidebar.not_connected" params={{ name: 'Mopidy' }}>
+              <I18n path="sidebar.not_connected" params={{ name: 'Mopidy' }} contentAfter>
                 <br />
               </I18n>
             )}
             {!pusher_connected && (
-              <I18n path="sidebar.not_connected" params={{ name: 'Pusher' }}>
+              <I18n path="sidebar.not_connected" params={{ name: 'Pusher' }} contentAfter>
                 <br />
               </I18n>
             )}
             {!snapcast_connected && snapcast_enabled && (
-              <I18n path="sidebar.not_connected" params={{ name: 'Snapcast' }}>
+              <I18n path="sidebar.not_connected" params={{ name: 'Snapcast' }} contentAfter>
                 <br />
               </I18n>
             )}

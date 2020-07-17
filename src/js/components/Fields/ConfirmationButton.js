@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { i18n } from '../../locale';
 
 export default class ConfirmationButton extends React.Component {
   constructor(props) {
@@ -16,22 +17,27 @@ export default class ConfirmationButton extends React.Component {
     clearTimeout(this.unconfirmTimer);
   }
 
-  handleClick(e) {
-    if (this.state.confirming) {
+  handleClick = () => {
+    const { confirming } = this.state;
+    const { onConfirm } = this.props;
+
+    if (confirming) {
       this.setState({ confirming: false });
-      this.props.onConfirm();
+      onConfirm();
     } else {
       this.setState({ confirming: true });
     }
   }
 
-  handleMouseEnter(e) {
+  handleMouseEnter = () => {
     this.setState({ timing_out: false });
     clearTimeout(this.unconfirmTimer);
   }
 
-  handleMouseLeave(e) {
-    if (this.state.confirming) {
+  handleMouseLeave = () => {
+    const { confirming } = this.state;
+
+    if (confirming) {
       this.setState({ timing_out: true });
       this.unconfirmTimer = setTimeout(
         () => {
@@ -42,38 +48,45 @@ export default class ConfirmationButton extends React.Component {
     }
   }
 
-  render() {
-    let className = 'button';
+  render = () => {
+    const {
+      confirmingContent,
+      working,
+      workingContent,
+      className: classNameProp,
+    } = this.props;
     let { content } = this.props;
+    const {
+      confirming,
+      timing_out,
+    } = this.state;
+    let className = 'button';
 
-    if (this.state.confirming) {
+    if (confirming) {
       className += ' button--confirming';
-      content = this.props.confirmingContent;
-      if (this.state.timing_out) {
+      content = confirmingContent || i18n('actions.confirm');
+      if (timing_out) {
         className += ' button--timing-out';
       }
     }
 
-    if (this.props.working) {
+    if (working) {
       className += ' button--working';
 
-      if (this.props.workingContent) {
-        content = this.props.workingContent;
+      if (workingContent) {
+        content = workingContent;
       }
-    }
-
-    if (this.props.className) {
-      className += ` ${this.props.className}`;
     }
 
     return (
       <button
-        className={className}
-        onClick={(e) => this.handleClick(e)}
-        onMouseLeave={(e) => this.handleMouseLeave(e)}
-        onMouseEnter={(e) => this.handleMouseEnter(e)}
+        className={`${className} ${classNameProp}`}
+        onClick={this.handleClick}
+        onMouseLeave={this.handleMouseLeave}
+        onMouseEnter={this.handleMouseEnter}
+        type="button"
       >
-        { content }
+        {content}
       </button>
     );
   }
