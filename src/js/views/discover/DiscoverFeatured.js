@@ -10,6 +10,7 @@ import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
 import { isLoading } from '../../util/helpers';
+import { i18n, I18n } from '../../locale';
 
 class DiscoverFeatured extends React.Component {
   componentDidMount() {
@@ -23,7 +24,7 @@ class DiscoverFeatured extends React.Component {
       },
     } = this.props;
 
-    setWindowTitle('Featured playlists');
+    setWindowTitle(i18n('discover.featured.title'));
     if (!featured_playlists) getFeaturedPlaylists();
   }
 
@@ -40,7 +41,7 @@ class DiscoverFeatured extends React.Component {
     getFeaturedPlaylists();
   }
 
-  handleContextMenu(e, item) {
+  handleContextMenu = (e, item) => {
     const {
       uiActions: {
         showContextMenu,
@@ -70,7 +71,7 @@ class DiscoverFeatured extends React.Component {
         <div className="view discover-featured-view preserve-3d">
           <Header className="overlay" uiActions={uiActions}>
             <Icon name="star" type="material" />
-						Featured playlists
+            <I18n path="discover.featured.title" />
           </Header>
           <Loader body loading />
         </div>
@@ -90,7 +91,7 @@ class DiscoverFeatured extends React.Component {
     const options = (
       <a className="button button--no-hover" onClick={this.onRefresh}>
         <Icon name="refresh" />
-        Refresh
+        <I18n path="actions.refresh" />
       </a>
     );
 
@@ -98,7 +99,7 @@ class DiscoverFeatured extends React.Component {
       <div className="view discover-featured-view preserve-3d">
         <Header uiActions={uiActions} options={options}>
           <Icon name="star" type="material" />
-          Featured playlists
+          <I18n path="discover.featured.title" />
         </Header>
         <section className="content-wrapper grid-wrapper">
           {items && <PlaylistGrid playlists={items} />}

@@ -3,6 +3,8 @@ errors:
   could_not_load: Could not load
   no_results: No results found
   authorization_required: 'You must authorize %{provider} first'
+  enable_first: 'Enable %{provider} first'
+  no_service_worker: Service worker not supported
 specs:
   tracks: '%{count} tracks'
   followers: '%{count} followers'
@@ -13,12 +15,14 @@ specs:
   edited: 'Edited '
 actions:
   play: Play
+  play_all: Play all
   pause: Pause
   stop: Stop
   add_to_library: Add to library
   remove_from_library: Remove from library
   reset: Reset
   back: Back
+  refresh: Refresh
   enable: Enable
   disable: Disable
   send: Send
@@ -63,6 +67,9 @@ time:
 services:
   mopidy:
     title: Mopidy
+    local: Local
+  spotify:
+    title: Spotify
   pusher:
     title: Pusher
   snapcast:
@@ -70,6 +77,8 @@ services:
   genius:
     title: Genius
     switch_lyrics_result: Switch to another lyrics seach result
+  google:
+    title: Google
   lastfm:
     title: LastFM
     love: Love
@@ -246,3 +255,67 @@ user:
   title: User
   title_window: '%{name} (user)'
   you: You
+discover:
+  categories:
+    title: 'Genre / Mood'
+  category:
+    title: 'Genre / Mood'
+    category: Category
+  featured:
+    title: Featured playlists
+  new_releases:
+    title: New releases
+  recommendations:
+    title: Discover
+    tracks: Tracks
+    artists: Artists
+    albums: Albums
+    body_title: Explore new music
+    body_subtitle: Add seeds and musical properties below to build your sound
+    too_many_seeds: Too many seeds! You can use up to a total of 5 seed tracks, artists and genres.
+    find_recommendations: Find recommendations
+library:
+  albums:
+    title: My albums
+  artists:
+    title: My artists
+  browse:
+    title: Browse
+  browse_directory:
+    title: Directory
+  playlists:
+    title: My playlists
+  tracks:
+    title: My tracks
+fields:
+  add_seed_field:
+    placeholder: 'Start typing...'
+  sort: Sort
+  view: View
+  source: Source
+  filters:
+    all: All
+    thumbnails: Thumbnails
+    list: List
+    as_loaded: As loaded
+    name: Name
+    artist: Artist
+    updated: Updated
+    tracks: Tracks
+    source: Source
+    editable: Editable
+    owner: Owner
+modal:
+  add_to_playlist:
+    title: Add to playlist
+    subtitle: 'Select playlist to add %{count} track%{plural} to'
+    no_playlists: No playlists available
+    no_editable_playlists: No editable playlists
+  add_to_queue:
+    title: Add to queue
+    subtitle: Add a comma-separated list of URIs to the play queue. You must have the appropriate Mopidy backend enabled for each URI schema (eg spotify:, yt:).
+    uris: URI(s)
+    position:
+      label: Position
+      end: End
+      next: After current track

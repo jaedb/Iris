@@ -65,6 +65,8 @@ class Settings extends React.Component {
   }
 
   resetServiceWorkerAndCache = () => {
+    const { coreActions: { handleException } } = this.props;
+
     if ('serviceWorker' in navigator) {
 
       // Hose out all our caches
@@ -87,24 +89,7 @@ class Settings extends React.Component {
       window.location = '#';
       window.location.reload(true);
     } else {
-      this.props.coreActions.handleException('Service Worker not supported');
-    }
-  }
-
-  handleBlur(service, name, value) {
-    this.setState({ input_in_focus: null });
-    const data = {};
-    data[name] = value;
-    this.props[`${service}Actions`].set(data);
-
-    // Any per-field actions
-    switch (name) {
-      case 'library_albums_uri':
-        this.props.mopidyActions.clearLibraryAlbums();
-        break;
-      case 'library_artists_uri':
-        this.props.mopidyActions.clearLibraryArtists();
-        break;
+      handleException(i18n('errors.no_service_worker'));
     }
   }
 

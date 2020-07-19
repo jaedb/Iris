@@ -19,6 +19,7 @@ import {
   isLoading,
 } from '../../util/helpers';
 import { arrayOf, sortItems } from '../../util/arrays';
+import { i18n, I18n } from '../../locale';
 
 class LibraryBrowseDirectory extends React.Component {
   constructor(props) {
@@ -40,7 +41,7 @@ class LibraryBrowseDirectory extends React.Component {
       });
     }
 
-    this.props.uiActions.setWindowTitle('Browse');
+    this.props.uiActions.setWindowTitle(i18n('library.browse_directory.title'));
     this.loadDirectory();
   }
 
@@ -151,7 +152,7 @@ class LibraryBrowseDirectory extends React.Component {
     } = this.props;
     const { limit } = this.state;
 
-    let title = 'Directory';
+    let title = i18n('library.browse_directory.title');
 
     if (!directory || isLoading(load_queue, ['mopidy_browse'])) {
       return (
@@ -188,12 +189,12 @@ class LibraryBrowseDirectory extends React.Component {
 
     const view_options = [
       {
-        label: 'Thumbnails',
         value: 'thumbnails',
+        label: i18n('fields.filters.thumbnails'),
       },
       {
-        label: 'List',
         value: 'list',
+        label: i18n('fields.filters.list'),
       },
     ];
 
@@ -210,12 +211,12 @@ class LibraryBrowseDirectory extends React.Component {
         {tracks && (
           <a className="button button--no-hover" onClick={(e) => { uiActions.hideContextMenu(); this.playAll(e, all_tracks); }}>
             <Icon name="play_circle_filled" />
-            Play all
+            <I18n path="actions.play_all" />
           </a>
         )}
         <a className="button button--no-hover" onClick={(e) => { uiActions.hideContextMenu(); this.goBack(e); }}>
           <Icon name="keyboard_backspace" />
-          Back
+          <I18n path="actions.back" />
         </a>
       </span>
     );

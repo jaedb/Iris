@@ -7,6 +7,7 @@ import * as coreActions from '../../services/core/actions';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
+import { I18n, i18n } from '../../locale';
 
 class AddToQueue extends React.Component {
   constructor(props) {
@@ -18,7 +19,7 @@ class AddToQueue extends React.Component {
   }
 
   componentDidMount() {
-    this.props.uiActions.setWindowTitle('Add to queue');
+    this.props.uiActions.setWindowTitle(i18n('modal.add_to_queue.title'));
   }
 
   handleSubmit(e) {
@@ -31,12 +32,18 @@ class AddToQueue extends React.Component {
   render() {
     return (
       <Modal className="modal--add-to-queue">
-        <h1>Add to queue</h1>
-        <h2 className="mid_grey-text">Add a comma-separated list of URIs to the play queue. You must have the appropriate Mopidy backend enabled for each URI schema (eg spotify:, yt:).</h2>
+        <h1>
+          <I18n path="modal.add_to_queue.title"/>
+        </h1>
+        <h2 className="mid_grey-text">
+          <I18n path="modal.add_to_queue.subtitle" />
+        </h2>
 
         <form onSubmit={(e) => this.handleSubmit(e)}>
           <div className="field text">
-            <div className="name">URI(s)</div>
+            <div className="name">
+              <I18n path="modal.add_to_queue.uris" />
+            </div>
             <div className="input">
               <input
                 type="text"
@@ -48,7 +55,7 @@ class AddToQueue extends React.Component {
 
           <div className="field radio white">
             <div className="name">
-							Position
+						  <I18n path="modal.add_to_queue.position.label" />
             </div>
             <div className="input">
               <label>
@@ -58,7 +65,9 @@ class AddToQueue extends React.Component {
                   checked={!this.state.next}
                   onChange={(e) => this.setState({ next: false })}
                 />
-                <span className="label">End</span>
+                <span className="label">
+                  <I18n path="modal.add_to_queue.position.end" />
+                </span>
               </label>
               <label>
                 <input
@@ -67,13 +76,17 @@ class AddToQueue extends React.Component {
                   checked={this.state.next}
                   onChange={(e) => this.setState({ next: true })}
                 />
-                <span className="label">After current track</span>
+                <span className="label">
+                  <I18n path="modal.add_to_queue.position.next" />
+                </span>
               </label>
             </div>
           </div>
 
           <div className="actions centered-text">
-            <button type="submit" className="button button--primary button--large">Add</button>
+            <button type="submit" className="button button--primary button--large">
+              <I18n path="actions.add" />
+            </button>
           </div>
         </form>
       </Modal>
