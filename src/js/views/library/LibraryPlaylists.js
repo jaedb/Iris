@@ -274,7 +274,7 @@ class LibraryPlaylists extends React.Component {
         />
         <Link className="button button--no-hover" to="/playlist/create">
           <Icon name="add_box" />
-          <I18n path="actions.new" />
+          <I18n path="actions.add" />
         </Link>
       </span>
     );

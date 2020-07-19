@@ -12,7 +12,7 @@ import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
 import { sourceIcon, decodeMopidyUri } from '../../util/helpers';
 import { sortItems } from '../../util/arrays';
-import { I18n } from '../../locale';
+import { I18n, i18n } from '../../locale';
 
 class AddToPlaylist extends React.Component {
   componentDidMount = () => {
@@ -23,6 +23,9 @@ class AddToPlaylist extends React.Component {
       spotify_available,
       spotifyActions,
       mopidyActions,
+      uiActions: {
+        setWindowTitle,
+      },
     } = this.props;
 
     if ((!spotify_library_playlists_status || spotify_library_playlists_status !== 'finished') && spotify_available) {
@@ -32,6 +35,8 @@ class AddToPlaylist extends React.Component {
     if ((!mopidy_library_playlists_status || mopidy_library_playlists_status !== 'finished') && mopidy_connected) {
       mopidyActions.getLibraryPlaylists();
     }
+
+    setWindowTitle(i18n('modal.add_to_playlist.title'));
   }
 
   playlistSelected = (playlist_uri) => {

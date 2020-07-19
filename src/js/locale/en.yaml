@@ -26,9 +26,11 @@ actions:
   enable: Enable
   disable: Disable
   send: Send
+  save: Save
   edit: Edit
   add: Add
   confirm: Are you sure?
+  delete: Delete
 common:
   popularity: Popularity
   name: Name
@@ -319,3 +321,31 @@ modal:
       label: Position
       end: End
       next: After current track
+  edit_playlist:
+    title: Edit playlist
+    title_create: Create playlist
+    name_required: Name is required
+    name: Name
+    description: Description
+    provider: Provider
+    image:
+      label: Cover image
+      description: JPEG only, 256kB max. Leave empty to keep cover image unchanged.
+    options:
+      label: Options
+      public: Public
+      collaborative: Collaborative
+    create_playlist: Create playlist
+  edit_command:
+    title: Edit command
+    title_create: Create command
+    name: Name
+    colour: Colour
+    icon: Icon
+    url: URL
+    method:
+      label: Method
+      get: GET
+      post: POST
+    data: Data
+    headers: Additional headers
