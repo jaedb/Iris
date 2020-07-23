@@ -13,6 +13,7 @@ import Icon from './Icon';
 import Link from './Link';
 import * as actions from '../services/snapcast/actions';
 import SelectField from './Fields/SelectField';
+import { I18n } from '../locale';
 
 const SnapcastGroups = (props) => {
   const {
@@ -56,7 +57,7 @@ const SnapcastGroups = (props) => {
       <div className="snapcast__group" key={group.id}>
         <div className="field text">
           <div className="name">
-            Name
+            <I18n path="snapcast.name" />
           </div>
           <div className="input">
             <TextField
@@ -68,7 +69,7 @@ const SnapcastGroups = (props) => {
         </div>
         <div className="field dropdown">
           <div className="name">
-            Stream
+            <I18n path="snapcast.stream" />
           </div>
           <div className="input">
             <SelectField
@@ -87,7 +88,7 @@ const SnapcastGroups = (props) => {
         </div>
         <div className="field">
           <div className="name">
-            Volume
+            <I18n path="snapcast.volume" />
           </div>
           <div className="input">
             <MuteControl

@@ -7,6 +7,7 @@ import * as coreActions from '../../services/core/actions';
 import * as uiActions from '../../services/ui/actions';
 import * as spotifyActions from '../../services/spotify/actions';
 import { generateGuid, uriType } from '../../util/helpers';
+import { i18n } from '../../locale';
 
 class AddSeedField extends React.Component {
   constructor(props) {
@@ -121,7 +122,7 @@ class AddSeedField extends React.Component {
             type="text"
             value={this.state.value}
             onChange={(e) => this.handleChange(e, e.target.value)}
-            placeholder={this.props.placeholder ? this.props.placeholder : 'Start typing...'}
+            placeholder={this.props.placeholder || i18n('fields.start_typing')}
           />
         </div>
         <div className="results">

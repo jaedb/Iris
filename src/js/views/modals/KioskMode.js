@@ -13,6 +13,7 @@ import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as geniusActions from '../../services/genius/actions';
 import { isLoading } from '../../util/helpers';
+import { i18n, I18n } from '../../locale';
 
 const LyricsScroller = ({ content = '', time_position = 1, duration = 100 }) => {
   const percent = ((time_position / duration) * 110).toFixed(4);
@@ -78,9 +79,9 @@ class KioskMode extends React.Component {
         }
         artists += current_track.artists[i].name;
       }
-      this.props.uiActions.setWindowTitle(`${current_track.name} by ${artists} (now playing)`);
+      this.props.uiActions.setWindowTitle(i18n('modal.kiosk.title_window', { name:current_track.name, artists }));
     } else {
-      this.props.uiActions.setWindowTitle('Now playing');
+      this.props.uiActions.setWindowTitle(i18n('modal.kiosk.title'));
     }
   }
 
@@ -131,9 +132,10 @@ class KioskMode extends React.Component {
 
       return (
         <p className="no-results">
-          Want track lyrics? Authorize Genius under
-          {' '}
-          <Link to="/settings/genius" scrollTo="#services-menu">Settings</Link>.
+          <I18n path="services.genius.want_lyrics" />
+          <Link to="/settings/genius" scrollTo="#services-menu">
+            <I18n path="settings.title" />
+          </Link>.
         </p>
       );
 
@@ -173,7 +175,7 @@ class KioskMode extends React.Component {
         {show_lyrics ? <Icon name="toggle_on" className="turquoise-text" />
           : <Icon name="toggle_off" />}
         <div style={{ paddingLeft: '6px', fontWeight: 'bold' }}>
-          Lyrics
+          <I18n path="modal.kiosk.lyrics" />
         </div>
       </div>
     );

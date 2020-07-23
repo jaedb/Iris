@@ -172,8 +172,6 @@ export default function reducer(mopidy = {}, action) {
       return { ...mopidy, search_results: {} };
 
     case 'MOPIDY_SEARCH_RESULTS_LOADED':
-      console.log(action);
-
       // Fetch or create our container
       if (mopidy.search_results) {
         var search_results = { ...mopidy.search_results };

@@ -5,6 +5,7 @@ import { titleCase } from '../util/helpers';
 
 const PARAMS_REG_EXP = '%{(.*?)}';
 const paramsRegExp = new RegExp(PARAMS_REG_EXP, 'g');
+const languagesAvailable = dictionaries.available;
 
 const i18n = (path, params = {}, transform) => {
   const dictionary = dictionaries[window.language || 'en'] || dictionaries.en;
@@ -49,9 +50,11 @@ const I18n = ({
 export default {
   I18n,
   i18n,
+  languagesAvailable,
 };
 
 export {
   I18n,
   i18n,
+  languagesAvailable,
 };

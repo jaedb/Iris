@@ -25,7 +25,9 @@ class Sidebar extends React.Component {
       return (
         <span className="status tooltip tooltip--right">
           <Icon name="cloud_download" className="green-text" />
-          <span className="tooltip__content">Update available</span>
+          <span className="tooltip__content">
+            <I18n path="sidebar.update_available" />
+          </span>
         </span>
       );
     }
@@ -35,7 +37,7 @@ class Sidebar extends React.Component {
         <span className="status tooltip tooltip--right">
           <Icon name="wifi_off" className="red-text" />
           <span className="tooltip__content">
-            Browser offline
+            <I18n path="sidebar.browser_offline" />
           </span>
         </span>
       );

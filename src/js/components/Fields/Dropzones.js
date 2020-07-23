@@ -11,6 +11,7 @@ import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
 import { arrayOf } from '../../util/arrays';
 import { decodeMopidyUri } from '../../util/helpers';
+import { i18n } from '../../locale';
 
 class Dropzones extends React.Component {
   constructor(props) {
@@ -18,17 +19,17 @@ class Dropzones extends React.Component {
 
     this._zones = [
       {
-        title: 'Add to queue',
+        title: i18n('actions.add_to_queue'),
         icon: 'play_arrow',
         action: 'enqueue',
       },
       {
-        title: 'Play next',
+        title: i18n('actions.play_next'),
         icon: 'play_arrow',
         action: 'enqueue_next',
       },
       {
-        title: 'Add to playlist',
+        title: i18n('actions.add_to_playlist'),
         icon: 'playlist_add',
         action: 'add_to_playlist',
         accepts: ['tltrack', 'track', 'album', 'playlist', 'artist'],

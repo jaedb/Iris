@@ -20,7 +20,7 @@ import * as mopidyActions from '../services/mopidy/actions';
 import * as lastfmActions from '../services/lastfm/actions';
 import * as spotifyActions from '../services/spotify/actions';
 import { isHosted } from '../util/helpers';
-import { i18n, I18n } from '../locale';
+import { i18n, I18n, languagesAvailable } from '../locale';
 
 class Settings extends React.Component {
   constructor(props) {
@@ -215,10 +215,10 @@ class Settings extends React.Component {
             <div className="input">
               <SelectField
                 onChange={this.onLanguageChange}
-                options={[
-                  { value: 'en', label: 'English (EN)' },
-                  { value: 'de', label: 'German (DE)' },
-                ]}
+                options={languagesAvailable.map((language) => ({
+                  value: language.key,
+                  label: `${language.name} (${language.key})`,
+                }))}
                 value={ui.language}
               />
             </div>

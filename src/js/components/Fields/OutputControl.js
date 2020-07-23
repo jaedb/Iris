@@ -11,6 +11,7 @@ import * as pusherActions from '../../services/pusher/actions';
 import * as snapcastActions from '../../services/snapcast/actions';
 import { sortItems, indexToArray, applyFilter } from '../../util/arrays';
 import { collate } from '../../util/format';
+import { I18n } from '../../locale';
 
 class OutputControl extends React.Component {
   constructor(props) {
@@ -193,7 +194,9 @@ class OutputControl extends React.Component {
     if (!snapcastGroups && !localStreaming && !commands) {
       return (
         <div className="output-control__items output-control__items--no-results">
-          <p className="no-results">No outputs</p>
+          <p className="no-results">
+            <I18n path="playback_controls.no_outputs" />
+          </p>
         </div>
       );
     }

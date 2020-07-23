@@ -18,6 +18,15 @@ class FollowButton extends React.Component {
     actions.following(uri, 'PUT');
   }
 
+  unauthorized = () => {
+    const { uiActions: { createNotification } } = this.props;
+
+    createNotification({
+      content: i18n('errors.authorization_required', { provider: i18n('services.spotify.title') }),
+      level: 'warning',
+    });
+  }
+
   render = () => {
     const {
       uri,
@@ -25,7 +34,6 @@ class FollowButton extends React.Component {
       removeText,
       spotify_authorized,
       is_following,
-      uiActions: actions,
       load_queue,
     } = this.props;
 
@@ -48,7 +56,7 @@ class FollowButton extends React.Component {
         <button
           type="button"
           className={`${className} button--disabled`}
-          onClick={() => actions.createNotification({ content: 'You must authorize Spotify first', level: 'warning' })}
+          onClick={this.unauthorized}
         >
           {addText || i18n('actions.add_to_library')}
         </button>

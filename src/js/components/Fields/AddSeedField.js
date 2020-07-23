@@ -146,7 +146,7 @@ class AddSeedField extends React.Component {
           <TextField
             value={value}
             onChange={this.handleChange}
-            placeholder={placeholder || i18n('fields.add_seed_field.placeholder')}
+            placeholder={placeholder || i18n('fields.start_typing')}
             everyChange
           />
         </div>

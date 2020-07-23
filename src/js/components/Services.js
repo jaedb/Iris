@@ -20,6 +20,7 @@ import * as pusherActions from '../services/pusher/actions';
 import * as spotifyActions from '../services/spotify/actions';
 import * as lastfmActions from '../services/lastfm/actions';
 import * as geniusActions from '../services/genius/actions';
+import { I18n } from '../locale';
 
 class Services extends React.Component {
   constructor(props) {
@@ -75,14 +76,20 @@ class Services extends React.Component {
       spotifyActions,
     } = this.props;
     const { country, locale } = this.state;
-    const user_object = (spotify.me && core.users[spotify.me.uri] ?core.users[spotify.me.uri] : null);
+    const user_object = (spotify.me && core.users[spotify.me.uri] ? core.users[spotify.me.uri] : null);
     if (user_object) {
       var user = (
         <URILink className="user" type="user" uri={user_object.uri}>
           <Thumbnail circle size="small" images={user_object.images} />
           <span className="user-name">
             {user_object.name ? user_object.name : user_object.id}
-            {!this.props.spotify.authorization ? <span className="mid_grey-text">&nbsp;&nbsp;(Limited access)</span> : null}
+            {!this.props.spotify.authorization && (
+              <span className="mid_grey-text">
+                {'  ('}
+                <I18n path="settings.services.limited_access" />
+                {')'}
+              </span>
+            )}
           </span>
         </URILink>
       );
@@ -91,7 +98,7 @@ class Services extends React.Component {
         <URILink className="user">
           <Thumbnail circle size="small" />
           <span className="user-name">
-						Unknown
+						<I18n path="settings.services.unknown" />
           </span>
         </URILink>
       );
@@ -103,8 +110,7 @@ class Services extends React.Component {
       not_installed = (
         <div>
           <p className="message warning">
-            <em>Mopidy-Spotify</em>
-            {' extension is not running - you will not be able to play any Spotify tracks'}
+            <I18n path="settings.services.spotify.mopidy_spotify_not_running" />
           </p>
           <br />
         </div>
@@ -115,7 +121,9 @@ class Services extends React.Component {
       <div>
         {not_installed}
         <label className="field">
-          <div className="name">Country</div>
+          <div className="name">
+            <I18n path="settings.services.spotify.country.label" />
+          </div>
           <div className="input">
             <TextField
               onChange={(value) => spotifyActions.set({ country: value })}
@@ -123,16 +131,14 @@ class Services extends React.Component {
               autosave
             />
             <div className="description">
-              {'An '}
-              <a href="http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">ISO 3166-1 alpha-2</a>
-              {' country code (eg '}
-              <em>NZ</em>
-              {')'}
+              <I18n path="settings.services.spotify.country.description" />
             </div>
           </div>
         </label>
         <label className="field">
-          <div className="name">Locale</div>
+          <div className="name">
+            <I18n path="settings.services.spotify.locale.title" />
+          </div>
           <div className="input">
             <TextField
               onChange={(value) => spotifyActions.set({ locale: value })}
@@ -140,13 +146,7 @@ class Services extends React.Component {
               autosave
             />
             <div className="description">
-              {'Lowercase '}
-              <a href="http://en.wikipedia.org/wiki/ISO_639" target="_blank">ISO 639 language code</a>
-              {' and an uppercase '}
-              <a href="http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">ISO 3166-1 alpha-2 country code</a>
-              {', joined by an underscore (eg'}
-              <em>en_NZ</em>
-              {')'}
+              <I18n path="settings.services.spotify.locale.description" />
             </div>
           </div>
         </label>
@@ -161,17 +161,21 @@ class Services extends React.Component {
         </div>
 
         <div className="field">
-          <div className="name">Authorization</div>
+          <div className="name">
+            <I18n path="settings.services.authorization" />
+          </div>
           <div className="input">
             <SpotifyAuthenticationFrame />
             {spotify.refreshing_token ? (
-              <a className="button button--default button--working">Force token refres</a>
+              <a className="button button--default button--working">
+                <I18n path="settings.services.refresh_token" />
+              </a>
             ) : (
               <a
                 className="button button--default"
                 onClick={() => spotifyActions.refreshingToken()}
               >
-                Force token refresh
+                <I18n path="settings.services.refresh_token" />
               </a>
             )}
           </div>
@@ -196,7 +200,7 @@ class Services extends React.Component {
         <span className="user">
           <Thumbnail circle size="small" />
           <span className="user-name">
-						Unknown
+            <I18n path="settings.services.unknown" />
           </span>
         </span>
       );
@@ -206,7 +210,9 @@ class Services extends React.Component {
       <div>
         {this.props.lastfm.authorization ? (
           <div className="field current-user">
-            <div className="name">Current user</div>
+            <div className="name">
+              <I18n path="settings.services.current_user" />
+            </div>
             <div className="input">
               <div className="text">
                 {user}
@@ -216,7 +222,9 @@ class Services extends React.Component {
         ) : null}
 
         <div className="field">
-          <div className="name">Authorization</div>
+          <div className="name">
+            <I18n path="settings.services.authorization" />
+          </div>
           <div className="input">
             <LastfmAuthenticationFrame />
           </div>
@@ -241,7 +249,7 @@ class Services extends React.Component {
         <span className="user">
           <Thumbnail circle size="small" />
           <span className="user-name">
-						Unknown
+            <I18n path="settings.services.unknown" />
           </span>
         </span>
       );
@@ -251,7 +259,9 @@ class Services extends React.Component {
       <div>
         {this.props.genius.authorization ? (
           <div className="field current-user">
-            <div className="name">Current user</div>
+            <div className="name">
+              <I18n path="settings.services.current_user" />
+            </div>
             <div className="input">
               <div className="text">
                 {user}
@@ -261,7 +271,9 @@ class Services extends React.Component {
         ) : null}
 
         <div className="field">
-          <div className="name">Authorization</div>
+          <div className="name">
+            <I18n path="settings.services.authorization" />
+          </div>
           <div className="input">
             <GeniusAuthenticationFrame />
           </div>
@@ -275,7 +287,9 @@ class Services extends React.Component {
     return (
       <div>
         <div className="field checkbox">
-          <div className="name">Enable</div>
+          <div className="name">
+            <I18n path="settings.services.icecast.enable.label" />
+          </div>
           <div className="input">
             <label>
               <input
@@ -285,13 +299,15 @@ class Services extends React.Component {
                 onChange={() => coreActions.set({ http_streaming_enabled: !core.http_streaming_enabled })}
               />
               <span className="label">
-								Stream audio to this browser
+                <I18n path="settings.services.icecast.enable.description" />
               </span>
             </label>
           </div>
         </div>
         <label className="field">
-          <div className="name">Location</div>
+          <div className="name">
+            <I18n path="settings.services.icecast.location.label" />
+          </div>
           <div className="input">
             <TextField
               onChange={(value) => coreActions.set({ http_streaming_url: value })}
@@ -299,7 +315,7 @@ class Services extends React.Component {
               autosave
             />
             <div className="description">
-							The full URL to your stream endpoint
+              <I18n path="settings.services.icecast.location.description" />
             </div>
           </div>
         </label>
@@ -333,43 +349,73 @@ class Services extends React.Component {
             <div className="menu-item__inner">
               {spotify_icon}
               <div className="menu-item__title">
-								Spotify
+                <I18n path="services.spotify.title" />
               </div>
-              {this.props.spotify.authorization ? <span className="status green-text">Authorized</span> : <span className="status mid_grey-text">Read-only</span>}
+              {this.props.spotify.authorization ? (
+                <span className="status green-text">
+                  <I18n path="settings.services.authorized" />
+                </span>
+              ) : (
+                <span className="status mid_grey-text">
+                  <I18n path="settings.services.read_only" />
+                </span>
+              )}
             </div>
           </Link>
           <Link history={this.props.history} className="menu-item menu-item--lastfm" activeClassName="menu-item--active" to="/settings/services/lastfm" scrollTo="#services-menu">
             <div className="menu-item__inner">
               {lastfm_icon}
               <div className="menu-item__title">
-								LastFM
+                <I18n path="services.lastfm.title" />
               </div>
-              {this.props.lastfm.authorization ? <span className="status green-text">Authorized</span> : <span className="status mid_grey-text">Read-only</span>}
+              {this.props.lastfm.authorization ? (
+                <span className="status green-text">
+                  <I18n path="settings.services.authorized" />
+                </span>
+              ) : (
+                <span className="status mid_grey-text">
+                  <I18n path="settings.services.read_only" />
+                </span>
+              )}
             </div>
           </Link>
           <Link history={this.props.history} className="menu-item menu-item--genius" activeClassName="menu-item--active" to="/settings/services/genius" scrollTo="#services-menu">
             <div className="menu-item__inner">
               {genius_icon}
               <div className="menu-item__title">
-								Genius
+                <I18n path="services.genius.title" />
               </div>
-              {this.props.genius.authorization ? <span className="status green-text">Authorized</span> : <span className="status mid_grey-text">Unauthorized</span>}
+              {this.props.genius.authorization ? (
+                <span className="status green-text">
+                  <I18n path="settings.services.authorized" />
+                </span>
+              ) : (
+                <span className="status mid_grey-text">
+                  <I18n path="settings.services.unauthorized" />
+                </span>
+              )}
             </div>
           </Link>
           <Link history={this.props.history} className="menu-item menu-item--snapcast" activeClassName="menu-item--active" to="/settings/services/snapcast" scrollTo="#services-menu">
             <div className="menu-item__inner">
               <Icon className="menu-item__icon" name="devices" />
               <div className="menu-item__title">
-								Snapcast
+                <I18n path="services.snapcast.title" />
               </div>
               {!this.props.snapcast.enabled && (
-                <span className="status mid_grey-text">Disabled</span>
+                <span className="status mid_grey-text">
+                  <I18n path="settings.services.disabled" />
+                </span>
               )}
               {this.props.snapcast.enabled && !this.props.snapcast.connected && (
-                <span className="status red-text">Disconnected</span>
+                <span className="status red-text">
+                  <I18n path="settings.services.disconnected" />
+                </span>
               )}
               {this.props.snapcast.enabled && this.props.snapcast.connected && (
-                <span className="status green-text">Connected</span>
+                <span className="status green-text">
+                  <I18n path="settings.services.connected" />
+                </span>
               )}
             </div>
           </Link>
@@ -377,9 +423,17 @@ class Services extends React.Component {
             <div className="menu-item__inner">
               <Icon className="menu-item__icon" name="wifi_tethering" />
               <div className="menu-item__title">
-								Icecast
+                <I18n path="services.icecast.title" />
               </div>
-              {this.props.core.http_streaming_enabled ? <span className="status green-text">Enabled</span> : <span className="status mid_grey-text">Disabled</span>}
+              {this.props.core.http_streaming_enabled ? (
+                <span className="status green-text">
+                  <I18n path="settings.services.enabled" />
+                </span>
+              ) : (
+                <span className="status mid_grey-text">
+                  <I18n path="settings.services.disabled" />
+                </span>
+              )}
             </div>
           </Link>
         </div>

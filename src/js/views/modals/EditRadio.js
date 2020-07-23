@@ -13,6 +13,7 @@ import {
   uriSource,
   uriType,
 } from '../../util/helpers';
+import { i18n, I18n } from '../../locale';
 
 class EditRadio extends React.Component {
   constructor(props) {
@@ -26,7 +27,7 @@ class EditRadio extends React.Component {
   }
 
   componentDidMount() {
-    this.props.uiActions.setWindowTitle('Edit radio');
+    this.props.uiActions.setWindowTitle(i18n('modal.edit_radio.title'));
 
     if (this.props.radio && this.props.radio.enabled) {
       this.loadRadio(this.props.radio);
@@ -59,7 +60,7 @@ class EditRadio extends React.Component {
       this.props.pusherActions.startRadio(this.state.seeds);
       window.history.back();
     } else {
-      this.setState({ error_message: 'Invalid seed URI(s)' });
+      this.setState({ error_message: i18n('modal.edit_radio.invalid_seed_uri') });
     }
   }
 
@@ -79,7 +80,7 @@ class EditRadio extends React.Component {
       this.props.pusherActions.updateRadio(this.state.seeds);
       window.history.back();
     } else {
-      this.setState({ error_message: 'Invalid seed URI(s)' });
+      this.setState({ error_message: i18n('modal.edit_radio.invalid_seed_uri') });
     }
   }
 
@@ -93,7 +94,7 @@ class EditRadio extends React.Component {
     e.preventDefault();
 
     if (this.state.uri == '') {
-      this.setState({ error_message: 'Cannot be empty' });
+      this.setState({ error_message: i18n('errors.required') });
       return;
     }
 
@@ -104,15 +105,15 @@ class EditRadio extends React.Component {
 
     if (uris.length >= 5) {
       uris = uris.slice(0, 5);
-      this.setState({ error_message: 'More than 5 seeds provided, ignoring rest' });
+      this.setState({ error_message: i18n('modal.edit_radio.too_many_seeds') });
     }
 
     for (let i = 0; i < uris.length; i++) {
       if (uriSource(uris[i]) !== 'spotify') {
-        this.setState({ error_message: 'Non-Spotify URIs not supported' });
+        this.setState({ error_message: i18n('modal.edit_radio.only_spotify_uris') });
         return;
       } if (seeds.indexOf(uris[i]) > -1) {
-        this.setState({ error_message: 'URI already added' });
+        this.setState({ error_message: i18n('modal.edit_radio.too_many_seeds') });
       } else {
         seeds.push(uris[i]);
       }
@@ -199,7 +200,7 @@ class EditRadio extends React.Component {
     ) : null}
     <span className="button discrete remove-uri no-hover" onClick={(e) => this.removeSeed(seed.uri)}>
       <Icon name="delete" />
-Remove
+      <I18n path="actions.delete" />
     </span>
   </div>
 							))
@@ -209,22 +210,30 @@ Remove
       );
     }
     return (
-      <div className="no-results">No seeds</div>
+      <div className="no-results">
+        <I18n path="modal.edit_radio.no_seeds" />
+      </div>
     );
   }
 
   render() {
     return (
       <Modal className="modal--edit-radio">
-        <h1>Radio</h1>
-        <h2 className="mid_grey-text">Add and remove seeds to shape the sound of your radio. Radio uses Spotify's recommendations engine to suggest tracks similar to your seeds.</h2>
+        <h1>
+          <I18n path="modal.edit_radio.title" />
+        </h1>
+        <h2 className="mid_grey-text">
+          <I18n path="modal.edit_radio.subtitle" />
+        </h2>
 
         <form onSubmit={(e) => { (this.state.enabled ? this.handleUpdate(e) : this.handleStart(e)); }}>
 
           {this.renderSeeds()}
 
           <div className="field text">
-            <div className="name">URI(s)</div>
+            <div className="name">
+              <I18n path="fields.uri" />
+            </div>
             <div className="input">
               <input
                 type="text"
@@ -233,16 +242,36 @@ Remove
               />
               <span className="button discrete add-uri no-hover" onClick={(e) => this.addSeed(e)}>
                 <Icon name="add" />
-Add
+                <I18n path="actions.add" />
               </span>
               {this.state.error_message ? <span className="description error">{this.state.error_message}</span> : null}
             </div>
           </div>
 
           <div className="actions centered-text">
-            {this.state.enabled ? <span className="button button--destructive button--large" onClick={(e) => this.handleStop(e)}>Stop</span> : null}
+            {this.state.enabled ? (
+              <span className="button button--destructive button--large" onClick={(e) => this.handleStop(e)}>
+                <I18n path="actions.add" />
+              </span>
+            ) : null}
 
-            {this.state.enabled ? <button className="button button--primary button--large" onClick={(e) => this.handleUpdate(e)}>Save</button> : <button className="button button--primary button--large" onClick={(e) => this.handleStart(e)}>Start</button>}
+            {this.state.enabled ? (
+              <button
+                className="button button--primary button--large"
+                onClick={(e) => this.handleUpdate(e)}
+                type="button"
+              >
+                <I18n path="actions.save" />
+              </button>
+            ) : (
+              <button
+                className="button button--primary button--large"
+                onClick={(e) => this.handleStart(e)}
+                type="button"
+              >
+                <I18n path="actions.start" />
+              </button>
+            )}
           </div>
         </form>
       </Modal>

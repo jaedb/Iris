@@ -176,7 +176,10 @@ class Playlist extends React.Component {
   inLibrary = () => {
     const { uri } = this.props;
     const libraryName = `${uriSource(uri)}_library_playlists`;
-    const { [libraryName]: library = [] } = this.props;
+    const { [libraryName]: library } = this.props;
+
+    if (!library) return false;
+
     return library.indexOf(uri) > -1;
   }
 

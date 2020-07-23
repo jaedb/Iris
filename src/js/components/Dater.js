@@ -99,17 +99,17 @@ const dater = (type, data) => {
       var years = Math.floor(diff / (1000 * 60 * 60 * 24 * 7 * 52));
 
       if (seconds < 60) {
-        return `${seconds} ${i18n(`time.seconds.${seconds > 1 ? 'singular' : 'plural'}`)}`;
+        return `${seconds} ${i18n(`time.seconds.${seconds > 1 ? 'plural' : 'singular'}`)}`;
       } if (minutes < 60) {
-        return `${minutes} ${i18n(`time.minutes.${minutes > 1 ? 'singular' : 'plural'}`)}`;
+        return `${minutes} ${i18n(`time.minutes.${minutes > 1 ? 'plural' : 'singular'}`)}`;
       } if (hours < 24) {
-        return `${hours} ${i18n(`time.hours.${hours > 1 ? 'singular' : 'plural'}`)}`;
+        return `${hours} ${i18n(`time.hours.${hours > 1 ? 'plural' : 'singular'}`)}`;
       } if (days < 7) {
-        return `${days} ${i18n(`time.days.${days > 1 ? 'singular' : 'plural'}`)}`;
+        return `${days} ${i18n(`time.days.${days > 1 ? 'plural' : 'singular'}`)}`;
       } if (weeks < 54) {
-        return `${weeks} ${i18n(`time.weeks.${weeks > 1 ? 'singular' : 'plural'}`)}`;
+        return `${weeks} ${i18n(`time.weeks.${weeks > 1 ? 'plural' : 'singular'}`)}`;
       }
-      return `${years} ${i18n(`time.years.${years > 1 ? 'singular' : 'plural'}`)}`;
+      return `${years} ${i18n(`time.years.${years > 1 ? 'plural' : 'singular'}`)}`;
     default:
       return null;
   }
