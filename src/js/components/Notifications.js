@@ -13,6 +13,7 @@ import Icon from './Icon';
 import Loader from './Loader';
 import { indexToArray } from '../util/arrays';
 import { i18n, I18n } from '../locale';
+import ErrorBoundary from './ErrorBoundary';
 
 class Notifications extends React.Component {
   importConfiguration(notification_key, configuration) {
@@ -38,7 +39,10 @@ class Notifications extends React.Component {
     }
 
     this.props.uiActions.removeNotification(notification_key, true);
-    this.props.uiActions.createNotification({ level: 'warning', content: i18n('modal.share_configuration.import.successful') });
+    this.props.uiActions.createNotification({
+      level: 'warning',
+      content: i18n('modal.share_configuration.import.successful'),
+    });
   }
 
   renderNotifications() {
@@ -47,7 +51,7 @@ class Notifications extends React.Component {
     const notifications = indexToArray(this.props.notifications);
 
     return (
-      <Fragment>
+      <ErrorBoundary>
         {
           notifications.map((notification) => {
             switch (notification.type) {
@@ -64,8 +68,11 @@ class Notifications extends React.Component {
                 return (
                   <div className="notification__wrapper" key={notification.key}>
                     <div className="notification notification--info" key={notification.key} data-duration={notification.duration}>
-                      <Icon name="close" className="notification__close-button" onClick={(e) => this.props.uiActions.removeNotification(notification.key, true)} />
-
+                      <Icon
+                        name="close"
+                        className="notification__close-button"
+                        onClick={(e) => this.props.uiActions.removeNotification(notification.key, true)}
+                      />
                       <h4 className="notification__title">
                         <I18n path="modal.share_configuration.import.title" />
                       </h4>
@@ -74,11 +81,21 @@ class Notifications extends React.Component {
                           <I18n path="modal.share_configuration.import.subtitle" />
                         </p>
                         <ul>
-                          {notification.configuration.ui ? <li><I18n path="modal.share_configuration.interface" /></li> : null}
-                          {notification.configuration.spotify ? <li><I18n path="services.spotify.title" /></li> : null}
-                          {notification.configuration.lastfm ? <li><I18n path="services.lastfm.title" /></li> : null}
-                          {notification.configuration.genius ? <li><I18n path="services.genius.title" /></li> : null}
-                          {notification.configuration.snapcast ? <li><I18n path="services.snapcast.title" /></li> : null}
+                          {notification.configuration.ui && (
+                            <li><I18n path="modal.share_configuration.interface" /></li>
+                          )}
+                          {notification.configuration.spotify && (
+                            <li><I18n path="services.spotify.title" /></li>
+                          )}
+                          {notification.configuration.lastfm && (
+                            <li><I18n path="services.lastfm.title" /></li>
+                          )}
+                          {notification.configuration.genius && (
+                            <li><I18n path="services.genius.title" /></li>
+                          )}
+                          {notification.configuration.snapcast && (
+                            <li><I18n path="services.snapcast.title" /></li>
+                          )}
                         </ul>
                         <p>
                           <I18n path="modal.share_configuration.import.do_you_want_to_import" />
@@ -96,23 +113,54 @@ class Notifications extends React.Component {
               default:
                 return (
                   <div className="notification__wrapper" key={notification.key}>
-                    <div className={`notification notification--${notification.level}${notification.closing ? ' closing' : ''}`} data-key={notification.key} data-duration={notification.duration}>
-                      <Icon name="close" className="notification__close-button" onClick={(e) => this.props.uiActions.removeNotification(notification.key, true)} />
-                      {notification.title ? <h4 className="notification__title">{notification.title}</h4> : null}
-                      {notification.content ? <div className="notification__content">{notification.content}</div> : null}
-                      {notification.description ? <div className="notification__description">{notification.description}</div> : null}
-                      {notification.links ? (
-                        <div className="notification__actions">
-                          {notification.links.map((link, i) => <a className="notification__actions__item button button--secondary" href={link.url} target={link.new_window ? '_blank' : 'self'} key={i}>{link.text}</a>)}
+                    <div
+                      className={`notification notification--${notification.level}${notification.closing ? ' closing' : ''}`}
+                      data-key={notification.key}
+                      data-duration={notification.duration}
+                    >
+                      <Icon
+                        name="close"
+                        className="notification__close-button"
+                        onClick={() => this.props.uiActions.removeNotification(notification.key, true)}
+                      />
+                      {notification.title && (
+                        <h4 className="notification__title">
+                          {notification.title}
+                        </h4>
+                      )}
+                      {notification.content && (
+                        <div className="notification__content">
+                          {notification.content}
                         </div>
-                      ) : null}
+                      )}
+                      {notification.description && (
+                        <div className="notification__description">
+                          {notification.description}
+                        </div>
+                      )}
+                      {notification.links && (
+                        <div className="notification__actions">
+                          {
+                            notification.links.map((link, i) => (
+                              <a
+                                className="notification__actions__item button button--secondary"
+                                href={link.url}
+                                target={link.new_window ? '_blank' : 'self'}
+                                key={i}
+                              >
+                                {link.text}
+                              </a>
+                            ))
+                          }
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
             }
           })
         }
-      </Fragment>
+      </ErrorBoundary>
     );
   }
 
