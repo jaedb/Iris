@@ -206,6 +206,36 @@
           }
         }
       }
+
+      .list__item--track {
+        padding: 5px 0 5px 16px;
+        @include responsive($bp_medium) {
+          padding: 0;
+          margin: 0;
+        }
+        @extend .text;
+        .list__item__column {
+          overflow: hidden;
+        }
+        .list__item__column__item {
+          &--name {
+            @include one_line_text;
+          }
+          &--details {
+            .details__item {
+              &--album {
+                display: none;
+              }
+            }
+          }
+          &--duration {
+            display: none;
+          }
+          &--source, &--context-menu-trigger {
+            padding: 0 4px;
+          }
+        }
+      }
     }
   }
 

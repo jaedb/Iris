@@ -12,7 +12,8 @@ import Dater from './Dater';
 import LinksSentence from './LinksSentence';
 import Thumbnail from './Thumbnail';
 import Icon from './Icon';
-import { scrollTo } from '../util/helpers';
+import Track from './Track';
+import { scrollTo, isTouchDevice } from '../util/helpers';
 import * as uiActions from '../services/ui/actions';
 import * as coreActions from '../services/core/actions';
 import * as mopidyActions from '../services/mopidy/actions';
@@ -89,6 +90,37 @@ class PlaybackControls extends React.Component {
 
     this.end_time = timestamp;
     e.preventDefault();
+  }
+
+  handleContextMenu = (e, track_key = null) => {
+    // Do our best to stop any flow-on events
+    e.preventDefault();
+    e.stopPropagation();
+    e.cancelBubble = true;
+
+    let { current_track } = this.state;
+
+    const data = {
+      e,
+      context: this.props.track_context,
+      tracklist_uri: null,
+      items: [current_track],
+      uris: [current_track.uri],
+      indexes: [current_track.index],
+    };
+
+    this.props.uiActions.showContextMenu(data);
+  }
+
+  handleDrag = (e, track_key) => {
+    let { current_track } = this.state;
+    this.props.uiActions.dragStart(
+      e,
+      this.props.track_context,
+      null,
+      [current_track],
+      [current_track.index],
+    );
   }
 
   setTransition(direction) {
@@ -169,6 +201,26 @@ class PlaybackControls extends React.Component {
     return button;
   }
 
+  renderTrack(track) {
+    return (
+      <React.Fragment>
+        <Link className="thumbnail-wrapper" to="/kiosk-mode" tabIndex="-1">
+          <Thumbnail size="small" images={track && track.images} type="track" />
+        </Link>
+        <Track
+          show_source_icon={true}
+          mini_zones={this.props.slim_mode || isTouchDevice()}
+          track={track}
+          track_context={this.props.track_context}
+          play_state={this.props.play_state}
+          dragger={this.props.dragger}
+          handleContextMenu={this.handleContextMenu}
+          handleDrag={this.handleDrag}
+        />
+      </React.Fragment>
+    );
+  }
+
   render() {
     const {
       next_track,
@@ -194,16 +246,10 @@ class PlaybackControls extends React.Component {
           transition={transition_track}
           direction={transition_direction}
         >
+
           {transition_track && transition_direction && (
             <div className={`current-track current-track__outgoing`}>
-              <div className="text">
-                <div className="title">
-                  {transition_track.name}
-                </div>
-                <div className="artist">
-                  <LinksSentence items={transition_track.artists} nolinks />
-                </div>
-              </div>
+              {this.renderTrack(transition_track)}
             </div>
           )}
 
@@ -215,17 +261,7 @@ class PlaybackControls extends React.Component {
               tabIndex="-1"
               key={current_track.tlid}
             >
-              <Link className="thumbnail-wrapper" to="/kiosk-mode" tabIndex="-1">
-                <Thumbnail size="small" images={current_track.images} type="track" />
-              </Link>
-              <div className="text">
-                <div className="title">
-                  {current_track ? current_track.name : <span>-</span>}
-                </div>
-                <div className="artist">
-                  {current_track ? <LinksSentence items={current_track.artists} /> : <LinksSentence />}
-                </div>
-              </div>
+              {this.renderTrack(current_track)}
             </div>
           ) : (
             <div
@@ -234,13 +270,7 @@ class PlaybackControls extends React.Component {
               onTouchEnd={this.handleTouchEnd}
               tabIndex="-1"
             >
-              <Link className="thumbnail-wrapper" to="/kiosk-mode" tabIndex="-1">
-                <Thumbnail size="small" type="track" />
-              </Link>
-              <div className="text">
-                <div className="title">&nbsp;</div>
-                <div className="artist">&nbsp;</div>
-              </div>
+              {this.renderTrack(null)}
             </div>
           )}
         </div>
@@ -311,9 +341,11 @@ const mapStateToProps = (state) => ({
   random: state.mopidy.random,
   volume: state.mopidy.volume,
   mute: state.mopidy.mute,
+  dragger: state.ui.dragger,
   sidebar_open: state.ui.sidebar_open,
   slim_mode: state.ui.slim_mode,
   touch_enabled: state.ui.playback_controls_touch_enabled,
+  track_context: 'playback_controls',
 });
 
 const mapDispatchToProps = (dispatch) => ({
