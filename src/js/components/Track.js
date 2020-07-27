@@ -90,7 +90,7 @@ export default class Track extends React.Component {
           this.props.handleDrop(e);
         }
       } else if (!target.is('a') && target.closest('a').length <= 0) {
-        this.props.handleClick(e);
+        this.handleClick(e);
         this.start_position = false;
       }
 
@@ -101,8 +101,20 @@ export default class Track extends React.Component {
     }
   }
 
+  handleClick(e) {
+    if (this.props.handleClick) {
+      this.props.handleClick(e);
+    } else {
+      console.warn('No prop handleClick.');
+    }
+  }
+
   handleDoubleClick(e) {
-    this.props.handleDoubleClick(e);
+    if (this.props.handleDoubleClick) {
+      this.props.handleDoubleClick(e);
+    } else {
+      console.warn('No prop handleDoubleClick.');
+    }
   }
 
   handleTouchStart(e) {
