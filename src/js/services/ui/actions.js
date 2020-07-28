@@ -179,7 +179,7 @@ export function createNotification(data) {
   }
 
   // Shortcut notifications are short and sweet
-  if (data.type == 'shortcut') {
+  if (data.type === 'shortcut') {
     data.duration = 0.4;
   }
 

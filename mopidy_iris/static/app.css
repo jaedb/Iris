@@ -2704,6 +2704,10 @@ html {
     body,
     html {
       font-size: 16px; } }
+  @media (max-width: 349px) {
+    body,
+    html {
+      font-size: 12px; } }
 
 body {
   transform: translateZ(0px);
@@ -3211,6 +3215,24 @@ footer {
   .left-padding {
     padding-left: 20px; } }
 
+@media (max-width: 349px) {
+  h1 {
+    font-size: 1.6rem;
+    line-height: 1.6rem; }
+  h2 {
+    font-size: 1.4rem;
+    line-height: 1.5rem; }
+  h3 {
+    font-size: 1.2rem; }
+  h4 {
+    font-size: 1.1rem; }
+  h5 {
+    font-size: 1.1rem; }
+  .right-padding {
+    padding-right: 10px; }
+  .left-padding {
+    padding-left: 10px; } }
+
 * {
   border: 0;
   margin: 0;
@@ -3623,6 +3645,16 @@ select {
     .button {
       padding-left: 28px;
       padding-right: 28px; }
+      .button--large {
+        width: 100%;
+        display: block;
+        margin-bottom: 10px; } }
+  @media (max-width: 349px) {
+    .button {
+      padding-left: 20px;
+      padding-right: 20px;
+      font-size: 12px;
+      margin: 2px 10px 2px 0; }
       .button--large {
         width: 100%;
         display: block;
@@ -5187,6 +5219,17 @@ select {
 @media only screen and (max-width: 799px) and (-webkit-min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min--moz-device-pixel-ratio: 2), only screen and (max-width: 799px) and (-o-min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min-device-pixel-ratio: 2), only screen and (max-width: 799px) and (min-resolution: 192dpi), only screen and (max-width: 799px) and (min-resolution: 2dppx) {
   .playback-controls .control {
     padding: 14px 8px; } }
+  @media (max-width: 349px) {
+    .playback-controls .current-track__wrapper {
+      width: 50%; }
+    .playback-controls .control {
+      padding: 12px 4px; }
+    .playback-controls section.playback {
+      width: auto; }
+    .playback-controls section.triggers {
+      width: 4rem; }
+      .playback-controls section.triggers .icon {
+        font-size: 0.9rem; } }
 
 .output-control {
   position: relative; }
@@ -5541,8 +5584,8 @@ select {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    padding-top: 12px;
-    font-size: 15px; }
+    padding-top: 0.8rem;
+    font-size: 1.1rem; }
   .grid__item__secondary {
     white-space: nowrap;
     overflow: hidden;

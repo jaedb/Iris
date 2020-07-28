@@ -48,6 +48,10 @@ html {
   @include resolution(3) {
     font-size: 16px;
   }
+
+  @include responsive($bp_narrow) {
+    font-size: 12px;
+  }
 }
 
 body {
@@ -702,5 +706,37 @@ footer {
 
   .left-padding {
     padding-left: 20px;
+  }
+}
+
+@include responsive($bp_narrow) {
+  h1 {
+    font-size: 1.6rem;
+    line-height: 1.6rem;
+  }
+
+  h2 {
+    font-size: 1.4rem;
+    line-height: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.2rem;
+  }
+
+  h4 {
+    font-size: 1.1rem;
+  }
+
+  h5 {
+    font-size: 1.1rem;
+  }
+
+  .right-padding {
+    padding-right: 10px;
+  }
+
+  .left-padding {
+    padding-left: 10px;
   }
 }

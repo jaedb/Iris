@@ -17,6 +17,7 @@ actions:
   play: Play
   play_all: Play all
   play_next: Play next
+  shuffle_play: Shuffle play
   pause: Pause
   stop: Stop
   add_to_playlist: Add to playlist
@@ -149,7 +150,6 @@ context_menu:
   add_to_playlist:
     title: Add to playlist
     no_playlists: No writable playlists
-  shuffle_play: Shuffle play
   play_next: Play next
   play_top_tracks: Play top tracks
   love_track: Love track
