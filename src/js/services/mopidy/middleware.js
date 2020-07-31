@@ -2031,7 +2031,7 @@ const MopidyMiddleware = (function () {
             for (let i = 0; i < response.length; i++) {
               // Convert local URI to actual artist URI
               // See https://github.com/mopidy/mopidy-local-sqlite/issues/39
-              response[i].uri = response[i].uri.replace('local:directory?albumartist=', '');
+              response[i].uri = response[i].uri.replace('local:directory?artist=', '');
               uris.push(response[i].uri);
             }
 
