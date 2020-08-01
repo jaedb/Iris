@@ -67,8 +67,8 @@ class Artist extends React.Component {
   }
 
   onResetFilters = () => {
-    this.setFilter(null);
-    this.setSort(null);
+    this.onChangeFilter(null);
+    this.onChangeSort(null);
   }
 
   onChangeFilter = (value) => {
@@ -285,10 +285,10 @@ class Artist extends React.Component {
                 value={filter}
                 valueAsLabel
                 options={filter_options}
-                handleChange={this.onFilterChange}
+                handleChange={this.onChangeFilter}
               />
               {(sort || filter) && (
-                <a className="button button--discrete button--small" onClick={this.onResetFilters}>
+                <a className="button button--discrete button--destructive button--small" onClick={this.onResetFilters}>
                   <Icon name="clear" />
                   <I18n path="actions.reset" />
                 </a>

@@ -359,6 +359,7 @@ select {
 
   &--discrete {
     border: none;
+    box-shadow: none !important;
 
     &:before {
       display: none;

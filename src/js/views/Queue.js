@@ -22,6 +22,32 @@ import {
 } from '../util/helpers';
 import { i18n, I18n } from '../locale';
 
+const Artwork = ({
+  image,
+  album_uri,
+}) => {
+  if (!image) {
+    return (
+      <div className="current-track__artwork">
+        <Thumbnail glow type="track" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="current-track__artwork">
+      <Thumbnail glow image={image} type="track">
+        <Link to="/kiosk-mode" className="thumbnail__actions__item">
+          <Icon name="expand" type="fontawesome" />
+        </Link>
+        <URILink uri={album_uri} className="thumbnail__actions__item">
+          <Icon name="album" />
+        </URILink>
+      </Thumbnail>
+    </div>
+  );
+}
+
 class Queue extends React.Component {
   constructor(props) {
     super(props);
@@ -122,31 +148,6 @@ class Queue extends React.Component {
     reorderTracklist(indexes, index);
   }
 
-  renderArtwork = (image) => {
-    const { current_track_uri } = this.props;
-
-    if (!image) {
-      return (
-        <div className="current-track__artwork">
-          <Thumbnail glow type="track" />
-        </div>
-      );
-    }
-
-    return (
-      <div className="current-track__artwork">
-        <Thumbnail glow image={image} type="track">
-          <URILink uri={current_track_uri} className="thumbnail__actions__item">
-            <Icon name="art_track" />
-          </URILink>
-          <Link to="/kiosk-mode" className="thumbnail__actions__item">
-            <Icon name="expand" type="fontawesome" />
-          </Link>
-        </Thumbnail>
-      </div>
-    );
-  }
-
   renderAddedFrom = () => {
     const { added_from_uri } = this.props;
     if (!added_from_uri) return null;
@@ -214,13 +215,18 @@ class Queue extends React.Component {
   }
 
   render = () => {
-    const { current_track, queue_tracks, theme } = this.props;
+    const {
+      current_track,
+      queue_tracks,
+      theme,
+      current_track_uri,
+    } = this.props;
     const { limit } = this.state;
     const total_queue_tracks = queue_tracks.length;
     const tracks = queue_tracks.slice(0, limit);
 
     let current_track_image = null;
-    if (current_track && this.props.current_track_uri) {
+    if (current_track && current_track_uri) {
       if (current_track.images !== undefined && current_track.images) {
         current_track_image = current_track.images.large;
       }
@@ -254,7 +260,10 @@ class Queue extends React.Component {
         {theme === 'dark' && <Parallax image={current_track_image} blur />}
         <div className="content-wrapper">
           <div className="current-track">
-            {this.renderArtwork(current_track_image)}
+            <Artwork
+              image={current_track_image}
+              album_uri={current_track && current_track.album && current_track.album.uri}
+            />
             <div className="current-track__details">
               <div className="current-track__title">
                 {current_track ? (

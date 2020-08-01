@@ -25,7 +25,7 @@ export default class GridItem extends React.Component {
     switch (uriType(item.uri)) {
       case 'artist':
         if (spotifyActions && spotifyAvailable) {
-          spotifyActions.getArtistImages(item);
+          //spotifyActions.getArtistImages(item);
         }
         break;
 

@@ -66,6 +66,8 @@ fields:
     source: Source
     editable: Editable
     owner: Owner
+    followers: Followers
+    popularity: Popularity
 time:
   seconds: 
     short: secs
@@ -295,7 +297,7 @@ settings:
     theme:
       label: Theme
       auto: Auto
-      auto_toolip: Detects your browser or OS preference
+      auto_tooltip: Detects your browser or OS preference
       dark: Dark
       light: Light
     behavior:

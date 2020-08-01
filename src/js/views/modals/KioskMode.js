@@ -29,6 +29,49 @@ const LyricsScroller = ({ content = '', time_position = 1, duration = 100 }) => 
   );
 }
 
+const Lyrics = ({
+  show_lyrics,
+  load_queue,
+  genius_authorized,
+  time_position = null,
+  current_track,
+}) => {
+  if (!show_lyrics) {
+    return null;
+  }
+
+  const { lyrics, duration } = current_track || {};
+
+  if (isLoading(load_queue, ['genius_'])) {
+    return (
+      <div className="lyrics">
+        <Loader body loading />
+      </div>
+    );
+  }
+  if (!genius_authorized) {
+    return (
+      <p className="no-results">
+        <I18n path="services.genius.want_lyrics" />
+        <Link to="/settings/genius" scrollTo="#services-menu">
+          <I18n path="settings.title" />
+        </Link>
+        .
+      </p>
+    );
+  }
+  if (lyrics) {
+    return (
+      <LyricsScroller
+        content={lyrics}
+        time_position={time_position}
+        duration={duration}
+      />
+    );
+  };
+  return null;
+};
+
 class KioskMode extends React.Component {
 
   componentDidMount() {
@@ -112,45 +155,6 @@ class KioskMode extends React.Component {
     }
   }
 
-  renderLyrics = () => {
-    const {
-      load_queue,
-      genius_authorized,
-      time_position = null,
-      current_track,
-    } = this.props;
-
-    const { lyrics, duration } = current_track || {};
-
-    if (isLoading(load_queue, ['genius_'])) {
-      return (
-        <div className="lyrics">
-          <Loader body loading />
-        </div>
-      );
-    } else if (!genius_authorized) {
-
-      return (
-        <p className="no-results">
-          <I18n path="services.genius.want_lyrics" />
-          <Link to="/settings/genius" scrollTo="#services-menu">
-            <I18n path="settings.title" />
-          </Link>.
-        </p>
-      );
-
-    } else if (lyrics) {
-      return (
-        <LyricsScroller
-          content={lyrics}
-          time_position={time_position}
-          duration={duration}
-        />
-      );
-    };
-    return null;
-  }
-
   renderPlayButton() {
     let button = <button className="control play" onClick={() => this.props.mopidyActions.play()}><Icon name="play_circle_filled" type="material" /></button>;
     if (this.props.play_state == 'playing') {
@@ -163,6 +167,9 @@ class KioskMode extends React.Component {
     const {
       show_lyrics,
       current_track,
+      load_queue,
+      genius_authorized,
+      time_position,
     } = this.props;
     if (current_track && current_track.images) {
       var { images } = current_track;
@@ -216,7 +223,13 @@ class KioskMode extends React.Component {
 
         </div>
 
-        {show_lyrics && this.renderLyrics()}
+        <Lyrics
+          show_lyrics={show_lyrics}
+          load_queue={load_queue}
+          genius_authorized={genius_authorized}
+          time_position={time_position}
+          current_track={current_track}
+        />
       </Modal>
     );
   }

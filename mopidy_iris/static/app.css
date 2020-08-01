@@ -2887,9 +2887,7 @@ h4 {
   h4 .dropdown-field {
     margin-left: 10px; }
   h4 .button {
-    margin-left: 10px;
-    margin-bottom: -1px;
-    margin-top: 0; }
+    margin-left: 10px; }
   h4.breadcrumbs .icon {
     padding-left: 10px;
     padding-right: 10px; }
@@ -3612,7 +3610,8 @@ select {
       background: rgba(128, 128, 128, 0.5);
       opacity: 0.25; }
   .button--discrete {
-    border: none; }
+    border: none;
+    box-shadow: none !important; }
     .button--discrete:before {
       display: none; }
   .button--working {
@@ -5597,8 +5596,7 @@ select {
   .grid__item:hover .thumbnail__image {
     transform: scale(1.01); }
     .grid__item:hover .thumbnail__image--glow {
-      -webkit-filter: blur(20px);
-      filter: blur(20px);
+      /*@include blur(20px);*/
       transform: rotateX(6deg); }
   .grid__item:active .thumbnail__image, .grid__item:focus .thumbnail__image {
     -webkit-transition: none !important;
@@ -8123,6 +8121,8 @@ main .track-view {
             align-items: center;
             display: flex;
             flex-flow: column; }
+            .modal--kiosk-mode .content .player .track__artwork .thumbnail {
+              max-width: 50vh; }
           .modal--kiosk-mode .content .player .track__info {
             font-size: 2rem;
             padding-top: 40px; }

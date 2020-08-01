@@ -316,6 +316,10 @@
             align-items: center;
             display: flex;
             flex-flow: column;
+
+            .thumbnail {
+              max-width: 50vh;
+            }
           }
 
           &__info {

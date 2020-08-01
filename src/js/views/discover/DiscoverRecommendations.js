@@ -196,20 +196,6 @@ class Discover extends React.Component {
       },
       tracks: tracksProp,
     } = this.props;
-    const {
-      seeds,
-    } = this.state;
-
-    let uri = 'iris:discover';
-    if (seeds) {
-      uri += ':';
-      for (let i = 0; i < seeds.length; i++) {
-        if (i > 0) {
-          uri += ',';
-        }
-        uri += seeds[i].split(':').join('_');
-      }
-    }
 
     const tracks = indexToArray(tracksProp, tracks_uris);
 
@@ -218,6 +204,7 @@ class Discover extends React.Component {
       context: 'track',
       items: tracks,
       uris: arrayOf('uri', tracks),
+      tracklist_uri: this.uri(),
     });
   }
 
@@ -256,6 +243,25 @@ class Discover extends React.Component {
       { seeds },
       () => this.getRecommendations(),
     );
+  }
+
+  uri = () => {
+    const {
+      seeds,
+    } = this.state;
+
+    var uri = 'iris:discover';
+    if (seeds) {
+      uri += ':';
+      for (var i = 0; i < seeds.length; i++) {
+        if (i > 0) {
+          uri += ',';
+        }
+        uri += seeds[i].split(':').join('_');
+      }
+    }
+
+    return uri;
   }
 
   getRecommendations = () => {
@@ -301,7 +307,7 @@ class Discover extends React.Component {
       },
     } = this.props;
 
-    playURIs(tracks_uris);
+    playURIs(tracks_uris, this.uri());
   }
 
   removeSeed = (index) => {
@@ -472,9 +478,6 @@ class Discover extends React.Component {
       artists: artistsProp,
       albums: albumsProp,
     } = this.props;
-    const {
-      seeds,
-    } = this.state;
 
     if (!albums_uris === undefined || artists_uris === undefined) {
       return <div className="content-wrapper recommendations-results" />;
@@ -515,17 +518,6 @@ class Discover extends React.Component {
       return null;
     }
 
-    var uri = 'iris:discover';
-    if (seeds) {
-      uri += ':';
-      for (var i = 0; i < seeds.length; i++) {
-        if (i > 0) {
-          uri += ',';
-        }
-        uri += seeds[i].split(':').join('_');
-      }
-    }
-
     return (
       <div className="content-wrapper recommendations-results">
 
@@ -539,7 +531,7 @@ class Discover extends React.Component {
               </button>
             </div>
           </h4>
-          <TrackList className="discover-track-list" uri={uri} tracks={tracks} />
+          <TrackList className="discover-track-list" uri={this.uri()} tracks={tracks} />
         </section>
 
         <div className="col col--w5" />

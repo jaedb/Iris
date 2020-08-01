@@ -42,7 +42,7 @@
           transform: scale(1.01);
 
           &--glow {
-            @include blur(20px);
+            /*@include blur(20px);*/
             transform: rotateX(6deg);
           }
         }

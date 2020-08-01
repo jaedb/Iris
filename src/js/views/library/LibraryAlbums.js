@@ -294,7 +294,7 @@ class LibraryAlbums extends React.Component {
       },
       {
         value: 'local',
-        label: i18n('services.spotify.local'),
+        label: i18n('services.mopidy.local'),
       },
     ];
 
