@@ -57,6 +57,17 @@ class Settings extends React.Component {
     setLanguage(language);
   }
 
+  onMopidySettingChanged = (name, value) => {
+    const {
+      mopidyActions: {
+        set,
+      },
+    } = this.props;
+    const shortName = name.replace('mopidy_','');
+    set({ [shortName]: value });
+    this.setState({ [name]: value });
+  }
+
   resetAllSettings = () => {
     localStorage.clear();
     window.location = '#';
@@ -128,7 +139,9 @@ class Settings extends React.Component {
 
   render = () => {
     const {
-      mopidyActions,
+      mopidyActions: {
+        set: setMopidy,
+      },
       mopidy,
       pusherActions: {
         setUsername,
@@ -408,7 +421,7 @@ class Settings extends React.Component {
             <div className="input">
               <TextField
                 value={this.state.mopidy_library_artists_uri}
-                onChange={(mopidy_library_artists_uri) => this.setState({ mopidy_library_artists_uri })}
+                onChange={(value) => this.onMopidySettingChanged('mopidy_library_artists_uri', value)}
                 autosave
               />
               <div className="description">
@@ -425,7 +438,7 @@ class Settings extends React.Component {
               <TextField
                 type="text"
                 value={this.state.mopidy_library_albums_uri}
-                onChange={(mopidy_library_albums_uri) => this.setState({ mopidy_library_albums_uri })}
+                onChange={(value) => this.onMopidySettingChanged('mopidy_library_albums_uri', value)}
                 autosave
               />
               <div className="description">
