@@ -8,7 +8,7 @@ services:
       - 1780:1780
     volumes:
       - HOST_SNAPCAST_TEMP:/tmp
-      - ./docker/snapserver.conf:/etc/default/snapserver.conf
+      - ./docker/snapserver.conf:/etc/snapserver.conf
   mopidy:
     image: jaedb/iris
     build:
