@@ -439,8 +439,10 @@ modal:
     no_editable_playlists: No editable playlists
   add_to_queue:
     title: Add to queue
-    subtitle: Add a comma-separated list of URIs to the play queue. You must have the appropriate Mopidy backend enabled for each URI schema (eg spotify:, yt:).
+    subtitle: Add a comma-separated list of URIs to the play queue
     uris: URI(s)
+    items_to_add: Items to add
+    no_items: No items
     position:
       label: Position
       end: End

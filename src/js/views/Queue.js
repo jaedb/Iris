@@ -246,7 +246,7 @@ class Queue extends React.Component {
         </Link>
         <Link className="button button--no-hover" to="/queue/add-uri">
           <Icon name="playlist_add" />
-          <I18n path="now_playing.context_actions.add_uri" />
+          <I18n path="actions.add" />
         </Link>
       </span>
     );

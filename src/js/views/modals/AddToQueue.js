@@ -8,28 +8,108 @@ import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
 import { I18n, i18n } from '../../locale';
+import { uriType } from '../../util/helpers';
+import Icon from '../../components/Icon';
+import TextField from '../../components/Fields/TextField';
+
+const UriListItem = ({
+  uri,
+  tracks,
+  albums,
+  remove,
+}) => {
+  const type = uriType(uri);
+  let item = null;
+  switch (type) {
+    case 'track':
+      item = tracks[uri];
+      break;
+    case 'album':
+      item = albums[uri];
+      break;
+    default:
+      break;
+  }
+  return (
+    <div className="list__item">
+      {item ? item.name : <span className="mid_grey-text">{uri}</span> }
+      <span className="mid_grey-text"> ({type})</span>
+      <span className="button discrete remove-uri no-hover" onClick={() => remove(uri)}>
+        <Icon name="delete" />
+        <I18n path="actions.remove" />
+      </span>
+    </div>
+  )
+}
 
 class AddToQueue extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      uris: '',
+      text: '',
+      error: '',
+      uris: [],
       next: false,
     };
   }
 
   componentDidMount() {
-    this.props.uiActions.setWindowTitle(i18n('modal.add_to_queue.title'));
+    const {
+      uiActions: {
+        setWindowTitle,
+      },
+    } = this.props;
+
+    setWindowTitle(i18n('modal.add_to_queue.title'));
   }
 
-  handleSubmit(e) {
+  onSubmit = (e) => {
+    const {
+      uris,
+      next,
+    } = this.state;
+    const {
+      mopidyActions: {
+        enqueueURIs,
+      },
+    } = this.props;
+
     e.preventDefault();
-    const uris = this.state.uris.split(',');
-    this.props.mopidyActions.enqueueURIs(uris, null, this.state.next);
+    enqueueURIs(uris, null, next);
     window.history.back();
   }
 
-  render() {
+  onChange = (text) => {
+    this.setState({ text });
+  }
+
+  addUris = () => {
+    const {
+      text,
+    } = this.state;
+    const uris = text.split(',');
+    this.setState({ uris, text: '' });
+  }
+
+  removeUri = (uri) => {
+    const {
+      uris,
+    } = this.state;
+
+    this.setState({ uris: uris.filter((item) => item !== uri) });
+  }
+
+  render = () => {
+    const {
+      tracks,
+      albums,
+    } = this.props;
+    const {
+      uris,
+      text,
+      error,
+    } = this.state;
+
     return (
       <Modal className="modal--add-to-queue">
         <h1>
@@ -39,17 +119,45 @@ class AddToQueue extends React.Component {
           <I18n path="modal.add_to_queue.subtitle" />
         </h2>
 
-        <form onSubmit={(e) => this.handleSubmit(e)}>
-          <div className="field text">
+        <form onSubmit={this.onSubmit}>
+
+        <div className="field text">
             <div className="name">
-              <I18n path="modal.add_to_queue.uris" />
+              <I18n path="modal.add_to_queue.items_to_add" />
             </div>
             <div className="input">
-              <input
-                type="text"
-                onChange={(e) => this.setState({ uris: e.target.value })}
-                value={this.state.uris}
+              {uris.length ? (
+                <div className="list">
+                  {uris.map((uri) => (
+                    <UriListItem
+                      uri={uri}
+                      tracks={tracks}
+                      albums={albums}
+                      remove={this.removeUri}
+                      key={uri}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <span className="text grey-text"><I18n path="modal.add_to_queue.no_items" /></span>
+              )}
+            </div>
+          </div>
+
+          <div className="field text">
+            <div className="name">
+              <I18n path="fields.uri" />
+            </div>
+            <div className="input">
+              <TextField
+                onChange={this.onChange}
+                value={text}
               />
+              <span className="button discrete add-uri no-hover" onClick={this.addUris}>
+                <Icon name="add" />
+                <I18n path="actions.add" />
+              </span>
+              {error && <span className="description error">{error}</span>}
             </div>
           </div>
 
@@ -96,8 +204,8 @@ class AddToQueue extends React.Component {
 
 const mapStateToProps = (state, ownProps) => ({
   mopidy_connected: state.mopidy.connected,
-  playlist: (state.core.playlists[ownProps.match.params.uri] !== undefined ? state.core.playlists[ownProps.match.params.uri] : null),
-  playlists: state.core.playlists,
+  albums: state.core.albums,
+  tracks: state.core.tracks,
 });
 
 const mapDispatchToProps = (dispatch) => ({

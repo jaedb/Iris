@@ -68,15 +68,25 @@ class LibraryBrowseDirectory extends React.Component {
     }
   }
 
-  loadMore() {
-    const new_limit = this.state.limit + this.state.per_page;
+  loadMore = () => {
+    const {
+      limit: prevLimit,
+      per_page,
+    } = this.state;
+    const {
+      history,
+      location: {
+        state: prevState = {},
+      },
+    } = this.props;
 
-    this.setState({ limit: new_limit });
+    const limit = prevLimit + per_page;
+    this.setState({ limit });
 
-    // Set our pagination to location state
-    const state = (this.props.location && this.props.location.state ? this.props.location.state : {});
-    state.limit = new_limit;
-    this.props.history.replace({ state });
+    history.replace({
+      ...prevState,
+      limit,
+    });
   }
 
   playAll(e, tracks) {
@@ -150,7 +160,9 @@ class LibraryBrowseDirectory extends React.Component {
       uiActions,
       view,
     } = this.props;
-    const { limit } = this.state;
+    const {
+      limit,
+    } = this.state;
 
     let title = i18n('library.browse_directory.title');
 
@@ -176,11 +188,11 @@ class LibraryBrowseDirectory extends React.Component {
     let subdirectories = (directory.subdirectories && directory.subdirectories.length > 0 ? directory.subdirectories : null);
     subdirectories = sortItems(subdirectories, 'name');
 
-    const total_items = (tracks ? tracks.length : 0) + (subdirectories ? subdirectories.length : 0);
-    subdirectories = subdirectories.slice(0, this.state.limit);
+    const total_items = (directory.tracks ? directory.tracks.length : 0) + (subdirectories ? subdirectories.length : 0);
+    subdirectories = subdirectories.slice(0, limit);
     let all_tracks = null;
     let tracks = null;
-    let limit_remaining = this.state.limit - subdirectories;
+    const limit_remaining = limit - subdirectories;
     if (limit_remaining > 0) {
       all_tracks = (directory.tracks && directory.tracks.length > 0 ? directory.tracks : null);
       all_tracks = sortItems(all_tracks, 'name');
@@ -245,7 +257,7 @@ class LibraryBrowseDirectory extends React.Component {
             <LazyLoadListener
               loadKey={total_items > limit ? limit : total_items}
               showLoader={limit < total_items}
-              loadMore={() => this.loadMore()}
+              loadMore={this.loadMore}
             />
 
           </ErrorBoundary>
