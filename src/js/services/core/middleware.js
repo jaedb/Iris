@@ -3,7 +3,7 @@ import React from 'react';
 import ReactGA from 'react-ga';
 import { arrayOf } from '../../util/arrays';
 import URILink from '../../components/URILink';
-import { uriSource, upgradeSpotifyPlaylistUris } from '../../util/helpers';
+import { uriSource, upgradeSpotifyPlaylistUris, uriType, titleCase } from '../../util/helpers';
 import {
   formatTracks,
   formatTrack,
@@ -315,12 +315,18 @@ const CoreMiddleware = (function () {
         break;
 
       /**
-           * Asset Load commands
-           *
-           * These are called from views and other middleware to load
-           * assets. This is where we can return already indexed records
-           * where appropriate
-           * */
+       * Asset Load commands
+       *
+       * These are called from views and other middleware to load
+       * assets. This is where we can return already indexed records
+       * where appropriate
+       * */
+      case 'LOAD_ITEM':
+        store.dispatch(coreActions[`load${titleCase(uriType(action.uri))}`](
+          action.uri,
+          action.force_reload,
+        ));
+        break;
 
       case 'LOAD_TRACK':
         if (

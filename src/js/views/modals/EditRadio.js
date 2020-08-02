@@ -14,6 +14,30 @@ import {
   uriType,
 } from '../../util/helpers';
 import { i18n, I18n } from '../../locale';
+import TextField from '../../components/Fields/TextField';
+
+const SeedListItem = ({ seed, remove }) => (
+  <div className="list__item list__item--no-interaction" key={seed.uri}>
+    {seed.unresolved ? (
+      <span className="mid_grey-text">{seed.uri}</span>
+    ) : (
+      <span>{seed.name}</span>
+    )}
+    {!seed.unresolved && (
+      <span className="mid_grey-text">
+        {` (${uriType(seed.uri)})`}
+      </span>
+    )}
+    <button
+      type="button"
+      className="button button--discrete button--destructive button--tiny pull-right"
+      onClick={() => remove(seed.uri)}
+    >
+      <Icon name="delete" />
+      <I18n path="actions.remove" />
+    </button>
+  </div>
+);
 
 class EditRadio extends React.Component {
   constructor(props) {
@@ -27,10 +51,17 @@ class EditRadio extends React.Component {
   }
 
   componentDidMount() {
-    this.props.uiActions.setWindowTitle(i18n('modal.edit_radio.title'));
+    const {
+      uiActions: {
+        setWindowTitle,
+      },
+      radio,
+    } = this.props;
 
-    if (this.props.radio && this.props.radio.enabled) {
-      this.loadRadio(this.props.radio);
+    setWindowTitle(i18n('modal.edit_radio.title'));
+
+    if (radio && radio.enabled) {
+      this.loadRadio(radio);
     }
   }
 
@@ -39,7 +70,11 @@ class EditRadio extends React.Component {
     if (!prev_radio && radio) this.loadRadio(radio);
   }
 
-  loadRadio(radio) {
+  onUriChange = (uri) => {
+    this.setState({ uri, error_message: null });
+  }
+
+  loadRadio = (radio) => {
     const seeds = [...radio.seed_tracks, ...radio.seed_artists, ...radio.seed_genres];
     this.setState({ seeds, enabled: radio.enabled });
   }
@@ -90,18 +125,28 @@ class EditRadio extends React.Component {
     this.props.uiActions.closeModal();
   }
 
-  addSeed(e) {
+  addSeed = (e) => {
+    const {
+      uri,
+      seeds,
+    } = this.state;
+    const {
+      coreActions: {
+        loadItem,
+      },
+    } = this.props;
+
     e.preventDefault();
 
-    if (this.state.uri == '') {
+    if (uri === '') {
       this.setState({ error_message: i18n('errors.required') });
       return;
     }
 
     this.setState({ error_message: null });
 
-    const seeds = Object.assign([], this.state.seeds);
-    let uris = this.state.uri.split(',');
+    const validatedSeeds = Object.assign([], seeds);
+    let uris = uri.split(',');
 
     if (uris.length >= 5) {
       uris = uris.slice(0, 5);
@@ -115,108 +160,71 @@ class EditRadio extends React.Component {
       } if (seeds.indexOf(uris[i]) > -1) {
         this.setState({ error_message: i18n('modal.edit_radio.too_many_seeds') });
       } else {
-        seeds.push(uris[i]);
-      }
-
-      // Resolve
-      switch (uriType(uris[i])) {
-        case 'track':
-          this.props.spotifyActions.getTrack(uris[i]);
-          break;
-
-        case 'artist':
-          this.props.spotifyActions.getArtist(uris[i]);
-          break;
+        validatedSeeds.push(uris[i]);
+        loadItem(uris[i]);
       }
     }
 
-    // commit to state
     this.setState({
-      seeds,
+      seeds: validatedSeeds,
       uri: '',
     });
   }
 
-  removeSeed(uri) {
-    const seeds = [];
-    for (let i = 0; i < this.state.seeds.length; i++) {
-      if (this.state.seeds[i] != uri) {
-        seeds.push(this.state.seeds[i]);
-      }
-    }
+  removeSeed = (uri) => {
+    const {
+      seeds: prevSeeds,
+    } = this.state;
+
+    const seeds = prevSeeds.filter((seed) => seed !== uri);
     this.setState({ seeds });
   }
 
-  mapSeeds() {
-    const seeds = [];
+  mapSeeds = () => {
+    const {
+      seeds,
+    } = this.state;
+    const {
+      tracks = {},
+      artists = {},
+    } = this.props;
 
-    if (this.state.seeds) {
-      for (let i = 0; i < this.state.seeds.length && i < 5; i++) {
-        const uri = this.state.seeds[i];
-        if (uri) {
-          if (uriType(uri) == 'artist') {
-            if (this.props.artists && this.props.artists.hasOwnProperty(uri)) {
-              seeds.push(this.props.artists[uri]);
-            } else {
-              seeds.push({
-                unresolved: true,
-                uri,
-              });
-            }
-          } else if (uriType(uri) == 'track') {
-            if (this.props.tracks && this.props.tracks.hasOwnProperty(uri)) {
-              seeds.push(this.props.tracks[uri]);
-            } else {
-              seeds.push({
-                unresolved: true,
-                uri,
-              });
-            }
-          }
-        }
-      }
+    if (!seeds) {
+      return [];
     }
 
-    return seeds;
+    return seeds.slice(0, 5).map((uri) => {
+      switch (uriType(uri)) {
+        case 'artist':
+          if (artists[uri]) {
+            return artists[uri];
+          }
+          break;
+        case 'track':
+          if (tracks[uri]) {
+            return tracks[uri];
+          }
+          break;
+        default:
+          break;
+      }
+
+      return {
+        unresolved: true,
+        uri,
+      };
+    });
   }
 
-  renderSeeds() {
+  render = () => {
+    const {
+      enabled,
+      uri,
+      error_message,
+    } = this.state;
+
     const seeds = this.mapSeeds();
 
-    if (seeds.length > 0) {
-      return (
-        <div>
-          <div className="list">
-            {
-							seeds.map((seed, index) => (
-  <div className="list__item" key={seed.uri}>
-    {seed.unresolved ? <span className="mid_grey-text">{seed.uri}</span> : <span>{seed.name}</span> }
-    {!seed.unresolved ? (
-      <span className="mid_grey-text">
-&nbsp;(
-        {uriType(seed.uri)}
-)
-      </span>
-    ) : null}
-    <span className="button discrete remove-uri no-hover" onClick={(e) => this.removeSeed(seed.uri)}>
-      <Icon name="delete" />
-      <I18n path="actions.delete" />
-    </span>
-  </div>
-							))
-						}
-          </div>
-        </div>
-      );
-    }
-    return (
-      <div className="no-results">
-        <I18n path="modal.edit_radio.no_seeds" />
-      </div>
-    );
-  }
-
-  render() {
     return (
       <Modal className="modal--edit-radio">
         <h1>
@@ -226,25 +234,45 @@ class EditRadio extends React.Component {
           <I18n path="modal.edit_radio.subtitle" />
         </h2>
 
-        <form onSubmit={(e) => { (this.state.enabled ? this.handleUpdate(e) : this.handleStart(e)); }}>
-
-          {this.renderSeeds()}
+        <form onSubmit={(e) => { (enabled ? this.handleUpdate(e) : this.handleStart(e)); }}>
 
           <div className="field text">
             <div className="name">
               <I18n path="fields.uri" />
             </div>
             <div className="input">
-              <input
-                type="text"
-                onChange={(e) => this.setState({ uri: e.target.value, error_message: null })}
-                value={this.state.uri}
+              <TextField
+                onChange={this.onUriChange}
+                value={uri}
               />
               <span className="button discrete add-uri no-hover" onClick={(e) => this.addSeed(e)}>
                 <Icon name="add" />
                 <I18n path="actions.add" />
               </span>
-              {this.state.error_message ? <span className="description error">{this.state.error_message}</span> : null}
+              {error_message && <span className="description error">{error_message}</span>}
+            </div>
+          </div>
+
+          <div className="field text">
+            <div className="name">
+              <I18n path="fields.items_to_add.label" />
+            </div>
+            <div className="input">
+              {seeds.length ? (
+                <div className="list">
+                  {seeds.map((seed, index) => (
+                    <SeedListItem
+                      key={`${seed}_${index}`}
+                      seed={seed}
+                      remove={this.removeSeed}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text mid_grey-text">
+                  <I18n path="fields.items_to_add.placeholder" />
+                </div>
+              )}
             </div>
           </div>
 

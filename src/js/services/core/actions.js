@@ -115,6 +115,14 @@ export function cachebustHttpStream() {
  * relevant service to load the record - all from one neat package.
  * */
 
+export function loadItem(uri, force_reload = false) {
+  return {
+    type: 'LOAD_ITEM',
+    uri,
+    force_reload,
+  };
+}
+
 export function loadTrack(uri, force_reload = false) {
   return {
     type: 'LOAD_TRACK',
@@ -246,6 +254,14 @@ export function removeFromIndex(index_name, key, new_key = null) {
     index_name,
     key,
     new_key,
+  };
+}
+
+export function viewDataLoaded(name, data) {
+  return {
+    type: 'VIEW_DATA_LOADED',
+    name,
+    data,
   };
 }
 

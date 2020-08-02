@@ -530,6 +530,13 @@ export function cancelProcessor(processor) {
   };
 }
 
+export function addToQueue_getRandomTracks(limit = 100) {
+  return {
+    type: 'ADD_TO_QUEUE__GET_RANDOM_TRACKS',
+    limit,
+  };
+}
+
 
 /**
  * Searching

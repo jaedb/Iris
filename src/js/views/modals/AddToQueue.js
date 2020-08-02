@@ -11,6 +11,7 @@ import { I18n, i18n } from '../../locale';
 import { uriType } from '../../util/helpers';
 import Icon from '../../components/Icon';
 import TextField from '../../components/Fields/TextField';
+import LinksSentence from '../../components/LinksSentence';
 
 const UriListItem = ({
   uri,
@@ -31,16 +32,25 @@ const UriListItem = ({
       break;
   }
   return (
-    <div className="list__item">
-      {item ? item.name : <span className="mid_grey-text">{uri}</span> }
-      <span className="mid_grey-text"> ({type})</span>
-      <span className="button discrete remove-uri no-hover" onClick={() => remove(uri)}>
+    <div className="list__item list__item--no-interaction">
+      {item ? item.name : <span className="mid_grey-text">{uri}</span>}
+      {item && item.artists && (
+        <I18n path="common.by" contentAfter>
+          <LinksSentence nolinks items={item.artists} />
+        </I18n>
+      )}
+      <span className="mid_grey-text">{` (${type})`}</span>
+      <button
+        className="button button--discrete button--destructive button--tiny pull-right"
+        type="button"
+        onClick={() => remove(uri)}
+      >
         <Icon name="delete" />
         <I18n path="actions.remove" />
-      </span>
+      </button>
     </div>
-  )
-}
+  );
+};
 
 class AddToQueue extends React.Component {
   constructor(props) {
@@ -83,12 +93,34 @@ class AddToQueue extends React.Component {
     this.setState({ text });
   }
 
+  addRandom = () => {
+    const {
+      mopidyActions: {
+        addToQueue_getRandomTracks,
+      },
+    } = this.props;
+
+    addToQueue_getRandomTracks(20);
+  }
+
   addUris = () => {
     const {
       text,
     } = this.state;
+    const {
+      coreActions: {
+        loadItem,
+      },
+    } = this.props;
     const uris = text.split(',');
-    this.setState({ uris, text: '' });
+
+    const validatedUris = uris.filter((uri) => uriType(uri));
+
+    validatedUris.forEach((uri) => {
+      loadItem(uri);
+    });
+
+    this.setState({ uris: validatedUris, text: '' });
   }
 
   removeUri = (uri) => {
@@ -108,41 +140,19 @@ class AddToQueue extends React.Component {
       uris,
       text,
       error,
+      next,
     } = this.state;
 
     return (
       <Modal className="modal--add-to-queue">
         <h1>
-          <I18n path="modal.add_to_queue.title"/>
+          <I18n path="modal.add_to_queue.title" />
         </h1>
         <h2 className="mid_grey-text">
           <I18n path="modal.add_to_queue.subtitle" />
         </h2>
 
         <form onSubmit={this.onSubmit}>
-
-        <div className="field text">
-            <div className="name">
-              <I18n path="modal.add_to_queue.items_to_add" />
-            </div>
-            <div className="input">
-              {uris.length ? (
-                <div className="list">
-                  {uris.map((uri) => (
-                    <UriListItem
-                      uri={uri}
-                      tracks={tracks}
-                      albums={albums}
-                      remove={this.removeUri}
-                      key={uri}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <span className="text grey-text"><I18n path="modal.add_to_queue.no_items" /></span>
-              )}
-            </div>
-          </div>
 
           <div className="field text">
             <div className="name">
@@ -161,17 +171,42 @@ class AddToQueue extends React.Component {
             </div>
           </div>
 
+          <div className="field text">
+            <div className="name">
+              <I18n path="fields.items_to_add.label" />
+            </div>
+            <div className="input">
+              {uris.length ? (
+                <div className="list">
+                  {uris.map((uri, index) => (
+                    <UriListItem
+                      uri={uri}
+                      tracks={tracks}
+                      albums={albums}
+                      remove={this.removeUri}
+                      key={`${uri}_${index}`}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <span className="text mid_grey-text">
+                  <I18n path="fields.items_to_add.placeholder" />
+                </span>
+              )}
+            </div>
+          </div>
+
           <div className="field radio white">
             <div className="name">
-						  <I18n path="modal.add_to_queue.position.label" />
+              <I18n path="modal.add_to_queue.position.label" />
             </div>
             <div className="input">
               <label>
                 <input
                   type="radio"
                   name="next"
-                  checked={!this.state.next}
-                  onChange={(e) => this.setState({ next: false })}
+                  checked={!next}
+                  onChange={() => this.setState({ next: false })}
                 />
                 <span className="label">
                   <I18n path="modal.add_to_queue.position.end" />
@@ -181,8 +216,8 @@ class AddToQueue extends React.Component {
                 <input
                   type="radio"
                   name="next"
-                  checked={this.state.next}
-                  onChange={(e) => this.setState({ next: true })}
+                  checked={next}
+                  onChange={() => this.setState({ next: true })}
                 />
                 <span className="label">
                   <I18n path="modal.add_to_queue.position.next" />
@@ -192,6 +227,13 @@ class AddToQueue extends React.Component {
           </div>
 
           <div className="actions centered-text">
+            <button
+              type="button"
+              className="button button--grey button--large"
+              onClick={this.addRandom}
+            >
+              <I18n path="modal.add_to_queue.add_random" />
+            </button>
             <button type="submit" className="button button--primary button--large">
               <I18n path="actions.add" />
             </button>
@@ -202,7 +244,7 @@ class AddToQueue extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state) => ({
   mopidy_connected: state.mopidy.connected,
   albums: state.core.albums,
   tracks: state.core.tracks,

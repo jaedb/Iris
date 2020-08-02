@@ -3543,6 +3543,9 @@ select {
       box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
   .button--small {
     padding: 6px 18px 4px; }
+  .button--tiny {
+    padding: 3px 10px 2px;
+    margin: 0; }
   .button--large {
     padding: 16px 50px 14px; }
   .button--pull-right {
@@ -8061,11 +8064,8 @@ main .track-view {
     box-sizing: border-box; }
     .modal--image-zoom .content img {
       max-width: 100%; }
-  .modal--edit-radio form .field {
-    position: relative;
-    margin-top: 50px; }
-    .modal--edit-radio form .field input[type="text"] {
-      padding-right: 80px; }
+  .modal--edit-radio form .field input[type="text"], .modal--add-to-queue form .field input[type="text"] {
+    padding-right: 80px; }
   .modal--share-configuration .checkbox-group__item {
     padding-bottom: 0.75rem; }
   .modal--share-configuration .field.checkbox .label {

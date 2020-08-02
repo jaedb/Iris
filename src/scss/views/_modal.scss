@@ -227,12 +227,10 @@
     }
   }
 
-  &--edit-radio {
+  &--edit-radio,
+  &--add-to-queue {
     form {
       .field {
-        position: relative;
-        margin-top: 50px;
-
         input[type="text"] {
           padding-right: 80px;
         }

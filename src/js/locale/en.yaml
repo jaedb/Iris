@@ -54,6 +54,9 @@ fields:
   view: View
   source: Source
   uri: URI(s)
+  items_to_add:
+    label: Items to add
+    placeholder: No items
   filters:
     all: All
     thumbnails: Thumbnails
@@ -441,8 +444,7 @@ modal:
     title: Add to queue
     subtitle: Add a comma-separated list of URIs to the play queue
     uris: URI(s)
-    items_to_add: Items to add
-    no_items: No items
+    add_random: Add random
     position:
       label: Position
       end: End

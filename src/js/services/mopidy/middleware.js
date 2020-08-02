@@ -2330,6 +2330,18 @@ const MopidyMiddleware = (function () {
           );
         break;
 
+      case 'ADD_TO_QUEUE__GET_RANDOM_TRACKS':
+        request(socket, store, 'library.browse', { uri: 'local:directory?type=track' })
+          .then(
+            (_response) => {
+              if (!_response || !_response.length) return;
+              store.dispatch(
+                coreActions.viewDataLoaded('random_tracks', _response.slice(0, action.limit)),
+              );
+            },
+          );
+        break;
+
 
       /**
            * =============================================================== IMAGES ===============
