@@ -1,38 +1,43 @@
 
-import * as helpers from '../src/js/helpers';
+import {
+	arrays,
+	storage,
+	format,
+	helpers,
+} from '../src/js/util';
 const state = require('./state');
 
 describe('localStorage', () => {
 
 	it('should handle keys that are not in storage', () => {
-		expect(helpers.getStorage('invalid_key')).toEqual({});
-		expect(helpers.getStorage('invalid_key', 'default_value')).toEqual('default_value');
+		expect(storage.get('invalid_key')).toEqual({});
+		expect(storage.get('invalid_key', 'default_value')).toEqual('default_value');
 	});
 
 	it('should store data', () => {
 
 		// Initially empty
-		expect(helpers.getStorage('test_key')).toEqual({});
+		expect(storage.get('test_key')).toEqual({});
 
 		// Set it
-		helpers.setStorage('test_key', 'test_value');
+		storage.set('test_key', 'test_value');
 
 		// Test storage
-		expect(helpers.getStorage('test_key')).toEqual('test_value');
+		expect(storage.get('test_key')).toEqual('test_value');
 	});
 });
 
 describe('isCached', () => {
 
 	it('should return false when not cached', () => {
-		expect(helpers.isCached('https://picsum.photos/200')).toBe(false);
+		expect(storage.isCached('https://picsum.photos/200')).toBe(false);
 	});
 
 	it('should return true when cached', () => {
 	    var image = new Image();
 	    image.src = 'https://picsum.photos/200';
 	    image.onload = function(){
-			expect(helpers.isCached('https://picsum.photos/200')).toBe(true);
+			expect(storage.isCached('https://picsum.photos/200')).toBe(true);
 	    }
 	});
 });
@@ -46,7 +51,7 @@ describe('formatImages', () => {
 				small: 'ignored-image.jpg'
 			}
 		];
-		expect(helpers.formatImages(images).small).toBe('ignored-image.jpg');
+		expect(format.formatImages(images).small).toBe('ignored-image.jpg');
 	});
 	
 	it('should handle Mopidy object', () => {
@@ -57,12 +62,12 @@ describe('formatImages', () => {
 				url: 'test-image.jpg'
 			}
 		];
-		expect(helpers.formatImages(images).small).toBe('test-image.jpg');
+		expect(format.formatImages(images).small).toBe('test-image.jpg');
 	});
 	
 	it('should handle Mopidy string', () => {
 		var images = ['test-image.jpg'];
-		expect(helpers.formatImages(images).small).toBe('test-image.jpg');
+		expect(format.formatImages(images).small).toBe('test-image.jpg');
 	});
 	
 	it('should handle Spotify image', () => {
@@ -72,7 +77,7 @@ describe('formatImages', () => {
 				url: 'test-image.jpg'
 			}
 		];
-		expect(helpers.formatImages(images).small).toBe('test-image.jpg');
+		expect(format.formatImages(images).small).toBe('test-image.jpg');
 	});
 	
 	it('should handle LastFM image', () => {
@@ -82,7 +87,7 @@ describe('formatImages', () => {
 				'#text': 'test-image.jpg'
 			}
 		];
-		expect(helpers.formatImages(images).small).toBe('test-image.jpg');
+		expect(format.formatImages(images).small).toBe('test-image.jpg');
 	});
 	
 	it('should handle Genius image', () => {
@@ -91,7 +96,7 @@ describe('formatImages', () => {
 				url: 'test-image.jpg'
 			}
 		};
-		expect(helpers.formatImages(images).small).toBe('test-image.jpg');
+		expect(format.formatImages(images).small).toBe('test-image.jpg');
 	});
 	
 	it('should up-fill sizes', () => {
@@ -101,9 +106,9 @@ describe('formatImages', () => {
 				url: 'small.jpg'
 			}
 		];
-		expect(helpers.formatImages(images).medium).toBe('small.jpg');
-		expect(helpers.formatImages(images).large).toBe('small.jpg');
-		expect(helpers.formatImages(images).huge).toBe('small.jpg');
+		expect(format.formatImages(images).medium).toBe('small.jpg');
+		expect(format.formatImages(images).large).toBe('small.jpg');
+		expect(format.formatImages(images).huge).toBe('small.jpg');
 	});
 	
 	it('should down-fill sizes', () => {
@@ -113,9 +118,9 @@ describe('formatImages', () => {
 				url: 'huge.jpg'
 			}
 		];
-		expect(helpers.formatImages(images).small).toBe('huge.jpg');
-		expect(helpers.formatImages(images).medium).toBe('huge.jpg');
-		expect(helpers.formatImages(images).large).toBe('huge.jpg');
+		expect(format.formatImages(images).small).toBe('huge.jpg');
+		expect(format.formatImages(images).medium).toBe('huge.jpg');
+		expect(format.formatImages(images).large).toBe('huge.jpg');
 	});
 });
 
@@ -177,7 +182,7 @@ describe('arrayOf', () => {
 				name: '456'
 			}
 		];
-		var uris = helpers.arrayOf('uri', items);
+		var uris = arrays.arrayOf('uri', items);
 		expect(Array.isArray(uris)).toBe(true);
 		expect(uris.length).toBe(2);
 
@@ -200,7 +205,7 @@ describe('arrayOf', () => {
 				name: '789'
 			}
 		];
-		var uris = helpers.arrayOf('uri', items);
+		var uris = arrays.arrayOf('uri', items);
 		expect(uris.length).toBe(1);
 	});
 });

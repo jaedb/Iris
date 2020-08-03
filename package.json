@@ -68,7 +68,7 @@
     "webpack-strip": "0.1.0"
   },
   "scripts": {
-    "jest": "jest",
+    "test": "jest",
     "start": "webpack-dev-server",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
@@ -80,6 +80,7 @@
   },
   "jest": {
     "verbose": true,
+    "collectCoverage": true,
     "setupFilesAfterEnv": [
       "./tests/setup.js"
     ]

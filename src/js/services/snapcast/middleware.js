@@ -497,11 +497,7 @@ const SnapcastMiddleware = (function () {
         break;
 
       case 'SNAPCAST_DELETE_CLIENT':
-        const params = {
-          id: action.id,
-        };
-
-        request(store, 'Server.DeleteClient', params)
+        request(store, 'Server.DeleteClient', { id: action.id })
           .then(
             () => {
               store.dispatch({

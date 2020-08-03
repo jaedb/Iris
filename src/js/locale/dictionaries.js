@@ -1,6 +1,6 @@
 import { merge } from 'lodash';
-import en from './en.yaml';
-import _de from './de.yaml';
+import { en } from './en.yaml';
+import { _de } from './de.yaml';
 
 // Merge languages with English. This provides English fallbacks to untranslated
 // fields without breaking the UI (with blanks)

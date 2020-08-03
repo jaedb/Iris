@@ -225,14 +225,14 @@ const CoreMiddleware = (function () {
            * Playlist manipulation
            * */
       case 'PLAYLIST_TRACKS':
-        const tracks = formatTracks(action.tracks);
+        const playlist_tracks = formatTracks(action.tracks);
 
         store.dispatch({
           type: 'TRACKS_LOADED',
-          tracks,
+          tracks: playlist_tracks,
         });
 
-        next({ ...action, tracks_uris: arrayOf('uri', tracks) });
+        next({ ...action, tracks_uris: arrayOf('uri', playlist_tracks) });
         break;
 
       case 'PLAYLIST_TRACKS_ADDED':
