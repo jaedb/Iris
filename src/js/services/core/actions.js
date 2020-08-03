@@ -257,10 +257,9 @@ export function removeFromIndex(index_name, key, new_key = null) {
   };
 }
 
-export function viewDataLoaded(name, data) {
+export function viewDataLoaded(data) {
   return {
     type: 'VIEW_DATA_LOADED',
-    name,
     data,
   };
 }

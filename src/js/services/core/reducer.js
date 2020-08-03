@@ -199,12 +199,11 @@ export default function reducer(core = {}, action) {
       return { ...core, genres: action.genres };
 
     case 'VIEW_DATA_LOADED':
-      console.log(action);
       return {
         ...core,
         view: {
           ...(core.view ? core.view : {}),
-          [action.name]: action.data,
+          ...action.data,
         },
       };
 

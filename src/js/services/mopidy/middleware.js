@@ -2,7 +2,7 @@
 import ReactGA from 'react-ga';
 import Mopidy from 'mopidy';
 import { sha256 } from 'js-sha256';
-
+import { sampleSize } from 'lodash';
 import {
   generateGuid,
   uriSource,
@@ -22,6 +22,7 @@ import {
   removeDuplicates,
   applyFilter,
   sortItems,
+  indexToArray,
 } from '../../util/arrays';
 
 const mopidyActions = require('./actions.js');
@@ -2176,21 +2177,14 @@ const MopidyMiddleware = (function () {
 
       case 'MOPIDY_GET_ARTISTS':
         request(socket, store, 'library.lookup', { uris: action.uris })
-          .then((response) => {
-            if (response.length <= 0) return;
+          .then((_response) => {
+            if (!_response || _response.length) return;
 
-            const artists = [];
-
-            for (const uri in response) {
-              if (response.hasOwnProperty(uri) && response[uri].length > 0 && response[uri][0].artists) {
-                const artist = {
-
-                  ...(response ? response[uri][0].artists[0] : {}),
-                  provider: 'mopidy',
-                };
-                artists.push(artist);
-              }
-            }
+            const response = indexToArray(_response);
+            const artists = response.map((item) => ({
+              ...item.artists[0],
+              provider: 'mopidy',
+            }));
 
             store.dispatch(coreActions.artistsLoaded(artists));
 
@@ -2309,17 +2303,19 @@ const MopidyMiddleware = (function () {
           );
         break;
 
-      case 'MOPIDY_GET_TRACK':
-        request(socket, store, 'library.lookup', { uris: [action.uri] })
+      case 'MOPIDY_GET_TRACKS':
+        request(socket, store, 'library.lookup', { uris: [action.uris] })
           .then(
             (_response) => {
               if (!_response) return;
-              const response = _response[action.uri];
-              if (!response || !response.length) return;
 
-              const track = { ...response[0] };
-              store.dispatch(coreActions.trackLoaded(track));
-              store.dispatch(mopidyActions.getImages('tracks', [track.uri]));
+              const tracks = indexToArray(_response);
+
+              store.dispatch(coreActions.tracksLoaded(tracks));
+
+              if (action.get_images) {
+                store.dispatch(mopidyActions.getImages('tracks', arrayOf('uri', tracks)));
+              }
             },
             (error) => {
               store.dispatch(coreActions.handleException(
@@ -2330,14 +2326,33 @@ const MopidyMiddleware = (function () {
           );
         break;
 
-      case 'ADD_TO_QUEUE__GET_RANDOM_TRACKS':
+      case 'VIEW__GET_RANDOM_TRACKS':
         request(socket, store, 'library.browse', { uri: 'local:directory?type=track' })
           .then(
             (_response) => {
               if (!_response || !_response.length) return;
-              store.dispatch(
-                coreActions.viewDataLoaded('random_tracks', _response.slice(0, action.limit)),
-              );
+
+              const uris = sampleSize(arrayOf('uri', _response), action.limit);
+
+              request(socket, store, 'library.lookup', { uris })
+                .then(
+                  (_response) => {
+                    if (!_response) return;
+
+                    const random_tracks = indexToArray(_response).map((results) => results[0]);
+                    const view = store.getState().core.view || {};
+                    store.dispatch(coreActions.viewDataLoaded({
+                      random_tracks: [
+                        ...(view.random_tracks ? view.random_tracks : []),
+                        ...random_tracks,
+                      ],
+                      uris: [
+                        ...(view.uris ? view.uris : []),
+                        ...uris,
+                      ],
+                    }));
+                  }
+                );
             },
           );
         break;

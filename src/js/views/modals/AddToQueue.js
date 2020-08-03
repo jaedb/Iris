@@ -16,6 +16,7 @@ import LinksSentence from '../../components/LinksSentence';
 const UriListItem = ({
   uri,
   tracks,
+  random_tracks,
   albums,
   remove,
 }) => {
@@ -30,6 +31,9 @@ const UriListItem = ({
       break;
     default:
       break;
+  }
+  if (!item) {
+    item = random_tracks.find((track) => track.uri === uri);
   }
   return (
     <div className="list__item list__item--no-interaction">
@@ -58,7 +62,6 @@ class AddToQueue extends React.Component {
     this.state = {
       text: '',
       error: '',
-      uris: [],
       next: false,
     };
   }
@@ -75,17 +78,20 @@ class AddToQueue extends React.Component {
 
   onSubmit = (e) => {
     const {
-      uris,
       next,
     } = this.state;
     const {
       mopidyActions: {
         enqueueURIs,
       },
+      view: {
+        uris = [],
+      },
     } = this.props;
 
     e.preventDefault();
     enqueueURIs(uris, null, next);
+    this.reset();
     window.history.back();
   }
 
@@ -93,14 +99,24 @@ class AddToQueue extends React.Component {
     this.setState({ text });
   }
 
-  addRandom = () => {
+  reset = () => {
     const {
-      mopidyActions: {
-        addToQueue_getRandomTracks,
+      coreActions: {
+        viewDataLoaded,
       },
     } = this.props;
 
-    addToQueue_getRandomTracks(20);
+    viewDataLoaded({ uris: [], random_tracks: [] });
+  }
+
+  addRandom = () => {
+    const {
+      mopidyActions: {
+        view_getRandomTracks,
+      },
+    } = this.props;
+
+    view_getRandomTracks(20);
   }
 
   addUris = () => {
@@ -108,8 +124,12 @@ class AddToQueue extends React.Component {
       text,
     } = this.state;
     const {
+      view: {
+        uris: prevUris = [],
+      },
       coreActions: {
         loadItem,
+        viewDataLoaded,
       },
     } = this.props;
     const uris = text.split(',');
@@ -120,24 +140,33 @@ class AddToQueue extends React.Component {
       loadItem(uri);
     });
 
-    this.setState({ uris: validatedUris, text: '' });
+    this.setState({ text: '' });
+    viewDataLoaded({ uris: [...prevUris, ...validatedUris] });
   }
 
   removeUri = (uri) => {
     const {
-      uris,
-    } = this.state;
+      view: {
+        uris = [],
+      },
+      coreActions: {
+        viewDataLoaded,
+      },
+    } = this.props;
 
-    this.setState({ uris: uris.filter((item) => item !== uri) });
+    viewDataLoaded({ uris: uris.filter((item) => item !== uri) });
   }
 
   render = () => {
     const {
       tracks,
       albums,
+      view: {
+        uris = [],
+        random_tracks = [],
+      },
     } = this.props;
     const {
-      uris,
       text,
       error,
       next,
@@ -182,6 +211,7 @@ class AddToQueue extends React.Component {
                     <UriListItem
                       uri={uri}
                       tracks={tracks}
+                      random_tracks={random_tracks}
                       albums={albums}
                       remove={this.removeUri}
                       key={`${uri}_${index}`}
@@ -234,7 +264,11 @@ class AddToQueue extends React.Component {
             >
               <I18n path="modal.add_to_queue.add_random" />
             </button>
-            <button type="submit" className="button button--primary button--large">
+            <button
+              type="submit"
+              className="button button--primary button--large"
+              disabled={!uris.length}
+            >
               <I18n path="actions.add" />
             </button>
           </div>
@@ -248,6 +282,7 @@ const mapStateToProps = (state) => ({
   mopidy_connected: state.mopidy.connected,
   albums: state.core.albums,
   tracks: state.core.tracks,
+  view: state.core.view ? state.core.view : {},
 });
 
 const mapDispatchToProps = (dispatch) => ({
