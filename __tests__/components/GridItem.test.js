@@ -21,13 +21,14 @@ describe('<GridItem />', () => {
 		var artist = state.core.artists['jest:artist:alpha'];
 		var dom = shallow(<GridItem item={artist} />);
 		expect(dom.find('.grid__item__name').text()).toEqual('Alpha');
-		expect(dom.find('.grid__item__secondary__content').text()).toEqual('123 followers 1 albums');
+		expect(dom.find('.grid__item__secondary__content').childAt(0).render().text()).toEqual('123 followers');
+		expect(dom.find('.grid__item__secondary__content').childAt(1).render().text()).toEqual('1 albums');
 	});
 
 	it('should handle playlist', () => {
 		var playlist = state.core.playlists['jest:playlist:one'];
 		var dom = shallow(<GridItem item={playlist} />);
 		expect(dom.find('.grid__item__name').text()).toEqual('One');
-		expect(dom.find('.grid__item__secondary__content').text()).toEqual('2 tracks');
+		expect(dom.find('.grid__item__secondary__content').render().text()).toEqual('2 tracks');
 	});
 });

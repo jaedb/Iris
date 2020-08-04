@@ -72,7 +72,7 @@ export default class GridItem extends React.Component {
         return (
           <span className="grid__item__secondary__content">
             {followers && <I18n path="specs.followers" count={followers.toLocaleString()} />}
-            {albums_uris && <I18n path="specs.albums" count={albums_uris.length}/>}
+            {albums_uris && <I18n path="specs.albums" count={albums_uris.length} />}
           </span>
         );
 
