@@ -27,6 +27,7 @@
     "react-sortablejs": "^1.5.0",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
+    "yaml-jest": "^1.0.5",
     "yaml-loader": "^0.6.0"
   },
   "devDependencies": {
@@ -77,12 +78,5 @@
     "build:tools": "node build_tools/build.js",
     "build:prod": "node build_tools/build.js && NODE_ENV=development webpack && NODE_ENV=production webpack",
     "release": "node build_tools/build.js && NODE_ENV=development webpack && NODE_ENV=production webpack && python setup.py sdist upload -r pypi && build_tools/release.sh"
-  },
-  "jest": {
-    "verbose": true,
-    "collectCoverage": true,
-    "setupFilesAfterEnv": [
-      "./tests/setup.js"
-    ]
   }
 }

@@ -8,6 +8,8 @@ import { _de } from './de.yaml';
 const de = {};
 merge(de, en, _de);
 
+console.log('en', en);
+
 const available = [
   { key: 'en', name: en.name },
   { key: 'de', name: de.name },
