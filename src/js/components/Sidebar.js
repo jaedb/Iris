@@ -8,10 +8,19 @@ import Icon from './Icon';
 import Dropzones from './Fields/Dropzones';
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
-import { I18n } from '../locale';
+import { I18n, i18n } from '../locale';
 
 class Sidebar extends React.Component {
-  closeSidebar = () => uiActions.toggleSidebar(false);
+
+  closeSidebar = () => {
+    const {
+      uiActions: {
+        toggleSidebar,
+      },
+    } = this.props;
+
+    toggleSidebar(false);
+  }
 
   renderStatusIcon() {
     const {
@@ -49,17 +58,17 @@ class Sidebar extends React.Component {
           <Icon name="warning" className="red-text" />
           <span className="tooltip__content">
             {!mopidy_connected && (
-              <I18n path="sidebar.not_connected" params={{ name: 'Mopidy' }} contentAfter>
+              <I18n path="sidebar.not_connected" params={{ name: i18n('services.mopidy.title') }} contentAfter>
                 <br />
               </I18n>
             )}
             {!pusher_connected && (
-              <I18n path="sidebar.not_connected" params={{ name: 'Pusher' }} contentAfter>
+              <I18n path="sidebar.not_connected" params={{ name: i18n('services.pusher.title') }} contentAfter>
                 <br />
               </I18n>
             )}
             {!snapcast_connected && snapcast_enabled && (
-              <I18n path="sidebar.not_connected" params={{ name: 'Snapcast' }} contentAfter>
+              <I18n path="sidebar.not_connected" params={{ name: i18n('services.snapcast.title') }} contentAfter>
                 <br />
               </I18n>
             )}
@@ -75,7 +84,6 @@ class Sidebar extends React.Component {
     const {
       history,
       spotify_available,
-      uiActions,
     } = this.props;
 
     return (
