@@ -1,9 +1,6 @@
 import React from 'react';
-import { Provider } from 'react-redux';
-import { BrowserRouter, Route, IndexRoute } from "react-router-dom";
 
 // Testing-specific
-import renderer from 'react-test-renderer';
 import { shallow, mount, render } from 'enzyme';
 const state = require('../state');
 
@@ -16,13 +13,16 @@ describe('<Album />', () => {
 
 	var album = state.core.albums['jest:album:one'];
 
-	it('should render accurately', () => {		
+	it('should render accurately', () => {
 		const dom = shallow(
 			<Album 
 				album={album}
 				uiActions={uiActions}
 				coreActions={coreActions}
-			/>
+			/>,
+			{
+				disableLifecycleMethods: true,
+			},
 		);
 
 		expect(dom.find('.album-view').length).toBe(1);
