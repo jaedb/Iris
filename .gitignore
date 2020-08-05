@@ -17,4 +17,5 @@ docker/data/
 docker/icecast2.xml
 docker-compose.yml
 /.tox/
-/tests/__pycache__/
+/__tests__/__pycache__/
+/coverage/

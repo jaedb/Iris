@@ -98,6 +98,7 @@ time:
     plural: years
 specs:
   tracks: '%{count} tracks'
+  albums: '%{count} albums'
   followers: '%{count} followers'
   listeners: '%{count} listeners'
   playlists: '%{count} playlists'

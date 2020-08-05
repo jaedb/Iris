@@ -39,13 +39,18 @@ const I18n = ({
   children,
   contentAfter,
   ...params
-}) => (
-  <Fragment>
-    {!contentAfter && children}
-    {i18n(path, params, transform)}
-    {contentAfter && children}
-  </Fragment>
-);
+}) => {
+  if (!children) {
+    return i18n(path, params, transform);
+  }
+  return (
+    <Fragment>
+      {!contentAfter && children}
+      {i18n(path, params, transform)}
+      {contentAfter && children}
+    </Fragment>
+  );
+};
 
 export default {
   I18n,

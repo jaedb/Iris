@@ -1,0 +1,26 @@
+{
+  "presets": [
+    "@babel/preset-env",
+    "@babel/preset-react"
+  ],
+  "plugins": [
+    "@babel/plugin-proposal-class-properties"
+  ],
+  "env": {
+    "development": {
+      "plugins": [
+        "react-element-info"
+      ],
+    },
+    "test": {
+      "plugins": [
+        "react-element-info",
+        "@babel/plugin-transform-runtime",
+      ],
+      "presets": [
+        "@babel/preset-env",
+        "@babel/preset-react"
+      ]
+    }
+  }
+}
