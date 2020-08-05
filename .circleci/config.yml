@@ -145,9 +145,6 @@ jobs:
           name: Build code
           command: npm run build:prod
       - run:
-          name: Run unit tests
-          command: npm run jest
-      - run:
           name: Install python dependencies
           command: pip install -e .
       - save_cache:
@@ -165,9 +162,16 @@ jobs:
           keys:
           - v1-dependencies-{{ checksum "IRIS_VERSION" }}
       - run:
-          name: Run Jest unit tests
-          command: npm run test
-      # Submit coverage
+          name: Install Code Climate test-reporter
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+      - run:
+          name: Run Test and Coverage
+          command: |
+            ./cc-test-reporter before-build
+            npm run test
+            ./cc-test-reporter after-build --exit-code $?
 
   deploy:
     docker:
