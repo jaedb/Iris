@@ -27,6 +27,7 @@ import * as pusherActions from '../services/pusher/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import * as lastfmActions from '../services/lastfm/actions';
 import * as spotifyActions from '../services/spotify/actions';
+import { I18n, i18n } from '../locale';
 
 class ContextMenu extends React.Component {
   constructor(props) {
@@ -616,15 +617,27 @@ class ContextMenu extends React.Component {
 
           switch (type) {
             case 'discover':
-              var link = <URILink type="recommendations" uri={getFromUri('seeds', metadata.added_from)}>discover</URILink>;
+              var link = (
+                <URILink type="recommendations" uri={getFromUri('seeds', metadata.added_from)}>
+                  <I18n path="discover.title" transform="lower" />
+                </URILink>
+              );
               break;
 
             case 'browse':
-              var link = <URILink type="browse" uri={metadata.added_from.replace('iris:browse:', '')}>browse</URILink>;
+              var link = (
+                <URILink type="browse" uri={metadata.added_from.replace('iris:browse:', '')}>
+                  <I18n path="library.browse.title" transform="lower" />
+                </URILink>
+              );
               break;
 
             case 'search':
-              var link = <URILink type="search" uri={metadata.added_from.replace('iris:', '')}>search</URILink>;
+              var link = (
+                <URILink type="search" uri={metadata.added_from.replace('iris:', '')}>
+                  <I18n path="search.title" transform="lower" />
+                </URILink>
+              );
               break;
 
             default:
@@ -700,7 +713,7 @@ class ContextMenu extends React.Component {
         <span className="context-menu__item">
           <span className="context-menu__item mid_grey-text">
             <span className="context-menu__item__link context-menu__item__link--inactive">
-              No writable playlists
+              <I18n path="context_menu.add_to_playlist.no_playlists" />
             </span>
           </span>
         </span>
@@ -730,7 +743,9 @@ class ContextMenu extends React.Component {
           >
             <span className="context-menu__item__label">
               <Icon name="arrow_back" />
-              <span> Back</span>
+              <span> 
+                <I18n path="actions.back" />
+              </span>
             </span>
           </a>
         </div>
@@ -755,7 +770,9 @@ class ContextMenu extends React.Component {
     const play_uris = (
       <div className="context-menu__item">
         <a className="context-menu__item__link" onClick={this.playURIs}>
-          <span className="context-menu__item__label">Play</span>
+          <span className="context-menu__item__label">
+            <I18n path="actions.play" />
+          </span>
         </a>
       </div>
     );
@@ -763,7 +780,9 @@ class ContextMenu extends React.Component {
     const play_playlist = (
       <div className="context-menu__item">
         <a className="context-menu__item__link" onClick={this.playPlaylist}>
-          <span className="context-menu__item__label">Play</span>
+          <span className="context-menu__item__label">
+            <I18n path="actions.play" />
+          </span>
         </a>
       </div>
     );
@@ -771,7 +790,9 @@ class ContextMenu extends React.Component {
     const shuffle_play_playlist = (
       <div className="context-menu__item">
         <a className="context-menu__item__link" onClick={this.shufflePlayPlaylist}>
-          <span className="context-menu__item__label">Shuffle play</span>
+          <span className="context-menu__item__label">
+            <I18n path="actions.shuffle_play" />
+          </span>
         </a>
       </div>
     );
@@ -779,7 +800,9 @@ class ContextMenu extends React.Component {
     const play_queue_item = (
       <div className="context-menu__item">
         <a className="context-menu__item__link" onClick={this.playQueueItem}>
-          <span className="context-menu__item__label">Play</span>
+          <span className="context-menu__item__label">
+            <I18n path="actions.play" />
+          </span>
         </a>
       </div>
     );
@@ -787,7 +810,9 @@ class ContextMenu extends React.Component {
     const play_uris_next = (
       <div className="context-menu__item">
         <a className="context-menu__item__link" onClick={(e) => this.addToQueue(e, true)}>
-          <span className="context-menu__item__label">Play next</span>
+          <span className="context-menu__item__label">
+            <I18n path="context_menu.play_next" />
+          </span>
         </a>
       </div>
     );
@@ -795,7 +820,9 @@ class ContextMenu extends React.Component {
     const play_artist_top_tracks = (
       <div className="context-menu__item">
         <a className="context-menu__item__link" onClick={this.playArtistTopTracks}>
-          <span className="context-menu__item__label">Play top tracks</span>
+          <span className="context-menu__item__label">
+            <I18n path="context_menu.play_top_tracks" />
+          </span>
         </a>
       </div>
     );
@@ -803,7 +830,9 @@ class ContextMenu extends React.Component {
     const add_to_queue = (
       <div className="context-menu__item">
         <a className="context-menu__item__link" onClick={this.addToQueue}>
-          <span className="context-menu__item__label">Add to queue</span>
+          <span className="context-menu__item__label">
+            <I18n path="actions.add_to_queue" />
+          </span>
         </a>
       </div>
     );
@@ -811,7 +840,9 @@ class ContextMenu extends React.Component {
     const add_playlist_to_queue = (
       <div className="context-menu__item">
         <a className="context-menu__item__link" onClick={this.enqueuePlaylist}>
-          <span className="context-menu__item__label">Add to queue</span>
+          <span className="context-menu__item__label">
+            <I18n path="actions.add_to_queue" />
+          </span>
         </a>
       </div>
     );
@@ -819,7 +850,9 @@ class ContextMenu extends React.Component {
     const play_playlist_next = (
       <div className="context-menu__item">
         <a className="context-menu__item__link" onClick={(e) => this.enqueuePlaylist(e, true)}>
-          <span className="context-menu__item__label">Play next</span>
+          <span className="context-menu__item__label">
+            <I18n path="context_menu.play_next" />
+          </span>
         </a>
       </div>
     );
@@ -827,7 +860,9 @@ class ContextMenu extends React.Component {
     const add_to_playlist = (
       <div className="context-menu__item context-menu__item--has-submenu">
         <a className="context-menu__item__link" onClick={() => this.setSubmenu('add-to-playlist')}>
-          <span className="context-menu__item__label">Add to playlist</span>
+          <span className="context-menu__item__label">
+            <I18n path="context_menu.add_to_playlist.title" />
+          </span>
           <Icon className="submenu-icon" name="arrow_forward" />
         </a>
       </div>
@@ -837,7 +872,7 @@ class ContextMenu extends React.Component {
       <div className="context-menu__item">
         <a className="context-menu__item__link" onClick={(e) => this.toggleInLibrary(e, context.in_library)}>
           <span className="context-menu__item__label">
-            {context.in_library ? 'Remove from library' : 'Add to library'}
+            <I18n path={`actions.${context.in_library ? 'remove_from' : 'add_to'}_library`} />
           </span>
         </a>
       </div>
@@ -860,7 +895,7 @@ class ContextMenu extends React.Component {
         <div className="context-menu__item">
           <a className="context-menu__item__link">
             <span className="context-menu__item__label mid_grey-text">
-							Add to library
+							<I18n path="actions.add_to_library" />
             </span>
           </a>
         </div>
@@ -870,7 +905,7 @@ class ContextMenu extends React.Component {
         <div className="context-menu__item">
           <a className="context-menu__item__link" onClick={(e) => this.toggleInLibrary(e, context.in_library)}>
             <span className="context-menu__item__label">
-              {context.in_library ? 'Remove from library' : 'Add to library'}
+              <I18n path={`actions.${context.in_library ? 'remove_from' : 'add_to'}_library`} />
             </span>
           </a>
         </div>
@@ -884,7 +919,7 @@ class ContextMenu extends React.Component {
         <div className="context-menu__item">
           <a className="context-menu__item__link">
             <span className="context-menu__item__label mid_grey-text">
-							Love track
+							<I18n path="context_menu.love_track" />
             </span>
           </a>
         </div>
@@ -894,7 +929,7 @@ class ContextMenu extends React.Component {
         <div className="context-menu__item">
           <a className="context-menu__item__link" onClick={(e) => this.toggleLoved(e, context.is_loved)}>
             <span className="context-menu__item__label">
-              {context.is_loved ? 'Unlove track' : 'Love track'}
+              <I18n path={`context_menu.${context.is_loved ? 'un' : ''}love_track`} />
             </span>
           </a>
         </div>
@@ -904,7 +939,9 @@ class ContextMenu extends React.Component {
     const go_to_artist = (
       <div className="context-menu__item">
         <a className="context-menu__item__link" onClick={this.goToArtist}>
-          <span className="context-menu__item__label">Go to artist</span>
+          <span className="context-menu__item__label">
+            <I18n path="context_menu.go_to_artist" />
+          </span>
         </a>
       </div>
     );
@@ -912,7 +949,9 @@ class ContextMenu extends React.Component {
     const go_to_user = (
       <div className="context-menu__item">
         <a className="context-menu__item__link" onClick={this.goToUser}>
-          <span className="context-menu__item__label">Go to user</span>
+          <span className="context-menu__item__label">
+            <I18n path="context_menu.go_to_user" />
+          </span>
         </a>
       </div>
     );
@@ -920,7 +959,9 @@ class ContextMenu extends React.Component {
     const go_to_track = (
       <div className="context-menu__item">
         <a className="context-menu__item__link" onClick={this.goToTrack}>
-          <span className="context-menu__item__label">Track info</span>
+          <span className="context-menu__item__label">
+            <I18n path="context_menu.track_info" />
+          </span>
         </a>
       </div>
     );
@@ -928,7 +969,9 @@ class ContextMenu extends React.Component {
     const go_to_recommendations = (
       <div className="context-menu__item">
         <a className="context-menu__item__link" onClick={this.goToRecommendations}>
-          <span className="context-menu__item__label">Discover similar</span>
+          <span className="context-menu__item__label">
+            <I18n path="context_menu.discover_similar" />
+          </span>
         </a>
       </div>
     );
@@ -936,7 +979,9 @@ class ContextMenu extends React.Component {
     const start_radio = (
       <div className="context-menu__item">
         <a className="context-menu__item__link" onClick={this.startRadio}>
-          <span className="context-menu__item__label">Start radio</span>
+          <span className="context-menu__item__label">
+            <I18n path="context_menu.start_radio" />
+          </span>
         </a>
       </div>
     );
@@ -944,7 +989,9 @@ class ContextMenu extends React.Component {
     const remove_from_queue = (
       <div className="context-menu__item">
         <a className="context-menu__item__link" onClick={this.removeFromQueue}>
-          <span className="context-menu__item__label">Remove</span>
+          <span className="context-menu__item__label">
+            <I18n path="actions.remove" />
+          </span>
         </a>
       </div>
     );
@@ -952,7 +999,9 @@ class ContextMenu extends React.Component {
     const remove_from_playlist = (
       <div className="context-menu__item">
         <a className="context-menu__item__link" onClick={this.removeFromPlaylist}>
-          <span className="context-menu__item__label">Remove</span>
+          <span className="context-menu__item__label">
+            <I18n path="actions.remove" />
+          </span>
         </a>
       </div>
     );
@@ -960,7 +1009,9 @@ class ContextMenu extends React.Component {
     const edit_playlist = (
       <div className="context-menu__item">
         <Link className="context-menu__item__link" to={`/playlist/${context.item.uri}/edit`}>
-          <span className="context-menu__item__label">Edit</span>
+          <span className="context-menu__item__label">
+            <I18n path="actions.edit" />
+          </span>
         </Link>
       </div>
     );
@@ -968,7 +1019,9 @@ class ContextMenu extends React.Component {
     const delete_playlist = (
       <div className="context-menu__item">
         <a className="context-menu__item__link" onClick={this.deletePlaylist}>
-          <span className="context-menu__item__label">Delete</span>
+          <span className="context-menu__item__label">
+            <I18n path="actions.delete" />
+          </span>
         </a>
       </div>
     );
@@ -977,7 +1030,7 @@ class ContextMenu extends React.Component {
       <div className="context-menu__item">
         <a className="context-menu__item__link" onClick={this.copyURIs}>
           <span className="context-menu__item__label">
-            {`Copy URI ${context.items_count > 1 ? 's' : ''}`}
+            <I18n path="context_menu.copy_uri" />
           </span>
         </a>
       </div>

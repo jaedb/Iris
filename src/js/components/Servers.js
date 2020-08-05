@@ -13,6 +13,7 @@ import * as uiActions from '../services/ui/actions';
 import * as coreActions from '../services/core/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import { iconFromKeyword } from '../util/helpers';
+import { I18n } from '../locale';
 
 const Servers = ({
   match: { params: { id: serverId } },
@@ -44,14 +45,30 @@ const Servers = ({
     <div className="sub-tabs__menu" id="servers-menu">
       <div className="menu__inner">
         {indexToArray(servers).map((server) => {
-          let status = <span className="status mid_grey-text">Inactive</span>;
+          let status = (
+            <span className="status mid_grey-text">
+              <I18n path="settings.servers.inactive" />
+            </span>
+          );
           if (server.id === current_server) {
             if (mopidyConnecting || pusherConnecting) {
-              status = <span className="status mid_grey-text">Connecting</span>
+              status = (
+                <span className="status mid_grey-text">
+                  <I18n path="settings.servers.connecting" />
+                </span>
+              );
             } else if (!mopidyConnected || !pusherConnected) {
-              status = <span className="status red-text">Disconnected</span>
+              status = (
+                <span className="status red-text">
+                  <I18n path="settings.servers.disconnected" />
+                </span>
+              );
             } else if (mopidyConnected && pusherConnected) {
-              status = <span className="status green-text">Connected</span>
+              status = (
+                <span className="status green-text">
+                  <I18n path="settings.servers.connected" />
+                </span>
+              );
             }
           }
           return (
@@ -80,9 +97,11 @@ const Servers = ({
           <div className="menu-item__inner">
             <Icon className="menu-item__icon" name="add" />
             <div className="menu-item__title">
-              Add
+              <I18n path="actions.add" />
             </div>
-            <span className="status mid_grey-text">New server</span>
+            <span className="status mid_grey-text">
+              <I18n path="settings.servers.new_server" />
+            </span>
           </div>
         </span>
       </div>
@@ -105,7 +124,9 @@ const Servers = ({
     return (
       <div className="sub-tabs__content">
         <label className="field">
-          <div className="name">Name</div>
+          <div className="name">
+            <I18n path="settings.servers.name" />
+          </div>
           <div className="input">
             <TextField
               type="text"
@@ -116,7 +137,9 @@ const Servers = ({
           </div>
         </label>
         <label className="field">
-          <div className="name">Host</div>
+          <div className="name">
+            <I18n path="settings.servers.host" />
+          </div>
           <div className="input">
             <TextField
               value={server.host}
@@ -126,7 +149,9 @@ const Servers = ({
           </div>
         </label>
         <label className="field">
-          <div className="name">Port</div>
+          <div className="name">
+            <I18n path="settings.servers.port" />
+          </div>
           <div className="input">
             <TextField
               type="text"
@@ -138,7 +163,9 @@ const Servers = ({
         </label>
 
         <div className="field checkbox">
-          <div className="name">Encryption</div>
+          <div className="name">
+            <I18n path="settings.servers.encryption.label" />
+          </div>
           <div className="input">
             <label>
               <input
@@ -149,8 +176,10 @@ const Servers = ({
                 onChange={() => dispatch(mopidyActions.updateServer({ id: server.id, ssl: !server.ssl }))}
               />
               <span className="label tooltip">
-                Use SSL
-                <span className="tooltip__content">Requires a SSL proxy</span>
+                <I18n path="settings.servers.encryption.sublabel" />
+                <span className="tooltip__content">
+                  <I18n path="settings.servers.encryption.description" />
+                </span>
               </span>
             </label>
           </div>
@@ -161,7 +190,7 @@ const Servers = ({
           className="button button--primary"
           onClick={setAsCurrent}
         >
-          Switch to this server
+          <I18n path={`settings.servers.${server.id === current_server ? 'reconnect' : 'switch'}`} />
         </button>
         <button
           type="button"
@@ -169,7 +198,7 @@ const Servers = ({
           disabled={server.id === current_server}
           onClick={remove}
         >
-          Remove
+          <I18n path="actions.remove" />
         </button>
       </div>
     );

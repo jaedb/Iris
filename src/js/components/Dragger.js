@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux';
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import * as spotifyActions from '../services/spotify/actions';
+import { I18n } from '../locale';
 
 class Dragger extends React.Component {
   constructor(props) {
@@ -79,7 +80,7 @@ class Dragger extends React.Component {
           top: position_y,
         }}
       >
-				{`Dragging ${victims.length} things`}
+        <I18n path="dropzones.dragging_things" count={victims.length} />
       </div>
     );
   }

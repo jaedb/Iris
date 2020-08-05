@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import Icon from './Icon';
+import { I18n } from '../locale';
 
 const ProgressRing = ({ radius, stroke, progress }) => {
   const normalizedRadius = radius - stroke * 2;
@@ -65,7 +66,7 @@ export default memo((props) => {
       <div className={classNameString}>
         <div className="loader__offline">
           <Icon name="wifi_off" />
-          <p> You need to be online load this resource </p>
+          <p><I18n path="errors.need_to_be_online" /></p>
         </div>
       </div>
     );

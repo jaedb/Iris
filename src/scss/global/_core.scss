@@ -48,6 +48,10 @@ html {
   @include resolution(3) {
     font-size: 16px;
   }
+
+  @include responsive($bp_narrow) {
+    font-size: 12px;
+  }
 }
 
 body {
@@ -294,8 +298,6 @@ h4 {
 
   .button {
     margin-left: 10px;
-    margin-bottom: -1px;
-    margin-top: 0;
   }
 
   &.breadcrumbs {
@@ -435,6 +437,14 @@ button.placeholder {
   padding-left: 40px;
 }
 
+.uppercase {
+  text-transform: uppercase;
+}
+
+.lowercase {
+  text-transform: lowercase;
+}
+
 .col {
   min-height: 1px;
   float: left;
@@ -565,6 +575,7 @@ footer {
 }
 
 .flag {
+  @include gradient_overlay(3px);
   font-size: 9px;
   font-weight: bold;
   display: inline-block;
@@ -574,6 +585,17 @@ footer {
   border-radius: 3px;
   vertical-align: bottom;
   margin: 0 8px 1px;
+
+  &[href] {
+    border: 0 !important;
+    overflow: hidden;
+
+    &:hover {
+      &:before {
+        opacity: 0.5;
+      }
+    }
+  }
 
   &--blue {
     background: colour(blue);
@@ -682,5 +704,37 @@ footer {
 
   .left-padding {
     padding-left: 20px;
+  }
+}
+
+@include responsive($bp_narrow) {
+  h1 {
+    font-size: 1.6rem;
+    line-height: 1.6rem;
+  }
+
+  h2 {
+    font-size: 1.4rem;
+    line-height: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.2rem;
+  }
+
+  h4 {
+    font-size: 1.1rem;
+  }
+
+  h5 {
+    font-size: 1.1rem;
+  }
+
+  .right-padding {
+    padding-right: 10px;
+  }
+
+  .left-padding {
+    padding-left: 10px;
   }
 }

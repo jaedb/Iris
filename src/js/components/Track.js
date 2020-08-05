@@ -2,7 +2,7 @@
 import React from 'react';
 import Icon from './Icon';
 import LinksSentence from './LinksSentence';
-import Dater from './Dater';
+import { Dater, dater } from './Dater';
 import URILink from './URILink';
 import ContextMenuTrigger from './ContextMenuTrigger';
 import ErrorBoundary from './ErrorBoundary';
@@ -13,6 +13,7 @@ import {
   sourceIcon,
   uriType,
 } from '../util/helpers';
+import { I18n } from '../locale';
 
 export default class Track extends React.Component {
   constructor(props) {
@@ -208,11 +209,9 @@ export default class Track extends React.Component {
       var track_middle_column = (
         <div className="list__item__column__item list__item__column__item--played_at">
           {track.played_at ? (
-            <span>
-              <Dater type="ago" data={track.played_at} />
-              {' ago'}
-            </span>
-          ) : '-'}
+            <I18n path="specs.played_ago" time={dater('ago', track.played_at)} />
+          ) : ('-')
+          }
         </div>
       );
     } else if (this.props.track_context == 'queue') {
@@ -221,23 +220,35 @@ export default class Track extends React.Component {
 
         switch (type) {
           case 'discover':
-            var link = <URILink type="recommendations" uri={getFromUri('seeds', track.added_from)}>Discover</URILink>;
+            var link = (
+              <URILink type="recommendations" uri={getFromUri('seeds', track.added_from)}>
+                <I18n path="discover.title" />
+              </URILink>
+            );
             break;
 
           case 'browse':
-            var link = <URILink uri={track.added_from}>Browse</URILink>;
+            var link = (
+              <URILink uri={track.added_from}>
+                <I18n path="library.browse.title" />
+              </URILink>
+            );
             break;
 
           case 'search':
-            var link = <URILink uri={track.added_from}>Search</URILink>;
+            var link = (
+              <URILink uri={track.added_from}>
+                <I18n path="search.title" />
+              </URILink>
+            );
             break;
 
           case 'radio':
-            var link = <span>Radio</span>;
+            var link = <I18n path="modal.edit_radio.title" />;
             break;
 
           case 'queue-history':
-            var link = <span>Queue history</span>;
+            var link = <I18n path="queue_history.title" />;
             break;
 
           default:

@@ -4,42 +4,73 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as uiActions from '../../services/ui/actions';
 import * as lastfmActions from '../../services/lastfm/actions';
+import { i18n } from '../../locale';
 
-class FollowButton extends React.Component {
-  constructor(props) {
-    super(props);
+const FollowButton = ({
+  uri,
+  artist,
+  track,
+  addText,
+  removeText,
+  is_loved,
+  className: classNameProp = '',
+  lastfm_authorized,
+  uiActions: {
+    createNotification,
+  },
+  lastfmActions: {
+    unloveTrack,
+    loveTrack,
+  },
+}) => {
+  const onRemove = () => unloveTrack(uri, artist, track);
+  const onAdd = () => loveTrack(uri, artist, track);
+  const onDisabledClick = () => {
+    createNotification({
+      content: i18n('errors.authorization_required', { provider: i18n('services.lastfm.title') }),
+      level: 'warning',
+    });
+  };
+
+  if (!uri) {
+    return false;
   }
 
-  remove() {
-    this.props.lastfmActions.unloveTrack(this.props.uri, this.props.artist, this.props.track);
+  const className = `button ${classNameProp}`;
+
+  if (!lastfm_authorized) {
+    return (
+      <button
+        className={`${className} button--disabled`}
+        onClick={onDisabledClick}
+        type="button"
+      >
+        {addText || i18n('services.lastfm.love')}
+      </button>
+    );
+  } if (is_loved && is_loved !== '0') {
+    return (
+      <button
+        className={`${className} button--destructive`}
+        onClick={onRemove}
+        type="button"
+      >
+        {removeText || i18n('services.lastfm.unlove')}
+      </button>
+    );
   }
+  return (
+    <button
+      className={`${className} button--default`}
+      onClick={onAdd}
+      type="button"
+    >
+      {addText || i18n('services.lastfm.love')}
+    </button>
+  );
+};
 
-  add() {
-    this.props.lastfmActions.loveTrack(this.props.uri, this.props.artist, this.props.track);
-  }
-
-  render() {
-    if (!this.props.uri) {
-      return false;
-    }
-
-    let className = 'button';
-
-    // Inherit passed-down classes
-    if (this.props.className) {
-      className += ` ${this.props.className}`;
-    }
-
-    if (!this.props.lastfm_authorized) {
-      return <button className={`${className} button--disabled`} onClick={(e) => this.props.uiActions.createNotification({ content: 'You must authorize LastFM first', level: 'warning' })}>{this.props.addText}</button>;
-    } if (this.props.is_loved && this.props.is_loved !== '0') {
-      return <button className={`${className} button--destructive`} onClick={(e) => this.remove()}>{this.props.removeText}</button>;
-    }
-    return <button className={`${className} button--default`} onClick={(e) => this.add()}>{this.props.addText}</button>;
-  }
-}
-
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state) => ({
   load_queue: state.ui.load_queue,
   lastfm_authorized: state.lastfm.authorization,
 });

@@ -9,6 +9,7 @@ import TextField from '../../components/Fields/TextField';
 import * as pusherActions from '../../services/pusher/actions';
 import * as uiActions from '../../services/ui/actions';
 import { scrollTo, generateGuid } from '../../util/helpers';
+import { i18n, I18n } from '../../locale';
 
 class EditCommand extends React.Component {
   constructor(props) {
@@ -27,10 +28,10 @@ class EditCommand extends React.Component {
 
   componentDidMount() {
     if (this.props.command) {
-      this.props.uiActions.setWindowTitle('Edit command');
+      this.props.uiActions.setWindowTitle(i18n('modal.edit_command.title'));
       this.setState(this.props.command);
     } else {
-      this.props.uiActions.setWindowTitle('Create command');
+      this.props.uiActions.setWindowTitle(i18n('modal.edit_command.title_create'));
     }
   }
 
@@ -120,13 +121,13 @@ class EditCommand extends React.Component {
     return (
       <Modal className="modal--create-command">
         <h1>
-          {`${command ? 'Edit' : 'Create'} command`}
+          <I18n path={`modal.edit_command.title${command ? '' : '_create'}`} />
         </h1>
         <form onSubmit={(e) => this.handleSubmit(e)}>
 
           <div className="field textarea white">
             <div className="name">
-							Name
+							<I18n path="modal.edit_command.name" />
             </div>
             <div className="input">
               <TextField
@@ -139,7 +140,7 @@ class EditCommand extends React.Component {
 
           <div className="field radio white">
             <div className="name">
-							Colour
+							<I18n path="modal.edit_command.colour" />
             </div>
             <div className="input">
               <ColourField
@@ -151,7 +152,7 @@ class EditCommand extends React.Component {
 
           <div className="field radio white">
             <div className="name">
-							Icon
+							<I18n path="modal.edit_command.icon" />
             </div>
             <div className="input">
               <IconField
@@ -164,7 +165,7 @@ class EditCommand extends React.Component {
 
           <div className="field textarea white">
             <div className="name">
-							URL
+							<I18n path="modal.edit_command.url" />
             </div>
             <div className="input">
               <TextField
@@ -177,7 +178,7 @@ class EditCommand extends React.Component {
 
           <div className="field radio white">
             <div className="name">
-							Method
+							<I18n path="modal.edit_command.method.label" />
             </div>
             <div className="input">
               <label>
@@ -188,7 +189,9 @@ class EditCommand extends React.Component {
                   checked={method === 'GET'}
                   onChange={(e) => this.setState({ method: e.target.value })}
                 />
-                <span className="label">GET</span>
+                <span className="label">
+                  <I18n path="modal.edit_command.method.get" />
+                </span>
               </label>
               <label>
                 <input
@@ -198,7 +201,9 @@ class EditCommand extends React.Component {
                   checked={method === 'POST'}
                   onChange={(e) => this.setState({ method: e.target.value })}
                 />
-                <span className="label">POST</span>
+                <span className="label">
+                  <I18n path="modal.edit_command.method.post" />
+                </span>
               </label>
             </div>
           </div>
@@ -206,7 +211,7 @@ class EditCommand extends React.Component {
           {method === 'POST' && (
           <div className="field textarea white">
             <div className="name">
-							Data
+							<I18n path="modal.edit_command.data" />
             </div>
             <div className="input">
               <textarea
@@ -220,7 +225,7 @@ class EditCommand extends React.Component {
 
           <div className="field textarea white">
             <div className="name">
-							Additional Headers
+							<I18n path="modal.edit_command.headers" />
             </div>
             <div className="input">
               <textarea
@@ -239,10 +244,12 @@ class EditCommand extends React.Component {
                 className="button button--destructive button--large"
                 onClick={(e) => this.handleDelete(e)}
               >
-                Delete
+                <I18n path="actions.delete" />
               </button>
             )}
-            <button type="submit" className="button button--primary button--large">Save</button>
+            <button type="submit" className="button button--primary button--large">
+              <I18n path="actions.save" />
+            </button>
           </div>
 
         </form>

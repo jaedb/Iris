@@ -8,6 +8,7 @@ import * as uiActions from '../../services/ui/actions';
 import * as pusherActions from '../../services/pusher/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import { queryString, isHosted } from '../../util/helpers';
+import { I18n, i18n } from '../../locale';
 
 class InitialSetup extends React.Component {
   constructor(props) {
@@ -42,7 +43,7 @@ class InitialSetup extends React.Component {
     if (customHost) this.setState({ host: customHost });
     if (customPort) this.setState({ port: customPort });
 
-    uiActions.setWindowTitle('Welcome to Iris');
+    uiActions.setWindowTitle(i18n('modal.initial_setup.title'));
   }
 
   handleSubmit(e) {
@@ -85,12 +86,14 @@ class InitialSetup extends React.Component {
   render() {
     return (
       <Modal className="modal--initial-setup" noclose>
-        <h1>Get started</h1>
+        <h1>
+          <I18n path="modal.initial_setup.title" />
+        </h1>
         <form onSubmit={(e) => this.handleSubmit(e)}>
 
           <div className="field text">
             <div className="name">
-							Username
+							<I18n path="settings.server.username.label" />
             </div>
             <div className="input">
               <input
@@ -99,13 +102,15 @@ class InitialSetup extends React.Component {
                 value={this.state.username}
               />
               <div className="description">
-								A non-unique string used to identify this client (no special characters)
+                <I18n path="settings.server.username.description" />
               </div>
             </div>
           </div>
 
           <div className="field">
-            <div className="name">Host</div>
+            <div className="name">
+              <I18n path="settings.servers.host" />
+            </div>
             <div className="input">
               <input
                 type="text"
@@ -115,7 +120,9 @@ class InitialSetup extends React.Component {
             </div>
           </div>
           <div className="field">
-            <div className="name">Port</div>
+            <div className="name">
+              <I18n path="settings.servers.port" />
+            </div>
             <div className="input">
               <input
                 type="text"
@@ -136,15 +143,20 @@ class InitialSetup extends React.Component {
                     onChange={(e) => this.setState({ allow_reporting: !this.state.allow_reporting })}
                   />
                   <span className="label">
-									Allow reporting of anonymous usage statistics
+                    <I18n path="settings.interface.reporting.sublabel" />
                   </span>
                 </label>
                 <p className="description">
-This anonymous usage data is important in identifying errors and potential features that make Iris better for everyone. Want to know more? Read the
-                  <a href="https://github.com/jaedb/Iris/wiki/Terms-of-use#privacy-policy" target="_blank">privacy policy</a>
-                  {!this.state.allow_reporting ? <span className="red-text"> Are you sure you don't want to support this?</span> : null}
-.
-                  {' '}
+                  <I18n path="settings.interface.reporting.description" />
+                  <a href="https://github.com/jaedb/Iris/wiki/Terms-of-use#privacy-policy" target="_blank">
+                    <I18n path="settings.interface.reporting.privacy_policy" />
+                  </a>.
+                  {!this.state.allow_reporting && (
+                    <span className="red-text">
+                      <br />
+                      <I18n path="settings.interface.reporting.are_you_sure" />
+                    </span>
+                  )}
                 </p>
               </div>
             </div>
@@ -152,7 +164,7 @@ This anonymous usage data is important in identifying errors and potential featu
 
           <div className="actions centered-text">
             <button className={`button button--primary button--large${this.state.saving ? ' button--working' : ''}`} onClick={(e) => this.handleSubmit(e)}>
-              {this.state.saving ? 'Saving' : 'Save'}
+              <I18n path="actions.save" />
             </button>
           </div>
 

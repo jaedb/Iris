@@ -22,8 +22,13 @@ export default class TextField extends React.Component {
     return null;
   }
 
-  handleChange = (e) => {
-    this.setState({ value: e.target.value });
+  handleChange = ({ target: { value } }) => {
+    const { everyChange, onChange } = this.props;
+
+    this.setState({ value });
+    if (everyChange) {
+      onChange(value);
+    }
   }
 
   handleFocus = () => {

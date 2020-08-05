@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import * as uiActions from '../../services/ui/actions';
 import { uriType } from '../../util/helpers';
 import Icon from '../Icon';
-import Link from '../Link';
+import { i18n } from '../../locale';
 
 class SearchForm extends React.Component {
   constructor(props) {
@@ -96,7 +96,7 @@ class SearchForm extends React.Component {
         <label>
           <input
             type="text"
-            placeholder="Search..."
+            placeholder={i18n('fields.search')}
             onChange={this.onChange}
             onBlur={this.onBlur}
             onFocus={this.onFocus}

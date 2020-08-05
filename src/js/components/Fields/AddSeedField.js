@@ -3,10 +3,12 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import LinksSentence from '../LinksSentence';
+import TextField from './TextField';
 import * as coreActions from '../../services/core/actions';
 import * as uiActions from '../../services/ui/actions';
 import * as spotifyActions from '../../services/spotify/actions';
 import { generateGuid } from '../../util/helpers';
+import { i18n } from '../../locale';
 
 class AddSeedField extends React.Component {
   constructor(props) {
@@ -21,10 +23,17 @@ class AddSeedField extends React.Component {
   }
 
   componentDidMount() {
+    const {
+      genres,
+      spotifyActions: {
+        getGenres,
+      },
+    } = this.props;
+
     window.addEventListener('click', this.handleClick, false);
 
-    if (!this.props.genres) {
-      this.props.spotifyActions.getGenres();
+    if (!genres) {
+      getGenres();
     }
   }
 
@@ -32,13 +41,24 @@ class AddSeedField extends React.Component {
     window.removeEventListener('click', this.handleClick, false);
   }
 
-  handleClick(e) {
+  handleClick = (e) => {
+    const {
+      spotifyActions: {
+        clearAutocompleteResults,
+      },
+    } = this.props;
+
     if ($(e.target).closest('.add-seed-field').length <= 0) {
-      this.props.spotifyActions.clearAutocompleteResults(this.id);
+      clearAutocompleteResults(this.id);
     }
   }
 
-  handleChange(e, value) {
+  handleChange = (value) => {
+    const {
+      spotifyActions: {
+        getAutocompleteResults,
+      },
+    } = this.props;
     const self = this;
 
     // update our local state
@@ -49,68 +69,85 @@ class AddSeedField extends React.Component {
     clearTimeout(this.timer);
     this.timer = setTimeout(
       () => {
-            	self.setState({ searching: true });
-        self.props.spotifyActions.getAutocompleteResults(self.id, value, ['artist', 'track', 'genre']);
+        self.setState({ searching: true });
+        getAutocompleteResults(self.id, value, ['artist', 'track', 'genre']);
       },
       500,
     );
   }
 
-  handleSelect(e, item) {
+  handleSelect = (e, item) => {
+    const {
+      onSelect,
+      spotifyActions: {
+        clearAutocompleteResults,
+      },
+    } = this.props;
+
     this.setState({ value: '' });
-    this.props.onSelect(e, item.uri);
-    this.props.spotifyActions.clearAutocompleteResults(this.id);
+    onSelect(e, item.uri);
+    clearAutocompleteResults(this.id);
   }
 
-  results() {
-    if (this.props.results === undefined) {
-      return null;
-    } if (this.props.results[this.id] === undefined) {
+  results = (type) => {
+    const {
+      results: resultsProp,
+    } = this.props;
+
+    const results = resultsProp[this.id];
+    if (type) {
+      if (results) {
+        return results[type];
+      }
       return null;
     }
-    return this.props.results[this.id];
+    return results;
   }
 
-  renderResults(type) {
-    const results = this.results();
-    if (!results || typeof (results[type]) === 'undefined' || results[type].length <= 0) return null;
-
-    // only show the first 3
-    const items = results[type].slice(0, 3);
+  renderResults = (type) => {
+    const results = this.results(type);
+    if (!results) return null;
 
     return (
       <div className="type">
         <h4 className="mid_grey-text">{type}</h4>
         {
-					items.map((item) => (
-  <div className="result" key={item.uri} onClick={(e) => this.handleSelect(e, item)}>
-    {item.name}
-    {type == 'tracks' ? (
-      <span className="mid_grey-text">
-        {' '}
-        <LinksSentence items={item.artists} nolinks />
-      </span>
-    ) : null}
-  </div>
-					))
-				}
+          results.slice(0, 3).map((item) => (
+            <div className="result" key={item.uri} onClick={(e) => this.handleSelect(e, item)}>
+              {item.name}
+              {type === 'tracks' && (
+                <span className="mid_grey-text">
+                  {' '}
+                  <LinksSentence items={item.artists} nolinks />
+                </span>
+              )}
+            </div>
+          ))
+        }
       </div>
     );
   }
 
-  render() {
+  render = () => {
+    const {
+      placeholder,
+      className: classNameProp = '',
+    } = this.props;
+    const { value } = this.state;
+    const results = this.results();
+
     let className = 'field autocomplete-field add-seed-field';
-    if (this.results() && this.results().loading) {
+    if (results && results.loading) {
       className += ' loading';
     }
     return (
-      <div className={className}>
+      <div className={`${className} ${classNameProp}`}>
         <div className="input">
-          <input
-            type="text"
-            value={this.state.value}
-            onChange={(e) => this.handleChange(e, e.target.value)}
-            placeholder={this.props.placeholder ? this.props.placeholder : 'Start typing...'}
+          <TextField
+            value={value}
+            onChange={this.handleChange}
+            placeholder={placeholder || i18n('fields.start_typing')}
+            everyChange
           />
         </div>
         <div className="results">
@@ -123,9 +160,9 @@ class AddSeedField extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
-  genres: (state.spotify.genres ? state.spotify.genres : null),
-  results: (state.spotify.autocomplete_results ? state.spotify.autocomplete_results : {}),
+const mapStateToProps = (state) => ({
+  genres: (state.spotify.genres || null),
+  results: (state.spotify.autocomplete_results || {}),
 });
 
 const mapDispatchToProps = (dispatch) => ({

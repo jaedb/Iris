@@ -41,15 +41,31 @@
 		#app-loading {
 			position: fixed;
 			top: 50vh;
-			right: 25vw;
-			left: 25vw;
-			width: 50vw;
+			left: 0;
+			right: 0;
+			transform: translateY(-50%);
+			text-align: center;
+			padding: 30px 0;
+		}
+		#app-loading-logo {
+			filter: brightness(0) invert(1);
+			margin: 0 auto;
+			display: block;
+			width: 60vw;
+			max-width: 100px;
+			opacity: 0.25;
+		}
+		#app-loading-loader {
+			position: relative;
+			margin: 30px auto 0;
+			width: 80vw;
+			max-width: 200px;
 			height: 3px;
 			border-radius: 3px;
 			overflow: hidden;
 			background-color: #1A1A1A;
 		}
-		#app-loading::before {
+		#app-loading-loader::before {
 			position: absolute;
 			display: block;
 			content: '';
@@ -60,16 +76,6 @@
 		    animation-timing-function: ease-in-out;
 		    animation-iteration-count: infinite;
 		}
-		#app-loading-text {
-			position: fixed;
-			top: 55vh;
-			text-align: center;
-			width: 70vw;
-			margin: 0 15vw;
-			color: rgba(255,255,255,0.2);
-			font-size: 16px;
-			font-family: Arial, Helvetica, sans-serif;
-		}
 	</style>
 
 </head>
@@ -77,9 +83,9 @@
 
 	<div id="app">
 		<!-- ReactJS app gets injected here, replacing the loader -->
-		<div id="app-loading"></div>
-		<div id="app-loading-text">
-			Please wait, loading...
+		<div id="app-loading">
+			<img src="/iris/assets/app-icon.svg" id="app-loading-logo" />
+			<div id="app-loading-loader"></div>
 		</div>
 	</div>
 

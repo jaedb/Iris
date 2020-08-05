@@ -198,6 +198,15 @@ export default function reducer(core = {}, action) {
     case 'SPOTIFY_GENRES_LOADED':
       return { ...core, genres: action.genres };
 
+    case 'VIEW_DATA_LOADED':
+      return {
+        ...core,
+        view: {
+          ...(core.view ? core.view : {}),
+          ...action.data,
+        },
+      };
+
 
       /**
          * Search results

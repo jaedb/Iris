@@ -10,6 +10,7 @@ import ArtistGrid from './ArtistGrid';
 import PlaylistGrid from './PlaylistGrid';
 import TrackList from './TrackList';
 import LazyLoadListener from './LazyLoadListener';
+import { I18n } from '../locale';
 
 const SearchResults = ({
   type,
@@ -87,15 +88,17 @@ const SearchResults = ({
         {!all && (
           <span>
             <URILink uri={`iris:search:all:${encodedTerm}`}>
-              {'Search '}
+              <I18n path="search.title" />
             </URILink>
+            {' '}
             <Icon type="fontawesome" name="angle-right" />
-            {` ${titleCase(type)}`}
+            {' '}
+            <I18n path={`search.${type}.title`} />
           </span>
         )}
         {all && (
           <URILink uri={`iris:search:${type}:${encodedTerm}`}>
-            {titleCase(type)}
+            <I18n path={`search.${type}.title`} />
           </URILink>
         )}
       </h4>
@@ -108,7 +111,7 @@ const SearchResults = ({
 
         {resultsCount > results.length && (
           <URILink uri={`iris:search:${type}:${encodedTerm}`} className="button button--default">
-            {`All ${type} (${resultsCount})`}
+            <I18n path={`search.${type}.more`} count={resultsCount} />
           </URILink>
         )}
       </section>

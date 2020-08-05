@@ -32,6 +32,7 @@ import {
 } from '../util/helpers';
 import { collate } from '../util/format';
 import { sortItems, applyFilter } from '../util/arrays';
+import { i18n, I18n } from '../locale';
 
 class Artist extends React.Component {
   componentDidMount() {
@@ -56,7 +57,7 @@ class Artist extends React.Component {
     if (uri !== prevUri) {
       loadArtist(uri);
     } else if (!prev_mopidy_connected && mopidy_connected) {
-      if (uriSource(uri) != 'spotify') {
+      if (uriSource(uri) !== 'spotify') {
         loadArtist(uri);
       }
     }
@@ -65,74 +66,127 @@ class Artist extends React.Component {
     if (prevUri !== uri && artist) this.setWindowTitle(artist);
   }
 
-  setWindowTitle(artist = this.props.artist) {
+  onResetFilters = () => {
+    this.onChangeFilter(null);
+    this.onChangeSort(null);
+  }
+
+  onChangeFilter = (value) => {
+    const { uiActions: { set, hideContextMenu } } = this.props;
+    set({ artist_albums_filter: value });
+    hideContextMenu();
+  }
+
+  onChangeSort = (value) => {
+    const {
+      sort,
+      sort_reverse,
+      uiActions: {
+        set,
+        hideContextMenu,
+      },
+    } = this.props;
+
+    let reverse = false;
+    if (value !== null && sort == value) {
+      reverse = !sort_reverse;
+    }
+
+    set({
+      artist_albums_sort_reverse: reverse,
+      artist_albums_sort: value,
+    });
+    hideContextMenu();
+  }
+
+  onPlay = () => {
+    const {
+      artist: {
+        uri,
+        tracks_uris,
+        albums_uris,
+      },
+      mopidyActions: { playURIs },
+    } = this.props;
+    playURIs(tracks_uris || albums_uris, uri);
+  }
+
+  setWindowTitle = (artist = this.props.artist) => {
+    const { uiActions: { setWindowTitle } } = this.props;
+
     if (artist) {
-      this.props.uiActions.setWindowTitle(`${artist.name} (artist)`);
+      setWindowTitle(i18n('artist.title_window', { name: artist.name }));
     } else {
-      this.props.uiActions.setWindowTitle('Artist');
+      setWindowTitle(i18n('artist.title'));
     }
   }
 
-  handleContextMenu(e) {
-    const data = {
+  handleContextMenu = (e) => {
+    const {
+      artist,
+      uri,
+      uiActions: { showContextMenu },
+    } = this.props;
+
+    showContextMenu({
       e,
       context: 'artist',
-      items: [this.props.artist],
-      uris: [this.props.uri],
-    };
-    this.props.uiActions.showContextMenu(data);
+      items: [artist],
+      uris: [uri],
+    });
   }
 
-  loadMore() {
-    this.props.spotifyActions.getMore(
-      this.props.artist.albums_more,
+  loadMore = () => {
+    const {
+      spotifyActions: { getMore },
+      artist: { albums_more },
+      uri,
+    } = this.props;
+
+    getMore(
+      albums_more,
       {
         parent_type: 'artist',
-        parent_key: this.props.uri,
+        parent_key: uri,
         records_type: 'album',
       },
     );
   }
 
-  inLibrary() {
-    const library = `${uriSource(this.props.uri)}_library_artists`;
-    return (this.props[library] && this.props[library].indexOf(this.props.uri) > -1);
+  inLibrary = () => {
+    const { uri } = this.props;
+    const libraryName = `${uriSource(uri)}_library_artists`;
+    const { [libraryName]: library = [] } = this.props;
+    return library.indexOf(uri) > -1;
   }
 
-  setSort(value) {
-    let reverse = false;
-    if (value !== null && this.props.sort == value) {
-      reverse = !this.props.sort_reverse;
-    }
-
-    const data = {
-      artist_albums_sort_reverse: reverse,
-      artist_albums_sort: value,
-    };
-    this.props.uiActions.set(data);
-  }
-
-  setFilter(value) {
-    this.props.uiActions.set({ artist_albums_filter: value });
-  }
-
-  renderOverview() {
-    const { uiActions } = this.props;
+  renderOverview = () => {
+    const {
+      uri,
+      uiActions,
+      artist: artistProp,
+      artists,
+      albums,
+      tracks,
+      sort,
+      sort_reverse,
+      filter,
+    } = this.props;
     const artist = collate(
-      this.props.artist,
+      artistProp,
       {
-        artists: this.props.artists,
-        albums: this.props.albums,
-        tracks: this.props.tracks,
+        artists,
+        albums,
+        tracks,
       },
     );
 
-    if (this.props.sort && artist.albums) {
-      artist.albums = sortItems(artist.albums, this.props.sort, this.props.sort_reverse);
+    if (sort && artist.albums) {
+      artist.albums = sortItems(artist.albums, sort, sort_reverse);
     }
 
-    if (this.props.filter && artist.albums) {
-      artist.albums = applyFilter('type', this.props.filter, artist.albums);
+    if (filter && artist.albums) {
+      artist.albums = applyFilter('type', filter, artist.albums);
     }
 
     const sort_options = [
@@ -173,16 +227,16 @@ class Artist extends React.Component {
       },
     ];
 
-    if (!artist.tracks_uris || (artist.tracks_uris && !artist.tracks) || (artist.tracks_uris.length !== artist.tracks.length)) {
-      var is_loading_tracks = true;
-    } else {
-      var is_loading_tracks = false;
-    }
+    const is_loading_tracks = (
+      !artist.tracks_uris
+      || (artist.tracks_uris && !artist.tracks)
+      || (artist.tracks_uris.length !== artist.tracks.length)
+    );
 
     return (
       <div className="body overview">
         <div className={`top-tracks col col--w${artist.related_artists && artist.related_artists.length > 0 ? '70' : '100'}`}>
-          {artist.tracks ? <h4>Top tracks</h4> : null}
+          {artist.tracks && <h4><I18n path="artist.overview.top_tracks" /></h4>}
           <div className="list-wrapper">
             <TrackList className="artist-track-list" uri={artist.uri} tracks={artist.tracks ? artist.tracks.splice(0, 10) : []} />
             <LazyLoadListener showLoader={is_loading_tracks} />
@@ -193,7 +247,7 @@ class Artist extends React.Component {
 
         {artist.related_artists && artist.related_artists.length > 0 && (
           <div className="col col--w25 related-artists">
-            <h4>Related artists</h4>
+            <h4><I18n path="artist.overview.related_artists.title" /></h4>
             <div className="list-wrapper">
               <RelatedArtists
                 artists={artist.related_artists.slice(0, 6)}
@@ -201,11 +255,11 @@ class Artist extends React.Component {
               />
             </div>
             <Link
-              to={`/artist/${encodeURIComponent(this.props.uri)}/related-artists`}
+              to={`/artist/${encodeURIComponent(uri)}/related-artists`}
               scrollTo="#sub-views-menu"
               className="button button--default"
             >
-              All related artists
+              <I18n path="artist.overview.related_artists.more" />
             </Link>
           </div>
         )}
@@ -215,28 +269,28 @@ class Artist extends React.Component {
         {artist.albums && (
           <div className="albums">
             <h4>
-						  <div>Albums</div>
+						  <div><I18n path="artist.overview.albums" /></div>
               <DropdownField
                 icon="swap_vert"
                 name="Sort"
-                value={this.props.sort}
+                value={sort}
                 valueAsLabel
                 options={sort_options}
-                selected_icon={this.props.sort ? (this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
-                handleChange={(value) => { this.setSort(value); this.props.uiActions.hideContextMenu(); }}
+                selected_icon={sort ? (sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
+                handleChange={this.onChangeSort}
               />
               <DropdownField
                 icon="filter_list"
                 name="Filter"
-                value={this.props.filter}
+                value={filter}
                 valueAsLabel
                 options={filter_options}
-                handleChange={(value) => { this.setFilter(value); this.props.uiActions.hideContextMenu(); }}
+                handleChange={this.onChangeFilter}
               />
-              {(this.props.sort || this.props.filter) && (
-                <a className="button button--discrete button--small" onClick={(e) => { this.setFilter(null); this.setSort(null); }}>
+              {(sort || filter) && (
+                <a className="button button--discrete button--destructive button--small" onClick={this.onResetFilters}>
                   <Icon name="clear" />
-                  Reset
+                  <I18n path="actions.reset" />
                 </a>
               )}
             </h4>
@@ -246,7 +300,7 @@ class Artist extends React.Component {
               <LazyLoadListener
                 loadKey={artist.albums_more}
                 showLoader={artist.albums_more}
-                loadMore={() => this.loadMore()}
+                loadMore={this.loadMore}
               />
             </section>
           </div>
@@ -255,20 +309,26 @@ class Artist extends React.Component {
     );
   }
 
-  renderTracks() {
+  renderTracks = () => {
+    const {
+      artist: artistProp,
+      artists,
+      tracks,
+    } = this.props;
+
     const artist = collate(
-      this.props.artist,
+      artistProp,
       {
-        artists: this.props.artists,
-        tracks: this.props.tracks,
+        artists,
+        tracks,
       },
     );
 
-    if (!artist.tracks_uris || (artist.tracks_uris && !artist.tracks) || (artist.tracks_uris.length !== artist.tracks.length)) {
-      var is_loading_tracks = true;
-    } else {
-      var is_loading_tracks = false;
-    }
+    const is_loading_tracks = (
+      !artist.tracks_uris
+      || (artist.tracks_uris && !artist.tracks)
+      || (artist.tracks_uris.length !== artist.tracks.length)
+    );
 
     return (
       <div className="body related-artists">
@@ -280,11 +340,16 @@ class Artist extends React.Component {
     );
   }
 
-  renderRelatedArtists() {
+  renderRelatedArtists = () => {
+    const {
+      artist: artistProp,
+      artists,
+    } = this.props;
+
     const artist = collate(
-      this.props.artist,
+      artistProp,
       {
-        artists: this.props.artists,
+        artists,
       },
     );
 
@@ -297,45 +362,48 @@ class Artist extends React.Component {
     );
   }
 
-  renderAbout() {
+  renderAbout = () => {
+    const {
+      artist: artistProp,
+      artists,
+    } = this.props;
+
     const artist = collate(
-      this.props.artist,
+      artistProp,
       {
-        artists: this.props.artists,
+        artists,
       },
     );
 
-    const thumbnails = [];
-    if (artist.images && artist.images.length > 0) {
-      for (const images of artist.images) {
-        // Capture potential 'null' images
-        // TODO: Prevent these from existing in the first place
-        if (images.huge) {
-          thumbnails.push(
-            <div className="tile thumbnail-wrapper" key={images.huge}>
-              <Thumbnail size="huge" canZoom fill images={images} />
-            </div>,
-          );
-        }
+    const thumbnails = artist.images && artist.images.map(
+      (image) => {
+        if (!image.huge) return null;
+        return (
+          <div className="tile thumbnail-wrapper" key={image.huge}>
+            <Thumbnail size="huge" canZoom fill images={image} />
+          </div>
+        );
       }
-    }
+    );
 
     return (
       <div className="body about">
-
         <div className="col col--w40 tiles artist-stats">
           {thumbnails}
           <div className="tile">
             <span className="content">
               <Icon type="fontawesome" name={sourceIcon(artist.uri)} />
-              {`${titleCase(uriSource(artist.uri))} artist`}
+              <I18n
+                path="artist.about.source"
+                source={titleCase(uriSource(artist.uri))}
+              />
             </span>
           </div>
           {artist.followers && (
             <div className="tile">
               <span className="content">
                 <Icon type="fontawesome" name="users" />
-                {`${artist.followers.toLocaleString()} followers`}
+                <I18n path="specs.followers" count={artist.followers.toLocaleString()} />
               </span>
             </div>
           )}
@@ -343,7 +411,7 @@ class Artist extends React.Component {
             <div className="tile">
               <span className="content">
                 <Icon type="fontawesome" name="fire" />
-                {`${artist.popularity} % popularity`}
+                <I18n path="specs.popularity" percent={artist.popularity} />
               </span>
             </div>
           )}
@@ -351,7 +419,7 @@ class Artist extends React.Component {
             <div className="tile">
               <span className="content">
                 <Icon type="fontawesome" name="headphones" />
-                {`${artist.listeners.toLocaleString()} listeners`}
+                <I18n path="specs.listeners" count={artist.listeners.toLocaleString()} />
               </span>
             </div>
           )}
@@ -365,11 +433,17 @@ class Artist extends React.Component {
                 <p>{artist.biography}</p>
                 <br />
                 <div className="mid_grey-text">
-                  {`Published: ${artist.biography_publish_date}`}
+                  <I18n path="artist.about.wiki.published" date={artist.biography_publish_date} />
                 </div>
                 <div className="mid_grey-text">
-                  {`Origin: `}
-                  <a href={artist.biography_link} target="_blank">{ artist.biography_link }</a>
+                  <I18n path="artist.about.wiki.origin" />
+                  <a
+                    href={artist.biography_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {artist.biography_link}
+                  </a>
                 </div>
               </div>
             )}
@@ -379,35 +453,35 @@ class Artist extends React.Component {
     );
   }
 
-  render() {
-    const scheme = uriSource(this.props.uri);
+  render = () => {
+    const {
+      uri,
+      load_queue,
+      artist,
+      history,
+    } = this.props;
 
-    if (!this.props.artist) {
-      if (isLoading(this.props.load_queue, [`spotify_artists/${getFromUri('artistid', this.props.uri)}`, 'lastfm_method=artist.getInfo'])) {
+    if (!artist) {
+      if (
+        isLoading(
+          load_queue,
+          [`spotify_artists/${getFromUri('artistid', uri)}`, 'lastfm_method=artist.getInfo'],
+        )
+      ) {
         return <Loader body loading />;
       }
       return (
         <ErrorMessage type="not-found" title="Not found">
           <p>
-            {`Could not find artist with URI "${encodeURIComponent(this.props.uri)}"`}
+            <I18n path="errors.uri_not_found" uri={encodeURIComponent(uri)} />
           </p>
         </ErrorMessage>
       );
     }
 
-    if (this.props.artist && this.props.artist.images && this.props.artist.images.length > 0) {
-      var image = this.props.artist.images[0].huge;
-    } else {
-      var image = null;
-    }
-
-    const is_spotify = (scheme == 'spotify');
-
-    if (this.props.artist.tracks_uris && this.props.artist.tracks_uris.length > 0) {
-      var uris_to_play = this.props.artist.tracks_uris;
-    } else {
-      var uris_to_play = this.props.artist.albums_uris;
-    }
+    const scheme = uriSource(uri);
+    const image = (artist.images && artist.images.length) ? artist.images[0].huge : null;
+    const is_spotify = (scheme === 'spotify');
 
     return (
       <div className="view artist-view preserve-3d">
@@ -417,64 +491,69 @@ class Artist extends React.Component {
 
           <div className="liner">
             <div className="heading">
-
               <div className="heading__thumbnail">
                 <Thumbnail size="medium" circle canZoom type="artist" image={image} />
               </div>
-
               <div className="heading__content">
                 <h1>{this.props.artist ? this.props.artist.name : null}</h1>
                 <div className="actions">
-                  <button className="button button--primary" onClick={(e) => this.props.mopidyActions.playURIs(uris_to_play, this.props.artist.uri)}>Play</button>
-                  {is_spotify ? <FollowButton uri={this.props.uri} removeText="Remove from library" addText="Add to library" is_following={this.inLibrary()} /> : null}
-                  <ContextMenuTrigger className="white" onTrigger={(e) => this.handleContextMenu(e)} />
+                  <button className="button button--primary" onClick={this.onPlay}>
+                    <I18n path="actions.play" />
+                  </button>
+                  {is_spotify && (
+                    <FollowButton
+                      uri={uri}
+                      is_following={this.inLibrary()}
+                    />
+                  )}
+                  <ContextMenuTrigger className="white" onTrigger={this.handleContextMenu} />
                 </div>
               </div>
             </div>
             <div className="sub-views" id="sub-views-menu">
               <Link
                 exact
-                history={this.props.history}
+                history={history}
                 activeClassName="sub-views__option--active"
                 className="sub-views__option"
-                to={`/artist/${encodeURIComponent(this.props.uri)}`}
+                to={`/artist/${encodeURIComponent(uri)}`}
                 scrollTo="#sub-views-menu"
               >
-                <h4>Overview</h4>
+                <h4><I18n path="artist.overview.title" /></h4>
               </Link>
-              {this.props.artist.tracks_uris && this.props.artist.tracks_uris.length > 10 && (
+              {artist.tracks_uris && artist.tracks_uris.length > 10 && (
                 <Link
                   exact
-                  history={this.props.history}
+                  history={history}
                   activeClassName="sub-views__option--active"
                   className="sub-views__option"
-                  to={`/artist/${encodeURIComponent(this.props.uri)}/tracks`}
+                  to={`/artist/${encodeURIComponent(uri)}/tracks`}
                   scrollTo="#sub-views-menu"
                 >
-                  <h4>Tracks</h4>
+                  <h4><I18n path="artist.tracks.title" /></h4>
                 </Link>
               )}
-              {this.props.artist.related_artists_uris && (
+              {artist.related_artists_uris && (
                 <Link
                   exact
-                  history={this.props.history}
+                  history={history}
                   activeClassName="sub-views__option--active"
                   className="sub-views__option"
-                  to={`/artist/${encodeURIComponent(this.props.uri)}/related-artists`}
+                  to={`/artist/${encodeURIComponent(uri)}/related-artists`}
                   scrollTo="#sub-views-menu"
                 >
-                  <h4>Related artists</h4>
+                  <h4><I18n path="artist.related_artists.title" /></h4>
                 </Link>
               )}
               <Link
                 exact
-                history={this.props.history}
+                history={history}
                 activeClassName="sub-views__option--active"
                 className="sub-views__option"
-                to={`/artist/${encodeURIComponent(this.props.uri)}/about`}
+                to={`/artist/${encodeURIComponent(uri)}/about`}
                 scrollTo="#sub-views-menu"
               >
-                <h4>About</h4>
+                <h4><I18n path="artist.about.title" /></h4>
               </Link>
             </div>
           </div>

@@ -8,8 +8,20 @@ import Icon from './Icon';
 import Dropzones from './Fields/Dropzones';
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
+import { I18n, i18n } from '../locale';
 
 class Sidebar extends React.Component {
+
+  closeSidebar = () => {
+    const {
+      uiActions: {
+        toggleSidebar,
+      },
+    } = this.props;
+
+    toggleSidebar(false);
+  }
+
   renderStatusIcon() {
     const {
       update_available,
@@ -22,7 +34,9 @@ class Sidebar extends React.Component {
       return (
         <span className="status tooltip tooltip--right">
           <Icon name="cloud_download" className="green-text" />
-          <span className="tooltip__content">Update available</span>
+          <span className="tooltip__content">
+            <I18n path="sidebar.update_available" />
+          </span>
         </span>
       );
     }
@@ -32,7 +46,7 @@ class Sidebar extends React.Component {
         <span className="status tooltip tooltip--right">
           <Icon name="wifi_off" className="red-text" />
           <span className="tooltip__content">
-            Browser offline
+            <I18n path="sidebar.browser_offline" />
           </span>
         </span>
       );
@@ -43,9 +57,21 @@ class Sidebar extends React.Component {
         <span className="status tooltip tooltip--right">
           <Icon name="warning" className="red-text" />
           <span className="tooltip__content">
-            {!mopidy_connected && (<span>Mopidy not connected<br /></span>)}
-            {!pusher_connected && (<span>Pusher not connected<br /></span>)}
-            {!snapcast_connected && snapcast_enabled && (<span>Snapcast not connected<br /></span>)}
+            {!mopidy_connected && (
+              <I18n path="sidebar.not_connected" params={{ name: i18n('services.mopidy.title') }} contentAfter>
+                <br />
+              </I18n>
+            )}
+            {!pusher_connected && (
+              <I18n path="sidebar.not_connected" params={{ name: i18n('services.pusher.title') }} contentAfter>
+                <br />
+              </I18n>
+            )}
+            {!snapcast_connected && snapcast_enabled && (
+              <I18n path="sidebar.not_connected" params={{ name: i18n('services.snapcast.title') }} contentAfter>
+                <br />
+              </I18n>
+            )}
           </span>
         </span>
       );
@@ -58,7 +84,6 @@ class Sidebar extends React.Component {
     const {
       history,
       spotify_available,
-      uiActions,
     } = this.props;
 
     return (
@@ -69,64 +94,68 @@ class Sidebar extends React.Component {
             <section className="sidebar__menu__section">
               <Link to="/queue" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="play_arrow" type="material" />
-								Now playing
+                <I18n path="sidebar.now_playing" />
               </Link>
               <Link to="/search" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="search" type="material" />
-								Search
+                <I18n path="sidebar.search" />
               </Link>
             </section>
 
             {spotify_available && (
               <section className="sidebar__menu__section">
-                <title className="sidebar__menu__section__title">Discover</title>
+                <title className="sidebar__menu__section__title">
+                  <I18n path="sidebar.discover" />
+                </title>
                 <Link to="/discover/recommendations" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                   <Icon name="explore" type="material" />
-								Discover
+                  <I18n path="sidebar.discover" />
                 </Link>
                 <Link to="/discover/categories" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                   <Icon name="mood" type="material" />
-								Genre / Mood
+                  <I18n path="sidebar.genre" />
                 </Link>
                 <Link to="/discover/featured" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                   <Icon name="star" type="material" />
-								Featured playlists
+                  <I18n path="sidebar.featured_playlists" />
                 </Link>
                 <Link to="/discover/new-releases" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                   <Icon name="new_releases" type="material" />
-								New releases
+                  <I18n path="sidebar.new_releases" />
                 </Link>
               </section>
             )}
 
             <section className="sidebar__menu__section">
-              <title className="sidebar__menu__section__title">My Music</title>
+              <title className="sidebar__menu__section__title">
+                <I18n path="sidebar.my_music" />
+              </title>
               <Link to="/library/playlists" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="queue_music" type="material" />
-								Playlists
+                <I18n path="sidebar.playlists" />
               </Link>
               <Link to="/library/artists" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="recent_actors" type="material" />
-								Artists
+                <I18n path="sidebar.artists" />
               </Link>
               <Link to="/library/albums" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="album" type="material" />
-								Albums
+                <I18n path="sidebar.albums" />
               </Link>
               <Link to="/library/tracks" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="music_note" type="material" />
-								Tracks
+                <I18n path="sidebar.tracks" />
               </Link>
               <Link to="/library/browse" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="folder" type="material" />
-								Browse
+                <I18n path="sidebar.browse" />
               </Link>
             </section>
 
             <section className="sidebar__menu__section">
               <Link to="/settings" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="settings" type="material" />
-								Settings
+                <I18n path="sidebar.settings" />
                 {this.renderStatusIcon()}
               </Link>
             </section>
@@ -136,7 +165,7 @@ class Sidebar extends React.Component {
 
         <Dropzones />
 
-        <div className="close" onClick={(e) => uiActions.toggleSidebar(false)}>
+        <div className="close" onClick={this.closeSidebar}>
           <Icon name="close" />
         </div>
 
@@ -145,7 +174,7 @@ class Sidebar extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state) => ({
   mopidy_connected: state.mopidy.connected,
   pusher_connected: state.pusher.connected,
   spotify_available: state.spotify.access_token,

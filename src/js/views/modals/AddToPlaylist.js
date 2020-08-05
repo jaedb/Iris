@@ -12,6 +12,7 @@ import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
 import { sourceIcon, decodeMopidyUri } from '../../util/helpers';
 import { sortItems } from '../../util/arrays';
+import { I18n, i18n } from '../../locale';
 
 class AddToPlaylist extends React.Component {
   componentDidMount = () => {
@@ -22,6 +23,9 @@ class AddToPlaylist extends React.Component {
       spotify_available,
       spotifyActions,
       mopidyActions,
+      uiActions: {
+        setWindowTitle,
+      },
     } = this.props;
 
     if ((!spotify_library_playlists_status || spotify_library_playlists_status !== 'finished') && spotify_available) {
@@ -31,6 +35,8 @@ class AddToPlaylist extends React.Component {
     if ((!mopidy_library_playlists_status || mopidy_library_playlists_status !== 'finished') && mopidy_connected) {
       mopidyActions.getLibraryPlaylists();
     }
+
+    setWindowTitle(i18n('modal.add_to_playlist.title'));
   }
 
   playlistSelected = (playlist_uri) => {
@@ -48,7 +54,11 @@ class AddToPlaylist extends React.Component {
   render = () =>{
     const { playlists, uris, spotify_library_playlists_status } = this.props;
 
-    if (!playlists) return <div className="empty">No editable playlists</div>;
+    if (!playlists) return (
+      <div className="empty">
+        <I18n path="modal.add_to_playlist.no_editable_playlists" />
+      </div>
+    );
 
     let editablePlaylists = [];
     for (let uri in playlists) {
@@ -61,11 +71,19 @@ class AddToPlaylist extends React.Component {
 
     return (
       <Modal className="modal--add-to-playlist">
-        <h1>Add to playlist</h1>
+        <h1><I18n path="modal.add_to_playlist.title" /></h1>
         <h2 className="mid_grey-text">
-          {`Select playlist to add ${uris.length} track ${uris.length > 1 ? 's' : ''} to`}
+          <I18n
+            path="modal.add_to_playlist.subtitle"
+            count={uris.length}
+            plural={uris.length > 1 ? 's' : ''}
+          />
         </h2>
-        {editablePlaylists.length <= 0 && <div className="no-results">No playlists available</div>}
+        {editablePlaylists.length <= 0 && (
+          <div className="no-results">
+            <I18n path="modal.add_to_playlist.no_playlists" />
+          </div>
+        )}
         <div className="list small playlists">
           {editablePlaylists.map((playlist) => (
             <div

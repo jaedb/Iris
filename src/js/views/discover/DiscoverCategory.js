@@ -11,6 +11,7 @@ import * as uiActions from '../../services/ui/actions';
 import * as spotifyActions from '../../services/spotify/actions';
 import { isLoading } from '../../util/helpers';
 import { collate } from '../../util/format';
+import { i18n } from '../../locale';
 
 class DiscoverCategory extends React.Component {
   componentDidMount() {
@@ -39,57 +40,93 @@ class DiscoverCategory extends React.Component {
     if (!prevCategory && category) this.setWindowTitle(category);
   }
 
-  setWindowTitle(category = this.props.category) {
+  setWindowTitle = (category = this.props.category) => {
+    const {
+      uiActions: { setWindowTitle },
+    } = this.props;
+
     if (category) {
-      this.props.uiActions.setWindowTitle(category.name);
+      setWindowTitle(category.name);
     } else {
-      this.props.uiActions.setWindowTitle('Genre / Mood');
+      setWindowTitle(i18n('discover.category.title'));
     }
   }
 
-  loadCategory() {
-    if (!this.props.category) {
-      this.props.spotifyActions.getCategory(this.props.match.params.id);
+  loadCategory = () => {
+    const {
+      category,
+      match: {
+        params: { id },
+      },
+      spotifyActions: {
+        getCategory,
+        getCategoryPlaylists,
+      },
+    } = this.props;
+
+    if (!category) {
+      getCategory(id);
     }
 
-    if (!this.props.category.playlists_uris) {
-      this.props.spotifyActions.getCategoryPlaylists(this.props.match.params.id);
+    if (!category.playlists_uris) {
+      getCategoryPlaylists(id);
     }
   }
 
-  loadMore() {
-    this.props.spotifyActions.getMore(
-      this.props.category.playlists_more,
+  loadMore = () => {
+    const {
+      spotifyActions: {
+        getMore,
+      },
+      category: {
+        playlists_more,
+      },
+      match: {
+        params: {
+          id,
+        },
+      },
+    } = this.props;
+
+    getMore(
+      playlists_more,
       null,
       {
         type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED_MORE',
-        uri: `category:${this.props.match.params.id}`,
+        uri: `category:${id}`,
       },
     );
   }
 
-  render() {
-    if (isLoading(this.props.load_queue, ['spotify_browse/categories/'])) {
+  render = () => {
+    const {
+      category: categoryProp,
+      playlists,
+      load_queue,
+      uiActions,
+    } = this.props;
+
+    if (isLoading(load_queue, ['spotify_browse/categories/'])) {
       return (
         <div className="view discover-categories-view">
           <Header>
             <Icon name="mood" type="material" />
-            {(this.props.category ? this.props.category.name : 'Category')}
+            {(categoryProp ? categoryProp.name : i18n('discover.category.category'))}
           </Header>
           <Loader body loading />
         </div>
       );
     }
 
-    if (!this.props.category) {
+    if (!categoryProp) {
       return null;
     }
 
-    const category = collate(this.props.category, { playlists: this.props.playlists });
+    const category = collate(categoryProp, { playlists });
 
     return (
       <div className="view discover-categories-view">
-        <Header uiActions={this.props.uiActions}>
+        <Header uiActions={uiActions}>
           <Icon name="mood" type="material" />
           {category.name}
         </Header>
@@ -100,7 +137,7 @@ class DiscoverCategory extends React.Component {
           <LazyLoadListener
             loadKey={category.playlists_more}
             showLoader={category.playlists_more}
-            loadMore={() => this.loadMore()}
+            loadMore={this.loadMore}
           />
         </div>
       </div>

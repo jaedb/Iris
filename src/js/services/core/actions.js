@@ -115,6 +115,14 @@ export function cachebustHttpStream() {
  * relevant service to load the record - all from one neat package.
  * */
 
+export function loadItem(uri, force_reload = false) {
+  return {
+    type: 'LOAD_ITEM',
+    uri,
+    force_reload,
+  };
+}
+
 export function loadTrack(uri, force_reload = false) {
   return {
     type: 'LOAD_TRACK',
@@ -249,6 +257,13 @@ export function removeFromIndex(index_name, key, new_key = null) {
   };
 }
 
+export function viewDataLoaded(data) {
+  return {
+    type: 'VIEW_DATA_LOADED',
+    data,
+  };
+}
+
 
 /**
  * Playlist manipulation
@@ -268,12 +283,19 @@ export function reorderPlaylistTracks(uri, indexes, insert_before, snapshot_id =
       };
 
     case 'm3u':
+    case 'gmusic':
       return {
         type: 'MOPIDY_REORDER_PLAYLIST_TRACKS',
         key: uri,
         range_start: range.start,
         range_length: range.length,
         insert_before,
+      };
+
+    default:
+      return {
+        type: 'UNSUPPORTED_ACTION',
+        name: 'reorderPlaylistTracks',
       };
   }
 }
@@ -292,13 +314,19 @@ export function savePlaylist(uri, name, description = '', is_public = false, is_
       };
 
     case 'm3u':
+    case 'gmusic':
       return {
         type: 'MOPIDY_SAVE_PLAYLIST',
         key: uri,
         name,
       };
+
+    default:
+      return {
+        type: 'UNSUPPORTED_ACTION',
+        name: 'savePlaylist',
+      };
   }
-  return false;
 }
 
 export function createPlaylist(scheme, name, description = '', is_public = false, is_collaborative = false) {
@@ -312,7 +340,6 @@ export function createPlaylist(scheme, name, description = '', is_public = false
     default:
       return mopidyActions.createPlaylist(name, scheme);
   }
-  return false;
 }
 
 export function deletePlaylist(uri) {
@@ -323,7 +350,6 @@ export function deletePlaylist(uri) {
     default:
       return mopidyActions.deletePlaylist(uri);
   }
-  return false;
 }
 
 export function removeTracksFromPlaylist(uri, tracks_indexes) {
@@ -336,10 +362,17 @@ export function removeTracksFromPlaylist(uri, tracks_indexes) {
       };
 
     case 'm3u':
+    case 'gmusic':
       return {
         type: 'MOPIDY_REMOVE_PLAYLIST_TRACKS',
         key: uri,
         tracks_indexes,
+      };
+
+    default:
+      return {
+        type: 'UNSUPPORTED_ACTION',
+        name: 'removeTracksFromPlaylist',
       };
   }
 }
@@ -354,10 +387,17 @@ export function addTracksToPlaylist(uri, tracks_uris) {
       };
 
     case 'm3u':
+    case 'gmusic':
       return {
         type: 'MOPIDY_ADD_PLAYLIST_TRACKS',
         key: uri,
         tracks_uris,
+      };
+
+    default:
+      return {
+        type: 'UNSUPPORTED_ACTION',
+        name: 'addTracksToPlaylist',
       };
   }
 }

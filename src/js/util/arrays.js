@@ -6,12 +6,13 @@ import { uriSource } from './helpers';
  * @param object Object
  * @return Array
  */
-const indexToArray = (index) => {
-  const array = [];
-  for (let key in index) {
-    if (index.hasOwnProperty(key)) array.push(index[key]);
+const indexToArray = (index, keys) => {
+  if (!index) return [];
+
+  if (keys) {
+    return keys.map((key) => index[key]);
   }
-  return array;
+  return Object.keys(index).map((key) => index[key]);
 };
 
 /**

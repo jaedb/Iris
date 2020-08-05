@@ -9,6 +9,7 @@ import Link from './Link';
 import Icon from './Icon';
 import Thumbnail from './Thumbnail';
 import LinksSentence from './LinksSentence';
+import { I18n } from '../locale';
 
 export default class GridItem extends React.Component {
   componentDidMount() {
@@ -24,7 +25,7 @@ export default class GridItem extends React.Component {
     switch (uriType(item.uri)) {
       case 'artist':
         if (spotifyActions && spotifyAvailable) {
-          spotifyActions.getArtistImages(item);
+          //spotifyActions.getArtistImages(item);
         }
         break;
 
@@ -63,15 +64,15 @@ export default class GridItem extends React.Component {
       case 'playlist':
         return tracks_total ? (
           <span className="grid__item__secondary__content">
-            {`${tracks_total} tracks`}
+            <I18n path="specs.tracks" count={tracks_total} />
           </span>
         ) : null;
 
       case 'artist':
         return (
           <span className="grid__item__secondary__content">
-            {followers && `${followers.toLocaleString()} followers `}
-            {albums_uris && `${albums_uris.length} albums`}
+            {followers && <I18n path="specs.followers" count={followers.toLocaleString()} />}
+            {albums_uris && <I18n path="specs.albums" count={albums_uris.length} />}
           </span>
         );
 
@@ -86,7 +87,7 @@ export default class GridItem extends React.Component {
         return (
           <span className="grid__item__secondary__content">
             {artists && <LinksSentence nolinks items={item.artists} /> }
-            {followers && `${followers.toLocaleString()} followers` }
+            {followers && <I18n path="specs.followers" count={followers.toLocaleString()} />}
           </span>
         );
     }

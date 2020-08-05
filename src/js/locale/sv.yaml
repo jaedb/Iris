@@ -1,0 +1,511 @@
+name: Svenska
+
+##
+# Common and reusable phrases
+##
+errors:
+  uri_not_found: 'Kunde inte hitta något med URI %{uri}'
+  could_not_load: Kunde inte ladda
+  no_results: Inga resultat
+  authorization_required: 'Du måste auktorisera %{provider} först'
+  enable_first: 'Aktivera %{provider} först'
+  no_service_worker: Service worker not supported
+  required: Behövs
+  unknown_error: Okänt fel
+  need_to_be_online: Du behöver vara online för att ladda denna resurs
+actions:
+  play: Spela
+  play_all: Spela allt
+  play_next: Spela nästa
+  shuffle_play: blanda listan
+  pause: Pausa
+  stop: Stopp
+  add_to_playlist: Lägg till i spellista
+  add_to_library: Lägg till i biblioteket
+  remove_from_library: Ta bort från biblioteket
+  add_to_queue: Lägg till i kön
+  reset: Återställ
+  back: Tillbaka
+  refresh: Refresh
+  enable: Aktivera
+  disable: Inaktivera
+  send: Skicka
+  save: Spara
+  start: Starta
+  edit: Ändra
+  add: Lägg till
+  confirm: Är du säker?
+  delete: Radera
+  remove: Ta bort
+common:
+  popularity: Populäritet
+  name: Namn
+  artist: Artist
+  duration: Varighet
+  source: Källa
+  sources: Källor
+  sort: Sortera
+  filter: Filter
+  by: ' av '
+fields:
+  start_typing: 'Börja skriva...'
+  search: 'Sök...'
+  sort: Sortera
+  view: Visa
+  source: Källa
+  uri: URI(s)
+  items_to_add:
+    label: Föremål att lägga till
+    placeholder: Inga föremål
+  filters:
+    all: Alla
+    thumbnails: Thumbnails
+    list: List
+    as_loaded: As loaded
+    name: Namn
+    artist: Artist
+    updated: Updated
+    tracks: Låtar
+    source: Källa
+    editable: Editable
+    owner: Ägare
+    followers: Följare
+    popularity: Populäritet
+time:
+  seconds: 
+    short: s
+    singular: skund
+    plural: sekunder
+  minutes: 
+    short: min
+    singular: minut
+    plural: minuter
+  hours: 
+    short: h
+    singular: timme
+    plural: timmar
+  days: 
+    short: d
+    singular: dag
+    plural: dagar
+  weeks: 
+    short: v
+    singular: vecka
+    plural: veckor
+  years: 
+    short: år
+    singular: år
+    plural: år
+specs:
+  tracks: '%{count} låtar'
+  followers: '%{count} följare'
+  listeners: '%{count} lyssnare'
+  playlists: '%{count} spellistor'
+  plays: '%{count} plays'
+  popularity: '%{percent}% populäritet'
+  added: 'Tillagd '
+  added_ago: 'Ändrad %{time} sedan'
+  edited: 'Ändrad '
+  edited_ago: 'Ändrad %{time} sedan'
+  played_ago: 'Spelad %{time} sedan'
+services:
+  mopidy:
+    title: Mopidy
+    local: Local
+  spotify:
+    title: Spotify
+  pusher:
+    title: Pusher
+  snapcast:
+    title: Snapcast
+  genius:
+    title: Genius
+    switch_lyrics_result: Switch to another lyrics seach result
+    want_lyrics: 'Vill du ha låttext? auktorisera Genius i '
+  google:
+    title: Google
+  icecast:
+    title: Icecast
+  lastfm:
+    title: LastFM
+    love: Love
+    unlove: Unlove
+
+##
+# Components
+##
+sidebar:
+  now_playing: Spelas just nu
+  search: Sök
+  discover: upptäck
+  genre: Genre
+  featured_playlists: Farmhävda spellistor
+  new_releases: Nya releaser
+  my_music: Min musik
+  playlists: Spellistor
+  artists: Artister
+  albums: Album
+  tracks: Låtar
+  browse: Utforska
+  settings: Inställningar
+  not_connected: '%{name} Inte ansluten'
+  browser_offline: Browser offline
+  update_available: Updpdatering tillgänglig
+context_menu:
+  add_to_playlist:
+    title: Lägg till i spellista
+    no_playlists: No writable playlists
+  play_next: Spela nästa
+  play_top_tracks: Spela topplistan
+  love_track: Gilla låten
+  unlove_track: Ogilla låten
+  go_to_artist: Gå till artisten
+  go_to_user: Gå till användaren
+  track_info: Låt info
+  discover_similar: Upptäck liknande
+  start_radio: Starta radio
+  copy_uri: Kopiera URI(s)
+dropzones:
+  dragging_things: 'Dragging %{count} things'
+playback_controls:
+  consume: Konsumera
+  shuffle: blanda
+  repeat: repetera
+  no_outputs: No outputs
+snapcast:
+  enabled: Aktiverad
+  show_disconnected_clients: Visa frånkopplade klienter
+  no_connected_clients: Inga anslutna klienter
+  host: Värd
+  port: Port
+  name: Namn
+  name_disconnected: Namn (frånkopplad)
+  group: Grupp
+  new_group: '+ Ny grupp'
+  latency: Ping
+  stream: Stream
+  volume: Volym
+authentication:
+  popup_blocked: Popup blockerad. Tillåt popups och försök igen.
+  failed: auktorisering misslyckades. %{origin} är inte rätt konfigurerad authorization_url.
+  log_out: Logga out
+  log_in: Logga in
+
+
+##
+# Views
+##
+now_playing:
+  title: Spelas just nu
+  context_actions:
+    radio: Radio
+    history: Historia
+    add_uri: Lägg till URI
+  current_track:
+    playing_from: Spelar från
+    shuffle: Blanda
+    clear: Rensa
+    radio: Radio
+album:
+  title: Album
+  title_window: '%{name} av %{artist} (album)'
+  wiki:
+    title: Om
+    published: 'Publicerad: %{date}'
+artist:
+  title: Artist
+  title_window: '%{name} (artist)'
+  overview:
+    title: Överblick
+    top_tracks: Toppade låtar
+    related_artists:
+      title: Relaterade artister
+      more: Alla relaterade artister
+  tracks:
+    title: Låtar
+  related_artists:
+    title: Relaterade artister
+  about:
+    title: Om
+    source: '%{source} artist'
+    wiki:
+      published: 'Publicerad: %{date}'
+      origin: 'Ursprung: '
+debug:
+  title: Debug
+  ui:
+    title: User interface
+  debug:
+    title: Debug
+    overlay: Show debug overlay
+  logging:
+    title: Logging
+    mopidy: Log Mopidy
+    pusher: Log Pusher
+    actions: Log Actions
+    snapcast: Log Snapcast
+  create_notification: Create notification
+  create_process: Create process notification
+  run_test: Run test process
+  call: Call
+  data: Data
+  examples: Examples
+playlist:
+  title: Spellista
+  title_window: '%{name} (playlist)'
+  title_plural: Spellistor
+queue_history:
+  title: Låthistorik
+search:
+  title: Sök
+  title_window: 'Sök: %{term}'
+  context_actions:
+    sort: Sortera
+    source: 'Källor (%{count})'
+  placeholder: Sök
+  all:
+    title: Alla
+  artists:
+    title: Artister
+    more: 'Alla artister (%{count})'
+  albums:
+    title: Album
+    more: 'Alla album (%{count})'
+  playlists:
+    title: Spellistor
+    more: 'Alla Spellistor (%{count})'
+  tracks:
+    title: Låtar
+track:
+  title: Track
+  title_window: '%{name} av %{artists} (track)'
+  lyrics_origin: 'Origin: '
+  explicit: Explicit
+  disc_number: 'Disc %{number}'
+  track_number: 'Track %{number}'
+  unknown_album: Okänt album
+  want_lyrics: 'Vill du ha låttext? Auktorisera Genius under '
+settings:
+  title: Inställningar
+  help: Hjälp
+  server:
+    title: Server
+    username:
+      label: Användarnamn
+      description: A non-unique string used to identify this client (no special characters)
+  interface:
+    title: Gränssnitt
+    language:
+      label: Språk
+    theme:
+      label: Tema
+      auto: Automatiskt
+      auto_toolip: Känner av din webbläsare eller ditt operativsystems önskade tema
+      dark: Mörkt
+      light: Ljust
+    behavior:
+      label: Hantering
+      clear_tracklist: Rensa låtkön om en låt spelas från URI(s)
+      clear_tracklist_tooltip: Om en låt spelas från ett eller fler URI(s) rensas låtkön först
+      hotkeys: Aktivera snabbknappar
+      smooth_scrolling: Akivera mjuk rullning
+      touch_events: Enable touch events on play controls
+      touch_events_tooltip: Allows left- and right-swipe to change tracks
+      wide_scrollbars: Use wide scrollbars
+    sources_priority:
+      label: Sources priority
+      description: Drag-and-drop to prioritize search providers and results
+    reporting:
+      label: Rapportering
+      sublabel: Tillåt rapportering av anonym användarstatistik
+      description: 'Denna anonyma användar data är viktig för att identifera fel och potentiella funktioner som gör Iris bättre för alla. Vill du veta mer? läs '
+      privacy_policy: privacy policy
+      are_you_sure: Är du säker att du itne vill stötta detta?
+    Commands:
+      label: Kommandon
+  advanced:
+    title: Avancerat
+    start_local_scan: Kör lokal sökning
+    artist_uri:
+      label: Artist library URI
+      description: URI used for collecting library artists
+    album_uri:
+      label: Album library URI
+      description: URI used for collecting library albums
+    connections:
+      label: Anslutningar
+    version:
+      label: Version
+      upgrade_available: 'Uppgradering tillgänglig (%{version})'
+      upgrade: 'Uppgradera till %{version}'
+      up_to_date: senaste uppgradering
+    share_configuration: Dela konfiguration
+    restart: starta om  servern
+    reset_cache: återställ cache
+    reset: Återställ alla inställningar
+  about:
+    title: Om
+    blurb_1: ' Är ett öppet projekt av '
+    blurb_2: '. Det är utvecklat gratis och utan garrantier. Om du betalade för denna mjukvara, kontakta mig.'
+    donate: Donera
+    github: GitHub
+  pusher_connection_list:
+    not_connected: Inte ansluten
+    no_connections: Inga anslutningar
+    you: ' (du)'
+  servers:
+    inactive: Inaktiv
+    connecting: Ansluter
+    disconnected: Frånkopplad
+    connected: Ansluten
+    new_server: Ny server
+    name: Namn
+    host: Värd
+    port: Port
+    encryption:
+      label: Kryptering
+      sublabel: Använder SSL
+      description: Kräver SSL proxy
+    switch: Byt till denna servern
+    reconnect: Återanslut
+  services:
+    title: Service
+    limited_access: Begränsad tillgång
+    unknown: Okänt
+    current_user: Nuvarande användare
+    authorization: Behörighet
+    refresh_token: Refresh token
+    authorized: Behörig
+    read_only: Read-only
+    unauthorized: Obehörig
+    enabled: Aktiverad
+    disabled: Inaktiverad
+    connected: Ansluten
+    disconnected: Frånkopplad
+    spotify:
+      mopidy_spotify_not_running: Mopidy-Spotify extension körs inte - Du kommer inte ha möjlighet att spela låtar från Spotify
+      country:
+        label: Land
+        description: En ISO 3166-1 alpha-2 landskod (ex 'SE')
+      locale:
+        title: Språk
+        description: Gemen ISO 639 språkkod och en versal ISO 3166-1 alpha-2 landskod, tillsammans med ett understreck (ex 'sv_SE')
+    icecast:
+      enable:
+        label: Aktivera
+        description: Spela ljud till denna webbläsare
+      location:
+        label: Location
+        description: The full URL to your stream endpoint
+user:
+  title: Användare
+  title_window: '%{name} (user)'
+  you: Du
+discover:
+  title: Upptäck
+  categories:
+    title: 'Genre / Mood'
+  category:
+    title: 'Genre / Mood'
+    category: Kategori
+  featured:
+    title: Farmhävda spellistor
+  new_releases:
+    title: Nya releaser
+  recommendations:
+    title: Upptäck
+    tracks: Låtar
+    artists: Artister
+    albums: Album
+    body_title: Upptäck ny musik
+    body_subtitle: Lägg till frön och musikaliska egenskaper nedanför för att bygga din musiksmak
+    too_many_seeds: För många frön! Du kan max använda 5 låtar, artister och genrer.
+    find_recommendations: Hitta rekommendationer 
+library:
+  albums:
+    title: Mina album
+  artists:
+    title: Mina artister
+  browse:
+    title: Bläddra
+  browse_directory:
+    title: Katalog
+  playlists:
+    title: Mina spellistor
+  tracks:
+    title: Mina låtar
+modal:
+  add_to_playlist:
+    title: Lägg till i spellista
+    subtitle: 'Select playlist to add %{count} track%{plural} to'
+    no_playlists: Inga spellistor tillgängligliga
+    no_editable_playlists: Inga ändringsbara spellistor
+  add_to_queue:
+    title: Lägg till i kön
+    subtitle: Lägg till URIs separerade med kommatecken att spela i kön. Du måste ha den lämpliga Mopidy backenden aktiverad för varje tillhörande URI (ex spotify:, yt:).
+    uris: URI(s)
+    add_random: Lägg till slumpmässig
+    position:
+      label: Position
+      end: Slut
+      next: Efter nästa låt
+  edit_playlist:
+    title: Ändra spellista
+    title_create: Skapa spellista
+    name_required: Ett namn krävs
+    name: Namn
+    description: Beskrivning
+    provider: Utgivare
+    image:
+      label: Cover bild
+      description: Bara JPEG, 256kB max. Lämna tomt för att bevara cover bilden oförändrad.
+    options:
+      label: Alternativ
+      public: Publik
+      collaborative: Gemensam
+    create_playlist: Skapa spellista
+  edit_command:
+    title: Ändra kommando
+    title_create: Skapa kommando
+    name: Namn
+    colour: Färg
+    icon: Ikon
+    url: URL
+    method:
+      label: Metod
+      get: GET
+      post: POST
+    data: Data
+    headers: Additional headers
+  edit_radio:
+    title: Radio
+    subtitle: Ändra och ta bort frön för att forma ljudet i din radio. Radion använder Spotify's rekommendationer för att föreslå låtar enligt dina frön.
+    invalid_seed_uri: Felaktig frö URI(s)
+    too_many_seeds:  Fler än 5 frön mottagna, ignorerar återställning
+    only_spotify_uris: Bara Spotify URIs är tillåtna
+    already_added: URI är redan tillagd
+    no_seeds: Inga frön
+  initial_setup:
+    title: Välkommen till Iris
+    username: Användare
+  kiosk:
+    title: Nu spelas
+    title_window: '%{name} av %{artist} (now playing)'
+    lyrics: Låttext
+  share_configuration:
+    title: Dela konfiguration
+    subtitle: Tryck dina auktoriseringar och gränssnitt till en annan, ansluten användare
+    no_peers: No peer connections
+    recipients: Mottagare
+    configurations: Konfigurationer
+    authorization: '%{service} auktorisering'
+    logged_in_as: 'In loggad som %{name}'
+    snapcast_description: Server connection details
+    interface: Interface settings
+    interface_description: Theme, sorting, filters, etc
+    import:
+      title: Konfiguration delad
+      subtitle: 'En annan användare har delat sin konfiguration med dig. Detta inkluderads:'
+      do_you_want_to_import: Vill du impotera detta?
+      import_now: Importera nu
+      successful: Importering lyckades

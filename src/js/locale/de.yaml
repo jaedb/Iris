@@ -1,0 +1,505 @@
+name: Deutsch
+
+##
+# Gemeinsame und wiederverwendbare Sätze
+##
+errors:
+  uri_not_found: 'Keine Ergebnisse mit dem URI %{uri}'
+  could_not_load: Konnte nicht laden
+  no_results: Keine Ergebnisse gefunden
+  authorization_required: 'Sie müssen %{provider} zuerst autorisieren'
+  enable_first: '%{provider} zuerst aktivieren'
+  no_service_worker: Dienstnehmer (Service Worker) nicht unterstützt
+  required: Erforderlich
+  unknown_error: Unbekannter Fehler
+  need_to_be_online: Sie müssen Online sein, um diese Ressource zu laden.
+actions:
+  play: Abspielen
+  play_all: Alles abspielen
+  play_next: Nächstes abspielen
+  pause: Pause
+  stop: Stop
+  add_to_playlist: Zur Wiedergabeliste hinzufügen
+  add_to_library: Zur Bibliothek hinzufügen
+  remove_from_library: Aus der Bibliothek entfernen
+  add_to_queue: Zur Warteschlange hinzufügen
+  reset: Zurücksetzen
+  back: Zurück
+  refresh: Aktualisieren
+  enable: Aktivieren
+  disable: Deaktivieren
+  send: Senden
+  save: Speichern
+  start: Start
+  edit: Bearbeiten
+  add: Hinzufügen
+  confirm: Sind Sie sicher?
+  delete: Löschen
+  remove: Entfernen
+common:
+  popularity: Beliebtheit
+  name: Name
+  artist: Künstler/in
+  duration: Dauer
+  source: Quelle
+  sources: Quellen
+  sort: Sortieren
+  filter: Filter
+  by: ' von '
+fields:
+  start_typing: 'Mit der Eingabe beginnen ...'
+  search: 'Suche ...'
+  sort: Sortieren
+  view: Ansicht
+  source: Quelle
+  uri: URI(s)
+  filters:
+    all: Alles
+    thumbnails: Vorschaubilder
+    list: Liste
+    as_loaded: Wie geladen
+    name: Name
+    artist: Künstler/in
+    updated: Aktualisiert
+    tracks: Titeln
+    source: Quelle
+    editable: Editierbar
+    owner: Eigentümer/in
+time:
+  seconds:
+    short: Sek.
+    singular: Sekunde
+    plural: Sekunden
+  minutes:
+    short: Min.
+    singular: Minute
+    plural: Minuten
+  hours:
+    short: Std.
+    singular: Stunde
+    plural: Stunden
+  days:
+    short: Tage
+    singular: Tag
+    plural: Tage
+  weeks:
+    short: Wochen
+    singular: Woche
+    plural: Wochen
+  years:
+    short: Jr.
+    singular: Jahr
+    plural: Jahre
+specs:
+  tracks: '%{count} Titeln'
+  followers: '%{count} Anhänger'
+  listeners: '%{count} Zuhörer'
+  playlists: '%{count} Wiedergabelisten'
+  plays: '%{count} abgespielt'
+  popularity: '%{percent}% Beliebt'
+  added: 'Hinzugefügt '
+  added_ago: 'Vor %{time} hinzugefügt'
+  edited: 'Bearbeitet '
+  edited_ago: 'Bearbeitet vor %{time}'
+  played_ago: 'Abgespielt vor %{time}'
+services:
+  mopidy:
+    title: Mopidy
+    local: Lokal
+  spotify:
+    title: Spotify
+  pusher:
+    title: Pusher
+  snapcast:
+    title: Snapcast
+  genius:
+    title: Genius
+    switch_lyrics_result: Zu einem anderen Liedtext wechseln
+    want_lyrics: 'Wollen Sie Liedtexte? Genius autorisieren in '
+  google:
+    title: Google
+  icecast:
+    title: Icecast
+  lastfm:
+    title: LastFM
+    love: Liebe es
+    unlove: Liebe das nicht
+
+##
+# Komponenten
+##
+sidebar:
+  now_playing: Aktuelle Wiedergabe
+  search: Suchen
+  discover: Entdecken
+  genre: Genre / Stimmung
+  featured_playlists: Ausgewählte Wiedergabelisten
+  new_releases: Neue Veröffentlichungen
+  my_music: Meine Musik
+  playlists: Wiedergabelisten
+  artists: Künstler/in
+  albums: Alben
+  tracks: Titeln
+  browse: Durchsuchen
+  settings: Einstellungen
+  not_connected: '%{name} nicht verbunden'
+  browser_offline: Browser offline
+  update_available: Update verfügbar
+context_menu:
+  add_to_playlist:
+    title: Zur Wiedergabeliste hinzufügen
+    no_playlists: Keine beschreibbaren Wiedergabelisten
+  shuffle_play: Zufallswiedergabe
+  play_next: Nächstes abspielen
+  play_top_tracks: Top-Titel abspielen
+  love_track: Liebestitel
+  unlove_track: Liebe den Tiel nicht
+  go_to_artist: Gehe zu Künstler/in
+  go_to_user: Zum Benutzer gehen
+  track_info: Titel Informationen
+  discover_similar: Ähnliches entdecken
+  start_radio: Radio starten
+  copy_uri: URI(s) kopieren
+dropzones:
+  dragging_things: 'Verschiebe %{count} Elemente'
+playback_controls:
+  consume: Verbrauchen
+  shuffle: Zufallswiedergabe
+  repeat: Wiederholen
+  no_outputs: Keine Ausgaben
+snapcast:
+  enabled: Aktiviert
+  show_disconnected_clients: Getrennte Clients anzeigen
+  no_connected_clients: Keine verbundenen Clients
+  host: Host
+  port: Port
+  name: Name
+  name_disconnected: Name (nicht verbunden)
+  group: Gruppe
+  new_group: '+ Neue Gruppe'
+  latency: Latenzzeit
+  stream: Stream
+  volume: Lautstärke
+authentication:
+  popup_blocked: Popup blockiert. Bitte lassen Sie Popups zu und versuchen Sie es erneut.
+  failed: Autorisierung fehlgeschlagen. %{origin} ist nicht die konfigurierte Autorisierungs-URL.
+  log_out: Abmelden
+  log_in: Anmelden
+
+
+##
+# Ansichten
+##
+now_playing:
+  title: Aktuelle Wiedergabe
+  context_actions:
+    radio: Radio
+    history: Verlauf
+    add_uri: URI hinzufügen
+  current_track:
+    playing_from: Wiedergabe von
+    shuffle: Zufallswiedergabe
+    clear: Löschen
+    radio: Radio
+album:
+  title: Album
+  title_window: '%{name} von %{artist} (Album)'
+  wiki:
+    title: Über
+    published: 'Veröffentlicht: %{date}'
+artist:
+  title: Künstler/in
+  title_window: '%{name} (Künstler/in)'
+  overview:
+    title: Übersicht
+    top_tracks: Top-Titeln
+    related_artists:
+      title: Verwandte Künstler/innen
+      more: Alle verwandten Künstler/innen
+  tracks:
+    title: Titeln
+  related_artists:
+    title: Verwandte Künstler/innen
+  about:
+    title: Über
+    source: '%{source} Künstler/in'
+    wiki:
+      published: 'Veröffentlicht: %{date}'
+      origin: 'Herkunft: '
+debug:
+  title: Fehlersuche
+  ui:
+    title: Benutzerschnittstelle
+  debug:
+    title: Fehlersuche
+    overlay: Debug-Overlay anzeigen
+  logging:
+    title: Protokollierung
+    mopidy: Protokolliere Mopidy
+    pusher: Protokolliere Pusher
+    actions: Protokolliere Actions
+    snapcast: Protokolliere Snapcast
+  create_notification: Benachrichtigung erstellen
+  create_process: Prozessbenachrichtigung anlegen
+  run_test: Testprozess ausführen
+  call: Anrufen
+  data: Daten
+  examples: Beispiele
+playlist:
+  title: Wiedergabeliste
+  title_window: '%{name} (Wiedergabeliste)'
+  title_plural: Wiedergabelisten
+queue_history:
+  title: Wiedergabe Geschichte
+search:
+  title: Suche
+  title_window: 'Suche: %{term}'
+  context_actions:
+    sort: Sortieren
+    source: 'Quellen (%{count})'
+  placeholder: Suche
+  all:
+    title: Alle
+  artists:
+    title: Künstler/innen
+    more: 'Alle Künstler/innen (%{count})'
+  albums:
+    title: Alben
+    more: 'Alle Alben (%{count})'
+  playlists:
+    title: Wiedergabelisten
+    more: 'Alle Wiedergabelisten (%{count})'
+  tracks:
+    title: Titeln
+track:
+  title: Titel
+  title_window: '%{name} von %{artists} (Tiel)'
+  lyrics_origin: 'Quelle: '
+  explicit: Explizit
+  disc_number: 'Album %{number}'
+  track_number: 'Titel %{number}'
+  unknown_album: Unbekanntes Album
+  want_lyrics: 'Wollen Sie Liedtexte? Genius autorisieren unter '
+settings:
+  title: Einstellungen
+  help: Hilfe
+  server:
+    title: Server
+    username:
+      label: Benutzername
+      description: Eine nicht-eindeutige Zeichenfolge, die zur Identifizierung dieses Clients verwendet wird (keine Sonderzeichen)
+  interface:
+    title: Benutzeroberfläche
+    language:
+      label: Sprache
+    theme:
+      label: Theme
+      auto: Automatisch
+      auto_toolip: Erkennt Ihre Such- oder Betriebssystem Einstellung
+      dark: Dunkel
+      light: Hell
+    behavior:
+      label: Verhalten
+      clear_tracklist: Leere Titelliste bei der Wiedergabe von URI(s)
+      clear_tracklist_tooltip: Beim Abspielen einer oder mehrerer URIs wird die aktuelle Warteschlange zuerst gelöscht.
+      hotkeys: Hotkeys aktivieren
+      smooth_scrolling: Smooth Scrolling aktivieren
+      touch_events: Aktivieren Berührungsereignissen zur Steuerungen
+      touch_events_tooltip: Ermöglicht Links- und Rechts-Wischen zum Wechseln der Titeln
+      wide_scrollbars: Breite Bildlaufleisten verwenden
+    sources_priority:
+      label: Quellen Priorität
+      description: Drag-and-Drop zur Priorisierung von Suchanbietern und Ergebnissen
+    reporting:
+      label: Berichterstattung
+      sublabel: Erlaubt die Berichterstattung anonymer Nutzungsstatistiken
+      description: 'Diese anonymen Nutzungsdaten sind wichtig, um Fehler und potenzielle Merkmale zu identifizieren, um Iris für alle besser machen. Möchten Sie mehr wissen? Lesen Sie die '
+      privacy_policy: Datenschutzerklärung
+      are_you_sure: Sind Sie sicher, dass Sie dies nicht unterstützen wollen?
+    commands:
+      label: Befehle
+  advanced:
+    title: Erweitert
+    start_local_scan: Lokalen Scan starten
+    artist_uri:
+      label: Künstler/innen Bibliothek URI
+      description: URI für das Sammeln von Bibliothekskünstlern
+    album_uri:
+      label: Album-Bibliothek URI
+      description: URI für das Sammeln von Bibliotheksalben
+    connections:
+      label: Verbindungen
+    version:
+      label: Version
+      upgrade_available: 'Upgrade verfügbar (%{version})'
+      upgrade: 'Upgrade auf %{version}'
+      up_to_date: Auf dem neuesten Stand
+    share_configuration: Konfiguration teilen
+    restart: Server neu starten
+    reset_cache: Cache zurücksetzen
+    reset: Alle Einstellungen zurücksetzen
+  about:
+    title: Über Iris
+    blurb_1: ' ist ein Open-Source-Projekt von '
+    blurb_2: '. Sie wird kostenlos und ohne jegliche Garantie zur Verfügung gestellt. Wenn Sie jemanden für diese Software bezahlt haben, lassen Sie es mich bitte wissen.'
+    donate: Unterstützen
+    github: GitHub
+  pusher_connection_list:
+    not_connected: Nicht verbunden
+    no_connections: Keine Verbindungen
+    you: ' (du)'
+  servers:
+    inactive: Inaktiv
+    connecting: Verbinde
+    disconnected: Verbindung getrennt
+    connected: Verbunden
+    new_server: Neuer Server
+    name: Name
+    host: Host
+    port: Port
+    encryption:
+      label: Verschlüsselung
+      sublabel: SSL verwenden
+      description: Erfordert einen SSL-Proxy
+    switch: Zu diesem Server wechseln
+    reconnect: Erneut verbinden
+  services:
+    title: Dienste
+    limited_access: Beschränkter Zugang
+    unknown: Unbekannt
+    current_user: Aktueller Benutzer
+    authorization: Autorisierung
+    refresh_token: Token auffrischen
+    authorized: Autorisiert
+    read_only: Schreibgeschützt
+    unauthorized: Unautorisiert
+    enabled: Aktiviert
+    disabled: Deaktiviert
+    connected: Verbunden
+    disconnected: Verbindung getrennt
+    spotify:
+      mopidy_spotify_not_running: Mopidy-Spotify-Erweiterung läuft nicht - Sie können keine Spotify-Titel abspielen
+      country:
+        label: Land
+        description: Ein ISO 3166-1 alpha-2 Ländercode (z.B. 'DE')
+      locale:
+        title: Sprache
+        description: ISO 639 Sprachcode in Kleinbuchstaben und ein großgeschriebener ISO 3166-1 alpha-2 Ländercode, verbunden mit einem Unterstrich (z.B. 'de_DE')
+    icecast:
+      enable:
+        label: Aktivieren
+        description: Audio an diesen Browser streamen
+      location:
+        label: Standort
+        description: Die vollständige URL zu Ihrem Stream-Endpunkt
+user:
+  title: Benutzer
+  title_window: '%{name} (Benutzer)'
+  you: Du
+discover:
+  title: Entdecke
+  categories:
+    title: 'Genre / Stimmung'
+  category:
+    title: 'Genre / Stimmung'
+    category: Kategorie
+  featured:
+    title: Ausgewählte Wiedergabelisten
+  new_releases:
+    title: Neuerscheinungen
+  recommendations:
+    title: Entdecke
+    tracks: Titeln
+    artists: Künstler/innen
+    albums: Alben
+    body_title: Neue Musik entdecken
+    body_subtitle: Fügen Sie unten Seeds und musikalische Eigenschaften hinzu, um Ihren Sound aufzubauen
+    too_many_seeds: Zu viele Seeds! Sie können insgesamt bis zu 5 Seeds Spuren, Künstler und Genres verwenden.
+    find_recommendations: Empfehlungen finden
+library:
+  albums:
+    title: Meine Alben
+  artists:
+    title: Meine Künstler/innen
+  browse:
+    title: Durchsuchen
+  browse_directory:
+    title: Verzeichnis
+  playlists:
+    title: Meine Wiedergabelisten
+  tracks:
+    title: Meine Titel
+modal:
+  add_to_playlist:
+    title: Zur Wiedergabeliste hinzufügen
+    subtitle: 'Hinzufügen von %{count} track%{plural} zur Wiedergabeliste'
+    no_playlists: Keine Wiedergabelisten verfügbar
+    no_editable_playlists: Keine editierbaren Wiedergabelisten
+  add_to_queue:
+    title: Zur Warteschlange hinzufügen
+    subtitle: Fügen Sie der Wiedergabewarteschlange eine durch Kommata getrennte Liste von URIs hinzu. Sie müssen für jedes URI-Schema das entsprechende Mopidy-Backend aktiviert haben (z.B. spotify:, yt:).
+    uris: URI(s)
+    position:
+      label: Position
+      end: Ans Ende
+      next: Nach dem aktuellen Titel
+  edit_playlist:
+    title: Wiedergabeliste bearbeiten
+    title_create: Wiedergabeliste erstellen
+    name_required: Name ist erforderlich
+    name: Name
+    description: Beschreibung
+    provider: Anbieter
+    image:
+      label: Titelbild
+      description: Nur JPEG, max. 256kB. Leer lassen, um das Coverbild unverändert zu belassen.
+    options:
+      label: Optionen
+      public: Öffentlich
+      collaborative: Gemeinschaftlich
+    create_playlist: Wiedergabeliste erstellen
+  edit_command:
+    title: Befehl Bearbeiten
+    title_create: Befehl erstellen
+    name: Name
+    colour: Farbe
+    icon: Symbol
+    url: URL
+    method:
+      label: Methode
+      get: GET
+      post: POST
+    data: Daten
+    headers: Zusätzliche Kopfzeilen (Headers)
+  edit_radio:
+    title: Radio
+    subtitle: Sie können Seeds hinzufügen und entfernen, um Ihre Radios zu formen. Radio verwendet die Empfehlungsmaschine von Spotify, um Titel vorzuschlagen, die Ihren Seeds ähnlich sind.
+    invalid_seed_uri: Ungültiger Seed URI(s)
+    too_many_seeds: Mehr als 5 Seeds vorgelegt, ignoriere den Rest
+    only_spotify_uris: Nur Spotify URIs werden unterstützt
+    already_added: URI bereits hinzugefügt
+    no_seeds: Keine Seeds
+  initial_setup:
+    title: Willkommen bei Iris
+    username: Benutzer
+  kiosk:
+    title: Sie hören
+    title_window: '%{name} von %{artist} (Sie hören)'
+    lyrics: Liedtexte
+  share_configuration:
+    title: Konfiguration teilen
+    subtitle: Übertragen Sie Ihre Berechtigungen und Einstellungen an einen anderen, verbundenen Benutzer
+    no_peers: Keine Peer-Verbindungen
+    recipients: Empfänger
+    configurations: Konfigurationen
+    authorization: '%{service} Autorisierung'
+    logged_in_as: 'Angemeldet als %{name}'
+    snapcast_description: Server Verbindungsdetails
+    interface: Einstellungen der Benutzeroberfläche
+    interface_description: Theme, Sortierung, Filter usw.
+    import:
+      title: Konfiguration geteilt
+      subtitle: 'Ein anderer Benutzer hat Ihnen seine Konfiguration mitgeteilt. Dazu gehören:'
+      do_you_want_to_import: Wollen Sie diese importieren?
+      import_now: Jetzt importieren
+      successful: Import erfolgreich

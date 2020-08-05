@@ -8,7 +8,7 @@ import ProgressSlider from './Fields/ProgressSlider';
 import VolumeControl from './Fields/VolumeControl';
 import MuteControl from './Fields/MuteControl';
 import OutputControl from './Fields/OutputControl';
-import Dater from './Dater';
+import { Dater } from './Dater';
 import LinksSentence from './LinksSentence';
 import Thumbnail from './Thumbnail';
 import Icon from './Icon';
@@ -16,6 +16,7 @@ import { scrollTo } from '../util/helpers';
 import * as uiActions from '../services/ui/actions';
 import * as coreActions from '../services/core/actions';
 import * as mopidyActions from '../services/mopidy/actions';
+import { I18n } from '../locale';
 
 class PlaybackControls extends React.Component {
   constructor(props) {
@@ -119,14 +120,18 @@ class PlaybackControls extends React.Component {
     let button = (
       <button className="control tooltip" onClick={() => this.props.mopidyActions.setConsume(true)}>
         <Icon name="restaurant" type="material" />
-        <span className="tooltip__content">Consume</span>
+        <span className="tooltip__content">
+          <I18n path="playback_controls.consume" />
+        </span>
       </button>
     );
     if (this.props.consume) {
       button = (
         <button className="control control--active tooltip" onClick={() => this.props.mopidyActions.setConsume(false)}>
           <Icon name="restaurant" type="material" />
-          <span className="tooltip__content">Consume</span>
+          <span className="tooltip__content">
+            <I18n path="playback_controls.consume" />
+          </span>
         </button>
       );
     }
@@ -137,14 +142,18 @@ class PlaybackControls extends React.Component {
     let button = (
       <button className="control tooltip" onClick={() => this.props.mopidyActions.setRandom(true)}>
         <Icon name="shuffle" type="material" />
-        <span className="tooltip__content">Shuffle</span>
+        <span className="tooltip__content">
+          <I18n path="playback_controls.shuffle" />
+        </span>
       </button>
     );
     if (this.props.random) {
       button = (
         <button className="control control--active tooltip" onClick={() => this.props.mopidyActions.setRandom(false)}>
           <Icon name="shuffle" type="material" />
-          <span className="tooltip__content">Shuffle</span>
+          <span className="tooltip__content">
+            <I18n path="playback_controls.shuffle" />
+          </span>
         </button>
       );
     }
@@ -155,14 +164,18 @@ class PlaybackControls extends React.Component {
     let button = (
       <button className="control tooltip" onClick={() => this.props.mopidyActions.setRepeat(true)}>
         <Icon name="repeat" />
-        <span className="tooltip__content">Repeat</span>
+        <span className="tooltip__content">
+          <I18n path="playback_controls.repeat" />
+        </span>
       </button>
     );
     if (this.props.repeat) {
       button = (
         <button className="control control--active tooltip" onClick={() => this.props.mopidyActions.setRepeat(false)}>
           <Icon name="repeat" />
-          <span className="tooltip__content">Repeat</span>
+          <span className="tooltip__content">
+            <I18n path="playback_controls.repeat" />
+          </span>
         </button>
       );
     }

@@ -23,6 +23,7 @@ import {
   getIndexedRecords,
 } from '../util/helpers';
 import { sortItems } from '../util/arrays';
+import { i18n } from '../locale';
 
 class Search extends React.Component {
   constructor(props) {
@@ -138,7 +139,7 @@ class Search extends React.Component {
 
     spotifyActions.clearSearchResults();
     mopidyActions.clearSearchResults();
-    setWindowTitle('Search');
+    setWindowTitle(i18n('search.title'));
     this.setState({ term: '' });
   }
 
@@ -171,7 +172,7 @@ class Search extends React.Component {
 
     console.info(`Searching for ${type} matching "${term}"`);
 
-    setWindowTitle(`Search: ${decodeURIComponent(term)}`);
+    setWindowTitle(i18n('search.title_window', { term: decodeURIComponent(term) }));
 
     if (type && term && mopidy_connected && uri_schemes_search_enabled) {
       if (mopidyTerm !== term || mopidyType !== type) {
@@ -225,26 +226,23 @@ class Search extends React.Component {
     } = this.props;
 
     const sort_options = [
-      { value: 'followers', label: 'Popularity' },
-      { value: 'name', label: 'Name' },
-      { value: 'artists.name', label: 'Artist' },
-      { value: 'duration', label: 'Duration' },
-      { value: 'uri', label: 'Source' },
+      { value: 'followers', label: i18n('common.popularity') },
+      { value: 'name', label: i18n('common.name') },
+      { value: 'artists.name', label: i18n('common.artist') },
+      { value: 'duration', label: i18n('common.duration') },
+      { value: 'uri', label: i18n('common.source') },
     ];
 
-    const provider_options = [];
-    for (let i = 0; i < uri_schemes.length; i++) {
-      provider_options.push({
-        value: uri_schemes[i],
-        label: titleCase(uri_schemes[i].replace(':', '').replace('+', ' ')),
-      });
-    }
+    const provider_options = uri_schemes.map((item) => ({
+      value: item,
+      label: titleCase(item.replace(':', '').replace('+', ' ')),
+    }));
 
     const options = (
       <span>
         <DropdownField
           icon="swap_vert"
-          name="Sort"
+          name={i18n('common.sort')}
           value={sort}
           valueAsLabel
           options={sort_options}
@@ -253,7 +251,7 @@ class Search extends React.Component {
         />
         <DropdownField
           icon="cloud"
-          name="Sources"
+          name={i18n('common.sources')}
           value={uri_schemes_search_enabled}
           options={provider_options}
           handleChange={this.onSourceChange}

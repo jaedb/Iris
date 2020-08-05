@@ -2,9 +2,6 @@
 import storage from '../../util/storage';
 
 const localstorageMiddleware = (function () {
-  /**
-     * The actual middleware inteceptor
-     * */
   return (store) => (next) => (action) => {
     // proceed as normal first
     // this way, any reducers and middleware do their thing BEFORE we store our new state
@@ -279,32 +276,35 @@ const localstorageMiddleware = (function () {
         );
         break;
 
-            /**
-             * Experimental saving of stores to localStorage
-             * This uses way too much storage space (ie 10MB+) so won't work. We need
-             * to use the IndexedDB engine instead for storing this quantity of data
+        /**
+         * Experimental saving of stores to localStorage
+         * This uses way too much storage space (ie 10MB+) so won't work. We need
+         * to use the IndexedDB engine instead for storing this quantity of data
 
-            case 'UPDATE_TRACKS_INDEX':
-                storage.set('core', {tracks: action.tracks});
-                next(action);
-                break;
-            case 'UPDATE_ALBUMS_INDEX':
-                storage.set('core', {albums: action.albums});
-                next(action);
-                break;
-            case 'UPDATE_ARTISTS_INDEX':
-                storage.set('core', {artists: action.artists});
-                next(action);
-                break;
-            case 'UPDATE_PLAYLISTS_INDEX':
-                storage.set('core', {playlists: action.playlists});
-                next(action);
-                break;
-            case 'UPDATE_USERS_INDEX':
-                storage.set('core', {users: action.users});
-                next(action);
-                break;
-             */
+        case 'UPDATE_TRACKS_INDEX':
+            storage.set('core', {tracks: action.tracks});
+            next(action);
+            break;
+        case 'UPDATE_ALBUMS_INDEX':
+            storage.set('core', {albums: action.albums});
+            next(action);
+            break;
+        case 'UPDATE_ARTISTS_INDEX':
+            storage.set('core', {artists: action.artists});
+            next(action);
+            break;
+        case 'UPDATE_PLAYLISTS_INDEX':
+            storage.set('core', {playlists: action.playlists});
+            next(action);
+            break;
+        case 'UPDATE_USERS_INDEX':
+            storage.set('core', {users: action.users});
+            next(action);
+            break;
+          */
+
+      default:
+        break;
     }
   };
 }());

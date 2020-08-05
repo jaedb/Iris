@@ -8,7 +8,7 @@ import Header from '../components/Header';
 import Thumbnail from '../components/Thumbnail';
 import LinksSentence from '../components/LinksSentence';
 import LastfmLoveButton from '../components/Fields/LastfmLoveButton';
-import Dater from '../components/Dater';
+import { Dater } from '../components/Dater';
 import SelectField from '../components/Fields/SelectField';
 import ContextMenuTrigger from '../components/ContextMenuTrigger';
 import Icon from '../components/Icon';
@@ -26,24 +26,27 @@ import {
   uriSource,
   uriType,
 } from '../util/helpers';
+import { i18n, I18n } from '../locale';
 
 class Track extends React.Component {
   componentDidMount() {
-    this.props.coreActions.loadTrack(this.props.uri);
+    const {
+      uri,
+      track,
+      coreActions: { loadTrack },
+      genius_authorized,
+      geniusActions: { findTrackLyrics },
+    } = this.props;
 
-    if (this.props.track) {
-      this.setWindowTitle(this.props.track);
+    loadTrack(uri);
 
-      if (this.props.genius_authorized && this.props.track.artists && !this.props.track.lyrics_results) {
-        this.props.geniusActions.findTrackLyrics(this.props.track);
+    if (track) {
+      this.setWindowTitle(track);
+
+      if (genius_authorized && track.artists && !track.lyrics_results) {
+        findTrackLyrics(track);
       }
     }
-  }
-
-  handleContextMenu(e) {
-    e.preventDefault();
-    const data = { uris: [this.props.uri] };
-    this.props.uiActions.showContextMenu(e, data, 'track', 'click');
   }
 
   componentDidUpdate = ({
@@ -87,7 +90,11 @@ class Track extends React.Component {
     if (!prevTrack && track) this.setWindowTitle(track);
   }
 
-  setWindowTitle(track = this.props.track) {
+  setWindowTitle = (track = this.props.track) => {
+    const {
+      uiActions: { setWindowTitle },
+    } = this.props;
+
     if (track) {
       let artists = '';
       for (let i = 0; i < track.artists.length; i++) {
@@ -96,30 +103,40 @@ class Track extends React.Component {
         }
         artists += track.artists[i].name;
       }
-      this.props.uiActions.setWindowTitle(`${track.name} by ${artists} (track)`);
+      setWindowTitle(i18n('track.title_window', { name: track.name, artists }));
     } else {
-      this.props.uiActions.setWindowTitle('Track');
+      setWindowTitle(i18n('track.title'));
     }
   }
 
-  handleContextMenu(e) {
-    const data = {
+  handleContextMenu = (e) => {
+    const {
+      uri,
+      track,
+      uiActions: { showContextMenu },
+    } = this.props;
+
+    showContextMenu({
       e,
       context: 'track',
-      items: [this.props.track],
-      uris: [this.props.uri],
-    };
-    this.props.uiActions.showContextMenu(data);
+      items: [track],
+      uris: [uri],
+    });
   }
 
-  play() {
-    this.props.mopidyActions.playURIs([this.props.uri], this.props.uri);
+  play = () => {
+    const {
+      uri,
+      mopidyActions: { playURIs },
+    } = this.props;
+
+    playURIs([uri], uri);
   }
 
-  renderLyricsSelector() {
+  renderLyricsSelector = () => {
     const {
       track,
-      geniusActions,
+      geniusActions: { getTrackLyrics },
     } = this.props;
 
     if (track.lyrics_results === undefined || track.lyrics_results === null) {
@@ -130,7 +147,7 @@ class Track extends React.Component {
           <div className="input">
             <input type="text" disabled="disabled" value="No results" />
             <div className="description">
-              Switch to another lyrics seach result
+              <I18n path="services.genius.switch_lyrics_result" />
             </div>
           </div>
         </div>
@@ -141,7 +158,7 @@ class Track extends React.Component {
       <div className="field lyrics-selector">
         <div className="input">
           <SelectField
-            onChange={(value) => geniusActions.getTrackLyrics(track.uri, value)}
+            onChange={(value) => getTrackLyrics(track.uri, value)}
             options={
               track.lyrics_results.map((result) => ({
                 value: result.path,
@@ -151,50 +168,70 @@ class Track extends React.Component {
             }
           />
           <div className="description">
-            Switch to another lyrics seach result
+            <I18n path="services.genius.switch_lyrics_result" />
           </div>
         </div>
       </div>
     );
   }
 
-  renderLyrics() {
-    if (isLoading(this.props.load_queue, ['genius_'])) {
+  renderLyrics = () => {
+    const {
+      load_queue,
+      track: {
+        lyrics,
+        lyrics_path,
+      } = {},
+    } = this.props;
+
+    if (isLoading(load_queue, ['genius_'])) {
       return (
         <div className="lyrics">
           <Loader body loading />
         </div>
       );
-    } if (this.props.track.lyrics) {
+    } if (lyrics) {
       return (
         <div className="lyrics">
-          <div className="content" dangerouslySetInnerHTML={{ __html: this.props.track.lyrics }} />
+          <div className="content" dangerouslySetInnerHTML={{ __html: lyrics }} />
           <div className="origin mid_grey-text">
-            Origin:
-            {' '}
-            <a href={`https://genius.com${this.props.track.lyrics_path}`} target="_blank">{`https://genius.com${this.props.track.lyrics_path}`}</a>
+            <I18n path="track.lyrics_origin" />
+            <a
+              href={`https://genius.com${lyrics_path}`}
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              {`https://genius.com${lyrics_path}`}
+            </a>
           </div>
         </div>
       );
     }
     return (
-      <ErrorMessage type="not-found" title="Could not load lyrics" />
+      <ErrorMessage type="not-found" title={i18n('errors.no_results')} />
     );
   }
 
-  render() {
-    if (isLoading(this.props.load_queue, [`spotify_track/${getFromUri('trackid', this.props.uri)}`])) {
-      return <Loader body loading />
+  render = () => {
+    const {
+      uri,
+      track,
+      albums,
+      load_queue,
+      slim_mode,
+      uiActions,
+      genius_authorized,
+    } = this.props;
+
+    if (isLoading(load_queue, [`spotify_track/${getFromUri('trackid', uri)}`])) {
+      return <Loader body loading />;
     }
 
-    if (!this.props.track) {
-      return null;
-    }
-    const { track } = this.props;
+    if (!track) return null;
 
     // Flatten our simple album so we can inherit artwork
     if (track.album) {
-      const album = this.props.albums[track.album.uri];
+      const album = albums[track.album.uri];
 
       if (album && album.images) {
         track.images = album.images;
@@ -205,14 +242,14 @@ class Track extends React.Component {
     return (
       <div className="view track-view content-wrapper">
 
-        {this.props.slim_mode ? (
+        {slim_mode && (
           <Header
             icon="music"
             title="Track"
-            handleContextMenuTrigger={(e) => this.handleContextMenu(e)}
-            uiActions={this.props.uiActions}
+            handleContextMenuTrigger={this.handleContextMenu}
+            uiActions={uiActions}
           />
-        ) : null}
+        )}
 
         <div className="thumbnail-wrapper">
           <Thumbnail size="large" canZoom images={track.images} type="album" />
@@ -224,40 +261,67 @@ class Track extends React.Component {
           <h2>
             {track.album && track.album.uri && <Link to={`/album/${track.album.uri}`}>{track.album.name}</Link>}
             {track.album && !track.album.uri ? track.album.name : null}
-            {!track.album ? 'Unknown album' : null}
-            {' by '}
+            {!track.album && <I18n path="track.unknown_album" />}
+            <I18n path="common.by" />
             <LinksSentence items={track.artists} />
           </h2>
 
           <ul className="details">
-            {!this.props.slim_mode ? <li className="source"><Icon type="fontawesome" name={sourceIcon(this.props.uri)} /></li> : null}
-            {track.date ? <li><Dater type="date" data={track.date} /></li> : null}
-            {track.explicit ? <li><span className="flag flag--dark">EXPLICIT</span></li> : null}
+            {!slim_mode && (
+              <li className="source">
+                <Icon type="fontawesome" name={sourceIcon(uri)} />
+              </li>
+            )}
+            {track.date && <li><Dater type="date" data={track.date} /></li>}
+            {track.explicit && (
+              <li>
+                <span className="flag flag--dark uppercase">
+                  <I18n path="track.explicit" />
+                </span>
+              </li>
+            )}
             <li>
-              {track.disc_number > 0 && <span>Disc {track.disc_number}</span>}
+              {track.disc_number > 0 && (
+                <I18n path="track.disc_number" number={track.disc_number} />
+              )}
               {track.disc_number > 0 && track.track_number > 0 && <span>,&nbsp;</span>}
-              {track.track_number && <span>Track {track.track_number}</span>}
+              {track.track_number && (
+                <I18n path="track.track_number" number={track.track_number} />
+              )}
             </li>
             {track.duration && <li><Dater type="length" data={track.duration} /></li>}
-            {track.popularity && <li>{`${track.popularity}% popularity`}</li>}
+            {track.popularity && (
+              <li>
+                <I18n path="stats.popularity" percent={track.popularity} />
+              </li>
+            )}
           </ul>
         </div>
 
         <div className="actions">
-          <button className="button button--primary" onClick={(e) => this.play()}>Play</button>
-          <LastfmLoveButton uri={this.props.uri} artist={(this.props.track.artists ? this.props.track.artists[0].name : null)} track={this.props.track.name} addText="Love" removeText="Unlove" is_loved={this.props.track.userloved} />
-          <ContextMenuTrigger onTrigger={(e) => this.handleContextMenu(e)} />
+          <button className="button button--primary" onClick={this.play} type="button">
+            <I18n path="actions.play" />
+          </button>
+          <LastfmLoveButton
+            uri={uri}
+            artist={(track.artists ? track.artists[0].name : null)}
+            track={track.name}
+            is_loved={track.userloved}
+          />
+          <ContextMenuTrigger onTrigger={this.handleContextMenu} />
         </div>
 
-        {!this.props.genius_authorized ? (
+        {!genius_authorized && (
           <p className="no-results">
-Want track lyrics? Authorize Genius under
-            <Link to="/settings/genius" scrollTo="#services-menu">Settings</Link>
-.
+            <I18n path="track.want_lyrics" />
+            <Link to="/settings/services/genius" scrollTo="#services-menu">
+              <I18n path="settings.title" />
+            </Link>
+            .
           </p>
-        ) : null}
-        {this.props.genius_authorized ? this.renderLyricsSelector() : null}
-        {this.props.genius_authorized ? this.renderLyrics() : null}
+        )}
+        {genius_authorized && this.renderLyricsSelector()}
+        {genius_authorized && this.renderLyrics()}
 
       </div>
     );

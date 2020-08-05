@@ -244,6 +244,11 @@ select {
     padding: 6px 18px 4px;
   }
 
+  &--tiny {
+    padding: 3px 10px 2px;
+    margin: 0;
+  }
+
   &--large {
     padding: 16px 50px 14px;
   }
@@ -359,6 +364,7 @@ select {
 
   &--discrete {
     border: none;
+    box-shadow: none !important;
 
     &:before {
       display: none;
@@ -402,6 +408,19 @@ select {
   @include responsive($bp_medium) {
     padding-left: 28px;
     padding-right: 28px;
+
+    &--large {
+      width: 100%;
+      display: block;
+      margin-bottom: 10px;
+    }
+  }
+
+  @include responsive($bp_narrow) {
+    padding-left: 20px;
+    padding-right: 20px;
+    font-size: 12px;
+    margin: 2px 10px 2px 0;
 
     &--large {
       width: 100%;

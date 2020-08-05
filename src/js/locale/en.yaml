@@ -1,0 +1,512 @@
+name: English
+
+##
+# Common and reusable phrases
+##
+errors:
+  uri_not_found: 'Could not find anything with URI %{uri}'
+  could_not_load: Could not load
+  no_results: No results found
+  authorization_required: 'You must authorize %{provider} first'
+  enable_first: 'Enable %{provider} first'
+  no_service_worker: Service worker not supported
+  required: Required
+  unknown_error: Unknown error
+  need_to_be_online: You need to be online load this resource
+actions:
+  play: Play
+  play_all: Play all
+  play_next: Play next
+  shuffle_play: Shuffle play
+  pause: Pause
+  stop: Stop
+  add_to_playlist: Add to playlist
+  add_to_library: Add to library
+  remove_from_library: Remove from library
+  add_to_queue: Add to queue
+  reset: Reset
+  back: Back
+  refresh: Refresh
+  enable: Enable
+  disable: Disable
+  send: Send
+  save: Save
+  start: Start
+  edit: Edit
+  add: Add
+  confirm: Are you sure?
+  delete: Delete
+  remove: Remove
+common:
+  popularity: Popularity
+  name: Name
+  artist: Artist
+  duration: Duration
+  source: Source
+  sources: Sources
+  sort: Sort
+  filter: Filter
+  by: ' by '
+fields:
+  start_typing: 'Start typing...'
+  search: 'Search...'
+  sort: Sort
+  view: View
+  source: Source
+  uri: URI(s)
+  items_to_add:
+    label: Items to add
+    placeholder: No items
+  filters:
+    all: All
+    thumbnails: Thumbnails
+    list: List
+    as_loaded: As loaded
+    name: Name
+    artist: Artist
+    updated: Updated
+    tracks: Tracks
+    source: Source
+    editable: Editable
+    owner: Owner
+    followers: Followers
+    popularity: Popularity
+time:
+  seconds: 
+    short: secs
+    singular: second
+    plural: seconds
+  minutes: 
+    short: mins
+    singular: minute
+    plural: minutes
+  hours: 
+    short: hrs
+    singular: hour
+    plural: hours
+  days: 
+    short: days
+    singular: day
+    plural: days
+  weeks: 
+    short: wks
+    singular: week
+    plural: weeks
+  years: 
+    short: yrs
+    singular: year
+    plural: years
+specs:
+  tracks: '%{count} tracks'
+  albums: '%{count} albums'
+  followers: '%{count} followers'
+  listeners: '%{count} listeners'
+  playlists: '%{count} playlists'
+  plays: '%{count} plays'
+  popularity: '%{percent}% popularity'
+  added: 'Added '
+  added_ago: 'Added %{time} ago'
+  edited: 'Edited '
+  edited_ago: 'Edited %{time} ago'
+  played_ago: 'Played %{time} ago'
+services:
+  mopidy:
+    title: Mopidy
+    local: Local
+  spotify:
+    title: Spotify
+  pusher:
+    title: Pusher
+  snapcast:
+    title: Snapcast
+  genius:
+    title: Genius
+    switch_lyrics_result: Switch to another lyrics seach result
+    want_lyrics: 'Want track lyrics? Authorize Genius in '
+  google:
+    title: Google
+  icecast:
+    title: Icecast
+  lastfm:
+    title: LastFM
+    love: Love
+    unlove: Unlove
+
+##
+# Components
+##
+sidebar:
+  now_playing: Now playing
+  search: Search
+  discover: Discover
+  genre: Genre / Mood
+  featured_playlists: Featured playlists
+  new_releases: New releases
+  my_music: My music
+  playlists: Playlists
+  artists: Artists
+  albums: Albums
+  tracks: Tracks
+  browse: Browse
+  settings: Settings
+  not_connected: '%{name} not connected'
+  browser_offline: Browser offline
+  update_available: Update available
+context_menu:
+  add_to_playlist:
+    title: Add to playlist
+    no_playlists: No writable playlists
+  play_next: Play next
+  play_top_tracks: Play top tracks
+  love_track: Love track
+  unlove_track: Unlove track
+  go_to_artist: Go to artist
+  go_to_user: Go to user
+  track_info: Track info
+  discover_similar: Discover similar
+  start_radio: Start radio
+  copy_uri: Copy URI(s)
+dropzones:
+  dragging_things: 'Dragging %{count} things'
+playback_controls:
+  consume: Consume
+  shuffle: Shuffle
+  repeat: Repeat
+  no_outputs: No outputs
+snapcast:
+  enabled: Enabled
+  show_disconnected_clients: Show disconnected clients
+  no_connected_clients: No connected clients
+  host: Host
+  port: Port
+  name: Name
+  name_disconnected: Name (disconnected)
+  group: Group
+  new_group: '+ New group'
+  latency: Latency
+  stream: Stream
+  volume: Volume
+authentication:
+  popup_blocked: Popup blocked. Please allow popups and try again.
+  failed: Authorization failed. %{origin} is not the configured authorization_url.
+  log_out: Log out
+  log_in: Log in
+
+
+##
+# Views
+##
+now_playing:
+  title: Now playing
+  context_actions:
+    radio: Radio
+    history: History
+    add_uri: Add URI
+  current_track:
+    playing_from: Playing from
+    shuffle: Shuffle
+    clear: Clear
+    radio: Radio
+album:
+  title: Album
+  title_window: '%{name} by %{artist} (album)'
+  wiki:
+    title: About
+    published: 'Published: %{date}'
+artist:
+  title: Artist
+  title_window: '%{name} (artist)'
+  overview:
+    title: Overview
+    top_tracks: Top tracks
+    related_artists:
+      title: Related artists
+      more: All related artists
+  tracks:
+    title: Tracks
+  related_artists:
+    title: Related artists
+  about:
+    title: About
+    source: '%{source} artist'
+    wiki:
+      published: 'Published: %{date}'
+      origin: 'Origin: '
+debug:
+  title: Debug
+  ui:
+    title: User interface
+  debug:
+    title: Debug
+    overlay: Show debug overlay
+  logging:
+    title: Logging
+    mopidy: Log Mopidy
+    pusher: Log Pusher
+    actions: Log Actions
+    snapcast: Log Snapcast
+  create_notification: Create notification
+  create_process: Create process notification
+  run_test: Run test process
+  call: Call
+  data: Data
+  examples: Examples
+playlist:
+  title: Playlist
+  title_window: '%{name} (playlist)'
+  title_plural: Playlists
+queue_history:
+  title: Playback history
+search:
+  title: Search
+  title_window: 'Search: %{term}'
+  context_actions:
+    sort: Sort
+    source: 'Sources (%{count})'
+  placeholder: Search
+  all:
+    title: All
+  artists:
+    title: Artists
+    more: 'All artists (%{count})'
+  albums:
+    title: Albums
+    more: 'All albums (%{count})'
+  playlists:
+    title: Playlists
+    more: 'All playlists (%{count})'
+  tracks:
+    title: Tracks
+track:
+  title: Track
+  title_window: '%{name} by %{artists} (track)'
+  lyrics_origin: 'Origin: '
+  explicit: Explicit
+  disc_number: 'Disc %{number}'
+  track_number: 'Track %{number}'
+  unknown_album: Unknown album
+  want_lyrics: 'Want track lyrics? Authorize Genius under '
+settings:
+  title: Settings
+  help: Help
+  server:
+    title: Server
+    username:
+      label: Username
+      description: A non-unique string used to identify this client (no special characters)
+  interface:
+    title: Interface
+    language:
+      label: Language
+    theme:
+      label: Theme
+      auto: Auto
+      auto_tooltip: Detects your browser or OS preference
+      dark: Dark
+      light: Light
+    behavior:
+      label: Behavior
+      clear_tracklist: Clear tracklist on play of URI(s)
+      clear_tracklist_tooltip: Playing one or more URIs will clear the current play queue first
+      hotkeys: Enable hotkeys
+      smooth_scrolling: Enable smooth scrolling
+      touch_events: Enable touch events on play controls
+      touch_events_tooltip: Allows left- and right-swipe to change tracks
+      wide_scrollbars: Use wide scrollbars
+    sources_priority:
+      label: Sources priority
+      description: Drag-and-drop to prioritize search providers and results
+    reporting:
+      label: Reporting
+      sublabel: Allow reporting of anonymous usage statistics
+      description: 'This anonymous usage data is important in identifying errors and potential features that make Iris better for everyone. Want to know more? Read the '
+      privacy_policy: privacy policy
+      are_you_sure: Are you sure you don't want to support this?
+    commands:
+      label: Commands
+  advanced:
+    title: Advanced
+    start_local_scan: Start local scan
+    artist_uri:
+      label: Artist library URI
+      description: URI used for collecting library artists
+    album_uri:
+      label: Album library URI
+      description: URI used for collecting library albums
+    connections:
+      label: Connections
+    version:
+      label: Version
+      upgrade_available: 'Upgrade available (%{version})'
+      upgrade: 'Upgrade to %{version}'
+      up_to_date: Up to date
+    share_configuration: Share configuration
+    restart: Restart server
+    reset_cache: Reset cache
+    reset: Reset all settings
+  about:
+    title: About
+    blurb_1: ' is an open-source project by '
+    blurb_2: '. It is provided free and with absolutely no warranty. If you paid someone for this software, please let me know.'
+    donate: Donate
+    github: GitHub
+  pusher_connection_list:
+    not_connected: Not connected
+    no_connections: No connections
+    you: ' (you)'
+  servers:
+    inactive: Inactive
+    connecting: Connecting
+    disconnected: Disconnected
+    connected: Connected
+    new_server: New server
+    name: Name
+    host: Host
+    port: Port
+    encryption:
+      label: Encryption
+      sublabel: Use SSL
+      description: Requires a SSL proxy
+    switch: Switch to this server
+    reconnect: Reconnect
+  services:
+    title: Services
+    limited_access: Limited access
+    unknown: Unknown
+    current_user: Current user
+    authorization: Authorization
+    refresh_token: Refresh token
+    authorized: Authorized
+    read_only: Read-only
+    unauthorized: Unauthorized
+    enabled: Enabled
+    disabled: Disabled
+    connected: Connected
+    disconnected: Disconnected
+    spotify:
+      mopidy_spotify_not_running: Mopidy-Spotify extension is not running - you will not be able to play any Spotify tracks
+      country:
+        label: Country
+        description: An ISO 3166-1 alpha-2 country code (eg 'NZ')
+      locale:
+        title: Locale
+        description: Lowercase ISO 639 language code and an uppercase ISO 3166-1 alpha-2 country code, joined by an underscore (eg 'en_NZ')
+    icecast:
+      enable:
+        label: Enable
+        description: Stream audio to this browser
+      location:
+        label: Location
+        description: The full URL to your stream endpoint
+user:
+  title: User
+  title_window: '%{name} (user)'
+  you: You
+discover:
+  title: Discover
+  categories:
+    title: 'Genre / Mood'
+  category:
+    title: 'Genre / Mood'
+    category: Category
+  featured:
+    title: Featured playlists
+  new_releases:
+    title: New releases
+  recommendations:
+    title: Discover
+    tracks: Tracks
+    artists: Artists
+    albums: Albums
+    body_title: Explore new music
+    body_subtitle: Add seeds and musical properties below to build your sound
+    too_many_seeds: Too many seeds! You can use up to a total of 5 seed tracks, artists and genres.
+    find_recommendations: Find recommendations
+library:
+  albums:
+    title: My albums
+  artists:
+    title: My artists
+  browse:
+    title: Browse
+  browse_directory:
+    title: Directory
+  playlists:
+    title: My playlists
+  tracks:
+    title: My tracks
+modal:
+  add_to_playlist:
+    title: Add to playlist
+    subtitle: 'Select playlist to add %{count} track%{plural} to'
+    no_playlists: No playlists available
+    no_editable_playlists: No editable playlists
+  add_to_queue:
+    title: Add to queue
+    subtitle: Add a comma-separated list of URIs to the play queue
+    uris: URI(s)
+    add_random: Add random
+    position:
+      label: Position
+      end: End
+      next: After current track
+  edit_playlist:
+    title: Edit playlist
+    title_create: Create playlist
+    name_required: Name is required
+    name: Name
+    description: Description
+    provider: Provider
+    image:
+      label: Cover image
+      description: JPEG only, 256kB max. Leave empty to keep cover image unchanged.
+    options:
+      label: Options
+      public: Public
+      collaborative: Collaborative
+    create_playlist: Create playlist
+  edit_command:
+    title: Edit command
+    title_create: Create command
+    name: Name
+    colour: Colour
+    icon: Icon
+    url: URL
+    method:
+      label: Method
+      get: GET
+      post: POST
+    data: Data
+    headers: Additional headers
+  edit_radio:
+    title: Radio
+    subtitle: Add and remove seeds to shape the sound of your radio. Radio uses Spotify's recommendations engine to suggest tracks similar to your seeds.
+    invalid_seed_uri: Invalid seed URI(s)
+    too_many_seeds: More than 5 seeds provided, ignoring rest
+    only_spotify_uris: Only Spotify URIs are supported
+    already_added: URI already added
+    no_seeds: No seeds
+  initial_setup:
+    title: Welcome to Iris
+    username: User
+  kiosk:
+    title: Now playing
+    title_window: '%{name} by %{artist} (now playing)'
+    lyrics: Lyrics
+  share_configuration:
+    title: Share configuration
+    subtitle: Push your authorizations and interface settings to another, connected user
+    no_peers: No peer connections
+    recipients: Recipients
+    configurations: Configurations
+    authorization: '%{service} authorization'
+    logged_in_as: 'Logged in as %{name}'
+    snapcast_description: Server connection details
+    interface: Interface settings
+    interface_description: Theme, sorting, filters, etc
+    import:
+      title: Configuration shared
+      subtitle: 'Another user has shared their configuration with you. This includes:'
+      do_you_want_to_import: Do you want to import this?
+      import_now: Import now
+      successful: Import successful

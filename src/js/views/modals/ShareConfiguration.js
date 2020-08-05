@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux';
 import Modal from './Modal';
 import * as uiActions from '../../services/ui/actions';
 import * as pusherActions from '../../services/pusher/actions';
+import { i18n, I18n } from '../../locale';
 
 class ShareConfiguration extends React.Component {
   constructor(props) {
@@ -20,7 +21,7 @@ class ShareConfiguration extends React.Component {
   }
 
   componentDidMount() {
-    this.props.uiActions.setWindowTitle('Share configuration');
+    this.props.uiActions.setWindowTitle(i18n('modal.share_configuration.title'));
   }
 
   toggleRecipient(id) {
@@ -117,7 +118,7 @@ class ShareConfiguration extends React.Component {
       var recipients = (
         <div className="input text">
           <span className="mid_grey-text">
-            No peer connections
+            <I18n path="modal.share_configuration.no_peers" />
           </span>
         </div>
       );
@@ -126,17 +127,25 @@ class ShareConfiguration extends React.Component {
     return (
       <Modal className="modal--share-configuration">
 
-        <h1>Share configuration</h1>
-        <h2>Push your authorizations and interface settings to another, connected user</h2>
+        <h1>
+          <I18n path="modal.share_configuration.title" />
+        </h1>
+        <h2>
+          <I18n path="modal.share_configuration.subtitle" />
+        </h2>
 
         <form onSubmit={(e) => this.handleSubmit(e)}>
           <div className="field checkbox white">
-            <div className="name">Recipients</div>
+            <div className="name">
+              <I18n path="modal.share_configuration.recipients" />
+            </div>
             {recipients}
           </div>
 
           <div className="field checkbox checkbox--block">
-            <div className="name">Configurations</div>
+            <div className="name">
+              <I18n path="modal.share_configuration.configurations" />
+            </div>
             <div className="input">
 
               {this.props.spotify_me && this.props.spotify_authorization && (
@@ -150,9 +159,17 @@ class ShareConfiguration extends React.Component {
                     />
                     <div className="label">
                       <div>
-                        <div className="title">Spotify authorization</div>
+                        <div className="title">
+                          <I18n
+                            path="modal.share_configuration.authorization"
+                            service={i18n('services.spotify.title')}
+                          />
+                        </div>
                         <div className="description mid_grey-text">
-                          {`Logged in as ${this.props.spotify_me.name}`}
+                          <I18n
+                            path="modal.share_configuration.logged_in_as"
+                            name={this.props.spotify_me.name}
+                          />
                         </div>
                       </div>
                     </div>
@@ -171,9 +188,17 @@ class ShareConfiguration extends React.Component {
                     />
                     <div className="label">
                       <div>
-                        <div className="title">LastFM authorization</div>
+                        <div className="title">
+                          <I18n
+                            path="modal.share_configuration.authorization"
+                            service={i18n('services.lastfm.title')}
+                          />
+                        </div>
                         <div className="description mid_grey-text">
-                          {`Logged in as ${this.props.lastfm_me.name}`}
+                          <I18n
+                            path="modal.share_configuration.logged_in_as"
+                            name={this.props.lastfm_me.name}
+                          />
                         </div>
                       </div>
                     </div>
@@ -192,9 +217,17 @@ class ShareConfiguration extends React.Component {
                     />
                     <div className="label">
                       <div>
-                        <div className="title">Genius authorization</div>
+                        <div className="title">
+                          <I18n
+                            path="modal.share_configuration.authorization"
+                            service={i18n('services.genius.title')}
+                          />
+                        </div>
                         <div className="description mid_grey-text">
-                          {`Logged in as ${this.props.genius_me.name}`}
+                          <I18n
+                            path="modal.share_configuration.logged_in_as"
+                            name={this.props.genius_me.name}
+                          />
                         </div>
                       </div>
                     </div>
@@ -212,8 +245,12 @@ class ShareConfiguration extends React.Component {
                   />
                   <div className="label">
                     <div>
-                      <div className="title">Snapcast</div>
-                      <div className="description mid_grey-text">Server connection details</div>
+                      <div className="title">
+                        <I18n path="services.snapcast.title" />
+                      </div>
+                      <div className="description mid_grey-text">
+                        <I18n path="modal.share_configuration.snapcast_description" />
+                      </div>
                     </div>
                   </div>
                 </label>
@@ -229,8 +266,12 @@ class ShareConfiguration extends React.Component {
                   />
                   <div className="label">
                     <div>
-                      <div className="title">Interface settings</div>
-                      <div className="description mid_grey-text">Theme, sorting, filters, etc</div>
+                      <div className="title">
+                        <I18n path="modal.share_configuration.interface" />
+                      </div>
+                      <div className="description mid_grey-text">
+                        <I18n path="modal.share_configuration.interface_description" />
+                      </div>
                     </div>
                   </div>
                 </label>
@@ -239,7 +280,15 @@ class ShareConfiguration extends React.Component {
           </div>
 
           <div className="actions centered-text">
-            {this.state.recipients.length > 0 ? <button className="button button--primary button--large" onClick={(e) => this.handleSubmit(e)}>Send</button> : <button className="button button--primary button--large" disabled="disabled" onClick={(e) => this.handleSubmit(e)}>Send</button>}
+            {this.state.recipients.length > 0 ? (
+              <button className="button button--primary button--large" onClick={(e) => this.handleSubmit(e)}>
+                <I18n path="actions.send" />
+              </button> 
+            ) : (
+              <button className="button button--primary button--large" disabled="disabled" onClick={(e) => this.handleSubmit(e)}>
+                <I18n path="actions.send" />
+              </button>
+            )}
           </div>
         </form>
       </Modal>

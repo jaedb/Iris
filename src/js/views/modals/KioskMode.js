@@ -13,6 +13,7 @@ import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as geniusActions from '../../services/genius/actions';
 import { isLoading } from '../../util/helpers';
+import { i18n, I18n } from '../../locale';
 
 const LyricsScroller = ({ content = '', time_position = 1, duration = 100 }) => {
   const percent = ((time_position / duration) * 110).toFixed(4);
@@ -27,6 +28,49 @@ const LyricsScroller = ({ content = '', time_position = 1, duration = 100 }) => 
     </div>
   );
 }
+
+const Lyrics = ({
+  show_lyrics,
+  load_queue,
+  genius_authorized,
+  time_position = null,
+  current_track,
+}) => {
+  if (!show_lyrics) {
+    return null;
+  }
+
+  const { lyrics, duration } = current_track || {};
+
+  if (isLoading(load_queue, ['genius_'])) {
+    return (
+      <div className="lyrics">
+        <Loader body loading />
+      </div>
+    );
+  }
+  if (!genius_authorized) {
+    return (
+      <p className="no-results">
+        <I18n path="services.genius.want_lyrics" />
+        <Link to="/settings/genius" scrollTo="#services-menu">
+          <I18n path="settings.title" />
+        </Link>
+        .
+      </p>
+    );
+  }
+  if (lyrics) {
+    return (
+      <LyricsScroller
+        content={lyrics}
+        time_position={time_position}
+        duration={duration}
+      />
+    );
+  };
+  return null;
+};
 
 class KioskMode extends React.Component {
 
@@ -78,9 +122,9 @@ class KioskMode extends React.Component {
         }
         artists += current_track.artists[i].name;
       }
-      this.props.uiActions.setWindowTitle(`${current_track.name} by ${artists} (now playing)`);
+      this.props.uiActions.setWindowTitle(i18n('modal.kiosk.title_window', { name:current_track.name, artists }));
     } else {
-      this.props.uiActions.setWindowTitle('Now playing');
+      this.props.uiActions.setWindowTitle(i18n('modal.kiosk.title'));
     }
   }
 
@@ -111,44 +155,6 @@ class KioskMode extends React.Component {
     }
   }
 
-  renderLyrics = () => {
-    const {
-      load_queue,
-      genius_authorized,
-      time_position = null,
-      current_track,
-    } = this.props;
-
-    const { lyrics, duration } = current_track || {};
-
-    if (isLoading(load_queue, ['genius_'])) {
-      return (
-        <div className="lyrics">
-          <Loader body loading />
-        </div>
-      );
-    } else if (!genius_authorized) {
-
-      return (
-        <p className="no-results">
-          Want track lyrics? Authorize Genius under
-          {' '}
-          <Link to="/settings/genius" scrollTo="#services-menu">Settings</Link>.
-        </p>
-      );
-
-    } else if (lyrics) {
-      return (
-        <LyricsScroller
-          content={lyrics}
-          time_position={time_position}
-          duration={duration}
-        />
-      );
-    };
-    return null;
-  }
-
   renderPlayButton() {
     let button = <button className="control play" onClick={() => this.props.mopidyActions.play()}><Icon name="play_circle_filled" type="material" /></button>;
     if (this.props.play_state == 'playing') {
@@ -161,6 +167,9 @@ class KioskMode extends React.Component {
     const {
       show_lyrics,
       current_track,
+      load_queue,
+      genius_authorized,
+      time_position,
     } = this.props;
     if (current_track && current_track.images) {
       var { images } = current_track;
@@ -173,7 +182,7 @@ class KioskMode extends React.Component {
         {show_lyrics ? <Icon name="toggle_on" className="turquoise-text" />
           : <Icon name="toggle_off" />}
         <div style={{ paddingLeft: '6px', fontWeight: 'bold' }}>
-          Lyrics
+          <I18n path="modal.kiosk.lyrics" />
         </div>
       </div>
     );
@@ -214,7 +223,13 @@ class KioskMode extends React.Component {
 
         </div>
 
-        {show_lyrics && this.renderLyrics()}
+        <Lyrics
+          show_lyrics={show_lyrics}
+          load_queue={load_queue}
+          genius_authorized={genius_authorized}
+          time_position={time_position}
+          current_track={current_track}
+        />
       </Modal>
     );
   }

@@ -8,6 +8,7 @@ import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
 import { uriSource } from '../../util/helpers';
+import { i18n, I18n } from '../../locale';
 
 class EditPlaylist extends React.Component {
   constructor(props) {
@@ -24,7 +25,7 @@ class EditPlaylist extends React.Component {
   }
 
   componentDidMount() {
-    this.props.uiActions.setWindowTitle('Edit playlist');
+    this.props.uiActions.setWindowTitle(i18n('modal.edit_playlist.title'));
 
     if (this.props.playlist) {
       this.setState({
@@ -84,7 +85,7 @@ class EditPlaylist extends React.Component {
     e.preventDefault();
 
     if (!this.state.name || this.state.name == '') {
-      this.setState({ error: 'Name is required' });
+      this.setState({ error: i18n('modal.edit_playlist.name_required') });
       return false;
     }
     this.props.coreActions.savePlaylist(
@@ -121,7 +122,9 @@ class EditPlaylist extends React.Component {
         return (
           <div>
             <div className="field text">
-              <div className="name">Name</div>
+              <div className="name">
+                <I18n path="modal.edit_playlist.name" />
+              </div>
               <div className="input">
                 <input
                   type="text"
@@ -131,7 +134,9 @@ class EditPlaylist extends React.Component {
               </div>
             </div>
             <div className="field text">
-              <div className="name">Description</div>
+              <div className="name">
+                <I18n path="modal.edit_playlist.description" />
+              </div>
               <div className="input">
                 <input
                   type="text"
@@ -141,7 +146,9 @@ class EditPlaylist extends React.Component {
               </div>
             </div>
             <div className="field file">
-              <div className="name">Cover image</div>
+              <div className="name">
+                <I18n path="modal.edit_playlist.image.label" />
+              </div>
               <div className="input">
                 <input
                   type="file"
@@ -149,13 +156,13 @@ class EditPlaylist extends React.Component {
                   onChange={(e) => this.setImage(e)}
                 />
                 <div className="description">
-									JPEG only, 256kB max. Leave empty to keep cover image unchanged.
+									<I18n path="modal.edit_playlist.image.description" />
                 </div>
               </div>
             </div>
             <div className="field checkbox white">
               <div className="name">
-								Options
+								<I18n path="modal.edit_playlist.options.label" />
               </div>
               <div className="input">
                 <label>
@@ -165,7 +172,9 @@ class EditPlaylist extends React.Component {
                     checked={this.state.public}
                     onChange={(e) => this.setState({ public: !this.state.public })}
                   />
-                  <span className="label">Public</span>
+                  <span className="label">
+                    <I18n path="modal.edit_playlist.options.public" />
+                  </span>
                 </label>
                 <label>
                   <input
@@ -174,7 +183,9 @@ class EditPlaylist extends React.Component {
                     checked={this.state.collaborative}
                     onChange={(e) => this.setState({ collaborative: !this.state.collaborative })}
                   />
-                  <span className="label">Collaborative</span>
+                  <span className="label">
+                    <I18n path="modal.edit_playlist.options.collaborative" />
+                  </span>
                 </label>
               </div>
             </div>
@@ -186,7 +197,9 @@ class EditPlaylist extends React.Component {
         return (
           <div>
             <div className="field text">
-              <div className="name">Name</div>
+              <div className="name">
+                <I18n path="modal.edit_playlist.name" />
+              </div>
               <div className="input">
                 <input
                   type="text"
@@ -203,14 +216,18 @@ class EditPlaylist extends React.Component {
   render() {
     return (
       <Modal className="modal--edit-playlist">
-        <h1>Edit playlist</h1>
+        <h1>
+          <I18n path="modal.edit_playlist.title" />
+        </h1>
         {this.state.error ? <h3 className="red-text">{this.state.error}</h3> : null}
         <form onSubmit={(e) => this.savePlaylist(e)}>
 
           {this.renderFields()}
 
           <div className="actions centered-text">
-            <button type="submit" className="button button--primary button--large">Save</button>
+            <button type="submit" className="button button--primary button--large">
+              <I18n path="actions.save" />
+            </button>
           </div>
         </form>
       </Modal>

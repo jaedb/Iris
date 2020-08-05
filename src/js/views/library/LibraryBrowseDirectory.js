@@ -19,6 +19,7 @@ import {
   isLoading,
 } from '../../util/helpers';
 import { arrayOf, sortItems } from '../../util/arrays';
+import { i18n, I18n } from '../../locale';
 
 class LibraryBrowseDirectory extends React.Component {
   constructor(props) {
@@ -40,7 +41,7 @@ class LibraryBrowseDirectory extends React.Component {
       });
     }
 
-    this.props.uiActions.setWindowTitle('Browse');
+    this.props.uiActions.setWindowTitle(i18n('library.browse_directory.title'));
     this.loadDirectory();
   }
 
@@ -67,15 +68,25 @@ class LibraryBrowseDirectory extends React.Component {
     }
   }
 
-  loadMore() {
-    const new_limit = this.state.limit + this.state.per_page;
+  loadMore = () => {
+    const {
+      limit: prevLimit,
+      per_page,
+    } = this.state;
+    const {
+      history,
+      location: {
+        state: prevState = {},
+      },
+    } = this.props;
 
-    this.setState({ limit: new_limit });
+    const limit = prevLimit + per_page;
+    this.setState({ limit });
 
-    // Set our pagination to location state
-    const state = (this.props.location && this.props.location.state ? this.props.location.state : {});
-    state.limit = new_limit;
-    this.props.history.replace({ state });
+    history.replace({
+      ...prevState,
+      limit,
+    });
   }
 
   playAll(e, tracks) {
@@ -149,9 +160,11 @@ class LibraryBrowseDirectory extends React.Component {
       uiActions,
       view,
     } = this.props;
-    const { limit } = this.state;
+    const {
+      limit,
+    } = this.state;
 
-    let title = 'Directory';
+    let title = i18n('library.browse_directory.title');
 
     if (!directory || isLoading(load_queue, ['mopidy_browse'])) {
       return (
@@ -175,11 +188,11 @@ class LibraryBrowseDirectory extends React.Component {
     let subdirectories = (directory.subdirectories && directory.subdirectories.length > 0 ? directory.subdirectories : null);
     subdirectories = sortItems(subdirectories, 'name');
 
-    const total_items = (tracks ? tracks.length : 0) + (subdirectories ? subdirectories.length : 0);
-    subdirectories = subdirectories.slice(0, this.state.limit);
+    const total_items = (directory.tracks ? directory.tracks.length : 0) + (subdirectories ? subdirectories.length : 0);
+    subdirectories = subdirectories.slice(0, limit);
     let all_tracks = null;
     let tracks = null;
-    let limit_remaining = this.state.limit - subdirectories;
+    const limit_remaining = limit - subdirectories;
     if (limit_remaining > 0) {
       all_tracks = (directory.tracks && directory.tracks.length > 0 ? directory.tracks : null);
       all_tracks = sortItems(all_tracks, 'name');
@@ -188,12 +201,12 @@ class LibraryBrowseDirectory extends React.Component {
 
     const view_options = [
       {
-        label: 'Thumbnails',
         value: 'thumbnails',
+        label: i18n('fields.filters.thumbnails'),
       },
       {
-        label: 'List',
         value: 'list',
+        label: i18n('fields.filters.list'),
       },
     ];
 
@@ -210,12 +223,12 @@ class LibraryBrowseDirectory extends React.Component {
         {tracks && (
           <a className="button button--no-hover" onClick={(e) => { uiActions.hideContextMenu(); this.playAll(e, all_tracks); }}>
             <Icon name="play_circle_filled" />
-            Play all
+            <I18n path="actions.play_all" />
           </a>
         )}
         <a className="button button--no-hover" onClick={(e) => { uiActions.hideContextMenu(); this.goBack(e); }}>
           <Icon name="keyboard_backspace" />
-          Back
+          <I18n path="actions.back" />
         </a>
       </span>
     );
@@ -244,7 +257,7 @@ class LibraryBrowseDirectory extends React.Component {
             <LazyLoadListener
               loadKey={total_items > limit ? limit : total_items}
               showLoader={limit < total_items}
-              loadMore={() => this.loadMore()}
+              loadMore={this.loadMore}
             />
 
           </ErrorBoundary>

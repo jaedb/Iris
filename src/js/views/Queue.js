@@ -5,7 +5,7 @@ import Link from '../components/Link';
 import Icon from '../components/Icon';
 import Parallax from '../components/Parallax';
 import TrackList from '../components/TrackList';
-import Dater from '../components/Dater';
+import { Dater } from '../components/Dater';
 import LinksSentence from '../components/LinksSentence';
 import Thumbnail from '../components/Thumbnail';
 import Header from '../components/Header';
@@ -20,6 +20,33 @@ import {
   getFromUri,
   uriType,
 } from '../util/helpers';
+import { i18n, I18n } from '../locale';
+
+const Artwork = ({
+  image,
+  album_uri,
+}) => {
+  if (!image) {
+    return (
+      <div className="current-track__artwork">
+        <Thumbnail glow type="track" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="current-track__artwork">
+      <Thumbnail glow image={image} type="track">
+        <Link to="/kiosk-mode" className="thumbnail__actions__item">
+          <Icon name="expand" type="fontawesome" />
+        </Link>
+        <URILink uri={album_uri} className="thumbnail__actions__item">
+          <Icon name="album" />
+        </URILink>
+      </Thumbnail>
+    </div>
+  );
+}
 
 class Queue extends React.Component {
   constructor(props) {
@@ -32,15 +59,14 @@ class Queue extends React.Component {
   }
 
   componentDidMount() {
-    // Restore any limit defined in our location state
-    const state = this.props.location.state ? this.props.location.state : {};
-    if (state.limit) {
-      this.setState({
-        limit: state.limit,
-      });
+    const {
+      uiActions: { setWindowTitle },
+      location: { limit } = {},
+    } = this.props;
+    if (limit) {
+      this.setState({ limit });
     }
-
-    this.props.uiActions.setWindowTitle('Now playing');
+    setWindowTitle(i18n('now_playing.title'));
   }
 
   shouldComponentUpdate(nextProps) {
@@ -77,7 +103,7 @@ class Queue extends React.Component {
     }
   }
 
-  loadMore() {
+  loadMore = () => {
     const { limit, per_page } = this.state;
     const { location, history } = this.props;
     const new_limit = limit + per_page;
@@ -92,7 +118,7 @@ class Queue extends React.Component {
     history.replace({ state });
   }
 
-  removeTracks(track_indexes) {
+  removeTracks = (track_indexes) => {
     const { queue_tracks, mopidyActions } = this.props;
     const tlids = [];
     for (let i = 0; i < track_indexes.length; i++) {
@@ -107,45 +133,22 @@ class Queue extends React.Component {
     }
   }
 
-  playTrack(track) {
-    this.props.mopidyActions.changeTrack(track.tlid);
+  playTrack = (track) => {
+    const { mopidyActions: { changeTrack } } = this.props;
+    changeTrack(track.tlid);
   }
 
-  playTracks(tracks) {
-    this.props.mopidyActions.changeTrack(tracks[0].tlid);
+  playTracks = (tracks) => {
+    const { mopidyActions: { changeTrack } } = this.props;
+    changeTrack(tracks[0].tlid);
   }
 
-  reorderTracks(indexes, index) {
-    this.props.mopidyActions.reorderTracklist(indexes, index);
+  reorderTracks = (indexes, index) => {
+    const { mopidyActions: { reorderTracklist } } = this.props;
+    reorderTracklist(indexes, index);
   }
 
-  renderArtwork(image) {
-    const { current_track } = this.props;
-    const uri = (current_track && current_track.album && current_track.album.uri) ? current_track.album.uri : null;
-
-    if (!image) {
-      return (
-        <div className="current-track__artwork">
-          <Thumbnail glow type="track" />
-        </div>
-      );
-    }
-
-    return (
-      <div className="current-track__artwork">
-        <Thumbnail glow image={image} type="track">
-          <URILink uri={uri} className="thumbnail__actions__item">
-            <Icon name="art_track" />
-          </URILink>
-          <Link to="/kiosk-mode" className="thumbnail__actions__item">
-            <Icon name="expand" type="fontawesome" />
-          </Link>
-        </Thumbnail>
-      </div>
-    );
-  }
-
-  renderAddedFrom() {
+  renderAddedFrom = () => {
     const { added_from_uri } = this.props;
     if (!added_from_uri) return null;
 
@@ -201,20 +204,29 @@ class Queue extends React.Component {
         <div className="current-track__added-from__text">
           {'Playing from '}
           <LinksSentence items={items} />
-          {uri_type === 'radio' && <span className="flag flag--blue">Radio</span>}
+          {uri_type === 'radio' && (
+            <span className="flag flag--blue">
+              {i18n('now_playing.current_track.radio')}
+            </span>
+          )}
         </div>
       </div>
     );
   }
 
-  render() {
-    const { current_track, queue_tracks, theme } = this.props;
+  render = () => {
+    const {
+      current_track,
+      queue_tracks,
+      theme,
+      current_track_uri,
+    } = this.props;
     const { limit } = this.state;
     const total_queue_tracks = queue_tracks.length;
     const tracks = queue_tracks.slice(0, limit);
 
     let current_track_image = null;
-    if (current_track && this.props.current_track_uri) {
+    if (current_track && current_track_uri) {
       if (current_track.images !== undefined && current_track.images) {
         current_track_image = current_track.images.large;
       }
@@ -225,16 +237,16 @@ class Queue extends React.Component {
         {this.props.spotify_enabled && (
           <Link className="button button--no-hover" to="/queue/radio">
             <Icon name="radio" />
-            Radio
+            <I18n path="now_playing.context_actions.radio" />
           </Link>
         )}
         <Link className="button button--no-hover" to="/queue/history">
           <Icon name="history" />
-          History
+          <I18n path="now_playing.context_actions.history" />
         </Link>
         <Link className="button button--no-hover" to="/queue/add-uri">
           <Icon name="playlist_add" />
-          Add URI
+          <I18n path="actions.add" />
         </Link>
       </span>
     );
@@ -243,12 +255,15 @@ class Queue extends React.Component {
       <div className="view queue-view preserve-3d">
         <Header options={options} uiActions={this.props.uiActions}>
           <Icon name="play_arrow" type="material" />
-          Now playing
+          <I18n path="now_playing.title" />
         </Header>
         {theme === 'dark' && <Parallax image={current_track_image} blur />}
         <div className="content-wrapper">
           <div className="current-track">
-            {this.renderArtwork(current_track_image)}
+            <Artwork
+              image={current_track_image}
+              album_uri={current_track && current_track.album && current_track.album.uri}
+            />
             <div className="current-track__details">
               <div className="current-track__title">
                 {current_track ? (
@@ -279,7 +294,7 @@ class Queue extends React.Component {
                     <li>
                       <a onClick={this.props.mopidyActions.shuffleTracklist}>
                         <Icon name="shuffle" />
-                        Shuffle
+                        <I18n path="now_playing.current_track.shuffle" />
                       </a>
                     </li>
                   )}
@@ -287,7 +302,7 @@ class Queue extends React.Component {
                     <li>
                       <a onClick={this.props.mopidyActions.clearTracklist}>
                         <Icon name="delete_sweep" />
-                        Clear
+                        <I18n path="now_playing.current_track.clear" />
                       </a>
                     </li>
                   )}
@@ -303,10 +318,10 @@ class Queue extends React.Component {
               track_context="queue"
               className="queue-track-list"
               tracks={tracks}
-              removeTracks={(track_indexes) => this.removeTracks(track_indexes)}
-              playTracks={(tracks) => this.playTracks(tracks)}
-              playTrack={(track) => this.playTrack(track)}
-              reorderTracks={(indexes, index) => this.reorderTracks(indexes, index)}
+              removeTracks={this.removeTracks}
+              playTracks={this.playTracks}
+              playTrack={this.playTrack}
+              reorderTracks={this.reorderTracks}
             />
           </section>
 
@@ -317,7 +332,7 @@ class Queue extends React.Component {
                 : total_queue_tracks
             }
             showLoader={limit < total_queue_tracks}
-            loadMore={() => this.loadMore()}
+            loadMore={this.loadMore}
           />
         </div>
       </div>

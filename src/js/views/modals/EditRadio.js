@@ -13,6 +13,31 @@ import {
   uriSource,
   uriType,
 } from '../../util/helpers';
+import { i18n, I18n } from '../../locale';
+import TextField from '../../components/Fields/TextField';
+
+const SeedListItem = ({ seed, remove }) => (
+  <div className="list__item list__item--no-interaction" key={seed.uri}>
+    {seed.unresolved ? (
+      <span className="mid_grey-text">{seed.uri}</span>
+    ) : (
+      <span>{seed.name}</span>
+    )}
+    {!seed.unresolved && (
+      <span className="mid_grey-text">
+        {` (${uriType(seed.uri)})`}
+      </span>
+    )}
+    <button
+      type="button"
+      className="button button--discrete button--destructive button--tiny pull-right"
+      onClick={() => remove(seed.uri)}
+    >
+      <Icon name="delete" />
+      <I18n path="actions.remove" />
+    </button>
+  </div>
+);
 
 class EditRadio extends React.Component {
   constructor(props) {
@@ -26,10 +51,17 @@ class EditRadio extends React.Component {
   }
 
   componentDidMount() {
-    this.props.uiActions.setWindowTitle('Edit radio');
+    const {
+      uiActions: {
+        setWindowTitle,
+      },
+      radio,
+    } = this.props;
 
-    if (this.props.radio && this.props.radio.enabled) {
-      this.loadRadio(this.props.radio);
+    setWindowTitle(i18n('modal.edit_radio.title'));
+
+    if (radio && radio.enabled) {
+      this.loadRadio(radio);
     }
   }
 
@@ -38,7 +70,11 @@ class EditRadio extends React.Component {
     if (!prev_radio && radio) this.loadRadio(radio);
   }
 
-  loadRadio(radio) {
+  onUriChange = (uri) => {
+    this.setState({ uri, error_message: null });
+  }
+
+  loadRadio = (radio) => {
     const seeds = [...radio.seed_tracks, ...radio.seed_artists, ...radio.seed_genres];
     this.setState({ seeds, enabled: radio.enabled });
   }
@@ -59,7 +95,7 @@ class EditRadio extends React.Component {
       this.props.pusherActions.startRadio(this.state.seeds);
       window.history.back();
     } else {
-      this.setState({ error_message: 'Invalid seed URI(s)' });
+      this.setState({ error_message: i18n('modal.edit_radio.invalid_seed_uri') });
     }
   }
 
@@ -79,7 +115,7 @@ class EditRadio extends React.Component {
       this.props.pusherActions.updateRadio(this.state.seeds);
       window.history.back();
     } else {
-      this.setState({ error_message: 'Invalid seed URI(s)' });
+      this.setState({ error_message: i18n('modal.edit_radio.invalid_seed_uri') });
     }
   }
 
@@ -89,160 +125,181 @@ class EditRadio extends React.Component {
     this.props.uiActions.closeModal();
   }
 
-  addSeed(e) {
+  addSeed = (e) => {
+    const {
+      uri,
+      seeds,
+    } = this.state;
+    const {
+      coreActions: {
+        loadItem,
+      },
+    } = this.props;
+
     e.preventDefault();
 
-    if (this.state.uri == '') {
-      this.setState({ error_message: 'Cannot be empty' });
+    if (uri === '') {
+      this.setState({ error_message: i18n('errors.required') });
       return;
     }
 
     this.setState({ error_message: null });
 
-    const seeds = Object.assign([], this.state.seeds);
-    let uris = this.state.uri.split(',');
+    const validatedSeeds = Object.assign([], seeds);
+    let uris = uri.split(',');
 
     if (uris.length >= 5) {
       uris = uris.slice(0, 5);
-      this.setState({ error_message: 'More than 5 seeds provided, ignoring rest' });
+      this.setState({ error_message: i18n('modal.edit_radio.too_many_seeds') });
     }
 
     for (let i = 0; i < uris.length; i++) {
       if (uriSource(uris[i]) !== 'spotify') {
-        this.setState({ error_message: 'Non-Spotify URIs not supported' });
+        this.setState({ error_message: i18n('modal.edit_radio.only_spotify_uris') });
         return;
       } if (seeds.indexOf(uris[i]) > -1) {
-        this.setState({ error_message: 'URI already added' });
+        this.setState({ error_message: i18n('modal.edit_radio.too_many_seeds') });
       } else {
-        seeds.push(uris[i]);
-      }
-
-      // Resolve
-      switch (uriType(uris[i])) {
-        case 'track':
-          this.props.spotifyActions.getTrack(uris[i]);
-          break;
-
-        case 'artist':
-          this.props.spotifyActions.getArtist(uris[i]);
-          break;
+        validatedSeeds.push(uris[i]);
+        loadItem(uris[i]);
       }
     }
 
-    // commit to state
     this.setState({
-      seeds,
+      seeds: validatedSeeds,
       uri: '',
     });
   }
 
-  removeSeed(uri) {
-    const seeds = [];
-    for (let i = 0; i < this.state.seeds.length; i++) {
-      if (this.state.seeds[i] != uri) {
-        seeds.push(this.state.seeds[i]);
-      }
-    }
+  removeSeed = (uri) => {
+    const {
+      seeds: prevSeeds,
+    } = this.state;
+
+    const seeds = prevSeeds.filter((seed) => seed !== uri);
     this.setState({ seeds });
   }
 
-  mapSeeds() {
-    const seeds = [];
+  mapSeeds = () => {
+    const {
+      seeds,
+    } = this.state;
+    const {
+      tracks = {},
+      artists = {},
+    } = this.props;
 
-    if (this.state.seeds) {
-      for (let i = 0; i < this.state.seeds.length && i < 5; i++) {
-        const uri = this.state.seeds[i];
-        if (uri) {
-          if (uriType(uri) == 'artist') {
-            if (this.props.artists && this.props.artists.hasOwnProperty(uri)) {
-              seeds.push(this.props.artists[uri]);
-            } else {
-              seeds.push({
-                unresolved: true,
-                uri,
-              });
-            }
-          } else if (uriType(uri) == 'track') {
-            if (this.props.tracks && this.props.tracks.hasOwnProperty(uri)) {
-              seeds.push(this.props.tracks[uri]);
-            } else {
-              seeds.push({
-                unresolved: true,
-                uri,
-              });
-            }
-          }
-        }
-      }
+    if (!seeds) {
+      return [];
     }
 
-    return seeds;
+    return seeds.slice(0, 5).map((uri) => {
+      switch (uriType(uri)) {
+        case 'artist':
+          if (artists[uri]) {
+            return artists[uri];
+          }
+          break;
+        case 'track':
+          if (tracks[uri]) {
+            return tracks[uri];
+          }
+          break;
+        default:
+          break;
+      }
+
+      return {
+        unresolved: true,
+        uri,
+      };
+    });
   }
 
-  renderSeeds() {
+  render = () => {
+    const {
+      enabled,
+      uri,
+      error_message,
+    } = this.state;
+
     const seeds = this.mapSeeds();
 
-    if (seeds.length > 0) {
-      return (
-        <div>
-          <div className="list">
-            {
-							seeds.map((seed, index) => (
-  <div className="list__item" key={seed.uri}>
-    {seed.unresolved ? <span className="mid_grey-text">{seed.uri}</span> : <span>{seed.name}</span> }
-    {!seed.unresolved ? (
-      <span className="mid_grey-text">
-&nbsp;(
-        {uriType(seed.uri)}
-)
-      </span>
-    ) : null}
-    <span className="button discrete remove-uri no-hover" onClick={(e) => this.removeSeed(seed.uri)}>
-      <Icon name="delete" />
-Remove
-    </span>
-  </div>
-							))
-						}
-          </div>
-        </div>
-      );
-    }
-    return (
-      <div className="no-results">No seeds</div>
-    );
-  }
-
-  render() {
     return (
       <Modal className="modal--edit-radio">
-        <h1>Radio</h1>
-        <h2 className="mid_grey-text">Add and remove seeds to shape the sound of your radio. Radio uses Spotify's recommendations engine to suggest tracks similar to your seeds.</h2>
+        <h1>
+          <I18n path="modal.edit_radio.title" />
+        </h1>
+        <h2 className="mid_grey-text">
+          <I18n path="modal.edit_radio.subtitle" />
+        </h2>
 
-        <form onSubmit={(e) => { (this.state.enabled ? this.handleUpdate(e) : this.handleStart(e)); }}>
-
-          {this.renderSeeds()}
+        <form onSubmit={(e) => { (enabled ? this.handleUpdate(e) : this.handleStart(e)); }}>
 
           <div className="field text">
-            <div className="name">URI(s)</div>
+            <div className="name">
+              <I18n path="fields.uri" />
+            </div>
             <div className="input">
-              <input
-                type="text"
-                onChange={(e) => this.setState({ uri: e.target.value, error_message: null })}
-                value={this.state.uri}
+              <TextField
+                onChange={this.onUriChange}
+                value={uri}
               />
               <span className="button discrete add-uri no-hover" onClick={(e) => this.addSeed(e)}>
                 <Icon name="add" />
-Add
+                <I18n path="actions.add" />
               </span>
-              {this.state.error_message ? <span className="description error">{this.state.error_message}</span> : null}
+              {error_message && <span className="description error">{error_message}</span>}
+            </div>
+          </div>
+
+          <div className="field text">
+            <div className="name">
+              <I18n path="fields.items_to_add.label" />
+            </div>
+            <div className="input">
+              {seeds.length ? (
+                <div className="list">
+                  {seeds.map((seed, index) => (
+                    <SeedListItem
+                      key={`${seed}_${index}`}
+                      seed={seed}
+                      remove={this.removeSeed}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text mid_grey-text">
+                  <I18n path="fields.items_to_add.placeholder" />
+                </div>
+              )}
             </div>
           </div>
 
           <div className="actions centered-text">
-            {this.state.enabled ? <span className="button button--destructive button--large" onClick={(e) => this.handleStop(e)}>Stop</span> : null}
+            {this.state.enabled ? (
+              <span className="button button--destructive button--large" onClick={(e) => this.handleStop(e)}>
+                <I18n path="actions.add" />
+              </span>
+            ) : null}
 
-            {this.state.enabled ? <button className="button button--primary button--large" onClick={(e) => this.handleUpdate(e)}>Save</button> : <button className="button button--primary button--large" onClick={(e) => this.handleStart(e)}>Start</button>}
+            {this.state.enabled ? (
+              <button
+                className="button button--primary button--large"
+                onClick={(e) => this.handleUpdate(e)}
+                type="button"
+              >
+                <I18n path="actions.save" />
+              </button>
+            ) : (
+              <button
+                className="button button--primary button--large"
+                onClick={(e) => this.handleStart(e)}
+                type="button"
+              >
+                <I18n path="actions.start" />
+              </button>
+            )}
           </div>
         </form>
       </Modal>

@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux';
 import * as uiActions from '../../services/ui/actions';
 import * as lastfmActions from '../../services/lastfm/actions';
 import { toJSON } from '../../util/format';
+import { I18n, i18n } from '../../locale';
 
 class LastfmAuthenticationFrame extends React.Component {
   constructor(props) {
@@ -36,7 +37,10 @@ class LastfmAuthenticationFrame extends React.Component {
     // Only allow incoming data from our authorized authenticator proxy
     const authorization_domain = this.props.authorization_url.substring(0, this.props.authorization_url.indexOf('/', 8));
     if (event.origin != authorization_domain) {
-      this.props.uiActions.createNotification({ content: `Authorization failed. ${event.origin} is not the configured authorization_url.`, level: 'error' });
+      this.props.uiActions.createNotification({
+        content: i18n('authentication.failed', { origin: event.origin }),
+        level: 'error',
+      });
       return false;
     }
 
@@ -75,7 +79,10 @@ class LastfmAuthenticationFrame extends React.Component {
 
         // Popup does not exist, so must have been blocked
       } else {
-        self.props.uiActions.createNotification({ content: 'Popup blocked. Please allow popups and try again.', level: 'error' });
+        self.props.uiActions.createNotification({
+          content: i18n('authentication.popup_blocked'),
+          level: 'error',
+        });
         self.setState({ authorizing: false });
         clearInterval(timer);
       }
@@ -87,11 +94,15 @@ class LastfmAuthenticationFrame extends React.Component {
 
     if (this.props.authorization) {
       return (
-        <a className={"button button--destructive" + (authorizing ? ' button--working' : '')} onClick={(e) => this.props.lastfmActions.revokeAuthorization()}>Log out</a>
+        <a className={"button button--destructive" + (authorizing ? ' button--working' : '')} onClick={(e) => this.props.lastfmActions.revokeAuthorization()}>
+          <I18n path="authentication.log_out" />
+        </a>
       );
     }
     return (
-      <a className={"button button--primary" + (authorizing ? ' button--working' : '')} onClick={(e) => this.startAuthorization()}>Log in</a>
+      <a className={"button button--primary" + (authorizing ? ' button--working' : '')} onClick={(e) => this.startAuthorization()}>
+        <I18n path="authentication.log_in" />
+      </a>
     );
   }
 }

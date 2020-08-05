@@ -3,9 +3,6 @@ import ReactGA from 'react-ga';
 const uiActions = require('./actions.js');
 
 const UIMiddleware = (function () {
-  /**
-     * The actual middleware inteceptor
-     * */
   return (store) => (next) => (action) => {
     switch (action.type) {
       case 'MOPIDY_STATE':
@@ -250,6 +247,12 @@ const UIMiddleware = (function () {
           200,
         );
         next(action);
+        break;
+
+      case 'SET_LANGUAGE':
+        const { language } = action;
+        window.language = language;
+        store.dispatch(uiActions.set({ language }));
         break;
 
       // This action is irrelevant to us, pass it on to the next middleware

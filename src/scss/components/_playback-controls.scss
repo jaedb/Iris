@@ -453,4 +453,29 @@
       }
     }
   }
+
+  @include responsive($bp_narrow) {
+    .current-track__wrapper {
+      width: 50%;
+    }
+    
+    .control {
+      padding: 12px 4px;
+    }
+
+    section {
+      &.playback {
+        width: auto;
+      }
+      
+
+      &.triggers {
+        width: 4rem;
+
+        .icon {
+          font-size: 0.9rem;
+        }
+      }
+    }
+  }
 }

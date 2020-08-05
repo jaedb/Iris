@@ -12,20 +12,37 @@ import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
 import { isLoading } from '../../util/helpers';
-import { collate } from '../../util/format';
+import { i18n, I18n } from '../../locale';
 
 class DiscoverNewReleases extends React.Component {
   componentDidMount() {
-    this.props.uiActions.setWindowTitle('New releases');
+    const {
+      new_releases,
+      uiActions: {
+        setWindowTitle,
+      },
+      spotifyActions: {
+        getNewReleases,
+      },
+    } = this.props;
 
-    if (!this.props.new_releases) {
-      this.props.spotifyActions.getNewReleases();
+    setWindowTitle(i18n('discover.new_releases.title'));
+
+    if (!new_releases) {
+      getNewReleases();
     }
   }
 
-  loadMore() {
-    this.props.spotifyActions.getMore(
-      this.props.new_releases_more,
+  loadMore = () => {
+    const {
+      new_releases_more,
+      spotifyActions: {
+        getMore,
+      },
+    } = this.props;
+
+    getMore(
+      new_releases_more,
       null,
       {
         type: 'SPOTIFY_NEW_RELEASES_LOADED',
@@ -33,19 +50,36 @@ class DiscoverNewReleases extends React.Component {
     );
   }
 
-  playAlbum(e, album) {
-    this.props.mopidyActions.playURIs([album.uri], album.uri);
+  playAlbum = (album) => {
+    const { mopidyActions: { playURIs } } = this.props;
+
+    playURIs([album.uri], album.uri);
+  }
+
+  refresh = () => {
+    const {
+      uiActions: {
+        hideContextMenu,
+      },
+      spotifyActions: {
+        getNewReleases,
+      },
+    } = this.props;
+
+    hideContextMenu();
+    getNewReleases();
   }
 
   handleContextMenu(e, item) {
+    const { uriActions: { showContextMenu } } = this.props;
+
     e.preventDefault();
-    const data = {
+    showContextMenu({
       e,
       context: 'album',
       uris: [item.uri],
       items: [item],
-    };
-    this.props.uiActions.showContextMenu(data);
+    });
   }
 
   renderIntro = ({ images: { large } = {} } = {}) => (
@@ -54,13 +88,21 @@ class DiscoverNewReleases extends React.Component {
     </div>
   );
 
-  render() {
-    if (isLoading(this.props.load_queue, ['spotify_browse/new-releases'])) {
+  render = () => {
+    const {
+      load_queue,
+      new_releases,
+      albums: albumsProp,
+      new_releases_more,
+      uiActions,
+    } = this.props;
+
+    if (isLoading(load_queue, ['spotify_browse/new-releases'])) {
       return (
         <div className="view discover-new-releases-view">
           <Header>
             <Icon name="new_releases" type="material" />
-						New releases
+            <I18n path="discover.new_releases.title" />
           </Header>
           <Loader body loading />
         </div>
@@ -68,41 +110,41 @@ class DiscoverNewReleases extends React.Component {
     }
 
     const albums = [];
-    if (this.props.new_releases) {
-      for (const uri of this.props.new_releases) {
-        if (this.props.albums.hasOwnProperty(uri)) {
-          albums.push(this.props.albums[uri]);
+    if (new_releases) {
+      for (const uri of new_releases) {
+        if (albumsProp.hasOwnProperty(uri)) {
+          albums.push(albumsProp[uri]);
         }
       }
     }
 
     const options = (
-      <a className="button button--no-hover" onClick={(e) => { this.props.uiActions.hideContextMenu(); this.props.spotifyActions.getNewReleases(); }}>
+      <a className="button button--no-hover" onClick={this.refresh}>
         <Icon name="refresh" />
-Refresh
+        <I18n path="actions.refresh" />
       </a>
     );
 
     return (
       <div className="view discover-new-releases-view preserve-3d">
-        <Header options={options} uiActions={this.props.uiActions}>
+        <Header options={options} uiActions={uiActions}>
           <Icon name="new_releases" type="material" />
-					New releases
+          <I18n path="discover.new_releases.title" />
         </Header>
         <section className="content-wrapper grid-wrapper">
           <AlbumGrid albums={albums} />
         </section>
         <LazyLoadListener
-          loadKey={this.props.new_releases_more}
-          showLoader={this.props.new_releases_more}
-          loadMore={() => this.loadMore()}
+          loadKey={new_releases_more}
+          showLoader={new_releases_more}
+          loadMore={this.loadMore}
         />
       </div>
     );
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state) => ({
   theme: state.ui.theme,
   load_queue: state.ui.load_queue,
   artists: state.core.artists,
