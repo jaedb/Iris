@@ -125,6 +125,29 @@ export class App extends React.Component {
       ReactGA.initialize('UA-64701652-3');
       Sentry.init({
         dsn: 'https://ca99fb6662fe40ae8ec4c18a466e4b4b@o99789.ingest.sentry.io/219026',
+        sampleRate: 0.25,
+        beforeSend: (event, hint) => {
+          const {
+            originalException: {
+              message,
+            } = {},
+          } = hint;
+
+          // Filter out issues that destroy our quota and that are not informative enough to
+          // actually resolve.
+          if (
+            message
+            && (
+              message.match(/Websocket/i)
+              || message.match(/NotSupportedError/i)
+              || message.match(/Non-Error promise rejection captured with keys: call, message, value/i)
+            )
+          ) {
+            return null;
+          }
+
+          return event;
+        },
       });
     }
 
