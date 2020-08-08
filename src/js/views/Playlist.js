@@ -2,13 +2,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import ReactGA from 'react-ga';
 import ErrorMessage from '../components/ErrorMessage';
 import Link from '../components/Link';
 import TrackList from '../components/TrackList';
 import Thumbnail from '../components/Thumbnail';
-import Parallax from '../components/Parallax';
-import NiceNumber, { nice_number } from '../components/NiceNumber';
+import PinButton from '../components/Fields/PinButton';
+import { nice_number } from '../components/NiceNumber';
 import { Dater, dater } from '../components/Dater';
 import LazyLoadListener from '../components/LazyLoadListener';
 import FollowButton from '../components/Fields/FollowButton';
@@ -183,6 +182,22 @@ class Playlist extends React.Component {
     return library.indexOf(uri) > -1;
   }
 
+  togglePinned = () => {
+    const {
+      uri,
+      coreActions: {
+        addPinned,
+        removePinned,
+      },
+    } = this.props;
+
+    if (this.isPinned()) {
+      removePinned(uri);
+    } else {
+      addPinned(uri);
+    }
+  }
+
   renderActions = () => {
     const {
       uri,
@@ -204,6 +219,7 @@ class Playlist extends React.Component {
             >
               <I18n path="actions.edit" />
             </Link>
+            <PinButton uri={uri} />
             <ContextMenuTrigger onTrigger={this.handleContextMenu} />
           </div>
         );
@@ -221,6 +237,7 @@ class Playlist extends React.Component {
               >
                 <I18n path="actions.edit" />
               </Link>
+              <PinButton uri={uri} />
               <ContextMenuTrigger onTrigger={this.handleContextMenu} />
             </div>
           );
@@ -234,6 +251,7 @@ class Playlist extends React.Component {
               uri={uri}
               is_following={this.inLibrary()}
             />
+            <PinButton uri={uri} />
             <ContextMenuTrigger onTrigger={this.handleContextMenu} />
           </div>
         );
@@ -247,6 +265,7 @@ class Playlist extends React.Component {
             >
               <I18n path="actions.play" />
             </button>
+            <PinButton uri={uri} />
             <ContextMenuTrigger onTrigger={this.handleContextMenu} />
           </div>
         );

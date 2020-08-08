@@ -807,6 +807,21 @@ const CoreMiddleware = (function () {
         next(action);
         break;
 
+      case 'ADD_PINNED':
+        store.dispatch(coreActions.updatePinned([
+          ...store.getState().core.pinned,
+          action.uri,
+        ]));
+        next(action);
+        break;
+    
+      case 'REMOVE_PINNED':
+        store.dispatch(coreActions.updatePinned(
+          store.getState().core.pinned.filter((item) => item !== action.uri),
+        ));
+        next(action);
+        break;
+
       // This action is irrelevant to us, pass it on to the next middleware
       default:
         return next(action);

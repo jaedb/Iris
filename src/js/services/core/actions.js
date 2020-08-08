@@ -424,3 +424,24 @@ export function getLibraryArtists() {
     type: 'GET_LIBRARY_ARTISTS',
   };
 }
+
+export function addPinned(uri) {
+  return {
+    type: 'ADD_PINNED',
+    uri,
+  };
+}
+
+export function removePinned(uri) {
+  return {
+    type: 'REMOVE_PINNED',
+    uri,
+  };
+}
+
+export function updatePinned(pinned) {
+  return {
+    type: 'UPDATE_PINNED',
+    pinned,
+  };
+}

@@ -221,6 +221,13 @@ const localstorageMiddleware = (function () {
         );
         break;
 
+      case 'UPDATE_PINNED':
+        storage.set(
+          'core',
+          { pinned: action.pinned },
+        );
+        break;
+
       case 'UI_SET':
         storage.set(
           'ui',
