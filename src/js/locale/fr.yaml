@@ -212,7 +212,7 @@ album:
   title_window: '%{name} par %{artist} (album)'
   wiki:
     title: À propos
-    published: 'Publié: %{date}'
+    published: 'Publié : %{date}'
 artist:
   title: Artiste
   title_window: '%{name} (artiste)'
