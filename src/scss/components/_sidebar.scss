@@ -63,6 +63,22 @@
         }
       }
 
+      &--submenu {
+        font-size: 1rem;
+        padding: 0.6em 0.7em;
+        font-weight: 400 !important;
+        margin: 0 1.1em 0 3em;
+
+        &:before {
+          display: none;
+        }
+
+        &.sidebar__menu__item--active {
+          background: transparent;
+          color: colour(turquoise) !important;
+        }
+      }
+
       &--active {
         background: colour(turquoise);
         color: colour(white) !important;

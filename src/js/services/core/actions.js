@@ -1,5 +1,5 @@
 
-import { createRange } from '../../util/arrays';
+import { createRange, removeDuplicates } from '../../util/arrays';
 import { uriSource } from '../../util/helpers';
 
 const spotifyActions = require('../../services/spotify/actions');
@@ -442,6 +442,6 @@ export function removePinned(uri) {
 export function updatePinned(pinned) {
   return {
     type: 'UPDATE_PINNED',
-    pinned,
+    pinned: removeDuplicates(pinned),
   };
 }

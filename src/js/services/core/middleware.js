@@ -814,7 +814,7 @@ const CoreMiddleware = (function () {
         ]));
         next(action);
         break;
-    
+
       case 'REMOVE_PINNED':
         store.dispatch(coreActions.updatePinned(
           store.getState().core.pinned.filter((item) => item !== action.uri),
