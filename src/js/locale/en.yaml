@@ -57,6 +57,7 @@ fields:
   items_to_add:
     label: Items to add
     placeholder: No items
+  filter: Filter
   filters:
     all: All
     thumbnails: Thumbnails
