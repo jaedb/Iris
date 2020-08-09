@@ -48,7 +48,7 @@ common:
   filter: Filtrer
   by: ' par '
 fields:
-  start_typing: 'Commecez à taper...'
+  start_typing: 'Commencez à taper...'
   search: 'Rechercher...'
   sort: Trier
   view: Voir
@@ -230,8 +230,8 @@ artist:
     title: À propos
     source: '%{source} artiste'
     wiki:
-      published: 'Publié: %{date}'
-      origin: 'Origine: '
+      published: 'Publié : %{date}'
+      origin: 'Source : '
 debug:
   title: Déboguer
   ui:
@@ -259,7 +259,7 @@ queue_history:
   title: Historique de lecture
 search:
   title: Rechercher
-  title_window: 'Rechercher: %{term}'
+  title_window: 'Rechercher : %{term}'
   context_actions:
     sort: Trier
     source: 'Sources (%{count})'
@@ -280,7 +280,7 @@ search:
 track:
   title: Morceau
   title_window: '%{name} par %{artists} (morceau)'
-  lyrics_origin: 'Origine: '
+  lyrics_origin: 'Source : '
   explicit: Paroles explicites
   disc_number: 'Disque %{number}'
   track_number: 'Morceau %{number}'
