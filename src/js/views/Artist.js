@@ -192,38 +192,38 @@ class Artist extends React.Component {
     const sort_options = [
       {
         value: null,
-        label: 'Default',
+        label: i18n('artist.albums.sort.default'),
       },
       {
         value: 'name',
-        label: 'Name',
+        label: i18n('artist.albums.sort.name'),
       },
       {
         value: 'release_date',
-        label: 'Date',
+        label: i18n('artist.albums.sort.release_date'),
       },
       {
         value: 'tracks_uris.length',
-        label: 'Tracks',
+        label: i18n('artist.albums.sort.track_count'),
       },
     ];
 
     const filter_options = [
       {
         value: null,
-        label: 'All',
+        label: i18n('artist.albums.filter.all'),
       },
       {
         value: 'album',
-        label: 'Albums',
+        label: i18n('artist.albums.filter.albums'),
       },
       {
         value: 'single',
-        label: 'Singles',
+        label: i18n('artist.albums.filter.singles'),
       },
       {
         value: 'compilation',
-        label: 'Compilations',
+        label: i18n('artist.albums.filter.compilations'),
       },
     ];
 

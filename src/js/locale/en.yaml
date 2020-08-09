@@ -238,6 +238,17 @@ artist:
     wiki:
       published: 'Published: %{date}'
       origin: 'Origin: '
+  albums:
+    sort:
+      default: Default
+      name: Name
+      release_date: Date
+      track_count: Tracks
+    filter:
+      all: All
+      albums: Albums
+      singles: Singles
+      compilations: Compilations
 debug:
   title: Debug
   ui:
