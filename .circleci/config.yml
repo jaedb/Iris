@@ -27,6 +27,12 @@ workflows:
           filters:
             branches:
               only: deploy/test
+      - jest:
+          requires:
+            - build
+          filters:
+            branches:
+              only: deploy/test
       - build:
           filters:
             branches:
@@ -50,6 +56,12 @@ workflows:
             branches:
               only: deploy/release
       - flake8:
+          filters:
+            branches:
+              only: deploy/release
+      - jest:
+          requires:
+            - build
           filters:
             branches:
               only: deploy/release
@@ -140,6 +152,26 @@ jobs:
             - node_modules
             - mopidy_iris
           key: v1-dependencies-{{ checksum "IRIS_VERSION" }}
+
+  jest:
+    docker:
+      - image: nikolaik/python-nodejs:python3.7-nodejs12-stretch
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "IRIS_VERSION" }}
+      - run:
+          name: Install Code Climate test-reporter
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+      - run:
+          name: Run Test and Coverage
+          command: |
+            ./cc-test-reporter before-build
+            npm run test
+            ./cc-test-reporter after-build --exit-code $?
 
   deploy:
     docker:
