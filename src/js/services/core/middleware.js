@@ -321,11 +321,13 @@ const CoreMiddleware = (function () {
        * assets. This is where we can return already indexed records
        * where appropriate
        * */
-      case 'LOAD_ITEM':
-        store.dispatch(coreActions[`load${titleCase(uriType(action.uri))}`](
-          action.uri,
-          action.force_reload,
-        ));
+      case 'LOAD_ITEMS':
+        action.uris.forEach((uri) => {
+          store.dispatch(coreActions[`load${titleCase(uriType(uri))}`](
+            uri,
+            action.force_reload,
+          ));
+        });
         break;
 
       case 'LOAD_TRACK':

@@ -115,12 +115,16 @@ export function cachebustHttpStream() {
  * relevant service to load the record - all from one neat package.
  * */
 
-export function loadItem(uri, force_reload = false) {
+export function loadItems(uris, force_reload = false) {
   return {
-    type: 'LOAD_ITEM',
-    uri,
+    type: 'LOAD_ITEMS',
+    uris,
     force_reload,
   };
+}
+
+export function loadItem(uri, force_reload = false) {
+  return loadItems([uri], force_reload);
 }
 
 export function loadTrack(uri, force_reload = false) {

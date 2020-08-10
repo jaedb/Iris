@@ -5433,7 +5433,8 @@ select {
       display: flex;
       padding: 0.75em 0.85em;
       margin: 0 1.1em;
-      border-radius: 3px; }
+      border-radius: 3px;
+      line-break: anywhere; }
       .sidebar__menu__item {
         position: relative;
         border-radius: 3px; }
