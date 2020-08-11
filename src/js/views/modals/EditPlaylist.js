@@ -52,18 +52,17 @@ class EditPlaylist extends React.Component {
   }
 
   componentDidUpdate = ({
-    mopidy_connected: prev_mopidy_connected,
+    playlist: prevPlaylist,
   }) => {
     const {
       uri,
       playlist,
-      mopidy_connected,
       mopidyActions: {
         getPlaylist,
       },
     } = this.props;
 
-    if (!prev_mopidy_connected && mopidy_connected && !playlist) {
+    if (playlist !== prevPlaylist) {
       getPlaylist(uri);
     }
   }

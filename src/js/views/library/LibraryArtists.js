@@ -32,15 +32,6 @@ class LibraryArtists extends React.Component {
 
   componentDidMount() {
     const {
-      source,
-      mopidy_library_artists,
-      mopidyActions,
-      google_available,
-      google_library_artists,
-      googleActions,
-      spotify_available,
-      spotify_library_artists_status,
-      spotifyActions,
       uiActions: {
         setWindowTitle,
       },
@@ -56,58 +47,70 @@ class LibraryArtists extends React.Component {
 
     setWindowTitle(i18n('library.artists.title'));
 
-    if (!mopidy_library_artists && (source === 'all' || source === 'local')) {
-      mopidyActions.getLibraryArtists();
-    }
+    this.getMopidyLibrary();
+    this.getGoogleLibrary();
+    this.getSpotifyLibrary();
+  }
 
-    if (google_available && !google_library_artists && (source === 'all' || source === 'google')) {
-      googleActions.getLibraryArtists();
-    }
+  componentDidUpdate = ({ source: prevSource }) => {
+    const { source } = this.props;
 
-    if (spotify_available && spotify_library_artists_status !== 'finished' && (source === 'all' || source === 'spotify')) {
-      spotifyActions.getLibraryArtists();
+    if (source !== prevSource) {
+      this.getMopidyLibrary();
+      this.getGoogleLibrary();
+      this.getSpotifyLibrary();
     }
   }
 
-  componentDidUpdate = ({
-    source: prevSource,
-  }) => {
+  getMopidyLibrary = () => {
+    const {
+      source,
+      mopidy_library_artists,
+      mopidyActions: {
+        getLibraryArtists,
+      },
+    } = this.props;
+
+    if (source !== 'local' && source !== 'all') return;
+    if (mopidy_library_artists) return;
+
+    getLibraryArtists();
+  };
+
+  getGoogleLibrary = () => {
     const {
       source,
       google_available,
-      spotify_available,
-      mopidyActions,
-      googleActions,
-      spotifyActions,
-      mopidy_library_artists,
       google_library_artists,
-      spotify_library_artists_status,
+      googleActions: {
+        getLibraryArtists,
+      },
     } = this.props;
 
-    if (source !== prevSource) {
-      switch (source) {
-        case 'google':
-          if (google_available && !google_library_artists) {
-            googleActions.getLibraryArtists();
-          }
-          break;
-        case 'spotify':
-          if (spotify_available && spotify_library_artists_status !== 'finished' && spotify_library_artists_status !== 'started') {
-            spotifyActions.getLibraryArtists();
-          }
-          break;
-        case 'local':
-          if (!mopidy_library_artists) {
-            mopidyActions.getLibraryArtists();
-          }
-          break;
-        default:
-          mopidyActions.getLibraryArtists();
-          googleActions.getLibraryArtists();
-          spotifyActions.getLibraryArtists();
-      }
-    }
-  }
+    if (!google_available) return;
+    if (source !== 'google' && source !== 'all') return;
+    if (google_library_artists) return;
+
+    getLibraryArtists();
+  };
+
+  getSpotifyLibrary = () => {
+    const {
+      source,
+      spotify_available,
+      spotify_library_artists_status,
+      spotifyActions: {
+        getLibraryArtists,
+      },
+    } = this.props;
+
+    if (!spotify_available) return;
+    if (source !== 'spotify' && source !== 'all') return;
+    if (spotify_library_artists_status === 'finished') return;
+    if (spotify_library_artists_status === 'started') return;
+
+    getLibraryArtists();
+  };
 
   handleContextMenu(e, item) {
     const data = {
@@ -342,8 +345,7 @@ class LibraryArtists extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
-  mopidy_connected: state.mopidy.connected,
+const mapStateToProps = (state) => ({
   mopidy_uri_schemes: state.mopidy.uri_schemes,
   mopidy_library_artists: state.mopidy.library_artists,
   google_available: (state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('gmusic:')),

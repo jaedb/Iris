@@ -1601,6 +1601,7 @@ const MopidyMiddleware = (function () {
            * */
 
       case 'MOPIDY_GET_LIBRARY_PLAYLISTS':
+        console.log(action);
         request(store, 'playlists.asList')
           .then((response) => {
             // drop in our URI list
