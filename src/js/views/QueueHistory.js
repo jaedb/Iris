@@ -23,14 +23,14 @@ class QueueHistory extends React.Component {
     if (!prev_mopidy_connected && mopidy_connected) this.loadHistory();
   }
 
-  loadHistory = (props = this.props) => {
+  loadHistory = () => {
     const {
-      mopidyActions: { getQueueHistory },
+      mopidyActions: {
+        getQueueHistory,
+      },
     } = this.props;
 
-    if (props.mopidy_connected) {
-      getQueueHistory();
-    }
+    getQueueHistory();
   }
 
   onBack = () => {

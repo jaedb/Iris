@@ -3549,7 +3549,7 @@ select {
   .button--large {
     padding: 16px 50px 14px; }
   .button--icon {
-    padding: 0.2rem;
+    padding: 0.2rem !important;
     font-size: 1.4rem;
     border: none;
     box-shadow: none !important; }

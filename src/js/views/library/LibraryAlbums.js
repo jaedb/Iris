@@ -40,7 +40,6 @@ class LibraryAlbums extends React.Component {
       uiActions: {
         setWindowTitle,
       },
-      mopidy_connected,
       mopidy_library_albums_status,
       source,
       mopidyActions,
@@ -61,7 +60,7 @@ class LibraryAlbums extends React.Component {
 
     setWindowTitle(i18n('library.albums.title'));
 
-    if (mopidy_connected && mopidy_library_albums_status !== 'finished' && mopidy_library_albums_status !== 'started' && (source === 'all' || source === 'local')) {
+    if (mopidy_library_albums_status !== 'finished' && mopidy_library_albums_status !== 'started' && (source === 'all' || source === 'local')) {
       mopidyActions.getLibraryAlbums();
     }
 
@@ -74,11 +73,8 @@ class LibraryAlbums extends React.Component {
     }
   }
 
-  componentDidUpdate = ({
-    mopidy_connected: prev_mopidy_connected,
-  }) => {
+  componentDidUpdate = () => {
     const {
-      mopidy_connected,
       google_available,
       spotify_available,
       source,
@@ -90,9 +86,7 @@ class LibraryAlbums extends React.Component {
       spotify_library_albums_status,
     } = this.props;
 
-    if (mopidy_connected && (source === 'all' || source === 'local')) {
-      if (!prev_mopidy_connected) mopidyActions.getLibraryAlbums();
-
+    if (source === 'all' || source === 'local') {
       // Filter changed, but we haven't got this provider's library yet
       if (source !== 'all' && source !== 'local' && mopidy_library_albums_status !== 'finished' && mopidy_library_albums_status !== 'started') {
         mopidyActions.getLibraryAlbums();
@@ -398,7 +392,6 @@ class LibraryAlbums extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  mopidy_connected: state.mopidy.connected,
   mopidy_uri_schemes: state.mopidy.uri_schemes,
   load_queue: state.ui.load_queue,
   artists: state.core.artists,

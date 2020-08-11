@@ -72,10 +72,6 @@ class Playlist extends React.Component {
 
     if (uri !== prevUri) {
       loadPlaylist(uri);
-    } else if (!prev_mopidy_connected && mopidy_connected) {
-      if (uriSource(uri) !== 'spotify') {
-        loadPlaylist(uri);
-      }
     }
 
     if (!prevPlaylist && playlist) this.setWindowTitle(playlist);

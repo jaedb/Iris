@@ -41,6 +41,7 @@ export class Album extends React.Component {
     } = this.props;
 
     this.setWindowTitle();
+    console.log('Mount', uri);
     loadAlbum(uri);
 
     if (album) {
@@ -66,12 +67,10 @@ export class Album extends React.Component {
   componentDidUpdate = ({
     uri: prevUri,
     album: prevAlbum,
-    mopidy_connected: prev_mopidy_connected,
   }) => {
     const {
       uri,
       album,
-      mopidy_connected,
       coreActions: {
         loadAlbum,
       },
@@ -82,10 +81,6 @@ export class Album extends React.Component {
 
     if (uri !== prevUri) {
       loadAlbum(uri);
-    } else if (!prev_mopidy_connected && mopidy_connected) {
-      if (uriSource(uri) !== 'spotify') {
-        loadAlbum(uri);
-      }
     }
 
     // We have just received our full album or our album artists
@@ -320,7 +315,6 @@ const mapStateToProps = (state, ownProps) => {
     spotify_library_albums: state.spotify.library_albums,
     local_library_albums: state.mopidy.library_albums,
     spotify_authorized: state.spotify.authorization,
-    mopidy_connected: state.mopidy.connected,
   };
 };
 

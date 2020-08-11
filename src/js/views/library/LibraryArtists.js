@@ -31,6 +31,21 @@ class LibraryArtists extends React.Component {
   }
 
   componentDidMount() {
+    const {
+      source,
+      mopidy_library_artists,
+      mopidyActions,
+      google_available,
+      google_library_artists,
+      googleActions,
+      spotify_available,
+      spotify_library_artists_status,
+      spotifyActions,
+      uiActions: {
+        setWindowTitle,
+      },
+    } = this.props;
+
     // Restore any limit defined in our location state
     const state = (this.props.location.state ? this.props.location.state : {});
     if (state.limit) {
@@ -39,27 +54,26 @@ class LibraryArtists extends React.Component {
       });
     }
 
-    this.props.uiActions.setWindowTitle(i18n('library.artists.title'));
+    setWindowTitle(i18n('library.artists.title'));
 
-    if (!this.props.mopidy_library_artists && this.props.mopidy_connected && (this.props.source == 'all' || this.props.source == 'local')) {
-      this.props.mopidyActions.getLibraryArtists();
+    if (!mopidy_library_artists && (source === 'all' || source === 'local')) {
+      mopidyActions.getLibraryArtists();
     }
 
-    if (this.props.google_available && !this.props.google_library_artists && this.props.mopidy_connected && (this.props.source == 'all' || this.props.source == 'google')) {
-      this.props.googleActions.getLibraryArtists();
+    if (google_available && !google_library_artists && (source === 'all' || source === 'google')) {
+      googleActions.getLibraryArtists();
     }
 
-    if (this.props.spotify_available && this.props.spotify_library_artists_status != 'finished' && (this.props.source == 'all' || this.props.source == 'spotify')) {
-      this.props.spotifyActions.getLibraryArtists();
+    if (spotify_available && spotify_library_artists_status !== 'finished' && (source === 'all' || source === 'spotify')) {
+      spotifyActions.getLibraryArtists();
     }
   }
 
   componentDidUpdate = ({
-    mopidy_connected: prev_mopidy_connected,
+    source: prevSource,
   }) => {
     const {
       source,
-      mopidy_connected,
       google_available,
       spotify_available,
       mopidyActions,
@@ -70,23 +84,27 @@ class LibraryArtists extends React.Component {
       spotify_library_artists_status,
     } = this.props;
 
-    if (mopidy_connected && (source === 'all' || source === 'local')) {
-      if (!prev_mopidy_connected) mopidyActions.getLibraryArtists();
-
-      if (source !== 'all' && source !== 'local' && !mopidy_library_artists) {
-        mopidyActions.getLibraryArtists();
-      }
-    }
-
-    if (mopidy_connected && google_available && (source === 'all' || source === 'google')) {
-      if (source !== 'all' && source !== 'google' && !google_library_artists) {
-        googleActions.getLibraryArtists();
-      }
-    }
-
-    if (spotify_available && (source === 'all' || source === 'spotify')) {
-      if (spotify_library_artists_status !== 'finished' && spotify_library_artists_status !== 'started') {
-        spotifyActions.getLibraryArtists();
+    if (source !== prevSource) {
+      switch (source) {
+        case 'google':
+          if (google_available && !google_library_artists) {
+            googleActions.getLibraryArtists();
+          }
+          break;
+        case 'spotify':
+          if (spotify_available && spotify_library_artists_status !== 'finished' && spotify_library_artists_status !== 'started') {
+            spotifyActions.getLibraryArtists();
+          }
+          break;
+        case 'local':
+          if (!mopidy_library_artists) {
+            mopidyActions.getLibraryArtists();
+          }
+          break;
+        default:
+          mopidyActions.getLibraryArtists();
+          googleActions.getLibraryArtists();
+          spotifyActions.getLibraryArtists();
       }
     }
   }
