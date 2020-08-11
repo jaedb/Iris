@@ -279,7 +279,6 @@ class AddToQueue extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  mopidy_connected: state.mopidy.connected,
   albums: state.core.albums,
   tracks: state.core.tracks,
   view: state.core.view ? state.core.view : {},

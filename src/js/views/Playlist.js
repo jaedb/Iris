@@ -52,12 +52,10 @@ class Playlist extends React.Component {
   componentDidUpdate = ({
     uri: prevUri,
     playlist: prevPlaylist,
-    mopidy_connected: prev_mopidy_connected,
   }) => {
     const {
       uri,
       playlist,
-      mopidy_connected,
       coreActions: {
         loadPlaylist,
       },
@@ -401,7 +399,6 @@ const mapStateToProps = (state, ownProps) => {
       me = {},
     } = {},
     mopidy: {
-      connected: mopidy_connected,
       library_playlists: local_library_playlists,
     } = {},
   } = state;
@@ -419,7 +416,6 @@ const mapStateToProps = (state, ownProps) => {
     playlist: (playlists[uri] !== undefined ? playlists[uri] : false),
     spotify_library_playlists,
     local_library_playlists,
-    mopidy_connected,
     spotify_authorized,
     spotify_userid: (me && me.id) || null,
   };

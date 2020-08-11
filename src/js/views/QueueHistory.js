@@ -18,9 +18,8 @@ class QueueHistory extends React.Component {
     this.loadHistory();
   }
 
-  componentDidUpdate = ({ mopidy_connected: prev_mopidy_connected }) => {
-    const { mopidy_connected } = this.props;
-    if (!prev_mopidy_connected && mopidy_connected) this.loadHistory();
+  componentDidUpdate = () => {
+    this.loadHistory();
   }
 
   loadHistory = () => {
@@ -82,7 +81,6 @@ class QueueHistory extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  mopidy_connected: state.mopidy.connected,
   tracks: (state.core.tracks ? state.core.tracks : {}),
   queue_history: (state.mopidy.queue_history ? state.mopidy.queue_history : []),
 });

@@ -308,7 +308,6 @@ class EditRadio extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  mopidy_connected: state.mopidy.connected,
   radio: state.core.radio,
   artists: state.core.artists,
   tracks: state.core.tracks,
