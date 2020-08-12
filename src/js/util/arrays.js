@@ -3,7 +3,8 @@ import { uriSource } from './helpers';
 /**
  * Convert an object (ie index) to an array of values
  *
- * @param object Object
+ * @param index Object
+ * @param keys Array of specific keys to fetch
  * @return Array
  */
 const indexToArray = (index, keys) => {
@@ -22,15 +23,8 @@ const indexToArray = (index, keys) => {
  * @param items = Array
  * @return Array
  * */
-const arrayOf = function (property, items) {
-  const array = [];
-  for (const item of items) {
-    // Make sure the property is defined
-    if (item[property] !== undefined && item[property] != null) {
-      array.push(item[property]);
-    }
-  }
-  return array;
+const arrayOf = (property, items = []) => {
+  return items.map((item) => item[property]);
 };
 
 

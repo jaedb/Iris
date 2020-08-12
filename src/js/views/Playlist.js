@@ -2,13 +2,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import ReactGA from 'react-ga';
 import ErrorMessage from '../components/ErrorMessage';
 import Link from '../components/Link';
 import TrackList from '../components/TrackList';
 import Thumbnail from '../components/Thumbnail';
-import Parallax from '../components/Parallax';
-import NiceNumber, { nice_number } from '../components/NiceNumber';
+import PinButton from '../components/Fields/PinButton';
+import { nice_number } from '../components/NiceNumber';
 import { Dater, dater } from '../components/Dater';
 import LazyLoadListener from '../components/LazyLoadListener';
 import FollowButton from '../components/Fields/FollowButton';
@@ -53,12 +52,10 @@ class Playlist extends React.Component {
   componentDidUpdate = ({
     uri: prevUri,
     playlist: prevPlaylist,
-    mopidy_connected: prev_mopidy_connected,
   }) => {
     const {
       uri,
       playlist,
-      mopidy_connected,
       coreActions: {
         loadPlaylist,
       },
@@ -73,10 +70,6 @@ class Playlist extends React.Component {
 
     if (uri !== prevUri) {
       loadPlaylist(uri);
-    } else if (!prev_mopidy_connected && mopidy_connected) {
-      if (uriSource(uri) !== 'spotify') {
-        loadPlaylist(uri);
-      }
     }
 
     if (!prevPlaylist && playlist) this.setWindowTitle(playlist);
@@ -183,6 +176,22 @@ class Playlist extends React.Component {
     return library.indexOf(uri) > -1;
   }
 
+  togglePinned = () => {
+    const {
+      uri,
+      coreActions: {
+        addPinned,
+        removePinned,
+      },
+    } = this.props;
+
+    if (this.isPinned()) {
+      removePinned(uri);
+    } else {
+      addPinned(uri);
+    }
+  }
+
   renderActions = () => {
     const {
       uri,
@@ -204,6 +213,7 @@ class Playlist extends React.Component {
             >
               <I18n path="actions.edit" />
             </Link>
+            <PinButton uri={uri} />
             <ContextMenuTrigger onTrigger={this.handleContextMenu} />
           </div>
         );
@@ -221,6 +231,7 @@ class Playlist extends React.Component {
               >
                 <I18n path="actions.edit" />
               </Link>
+              <PinButton uri={uri} />
               <ContextMenuTrigger onTrigger={this.handleContextMenu} />
             </div>
           );
@@ -234,6 +245,7 @@ class Playlist extends React.Component {
               uri={uri}
               is_following={this.inLibrary()}
             />
+            <PinButton uri={uri} />
             <ContextMenuTrigger onTrigger={this.handleContextMenu} />
           </div>
         );
@@ -247,6 +259,7 @@ class Playlist extends React.Component {
             >
               <I18n path="actions.play" />
             </button>
+            <PinButton uri={uri} />
             <ContextMenuTrigger onTrigger={this.handleContextMenu} />
           </div>
         );
@@ -386,7 +399,6 @@ const mapStateToProps = (state, ownProps) => {
       me = {},
     } = {},
     mopidy: {
-      connected: mopidy_connected,
       library_playlists: local_library_playlists,
     } = {},
   } = state;
@@ -404,7 +416,6 @@ const mapStateToProps = (state, ownProps) => {
     playlist: (playlists[uri] !== undefined ? playlists[uri] : false),
     spotify_library_playlists,
     local_library_playlists,
-    mopidy_connected,
     spotify_authorized,
     spotify_userid: (me && me.id) || null,
   };

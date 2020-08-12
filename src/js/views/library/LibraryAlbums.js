@@ -40,16 +40,6 @@ class LibraryAlbums extends React.Component {
       uiActions: {
         setWindowTitle,
       },
-      mopidy_connected,
-      mopidy_library_albums_status,
-      source,
-      mopidyActions,
-      spotifyActions,
-      googleActions,
-      google_available,
-      google_library_albums_status,
-      spotify_available,
-      spotify_library_albums_status,
     } = this.props;
 
     // Restore any limit defined in our location state
@@ -60,59 +50,71 @@ class LibraryAlbums extends React.Component {
     }
 
     setWindowTitle(i18n('library.albums.title'));
+    this.getMopidyLibrary();
+    this.getGoogleLibrary();
+    this.getSpotifyLibrary();
+  }
 
-    if (mopidy_connected && mopidy_library_albums_status !== 'finished' && mopidy_library_albums_status !== 'started' && (source === 'all' || source === 'local')) {
-      mopidyActions.getLibraryAlbums();
-    }
+  componentDidUpdate = ({ source: prevSource }) => {
+    const { source } = this.props;
 
-    if (google_available && google_library_albums_status !== 'finished' && google_library_albums_status !== 'started' && (source === 'all' || source === 'google')) {
-      googleActions.getLibraryAlbums();
-    }
-
-    if (spotify_available && spotify_library_albums_status !== 'finished' && spotify_library_albums_status !== 'started' && (source == 'all' || source === 'spotify')) {
-      spotifyActions.getLibraryAlbums();
+    if (source !== prevSource) {
+      this.getMopidyLibrary();
+      this.getGoogleLibrary();
+      this.getSpotifyLibrary();
     }
   }
 
-  componentDidUpdate = ({
-    mopidy_connected: prev_mopidy_connected,
-  }) => {
+  getMopidyLibrary = () => {
     const {
-      mopidy_connected,
-      google_available,
-      spotify_available,
       source,
-      mopidyActions,
-      googleActions,
-      spotifyActions,
-      mopidy_library_albums_status,
-      google_library_albums_status,
-      spotify_library_albums_status,
+      mopidy_library_playlists,
+      mopidyActions: {
+        getLibraryAlbums,
+      },
     } = this.props;
 
-    if (mopidy_connected && (source === 'all' || source === 'local')) {
-      if (!prev_mopidy_connected) mopidyActions.getLibraryAlbums();
+    if (source !== 'local' && source !== 'all') return;
+    if (mopidy_library_playlists) return;
 
-      // Filter changed, but we haven't got this provider's library yet
-      if (source !== 'all' && source !== 'local' && mopidy_library_albums_status !== 'finished' && mopidy_library_albums_status !== 'started') {
-        mopidyActions.getLibraryAlbums();
-      }
-    }
+    getLibraryAlbums();
+  };
 
-    if (google_available && (source === 'all' || source === 'google')) {
-      // Filter changed, but we haven't got this provider's library yet
-      if (source !== 'all' && source !== 'google' && google_library_albums_status !== 'finished' && google_library_albums_status !== 'started') {
-        googleActions.getLibraryAlbums();
-      }
-    }
+  getGoogleLibrary = () => {
+    const {
+      source,
+      google_available,
+      google_library_albums_status,
+      googleActions: {
+        getLibraryAlbums,
+      },
+    } = this.props;
 
-    if (spotify_available && (source === 'all' || source === 'spotify')) {
-      // Filter changed, but we haven't got this provider's library yet
-      if (spotify_library_albums_status !== 'finished' && spotify_library_albums_status !== 'started') {
-        spotifyActions.getLibraryAlbums();
-      }
-    }
-  }
+    if (!google_available) return;
+    if (source !== 'google' && source !== 'all') return;
+    if (google_library_albums_status === 'finished') return;
+    if (google_library_albums_status === 'started') return;
+
+    getLibraryAlbums();
+  };
+
+  getSpotifyLibrary = () => {
+    const {
+      source,
+      spotify_available,
+      spotify_library_albums_status,
+      spotifyActions: {
+        getLibraryAlbums,
+      },
+    } = this.props;
+
+    if (!spotify_available) return;
+    if (source !== 'spotify' && source !== 'all') return;
+    if (spotify_library_albums_status === 'finished') return;
+    if (spotify_library_albums_status === 'started') return;
+
+    getLibraryAlbums();
+  };
 
   handleContextMenu = (e, item) => {
     const {
@@ -398,7 +400,6 @@ class LibraryAlbums extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  mopidy_connected: state.mopidy.connected,
   mopidy_uri_schemes: state.mopidy.uri_schemes,
   load_queue: state.ui.load_queue,
   artists: state.core.artists,

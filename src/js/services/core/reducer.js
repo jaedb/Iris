@@ -294,6 +294,11 @@ export default function reducer(core = {}, action) {
         },
       };
 
+    case 'UPDATE_PINNED':
+      return {
+        ...core,
+        pinned: action.pinned,
+      };
 
     default:
       return core;

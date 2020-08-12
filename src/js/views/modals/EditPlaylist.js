@@ -43,27 +43,24 @@ class EditPlaylist extends React.Component {
           break;
 
         default:
-          if (this.props.mopidy_connected) {
-            this.props.mopidyActions.getPlaylist(this.props.uri);
-          }
+          this.props.mopidyActions.getPlaylist(this.props.uri);
           break;
       }
     }
   }
 
   componentDidUpdate = ({
-    mopidy_connected: prev_mopidy_connected,
+    playlist: prevPlaylist,
   }) => {
     const {
       uri,
       playlist,
-      mopidy_connected,
       mopidyActions: {
         getPlaylist,
       },
     } = this.props;
 
-    if (!prev_mopidy_connected && mopidy_connected && !playlist) {
+    if (playlist !== prevPlaylist) {
       getPlaylist(uri);
     }
   }
@@ -249,7 +246,6 @@ const mapStateToProps = (state, ownProps) => {
 
   return {
     uri,
-    mopidy_connected: state.mopidy.connected,
     playlist: (state.core.playlists[uri] !== undefined ? state.core.playlists[uri] : null),
     playlists: state.core.playlists,
   };

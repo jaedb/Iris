@@ -52,14 +52,12 @@ class Track extends React.Component {
   componentDidUpdate = ({
     uri: prevUri,
     track: prevTrack,
-    mopidy_connected: prev_mopidy_connected,
   }) => {
     const {
       uri,
       track,
       genius_authorized,
       lastfm_authorized,
-      mopidy_connected,
       coreActions: {
         loadTrack,
       },
@@ -70,14 +68,13 @@ class Track extends React.Component {
         getTrack,
       },
     } = this.props;
-    // if our URI has changed, fetch new track
+
     if (prevUri !== uri) {
       loadTrack(uri);
-      if (genius_authorized && track.artists) findTrackLyrics(track);
 
-      // if mopidy has just connected AND we're not a Spotify track, go get
-    } else if (!prev_mopidy_connected && mopidy_connected) {
-      if (uriSource(uri) !== 'spotify') loadTrack(uri);
+      if (genius_authorized && track.artists) {
+        findTrackLyrics(track);
+      }
     }
 
     // We have just received our full track or our track artists
@@ -370,7 +367,6 @@ const mapStateToProps = (state, ownProps) => {
     lastfm_authorized: state.lastfm.authorization,
     spotify_authorized: state.spotify.authorization,
     genius_authorized: state.genius.authorization,
-    mopidy_connected: state.mopidy.connected,
   };
 };
 

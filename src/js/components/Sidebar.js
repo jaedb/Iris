@@ -6,6 +6,7 @@ import { withRouter } from 'react-router';
 import Link from './Link';
 import Icon from './Icon';
 import Dropzones from './Fields/Dropzones';
+import PinList from './Fields/PinList';
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import { I18n, i18n } from '../locale';
@@ -80,7 +81,7 @@ class Sidebar extends React.Component {
     return null;
   }
 
-  render() {
+  render = () => {
     const {
       history,
       spotify_available,
@@ -134,6 +135,7 @@ class Sidebar extends React.Component {
                 <Icon name="queue_music" type="material" />
                 <I18n path="sidebar.playlists" />
               </Link>
+              <PinList />
               <Link to="/library/artists" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="recent_actors" type="material" />
                 <I18n path="sidebar.artists" />

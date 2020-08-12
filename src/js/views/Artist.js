@@ -42,12 +42,10 @@ class Artist extends React.Component {
 
   componentDidUpdate = ({
     uri: prevUri,
-    mopidy_connected: prev_mopidy_connected,
     artist: prevArtist,
   }) => {
     const {
       uri,
-      mopidy_connected,
       artist,
       coreActions: {
         loadArtist,
@@ -56,10 +54,6 @@ class Artist extends React.Component {
 
     if (uri !== prevUri) {
       loadArtist(uri);
-    } else if (!prev_mopidy_connected && mopidy_connected) {
-      if (uriSource(uri) !== 'spotify') {
-        loadArtist(uri);
-      }
     }
 
     if (!prevArtist && artist) this.setWindowTitle(artist);
@@ -596,7 +590,6 @@ const mapStateToProps = (state, ownProps) => {
     sort: (state.ui.artist_albums_sort ? state.ui.artist_albums_sort : null),
     sort_reverse: (!!state.ui.artist_albums_sort_reverse),
     spotify_authorized: state.spotify.authorization,
-    mopidy_connected: state.mopidy.connected,
   };
 };
 

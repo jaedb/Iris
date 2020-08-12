@@ -39,40 +39,47 @@ class LibraryPlaylists extends React.Component {
 
     this.props.uiActions.setWindowTitle(i18n('library.playlists.title'));
 
-    if (!this.props.mopidy_library_playlists && this.props.mopidy_connected && (this.props.source == 'all' || this.props.source == 'local')) {
-      this.props.mopidyActions.getLibraryPlaylists();
-    }
-
-    if (this.props.spotify_available && this.props.spotify_library_playlists_status !== 'finished' && (this.props.source == 'all' || this.props.source == 'spotify')) {
-      this.props.spotifyActions.getLibraryPlaylists();
-    }
+    this.getMopidyLibrary();
+    this.getSpotifyLibrary();
   }
 
-  componentDidUpdate = ({
-    mopidy_connected: prev_mopidy_connected,
-  }) => {
+  getMopidyLibrary = () => {
     const {
       source,
-      mopidy_connected,
       mopidy_library_playlists,
-      spotify_available,
-      spotify_library_playlists_status,
-      mopidyActions,
-      spotifyActions,
+      mopidyActions: {
+        getLibraryPlaylists,
+      },
     } = this.props;
 
-    if (mopidy_connected && (source == 'all' || source == 'local')) {
-      if (!prev_mopidy_connected) mopidyActions.getLibraryPlaylists();
+    if (source !== 'local' && source !== 'all') return;
+    if (mopidy_library_playlists) return;
 
-      if (source !== 'all' && source !== 'local' && !mopidy_library_playlists) {
-        this.props.mopidyActions.getLibraryPlaylists();
-      }
-    }
+    getLibraryPlaylists();
+  };
 
-    if (spotify_available && (source === 'all' || source === 'spotify')) {
-      if (spotify_library_playlists_status !== 'finished' && spotify_library_playlists_status !== 'started') {
-        spotifyActions.getLibraryPlaylists();
-      }
+  getSpotifyLibrary = () => {
+    const {
+      source,
+      spotify_library_playlists_status,
+      spotifyActions: {
+        getLibraryPlaylists,
+      },
+    } = this.props;
+
+    if (source !== 'spotify' && source !== 'all') return;
+    if (spotify_library_playlists_status === 'finished') return;
+    if (spotify_library_playlists_status === 'started') return;
+
+    getLibraryPlaylists();
+  };
+
+  componentDidUpdate = ({ source: prevSource }) => {
+    const { source } = this.props;
+
+    if (source !== prevSource) {
+      this.getMopidyLibrary();
+      this.getSpotifyLibrary();
     }
   }
 
@@ -291,9 +298,8 @@ class LibraryPlaylists extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state) => ({
   slim_mode: state.ui.slim_mode,
-  mopidy_connected: state.mopidy.connected,
   mopidy_uri_schemes: state.mopidy.uri_schemes,
   mopidy_library_playlists: state.mopidy.library_playlists,
   mopidy_library_playlists_status: (state.ui.processes.MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR.status : null),
