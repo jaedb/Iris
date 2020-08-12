@@ -318,9 +318,9 @@ settings:
     reporting:
       label: Rapportering
       sublabel: Tillåt rapportering av anonym användarstatistik
-      description: 'Denna anonyma användar data är viktig för att identifera fel och potentiella funktioner som gör Iris bättre för alla. Vill du veta mer? läs '
+      description: 'Denna anonyma användardata är viktig för att identifera fel och potentiella funktioner som gör Iris bättre för alla. Vill du veta mer? läs '
       privacy_policy: privacy policy
-      are_you_sure: Är du säker att du itne vill stötta detta?
+      are_you_sure: Är du säker att du inte vill stötta detta?
     Commands:
       label: Kommandon
   advanced:
@@ -338,14 +338,14 @@ settings:
       label: Version
       upgrade_available: 'Uppgradering tillgänglig (%{version})'
       upgrade: 'Uppgradera till %{version}'
-      up_to_date: senaste uppgradering
+      up_to_date: senaste versionen
     share_configuration: Dela konfiguration
     restart: starta om  servern
     reset_cache: återställ cache
     reset: Återställ alla inställningar
   about:
     title: Om
-    blurb_1: ' Är ett öppet projekt av '
+    blurb_1: ' är ett öppet projekt av '
     blurb_2: '. Det är utvecklat gratis och utan garrantier. Om du betalade för denna mjukvara, kontakta mig.'
     donate: Donera
     github: GitHub
@@ -373,9 +373,9 @@ settings:
     limited_access: Begränsad tillgång
     unknown: Okänt
     current_user: Nuvarande användare
-    authorization: Behörighet
+    authorization: Ge behörighet
     refresh_token: Refresh token
-    authorized: Behörig
+    authorized: Ansluten
     read_only: Read-only
     unauthorized: Obehörig
     enabled: Aktiverad
@@ -494,7 +494,7 @@ modal:
     lyrics: Låttext
   share_configuration:
     title: Dela konfiguration
-    subtitle: Tryck dina auktoriseringar och gränssnitt till en annan, ansluten användare
+    subtitle: Flytta dina auktoriseringar och gränssnitt till en annan, ansluten användare
     no_peers: No peer connections
     recipients: Mottagare
     configurations: Konfigurationer
@@ -505,7 +505,7 @@ modal:
     interface_description: Theme, sorting, filters, etc
     import:
       title: Konfiguration delad
-      subtitle: 'En annan användare har delat sin konfiguration med dig. Detta inkluderads:'
+      subtitle: 'En annan användare har delat sin konfiguration med dig. Detta inkluderas:'
       do_you_want_to_import: Vill du impotera detta?
       import_now: Importera nu
       successful: Importering lyckades
