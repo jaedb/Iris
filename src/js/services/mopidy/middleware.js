@@ -191,11 +191,7 @@ const MopidyMiddleware = (function () {
           const timeout = setTimeout(
             () => {
               store.dispatch(uiActions.stopLoading(loader_key));
-              reject({
-                message: 'Request timed out',
-                call,
-                value,
-              });
+              reject(new Error('Request timed out'));
             },
             30000,
           );
@@ -217,7 +213,7 @@ const MopidyMiddleware = (function () {
           // Controller (model.method) doesn't exist, or connection not established
           store.dispatch(uiActions.stopLoading(loader_key));
           console.warn(
-            'Mopidy request aborted. This could be due to an invalid request, or Mopidy is not connected. Check the request and your server settings.',
+            'Mopidy request aborted. Either Mopidy is not connected or the request method is invalid. Check the request and your server settings.',
             { call, value },
           );
         }
@@ -1643,6 +1639,8 @@ const MopidyMiddleware = (function () {
       case 'MOPIDY_GET_PLAYLIST':
         request(store, 'playlists.lookup', action.data)
           .then((response) => {
+            if (!response) return;
+
             const playlist = {
               ...response,
               uri: response.uri,
@@ -1765,10 +1763,11 @@ const MopidyMiddleware = (function () {
 
             request(store, 'playlists.save', { playlist: mopidy_playlist })
               .then((response) => {
+                if (!response) return;
+
                 // Overwrite our playlist with the response to our save
                 // This is essential to get the updated URI from Mopidy
                 const playlist = {
-
                   ...store.getState().core.playlists[action.key],
                   uri: response.uri,
                   name: response.name,
@@ -1780,11 +1779,11 @@ const MopidyMiddleware = (function () {
                   // Remove old playlist (by old key/uri) from index
                   // By providing the new key, the old playlist gets replaced with a redirector object
                   store.dispatch(coreActions.removeFromIndex('playlists', action.key, playlist.uri));
+                  store.dispatch(coreActions.updatePinnedUri(action.key, playlist.uri));
                 }
 
                 store.dispatch(coreActions.playlistLoaded(playlist));
-
-                store.dispatch(uiActions.createNotification({ level: 'warning', content: 'Playlist saved' }));
+                store.dispatch(uiActions.createNotification({ content: 'Playlist saved' }));
               });
           });
         break;

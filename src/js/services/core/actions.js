@@ -449,3 +449,11 @@ export function updatePinned(pinned) {
     pinned: removeDuplicates(pinned),
   };
 }
+
+export function updatePinnedUri(oldUri, newUri) {
+  return {
+    type: 'UPDATE_PINNED_URI',
+    oldUri,
+    newUri,
+  };
+}

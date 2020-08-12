@@ -803,6 +803,16 @@ const CoreMiddleware = (function () {
         next(action);
         break;
 
+      case 'UPDATE_PINNED_URI':
+        const pinnedUris = store.getState().core.pinned;
+        const pinnedUriIndex = pinnedUris.indexOf(action.oldUri);
+        if (pinnedUriIndex > -1) {
+          pinnedUris[pinnedUriIndex] = action.newUri;
+          store.dispatch(coreActions.updatePinned(pinnedUris));
+        }
+        next(action);
+        break;
+
       // This action is irrelevant to us, pass it on to the next middleware
       default:
         return next(action);
