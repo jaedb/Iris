@@ -3,6 +3,7 @@ import ReactGA from 'react-ga';
 import Mopidy from 'mopidy';
 import { sha256 } from 'js-sha256';
 import { sampleSize } from 'lodash';
+import { i18n } from '../../locale';
 import {
   generateGuid,
   uriSource,
@@ -786,7 +787,7 @@ const MopidyMiddleware = (function () {
         // start our processor
         store.dispatch(uiActions.startProcess(
           'MOPIDY_ENQUEUE_URIS_PROCESSOR',
-          `Adding ${action.uris.length} URI(s)`,
+          i18n('services.mopidy.adding_uris', { count: action.uris.length }),
           {
             batches,
             remaining: action.uris.length,
@@ -1042,7 +1043,7 @@ const MopidyMiddleware = (function () {
         } else {
           store.dispatch(uiActions.startProcess(
             'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
-            `Searching ${uri_schemes_total} Mopidy providers`,
+            i18n('services.mopidy.searching_providers', { count: uri_schemes_total }),
             {
               query: action.query,
               limit: action.limit,
@@ -1875,7 +1876,7 @@ const MopidyMiddleware = (function () {
               // Start our process to load the full album objects
               store.dispatch(uiActions.startProcess(
                 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR',
-                `Loading ${uris.length} local albums`,
+                i18n('services.mopidy.loading_albums', { count: uris.length }),
                 {
                   uris,
                   total: uris.length,
