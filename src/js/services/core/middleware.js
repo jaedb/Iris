@@ -416,9 +416,11 @@ const CoreMiddleware = (function () {
           break;
         }
 
+        const { sort } = action.filters || {}
+
         switch (uriSource(action.uri)) {
           case 'spotify':
-            store.dispatch(spotifyActions.getPlaylist(action.uri));
+            store.dispatch(spotifyActions.getPlaylist(action.uri, sort));
 
             if (store.getState().spotify.me) {
               store.dispatch(spotifyActions.following(action.uri));
@@ -762,7 +764,7 @@ const CoreMiddleware = (function () {
         var records_next = action.records_data.next;
 
         // Handle ordering
-        if (parent.order === 'INVERTED') {
+        if (parent.order === 'reverse') {
           records = records.reverse();
           records_next = action.records_data.previous;
         }

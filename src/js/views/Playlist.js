@@ -14,6 +14,7 @@ import LazyLoadListener from '../components/LazyLoadListener';
 import FollowButton from '../components/Fields/FollowButton';
 import Loader from '../components/Loader';
 import ContextMenuTrigger from '../components/ContextMenuTrigger';
+import DropdownField from '../components/Fields/DropdownField';
 import URILink from '../components/URILink';
 import Icon from '../components/Icon';
 import * as coreActions from '../services/core/actions';
@@ -28,6 +29,17 @@ import {
   decodeMopidyUri,
 } from '../util/helpers';
 import { collate } from '../util/format';
+
+const sort_options = [
+  {
+    value: null,
+    label: 'As loaded',
+  },
+  {
+    value: 'reverse',
+    label: 'Reversed',
+  },
+];
 
 class Playlist extends React.Component {
   constructor(props) {
@@ -46,18 +58,20 @@ class Playlist extends React.Component {
   componentDidMount() {
     const { coreActions: { loadPlaylist }, uri } = this.props;
     this.setWindowTitle();
-    loadPlaylist(uri);
+    loadPlaylist(uri, false, { sort: this.props.sort });
   }
 
   componentDidUpdate = ({
     uri: prevUri,
     playlist: prevPlaylist,
     mopidy_connected: prev_mopidy_connected,
+    sort: prevSort,
   }) => {
     const {
       uri,
       playlist,
       mopidy_connected,
+      sort,
       coreActions: {
         loadPlaylist,
       },
@@ -66,12 +80,14 @@ class Playlist extends React.Component {
       },
     } = this.props;
 
+    console.log("updated", this.props)
+
     if (prevPlaylist && playlist && prevPlaylist.moved_to !== playlist.moved_to) {
       push(`/playlist/${encodeURIComponent(playlist.moved_to)}`);
     }
 
-    if (uri !== prevUri) {
-      loadPlaylist(uri);
+    if (uri !== prevUri || sort !== prevSort) {
+      loadPlaylist(uri, true, { sort: this.props.sort });
     } else if (!prev_mopidy_connected && mopidy_connected) {
       if (uriSource(uri) !== 'spotify') {
         loadPlaylist(uri);
@@ -99,6 +115,17 @@ class Playlist extends React.Component {
         records_type: 'track',
       },
     );
+  }
+
+  setSort(value) {
+    let reverse = false;
+    if (this.props.sort == value) reverse = !this.props.sort_reverse;
+
+    const data = {
+      playlists_sort_reverse: reverse,
+      playlists_sort: value,
+    };
+    this.props.uiActions.set(data);
   }
 
   handleContextMenu(e) {
@@ -148,6 +175,20 @@ class Playlist extends React.Component {
     return (this.props[library] && this.props[library].indexOf(this.props.uri) > -1);
   }
 
+  renderSortElement() {
+    return (
+      <DropdownField
+        icon="swap_vert"
+        name="Sort"
+        value={this.props.sort}
+        valueAsLabel
+        options={sort_options}
+        selected_icon={this.props.sort ? (this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
+        handleChange={(value) => { this.setSort(value); this.props.uiActions.hideContextMenu(); }}
+      />
+    )
+  }
+
   renderActions() {
     switch (uriSource(this.props.uri)) {
       case 'm3u':
@@ -162,19 +203,29 @@ class Playlist extends React.Component {
       case 'spotify':
         if (this.props.playlist.can_edit) {
           return (
-            <div className="actions">
-              <button className="button button--primary" onClick={(e) => this.play()}>Play</button>
-              <Link className="button button--default" to={`/playlist/${encodeURIComponent(this.props.uri)}/edit`}>Edit</Link>
-              <ContextMenuTrigger onTrigger={(e) => this.handleContextMenu(e)} />
-            </div>
+            <React.Fragment>
+              <div className="actions">
+                <button className="button button--primary" onClick={(e) => this.play()}>Play</button>
+                <Link className="button button--default" to={`/playlist/${encodeURIComponent(this.props.uri)}/edit`}>Edit</Link>
+                <ContextMenuTrigger onTrigger={(e) => this.handleContextMenu(e)} />
+              </div>
+              <div className="filters">
+                {this.renderSortElement()}
+              </div>
+            </React.Fragment>
           );
         }
         return (
-          <div className="actions">
-            <button className="button button--primary" onClick={(e) => this.play()}>Play</button>
-            <FollowButton uri={this.props.uri} addText="Add to library" removeText="Remove from library" is_following={this.inLibrary()} />
-            <ContextMenuTrigger onTrigger={(e) => this.handleContextMenu(e)} />
-          </div>
+          <React.Fragment>
+            <div className="actions">
+              <button className="button button--primary" onClick={(e) => this.play()}>Play</button>
+              <FollowButton uri={this.props.uri} addText="Add to library" removeText="Remove from library" is_following={this.inLibrary()} />
+              <ContextMenuTrigger onTrigger={(e) => this.handleContextMenu(e)} />
+            </div>
+            <div className="filters">
+              {this.renderSortElement()}
+            </div>
+          </React.Fragment>
         );
 
       default:
@@ -316,6 +367,8 @@ const mapStateToProps = (state, ownProps) => {
     mopidy_connected,
     spotify_authorized,
     spotify_userid: (me && me.id) || null,
+    sort: (state.ui.playlists_sort ? state.ui.playlists_sort : null),
+    sort_reverse: (state.ui.playlists_sort_reverse ? state.ui.playlists_sort_reverse : false),
   };
 };
 

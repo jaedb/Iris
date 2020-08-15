@@ -139,11 +139,12 @@ export function loadArtist(uri, force_reload = false) {
   };
 }
 
-export function loadPlaylist(uri, force_reload = false) {
+export function loadPlaylist(uri, force_reload = false, filters = {}) {
   return {
     type: 'LOAD_PLAYLIST',
     uri,
     force_reload,
+    filters,
   };
 }
 

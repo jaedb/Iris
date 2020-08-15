@@ -1493,7 +1493,7 @@ export function savePlaylist(uri, name, description, is_public, is_collaborative
   };
 }
 
-export function getPlaylist(uri) {
+export function getPlaylist(uri, order=null) {
   const fields = 'collaborative,description,followers(total),images,name,owner(display_name,id,images,uri),public,tracks(total),uri';
   return (dispatch, getState) => {
     // get the main playlist object
@@ -1511,11 +1511,10 @@ export function getPlaylist(uri) {
 
           const tracks = formatTracks(response.tracks.items);
 
-          let order = 'INVERTED';
           let limit = 100;
           let tracks_more = `playlists/${getFromUri('playlistid', uri)}/tracks?limit=${limit}&market=${getState().spotify.country}`;
 
-          if (order === 'INVERTED') {
+          if (order === 'reverse') {
             // Invert tracks paging starting from end
             tracks_more += `&offset=${Math.max(response.tracks.total - 100, 0)}`;
           }
