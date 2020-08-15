@@ -407,6 +407,7 @@ const formatPlaylist = function (data) {
     'last_modified',
     'can_edit',
     'owner',
+    'order',
     'user_uri',
     'tracks_uris',
     'tracks_total',

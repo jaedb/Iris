@@ -759,6 +759,14 @@ const CoreMiddleware = (function () {
           records = formatTracks(records);
         }
 
+        var records_next = action.records_data.next;
+
+        // Handle ordering
+        if (parent.order === 'INVERTED') {
+          records = records.reverse();
+          records_next = action.records_data.previous;
+        }
+
         var records_type_plural = `${action.records_type}s`;
         var records_index = {};
         var records_uris = arrayOf('uri', records);
@@ -780,8 +788,8 @@ const CoreMiddleware = (function () {
           uris = [...parent[`${records_type_plural}_uris`], ...uris];
         }
         parent[`${records_type_plural}_uris`] = uris;
-        if (action.records_data.next !== undefined) {
-          parent[`${records_type_plural}_more`] = action.records_data.next;
+        if (records_next !== undefined) {
+          parent[`${records_type_plural}_more`] = records_next;
         }
 
         // Parent loaded (well, changed)

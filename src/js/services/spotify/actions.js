@@ -1494,6 +1494,69 @@ export function savePlaylist(uri, name, description, is_public, is_collaborative
 }
 
 export function getPlaylist(uri) {
+  const fields = 'collaborative,description,followers(total),images,name,owner(display_name,id,images,uri),public,tracks(total),uri';
+  return (dispatch, getState) => {
+    // get the main playlist object
+    request(dispatch, getState, `playlists/${getFromUri('playlistid', uri)}?fields=${fields}&market=${getState().spotify.country}`)
+      .then(
+        (response) => {
+          // convert links in description
+          let description = null;
+          if (response.description) {
+            description = response.description;
+            description = description.split('<a href="spotify:artist:').join('<a href="#' + '/artist/spotify:artist:');
+            description = description.split('<a href="spotify:album:').join('<a href="#' + '/album/spotify:album:');
+            description = description.split('<a href="spotify:user:').join('<a href="#' + '/user/spotify:user:');
+          }
+
+          const tracks = formatTracks(response.tracks.items);
+
+          let order = 'INVERTED';
+          let limit = 100;
+          let tracks_more = `playlists/${getFromUri('playlistid', uri)}/tracks?limit=${limit}&market=${getState().spotify.country}`;
+
+          if (order === 'INVERTED') {
+            // Invert tracks paging starting from end
+            tracks_more += `&offset=${Math.max(response.tracks.total - 100, 0)}`;
+          }
+
+          const playlist = {
+
+            ...formatPlaylist(response),
+            is_completely_loaded: true,
+            user_uri: response.owner.uri,
+            tracks_uris: tracks ? arrayOf('uri', tracks) : null,
+            tracks_more,
+            tracks_total: response.tracks.total,
+            description,
+            order,
+          };
+
+          dispatch(coreActions.userLoaded(formatUser(response.owner)));
+          // dispatch(coreActions.tracksLoaded(tracks));
+          dispatch(coreActions.playlistLoaded(playlist));
+
+          // Load first page of tracks
+          getMore(
+            playlist.tracks_more,
+            {
+              parent_type: 'playlist',
+              parent_key: playlist.uri,
+              records_type: 'track',
+            },
+          )(dispatch, getState);
+        },
+        (error) => {
+          dispatch(coreActions.handleException(
+            'Could not load playlist',
+            error,
+          ));
+        },
+      );
+  };
+}
+
+export function getPlaylistFull(uri) {
   return (dispatch, getState) => {
     // get the main playlist object
     request(dispatch, getState, `playlists/${getFromUri('playlistid', uri)}?market=${getState().spotify.country}`)
