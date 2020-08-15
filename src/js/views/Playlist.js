@@ -83,8 +83,6 @@ class Playlist extends React.Component {
       },
     } = this.props;
 
-    console.log("updated", this.props)
-
     if (prevPlaylist && playlist && prevPlaylist.moved_to !== playlist.moved_to) {
       push(`/playlist/${encodeURIComponent(playlist.moved_to)}`);
     }
@@ -189,7 +187,7 @@ class Playlist extends React.Component {
         selected_icon={this.props.sort ? (this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
         handleChange={(value) => { this.setSort(value); this.props.uiActions.hideContextMenu(); }}
       />
-    )
+    );
   }
 
   renderActions() {
