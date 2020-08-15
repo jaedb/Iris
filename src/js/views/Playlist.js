@@ -3,7 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import ErrorMessage from '../components/ErrorMessage';
-import Link from '../components/Link';
+import Button from '../components/Button';
 import TrackList from '../components/TrackList';
 import Thumbnail from '../components/Thumbnail';
 import PinButton from '../components/Fields/PinButton';
@@ -197,23 +197,21 @@ class Playlist extends React.Component {
       uri,
       playlist: {
         can_edit,
+        name,
       },
     } = this.props;
 
-    switch (uriSource(this.props.uri)) {
+    switch (uriSource(uri)) {
       case 'm3u':
         return (
           <div className="actions">
-            <button className="button button--primary" onClick={this.play}>
+            <Button type="primary" onClick={this.play} trackingLabel="Play">
               <I18n path="actions.play" />
-            </button>
-            <Link
-              className="button button--default"
-              to={`/playlist/${encodeURIComponent(uri)}/edit`}
-            >
+            </Button>
+            <Button to={`/playlist/${encodeURIComponent(uri)}/edit`} trackingLabel="Edit">
               <I18n path="actions.edit" />
-            </Link>
-            <PinButton uri={uri} />
+            </Button>
+            <PinButton item={{ uri, name }} />
             <ContextMenuTrigger onTrigger={this.handleContextMenu} />
           </div>
         );
@@ -222,30 +220,27 @@ class Playlist extends React.Component {
         if (can_edit) {
           return (
             <div className="actions">
-              <button className="button button--primary" onClick={this.play}>
+              <Button type="primary" onClick={this.play} trackingLabel="Play">
                 <I18n path="actions.play" />
-              </button>
-              <Link
-                className="button button--default"
-                to={`/playlist/${encodeURIComponent(uri)}/edit`}
-              >
+              </Button>
+              <Button to={`/playlist/${encodeURIComponent(uri)}/edit`}>
                 <I18n path="actions.edit" />
-              </Link>
-              <PinButton uri={uri} />
+              </Button>
+              <PinButton item={{ uri, name }} />
               <ContextMenuTrigger onTrigger={this.handleContextMenu} />
             </div>
           );
         }
         return (
           <div className="actions">
-            <button className="button button--primary" onClick={this.play}>
+            <Button type="primary" onClick={this.play} trackingLabel="Play">
               <I18n path="actions.play" />
-            </button>
+            </Button>
             <FollowButton
               uri={uri}
               is_following={this.inLibrary()}
             />
-            <PinButton uri={uri} />
+            <PinButton item={{ uri, name }} />
             <ContextMenuTrigger onTrigger={this.handleContextMenu} />
           </div>
         );
@@ -253,13 +248,10 @@ class Playlist extends React.Component {
       default:
         return (
           <div className="actions">
-            <button
-              className="button button--primary"
-              onClick={this.play}
-            >
+            <Button type="primary" onClick={this.play} trackingLabel="Play">
               <I18n path="actions.play" />
-            </button>
-            <PinButton uri={uri} />
+            </Button>
+            <PinButton item={{ uri, name }} />
             <ContextMenuTrigger onTrigger={this.handleContextMenu} />
           </div>
         );

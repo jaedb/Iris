@@ -3554,7 +3554,7 @@ select {
     border: none;
     box-shadow: none !important; }
     .button--icon:hover {
-      color: #32b5f2 !important; }
+      color: #32b5f2; }
     .button--icon .icon {
       padding: 0 !important; }
   .button--pull-right {
@@ -3604,7 +3604,8 @@ select {
     color: #cf2d2d; }
     .button--confirming:active, .button--destructive:active {
       background: rgba(128, 128, 128, 0.2); }
-    .button--confirming:hover, .button--destructive:hover {
+    .button--confirming:hover, .button--confirming-hover:hover, .button--destructive:hover, .button--destructive-hover:hover {
+      color: #cf2d2d;
       box-shadow: 0 0 10px rgba(207, 45, 45, 0.5); }
   .button--timing-out {
     position: relative;
@@ -3907,6 +3908,10 @@ select {
           padding-top: 4px;
           margin-left: 10px;
           vertical-align: baseline; }
+  .context-menu em {
+    font-style: normal; }
+    .context-menu em.context-menu__item:last-of-type {
+      border-bottom: 1px solid rgba(128, 128, 128, 0.5); }
   .context-menu__divider {
     height: 1px;
     padding: 0;

@@ -1,9 +1,9 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Header from '../components/Header';
 import Icon from '../components/Icon';
+import Button from '../components/Button';
 import * as uiActions from '../services/ui/actions';
 import * as pusherActions from '../services/pusher/actions';
 import * as mopidyActions from '../services/mopidy/actions';
@@ -178,9 +178,24 @@ class Debug extends React.Component {
             <div className="field">
               <div className="name" />
               <div className="input">
-                <a className="button button--default" onClick={(e) => this.props.uiActions.createNotification({ content: 'Test notification' })}><I18n path="debug.create_notification" /></a>
-                <a className="button button--default" onClick={(e) => this.props.uiActions.startProcess('test_process', "Test process", {remaining: 68, total: 100})}><I18n path="debug.create_process" /></a>
-                <a className="button button--default" onClick={(e) => this.props.pusherActions.request('test')}><I18n path="debug.run_test" /></a>
+                <Button
+                  onClick={() => this.props.uiActions.createNotification({ content: 'Test notification' })}
+                  trackingLabel="TestNotification"
+                >
+                  <I18n path="debug.create_notification" />
+                </Button>
+                <Button
+                  onClick={() => this.props.uiActions.startProcess('test_process', "Test process", {remaining: 68, total: 100})}
+                  trackingLabel="TestProcess"
+                >
+                  <I18n path="debug.create_process" />
+                </Button>
+                <Button
+                  onClick={() => this.props.pusherActions.request('test')}
+                  trackingLabel="RunTest"
+                >
+                  <I18n path="debug.run_test" />
+                </Button>
               </div>
             </div>
           </form>

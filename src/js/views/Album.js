@@ -26,6 +26,7 @@ import {
   sourceIcon,
 } from '../util/helpers';
 import { collate } from '../util/format';
+import Button from '../components/Button';
 
 export class Album extends React.Component {
   componentDidMount = () => {
@@ -255,12 +256,11 @@ export class Album extends React.Component {
         </div>
 
         <div className="actions">
-          <button type="button" className="button button--primary" onClick={this.play}>
+          <Button type="primary" onClick={this.play}>
             <I18n path="actions.play" />
-          </button>
+          </Button>
           {uriSource(uri) === 'spotify' && (
             <FollowButton
-              className="secondary"
               uri={uri}
               is_following={this.inLibrary()}
             />

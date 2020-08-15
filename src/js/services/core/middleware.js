@@ -3,7 +3,7 @@ import React from 'react';
 import ReactGA from 'react-ga';
 import { arrayOf } from '../../util/arrays';
 import URILink from '../../components/URILink';
-import { uriSource, upgradeSpotifyPlaylistUris, uriType, titleCase } from '../../util/helpers';
+import { uriSource, upgradeSpotifyPlaylistUris, uriType } from '../../util/helpers';
 import {
   formatTracks,
   formatTrack,
@@ -791,25 +791,25 @@ const CoreMiddleware = (function () {
       case 'ADD_PINNED':
         store.dispatch(coreActions.updatePinned([
           ...store.getState().core.pinned,
-          action.uri,
+          formatSimpleObject(action.item),
         ]));
         next(action);
         break;
 
       case 'REMOVE_PINNED':
         store.dispatch(coreActions.updatePinned(
-          store.getState().core.pinned.filter((item) => item !== action.uri),
+          store.getState().core.pinned.filter((pinnedItem) => pinnedItem.uri !== action.uri),
         ));
         next(action);
         break;
 
       case 'UPDATE_PINNED_URI':
-        const pinnedUris = store.getState().core.pinned;
-        const pinnedUriIndex = pinnedUris.indexOf(action.oldUri);
-        if (pinnedUriIndex > -1) {
-          pinnedUris[pinnedUriIndex] = action.newUri;
-          store.dispatch(coreActions.updatePinned(pinnedUris));
-        }
+        store.dispatch(coreActions.updatePinned(
+          store.getState().core.pinned.map((pinnedItem) => ({
+            ...pinnedItem,
+            ...(pinnedItem.uri === action.oldUri ? { uri: action.newUri } : {}),
+          })),
+        ));
         next(action);
         break;
 

@@ -95,6 +95,14 @@
 			}
 		}
 	}
+	
+	em {
+		font-style: normal;
+
+		&.context-menu__item:last-of-type {
+			border-bottom: 1px solid colour(middle_grey);
+		}
+	}
 
 	&__divider {
 		height: 1px;

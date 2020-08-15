@@ -33,6 +33,7 @@ import {
 import { collate } from '../util/format';
 import { sortItems, applyFilter } from '../util/arrays';
 import { i18n, I18n } from '../locale';
+import Button from '../components/Button';
 
 class Artist extends React.Component {
   componentDidMount() {
@@ -491,9 +492,9 @@ class Artist extends React.Component {
               <div className="heading__content">
                 <h1>{this.props.artist ? this.props.artist.name : null}</h1>
                 <div className="actions">
-                  <button className="button button--primary" onClick={this.onPlay}>
+                  <Button type="primary" onClick={this.onPlay}>
                     <I18n path="actions.play" />
-                  </button>
+                  </Button>
                   {is_spotify && (
                     <FollowButton
                       uri={uri}

@@ -260,7 +260,7 @@ select {
     box-shadow: none !important;
 
     &:hover {
-      color: colour(blue) !important;
+      color: colour(blue);
     }
 
     .icon {
@@ -355,7 +355,9 @@ select {
       background: rgba(128, 128, 128, 0.2);
     }
 
-    &:hover {
+    &:hover,
+    &-hover:hover {
+      color: colour(red);
       box-shadow: 0 0 10px rgba(colour(red), 0.5);
     }
   }

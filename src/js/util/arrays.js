@@ -178,7 +178,7 @@ const sortItems = function (array, property, reverse = false, sort_map = null) {
     let b_value = get_value(b);
 
     // Sorting by URI as a reference for sorting by uri source (first component of URI)
-    if (property == 'uri') {
+    if (property === 'uri') {
       a_value = uriSource(a_value);
       b_value = uriSource(b_value);
     }
@@ -195,7 +195,6 @@ const sortItems = function (array, property, reverse = false, sort_map = null) {
     } else if (typeof a_value === 'boolean' && typeof b_value === 'boolean') {
       if (a_value && !b_value) return -1;
       if (!a_value && b_value) return 1;
-      return 0;
 
       // Numeric sorting
     } else if (typeof a_value === 'number' && typeof b_value === 'number') {
@@ -204,7 +203,6 @@ const sortItems = function (array, property, reverse = false, sort_map = null) {
       if (b_value == null) return 1;
       if (parseInt(a_value) > parseInt(b_value)) return 1;
       if (parseInt(a_value) < parseInt(b_value)) return -1;
-      return 0;
 
       // Alphabetic sorting
     } else {
@@ -213,8 +211,8 @@ const sortItems = function (array, property, reverse = false, sort_map = null) {
       if (!a_value && !b_value) return 0;
       if (a_value.toLowerCase() > b_value.toLowerCase()) return 1;
       if (a_value.toLowerCase() < b_value.toLowerCase()) return -1;
-      return 0;
     }
+    return 0;
   }
 
   const sorted = Object.assign([], array.sort(compare));

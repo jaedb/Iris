@@ -164,6 +164,8 @@ context_menu:
   play_top_tracks: Play top tracks
   love_track: Love track
   unlove_track: Unlove track
+  pin: Pin
+  unpin: Unpin
   go_to_artist: Go to artist
   go_to_user: Go to user
   track_info: Track info

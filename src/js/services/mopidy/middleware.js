@@ -1598,7 +1598,6 @@ const MopidyMiddleware = (function () {
            * */
 
       case 'MOPIDY_GET_LIBRARY_PLAYLISTS':
-        console.log(action);
         request(store, 'playlists.asList')
           .then((response) => {
             // drop in our URI list
@@ -1780,7 +1779,8 @@ const MopidyMiddleware = (function () {
                   // Remove old playlist (by old key/uri) from index
                   // By providing the new key, the old playlist gets replaced with a redirector object
                   store.dispatch(coreActions.removeFromIndex('playlists', action.key, playlist.uri));
-                  store.dispatch(coreActions.updatePinnedUri(action.key, playlist.uri));
+                  store.dispatch(coreActions.removePinned(action.key));
+                  store.dispatch(coreActions.addPinned(playlist));
                 }
 
                 store.dispatch(coreActions.playlistLoaded(playlist));

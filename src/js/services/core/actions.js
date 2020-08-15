@@ -429,10 +429,10 @@ export function getLibraryArtists() {
   };
 }
 
-export function addPinned(uri) {
+export function addPinned(item) {
   return {
     type: 'ADD_PINNED',
-    uri,
+    item,
   };
 }
 
