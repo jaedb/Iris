@@ -56,8 +56,11 @@ class Playlist extends React.Component {
   }
 
   componentDidMount() {
-    const { coreActions: { loadPlaylist }, uri } = this.props;
+    const { coreActions: { loadPlaylist }, uri, order } = this.props;
     this.setWindowTitle();
+    if (order === undefined) {
+      this.setSort('reverse');
+    }
     loadPlaylist(uri, false, { sort: this.props.sort });
   }
 
