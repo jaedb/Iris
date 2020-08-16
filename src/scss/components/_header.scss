@@ -93,11 +93,12 @@ main {
 			}
 
 			.header__options {
-				top: 0;
-				right: 0;
+				top: 1rem;
+				right: 1rem;
 
 				.context-menu-trigger {
 					display: block;
+					font-size: 1.4rem;
 				}
 
 				&__wrapper {

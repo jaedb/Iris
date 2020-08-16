@@ -4207,6 +4207,8 @@ select {
       pointer-events: none; }
   .list__item .drag-zone {
     touch-action: none; }
+  .list__item .context-menu-trigger {
+    margin: 0 0 0 0.5rem; }
   .list__item.field {
     padding: 0 !important; }
     .list__item.field > label {
@@ -6011,10 +6013,11 @@ main header {
           padding-right: 6px;
           margin-left: 10px; }
       main header .header__options {
-        top: 0;
-        right: 0; }
+        top: 1rem;
+        right: 1rem; }
         main header .header__options .context-menu-trigger {
-          display: block; }
+          display: block;
+          font-size: 1.4rem; }
         main header .header__options__wrapper {
           display: none; } }
 

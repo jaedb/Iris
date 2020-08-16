@@ -6,6 +6,7 @@ import * as uiActions from '../../services/ui/actions';
 import * as spotifyActions from '../../services/spotify/actions';
 import { toJSON } from '../../util/format';
 import { I18n, i18n } from '../../locale';
+import { Button } from '../Button';
 
 class SpotifyAuthenticationFrame extends React.Component {
   constructor(props) {
@@ -110,15 +111,25 @@ class SpotifyAuthenticationFrame extends React.Component {
 
     if (authorized) {
       return (
-        <a className={`button button--destructive ${authorizing ? 'button--working' :''}`} onClick={(e) => this.props.spotifyActions.revokeAuthorization()}>
+        <Button
+          type="destructive"
+          working={authorizing}
+          onClick={() => this.props.spotifyActions.revokeAuthorization()}
+          tracking={{ category: 'Spotify', action: 'Logout' }}
+        >
           <I18n path="authentication.log_out" />
-        </a>
+        </Button>
       );
     }
     return (
-      <a className={`button button--primary ${authorizing ? 'button--working' :''}`} onClick={(e) => this.startAuthorization()}>
+      <Button
+        type="primary"
+        working={authorizing}
+        onClick={() => this.startAuthorization()}
+        tracking={{ category: 'Spotify', action: 'Login' }}
+      >
         <I18n path="authentication.log_in" />
-      </a>
+      </Button>
     );
   }
 }

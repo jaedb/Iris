@@ -21,6 +21,7 @@ import * as lastfmActions from '../services/lastfm/actions';
 import * as spotifyActions from '../services/spotify/actions';
 import { isHosted } from '../util/helpers';
 import { i18n, I18n, languagesAvailable } from '../locale';
+import Button from '../components/Button';
 
 class Settings extends React.Component {
   constructor(props) {
@@ -127,13 +128,13 @@ class Settings extends React.Component {
     const loading = processes.local_scan && processes.local_scan.status === 'running';
 
     return (
-      <button
-        className={`button button--default ${loading ? 'button--working' : ''}`}
+      <Button
+        working={loading}
         onClick={this.doLocalScan}
-        type="button"
+        tracking={{ category: 'System', action: 'LocalScan' }}
       >
         <I18n path="settings.advanced.start_local_scan" />
-      </button>
+      </Button>
     );
   }
 
@@ -159,24 +160,26 @@ class Settings extends React.Component {
 
     const options = (
       <span>
-        <Link
-          className="button button--discrete button--no-hover"
+        <Button
+          discrete
+          noHover
           to="/settings/debug"
         >
           <I18n path="debug.title">
             <Icon name="code" />
           </I18n>
-        </Link>
-        <a
-          className="button button--discrete button--no-hover"
+        </Button>
+        <Button
           href="https://github.com/jaedb/Iris/wiki"
           target="_blank"
           rel="noreferrer noopener"
+          discrete
+          noHover
         >
           <I18n path="settings.help">
             <Icon name="help" />
           </I18n>
-        </a>
+        </Button>
       </span>
     );
 
@@ -403,9 +406,9 @@ class Settings extends React.Component {
                 runCommand={(id, notify) => runCommand(id, notify)}
                 onChange={(commands) => setCommands(commands)}
               />
-              <Link to="/edit-command" className="button button--default">
+              <Button to="/edit-command">
                 <I18n path="actions.add" />
-              </Link>
+              </Button>
             </div>
           </div>
 
@@ -504,43 +507,40 @@ class Settings extends React.Component {
 
           <div className="field">
             {this.renderLocalScanButton()}
-            <Link
-              className="button button--default"
-              to="/share-configuration"
-            >
+            <Button to="/share-configuration">
               <I18n path="settings.advanced.share_configuration" />
-            </Link>
+            </Button>
           </div>
 
           <div className="field">
             {pusher.version.upgrade_available && (
-              <button
-                className="button button--secondary"
+              <Button
+                type="secondary"
                 onClick={this.doUpgrade}
-                type="button"
+                tracking={{ category: 'System', action: 'Upgrade', label: pusher.version.latest }}
               >
                 <I18n path="settings.advanced.version.upgrade" version={pusher.version.latest} />
-              </button>
+              </Button>
             )}
-            <button
-              className={`button button--destructive${mopidy.restarting ? ' button--working' : ''}`}
+            <Button
+              type="destructive"
+              working={mopidy.restarting}
               onClick={this.doRestart}
-              type="button"
+              tracking={{ category: 'System', action: 'Restart' }}
             >
               <I18n path="settings.advanced.restart" />
-            </button>
+            </Button>
             <ConfirmationButton
-              className="button--destructive"
               content={i18n('settings.advanced.reset')}
               onConfirm={this.resetAllSettings}
             />
-            <button
-              className="button button--destructive"
+            <Button
+              type="destructive"
               onClick={this.resetServiceWorkerAndCache}
-              type="button"
+              tracking={{ category: 'System', action: 'ResetCache' }}
             >
               <I18n path="settings.advanced.reset_cache" />
-            </button>
+            </Button>
           </div>
 
           <h4 className="underline">
@@ -563,18 +563,26 @@ class Settings extends React.Component {
           <br />
           <br />
           <div>
-            <a className="button button--default" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=james%40barnsley%2enz&lc=NZ&item_name=James%20Barnsley&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted" target="_blank">
+            <Button
+              href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=james%40barnsley%2enz&lc=NZ&item_name=James%20Barnsley&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted"
+              target="_blank"
+              tracking={{ category: 'About', action: 'Paypal' }}
+            >
               <I18n path="settings.about.donate">
                 <Icon type="fontawesome" name="paypal" />
                 {' '}
               </I18n>
-            </a>
-            <a className="button button--default" href="https://github.com/jaedb/Iris" target="_blank">
+            </Button>
+            <Button
+              href="https://github.com/jaedb/Iris"
+              target="_blank"
+              tracking={{ category: 'About', action: 'GitHub' }}
+            >
               <I18n path="settings.about.github">
                 <Icon type="fontawesome" name="github" />
                 {' '}
               </I18n>
-            </a>
+            </Button>
           </div>
 
         </section>

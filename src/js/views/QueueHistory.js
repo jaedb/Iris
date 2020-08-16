@@ -10,6 +10,7 @@ import * as pusherActions from '../services/pusher/actions';
 import * as spotifyActions from '../services/spotify/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import { i18n, I18n } from '../locale';
+import Button from '../components/Button';
 
 class QueueHistory extends React.Component {
   componentDidMount() {
@@ -45,12 +46,16 @@ class QueueHistory extends React.Component {
     } = this.props;
 
     const options = (
-      <a className="button button--no-hover" onClick={this.onBack}>
+      <Button
+        onClick={this.onBack}
+        noHover
+        tracking={{ category: 'QueueHistory', action: 'Back' }}
+      >
         <I18n path="actions.back">
           <Icon name="keyboard_backspace" />
           {' '}
         </I18n>
-      </a>
+      </Button>
     );
 
     const tracks = queue_history.map((item) => ({

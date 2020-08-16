@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from './Link';
+import URILink from './URILink';
 import { trackEvent } from './Trackable';
 
 const Button = ({
@@ -17,9 +18,12 @@ const Button = ({
   working,
   disabled,
   noHover,
-  trackingLabel,
+  submit,
+  tracking,
+  href,
   onClick: onClickProp,
   to,
+  uri,
   ...rest
 }) => {
   const classNames = [];
@@ -40,26 +44,31 @@ const Button = ({
   if (disabled) classNames.push('disabled');
   if (noHover) classNames.push('no-hover');
 
-  const Element = to ? Link : 'button';
+  let Element = 'button';
+  if (to) Element = Link;
+  if (uri) Element = URILink;
+  if (href) Element = 'a';
 
   const onClick = (e) => {
     if (onClickProp) onClickProp(e);
 
-    if (trackingLabel) {
+    if (tracking) {
       trackEvent({
         category: 'Button',
         action: 'Click',
-        label: trackingLabel,
+        ...tracking,
       });
     }
   };
 
   return (
     <Element
-      type="button"
+      type={submit ? 'submit' : 'button'}
       className={`button ${className} ${classNames.map((s) => ` button--${s}`).join(' ')}`}
       disabled={disabled}
       to={to}
+      href={href}
+      uri={uri}
       onClick={onClick}
       {...rest}
     />

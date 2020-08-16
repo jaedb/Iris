@@ -279,10 +279,14 @@ class LibraryPlaylists extends React.Component {
           options={source_options}
           handleChange={(value) => { this.props.uiActions.set({ library_playlists_source: value }); this.props.uiActions.hideContextMenu(); }}
         />
-        <Link className="button button--no-hover" to="/playlist/create">
+        <Button
+          to="/playlist/create"
+          noHover
+          tracking={{ category: 'Playlist', action: 'Create' }}
+        >
           <Icon name="add_box" />
           <I18n path="actions.add" />
-        </Link>
+        </Button>
       </span>
     );
 

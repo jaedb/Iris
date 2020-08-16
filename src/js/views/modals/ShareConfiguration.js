@@ -6,6 +6,7 @@ import Modal from './Modal';
 import * as uiActions from '../../services/ui/actions';
 import * as pusherActions from '../../services/pusher/actions';
 import { i18n, I18n } from '../../locale';
+import Button from '../../components/Button';
 
 class ShareConfiguration extends React.Component {
   constructor(props) {
@@ -280,15 +281,15 @@ class ShareConfiguration extends React.Component {
           </div>
 
           <div className="actions centered-text">
-            {this.state.recipients.length > 0 ? (
-              <button className="button button--primary button--large" onClick={(e) => this.handleSubmit(e)}>
-                <I18n path="actions.send" />
-              </button> 
-            ) : (
-              <button className="button button--primary button--large" disabled="disabled" onClick={(e) => this.handleSubmit(e)}>
-                <I18n path="actions.send" />
-              </button>
-            )}
+            <Button
+              type="primary"
+              size="large"
+              disabled={this.state.recipients.length <= 0}
+              onClick={(e) => this.handleSubmit(e)}
+              tracking={{ category: 'ShareConfiguration', action: 'Send' }}
+            >
+              <I18n path="actions.send" />
+            </Button>
           </div>
         </form>
       </Modal>

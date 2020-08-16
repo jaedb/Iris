@@ -24,6 +24,7 @@ import {
 } from '../../util/helpers';
 import { arrayOf, indexToArray } from '../../util/arrays';
 import { i18n, I18n } from '../../locale';
+import Button from '../../components/Button';
 
 class Discover extends React.Component {
   constructor(props) {
@@ -526,9 +527,13 @@ class Discover extends React.Component {
             <I18n path="discover.recommendations.tracks" />
             <div className="pull-right">
               <ContextMenuTrigger onTrigger={this.handleContextMenu} />
-              <button className="button button--primary" onClick={this.playTracks} type="button">
+              <Button
+                type="primary"
+                onClick={this.playTracks}
+                tracking={{ category: 'DiscoverRecommendations', action: 'Play' }}
+              >
                 <I18n path="actions.play_all" />
-              </button>
+              </Button>
             </div>
           </h4>
           <TrackList className="discover-track-list" uri={this.uri()} tracks={tracks} />
@@ -608,15 +613,19 @@ class Discover extends React.Component {
                 handleChange={this.toggleTunability}
               />
               <div className="intro__actions__separator" />
-              <span
-                className={`submit button button--primary button--large${is_loading ? ' button--working' : ''}`}
+              <Button
+                className="submit"
+                type="primary"
+                size="large"
+                working={is_loading}
                 onClick={this.getRecommendations}
+                tracking={{ category: 'DiscoverRecommendations', action: 'Submit' }}
               >
                 <Icon name="explore" />
                 <I18n path="discover.recommendations.find_recommendations" afterContent>
                   {' '}
                 </I18n>
-              </span>
+              </Button>
             </div>
           </div>
 

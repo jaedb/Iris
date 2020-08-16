@@ -256,7 +256,11 @@ export class Album extends React.Component {
         </div>
 
         <div className="actions">
-          <Button type="primary" onClick={this.play}>
+          <Button
+            type="primary"
+            onClick={this.play}
+            tracking={{ category: 'Album', action: 'Play' }}
+          >
             <I18n path="actions.play" />
           </Button>
           {uriSource(uri) === 'spotify' && (

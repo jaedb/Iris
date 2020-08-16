@@ -9,6 +9,7 @@ import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
 import { uriSource } from '../../util/helpers';
 import { i18n, I18n } from '../../locale';
+import Button from '../../components/Button';
 
 class EditPlaylist extends React.Component {
   constructor(props) {
@@ -222,9 +223,14 @@ class EditPlaylist extends React.Component {
           {this.renderFields()}
 
           <div className="actions centered-text">
-            <button type="submit" className="button button--primary button--large">
+            <Button
+              type="primary"
+              size="large"
+              tracking={{ category: 'EditPlaylist', action: 'Submit' }}
+              submit
+            >
               <I18n path="actions.save" />
-            </button>
+            </Button>
           </div>
         </form>
       </Modal>

@@ -20,6 +20,7 @@ import {
 } from '../../util/helpers';
 import { arrayOf, sortItems } from '../../util/arrays';
 import { i18n, I18n } from '../../locale';
+import Button from '../../components/Button';
 
 class LibraryBrowseDirectory extends React.Component {
   constructor(props) {
@@ -217,15 +218,23 @@ class LibraryBrowseDirectory extends React.Component {
           handleChange={(value) => { uiActions.set({ library_directory_view: value }); uiActions.hideContextMenu(); }}
         />
         {tracks && (
-          <a className="button button--no-hover" onClick={(e) => { uiActions.hideContextMenu(); this.playAll(e, all_tracks); }}>
+          <Button
+            onClick={(e) => { uiActions.hideContextMenu(); this.playAll(e, all_tracks); }}
+            noHover
+            tracking={{ category: 'Directory', action: 'Play' }}
+          >
             <Icon name="play_circle_filled" />
             <I18n path="actions.play_all" />
-          </a>
+          </Button>
         )}
-        <a className="button button--no-hover" onClick={(e) => { uiActions.hideContextMenu(); this.goBack(e); }}>
+        <Button
+          onClick={(e) => { uiActions.hideContextMenu(); this.goBack(e); }}
+          noHover
+          tracking={{ category: 'Directory', action: 'Back' }}
+        >
           <Icon name="keyboard_backspace" />
           <I18n path="actions.back" />
-        </a>
+        </Button>
       </span>
     );
 

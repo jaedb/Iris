@@ -6,6 +6,7 @@ import * as uiActions from '../../services/ui/actions';
 import * as lastfmActions from '../../services/lastfm/actions';
 import { toJSON } from '../../util/format';
 import { I18n, i18n } from '../../locale';
+import Button from '../Button';
 
 class LastfmAuthenticationFrame extends React.Component {
   constructor(props) {
@@ -94,15 +95,25 @@ class LastfmAuthenticationFrame extends React.Component {
 
     if (this.props.authorization) {
       return (
-        <a className={"button button--destructive" + (authorizing ? ' button--working' : '')} onClick={(e) => this.props.lastfmActions.revokeAuthorization()}>
+        <Button
+          type="destructive"
+          working={authorizing}
+          onClick={() => this.props.lastfmActions.revokeAuthorization()}
+          tracking={{ category: 'Lastfm', label: 'Logout' }}
+        >
           <I18n path="authentication.log_out" />
-        </a>
+        </Button>
       );
     }
     return (
-      <a className={"button button--primary" + (authorizing ? ' button--working' : '')} onClick={(e) => this.startAuthorization()}>
+      <Button
+        type="primary"
+        working={authorizing}
+        onClick={() => this.startAuthorization()}
+        tracking={{ category: 'Lastfm', label: 'Login' }}
+      >
         <I18n path="authentication.log_in" />
-      </a>
+      </Button>
     );
   }
 }

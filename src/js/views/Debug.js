@@ -85,12 +85,16 @@ class Debug extends React.Component {
       pusher_data,
       snapcast_data,
     } = this.state;
-  
+
     const options = (
-      <a className="button button--discrete button--no-hover" onClick={this.onBack}>
+      <Button
+        onClick={this.onBack}
+        noHover
+        discrete
+      >
         <Icon name="keyboard_backspace" />
         <I18n path="actions.back" />
-      </a>
+      </Button>
     );
 
     return (
@@ -107,17 +111,14 @@ class Debug extends React.Component {
             <div className="field checkbox">
               <div className="name">Test mode</div>
               <div className="input">
-                {toggling_test_mode && (
-                  <span className="button button--working">Applying...</span>
-                )}
-                {!toggling_test_mode && (
-                  <span
-                    className={`button button--${test_mode ? 'destructive' : 'default'}`}
-                    onClick={this.toggleTestMode}
-                  >
-                    <I18n path={`actions.${test_mode ? 'disable' : 'enable'}`} />
-                  </span>
-                )}
+                <Button
+                  type={test_mode ? 'destructive' : null}
+                  working={toggling_test_mode}
+                  onClick={this.toggleTestMode}
+                  tracking={{ category: 'Debug', action: 'TestMode', label: test_mode ? 'Disable' : 'Enable' }}
+                >
+                  <I18n path={`actions.${test_mode ? 'disable' : 'enable'}`} />
+                </Button>
               </div>
             </div>
             <div className="field checkbox">
@@ -180,19 +181,19 @@ class Debug extends React.Component {
               <div className="input">
                 <Button
                   onClick={() => this.props.uiActions.createNotification({ content: 'Test notification' })}
-                  trackingLabel="TestNotification"
+                  tracking={{ category: 'Debug', action: 'Test notification' }}
                 >
                   <I18n path="debug.create_notification" />
                 </Button>
                 <Button
                   onClick={() => this.props.uiActions.startProcess('test_process', "Test process", {remaining: 68, total: 100})}
-                  trackingLabel="TestProcess"
+                  tracking={{ category: 'Debug', action: 'Test process' }}
                 >
                   <I18n path="debug.create_process" />
                 </Button>
                 <Button
                   onClick={() => this.props.pusherActions.request('test')}
-                  trackingLabel="RunTest"
+                  tracking={{ category: 'Debug', action: 'Run test process' }}
                 >
                   <I18n path="debug.run_test" />
                 </Button>
@@ -236,7 +237,12 @@ class Debug extends React.Component {
             <div className="field">
               <div className="name" />
               <div className="input">
-                <button type="submit" className="button button--default">Send</button>
+                <Button
+                  submit
+                  tracking={{ category: 'Debug', action: 'Mopidy', label: 'Send' }}
+                >
+                  <I18n path="actions.send" />
+                </Button>
               </div>
             </div>
           </form>
@@ -273,7 +279,12 @@ class Debug extends React.Component {
             <div className="field">
               <div className="name" />
               <div className="input">
-                <button type="submit" className="button button--default"><I18n path="actions.send" /></button>
+                <Button
+                  submit
+                  tracking={{ category: 'Debug', action: 'Pusher', label: 'Send' }}
+                >
+                  <I18n path="actions.send" />
+                </Button>
               </div>
             </div>
           </form>
@@ -292,7 +303,12 @@ class Debug extends React.Component {
             <div className="field">
               <div className="name" />
               <div className="input">
-                <button type="submit" className="button button--default"><I18n path="actions.send" /></button>
+                <Button
+                  submit
+                  tracking={{ category: 'Debug', action: 'Snapcast', label: 'Send' }}
+                >
+                  <I18n path="actions.send" />
+                </Button>
               </div>
             </div>
           </form>

@@ -236,16 +236,16 @@ class Queue extends React.Component {
     const options = (
       <span>
         {this.props.spotify_enabled && (
-          <Button noHover to="/queue/radio">
+          <Button noHover discrete to="/queue/radio">
             <Icon name="radio" />
             <I18n path="now_playing.context_actions.radio" />
           </Button>
         )}
-        <Button noHover to="/queue/history">
+        <Button noHover discrete to="/queue/history">
           <Icon name="history" />
           <I18n path="now_playing.context_actions.history" />
         </Button>
-        <Button noHover to="/queue/add-uri">
+        <Button noHover discrete to="/queue/add-uri">
           <Icon name="playlist_add" />
           <I18n path="actions.add" />
         </Button>

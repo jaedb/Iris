@@ -205,10 +205,17 @@ class Playlist extends React.Component {
       case 'm3u':
         return (
           <div className="actions">
-            <Button type="primary" onClick={this.play} trackingLabel="Play">
+            <Button
+              type="primary"
+              onClick={this.play}
+              tracking={{ category: 'Playlist', action: 'Play' }}
+            >
               <I18n path="actions.play" />
             </Button>
-            <Button to={`/playlist/${encodeURIComponent(uri)}/edit`} trackingLabel="Edit">
+            <Button
+              to={`/playlist/${encodeURIComponent(uri)}/edit`}
+              tracking={{ category: 'Playlist', action: 'Edit' }}
+            >
               <I18n path="actions.edit" />
             </Button>
             <PinButton item={{ uri, name }} />
@@ -220,10 +227,17 @@ class Playlist extends React.Component {
         if (can_edit) {
           return (
             <div className="actions">
-              <Button type="primary" onClick={this.play} trackingLabel="Play">
+              <Button
+                type="primary"
+                onClick={this.play}
+                tracking={{ category: 'Playlist', action: 'Play' }}
+              >
                 <I18n path="actions.play" />
               </Button>
-              <Button to={`/playlist/${encodeURIComponent(uri)}/edit`}>
+              <Button
+                to={`/playlist/${encodeURIComponent(uri)}/edit`}
+                tracking={{ category: 'Playlist', action: 'Edit' }}
+              >
                 <I18n path="actions.edit" />
               </Button>
               <PinButton item={{ uri, name }} />
@@ -233,7 +247,11 @@ class Playlist extends React.Component {
         }
         return (
           <div className="actions">
-            <Button type="primary" onClick={this.play} trackingLabel="Play">
+            <Button
+              type="primary"
+              onClick={this.play}
+              tracking={{ category: 'Playlist', action: 'Play' }}
+            >
               <I18n path="actions.play" />
             </Button>
             <FollowButton
@@ -248,7 +266,11 @@ class Playlist extends React.Component {
       default:
         return (
           <div className="actions">
-            <Button type="primary" onClick={this.play} trackingLabel="Play">
+            <Button
+              type="primary"
+              onClick={this.play}
+              tracking={{ category: 'Playlist', action: 'Play' }}
+            >
               <I18n path="actions.play" />
             </Button>
             <PinButton item={{ uri, name }} />

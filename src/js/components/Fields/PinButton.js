@@ -25,7 +25,7 @@ const PinButton = ({ item }) => {
         icon
         destructiveHover
         onClick={remove}
-        trackingLabel="Pin"
+        tracking={{ category: 'PinButton', action: 'Pin' }}
       >
         <Icon name="star" />
       </Button>
@@ -35,7 +35,7 @@ const PinButton = ({ item }) => {
     <Button
       icon
       onClick={add}
-      trackingLabel="Unpin"
+      tracking={{ category: 'PinButton', action: 'Unpin' }}
     >
       <Icon name="star_border" />
     </Button>

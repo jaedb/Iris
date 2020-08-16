@@ -52,7 +52,7 @@ class FollowButton extends React.Component {
           disabled
           working={working}
           onClick={this.unauthorized}
-          trackingLabel="AddToLibrary_Disabled"
+          tracking={{ category: 'FollowButton', action: 'Add (disabled)' }}
         >
           {addText || i18n('actions.add_to_library')}
         </Button>
@@ -63,7 +63,7 @@ class FollowButton extends React.Component {
           type="destructive"
           working={working}
           onClick={this.remove}
-          trackingLabel="RemoveFromLibrary"
+          tracking={{ category: 'FollowButton', action: 'Remove' }}
         >
           {removeText || i18n('actions.remove_from_library')}
         </Button>
@@ -73,7 +73,7 @@ class FollowButton extends React.Component {
       <Button
         onClick={this.add}
         working={working}
-        trackingLabel="AddToLibrary"
+        tracking={{ category: 'FollowButton', action: 'Add' }}
       >
         {addText || i18n('actions.add_to_library')}
       </Button>

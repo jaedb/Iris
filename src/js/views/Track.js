@@ -27,6 +27,7 @@ import {
   uriType,
 } from '../util/helpers';
 import { i18n, I18n } from '../locale';
+import Button from '../components/Button';
 
 class Track extends React.Component {
   componentDidMount() {
@@ -296,9 +297,13 @@ class Track extends React.Component {
         </div>
 
         <div className="actions">
-          <button className="button button--primary" onClick={this.play} type="button">
+          <Button
+            type="primary"
+            onClick={this.play}
+            tracking={{ category: 'Track', action: 'Play' }}
+          >
             <I18n path="actions.play" />
-          </button>
+          </Button>
           <LastfmLoveButton
             uri={uri}
             artist={(track.artists ? track.artists[0].name : null)}

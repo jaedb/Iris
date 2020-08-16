@@ -34,6 +34,7 @@ import { collate } from '../util/format';
 import { sortItems, applyFilter } from '../util/arrays';
 import { i18n, I18n } from '../locale';
 import Button from '../components/Button';
+import { trackEvent } from '../components/Trackable';
 
 class Artist extends React.Component {
   componentDidMount() {
@@ -64,12 +65,14 @@ class Artist extends React.Component {
   onResetFilters = () => {
     this.onChangeFilter(null);
     this.onChangeSort(null);
+    trackEvent({ category: 'Artist', action: 'FilterAlbums', label: 'Reset' });
   }
 
   onChangeFilter = (value) => {
     const { uiActions: { set, hideContextMenu } } = this.props;
     set({ artist_albums_filter: value });
     hideContextMenu();
+    trackEvent({ category: 'Artist', action: 'FilterAlbums', label: value });
   }
 
   onChangeSort = (value) => {
@@ -83,7 +86,7 @@ class Artist extends React.Component {
     } = this.props;
 
     let reverse = false;
-    if (value !== null && sort == value) {
+    if (value !== null && sort === value) {
       reverse = !sort_reverse;
     }
 
@@ -92,6 +95,7 @@ class Artist extends React.Component {
       artist_albums_sort: value,
     });
     hideContextMenu();
+    trackEvent({ category: 'Artist', action: 'SortAlbums', label: `${value} ${reverse ? 'DESC' : 'ASC'}` });
   }
 
   onPlay = () => {
@@ -249,13 +253,12 @@ class Artist extends React.Component {
                 uiActions={uiActions}
               />
             </div>
-            <Link
+            <Button
               to={`/artist/${encodeURIComponent(uri)}/related-artists`}
               scrollTo="#sub-views-menu"
-              className="button button--default"
             >
               <I18n path="artist.overview.related_artists.more" />
-            </Link>
+            </Button>
           </div>
         )}
 
@@ -283,10 +286,15 @@ class Artist extends React.Component {
                 handleChange={this.onChangeFilter}
               />
               {(sort || filter) && (
-                <a className="button button--discrete button--destructive button--small" onClick={this.onResetFilters}>
+                <Button
+                  discrete
+                  type="destructive"
+                  size="small"
+                  onClick={this.onResetFilters}
+                >
                   <Icon name="clear" />
                   <I18n path="actions.reset" />
-                </a>
+                </Button>
               )}
             </h4>
 
@@ -492,7 +500,11 @@ class Artist extends React.Component {
               <div className="heading__content">
                 <h1>{this.props.artist ? this.props.artist.name : null}</h1>
                 <div className="actions">
-                  <Button type="primary" onClick={this.onPlay}>
+                  <Button
+                    type="primary"
+                    onClick={this.onPlay}
+                    tracking={{ category: 'Artist', action: 'Play' }}
+                  >
                     <I18n path="actions.play" />
                   </Button>
                   {is_spotify && (

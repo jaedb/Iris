@@ -14,6 +14,7 @@ import Loader from './Loader';
 import { indexToArray } from '../util/arrays';
 import { i18n, I18n } from '../locale';
 import ErrorBoundary from './ErrorBoundary';
+import Button from './Button';
 
 class Notifications extends React.Component {
   importConfiguration(notification_key, configuration) {
@@ -102,9 +103,13 @@ class Notifications extends React.Component {
                         </p>
                       </div>
                       <div className="notification__actions">
-                        <a className="notification__actions__item button button--default" onClick={(e) => this.importConfiguration(notification.key, notification.configuration)}>
+                        <Button
+                          className="notification__actions__item"
+                          onClick={() => this.importConfiguration(notification.key, notification.configuration)}
+                          tracking={{ category: 'ShareConfiguration', action: 'Import' }}
+                        >
                           <I18n path="modal.share_configuration.import.import_now" />
-                        </a>
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -142,14 +147,16 @@ class Notifications extends React.Component {
                         <div className="notification__actions">
                           {
                             notification.links.map((link, i) => (
-                              <a
-                                className="notification__actions__item button button--secondary"
+                              <Button
+                                type="secondary"
+                                className="notification__actions__item"
                                 href={link.url}
                                 target={link.new_window ? '_blank' : 'self'}
                                 key={i}
+                                tracking={{ category: 'NotificationLink', action: 'Click', label: link.text }}
                               >
                                 {link.text}
-                              </a>
+                              </Button>
                             ))
                           }
                         </div>
