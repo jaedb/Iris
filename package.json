@@ -13,7 +13,7 @@
     "@sentry/browser": "^5.20.1",
     "history": "^4.10.1",
     "jquery": "^3.5.1",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.20",
     "logrocket": "^1.0.10",
     "mopidy": "^0.5",
     "react": "^16.13.1",
