@@ -4,7 +4,7 @@ import URILink from './URILink';
 import { trackEvent } from './Trackable';
 
 const Button = ({
-  className,
+  className = '',
   primary,
   type,
   size,

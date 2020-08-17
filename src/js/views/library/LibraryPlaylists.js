@@ -2,7 +2,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import Link from '../../components/Link';
+import Button from '../../components/Button';
 import PlaylistGrid from '../../components/PlaylistGrid';
 import List from '../../components/List';
 import DropdownField from '../../components/Fields/DropdownField';
@@ -282,6 +282,7 @@ class LibraryPlaylists extends React.Component {
         <Button
           to="/playlist/create"
           noHover
+          discrete
           tracking={{ category: 'Playlist', action: 'Create' }}
         >
           <Icon name="add_box" />

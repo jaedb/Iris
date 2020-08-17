@@ -221,6 +221,7 @@ class LibraryBrowseDirectory extends React.Component {
           <Button
             onClick={(e) => { uiActions.hideContextMenu(); this.playAll(e, all_tracks); }}
             noHover
+            discrete
             tracking={{ category: 'Directory', action: 'Play' }}
           >
             <Icon name="play_circle_filled" />

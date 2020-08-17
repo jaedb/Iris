@@ -3908,6 +3908,8 @@ select {
           padding-top: 4px;
           margin-left: 10px;
           vertical-align: baseline; }
+    .context-menu__item--loader {
+      padding-top: 75%; }
   .context-menu em {
     font-style: normal; }
     .context-menu em.context-menu__item:last-of-type {

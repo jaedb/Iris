@@ -64,14 +64,17 @@ class LibraryTracks extends React.Component {
     }
 
     const options = (
-      <Button
-        onClick={(e) => this.playAll(e)}
-        tracking={{ category: 'LibraryTracks', action: 'Play' }}
-        noHover
-      >
-        <Icon name="play_circle_filled" />
-        <I18n path="actions.play_all" />
-      </Button>
+      <div className="header__options__wrapper">
+        <Button
+          onClick={(e) => this.playAll(e)}
+          tracking={{ category: 'LibraryTracks', action: 'Play' }}
+          noHover
+          discrete
+        >
+          <Icon name="play_circle_filled" />
+          <I18n path="actions.play_all" />
+        </Button>
+      </div>
     );
 
     return (

@@ -339,12 +339,12 @@ const MopidyMiddleware = (function () {
           .then(
             (response) => {
               if (action.response_callback) {
-                store.dispatch(action.response_callback.call(this, response));
+                action.response_callback(response);
               }
             },
             (error) => {
               if (action.error_callback) {
-                store.dispatch(action.error_callback.call(this, error));
+                action.error_callback(error);
               } else {
                 store.dispatch(coreActions.handleException(
                   'Mopidy request failed',
@@ -358,8 +358,8 @@ const MopidyMiddleware = (function () {
         break;
 
       /**
-           * General playback
-           * */
+       * General playback
+       **/
 
       case 'MOPIDY_PLAY_STATE':
         store.dispatch(uiActions.setWindowTitle(null, action.play_state));

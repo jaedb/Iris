@@ -797,7 +797,7 @@ class ContextMenu extends React.Component {
           </a>
         </div>
         {isLoading ? (
-          <div className="context-menu__item">
+          <div className="context-menu__item context-menu__item--loader">
             <Loader className="context-menu__item" mini loading />
           </div>
         ) : list}

@@ -1,4 +1,3 @@
-
 import { createRange } from '../../util/arrays';
 import { generateGuid } from '../../util/helpers';
 

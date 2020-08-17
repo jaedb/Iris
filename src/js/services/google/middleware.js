@@ -56,7 +56,6 @@ const GoogleMiddleware = (function () {
         } else if (last_run.status === 'finished') {
           // TODO: do we want to force a refresh?
         }
-
         break;
 
       case 'GOOGLE_LIBRARY_ALBUMS_PROCESSOR':

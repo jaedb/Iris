@@ -42,7 +42,6 @@ export class Album extends React.Component {
     } = this.props;
 
     this.setWindowTitle();
-    console.log('Mount', uri);
     loadAlbum(uri);
 
     if (album) {
