@@ -1,0 +1,512 @@
+name: Nederlands
+
+##
+# Common and reusable phrases
+##
+errors:
+  uri_not_found: 'Geen resultaten met URI %{uri}'
+  could_not_load: Kon niet geladen worden
+  no_results: Geen resultaten gevonden
+  authorization_required: 'Autoriseer %{provider} eerst'
+  enable_first: 'Activeer %{provider} eerst'
+  no_service_worker: Service worker niet ondersteund
+  required: Vereist
+  unknown_error: Onbekende fout
+  need_to_be_online: Je moet online zijn om deze bron te laden
+actions:
+  play: Afspelen
+  play_all: Alles afspelen
+  play_next: Volgende afspelen
+  shuffle_play: Willekeurig afspelen
+  pause: Pause
+  stop: Stop
+  add_to_playlist: Toevoegen aan afspeellijst
+  add_to_library: Toevoegen aan bibliotheek
+  remove_from_library: Verwijderen uit bibliotheek
+  add_to_queue: Toevoegen aan wachtlijst
+  reset: Resetten
+  back: Terug
+  refresh: Ververs
+  enable: Activeren
+  disable: Desactiveren
+  send: Versturen
+  save: Opslaan
+  start: Starten
+  edit: Wijzigen
+  add: Toevoegen
+  confirm: Weet je dit zeker?
+  delete: Wissen
+  remove: Verwijderen
+common:
+  popularity: Populariteit
+  name: Naam
+  artist: Artiest
+  duration: Duur
+  source: Bron
+  sources: Bronnen
+  sort: Sorteren
+  filter: Filteren
+  by: ' door '
+fields:
+  start_typing: 'Begin te typen...'
+  search: 'Zoek...'
+  sort: Sorteren
+  view: Tonen
+  source: Bron
+  uri: URI('s)
+  items_to_add:
+    label: Toe te voegen items
+    placeholder: Geen item
+  filters:
+    all: Alles
+    thumbnails: Miniaturen
+    list: Lijst
+    as_loaded: Zoals geladen
+    name: Naam
+    artist: Artiest
+    updated: Gewijzigd
+    tracks: Tracks
+    source: Bron
+    editable: Bewerkbaar
+    owner: Eigenaar
+    followers: Volgers
+    popularity: Populariteit
+time:
+  seconds: 
+    short: s
+    singular: seconde
+    plural: seconden
+  minutes: 
+    short: min
+    singular: minuut
+    plural: minuten
+  hours: 
+    short: u
+    singular: uur
+    plural: uren
+  days: 
+    short: dagen
+    singular: dag
+    plural: dagen
+  weeks: 
+    short: weken
+    singular: week
+    plural: weken
+  years: 
+    short: jaren
+    singular: jaar
+    plural: jaren
+specs:
+  tracks: '%{count} tracks'
+  albums: '%{count} albums'
+  followers: '%{count} volgers'
+  listeners: '%{count} luisteraars'
+  playlists: '%{count} afspeellijsten'
+  plays: '%{count} keer afgespeeld'
+  popularity: '%{percent}% populariteit'
+  added: 'Toegevoegd '
+  added_ago: '%{time} geleden toegevoegd'
+  edited: 'Gewijzigd '
+  edited_ago: '%{time} geleden gewijzigd'
+  played_ago: '%{time} geleden afgespeeld'
+services:
+  mopidy:
+    title: Mopidy
+    local: Loal
+  spotify:
+    title: Spotify
+  pusher:
+    title: Pusher
+  snapcast:
+    title: Snapcast
+  genius:
+    title: Genius
+    switch_lyrics_result: Overschakelen naar een andere songtekst/zoekresultaat
+    want_lyrics: 'Wil je songteksten? Geef Genius toestemming in '
+  google:
+    title: Google
+  icecast:
+    title: Icecast
+  lastfm:
+    title: LastFM
+    love: Leuk
+    unlove: Niet leuk
+
+##
+# Components
+##
+sidebar:
+  now_playing: Speelt nu af
+  search: Zoek
+  discover: Ontdek
+  genre: Genre / Stemming
+  featured_playlists: Uitgelichte afspeellijsten
+  new_releases: Nieuw uitgebracht
+  my_music: Mijn muziek
+  playlists: Afspeellijsten
+  artists: Artiesten
+  albums: Albums
+  tracks: Tracks
+  browse: Bladeren
+  settings: Instellingen
+  not_connected: '%{name} niet verbonden'
+  browser_offline: Browser offline
+  update_available: Nieuwe versie beschikbaar
+context_menu:
+  add_to_playlist:
+    title: Toevoegen aan afspeellijst
+    no_playlists: Geen bewerkbare afspeellijsten
+  play_next: Als volgende afspelen
+  play_top_tracks: Top tracks afspelen
+  love_track: Leuk vinden
+  unlove_track: Niet leuk vinden
+  go_to_artist: Ga naar artiest
+  go_to_user: Ga naar gebruiker
+  track_info: Track info
+  discover_similar: Ontdek gelijkaardig
+  start_radio: Start radio
+  copy_uri: URI('s) kopiëren
+dropzones:
+  dragging_things: 'Versleep %{count} zaken'
+playback_controls:
+  consume: Consumeren
+  shuffle: Willekeurig
+  repeat: Herhalen
+  no_outputs: No outputs
+snapcast:
+  enabled: Geactiveerd
+  show_disconnected_clients: Toon niet-verbonden clients
+  no_connected_clients: Geen verbonden clients
+  host: Host
+  port: Poort
+  name: Naam
+  name_disconnected: Naam (niet verbonden)
+  group: Groep
+  new_group: '+ Nieuwe groep'
+  latency: Vertraging
+  stream: Stream
+  volume: Volume
+authentication:
+  popup_blocked: Popup geblokkeerd. Laat popups toe en probeer het opnieuw.
+  failed: Autorisatie gefaald. %{origin} is niet de ingestelde autorisation_url.
+  log_out: Afmelden
+  log_in: Aanmelden
+
+
+##
+# Views
+##
+now_playing:
+  title: Speelt nu af
+  context_actions:
+    radio: Radio
+    history: Geschiedenis
+    add_uri: URI toevoegen
+  current_track:
+    playing_from: Speelt af van
+    shuffle: Willekeurig
+    clear: Wis
+    radio: Radio
+album:
+  title: Album
+  title_window: '%{name} door %{artist} (album)'
+  wiki:
+    title: Over
+    published: 'Uitgebracht: %{date}'
+artist:
+  title: Artiest
+  title_window: '%{name} (artiest)'
+  overview:
+    title: Overzicht
+    top_tracks: Top tracks
+    related_artists:
+      title: Verwante artiesten
+      more: Alle verwante artiesten
+  tracks:
+    title: Tracks
+  related_artists:
+    title: Verwante artiesten
+  about:
+    title: Over
+    source: '%{source} artiest'
+    wiki:
+      published: 'Uitgebracht: %{date}'
+      origin: 'Bron: '
+debug:
+  title: Foutopsporing
+  ui:
+    title: Gebruikersinterface
+  debug:
+    title: Foutopsporing
+    overlay: Toon de debug overlay
+  logging:
+    title: Logboeken
+    mopidy: Log Mopidy
+    pusher: Log Pusher
+    actions: Log Actions
+    snapcast: Log Snapcast
+  create_notification: Maak notificatie
+  create_process: Maak procesnotificatie
+  run_test: Testproces uitvoeren
+  call: Oproepen
+  data: Data
+  examples: Voorbeelden
+playlist:
+  title: Afspeellijst
+  title_window: '%{name} (afspeellijst)'
+  title_plural: Afspeellijsten
+queue_history:
+  title: Afspeelgeschiedenis
+search:
+  title: Zoeken
+  title_window: 'Zoek: %{term}'
+  context_actions:
+    sort: Sorteren
+    source: 'Bronnen (%{count})'
+  placeholder: Zoeken
+  all:
+    title: Alle
+  artists:
+    title: Artiesten
+    more: 'Alle artiesten (%{count})'
+  albums:
+    title: Albums
+    more: 'Alle albums (%{count})'
+  playlists:
+    title: Afspeellijsten
+    more: 'Alle afspeellijsten (%{count})'
+  tracks:
+    title: Tracks
+track:
+  title: Track
+  title_window: '%{name} door %{artists} (track)'
+  lyrics_origin: 'Bron: '
+  explicit: Expliciet
+  disc_number: 'Schijf %{number}'
+  track_number: 'Track %{number}'
+  unknown_album: Onbekend album
+  want_lyrics: 'Wil je songteksten? Geef Genius toestemming onder '
+settings:
+  title: Instellingen
+  help: Help
+  server:
+    title: Server
+    username:
+      label: Gebruikersnaam
+      description: Een niet-unieke tekenreeks die wordt gebruikt om deze client te identificeren (geen speciale tekens)
+  interface:
+    title: Interface
+    language:
+      label: Taal
+    theme:
+      label: Thema
+      auto: Auto
+      auto_tooltip: Detecteert jouw keuze in de browser of besturingssysteem
+      dark: Donkder
+      light: Licht
+    behavior:
+      label: Gedrag
+      clear_tracklist: Wis wachtlijst bij het afspelen van URI('s)
+      clear_tracklist_tooltip: Afspelen van één of meerdere URI's zal de huidige wachtlijst overschrijven
+      hotkeys: Sneltoetsen activeren
+      smooth_scrolling: Vloeiend scrollen activeren
+      touch_events: Veegbewegingen voor afspeelbediening activeren
+      touch_events_tooltip: Maakt het mogelijk om naar links of rechts te vegen om van tracks te veranderen
+      wide_scrollbars: Gebruik brede schuifbalken
+    sources_priority:
+      label: Prioriteit bronnen
+      description: Verslepen om voorrang van zoekmachines en resultaten te wijzigen
+    reporting:
+      label: Rapportering
+      sublabel: Sta het versturen van anonieme gebruiksstatistieken toe
+      description: 'Deze anonieme gebruiksgegevens zijn belangrijk bij het identificeren van fouten en potentiële functies die Iris nog beter maken. Wilt u meer weten? Lees het '
+      privacy_policy: privacybeleid
+      are_you_sure: Weet je zeker dat je dit niet wenst te ondersteunen?
+    commands:
+      label: Opdrachten
+  advanced:
+    title: Geavanceerd
+    start_local_scan: Lokale scan uitvoeren
+    artist_uri:
+      label: URI artiestenbibliotheek
+      description: URI gebruikt voor het samenstellen van de artiestenbibliotheek
+    album_uri:
+      label: URI albumbibliotheek
+      description: URI gebruikt voor het samenstellen van de albumbibliotheek
+    connections:
+      label: Verbindingen
+    version:
+      label: Versie
+      upgrade_available: 'Nieuwe versie beschikbaar (%{version})'
+      upgrade: 'Opwaarderen naar %{version}'
+      up_to_date: Actueel
+    share_configuration: Deel configuratie
+    restart: Herstart server
+    reset_cache: Wis cachegeheugen
+    reset: Alle instellingen terugzetten
+  about:
+    title: Over
+    blurb_1: ' is een opensource project door '
+    blurb_2: '. Het wordt gratis verstrekt en zonder enige garantie. Als je iemand hebt betaald voor deze software, laat het me dan weten.'
+    donate: Steunen
+    github: GitHub
+  pusher_connection_list:
+    not_connected: Niet verbonden
+    no_connections: Geen verbindingen
+    you: ' (jij)'
+  servers:
+    inactive: Inactief
+    connecting: Verbinden
+    disconnected: Verbinding verbroken
+    connected: Verbonden
+    new_server: Nieuwe server
+    name: Naam
+    host: Host
+    port: Poort
+    encryption:
+      label: Encryptie
+      sublabel: Gebruik SSL
+      description: Vereist een SSL-proxy
+    switch: Schakel naar deze server
+    reconnect: Opnieuw verbinden
+  services:
+    title: Diensten
+    limited_access: Beperkte toegang
+    unknown: Onbekend
+    current_user: Huidige gebruiker
+    authorization: Autorisatie
+    refresh_token: Token verversen
+    authorized: Geautoriseerd
+    read_only: Alleen-lezen
+    unauthorized: Ongeautoriseerd
+    enabled: Actief
+    disabled: Uitgeschakeld
+    connected: Verbonden
+    disconnected: Verbinding verbroken
+    spotify:
+      mopidy_spotify_not_running: Mopidy-Spotify-extensie is niet actief - je zal geen muziek van Spotify kunnen afspelen
+      country:
+        label: Land
+        description: Een ISO 3166-1 alpha-2 landcode (eg 'NZ')
+      locale:
+        title: Taal
+        description: Een ISO 639 taalcode in kleine letters en een ISO 3166-1 alpha-2 landcode in hoofdletters, verbonden met een liggend streepje (bv 'nl_NL' of 'nl_BE')
+    icecast:
+      enable:
+        label: Actief
+        description: Stream audio naar deze browser
+      location:
+        label: Locatie
+        description: De volledige URL naar het stream-eindpunt
+user:
+  title: Gebruiker
+  title_window: '%{name} (gebruiker)'
+  you: Jij
+discover:
+  title: Ontdek
+  categories:
+    title: 'Genre / Stemming'
+  category:
+    title: 'Genre / Stemming'
+    category: Categorie
+  featured:
+    title: Uitgelichte afspeellijsten
+  new_releases:
+    title: Nieuw uitgebracht
+  recommendations:
+    title: Ontdek
+    tracks: Tracks
+    artists: Artiesten
+    albums: Albums
+    body_title: Verken nieuwe muziek
+    body_subtitle: Zaai muzikale kenmerken om jouw unieke sound samen te stellen
+    too_many_seeds: Te veel zaadjes! Je kan maximaal 5 tracks, artiesten en genres toevoegen.
+    find_recommendations: Vind aanbevelingen
+library:
+  albums:
+    title: Mijn albums
+  artists:
+    title: Mijn artiesten
+  browse:
+    title: Bladeren
+  browse_directory:
+    title: Map
+  playlists:
+    title: Mijn afspeellijsten
+  tracks:
+    title: Mijn tracks
+modal:
+  add_to_playlist:
+    title: Toevoegen aan afspeellijst
+    subtitle: 'Kies afspeellijst om %{count} track%{plural} toe te voegen'
+    no_playlists: Geen afspeellijsten beschikbaar
+    no_editable_playlists: Geen bewerkbare afspeellijsten
+  add_to_queue:
+    title: Toevoegen aan wachtlijst
+    subtitle: Voeg een door komma's gescheiden lijst van URI's toe aan de wachtrij
+    uris: URI('s)
+    add_random: Willekeurig toevoegen
+    position:
+      label: Positie
+      end: Einde
+      next: Na huidige track
+  edit_playlist:
+    title: Afspeellijst bewerken
+    title_create: Afspeellijst maken
+    name_required: Naam is vereist
+    name: Naam
+    description: Beschrijving
+    provider: Aanbieder
+    image:
+      label: Coverafbeelding
+      description: Enkel JPEG, maximaal 256kB. Leeg laten om de coverafbeelding niet te wijzigen.
+    options:
+      label: Opties
+      public: Publiek
+      collaborative: Gemeenschappelijk
+    create_playlist: Maak afspeellijst
+  edit_command:
+    title: Opdracht bewerken
+    title_create: Opdracht maken
+    name: Naam
+    colour: Kleur
+    icon: Pictogram
+    url: URL
+    method:
+      label: Methode
+      get: GET
+      post: POST
+    data: Data
+    headers: Aanvullende headers
+  edit_radio:
+    title: Radio
+    subtitle: Zaai muzikale kenmerken om de sound van jouw radio vorm te geven. Radio gebruikt Spotify's aanbevelingen om tracks te suggereren die vergelijkbaar zijn met jouw zaden.
+    invalid_seed_uri: Ongeldige zaad-URI('s)
+    too_many_seeds: Meer dan 5 zaden opgegeven, verwaarloos de rest
+    only_spotify_uris: Elkel Spotify URI's worden ondersteund
+    already_added: URI reeds toegevoegd
+    no_seeds: Geen zaden
+  initial_setup:
+    title: Welkom op Iris
+    username: Gebruikersnaam
+  kiosk:
+    title: Speelt nu af
+    title_window: '%{name} door %{artist} (speelt nu af)'
+    lyrics: Songtekst
+  share_configuration:
+    title: Deel configuratie
+    subtitle: Stuur uw autorisaties en instellingen naar een andere verbonden gebruiker
+    no_peers: Geen onderlinge verbindingen
+    recipients: Ontvangers
+    configurations: Configuraties
+    authorization: '%{service} autorisatie'
+    logged_in_as: 'Aangemeld als %{name}'
+    snapcast_description: Server verbindingsgegevens
+    interface: Instellingen gebruikersinterface
+    interface_description: Thema, sortering, filters, etc
+    import:
+      title: Configuratie gedeeld
+      subtitle: 'Een andere gebruiker heeft zijn configuratie gedeeld met jou. Dit omvat:'
+      do_you_want_to_import: Wil je dit importeren?
+      import_now: Nu importeren
+      successful: Importeren geslaagd
