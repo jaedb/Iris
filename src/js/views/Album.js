@@ -85,7 +85,7 @@ export class Album extends React.Component {
 
     // We have just received our full album or our album artists
     if ((!prevAlbum && album) || (!prevAlbum.artists && album.artists)) {
-      if (album.wiki === undefined && album.artists.length > 0) {
+      if (album.artists && album.wiki === undefined) {
         getAlbum(album.uri, album.artists[0].name, album.name);
       }
     }

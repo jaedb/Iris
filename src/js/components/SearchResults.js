@@ -111,7 +111,7 @@ const SearchResults = ({
         {/*<LazyLoadListener enabled={this.props.artists_more && spotify_search_enabled} loadMore={loadMore} />*/}
 
         {resultsCount > results.length && (
-          <Button uri={`iris:search:${type}:${encodedTerm}`}>
+          <Button uri={`iris:search:${type}:${encodedTerm}`} debug>
             <I18n path={`search.${type}.more`} count={resultsCount} />
           </Button>
         )}
