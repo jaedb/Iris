@@ -38,6 +38,10 @@ class IrisCore(pykka.ThreadingActor):
         "seed_tracks": [],
         "results": [],
     }
+    data = {
+        "commands": [],
+        "pinned": [],
+    }
     ioloop = None
 
     @classmethod
@@ -56,7 +60,7 @@ class IrisCore(pykka.ThreadingActor):
         logger.info("Starting Iris " + Extension.version)
 
         # Load our commands from file
-        self.commands = self.load_from_file("commands")
+        self.data['commands'] = self.load_from_file("commands")
 
     ##
     # Mopidy is shutting down
@@ -822,49 +826,70 @@ class IrisCore(pykka.ThreadingActor):
         self.queue_metadata = cleaned_queue_metadata
 
     ##
-    # Commands
+    # Server-side data assets
     #
-    # These are stored locally for all users to access
+    # These functions are used internally to store data packets locally for all users to access
     ##
 
-    def get_commands(self, *args, **kwargs):
+    def get_data(self, name, *args, **kwargs):
         callback = kwargs.get("callback", False)
 
-        response = {"commands": self.commands}
+        response = {name: self.data[name]}
+
         if callback:
             callback(response)
         else:
             return response
 
-    def set_commands(self, *args, **kwargs):
+    def set_data(self, name, *args, **kwargs):
         callback = kwargs.get("callback", False)
         data = kwargs.get("data", {})
 
         # Update our temporary variable
-        self.commands = data["commands"]
+        self.data[name] = data[name]
 
         # Save the new commands to file storage
-        self.save_to_file(self.commands, "commands")
+        self.save_to_file(self.data[name], name)
 
         self.broadcast(
             data={
-                "method": "commands_changed",
-                "params": {"commands": self.commands},
+                "method": f"{name}_changed",
+                "params": {name: self.data[name]},
             }
         )
 
-        response = {"message": "Commands saved"}
+        response = {"message": f"Saved {name}"}
         if callback:
             callback(response)
         else:
             return response
+
+    ##
+    # Pinned assets
+    ##
+
+    def get_pinned(self, *args, **kwargs):
+        return self.get_data('pinned', *args, **kwargs)
+
+    def set_pinned(self, *args, **kwargs):
+        return self.set_data('pinned', *args, **kwargs)
+
+    ##
+    # Commands
+    ##
+
+    def get_commands(self, *args, **kwargs):
+        return self.get_data('commands', *args, **kwargs)
+
+    def set_commands(self, *args, **kwargs):
+        return self.set_data('commands', *args, **kwargs)
 
     async def run_command(self, *args, **kwargs):
         callback = kwargs.get("callback", False)
         data = kwargs.get("data", {})
         error = False
 
-        if str(data["id"]) not in self.commands:
+        if str(data["id"]) not in self.data['commands']:
             error = {
                 "message": "Command failed",
                 "description": "Could not find command by ID "
@@ -873,7 +898,7 @@ class IrisCore(pykka.ThreadingActor):
                 + '"',
             }
         else:
-            command = self.commands[str(data["id"])]
+            command = self.data['commands'][str(data["id"])]
             if "method" not in command:
                 error = {
                     "message": "Command failed",
