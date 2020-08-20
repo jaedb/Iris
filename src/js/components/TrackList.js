@@ -403,6 +403,7 @@ class TrackList extends React.Component {
     mini_zones={this.props.slim_mode || isTouchDevice()}
     track={track}
     track_context={this.props.track_context}
+    stream_title={this.props.stream_title}
     can_sort={this.props.track_context == 'queue' || this.props.track_context == 'editable-playlist'}
     selected={this.props.selected_tracks.includes(track_key)}
     play_state={this.props.play_state}
@@ -432,6 +433,7 @@ const mapStateToProps = (state, ownProps) => ({
   dragger: state.ui.dragger,
   current_track: state.core.current_track,
   context_menu: state.ui.context_menu,
+  stream_title: state.core.stream_title,
 });
 
 const mapDispatchToProps = (dispatch) => ({

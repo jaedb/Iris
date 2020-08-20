@@ -178,7 +178,7 @@ export default class Track extends React.Component {
       return null;
     }
 
-    const { track } = this.props;
+    const { track, stream_title } = this.props;
     let className = 'list__item list__item--track mouse-draggable mouse-selectable mouse-contextable';
     const track_details = [];
     const track_actions = [];
@@ -187,6 +187,12 @@ export default class Track extends React.Component {
       track_details.push(
         <li className="details__item details__item--artists" key="artists">
           {track.artists ? <LinksSentence items={track.artists} /> : '-'}
+        </li>,
+      );
+    } else if (track.playing && stream_title) {
+      track_details.push(
+        <li className="details__item details__item--artists" key="stream_title">
+          <span className="links-sentence">{stream_title}</span>
         </li>,
       );
     }

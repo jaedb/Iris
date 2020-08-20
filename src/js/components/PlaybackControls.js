@@ -25,15 +25,17 @@ class PlaybackControls extends React.Component {
     this.state = {
       expanded: false,
       current_track: null,
+      stream_title: null,
       transition_track: null,
       transition_direction: null,
     };
   }
 
-  static getDerivedStateFromProps({ current_track }, state) {
+  static getDerivedStateFromProps({ current_track, stream_title }, state) {
     return {
       ...state,
       current_track,
+      stream_title,
     };
   }
 
@@ -191,6 +193,7 @@ class PlaybackControls extends React.Component {
     const {
       current_track,
       expanded,
+      stream_title,
       transition_track,
       transition_direction,
     } = this.state;
@@ -236,7 +239,12 @@ class PlaybackControls extends React.Component {
                   {current_track ? current_track.name : <span>-</span>}
                 </div>
                 <div className="artist">
-                  {current_track ? <LinksSentence items={current_track.artists} /> : <LinksSentence />}
+                  {
+                    (current_track && current_track.artists
+                        && <LinksSentence items={current_track.artists} />)
+                    || (stream_title && <span className="links-sentence">{stream_title}</span>)
+                    || <LinksSentence />
+                  }
                 </div>
               </div>
             </div>
@@ -316,6 +324,7 @@ const mapStateToProps = (state) => ({
   snapcast_enabled: state.pusher.config.snapcast_enabled,
   current_track: (state.core.current_track && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null),
   next_track: (state.core.next_track_uri && state.core.tracks[state.core.next_track_uri] !== undefined ? state.core.tracks[state.core.next_track_uri] : null),
+  stream_title: state.core.stream_title,
   radio_enabled: (!!(state.ui.radio && state.ui.radio.enabled)),
   play_state: state.mopidy.play_state,
   time_position: state.mopidy.time_position,
