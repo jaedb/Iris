@@ -60,7 +60,7 @@ class IrisCore(pykka.ThreadingActor):
         logger.info("Starting Iris " + Extension.version)
 
         # Load our commands from file
-        self.data['commands'] = self.load_from_file("commands")
+        self.data["commands"] = self.load_from_file("commands")
 
     ##
     # Mopidy is shutting down
@@ -869,27 +869,27 @@ class IrisCore(pykka.ThreadingActor):
     ##
 
     def get_pinned(self, *args, **kwargs):
-        return self.get_data('pinned', *args, **kwargs)
+        return self.get_data("pinned", *args, **kwargs)
 
     def set_pinned(self, *args, **kwargs):
-        return self.set_data('pinned', *args, **kwargs)
+        return self.set_data("pinned", *args, **kwargs)
 
     ##
     # Commands
     ##
 
     def get_commands(self, *args, **kwargs):
-        return self.get_data('commands', *args, **kwargs)
+        return self.get_data("commands", *args, **kwargs)
 
     def set_commands(self, *args, **kwargs):
-        return self.set_data('commands', *args, **kwargs)
+        return self.set_data("commands", *args, **kwargs)
 
     async def run_command(self, *args, **kwargs):
         callback = kwargs.get("callback", False)
         data = kwargs.get("data", {})
         error = False
 
-        if str(data["id"]) not in self.data['commands']:
+        if str(data["id"]) not in self.data["commands"]:
             error = {
                 "message": "Command failed",
                 "description": "Could not find command by ID "
@@ -898,7 +898,7 @@ class IrisCore(pykka.ThreadingActor):
                 + '"',
             }
         else:
-            command = self.data['commands'][str(data["id"])]
+            command = self.data["commands"][str(data["id"])]
             if "method" not in command:
                 error = {
                     "message": "Command failed",
