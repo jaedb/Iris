@@ -21,6 +21,7 @@ import {
   uriType,
 } from '../util/helpers';
 import { i18n, I18n } from '../locale';
+import Button from '../components/Button';
 
 const Artwork = ({
   image,
@@ -235,19 +236,19 @@ class Queue extends React.Component {
     const options = (
       <span>
         {this.props.spotify_enabled && (
-          <Link className="button button--no-hover" to="/queue/radio">
+          <Button noHover discrete to="/queue/radio">
             <Icon name="radio" />
             <I18n path="now_playing.context_actions.radio" />
-          </Link>
+          </Button>
         )}
-        <Link className="button button--no-hover" to="/queue/history">
+        <Button noHover discrete to="/queue/history">
           <Icon name="history" />
           <I18n path="now_playing.context_actions.history" />
-        </Link>
-        <Link className="button button--no-hover" to="/queue/add-uri">
+        </Button>
+        <Button noHover discrete to="/queue/add-uri">
           <Icon name="playlist_add" />
           <I18n path="actions.add" />
-        </Link>
+        </Button>
       </span>
     );
 

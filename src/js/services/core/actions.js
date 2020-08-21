@@ -1,5 +1,5 @@
 
-import { createRange } from '../../util/arrays';
+import { createRange, removeDuplicates } from '../../util/arrays';
 import { uriSource } from '../../util/helpers';
 
 const spotifyActions = require('../../services/spotify/actions');
@@ -115,12 +115,16 @@ export function cachebustHttpStream() {
  * relevant service to load the record - all from one neat package.
  * */
 
-export function loadItem(uri, force_reload = false) {
+export function loadItems(uris, force_reload = false) {
   return {
-    type: 'LOAD_ITEM',
-    uri,
+    type: 'LOAD_ITEMS',
+    uris,
     force_reload,
   };
+}
+
+export function loadItem(uri, force_reload = false) {
+  return loadItems([uri], force_reload);
 }
 
 export function loadTrack(uri, force_reload = false) {
@@ -422,5 +426,34 @@ export function getLibraryAlbums() {
 export function getLibraryArtists() {
   return {
     type: 'GET_LIBRARY_ARTISTS',
+  };
+}
+
+export function addPinned(item) {
+  return {
+    type: 'ADD_PINNED',
+    item,
+  };
+}
+
+export function removePinned(uri) {
+  return {
+    type: 'REMOVE_PINNED',
+    uri,
+  };
+}
+
+export function updatePinned(pinned) {
+  return {
+    type: 'UPDATE_PINNED',
+    pinned: removeDuplicates(pinned),
+  };
+}
+
+export function updatePinnedUri(oldUri, newUri) {
+  return {
+    type: 'UPDATE_PINNED_URI',
+    oldUri,
+    newUri,
   };
 }

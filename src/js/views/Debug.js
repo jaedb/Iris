@@ -1,9 +1,9 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Header from '../components/Header';
 import Icon from '../components/Icon';
+import Button from '../components/Button';
 import * as uiActions from '../services/ui/actions';
 import * as pusherActions from '../services/pusher/actions';
 import * as mopidyActions from '../services/mopidy/actions';
@@ -85,12 +85,16 @@ class Debug extends React.Component {
       pusher_data,
       snapcast_data,
     } = this.state;
-  
+
     const options = (
-      <a className="button button--discrete button--no-hover" onClick={this.onBack}>
+      <Button
+        onClick={this.onBack}
+        noHover
+        discrete
+      >
         <Icon name="keyboard_backspace" />
         <I18n path="actions.back" />
-      </a>
+      </Button>
     );
 
     return (
@@ -107,17 +111,14 @@ class Debug extends React.Component {
             <div className="field checkbox">
               <div className="name">Test mode</div>
               <div className="input">
-                {toggling_test_mode && (
-                  <span className="button button--working">Applying...</span>
-                )}
-                {!toggling_test_mode && (
-                  <span
-                    className={`button button--${test_mode ? 'destructive' : 'default'}`}
-                    onClick={this.toggleTestMode}
-                  >
-                    <I18n path={`actions.${test_mode ? 'disable' : 'enable'}`} />
-                  </span>
-                )}
+                <Button
+                  type={test_mode ? 'destructive' : null}
+                  working={toggling_test_mode}
+                  onClick={this.toggleTestMode}
+                  tracking={{ category: 'Debug', action: 'TestMode', label: test_mode ? 'Disable' : 'Enable' }}
+                >
+                  <I18n path={`actions.${test_mode ? 'disable' : 'enable'}`} />
+                </Button>
               </div>
             </div>
             <div className="field checkbox">
@@ -178,9 +179,24 @@ class Debug extends React.Component {
             <div className="field">
               <div className="name" />
               <div className="input">
-                <a className="button button--default" onClick={(e) => this.props.uiActions.createNotification({ content: 'Test notification' })}><I18n path="debug.create_notification" /></a>
-                <a className="button button--default" onClick={(e) => this.props.uiActions.startProcess('test_process', "Test process", {remaining: 68, total: 100})}><I18n path="debug.create_process" /></a>
-                <a className="button button--default" onClick={(e) => this.props.pusherActions.request('test')}><I18n path="debug.run_test" /></a>
+                <Button
+                  onClick={() => this.props.uiActions.createNotification({ content: 'Test notification' })}
+                  tracking={{ category: 'Debug', action: 'Test notification' }}
+                >
+                  <I18n path="debug.create_notification" />
+                </Button>
+                <Button
+                  onClick={() => this.props.uiActions.startProcess('test_process', "Test process", {remaining: 68, total: 100})}
+                  tracking={{ category: 'Debug', action: 'Test process' }}
+                >
+                  <I18n path="debug.create_process" />
+                </Button>
+                <Button
+                  onClick={() => this.props.pusherActions.request('test')}
+                  tracking={{ category: 'Debug', action: 'Run test process' }}
+                >
+                  <I18n path="debug.run_test" />
+                </Button>
               </div>
             </div>
           </form>
@@ -221,7 +237,12 @@ class Debug extends React.Component {
             <div className="field">
               <div className="name" />
               <div className="input">
-                <button type="submit" className="button button--default">Send</button>
+                <Button
+                  submit
+                  tracking={{ category: 'Debug', action: 'Mopidy', label: 'Send' }}
+                >
+                  <I18n path="actions.send" />
+                </Button>
               </div>
             </div>
           </form>
@@ -258,7 +279,12 @@ class Debug extends React.Component {
             <div className="field">
               <div className="name" />
               <div className="input">
-                <button type="submit" className="button button--default"><I18n path="actions.send" /></button>
+                <Button
+                  submit
+                  tracking={{ category: 'Debug', action: 'Pusher', label: 'Send' }}
+                >
+                  <I18n path="actions.send" />
+                </Button>
               </div>
             </div>
           </form>
@@ -277,7 +303,12 @@ class Debug extends React.Component {
             <div className="field">
               <div className="name" />
               <div className="input">
-                <button type="submit" className="button button--default"><I18n path="actions.send" /></button>
+                <Button
+                  submit
+                  tracking={{ category: 'Debug', action: 'Snapcast', label: 'Send' }}
+                >
+                  <I18n path="actions.send" />
+                </Button>
               </div>
             </div>
           </form>

@@ -3,7 +3,7 @@ import React from 'react';
 import ReactGA from 'react-ga';
 import { arrayOf } from '../../util/arrays';
 import URILink from '../../components/URILink';
-import { uriSource, upgradeSpotifyPlaylistUris, uriType, titleCase } from '../../util/helpers';
+import { uriSource, upgradeSpotifyPlaylistUris, uriType } from '../../util/helpers';
 import {
   formatTracks,
   formatTrack,
@@ -176,44 +176,30 @@ const CoreMiddleware = (function () {
         }
 
         // backend searching (mopidy)
-        if (mopidy.connected) {
-          store.dispatch(
-            mopidyActions.getSearchResults(action.search_type, action.query, 100, full_uri_schemes),
-          );
-        }
+        store.dispatch(
+          mopidyActions.getSearchResults(action.search_type, action.query, 100, full_uri_schemes),
+        );
 
         break;
 
       // Get assets from all of our providers
       case 'GET_LIBRARY_PLAYLISTS':
-        if (spotify.connected) {
-          store.dispatch(spotifyActions.getLibraryPlaylists());
-        }
-        if (store.getState().mopidy.connected) {
-          store.dispatch(mopidyActions.getLibraryPlaylists());
-        }
+        store.dispatch(spotifyActions.getLibraryPlaylists());
+        store.dispatch(mopidyActions.getLibraryPlaylists());
         next(action);
         break;
 
       // Get assets from all of our providers
       case 'GET_LIBRARY_ALBUMS':
-        if (spotify.connected) {
-          store.dispatch(spotifyActions.getLibraryAlbums());
-        }
-        if (store.getState().mopidy.connected) {
-          store.dispatch(mopidyActions.getLibraryAlbums());
-        }
+        store.dispatch(spotifyActions.getLibraryAlbums());
+        store.dispatch(mopidyActions.getLibraryAlbums());
         next(action);
         break;
 
       // Get assets from all of our providers
       case 'GET_LIBRARY_ARTISTS':
-        if (spotify.connected) {
-          store.dispatch(spotifyActions.getLibraryArtists());
-        }
-        if (store.getState().mopidy.connected) {
-          store.dispatch(mopidyActions.getLibraryArtists());
-        }
+        store.dispatch(spotifyActions.getLibraryArtists());
+        store.dispatch(mopidyActions.getLibraryArtists());
         next(action);
         break;
 
@@ -245,7 +231,7 @@ const CoreMiddleware = (function () {
             store.dispatch(spotifyActions.getPlaylist(action.key));
             break;
           case 'm3u':
-            if (store.getState().mopidy.connected) store.dispatch(mopidyActions.getPlaylist(action.key));
+            store.dispatch(mopidyActions.getPlaylist(action.key));
             break;
           default:
             break;
@@ -321,11 +307,14 @@ const CoreMiddleware = (function () {
        * assets. This is where we can return already indexed records
        * where appropriate
        * */
-      case 'LOAD_ITEM':
-        store.dispatch(coreActions[`load${titleCase(uriType(action.uri))}`](
-          action.uri,
-          action.force_reload,
-        ));
+      case 'LOAD_ITEMS':
+        action.uris.forEach((uri) => {
+          store.dispatch({
+            type: `LOAD_${uriType(uri).toUpperCase()}`,
+            uri,
+            force_reload: action.force_reload,
+          });
+        });
         break;
 
       case 'LOAD_TRACK':
@@ -346,9 +335,7 @@ const CoreMiddleware = (function () {
             break;
 
           default:
-            if (store.getState().mopidy.connected) {
-              store.dispatch(mopidyActions.getTrack(action.uri));
-            }
+            store.dispatch(mopidyActions.getTrack(action.uri));
             break;
         }
 
@@ -374,9 +361,7 @@ const CoreMiddleware = (function () {
             break;
 
           default:
-            if (store.getState().mopidy.connected) {
-              store.dispatch(mopidyActions.getAlbum(action.uri));
-            }
+            store.dispatch(mopidyActions.getAlbum(action.uri));
             break;
         }
 
@@ -403,9 +388,7 @@ const CoreMiddleware = (function () {
             break;
 
           default:
-            if (store.getState().mopidy.connected) {
-              store.dispatch(mopidyActions.getArtist(action.uri));
-            }
+            store.dispatch(mopidyActions.getArtist(action.uri));
             break;
         }
 
@@ -432,9 +415,7 @@ const CoreMiddleware = (function () {
             break;
 
           default:
-            if (store.getState().mopidy.connected) {
-              store.dispatch(mopidyActions.getPlaylist(action.uri));
-            }
+            store.dispatch(mopidyActions.getPlaylist(action.uri));
             break;
         }
 
@@ -491,9 +472,9 @@ const CoreMiddleware = (function () {
 
 
       /**
-           * Index actions
-           * These modify our asset indexes, which are used globally
-           * */
+       * Index actions
+       * These modify our asset indexes, which are used globally
+       * */
 
       case 'CURRENT_TRACK_LOADED':
         store.dispatch(coreActions.trackLoaded(action.track));
@@ -804,6 +785,31 @@ const CoreMiddleware = (function () {
         records_action[records_type_plural] = records;
         store.dispatch(records_action);
 
+        next(action);
+        break;
+
+      case 'ADD_PINNED':
+        store.dispatch(coreActions.updatePinned([
+          ...store.getState().core.pinned,
+          formatSimpleObject(action.item),
+        ]));
+        next(action);
+        break;
+
+      case 'REMOVE_PINNED':
+        store.dispatch(coreActions.updatePinned(
+          store.getState().core.pinned.filter((pinnedItem) => pinnedItem.uri !== action.uri),
+        ));
+        next(action);
+        break;
+
+      case 'UPDATE_PINNED_URI':
+        store.dispatch(coreActions.updatePinned(
+          store.getState().core.pinned.map((pinnedItem) => ({
+            ...pinnedItem,
+            ...(pinnedItem.uri === action.oldUri ? { uri: action.newUri } : {}),
+          })),
+        ));
         next(action);
         break;
 

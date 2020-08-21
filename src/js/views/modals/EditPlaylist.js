@@ -9,6 +9,7 @@ import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
 import { uriSource } from '../../util/helpers';
 import { i18n, I18n } from '../../locale';
+import Button from '../../components/Button';
 
 class EditPlaylist extends React.Component {
   constructor(props) {
@@ -43,27 +44,24 @@ class EditPlaylist extends React.Component {
           break;
 
         default:
-          if (this.props.mopidy_connected) {
-            this.props.mopidyActions.getPlaylist(this.props.uri);
-          }
+          this.props.mopidyActions.getPlaylist(this.props.uri);
           break;
       }
     }
   }
 
   componentDidUpdate = ({
-    mopidy_connected: prev_mopidy_connected,
+    playlist: prevPlaylist,
   }) => {
     const {
       uri,
       playlist,
-      mopidy_connected,
       mopidyActions: {
         getPlaylist,
       },
     } = this.props;
 
-    if (!prev_mopidy_connected && mopidy_connected && !playlist) {
+    if (playlist !== prevPlaylist) {
       getPlaylist(uri);
     }
   }
@@ -225,9 +223,14 @@ class EditPlaylist extends React.Component {
           {this.renderFields()}
 
           <div className="actions centered-text">
-            <button type="submit" className="button button--primary button--large">
+            <Button
+              type="primary"
+              size="large"
+              tracking={{ category: 'EditPlaylist', action: 'Submit' }}
+              submit
+            >
               <I18n path="actions.save" />
-            </button>
+            </Button>
           </div>
         </form>
       </Modal>
@@ -249,7 +252,6 @@ const mapStateToProps = (state, ownProps) => {
 
   return {
     uri,
-    mopidy_connected: state.mopidy.connected,
     playlist: (state.core.playlists[uri] !== undefined ? state.core.playlists[uri] : null),
     playlists: state.core.playlists,
   };

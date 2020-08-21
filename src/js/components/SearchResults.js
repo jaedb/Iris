@@ -11,6 +11,7 @@ import PlaylistGrid from './PlaylistGrid';
 import TrackList from './TrackList';
 import LazyLoadListener from './LazyLoadListener';
 import { I18n } from '../locale';
+import Button from './Button';
 
 const SearchResults = ({
   type,
@@ -110,9 +111,9 @@ const SearchResults = ({
         {/*<LazyLoadListener enabled={this.props.artists_more && spotify_search_enabled} loadMore={loadMore} />*/}
 
         {resultsCount > results.length && (
-          <URILink uri={`iris:search:${type}:${encodedTerm}`} className="button button--default">
+          <Button uri={`iris:search:${type}:${encodedTerm}`} debug>
             <I18n path={`search.${type}.more`} count={resultsCount} />
-          </URILink>
+          </Button>
         )}
       </section>
     </div>

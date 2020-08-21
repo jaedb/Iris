@@ -17,15 +17,14 @@ class LibraryBrowse extends React.Component {
     this.props.uiActions.setWindowTitle(i18n('library.browse.title'));
   }
 
-  componentDidUpdate = ({ mopidy_connected: prev_mopidy_connected}) => {
-    const { mopidy_connected } = this.props;
-    if (!prev_mopidy_connected && mopidy_connected) this.loadDirectory();
-  }
+  loadDirectory = () => {
+    const {
+      mopidyActions: {
+        getDirectory,
+      },
+    } = this.props;
 
-  loadDirectory(props = this.props) {
-    if (props.mopidy_connected) {
-      this.props.mopidyActions.getDirectory(null);
-    }
+    getDirectory(null);
   }
 
   render() {
@@ -62,6 +61,10 @@ class LibraryBrowse extends React.Component {
 
           case 'SoundCloud':
             subdirectory.icons = ['/iris/assets/backgrounds/browse-soundcloud.jpg'];
+            break;
+
+          case 'Mixcloud':
+            subdirectory.icons = ['/iris/assets/backgrounds/browse-mixcloud.jpg'];
             break;
 
           case 'iTunes Store: Podcasts':
@@ -124,9 +127,8 @@ class LibraryBrowse extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state) => ({
   load_queue: state.ui.load_queue,
-  mopidy_connected: state.mopidy.connected,
   directory: state.mopidy.directory,
   view: state.ui.library_directory_view,
 });

@@ -6,6 +6,7 @@ import * as uiActions from '../../services/ui/actions';
 import * as geniusActions from '../../services/genius/actions';
 import { toJSON } from '../../util/format';
 import { I18n, i18n } from '../../locale';
+import Button from '../Button';
 
 class GeniusAuthenticationFrame extends React.Component {
   constructor(props) {
@@ -70,7 +71,7 @@ class GeniusAuthenticationFrame extends React.Component {
     // Start timer to check our popup's state
     const timer = setInterval(checkPopup, 1000);
     function checkPopup() {
-        	// Popup has been closed
+      // Popup has been closed
       if (typeof (popup) !== 'undefined' && popup) {
         if (popup.closed) {
           self.setState({ authorizing: false });
@@ -94,15 +95,25 @@ class GeniusAuthenticationFrame extends React.Component {
 
     if (this.props.authorized) {
       return (
-        <a className={"button button--destructive" + (authorizing ? ' button--working' : '')} onClick={(e) => this.props.geniusActions.revokeAuthorization()}>
+        <Button
+          type="destructive"
+          working={authorizing}
+          onClick={() => this.props.geniusActions.revokeAuthorization()}
+          tracking={{ category: 'Genius', action: 'Logout' }}
+        >
           <I18n path="authentication.log_out" />
-        </a>
+        </Button>
       );
     }
     return (
-      <a className={"button button--primary" + (authorizing ? ' button--working' : '')} onClick={(e) => this.startAuthorization()}>
+      <Button
+        type="primary"
+        working={authorizing}
+        onClick={() => this.startAuthorization()}
+        tracking={{ category: 'Genius', label: 'Login' }}
+      >
         <I18n path="authentication.log_in" />
-      </a>
+      </Button>
     );
   }
 }

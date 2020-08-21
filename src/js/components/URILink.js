@@ -1,12 +1,11 @@
-
 import React, { memo } from 'react';
 import Link from './Link';
 import { uriType as uriTypeHelper } from '../util/helpers';
 
 export default memo((props) => {
   let to = null;
-  let { uri, type } = props;
-  const uriType = type || uriTypeHelper(uri);
+  let { uri } = props;
+  const uriType = uriTypeHelper(uri);
   if (!props.unencoded) {
     uri = encodeURIComponent(uri);
   }

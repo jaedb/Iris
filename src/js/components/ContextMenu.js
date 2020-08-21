@@ -3,6 +3,7 @@ import React, { createRef } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { withRouter } from 'react-router';
+import { compact } from 'lodash';
 import {
   uriSource,
   uriType,
@@ -140,6 +141,7 @@ class ContextMenu extends React.Component {
         context.type = uriType(item.uri);
         context.in_library = this.inLibrary(item);
         context.is_loved = this.isLoved(item);
+        context.is_pinned = this.isPinned(item);
       }
     }
 
@@ -204,7 +206,15 @@ class ContextMenu extends React.Component {
     if (tracks[uri] === undefined) return false;
 
     const track = tracks[uri];
-    return (track.userloved !== undefined && track.userloved == '1');
+    return (track.userloved !== undefined && track.userloved === '1');
+  }
+
+  isPinned = ({ uri }) => {
+    const {
+      pinned,
+    } = this.props;
+
+    return pinned.findIndex((pinnedItem) => pinnedItem.uri === uri) > -1;
   }
 
   canBeInLibrary = () => {
@@ -231,6 +241,30 @@ class ContextMenu extends React.Component {
       following(items[0].uri, 'DELETE');
     } else {
       following(items[0].uri, 'PUT');
+    }
+  }
+
+  togglePinned = (isItemPinned) => {
+    const {
+      uiActions: {
+        hideContextMenu,
+      },
+      coreActions: {
+        addPinned,
+        removePinned,
+      },
+      menu: {
+        items,
+      } = {},
+    } = this.props;
+
+    const item = items[0];
+
+    hideContextMenu();
+    if (isItemPinned) {
+      removePinned(item.uri);
+    } else {
+      addPinned(item);
     }
   }
 
@@ -701,36 +735,49 @@ class ContextMenu extends React.Component {
     let isLoading = false;
 
     if (submenu === 'add-to-playlist') {
-      let playlists = indexToArray(playlistsIndex);
-      playlists = playlists.filter((playlist) => playlist.can_edit);
-      playlists = sortItems(playlists, 'name');
-
       if (processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR && processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR.status === 'running') {
         isLoading = true;
-      }
+      } else {
+        let playlists = indexToArray(playlistsIndex);
+        playlists = compact(playlists.map((playlist) => {
+          if (!playlist.can_edit) return null;
+          return {
+            ...playlist,
+            is_pinned: this.isPinned(playlist),
+          };
+        }));
+        playlists = sortItems(playlists, 'name');
+        playlists = sortItems(playlists, 'is_pinned');
 
-      list = (
-        <span className="context-menu__item">
-          <span className="context-menu__item mid_grey-text">
-            <span className="context-menu__item__link context-menu__item__link--inactive">
-              <I18n path="context_menu.add_to_playlist.no_playlists" />
+        list = (
+          <span className="context-menu__item">
+            <span className="context-menu__item mid_grey-text">
+              <span className="context-menu__item__link context-menu__item__link--inactive">
+                <I18n path="context_menu.add_to_playlist.no_playlists" />
+              </span>
             </span>
           </span>
-        </span>
-      );
-      if (playlists.length) {
-        list = playlists.map((playlist) => (
-          <span className="context-menu__item" key={playlist.uri}>
-            <a
-              className="context-menu__item__link"
-              onClick={(e) => this.addTracksToPlaylist(e, playlist.uri)}
-            >
-              <span className="context-menu__item__label">
-                {playlist.name}
-              </span>
-            </a>
-          </span>
-        ));
+        );
+        if (playlists.length) {
+          list = playlists.map((playlist) => {
+
+            // Allows us to css target last-child
+            const ElementTag = playlist.is_pinned ? 'em' : 'span';
+
+            return (
+              <ElementTag className="context-menu__item" key={playlist.uri}>
+                <a
+                  className="context-menu__item__link"
+                  onClick={(e) => this.addTracksToPlaylist(e, playlist.uri)}
+                >
+                  <span className="context-menu__item__label">
+                    {playlist.name}
+                  </span>
+                </a>
+              </ElementTag>
+            );
+          });
+        }
       }
     }
 
@@ -749,12 +796,11 @@ class ContextMenu extends React.Component {
             </span>
           </a>
         </div>
-        {list}
-        {isLoading && (
-          <div className="context-menu__item">
+        {isLoading ? (
+          <div className="context-menu__item context-menu__item--loader">
             <Loader className="context-menu__item" mini loading />
           </div>
-        )}
+        ) : list}
       </div>
     );
   }
@@ -936,6 +982,16 @@ class ContextMenu extends React.Component {
       );
     }
 
+    let toggle_pinned = (
+      <div className="context-menu__item">
+        <a className="context-menu__item__link" onClick={() => this.togglePinned(context.is_pinned)}>
+          <span className="context-menu__item__label">
+            <I18n path={`context_menu.${context.is_pinned ? 'un' : ''}pin`} />
+          </span>
+        </a>
+      </div>
+    );
+
     const go_to_artist = (
       <div className="context-menu__item">
         <a className="context-menu__item__link" onClick={this.goToArtist}>
@@ -1071,6 +1127,7 @@ class ContextMenu extends React.Component {
             {add_playlist_to_queue}
             {this.canBeInLibrary() && <div className="context-menu__divider" /> }
             {this.canBeInLibrary() && toggle_in_library}
+            {toggle_pinned}
             <div className="context-menu__divider" />
             {context.source === 'spotify' && go_to_user}
             {copy_uris}
@@ -1201,6 +1258,7 @@ const mapStateToProps = (state) => ({
   mopidy_library_albums: state.mopidy.library_albums,
   playlists: state.core.playlists,
   tracks: state.core.tracks,
+  pinned: state.core.pinned,
   lastfm_authorized: state.lastfm.authorization,
 });
 

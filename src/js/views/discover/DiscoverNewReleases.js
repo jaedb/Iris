@@ -13,6 +13,7 @@ import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
 import { isLoading } from '../../util/helpers';
 import { i18n, I18n } from '../../locale';
+import Button from '../../components/Button';
 
 class DiscoverNewReleases extends React.Component {
   componentDidMount() {
@@ -119,10 +120,14 @@ class DiscoverNewReleases extends React.Component {
     }
 
     const options = (
-      <a className="button button--no-hover" onClick={this.refresh}>
+      <Button
+        noHover
+        onClick={this.refresh}
+        tracking={{ category: 'DiscoverFeatured', action: 'Refresh' }}
+      >
         <Icon name="refresh" />
         <I18n path="actions.refresh" />
-      </a>
+      </Button>
     );
 
     return (

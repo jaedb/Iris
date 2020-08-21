@@ -1,7 +1,4 @@
-
-import ReactGA from 'react-ga';
 import { arrayOf } from '../../util/arrays';
-
 const coreActions = require('../core/actions');
 const mopidyActions = require('../mopidy/actions');
 const uiActions = require('../ui/actions');
@@ -10,18 +7,16 @@ const GoogleMiddleware = (function () {
   // A Google request is an alias of the Mopidy request
   const request = (store, method, params = null, response_callback = null, error_callback = null) => {
     store.dispatch(
-        	mopidyActions.request(
-        		method,
-        		params,
-        		response_callback,
-        		error_callback,
-        	),
+      mopidyActions.request(
+        method,
+        params,
+        response_callback,
+        error_callback,
+      ),
     );
   };
 
   return (store) => (next) => (action) => {
-    const { google } = store.getState();
-
     switch (action.type) {
       case 'GOOGLE_GET_LIBRARY_ALBUMS':
         var last_run = store.getState().ui.processes.GOOGLE_LIBRARY_ALBUMS_PROCESSOR;
@@ -61,7 +56,6 @@ const GoogleMiddleware = (function () {
         } else if (last_run.status === 'finished') {
           // TODO: do we want to force a refresh?
         }
-
         break;
 
       case 'GOOGLE_LIBRARY_ALBUMS_PROCESSOR':

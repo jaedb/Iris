@@ -154,6 +154,15 @@ const uriType = function (uri) {
     return exploded[1];
   }
 
+  if (exploded[0] === 'tunein') {
+    switch (exploded[1]) {
+      case 'station':
+        return 'album';
+      default:
+        return exploded[1];
+    }
+  }
+
   switch (exploded[1]) {
     case 'track':
     case 'artist':
@@ -162,12 +171,12 @@ const uriType = function (uri) {
     case 'genre':
       return exploded[1];
     case 'user':
-      if (exploded.length > 3 && exploded[3] == 'playlist') {
+      if (exploded.length > 3 && exploded[3] === 'playlist') {
         return 'playlist';
       }
       return exploded[1];
     default:
-      return null;
+      return '';
   }
 };
 
@@ -192,7 +201,7 @@ const sourceIcon = function (uri, source = null) {
     case 'tunein':
     case 'somafm':
     case 'dirble':
-      return 'microphone';
+      return 'cloud';
 
     default:
       return source;

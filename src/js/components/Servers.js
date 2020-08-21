@@ -8,6 +8,7 @@ import Icon from './Icon';
 import URILink from './URILink';
 import TextField from './Fields/TextField';
 import { indexToArray } from '../util/arrays';
+import { Button } from './Button';
 
 import * as uiActions from '../services/ui/actions';
 import * as coreActions from '../services/core/actions';
@@ -185,21 +186,25 @@ const Servers = ({
           </div>
         </div>
 
-        <button
-          type="button"
-          className="button button--primary"
+        <Button
+          type="primary"
           onClick={setAsCurrent}
+          tracking={{
+            category: 'Servers',
+            action: 'SetAsCurrent',
+            label: (server.id === current_server ? 'Reconnect' : 'Switch'),
+          }}
         >
           <I18n path={`settings.servers.${server.id === current_server ? 'reconnect' : 'switch'}`} />
-        </button>
-        <button
-          type="button"
-          className="button button--destructive"
+        </Button>
+        <Button
+          type="destructive"
           disabled={server.id === current_server}
           onClick={remove}
+          tracking={{ category: 'Servers', action: 'Delete' }}
         >
           <I18n path="actions.remove" />
-        </button>
+        </Button>
       </div>
     );
   };

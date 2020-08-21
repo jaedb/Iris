@@ -109,6 +109,9 @@ const PusherMiddleware = (function () {
         case 'commands_changed':
           store.dispatch(pusherActions.commandsUpdated(params.commands));
           break;
+        case 'pinned_changed':
+          store.dispatch(pusherActions.pinnedUpdated(params.pinned));
+          break;
         case 'reload':
           window.location.reload(true);
           break;
@@ -299,6 +302,7 @@ const PusherMiddleware = (function () {
         store.dispatch(pusherActions.getConfig());
         store.dispatch(pusherActions.getRadio());
         store.dispatch(pusherActions.getCommands());
+        store.dispatch(pusherActions.getPinned());
         store.dispatch(pusherActions.getQueueMetadata());
 
         // Give things a few moments to setup before we check for version.
@@ -462,13 +466,73 @@ const PusherMiddleware = (function () {
               ));
             },
           );
-        return next(action);
+        next(action);
         break;
 
+      /**
+       * Pinned uris
+       **/
+
+      case 'PUSHER_GET_PINNED':
+        request(store, 'get_pinned')
+          .then(
+            (response) => {
+              store.dispatch(pusherActions.pinnedUpdated(response.pinned));
+            },
+            (error) => {
+              // We're not too worried about capturing errors here
+              // It's also likely to fail where UI has been updated but
+              // server hasn't been restarted yet.
+              // TODO: Wrap Pusher in 5second wait, like Mopidy
+            },
+          );
+        next(action);
+        break;
+
+      case 'PUSHER_ADD_PINNED':
+        var pinned = [...pusher.pinned, action.item];
+        store.dispatch(pusherActions.setPinned(pinned));
+        break;
+
+      case 'PUSHER_SET_PINNED':
+        request(store, 'set_pinned', { pinned: action.pinned })
+          .then(
+            (response) => {
+              // No action required, the change will be broadcast
+            },
+            (error) => {
+              store.dispatch(coreActions.handleException(
+                'Could not pin URI',
+                error,
+              ));
+            },
+          );
+
+        next(action);
+        break;
+
+      case 'PUSHER_REMOVE_PINNED':
+        var pinned = pusher.pinned.filter((item) => item.uri !== action.uri);
+
+        request(store, 'set_pinned', { pinned })
+          .then(
+            (response) => {
+              // No action required, the change will be broadcast
+            },
+            (error) => {
+              store.dispatch(coreActions.handleException(
+                'Could not unpin URI',
+                error,
+              ));
+            },
+          );
+
+        next(action);
+        break;
 
       /**
-           * Commands
-           * */
+       * Commands
+       **/
 
       case 'PUSHER_GET_COMMANDS':
         request(store, 'get_commands')
@@ -480,6 +544,7 @@ const PusherMiddleware = (function () {
               // We're not too worried about capturing errors here
               // It's also likely to fail where UI has been updated but
               // server hasn't been restarted yet.
+              // TODO: Wrap Pusher in 5second wait, like Mopidy
             },
           );
         next(action);

@@ -3,6 +3,7 @@ import React from 'react';
 
 import Link from '../Link';
 import Icon from '../Icon';
+import { i18n } from '../../locale';
 
 export default class FilterField extends React.Component {
   constructor(props) {
@@ -68,7 +69,7 @@ export default class FilterField extends React.Component {
         <form onSubmit={e => this.handleSubmit(e)}>
           <input
             type="text"
-            placeholder="Filter"
+            placeholder={i18n('fields.filter')}
             value={this.state.value}
             onFocus={(e) => this.activate()}
             onBlur={(e) => this.handleBlur()}

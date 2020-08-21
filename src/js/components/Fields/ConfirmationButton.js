@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { i18n } from '../../locale';
+import Button from '../Button';
 
 export default class ConfirmationButton extends React.Component {
   constructor(props) {
@@ -53,41 +54,36 @@ export default class ConfirmationButton extends React.Component {
       confirmingContent,
       working,
       workingContent,
-      className: classNameProp,
+      onConfirm,
+      ...rest
     } = this.props;
     let { content } = this.props;
     const {
       confirming,
       timing_out,
     } = this.state;
-    let className = 'button';
 
     if (confirming) {
-      className += ' button--confirming';
       content = confirmingContent || i18n('actions.confirm');
-      if (timing_out) {
-        className += ' button--timing-out';
-      }
     }
 
-    if (working) {
-      className += ' button--working';
-
-      if (workingContent) {
-        content = workingContent;
-      }
+    if (working && workingContent) {
+      content = workingContent;
     }
 
     return (
-      <button
-        className={`${className} ${classNameProp}`}
+      <Button
+        type="destructive"
+        confirming={confirming}
+        timingOut={timing_out}
+        working={working}
         onClick={this.handleClick}
         onMouseLeave={this.handleMouseLeave}
         onMouseEnter={this.handleMouseEnter}
-        type="button"
+        {...rest}
       >
         {content}
-      </button>
+      </Button>
     );
   }
 }

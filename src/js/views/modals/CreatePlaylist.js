@@ -6,6 +6,7 @@ import Modal from './Modal';
 import * as coreActions from '../../services/core/actions';
 import * as uiActions from '../../services/ui/actions';
 import { i18n, I18n } from '../../locale';
+import Button from '../../components/Button';
 
 class CreatePlaylist extends React.Component {
   constructor(props) {
@@ -173,9 +174,14 @@ class CreatePlaylist extends React.Component {
           {this.renderFields()}
 
           <div className="actions centered-text">
-            <button type="submit" className="button button--primary button--large">
+            <Button
+              type="primary"
+              size="large"
+              submit
+              tracking={{ category: 'CreatePlaylist', action: 'Submit' }}
+            >
               <I18n path="modal.edit_playlist.create_playlist" />
-            </button>
+            </Button>
           </div>
 
         </form>
