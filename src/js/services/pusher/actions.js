@@ -203,6 +203,45 @@ export function addQueueMetadata(tlids = [], from_uri = null) {
 
 
 /**
+ * Pinned URIs
+ **/
+
+export function getPinned() {
+  return {
+    type: 'PUSHER_GET_PINNED',
+  };
+}
+
+export function addPinned(item) {
+  return {
+    type: 'PUSHER_ADD_PINNED',
+    item,
+  };
+}
+
+export function removePinned(uri) {
+  return {
+    type: 'PUSHER_REMOVE_PINNED',
+    uri,
+  };
+}
+
+export function setPinned(pinned) {
+  return {
+    type: 'PUSHER_SET_PINNED',
+    pinned,
+  };
+}
+
+export function pinnedUpdated(pinned) {
+  return {
+    type: 'PUSHER_PINNED_UPDATED',
+    pinned,
+  };
+}
+
+
+/**
  * Commands (buttons)
  * */
 

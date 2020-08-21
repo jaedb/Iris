@@ -18,7 +18,7 @@ const PinListItem = ({ item }) => {
 };
 
 const PinList = () => {
-  let items = useSelector((state) => state.core.pinned || []);
+  let items = useSelector((state) => state.pusher.pinned || []);
   if (items.length <= 0) return null;
   items = sortItems(items, 'name');
 
