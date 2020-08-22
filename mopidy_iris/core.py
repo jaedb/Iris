@@ -59,8 +59,9 @@ class IrisCore(pykka.ThreadingActor):
     def start(self):
         logger.info("Starting Iris " + Extension.version)
 
-        # Load our commands from file
+        # Load our commands and pinned items from file
         self.data["commands"] = self.load_from_file("commands")
+        self.data["pinned"] = self.load_from_file("pinned")
 
     ##
     # Mopidy is shutting down
