@@ -84,7 +84,10 @@ class IrisCore(pykka.ThreadingActor):
                 f.close()
                 return content
         except Exception:
-            return {}
+            if name == "pinned":
+                return []
+            else:
+                return {}
 
     ##
     # Save dict object to disk
@@ -829,7 +832,7 @@ class IrisCore(pykka.ThreadingActor):
     ##
     # Server-side data assets
     #
-    # These functions are used internally to store data packets locally for all users to access
+    # These functions are used internally to store data locally for all users to access
     ##
 
     def get_data(self, name, *args, **kwargs):
