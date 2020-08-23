@@ -57,17 +57,18 @@ fields:
   items_to_add:
     label: Föremål att lägga till
     placeholder: Inga föremål
+  filter: filter
   filters:
     all: Alla
     thumbnails: Thumbnails
     list: List
-    as_loaded: As loaded
+    as_loaded: Som inladdat
     name: Namn
     artist: Artist
     updated: Updated
     tracks: Låtar
     source: Källa
-    editable: Editable
+    editable: Ändringsbar
     owner: Ägare
     followers: Följare
     popularity: Populäritet
@@ -98,6 +99,7 @@ time:
     plural: år
 specs:
   tracks: '%{count} låtar'
+  albums: '%{count} albums'
   followers: '%{count} följare'
   listeners: '%{count} lyssnare'
   playlists: '%{count} spellistor'
@@ -112,6 +114,9 @@ services:
   mopidy:
     title: Mopidy
     local: Local
+    adding_uris: 'Lägger till %{count} URI(s)'	
+    searching_providers: 'Söker %{count} Mopidy providers'	
+    loading_albums: 'Laddar %{count} lokala album'	
   spotify:
     title: Spotify
   pusher:
@@ -159,6 +164,8 @@ context_menu:
   play_top_tracks: Spela topplistan
   love_track: Gilla låten
   unlove_track: Ogilla låten
+  pin: Fäst
+  unpin: Släpp
   go_to_artist: Gå till artisten
   go_to_user: Gå till användaren
   track_info: Låt info
@@ -166,12 +173,14 @@ context_menu:
   start_radio: Starta radio
   copy_uri: Kopiera URI(s)
 dropzones:
-  dragging_things: 'Dragging %{count} things'
+  dragging_things: 'Drar %{count} saker'
 playback_controls:
   consume: Konsumera
   shuffle: blanda
   repeat: repetera
   no_outputs: No outputs
+  mute: Tyst
+  unmute: Ljud
 snapcast:
   enabled: Aktiverad
   show_disconnected_clients: Visa frånkopplade klienter
@@ -188,7 +197,7 @@ snapcast:
 authentication:
   popup_blocked: Popup blockerad. Tillåt popups och försök igen.
   failed: auktorisering misslyckades. %{origin} är inte rätt konfigurerad authorization_url.
-  log_out: Logga out
+  log_out: Logga ut
   log_in: Logga in
 
 
@@ -231,6 +240,17 @@ artist:
     wiki:
       published: 'Publicerad: %{date}'
       origin: 'Ursprung: '
+  albums:	
+    sort:	
+      default: Default	
+      name: Namn
+      release_date: Datum
+      track_count: Låtar
+    filter:	
+      all: All
+      albums: Album
+      singles: Singlar
+      compilations: Compilations
 debug:
   title: Debug
   ui:
@@ -314,7 +334,7 @@ settings:
       wide_scrollbars: Use wide scrollbars
     sources_priority:
       label: Sources priority
-      description: Drag-and-drop to prioritize search providers and results
+      description: Dra och släpp för att prioritera sök resultaten från olika utgivningar
     reporting:
       label: Rapportering
       sublabel: Tillåt rapportering av anonym användarstatistik
@@ -346,7 +366,7 @@ settings:
   about:
     title: Om
     blurb_1: ' är ett öppet projekt av '
-    blurb_2: '. Det är utvecklat gratis och utan garrantier. Om du betalade för denna mjukvara, kontakta mig.'
+    blurb_2: '. Det är utvecklat gratis och utan garantier. Om du betalade för denna mjukvara, kontakta mig.'
     donate: Donera
     github: GitHub
   pusher_connection_list:
