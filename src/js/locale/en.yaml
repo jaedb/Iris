@@ -5,7 +5,8 @@ name: English
 ##
 errors:
   uri_not_found: 'Could not find anything with URI %{uri}'
-  could_not_load: Could not load
+  could_not_load: 'Could not load %{name}'
+  could_not_load_library: 'Could not load %{name} from %{provider}'
   no_results: No results found
   authorization_required: 'You must authorize %{provider} first'
   enable_first: 'Enable %{provider} first'

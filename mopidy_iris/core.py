@@ -1020,14 +1020,24 @@ class IrisCore(pykka.ThreadingActor):
     async def refresh_spotify_token(self, *args, **kwargs):
         callback = kwargs.get("callback", None)
 
-        # Use client_id and client_secret from config
-        # This was introduced in Mopidy-Spotify 3.1.0
-        url = "https://auth.mopidy.com/spotify/token"
-        data = {
-            "client_id": self.config["spotify"]["client_id"],
-            "client_secret": self.config["spotify"]["client_secret"],
-            "grant_type": "client_credentials",
-        }
+        try:
+            # Use client_id and client_secret from config
+            # This was introduced in Mopidy-Spotify 3.1.0
+            url = "https://auth.mopidy.com/spotify/token"
+            data = {
+                "client_id": self.config["spotify"]["client_id"],
+                "client_secret": self.config["spotify"]["client_secret"],
+                "grant_type": "client_credentials",
+            }
+        except (Exception) as e:
+            error = {
+                "message": "Could not refresh Spotify token: invalid configuration"
+            }
+
+            if callback:
+                callback(False, error)
+            else:
+                return error
 
         try:
             http_client = tornado.httpclient.AsyncHTTPClient()
@@ -1056,7 +1066,7 @@ class IrisCore(pykka.ThreadingActor):
         except (urllib.error.HTTPError, urllib.error.URLError) as e:
             error = json.loads(e.read())
             error = {
-                "message": "Could not refresh token: "
+                "message": "Could not refresh Spotify token: "
                 + error["error_description"]
             }
 
@@ -1127,11 +1137,11 @@ class IrisCore(pykka.ThreadingActor):
         except (urllib.error.HTTPError, urllib.error.URLError) as e:
             error = json.loads(e.read())
             error = {
-                "message": "Could not fetch Spotify recommendations: "
+                "message": "Could not fetch Genius lyrics: "
                 + error["error_description"]
             }
             logger.error(
-                "Could not fetch Spotify recommendations: "
+                "Could not fetch Genius lyrics: "
                 + error["error_description"]
             )
             logger.debug(error)
