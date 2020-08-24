@@ -59,8 +59,9 @@ class IrisCore(pykka.ThreadingActor):
     def start(self):
         logger.info("Starting Iris " + Extension.version)
 
-        # Load our commands from file
-        self.data['commands'] = self.load_from_file("commands")
+        # Load our commands and pinned items from file
+        self.data["commands"] = self.load_from_file("commands")
+        self.data["pinned"] = self.load_from_file("pinned")
 
     ##
     # Mopidy is shutting down
@@ -83,7 +84,10 @@ class IrisCore(pykka.ThreadingActor):
                 f.close()
                 return content
         except Exception:
-            return {}
+            if name == "pinned":
+                return []
+            else:
+                return {}
 
     ##
     # Save dict object to disk
@@ -828,7 +832,7 @@ class IrisCore(pykka.ThreadingActor):
     ##
     # Server-side data assets
     #
-    # These functions are used internally to store data packets locally for all users to access
+    # These functions are used internally to store data locally for all users to access
     ##
 
     def get_data(self, name, *args, **kwargs):
@@ -869,27 +873,27 @@ class IrisCore(pykka.ThreadingActor):
     ##
 
     def get_pinned(self, *args, **kwargs):
-        return self.get_data('pinned', *args, **kwargs)
+        return self.get_data("pinned", *args, **kwargs)
 
     def set_pinned(self, *args, **kwargs):
-        return self.set_data('pinned', *args, **kwargs)
+        return self.set_data("pinned", *args, **kwargs)
 
     ##
     # Commands
     ##
 
     def get_commands(self, *args, **kwargs):
-        return self.get_data('commands', *args, **kwargs)
+        return self.get_data("commands", *args, **kwargs)
 
     def set_commands(self, *args, **kwargs):
-        return self.set_data('commands', *args, **kwargs)
+        return self.set_data("commands", *args, **kwargs)
 
     async def run_command(self, *args, **kwargs):
         callback = kwargs.get("callback", False)
         data = kwargs.get("data", {})
         error = False
 
-        if str(data["id"]) not in self.data['commands']:
+        if str(data["id"]) not in self.data["commands"]:
             error = {
                 "message": "Command failed",
                 "description": "Could not find command by ID "
@@ -898,7 +902,7 @@ class IrisCore(pykka.ThreadingActor):
                 + '"',
             }
         else:
-            command = self.data['commands'][str(data["id"])]
+            command = self.data["commands"][str(data["id"])]
             if "method" not in command:
                 error = {
                     "message": "Command failed",
@@ -1016,14 +1020,24 @@ class IrisCore(pykka.ThreadingActor):
     async def refresh_spotify_token(self, *args, **kwargs):
         callback = kwargs.get("callback", None)
 
-        # Use client_id and client_secret from config
-        # This was introduced in Mopidy-Spotify 3.1.0
-        url = "https://auth.mopidy.com/spotify/token"
-        data = {
-            "client_id": self.config["spotify"]["client_id"],
-            "client_secret": self.config["spotify"]["client_secret"],
-            "grant_type": "client_credentials",
-        }
+        try:
+            # Use client_id and client_secret from config
+            # This was introduced in Mopidy-Spotify 3.1.0
+            url = "https://auth.mopidy.com/spotify/token"
+            data = {
+                "client_id": self.config["spotify"]["client_id"],
+                "client_secret": self.config["spotify"]["client_secret"],
+                "grant_type": "client_credentials",
+            }
+        except (Exception) as e:
+            error = {
+                "message": "Could not refresh Spotify token: invalid configuration"
+            }
+
+            if callback:
+                callback(False, error)
+            else:
+                return error
 
         try:
             http_client = tornado.httpclient.AsyncHTTPClient()
@@ -1052,7 +1066,7 @@ class IrisCore(pykka.ThreadingActor):
         except (urllib.error.HTTPError, urllib.error.URLError) as e:
             error = json.loads(e.read())
             error = {
-                "message": "Could not refresh token: "
+                "message": "Could not refresh Spotify token: "
                 + error["error_description"]
             }
 
@@ -1123,11 +1137,11 @@ class IrisCore(pykka.ThreadingActor):
         except (urllib.error.HTTPError, urllib.error.URLError) as e:
             error = json.loads(e.read())
             error = {
-                "message": "Could not fetch Spotify recommendations: "
+                "message": "Could not fetch Genius lyrics: "
                 + error["error_description"]
             }
             logger.error(
-                "Could not fetch Spotify recommendations: "
+                "Could not fetch Genius lyrics: "
                 + error["error_description"]
             )
             logger.debug(error)

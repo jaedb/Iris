@@ -1,3 +1,4 @@
+import { compact } from 'lodash';
 import { uriSource } from './helpers';
 
 /**
@@ -24,7 +25,7 @@ const indexToArray = (index, keys) => {
  * @return Array
  * */
 const arrayOf = (property, items = []) => {
-  return items.map((item) => item[property]);
+  return compact(items.map((item) => item[property]));
 };
 
 

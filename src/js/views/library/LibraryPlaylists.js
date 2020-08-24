@@ -61,12 +61,14 @@ class LibraryPlaylists extends React.Component {
   getSpotifyLibrary = () => {
     const {
       source,
+      spotify_available,
       spotify_library_playlists_status,
       spotifyActions: {
         getLibraryPlaylists,
       },
     } = this.props;
 
+    if (!spotify_available) return;
     if (source !== 'spotify' && source !== 'all') return;
     if (spotify_library_playlists_status === 'finished') return;
     if (spotify_library_playlists_status === 'started') return;

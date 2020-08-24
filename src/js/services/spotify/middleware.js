@@ -21,8 +21,8 @@ const SpotifyMiddleware = (function () {
     switch (action.type) {
       case 'SPOTIFY_AUTHORIZATION_GRANTED':
         if (store.getState().ui.allow_reporting) {
-	                ReactGA.event({ category: 'Spotify', action: 'Authorization granted' });
-	            }
+          ReactGA.event({ category: 'Spotify', action: 'Authorization granted' });
+        }
 
         // Flush out the previous user's library
         store.dispatch(spotifyActions.flushLibrary());

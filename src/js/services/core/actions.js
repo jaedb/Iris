@@ -72,6 +72,10 @@ export function handleException(message, data = {}, description = null, show_not
     }
   }
 
+  // Explicitly convert values to strings
+  if (message && typeof message !== 'string') message = String(message);
+  if (description && typeof description !== 'string') description = String(description);
+
   return {
     type: 'HANDLE_EXCEPTION',
     message,

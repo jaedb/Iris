@@ -1,6 +1,6 @@
 {
   "name": "mopidy-iris",
-  "version": "3.51.0",
+  "version": "3.52.2",
   "description": "Mopidy HTTP interface",
   "repository": "https://github.com/jaedb/iris",
   "author": "James Barnsley <james@barnsley.nz>",
@@ -73,6 +73,7 @@
   },
   "scripts": {
     "test": "jest",
+    "tox": "sudo docker exec -it -u root iris_mopidy_1 bash -c \"cd /iris && tox\"",
     "start": "webpack-dev-server",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
