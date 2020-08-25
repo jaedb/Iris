@@ -249,7 +249,7 @@ class ContextMenu extends React.Component {
       uiActions: {
         hideContextMenu,
       },
-      coreActions: {
+      pusherActions: {
         addPinned,
         removePinned,
       },

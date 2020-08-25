@@ -41,7 +41,6 @@ class Notifications extends React.Component {
 
     this.props.uiActions.removeNotification(notification_key, true);
     this.props.uiActions.createNotification({
-      level: 'warning',
       content: i18n('modal.share_configuration.import.successful'),
     });
   }
