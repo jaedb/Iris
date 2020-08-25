@@ -1270,7 +1270,7 @@ const mapStateToProps = (state) => ({
   mopidy_library_albums: state.mopidy.library_albums,
   playlists: state.core.playlists,
   tracks: state.core.tracks,
-  pinned: state.core.pinned,
+  pinned: state.pusher.pinned,
   lastfm_authorized: state.lastfm.authorization,
 });
 
