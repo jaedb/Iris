@@ -37,6 +37,42 @@ class PlaybackControls extends React.Component {
     };
   }
 
+  setTransition(direction) {
+    this.setState({
+      transition_track: this.state.current_track,
+      transition_direction: direction,
+    });
+
+    // Allow time for the animation to complete, then remove
+    // the transitioning track from state
+    setTimeout(() => {
+      this.setState({
+        transition_track: null,
+      });
+    },
+    250);
+  }
+
+  handleContextMenu = (e) => {
+    const {
+      current_track,
+    } = this.state;
+    const {
+      uiActions: {
+        showContextMenu,
+      },
+    } = this.props;
+
+    e.preventDefault();
+
+    showContextMenu({
+      e,
+      context: 'current-track',
+      items: [current_track],
+      uris: [current_track.uri],
+    });
+  }
+
   handleTouchStart = (e) => {
     const { touch_enabled } = this.props;
     if (!touch_enabled) return;
@@ -90,22 +126,6 @@ class PlaybackControls extends React.Component {
 
     this.end_time = timestamp;
     e.preventDefault();
-  }
-
-  setTransition(direction) {
-    this.setState({
-      transition_track: this.state.current_track,
-      transition_direction: direction,
-    });
-
-    // Allow time for the animation to complete, then remove
-    // the transitioning track from state
-    setTimeout(() => {
-      this.setState({
-        transition_track: null,
-      });
-    },
-    250);
   }
 
   renderPlayButton() {
@@ -225,6 +245,7 @@ class PlaybackControls extends React.Component {
               className="current-track current-track__incoming"
               onTouchStart={this.handleTouchStart}
               onTouchEnd={this.handleTouchEnd}
+              onContextMenu={this.handleContextMenu}
               tabIndex="-1"
               key={current_track.tlid}
             >
