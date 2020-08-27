@@ -662,6 +662,7 @@ class IrisCore(pykka.ThreadingActor):
             return response
 
     async def load_more_tracks(self, *args, **kwargs):
+        logger.info("Loading more radio tracks from Spotify")
         try:
             await self.get_spotify_token()
             spotify_token = self.spotify_token
@@ -710,7 +711,7 @@ class IrisCore(pykka.ThreadingActor):
 
         except (urllib.error.HTTPError, urllib.error.URLError) as e:
             error = json.loads(e.read())
-            error = {
+            error_response = {
                 "message": "Could not fetch Spotify recommendations: "
                 + error["error_description"]
             }
@@ -718,10 +719,10 @@ class IrisCore(pykka.ThreadingActor):
                 "Could not fetch Spotify recommendations: "
                 + error["error_description"]
             )
-            logger.debug(error)
+            logger.debug(error_response)
             return False
 
-    def check_for_radio_update(self):
+    async def check_for_radio_update(self):
         tracklistLength = self.core.tracklist.get_length().get()
         if tracklistLength < 3 and self.radio["enabled"] == 1:
 
@@ -731,7 +732,7 @@ class IrisCore(pykka.ThreadingActor):
             # We've run out of pre-fetched tracks, so we need to get more
             # recommendations
             if len(uris) < 3:
-                uris = self.load_more_tracks()
+                uris = await self.load_more_tracks()
 
             # Remove the next batch, and update our results
             self.radio["results"] = uris[3:]
@@ -1141,8 +1142,7 @@ class IrisCore(pykka.ThreadingActor):
                 + error["error_description"]
             }
             logger.error(
-                "Could not fetch Genius lyrics: "
-                + error["error_description"]
+                "Could not fetch Genius lyrics: " + error["error_description"]
             )
             logger.debug(error)
             return error
