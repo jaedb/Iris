@@ -23,7 +23,13 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
         iris.stop()
 
     def track_playback_ended(self, tl_track, time_position):
-        iris.ioloop.add_callback(functools.partial(iris.check_for_radio_update))
+        if iris.ioloop:
+            iris.ioloop.add_callback(
+                functools.partial(iris.check_for_radio_update)
+            )
 
     def tracklist_changed(self):
-        iris.ioloop.add_callback(functools.partial(iris.clean_queue_metadata))
+        if iris.ioloop:
+            iris.ioloop.add_callback(
+                functools.partial(iris.clean_queue_metadata)
+            )
