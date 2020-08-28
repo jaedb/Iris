@@ -1030,7 +1030,7 @@ class IrisCore(pykka.ThreadingActor):
                 "client_secret": self.config["spotify"]["client_secret"],
                 "grant_type": "client_credentials",
             }
-        except (Exception) as e:
+        except (Exception):
             error = {
                 "message": "Could not refresh Spotify token: invalid configuration"
             }
