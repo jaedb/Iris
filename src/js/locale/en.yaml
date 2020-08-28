@@ -465,7 +465,7 @@ modal:
     title: Add to queue
     subtitle: Add a comma-separated list of URIs to the play queue
     uris: URI(s)
-    add_random: Add random
+    add_random: Find random tracks
     position:
       label: Position
       end: End

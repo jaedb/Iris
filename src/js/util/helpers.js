@@ -150,6 +150,18 @@ const uriType = function (uri) {
     return 'playlist';
   }
 
+  if (exploded[0] === 'yt') {
+    return 'track';
+  }
+
+  if (exploded[0] === 'youtube') {
+    const youtubeParts = exploded[1].split('/');
+    if (youtubeParts[0] === 'video') {
+      return 'track';
+    }
+    return youtubeParts[0];
+  }
+
   if (exploded[0] === 'iris') {
     return exploded[1];
   }

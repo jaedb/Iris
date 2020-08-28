@@ -249,7 +249,7 @@ class ContextMenu extends React.Component {
       uiActions: {
         hideContextMenu,
       },
-      coreActions: {
+      pusherActions: {
         addPinned,
         removePinned,
       },
@@ -1140,6 +1140,18 @@ class ContextMenu extends React.Component {
             )}
           </div>
         );
+      case 'current-track':
+        return (
+          <div>
+            {add_to_playlist}
+            {this.canBeInLibrary() && toggle_in_library}
+            {toggle_loved}
+            <div className="context-menu__divider" />
+            {context.source === 'spotify' && context.items_count <= 5 && go_to_recommendations}
+            {context.items_count === 1 && go_to_track}
+            {copy_uris}
+          </div>
+        );
       case 'queue-track':
         return (
           <div>
@@ -1258,7 +1270,7 @@ const mapStateToProps = (state) => ({
   mopidy_library_albums: state.mopidy.library_albums,
   playlists: state.core.playlists,
   tracks: state.core.tracks,
-  pinned: state.core.pinned,
+  pinned: state.pusher.pinned,
   lastfm_authorized: state.lastfm.authorization,
 });
 
