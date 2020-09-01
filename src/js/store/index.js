@@ -1,9 +1,11 @@
-
 import { createStore, applyMiddleware, combineReducers } from 'redux';
+import { persistStore, persistReducer } from 'redux-persist';
+import localForage from 'localforage';
 import thunk from 'redux-thunk';
 
 import { generateGuid } from '../util/helpers';
-import storage from '../util/storage';
+import hardSet from 'redux-persist/lib/stateReconciler/hardSet'
+//import storage from '../util/storage';
 import core from '../services/core/reducer';
 import ui from '../services/ui/reducer';
 import pusher from '../services/pusher/reducer';
@@ -56,6 +58,7 @@ let state = {
     selected_tracks: [],
     notifications: {},
     processes: {},
+    suppressed_broadcasts: [],
   },
   mopidy: {
     connected: false,
@@ -120,6 +123,7 @@ let state = {
   },
 };
 
+/*
 // load all our stored values from LocalStorage
 state.core = { ...state.core, ...storage.get('core') };
 state.ui = { ...state.ui, ...storage.get('ui') };
@@ -130,13 +134,41 @@ state.lastfm = { ...state.lastfm, ...storage.get('lastfm') };
 state.genius = { ...state.genius, ...storage.get('genius') };
 state.google = { ...state.google, ...storage.get('google') };
 state.snapcast = { ...state.snapcast, ...storage.get('snapcast') };
+*/
 
 // Run any migrations
 state = migration(state);
 
-const reducers = combineReducers({
-  core,
-  ui,
+const rootPersistConfig = {
+  key: 'root',
+  storage: localForage,
+  blacklist: ['ui', 'core'],
+  debug: window.test_mode,
+};
+
+const corePersistConfig = {
+  key: 'core',
+  storage: localForage,
+  debug: window.test_mode,
+  blacklist: [
+    'albums',
+    'artists',
+    'playlists',
+    'users',
+    'tracks',
+  ],
+};
+
+const uiPersistConfig = {
+  key: 'ui',
+  storage: localForage,
+  blacklist: ['load_queue', 'notifications'],
+  debug: window.test_mode,
+};
+
+const rootReducer = combineReducers({
+  core: persistReducer(corePersistConfig, core),
+  ui: persistReducer(uiPersistConfig, ui),
   pusher,
   mopidy,
   lastfm,
@@ -146,8 +178,10 @@ const reducers = combineReducers({
   snapcast,
 });
 
-export default createStore(
-  reducers,
+const persistedReducer = persistReducer(rootPersistConfig, rootReducer);
+
+const store = createStore(
+  persistedReducer,
   state,
   applyMiddleware(
     thunk,
@@ -163,3 +197,7 @@ export default createStore(
     snapcastMiddleware,
   ),
 );
+const persistor = persistStore(store);
+
+export default { store, persistor };
+export { store, persistor };

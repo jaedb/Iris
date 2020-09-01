@@ -165,14 +165,12 @@ export class Album extends React.Component {
   render = () => {
     const {
       uri,
-      album: albumProp,
-      tracks,
-      artists,
+      album,
       load_queue,
       slim_mode,
     } = this.props;
 
-    if (!albumProp) {
+    if (!album) {
       if (
         isLoading(load_queue, [
           `spotify_albums/${getFromUri('albumid', uri)}`,
@@ -188,14 +186,6 @@ export class Album extends React.Component {
         </ErrorMessage>
       );
     }
-
-    const album = collate(albumProp, { tracks, artists });
-
-    const is_loading_tracks = (
-      !album.tracks_uris
-      || (album.tracks_uris && !album.tracks)
-      || album.tracks_uris.length !== album.tracks.length
-    );
 
     return (
       <div className="view album-view content-wrapper preserve-3d">
@@ -276,11 +266,6 @@ export class Album extends React.Component {
             className="album-track-list"
             tracks={album.tracks}
             uri={album.uri}
-          />
-          <LazyLoadListener
-            loadKey={album.tracks_more}
-            showLoader={is_loading_tracks}
-            loadMore={this.loadMore}
           />
         </section>
 

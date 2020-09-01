@@ -13,6 +13,7 @@
     "@sentry/browser": "^5.20.1",
     "history": "^4.10.1",
     "jquery": "^3.5.1",
+    "localforage": "^1.9.0",
     "lodash": "^4.17.19",
     "logrocket": "^1.0.10",
     "mopidy": "^0.5",
@@ -26,6 +27,7 @@
     "react-router-dom": "^5.2.0",
     "react-sortablejs": "^1.5.0",
     "redux": "^4.0.5",
+    "redux-persist": "^6.0.0",
     "redux-thunk": "^2.3.0"
   },
   "devDependencies": {
@@ -80,6 +82,7 @@
     "watch:dev": "node build_tools/build.js && NODE_ENV=development webpack --watch",
     "watch:prod": "node build_tools/build.js && NODE_ENV=production webpack --watch",
     "build:tools": "node build_tools/build.js",
+    "build:dev": "node build_tools/build.js && NODE_ENV=development webpack",
     "build:prod": "node build_tools/build.js && NODE_ENV=development webpack && NODE_ENV=production webpack",
     "release": "node build_tools/build.js && NODE_ENV=development webpack && NODE_ENV=production webpack && python setup.py sdist upload -r pypi && build_tools/release.sh"
   }

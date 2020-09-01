@@ -140,6 +140,46 @@ export default function reducer(core = {}, action) {
       return { ...core, users };
 
 
+    case 'RESTORED_FROM_COLD_STORE':
+      switch (action.item_type) {
+        case 'artist':
+          return {
+            ...core,
+            artists: {
+              ...core.artists,
+              [action.item.uri]: {
+                ...core.artists[action.item.uri],
+                ...action.item,
+              },
+            },
+          };
+        case 'album':
+          return {
+            ...core,
+            albums: {
+              ...core.albums,
+              [action.item.uri]: {
+                ...core.albums[action.item.uri],
+                ...action.item,
+              },
+            },
+          };
+        case 'playlist':
+          return {
+            ...core,
+            playlists: {
+              ...core.playlists,
+              [action.item.uri]: {
+                ...core.albums[action.item.uri],
+                ...action.item,
+              },
+            },
+          };
+
+        default:
+          return core;
+      }
+
       /**
          * Remove an item from an index
          * */
@@ -292,12 +332,6 @@ export default function reducer(core = {}, action) {
           tracks,
           tracks_more,
         },
-      };
-
-    case 'UPDATE_PINNED':
-      return {
-        ...core,
-        pinned: action.pinned,
       };
 
     default:

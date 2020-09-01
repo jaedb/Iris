@@ -5,46 +5,6 @@ import { uriSource } from '../../util/helpers';
 const spotifyActions = require('../../services/spotify/actions');
 const mopidyActions = require('../../services/mopidy/actions');
 
-export function getBroadcasts() {
-  return (dispatch, getState) => {
-    const config = {
-      method: 'GET',
-      timeout: 15000,
-    };
-
-    // Fetch the "iris_broadcasts.json" file from Gist (or "_test" for test mode)
-    if (getState().ui.test_mode) {
-        	config.url = 'https://gist.githubusercontent.com/jaedb/cb3a5ee6909632abb2e0fe66d4c8c311/raw';
-    } else {
-        	config.url = 'https://gist.githubusercontent.com/jaedb/b677dccf80daf3ccb2ef12e96e495677/raw';
-    }
-
-    $.ajax(config).then(
-      (response) => {
-        dispatch({
-          type: 'BROADCASTS_LOADED',
-          broadcasts: JSON.parse(response),
-        });
-      },
-      (xhr, status, error) => {
-        dispatch(
-          handleException(
-            'Could not fetch broadcasts from GitHub',
-            {
-              config,
-              xhr,
-              status,
-              error,
-            },
-            null,
-            false,
-          ),
-        );
-      },
-    );
-  };
-}
-
 export function startSearch(search_type, query, only_mopidy = false) {
   return {
     type: 'SEARCH_STARTED',
@@ -110,6 +70,27 @@ export function cachebustHttpStream() {
     type: 'CACHEBUST_HTTP_STREAM',
   };
 }
+
+export function clearStorage() {
+  return {
+    type: 'CLEAR_STORAGE',
+  };
+}
+
+export function restoreFromColdStore(item) {
+  return {
+    type: 'RESTORE_FROM_COLD_STORE',
+    item,
+  };
+}
+
+export function updateColdStore(items) {
+  return {
+    type: 'UPDATE_COLD_STORE',
+    items,
+  };
+}
+
 
 /**
  * Record getters

@@ -3,6 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Route, Link } from 'react-router-dom';
+import localForage from 'localforage';
 import ConfirmationButton from '../components/Fields/ConfirmationButton';
 import PusherConnectionList from '../components/PusherConnectionList';
 import SourcesPriority from '../components/Fields/SourcesPriority';
@@ -70,9 +71,11 @@ class Settings extends React.Component {
   }
 
   resetAllSettings = () => {
-    localStorage.clear();
-    window.location = '#';
-    window.location.reload(true);
+    localForage.clear(() => {
+      console.debug('Cleared settings, reloading...');
+      //window.location = '#';
+      //window.location.reload(true);
+    });
     return false;
   }
 

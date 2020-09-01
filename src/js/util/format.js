@@ -258,6 +258,13 @@ const formatUsers = function (records = []) {
   }
   return formatted;
 };
+const formatSimpleObjects = function (records = []) {
+  const formatted = [];
+  for (const record of records) {
+	    formatted.push(formatSimpleObject(record));
+  }
+  return formatted;
+};
 
 
 /**
@@ -283,6 +290,7 @@ const formatAlbum = function (data) {
     'popularity',
     'images',
     'artists_uris',
+    'tracks',
     'tracks_uris',
     'tracks_total',
     'tracks_more',
@@ -340,13 +348,9 @@ const formatArtist = function (data) {
     'biography',
     'biography_link',
     'biography_publish_date',
-    'related_artists_uris',
-    'albums_uris',
-    'albums_total',
-    'albums_more',
-    'tracks_uris',
-    'tracks_total',
-    'tracks_more',
+    'related_artists',
+    'albums',
+    'tracks',
   ];
 
   // Loop fields and import from data
@@ -840,6 +844,7 @@ export {
   digestMopidyImages,
   formatImages,
   formatSimpleObject,
+  formatSimpleObjects,
   formatAlbum,
   formatAlbums,
   formatArtist,
@@ -861,6 +866,7 @@ export default {
   digestMopidyImages,
   formatImages,
   formatSimpleObject,
+  formatSimpleObjects,
   formatAlbum,
   formatAlbums,
   formatArtist,

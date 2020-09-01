@@ -135,23 +135,6 @@ class Artist extends React.Component {
     });
   }
 
-  loadMore = () => {
-    const {
-      spotifyActions: { getMore },
-      artist: { albums_more },
-      uri,
-    } = this.props;
-
-    getMore(
-      albums_more,
-      {
-        parent_type: 'artist',
-        parent_key: uri,
-        records_type: 'album',
-      },
-    );
-  }
-
   inLibrary = () => {
     const { uri } = this.props;
     const libraryName = `${uriSource(uri)}_library_artists`;
@@ -226,19 +209,12 @@ class Artist extends React.Component {
       },
     ];
 
-    const is_loading_tracks = (
-      !artist.tracks_uris
-      || (artist.tracks_uris && !artist.tracks)
-      || (artist.tracks_uris.length !== artist.tracks.length)
-    );
-
     return (
       <div className="body overview">
         <div className={`top-tracks col col--w${artist.related_artists && artist.related_artists.length > 0 ? '70' : '100'}`}>
           {artist.tracks && <h4><I18n path="artist.overview.top_tracks" /></h4>}
           <div className="list-wrapper">
             <TrackList className="artist-track-list" uri={artist.uri} tracks={artist.tracks ? artist.tracks.splice(0, 10) : []} />
-            <LazyLoadListener showLoader={is_loading_tracks} />
           </div>
         </div>
 
@@ -344,17 +320,7 @@ class Artist extends React.Component {
   }
 
   renderRelatedArtists = () => {
-    const {
-      artist: artistProp,
-      artists,
-    } = this.props;
-
-    const artist = collate(
-      artistProp,
-      {
-        artists,
-      },
-    );
+    const { artist } = this.props;
 
     return (
       <div className="body related-artists">
@@ -498,7 +464,7 @@ class Artist extends React.Component {
                 <Thumbnail size="medium" circle canZoom type="artist" image={image} />
               </div>
               <div className="heading__content">
-                <h1>{this.props.artist ? this.props.artist.name : null}</h1>
+                <h1>{artist && artist.name}</h1>
                 <div className="actions">
                   <Button
                     type="primary"
@@ -528,7 +494,7 @@ class Artist extends React.Component {
               >
                 <h4><I18n path="artist.overview.title" /></h4>
               </Link>
-              {artist.tracks_uris && artist.tracks_uris.length > 10 && (
+              {artist.tracks && artist.tracks.length > 10 && (
                 <Link
                   exact
                   history={history}
@@ -540,7 +506,7 @@ class Artist extends React.Component {
                   <h4><I18n path="artist.tracks.title" /></h4>
                 </Link>
               )}
-              {artist.related_artists_uris && (
+              {artist.related_artists && (
                 <Link
                   exact
                   history={history}

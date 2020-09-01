@@ -3,6 +3,7 @@ import { bindActionCreators } from 'redux';
 import { Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
 import ReactGA from 'react-ga';
+import localForage from 'localforage';
 import * as Sentry from '@sentry/browser';
 
 import Sidebar from './components/Sidebar';
@@ -137,6 +138,7 @@ export class App extends React.Component {
   }
 
   componentDidMount() {
+    localForage.keys().then((r) => console.log(r))
     const {
       history,
       snapcast_enabled,
@@ -161,7 +163,7 @@ export class App extends React.Component {
     if (snapcast_enabled) {
       snapcastActions.connect();
     }
-    coreActions.getBroadcasts();
+    uiActions.getBroadcasts();
 
     if (!initial_setup_complete) {
       history.push('/initial-setup');

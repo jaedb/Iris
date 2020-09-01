@@ -15,6 +15,8 @@ import {
   formatPlaylist,
   formatUser,
   formatAlbum,
+  formatArtists,
+  formatAlbums,
 } from '../../util/format';
 import URILink from '../../components/URILink';
 import { i18n } from '../../locale';
@@ -1078,20 +1080,14 @@ export function getArtist(uri, full = false) {
   return (dispatch, getState) => {
     // Start with an empty object
     // As each requests completes, they'll add to this object
-    const artist = {};
+    let artist = {};
 
     // We need our artist, obviously
     const requests = [
       request(dispatch, getState, `artists/${getFromUri('artistid', uri)}`, 'GET', false, true)
         .then(
           (response) => {
-            Object.assign(artist, response);
-          },
-          (error) => {
-            dispatch(coreActions.handleException(
-              'Could not load artist',
-              error,
-            ));
+            artist = { ...artist, ...response };
           },
         ),
     ];
@@ -1102,13 +1098,7 @@ export function getArtist(uri, full = false) {
         request(dispatch, getState, `artists/${getFromUri('artistid', uri)}/top-tracks?country=${getState().spotify.country}`)
           .then(
             (response) => {
-              Object.assign(artist, response);
-            },
-            (error) => {
-              dispatch(coreActions.handleException(
-                'Could not load artist\'s top tracks',
-                error,
-              ));
+              artist = { ...artist, tracks: formatTracks(response.tracks) };
             },
           ),
       );
@@ -1117,47 +1107,38 @@ export function getArtist(uri, full = false) {
         request(dispatch, getState, `artists/${getFromUri('artistid', uri)}/related-artists`)
           .then(
             (response) => {
-              dispatch(coreActions.artistsLoaded(response.artists));
-              Object.assign(artist, { related_artists_uris: arrayOf('uri', response.artists) });
-            },
-            (error) => {
-              dispatch(coreActions.handleException(
-                'Could not load artist\'s related artists',
-                error,
-              ));
+              artist = { ...artist, related_artists: formatArtists(response.artists) };
             },
           ),
       );
     }
 
-    // Run our requests
     $.when.apply($, requests).then(() => {
+      dispatch(coreActions.artistLoaded(artist));
+
+      // Get supporting biography and imagery
       if (artist.musicbrainz_id) {
         dispatch(lastfmActions.getArtist(artist.uri, false, artist.musicbrainz_id));
       } else {
         dispatch(lastfmActions.getArtist(artist.uri, artist.name.replace('&', 'and')));
       }
 
-      dispatch(coreActions.artistLoaded(artist));
-
-      // Now go get our artist albums
+      // Get all their albums
       if (full) {
-        request(dispatch, getState, `artists/${getFromUri('artistid', uri)}/albums?market=${getState().spotify.country}`)
-          .then(
-            (response) => {
-              dispatch({
-                type: 'SPOTIFY_ARTIST_ALBUMS_LOADED',
-                artist_uri: uri,
-                data: response,
-              });
-            },
-            (error) => {
-              dispatch(coreActions.handleException(
-                'Could not load artist\'s albums',
-                error,
-              ));
-            },
-          );
+        let albums = [];
+        const fetchAlbums = (endpoint) => request(dispatch, getState, endpoint)
+          .then((response) => {
+            albums = [...albums, ...formatAlbums(response.items)];
+            if (response.next) {
+              fetchAlbums(response.next);
+            } else {
+              dispatch(coreActions.artistLoaded({
+                uri: artist.uri,
+                albums,
+              }));
+            }
+          });
+        fetchAlbums(`artists/${getFromUri('artistid', uri)}/albums?market=${getState().spotify.country}`);
       }
     });
   };
@@ -1333,21 +1314,18 @@ export function getAlbum(uri) {
           const album = {
             ...formatAlbum(response),
             artists_uris: arrayOf('uri', response.artists),
-            tracks_uris: arrayOf('uri', tracks),
             tracks_more: response.tracks.next,
             tracks_total: response.tracks.total,
           };
-
-          // add our album to all the tracks
-          for (var i = 0; i < tracks.length; i++) {
-            tracks[i].album = {
+          album.tracks = tracks.map((track) => ({
+            ...track,
+            album: {
               name: album.name,
               uri: album.uri,
-            };
-          }
+            },
+          }));
 
           dispatch(coreActions.albumLoaded(album));
-          dispatch(coreActions.tracksLoaded(tracks));
 
           // now get all the artists for this album (full objects)
           // we do this to get the artist artwork

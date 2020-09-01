@@ -197,6 +197,8 @@ export default function reducer(ui = {}, action) {
       }
       return { ...ui, processes };
 
+    case 'SUPPRESS_BROADCAST':
+      return { ...ui, suppressed_broadcasts: [...(ui.suppressed_broadcasts || []), action.key] };
 
     default:
       return ui;
