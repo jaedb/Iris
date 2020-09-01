@@ -57,6 +57,7 @@ fields:
   items_to_add:
     label: Éléments à ajouter
     placeholder: Aucun élément
+  filter: Filtre
   filters:
     all: Tout
     thumbnails: Vignettes
@@ -113,6 +114,9 @@ services:
   mopidy:
     title: Mopidy
     local: Local
+    adding_uris: 'Ajout de %{count} URI(s)'
+    searching_providers: 'Recherche parmi %{count} Mopidy services'
+    loading_albums: 'Chargement de %{count} albums locaux'
   spotify:
     title: Spotify
   pusher:
@@ -173,6 +177,8 @@ playback_controls:
   shuffle: Aléatoire
   repeat: Répéter
   no_outputs: Pas de sortie
+  mute: Muet
+  unmute: Réactiver le son
 snapcast:
   enabled: Activé
   show_disconnected_clients: Montrer les clients déconnectés
@@ -232,6 +238,17 @@ artist:
     wiki:
       published: 'Publié : %{date}'
       origin: 'Source : '
+  albums:
+    sort:
+      default: Défaut
+      name: Nom
+      release_date: Date de parution
+      track_count: Nombre de morceaux
+    filter:
+      all: Tous
+      albums: Albums
+      singles: Singles
+      compilations: Compilations
 debug:
   title: Déboguer
   ui:

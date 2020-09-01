@@ -17,6 +17,7 @@ import {
   formatAlbum,
 } from '../../util/format';
 import URILink from '../../components/URILink';
+import { i18n } from '../../locale';
 
 const coreActions = require('../../services/core/actions');
 const uiActions = require('../../services/ui/actions');
@@ -1604,10 +1605,13 @@ export function getLibraryTracksAndPlayProcessor(data) {
             dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR'));
           }
         },
-        (error) => {
-          dispatch(coreActions.handleException(
-            'Could not load library tracks',
-            error,
+        () => {
+          dispatch(uiActions.processFinished(
+            'SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR',
+            {
+              content: 'Could not load library tracks',
+              level: 'error',
+            },
           ));
         },
       );
@@ -1818,11 +1822,11 @@ export function getLibraryPlaylists() {
 
     if (!last_run) {
       dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR', 'Loading Spotify playlists', { next: 'me/playlists?limit=50' }));
-    } else if (last_run.status == 'cancelled') {
+    } else if (last_run.status === 'cancelled') {
       dispatch(uiActions.resumeProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'));
 
       // We've already finished, but the status has been flushed
-    } else if (last_run.status == 'finished' && !getState().spotify.library_playlists_loaded_all) {
+    } else if (last_run.status === 'finished' && !getState().spotify.library_playlists_loaded_all) {
       dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR', 'Loading Spotify playlists', { next: 'me/playlists?limit=50' }));
     }
   };
@@ -1868,10 +1872,19 @@ export function getLibraryPlaylistsProcessor(data) {
             dispatch({ type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED_ALL' });
           }
         },
-        (error) => {
-          dispatch(coreActions.handleException(
-            'Could not load library playlists',
-            error,
+        () => {
+          dispatch(uiActions.processFinished(
+            'SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR',
+            {
+              content: i18n(
+                'errors.could_not_load_library',
+                {
+                  name: i18n('library.playlists.title'),
+                  provider: i18n('services.spotify.title'),
+                },
+              ),
+              level: 'error',
+            },
           ));
         },
       );
@@ -1889,11 +1902,11 @@ export function getLibraryArtists() {
 
     if (!last_run) {
       dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR', 'Loading Spotify artists', { next: 'me/following?type=artist&limit=50' }));
-    } else if (last_run.status == 'cancelled') {
+    } else if (last_run.status === 'cancelled') {
       dispatch(uiActions.resumeProcess('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'));
 
       // We've already finished, but the status has been flushed
-    } else if (last_run.status == 'finished' && !getState().spotify.library_artists_loaded_all) {
+    } else if (last_run.status === 'finished' && !getState().spotify.library_artists_loaded_all) {
       dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR', 'Loading Spotify artists', { next: 'me/following?type=artist&limit=50' }));
     }
   };
@@ -1927,10 +1940,19 @@ export function getLibraryArtistsProcessor(data) {
             dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'));
           }
         },
-        (error) => {
-          dispatch(coreActions.handleException(
-            'Could not load library artists',
-            error,
+        () => {
+          dispatch(uiActions.processFinished(
+            'SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR',
+            {
+              content: i18n(
+                'errors.could_not_load_library',
+                {
+                  name: i18n('library.artists.title'),
+                  provider: i18n('services.spotify.title'),
+                },
+              ),
+              level: 'error',
+            },
           ));
         },
       );
@@ -1948,11 +1970,11 @@ export function getLibraryAlbums() {
 
     if (!last_run) {
       dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR', 'Loading Spotify albums', { next: 'me/albums?limit=50' }));
-    } else if (last_run.status == 'cancelled') {
+    } else if (last_run.status === 'cancelled') {
       dispatch(uiActions.updateProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR', 'Loading Spotify albums', { next: 'me/albums?limit=50' }));
 
       // We've already finished, but the status has been flushed
-    } else if (last_run.status == 'finished' && !getState().spotify.library_albums_loaded_all) {
+    } else if (last_run.status === 'finished' && !getState().spotify.library_albums_loaded_all) {
       dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR', 'Loading Spotify albums', { next: 'me/albums?limit=50' }));
     }
   };
@@ -1997,10 +2019,19 @@ export function getLibraryAlbumsProcessor(data) {
             dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'));
           }
         },
-        (error) => {
-          dispatch(coreActions.handleException(
-            'Could not load library albums',
-            error,
+        () => {
+          dispatch(uiActions.processFinished(
+            'SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR',
+            {
+              content: i18n(
+                'errors.could_not_load_library',
+                {
+                  name: i18n('library.albums.title'),
+                  provider: i18n('services.spotify.title'),
+                },
+              ),
+              level: 'error',
+            },
           ));
         },
       );

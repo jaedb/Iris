@@ -26,6 +26,7 @@ import {
   sourceIcon,
 } from '../util/helpers';
 import { collate } from '../util/format';
+import Button from '../components/Button';
 
 export class Album extends React.Component {
   componentDidMount = () => {
@@ -66,12 +67,10 @@ export class Album extends React.Component {
   componentDidUpdate = ({
     uri: prevUri,
     album: prevAlbum,
-    mopidy_connected: prev_mopidy_connected,
   }) => {
     const {
       uri,
       album,
-      mopidy_connected,
       coreActions: {
         loadAlbum,
       },
@@ -82,15 +81,11 @@ export class Album extends React.Component {
 
     if (uri !== prevUri) {
       loadAlbum(uri);
-    } else if (!prev_mopidy_connected && mopidy_connected) {
-      if (uriSource(uri) !== 'spotify') {
-        loadAlbum(uri);
-      }
     }
 
     // We have just received our full album or our album artists
     if ((!prevAlbum && album) || (!prevAlbum.artists && album.artists)) {
-      if (album.wiki === undefined && album.artists.length > 0) {
+      if (album.artists && album.wiki === undefined) {
         getAlbum(album.uri, album.artists[0].name, album.name);
       }
     }
@@ -260,12 +255,15 @@ export class Album extends React.Component {
         </div>
 
         <div className="actions">
-          <button type="button" className="button button--primary" onClick={this.play}>
+          <Button
+            type="primary"
+            onClick={this.play}
+            tracking={{ category: 'Album', action: 'Play' }}
+          >
             <I18n path="actions.play" />
-          </button>
+          </Button>
           {uriSource(uri) === 'spotify' && (
             <FollowButton
-              className="secondary"
               uri={uri}
               is_following={this.inLibrary()}
             />
@@ -320,7 +318,6 @@ const mapStateToProps = (state, ownProps) => {
     spotify_library_albums: state.spotify.library_albums,
     local_library_albums: state.mopidy.library_albums,
     spotify_authorized: state.spotify.authorization,
-    mopidy_connected: state.mopidy.connected,
   };
 };
 

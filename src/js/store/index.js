@@ -33,6 +33,7 @@ let state = {
     queue: [],
     queue_metadata: {},
     current_track: null,
+    pinned: [],
     albums: {},
     artists: {},
     playlists: {},

@@ -33,12 +33,12 @@ class DebugInfo extends React.Component {
     const { ui: { load_queue } } = this.props;
     if (!load_queue) return <div className="debug-info-item mid_grey-text">Nothing loading</div>;
 
-    const queue = indexToArray(load_queue);
+    const queue = indexToArray(load_queue, null, true);
 
     if (queue.length > 0) {
       return (
         <div className="debug-info-item">
-          {queue.map((item) => (<div key={item}>{item}</div>))}
+          {queue.map((item, index) => (<div key={`${item}_${index}`}>{item}</div>))}
         </div>
       );
     }

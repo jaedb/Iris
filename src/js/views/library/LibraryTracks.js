@@ -12,6 +12,7 @@ import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
 import { isLoading } from '../../util/helpers';
 import { I18n, i18n } from '../../locale';
+import Button from '../../components/Button';
 
 class LibraryTracks extends React.Component {
   componentDidMount() {
@@ -63,10 +64,17 @@ class LibraryTracks extends React.Component {
     }
 
     const options = (
-      <a className="button button--no-hover" onClick={(e) => this.playAll(e)}>
-        <Icon name="play_circle_filled" />
-        <I18n path="actions.play_all" />
-      </a>
+      <div className="header__options__wrapper">
+        <Button
+          onClick={(e) => this.playAll(e)}
+          tracking={{ category: 'LibraryTracks', action: 'Play' }}
+          noHover
+          discrete
+        >
+          <Icon name="play_circle_filled" />
+          <I18n path="actions.play_all" />
+        </Button>
+      </div>
     );
 
     return (

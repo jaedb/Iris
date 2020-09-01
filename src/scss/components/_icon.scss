@@ -15,28 +15,21 @@
 	@include noselect();
 
 	&--material {
-	    font-family: 'Material Icons';
-	    font-weight: normal;
-	    font-style: normal;
-	    line-height: 1;
-	    text-transform: none;
-	    letter-spacing: normal;
-	    word-wrap: normal;
-	    white-space: nowrap;
-	    direction: ltr;
+		font-family: 'Material Icons';
+		font-weight: normal;
+		font-style: normal;
+		line-height: 1;
+		text-transform: none;
+		letter-spacing: normal;
+		word-wrap: normal;
+		white-space: nowrap;
+		direction: ltr;
 		vertical-align: top;
-	    font-size: 1.3em;
-	    -webkit-font-smoothing: antialiased;
-	    text-rendering: optimizeLegibility;
-	    -moz-osx-font-smoothing: grayscale;
-	    font-feature-settings: 'liga';
-	}
-
-	&--fontawesome {
-
-	}
-
-	&--svg {
+		font-size: 1.3em;
+		-webkit-font-smoothing: antialiased;
+		text-rendering: optimizeLegibility;
+		-moz-osx-font-smoothing: grayscale;
+		font-feature-settings: 'liga';
 	}
 
 	&--spin {

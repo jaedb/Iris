@@ -10,6 +10,7 @@ import * as pusherActions from '../../services/pusher/actions';
 import * as uiActions from '../../services/ui/actions';
 import { scrollTo, generateGuid } from '../../util/helpers';
 import { i18n, I18n } from '../../locale';
+import Button from '../../components/Button';
 
 class EditCommand extends React.Component {
   constructor(props) {
@@ -239,17 +240,23 @@ class EditCommand extends React.Component {
 
           <div className="actions centered-text">
             {command && (
-              <button
-                type="button"
-                className="button button--destructive button--large"
+              <Button
+                type="destructive"
+                size="large"
                 onClick={(e) => this.handleDelete(e)}
+                tracking={{ category: 'EditCommand', action: 'Delete' }}
               >
                 <I18n path="actions.delete" />
-              </button>
+              </Button>
             )}
-            <button type="submit" className="button button--primary button--large">
+            <Button
+              type="primary"
+              size="large"
+              submit
+              tracking={{ category: 'EditCommand', action: 'Submit' }}
+            >
               <I18n path="actions.save" />
-            </button>
+            </Button>
           </div>
 
         </form>

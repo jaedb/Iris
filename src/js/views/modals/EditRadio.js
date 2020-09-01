@@ -15,6 +15,7 @@ import {
 } from '../../util/helpers';
 import { i18n, I18n } from '../../locale';
 import TextField from '../../components/Fields/TextField';
+import Button from '../../components/Button';
 
 const SeedListItem = ({ seed, remove }) => (
   <div className="list__item list__item--no-interaction" key={seed.uri}>
@@ -28,14 +29,17 @@ const SeedListItem = ({ seed, remove }) => (
         {` (${uriType(seed.uri)})`}
       </span>
     )}
-    <button
-      type="button"
-      className="button button--discrete button--destructive button--tiny pull-right"
+    <Button
+      type="destructive"
+      size="tiny"
+      className="pull-right"
+      discrete
       onClick={() => remove(seed.uri)}
+      tracking={{ category: 'Directory', action: 'Play' }}
     >
       <Icon name="delete" />
       <I18n path="actions.remove" />
-    </button>
+    </Button>
   </div>
 );
 
@@ -277,28 +281,35 @@ class EditRadio extends React.Component {
           </div>
 
           <div className="actions centered-text">
-            {this.state.enabled ? (
-              <span className="button button--destructive button--large" onClick={(e) => this.handleStop(e)}>
+            {this.state.enabled && (
+              <Button
+                type="destructive"
+                size="large"
+                onClick={(e) => this.handleStop(e)}
+                tracking={{ category: 'Radio', action: 'Stop' }}
+              >
                 <I18n path="actions.add" />
-              </span>
-            ) : null}
+              </Button>
+            )}
 
             {this.state.enabled ? (
-              <button
-                className="button button--primary button--large"
+              <Button
+                type="primary"
+                size="large"
                 onClick={(e) => this.handleUpdate(e)}
-                type="button"
+                tracking={{ category: 'Radio', action: 'Update' }}
               >
                 <I18n path="actions.save" />
-              </button>
+              </Button>
             ) : (
-              <button
-                className="button button--primary button--large"
+              <Button
+                type="primary"
+                size="large"
                 onClick={(e) => this.handleStart(e)}
-                type="button"
+                tracking={{ category: 'Radio', action: 'Start' }}
               >
                 <I18n path="actions.start" />
-              </button>
+              </Button>
             )}
           </div>
         </form>
@@ -308,7 +319,6 @@ class EditRadio extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  mopidy_connected: state.mopidy.connected,
   radio: state.core.radio,
   artists: state.core.artists,
   tracks: state.core.tracks,

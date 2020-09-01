@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -6,6 +5,7 @@ import * as uiActions from '../../services/ui/actions';
 import * as spotifyActions from '../../services/spotify/actions';
 import { isLoading, getFromUri } from '../../util/helpers';
 import { i18n } from '../../locale';
+import { Button } from '../Button';
 
 class FollowButton extends React.Component {
   remove = () => {
@@ -37,49 +37,46 @@ class FollowButton extends React.Component {
       load_queue,
     } = this.props;
 
-    let { className } = this.props;
-
     if (!uri) return null;
 
-    className += ' button';
-    if (isLoading(load_queue, [
+    const working = isLoading(load_queue, [
       'spotify_me/tracks?',
       'spotify_me/albums?',
       'spotify_me/following?',
       `spotify_playlists/${getFromUri('playlistid', uri)}/followers?`,
-    ])) {
-      className += ' button--working';
-    }
+    ]);
 
     if (!spotify_authorized) {
       return (
-        <button
-          type="button"
-          className={`${className} button--disabled`}
+        <Button
+          disabled
+          working={working}
           onClick={this.unauthorized}
+          tracking={{ category: 'FollowButton', action: 'Add (disabled)' }}
         >
           {addText || i18n('actions.add_to_library')}
-        </button>
+        </Button>
       );
     } if (is_following === true) {
       return (
-        <button
-          type="button"
-          className={`${className} button--destructive`}
+        <Button
+          type="destructive"
+          working={working}
           onClick={this.remove}
+          tracking={{ category: 'FollowButton', action: 'Remove' }}
         >
           {removeText || i18n('actions.remove_from_library')}
-        </button>
+        </Button>
       );
     }
     return (
-      <button
-        type="button"
-        className={`${className} button--default`}
+      <Button
         onClick={this.add}
+        working={working}
+        tracking={{ category: 'FollowButton', action: 'Add' }}
       >
         {addText || i18n('actions.add_to_library')}
-      </button>
+      </Button>
     );
   }
 }

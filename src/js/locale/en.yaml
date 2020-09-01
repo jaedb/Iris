@@ -5,7 +5,8 @@ name: English
 ##
 errors:
   uri_not_found: 'Could not find anything with URI %{uri}'
-  could_not_load: Could not load
+  could_not_load: 'Could not load %{name}'
+  could_not_load_library: 'Could not load %{name} from %{provider}'
   no_results: No results found
   authorization_required: 'You must authorize %{provider} first'
   enable_first: 'Enable %{provider} first'
@@ -57,6 +58,7 @@ fields:
   items_to_add:
     label: Items to add
     placeholder: No items
+  filter: Filter
   filters:
     all: All
     thumbnails: Thumbnails
@@ -113,6 +115,9 @@ services:
   mopidy:
     title: Mopidy
     local: Local
+    adding_uris: 'Adding %{count} URI(s)'
+    searching_providers: 'Searching %{count} Mopidy providers'
+    loading_albums: 'Loading %{count} local albums'
   spotify:
     title: Spotify
   pusher:
@@ -160,6 +165,8 @@ context_menu:
   play_top_tracks: Play top tracks
   love_track: Love track
   unlove_track: Unlove track
+  pin: Pin
+  unpin: Unpin
   go_to_artist: Go to artist
   go_to_user: Go to user
   track_info: Track info
@@ -173,6 +180,8 @@ playback_controls:
   shuffle: Shuffle
   repeat: Repeat
   no_outputs: No outputs
+  mute: Mute
+  unmute: Unmute
 snapcast:
   enabled: Enabled
   show_disconnected_clients: Show disconnected clients
@@ -232,6 +241,17 @@ artist:
     wiki:
       published: 'Published: %{date}'
       origin: 'Origin: '
+  albums:
+    sort:
+      default: Default
+      name: Name
+      release_date: Date
+      track_count: Tracks
+    filter:
+      all: All
+      albums: Albums
+      singles: Singles
+      compilations: Compilations
 debug:
   title: Debug
   ui:
@@ -445,7 +465,7 @@ modal:
     title: Add to queue
     subtitle: Add a comma-separated list of URIs to the play queue
     uris: URI(s)
-    add_random: Add random
+    add_random: Find random tracks
     position:
       label: Position
       end: End

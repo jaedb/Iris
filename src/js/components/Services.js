@@ -21,6 +21,7 @@ import * as spotifyActions from '../services/spotify/actions';
 import * as lastfmActions from '../services/lastfm/actions';
 import * as geniusActions from '../services/genius/actions';
 import { I18n } from '../locale';
+import Button from './Button';
 
 class Services extends React.Component {
   constructor(props) {
@@ -166,18 +167,13 @@ class Services extends React.Component {
           </div>
           <div className="input">
             <SpotifyAuthenticationFrame />
-            {spotify.refreshing_token ? (
-              <a className="button button--default button--working">
-                <I18n path="settings.services.refresh_token" />
-              </a>
-            ) : (
-              <a
-                className="button button--default"
-                onClick={() => spotifyActions.refreshingToken()}
-              >
-                <I18n path="settings.services.refresh_token" />
-              </a>
-            )}
+            <Button
+              working={spotify.refreshing_token}
+              onClick={() => spotifyActions.refreshingToken()}
+              tracking={{ category: 'Spotify', action: 'RefreshToken' }}
+            >
+              <I18n path="settings.services.refresh_token" />
+            </Button>
           </div>
         </div>
       </div>

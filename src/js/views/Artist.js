@@ -33,6 +33,8 @@ import {
 import { collate } from '../util/format';
 import { sortItems, applyFilter } from '../util/arrays';
 import { i18n, I18n } from '../locale';
+import Button from '../components/Button';
+import { trackEvent } from '../components/Trackable';
 
 class Artist extends React.Component {
   componentDidMount() {
@@ -42,12 +44,10 @@ class Artist extends React.Component {
 
   componentDidUpdate = ({
     uri: prevUri,
-    mopidy_connected: prev_mopidy_connected,
     artist: prevArtist,
   }) => {
     const {
       uri,
-      mopidy_connected,
       artist,
       coreActions: {
         loadArtist,
@@ -56,10 +56,6 @@ class Artist extends React.Component {
 
     if (uri !== prevUri) {
       loadArtist(uri);
-    } else if (!prev_mopidy_connected && mopidy_connected) {
-      if (uriSource(uri) !== 'spotify') {
-        loadArtist(uri);
-      }
     }
 
     if (!prevArtist && artist) this.setWindowTitle(artist);
@@ -69,12 +65,14 @@ class Artist extends React.Component {
   onResetFilters = () => {
     this.onChangeFilter(null);
     this.onChangeSort(null);
+    trackEvent({ category: 'Artist', action: 'FilterAlbums', label: 'Reset' });
   }
 
   onChangeFilter = (value) => {
     const { uiActions: { set, hideContextMenu } } = this.props;
     set({ artist_albums_filter: value });
     hideContextMenu();
+    trackEvent({ category: 'Artist', action: 'FilterAlbums', label: value });
   }
 
   onChangeSort = (value) => {
@@ -88,7 +86,7 @@ class Artist extends React.Component {
     } = this.props;
 
     let reverse = false;
-    if (value !== null && sort == value) {
+    if (value !== null && sort === value) {
       reverse = !sort_reverse;
     }
 
@@ -97,6 +95,7 @@ class Artist extends React.Component {
       artist_albums_sort: value,
     });
     hideContextMenu();
+    trackEvent({ category: 'Artist', action: 'SortAlbums', label: `${value} ${reverse ? 'DESC' : 'ASC'}` });
   }
 
   onPlay = () => {
@@ -192,38 +191,38 @@ class Artist extends React.Component {
     const sort_options = [
       {
         value: null,
-        label: 'Default',
+        label: i18n('artist.albums.sort.default'),
       },
       {
         value: 'name',
-        label: 'Name',
+        label: i18n('artist.albums.sort.name'),
       },
       {
         value: 'release_date',
-        label: 'Date',
+        label: i18n('artist.albums.sort.release_date'),
       },
       {
         value: 'tracks_uris.length',
-        label: 'Tracks',
+        label: i18n('artist.albums.sort.track_count'),
       },
     ];
 
     const filter_options = [
       {
         value: null,
-        label: 'All',
+        label: i18n('artist.albums.filter.all'),
       },
       {
         value: 'album',
-        label: 'Albums',
+        label: i18n('artist.albums.filter.albums'),
       },
       {
         value: 'single',
-        label: 'Singles',
+        label: i18n('artist.albums.filter.singles'),
       },
       {
         value: 'compilation',
-        label: 'Compilations',
+        label: i18n('artist.albums.filter.compilations'),
       },
     ];
 
@@ -254,13 +253,12 @@ class Artist extends React.Component {
                 uiActions={uiActions}
               />
             </div>
-            <Link
+            <Button
               to={`/artist/${encodeURIComponent(uri)}/related-artists`}
               scrollTo="#sub-views-menu"
-              className="button button--default"
             >
               <I18n path="artist.overview.related_artists.more" />
-            </Link>
+            </Button>
           </div>
         )}
 
@@ -288,10 +286,15 @@ class Artist extends React.Component {
                 handleChange={this.onChangeFilter}
               />
               {(sort || filter) && (
-                <a className="button button--discrete button--destructive button--small" onClick={this.onResetFilters}>
+                <Button
+                  discrete
+                  type="destructive"
+                  size="small"
+                  onClick={this.onResetFilters}
+                >
                   <Icon name="clear" />
                   <I18n path="actions.reset" />
-                </a>
+                </Button>
               )}
             </h4>
 
@@ -497,9 +500,13 @@ class Artist extends React.Component {
               <div className="heading__content">
                 <h1>{this.props.artist ? this.props.artist.name : null}</h1>
                 <div className="actions">
-                  <button className="button button--primary" onClick={this.onPlay}>
+                  <Button
+                    type="primary"
+                    onClick={this.onPlay}
+                    tracking={{ category: 'Artist', action: 'Play' }}
+                  >
                     <I18n path="actions.play" />
-                  </button>
+                  </Button>
                   {is_spotify && (
                     <FollowButton
                       uri={uri}
@@ -596,7 +603,6 @@ const mapStateToProps = (state, ownProps) => {
     sort: (state.ui.artist_albums_sort ? state.ui.artist_albums_sort : null),
     sort_reverse: (!!state.ui.artist_albums_sort_reverse),
     spotify_authorized: state.spotify.authorization,
-    mopidy_connected: state.mopidy.connected,
   };
 };
 

@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux';
 import * as uiActions from '../../services/ui/actions';
 import * as lastfmActions from '../../services/lastfm/actions';
 import { i18n } from '../../locale';
+import Button from '../Button';
 
 const FollowButton = ({
   uri,
@@ -40,33 +41,32 @@ const FollowButton = ({
 
   if (!lastfm_authorized) {
     return (
-      <button
-        className={`${className} button--disabled`}
+      <Button
+        disabled
         onClick={onDisabledClick}
-        type="button"
+        tracking={{ category: 'Lastfm', action: 'Love', label: 'Disabled' }}
       >
         {addText || i18n('services.lastfm.love')}
-      </button>
+      </Button>
     );
   } if (is_loved && is_loved !== '0') {
     return (
-      <button
-        className={`${className} button--destructive`}
+      <Button
+        type="destructive"
         onClick={onRemove}
-        type="button"
+        tracking={{ category: 'Lastfm', action: 'Unlove' }}
       >
         {removeText || i18n('services.lastfm.unlove')}
-      </button>
+      </Button>
     );
   }
   return (
-    <button
-      className={`${className} button--default`}
+    <Button
       onClick={onAdd}
-      type="button"
+      tracking={{ category: 'Lastfm', action: 'Love' }}
     >
       {addText || i18n('services.lastfm.love')}
-    </button>
+    </Button>
   );
 };
 

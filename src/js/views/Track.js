@@ -27,6 +27,7 @@ import {
   uriType,
 } from '../util/helpers';
 import { i18n, I18n } from '../locale';
+import Button from '../components/Button';
 
 class Track extends React.Component {
   componentDidMount() {
@@ -52,14 +53,12 @@ class Track extends React.Component {
   componentDidUpdate = ({
     uri: prevUri,
     track: prevTrack,
-    mopidy_connected: prev_mopidy_connected,
   }) => {
     const {
       uri,
       track,
       genius_authorized,
       lastfm_authorized,
-      mopidy_connected,
       coreActions: {
         loadTrack,
       },
@@ -70,14 +69,13 @@ class Track extends React.Component {
         getTrack,
       },
     } = this.props;
-    // if our URI has changed, fetch new track
+
     if (prevUri !== uri) {
       loadTrack(uri);
-      if (genius_authorized && track.artists) findTrackLyrics(track);
 
-      // if mopidy has just connected AND we're not a Spotify track, go get
-    } else if (!prev_mopidy_connected && mopidy_connected) {
-      if (uriSource(uri) !== 'spotify') loadTrack(uri);
+      if (genius_authorized && track.artists) {
+        findTrackLyrics(track);
+      }
     }
 
     // We have just received our full track or our track artists
@@ -299,9 +297,13 @@ class Track extends React.Component {
         </div>
 
         <div className="actions">
-          <button className="button button--primary" onClick={this.play} type="button">
+          <Button
+            type="primary"
+            onClick={this.play}
+            tracking={{ category: 'Track', action: 'Play' }}
+          >
             <I18n path="actions.play" />
-          </button>
+          </Button>
           <LastfmLoveButton
             uri={uri}
             artist={(track.artists ? track.artists[0].name : null)}
@@ -370,7 +372,6 @@ const mapStateToProps = (state, ownProps) => {
     lastfm_authorized: state.lastfm.authorization,
     spotify_authorized: state.spotify.authorization,
     genius_authorized: state.genius.authorization,
-    mopidy_connected: state.mopidy.connected,
   };
 };
 

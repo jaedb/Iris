@@ -9,6 +9,7 @@ import * as pusherActions from '../../services/pusher/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import { queryString, isHosted } from '../../util/helpers';
 import { I18n, i18n } from '../../locale';
+import Button from '../../components/Button';
 
 class InitialSetup extends React.Component {
   constructor(props) {
@@ -163,9 +164,15 @@ class InitialSetup extends React.Component {
           )}
 
           <div className="actions centered-text">
-            <button className={`button button--primary button--large${this.state.saving ? ' button--working' : ''}`} onClick={(e) => this.handleSubmit(e)}>
+            <Button
+              type="primary"
+              size="large"
+              working={this.state.saving}
+              onClick={(e) => this.handleSubmit(e)}
+              tracking={{ category: 'InitialSetup', action: 'Submit' }}
+            >
               <I18n path="actions.save" />
-            </button>
+            </Button>
           </div>
 
         </form>

@@ -150,8 +150,29 @@ const uriType = function (uri) {
     return 'playlist';
   }
 
+  if (exploded[0] === 'yt') {
+    return 'track';
+  }
+
+  if (exploded[0] === 'youtube') {
+    const youtubeParts = exploded[1].split('/');
+    if (youtubeParts[0] === 'video') {
+      return 'track';
+    }
+    return youtubeParts[0];
+  }
+
   if (exploded[0] === 'iris') {
     return exploded[1];
+  }
+
+  if (exploded[0] === 'tunein') {
+    switch (exploded[1]) {
+      case 'station':
+        return 'album';
+      default:
+        return exploded[1];
+    }
   }
 
   switch (exploded[1]) {
@@ -162,12 +183,12 @@ const uriType = function (uri) {
     case 'genre':
       return exploded[1];
     case 'user':
-      if (exploded.length > 3 && exploded[3] == 'playlist') {
+      if (exploded.length > 3 && exploded[3] === 'playlist') {
         return 'playlist';
       }
       return exploded[1];
     default:
-      return null;
+      return '';
   }
 };
 
@@ -192,7 +213,7 @@ const sourceIcon = function (uri, source = null) {
     case 'tunein':
     case 'somafm':
     case 'dirble':
-      return 'microphone';
+      return 'cloud';
 
     default:
       return source;

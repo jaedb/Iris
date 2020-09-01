@@ -1,22 +1,27 @@
-
 import React, { memo } from 'react';
 import Icon from './Icon';
+import Button from './Button';
+import { trackEvent } from './Trackable';
 
-export default memo((props) => {
+export default memo(({ onTrigger }) => {
   const handleClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    props.onTrigger(e);
+    onTrigger(e);
+
+    trackEvent({
+      category: 'ContextMenu',
+      action: 'Open',
+    });
   };
 
-  let className = 'context-menu-trigger mouse-contextable touch-contextable';
-  if (props.className) {
-    className += ` ${props.className}`;
-  }
-
   return (
-    <span className={className} onClick={handleClick}>
+    <Button
+      className="context-menu-trigger mouse-contextable touch-contextable"
+      onClick={handleClick}
+      icon
+    >
       <Icon name="more_horiz" />
-    </span>
+    </Button>
   );
 });

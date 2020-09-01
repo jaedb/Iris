@@ -12,6 +12,7 @@ import { uriType } from '../../util/helpers';
 import Icon from '../../components/Icon';
 import TextField from '../../components/Fields/TextField';
 import LinksSentence from '../../components/LinksSentence';
+import Button from '../../components/Button';
 
 const UriListItem = ({
   uri,
@@ -44,14 +45,17 @@ const UriListItem = ({
         </I18n>
       )}
       <span className="mid_grey-text">{` (${type})`}</span>
-      <button
-        className="button button--discrete button--destructive button--tiny pull-right"
-        type="button"
+      <Button
+        type="destructive"
+        discrete
+        size="tiny"
+        className="pull-right"
         onClick={() => remove(uri)}
+        tracking={{ category: 'AddToQueue', action: 'RemoveItem' }}
       >
         <Icon name="delete" />
         <I18n path="actions.remove" />
-      </button>
+      </Button>
     </div>
   );
 };
@@ -257,20 +261,23 @@ class AddToQueue extends React.Component {
           </div>
 
           <div className="actions centered-text">
-            <button
-              type="button"
-              className="button button--grey button--large"
+            <Button
+              colour="grey"
+              size="large"
               onClick={this.addRandom}
+              tracking={{ category: 'AddToQueue', action: 'AddRandom' }}
             >
               <I18n path="modal.add_to_queue.add_random" />
-            </button>
-            <button
-              type="submit"
-              className="button button--primary button--large"
+            </Button>
+            <Button
+              type="primary"
+              size="large"
               disabled={!uris.length}
+              submit
+              tracking={{ category: 'AddToQueue', action: 'Submit' }}
             >
               <I18n path="actions.add" />
-            </button>
+            </Button>
           </div>
         </form>
       </Modal>
@@ -279,7 +286,6 @@ class AddToQueue extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  mopidy_connected: state.mopidy.connected,
   albums: state.core.albums,
   tracks: state.core.tracks,
   view: state.core.view ? state.core.view : {},

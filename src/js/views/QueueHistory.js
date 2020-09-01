@@ -10,6 +10,7 @@ import * as pusherActions from '../services/pusher/actions';
 import * as spotifyActions from '../services/spotify/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import { i18n, I18n } from '../locale';
+import Button from '../components/Button';
 
 class QueueHistory extends React.Component {
   componentDidMount() {
@@ -18,19 +19,18 @@ class QueueHistory extends React.Component {
     this.loadHistory();
   }
 
-  componentDidUpdate = ({ mopidy_connected: prev_mopidy_connected }) => {
-    const { mopidy_connected } = this.props;
-    if (!prev_mopidy_connected && mopidy_connected) this.loadHistory();
+  componentDidUpdate = () => {
+    this.loadHistory();
   }
 
-  loadHistory = (props = this.props) => {
+  loadHistory = () => {
     const {
-      mopidyActions: { getQueueHistory },
+      mopidyActions: {
+        getQueueHistory,
+      },
     } = this.props;
 
-    if (props.mopidy_connected) {
-      getQueueHistory();
-    }
+    getQueueHistory();
   }
 
   onBack = () => {
@@ -46,12 +46,16 @@ class QueueHistory extends React.Component {
     } = this.props;
 
     const options = (
-      <a className="button button--no-hover" onClick={this.onBack}>
+      <Button
+        onClick={this.onBack}
+        noHover
+        tracking={{ category: 'QueueHistory', action: 'Back' }}
+      >
         <I18n path="actions.back">
           <Icon name="keyboard_backspace" />
           {' '}
         </I18n>
-      </a>
+      </Button>
     );
 
     const tracks = queue_history.map((item) => ({
@@ -82,7 +86,6 @@ class QueueHistory extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  mopidy_connected: state.mopidy.connected,
   tracks: (state.core.tracks ? state.core.tracks : {}),
   queue_history: (state.mopidy.queue_history ? state.mopidy.queue_history : []),
 });

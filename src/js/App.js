@@ -66,6 +66,41 @@ export class App extends React.Component {
   constructor(props) {
     super(props);
 
+    const {
+      allow_reporting,
+      test_mode,
+    } = this.props;
+
+    if (allow_reporting) {
+      ReactGA.initialize('UA-64701652-3');
+      Sentry.init({
+        dsn: 'https://ca99fb6662fe40ae8ec4c18a466e4b4b@o99789.ingest.sentry.io/219026',
+        sampleRate: 0.25,
+        beforeSend: (event, hint) => {
+          const {
+            originalException: {
+              message,
+            } = {},
+          } = hint;
+
+          // Filter out issues that destroy our quota and that are not informative enough to
+          // actually resolve.
+          if (
+            message
+            && (
+              message.match(/Websocket/i)
+              || message.match(/NotSupportedError/i)
+              || message.match(/Non-Error promise rejection captured with keys: call, message, value/i)
+            )
+          ) {
+            return null;
+          }
+
+          return event;
+        },
+      });
+    }
+
     // Load query param settings
     const configs = ['ui', 'spotify', 'pusher', 'snapcast', 'mopidy', 'google', 'lastfm', 'genius']
     const params = new URLSearchParams(window.location.search)
@@ -105,7 +140,6 @@ export class App extends React.Component {
     const {
       history,
       snapcast_enabled,
-      allow_reporting,
       initial_setup_complete,
       mopidyActions,
       pusherActions,
@@ -120,13 +154,6 @@ export class App extends React.Component {
     );
     window.addEventListener('focus', this.handleFocusAndBlur, false);
     window.addEventListener('blur', this.handleFocusAndBlur, false);
-
-    if (allow_reporting) {
-      ReactGA.initialize('UA-64701652-3');
-      Sentry.init({
-        dsn: 'https://ca99fb6662fe40ae8ec4c18a466e4b4b@o99789.ingest.sentry.io/219026',
-      });
-    }
 
     // Fire up our services
     mopidyActions.connect();
@@ -366,7 +393,7 @@ export class App extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state) => ({
   language: state.ui.language,
   theme: state.ui.theme,
   wide_scrollbar_enabled: state.ui.wide_scrollbar_enabled,
@@ -376,13 +403,13 @@ const mapStateToProps = (state, ownProps) => ({
   touch_dragging: state.ui.touch_dragging,
   initial_setup_complete: state.ui.initial_setup_complete,
   slim_mode: state.ui.slim_mode,
-  mopidy_connected: state.mopidy.connected,
   snapcast_enabled: state.snapcast.enabled,
   spotify_authorized: state.spotify.authorization,
   sidebar_open: state.ui.sidebar_open,
   dragging: state.ui.dragger && state.ui.dragger.active,
   context_menu: state.ui.context_menu,
   debug_info: state.ui.debug_info,
+  test_mode: state.ui.test_mode,
 });
 
 const mapDispatchToProps = (dispatch) => ({

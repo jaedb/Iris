@@ -19,7 +19,6 @@ class AddToPlaylist extends React.Component {
     const {
       spotify_library_playlists_status,
       mopidy_library_playlists_status,
-      mopidy_connected,
       spotify_available,
       spotifyActions,
       mopidyActions,
@@ -32,7 +31,7 @@ class AddToPlaylist extends React.Component {
       spotifyActions.getLibraryPlaylists();
     }
 
-    if ((!mopidy_library_playlists_status || mopidy_library_playlists_status !== 'finished') && mopidy_connected) {
+    if ((!mopidy_library_playlists_status || mopidy_library_playlists_status !== 'finished')) {
       mopidyActions.getLibraryPlaylists();
     }
 
@@ -114,7 +113,6 @@ class AddToPlaylist extends React.Component {
 
 const mapStateToProps = (state, ownProps) => ({
   uris: (ownProps.match.params.uris ? decodeURIComponent(ownProps.match.params.uris).split(',') : []),
-  mopidy_connected: state.mopidy.connected,
   mopidy_uri_schemes: state.mopidy.uri_schemes,
   mopidy_library_playlists: state.mopidy.library_playlists,
   mopidy_library_playlists_status: (state.ui.processes.MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR.status : null),

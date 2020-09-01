@@ -38,6 +38,7 @@
       padding: 0.75em 0.85em;
       margin: 0 1.1em;
       border-radius: 3px;
+      line-break: anywhere;
 
       @include theme('dark') & {
         @include gradient_overlay(3px);
@@ -60,6 +61,22 @@
         .icon {
           padding-right: 0;
           padding-left: 8px;
+        }
+      }
+
+      &--submenu {
+        font-size: 1rem;
+        padding: 0.6em 0.7em;
+        font-weight: 400 !important;
+        margin: 0 1.1em 0 3em;
+
+        &:before {
+          display: none;
+        }
+
+        &.sidebar__menu__item--active {
+          background: transparent;
+          color: colour(turquoise) !important;
         }
       }
 

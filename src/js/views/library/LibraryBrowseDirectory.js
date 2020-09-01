@@ -20,6 +20,7 @@ import {
 } from '../../util/helpers';
 import { arrayOf, sortItems } from '../../util/arrays';
 import { i18n, I18n } from '../../locale';
+import Button from '../../components/Button';
 
 class LibraryBrowseDirectory extends React.Component {
   constructor(props) {
@@ -45,27 +46,23 @@ class LibraryBrowseDirectory extends React.Component {
     this.loadDirectory();
   }
 
-  componentDidUpdate = ({
-    mopidy_connected: prev_mopidy_connected,
-    uri: prevUri,
-  }) => {
-    const {
-      uri,
-      mopidy_connected,
-    } = this.props;
+  componentDidUpdate = ({ uri: prevUri }) => {
+    const { uri } = this.props;
 
-    if (!prev_mopidy_connected && mopidy_connected) this.loadDirectory();
-    if (uri && uri !== prevUri) this.loadDirectory();
+    if (uri && uri !== prevUri) {
+      this.loadDirectory();
+    }
   }
 
-  loadDirectory(props = this.props) {
-    if (props.mopidy_connected) {
-      let uri = null;
-      if (props.uri !== undefined) {
-        uri = props.uri;
-      }
-      this.props.mopidyActions.getDirectory(uri);
-    }
+  loadDirectory = () => {
+    const {
+      uri,
+      mopidyActions: {
+        getDirectory,
+      },
+    } = this.props;
+
+    getDirectory(uri);
   }
 
   loadMore = () => {
@@ -221,15 +218,24 @@ class LibraryBrowseDirectory extends React.Component {
           handleChange={(value) => { uiActions.set({ library_directory_view: value }); uiActions.hideContextMenu(); }}
         />
         {tracks && (
-          <a className="button button--no-hover" onClick={(e) => { uiActions.hideContextMenu(); this.playAll(e, all_tracks); }}>
+          <Button
+            onClick={(e) => { uiActions.hideContextMenu(); this.playAll(e, all_tracks); }}
+            noHover
+            discrete
+            tracking={{ category: 'Directory', action: 'Play' }}
+          >
             <Icon name="play_circle_filled" />
             <I18n path="actions.play_all" />
-          </a>
+          </Button>
         )}
-        <a className="button button--no-hover" onClick={(e) => { uiActions.hideContextMenu(); this.goBack(e); }}>
+        <Button
+          onClick={(e) => { uiActions.hideContextMenu(); this.goBack(e); }}
+          noHover
+          tracking={{ category: 'Directory', action: 'Back' }}
+        >
           <Icon name="keyboard_backspace" />
           <I18n path="actions.back" />
-        </a>
+        </Button>
       </span>
     );
 
@@ -283,7 +289,6 @@ const mapStateToProps = (state, ownProps) => {
   return {
     uri,
     load_queue: state.ui.load_queue,
-    mopidy_connected: state.mopidy.connected,
     directory: state.mopidy.directory,
     view: state.ui.library_directory_view,
   };
