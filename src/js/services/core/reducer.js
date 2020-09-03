@@ -66,6 +66,10 @@ export default function reducer(core = {}, action) {
          * and appended to their relevant index.
          * */
 
+
+    case 'ITEM_LOADED':
+      return { ...core, items: { ...core.items, [action.item.uri]: action.item } };
+
     case 'TRACKS_LOADED':
       var tracks = { ...core.tracks };
       for (const track of action.tracks) {
@@ -141,44 +145,16 @@ export default function reducer(core = {}, action) {
 
 
     case 'RESTORED_FROM_COLD_STORE':
-      switch (action.item_type) {
-        case 'artist':
-          return {
-            ...core,
-            artists: {
-              ...core.artists,
-              [action.item.uri]: {
-                ...core.artists[action.item.uri],
-                ...action.item,
-              },
-            },
-          };
-        case 'album':
-          return {
-            ...core,
-            albums: {
-              ...core.albums,
-              [action.item.uri]: {
-                ...core.albums[action.item.uri],
-                ...action.item,
-              },
-            },
-          };
-        case 'playlist':
-          return {
-            ...core,
-            playlists: {
-              ...core.playlists,
-              [action.item.uri]: {
-                ...core.albums[action.item.uri],
-                ...action.item,
-              },
-            },
-          };
-
-        default:
-          return core;
-      }
+      return {
+        ...core,
+        items: {
+          ...core.items,
+          [action.item.uri]: {
+            ...core.items[action.item.uri],
+            ...action.item,
+          },
+        },
+      };
 
       /**
          * Remove an item from an index

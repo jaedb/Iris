@@ -399,7 +399,6 @@ const CoreMiddleware = (function () {
         if (action.item) {
           store.dispatch({
             type: 'RESTORED_FROM_COLD_STORE',
-            item_type: uriType(action.item.uri),
             item: action.item,
           });
         }
@@ -618,40 +617,27 @@ const CoreMiddleware = (function () {
         next(action);
         break;
 
+      case 'ITEM_LOADED':
+        const mergedItem = {
+          ...core.items[action.item.uri] || {},
+          ...action.item,
+        };
+        store.dispatch(coreActions.updateColdStore([mergedItem]));
+        next({
+          ...action,
+          item: mergedItem,
+        });
+        break;
+
       case 'ARTISTS_LOADED':
         var artists_index = { ...core.artists };
         var artists_loaded = [];
         var tracks_loaded = [];
 
         for (const raw_artist of action.artists) {
+          console.log(raw_artist);
           var artist = formatArtist(raw_artist);
-
-          // Already have an artist in the index
-          if (artists_index[artist.uri]) {
-            // And we've already got some images, make sure we merge the arrays,
-            // rather than overwriting
-            if (artists_index[artist.uri].images && artist.images) {
-              const existing_images = artists_index[artist.uri].images;
-              let are_new_images = true;
-
-              // loop all extisting images to make sure we're not adding one that
-              // we already have
-              for (const existing_image of existing_images) {
-                // We only need to check one size, the formatter should insist on consistency
-                // Note that we depend on having a one-item array of images provided per action
-                if (existing_image.huge == artist.images[0].huge) {
-                  are_new_images = false;
-                }
-              }
-
-              // Only if they're new images should we merge them in
-              if (are_new_images) {
-                artist.images = Object.assign([], [...existing_images, ...artist.images]);
-              }
-            }
-
-            artist = { ...artists_index[artist.uri], ...artist };
-          }
+          artist = { ...artists_index[artist.uri], ...artist };
 /*
           // Migrate nested tracks objects into references to our tracks index
           if (raw_artist.tracks) {
@@ -665,10 +651,11 @@ const CoreMiddleware = (function () {
         }
 
         action.artists = artists_loaded;
-
+/*
         if (tracks_loaded.length > 0) {
           store.dispatch(coreActions.tracksLoaded(tracks_loaded));
         }
+        */
 
         store.dispatch(coreActions.updateColdStore(artists_loaded));
         

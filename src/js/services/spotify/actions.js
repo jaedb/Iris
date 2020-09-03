@@ -15,6 +15,7 @@ import {
   formatPlaylist,
   formatUser,
   formatAlbum,
+  formatArtist,
   formatArtists,
   formatAlbums,
 } from '../../util/format';
@@ -1078,104 +1079,54 @@ export function getGenres() {
  * */
 export function getArtist(uri, full = false) {
   return (dispatch, getState) => {
-    // Start with an empty object
-    // As each requests completes, they'll add to this object
-    let artist = {};
-
-    // We need our artist, obviously
-    const requests = [
-      request(dispatch, getState, `artists/${getFromUri('artistid', uri)}`, 'GET', false, true)
-        .then(
-          (response) => {
-            artist = { ...artist, ...response };
-          },
-        ),
-    ];
+    request(dispatch, getState, `artists/${getFromUri('artistid', uri)}`, 'GET', false, true)
+      .then(
+        (response) => {
+          dispatch(coreActions.itemLoaded(formatArtist(response)));
+        },
+      );
 
     // Do we want a full artist, with all supporting material?
     if (full) {
-      requests.push(
-        request(dispatch, getState, `artists/${getFromUri('artistid', uri)}/top-tracks?country=${getState().spotify.country}`)
-          .then(
-            (response) => {
-              artist = { ...artist, tracks: formatTracks(response.tracks) };
-            },
-          ),
-      );
 
-      requests.push(
-        request(dispatch, getState, `artists/${getFromUri('artistid', uri)}/related-artists`)
-          .then(
-            (response) => {
-              artist = { ...artist, related_artists: formatArtists(response.artists) };
-            },
-          ),
-      );
-    }
-
-    $.when.apply($, requests).then(() => {
-      dispatch(coreActions.artistLoaded(artist));
-
-      // Get supporting biography and imagery
-      if (artist.musicbrainz_id) {
-        dispatch(lastfmActions.getArtist(artist.uri, false, artist.musicbrainz_id));
-      } else {
-        dispatch(lastfmActions.getArtist(artist.uri, artist.name.replace('&', 'and')));
-      }
-
-      // Get all their albums
-      if (full) {
-        let albums = [];
-        const fetchAlbums = (endpoint) => request(dispatch, getState, endpoint)
-          .then((response) => {
-            albums = [...albums, ...formatAlbums(response.items)];
-            if (response.next) {
-              fetchAlbums(response.next);
-            } else {
-              dispatch(coreActions.artistLoaded({
-                uri: artist.uri,
-                albums,
-              }));
-            }
-          });
-        fetchAlbums(`artists/${getFromUri('artistid', uri)}/albums?market=${getState().spotify.country}`);
-      }
-    });
-  };
-}
-
-export function getArtists(uris) {
-  return (dispatch, getState) => {
-    // now get all the artists for this album (full objects)
-    let ids = '';
-    for (let i = 0; i < uris.length; i++) {
-      if (ids != '') ids += ',';
-      ids += getFromUri('artistid', uris[i]);
-    }
-
-    request(dispatch, getState, `artists/?ids=${ids}`)
-      .then(
-        (response) => {
-          for (var i = i; i < response.length; i++) {
-            const artist = response;
-            for (var i = 0; i < artist.albums.length; i++) {
-              dispatch({
-                type: 'ALBUM_LOADED',
-                album: artist.albums[i],
-              });
-            }
-            artist.albums_uris = arrayOf('uri', artist.albums);
-            artist.albums_more = artist.albums.next;
-            dispatch(coreActions.artistLoaded(artist));
+      // All albums (gets all pages, may take some time to iterate them all)
+      let albums = [];
+      const fetchAlbums = (endpoint) => request(dispatch, getState, endpoint)
+        .then((response) => {
+          albums = [...albums, ...formatAlbums(response.items)];
+          if (response.next) {
+            fetchAlbums(response.next);
+          } else {
+            dispatch(coreActions.itemLoaded({
+              uri,
+              albums,
+            }));
           }
-        },
-        (error) => {
-          dispatch(coreActions.handleException(
-            'Could not load artists',
-            error,
-          ));
-        },
-      );
+        });
+      fetchAlbums(`artists/${getFromUri('artistid', uri)}/albums?limit=50&include_groups=album,single&market=${getState().spotify.country}`);
+
+      // Get top tracks
+      request(dispatch, getState, `artists/${getFromUri('artistid', uri)}/top-tracks?country=${getState().spotify.country}`)
+        .then(
+          (response) => {
+            dispatch(coreActions.itemLoaded({
+              uri,
+              tracks: formatTracks(response.tracks),
+            }));
+          },
+        );
+
+      // Related artists
+      request(dispatch, getState, `artists/${getFromUri('artistid', uri)}/related-artists`)
+        .then(
+          (response) => {
+            dispatch(coreActions.itemLoaded({
+              uri,
+              related_artists: formatArtists(response.artists),
+            }));
+          },
+        );
+    }
   };
 }
 
@@ -1202,7 +1153,6 @@ export function getArtistImages(artist) {
   };
 }
 
-
 export function playArtistTopTracks(uri) {
   return (dispatch, getState) => {
     const { artists } = getState().core;
@@ -1219,12 +1169,6 @@ export function playArtistTopTracks(uri) {
           (response) => {
             const uris = arrayOf('uri', response.tracks);
             dispatch(mopidyActions.playURIs(uris, uri));
-          },
-          (error) => {
-            dispatch(coreActions.handleException(
-              'Could not play artist\'s top tracks',
-              error,
-            ));
           },
         );
     }
@@ -1306,47 +1250,28 @@ export function getAlbum(uri) {
     request(dispatch, getState, `albums/${getFromUri('albumid', uri)}`)
       .then(
         (response) => {
-          // dispatch our loaded artists (simple objects)
-          dispatch(coreActions.artistsLoaded(response.artists));
-
-          const tracks = Object.assign([], response.tracks.items);
-
-          const album = {
+          dispatch(coreActions.itemLoaded({
             ...formatAlbum(response),
-            artists_uris: arrayOf('uri', response.artists),
-            tracks_more: response.tracks.next,
-            tracks_total: response.tracks.total,
-          };
-          album.tracks = tracks.map((track) => ({
-            ...track,
-            album: {
-              name: album.name,
-              uri: album.uri,
-            },
+            tracks: formatTracks(response.tracks.items),
           }));
 
-          dispatch(coreActions.albumLoaded(album));
+          let tracks = formatTracks(response.tracks.items);
+          const fetchTracks = (endpoint) => request(dispatch, getState, endpoint)
+            .then((response) => {
+              tracks = [...tracks, ...formatTracks(response.items)];
+              if (response.next) {
+                fetchTracks(response.next);
+              } else {
+                dispatch(coreActions.itemLoaded({
+                  uri,
+                  tracks,
+                }));
+              }
+            });
 
-          // now get all the artists for this album (full objects)
-          // we do this to get the artist artwork
-          const artist_ids = [];
-          for (var i = 0; i < response.artists.length; i++) {
-            artist_ids.push(getFromUri('artistid', response.artists[i].uri));
+          if (response.tracks.next) {
+            fetchTracks(response.tracks.next);
           }
-
-          // get all album artists as full objects
-          request(dispatch, getState, `artists/?ids=${artist_ids}`)
-            .then(
-              (response) => {
-                dispatch(coreActions.artistsLoaded(response.artists));
-              },
-              (error) => {
-                dispatch(coreActions.handleException(
-                  'Could not load album\'s artists',
-                  error,
-                ));
-              },
-            );
         },
         (error) => {
           dispatch(coreActions.handleException(

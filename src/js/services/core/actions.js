@@ -167,6 +167,13 @@ export function loadUserPlaylists(uri, force_reload = false) {
  * We've got a loaded record, now we just need to plug it in to our state and stores.
  * */
 
+export function itemLoaded(item) {
+  return {
+    type: 'ITEM_LOADED',
+    item,
+  };
+}
+
 export function trackLoaded(track) {
   return tracksLoaded([track]);
 }
@@ -177,9 +184,6 @@ export function tracksLoaded(tracks) {
   };
 }
 
-export function artistLoaded(artist) {
-  return artistsLoaded([artist]);
-}
 export function artistsLoaded(artists) {
   return {
     type: 'ARTISTS_LOADED',

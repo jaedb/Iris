@@ -211,9 +211,6 @@ export function getTrack(uri) {
             dispatch(coreActions.trackLoaded(merged_track));
           }
         },
-        (error) => {
-          console.info(`LastFM: No results for track '${track_name}' by '${artist_name}'`);
-        },
       );
   };
 }
@@ -231,20 +228,15 @@ export function getArtist(uri, artist, mbid = false) {
       .then(
         (response) => {
           if (response.artist) {
-                    	const artist = {
+            dispatch(coreActions.artistLoaded({
               uri,
               mbid: response.artist.mbid,
               biography: response.artist.bio.content,
               biography_publish_date: response.artist.bio.published,
               biography_link: response.artist.bio.links.link.href,
               listeners: parseInt(response.artist.stats.listeners),
-            };
-
-            dispatch(coreActions.artistLoaded(artist));
+            }));
           }
-        },
-        (error) => {
-          console.info(`LastFM: No results for artist '${artist}'`);
         },
       );
   };
@@ -283,9 +275,6 @@ export function getAlbum(uri, artist, album, mbid = false) {
 
             dispatch(coreActions.albumLoaded(album));
           }
-        },
-        (error) => {
-          console.info(`LastFM: No results for album '${album}'`);
         },
       );
   };

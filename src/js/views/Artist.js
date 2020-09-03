@@ -146,29 +146,26 @@ class Artist extends React.Component {
     const {
       uri,
       uiActions,
-      artist: artistProp,
-      artists,
-      albums,
-      tracks,
+      artist: {
+        tracks = [],
+        related_artists = [],
+      } = {},
       sort,
       sort_reverse,
       filter,
     } = this.props;
-    const artist = collate(
-      artistProp,
-      {
-        artists,
-        albums,
-        tracks,
-      },
-    );
+    let {
+      artist: {
+        albums = [],
+      } = {},
+    } = this.props;
 
-    if (sort && artist.albums) {
-      artist.albums = sortItems(artist.albums, sort, sort_reverse);
+    if (sort && albums) {
+      albums = sortItems(albums, sort, sort_reverse);
     }
 
-    if (filter && artist.albums) {
-      artist.albums = applyFilter('type', filter, artist.albums);
+    if (filter && albums) {
+      albums = applyFilter('type', filter, albums);
     }
 
     const sort_options = [
@@ -211,21 +208,21 @@ class Artist extends React.Component {
 
     return (
       <div className="body overview">
-        <div className={`top-tracks col col--w${artist.related_artists && artist.related_artists.length > 0 ? '70' : '100'}`}>
-          {artist.tracks && <h4><I18n path="artist.overview.top_tracks" /></h4>}
+        <div className={`top-tracks col col--w${related_artists && related_artists.length > 0 ? '70' : '100'}`}>
+          {tracks && <h4><I18n path="artist.overview.top_tracks" /></h4>}
           <div className="list-wrapper">
-            <TrackList className="artist-track-list" uri={artist.uri} tracks={artist.tracks ? artist.tracks.splice(0, 10) : []} />
+            <TrackList className="artist-track-list" uri={uri} tracks={tracks ? tracks.slice(0, 10) : []} />
           </div>
         </div>
 
         <div className="col col--w5" />
 
-        {artist.related_artists && artist.related_artists.length > 0 && (
+        {related_artists && related_artists.length > 0 && (
           <div className="col col--w25 related-artists">
             <h4><I18n path="artist.overview.related_artists.title" /></h4>
             <div className="list-wrapper">
               <RelatedArtists
-                artists={artist.related_artists.slice(0, 6)}
+                artists={related_artists.slice(0, 6)}
                 uiActions={uiActions}
               />
             </div>
@@ -240,7 +237,7 @@ class Artist extends React.Component {
 
         <div className="cf" />
 
-        {artist.albums && (
+        {albums && (
           <div className="albums">
             <h4>
 						  <div><I18n path="artist.overview.albums" /></div>
@@ -275,12 +272,7 @@ class Artist extends React.Component {
             </h4>
 
             <section className="grid-wrapper no-top-padding">
-              <AlbumGrid albums={artist.albums} />
-              <LazyLoadListener
-                loadKey={artist.albums_more}
-                showLoader={artist.albums_more}
-                loadMore={this.loadMore}
-              />
+              <AlbumGrid albums={albums} />
             </section>
           </div>
         )}
@@ -289,31 +281,12 @@ class Artist extends React.Component {
   }
 
   renderTracks = () => {
-    const {
-      artist: artistProp,
-      artists,
-      tracks,
-    } = this.props;
-
-    const artist = collate(
-      artistProp,
-      {
-        artists,
-        tracks,
-      },
-    );
-
-    const is_loading_tracks = (
-      !artist.tracks_uris
-      || (artist.tracks_uris && !artist.tracks)
-      || (artist.tracks_uris.length !== artist.tracks.length)
-    );
+    const { artist: { uri, tracks } } = this.props;
 
     return (
       <div className="body related-artists">
         <section className="list-wrapper no-top-padding">
-          <TrackList className="artist-track-list" uri={artist.uri} tracks={artist.tracks} />
-          <LazyLoadListener showLoader={is_loading_tracks} />
+          <TrackList className="artist-track-list" uri={uri} tracks={tracks} />
         </section>
       </div>
     );
@@ -559,7 +532,7 @@ const mapStateToProps = (state, ownProps) => {
     theme: state.ui.theme,
     slim_mode: state.ui.slim_mode,
     load_queue: state.ui.load_queue,
-    artist: (state.core.artists[uri] !== undefined ? state.core.artists[uri] : false),
+    artist: (state.core.items[uri] !== undefined ? state.core.items[uri] : false),
     tracks: state.core.tracks,
     artists: state.core.artists,
     spotify_library_artists: state.spotify.library_artists,

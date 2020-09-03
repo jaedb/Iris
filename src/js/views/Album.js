@@ -84,7 +84,7 @@ export class Album extends React.Component {
     }
 
     // We have just received our full album or our album artists
-    if ((!prevAlbum && album) || (!prevAlbum.artists && album.artists)) {
+    if ((!prevAlbum && album)) {
       if (album.artists && album.wiki === undefined) {
         getAlbum(album.uri, album.artists[0].name, album.name);
       }
@@ -216,7 +216,7 @@ export class Album extends React.Component {
               <li>
                 {i18n(
                   'specs.tracks',
-                  { count: album.tracks_total || album.tracks.length },
+                  { count: album.tracks.length },
                 )}
               </li>
             ) : null}
@@ -295,10 +295,7 @@ const mapStateToProps = (state, ownProps) => {
     load_queue: state.ui.load_queue,
     tracks: state.core.tracks,
     artists: state.core.artists,
-    album:
-      state.core.albums && state.core.albums[uri] !== undefined
-        ? state.core.albums[uri]
-        : false,
+    album: (state.core.items[uri] || null),
     albums: state.core.albums,
     spotify_library_albums: state.spotify.library_albums,
     local_library_albums: state.mopidy.library_albums,

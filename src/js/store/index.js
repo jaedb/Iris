@@ -41,6 +41,7 @@ let state = {
     playlists: {},
     users: {},
     tracks: {},
+    items: {},
     http_streaming_enabled: false,
     http_streaming_cachebuster: null,
     http_streaming_url: `http://${window.location.hostname}:8000/mopidy`,
@@ -151,6 +152,7 @@ const corePersistConfig = {
   storage: localForage,
   debug: window.test_mode,
   blacklist: [
+    'items',
     'albums',
     'artists',
     'playlists',
