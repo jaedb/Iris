@@ -83,27 +83,6 @@ class Playlist extends React.Component {
     );
   }
 
-  loadMore = () => {
-    const {
-      spotifyActions: {
-        getMore,
-      },
-      playlist: {
-        uri,
-        tracks_more,
-      },
-    } = this.props;
-
-    getMore(
-      tracks_more,
-      {
-        parent_type: 'playlist',
-        parent_key: uri,
-        records_type: 'track',
-      },
-    );
-  }
-
   handleContextMenu = (e) => {
     const {
       uiActions: {
@@ -163,7 +142,16 @@ class Playlist extends React.Component {
   }
 
   removeTracks = (tracks_indexes) => {
-    this.props.coreActions.removeTracksFromPlaylist(this.props.playlist.uri, tracks_indexes);
+    const {
+      coreActions: {
+        removeTracksFromPlaylist,
+      },
+      playlist: {
+        uri,
+      },
+    } = this.props;
+
+    removeTracksFromPlaylist(uri, tracks_indexes);
   }
 
   inLibrary = () => {
@@ -283,16 +271,14 @@ class Playlist extends React.Component {
   render = () => {
     const {
       uri,
-      playlist: playlistProp,
+      playlist,
       load_queue,
-      tracks,
-      users,
       slim_mode,
     } = this.props;
 
     const playlist_id = getFromUri('playlistid', uri);
 
-    if (!playlistProp) {
+    if (!playlist) {
       if (isLoading(load_queue, [`spotify_playlists/${playlist_id}?`])) {
         return <Loader body loading />
       }
@@ -305,21 +291,10 @@ class Playlist extends React.Component {
       );
     }
 
-    const playlist = collate(playlistProp, { tracks, users });
-
     let context = 'playlist';
     if (playlist.can_edit) {
       context = 'editable-playlist';
     }
-
-    const is_loading_tracks = (
-      playlist.tracks_total !== 0
-      && (
-        !playlist.tracks_uris
-        || (playlist.tracks_uris && !playlist.tracks)
-        || (playlist.tracks_uris.length !== playlist.tracks.length)
-      )
-    );
 
     return (
       <div className="view playlist-view content-wrapper preserve-3d">
@@ -383,11 +358,6 @@ class Playlist extends React.Component {
             removeTracks={this.removeTracks}
             reorderTracks={this.reorderTracks}
           />
-          <LazyLoadListener
-            loadKey={playlist.tracks_more}
-            showLoader={is_loading_tracks || playlist.tracks_more}
-            loadMore={this.loadMore}
-          />
         </section>
       </div>
     );
@@ -403,9 +373,7 @@ const mapStateToProps = (state, ownProps) => {
       load_queue,
     } = {},
     core: {
-      users,
-      tracks,
-      playlists,
+      items,
     } = {},
     spotify: {
       library_playlists: spotify_library_playlists,
@@ -425,9 +393,7 @@ const mapStateToProps = (state, ownProps) => {
     slim_mode,
     theme,
     load_queue,
-    users,
-    tracks,
-    playlist: (playlists[uri] !== undefined ? playlists[uri] : false),
+    playlist: items[uri] || null,
     spotify_library_playlists,
     local_library_playlists,
     spotify_authorized,

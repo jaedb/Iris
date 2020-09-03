@@ -18,6 +18,7 @@ import {
   formatArtist,
   formatArtists,
   formatAlbums,
+  formatPlaylists,
 } from '../../util/format';
 import URILink from '../../components/URILink';
 import { i18n } from '../../locale';
@@ -1403,6 +1404,8 @@ export function getPlaylist(uri) {
     request(dispatch, getState, `playlists/${getFromUri('playlistid', uri)}?market=${getState().spotify.country}`)
       .then(
         (response) => {
+          let tracks = formatTracks(response.tracks.items);
+
           // convert links in description
           let description = null;
           if (response.description) {
@@ -1412,22 +1415,29 @@ export function getPlaylist(uri) {
             description = description.split('<a href="spotify:user:').join('<a href="#' + '/user/spotify:user:');
           }
 
-          const tracks = formatTracks(response.tracks.items);
-
-          const playlist = {
-
+          dispatch(coreActions.itemLoaded({
             ...formatPlaylist(response),
-            is_completely_loaded: true,
-            user_uri: response.owner.uri,
-            tracks_uris: tracks ? arrayOf('uri', tracks) : null,
-            tracks_more: response.tracks.next,
-            tracks_total: response.tracks.total,
+            user: formatUser(response.owner),
+            tracks,
             description,
-          };
+          }));
 
-          dispatch(coreActions.userLoaded(formatUser(response.owner)));
-          dispatch(coreActions.tracksLoaded(tracks));
-          dispatch(coreActions.playlistLoaded(playlist));
+          const fetchTracks = (endpoint) => request(dispatch, getState, endpoint)
+            .then((response) => {
+              tracks = [...tracks, ...formatTracks(response.items)];
+              if (response.next) {
+                fetchTracks(response.next);
+              } else {
+                dispatch(coreActions.itemLoaded({
+                  uri,
+                  tracks,
+                }));
+              }
+            });
+
+          if (response.tracks.next) {
+            fetchTracks(response.tracks.next);
+          }
         },
         (error) => {
           dispatch(coreActions.handleException(
@@ -1721,6 +1731,23 @@ export function flushLibrary() {
 
 export function getLibraryPlaylists() {
   return (dispatch, getState) => {
+    let libraryPlaylists = [];
+    const fetchLibraryPlaylists = (endpoint) => request(dispatch, getState, endpoint)
+      .then((response) => {
+        libraryPlaylists = [...libraryPlaylists, ...formatPlaylists(response.items)];
+        console.log('loaded page of playlists', response.items);
+        if (response.next) {
+          fetchLibraryPlaylists(response.next);
+        } else {
+          dispatch(coreActions.itemLoaded({
+            uri: 'spotify:library:playlists',
+            items: libraryPlaylists,
+          }));
+        }
+      });
+
+    fetchLibraryPlaylists('me/playlists?limit=50');
+    /*
     const last_run = getState().ui.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR;
 
     if (!last_run) {
@@ -1732,6 +1759,7 @@ export function getLibraryPlaylists() {
     } else if (last_run.status === 'finished' && !getState().spotify.library_playlists_loaded_all) {
       dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR', 'Loading Spotify playlists', { next: 'me/playlists?limit=50' }));
     }
+    */
   };
 }
 

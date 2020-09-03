@@ -46,34 +46,29 @@ class LibraryPlaylists extends React.Component {
   getMopidyLibrary = () => {
     const {
       source,
-      mopidy_library_playlists,
-      mopidyActions: {
-        getLibraryPlaylists,
+      coreActions: {
+        loadLibrary,
       },
     } = this.props;
 
     if (source !== 'local' && source !== 'all') return;
-    if (mopidy_library_playlists) return;
 
-    getLibraryPlaylists();
+    loadLibrary('mopidy:library:playlists');
   };
 
   getSpotifyLibrary = () => {
     const {
       source,
       spotify_available,
-      spotify_library_playlists_status,
-      spotifyActions: {
-        getLibraryPlaylists,
+      coreActions: {
+        loadLibrary,
       },
     } = this.props;
 
     if (!spotify_available) return;
     if (source !== 'spotify' && source !== 'all') return;
-    if (spotify_library_playlists_status === 'finished') return;
-    if (spotify_library_playlists_status === 'started') return;
 
-    getLibraryPlaylists();
+    loadLibrary('spotify:library:playlists');
   };
 
   componentDidUpdate = ({ source: prevSource }) => {
@@ -117,28 +112,20 @@ class LibraryPlaylists extends React.Component {
     this.props.uiActions.set(data);
   }
 
-  renderView() {
-    let playlists = [];
+  renderView = () => {
+    const {
+      spotify_library_playlists: {
+        items: spotify_playlists,
+      },
+      mopidy_library_playlists: {
+        items: mopidy_playlists,
+      },
+    } = this.props;
 
-    // Spotify library items
-    if (this.props.spotify_library_playlists && (this.props.source == 'all' || this.props.source == 'spotify')) {
-      for (var i = 0; i < this.props.spotify_library_playlists.length; i++) {
-        var uri = this.props.spotify_library_playlists[i];
-        if (this.props.playlists.hasOwnProperty(uri)) {
-          playlists.push(this.props.playlists[uri]);
-        }
-      }
-    }
-
-    // Mopidy library items
-    if (this.props.mopidy_library_playlists && (this.props.source == 'all' || this.props.source == 'local')) {
-      for (var i = 0; i < this.props.mopidy_library_playlists.length; i++) {
-        var uri = this.props.mopidy_library_playlists[i];
-        if (this.props.playlists.hasOwnProperty(uri)) {
-          playlists.push(this.props.playlists[uri]);
-        }
-      }
-    }
+    let playlists = [
+      ...spotify_playlists,
+      ...mopidy_playlists,
+    ];
 
     if (this.props.sort) {
       playlists = sortItems(playlists, this.props.sort, this.props.sort_reverse);
@@ -308,11 +295,9 @@ class LibraryPlaylists extends React.Component {
 const mapStateToProps = (state) => ({
   slim_mode: state.ui.slim_mode,
   mopidy_uri_schemes: state.mopidy.uri_schemes,
-  mopidy_library_playlists: state.mopidy.library_playlists,
-  mopidy_library_playlists_status: (state.ui.processes.MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR.status : null),
   spotify_available: state.spotify.access_token,
-  spotify_library_playlists: state.spotify.library_playlists,
-  spotify_library_playlists_status: (state.ui.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR !== undefined ? state.ui.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR.status : null),
+  mopidy_library_playlists: state.core.items['mopidy:library:playlists'] || { items: [] },
+  spotify_library_playlists: state.core.items['spotify:library:playlists'] || { items: [] },
   load_queue: state.ui.load_queue,
   me_id: (state.spotify.me ? state.spotify.me.id : false),
   view: state.ui.library_playlists_view,

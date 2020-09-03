@@ -160,6 +160,14 @@ export function loadUserPlaylists(uri, force_reload = false) {
   };
 }
 
+export function loadLibrary(uri, force_reload = false) {
+  return {
+    type: 'LOAD_LIBRARY',
+    uri,
+    force_reload,
+  };
+}
+
 
 /**
  * Record loaders

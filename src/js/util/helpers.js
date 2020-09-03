@@ -176,6 +176,8 @@ const uriType = function (uri) {
   }
 
   switch (exploded[1]) {
+    case 'library':
+      return exploded[2];
     case 'track':
     case 'artist':
     case 'album':

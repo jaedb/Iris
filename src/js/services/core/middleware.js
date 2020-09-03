@@ -4,7 +4,7 @@ import ReactGA from 'react-ga';
 import localForage from 'localforage';
 import { arrayOf } from '../../util/arrays';
 import URILink from '../../components/URILink';
-import { uriSource, upgradeSpotifyPlaylistUris, uriType } from '../../util/helpers';
+import { uriSource, upgradeSpotifyPlaylistUris, uriType, titleCase } from '../../util/helpers';
 import {
   formatTracks,
   formatTrack,
@@ -348,20 +348,14 @@ const CoreMiddleware = (function () {
         break;
 
       case 'LOAD_ALBUM':
-
-        // Load from Redux store
-        if (
-          !action.force_reload
-          && store.getState().core.albums[action.uri]
-          && store.getState().core.albums[action.uri].tracks_uris) {
+        if (!action.force_reload && store.getState().core.items[action.uri]) {
           console.info(`Loading "${action.uri}" from index`);
           break;
         }
 
         // Try our cold storage
         localForage.getItem(action.uri).then((result) => {
-
-          if (result) {
+          if (result && !action.force_reload) {
             console.info(`Loading "${action.uri}" from database`);
             store.dispatch(coreActions.restoreFromColdStore(result));
           } else {
@@ -416,7 +410,7 @@ const CoreMiddleware = (function () {
 
         // Try our cold storage
         localForage.getItem(action.uri).then((result) => {
-          if (result) {
+          if (result && !action.force_reload) {
             console.info(`Loading "${action.uri}" from database`);
             store.dispatch(coreActions.restoreFromColdStore(result));
           } else {
@@ -440,28 +434,39 @@ const CoreMiddleware = (function () {
         break;
 
       case 'LOAD_PLAYLIST':
-        if (
-          !action.force_reload
-          && store.getState().core.playlists[action.uri]
-          && store.getState().core.playlists[action.uri].tracks_uris !== undefined
-        ) {
-          console.info(`Loading "${action.uri}" from index`);
+        const fetchPlaylist = () => {
+          switch (uriSource(action.uri)) {
+            case 'spotify':
+              store.dispatch(spotifyActions.getPlaylist(action.uri));
+
+              if (spotify.me) {
+                store.dispatch(spotifyActions.following(action.uri));
+              }
+              break;
+
+            default:
+              store.dispatch(mopidyActions.getPlaylist(action.uri));
+              break;
+          }
+        };
+
+        if (action.force_reload) {
+          fetchPlaylist();
+          break;
+        }
+        if (store.getState().core.items[action.uri]) {
+          console.info(`Using "${action.uri}" from index`);
           break;
         }
 
-        switch (uriSource(action.uri)) {
-          case 'spotify':
-            store.dispatch(spotifyActions.getPlaylist(action.uri));
-
-            if (spotify.me) {
-              store.dispatch(spotifyActions.following(action.uri));
-            }
-            break;
-
-          default:
-            store.dispatch(mopidyActions.getPlaylist(action.uri));
-            break;
-        }
+        localForage.getItem(action.uri).then((result) => {
+          if (result) {
+            console.info(`Restoring "${action.uri}" from database`);
+            store.dispatch(coreActions.restoreFromColdStore(result));
+          } else {
+            fetchPlaylist();
+          }
+        });
 
         next(action);
         break;
@@ -510,6 +515,44 @@ const CoreMiddleware = (function () {
             // No Mopidy mechanism for users
             break;
         }
+
+        next(action);
+        break;
+
+      case 'LOAD_LIBRARY':
+        const fetchLibrary = () => {
+          switch (uriSource(action.uri)) {
+            case 'spotify':
+              store.dispatch(
+                spotifyActions[`getLibrary${titleCase(uriType(action.uri))}`](action.uri),
+              );
+              break;
+
+            default:
+              store.dispatch(
+                mopidyActions[`getLibrary${titleCase(uriType(action.uri))}`](action.uri),
+              );
+              break;
+          }
+        };
+
+        if (action.force_reload) {
+          fetchLibrary();
+          break;
+        }
+        if (store.getState().core.items[action.uri]) {
+          console.info(`Using "${action.uri}" from index`);
+          break;
+        }
+
+        localForage.getItem(action.uri).then((result) => {
+          if (result) {
+            console.info(`Restoring "${action.uri}" from database`);
+            store.dispatch(coreActions.restoreFromColdStore(result));
+          } else {
+            fetchLibrary();
+          }
+        });
 
         next(action);
         break;

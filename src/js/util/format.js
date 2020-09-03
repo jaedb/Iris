@@ -247,7 +247,7 @@ const formatArtists = function (records = []) {
 const formatPlaylists = function (records = []) {
   const formatted = [];
   for (const record of records) {
-	    formatted.push(formatTrack(record));
+	    formatted.push(formatPlaylist(record));
   }
   return formatted;
 };
@@ -411,10 +411,7 @@ const formatPlaylist = function (data) {
     'last_modified',
     'can_edit',
     'owner',
-    'user_uri',
-    'tracks_uris',
-    'tracks_total',
-    'tracks_more',
+    'tracks',
   ];
 
   // Loop fields and import from data

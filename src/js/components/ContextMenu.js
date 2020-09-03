@@ -610,6 +610,39 @@ class ContextMenu extends React.Component {
     hideContextMenu();
   }
 
+  reload = () => {
+    const {
+      uiActions: {
+        hideContextMenu,
+      },
+      coreActions: {
+        loadArtist,
+        loadAlbum,
+        loadPlaylist,
+      },
+      menu: {
+        uris,
+      } = {},
+    } = this.props;
+
+    const uri = uris[0];
+
+    switch (uriType(uri)) {
+      case 'artist':
+        loadArtist(uri, true);
+        break;
+      case 'album':
+        loadAlbum(uri, true);
+        break;
+      case 'playlist':
+        loadPlaylist(uri, true);
+        break;
+      default:
+        break;
+    }
+    hideContextMenu();
+  }
+
   renderTitle = () => {
     const {
       uiActions: {
@@ -1092,6 +1125,16 @@ class ContextMenu extends React.Component {
       </div>
     );
 
+    const reload = (
+      <div className="context-menu__item">
+        <a className="context-menu__item__link" onClick={this.reload}>
+          <span className="context-menu__item__label">
+            <I18n path="context_menu.reload" />
+          </span>
+        </a>
+      </div>
+    );
+
     switch (context.name) {
       case 'album':
         return (
@@ -1104,6 +1147,7 @@ class ContextMenu extends React.Component {
             <div className="context-menu__divider" />
             {go_to_artist}
             {copy_uris}
+            {reload}
           </div>
         );
       case 'artist':
@@ -1116,6 +1160,7 @@ class ContextMenu extends React.Component {
             <div className="context-menu__divider" />
             {context.source === 'spotify' && go_to_recommendations}
             {copy_uris}
+            {reload}
           </div>
         );
       case 'playlist':
@@ -1138,6 +1183,7 @@ class ContextMenu extends React.Component {
                 {delete_playlist}
               </div>
             )}
+            {reload}
           </div>
         );
       case 'current-track':

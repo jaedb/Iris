@@ -1600,39 +1600,35 @@ const MopidyMiddleware = (function () {
       case 'MOPIDY_GET_LIBRARY_PLAYLISTS':
         request(store, 'playlists.asList')
           .then((response) => {
-            // drop in our URI list
-            const playlist_uris = arrayOf('uri', response);
-            const playlist_uris_filtered = [];
 
             // Remove any Spotify playlists. These will be handled by our Spotify API
-            for (var i = 0; i < playlist_uris.length; i++) {
-              if (uriSource(playlist_uris[i]) != 'spotify') {
-                playlist_uris_filtered.push(playlist_uris[i]);
-              }
-            }
-
-            store.dispatch({ type: 'MOPIDY_LIBRARY_PLAYLISTS_LOADED', uris: playlist_uris_filtered });
-            store.dispatch({ type: 'MOPIDY_LIBRARY_PLAYLISTS_LOADED_ALL' });
+            const playlist_uris = arrayOf('uri', response).filter(
+              (uri) => uriSource(uri) !== 'spotify',
+            );
+            const libraryPlaylists = [];
 
             // get the full playlist objects
-            for (var i = 0; i < playlist_uris_filtered.length; i++) {
-              request(store, 'playlists.lookup', { uri: playlist_uris_filtered[i] })
+            playlist_uris.forEach((uri, index) => {
+              request(store, 'playlists.lookup', { uri })
                 .then((response) => {
-                  const source = uriSource(response.uri);
-                  const playlist = {
-
+                  libraryPlaylists.push({
                     type: 'playlist',
                     name: response.name,
                     uri: response.uri,
-                    source,
+                    source: uriSource(response.uri),
                     provider: 'mopidy',
                     last_modified: response.last_modified,
-                    tracks_total: (response.tracks ? response.tracks.length : 0),
-                  };
+                    tracks: response.tracks,
+                  });
 
-                  store.dispatch(coreActions.playlistLoaded(playlist));
+                  if (index === playlist_uris.length - 1) {
+                    store.dispatch(coreActions.itemLoaded({
+                      uri: 'mopidy:library:playlists',
+                      items: libraryPlaylists,
+                    }));
+                  }
                 });
-            }
+            });
           });
         break;
 
