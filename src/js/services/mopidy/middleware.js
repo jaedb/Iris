@@ -16,6 +16,7 @@ import {
   formatTracks,
   formatSimpleObject,
   getTrackIcon,
+  formatArtists,
 } from '../../util/format';
 import {
   arrayOf,
@@ -1622,9 +1623,10 @@ const MopidyMiddleware = (function () {
                   });
 
                   if (index === playlist_uris.length - 1) {
+                    store.dispatch(coreActions.itemsLoaded(libraryPlaylists));
                     store.dispatch(coreActions.itemLoaded({
                       uri: 'mopidy:library:playlists',
-                      items: libraryPlaylists,
+                      items_uris: arrayOf('uri', libraryPlaylists),
                     }));
                   }
                 });
@@ -1855,166 +1857,52 @@ const MopidyMiddleware = (function () {
            * ======================================================================================
            * */
 
+
       case 'MOPIDY_GET_LIBRARY_ALBUMS':
-        var last_run = store.getState().ui.processes.MOPIDY_LIBRARY_ALBUMS_PROCESSOR;
-
-        if (!last_run) {
-          request(store, 'library.browse', { uri: store.getState().mopidy.library_albums_uri })
-            .then((response) => {
-              if (response.length <= 0) return;
-
-              const uris = arrayOf('uri', response);
-              store.dispatch({
-                type: 'MOPIDY_LIBRARY_ALBUMS_LOADED',
-                uris,
-              });
-
-              // Start our process to load the full album objects
-              store.dispatch(uiActions.startProcess(
-                'MOPIDY_LIBRARY_ALBUMS_PROCESSOR',
-                i18n('services.mopidy.loading_albums', { count: uris.length }),
-                {
-                  uris,
-                  total: uris.length,
-                  remaining: uris.length,
-                },
-              ));
-            });
-        } else if (last_run.status == 'cancelled') {
-          store.dispatch(uiActions.resumeProcess('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'));
-        } else if (last_run.status == 'finished') {
-          // TODO: do we want to force a refresh?
-        }
-
-        break;
-
-      case 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR':
-        if (store.getState().ui.processes.MOPIDY_LIBRARY_ALBUMS_PROCESSOR !== undefined) {
-          const processor = store.getState().ui.processes.MOPIDY_LIBRARY_ALBUMS_PROCESSOR;
-
-          if (processor.status == 'cancelling') {
-            store.dispatch(uiActions.processCancelled('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'));
-            return false;
-          }
-        }
-
-        var uris = Object.assign([], action.data.uris);
-        var uris_to_load = uris.splice(0, 50);
-
-        if (uris_to_load.length > 0) {
-          store.dispatch(uiActions.updateProcess(
-            'MOPIDY_LIBRARY_ALBUMS_PROCESSOR',
-            `Loading ${uris.length} local albums`,
-            {
-              uris,
-              remaining: uris.length,
-            },
-          ));
-          store.dispatch(mopidyActions.getAlbums(uris_to_load, { name: 'MOPIDY_LIBRARY_ALBUMS_PROCESSOR', data: { uris } }));
-        } else {
-          store.dispatch(uiActions.processFinished('MOPIDY_LIBRARY_ALBUMS_PROCESSOR'));
-        }
-
-        break;
-
-      case 'MOPIDY_GET_ALBUMS':
-        request(store, 'library.lookup', { uris: action.uris })
+        request(store, 'library.browse', { uri: store.getState().mopidy.library_albums_uri })
           .then((response) => {
-            const albums_loaded = [];
-            const artists_loaded = [];
-            const tracks_loaded = [];
-
-            for (const uri in response) {
-              if (response.hasOwnProperty(uri) && response[uri].length > 0 && response[uri][0].album) {
-                const tracks = response[uri];
-                const artists_uris = [];
-                if (tracks[0].artists) {
-                  for (const artist of response[uri][0].artists) {
-                    artists_uris.push(artist.uri);
-                    artists_loaded.push(artist);
-                  }
-                }
-
-                const tracks_uris = [];
-                for (const track of tracks) {
-                  tracks_uris.push(track.uri);
-                  tracks_loaded.push(track);
-                }
-
-                const album = {
+            const uris = arrayOf('uri', response);
+            request(store, 'library.lookup', { uris })
+              .then((response) => {
+                const libraryAlbums = indexToArray(response).map((tracks) => ({
                   source: 'local',
-                  artists_uris,
-                  tracks_uris,
-                  tracks_total: tracks_uris.length,
+                  artists: tracks[0].artists || null,
+                  tracks,
                   last_modified: tracks[0].last_modified,
                   ...tracks[0].album,
-                };
+                }));
 
-                albums_loaded.push(album);
-              }
-            }
-
-            store.dispatch(coreActions.albumsLoaded(albums_loaded));
-            store.dispatch(coreActions.artistsLoaded(artists_loaded));
-            store.dispatch(coreActions.tracksLoaded(tracks_loaded));
-
-            // Re-run any consequential processes in a few ms. This allows a small window for other
-            // server requests before our next batch. It's a little crude but it means the server isn't
-            // locked until we're completely done.
-            if (action.processor) {
-              setTimeout(
-                () => {
-                  store.dispatch(uiActions.runProcess(action.processor.name, action.processor.data));
-                },
-                10,
-              );
-            }
+                store.dispatch(coreActions.itemsLoaded(libraryAlbums));
+                store.dispatch(coreActions.itemLoaded({
+                  uri: 'mopidy:library:albums',
+                  items_uris: arrayOf('uri', libraryAlbums),
+                }));
+              });
           });
         break;
 
       case 'MOPIDY_GET_ALBUM':
         request(store, 'library.lookup', { uris: [action.uri] })
           .then((_response) => {
+            const { uri } = action;
             if (!_response) return;
-            let response = _response[action.uri];
+            let response = _response[uri];
             if (!response || !response.length) return;
 
             response = sortItems(response, 'track_number');
-            const artists = [];
-            if (response[0].artists) {
-              for (const artist of response[0].artists) {
-                artists.push(artist);
-              }
-            }
 
             const album = {
               ...response[0].album,
               source: 'local',
-              artists_uris: arrayOf('uri', artists),
-              tracks_uris: arrayOf('uri', response),
-              tracks_total: response.length,
+              artists: formatArtists(response[0].artists),
+              tracks: formatTracks(response),
             };
 
-            store.dispatch(coreActions.albumLoaded(album));
-            store.dispatch(coreActions.artistsLoaded(artists));
+            store.dispatch(coreActions.itemLoaded(album));
 
-            // Load images
-            if (!response[0].album.images) {
-              store.dispatch(mopidyActions.getImages('albums', [album.uri]));
+            if (!album.images) {
+              store.dispatch(mopidyActions.getImages([album.uri]));
             }
-
-            request(store, 'library.lookup', { uris: album.tracks_uris })
-              .then((response) => {
-                const tracks_loaded = [];
-
-                for (const uri in response) {
-                  if (response.hasOwnProperty(uri)) {
-                    tracks_loaded.push(response[uri][0]);
-                  }
-                }
-
-                store.dispatch(coreActions.tracksLoaded(tracks_loaded));
-              });
           });
         break;
 
@@ -2368,28 +2256,22 @@ const MopidyMiddleware = (function () {
         if (action.uris) {
           request(store, 'library.getImages', { uris: action.uris })
             .then((response) => {
-              const records = [];
-              for (const uri in response) {
-                if (response.hasOwnProperty(uri)) {
-                  let images = response[uri];
-                  if (images.length) {
-                    images = formatImages(digestMopidyImages(store.getState().mopidy, images));
-                    records.push({
-                      uri,
-                      images,
-                    });
-                  } else {
-                    store.dispatch(lastfmActions.getImages(action.context, uri));
-                  }
-                }
-              }
+              const itemsWithImages = [];
+              Object.keys(response).forEach((uri) => {
+                const images = response[uri];
 
-              if (records.length) {
-                const action_data = {
-                  type: (`${action.context}_LOADED`).toUpperCase(),
+                if (images) {
+                  itemsWithImages.push({
+                    uri,
+                    images: formatImages(digestMopidyImages(store.getState().mopidy, images)),
+                  });
+                } else {
+                  store.dispatch(lastfmActions.getImages(uri));
                 };
-                action_data[action.context] = records;
-                store.dispatch(action_data);
+              });
+
+              if (itemsWithImages.length) {
+                store.dispatch(coreActions.itemsLoaded(itemsWithImages));
               }
             });
         }

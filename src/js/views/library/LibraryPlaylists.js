@@ -16,6 +16,7 @@ import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
 import { applyFilter, removeDuplicates, sortItems } from '../../util/arrays';
 import { I18n, i18n } from '../../locale';
+import { collate } from '../../util/format';
 
 class LibraryPlaylists extends React.Component {
   constructor(props) {
@@ -114,33 +115,38 @@ class LibraryPlaylists extends React.Component {
 
   renderView = () => {
     const {
-      spotify_library_playlists: {
-        items: spotify_playlists,
-      },
-      mopidy_library_playlists: {
-        items: mopidy_playlists,
-      },
+      spotify_library,
+      mopidy_library,
+      items,
+      sort,
+      sort_reverse,
+      view,
+      source,
     } = this.props;
+    const {
+      filter,
+      limit,
+    } = this.state;
 
     let playlists = [
-      ...spotify_playlists,
-      ...mopidy_playlists,
+      ...(source === 'all' || source === 'spotify' ? collate(spotify_library, { items }).items : []),
+      ...(source === 'all' || source === 'local' ? collate(mopidy_library, { items }).items : []),
     ];
 
-    if (this.props.sort) {
-      playlists = sortItems(playlists, this.props.sort, this.props.sort_reverse);
+    if (sort) {
+      playlists = sortItems(playlists, sort, sort_reverse);
     }
     playlists = removeDuplicates(playlists);
 
-    if (this.state.filter !== '') {
-      playlists = applyFilter('name', this.state.filter, playlists);
+    if (filter !== '') {
+      playlists = applyFilter('name', filter, playlists);
     }
 
     // Apply our lazy-load-rendering
     const total_playlists = playlists.length;
-    playlists = playlists.slice(0, this.state.limit);
+    playlists = playlists.slice(0, limit);
 
-    if (this.props.view == 'list') {
+    if (view === 'list') {
       return (
         <section className="content-wrapper">
           <List
@@ -153,8 +159,8 @@ class LibraryPlaylists extends React.Component {
             link_prefix="/playlist/"
           />
           <LazyLoadListener
-            loadKey={total_playlists > this.state.limit ? this.state.limit : total_playlists}
-            loading={this.state.limit < total_playlists}
+            loadKey={total_playlists > limit ? limit : total_playlists}
+            loading={limit < total_playlists}
             loadMore={() => this.loadMore()}
           />
         </section>
@@ -167,8 +173,8 @@ class LibraryPlaylists extends React.Component {
           playlists={playlists}
         />
         <LazyLoadListener
-          loadKey={total_playlists > this.state.limit ? this.state.limit : total_playlists}
-          loading={this.state.limit < total_playlists}
+          loadKey={total_playlists > limit ? limit : total_playlists}
+          loading={limit < total_playlists}
           loadMore={() => this.loadMore()}
         />
       </section>
@@ -292,20 +298,23 @@ class LibraryPlaylists extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  slim_mode: state.ui.slim_mode,
-  mopidy_uri_schemes: state.mopidy.uri_schemes,
-  spotify_available: state.spotify.access_token,
-  mopidy_library_playlists: state.core.items['mopidy:library:playlists'] || { items: [] },
-  spotify_library_playlists: state.core.items['spotify:library:playlists'] || { items: [] },
-  load_queue: state.ui.load_queue,
-  me_id: (state.spotify.me ? state.spotify.me.id : false),
-  view: state.ui.library_playlists_view,
-  source: (state.ui.library_playlists_source ? state.ui.library_playlists_source : 'all'),
-  sort: (state.ui.library_playlists_sort ? state.ui.library_playlists_sort : null),
-  sort_reverse: (state.ui.library_playlists_sort_reverse ? state.ui.library_playlists_sort_reverse : false),
-  playlists: state.core.playlists,
-});
+const mapStateToProps = (state) => {
+  return {
+    slim_mode: state.ui.slim_mode,
+    mopidy_uri_schemes: state.mopidy.uri_schemes,
+    spotify_available: state.spotify.access_token,
+    items: state.core.items,
+    mopidy_library: state.core.items['mopidy:library:playlists'] || { items_uris: [] },
+    spotify_library: state.core.items['spotify:library:playlists'] || { items_uris: [] },
+    load_queue: state.ui.load_queue,
+    me_id: (state.spotify.me ? state.spotify.me.id : false),
+    view: state.ui.library_playlists_view,
+    source: (state.ui.library_playlists_source ? state.ui.library_playlists_source : 'all'),
+    sort: (state.ui.library_playlists_sort ? state.ui.library_playlists_sort : null),
+    sort_reverse: (state.ui.library_playlists_sort_reverse ? state.ui.library_playlists_sort_reverse : false),
+    playlists: state.core.playlists,
+  };
+};
 
 const mapDispatchToProps = (dispatch) => ({
   coreActions: bindActionCreators(coreActions, dispatch),

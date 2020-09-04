@@ -1735,90 +1735,39 @@ export function getLibraryPlaylists() {
     const fetchLibraryPlaylists = (endpoint) => request(dispatch, getState, endpoint)
       .then((response) => {
         libraryPlaylists = [...libraryPlaylists, ...formatPlaylists(response.items)];
-        console.log('loaded page of playlists', response.items);
         if (response.next) {
           fetchLibraryPlaylists(response.next);
         } else {
+          dispatch(coreActions.itemsLoaded(libraryPlaylists));
           dispatch(coreActions.itemLoaded({
             uri: 'spotify:library:playlists',
-            items: libraryPlaylists,
+            items_uris: arrayOf('uri', libraryPlaylists),
           }));
         }
       });
 
     fetchLibraryPlaylists('me/playlists?limit=50');
-    /*
-    const last_run = getState().ui.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR;
-
-    if (!last_run) {
-      dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR', 'Loading Spotify playlists', { next: 'me/playlists?limit=50' }));
-    } else if (last_run.status === 'cancelled') {
-      dispatch(uiActions.resumeProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'));
-
-      // We've already finished, but the status has been flushed
-    } else if (last_run.status === 'finished' && !getState().spotify.library_playlists_loaded_all) {
-      dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR', 'Loading Spotify playlists', { next: 'me/playlists?limit=50' }));
-    }
-    */
   };
 }
 
-export function getLibraryPlaylistsProcessor(data) {
+export function getLibraryAlbums() {
   return (dispatch, getState) => {
-    request(dispatch, getState, data.next)
-      .then(
-        (response) => {
-          dispatch({
-            type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED',
-            playlists: response.items,
-          });
+    let libraryAlbums = [];
+    const fetchLibraryAlbums = (endpoint) => request(dispatch, getState, endpoint)
+      .then((response) => {
+        libraryAlbums = [...libraryAlbums, ...formatAlbums(response.items)];
+        if (response.next) {
+          fetchLibraryAlbums(response.next);
+        } else {
+          dispatch(coreActions.itemsLoaded(libraryAlbums));
+          dispatch(coreActions.itemLoaded({
+            uri: 'spotify:library:albums',
+            items_uris: arrayOf('uri', libraryAlbums),
+          }));
+        }
+      });
 
-          // Check to see if we've been cancelled
-          if (getState().ui.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR !== undefined) {
-            const processor = getState().ui.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR;
-
-            if (processor.status == 'cancelling') {
-              dispatch(uiActions.processCancelled('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'));
-              return false;
-            }
-          }
-
-          // We got a next link, so we've got more work to be done
-          if (response.next) {
-            const { total } = response;
-            const loaded = getState().spotify.library_playlists.length;
-            const remaining = total - loaded;
-            dispatch(uiActions.updateProcess(
-              'SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR',
-              `Loading ${remaining} Spotify playlists`,
-              {
-                next: response.next,
-                total: response.total,
-                remaining,
-              },
-            ));
-            dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR', { next: response.next }));
-          } else {
-            dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'));
-            dispatch({ type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED_ALL' });
-          }
-        },
-        () => {
-          dispatch(uiActions.processFinished(
-            'SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR',
-            {
-              content: i18n(
-                'errors.could_not_load_library',
-                {
-                  name: i18n('library.playlists.title'),
-                  provider: i18n('services.spotify.title'),
-                },
-              ),
-              level: 'error',
-            },
-          ));
-        },
-      );
+    fetchLibraryAlbums('me/albums?limit=50');
   };
 }
 
@@ -1879,85 +1828,6 @@ export function getLibraryArtistsProcessor(data) {
                 'errors.could_not_load_library',
                 {
                   name: i18n('library.artists.title'),
-                  provider: i18n('services.spotify.title'),
-                },
-              ),
-              level: 'error',
-            },
-          ));
-        },
-      );
-  };
-}
-
-
-/**
- * ALbums
- * */
-
-export function getLibraryAlbums() {
-  return (dispatch, getState) => {
-    const last_run = getState().ui.processes.SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR;
-
-    if (!last_run) {
-      dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR', 'Loading Spotify albums', { next: 'me/albums?limit=50' }));
-    } else if (last_run.status === 'cancelled') {
-      dispatch(uiActions.updateProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR', 'Loading Spotify albums', { next: 'me/albums?limit=50' }));
-
-      // We've already finished, but the status has been flushed
-    } else if (last_run.status === 'finished' && !getState().spotify.library_albums_loaded_all) {
-      dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR', 'Loading Spotify albums', { next: 'me/albums?limit=50' }));
-    }
-  };
-}
-
-export function getLibraryAlbumsProcessor(data) {
-  return (dispatch, getState) => {
-    request(dispatch, getState, data.next)
-      .then(
-        (response) => {
-          dispatch({
-            type: 'SPOTIFY_LIBRARY_ALBUMS_LOADED',
-            albums: response.items,
-          });
-
-          // Check to see if we've been cancelled
-          if (getState().ui.processes.SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR !== undefined) {
-            const processor = getState().ui.processes.SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR;
-
-            if (processor.status == 'cancelling') {
-              dispatch(uiActions.processCancelled('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'));
-              return false;
-            }
-          }
-
-          // We got a next link, so we've got more work to be done
-          if (response.next) {
-            const { total } = response;
-            const loaded = getState().spotify.library_albums.length;
-            const remaining = total - loaded;
-            dispatch(uiActions.updateProcess(
-              'SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR',
-              `Loading ${remaining} Spotify albums`,
-              {
-                next: response.next,
-                total: response.total,
-                remaining,
-              },
-            ));
-            dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR', { next: response.next }));
-          } else {
-            dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'));
-          }
-        },
-        () => {
-          dispatch(uiActions.processFinished(
-            'SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR',
-            {
-              content: i18n(
-                'errors.could_not_load_library',
-                {
-                  name: i18n('library.albums.title'),
                   provider: i18n('services.spotify.title'),
                 },
               ),

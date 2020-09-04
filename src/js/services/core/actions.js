@@ -77,10 +77,10 @@ export function clearStorage() {
   };
 }
 
-export function restoreFromColdStore(item) {
+export function restoreFromColdStore(items) {
   return {
     type: 'RESTORE_FROM_COLD_STORE',
-    item,
+    items,
   };
 }
 
@@ -174,6 +174,13 @@ export function loadLibrary(uri, force_reload = false) {
  *
  * We've got a loaded record, now we just need to plug it in to our state and stores.
  * */
+
+export function itemsLoaded(items) {
+  return {
+    type: 'ITEMS_LOADED',
+    items,
+  };
+}
 
 export function itemLoaded(item) {
   return {

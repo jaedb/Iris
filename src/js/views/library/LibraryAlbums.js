@@ -68,52 +68,44 @@ class LibraryAlbums extends React.Component {
   getMopidyLibrary = () => {
     const {
       source,
-      mopidy_library_playlists,
-      mopidyActions: {
-        getLibraryAlbums,
+      coreActions: {
+        loadLibrary,
       },
     } = this.props;
 
     if (source !== 'local' && source !== 'all') return;
-    if (mopidy_library_playlists) return;
 
-    getLibraryAlbums();
+    loadLibrary('mopidy:library:albums');
   };
 
   getGoogleLibrary = () => {
     const {
       source,
       google_available,
-      google_library_albums_status,
-      googleActions: {
-        getLibraryAlbums,
+      coreActions: {
+        loadLibrary,
       },
     } = this.props;
 
     if (!google_available) return;
     if (source !== 'google' && source !== 'all') return;
-    if (google_library_albums_status === 'finished') return;
-    if (google_library_albums_status === 'started') return;
 
-    getLibraryAlbums();
+    loadLibrary('google:library:albums');
   };
 
   getSpotifyLibrary = () => {
     const {
       source,
       spotify_available,
-      spotify_library_albums_status,
-      spotifyActions: {
-        getLibraryAlbums,
+      coreActions: {
+        loadLibrary,
       },
     } = this.props;
 
     if (!spotify_available) return;
     if (source !== 'spotify' && source !== 'all') return;
-    if (spotify_library_albums_status === 'finished') return;
-    if (spotify_library_albums_status === 'started') return;
 
-    getLibraryAlbums();
+    loadLibrary('spotify:library:albums');
   };
 
   handleContextMenu = (e, item) => {
@@ -129,28 +121,6 @@ class LibraryAlbums extends React.Component {
       uris: [item.uri],
       items: [item],
     });
-  }
-
-  moreURIsToLoad = () => {
-    const {
-      albums,
-      library_albums,
-    } = this.props;
-
-    const uris = [];
-    if (albums && library_albums) {
-      for (let i = 0; i < library_albums.length; i++) {
-        const uri = library_albums[i];
-        if (!albums.hasOwnProperty(uri) && uriSource(uri) == 'local') {
-          uris.push(uri);
-        }
-
-        // limit each lookup to 50 URIs
-        if (uris.length >= 50) break;
-      }
-    }
-
-    return uris;
   }
 
   loadMore = () => {
@@ -189,71 +159,40 @@ class LibraryAlbums extends React.Component {
   }
 
   renderView = () => {
-    let albums = [];
+    const {
+      spotify_library,
+      google_library,
+      mopidy_library,
+      items,
+      source,
+      sort,
+      sort_reverse,
+      view,
+    } = this.props;
+    const {
+      limit,
+      filter,
+    } = this.state;
 
-    // Spotify library items
-    if (this.props.spotify_library_albums && (this.props.source == 'all' || this.props.source == 'spotify')) {
-      for (var uri of this.props.spotify_library_albums) {
-        if (this.props.albums.hasOwnProperty(uri)) {
-          albums.push(this.props.albums[uri]);
-        }
-      }
+    let albums = [
+      ...(source === 'all' || source === 'spotify' ? collate(spotify_library, { items }).items : []),
+      ...(source === 'all' || source === 'google' ? collate(google_library, { items }).items : []),
+      ...(source === 'all' || source === 'local' ? collate(mopidy_library, { items }).items : []),
+    ];
+
+    if (sort) {
+      albums = sortItems(albums, sort, sort_reverse);
     }
 
-    // Mopidy library items
-    if (this.props.mopidy_library_albums && (this.props.source == 'all' || this.props.source == 'local')) {
-      for (var uri of this.props.mopidy_library_albums) {
-        // Construct item placeholder. This is used as Mopidy needs to
-        // lookup ref objects to get the full object which can take some time
-        var source = uriSource(uri);
-        var album = {
-          uri,
-          source,
-        };
-
-        if (this.props.albums.hasOwnProperty(uri)) {
-          albums.push(this.props.albums[uri]);
-        }
-      }
-    }
-
-    // Google library items
-    if (this.props.google_library_albums && (this.props.source == 'all' || this.props.source == 'google')) {
-      for (var uri of this.props.google_library_albums) {
-        // Construct item placeholder. This is used as Mopidy needs to
-        // lookup ref objects to get the full object which can take some time
-        var source = uriSource(uri);
-        var album = {
-          uri,
-          source,
-        };
-
-        if (this.props.albums.hasOwnProperty(uri)) {
-          album = this.props.albums[uri];
-        }
-
-        albums.push(album);
-      }
-    }
-
-    // Collate each album into it's full object (including nested artists)
-    for (let i = 0; i < albums.length; i++) {
-      albums[i] = collate(albums[i], { artists: this.props.artists });
-    }
-
-    if (this.props.sort) {
-      albums = sortItems(albums, this.props.sort, this.props.sort_reverse);
-    }
-
-    if (this.state.filter && this.state.filter !== '') {
-      albums = applyFilter('name', this.state.filter, albums);
+    if (filter && filter !== '') {
+      albums = applyFilter('name', filter, albums);
     }
 
     // Apply our lazy-load-rendering
     const total_albums = albums.length;
-    albums = albums.slice(0, this.state.limit);
+    albums = albums.slice(0, limit);
 
-    if (this.props.view == 'list') {
+    if (view === 'list') {
       return (
         <section className="content-wrapper">
           <List
@@ -266,8 +205,8 @@ class LibraryAlbums extends React.Component {
             link_prefix="/album/"
           />
           <LazyLoadListener
-            loadKey={total_albums > this.state.limit ? this.state.limit : total_albums}
-            showLoader={this.state.limit < total_albums}
+            loadKey={total_albums > limit ? limit : total_albums}
+            showLoader={limit < total_albums}
             loadMore={this.loadMore}
           />
         </section>
@@ -280,15 +219,28 @@ class LibraryAlbums extends React.Component {
           albums={albums}
         />
         <LazyLoadListener
-          loadKey={total_albums > this.state.limit ? this.state.limit : total_albums}
-          showLoader={this.state.limit < total_albums}
+          loadKey={total_albums > limit ? limit : total_albums}
+          showLoader={limit < total_albums}
           loadMore={() => this.loadMore()}
         />
       </section>
     );
   }
 
-  render() {
+  render = () => {
+    const {
+      spotify_available,
+      google_available,
+      sort,
+      view,
+      source,
+      sort_reverse,
+    } = this.props;
+    const {
+      filter,
+      per_page,
+    } = this.state;
+
     const source_options = [
       {
         value: 'all',
@@ -300,14 +252,14 @@ class LibraryAlbums extends React.Component {
       },
     ];
 
-    if (this.props.spotify_available) {
+    if (spotify_available) {
       source_options.push({
         value: 'spotify',
         label: i18n('services.spotify.title'),
       });
     }
 
-    if (this.props.google_available) {
+    if (google_available) {
       source_options.push({
         value: 'google',
         label: i18n('services.google.title'),
@@ -355,23 +307,23 @@ class LibraryAlbums extends React.Component {
     const options = (
       <div className="header__options__wrapper">
         <FilterField
-          initialValue={this.state.filter}
-          handleChange={(value) => this.setState({ filter: value, limit: this.state.per_page })}
+          initialValue={filter}
+          handleChange={(value) => this.setState({ filter: value, limit: per_page })}
           onSubmit={e => this.props.uiActions.hideContextMenu()}
         />
         <DropdownField
           icon="swap_vert"
           name={i18n('fields.sort')}
-          value={this.props.sort}
+          value={sort}
           valueAsLabel
           options={sort_options}
-          selected_icon={this.props.sort ? (this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
+          selected_icon={sort ? (sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
           handleChange={(val) => { this.setSort(val); this.props.uiActions.hideContextMenu(); }}
         />
         <DropdownField
           icon="visibility"
           name={i18n('fields.view')}
-          value={this.props.view}
+          value={view}
           valueAsLabel
           options={view_options}
           handleChange={(val) => { this.props.uiActions.set({ library_albums_view: val }); this.props.uiActions.hideContextMenu(); }}
@@ -379,7 +331,7 @@ class LibraryAlbums extends React.Component {
         <DropdownField
           icon="cloud"
           name={i18n('fields.source')}
-          value={this.props.source}
+          value={source}
           valueAsLabel
           options={source_options}
           handleChange={(val) => { this.props.uiActions.set({ library_albums_source: val }); this.props.uiActions.hideContextMenu(); }}
@@ -399,19 +351,15 @@ class LibraryAlbums extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state) => ({
   mopidy_uri_schemes: state.mopidy.uri_schemes,
   load_queue: state.ui.load_queue,
-  artists: state.core.artists,
-  albums: state.core.albums,
-  mopidy_library_albums: state.mopidy.library_albums,
-  mopidy_library_albums_status: (state.ui.processes.MOPIDY_LIBRARY_ALBUMS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_ALBUMS_PROCESSOR.status : null),
+  items: state.core.items,
+  mopidy_library: state.core.items['mopidy:library:albums'] || { items_uris: [] },
+  spotify_library: state.core.items['spotify:library:albums'] || { items_uris: [] },
+  google_library: state.core.items['google:library:albums'] || { items_uris: [] },
   google_available: (state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('gmusic:')),
-  google_library_albums: state.google.library_albums,
-  google_library_albums_status: (state.ui.processes.GOOGLE_LIBRARY_ALBUMS_PROCESSOR !== undefined ? state.ui.processes.GOOGLE_LIBRARY_ALBUMS_PROCESSOR.status : null),
   spotify_available: state.spotify.access_token,
-  spotify_library_albums: state.spotify.library_albums,
-  spotify_library_albums_status: (state.ui.processes.SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR !== undefined ? state.ui.processes.SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR.status : null),
   view: state.ui.library_albums_view,
   source: (state.ui.library_albums_source ? state.ui.library_albums_source : 'all'),
   sort: (state.ui.library_albums_sort ? state.ui.library_albums_sort : null),

@@ -405,10 +405,9 @@ export function shuffleTracklist() {
  * Asset-oriented actions
  * */
 
-export function getImages(context, uris) {
+export function getImages(uris) {
   return {
     type: 'MOPIDY_GET_IMAGES',
-    context,
     uris,
   };
 }

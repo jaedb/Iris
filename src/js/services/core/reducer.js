@@ -66,9 +66,14 @@ export default function reducer(core = {}, action) {
          * and appended to their relevant index.
          * */
 
-
     case 'ITEM_LOADED':
-      return { ...core, items: { ...core.items, [action.item.uri]: action.item } };
+      return {
+        ...core,
+        items: {
+          ...core.items,
+          [action.item.uri]: action.item,
+        },
+      };
 
     case 'TRACKS_LOADED':
       var tracks = { ...core.tracks };
@@ -145,15 +150,16 @@ export default function reducer(core = {}, action) {
 
 
     case 'RESTORED_FROM_COLD_STORE':
+      const { items } = core;
+      action.items.forEach((item) => {
+        items[item.uri] = {
+          ...(items[item.uri] || {}),
+          ...item,
+        };
+      });
       return {
         ...core,
-        items: {
-          ...core.items,
-          [action.item.uri]: {
-            ...core.items[action.item.uri],
-            ...action.item,
-          },
-        },
+        items,
       };
 
       /**

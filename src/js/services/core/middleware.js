@@ -20,6 +20,7 @@ import { handleException } from './actions';
 const coreActions = require('./actions.js');
 const uiActions = require('../ui/actions.js');
 const mopidyActions = require('../mopidy/actions.js');
+const googleActions = require('../google/actions.js');
 const spotifyActions = require('../spotify/actions.js');
 
 const CoreMiddleware = (function () {
@@ -348,31 +349,47 @@ const CoreMiddleware = (function () {
         break;
 
       case 'LOAD_ALBUM':
-        if (!action.force_reload && store.getState().core.items[action.uri]) {
-          console.info(`Loading "${action.uri}" from index`);
+        const fetchAlbum = () => {
+          switch (uriSource(action.uri)) {
+            case 'spotify':
+              store.dispatch(spotifyActions.getAlbum(action.uri));
+
+              if (spotify.me) {
+                store.dispatch(spotifyActions.following(action.uri));
+              }
+              break;
+
+            default:
+              store.dispatch(mopidyActions.getAlbum(action.uri));
+              break;
+          };
+        };
+
+        if (action.force_reload) {
+          fetchAlbum();
+          break;
+        }
+        if (
+          store.getState().core.items[action.uri] &&
+          store.getState().core.items[action.uri].tracks
+        ) {
+          console.info(`Using "${action.uri}" from index`);
           break;
         }
 
-        // Try our cold storage
         localForage.getItem(action.uri).then((result) => {
-          if (result && !action.force_reload) {
+          if (result) {
             console.info(`Loading "${action.uri}" from database`);
-            store.dispatch(coreActions.restoreFromColdStore(result));
-          } else {
-            switch (uriSource(action.uri)) {
-              case 'spotify':
-                store.dispatch(spotifyActions.getAlbum(action.uri));
+            store.dispatch(coreActions.restoreFromColdStore([result]));
+            console.log(result);
 
-                if (spotify.me) {
-                  store.dispatch(spotifyActions.following(action.uri));
-                }
-                break;
-
-              default:
-                store.dispatch(mopidyActions.getAlbum(action.uri));
-                break;
+            // We don't have the complete Album, so refetch
+            if (!result.tracks) {
+              fetchAlbum();
             }
-          };
+          } else {
+            fetchAlbum();
+          }
         });
 
         next(action);
@@ -380,7 +397,6 @@ const CoreMiddleware = (function () {
 
       // TODO: Relocate this
       case 'UPDATE_COLD_STORE':
-        console.log(action);
         if (action.items) {
           action.items.map((item) => {
             localForage.getItem(item.uri).then((result) => {
@@ -390,10 +406,10 @@ const CoreMiddleware = (function () {
         }
         break;
       case 'RESTORE_FROM_COLD_STORE':
-        if (action.item) {
+        if (action.items) {
           store.dispatch({
             type: 'RESTORED_FROM_COLD_STORE',
-            item: action.item,
+            items: action.items,
           });
         }
         break;
@@ -412,7 +428,7 @@ const CoreMiddleware = (function () {
         localForage.getItem(action.uri).then((result) => {
           if (result && !action.force_reload) {
             console.info(`Loading "${action.uri}" from database`);
-            store.dispatch(coreActions.restoreFromColdStore(result));
+            store.dispatch(coreActions.restoreFromColdStore([result]));
           } else {
             switch (uriSource(action.uri)) {
               case 'spotify':
@@ -462,7 +478,7 @@ const CoreMiddleware = (function () {
         localForage.getItem(action.uri).then((result) => {
           if (result) {
             console.info(`Restoring "${action.uri}" from database`);
-            store.dispatch(coreActions.restoreFromColdStore(result));
+            store.dispatch(coreActions.restoreFromColdStore([result]));
           } else {
             fetchPlaylist();
           }
@@ -527,7 +543,11 @@ const CoreMiddleware = (function () {
                 spotifyActions[`getLibrary${titleCase(uriType(action.uri))}`](action.uri),
               );
               break;
-
+            case 'google':
+              store.dispatch(
+                googleActions[`getLibrary${titleCase(uriType(action.uri))}`](action.uri),
+              );
+              break;
             default:
               store.dispatch(
                 mopidyActions[`getLibrary${titleCase(uriType(action.uri))}`](action.uri),
@@ -545,10 +565,17 @@ const CoreMiddleware = (function () {
           break;
         }
 
-        localForage.getItem(action.uri).then((result) => {
-          if (result) {
-            console.info(`Restoring "${action.uri}" from database`);
-            store.dispatch(coreActions.restoreFromColdStore(result));
+        localForage.getItem(action.uri).then((library) => {
+          if (library) {
+            console.info(`Restoring "${action.uri}" and ${library.items_uris.length} items from db`);
+
+            var promises  = library.items_uris.map(function(item) { return localForage.getItem(item); });
+            Promise.all(promises).then(function(libraryItems) {
+              store.dispatch(coreActions.restoreFromColdStore(libraryItems));
+            });
+
+            //store.dispatch(coreActions.loadItems(result.items_uris));
+            store.dispatch(coreActions.restoreFromColdStore([library]));
           } else {
             fetchLibrary();
           }
@@ -658,6 +685,11 @@ const CoreMiddleware = (function () {
         store.dispatch(coreActions.updateColdStore(albums_loaded));
 
         next(action);
+        break;
+
+      // TODO: Flatten ITEM_LOADED to become an alias for ITEMS_LOADED (prefer bulk)
+      case 'ITEMS_LOADED':
+        action.items.forEach((item) => store.dispatch(coreActions.itemLoaded(item)));
         break;
 
       case 'ITEM_LOADED':

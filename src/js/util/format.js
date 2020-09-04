@@ -289,13 +289,17 @@ const formatAlbum = function (data) {
     'wiki_publish_date',
     'popularity',
     'images',
-    'artists_uris',
     'tracks',
-    'tracks_uris',
-    'tracks_total',
-    'tracks_more',
-    'artists', // Array of simple records
+    'artists',
   ];
+
+  // Nested album object (eg in spotify library)
+  if (data && data.album && isObject(data.album)) {
+    if (data.added_at) {
+      data.album.added_at = data.added_at;
+    }
+    data = data.album;
+  }
 
   // Loop fields and import from data
   for (const field of fields) {
@@ -306,6 +310,16 @@ const formatAlbum = function (data) {
 
   if (album.images && !album.images.formatted) {
     album.images = formatImages(album.images);
+  }
+  if (album.tracks) {
+    if (album.tracks.items) {
+      album.tracks = formatTracks(album.tracks.items);
+    } else {
+      album.tracks = formatTracks(album.tracks);
+    }
+  }
+  if (album.artists) {
+    album.artists = formatSimpleObjects(album.artists);
   }
 
   if (data.last_modified && album.added_at === undefined) {
@@ -591,31 +605,39 @@ const formatTrack = function (data) {
   }
 
   if (track.track_number === undefined && data.track_no !== undefined) {
-    	track.track_number = data.track_no;
+    track.track_number = data.track_no;
   }
 
   if (track.disc_number === undefined && data.disc_no !== undefined) {
-    	track.disc_number = data.disc_no;
+    track.disc_number = data.disc_no;
   }
 
   if (track.release_date === undefined && data.date !== undefined) {
-    	track.release_date = data.date;
+    track.release_date = data.date;
   }
 
   if (track.explicit === undefined && data.explicit !== undefined) {
-    	track.is_explicit = data.explicit;
+    track.is_explicit = data.explicit;
   }
 
   // Copy images from albums (if applicable)
   // TOOD: Identify if we stil need this...
   if (data.album && data.album.images) {
-    	if (track.images === undefined || !track.images.formatted) {
-    		track.images = formatImages(data.album.images);
-    	}
+    if (track.images === undefined || !track.images.formatted) {
+      track.images = formatImages(data.album.images);
+    }
   }
 
   if (track.provider === undefined && track.uri !== undefined) {
     track.provider = uriSource(track.uri);
+  }
+
+  if (track.artists) {
+    track.artists = formatSimpleObjects(track.artists);
+  }
+
+  if (track.album) {
+    track.album = formatSimpleObject(track.album);
   }
 
   return track;
@@ -739,6 +761,7 @@ const collate = function (obj, indexes = {}) {
   if (obj.playlists_uris !== undefined) 		obj.playlists = [];
   if (obj.related_artists_uris !== undefined) obj.related_artists = [];
   if (obj.clients_ids !== undefined) 			obj.clients = [];
+  if (obj.items_uris !== undefined) 			obj.items = [];
 
   if (indexes.artists) {
     if (obj.artists_uris) {
@@ -827,6 +850,16 @@ const collate = function (obj, indexes = {}) {
       for (const id of obj.clients_ids) {
         if (indexes.clients[id]) {
           obj.clients.push(indexes.clients[id]);
+        }
+      }
+    }
+  }
+
+  if (indexes.items) {
+    if (obj.items_uris) {
+      for (const uri of obj.items_uris) {
+        if (indexes.items[uri]) {
+          obj.items.push(indexes.items[uri]);
         }
       }
     }
