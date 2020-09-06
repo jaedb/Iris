@@ -946,7 +946,7 @@ export function getRecommendations(uris = [], limit = 20, tunabilities = null) {
     request(dispatch, getState, endpoint)
       .then(
         (response) => {
-          const tracks = Object.assign([], response.tracks);
+          const tracks = Object.assign([], formatTracks(response.tracks));
 
           // We only get simple artist objects, so we need to
           // get the full object. We'll add URIs to our recommendations
@@ -983,11 +983,11 @@ export function getRecommendations(uris = [], limit = 20, tunabilities = null) {
           }
 
           if (albums.length > 0) {
-            dispatch(coreActions.albumsLoaded(albums));
+            dispatch(coreActions.itemsLoaded(albums));
           }
 
           if (tracks.length > 0) {
-            dispatch(coreActions.tracksLoaded(tracks));
+            dispatch(coreActions.itemsLoaded(tracks));
           }
 
           dispatch({
@@ -1104,7 +1104,6 @@ export function getArtistImages(artist) {
   return (dispatch, getState) => {
     request(dispatch, getState, `search?q=${artist.name}&type=artist`)
       .then(response => {
-        console.log('images', response);
         if (response.artists.items.length > 0) {
           dispatch(coreActions.itemLoaded({
             uri: artist.uri,
@@ -1117,22 +1116,27 @@ export function getArtistImages(artist) {
 
 export function playArtistTopTracks(uri) {
   return (dispatch, getState) => {
-    const { artists } = getState().core;
+    const {
+      items: {
+        [uri]: artist,
+      },
+    } = getState().core;
 
     // Do we have this artist (and their tracks) in our index already?
-    if (typeof (artists[uri]) !== 'undefined' && typeof (artists[uri].tracks) !== 'undefined') {
-      const uris = arrayOf('uri', artists[uri].tracks);
+    if (artist && artist.tracks) {
+      const uris = arrayOf('uri', artist.tracks);
       dispatch(mopidyActions.playURIs(uris, uri));
-
-      // We need to load the artist's top tracks first
     } else {
-      request(dispatch, getState, `artists/${getFromUri('artistid', uri)}/top-tracks?country=${getState().spotify.country}`)
-        .then(
-          (response) => {
-            const uris = arrayOf('uri', response.tracks);
-            dispatch(mopidyActions.playURIs(uris, uri));
-          },
-        );
+      request(
+        dispatch,
+        getState,
+        `artists/${getFromUri('artistid', uri)}/top-tracks?country=${getState().spotify.country}`,
+      ).then(
+        (response) => {
+          const uris = arrayOf('uri', response.tracks);
+          dispatch(mopidyActions.playURIs(uris, uri));
+        },
+      );
     }
   };
 }
@@ -1359,9 +1363,8 @@ export function savePlaylist(uri, name, description, is_public, is_collaborative
   };
 }
 
-export function getPlaylist(uri) {
+export function getPlaylist(uri, callbackAction = null) {
   return (dispatch, getState) => {
-    // get the main playlist object
     request(dispatch, getState, `playlists/${getFromUri('playlistid', uri)}?market=${getState().spotify.country}`)
       .then(
         (response) => {
@@ -1393,6 +1396,29 @@ export function getPlaylist(uri) {
                   uri,
                   tracks,
                 }));
+
+                if (callbackAction) {
+                  switch (callbackAction.name) {
+                    case 'enqueue':
+                      dispatch(mopidyActions.enqueueURIs(
+                        arrayOf('uri', tracks),
+                        uri,
+                        callbackAction.play_next,
+                        callbackAction.at_position,
+                        callbackAction.offset,
+                      ));
+                      break;
+                    case 'play':
+                      dispatch(mopidyActions.playURIs(
+                        arrayOf('uri', tracks),
+                        uri,
+                        callbackAction.shuffle,
+                      ));
+                      break;
+                    default:
+                      break;
+                  }
+                }
               }
             });
 
@@ -1498,8 +1524,26 @@ export function getLibraryTracksAndPlayProcessor(data) {
  * Recursively get .next until we have all tracks
  * */
 
-export function getAllPlaylistTracks(uri, shuffle = false, callback_action = null, play_next = false, at_position = null, offset = 0) {
+export function getAllPlaylistTracks(
+  uri,
+  shuffle = false,
+  callback_action = null,
+  play_next = false,
+  at_position = null,
+  offset = 0,
+) {
   return (dispatch, getState) => {
+
+
+
+
+
+    if (data.callback_action == 'enqueue') {
+      dispatch(mopidyActions.enqueueURIs(uris, data.uri, data.play_next, data.at_position, data.offset));
+    } else {
+      dispatch(mopidyActions.playURIs(uris, data.uri));
+    }
+
     dispatch(uiActions.startProcess(
       'SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR',
       'Loading playlist tracks',
@@ -1690,7 +1734,6 @@ export function getLibraryPlaylists() {
     let libraryPlaylists = [];
     const fetchLibraryPlaylists = (endpoint) => request(dispatch, getState, endpoint)
       .then((response) => {
-        console.log('spot', response);
         libraryPlaylists = [...libraryPlaylists, ...formatPlaylists(response.items)];
         if (response.next) {
           fetchLibraryPlaylists(response.next);

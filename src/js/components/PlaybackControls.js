@@ -333,22 +333,30 @@ class PlaybackControls extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  snapcast_enabled: state.pusher.config.snapcast_enabled,
-  current_track: (state.core.current_track && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null),
-  next_track: (state.core.next_track_uri && state.core.tracks[state.core.next_track_uri] !== undefined ? state.core.tracks[state.core.next_track_uri] : null),
-  radio_enabled: (!!(state.ui.radio && state.ui.radio.enabled)),
-  play_state: state.mopidy.play_state,
-  time_position: state.mopidy.time_position,
-  consume: state.mopidy.consume,
-  repeat: state.mopidy.repeat,
-  random: state.mopidy.random,
-  volume: state.mopidy.volume,
-  mute: state.mopidy.mute,
-  sidebar_open: state.ui.sidebar_open,
-  slim_mode: state.ui.slim_mode,
-  touch_enabled: state.ui.playback_controls_touch_enabled,
-});
+const mapStateToProps = (state) => {
+  const {
+    items,
+    next_track_uri,
+    current_track,
+  } = state.core;
+
+  return {
+    snapcast_enabled: state.pusher.config.snapcast_enabled,
+    current_track: current_track ? items[current_track.uri] || current_track : null,
+    next_track: items[next_track_uri],
+    radio_enabled: (!!(state.ui.radio && state.ui.radio.enabled)),
+    play_state: state.mopidy.play_state,
+    time_position: state.mopidy.time_position,
+    consume: state.mopidy.consume,
+    repeat: state.mopidy.repeat,
+    random: state.mopidy.random,
+    volume: state.mopidy.volume,
+    mute: state.mopidy.mute,
+    sidebar_open: state.ui.sidebar_open,
+    slim_mode: state.ui.slim_mode,
+    touch_enabled: state.ui.playback_controls_touch_enabled,
+  };
+};
 
 const mapDispatchToProps = (dispatch) => ({
   coreActions: bindActionCreators(coreActions, dispatch),

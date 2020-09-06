@@ -107,71 +107,74 @@ export function updateColdStore(items) {
  * relevant service to load the record - all from one neat package.
  * */
 
-export function loadItems(uris, force_reload = false) {
+export function loadItems(uris, forceReload = false) {
   return {
     type: 'LOAD_ITEMS',
     uris,
-    force_reload,
+    forceReload,
   };
 }
 
-export function loadItem(uri, force_reload = false) {
-  return loadItems([uri], force_reload);
+export function loadItem(uri, forceReload = false) {
+  return loadItems([uri], forceReload);
 }
 
-export function loadTrack(uri, force_reload = false) {
+export function loadTrack(uri, forceReload = false) {
   return {
     type: 'LOAD_TRACK',
     uri,
-    force_reload,
+    forceReload,
   };
 }
 
-export function loadAlbum(uri, force_reload = false) {
+export function loadAlbum(uri, forceReload = false, callbackAction) {
   return {
     type: 'LOAD_ALBUM',
     uri,
-    force_reload,
+    forceReload,
+    callbackAction,
   };
 }
 
-export function loadArtist(uri, force_reload = false) {
+export function loadArtist(uri, forceReload = false, callbackAction) {
   return {
     type: 'LOAD_ARTIST',
     uri,
-    force_reload,
+    forceReload,
+    callbackAction,
   };
 }
 
-export function loadPlaylist(uri, force_reload = false) {
+export function loadPlaylist(uri, forceReload = false, callbackAction) {
   return {
     type: 'LOAD_PLAYLIST',
     uri,
-    force_reload,
+    forceReload,
+    callbackAction,
   };
 }
 
-export function loadUser(uri, force_reload = false) {
+export function loadUser(uri, forceReload = false) {
   return {
     type: 'LOAD_USER',
     uri,
-    force_reload,
+    forceReload,
   };
 }
 
-export function loadUserPlaylists(uri, force_reload = false) {
+export function loadUserPlaylists(uri, forceReload = false) {
   return {
     type: 'LOAD_USER_PLAYLISTS',
     uri,
-    force_reload,
+    forceReload,
   };
 }
 
-export function loadLibrary(uri, force_reload = false) {
+export function loadLibrary(uri, forceReload = false) {
   return {
     type: 'LOAD_LIBRARY',
     uri,
-    force_reload,
+    forceReload,
   };
 }
 

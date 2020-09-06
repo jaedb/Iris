@@ -318,35 +318,50 @@ const CoreMiddleware = (function () {
           store.dispatch({
             type: `LOAD_${uriType(uri).toUpperCase()}`,
             uri,
-            force_reload: action.force_reload,
+            forceReload: action.forceReload,
           });
         });
         break;
 
-      case 'LOAD_TRACK':
-        if (
-          !action.force_reload
-          && store.getState().core.tracks[action.uri]) {
-          console.info(`Loading "${action.uri}" from index`);
+      case 'LOAD_TRACK': {
+        const fetchTrack = () => {
+          switch (uriSource(action.uri)) {
+            case 'spotify':
+              store.dispatch(spotifyActions.getTrack(action.uri));
+
+              if (spotify.me) {
+                store.dispatch(spotifyActions.following(action.uri));
+              }
+              break;
+
+            default:
+              store.dispatch(mopidyActions.getTrack(action.uri));
+              break;
+          }
+        };
+
+        if (action.forceReload) {
+          console.info(`Force-reloading "${action.uri}"`);
+          fetchTrack();
+          break;
+        }
+        if (store.getState().core.items[action.uri]) {
+          console.info(`Using "${action.uri}" from index`);
           break;
         }
 
-        switch (uriSource(action.uri)) {
-          case 'spotify':
-            store.dispatch(spotifyActions.getTrack(action.uri));
-
-            if (spotify.me) {
-              store.dispatch(spotifyActions.following(action.uri));
-            }
-            break;
-
-          default:
-            store.dispatch(mopidyActions.getTrack(action.uri));
-            break;
-        }
+        localForage.getItem(action.uri).then((result) => {
+          if (result) {
+            console.info(`Loading "${action.uri}" from database`);
+            store.dispatch(coreActions.restoreItemsFromColdStore([result]));
+          } else {
+            fetchTrack();
+          }
+        });
 
         next(action);
         break;
+      }
 
       case 'LOAD_ALBUM':
         const fetchAlbum = () => {
@@ -365,7 +380,7 @@ const CoreMiddleware = (function () {
           };
         };
 
-        if (action.force_reload) {
+        if (action.forceReload) {
           console.info(`Force-reloading "${action.uri}"`);
           fetchAlbum();
           break;
@@ -412,7 +427,7 @@ const CoreMiddleware = (function () {
           }
         };
 
-        if (action.force_reload) {
+        if (action.forceReload) {
           console.info(`Force-reloading "${action.uri}"`);
           fetchArtist();
           break;
@@ -460,7 +475,7 @@ const CoreMiddleware = (function () {
           }
         };
 
-        if (action.force_reload) {
+        if (action.forceReload) {
           console.info(`Force-reloading "${action.uri}"`);
           fetchPlaylist();
           break;
@@ -477,7 +492,6 @@ const CoreMiddleware = (function () {
           if (result) {
             console.info(`Restoring "${action.uri}" from database`);
             store.dispatch(coreActions.restoreItemsFromColdStore([result]));
-  
             if (!result.tracks) {
               fetchPlaylist();
             }
@@ -491,7 +505,7 @@ const CoreMiddleware = (function () {
 
       case 'LOAD_USER':
         if (
-          !action.force_reload
+          !action.forceReload
           && store.getState().core.users[action.uri]
           && store.getState().core.users[action.uri].playlists_uris) {
           console.info(`Loading "${action.uri}" from index`);
@@ -517,7 +531,7 @@ const CoreMiddleware = (function () {
 
       case 'LOAD_USER_PLAYLISTS':
         if (
-          !action.force_reload
+          !action.forceReload
           && store.getState().core.users[action.uri]
           && store.getState().core.users[action.uri].playlists_uris) {
           console.info(`Loading "${action.uri}" playlists from index`);
@@ -558,7 +572,7 @@ const CoreMiddleware = (function () {
           }
         };
 
-        if (action.force_reload) {
+        if (action.forceReload) {
           console.info(`Force-reloading "${action.uri}"`);
           fetchLibrary();
           break;
@@ -592,11 +606,15 @@ const CoreMiddleware = (function () {
        * These modify our asset indexes, which are used globally
        * */
 
-      case 'CURRENT_TRACK_LOADED':
-        store.dispatch(coreActions.trackLoaded(action.track));
-        action.track = formatTrack(action.track);
-        next(action);
+      case 'CURRENT_TRACK_LOADED': {
+        const track = formatTrack(action.track);
+        store.dispatch(coreActions.itemLoaded(track));
+        next({
+          ...action,
+          track,
+        });
         break;
+      }
 
       case 'QUEUE_LOADED':
         store.dispatch(coreActions.tracksLoaded(action.tracks));

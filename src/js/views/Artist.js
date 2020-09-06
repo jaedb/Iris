@@ -31,7 +31,7 @@ import {
   titleCase,
 } from '../util/helpers';
 import { collate } from '../util/format';
-import { sortItems, applyFilter } from '../util/arrays';
+import { sortItems, applyFilter, arrayOf } from '../util/arrays';
 import { i18n, I18n } from '../locale';
 import Button from '../components/Button';
 import { trackEvent } from '../components/Trackable';
@@ -102,12 +102,14 @@ class Artist extends React.Component {
     const {
       artist: {
         uri,
-        tracks_uris,
+        tracks,
         albums_uris,
       },
-      mopidyActions: { playURIs },
+      mopidyActions: {
+        playURIs,
+      },
     } = this.props;
-    playURIs(tracks_uris || albums_uris, uri);
+    playURIs(arrayOf('uri', tracks) || albums_uris, uri);
   }
 
   setWindowTitle = (artist = this.props.artist) => {
@@ -532,8 +534,8 @@ const mapStateToProps = (state, ownProps) => {
     load_queue: state.ui.load_queue,
     artist: (state.core.items[uri] || null),
     items: state.core.items,
-    spotify_library_artists: state.core.items['spotify:library:artists'] || { items_uris: [] },
-    mopidy_library_artists: state.core.items['mopidy:library:artists'] || { items_uris: [] },
+    spotify_library_artists: state.core.libraries['spotify:library:artists'] || { items_uris: [] },
+    mopidy_library_artists: state.core.libraries['mopidy:library:artists'] || { items_uris: [] },
     albums: (state.core.albums ? state.core.albums : []),
     filter: (state.ui.artist_albums_filter ? state.ui.artist_albums_filter : null),
     sort: (state.ui.artist_albums_sort ? state.ui.artist_albums_sort : null),

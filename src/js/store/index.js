@@ -172,6 +172,7 @@ const uiPersistConfig = {
   blacklist: [
     'load_queue',
     'notifications',
+    'processes',
     'context_menu',
     'current_track_transition',
     'dragger',

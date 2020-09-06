@@ -651,109 +651,65 @@ const MopidyMiddleware = (function () {
            * Advanced playback events
            * */
 
-      case 'MOPIDY_PLAY_PLAYLIST':
-        var playlist = store.getState().core.items[action.uri];
-
-        // We have the playlist loaded already, and we've got at least 1 track to start playing
-        if (playlist && playlist.tracks_uris && playlist.tracks_uris.length > 0) {
-          // We've got all of the tracks, so just play those; no further action required
-          if (playlist.tracks_total == playlist.tracks_uris.length) {
-            store.dispatch(mopidyActions.playURIs(playlist.tracks_uris, action.uri, action.shuffle));
-            break;
-          }
-
-          // Spotify-provided playlists need to be handled by the Spotify service
-          if (playlist.provider == 'spotify') {
-            store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri, action.shuffle, 'play'));
-            break;
-          }
-
-          // It's a Spotify playlist that we haven't loaded yet, so Spotify HTTP API needs to go get it
-        } else if (uriSource(action.uri) == 'spotify' && store.getState().spotify.enabled) {
-          store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri, action.shuffle, 'play'));
+      case 'MOPIDY_PLAY_PLAYLIST': {
+        const playlist = store.getState().core.items[action.uri];
+        if (playlist && playlist.tracks) {
+          store.dispatch(
+            mopidyActions.playURIs(
+              arrayOf('uri', playlist.tracks),
+              action.uri,
+              action.shuffle,
+            ),
+          );
           break;
         }
-
-        // Not in index, and Spotify HTTP not enabled, so just play it as-is
-        // Fetch the playlist tracks via backend and add each track by URI
-        request(store, 'playlists.lookup', { uri: action.uri })
-          .then(
-            (response) => {
-              if (!response || response.tracks === undefined || !response.tracks) {
-                store.dispatch(uiActions.createNotification({ content: 'Failed to load playlist tracks', level: 'error' }));
-              } else {
-                let tracks_uris = arrayOf('uri', response.tracks);
-                if (action.shuffle) {
-                  tracks_uris = shuffle(tracks_uris);
-                }
-                store.dispatch(mopidyActions.playURIs(tracks_uris, action.uri));
-              }
+        store.dispatch(
+          coreActions.loadPlaylist(
+            action.uri,
+            false,
+            {
+              name: 'play',
+              shuffle: action.shuffle,
             },
-            (error) => {
-              store.dispatch(coreActions.handleException(
-                `Mopidy: ${error.message ? error.message : 'Lookup failed'}`,
-                error,
-              ));
-            },
-          );
+          ),
+        );
         break;
+      }
 
-      case 'MOPIDY_ENQUEUE_PLAYLIST':
-
-        var playlist = store.getState().core.items[action.uri];
-
-        // We have the playlist loaded already, and we've got at least 1 track to start playing
-        if (playlist && playlist.tracks_uris && playlist.tracks_uris.length > 0) {
-          // We've got all of the tracks, so just play those; no further action required
-          if (playlist.tracks_total == playlist.tracks_uris.length) {
-            let tracks_uris = Object.assign([], playlist.tracks_uris);
-            if (action.shuffle) {
-              tracks_uris = shuffle(tracks_uris);
-            }
-            store.dispatch(mopidyActions.enqueueURIs(tracks_uris, action.uri, action.play_next, action.at_position, action.offset));
-            break;
-          }
-
-          // Spotify-provided playlists need to be handled by the Spotify service
-          if (playlist.provider == 'spotify') {
-            store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri, action.shuffle, 'enqueue', action.play_next));
-            break;
-          }
-
-          // It's a Spotify playlist that we haven't loaded yet, so Spotify HTTP API needs to go get it
-        } else if (uriSource(action.uri) == 'spotify' && store.getState().spotify.enabled) {
-          store.dispatch(spotifyActions.getAllPlaylistTracks(action.uri, action.shuffle, 'enqueue', action.play_next));
+      case 'MOPIDY_ENQUEUE_PLAYLIST': {
+        const playlist = store.getState().core.items[action.uri];
+        if (playlist && playlist.tracks) {
+          store.dispatch(
+            mopidyActions.enqueueURIs(
+              arrayOf('uri', playlist.tracks),
+              action.uri,
+              action.shuffle,
+            ),
+          );
           break;
         }
-
-        // Not in index, and Spotify HTTP not enabled, so just play it as-is
-        // Fetch the playlist tracks via backend and add each track by URI
-        request(store, 'playlists.lookup', { uri: action.uri })
-          .then(
-            (response) => {
-              if (response.tracks === undefined) {
-                store.dispatch(uiActions.createNotification({ content: 'Failed to load playlist tracks', level: 'error' }));
-              } else {
-                let tracks_uris = arrayOf('uri', response.tracks);
-                if (action.shuffle) {
-                  tracks_uris = shuffle(tracks_uris);
-                }
-                store.dispatch(mopidyActions.enqueueURIs(tracks_uris, action.uri, action.play_next, action.at_position, action.offset));
-              }
+        store.dispatch(
+          coreActions.loadPlaylist(
+            action.uri,
+            false,
+            {
+              name: 'enqueue',
+              shuffle: action.shuffle,
+              play_next: action.play_next,
+              at_position: action.at_position,
+              offset: action.offset,
             },
-            (error) => {
-              store.dispatch(coreActions.handleException(
-                `Mopidy: ${error.message ? error.message : 'Lookup failed'}`,
-                error,
-              ));
-            },
-          );
+          ),
+        );
         break;
+      }
 
-      case 'MOPIDY_ENQUEUE_URIS':
-
+      case 'MOPIDY_ENQUEUE_URIS': {
         if (!action.uris || action.uris.length <= 0) {
-          this.props.uiActions.createNotification({ content: 'No URIs to enqueue', level: 'warning' });
+          this.props.uiActions.createNotification({
+            content: 'No URIs to enqueue',
+            level: 'warning',
+          });
           break;
         }
 
@@ -762,15 +718,18 @@ const MopidyMiddleware = (function () {
           {
             notification: {
               content: `${store.getState().pusher.username} is adding ${action.uris.length} URIs to queue`,
-              icon: (store.getState().core.current_track ? getTrackIcon(store.getState().core.current_track, store.getState().core) : false),
+              icon: (
+                store.getState().core.current_track
+                  ? getTrackIcon(store.getState().core.current_track, store.getState().core)
+                  : false
+              ),
             },
           },
         ));
 
-        // split into batches
-        var uris = Object.assign([], action.uris);
-        var batches = [];
-        var batch_size = 5;
+        const uris = Object.assign([], action.uris);
+        const batches = [];
+        const batch_size = 5;
         while (uris.length > 0) {
           batches.push({
             uris: uris.splice(0, batch_size),
@@ -781,11 +740,11 @@ const MopidyMiddleware = (function () {
           });
         }
 
-        // pass this modified action to the reducer (and other middleware)
-        action.batches = batches;
-        next(action);
+        next({
+          ...action,
+          batches,
+        });
 
-        // start our processor
         store.dispatch(uiActions.startProcess(
           'MOPIDY_ENQUEUE_URIS_PROCESSOR',
           i18n('services.mopidy.adding_uris', { count: action.uris.length }),
@@ -796,17 +755,14 @@ const MopidyMiddleware = (function () {
           },
         ));
         break;
+      }
 
-      case 'MOPIDY_ENQUEUE_URIS_PROCESSOR':
+      case 'MOPIDY_ENQUEUE_URIS_PROCESSOR': {
+        const last_run = store.getState().ui.processes.MOPIDY_ENQUEUE_URIS_PROCESSOR;
 
-        var last_run = store.getState().ui.processes.MOPIDY_ENQUEUE_URIS_PROCESSOR;
-
-        // Cancelling
         if (last_run && last_run.status == 'cancelling') {
           store.dispatch(uiActions.processCancelled('MOPIDY_ENQUEUE_URIS_PROCESSOR'));
           return;
-
-          // make sure we have some uris in the queue
         } if (action.data.batches && action.data.batches.length > 0) {
           var batches = Object.assign([], action.data.batches);
           var batch = batches[0];
@@ -829,9 +785,11 @@ const MopidyMiddleware = (function () {
           break;
         }
 
-        var { current_track } = store.getState().core;
-        var { queue } = store.getState().core;
-        var current_track_index = -1;
+        const {
+          current_track,
+          queue,
+        } = store.getState().core;
+        let current_track_index = -1;
 
         if (current_track) {
           for (var i = 0; i < queue.length; i++) {
@@ -888,8 +846,8 @@ const MopidyMiddleware = (function () {
               ));
             },
           );
-
         break;
+      }
 
       case 'MOPIDY_PLAY_URIS':
         const { from_uri } = action;
@@ -2039,7 +1997,7 @@ const MopidyMiddleware = (function () {
 
               // Some other source, rely on Mopidy backends to do their work
             } else {
-              store.dispatch(mopidyActions.getImages('tracks', [track.uri]));
+              store.dispatch(mopidyActions.getImages([track.uri]));
             }
           }
         }
@@ -2060,17 +2018,7 @@ const MopidyMiddleware = (function () {
                     uri: track.uri,
                   });
 
-                  // We don't have the track (including images) already in our index
-                  if (store.getState().core.tracks[track.uri] === undefined || store.getState().core.tracks[track.uri].images === undefined) {
-                    // We've got Spotify running, and it's a spotify track - go straight to the source!
-                    if (store.getState().spotify.enabled && uriSource(track.uri) == 'spotify') {
-                      store.dispatch(spotifyActions.getTrack(track.uri));
-
-                      // Some other source, rely on Mopidy backends to do their work
-                    } else {
-                      store.dispatch(mopidyActions.getImages('tracks', [track.uri]));
-                    }
-                  }
+                  store.dispatch(coreActions.loadItem(track.uri));
                 }
               }
             },
@@ -2088,7 +2036,7 @@ const MopidyMiddleware = (function () {
               store.dispatch(coreActions.tracksLoaded(tracks));
 
               if (action.get_images) {
-                store.dispatch(mopidyActions.getImages('tracks', arrayOf('uri', tracks)));
+                store.dispatch(mopidyActions.getImages(arrayOf('uri', tracks)));
               }
             },
             (error) => {
