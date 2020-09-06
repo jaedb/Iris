@@ -29,6 +29,7 @@ import * as mopidyActions from '../services/mopidy/actions';
 import * as lastfmActions from '../services/lastfm/actions';
 import * as spotifyActions from '../services/spotify/actions';
 import { I18n, i18n } from '../locale';
+import { collate } from '../util/format';
 
 class ContextMenu extends React.Component {
   constructor(props) {
@@ -181,11 +182,11 @@ class ContextMenu extends React.Component {
 
     switch (uriType(uri)) {
       case 'artist':
-        return (spotify_library_artists && spotify_library_artists.indexOf(uri) > -1);
+        return (spotify_library_artists.items_uris.indexOf(uri) > -1);
       case 'album':
-        return (spotify_library_albums && spotify_library_albums.indexOf(uri) > -1);
+        return (spotify_library_albums.items_uris.indexOf(uri) > -1);
       case 'playlist':
-        return (spotify_library_playlists && spotify_library_playlists.indexOf(uri) > -1);
+        return (spotify_library_playlists.items_uris.indexOf(uri) > -1);
       case 'track':
         return (spotify_library_tracks && spotify_library_tracks.indexOf(uri) > -1);
       default:
@@ -742,14 +743,19 @@ class ContextMenu extends React.Component {
     const { submenu } = this.state;
     const {
       spotify_available,
-      spotify_library_playlists_loaded_all,
-      mopidy_library_playlists_loaded_all,
-      spotifyActions,
-      mopidyActions,
+      spotify_library_playlists: {
+        items_uris: spotify_library,
+      },
+      mopidy_library_playlists: {
+        items_uris: mopidy_library,
+      },
+      coreActions: {
+        loadLibrary,
+      },
     } = this.props;
     if (submenu !== name && name === 'add-to-playlist') {
-      if (spotify_available && !spotify_library_playlists_loaded_all) spotifyActions.getLibraryPlaylists();
-      if (!mopidy_library_playlists_loaded_all) mopidyActions.getLibraryPlaylists();
+      if (spotify_available && !spotify_library.length) loadLibrary('spotify:library:playlists');
+      if (!mopidy_library.length) loadLibrary('mopidy:library:playlists');
     }
 
     this.setState({ submenu: name });
@@ -760,57 +766,57 @@ class ContextMenu extends React.Component {
   renderSubmenu = () => {
     const { submenu } = this.state;
     const {
-      playlists: playlistsIndex,
-      processes,
+      items,
+      spotify_library_playlists,
+      mopidy_library_playlists,
     } = this.props;
 
     let list = null;
     let isLoading = false;
 
     if (submenu === 'add-to-playlist') {
-      if (processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR && processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR.status === 'running') {
-        isLoading = true;
-      } else {
-        let playlists = indexToArray(playlistsIndex);
-        playlists = compact(playlists.map((playlist) => {
-          if (!playlist.can_edit) return null;
-          return {
-            ...playlist,
-            is_pinned: this.isPinned(playlist),
-          };
-        }));
-        playlists = sortItems(playlists, 'name');
-        playlists = sortItems(playlists, 'is_pinned');
+      let playlists = [
+        ...(collate(spotify_library_playlists, { items }).items || []),
+        ...(collate(mopidy_library_playlists, { items }).items || []),
+      ];
+      playlists = compact(playlists.map((playlist) => {
+        if (!playlist.can_edit) return null;
+        return {
+          ...playlist,
+          is_pinned: this.isPinned(playlist),
+        };
+      }));
+      playlists = sortItems(playlists, 'name');
+      playlists = sortItems(playlists, 'is_pinned');
 
-        list = (
-          <span className="context-menu__item">
-            <span className="context-menu__item mid_grey-text">
-              <span className="context-menu__item__link context-menu__item__link--inactive">
-                <I18n path="context_menu.add_to_playlist.no_playlists" />
-              </span>
+      list = (
+        <span className="context-menu__item">
+          <span className="context-menu__item mid_grey-text">
+            <span className="context-menu__item__link context-menu__item__link--inactive">
+              <I18n path="context_menu.add_to_playlist.no_playlists" />
             </span>
           </span>
-        );
-        if (playlists.length) {
-          list = playlists.map((playlist) => {
+        </span>
+      );
+      if (playlists.length) {
+        list = playlists.map((playlist) => {
 
-            // Allows us to css target last-child
-            const ElementTag = playlist.is_pinned ? 'em' : 'span';
+          // Allows us to css target last-child
+          const ElementTag = playlist.is_pinned ? 'em' : 'span';
 
-            return (
-              <ElementTag className="context-menu__item" key={playlist.uri}>
-                <a
-                  className="context-menu__item__link"
-                  onClick={(e) => this.addTracksToPlaylist(e, playlist.uri)}
-                >
-                  <span className="context-menu__item__label">
-                    {playlist.name}
-                  </span>
-                </a>
-              </ElementTag>
-            );
-          });
-        }
+          return (
+            <ElementTag className="context-menu__item" key={playlist.uri}>
+              <a
+                className="context-menu__item__link"
+                onClick={(e) => this.addTracksToPlaylist(e, playlist.uri)}
+              >
+                <span className="context-menu__item__label">
+                  {playlist.name}
+                </span>
+              </a>
+            </ElementTag>
+          );
+        });
       }
     }
 
@@ -1305,17 +1311,16 @@ const mapStateToProps = (state) => ({
   current_tracklist: state.core.current_tracklist,
   queue_metadata: state.core.queue_metadata,
   spotify_available: state.spotify.access_token,
-  spotify_library_playlists: state.spotify.library_playlists,
-  spotify_library_playlists_loaded_all: state.spotify.library_playlists_loaded_all,
-  spotify_library_artists: state.spotify.library_artists,
-  spotify_library_albums: state.spotify.library_albums,
+  spotify_library_playlists: state.core.items['spotify:library:playlists'] || { items_uris: [] },
+  spotify_library_artists: state.core.items['spotify:library:artists'] || { items_uris: [] },
+  spotify_library_albums: state.core.items['spotify:library:albums'] || { items_uris: [] },
   spotify_library_tracks: state.spotify.library_tracks,
-  mopidy_library_playlists: state.mopidy.library_playlists,
-  mopidy_library_playlists_loaded_all: state.mopidy.library_playlists_loaded_all,
-  mopidy_library_artists: state.mopidy.library_artists,
-  mopidy_library_albums: state.mopidy.library_albums,
+  mopidy_library_playlists: state.core.items['mopidy:library:playlists'] || { items_uris: [] },
+  mopidy_library_artists: state.core.items['mopidy:library:artists'] || { items_uris: [] },
+  mopidy_library_albums: state.core.items['mopidy:library:albums'] || { items_uris: [] },
   playlists: state.core.playlists,
   tracks: state.core.tracks,
+  items: state.core.items,
   pinned: state.pusher.pinned,
   lastfm_authorized: state.lastfm.authorization,
 });

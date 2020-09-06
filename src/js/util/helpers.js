@@ -190,7 +190,7 @@ const uriType = function (uri) {
       }
       return exploded[1];
     default:
-      return '';
+      return exploded[1];
   }
 };
 

@@ -138,7 +138,6 @@ export class App extends React.Component {
   }
 
   componentDidMount() {
-    localForage.keys().then((r) => console.log(r))
     const {
       history,
       snapcast_enabled,

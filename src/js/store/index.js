@@ -42,6 +42,7 @@ let state = {
     users: {},
     tracks: {},
     items: {},
+    libraries: {},
     http_streaming_enabled: false,
     http_streaming_cachebuster: null,
     http_streaming_url: `http://${window.location.hostname}:8000/mopidy`,
@@ -143,7 +144,10 @@ state = migration(state);
 const rootPersistConfig = {
   key: 'root',
   storage: localForage,
-  blacklist: ['ui', 'core'],
+  blacklist: [
+    'ui',
+    'core',
+  ],
   debug: window.test_mode,
 };
 
@@ -158,13 +162,23 @@ const corePersistConfig = {
     'playlists',
     'users',
     'tracks',
+    'libraries', // We manually hydrate this, so we can handle the rehydration of library items
   ],
 };
 
 const uiPersistConfig = {
   key: 'ui',
   storage: localForage,
-  blacklist: ['load_queue', 'notifications'],
+  blacklist: [
+    'load_queue',
+    'notifications',
+    'context_menu',
+    'current_track_transition',
+    'dragger',
+    'selected_tracks',
+    'sidebar_open',
+    'window_focus',
+  ],
   debug: window.test_mode,
 };
 

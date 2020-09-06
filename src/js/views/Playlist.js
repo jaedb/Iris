@@ -318,13 +318,13 @@ class Playlist extends React.Component {
                 <Icon type="fontawesome" name={sourceIcon(playlist.uri)} />
               </li>
             )}
-            {playlist.user_uri && (
+            {playlist.user && (
               <li>
                 <URILink
                   type="user"
-                  uri={playlist.user_uri}
+                  uri={playlist.user.uri}
                 >
-                  {playlist.user ? playlist.user.name : getFromUri('userid', playlist.user_uri)}
+                  {playlist.user.name}
                 </URILink>
               </li>
             )}
@@ -349,16 +349,20 @@ class Playlist extends React.Component {
 
         {this.renderActions()}
 
-        <section className="list-wrapper">
-          <TrackList
-            uri={playlist.uri}
-            className="playlist-track-list"
-            track_context={context}
-            tracks={playlist.tracks}
-            removeTracks={this.removeTracks}
-            reorderTracks={this.reorderTracks}
-          />
-        </section>
+        {isLoading(load_queue, [`spotify_playlists/${playlist_id}/tracks`]) ? (
+          <Loader body loading />
+        ) : (
+          <section className="list-wrapper">
+            <TrackList
+              uri={playlist.uri}
+              className="playlist-track-list"
+              track_context={context}
+              tracks={playlist.tracks}
+              removeTracks={this.removeTracks}
+              reorderTracks={this.reorderTracks}
+            />
+          </section>
+        )}
       </div>
     );
   }

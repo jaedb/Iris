@@ -77,10 +77,17 @@ export function clearStorage() {
   };
 }
 
-export function restoreFromColdStore(items) {
+export function restoreItemsFromColdStore(items) {
   return {
-    type: 'RESTORE_FROM_COLD_STORE',
+    type: 'RESTORE_ITEMS_FROM_COLD_STORE',
     items,
+  };
+}
+
+export function restoreLibraryFromColdStore(library) {
+  return {
+    type: 'RESTORE_LIBRARY_FROM_COLD_STORE',
+    library,
   };
 }
 
@@ -175,28 +182,30 @@ export function loadLibrary(uri, force_reload = false) {
  * We've got a loaded record, now we just need to plug it in to our state and stores.
  * */
 
+export function libraryLoaded(library) {
+  return {
+    type: 'LIBRARY_LOADED',
+    library,
+  };
+}
 export function itemsLoaded(items) {
   return {
     type: 'ITEMS_LOADED',
     items,
   };
 }
-
 export function itemLoaded(item) {
-  return {
-    type: 'ITEM_LOADED',
-    item,
-  };
+  return itemsLoaded([item]);
 }
 
-export function trackLoaded(track) {
-  return tracksLoaded([track]);
-}
 export function tracksLoaded(tracks) {
   return {
     type: 'TRACKS_LOADED',
     tracks,
   };
+}
+export function trackLoaded(track) {
+  return tracksLoaded([track]);
 }
 
 export function artistsLoaded(artists) {
@@ -206,34 +215,34 @@ export function artistsLoaded(artists) {
   };
 }
 
-export function albumLoaded(album) {
-  return albumsLoaded([album]);
-}
 export function albumsLoaded(albums) {
   return {
     type: 'ALBUMS_LOADED',
     albums,
   };
 }
-
-export function playlistLoaded(playlist) {
-  return playlistsLoaded([playlist]);
+export function albumLoaded(album) {
+  return albumsLoaded([album]);
 }
+
 export function playlistsLoaded(playlists) {
   return {
     type: 'PLAYLISTS_LOADED',
     playlists,
   };
 }
-
-export function userLoaded(user) {
-  return usersLoaded([user]);
+export function playlistLoaded(playlist) {
+  return playlistsLoaded([playlist]);
 }
+
 export function usersLoaded(users) {
   return {
     type: 'USERS_LOADED',
     users,
   };
+}
+export function userLoaded(user) {
+  return usersLoaded([user]);
 }
 export function userPlaylistsLoaded(uri, playlists, more = null, total = null) {
   return {

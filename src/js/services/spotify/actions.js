@@ -19,6 +19,7 @@ import {
   formatArtists,
   formatAlbums,
   formatPlaylists,
+  formatImages,
 } from '../../util/format';
 import URILink from '../../components/URILink';
 import { i18n } from '../../locale';
@@ -391,7 +392,6 @@ export function getFeaturedPlaylists() {
           const playlists = [];
           for (let i = 0; i < response.playlists.items.length; i++) {
             playlists.push({
-
               ...response.playlists.items[i],
               is_completely_loaded: false,
               can_edit: (getState().spotify.me && response.playlists.items[i].owner.id == getState().spotify.me.id),
@@ -892,38 +892,6 @@ export function resolveRadioSeeds(radio) {
 
 
 /**
- * Get my favorites
- *
- * @param uri string
- * */
-export function getFavorites(limit = 50, term = 'long_term') {
-  return (dispatch, getState) => {
-    dispatch({ type: 'SPOTIFY_FAVORITES_LOADED', artists: [], tracks: [] });
-
-    $.when(
-      request(dispatch, getState, `me/top/artists?limit=${limit}&time_range=${term}`),
-      request(dispatch, getState, `me/top/tracks?limit=${limit}&time_range=${term}`),
-
-    ).then(
-      (artists_response, tracks_response) => {
-        dispatch({
-          type: 'SPOTIFY_FAVORITES_LOADED',
-          artists: artists_response.items,
-          tracks: tracks_response.items,
-        });
-      },
-      (artists_error, tracks_error) => {
-        dispatch(coreActions.handleException(
-          'Could not load favorites',
-          { ...artists_error, ...tracks_error },
-        ));
-      },
-    );
-  };
-}
-
-
-/**
  * Get our recommendations
  * This is based off our 'favorites' and then we use those as seeds
  *
@@ -993,7 +961,7 @@ export function getRecommendations(uris = [], limit = 20, tunabilities = null) {
               // is not one of the seeds
               if (!artists_uris.includes(artist.uri) && !artists_ids.includes(artist.id)) {
                 artists_uris.push(artist.uri);
-                dispatch(getArtist(artist.uri));
+                dispatch(getArtist(artist.uri, false));
               }
             }
           }
@@ -1136,21 +1104,14 @@ export function getArtistImages(artist) {
   return (dispatch, getState) => {
     request(dispatch, getState, `search?q=${artist.name}&type=artist`)
       .then(response => {
+        console.log('images', response);
         if (response.artists.items.length > 0) {
-          const updatedArtist = {
+          dispatch(coreActions.itemLoaded({
             uri: artist.uri,
-            images: response.artists.items[0].images,
-          }
-          dispatch(coreActions.artistLoaded(updatedArtist));
+            images: [formatImages(response.artists.items[0].images)],
+          }));
         }
-      },
-        error => {
-          dispatch(coreActions.handleException(
-            'Could not load artists',
-            error,
-          ));
-        },
-      );
+      });
   };
 }
 
@@ -1724,22 +1685,18 @@ export function flushLibrary() {
   };
 }
 
-
-/**
- * Playlists
- * */
-
 export function getLibraryPlaylists() {
   return (dispatch, getState) => {
     let libraryPlaylists = [];
     const fetchLibraryPlaylists = (endpoint) => request(dispatch, getState, endpoint)
       .then((response) => {
+        console.log('spot', response);
         libraryPlaylists = [...libraryPlaylists, ...formatPlaylists(response.items)];
         if (response.next) {
           fetchLibraryPlaylists(response.next);
         } else {
           dispatch(coreActions.itemsLoaded(libraryPlaylists));
-          dispatch(coreActions.itemLoaded({
+          dispatch(coreActions.libraryLoaded({
             uri: 'spotify:library:playlists',
             items_uris: arrayOf('uri', libraryPlaylists),
           }));
@@ -1760,7 +1717,7 @@ export function getLibraryAlbums() {
           fetchLibraryAlbums(response.next);
         } else {
           dispatch(coreActions.itemsLoaded(libraryAlbums));
-          dispatch(coreActions.itemLoaded({
+          dispatch(coreActions.libraryLoaded({
             uri: 'spotify:library:albums',
             items_uris: arrayOf('uri', libraryAlbums),
           }));
@@ -1771,70 +1728,23 @@ export function getLibraryAlbums() {
   };
 }
 
-
-/**
- * Artists
- * */
-
 export function getLibraryArtists() {
   return (dispatch, getState) => {
-    const last_run = getState().ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR;
+    let libraryArtists = [];
+    const fetchLibraryArtists = (endpoint) => request(dispatch, getState, endpoint)
+      .then((response) => {
+        libraryArtists = [...libraryArtists, ...formatArtists(response.artists.items)];
+        if (response.next) {
+          fetchLibraryArtists(response.next);
+        } else {
+          dispatch(coreActions.itemsLoaded(libraryArtists));
+          dispatch(coreActions.libraryLoaded({
+            uri: 'spotify:library:artists',
+            items_uris: arrayOf('uri', libraryArtists),
+          }));
+        }
+      });
 
-    if (!last_run) {
-      dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR', 'Loading Spotify artists', { next: 'me/following?type=artist&limit=50' }));
-    } else if (last_run.status === 'cancelled') {
-      dispatch(uiActions.resumeProcess('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'));
-
-      // We've already finished, but the status has been flushed
-    } else if (last_run.status === 'finished' && !getState().spotify.library_artists_loaded_all) {
-      dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR', 'Loading Spotify artists', { next: 'me/following?type=artist&limit=50' }));
-    }
-  };
-}
-
-export function getLibraryArtistsProcessor(data) {
-  return (dispatch, getState) => {
-    request(dispatch, getState, data.next)
-      .then(
-        (response) => {
-          dispatch({
-            type: 'SPOTIFY_LIBRARY_ARTISTS_LOADED',
-            artists: response.artists.items,
-          });
-          // We got a next link, so we've got more work to be done
-          if (response.artists.next) {
-            const { total } = response.artists;
-            const loaded = getState().spotify.library_artists.length;
-            const remaining = total - loaded;
-            dispatch(uiActions.updateProcess(
-              'SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR',
-              `Loading ${remaining} Spotify artists`,
-              {
-                next: response.artists.next,
-                total: response.artists.total,
-                remaining,
-              },
-            ));
-            dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR', { next: response.artists.next }));
-          } else {
-            dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'));
-          }
-        },
-        () => {
-          dispatch(uiActions.processFinished(
-            'SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR',
-            {
-              content: i18n(
-                'errors.could_not_load_library',
-                {
-                  name: i18n('library.artists.title'),
-                  provider: i18n('services.spotify.title'),
-                },
-              ),
-              level: 'error',
-            },
-          ));
-        },
-      );
+    fetchLibraryArtists('me/following?type=artist&limit=50');
   };
 }

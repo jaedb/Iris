@@ -75,6 +75,26 @@ export default function reducer(core = {}, action) {
         },
       };
 
+    case 'ITEMS_LOADED':
+      const mergedItems = action.items.reduce((obj, item) => (obj[item.uri] = item, obj), {});
+      return {
+        ...core,
+        items: {
+          ...core.items,
+          ...mergedItems,
+        },
+      };
+
+    case 'LIBRARY_LOADED':
+      console.log(action);
+      return {
+        ...core,
+        libraries: {
+          ...core.libraries,
+          [action.library.uri]: action.library,
+        },
+      };
+
     case 'TRACKS_LOADED':
       var tracks = { ...core.tracks };
       for (const track of action.tracks) {
@@ -148,8 +168,18 @@ export default function reducer(core = {}, action) {
       users[action.uri] = user;
       return { ...core, users };
 
+    case 'RESTORE_LIBRARY_FROM_COLD_STORE':
+      const { libraries } = core;
+      libraries[action.library.uri] = {
+        ...(libraries[action.library.uri] || {}),
+        ...action.library,
+      };
+      return {
+        ...core,
+        libraries,
+      };
 
-    case 'RESTORED_FROM_COLD_STORE':
+    case 'RESTORE_ITEMS_FROM_COLD_STORE':
       const { items } = core;
       action.items.forEach((item) => {
         items[item.uri] = {

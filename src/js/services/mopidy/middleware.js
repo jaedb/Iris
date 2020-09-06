@@ -652,7 +652,7 @@ const MopidyMiddleware = (function () {
            * */
 
       case 'MOPIDY_PLAY_PLAYLIST':
-        var playlist = store.getState().core.playlists[action.uri];
+        var playlist = store.getState().core.items[action.uri];
 
         // We have the playlist loaded already, and we've got at least 1 track to start playing
         if (playlist && playlist.tracks_uris && playlist.tracks_uris.length > 0) {
@@ -700,7 +700,7 @@ const MopidyMiddleware = (function () {
 
       case 'MOPIDY_ENQUEUE_PLAYLIST':
 
-        var playlist = store.getState().core.playlists[action.uri];
+        var playlist = store.getState().core.items[action.uri];
 
         // We have the playlist loaded already, and we've got at least 1 track to start playing
         if (playlist && playlist.tracks_uris && playlist.tracks_uris.length > 0) {
@@ -1598,41 +1598,6 @@ const MopidyMiddleware = (function () {
            * ======================================================================================
            * */
 
-      case 'MOPIDY_GET_LIBRARY_PLAYLISTS':
-        request(store, 'playlists.asList')
-          .then((response) => {
-
-            // Remove any Spotify playlists. These will be handled by our Spotify API
-            const playlist_uris = arrayOf('uri', response).filter(
-              (uri) => uriSource(uri) !== 'spotify',
-            );
-            const libraryPlaylists = [];
-
-            // get the full playlist objects
-            playlist_uris.forEach((uri, index) => {
-              request(store, 'playlists.lookup', { uri })
-                .then((response) => {
-                  libraryPlaylists.push({
-                    type: 'playlist',
-                    name: response.name,
-                    uri: response.uri,
-                    source: uriSource(response.uri),
-                    provider: 'mopidy',
-                    last_modified: response.last_modified,
-                    tracks: response.tracks,
-                  });
-
-                  if (index === playlist_uris.length - 1) {
-                    store.dispatch(coreActions.itemsLoaded(libraryPlaylists));
-                    store.dispatch(coreActions.itemLoaded({
-                      uri: 'mopidy:library:playlists',
-                      items_uris: arrayOf('uri', libraryPlaylists),
-                    }));
-                  }
-                });
-            });
-          });
-        break;
 
       case 'MOPIDY_GET_PLAYLIST':
         request(store, 'playlists.lookup', action.data)
@@ -1766,7 +1731,7 @@ const MopidyMiddleware = (function () {
                 // Overwrite our playlist with the response to our save
                 // This is essential to get the updated URI from Mopidy
                 const playlist = {
-                  ...store.getState().core.playlists[action.key],
+                  ...store.getState().core.items[action.key],
                   uri: response.uri,
                   name: response.name,
                 };
@@ -1858,28 +1823,6 @@ const MopidyMiddleware = (function () {
            * */
 
 
-      case 'MOPIDY_GET_LIBRARY_ALBUMS':
-        request(store, 'library.browse', { uri: store.getState().mopidy.library_albums_uri })
-          .then((response) => {
-            const uris = arrayOf('uri', response);
-            request(store, 'library.lookup', { uris })
-              .then((response) => {
-                const libraryAlbums = indexToArray(response).map((tracks) => ({
-                  source: 'local',
-                  artists: tracks[0].artists || null,
-                  tracks,
-                  last_modified: tracks[0].last_modified,
-                  ...tracks[0].album,
-                }));
-
-                store.dispatch(coreActions.itemsLoaded(libraryAlbums));
-                store.dispatch(coreActions.itemLoaded({
-                  uri: 'mopidy:library:albums',
-                  items_uris: arrayOf('uri', libraryAlbums),
-                }));
-              });
-          });
-        break;
 
       case 'MOPIDY_GET_ALBUM':
         request(store, 'library.lookup', { uris: [action.uri] })
@@ -1911,7 +1854,8 @@ const MopidyMiddleware = (function () {
       * =============================================================== ARTIST(S) ============
       * ======================================================================================
       **/
-      case 'MOPIDY_GET_LIBRARY_ARTISTS':
+  
+      case 'MOPIDY_GET_LIBRARY_ARTISTSXXXXXXXXXXXX':
         const uri = store.getState().mopidy.library_artists_uri;
         request(store, 'library.browse', { uri })
           .then((response) => {
@@ -1919,8 +1863,6 @@ const MopidyMiddleware = (function () {
 
             const uris = [];
             for (let i = 0; i < response.length; i++) {
-              // Convert local URI to actual artist URI
-              // See https://github.com/mopidy/mopidy-local-sqlite/issues/39
               response[i].uri = response[i].uri.replace('local:directory?albumartist=', '').replace('local:directory?artist=', '');
               uris.push(response[i].uri);
             }
@@ -1933,62 +1875,6 @@ const MopidyMiddleware = (function () {
             });
           });
         break;
-
-      /**
-           * TODO: Fetch and process library artists
-           *
-           * We can't get specific artist artwork from Mopidy. Perhaps we fetch additional
-           * artist metadata via LastFM? Their API limits will make this quite slow.
-          case 'MOPIDY_GET_LIBRARY_ARTISTS':
-
-              var last_run = store.getState().ui.processes.MOPIDY_LIBRARY_ARTISTS_PROCESSOR
-
-              if (!last_run){
-                  request(store, 'library.browse', { uri: 'local:directory?type=artist' } )
-                      .then(response => {
-                          if (response.length <= 0) return;
-
-                          var uris = arrayOf('uri',response);
-
-                          store.dispatch({
-                              type: 'MOPIDY_LIBRARY_ARTISTS_LOADED',
-                              uris: uris
-                          });
-
-                          // Start our process to load the full album objects
-                          store.dispatch(uiActions.startProcess('MOPIDY_LIBRARY_ARTISTS_PROCESSOR','Loading '+uris.length+' local artists', {uris: uris}));
-                      })
-
-              } else if (last_run.status == 'cancelled'){
-                  store.dispatch(uiActions.resumeProcess('MOPIDY_LIBRARY_ARTISTS_PROCESSOR'))
-              } else if (last_run.status == 'finished'){
-                  // TODO: do we want to force a refresh?
-              }
-
-              break;
-
-          case 'MOPIDY_LIBRARY_ARTISTS_PROCESSOR':
-              if (store.getState().ui.processes['MOPIDY_LIBRARY_ARTISTS_PROCESSOR'] !== undefined){
-                  var processor = store.getState().ui.processes['MOPIDY_LIBRARY_ARTISTS_PROCESSOR'];
-
-                  if (processor.status == 'cancelling'){
-                      store.dispatch(uiActions.processCancelled('MOPIDY_LIBRARY_ARTISTS_PROCESSOR'));
-                      return false;
-                  }
-              }
-
-              var uris = Object.assign([], action.data.uris)
-              var uris_to_load = uris.splice(0,50)
-
-              if (uris_to_load.length > 0){
-                  store.dispatch(uiActions.updateProcess('MOPIDY_LIBRARY_ARTISTS_PROCESSOR', 'Loading '+uris.length+' local artists', {uris: uris}));
-                  store.dispatch(mopidyActions.getArtists(uris_to_load, {name: 'MOPIDY_LIBRARY_ARTISTS_PROCESSOR', data: {uris: uris}}));
-              } else {
-                  store.dispatch(uiActions.processFinished('MOPIDY_LIBRARY_ARTISTS_PROCESSOR'));
-              }
-
-              break;
-           * */
 
       case 'MOPIDY_GET_ARTIST':
         request(store, 'library.lookup', { uris: [action.uri] })
@@ -2016,10 +1902,9 @@ const MopidyMiddleware = (function () {
               }
             }
             if (albums) {
-              store.dispatch(coreActions.albumsLoaded(albums));
+              store.dispatch(coreActions.itemsLoaded(albums));
             }
 
-            // Start with an empty artist object
             let artist = {
               uri: action.uri,
               provider: 'mopidy',
@@ -2035,13 +1920,13 @@ const MopidyMiddleware = (function () {
             }
 
             // Add our tracks and albums
-            artist.albums_uris = arrayOf('uri', albums),
-              artist.tracks = response;
+            artist.albums_uris = arrayOf('uri', albums);
+            artist.tracks = response;
 
-            store.dispatch(coreActions.artistLoaded(artist));
+            store.dispatch(coreActions.itemLoaded(artist));
 
             // Load supprting information from LastFM and Discogs
-            const existing_artist = store.getState().core.artists[artist.uri];
+            const existing_artist = store.getState().core.items[artist.uri];
             if (existing_artist) {
               if (!existing_artist.images) {
                 if (store.getState().spotify.enabled) {
@@ -2049,7 +1934,7 @@ const MopidyMiddleware = (function () {
                 } else {
                   store.dispatch(discogsActions.getArtistImages(artist.uri, artist));
                 }
-              }
+             }
 
               // Get biography and other stats from LastFM
               if (!existing_artist.biography) {
@@ -2378,6 +2263,88 @@ const MopidyMiddleware = (function () {
           ReactGA.event({ category: 'Directory', action: 'Load', label: action.data.uri });
         }
         next(action);
+        break;
+
+      /**
+       * My Music libraries
+       */
+      case 'MOPIDY_GET_LIBRARY_ARTISTS':
+        request(store, 'library.browse', { uri: store.getState().mopidy.library_artists_uri })
+          .then((raw_response) => {
+            if (raw_response.length <= 0) return;
+
+            // Convert local URI to actual artist URI
+            // See https://github.com/mopidy/mopidy-local-sqlite/issues/39
+            const response = raw_response.map((artist) => ({
+              ...artist,
+              uri: artist.uri.replace('local:directory?albumartist=', '').replace('local:directory?artist=', '')
+            }));
+
+            store.dispatch(coreActions.itemsLoaded(response));
+            store.dispatch(coreActions.libraryLoaded({
+              uri: 'mopidy:library:artists',
+              items_uris: arrayOf('uri', response),
+            }));
+          });
+        break;
+
+      case 'MOPIDY_GET_LIBRARY_PLAYLISTS':
+        request(store, 'playlists.asList')
+          .then((response) => {
+
+            // Remove any Spotify playlists. These will be handled by our Spotify API
+            const playlist_uris = arrayOf('uri', response).filter(
+              (uri) => uriSource(uri) !== 'spotify',
+            );
+            const libraryPlaylists = [];
+
+            // get the full playlist objects
+            playlist_uris.forEach((uri, index) => {
+              request(store, 'playlists.lookup', { uri })
+                .then((response) => {
+                  libraryPlaylists.push({
+                    type: 'playlist',
+                    name: response.name,
+                    uri: response.uri,
+                    source: uriSource(response.uri),
+                    provider: 'mopidy',
+                    last_modified: response.last_modified,
+                    tracks: response.tracks,
+                  });
+
+                  if (index === playlist_uris.length - 1) {
+                    store.dispatch(coreActions.itemsLoaded(libraryPlaylists));
+                    store.dispatch(coreActions.libraryLoaded({
+                      uri: 'mopidy:library:playlists',
+                      items_uris: arrayOf('uri', libraryPlaylists),
+                    }));
+                  }
+                });
+            });
+          });
+        break;
+
+      case 'MOPIDY_GET_LIBRARY_ALBUMS':
+        request(store, 'library.browse', { uri: store.getState().mopidy.library_albums_uri })
+          .then((response) => {
+            const uris = arrayOf('uri', response);
+            request(store, 'library.lookup', { uris })
+              .then((response) => {
+                const libraryAlbums = indexToArray(response).map((tracks) => ({
+                  source: 'local',
+                  artists: tracks[0].artists || null,
+                  tracks,
+                  last_modified: tracks[0].last_modified,
+                  ...tracks[0].album,
+                }));
+
+                store.dispatch(coreActions.itemsLoaded(libraryAlbums));
+                store.dispatch(coreActions.libraryLoaded({
+                  uri: 'mopidy:library:albums',
+                  items_uris: arrayOf('uri', libraryAlbums),
+                }));
+              });
+          });
         break;
 
       // This action is irrelevant to us, pass it on to the next middleware

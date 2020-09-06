@@ -1,7 +1,7 @@
-
 import React from 'react';
 import ReactGA from 'react-ga';
 import localForage from 'localforage';
+import { compact } from 'lodash';
 import { arrayOf } from '../../util/arrays';
 import URILink from '../../components/URILink';
 import { uriSource, upgradeSpotifyPlaylistUris, uriType, titleCase } from '../../util/helpers';
@@ -366,12 +366,13 @@ const CoreMiddleware = (function () {
         };
 
         if (action.force_reload) {
+          console.info(`Force-reloading "${action.uri}"`);
           fetchAlbum();
           break;
         }
         if (
-          store.getState().core.items[action.uri] &&
-          store.getState().core.items[action.uri].tracks
+          store.getState().core.items[action.uri]
+          && store.getState().core.items[action.uri].tracks
         ) {
           console.info(`Using "${action.uri}" from index`);
           break;
@@ -380,8 +381,7 @@ const CoreMiddleware = (function () {
         localForage.getItem(action.uri).then((result) => {
           if (result) {
             console.info(`Loading "${action.uri}" from database`);
-            store.dispatch(coreActions.restoreFromColdStore([result]));
-            console.log(result);
+            store.dispatch(coreActions.restoreItemsFromColdStore([result]));
 
             // We don't have the complete Album, so refetch
             if (!result.tracks) {
@@ -395,54 +395,48 @@ const CoreMiddleware = (function () {
         next(action);
         break;
 
-      // TODO: Relocate this
-      case 'UPDATE_COLD_STORE':
-        if (action.items) {
-          action.items.map((item) => {
-            localForage.getItem(item.uri).then((result) => {
-              localForage.setItem(item.uri, { ...(result || {}), ...item });
-            });
-          });
-        }
-        break;
-      case 'RESTORE_FROM_COLD_STORE':
-        if (action.items) {
-          store.dispatch({
-            type: 'RESTORED_FROM_COLD_STORE',
-            items: action.items,
-          });
-        }
-        break;
-
       case 'LOAD_ARTIST':
+        const fetchArtist = () => {
+          switch (uriSource(action.uri)) {
+            case 'spotify':
+              store.dispatch(spotifyActions.getArtist(action.uri, true));
+
+              if (spotify.me) {
+                store.dispatch(spotifyActions.following(action.uri));
+              }
+              break;
+
+            default:
+              store.dispatch(mopidyActions.getArtist(action.uri));
+              break;
+          }
+        };
+
+        if (action.force_reload) {
+          console.info(`Force-reloading "${action.uri}"`);
+          fetchArtist();
+          break;
+        }
         if (
-          !action.force_reload
-          && store.getState().core.artists[action.uri]
-          && store.getState().core.artists[action.uri].albums
-          && store.getState().core.artists[action.uri].tracks) {
-          console.info(`Loading "${action.uri}" from index`);
+          store.getState().core.items[action.uri]
+          && store.getState().core.items[action.uri].tracks
+          && store.getState().core.items[action.uri].albums
+          && store.getState().core.items[action.uri].images
+        ) {
+          console.info(`Using "${action.uri}" from index`);
           break;
         }
 
-        // Try our cold storage
         localForage.getItem(action.uri).then((result) => {
-          if (result && !action.force_reload) {
-            console.info(`Loading "${action.uri}" from database`);
-            store.dispatch(coreActions.restoreFromColdStore([result]));
-          } else {
-            switch (uriSource(action.uri)) {
-              case 'spotify':
-                store.dispatch(spotifyActions.getArtist(action.uri, true));
+          if (result) {
+            console.info(`Restoring "${action.uri}" from database`);
+            store.dispatch(coreActions.restoreItemsFromColdStore([result]));
 
-                if (spotify.me) {
-                  store.dispatch(spotifyActions.following(action.uri));
-                }
-                break;
-
-              default:
-                store.dispatch(mopidyActions.getArtist(action.uri));
-                break;
+            if (!result.tracks || !result.albums || !result.images) {
+              fetchArtist();
             }
+          } else {
+            fetchArtist();
           }
         });
 
@@ -467,10 +461,14 @@ const CoreMiddleware = (function () {
         };
 
         if (action.force_reload) {
+          console.info(`Force-reloading "${action.uri}"`);
           fetchPlaylist();
           break;
         }
-        if (store.getState().core.items[action.uri]) {
+        if (
+          store.getState().core.items[action.uri]
+          && store.getState().core.items[action.uri].tracks
+        ) {
           console.info(`Using "${action.uri}" from index`);
           break;
         }
@@ -478,7 +476,11 @@ const CoreMiddleware = (function () {
         localForage.getItem(action.uri).then((result) => {
           if (result) {
             console.info(`Restoring "${action.uri}" from database`);
-            store.dispatch(coreActions.restoreFromColdStore([result]));
+            store.dispatch(coreActions.restoreItemsFromColdStore([result]));
+  
+            if (!result.tracks) {
+              fetchPlaylist();
+            }
           } else {
             fetchPlaylist();
           }
@@ -540,27 +542,28 @@ const CoreMiddleware = (function () {
           switch (uriSource(action.uri)) {
             case 'spotify':
               store.dispatch(
-                spotifyActions[`getLibrary${titleCase(uriType(action.uri))}`](action.uri),
+                spotifyActions[`getLibrary${titleCase(uriType(action.uri))}`](),
               );
               break;
             case 'google':
               store.dispatch(
-                googleActions[`getLibrary${titleCase(uriType(action.uri))}`](action.uri),
+                googleActions[`getLibrary${titleCase(uriType(action.uri))}`](),
               );
               break;
             default:
               store.dispatch(
-                mopidyActions[`getLibrary${titleCase(uriType(action.uri))}`](action.uri),
+                mopidyActions[`getLibrary${titleCase(uriType(action.uri))}`](),
               );
               break;
           }
         };
 
         if (action.force_reload) {
+          console.info(`Force-reloading "${action.uri}"`);
           fetchLibrary();
           break;
         }
-        if (store.getState().core.items[action.uri]) {
+        if (store.getState().core.libraries[action.uri]) {
           console.info(`Using "${action.uri}" from index`);
           break;
         }
@@ -569,13 +572,12 @@ const CoreMiddleware = (function () {
           if (library) {
             console.info(`Restoring "${action.uri}" and ${library.items_uris.length} items from db`);
 
-            var promises  = library.items_uris.map(function(item) { return localForage.getItem(item); });
-            Promise.all(promises).then(function(libraryItems) {
-              store.dispatch(coreActions.restoreFromColdStore(libraryItems));
-            });
+            const promises = library.items_uris.map((libraryItem) => localForage.getItem(libraryItem));
+            Promise.all(promises).then(
+              (libraryItems) => store.dispatch(coreActions.restoreItemsFromColdStore(compact(libraryItems))),
+            );
 
-            //store.dispatch(coreActions.loadItems(result.items_uris));
-            store.dispatch(coreActions.restoreFromColdStore([library]));
+            store.dispatch(coreActions.restoreLibraryFromColdStore(library));
           } else {
             fetchLibrary();
           }
@@ -687,21 +689,20 @@ const CoreMiddleware = (function () {
         next(action);
         break;
 
-      // TODO: Flatten ITEM_LOADED to become an alias for ITEMS_LOADED (prefer bulk)
       case 'ITEMS_LOADED':
-        action.items.forEach((item) => store.dispatch(coreActions.itemLoaded(item)));
-        break;
-
-      case 'ITEM_LOADED':
-        const mergedItem = {
-          ...core.items[action.item.uri] || {},
-          ...action.item,
-        };
-        store.dispatch(coreActions.updateColdStore([mergedItem]));
+        const mergedItems = action.items.map((item) => ({
+          ...core.items[item.uri] || {},
+          ...item,
+        }));
+        store.dispatch(coreActions.updateColdStore(mergedItems));
         next({
           ...action,
-          item: mergedItem,
+          items: mergedItems,
         });
+        break;
+
+      case 'LIBRARY_LOADED':
+        store.dispatch(coreActions.updateColdStore([action.library]));
         break;
 
       case 'ARTISTS_LOADED':
@@ -753,7 +754,7 @@ const CoreMiddleware = (function () {
 
             case 'spotify':
               if (spotify.authorization && spotify.me) {
-                playlist.can_edit = (playlist.owner.id == spotify.me.id);
+                playlist.can_edit = (playlist.owner && playlist.owner.id == spotify.me.id);
               }
           }
 
@@ -909,6 +910,17 @@ const CoreMiddleware = (function () {
           })),
         ));
         next(action);
+        break;
+
+      // TODO: Relocate this
+      case 'UPDATE_COLD_STORE':
+        if (action.items) {
+          action.items.map((item) => {
+            localForage.getItem(item.uri).then((result) => {
+              localForage.setItem(item.uri, { ...(result || {}), ...item });
+            });
+          });
+        }
         break;
 
       // This action is irrelevant to us, pass it on to the next middleware

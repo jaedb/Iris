@@ -138,27 +138,25 @@ class Artist extends React.Component {
   inLibrary = () => {
     const { uri } = this.props;
     const libraryName = `${uriSource(uri)}_library_artists`;
-    const { [libraryName]: library = [] } = this.props;
-    return library.indexOf(uri) > -1;
+    const { [libraryName]: { items_uris } } = this.props;
+    return items_uris.indexOf(uri) > -1;
   }
 
   renderOverview = () => {
     const {
       uri,
       uiActions,
-      artist: {
-        tracks = [],
-        related_artists = [],
-      } = {},
+      artist,
+      items,
       sort,
       sort_reverse,
       filter,
     } = this.props;
     let {
-      artist: {
-        albums = [],
-      } = {},
-    } = this.props;
+      tracks,
+      related_artists,
+      albums,
+    } = collate(artist, { albums: items });
 
     if (sort && albums) {
       albums = sortItems(albums, sort, sort_reverse);
@@ -317,7 +315,7 @@ class Artist extends React.Component {
       },
     );
 
-    const thumbnails = artist.images && artist.images.map(
+    const thumbnails = artist.images && Array.isArray(artist.images) && artist.images.map(
       (image) => {
         if (!image.huge) return null;
         return (
@@ -532,11 +530,10 @@ const mapStateToProps = (state, ownProps) => {
     theme: state.ui.theme,
     slim_mode: state.ui.slim_mode,
     load_queue: state.ui.load_queue,
-    artist: (state.core.items[uri] !== undefined ? state.core.items[uri] : false),
-    tracks: state.core.tracks,
-    artists: state.core.artists,
-    spotify_library_artists: state.spotify.library_artists,
-    local_library_artists: state.mopidy.library_artists,
+    artist: (state.core.items[uri] || null),
+    items: state.core.items,
+    spotify_library_artists: state.core.items['spotify:library:artists'] || { items_uris: [] },
+    mopidy_library_artists: state.core.items['mopidy:library:artists'] || { items_uris: [] },
     albums: (state.core.albums ? state.core.albums : []),
     filter: (state.ui.artist_albums_filter ? state.ui.artist_albums_filter : null),
     sort: (state.ui.artist_albums_sort ? state.ui.artist_albums_sort : null),

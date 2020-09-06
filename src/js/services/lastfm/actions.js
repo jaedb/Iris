@@ -228,7 +228,7 @@ export function getArtist(uri, artist, mbid = false) {
       .then(
         (response) => {
           if (response.artist) {
-            dispatch(coreActions.artistLoaded({
+            dispatch(coreActions.itemLoaded({
               uri,
               mbid: response.artist.mbid,
               biography: response.artist.bio.content,
@@ -255,7 +255,7 @@ export function getAlbum(uri, artist, album, mbid = false) {
       .then(
         (response) => {
           if (response.album) {
-            const existing_album = getState().core.albums[uri];
+            const existing_album = getState().core.items[uri];
             const album = {
               uri,
               images: response.album.image,
@@ -273,7 +273,7 @@ export function getAlbum(uri, artist, album, mbid = false) {
               delete album.images;
             }
 
-            dispatch(coreActions.albumLoaded(album));
+            dispatch(coreActions.itemLoaded(album));
           }
         },
       );

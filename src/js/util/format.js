@@ -1,4 +1,4 @@
-
+import { compact } from 'lodash';
 import {
   isObject,
   upgradeSpotifyPlaylistUri,
@@ -438,6 +438,15 @@ const formatPlaylist = function (data) {
   if (playlist.images && !playlist.images.formatted) {
     playlist.images = formatImages(playlist.images);
   }
+  if (playlist.tracks) {
+    if (Array.isArray(playlist.tracks)) {
+      playlist.tracks = formatTracks(playlist.tracks);
+    } else if (playlist.tracks.items) {
+      playlist.tracks = formatTracks(playlist.tracks.items);
+    } else {
+      playlist.tracks = null;
+    }
+  }
 
   if (data.last_modified_date && playlist.last_modified === undefined) {
     playlist.last_modified = data.last_modified_date;
@@ -461,9 +470,8 @@ const formatPlaylist = function (data) {
     playlist.owner = {
       id: data.owner.id,
       uri: data.owner.uri,
-      name: (data.owner.display_name ? data.owner.display_name : null),
+      name: (data.owner.display_name || data.owner.id),
     };
-    playlist.user_uri = data.owner.uri;
   }
 
   // Spotify upgraded their playlists URI to remove user component (Sept 2018)
@@ -737,6 +745,10 @@ const formatGroup = function (data) {
 };
 
 
+const collateLibrary = (uris, itemsIndex) => {
+  return compact(uris.map((uri) => itemsIndex[uri]));
+};
+
 /**
  * Collate an object with external references into a fully self-contained object
  * We merge *_uris references (ie tracks_uris) into the main object
@@ -888,6 +900,7 @@ export {
   formatClient,
   formatGroup,
   collate,
+  collateLibrary,
 };
 
 export default {
@@ -910,4 +923,5 @@ export default {
   formatClient,
   formatGroup,
   collate,
+  collateLibrary,
 };

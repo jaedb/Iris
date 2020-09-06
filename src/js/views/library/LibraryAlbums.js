@@ -18,7 +18,7 @@ import {
   uriSource,
 } from '../../util/helpers';
 import { sortItems, applyFilter } from '../../util/arrays';
-import { collate } from '../../util/format';
+import { collateLibrary, collate } from '../../util/format';
 import { i18n, I18n } from '../../locale';
 
 class LibraryAlbums extends React.Component {
@@ -355,9 +355,9 @@ const mapStateToProps = (state) => ({
   mopidy_uri_schemes: state.mopidy.uri_schemes,
   load_queue: state.ui.load_queue,
   items: state.core.items,
-  mopidy_library: state.core.items['mopidy:library:albums'] || { items_uris: [] },
-  spotify_library: state.core.items['spotify:library:albums'] || { items_uris: [] },
-  google_library: state.core.items['google:library:albums'] || { items_uris: [] },
+  mopidy_library: state.core.libraries['mopidy:library:albums'] || { items_uris: [] },
+  spotify_library: state.core.libraries['spotify:library:albums'] || { items_uris: [] },
+  google_library: state.core.libraries['google:library:albums'] || { items_uris: [] },
   google_available: (state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('gmusic:')),
   spotify_available: state.spotify.access_token,
   view: state.ui.library_albums_view,
