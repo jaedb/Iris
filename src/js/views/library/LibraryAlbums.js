@@ -14,11 +14,9 @@ import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as googleActions from '../../services/google/actions';
 import * as spotifyActions from '../../services/spotify/actions';
-import {
-  uriSource,
-} from '../../util/helpers';
 import { sortItems, applyFilter } from '../../util/arrays';
-import { collateLibrary, collate } from '../../util/format';
+import { collate } from '../../util/format';
+import Button from '../../components/Button';
 import { i18n, I18n } from '../../locale';
 
 class LibraryAlbums extends React.Component {
@@ -65,7 +63,16 @@ class LibraryAlbums extends React.Component {
     }
   }
 
-  getMopidyLibrary = () => {
+  onRefresh = () => {
+    const { uiActions: { hideContextMenu } } = this.props;
+
+    hideContextMenu();
+    this.getMopidyLibrary(true);
+    this.getGoogleLibrary(true);
+    this.getSpotifyLibrary(true);
+  }
+
+  getMopidyLibrary = (forceRefresh = false) => {
     const {
       source,
       coreActions: {
@@ -75,10 +82,10 @@ class LibraryAlbums extends React.Component {
 
     if (source !== 'local' && source !== 'all') return;
 
-    loadLibrary('mopidy:library:albums');
+    loadLibrary('mopidy:library:albums', forceRefresh);
   };
 
-  getGoogleLibrary = () => {
+  getGoogleLibrary = (forceRefresh = false) => {
     const {
       source,
       google_available,
@@ -90,10 +97,10 @@ class LibraryAlbums extends React.Component {
     if (!google_available) return;
     if (source !== 'google' && source !== 'all') return;
 
-    loadLibrary('google:library:albums');
+    loadLibrary('google:library:albums', forceRefresh);
   };
 
-  getSpotifyLibrary = () => {
+  getSpotifyLibrary = (forceRefresh = false) => {
     const {
       source,
       spotify_available,
@@ -105,7 +112,7 @@ class LibraryAlbums extends React.Component {
     if (!spotify_available) return;
     if (source !== 'spotify' && source !== 'all') return;
 
-    loadLibrary('spotify:library:albums');
+    loadLibrary('spotify:library:albums', forceRefresh);
   };
 
   handleContextMenu = (e, item) => {
@@ -235,6 +242,7 @@ class LibraryAlbums extends React.Component {
       view,
       source,
       sort_reverse,
+      uiActions,
     } = this.props;
     const {
       filter,
@@ -309,7 +317,7 @@ class LibraryAlbums extends React.Component {
         <FilterField
           initialValue={filter}
           handleChange={(value) => this.setState({ filter: value, limit: per_page })}
-          onSubmit={e => this.props.uiActions.hideContextMenu()}
+          onSubmit={() => uiActions.hideContextMenu()}
         />
         <DropdownField
           icon="swap_vert"
@@ -318,7 +326,7 @@ class LibraryAlbums extends React.Component {
           valueAsLabel
           options={sort_options}
           selected_icon={sort ? (sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
-          handleChange={(val) => { this.setSort(val); this.props.uiActions.hideContextMenu(); }}
+          handleChange={(val) => { this.setSort(val); uiActions.hideContextMenu(); }}
         />
         <DropdownField
           icon="visibility"
@@ -326,7 +334,7 @@ class LibraryAlbums extends React.Component {
           value={view}
           valueAsLabel
           options={view_options}
-          handleChange={(val) => { this.props.uiActions.set({ library_albums_view: val }); this.props.uiActions.hideContextMenu(); }}
+          handleChange={(val) => { uiActions.set({ library_albums_view: val }); uiActions.hideContextMenu(); }}
         />
         <DropdownField
           icon="cloud"
@@ -334,14 +342,22 @@ class LibraryAlbums extends React.Component {
           value={source}
           valueAsLabel
           options={source_options}
-          handleChange={(val) => { this.props.uiActions.set({ library_albums_source: val }); this.props.uiActions.hideContextMenu(); }}
+          handleChange={(val) => { uiActions.set({ library_albums_source: val }); uiActions.hideContextMenu(); }}
         />
+        <Button
+          noHover
+          onClick={this.onRefresh}
+          tracking={{ category: 'LibraryAlbums', action: 'Refresh' }}
+        >
+          <Icon name="refresh" />
+          <I18n path="actions.refresh" />
+        </Button>
       </div>
     );
 
     return (
       <div className="view library-albums-view">
-        <Header options={options} uiActions={this.props.uiActions}>
+        <Header options={options} uiActions={uiActions}>
           <Icon name="album" type="material" />
           <I18n path="library.albums.title" />
         </Header>

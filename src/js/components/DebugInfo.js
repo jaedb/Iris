@@ -6,8 +6,16 @@ import { get as getStorage } from '../util/storage';
 import { isTouchDevice } from '../util/helpers';
 import * as uiActions from '../services/ui/actions';
 import { indexToArray } from '../util/arrays';
+import localForage from 'localforage';
 
 class DebugInfo extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { localForageLength: 0 }
+  }
+  componentDidMount() {
+    localForage.length().then((localForageLength) => this.setState({ localForageLength }))
+  }
   localStorageSize() {
     let data = '';
 
@@ -45,7 +53,7 @@ class DebugInfo extends React.Component {
     return <div className="debug-info-item mid_grey-text">Nothing loading</div>;
   }
 
-  render() {
+  render = () => {
     const localStorageUsage = this.localStorageSize();
 
     return (
@@ -65,7 +73,17 @@ class DebugInfo extends React.Component {
         </div>
 
         <div className="debug-info-section">
-          <h5>Indexes</h5>
+          <h5>State</h5>
+          <div className="debug-info-item">
+						Items:
+            {' '}
+            {this.props.core.items ? Object.keys(this.props.core.items).length : '0'}
+          </div>
+          <div className="debug-info-item">
+						Coldstore items:
+            {' '}
+            {this.state.localForageLength}
+          </div>
           <div className="debug-info-item">
 						Albums:
             {' '}
@@ -161,7 +179,7 @@ kb (~
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state) => ({
   core: state.core,
   ui: state.ui,
   mopidy: state.mopidy,

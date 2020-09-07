@@ -140,7 +140,7 @@ class ContextMenu extends React.Component {
         context.items_count = menu.items.length;
         context.source = uriSource(item.uri);
         context.type = uriType(item.uri);
-        context.in_library = this.inLibrary(item);
+        context.in_library = item.in_library;
         context.is_loved = this.isLoved(item);
         context.is_pinned = this.isPinned(item);
       }
@@ -611,15 +611,13 @@ class ContextMenu extends React.Component {
     hideContextMenu();
   }
 
-  reload = () => {
+  refetch = () => {
     const {
       uiActions: {
         hideContextMenu,
       },
       coreActions: {
-        loadArtist,
-        loadAlbum,
-        loadPlaylist,
+        loadItem,
       },
       menu: {
         uris,
@@ -628,19 +626,7 @@ class ContextMenu extends React.Component {
 
     const uri = uris[0];
 
-    switch (uriType(uri)) {
-      case 'artist':
-        loadArtist(uri, true);
-        break;
-      case 'album':
-        loadAlbum(uri, true);
-        break;
-      case 'playlist':
-        loadPlaylist(uri, true);
-        break;
-      default:
-        break;
-    }
+    loadItem(uri, true);
     hideContextMenu();
   }
 
@@ -1131,11 +1117,11 @@ class ContextMenu extends React.Component {
       </div>
     );
 
-    const reload = (
+    const refetch = (
       <div className="context-menu__item">
-        <a className="context-menu__item__link" onClick={this.reload}>
+        <a className="context-menu__item__link" onClick={this.refetch}>
           <span className="context-menu__item__label">
-            <I18n path="context_menu.reload" />
+            <I18n path="context_menu.refetch" />
           </span>
         </a>
       </div>
@@ -1153,7 +1139,7 @@ class ContextMenu extends React.Component {
             <div className="context-menu__divider" />
             {go_to_artist}
             {copy_uris}
-            {reload}
+            {refetch}
           </div>
         );
       case 'artist':
@@ -1166,7 +1152,7 @@ class ContextMenu extends React.Component {
             <div className="context-menu__divider" />
             {context.source === 'spotify' && go_to_recommendations}
             {copy_uris}
-            {reload}
+            {refetch}
           </div>
         );
       case 'playlist':
@@ -1189,7 +1175,7 @@ class ContextMenu extends React.Component {
                 {delete_playlist}
               </div>
             )}
-            {reload}
+            {refetch}
           </div>
         );
       case 'current-track':

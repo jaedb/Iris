@@ -30,21 +30,37 @@ class LibraryPlaylists extends React.Component {
   }
 
   componentDidMount() {
-    // Restore any limit defined in our location state
-    const state = (this.props.location.state ? this.props.location.state : {});
-    if (state.limit) {
+    const {
+      location: {
+        state: {
+          limit,
+        } = {},
+      } = {},
+      uiActions: {
+        setWindowTitle,
+      },
+    } = this.props;
+    if (limit) {
       this.setState({
-        limit: state.limit,
+        limit,
       });
     }
 
-    this.props.uiActions.setWindowTitle(i18n('library.playlists.title'));
+    setWindowTitle(i18n('library.playlists.title'));
 
     this.getMopidyLibrary();
     this.getSpotifyLibrary();
   }
 
-  getMopidyLibrary = () => {
+  onRefresh = () => {
+    const { uiActions: { hideContextMenu } } = this.props;
+
+    hideContextMenu();
+    this.getMopidyLibrary(true);
+    this.getSpotifyLibrary(true);
+  }
+
+  getMopidyLibrary = (forceRefetch = false) => {
     const {
       source,
       coreActions: {
@@ -54,10 +70,10 @@ class LibraryPlaylists extends React.Component {
 
     if (source !== 'local' && source !== 'all') return;
 
-    loadLibrary('mopidy:library:playlists');
+    loadLibrary('mopidy:library:playlists', forceRefetch);
   };
 
-  getSpotifyLibrary = () => {
+  getSpotifyLibrary = (forceRefetch = false) => {
     const {
       source,
       spotify_available,
@@ -69,7 +85,7 @@ class LibraryPlaylists extends React.Component {
     if (!spotify_available) return;
     if (source !== 'spotify' && source !== 'all') return;
 
-    loadLibrary('spotify:library:playlists');
+    loadLibrary('spotify:library:playlists', forceRefetch);
   };
 
   componentDidUpdate = ({ source: prevSource }) => {
@@ -79,6 +95,17 @@ class LibraryPlaylists extends React.Component {
       this.getMopidyLibrary();
       this.getSpotifyLibrary();
     }
+  }
+
+  setSort(value) {
+    let reverse = false;
+    if (this.props.sort == value) reverse = !this.props.sort_reverse;
+
+    const data = {
+      library_playlists_sort_reverse: reverse,
+      library_playlists_sort: value,
+    };
+    this.props.uiActions.set(data);
   }
 
   handleContextMenu(e, item) {
@@ -100,17 +127,6 @@ class LibraryPlaylists extends React.Component {
     const state = (this.props.location && this.props.location.state ? this.props.location.state : {});
     state.limit = new_limit;
     this.props.history.replace({ state });
-  }
-
-  setSort(value) {
-    let reverse = false;
-    if (this.props.sort == value) reverse = !this.props.sort_reverse;
-
-    const data = {
-      library_playlists_sort_reverse: reverse,
-      library_playlists_sort: value,
-    };
-    this.props.uiActions.set(data);
   }
 
   renderView = () => {
@@ -282,6 +298,14 @@ class LibraryPlaylists extends React.Component {
         >
           <Icon name="add_box" />
           <I18n path="actions.add" />
+        </Button>
+        <Button
+          noHover
+          onClick={this.onRefresh}
+          tracking={{ category: 'LibraryAlbums', action: 'Refresh' }}
+        >
+          <Icon name="refresh" />
+          <I18n path="actions.refresh" />
         </Button>
       </span>
     );

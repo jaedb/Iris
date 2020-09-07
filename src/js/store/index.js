@@ -147,6 +147,7 @@ const rootPersistConfig = {
   blacklist: [
     'ui',
     'core',
+    'spotify',
   ],
   debug: window.test_mode,
 };
@@ -163,6 +164,22 @@ const corePersistConfig = {
     'users',
     'tracks',
     'libraries', // We manually hydrate this, so we can handle the rehydration of library items
+  ],
+};
+
+const spotifyPersistConfig = {
+  key: 'spotify',
+  storage: localForage,
+  debug: window.test_mode,
+  whitelist: [
+    'access_token',
+    'authorization',
+    'country',
+    'enabled',
+    'locale',
+    'me',
+    'refresh_token',
+    'token_expiry',
   ],
 };
 
@@ -186,11 +203,11 @@ const uiPersistConfig = {
 const rootReducer = combineReducers({
   core: persistReducer(corePersistConfig, core),
   ui: persistReducer(uiPersistConfig, ui),
+  spotify: persistReducer(spotifyPersistConfig, spotify),
   pusher,
   mopidy,
   lastfm,
   genius,
-  spotify,
   google,
   snapcast,
 });

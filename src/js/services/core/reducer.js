@@ -86,7 +86,6 @@ export default function reducer(core = {}, action) {
       };
 
     case 'LIBRARY_LOADED':
-      console.log(action);
       return {
         ...core,
         libraries: {

@@ -449,7 +449,7 @@ class Artist extends React.Component {
                   {is_spotify && (
                     <FollowButton
                       uri={uri}
-                      is_following={this.inLibrary()}
+                      is_following={artist.in_library}
                     />
                   )}
                   <ContextMenuTrigger className="white" onTrigger={this.handleContextMenu} />

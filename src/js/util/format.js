@@ -611,6 +611,9 @@ const formatTrack = function (data) {
   } else if (track.duration === undefined && data.length !== undefined) {
     track.duration = data.length;
   }
+  if (data.length) {
+    track.duration = data.length;
+  }
 
   if (track.track_number === undefined && data.track_no !== undefined) {
     track.track_number = data.track_no;

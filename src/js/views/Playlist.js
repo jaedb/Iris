@@ -186,6 +186,7 @@ class Playlist extends React.Component {
       playlist: {
         can_edit,
         name,
+        in_library,
       },
     } = this.props;
 
@@ -244,7 +245,7 @@ class Playlist extends React.Component {
             </Button>
             <FollowButton
               uri={uri}
-              is_following={this.inLibrary()}
+              is_following={in_library}
             />
             <PinButton item={{ uri, name }} />
             <ContextMenuTrigger onTrigger={this.handleContextMenu} />

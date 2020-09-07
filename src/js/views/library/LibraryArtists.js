@@ -17,6 +17,7 @@ import {
 import { sortItems, applyFilter } from '../../util/arrays';
 import { I18n, i18n } from '../../locale';
 import { collate, collateLibrary } from '../../util/format';
+import Button from '../../components/Button';
 
 class LibraryArtists extends React.Component {
   constructor(props) {
@@ -61,7 +62,36 @@ class LibraryArtists extends React.Component {
     }
   }
 
-  getMopidyLibrary = () => {
+  onRefresh = () => {
+    const { uiActions: { hideContextMenu } } = this.props;
+
+    hideContextMenu();
+    this.getMopidyLibrary(true);
+    this.getGoogleLibrary(true);
+    this.getSpotifyLibrary(true);
+  }
+
+  setSort = (value) => {
+    const { sort, sort_reverse, uiActions: { set } } = this.props;
+    let reverse = false;
+    if (sort === value) reverse = !sort_reverse;
+    set({
+      library_artists_sort_reverse: reverse,
+      library_artists_sort: value,
+    });
+  }
+
+  handleContextMenu = (e, item) => {
+    const { uiActions: { showContextMenu } } = this.props;
+    showContextMenu({
+      e,
+      context: 'artist',
+      uris: [item.uri],
+      items: [item],
+    });
+  }
+
+  getMopidyLibrary = (forceRefetch = false) => {
     const {
       source,
       coreActions: {
@@ -71,10 +101,10 @@ class LibraryArtists extends React.Component {
 
     if (source !== 'local' && source !== 'all') return;
 
-    loadLibrary('mopidy:library:artists');
+    loadLibrary('mopidy:library:artists', forceRefetch);
   };
 
-  getGoogleLibrary = () => {
+  getGoogleLibrary = (forceRefetch = false) => {
     const {
       source,
       google_available,
@@ -86,10 +116,10 @@ class LibraryArtists extends React.Component {
     if (!google_available) return;
     if (source !== 'google' && source !== 'all') return;
 
-    loadLibrary('google:library:artists');
+    loadLibrary('google:library:artists', forceRefetch);
   };
 
-  getSpotifyLibrary = () => {
+  getSpotifyLibrary = (forceRefetch = false) => {
     const {
       source,
       spotify_available,
@@ -101,20 +131,10 @@ class LibraryArtists extends React.Component {
     if (!spotify_available) return;
     if (source !== 'spotify' && source !== 'all') return;
 
-    loadLibrary('spotify:library:artists');
+    loadLibrary('spotify:library:artists', forceRefetch);
   };
 
-  handleContextMenu(e, item) {
-    const data = {
-      e,
-      context: 'artist',
-      uris: [item.uri],
-      items: [item],
-    };
-    this.props.uiActions.showContextMenu(data);
-  }
-
-  loadMore() {
+  loadMore = () => {
     const new_limit = this.state.limit + this.state.per_page;
 
     this.setState({ limit: new_limit });
@@ -123,17 +143,6 @@ class LibraryArtists extends React.Component {
     const state = (this.props.location && this.props.location.state ? this.props.location.state : {});
     state.limit = new_limit;
     this.props.history.replace({ state });
-  }
-
-  setSort(value) {
-    let reverse = false;
-    if (this.props.sort == value) reverse = !this.props.sort_reverse;
-
-    const data = {
-      library_artists_sort_reverse: reverse,
-      library_artists_sort: value,
-    };
-    this.props.uiActions.set(data);
   }
 
   renderView = () => {
@@ -298,6 +307,14 @@ class LibraryArtists extends React.Component {
           options={source_options}
           handleChange={(value) => { this.props.uiActions.set({ library_artists_source: value }); this.props.uiActions.hideContextMenu(); }}
         />
+        <Button
+          noHover
+          onClick={this.onRefresh}
+          tracking={{ category: 'LibraryArtists', action: 'Refresh' }}
+        >
+          <Icon name="refresh" />
+          <I18n path="actions.refresh" />
+        </Button>
       </span>
     );
 

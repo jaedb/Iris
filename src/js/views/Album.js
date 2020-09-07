@@ -255,7 +255,7 @@ export class Album extends React.Component {
           {uriSource(uri) === 'spotify' && (
             <FollowButton
               uri={uri}
-              is_following={this.inLibrary()}
+              is_following={album.in_library}
             />
           )}
           <ContextMenuTrigger onTrigger={this.handleContextMenu} />

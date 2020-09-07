@@ -20,6 +20,7 @@ import {
   formatAlbums,
   formatPlaylists,
   formatImages,
+  formatTrack,
 } from '../../util/format';
 import URILink from '../../components/URILink';
 import { i18n } from '../../locale';
@@ -334,13 +335,7 @@ export function getTrack(uri) {
     request(dispatch, getState, `tracks/${getFromUri('trackid', uri)}`)
       .then(
         (response) => {
-          dispatch(coreActions.trackLoaded(response));
-        },
-        (error) => {
-          dispatch(coreActions.handleException(
-            'Could not load track',
-            error,
-          ));
+          dispatch(coreActions.itemLoaded(formatTrack(response)));
         },
       );
   };
@@ -389,26 +384,21 @@ export function getFeaturedPlaylists() {
     request(dispatch, getState, `browse/featured-playlists?limit=50&country=${getState().spotify.country}&locale=${getState().spotify.locale}timestamp=${timestamp}`)
       .then(
         (response) => {
-          const playlists = [];
-          for (let i = 0; i < response.playlists.items.length; i++) {
-            playlists.push({
-              ...response.playlists.items[i],
-              is_completely_loaded: false,
-              can_edit: (getState().spotify.me && response.playlists.items[i].owner.id == getState().spotify.me.id),
-              tracks_total: response.playlists.items[i].tracks.total,
-            });
-          }
+          const playlists = response.playlists.items.map(
+            (raw_playlist) => {
+              const playlist = formatPlaylist(raw_playlist);
+              delete playlist.tracks; // Don't overwrite (we may already have loaded these)
+              return playlist;
+            },
+          );
 
-          dispatch({
-            type: 'PLAYLISTS_LOADED',
-            playlists,
-          });
+          dispatch(coreActions.itemsLoaded(playlists));
 
           dispatch({
             type: 'SPOTIFY_FEATURED_PLAYLISTS_LOADED',
             data: {
               message: response.message,
-              playlists: upgradeSpotifyPlaylistUris(arrayOf('uri', response.playlists.items)),
+              uris: upgradeSpotifyPlaylistUris(arrayOf('uri', playlists)),
             },
           });
         },
@@ -797,11 +787,10 @@ export function following(uri, method = 'GET') {
             is_following = is_following;
           }
 
-          dispatch({
-            type: `SPOTIFY_LIBRARY_${asset_name.toUpperCase()}_CHECK`,
-            key: uri,
+          dispatch(coreActions.itemLoaded({
+            uri,
             in_library: is_following,
-          });
+          }));
 
           if (method === 'DELETE') {
             dispatch(uiActions.createNotification({
@@ -1046,9 +1035,10 @@ export function getGenres() {
  * @param uri string
  * @param full boolean (whether we want a full artist object)
  * */
-export function getArtist(uri, full = false) {
+export function getArtist(uri, full = false, forceRefetch = false) {
   return (dispatch, getState) => {
-    request(dispatch, getState, `artists/${getFromUri('artistid', uri)}`, 'GET', false, true)
+    const endpoint = `artists/${getFromUri('artistid', uri)}${forceRefetch ? `?refetch=${Date.now()}` : ''}`;
+    request(dispatch, getState, endpoint, 'GET', false, true)
       .then(
         (response) => {
           dispatch(coreActions.itemLoaded(formatArtist(response)));
@@ -1210,10 +1200,10 @@ export function getUserPlaylists(uri) {
  *
  * @oaram uri string
  * */
-export function getAlbum(uri) {
+export function getAlbum(uri, forceRefetch) {
   return (dispatch, getState) => {
-    // get the album
-    request(dispatch, getState, `albums/${getFromUri('albumid', uri)}`)
+    const endpoint = `albums/${getFromUri('albumid', uri)}${forceRefetch ? `?refetch=${Date.now()}` : ''}`;
+    request(dispatch, getState, endpoint)
       .then(
         (response) => {
           dispatch(coreActions.itemLoaded({
@@ -1363,9 +1353,10 @@ export function savePlaylist(uri, name, description, is_public, is_collaborative
   };
 }
 
-export function getPlaylist(uri, callbackAction = null) {
+export function getPlaylist(uri, forceRefetch = false, callbackAction = null) {
   return (dispatch, getState) => {
-    request(dispatch, getState, `playlists/${getFromUri('playlistid', uri)}?market=${getState().spotify.country}`)
+    const endpoint = `playlists/${getFromUri('playlistid', uri)}?market=${getState().spotify.country}${forceRefetch ? `&refetch=${Date.now()}` : ''}`;
+    request(dispatch, getState, endpoint)
       .then(
         (response) => {
           let tracks = formatTracks(response.tracks.items);
@@ -1729,65 +1720,74 @@ export function flushLibrary() {
   };
 }
 
-export function getLibraryPlaylists() {
+export function getLibraryPlaylists(forceRefetch) {
   return (dispatch, getState) => {
-    let libraryPlaylists = [];
+    let libraryItems = [];
     const fetchLibraryPlaylists = (endpoint) => request(dispatch, getState, endpoint)
       .then((response) => {
-        libraryPlaylists = [...libraryPlaylists, ...formatPlaylists(response.items)];
+        const items = response.items.map(
+          (item) => ({ ...item, in_library: true }),
+        );
+        libraryItems = [...libraryItems, ...formatPlaylists(items)];
         if (response.next) {
           fetchLibraryPlaylists(response.next);
         } else {
-          dispatch(coreActions.itemsLoaded(libraryPlaylists));
+          dispatch(coreActions.itemsLoaded(libraryItems));
           dispatch(coreActions.libraryLoaded({
             uri: 'spotify:library:playlists',
-            items_uris: arrayOf('uri', libraryPlaylists),
+            items_uris: arrayOf('uri', libraryItems),
           }));
         }
       });
 
-    fetchLibraryPlaylists('me/playlists?limit=50');
+    fetchLibraryPlaylists(`me/playlists?limit=50${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
   };
 }
 
-export function getLibraryAlbums() {
+export function getLibraryAlbums(forceRefetch) {
   return (dispatch, getState) => {
-    let libraryAlbums = [];
+    let libraryItems = [];
     const fetchLibraryAlbums = (endpoint) => request(dispatch, getState, endpoint)
       .then((response) => {
-        libraryAlbums = [...libraryAlbums, ...formatAlbums(response.items)];
+        const items = response.items.map(
+          (item) => ({ ...item, in_library: true }),
+        );
+        libraryItems = [...libraryItems, ...formatAlbums(items)];
         if (response.next) {
           fetchLibraryAlbums(response.next);
         } else {
-          dispatch(coreActions.itemsLoaded(libraryAlbums));
+          dispatch(coreActions.itemsLoaded(libraryItems));
           dispatch(coreActions.libraryLoaded({
             uri: 'spotify:library:albums',
-            items_uris: arrayOf('uri', libraryAlbums),
+            items_uris: arrayOf('uri', libraryItems),
           }));
         }
       });
 
-    fetchLibraryAlbums('me/albums?limit=50');
+    fetchLibraryAlbums(`me/albums?limit=50${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
   };
 }
 
-export function getLibraryArtists() {
+export function getLibraryArtists(forceRefetch) {
   return (dispatch, getState) => {
-    let libraryArtists = [];
+    let libraryItems = [];
     const fetchLibraryArtists = (endpoint) => request(dispatch, getState, endpoint)
       .then((response) => {
-        libraryArtists = [...libraryArtists, ...formatArtists(response.artists.items)];
+        const items = response.artists.items.map(
+          (item) => ({ ...item, in_library: true }),
+        );
+        libraryItems = [...libraryItems, ...formatArtists(items)];
         if (response.next) {
           fetchLibraryArtists(response.next);
         } else {
-          dispatch(coreActions.itemsLoaded(libraryArtists));
+          dispatch(coreActions.itemsLoaded(libraryItems));
           dispatch(coreActions.libraryLoaded({
             uri: 'spotify:library:artists',
-            items_uris: arrayOf('uri', libraryArtists),
+            items_uris: arrayOf('uri', libraryItems),
           }));
         }
       });
 
-    fetchLibraryArtists('me/following?type=artist&limit=50');
+    fetchLibraryArtists(`me/following?type=artist&limit=50${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
   };
 }

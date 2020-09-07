@@ -318,7 +318,7 @@ const CoreMiddleware = (function () {
           store.dispatch({
             type: `LOAD_${uriType(uri).toUpperCase()}`,
             uri,
-            forceReload: action.forceReload,
+            forceRefetch: action.forceRefetch,
           });
         });
         break;
@@ -327,7 +327,7 @@ const CoreMiddleware = (function () {
         const fetchTrack = () => {
           switch (uriSource(action.uri)) {
             case 'spotify':
-              store.dispatch(spotifyActions.getTrack(action.uri));
+              store.dispatch(spotifyActions.getTrack(action.uri, action.forceRefetch));
 
               if (spotify.me) {
                 store.dispatch(spotifyActions.following(action.uri));
@@ -340,8 +340,8 @@ const CoreMiddleware = (function () {
           }
         };
 
-        if (action.forceReload) {
-          console.info(`Force-reloading "${action.uri}"`);
+        if (action.forceRefetch) {
+          console.info(`Force-refetching "${action.uri}"`);
           fetchTrack();
           break;
         }
@@ -367,7 +367,7 @@ const CoreMiddleware = (function () {
         const fetchAlbum = () => {
           switch (uriSource(action.uri)) {
             case 'spotify':
-              store.dispatch(spotifyActions.getAlbum(action.uri));
+              store.dispatch(spotifyActions.getAlbum(action.uri, action.forceRefetch));
 
               if (spotify.me) {
                 store.dispatch(spotifyActions.following(action.uri));
@@ -380,8 +380,8 @@ const CoreMiddleware = (function () {
           };
         };
 
-        if (action.forceReload) {
-          console.info(`Force-reloading "${action.uri}"`);
+        if (action.forceRefetch) {
+          console.info(`Force-refetching "${action.uri}"`);
           fetchAlbum();
           break;
         }
@@ -414,7 +414,7 @@ const CoreMiddleware = (function () {
         const fetchArtist = () => {
           switch (uriSource(action.uri)) {
             case 'spotify':
-              store.dispatch(spotifyActions.getArtist(action.uri, true));
+              store.dispatch(spotifyActions.getArtist(action.uri, true, action.forceRefetch));
 
               if (spotify.me) {
                 store.dispatch(spotifyActions.following(action.uri));
@@ -427,8 +427,8 @@ const CoreMiddleware = (function () {
           }
         };
 
-        if (action.forceReload) {
-          console.info(`Force-reloading "${action.uri}"`);
+        if (action.forceRefetch) {
+          console.info(`Force-refetching "${action.uri}"`);
           fetchArtist();
           break;
         }
@@ -459,10 +459,11 @@ const CoreMiddleware = (function () {
         break;
 
       case 'LOAD_PLAYLIST':
+        console.log(action);
         const fetchPlaylist = () => {
           switch (uriSource(action.uri)) {
             case 'spotify':
-              store.dispatch(spotifyActions.getPlaylist(action.uri));
+              store.dispatch(spotifyActions.getPlaylist(action.uri, action.forceRefetch));
 
               if (spotify.me) {
                 store.dispatch(spotifyActions.following(action.uri));
@@ -475,8 +476,8 @@ const CoreMiddleware = (function () {
           }
         };
 
-        if (action.forceReload) {
-          console.info(`Force-reloading "${action.uri}"`);
+        if (action.forceRefetch) {
+          console.info(`Force-refetching "${action.uri}"`);
           fetchPlaylist();
           break;
         }
@@ -505,7 +506,7 @@ const CoreMiddleware = (function () {
 
       case 'LOAD_USER':
         if (
-          !action.forceReload
+          !action.forceRefetch
           && store.getState().core.users[action.uri]
           && store.getState().core.users[action.uri].playlists_uris) {
           console.info(`Loading "${action.uri}" from index`);
@@ -531,7 +532,7 @@ const CoreMiddleware = (function () {
 
       case 'LOAD_USER_PLAYLISTS':
         if (
-          !action.forceReload
+          !action.forceRefetch
           && store.getState().core.users[action.uri]
           && store.getState().core.users[action.uri].playlists_uris) {
           console.info(`Loading "${action.uri}" playlists from index`);
@@ -556,7 +557,7 @@ const CoreMiddleware = (function () {
           switch (uriSource(action.uri)) {
             case 'spotify':
               store.dispatch(
-                spotifyActions[`getLibrary${titleCase(uriType(action.uri))}`](),
+                spotifyActions[`getLibrary${titleCase(uriType(action.uri))}`](action.forceRefetch),
               );
               break;
             case 'google':
@@ -572,8 +573,8 @@ const CoreMiddleware = (function () {
           }
         };
 
-        if (action.forceReload) {
-          console.info(`Force-reloading "${action.uri}"`);
+        if (action.forceRefetch) {
+          console.info(`Force-refetching "${action.uri}"`);
           fetchLibrary();
           break;
         }
@@ -721,6 +722,7 @@ const CoreMiddleware = (function () {
 
       case 'LIBRARY_LOADED':
         store.dispatch(coreActions.updateColdStore([action.library]));
+        next(action);
         break;
 
       case 'ARTISTS_LOADED':

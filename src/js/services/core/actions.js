@@ -107,74 +107,74 @@ export function updateColdStore(items) {
  * relevant service to load the record - all from one neat package.
  * */
 
-export function loadItems(uris, forceReload = false) {
+export function loadItems(uris, forceRefetch = false) {
   return {
     type: 'LOAD_ITEMS',
     uris,
-    forceReload,
+    forceRefetch,
   };
 }
 
-export function loadItem(uri, forceReload = false) {
-  return loadItems([uri], forceReload);
+export function loadItem(uri, forceRefetch = false) {
+  return loadItems([uri], forceRefetch);
 }
 
-export function loadTrack(uri, forceReload = false) {
+export function loadTrack(uri, forceRefetch = false) {
   return {
     type: 'LOAD_TRACK',
     uri,
-    forceReload,
+    forceRefetch,
   };
 }
 
-export function loadAlbum(uri, forceReload = false, callbackAction) {
+export function loadAlbum(uri, forceRefetch = false, callbackAction) {
   return {
     type: 'LOAD_ALBUM',
     uri,
-    forceReload,
+    forceRefetch,
     callbackAction,
   };
 }
 
-export function loadArtist(uri, forceReload = false, callbackAction) {
+export function loadArtist(uri, forceRefetch = false, callbackAction) {
   return {
     type: 'LOAD_ARTIST',
     uri,
-    forceReload,
+    forceRefetch,
     callbackAction,
   };
 }
 
-export function loadPlaylist(uri, forceReload = false, callbackAction) {
+export function loadPlaylist(uri, forceRefetch = false, callbackAction) {
   return {
     type: 'LOAD_PLAYLIST',
     uri,
-    forceReload,
+    forceRefetch,
     callbackAction,
   };
 }
 
-export function loadUser(uri, forceReload = false) {
+export function loadUser(uri, forceRefetch = false) {
   return {
     type: 'LOAD_USER',
     uri,
-    forceReload,
+    forceRefetch,
   };
 }
 
-export function loadUserPlaylists(uri, forceReload = false) {
+export function loadUserPlaylists(uri, forceRefetch = false) {
   return {
     type: 'LOAD_USER_PLAYLISTS',
     uri,
-    forceReload,
+    forceRefetch,
   };
 }
 
-export function loadLibrary(uri, forceReload = false) {
+export function loadLibrary(uri, forceRefetch = false) {
   return {
     type: 'LOAD_LIBRARY',
     uri,
-    forceReload,
+    forceRefetch,
   };
 }
 
