@@ -20,9 +20,6 @@ import Loader from '../components/Loader';
 import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
-import * as pusherActions from '../services/pusher/actions';
-import * as lastfmActions from '../services/lastfm/actions';
-import * as spotifyActions from '../services/spotify/actions';
 import {
   uriSource,
   getFromUri,
@@ -548,9 +545,6 @@ const mapDispatchToProps = (dispatch) => ({
   coreActions: bindActionCreators(coreActions, dispatch),
   uiActions: bindActionCreators(uiActions, dispatch),
   mopidyActions: bindActionCreators(mopidyActions, dispatch),
-  pusherActions: bindActionCreators(pusherActions, dispatch),
-  lastfmActions: bindActionCreators(lastfmActions, dispatch),
-  spotifyActions: bindActionCreators(spotifyActions, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Artist);

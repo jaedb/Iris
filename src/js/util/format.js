@@ -363,7 +363,7 @@ const formatArtist = function (data) {
     'biography_link',
     'biography_publish_date',
     'related_artists',
-    'albums',
+    'albums_uris',
     'tracks',
   ];
 
@@ -424,7 +424,7 @@ const formatPlaylist = function (data) {
     'followers',
     'last_modified',
     'can_edit',
-    'owner',
+    'user',
     'tracks',
   ];
 
@@ -466,8 +466,8 @@ const formatPlaylist = function (data) {
     playlist.last_modified = data.added_at;
   }
 
-  if (data.owner) {
-    playlist.owner = {
+  if (data.owner && playlist.user === undefined) {
+    playlist.user = {
       id: data.owner.id,
       uri: data.owner.uri,
       name: (data.owner.display_name || data.owner.id),

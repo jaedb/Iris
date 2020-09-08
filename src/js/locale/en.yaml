@@ -229,6 +229,7 @@ artist:
   overview:
     title: Overview
     top_tracks: Top tracks
+    albums: Albums
     related_artists:
       title: Related artists
       more: All related artists

@@ -1041,7 +1041,9 @@ export function getArtist(uri, full = false, forceRefetch = false) {
     request(dispatch, getState, endpoint, 'GET', false, true)
       .then(
         (response) => {
-          dispatch(coreActions.itemLoaded(formatArtist(response)));
+          const artist = formatArtist(response);
+          dispatch(coreActions.itemLoaded(artist));
+          dispatch(lastfmActions.getArtist(uri, artist.name, artist.mbid));
         },
       );
 
@@ -1058,8 +1060,9 @@ export function getArtist(uri, full = false, forceRefetch = false) {
           } else {
             dispatch(coreActions.itemLoaded({
               uri,
-              albums,
+              albums_uris: arrayOf('uri', albums),
             }));
+            dispatch(coreActions.itemsLoaded(albums));
           }
         });
       fetchAlbums(`artists/${getFromUri('artistid', uri)}/albums?limit=50&include_groups=album,single&market=${getState().spotify.country}`);
@@ -1257,18 +1260,11 @@ export function createPlaylist(name, description, is_public, is_collaborative) {
     request(dispatch, getState, `users/${getState().spotify.me.id}/playlists/`, 'POST', data)
       .then(
         (response) => {
-          dispatch({
-            type: 'PLAYLIST_LOADED',
-            key: response.uri,
-            playlist: {
-
-              ...response,
-              can_edit: true,
-              tracks: [],
-              tracks_more: null,
-              tracks_total: 0,
-            },
-          });
+          dispatch(coreActions.itemLoaded({
+            ...formatPlaylist(response),
+            can_edit: true,
+            tracks: [],
+          }));
 
           dispatch({
             type: 'LIBRARY_PLAYLISTS_LOADED',
@@ -1372,7 +1368,7 @@ export function getPlaylist(uri, forceRefetch = false, callbackAction = null) {
 
           dispatch(coreActions.itemLoaded({
             ...formatPlaylist(response),
-            user: formatUser(response.owner),
+            can_edit: (getState().spotify.me && getState().spotify.me.id === response.owner.id),
             tracks,
             description,
           }));

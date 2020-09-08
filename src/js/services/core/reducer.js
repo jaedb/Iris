@@ -76,7 +76,10 @@ export default function reducer(core = {}, action) {
       };
 
     case 'ITEMS_LOADED':
-      const mergedItems = action.items.reduce((obj, item) => (obj[item.uri] = item, obj), {});
+      const mergedItems = action.items.reduce(
+        (obj, item) => (obj[item.uri] = item, obj),
+        {},
+      );
       return {
         ...core,
         items: {

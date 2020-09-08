@@ -17,6 +17,7 @@ import {
   formatSimpleObject,
   getTrackIcon,
   formatArtists,
+  formatArtist,
 } from '../../util/format';
 import {
   arrayOf,
@@ -1566,55 +1567,23 @@ const MopidyMiddleware = (function () {
               ...response,
               uri: response.uri,
               type: 'playlist',
-              is_completely_loaded: true,
               provider: 'mopidy',
-              tracks: (response.tracks ? response.tracks : []),
-              tracks_total: (response.tracks ? response.tracks.length : 0),
+              can_edit: true,
             };
 
-            // tracks? get the full track objects
-            if (playlist.tracks.length > 0) {
-              store.dispatch({
-                type: 'MOPIDY_RESOLVE_PLAYLIST_TRACKS',
-                tracks: playlist.tracks,
-                key: playlist.uri,
+            request(store, 'library.lookup', { uris: arrayOf('uri', response.tracks) })
+              .then((tracksResponse) => {
+                const tracks = response.tracks.map((simpleTrack) => {
+                  const fullTracks = tracksResponse[simpleTrack.uri];
+                  return {
+                    ...simpleTrack,
+                    ...(fullTracks.length ? fullTracks[0] : {}),
+                  };
+                });
+                playlist.tracks = tracks;
+                store.dispatch(coreActions.itemLoaded(playlist));
               });
-            }
 
-            store.dispatch(coreActions.playlistLoaded(playlist));
-          });
-        break;
-
-      case 'MOPIDY_RESOLVE_PLAYLIST_TRACKS':
-        var tracks = Object.assign([], action.tracks);
-        var uris = arrayOf('uri', tracks);
-
-        request(store, 'library.lookup', { uris })
-          .then((response) => {
-            for (const uri in response) {
-              if (response.hasOwnProperty(uri)) {
-                var track = response[uri][0];
-                if (track) {
-                  // find the track reference, and drop in the full track data
-                  function getByURI(trackReference) {
-                    return track.uri == trackReference.uri;
-                  }
-                  const trackReferences = tracks.filter(getByURI);
-
-                  // there could be multiple instances of this track, so accommodate this
-                  for (let j = 0; j < trackReferences.length; j++) {
-                    const key = tracks.indexOf(trackReferences[j]);
-                    tracks[key] = track;
-                  }
-                }
-              }
-            }
-
-            store.dispatch({
-              type: 'PLAYLIST_TRACKS',
-              tracks,
-              key: action.key,
-            });
           });
         break;
 
@@ -1873,36 +1842,22 @@ const MopidyMiddleware = (function () {
             for (const raw_artist of response[0].artists) {
               // We're only interested in the artist we asked for
               if (raw_artist.uri === artist.uri) {
-                artist = { ...raw_artist };
+                artist = { ...formatArtist(raw_artist) };
               }
             }
 
             // Add our tracks and albums
             artist.albums_uris = arrayOf('uri', albums);
-            artist.tracks = response;
+            artist.tracks = formatTracks(response);
 
             store.dispatch(coreActions.itemLoaded(artist));
+            store.dispatch(lastfmActions.getArtist(artist.uri, artist.name, artist.musicbrainz_id));
 
             // Load supprting information from LastFM and Discogs
-            const existing_artist = store.getState().core.items[artist.uri];
-            if (existing_artist) {
-              if (!existing_artist.images) {
-                if (store.getState().spotify.enabled) {
-                  store.dispatch(spotifyActions.getArtistImages(artist));
-                } else {
-                  store.dispatch(discogsActions.getArtistImages(artist.uri, artist));
-                }
-             }
-
-              // Get biography and other stats from LastFM
-              if (!existing_artist.biography) {
-                // TODO: Move this condition into lastfmActions
-                if (artist.musicbrainz_id) {
-                  store.dispatch(lastfmActions.getArtist(artist.uri, false, artist.musicbrainz_id));
-                } else {
-                  store.dispatch(lastfmActions.getArtist(artist.uri, artist.name));
-                }
-              }
+            if (store.getState().spotify.enabled) {
+              store.dispatch(spotifyActions.getArtistImages(artist));
+            } else {
+              store.dispatch(discogsActions.getArtistImages(artist.uri, artist));
             }
           });
         break;
@@ -1982,24 +1937,13 @@ const MopidyMiddleware = (function () {
 
         var track = formatTrack(action.tl_track);
         if (track.uri) {
-          // Deliver the data we've got already
           store.dispatch({
             type: 'CURRENT_TRACK_LOADED',
             track,
             uri: track.uri,
           });
 
-          // Now attempt to get supporting images
-          if (store.getState().core.tracks[track.uri] === undefined || store.getState().core.tracks[track.uri].images === undefined) {
-            // We've got Spotify running, and it's a spotify track - go straight to the source!
-            if (store.getState().spotify.enabled && uriSource(track.uri) == 'spotify') {
-              store.dispatch(spotifyActions.getTrack(track.uri));
-
-              // Some other source, rely on Mopidy backends to do their work
-            } else {
-              store.dispatch(mopidyActions.getImages([track.uri]));
-            }
-          }
+          store.dispatch(coreActions.loadItem(track.uri));
         }
         break;
 

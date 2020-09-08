@@ -319,6 +319,7 @@ const CoreMiddleware = (function () {
             type: `LOAD_${uriType(uri).toUpperCase()}`,
             uri,
             forceRefetch: action.forceRefetch,
+            callbackAction: action.callbackAction,
           });
         });
         break;
@@ -345,7 +346,10 @@ const CoreMiddleware = (function () {
           fetchTrack();
           break;
         }
-        if (store.getState().core.items[action.uri]) {
+        if (
+          store.getState().core.items[action.uri]
+          && store.getState().core.items[action.uri].images
+        ) {
           console.info(`Using "${action.uri}" from index`);
           break;
         }
@@ -354,6 +358,10 @@ const CoreMiddleware = (function () {
           if (result) {
             console.info(`Loading "${action.uri}" from database`);
             store.dispatch(coreActions.restoreItemsFromColdStore([result]));
+
+            if (!result.images) {
+              fetchTrack();
+            }
           } else {
             fetchTrack();
           }
@@ -435,19 +443,34 @@ const CoreMiddleware = (function () {
         if (
           store.getState().core.items[action.uri]
           && store.getState().core.items[action.uri].tracks
-          && store.getState().core.items[action.uri].albums
+          && store.getState().core.items[action.uri].albums_uris
           && store.getState().core.items[action.uri].images
         ) {
           console.info(`Using "${action.uri}" from index`);
           break;
         }
 
+        localForage.getItem(action.uri).then((artist) => {
+          if (artist) {
+            console.info(`Restoring "${action.uri}" and ${artist.albums_uris.length} albums from database`);
+
+            const promises = artist.albums_uris.map((albumUri) => localForage.getItem(albumUri));
+            Promise.all(promises).then(
+              (albums) => store.dispatch(coreActions.restoreItemsFromColdStore(compact(albums))),
+            );
+
+            store.dispatch(coreActions.restoreLibraryFromColdStore(artist));
+          } else {
+            fetchArtist();
+          }
+        });
+
         localForage.getItem(action.uri).then((result) => {
           if (result) {
             console.info(`Restoring "${action.uri}" from database`);
             store.dispatch(coreActions.restoreItemsFromColdStore([result]));
 
-            if (!result.tracks || !result.albums || !result.images) {
+            if (!result.tracks || !result.albums_uris || !result.images) {
               fetchArtist();
             }
           } else {
@@ -459,7 +482,6 @@ const CoreMiddleware = (function () {
         break;
 
       case 'LOAD_PLAYLIST':
-        console.log(action);
         const fetchPlaylist = () => {
           switch (uriSource(action.uri)) {
             case 'spotify':
@@ -585,7 +607,7 @@ const CoreMiddleware = (function () {
 
         localForage.getItem(action.uri).then((library) => {
           if (library) {
-            console.info(`Restoring "${action.uri}" and ${library.items_uris.length} items from db`);
+            console.info(`Restoring "${action.uri}" and ${library.items_uris.length} items from database`);
 
             const promises = library.items_uris.map((libraryItem) => localForage.getItem(libraryItem));
             Promise.all(promises).then(

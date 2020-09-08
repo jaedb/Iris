@@ -107,16 +107,17 @@ export function updateColdStore(items) {
  * relevant service to load the record - all from one neat package.
  * */
 
-export function loadItems(uris, forceRefetch = false) {
+export function loadItems(uris, forceRefetch = false, callbackAction = null) {
   return {
     type: 'LOAD_ITEMS',
     uris,
     forceRefetch,
+    callbackAction,
   };
 }
 
-export function loadItem(uri, forceRefetch = false) {
-  return loadItems([uri], forceRefetch);
+export function loadItem(uri, forceRefetch = false, callbackAction) {
+  return loadItems([uri], forceRefetch, callbackAction);
 }
 
 export function loadTrack(uri, forceRefetch = false) {

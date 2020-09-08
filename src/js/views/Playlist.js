@@ -44,9 +44,9 @@ class Playlist extends React.Component {
   }
 
   componentDidMount() {
-    const { coreActions: { loadPlaylist }, uri } = this.props;
+    const { coreActions: { loadItem }, uri } = this.props;
     this.setWindowTitle();
-    loadPlaylist(uri);
+    loadItem(uri);
   }
 
   componentDidUpdate = ({
@@ -57,7 +57,7 @@ class Playlist extends React.Component {
       uri,
       playlist,
       coreActions: {
-        loadPlaylist,
+        loadItem,
       },
       history: {
         push,
@@ -69,7 +69,7 @@ class Playlist extends React.Component {
     }
 
     if (uri !== prevUri) {
-      loadPlaylist(uri);
+      loadItem(uri);
     }
 
     if (!prevPlaylist && playlist) this.setWindowTitle(playlist);
