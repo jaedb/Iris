@@ -26,7 +26,6 @@ import {
   sourceIcon,
   decodeMopidyUri,
 } from '../util/helpers';
-import { collate } from '../util/format';
 import { i18n, I18n } from '../locale';
 
 class Playlist extends React.Component {
@@ -46,7 +45,7 @@ class Playlist extends React.Component {
   componentDidMount() {
     const { coreActions: { loadItem }, uri } = this.props;
     this.setWindowTitle();
-    loadItem(uri);
+    loadItem(uri, { full: true });
   }
 
   componentDidUpdate = ({
@@ -69,7 +68,7 @@ class Playlist extends React.Component {
     }
 
     if (uri !== prevUri) {
-      loadItem(uri);
+      loadItem(uri, { full: true });
     }
 
     if (!prevPlaylist && playlist) this.setWindowTitle(playlist);
@@ -330,7 +329,7 @@ class Playlist extends React.Component {
               </li>
             )}
             <li>
-              <I18n path="specs.tracks" count={playlist.tracks_total || 0} />
+              <I18n path="specs.tracks" count={playlist.tracks ? playlist.tracks.length : 0} />
             </li>
             {!slim_mode && playlist.tracks && playlist.tracks_total > 0 && (
               <li><Dater type="total-time" data={playlist.tracks} /></li>

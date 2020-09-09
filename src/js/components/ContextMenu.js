@@ -626,7 +626,7 @@ class ContextMenu extends React.Component {
 
     const uri = uris[0];
 
-    loadItem(uri, true);
+    loadItem(uri, { forceRefetch: true });
     hideContextMenu();
   }
 
@@ -1297,13 +1297,13 @@ const mapStateToProps = (state) => ({
   current_tracklist: state.core.current_tracklist,
   queue_metadata: state.core.queue_metadata,
   spotify_available: state.spotify.access_token,
-  spotify_library_playlists: state.core.items['spotify:library:playlists'] || { items_uris: [] },
-  spotify_library_artists: state.core.items['spotify:library:artists'] || { items_uris: [] },
-  spotify_library_albums: state.core.items['spotify:library:albums'] || { items_uris: [] },
+  spotify_library_playlists: state.core.libraries['spotify:library:playlists'] || { items_uris: [] },
+  spotify_library_artists: state.core.libraries['spotify:library:artists'] || { items_uris: [] },
+  spotify_library_albums: state.core.libraries['spotify:library:albums'] || { items_uris: [] },
   spotify_library_tracks: state.spotify.library_tracks,
-  mopidy_library_playlists: state.core.items['mopidy:library:playlists'] || { items_uris: [] },
-  mopidy_library_artists: state.core.items['mopidy:library:artists'] || { items_uris: [] },
-  mopidy_library_albums: state.core.items['mopidy:library:albums'] || { items_uris: [] },
+  mopidy_library_playlists: state.core.libraries['mopidy:library:playlists'] || { items_uris: [] },
+  mopidy_library_artists: state.core.libraries['mopidy:library:artists'] || { items_uris: [] },
+  mopidy_library_albums: state.core.libraries['mopidy:library:albums'] || { items_uris: [] },
   playlists: state.core.playlists,
   tracks: state.core.tracks,
   items: state.core.items,

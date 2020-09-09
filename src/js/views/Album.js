@@ -25,7 +25,6 @@ import {
   isLoading,
   sourceIcon,
 } from '../util/helpers';
-import { collate } from '../util/format';
 import Button from '../components/Button';
 
 export class Album extends React.Component {
@@ -34,7 +33,7 @@ export class Album extends React.Component {
       uri,
       album,
       coreActions: {
-        loadAlbum,
+        loadItem,
       },
       lastfmActions: {
         getAlbum,
@@ -42,7 +41,7 @@ export class Album extends React.Component {
     } = this.props;
 
     this.setWindowTitle();
-    loadAlbum(uri);
+    loadItem(uri, { full: true });
 
     if (album) {
       if (album.artists && album.wiki === undefined) {
@@ -72,7 +71,7 @@ export class Album extends React.Component {
       uri,
       album,
       coreActions: {
-        loadAlbum,
+        loadItem,
       },
       lastfmActions: {
         getAlbum,
@@ -80,7 +79,7 @@ export class Album extends React.Component {
     } = this.props;
 
     if (uri !== prevUri) {
-      loadAlbum(uri);
+      loadItem(uri, { full: true });
     }
 
     // We have just received our full album or our album artists

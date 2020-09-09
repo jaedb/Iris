@@ -665,7 +665,7 @@ const MopidyMiddleware = (function () {
           break;
         }
         store.dispatch(
-          coreActions.loadPlaylist(
+          coreActions.loadItem(
             action.uri,
             false,
             {
@@ -690,7 +690,7 @@ const MopidyMiddleware = (function () {
           break;
         }
         store.dispatch(
-          coreActions.loadPlaylist(
+          coreActions.loadItem(
             action.uri,
             false,
             {

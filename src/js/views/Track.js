@@ -34,12 +34,14 @@ class Track extends React.Component {
     const {
       uri,
       track,
-      coreActions: { loadTrack },
+      coreActions: {
+        loadItem,
+      },
       genius_authorized,
       geniusActions: { findTrackLyrics },
     } = this.props;
 
-    loadTrack(uri);
+    loadItem(uri);
 
     if (track) {
       this.setWindowTitle(track);
@@ -60,7 +62,7 @@ class Track extends React.Component {
       genius_authorized,
       lastfm_authorized,
       coreActions: {
-        loadTrack,
+        loadItem,
       },
       geniusActions: {
         findTrackLyrics,
@@ -71,7 +73,7 @@ class Track extends React.Component {
     } = this.props;
 
     if (prevUri !== uri) {
-      loadTrack(uri);
+      loadItem(uri);
 
       if (genius_authorized && track.artists) {
         findTrackLyrics(track);

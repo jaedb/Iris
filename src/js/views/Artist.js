@@ -36,7 +36,7 @@ import { trackEvent } from '../components/Trackable';
 class Artist extends React.Component {
   componentDidMount() {
     this.setWindowTitle();
-    this.props.coreActions.loadArtist(this.props.uri);
+    this.props.coreActions.loadItem(this.props.uri, { full: true });
   }
 
   componentDidUpdate = ({
@@ -47,12 +47,12 @@ class Artist extends React.Component {
       uri,
       artist,
       coreActions: {
-        loadArtist,
+        loadItem,
       },
     } = this.props;
 
     if (uri !== prevUri) {
-      loadArtist(uri);
+      loadItem(uri, { full: true });
     }
 
     if (!prevArtist && artist) this.setWindowTitle(artist);

@@ -101,7 +101,7 @@ class LibraryArtists extends React.Component {
 
     if (source !== 'local' && source !== 'all') return;
 
-    loadLibrary('mopidy:library:artists', forceRefetch);
+    loadLibrary('mopidy:library:artists', { forceRefetch });
   };
 
   getGoogleLibrary = (forceRefetch = false) => {
@@ -116,7 +116,7 @@ class LibraryArtists extends React.Component {
     if (!google_available) return;
     if (source !== 'google' && source !== 'all') return;
 
-    loadLibrary('google:library:artists', forceRefetch);
+    loadLibrary('google:library:artists', { forceRefetch });
   };
 
   getSpotifyLibrary = (forceRefetch = false) => {
@@ -131,7 +131,7 @@ class LibraryArtists extends React.Component {
     if (!spotify_available) return;
     if (source !== 'spotify' && source !== 'all') return;
 
-    loadLibrary('spotify:library:artists', forceRefetch);
+    loadLibrary('spotify:library:artists', { forceRefetch });
   };
 
   loadMore = () => {

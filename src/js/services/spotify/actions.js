@@ -1035,7 +1035,7 @@ export function getGenres() {
  * @param uri string
  * @param full boolean (whether we want a full artist object)
  * */
-export function getArtist(uri, full = false, forceRefetch = false) {
+export function getArtist(uri, { full, forceRefetch }) {
   return (dispatch, getState) => {
     const endpoint = `artists/${getFromUri('artistid', uri)}${forceRefetch ? `?refetch=${Date.now()}` : ''}`;
     request(dispatch, getState, endpoint, 'GET', false, true)
@@ -1203,7 +1203,7 @@ export function getUserPlaylists(uri) {
  *
  * @oaram uri string
  * */
-export function getAlbum(uri, forceRefetch) {
+export function getAlbum(uri, { full, forceRefetch }) {
   return (dispatch, getState) => {
     const endpoint = `albums/${getFromUri('albumid', uri)}${forceRefetch ? `?refetch=${Date.now()}` : ''}`;
     request(dispatch, getState, endpoint)
@@ -1211,25 +1211,26 @@ export function getAlbum(uri, forceRefetch) {
         (response) => {
           dispatch(coreActions.itemLoaded({
             ...formatAlbum(response),
-            tracks: formatTracks(response.tracks.items),
           }));
 
-          let tracks = formatTracks(response.tracks.items);
-          const fetchTracks = (endpoint) => request(dispatch, getState, endpoint)
-            .then((response) => {
-              tracks = [...tracks, ...formatTracks(response.items)];
-              if (response.next) {
-                fetchTracks(response.next);
-              } else {
-                dispatch(coreActions.itemLoaded({
-                  uri,
-                  tracks,
-                }));
-              }
-            });
+          if (full) {
+            let tracks = formatTracks(response.tracks.items);
+            const fetchTracks = (endpoint) => request(dispatch, getState, endpoint)
+              .then((response) => {
+                tracks = [...tracks, ...formatTracks(response.items)];
+                if (response.next) {
+                  fetchTracks(response.next);
+                } else {
+                  dispatch(coreActions.itemLoaded({
+                    uri,
+                    tracks,
+                  }));
+                }
+              });
 
-          if (response.tracks.next) {
-            fetchTracks(response.tracks.next);
+            if (response.tracks.next) {
+              fetchTracks(response.tracks.next);
+            }
           }
         },
         (error) => {
@@ -1349,7 +1350,7 @@ export function savePlaylist(uri, name, description, is_public, is_collaborative
   };
 }
 
-export function getPlaylist(uri, forceRefetch = false, callbackAction = null) {
+export function getPlaylist(uri, { full, forceRefetch, callbackAction }) {
   return (dispatch, getState) => {
     const endpoint = `playlists/${getFromUri('playlistid', uri)}?market=${getState().spotify.country}${forceRefetch ? `&refetch=${Date.now()}` : ''}`;
     request(dispatch, getState, endpoint)
@@ -1369,49 +1370,50 @@ export function getPlaylist(uri, forceRefetch = false, callbackAction = null) {
           dispatch(coreActions.itemLoaded({
             ...formatPlaylist(response),
             can_edit: (getState().spotify.me && getState().spotify.me.id === response.owner.id),
-            tracks,
             description,
           }));
 
-          const fetchTracks = (endpoint) => request(dispatch, getState, endpoint)
-            .then((response) => {
-              tracks = [...tracks, ...formatTracks(response.items)];
-              if (response.next) {
-                fetchTracks(response.next);
-              } else {
-                dispatch(coreActions.itemLoaded({
-                  uri,
-                  tracks,
-                }));
+          if (full) {
+            const fetchTracks = (endpoint) => request(dispatch, getState, endpoint)
+              .then((response) => {
+                tracks = [...tracks, ...formatTracks(response.items)];
+                if (response.next) {
+                  fetchTracks(response.next);
+                } else {
+                  dispatch(coreActions.itemLoaded({
+                    uri,
+                    tracks,
+                  }));
 
-                if (callbackAction) {
-                  switch (callbackAction.name) {
-                    case 'enqueue':
-                      dispatch(mopidyActions.enqueueURIs(
-                        arrayOf('uri', tracks),
-                        uri,
-                        callbackAction.play_next,
-                        callbackAction.at_position,
-                        callbackAction.offset,
-                      ));
-                      break;
-                    case 'play':
-                      dispatch(mopidyActions.playURIs(
-                        arrayOf('uri', tracks),
-                        uri,
-                        callbackAction.shuffle,
-                      ));
-                      break;
-                    default:
-                      break;
+                  if (callbackAction) {
+                    switch (callbackAction.name) {
+                      case 'enqueue':
+                        dispatch(mopidyActions.enqueueURIs(
+                          arrayOf('uri', tracks),
+                          uri,
+                          callbackAction.play_next,
+                          callbackAction.at_position,
+                          callbackAction.offset,
+                        ));
+                        break;
+                      case 'play':
+                        dispatch(mopidyActions.playURIs(
+                          arrayOf('uri', tracks),
+                          uri,
+                          callbackAction.shuffle,
+                        ));
+                        break;
+                      default:
+                        break;
+                    }
                   }
                 }
-              }
-            });
+              });
 
-          if (response.tracks.next) {
-            fetchTracks(response.tracks.next);
-          }
+            if (response.tracks.next) {
+              fetchTracks(response.tracks.next);
+            }
+          };
         },
         (error) => {
           dispatch(coreActions.handleException(
@@ -1722,7 +1724,11 @@ export function getLibraryPlaylists(forceRefetch) {
     const fetchLibraryPlaylists = (endpoint) => request(dispatch, getState, endpoint)
       .then((response) => {
         const items = response.items.map(
-          (item) => ({ ...item, in_library: true }),
+          (item) => ({
+            ...item,
+            in_library: true,
+            can_edit: (getState().spotify.me && item.owner.id === getState().spotify.me.id),
+          }),
         );
         libraryItems = [...libraryItems, ...formatPlaylists(items)];
         if (response.next) {

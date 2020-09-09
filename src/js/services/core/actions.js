@@ -107,75 +107,71 @@ export function updateColdStore(items) {
  * relevant service to load the record - all from one neat package.
  * */
 
-export function loadItems(uris, forceRefetch = false, callbackAction = null) {
+export function loadItems(uris, options = {}) {
   return {
     type: 'LOAD_ITEMS',
     uris,
-    forceRefetch,
-    callbackAction,
+    options,
   };
 }
 
-export function loadItem(uri, forceRefetch = false, callbackAction) {
-  return loadItems([uri], forceRefetch, callbackAction);
+export function loadItem(uri, options = {}) {
+  return loadItems([uri], options);
 }
 
-export function loadTrack(uri, forceRefetch = false) {
+export function loadTrack(uri, options = {}) {
   return {
     type: 'LOAD_TRACK',
     uri,
-    forceRefetch,
+    options,
   };
 }
 
-export function loadAlbum(uri, forceRefetch = false, callbackAction) {
+export function loadAlbum(uri, options = {}) {
   return {
     type: 'LOAD_ALBUM',
     uri,
-    forceRefetch,
-    callbackAction,
+    options,
   };
 }
 
-export function loadArtist(uri, forceRefetch = false, callbackAction) {
+export function loadArtist(uri, options = {}) {
   return {
     type: 'LOAD_ARTIST',
     uri,
-    forceRefetch,
-    callbackAction,
+    options,
   };
 }
 
-export function loadPlaylist(uri, forceRefetch = false, callbackAction) {
+export function loadPlaylist(uri, options = {}) {
   return {
     type: 'LOAD_PLAYLIST',
     uri,
-    forceRefetch,
-    callbackAction,
+    options,
   };
 }
 
-export function loadUser(uri, forceRefetch = false) {
+export function loadUser(uri, options = {}) {
   return {
     type: 'LOAD_USER',
     uri,
-    forceRefetch,
+    options,
   };
 }
 
-export function loadUserPlaylists(uri, forceRefetch = false) {
+export function loadUserPlaylists(uri, options) {
   return {
     type: 'LOAD_USER_PLAYLISTS',
     uri,
-    forceRefetch,
+    options,
   };
 }
 
-export function loadLibrary(uri, forceRefetch = false) {
+export function loadLibrary(uri, options = {}) {
   return {
     type: 'LOAD_LIBRARY',
     uri,
-    forceRefetch,
+    options,
   };
 }
 
