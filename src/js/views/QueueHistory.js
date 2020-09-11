@@ -19,16 +19,14 @@ class QueueHistory extends React.Component {
     this.loadHistory();
   }
 
-  componentDidUpdate = () => {
-    this.loadHistory();
-  }
-
   loadHistory = () => {
     const {
       mopidyActions: {
         getQueueHistory,
       },
     } = this.props;
+
+    console.log('get queue history');
 
     getQueueHistory();
   }
@@ -41,7 +39,7 @@ class QueueHistory extends React.Component {
   render = () => {
     const {
       queue_history,
-      tracks: tracksProp,
+      items,
       uiActions,
     } = this.props;
 
@@ -58,9 +56,11 @@ class QueueHistory extends React.Component {
       </Button>
     );
 
+    if (!queue_history) return null;
+
     const tracks = queue_history.map((item) => ({
       ...item,
-      ...(tracksProp[item.uri] || {}),
+      ...(items[item.uri] || {}),
     }));
 
     return (
@@ -86,8 +86,8 @@ class QueueHistory extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  tracks: (state.core.tracks ? state.core.tracks : {}),
-  queue_history: (state.mopidy.queue_history ? state.mopidy.queue_history : []),
+  items: state.core.items,
+  queue_history: state.mopidy.queue_history,
 });
 
 const mapDispatchToProps = (dispatch) => ({

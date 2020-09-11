@@ -72,7 +72,7 @@ class LibraryAlbums extends React.Component {
     this.getSpotifyLibrary(true);
   }
 
-  getMopidyLibrary = (forceRefresh = false) => {
+  getMopidyLibrary = (forceRefetch = false) => {
     const {
       source,
       coreActions: {
@@ -82,10 +82,10 @@ class LibraryAlbums extends React.Component {
 
     if (source !== 'local' && source !== 'all') return;
 
-    loadLibrary('mopidy:library:albums', forceRefresh);
+    loadLibrary('mopidy:library:albums', { forceRefetch });
   };
 
-  getGoogleLibrary = (forceRefresh = false) => {
+  getGoogleLibrary = (forceRefetch = false) => {
     const {
       source,
       google_available,
@@ -97,10 +97,10 @@ class LibraryAlbums extends React.Component {
     if (!google_available) return;
     if (source !== 'google' && source !== 'all') return;
 
-    loadLibrary('google:library:albums', forceRefresh);
+    loadLibrary('google:library:albums', { forceRefetch });
   };
 
-  getSpotifyLibrary = (forceRefresh = false) => {
+  getSpotifyLibrary = (forceRefetch = false) => {
     const {
       source,
       spotify_available,
@@ -112,7 +112,7 @@ class LibraryAlbums extends React.Component {
     if (!spotify_available) return;
     if (source !== 'spotify' && source !== 'all') return;
 
-    loadLibrary('spotify:library:albums', forceRefresh);
+    loadLibrary('spotify:library:albums', { forceRefetch });
   };
 
   handleContextMenu = (e, item) => {

@@ -587,7 +587,6 @@ class Discover extends React.Component {
 
 const mapStateToProps = (state) => ({
   theme: state.ui.theme,
-  tracks: state.core.tracks,
   items: state.core.items,
   genres: (state.core.genres ? state.core.genres : []),
   authorized: state.spotify.authorization,

@@ -1725,14 +1725,14 @@ export function getLibraryPlaylists(forceRefetch) {
       .then((response) => {
         const items = response.items.map(
           (item) => ({
-            ...item,
+            ...formatPlaylist(item),
             in_library: true,
             can_edit: (getState().spotify.me && item.owner.id === getState().spotify.me.id),
           }),
         );
-        libraryItems = [...libraryItems, ...formatPlaylists(items)];
+        libraryItems = [...libraryItems, ...items];
         if (response.next) {
-          fetchLibraryPlaylists(response.next);
+          fetchLibraryPlaylists(`${response.next}${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
         } else {
           dispatch(coreActions.itemsLoaded(libraryItems));
           dispatch(coreActions.libraryLoaded({
@@ -1752,11 +1752,14 @@ export function getLibraryAlbums(forceRefetch) {
     const fetchLibraryAlbums = (endpoint) => request(dispatch, getState, endpoint)
       .then((response) => {
         const items = response.items.map(
-          (item) => ({ ...item, in_library: true }),
+          (item) => ({
+            ...formatAlbum(item),
+            in_library: true,
+          }),
         );
-        libraryItems = [...libraryItems, ...formatAlbums(items)];
+        libraryItems = [...libraryItems, ...items];
         if (response.next) {
-          fetchLibraryAlbums(response.next);
+          fetchLibraryAlbums(`${response.next}${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
         } else {
           dispatch(coreActions.itemsLoaded(libraryItems));
           dispatch(coreActions.libraryLoaded({
@@ -1776,11 +1779,14 @@ export function getLibraryArtists(forceRefetch) {
     const fetchLibraryArtists = (endpoint) => request(dispatch, getState, endpoint)
       .then((response) => {
         const items = response.artists.items.map(
-          (item) => ({ ...item, in_library: true }),
+          (item) => ({
+            ...formatArtist(item),
+            in_library: true,
+          }),
         );
-        libraryItems = [...libraryItems, ...formatArtists(items)];
+        libraryItems = [...libraryItems, ...items];
         if (response.next) {
-          fetchLibraryArtists(response.next);
+          fetchLibraryArtists(`${response.next}${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
         } else {
           dispatch(coreActions.itemsLoaded(libraryItems));
           dispatch(coreActions.libraryLoaded({

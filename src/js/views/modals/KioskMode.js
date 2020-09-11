@@ -237,7 +237,7 @@ class KioskMode extends React.Component {
 
 const mapStateToProps = (state) => ({
   play_state: state.mopidy.play_state,
-  current_track: (state.core.current_track && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null),
+  current_track: (state.core.current_track && state.core.items[state.core.current_track.uri] !== undefined ? state.core.items[state.core.current_track.uri] : null),
   time_position: state.mopidy.time_position,
   load_queue: state.ui.load_queue,
   show_lyrics: state.ui.show_lyrics,

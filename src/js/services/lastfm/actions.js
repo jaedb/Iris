@@ -1,5 +1,10 @@
-
-import { formatImages, collate } from '../../util/format';
+import {
+  collate,
+  formatImages,
+  formatTrack,
+  formatArtist,
+  formatAlbum,
+} from '../../util/format';
 import { generateGuid } from '../../util/helpers';
 
 const coreActions = require('../core/actions');
@@ -173,21 +178,12 @@ export function getMe() {
 
 export function getTrack(uri) {
   return (dispatch, getState) => {
-    if (getState().core.tracks[uri] !== undefined) {
-      var track = getState().core.tracks[uri];
-      if (!track.artists) {
-        dispatch(coreActions.handleException(
-          'Could not get LastFM track',
-          {},
-          'Track has no artists',
-        ));
-        return;
-      }
-    } else {
+    const track = getState().core.items[uri];
+    if (!track || !track.artists) {
       dispatch(coreActions.handleException(
         'Could not get LastFM track',
         {},
-        'Could not find track in index',
+        'Not in index or has no artists',
       ));
       return;
     }
@@ -202,13 +198,15 @@ export function getTrack(uri) {
       .then(
         (response) => {
           if (response.track) {
-            const merged_track = {
-
-              uri: track.uri,
-              ...response.track,
-              ...track,
-            };
-            dispatch(coreActions.trackLoaded(merged_track));
+            dispatch(
+              coreActions.itemLoaded(
+                formatTrack({
+                  uri: track.uri,
+                  ...response.track,
+                  ...track,
+                }),
+              ),
+            );
           }
         },
       );
@@ -228,14 +226,18 @@ export function getArtist(uri, artist, mbid = false) {
       .then(
         (response) => {
           if (response.artist) {
-            dispatch(coreActions.itemLoaded({
-              uri,
-              mbid: response.artist.mbid,
-              biography: response.artist.bio.content,
-              biography_publish_date: response.artist.bio.published,
-              biography_link: response.artist.bio.links.link.href,
-              listeners: parseInt(response.artist.stats.listeners),
-            }));
+            dispatch(
+              coreActions.itemLoaded(
+                formatArtist({
+                  uri,
+                  mbid: response.artist.mbid,
+                  biography: response.artist.bio.content,
+                  biography_publish_date: response.artist.bio.published,
+                  biography_link: response.artist.bio.links.link.href,
+                  listeners: parseInt(response.artist.stats.listeners),
+                }),
+              ),
+            );
           }
         },
       );
@@ -273,7 +275,7 @@ export function getAlbum(uri, artist, album, mbid = false) {
               delete album.images;
             }
 
-            dispatch(coreActions.itemLoaded(album));
+            dispatch(coreActions.itemLoaded(formatAlbum(album)));
           }
         },
       );
@@ -305,7 +307,7 @@ export function getImages(context, uri) {
                 (response) => {
                   if (response.album) {
                     const images = formatImages(response.album.image);
-                    dispatch(coreActions.trackLoaded({ uri, images }));
+                    dispatch(coreActions.itemLoaded(formatAlbum({ uri, images })));
                   }
                 },
               );
@@ -351,8 +353,8 @@ export function getImages(context, uri) {
 
 export function loveTrack(uri) {
   return (dispatch, getState) => {
-    if (getState().core.tracks[uri] !== undefined) {
-      var track = getState().core.tracks[uri];
+    if (getState().core.items[uri] !== undefined) {
+      var track = getState().core.items[uri];
       if (!track.artists) {
         dispatch(coreActions.handleException(
           'Could not love LastFM track',
@@ -375,15 +377,10 @@ export function loveTrack(uri) {
     sendSignedRequest(dispatch, getState, params)
       .then(
         (response) => {
-          track = {
-
-            ...track,
+          dispatch(coreActions.itemLoaded({
+            uri,
             userloved: true,
-          };
-          dispatch({
-            type: 'TRACKS_LOADED',
-            tracks: [track],
-          });
+          }));
         },
       );
   };
@@ -391,8 +388,8 @@ export function loveTrack(uri) {
 
 export function unloveTrack(uri) {
   return (dispatch, getState) => {
-    if (getState().core.tracks[uri] !== undefined) {
-      var track = getState().core.tracks[uri];
+    if (getState().core.items[uri] !== undefined) {
+      var track = getState().core.items[uri];
       if (!track.artists) {
         dispatch(coreActions.handleException(
           'Could not unlove LastFM track',
@@ -415,15 +412,10 @@ export function unloveTrack(uri) {
     sendSignedRequest(dispatch, getState, params)
       .then(
         (response) => {
-          track = {
-
-            ...track,
+          dispatch(coreActions.itemLoaded({
+            uri,
             userloved: false,
-          };
-          dispatch({
-            type: 'TRACKS_LOADED',
-            tracks: [track],
-          });
+          }));
         },
       );
   };

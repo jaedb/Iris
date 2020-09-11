@@ -57,11 +57,11 @@ class ContextMenu extends React.Component {
   componentDidUpdate = (prevProps) => {
     const {
       menu: prevMenu,
-      tracks: prevTracks,
+      items: prevItems,
     } = prevProps;
     const {
       menu,
-      tracks,
+      items,
       lastfm_authorized,
       spotify_available,
       spotifyActions,
@@ -93,8 +93,8 @@ class ContextMenu extends React.Component {
       }
 
       // if we're able to be in the LastFM library, run a check
-      if (lastfm_authorized && context.is_track && context.items_count == 1) {
-        if (menu.items[0].uri && prevTracks[menu.items[0].uri] !== undefined && tracks[menu.items[0].uri].userloved === undefined) {
+      if (lastfm_authorized && context.is_track && context.items_count === 1) {
+        if (menu.items[0].uri && prevItems[menu.items[0].uri] !== undefined && items[menu.items[0].uri].userloved === undefined) {
           lastfmActions.getTrack(menu.items[0].uri);
         }
       }
@@ -200,13 +200,13 @@ class ContextMenu extends React.Component {
    * */
   isLoved = ({ uri } = {}) => {
     const {
-      tracks,
+      items,
     } = this.props;
 
     if (!uri) return false;
-    if (tracks[uri] === undefined) return false;
+    if (items[uri] === undefined) return false;
 
-    const track = tracks[uri];
+    const track = items[uri];
     return (track.userloved !== undefined && track.userloved === '1');
   }
 
@@ -1304,8 +1304,6 @@ const mapStateToProps = (state) => ({
   mopidy_library_playlists: state.core.libraries['mopidy:library:playlists'] || { items_uris: [] },
   mopidy_library_artists: state.core.libraries['mopidy:library:artists'] || { items_uris: [] },
   mopidy_library_albums: state.core.libraries['mopidy:library:albums'] || { items_uris: [] },
-  playlists: state.core.playlists,
-  tracks: state.core.tracks,
   items: state.core.items,
   pinned: state.pusher.pinned,
   lastfm_authorized: state.lastfm.authorization,

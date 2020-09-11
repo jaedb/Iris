@@ -38,8 +38,8 @@ const getTrackIcon = function (current_track = false, core = false) {
   if (!core) return false;
   if (!current_track) return false;
   if (typeof (current_track.uri) === 'undefined') return false;
-  if (typeof (core.tracks[current_track.uri]) === 'undefined') return false;
-  const track = core.tracks[current_track.uri];
+  if (typeof (core.items[current_track.uri]) === 'undefined') return false;
+  const track = core.items[current_track.uri];
   if (!track.images) return false;
   return formatImages(track.images).small;
 };
@@ -277,6 +277,7 @@ const formatAlbum = function (data) {
   const album = {};
   const fields = [
     'uri',
+    'in_library',
     'provider',
     'name',
     'type',
@@ -351,6 +352,7 @@ const formatArtist = function (data) {
   const artist = {};
   const fields = [
     'uri',
+    'in_library',
     'provider',
     'mbid',
     'name',
@@ -412,6 +414,7 @@ const formatPlaylist = function (data) {
   const playlist = {};
   const fields = [
     'uri',
+    'in_library',
     'snapshot_id',
     'provider',
     'type',
@@ -500,6 +503,7 @@ const formatUser = function (data) {
   const user = {};
   const fields = [
     'id',
+    'in_library',
     'uri',
     'provider',
     'name',
@@ -555,6 +559,7 @@ const formatTrack = function (data) {
   const track = {};
   const fields = [
     'uri',
+    'in_library',
     'tlid',
     'provider',
     'name',

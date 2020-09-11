@@ -5497,9 +5497,16 @@ select {
         margin: 0 1.1em 0 3em; }
         .sidebar__menu__item--submenu:before {
           display: none; }
-        .sidebar__menu__item--submenu.sidebar__menu__item--active {
-          background: transparent;
-          color: #08d58f !important; }
+        .sidebar__menu__item--submenu.sidebar__menu__item {
+          color: #a3a19f; }
+          .light-theme .sidebar__menu__item--submenu.sidebar__menu__item {
+            color: #51504e; }
+          @media (prefers-color-scheme: light) {
+            .auto-theme .sidebar__menu__item--submenu.sidebar__menu__item {
+              color: #51504e; } }
+          .sidebar__menu__item--submenu.sidebar__menu__item--active {
+            background: transparent;
+            color: #08d58f !important; }
       .sidebar__menu__item--active {
         background: #08d58f;
         color: #FFFFFF !important; }

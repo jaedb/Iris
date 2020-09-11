@@ -57,6 +57,7 @@ const MopidyMiddleware = (function () {
       case 'state:online':
         store.dispatch({ type: 'MOPIDY_CONNECTED' });
 
+        store.dispatch(mopidyActions.getCurrentTrack());
         store.dispatch(mopidyActions.getPlayState());
         store.dispatch(mopidyActions.getVolume());
         store.dispatch(mopidyActions.getMute());
@@ -64,15 +65,14 @@ const MopidyMiddleware = (function () {
         store.dispatch(mopidyActions.getRandom());
         store.dispatch(mopidyActions.getRepeat());
         store.dispatch(mopidyActions.getQueue());
-        store.dispatch(mopidyActions.getCurrentTrack());
         store.dispatch(mopidyActions.getTimePosition());
         store.dispatch(mopidyActions.getUriSchemes());
 
         // Every 1s update our play position (when playing)
         progress_interval = setInterval(() => {
-          if (store.getState().mopidy.play_state == 'playing') {
+          if (store.getState().mopidy.play_state === 'playing') {
             // Every 10s get real position from server, provided we're in-focus
-            if (progress_interval_counter % 5 == 0 && store.getState().ui.window_focus === true) {
+            if (progress_interval_counter % 5 === 0 && store.getState().ui.window_focus === true) {
               store.dispatch(mopidyActions.getTimePosition());
 
               // Otherwise we just assume to add 1000ms every 1000ms of play time
@@ -80,7 +80,7 @@ const MopidyMiddleware = (function () {
               store.dispatch(mopidyActions.timePosition(store.getState().mopidy.time_position + 1000));
             }
 
-            progress_interval_counter++;
+            progress_interval_counter += 1;
           }
         }, 1000);
 
@@ -326,13 +326,13 @@ const MopidyMiddleware = (function () {
 
         // Focus has just been regained
         if (action.window_focus === true) {
+          store.dispatch(mopidyActions.getCurrentTrack());
           store.dispatch(mopidyActions.getPlayState());
           store.dispatch(mopidyActions.getVolume());
           store.dispatch(mopidyActions.getMute());
           store.dispatch(mopidyActions.getConsume());
           store.dispatch(mopidyActions.getRandom());
           store.dispatch(mopidyActions.getRepeat());
-          store.dispatch(mopidyActions.getCurrentTrack());
           store.dispatch(mopidyActions.getTimePosition());
         }
         break;
@@ -1980,7 +1980,7 @@ const MopidyMiddleware = (function () {
 
               const tracks = indexToArray(_response);
 
-              store.dispatch(coreActions.tracksLoaded(tracks));
+              store.dispatch(coreActions.itemsLoaded(formatTracks(tracks)));
 
               if (action.get_images) {
                 store.dispatch(mopidyActions.getImages(arrayOf('uri', tracks)));

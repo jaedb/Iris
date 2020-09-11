@@ -167,6 +167,28 @@ const corePersistConfig = {
   ],
 };
 
+const mopidyPersistConfig = {
+  key: 'mopidy',
+  storage: localForage,
+  debug: window.test_mode,
+  whitelist: [
+    'consume',
+    'current_server',
+    'host',
+    'port',
+    'library_albums_uri',
+    'library_artists_uri',
+    'mute',
+    'play_state',
+    'random',
+    'repeat',
+    'servers',
+    'ssl',
+    'uri_schemes',
+    'volume',
+  ],
+};
+
 const spotifyPersistConfig = {
   key: 'spotify',
   storage: localForage,
@@ -203,9 +225,9 @@ const uiPersistConfig = {
 const rootReducer = combineReducers({
   core: persistReducer(corePersistConfig, core),
   ui: persistReducer(uiPersistConfig, ui),
+  mopidy: persistReducer(mopidyPersistConfig, mopidy),
   spotify: persistReducer(spotifyPersistConfig, spotify),
   pusher,
-  mopidy,
   lastfm,
   genius,
   google,

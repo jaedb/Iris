@@ -263,8 +263,8 @@ export function removeNotification(key, manual = false) {
 export function startLoading(key, source) {
   return {
     type: 'START_LOADING',
-    source,
     key,
+    source,
   };
 }
 

@@ -315,6 +315,7 @@ const CoreMiddleware = (function () {
        * */
       case 'LOAD_ITEMS':
         action.uris.forEach((uri) => {
+          store.dispatch(uiActions.startLoading(uri, `load_item_${uri}`));
           store.dispatch({
             type: `LOAD_${uriType(uri).toUpperCase()}`,
             uri,
@@ -574,11 +575,12 @@ const CoreMiddleware = (function () {
         break;
 
       case 'LOAD_LIBRARY':
+        store.dispatch(uiActions.startLoading(action.uri, `load_library_${action.uri}`));
         const fetchLibrary = () => {
           switch (uriSource(action.uri)) {
             case 'spotify':
               store.dispatch(
-                spotifyActions[`getLibrary${titleCase(uriType(action.uri))}`](action.forceRefetch),
+                spotifyActions[`getLibrary${titleCase(uriType(action.uri))}`](action.options.forceRefetch),
               );
               break;
             case 'google':
@@ -730,10 +732,14 @@ const CoreMiddleware = (function () {
         break;
 
       case 'ITEMS_LOADED':
-        const mergedItems = action.items.map((item) => ({
-          ...core.items[item.uri] || {},
-          ...item,
-        }));
+        const mergedItems = [];
+        action.items.forEach((item) => {
+          mergedItems.push({
+            ...core.items[item.uri] || {},
+            ...item,
+          });
+          store.dispatch(uiActions.stopLoading(item.uri));
+        });
         store.dispatch(coreActions.updateColdStore(mergedItems));
         next({
           ...action,
@@ -742,7 +748,18 @@ const CoreMiddleware = (function () {
         break;
 
       case 'LIBRARY_LOADED':
+        store.dispatch(uiActions.stopLoading(action.library.uri));
         store.dispatch(coreActions.updateColdStore([action.library]));
+        next(action);
+        break;
+
+      case 'RESTORE_ITEMS_FROM_COLD_STORE':
+        action.items.forEach((item) => store.dispatch(uiActions.stopLoading(item.uri)));
+        next(action);
+        break;
+
+      case 'RESTORE_LIBRARY_FROM_COLD_STORE':
+        store.dispatch(uiActions.stopLoading(action.library.uri));
         next(action);
         break;
 
