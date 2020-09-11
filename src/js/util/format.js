@@ -426,6 +426,7 @@ const formatPlaylist = function (data) {
     'can_edit',
     'user',
     'tracks',
+    'tracks_total',
   ];
 
   // Loop fields and import from data
@@ -446,6 +447,10 @@ const formatPlaylist = function (data) {
     } else {
       playlist.tracks = null;
     }
+  }
+
+  if (playlist.tracks_total === undefined) {
+    playlist.tracks_total = playlist.tracks ? playlist.tracks.length : 0;
   }
 
   if (data.last_modified_date && playlist.last_modified === undefined) {

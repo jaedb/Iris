@@ -62,11 +62,11 @@ export default class GridItem extends React.Component {
   }) => {
     switch (uriType(uri)) {
       case 'playlist':
-        return tracks_total ? (
+        return (
           <span className="grid__item__secondary__content">
-            <I18n path="specs.tracks" count={tracks_total} />
+            <I18n path="specs.tracks" count={tracks_total || 0} />
           </span>
-        ) : null;
+        );
 
       case 'artist':
         return (

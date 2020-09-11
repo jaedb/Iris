@@ -40,7 +40,6 @@ class Hotkeys extends React.Component {
       ctrlKey,
       metaKey,
       shiftKey,
-      preventDefault,
     } = e;
     key = key.toLowerCase();
 
@@ -71,13 +70,13 @@ class Hotkeys extends React.Component {
           uiActions.createNotification({ content: 'play_arrow', type: 'shortcut' });
           if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Play' });
         }
-        preventDefault();
+        e.preventDefault();
         break;
 
       case 's': // Stop
         mopidyActions.stop();
         uiActions.createNotification({ content: 'stop', type: 'shortcut' });
-        preventDefault();
+        e.preventDefault();
         if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Stop' });
         break;
 
@@ -88,14 +87,14 @@ class Hotkeys extends React.Component {
         }
         mopidyActions.setTimePosition(new_position);
         uiActions.createNotification({ content: 'fast_rewind', type: 'shortcut' });
-        preventDefault();
+        e.preventDefault();
         if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Rewind' });
         break;
 
       case 'f': // Seek forwards 30 sec
         mopidyActions.setTimePosition(play_time_position + 30000);
         uiActions.createNotification({ content: 'fast_forward', type: 'shortcut' });
-        preventDefault();
+        e.preventDefault();
         if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Fastforward' });
         break;
 
@@ -103,7 +102,7 @@ class Hotkeys extends React.Component {
       case '<': // Previous track
         mopidyActions.previous();
         uiActions.createNotification({ content: 'skip_previous', type: 'shortcut' });
-        preventDefault();
+        e.preventDefault();
         if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Previous' });
         break;
 
@@ -111,7 +110,7 @@ class Hotkeys extends React.Component {
       case '>': // Next track
         mopidyActions.next();
         uiActions.createNotification({ content: 'skip_next', type: 'shortcut' });
-        preventDefault();
+        e.preventDefault();
         if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Next' });
         break;
 
@@ -128,7 +127,7 @@ class Hotkeys extends React.Component {
           }
           uiActions.createNotification({ content: 'volume_up', type: 'shortcut' });
         }
-        preventDefault();
+        e.preventDefault();
         if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Volume up' });
         break;
 
@@ -144,7 +143,7 @@ class Hotkeys extends React.Component {
           }
         }
         uiActions.createNotification({ content: 'volume_down', type: 'shortcut' });
-        preventDefault();
+        e.preventDefault();
         if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Volume down' });
         break;
 
@@ -158,36 +157,36 @@ class Hotkeys extends React.Component {
           uiActions.createNotification({ content: 'volume_off', type: 'shortcut' });
           if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Mute' });
         }
-        preventDefault();
+        e.preventDefault();
         break;
 
       case 'escape': // Cancel current action/context
         if (dragging) {
           uiActions.dragEnd();
-          preventDefault();
+          e.preventDefault();
           if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Dragging' });
         } else if ($('body').hasClass('modal-open')) {
           window.history.back();
-          preventDefault();
+          e.preventDefault();
           if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Modal' });
         }
         break;
 
       case '1': // Navigation: Queue
         history.push('/queue');
-        preventDefault();
+        e.preventDefault();
         if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Queue' });
         break;
 
       case '2': // Navigation: Search
         history.push('/search');
-        preventDefault();
+        e.preventDefault();
         if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Search' });
         break;
 
       case '3': // Navigation: Kiosk mode
         history.push('/kiosk-mode');
-        preventDefault();
+        e.preventDefault();
         if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Kiosk mode' });
         break;
 

@@ -38,7 +38,6 @@ class TrackList extends React.Component {
       ctrlKey,
       metaKey,
       shiftKey,
-      preventDefault,
     } = e;
 
     // When we're focussed on certian elements, don't fire any shortcuts
@@ -61,7 +60,7 @@ class TrackList extends React.Component {
         if (tracks_keys && tracks_keys.length > 0) {
           this.playTracks();
         }
-        preventDefault();
+        e.preventDefault();
         break;
 
       case 'backspace':
@@ -69,7 +68,7 @@ class TrackList extends React.Component {
         if (tracks_keys && tracks_keys.length > 0) {
           this.removeTracks();
         }
-        preventDefault();
+        e.preventDefault();
         break;
 
       case 'a':
@@ -78,7 +77,7 @@ class TrackList extends React.Component {
           all_tracks.push(this.buildTrackKey(this.props.tracks[i], i));
         }
         this.props.uiActions.setSelectedTracks(all_tracks);
-        preventDefault();
+        e.preventDefault();
         break;
     }
   }

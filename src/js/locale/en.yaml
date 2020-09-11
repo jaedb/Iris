@@ -365,6 +365,7 @@ settings:
     share_configuration: Share configuration
     restart: Restart server
     reset_cache: Reset cache
+    reset_storage: Reset storage
     reset: Reset all settings
   about:
     title: About

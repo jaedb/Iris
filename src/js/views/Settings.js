@@ -79,6 +79,24 @@ class Settings extends React.Component {
     return false;
   }
 
+  resetStorage = () => {
+    localForage.keys().then((keys) => {
+      const keysToKeep = ['persist:root', 'persist:ui', 'persist:spotify'];
+      const keysToRemove = keys.filter((key) => keysToKeep.indexOf(key) < 0);
+
+      keysToRemove.forEach((key, index) => {
+        localForage.removeItem(key).then(() => {
+          console.debug(`Removed ${key}`);
+          if (index === keysToRemove.length) {
+            console.debug('Reloading...');
+            window.location = '#';
+            window.location.reload(true);
+          }
+        });
+      });
+    });
+  }
+
   resetServiceWorkerAndCache = () => {
     const { coreActions: { handleException } } = this.props;
 
@@ -533,10 +551,6 @@ class Settings extends React.Component {
             >
               <I18n path="settings.advanced.restart" />
             </Button>
-            <ConfirmationButton
-              content={i18n('settings.advanced.reset')}
-              onConfirm={this.resetAllSettings}
-            />
             <Button
               type="destructive"
               onClick={this.resetServiceWorkerAndCache}
@@ -544,6 +558,17 @@ class Settings extends React.Component {
             >
               <I18n path="settings.advanced.reset_cache" />
             </Button>
+            <Button
+              type="destructive"
+              onClick={this.resetStorage}
+              tracking={{ category: 'System', action: 'ResetStorage' }}
+            >
+              <I18n path="settings.advanced.reset_storage" />
+            </Button>
+            <ConfirmationButton
+              content={i18n('settings.advanced.reset')}
+              onConfirm={this.resetAllSettings}
+            />
           </div>
 
           <h4 className="underline">

@@ -18,8 +18,8 @@ import { collate } from '../../util/format';
 class AddToPlaylist extends React.Component {
   componentDidMount = () => {
     const {
-      spotify_library_playlists,
-      mopidy_library_playlists,
+      spotify_library,
+      mopidy_library,
       spotify_available,
       coreActions: {
         loadLibrary,
@@ -29,11 +29,11 @@ class AddToPlaylist extends React.Component {
       },
     } = this.props;
 
-    if (!spotify_library_playlists && spotify_available) {
+    if (!spotify_library && spotify_available) {
       loadLibrary('spotify:library:playlists');
     }
 
-    if (!mopidy_library_playlists) {
+    if (!mopidy_library) {
       loadLibrary('mopidy:library:playlists');
     }
 
@@ -56,8 +56,8 @@ class AddToPlaylist extends React.Component {
     const {
       uris,
       items,
-      spotify_library,
-      mopidy_library,
+      spotify_library = { items_uris: [] },
+      mopidy_library = { items_uris: [] },
     } = this.props;
 
     let playlists = [
@@ -89,12 +89,8 @@ class AddToPlaylist extends React.Component {
                 <h4 className="list__item__name">{ playlist.name }</h4>
                 <ul className="list__item__details details">
                   <li><Icon type="fontawesome" className="source" name={sourceIcon(playlist.uri)} /></li>
-                  <li>
-                    {playlist.tracks_total && (
-                      <span className="mid_grey-text">
-                        {`${playlist.tracks_total} tracks`}
-                      </span>
-                    )}
+                  <li className="mid_grey-text">
+                    {`${playlist.tracks_total || 0} tracks`}
                   </li>
                 </ul>
               </div>
@@ -114,8 +110,8 @@ const mapStateToProps = (state, ownProps) => ({
   uris: (ownProps.match.params.uris ? decodeURIComponent(ownProps.match.params.uris).split(',') : []),
   mopidy_uri_schemes: state.mopidy.uri_schemes,
   items: state.core.items,
-  mopidy_library: state.core.libraries['mopidy:library:playlists'] || { items_uris: [] },
-  spotify_library: state.core.libraries['spotify:library:playlists'] || { items_uris: [] },
+  mopidy_library: state.core.libraries['mopidy:library:playlists'],
+  spotify_library: state.core.libraries['spotify:library:playlists'],
   spotify_available: state.spotify.access_token,
   load_queue: state.ui.load_queue,
   me_id: (state.spotify.me ? state.spotify.me.id : false),

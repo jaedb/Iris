@@ -18,6 +18,7 @@ import {
   getTrackIcon,
   formatArtists,
   formatArtist,
+  formatPlaylist,
 } from '../../util/format';
 import {
   arrayOf,
@@ -1564,25 +1565,27 @@ const MopidyMiddleware = (function () {
             if (!response) return;
 
             const playlist = {
-              ...response,
+              ...formatPlaylist(response),
               uri: response.uri,
               type: 'playlist',
               provider: 'mopidy',
               can_edit: true,
             };
 
-            request(store, 'library.lookup', { uris: arrayOf('uri', response.tracks) })
-              .then((tracksResponse) => {
-                const tracks = response.tracks.map((simpleTrack) => {
-                  const fullTracks = tracksResponse[simpleTrack.uri];
-                  return {
-                    ...simpleTrack,
-                    ...(fullTracks.length ? fullTracks[0] : {}),
-                  };
+            if (response.tracks) {
+              request(store, 'library.lookup', { uris: arrayOf('uri', response.tracks) })
+                .then((tracksResponse) => {
+                  const tracks = response.tracks.map((simpleTrack) => {
+                    const fullTracks = tracksResponse[simpleTrack.uri];
+                    return {
+                      ...simpleTrack,
+                      ...(fullTracks.length ? fullTracks[0] : {}),
+                    };
+                  });
+                  playlist.tracks = formatTracks(tracks);
+                  store.dispatch(coreActions.itemLoaded(playlist));
                 });
-                playlist.tracks = tracks;
-                store.dispatch(coreActions.itemLoaded(playlist));
-              });
+            }
 
           });
         break;
@@ -2194,15 +2197,17 @@ const MopidyMiddleware = (function () {
             playlist_uris.forEach((uri, index) => {
               request(store, 'playlists.lookup', { uri })
                 .then((response) => {
-                  libraryPlaylists.push({
-                    type: 'playlist',
-                    name: response.name,
-                    uri: response.uri,
-                    source: uriSource(response.uri),
-                    provider: 'mopidy',
-                    last_modified: response.last_modified,
-                    tracks: response.tracks,
-                  });
+                  libraryPlaylists.push(
+                    formatPlaylist({
+                      name: response.name,
+                      uri: response.uri,
+                      can_edit: uriSource(response.uri) === 'm3u',
+                      last_modified: response.last_modified,
+                      // By not including actual tracks they will be fetched when needed. We don't
+                      // want these simple tracks because they don't contain duration, artist, etc.
+                      tracks_total: response.tracks ? response.tracks.length : null,
+                    }),
+                  );
 
                   if (index === playlist_uris.length - 1) {
                     store.dispatch(coreActions.itemsLoaded(libraryPlaylists));
@@ -2223,7 +2228,6 @@ const MopidyMiddleware = (function () {
             request(store, 'library.lookup', { uris })
               .then((response) => {
                 const libraryAlbums = indexToArray(response).map((tracks) => ({
-                  source: 'local',
                   artists: tracks[0].artists || null,
                   tracks,
                   last_modified: tracks[0].last_modified,
