@@ -68,6 +68,7 @@ body {
 
 .hide-scrollbars * ::-webkit-scrollbar {
   display: none;
+  scrollbar-width: none;
 }
 
 .smooth-scroll {
