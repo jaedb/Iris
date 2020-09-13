@@ -124,7 +124,7 @@ export default function reducer(ui = {}, action) {
 
     case 'START_LOADING':
       var load_queue = { ...(ui.load_queue ? ui.load_queue : {}) };
-      load_queue[action.key] = action.source;
+      load_queue[action.key] = action.source || action.key;
       return { ...ui, load_queue };
 
     case 'STOP_LOADING':

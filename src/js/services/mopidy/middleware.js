@@ -12,6 +12,7 @@ import {
 import {
   digestMopidyImages,
   formatImages,
+  formatAlbums,
   formatTrack,
   formatTracks,
   formatSimpleObject,
@@ -1094,7 +1095,7 @@ const MopidyMiddleware = (function () {
                     let albums_uris = arrayOf('uri', albums);
                     albums_uris = removeDuplicates(albums_uris);
 
-                    store.dispatch(coreActions.albumsLoaded(albums));
+                    store.dispatch(coreActions.itemsLoaded(albums));
 
                     // and plug in their URIs
                     store.dispatch({
@@ -1169,11 +1170,7 @@ const MopidyMiddleware = (function () {
                     }
 
                     artists_uris = removeDuplicates(artists_uris);
-
-                    // load each artist
-                    for (var i = 0; i < artists_uris.length; i++) {
-                      store.dispatch(mopidyActions.getArtist(artists_uris[i]));
-                    }
+                    store.dispatch(coreActions.loadItems(artists_uris));
 
                     // and plug in their URIs
                     store.dispatch({
@@ -1380,7 +1377,7 @@ const MopidyMiddleware = (function () {
                       let albums_uris = arrayOf('uri', albums);
                       albums_uris = removeDuplicates(albums_uris);
 
-                      store.dispatch(coreActions.albumsLoaded(albums));
+                      store.dispatch(coreActions.itemsLoaded(formatAlbums(albums)));
 
                       // and plug in their URIs
                       store.dispatch({
@@ -1446,11 +1443,7 @@ const MopidyMiddleware = (function () {
                       }
 
                       artists_uris = removeDuplicates(artists_uris);
-
-                      // load each artist
-                      for (var i = 0; i < artists_uris.length; i++) {
-                        store.dispatch(mopidyActions.getArtist(artists_uris[i]));
-                      }
+                      store.dispatch(coreActions.loadItems(artists_uris));
 
                       // and plug in their URIs
                       store.dispatch({
@@ -1676,7 +1669,7 @@ const MopidyMiddleware = (function () {
                   store.dispatch(coreActions.addPinned(playlist));
                 }
 
-                store.dispatch(coreActions.playlistLoaded(playlist));
+                store.dispatch(coreActions.itemLoaded(playlist));
                 store.dispatch(uiActions.createNotification({ content: 'Playlist saved' }));
               });
           });
@@ -1726,7 +1719,7 @@ const MopidyMiddleware = (function () {
         request(store, 'playlists.create', { name: action.name, uri_scheme: action.scheme })
           .then((response) => {
             store.dispatch(uiActions.createNotification({ content: 'Created playlist' }));
-            store.dispatch(coreActions.playlistLoaded(response));
+            store.dispatch(coreActions.itemLoaded(response));
             store.dispatch({
               type: 'MOPIDY_LIBRARY_PLAYLIST_CREATED',
               key: response.uri,
@@ -1807,6 +1800,7 @@ const MopidyMiddleware = (function () {
         break;
 
       case 'MOPIDY_GET_ARTIST':
+        console.log(action);
         request(store, 'library.lookup', { uris: [action.uri] })
           .then((_response) => {
             if (!_response) return;
@@ -1876,7 +1870,7 @@ const MopidyMiddleware = (function () {
               provider: 'mopidy',
             }));
 
-            store.dispatch(coreActions.artistsLoaded(artists));
+            store.dispatch(coreActions.itemsLoaded(artists));
 
             // Re-run any consequential processes in 100ms. This allows a small window for other
             // server requests before our next batch. It's a little crude but it means the server isn't
@@ -2084,6 +2078,7 @@ const MopidyMiddleware = (function () {
         request(store, 'library.browse', { uri: action.uri })
           .then((response) => {
             const tracks_uris = [];
+            const tracks = [];
             const subdirectories = [];
 
             for (const item of response) {
@@ -2124,8 +2119,6 @@ const MopidyMiddleware = (function () {
                   if (response.length <= 0) {
                     return;
                   }
-
-                  const tracks = [];
 
                   for (const uri in response) {
                     if (response.hasOwnProperty(uri) && response[uri].length > 0) {

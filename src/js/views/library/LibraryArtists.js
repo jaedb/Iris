@@ -12,12 +12,13 @@ import Icon from '../../components/Icon';
 import * as uiActions from '../../services/ui/actions';
 import * as coreActions from '../../services/core/actions';
 import {
-  uriSource,
+  uriSource, isLoading,
 } from '../../util/helpers';
 import { sortItems, applyFilter } from '../../util/arrays';
 import { I18n, i18n } from '../../locale';
 import { collate, collateLibrary } from '../../util/format';
 import Button from '../../components/Button';
+import Loader from '../../components/Loader';
 
 class LibraryArtists extends React.Component {
   constructor(props) {
@@ -155,11 +156,16 @@ class LibraryArtists extends React.Component {
       sort,
       sort_reverse,
       view,
+      load_queue,
     } = this.props;
     const {
       limit,
       filter,
     } = this.state;
+
+    if (isLoading(load_queue, ['(.*):library:artists'])) {
+      return <Loader body loading />;
+    }
 
     let artists = [
       ...(source === 'all' || source === 'spotify' ? collate(spotify_library, { items }).items : []),
@@ -342,6 +348,7 @@ const mapStateToProps = (state) => ({
   sort: (state.ui.library_artists_sort ? state.ui.library_artists_sort : null),
   sort_reverse: (state.ui.library_artists_sort_reverse ? state.ui.library_artists_sort_reverse : false),
   view: state.ui.library_artists_view,
+  load_queue: state.ui.load_queue,
 });
 
 const mapDispatchToProps = (dispatch) => ({

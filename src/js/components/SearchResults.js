@@ -2,7 +2,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { titleCase, getIndexedRecords } from '../util/helpers';
-import { sortItems } from '../util/arrays';
+import { sortItems, indexToArray } from '../util/arrays';
 import URILink from './URILink';
 import Icon from './Icon';
 import AlbumGrid from './AlbumGrid';
@@ -17,7 +17,7 @@ const SearchResults = ({
   type,
   query,
   loadMore,
-  index,
+  items,
   mopidy_search_results,
   spotify_search_results,
   sort,
@@ -39,7 +39,7 @@ const SearchResults = ({
       ...(
         type === 'tracks'
           ? mopidy_search_results[type]
-          : getIndexedRecords(index, mopidy_search_results[type])
+          : indexToArray(items, mopidy_search_results[type])
       ),
     ];
   }
@@ -50,7 +50,7 @@ const SearchResults = ({
       ...(
         type === 'tracks'
           ? spotify_search_results[type]
-          : getIndexedRecords(index, spotify_search_results[type])
+          : indexToArray(items, spotify_search_results[type])
       ),
     ];
   }
@@ -120,8 +120,8 @@ const SearchResults = ({
   );
 };
 
-const mapStateToProps = (state, ownProps) => ({
-  index: state.core[ownProps.type] || [],
+const mapStateToProps = (state) => ({
+  items: state.core.items,
   uri_schemes_priority: state.ui.uri_schemes_priority || [],
   mopidy_search_results: state.mopidy.search_results || {},
   spotify_search_results: state.spotify.search_results || {},

@@ -315,7 +315,7 @@ const CoreMiddleware = (function () {
        * */
       case 'LOAD_ITEMS':
         action.uris.forEach((uri) => {
-          store.dispatch(uiActions.startLoading(uri, `load_item_${uri}`));
+          store.dispatch(uiActions.startLoading(uri));
           store.dispatch({
             type: `LOAD_${uriType(uri).toUpperCase()}`,
             uri,
@@ -350,7 +350,8 @@ const CoreMiddleware = (function () {
           store.getState().core.items[action.uri]
           && store.getState().core.items[action.uri].images
         ) {
-          console.info(`Using "${action.uri}" from index`);
+          console.info(`${action.uri}" already in index`);
+          store.dispatch(uiActions.stopLoading(action.uri));
           break;
         }
 
@@ -397,7 +398,8 @@ const CoreMiddleware = (function () {
           store.getState().core.items[action.uri]
           && (!action.options.full || store.getState().core.items[action.uri].tracks)
         ) {
-          console.info(`Using "${action.uri}" from index`);
+          console.info(`${action.uri}" already in index`);
+          store.dispatch(uiActions.stopLoading(action.uri));
           break;
         }
 
@@ -419,6 +421,7 @@ const CoreMiddleware = (function () {
         break;
 
       case 'LOAD_ARTIST':
+        console.log(action);
         const fetchArtist = () => {
           switch (uriSource(action.uri)) {
             case 'spotify':
@@ -451,7 +454,9 @@ const CoreMiddleware = (function () {
             )
           )
         ) {
-          console.info(`Using "${action.uri}" from index`);
+          console.info(`${action.uri}" already in index`);
+          store.dispatch(coreActions.loadItems(store.getState().core.items[action.uri].albums_uris));
+          store.dispatch(uiActions.stopLoading(action.uri));
           break;
         }
 
@@ -507,7 +512,8 @@ const CoreMiddleware = (function () {
             || store.getState().core.items[action.uri].tracks
           )
         ) {
-          console.info(`Using "${action.uri}" from index`);
+          console.info(`${action.uri}" already in index`);
+          store.dispatch(uiActions.stopLoading(action.uri));
           break;
         }
 
@@ -575,7 +581,7 @@ const CoreMiddleware = (function () {
         break;
 
       case 'LOAD_LIBRARY':
-        store.dispatch(uiActions.startLoading(action.uri, `load_library_${action.uri}`));
+        store.dispatch(uiActions.startLoading(action.uri));
         const fetchLibrary = () => {
           switch (uriSource(action.uri)) {
             case 'spotify':
@@ -602,7 +608,8 @@ const CoreMiddleware = (function () {
           break;
         }
         if (store.getState().core.libraries[action.uri]) {
-          console.info(`Using "${action.uri}" from index`);
+          console.info(`${action.uri}" already in index`);
+          store.dispatch(uiActions.stopLoading(action.uri));
           break;
         }
 
@@ -612,10 +619,12 @@ const CoreMiddleware = (function () {
 
             const promises = library.items_uris.map((libraryItem) => localForage.getItem(libraryItem));
             Promise.all(promises).then(
-              (libraryItems) => store.dispatch(coreActions.restoreItemsFromColdStore(compact(libraryItems))),
+              (libraryItems) => {
+                store.dispatch(coreActions.restoreItemsFromColdStore(compact(libraryItems)));
+                store.dispatch(coreActions.restoreLibraryFromColdStore(library));
+              },
             );
 
-            store.dispatch(coreActions.restoreLibraryFromColdStore(library));
           } else {
             fetchLibrary();
           }
@@ -720,10 +729,10 @@ const CoreMiddleware = (function () {
         action.albums = albums_loaded;
 
         if (artists_loaded.length > 0) {
-          store.dispatch(coreActions.artistsLoaded(artists_loaded));
+          store.dispatch(coreActions.items(artists_loaded));
         }
         if (tracks_loaded.length > 0) {
-          store.dispatch(coreActions.tracksLoaded(tracks_loaded));
+          store.dispatch(coreActions.items(tracks_loaded));
         }
 
         store.dispatch(coreActions.updateColdStore(albums_loaded));

@@ -332,7 +332,9 @@ export function getImages(context, uri) {
               .then(
                 (response) => {
                   if (response.album) {
-                    dispatch(coreActions.albumLoaded({ uri, images: response.album.image }));
+                    dispatch(
+                      coreActions.itemLoaded(formatAlbum({ uri, images: response.album.image })),
+                    );
                   }
                 },
               );

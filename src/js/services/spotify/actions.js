@@ -678,19 +678,19 @@ export function getAutocompleteResults(field_id, query, types = ['album', 'artis
           }
 
           if (response.artists && response.artists.items) {
-            dispatch(coreActions.artistsLoaded(response.artists.items));
+            dispatch(coreActions.itemsLoaded(response.artists.items));
           }
 
           if (response.albums && response.albums.items) {
-            dispatch(coreActions.albumsLoaded(response.albums.items));
+            dispatch(coreActions.itemsLoaded(response.albums.items));
           }
 
           if (response.playlists && response.playlists.items) {
-            dispatch(coreActions.playlistsLoaded(response.playlists.items));
+            dispatch(coreActions.itemsLoaded(response.playlists.items));
           }
 
           if (response.tracks && response.tracks.items) {
-            dispatch(coreActions.tracksLoaded(response.tracks.items));
+            dispatch(coreActions.itemsLoaded(response.tracks.items));
           }
 
           dispatch({

@@ -1,12 +1,37 @@
-
 import {
 	arrays,
 	storage,
 	format,
 	helpers,
-} from '../src/js/util';
-const state = require('./state');
+} from '../../src/js/util';
+import { isLoading } from '../../src/js/util/helpers';
 
+const state = require('../state');
+
+describe('isLoading', () => {
+	let load_queue = {
+		'spotify:playlist:123': 'Some load queue value',
+		'stuff:and_things': 'stuff:and_things',
+	}
+
+	it('should return false when not in load_queue', () => {
+		expect(isLoading(load_queue, ['not_there'])).toBe(false);
+	});
+
+	it('should return true when in load queue', () => {
+		expect(isLoading(load_queue, ['stuff:and_things'])).toBe(true);
+	});
+
+	it('should return true when in load queue (regex)', () => {
+		expect(isLoading(load_queue, ['(.*)playlist(.*)'])).toBe(true);
+	});
+
+	it('should return false when regex is invalid', () => {
+		expect(isLoading(load_queue, ['(*.)playlist(*.)'])).toBe(false);
+	});
+});
+
+// TODO: DELETE THIS, WE USE LOCALFORAGE NOW
 describe('localStorage', () => {
 
 	it('should handle keys that are not in storage', () => {

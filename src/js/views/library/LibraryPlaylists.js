@@ -17,6 +17,8 @@ import * as spotifyActions from '../../services/spotify/actions';
 import { applyFilter, removeDuplicates, sortItems } from '../../util/arrays';
 import { I18n, i18n } from '../../locale';
 import { collate } from '../../util/format';
+import { isLoading } from '../../util/helpers';
+import Loader from '../../components/Loader';
 
 class LibraryPlaylists extends React.Component {
   constructor(props) {
@@ -138,11 +140,16 @@ class LibraryPlaylists extends React.Component {
       sort_reverse,
       view,
       source,
+      load_queue,
     } = this.props;
     const {
       filter,
       limit,
     } = this.state;
+
+    if (isLoading(load_queue, ['(.*):library:playlists'])) {
+      return <Loader body loading />;
+    }
 
     let playlists = [
       ...(source === 'all' || source === 'spotify' ? collate(spotify_library, { items }).items : []),

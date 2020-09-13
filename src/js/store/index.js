@@ -209,6 +209,7 @@ const uiPersistConfig = {
   key: 'ui',
   storage: localForage,
   blacklist: [
+    'debug_response',
     'load_queue',
     'notifications',
     'processes',

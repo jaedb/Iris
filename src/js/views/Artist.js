@@ -197,10 +197,6 @@ class Artist extends React.Component {
         value: 'single',
         label: i18n('artist.albums.filter.singles'),
       },
-      {
-        value: 'compilation',
-        label: i18n('artist.albums.filter.compilations'),
-      },
     ];
 
     return (
@@ -402,10 +398,7 @@ class Artist extends React.Component {
 
     if (!artist) {
       if (
-        isLoading(
-          load_queue,
-          [`spotify_artists/${getFromUri('artistid', uri)}`, 'lastfm_method=artist.getInfo'],
-        )
+        isLoading(load_queue, [`(.*)${uri}(.*)`])
       ) {
         return <Loader body loading />;
       }

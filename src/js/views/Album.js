@@ -171,9 +171,7 @@ export class Album extends React.Component {
 
     if (!album) {
       if (
-        isLoading(load_queue, [
-          `spotify_albums/${getFromUri('albumid', uri)}`,
-        ])
+        isLoading(load_queue, [`(.*)${uri}`])
       ) {
         return <Loader body loading />;
       }

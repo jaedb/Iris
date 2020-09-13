@@ -37,7 +37,7 @@ class DebugInfo extends React.Component {
     };
   }
 
-  renderLoadQueue() {
+  renderload_queue() {
     const { ui: { load_queue } } = this.props;
     if (!load_queue) return <div className="debug-info-item mid_grey-text">Nothing loading</div>;
 
@@ -171,7 +171,7 @@ kb (~
 
         <div className="debug-info-section">
           <h5>Load queue</h5>
-          {this.renderLoadQueue()}
+          {this.renderload_queue()}
         </div>
 
       </div>

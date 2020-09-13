@@ -121,6 +121,7 @@ const SpotifyMiddleware = (function () {
         next(action);
         break;
 
+        // TODO: This can go
       case 'SPOTIFY_ARTIST_ALBUMS_LOADED':
         store.dispatch(coreActions.albumsLoaded(action.data.items));
         store.dispatch({

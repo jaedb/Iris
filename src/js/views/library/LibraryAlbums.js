@@ -18,6 +18,8 @@ import { sortItems, applyFilter } from '../../util/arrays';
 import { collate } from '../../util/format';
 import Button from '../../components/Button';
 import { i18n, I18n } from '../../locale';
+import { isLoading } from '../../util/helpers';
+import Loader from '../../components/Loader';
 
 class LibraryAlbums extends React.Component {
   constructor(props) {
@@ -175,11 +177,16 @@ class LibraryAlbums extends React.Component {
       sort,
       sort_reverse,
       view,
+      load_queue,
     } = this.props;
     const {
       limit,
       filter,
     } = this.state;
+
+    if (isLoading(load_queue, ['(.*):library:albums'])) {
+      return <Loader body loading />;
+    }
 
     let albums = [
       ...(source === 'all' || source === 'spotify' ? collate(spotify_library, { items }).items : []),

@@ -1,12 +1,11 @@
-
-import store from '../src/js/store';
+import { store } from '../src/js/store';
 
 const state = store.getState();
 
 /**
  * Artists
  **/
-state.core.artists['jest:artist:alpha'] = {
+state.core.items['jest:artist:alpha'] = {
 	uri: 'jest:artist:alpha',
 	name: 'Alpha',
 	followers: 123,
@@ -17,19 +16,19 @@ state.core.artists['jest:artist:alpha'] = {
 	biography: "Alpha biography"
 };
 
-state.core.artists['jest:artist:beta'] = {
+state.core.items['jest:artist:beta'] = {
 	uri: 'jest:artist:beta',
 	name: 'Beta',
 	followers: 100
 };
 
-state.core.artists['jest:artist:charlie'] = {
+state.core.items['jest:artist:charlie'] = {
 	uri: 'jest:artist:charlie',
 	name: 'Charlie',
 	followers: 999
 };
 
-state.core.artists['jest:artist:delta'] = {
+state.core.items['jest:artist:delta'] = {
 	uri: 'jest:artist:delta',
 	name: 'Delta',
 	followers: 987
@@ -38,7 +37,7 @@ state.core.artists['jest:artist:delta'] = {
 /**
  * Albums
  **/
-state.core.albums['jest:album:one'] = {
+state.core.items['jest:album:one'] = {
 	uri: 'jest:album:one',
 	name: 'One',
 	artists_uris: [
@@ -54,7 +53,7 @@ state.core.albums['jest:album:one'] = {
 /**
  * Playlists
  **/
-state.core.playlists['jest:playlist:one'] = {
+state.core.items['jest:playlist:one'] = {
 	uri: 'jest:playlist:one',
 	name: 'One',
 	tracks_uris: [
@@ -67,7 +66,7 @@ state.core.playlists['jest:playlist:one'] = {
 /**
  * Tracks
  **/
-state.core.tracks['jest:track:one'] = {
+state.core.items['jest:track:one'] = {
 	uri: 'jest:track:one',
 	name: 'One',
 	artists_uris: [
@@ -75,7 +74,7 @@ state.core.tracks['jest:track:one'] = {
 	]
 };
 
-state.core.tracks['jest:track:two'] = {
+state.core.items['jest:track:two'] = {
 	uri: 'jest:track:two',
 	name: 'Two',
 	artists_uris: [
@@ -84,7 +83,7 @@ state.core.tracks['jest:track:two'] = {
 	]
 };
 
-state.core.tracks['jest:track:three'] = {
+state.core.items['jest:track:three'] = {
 	uri: 'jest:track:three',
 	name: 'Three',
 	artists_uris: [
