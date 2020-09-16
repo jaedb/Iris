@@ -742,6 +742,9 @@ const CoreMiddleware = (function () {
 
       case 'ITEMS_LOADED':
         const mergedItems = [];
+
+        console.time('TIMER')
+        // THE FOLLOWING LINES ARE THE CULPRIT
         action.items.forEach((item) => {
           mergedItems.push({
             ...core.items[item.uri] || {},
@@ -749,6 +752,8 @@ const CoreMiddleware = (function () {
           });
           store.dispatch(uiActions.stopLoading(item.uri));
         });
+        // ABOVE
+        
         store.dispatch(coreActions.updateColdStore(mergedItems));
         next({
           ...action,

@@ -216,28 +216,17 @@ class Track extends React.Component {
     const {
       uri,
       track,
-      albums,
       load_queue,
       slim_mode,
       uiActions,
       genius_authorized,
     } = this.props;
 
-    if (isLoading(load_queue, [`spotify_track/${getFromUri('trackid', uri)}`])) {
+    if (isLoading(load_queue, [`(.*)${uri}(.*)`])) {
       return <Loader body loading />;
     }
 
     if (!track) return null;
-
-    // Flatten our simple album so we can inherit artwork
-    if (track.album) {
-      const album = albums[track.album.uri];
-
-      if (album && album.images) {
-        track.images = album.images;
-      }
-    }
-
 
     return (
       <div className="view track-view content-wrapper">
@@ -263,7 +252,7 @@ class Track extends React.Component {
             {track.album && !track.album.uri ? track.album.name : null}
             {!track.album && <I18n path="track.unknown_album" />}
             <I18n path="common.by" />
-            <LinksSentence items={track.artists} />
+            {track.artists && <LinksSentence items={track.artists} />}
           </h2>
 
           <ul className="details">
@@ -292,7 +281,7 @@ class Track extends React.Component {
             {track.duration && <li><Dater type="length" data={track.duration} /></li>}
             {track.popularity && (
               <li>
-                <I18n path="stats.popularity" percent={track.popularity} />
+                <I18n path="specs.popularity" percent={track.popularity} />
               </li>
             )}
           </ul>
@@ -365,10 +354,7 @@ const mapStateToProps = (state, ownProps) => {
     uri,
     slim_mode: state.ui.slim_mode,
     load_queue: state.ui.load_queue,
-    track: (state.core.tracks && state.core.tracks[uri] !== undefined ? state.core.tracks[uri] : false),
-    tracks: state.core.tracks,
-    artists: state.core.artists,
-    albums: state.core.albums,
+    track: (state.core.items && state.core.items[uri] !== undefined ? state.core.items[uri] : false),
     spotify_library_albums: state.spotify.library_albums,
     local_library_albums: state.mopidy.library_albums,
     lastfm_authorized: state.lastfm.authorization,

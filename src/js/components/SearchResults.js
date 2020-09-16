@@ -47,6 +47,7 @@ const SearchResults = ({
   if (resultsMatchQuery(spotify_search_results) && spotify_search_results[type]) {
     results = [
       ...results,
+      ...indexToArray(items, spotify_search_results[type]),
       ...(
         type === 'tracks'
           ? spotify_search_results[type]

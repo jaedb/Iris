@@ -187,6 +187,8 @@ export function getTrackLyrics(uri, path) {
             lyrics_html = lyrics_html.replace(/(\[)/g, '<span class="mid_grey-text">[');
             lyrics_html = lyrics_html.replace(/(\])/g, ']</span>');
 
+            console.debug(lyrics_html);
+
             dispatch(coreActions.itemLoaded({
               uri,
               lyrics: lyrics_html,

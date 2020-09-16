@@ -1092,9 +1092,6 @@ const MopidyMiddleware = (function () {
                       }
                     }
 
-                    let albums_uris = arrayOf('uri', albums);
-                    albums_uris = removeDuplicates(albums_uris);
-
                     store.dispatch(coreActions.itemsLoaded(albums));
 
                     // and plug in their URIs

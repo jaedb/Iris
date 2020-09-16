@@ -586,23 +586,19 @@ export function getSearchResults(type, term, limit = 50, offset = 0) {
 
           if (response.artists !== undefined) {
             dispatch({
-              type: 'ARTISTS_LOADED',
-              artists: response.artists.items,
-            });
-            dispatch({
               type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
               context: 'artists',
               query: { type, term },
               results: arrayOf('uri', response.artists.items),
               more: response.artists.next,
             });
+            // TODO: Loading items into index causes massive performance issue
+            // Not the formatter, not coldstorage (async) and not building new index
+            dispatch(coreActions.itemsLoaded(formatArtists(response.artists.items)));
           }
 
           if (response.albums !== undefined) {
-            dispatch({
-              type: 'ALBUMS_LOADED',
-              albums: response.albums.items,
-            });
+            //dispatch(coreActions.itemsLoaded(formatAlbums(response.albums.items)));
             dispatch({
               type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
               context: 'albums',
@@ -618,10 +614,7 @@ export function getSearchResults(type, term, limit = 50, offset = 0) {
               can_edit: (getState().spotify.me && item.owner.id === getState().spotify.me.id),
               tracks_total: item.tracks.total,
             }));
-            dispatch({
-              type: 'PLAYLISTS_LOADED',
-              playlists,
-            });
+            //dispatch(coreActions.itemsLoaded(playlists));
 
             dispatch({
               type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
