@@ -18,12 +18,10 @@ import {
   formatArtist,
   formatArtists,
   formatAlbums,
-  formatPlaylists,
   formatImages,
   formatTrack,
 } from '../../util/format';
 import URILink from '../../components/URILink';
-import { i18n } from '../../locale';
 
 const coreActions = require('../../services/core/actions');
 const uiActions = require('../../services/ui/actions');
@@ -361,7 +359,7 @@ export function getLibraryTracks() {
   };
 }
 
-export function getFeaturedPlaylists() {
+export function getFeaturedPlaylists(forceRefetch = false) {
   return (dispatch, getState) => {
     dispatch({ type: 'SPOTIFY_FEATURED_PLAYLISTS_LOADED', data: false });
 
@@ -380,8 +378,13 @@ export function getFeaturedPlaylists() {
     if (sec < 10) sec = `0${sec}`;
 
     const timestamp = `${year}-${month}-${day}T${hour}:${min}:${sec}`;
+    let endpoint = 'browse/featured-playlists?limit=50';
+    endpoint += `&country=${getState().spotify.country}`;
+    endpoint += `&locale=${getState().spotify.locale}`;
+    endpoint += `&timestamp=${timestamp}`;
+    if (forceRefetch) endpoint += `&refetch=${Date.now()}`;
 
-    request(dispatch, getState, `browse/featured-playlists?limit=50&country=${getState().spotify.country}&locale=${getState().spotify.locale}timestamp=${timestamp}`)
+    request(dispatch, getState, endpoint)
       .then(
         (response) => {
           const playlists = response.playlists.items.map(
@@ -432,9 +435,14 @@ export function getCategories() {
   };
 }
 
-export function getCategory(id) {
+export function getCategory(id, forceRefetch = false) {
   return (dispatch, getState) => {
-    request(dispatch, getState, `browse/categories/${id}?country=${getState().spotify.country}&locale=${getState().spotify.locale}`)
+    let endpoint = `browse/categories/${id}`;
+    endpoint += `?country=${getState().spotify.country}`;
+    endpoint += `&locale=${getState().spotify.locale}`;
+    if (forceRefetch) endpoint += `&refetch=${Date.now()}`;
+
+    request(dispatch, getState, endpoint)
       .then(
         (response) => {
           dispatch({
@@ -456,9 +464,15 @@ export function getCategory(id) {
   };
 }
 
-export function getCategoryPlaylists(id) {
+export function getCategoryPlaylists(id, forceRefetch = false) {
   return (dispatch, getState) => {
-    request(dispatch, getState, `browse/categories/${id}/playlists?limit=50&country=${getState().spotify.country}&locale=${getState().spotify.locale}`)
+    let endpoint = `browse/categories/${id}/playlists`;
+    endpoint += '?limit=50';
+    endpoint += `&country=${getState().spotify.country}`;
+    endpoint += `&locale=${getState().spotify.locale}`;
+    if (forceRefetch) endpoint += `&refetch=${Date.now()}`;
+
+    request(dispatch, getState, endpoint)
       .then(
         (response) => {
           dispatch({
@@ -477,9 +491,15 @@ export function getCategoryPlaylists(id) {
   };
 }
 
-export function getNewReleases() {
+export function getNewReleases(forceRefetch = false) {
   return (dispatch, getState) => {
-    request(dispatch, getState, `browse/new-releases?country=${getState().spotify.country}&limit=50`)
+    let endpoint = 'browse/new-releases';
+    endpoint += '?limit=50';
+    endpoint += '&offset=0';
+    endpoint += `&country=${getState().spotify.country}`;
+    if (forceRefetch) endpoint += `&refetch=${Date.now()}`;
+
+    request(dispatch, getState, endpoint)
       .then(
         (response) => {
           dispatch({
@@ -1030,7 +1050,9 @@ export function getGenres() {
  * */
 export function getArtist(uri, { full, forceRefetch }) {
   return (dispatch, getState) => {
-    const endpoint = `artists/${getFromUri('artistid', uri)}${forceRefetch ? `?refetch=${Date.now()}` : ''}`;
+    let endpoint = `artists/${getFromUri('artistid', uri)}`;
+    if (forceRefetch) endpoint += `?refetch=${Date.now()}`;
+
     request(dispatch, getState, endpoint, 'GET', false, true)
       .then(
         (response) => {
@@ -1198,7 +1220,9 @@ export function getUserPlaylists(uri) {
  * */
 export function getAlbum(uri, { full, forceRefetch }) {
   return (dispatch, getState) => {
-    const endpoint = `albums/${getFromUri('albumid', uri)}${forceRefetch ? `?refetch=${Date.now()}` : ''}`;
+    let endpoint = `albums/${getFromUri('albumid', uri)}`;
+    if (forceRefetch) endpoint += `?refetch=${Date.now()}`;
+
     request(dispatch, getState, endpoint)
       .then(
         (response) => {
@@ -1345,7 +1369,10 @@ export function savePlaylist(uri, name, description, is_public, is_collaborative
 
 export function getPlaylist(uri, { full, forceRefetch, callbackAction }) {
   return (dispatch, getState) => {
-    const endpoint = `playlists/${getFromUri('playlistid', uri)}?market=${getState().spotify.country}${forceRefetch ? `&refetch=${Date.now()}` : ''}`;
+    let endpoint = `playlists/${getFromUri('playlistid', uri)}`;
+    endpoint += `?market=${getState().spotify.country}`;
+    if (forceRefetch) endpoint += `&refetch=${Date.now()}`;
+
     request(dispatch, getState, endpoint)
       .then(
         (response) => {

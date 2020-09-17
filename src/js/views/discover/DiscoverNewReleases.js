@@ -14,6 +14,7 @@ import * as spotifyActions from '../../services/spotify/actions';
 import { isLoading } from '../../util/helpers';
 import { i18n, I18n } from '../../locale';
 import Button from '../../components/Button';
+import { indexToArray } from '../../util/arrays';
 
 class DiscoverNewReleases extends React.Component {
   componentDidMount() {
@@ -68,7 +69,7 @@ class DiscoverNewReleases extends React.Component {
     } = this.props;
 
     hideContextMenu();
-    getNewReleases();
+    getNewReleases(true);
   }
 
   handleContextMenu(e, item) {
@@ -92,13 +93,13 @@ class DiscoverNewReleases extends React.Component {
   render = () => {
     const {
       load_queue,
+      items,
       new_releases,
-      albums: albumsProp,
       new_releases_more,
       uiActions,
     } = this.props;
 
-    if (isLoading(load_queue, ['spotify_browse/new-releases'])) {
+    if (isLoading(load_queue, ['(.*)new-releases(.*)offset=0(.*)'])) {
       return (
         <div className="view discover-new-releases-view">
           <Header>
@@ -110,14 +111,7 @@ class DiscoverNewReleases extends React.Component {
       );
     }
 
-    const albums = [];
-    if (new_releases) {
-      for (const uri of new_releases) {
-        if (albumsProp.hasOwnProperty(uri)) {
-          albums.push(albumsProp[uri]);
-        }
-      }
-    }
+    const albums = indexToArray(items, new_releases || []);
 
     const options = (
       <Button
@@ -152,8 +146,7 @@ class DiscoverNewReleases extends React.Component {
 const mapStateToProps = (state) => ({
   theme: state.ui.theme,
   load_queue: state.ui.load_queue,
-  artists: state.core.artists,
-  albums: state.core.albums,
+  items: state.core.items,
   new_releases: (state.spotify.new_releases ? state.spotify.new_releases : null),
   new_releases_more: (state.spotify.new_releases_more ? state.spotify.new_releases_more : null),
   new_releases_total: (state.spotify.new_releases_total ? state.spotify.new_releases_total : null),

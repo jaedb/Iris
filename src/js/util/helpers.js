@@ -1,3 +1,5 @@
+import { indexToArray } from "./arrays";
+
 /**
  * Returns a function, that, as long as it continues to be invoked, will not
  * be triggered. The function will be called after it stops being called for
@@ -372,7 +374,7 @@ let isObject = function (value) {
 const isLoading = function (load_queue = {}, keys = []) {
   if (!load_queue || !keys) return false;
 
-  const queue_keys = Object.keys(load_queue);
+  const queue_keys = indexToArray(load_queue);
   const matches = keys.reduce((acc, key) => {
     let regex = '';
     try {

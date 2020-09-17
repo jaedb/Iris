@@ -8,6 +8,7 @@ import {
   formatTracks,
   formatImages,
   formatUser,
+  formatAlbums,
 } from '../../util/format';
 const coreActions = require('../core/actions');
 const uiActions = require('../ui/actions');
@@ -106,22 +107,20 @@ const SpotifyMiddleware = (function () {
         store.dispatch(spotifyActions.savePlaylist(action.key, action.name, action.description, action.is_public, action.is_collaborative, action.image));
         break;
 
-      case 'SPOTIFY_NEW_RELEASES_LOADED':
-        store.dispatch({
-          type: 'ALBUMS_LOADED',
-          albums: action.data.albums.items,
+      case 'SPOTIFY_NEW_RELEASES_LOADED': {
+        const albums = formatAlbums(action.data.albums.items);
+        store.dispatch(coreActions.itemsLoaded(albums));
+
+        next({
+          ...action,
+          uris: arrayOf('uri', albums),
+          more: action.data.albums.next,
+          total: action.data.albums.total,
         });
-
-        // Collate result into the three key values we want
-        action.uris = arrayOf('uri', action.data.albums.items);
-        action.more = action.data.albums.next;
-        action.total = action.data.albums.total;
-
-        // And pass on to our reducer
-        next(action);
         break;
+      }
 
-        // TODO: This can go
+      // TODO: This can go
       case 'SPOTIFY_ARTIST_ALBUMS_LOADED':
         store.dispatch(coreActions.albumsLoaded(action.data.items));
         store.dispatch({

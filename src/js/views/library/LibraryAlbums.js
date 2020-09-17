@@ -235,7 +235,7 @@ class LibraryAlbums extends React.Component {
         <LazyLoadListener
           loadKey={total_albums > limit ? limit : total_albums}
           showLoader={limit < total_albums}
-          loadMore={() => this.loadMore()}
+          loadMore={this.loadMore}
         />
       </section>
     );

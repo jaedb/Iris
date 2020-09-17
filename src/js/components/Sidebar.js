@@ -59,17 +59,17 @@ class Sidebar extends React.Component {
           <Icon name="warning" className="red-text" />
           <span className="tooltip__content">
             {!mopidy_connected && (
-              <I18n path="sidebar.not_connected" params={{ name: i18n('services.mopidy.title') }} contentAfter>
+              <I18n path="sidebar.not_connected" name={i18n('services.mopidy.title')} contentAfter>
                 <br />
               </I18n>
             )}
             {!pusher_connected && (
-              <I18n path="sidebar.not_connected" params={{ name: i18n('services.pusher.title') }} contentAfter>
+              <I18n path="sidebar.not_connected" name={i18n('services.pusher.title')} contentAfter>
                 <br />
               </I18n>
             )}
             {!snapcast_connected && snapcast_enabled && (
-              <I18n path="sidebar.not_connected" params={{ name: i18n('services.snapcast.title') }} contentAfter>
+              <I18n path="sidebar.not_connected" name={i18n('services.snapcast.title')} contentAfter>
                 <br />
               </I18n>
             )}

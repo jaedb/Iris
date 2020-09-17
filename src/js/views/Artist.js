@@ -22,7 +22,6 @@ import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import {
   uriSource,
-  getFromUri,
   isLoading,
   sourceIcon,
   titleCase,
@@ -35,8 +34,15 @@ import { trackEvent } from '../components/Trackable';
 
 class Artist extends React.Component {
   componentDidMount() {
+    const {
+      uri,
+      coreActions: {
+        loadItem,
+      },
+    } = this.props;
+
     this.setWindowTitle();
-    this.props.coreActions.loadItem(this.props.uri, { full: true });
+    loadItem(uri, { full: true });
   }
 
   componentDidUpdate = ({

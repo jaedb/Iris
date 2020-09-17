@@ -40,7 +40,7 @@ class DiscoverFeatured extends React.Component {
       },
     } = this.props;
     hideContextMenu();
-    getFeaturedPlaylists();
+    getFeaturedPlaylists(true);
   }
 
   handleContextMenu = (e, item) => {
@@ -68,7 +68,7 @@ class DiscoverFeatured extends React.Component {
       items,
     } = this.props;
 
-    if (isLoading(load_queue, ['spotify_browse/featured-playlists'])) {
+    if (isLoading(load_queue, ['(.*)spotify_browse/featured-playlists(.*)'])) {
       return (
         <div className="view discover-featured-view preserve-3d">
           <Header className="overlay" uiActions={uiActions}>
@@ -80,7 +80,7 @@ class DiscoverFeatured extends React.Component {
       );
     }
 
-    const playlists = indexToArray(items, uris);
+    const playlists = indexToArray(items, uris || []);
 
     const options = (
       <Button

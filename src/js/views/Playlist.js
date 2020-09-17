@@ -279,8 +279,8 @@ class Playlist extends React.Component {
     const playlist_id = getFromUri('playlistid', uri);
 
     if (!playlist) {
-      if (isLoading(load_queue, [`(.*)${playlist_id}`])) {
-        return <Loader body loading />
+      if (isLoading(load_queue, [`(.*)${playlist_id}(.*)`])) {
+        return <Loader body loading />;
       }
       return (
         <ErrorMessage type="not-found" title="Not found">
@@ -349,7 +349,7 @@ class Playlist extends React.Component {
 
         {this.renderActions()}
 
-        {isLoading(load_queue, [`(.*)${playlist_id}/tracks`]) ? (
+        {isLoading(load_queue, [`(.*)${playlist_id}/tracks(.*)`]) ? (
           <Loader body loading />
         ) : (
           <section className="list-wrapper">
