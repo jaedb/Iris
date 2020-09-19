@@ -25,6 +25,7 @@ import {
   isLoading,
   sourceIcon,
   titleCase,
+  getFromUri,
 } from '../util/helpers';
 import { collate } from '../util/format';
 import { sortItems, applyFilter, arrayOf } from '../util/arrays';
@@ -151,6 +152,7 @@ class Artist extends React.Component {
     const {
       uri,
       uiActions,
+      load_queue,
       artist,
       items,
       sort,
@@ -236,45 +238,47 @@ class Artist extends React.Component {
 
         <div className="cf" />
 
-        {albums && (
-          <div className="albums">
-            <h4>
-						  <div><I18n path="artist.overview.albums" /></div>
-              <DropdownField
-                icon="swap_vert"
-                name="Sort"
-                value={sort}
-                valueAsLabel
-                options={sort_options}
-                selected_icon={sort ? (sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
-                handleChange={this.onChangeSort}
-              />
-              <DropdownField
-                icon="filter_list"
-                name="Filter"
-                value={filter}
-                valueAsLabel
-                options={filter_options}
-                handleChange={this.onChangeFilter}
-              />
-              {(sort || filter) && (
-                <Button
-                  discrete
-                  type="destructive"
-                  size="small"
-                  onClick={this.onResetFilters}
-                >
-                  <Icon name="clear" />
-                  <I18n path="actions.reset" />
-                </Button>
-              )}
-            </h4>
+        <div className="albums">
+          <h4>
+            <div><I18n path="artist.overview.albums" /></div>
+            <DropdownField
+              icon="swap_vert"
+              name="Sort"
+              value={sort}
+              valueAsLabel
+              options={sort_options}
+              selected_icon={sort ? (sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
+              handleChange={this.onChangeSort}
+            />
+            <DropdownField
+              icon="filter_list"
+              name="Filter"
+              value={filter}
+              valueAsLabel
+              options={filter_options}
+              handleChange={this.onChangeFilter}
+            />
+            {(sort || filter) && (
+              <Button
+                discrete
+                type="destructive"
+                size="small"
+                onClick={this.onResetFilters}
+              >
+                <Icon name="clear" />
+                <I18n path="actions.reset" />
+              </Button>
+            )}
+          </h4>
 
-            <section className="grid-wrapper no-top-padding">
+          <section className="grid-wrapper no-top-padding">
+            {isLoading(load_queue, [`(.*)${getFromUri('artistid', uri)}/albums(.*)`]) ? (
+              <Loader body loading />
+            ) : (
               <AlbumGrid albums={albums} />
-            </section>
-          </div>
-        )}
+            )}
+          </section>
+        </div>
       </div>
     );
   }

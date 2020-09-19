@@ -12,6 +12,7 @@ import {
 import {
   digestMopidyImages,
   formatImages,
+  formatAlbum,
   formatAlbums,
   formatTrack,
   formatTracks,
@@ -1797,7 +1798,6 @@ const MopidyMiddleware = (function () {
         break;
 
       case 'MOPIDY_GET_ARTIST':
-        console.log(action);
         request(store, 'library.lookup', { uris: [action.uri] })
           .then((_response) => {
             if (!_response) return;
@@ -1826,23 +1826,17 @@ const MopidyMiddleware = (function () {
               store.dispatch(coreActions.itemsLoaded(albums));
             }
 
-            let artist = {
-              uri: action.uri,
-              provider: 'mopidy',
-            };
-
             // Get the artist object from the track. This is a bit ugly because it's a simplified
             // (Mopidy) artist object but gives us enough to fetch their name and artwork.
-            for (const raw_artist of response[0].artists) {
-              // We're only interested in the artist we asked for
-              if (raw_artist.uri === artist.uri) {
-                artist = { ...formatArtist(raw_artist) };
-              }
-            }
+            const raw_artist = response[0].artists.find((item) => item.uri === action.uri);
 
-            // Add our tracks and albums
-            artist.albums_uris = arrayOf('uri', albums);
-            artist.tracks = formatTracks(response);
+            const artist = {
+              uri: action.uri,
+              provider: 'mopidy',
+              albums_uris: arrayOf('uri', albums),
+              tracks: formatTracks(response),
+              ...(raw_artist ? formatArtist(raw_artist) : {}),
+            };
 
             store.dispatch(coreActions.itemLoaded(artist));
             store.dispatch(lastfmActions.getArtist(artist.uri, artist.name, artist.musicbrainz_id));
@@ -2218,10 +2212,10 @@ const MopidyMiddleware = (function () {
             request(store, 'library.lookup', { uris })
               .then((response) => {
                 const libraryAlbums = indexToArray(response).map((tracks) => ({
-                  artists: tracks[0].artists || null,
-                  tracks,
+                  artists: tracks[0].artists ? formatArtists(tracks[0].artists) : null,
+                  tracks: formatTracks(tracks),
                   last_modified: tracks[0].last_modified,
-                  ...tracks[0].album,
+                  ...formatAlbum(tracks[0].album),
                 }));
 
                 store.dispatch(coreActions.itemsLoaded(libraryAlbums));

@@ -268,10 +268,10 @@ export function startLoading(key, source) {
   };
 }
 
-export function stopLoading(key) {
+export function stopLoading(keys) {
   return {
     type: 'STOP_LOADING',
-    key,
+    keys: Array.isArray(keys) ? keys : [keys],
   };
 }
 

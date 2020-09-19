@@ -467,8 +467,12 @@ const CoreMiddleware = (function () {
 
             if (artist.albums_uris) {
               const promises = artist.albums_uris.map((albumUri) => localForage.getItem(albumUri));
+              console.time('restoring')
               Promise.all(promises).then(
-                (albums) => store.dispatch(coreActions.restoreItemsFromColdStore(compact(albums))),
+                (albums) => {
+                  store.dispatch(coreActions.restoreItemsFromColdStore(compact(albums)));
+                  console.timeEnd('restoring')
+                },
               );
             }
 
@@ -742,18 +746,14 @@ const CoreMiddleware = (function () {
 
       case 'ITEMS_LOADED':
         const mergedItems = [];
-
-        console.time('TIMER')
-        // THE FOLLOWING LINES ARE THE CULPRIT
         action.items.forEach((item) => {
           mergedItems.push({
             ...core.items[item.uri] || {},
             ...item,
           });
-          store.dispatch(uiActions.stopLoading(item.uri));
         });
-        // ABOVE
-        
+
+        store.dispatch(uiActions.stopLoading(arrayOf('uri', action.items)));
         store.dispatch(coreActions.updateColdStore(mergedItems));
         next({
           ...action,
@@ -764,16 +764,6 @@ const CoreMiddleware = (function () {
       case 'LIBRARY_LOADED':
         store.dispatch(uiActions.stopLoading(action.library.uri));
         store.dispatch(coreActions.updateColdStore([action.library]));
-        next(action);
-        break;
-
-      case 'RESTORE_ITEMS_FROM_COLD_STORE':
-        action.items.forEach((item) => store.dispatch(uiActions.stopLoading(item.uri)));
-        next(action);
-        break;
-
-      case 'RESTORE_LIBRARY_FROM_COLD_STORE':
-        store.dispatch(uiActions.stopLoading(action.library.uri));
         next(action);
         break;
 
@@ -981,6 +971,16 @@ const CoreMiddleware = (function () {
             ...(pinnedItem.uri === action.oldUri ? { uri: action.newUri } : {}),
           })),
         ));
+        next(action);
+        break;
+
+      case 'RESTORE_ITEMS_FROM_COLD_STORE':
+        store.dispatch(uiActions.stopLoading(action.items));
+        next(action);
+        break;
+
+      case 'RESTORE_LIBRARY_FROM_COLD_STORE':
+        store.dispatch(uiActions.stopLoading(action.library.uri));
         next(action);
         break;
 

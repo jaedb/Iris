@@ -1,3 +1,4 @@
+import { omit } from 'lodash';
 
 export default function reducer(ui = {}, action) {
   switch (action.type) {
@@ -128,11 +129,10 @@ export default function reducer(ui = {}, action) {
       return { ...ui, load_queue };
 
     case 'STOP_LOADING':
-      var load_queue = { ...(ui.load_queue ? ui.load_queue : {}) };
-      if (load_queue[action.key]) {
-        delete load_queue[action.key];
-      }
-      return { ...ui, load_queue };
+      return {
+        ...ui,
+        load_queue: omit(load_queue, action.keys),
+      };
 
     case 'START_PROCESS':
     case 'UPDATE_PROCESS':

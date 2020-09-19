@@ -618,7 +618,7 @@ export function getSearchResults(type, term, limit = 50, offset = 0) {
           }
 
           if (response.albums !== undefined) {
-            //dispatch(coreActions.itemsLoaded(formatAlbums(response.albums.items)));
+            dispatch(coreActions.itemsLoaded(formatAlbums(response.albums.items)));
             dispatch({
               type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
               context: 'albums',
@@ -634,7 +634,7 @@ export function getSearchResults(type, term, limit = 50, offset = 0) {
               can_edit: (getState().spotify.me && item.owner.id === getState().spotify.me.id),
               tracks_total: item.tracks.total,
             }));
-            //dispatch(coreActions.itemsLoaded(playlists));
+            dispatch(coreActions.itemsLoaded(playlists));
 
             dispatch({
               type: 'SPOTIFY_SEARCH_RESULTS_LOADED',

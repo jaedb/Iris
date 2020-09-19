@@ -626,7 +626,7 @@ class ContextMenu extends React.Component {
 
     const uri = uris[0];
 
-    loadItem(uri, { forceRefetch: true });
+    loadItem(uri, { forceRefetch: true, full: true });
     hideContextMenu();
   }
 

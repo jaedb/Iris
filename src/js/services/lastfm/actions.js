@@ -213,14 +213,14 @@ export function getTrack(uri) {
   };
 }
 
-export function getArtist(uri, artist, mbid = false) {
+export function getArtist(uri, name, mbid = false) {
   return (dispatch, getState) => {
     if (mbid) {
       var params = `method=artist.getInfo&mbid=${mbid}`;
     } else {
-      artist = artist.replace('&', 'and');
-      artist = encodeURIComponent(artist);
-      var params = `method=artist.getInfo&artist=${artist}`;
+      name = name.replace('&', 'and');
+      name = encodeURIComponent(name);
+      var params = `method=artist.getInfo&artist=${name}`;
     }
     sendRequest(dispatch, getState, params)
       .then(

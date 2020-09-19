@@ -616,12 +616,9 @@ const formatTrack = function (data) {
     track.last_modified = track.added_at;
   }
 
-  if (track.duration === undefined && data.duration_ms !== undefined) {
+  if (data.duration_ms !== undefined) {
     track.duration = data.duration_ms;
-  } else if (track.duration === undefined && data.length !== undefined) {
-    track.duration = data.length;
-  }
-  if (data.length) {
+  } else if (data.length !== undefined) {
     track.duration = data.length;
   }
 
