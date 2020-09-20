@@ -349,20 +349,23 @@ class Playlist extends React.Component {
 
         {this.renderActions()}
 
-        {isLoading(load_queue, [`(.*)${playlist_id}/tracks(.*)`]) ? (
-          <Loader body loading />
-        ) : (
-          <section className="list-wrapper">
-            <TrackList
-              uri={playlist.uri}
-              className="playlist-track-list"
-              track_context={context}
-              tracks={playlist.tracks}
-              removeTracks={this.removeTracks}
-              reorderTracks={this.reorderTracks}
-            />
-          </section>
-        )}
+        {
+          (!playlist.tracks || playlist.tracks.length <= 0)
+          && isLoading(load_queue, [`(.*)${playlist_id}/tracks(.*)`])
+          && (
+            <Loader body loading />
+          )
+        }
+        <section className="list-wrapper">
+          <TrackList
+            uri={playlist.uri}
+            className="playlist-track-list"
+            track_context={context}
+            tracks={playlist.tracks}
+            removeTracks={this.removeTracks}
+            reorderTracks={this.reorderTracks}
+          />
+        </section>
       </div>
     );
   }
@@ -397,7 +400,7 @@ const mapStateToProps = (state, ownProps) => {
     slim_mode,
     theme,
     load_queue,
-    playlist: items[uri] || null,
+    playlist: items[uri],
     spotify_library_playlists,
     local_library_playlists,
     spotify_authorized,

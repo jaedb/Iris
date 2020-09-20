@@ -20,6 +20,7 @@ import Button from '../../components/Button';
 import { i18n, I18n } from '../../locale';
 import { isLoading } from '../../util/helpers';
 import Loader from '../../components/Loader';
+import { getLibraryItems } from '../../util/selectors';
 
 class LibraryAlbums extends React.Component {
   constructor(props) {
@@ -63,6 +64,40 @@ class LibraryAlbums extends React.Component {
       this.getGoogleLibrary();
       this.getSpotifyLibrary();
     }
+  }
+
+  shouldComponentUpdate = ({
+    albums: prevAlbums,
+    sort: prevSort,
+    sort_reverse: prevSortReverse,
+    source: prevSource,
+    view: prevView,
+  },
+  {
+    filter: prevFilter,
+    limit: prevLimit,
+  }) => {
+    const {
+      albums,
+      sort,
+      sort_reverse,
+      source,
+      view,
+    } = this.props;
+    const {
+      filter,
+      limit,
+    } = this.state;
+
+    if (prevAlbums.length !== albums.length) return true;
+    if (prevSource !== source) return true;
+    if (prevSort !== sort) return true;
+    if (prevSortReverse !== sort_reverse) return true;
+    if (prevView !== view) return true;
+    if (prevFilter !== filter) return true;
+    if (prevLimit !== limit) return true;
+
+    return false;
   }
 
   onRefresh = () => {
@@ -169,11 +204,6 @@ class LibraryAlbums extends React.Component {
 
   renderView = () => {
     const {
-      spotify_library,
-      google_library,
-      mopidy_library,
-      items,
-      source,
       sort,
       sort_reverse,
       view,
@@ -183,16 +213,11 @@ class LibraryAlbums extends React.Component {
       limit,
       filter,
     } = this.state;
+    let { albums } = this.props;
 
     if (isLoading(load_queue, ['(.*):library:albums'])) {
       return <Loader body loading />;
     }
-
-    let albums = [
-      ...(source === 'all' || source === 'spotify' ? collate(spotify_library, { items }).items : []),
-      ...(source === 'all' || source === 'google' ? collate(google_library, { items }).items : []),
-      ...(source === 'all' || source === 'local' ? collate(mopidy_library, { items }).items : []),
-    ];
 
     if (sort) {
       albums = sortItems(albums, sort, sort_reverse);
@@ -255,6 +280,8 @@ class LibraryAlbums extends React.Component {
       filter,
       per_page,
     } = this.state;
+
+    console.log('RENDER')
 
     const source_options = [
       {
@@ -374,20 +401,27 @@ class LibraryAlbums extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  mopidy_uri_schemes: state.mopidy.uri_schemes,
-  load_queue: state.ui.load_queue,
-  items: state.core.items,
-  mopidy_library: state.core.libraries['mopidy:library:albums'] || { items_uris: [] },
-  spotify_library: state.core.libraries['spotify:library:albums'] || { items_uris: [] },
-  google_library: state.core.libraries['google:library:albums'] || { items_uris: [] },
-  google_available: (state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('gmusic:')),
-  spotify_available: state.spotify.access_token,
-  view: state.ui.library_albums_view,
-  source: (state.ui.library_albums_source ? state.ui.library_albums_source : 'all'),
-  sort: (state.ui.library_albums_sort ? state.ui.library_albums_sort : null),
-  sort_reverse: (state.ui.library_albums_sort_reverse ? state.ui.library_albums_sort_reverse : false),
-});
+const mapStateToProps = (state) => {
+  const source = state.ui.library_albums_source ? state.ui.library_albums_source : 'all';
+
+  const albums = [
+    ...(source === 'all' || source === 'spotify' ? getLibraryItems(state, 'spotify:library:albums') : []),
+    ...(source === 'all' || source === 'google' ? getLibraryItems(state, 'google:library:albums') : []),
+    ...(source === 'all' || source === 'local' ? getLibraryItems(state, 'mopidy:library:albums') : []),
+  ];
+
+  return {
+    mopidy_uri_schemes: state.mopidy.uri_schemes,
+    load_queue: state.ui.load_queue,
+    albums,
+    google_available: (state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('gmusic:')),
+    spotify_available: state.spotify.access_token,
+    view: state.ui.library_albums_view,
+    source,
+    sort: (state.ui.library_albums_sort ? state.ui.library_albums_sort : null),
+    sort_reverse: (state.ui.library_albums_sort_reverse ? state.ui.library_albums_sort_reverse : false),
+  };
+};
 
 const mapDispatchToProps = (dispatch) => ({
   coreActions: bindActionCreators(coreActions, dispatch),

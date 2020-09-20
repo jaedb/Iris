@@ -32,6 +32,7 @@ import { sortItems, applyFilter, arrayOf } from '../util/arrays';
 import { i18n, I18n } from '../locale';
 import Button from '../components/Button';
 import { trackEvent } from '../components/Trackable';
+import { getItemFromIndex, getItemsFromIndex } from '../util/selectors';
 
 class Artist extends React.Component {
   componentDidMount() {
@@ -154,7 +155,6 @@ class Artist extends React.Component {
       uiActions,
       load_queue,
       artist,
-      items,
       sort,
       sort_reverse,
       filter,
@@ -163,7 +163,7 @@ class Artist extends React.Component {
       tracks,
       related_artists,
       albums,
-    } = collate(artist, { albums: items });
+    } = artist;
 
     if (sort && albums) {
       albums = sortItems(albums, sort, sort_reverse);
@@ -527,16 +527,18 @@ class Artist extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   const uri = decodeURIComponent(ownProps.match.params.uri);
+  const artist = getItemFromIndex(state, uri);
+  if (artist && artist.albums_uris) {
+    artist.albums = getItemsFromIndex(state, artist.albums_uris);
+  }
   return {
     uri,
+    artist,
     theme: state.ui.theme,
     slim_mode: state.ui.slim_mode,
     load_queue: state.ui.load_queue,
-    artist: (state.core.items[uri] || null),
-    items: state.core.items,
     spotify_library_artists: state.core.libraries['spotify:library:artists'] || { items_uris: [] },
     mopidy_library_artists: state.core.libraries['mopidy:library:artists'] || { items_uris: [] },
-    albums: (state.core.albums ? state.core.albums : []),
     filter: (state.ui.artist_albums_filter ? state.ui.artist_albums_filter : null),
     sort: (state.ui.artist_albums_sort ? state.ui.artist_albums_sort : null),
     sort_reverse: (!!state.ui.artist_albums_sort_reverse),

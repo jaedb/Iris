@@ -28,6 +28,7 @@ import {
 } from '../util/helpers';
 import { i18n, I18n } from '../locale';
 import Button from '../components/Button';
+import { getItemFromIndex } from '../util/selectors';
 
 class Track extends React.Component {
   componentDidMount() {
@@ -81,7 +82,7 @@ class Track extends React.Component {
     }
 
     // We have just received our full track or our track artists
-    if ((!prevTrack && track) || (!prevTrack.artists && track.artists)) {
+    if ((!prevTrack && track) || (prevTrack && !prevTrack.artists && track.artists)) {
       this.setWindowTitle(track);
       if (lastfm_authorized) getTrack(track.uri);
       if (genius_authorized && !track.lyrics_results) findTrackLyrics(track);
@@ -354,7 +355,7 @@ const mapStateToProps = (state, ownProps) => {
     uri,
     slim_mode: state.ui.slim_mode,
     load_queue: state.ui.load_queue,
-    track: (state.core.items && state.core.items[uri] !== undefined ? state.core.items[uri] : false),
+    track: getItemFromIndex(state, uri),
     spotify_library_albums: state.spotify.library_albums,
     local_library_albums: state.mopidy.library_albums,
     lastfm_authorized: state.lastfm.authorization,

@@ -11,6 +11,8 @@ import * as spotifyActions from '../services/spotify/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import { i18n, I18n } from '../locale';
 import Button from '../components/Button';
+import { arrayOf } from '../util/arrays';
+import { getItemsFromIndex } from '../util/selectors';
 
 class QueueHistory extends React.Component {
   componentDidMount() {
@@ -19,14 +21,18 @@ class QueueHistory extends React.Component {
     this.loadHistory();
   }
 
+  shouldComponentUpdate = ({ tracks: nextTracks }) => {
+    const { tracks } = this.props;
+
+    return nextTracks.length !== tracks.length;
+  }
+
   loadHistory = () => {
     const {
       mopidyActions: {
         getQueueHistory,
       },
     } = this.props;
-
-    console.log('get queue history');
 
     getQueueHistory();
   }
@@ -38,8 +44,7 @@ class QueueHistory extends React.Component {
 
   render = () => {
     const {
-      queue_history,
-      items,
+      tracks,
       uiActions,
     } = this.props;
 
@@ -56,13 +61,6 @@ class QueueHistory extends React.Component {
       </Button>
     );
 
-    if (!queue_history) return null;
-
-    const tracks = queue_history.map((item) => ({
-      ...item,
-      ...(items[item.uri] || {}),
-    }));
-
     return (
       <div className="view queue-history-view">
         <Header options={options} uiActions={uiActions}>
@@ -70,25 +68,41 @@ class QueueHistory extends React.Component {
             <Icon name="play_arrow" type="material" />
           </I18n>
         </Header>
-        <section className="content-wrapper">
-          <TrackList
-            uri="iris:queue-history"
-            className="queue-history-track-list"
-            track_context="history"
-            tracks={tracks}
-            show_source_icon
-          />
-        </section>
-
+        {tracks && (
+          <section className="content-wrapper">
+            <TrackList
+              uri="iris:queue-history"
+              className="queue-history-track-list"
+              track_context="history"
+              tracks={tracks}
+              show_source_icon
+            />
+          </section>
+        )}
       </div>
     );
   }
 }
 
-const mapStateToProps = (state) => ({
-  items: state.core.items,
-  queue_history: state.mopidy.queue_history,
-});
+const mapStateToProps = (state) => {
+  const {
+    mopidy: {
+      queue_history,
+    },
+  } = state;
+
+  const uris = arrayOf('uri', queue_history);
+  const storedTracks = getItemsFromIndex(state, uris);
+
+  const tracks = queue_history.map((item) => ({
+    ...item,
+    ...(storedTracks[item.uri] || {}),
+  }));
+
+  return {
+    tracks,
+  };
+};
 
 const mapDispatchToProps = (dispatch) => ({
   uiActions: bindActionCreators(uiActions, dispatch),

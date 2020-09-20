@@ -355,8 +355,8 @@ export function getImages(context, uri) {
 
 export function loveTrack(uri) {
   return (dispatch, getState) => {
+    const track = getState().core.items[uri];
     if (getState().core.items[uri] !== undefined) {
-      var track = getState().core.items[uri];
       if (!track.artists) {
         dispatch(coreActions.handleException(
           'Could not love LastFM track',

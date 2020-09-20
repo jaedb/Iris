@@ -6676,7 +6676,8 @@ main header {
   color: #FFFFFF;
   pointer-events: none;
   width: 220px;
-  max-width: 98vw; }
+  max-width: 98vw;
+  word-break: break-all; }
   .debug-info-section {
     padding-top: 14px; }
     .debug-info-section:first-child {

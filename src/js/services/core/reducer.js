@@ -80,7 +80,6 @@ export default function reducer(core = {}, action) {
         (obj, item) => (obj[item.uri] = item, obj),
         {},
       );
-      console.timeEnd('TIMER');
       return {
         ...core,
         items: {

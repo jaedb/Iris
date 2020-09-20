@@ -12,6 +12,7 @@ import TrackList from './TrackList';
 import LazyLoadListener from './LazyLoadListener';
 import { I18n } from '../locale';
 import Button from './Button';
+import { getSearchResults } from '../util/selectors';
 
 const SearchResults = ({
   type,
@@ -92,33 +93,11 @@ const SearchResults = ({
   );
 };
 
-const getResults = (state, provider, type, query) => {
-  const {
-    [provider]: {
-      search_results: {
-        query: resultsQuery,
-        [type]: results,
-      } = {},
-    } = {},
-  } = state;
-
-  if (!resultsQuery) return [];
-  if (resultsQuery.term !== query.term) return [];
-  if (resultsQuery.type !== query.type) return [];
-
-  if (type === 'tracks') {
-    return results || [];
-  }
-
-  const selectedItems = pick(state.core.items, results);
-  return Object.keys(selectedItems).length > 0 ? indexToArray(selectedItems) : [];
-};
-
 const mapStateToProps = (state, ownProps) => ({
   uri_schemes_priority: state.ui.uri_schemes_priority || [],
   results: [
-    ...getResults(state, 'mopidy', ownProps.type, ownProps.query),
-    ...getResults(state, 'spotify', ownProps.type, ownProps.query),
+    ...getSearchResults(state, 'mopidy', ownProps.type, ownProps.query),
+    ...getSearchResults(state, 'spotify', ownProps.type, ownProps.query),
   ],
   sort: state.ui.search_results_sort || 'followers',
   sort_reverse: !!state.ui.search_results_sort_reverse,

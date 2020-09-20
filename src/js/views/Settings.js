@@ -73,8 +73,8 @@ class Settings extends React.Component {
   resetAllSettings = () => {
     localForage.clear(() => {
       console.debug('Cleared settings, reloading...');
-      //window.location = '#';
-      //window.location.reload(true);
+      window.location = '#';
+      window.location.reload(true);
     });
     return false;
   }
