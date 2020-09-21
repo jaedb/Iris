@@ -22,17 +22,18 @@ import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import {
   uriSource,
-  isLoading,
   sourceIcon,
   titleCase,
-  getFromUri,
 } from '../util/helpers';
 import { collate } from '../util/format';
 import { sortItems, applyFilter, arrayOf } from '../util/arrays';
 import { i18n, I18n } from '../locale';
 import Button from '../components/Button';
 import { trackEvent } from '../components/Trackable';
-import { getItemFromIndex, getItemsFromIndex } from '../util/selectors';
+import {
+  makeItemSelector,
+  makeLoadingSelector,
+} from '../util/selectors';
 
 class Artist extends React.Component {
   componentDidMount() {
@@ -153,7 +154,6 @@ class Artist extends React.Component {
     const {
       uri,
       uiActions,
-      load_queue,
       artist,
       sort,
       sort_reverse,
@@ -272,11 +272,7 @@ class Artist extends React.Component {
           </h4>
 
           <section className="grid-wrapper no-top-padding">
-            {isLoading(load_queue, [`(.*)${getFromUri('artistid', uri)}/albums(.*)`]) ? (
-              <Loader body loading />
-            ) : (
-              <AlbumGrid albums={albums} />
-            )}
+            <AlbumGrid albums={albums} />
           </section>
         </div>
       </div>
@@ -401,17 +397,16 @@ class Artist extends React.Component {
   render = () => {
     const {
       uri,
-      load_queue,
+      loading,
       artist,
       history,
     } = this.props;
 
-    if (!artist) {
-      if (
-        isLoading(load_queue, [`(.*)${uri}(.*)`])
-      ) {
-        return <Loader body loading />;
-      }
+    console.log('artist render', loading)
+
+    if (loading) {
+      return <Loader body loading />;
+    } else if (!artist) {
       return (
         <ErrorMessage type="not-found" title="Not found">
           <p>
@@ -527,18 +522,20 @@ class Artist extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   const uri = decodeURIComponent(ownProps.match.params.uri);
-  const artist = getItemFromIndex(state, uri);
+  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`]);
+  const artistSelector = makeItemSelector(uri);
+  const artist = artistSelector(state);
   if (artist && artist.albums_uris) {
-    artist.albums = getItemsFromIndex(state, artist.albums_uris);
+    const albumsSelector = makeItemSelector(artist.albums_uris);
+    artist.albums = albumsSelector(state);
   }
+
   return {
     uri,
     artist,
+    loading: loadingSelector(state),
     theme: state.ui.theme,
     slim_mode: state.ui.slim_mode,
-    load_queue: state.ui.load_queue,
-    spotify_library_artists: state.core.libraries['spotify:library:artists'] || { items_uris: [] },
-    mopidy_library_artists: state.core.libraries['mopidy:library:artists'] || { items_uris: [] },
     filter: (state.ui.artist_albums_filter ? state.ui.artist_albums_filter : null),
     sort: (state.ui.artist_albums_sort ? state.ui.artist_albums_sort : null),
     sort_reverse: (!!state.ui.artist_albums_sort_reverse),

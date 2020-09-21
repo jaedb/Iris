@@ -19,6 +19,10 @@ import { I18n, i18n } from '../../locale';
 import { collate, collateLibrary } from '../../util/format';
 import Button from '../../components/Button';
 import Loader from '../../components/Loader';
+import {
+  makeLibrarySelector,
+  makeLoadingSelector,
+} from '../../util/selectors';
 
 class LibraryArtists extends React.Component {
   constructor(props) {
@@ -148,30 +152,20 @@ class LibraryArtists extends React.Component {
 
   renderView = () => {
     const {
-      spotify_library,
-      google_library,
-      mopidy_library,
-      items,
-      source,
       sort,
       sort_reverse,
       view,
-      load_queue,
+      loading,
     } = this.props;
     const {
       limit,
       filter,
     } = this.state;
+    let { artists } = this.props;
 
-    if (isLoading(load_queue, ['(.*):library:artists'])) {
+    if (loading) {
       return <Loader body loading />;
     }
-
-    let artists = [
-      ...(source === 'all' || source === 'spotify' ? collate(spotify_library, { items }).items : []),
-      ...(source === 'all' || source === 'google' ? collate(google_library, { items }).items : []),
-      ...(source === 'all' || source === 'local' ? collate(mopidy_library, { items }).items : []),
-    ];
 
     if (sort) {
       artists = sortItems(artists, sort, sort_reverse);
@@ -336,20 +330,37 @@ class LibraryArtists extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  mopidy_uri_schemes: state.mopidy.uri_schemes,
-  google_available: (state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('gmusic:')),
-  spotify_available: state.spotify.access_token,
-  items: state.core.items,
-  mopidy_library: state.core.libraries['mopidy:library:artists'] || { items_uris: [] },
-  spotify_library: state.core.libraries['spotify:library:artists'] || { items_uris: [] },
-  google_library: state.core.libraries['google:library:artists'] || { items_uris: [] },
-  source: (state.ui.library_artists_source ? state.ui.library_artists_source : 'all'),
-  sort: (state.ui.library_artists_sort ? state.ui.library_artists_sort : null),
-  sort_reverse: (state.ui.library_artists_sort_reverse ? state.ui.library_artists_sort_reverse : false),
-  view: state.ui.library_artists_view,
-  load_queue: state.ui.load_queue,
-});
+const mapStateToProps = (state) => {
+  const source = state.ui.library_albums_source ? state.ui.library_albums_source : 'all';
+  const loadingSelector = makeLoadingSelector(['(.*):library:artists']);
+  const spotifyLibrarySelector = makeLibrarySelector('spotify:library:artists');
+  const googleLibrarySelector = makeLibrarySelector('google:library:artists');
+  const mopidyLibrarySelector = makeLibrarySelector('mopidy:library:artists');
+
+  const artists = [
+    ...(source === 'all' || source === 'spotify' ? spotifyLibrarySelector(state) : []),
+    ...(source === 'all' || source === 'google' ? googleLibrarySelector(state) : []),
+    ...(source === 'all' || source === 'local' ? mopidyLibrarySelector(state) : []),
+  ];
+
+  /**
+   TODO
+   Apply sort, filter and source rules to the selector.
+   This will mean we have a universal selector for all libraries. WIN!
+  **/
+
+  return {
+    mopidy_uri_schemes: state.mopidy.uri_schemes,
+    google_available: (state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('gmusic:')),
+    spotify_available: (state.spotify.access_token),
+    artists,
+    loading: loadingSelector(state),
+    source,
+    sort: (state.ui.library_artists_sort ? state.ui.library_artists_sort : null),
+    sort_reverse: (state.ui.library_artists_sort_reverse ? state.ui.library_artists_sort_reverse : false),
+    view: state.ui.library_artists_view,
+  };
+};
 
 const mapDispatchToProps = (dispatch) => ({
   uiActions: bindActionCreators(uiActions, dispatch),

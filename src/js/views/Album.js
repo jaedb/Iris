@@ -26,6 +26,7 @@ import {
   sourceIcon,
 } from '../util/helpers';
 import Button from '../components/Button';
+import { makeLoadingSelector, makeItemSelector } from '../util/selectors';
 
 export class Album extends React.Component {
   componentDidMount = () => {
@@ -165,16 +166,13 @@ export class Album extends React.Component {
     const {
       uri,
       album,
-      load_queue,
+      loading,
       slim_mode,
     } = this.props;
 
-    if (!album) {
-      if (
-        isLoading(load_queue, [`(.*)${uri}`])
-      ) {
-        return <Loader body loading />;
-      }
+    if (loading) {
+      return <Loader body loading />;
+    } else if (!album) {
       return (
         <ErrorMessage type="not-found" title="Not found">
           <p>
@@ -285,12 +283,14 @@ export class Album extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   const uri = decodeURIComponent(ownProps.match.params.uri);
+  const itemSelector = makeItemSelector(uri);
+  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`]);
   return {
     uri,
     slim_mode: state.ui.slim_mode,
     theme: state.ui.theme,
-    load_queue: state.ui.load_queue,
-    album: (state.core.items[uri] || null),
+    album: itemSelector(state),
+    loading: loadingSelector(state),
     spotify_library_albums: state.spotify.library_albums,
     local_library_albums: state.mopidy.library_albums,
     spotify_authorized: state.spotify.authorization,

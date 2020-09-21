@@ -276,6 +276,8 @@ class Playlist extends React.Component {
       slim_mode,
     } = this.props;
 
+    console.log('RENDERING')
+
     const playlist_id = getFromUri('playlistid', uri);
 
     if (!playlist) {

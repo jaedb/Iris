@@ -15,12 +15,13 @@ import * as mopidyActions from '../../services/mopidy/actions';
 import * as googleActions from '../../services/google/actions';
 import * as spotifyActions from '../../services/spotify/actions';
 import { sortItems, applyFilter } from '../../util/arrays';
-import { collate } from '../../util/format';
 import Button from '../../components/Button';
 import { i18n, I18n } from '../../locale';
-import { isLoading } from '../../util/helpers';
 import Loader from '../../components/Loader';
-import { getLibraryItems } from '../../util/selectors';
+import {
+  makeLibrarySelector,
+  makeLoadingSelector,
+} from '../../util/selectors';
 
 class LibraryAlbums extends React.Component {
   constructor(props) {
@@ -207,7 +208,7 @@ class LibraryAlbums extends React.Component {
       sort,
       sort_reverse,
       view,
-      load_queue,
+      loading,
     } = this.props;
     const {
       limit,
@@ -215,7 +216,7 @@ class LibraryAlbums extends React.Component {
     } = this.state;
     let { albums } = this.props;
 
-    if (isLoading(load_queue, ['(.*):library:albums'])) {
+    if (loading) {
       return <Loader body loading />;
     }
 
@@ -280,8 +281,6 @@ class LibraryAlbums extends React.Component {
       filter,
       per_page,
     } = this.state;
-
-    console.log('RENDER')
 
     const source_options = [
       {
@@ -403,16 +402,20 @@ class LibraryAlbums extends React.Component {
 
 const mapStateToProps = (state) => {
   const source = state.ui.library_albums_source ? state.ui.library_albums_source : 'all';
+  const loadingSelector = makeLoadingSelector(['(.*):library:albums']);
+  const spotifyLibrarySelector = makeLibrarySelector('spotify:library:albums');
+  const googleLibrarySelector = makeLibrarySelector('google:library:albums');
+  const mopidyLibrarySelector = makeLibrarySelector('mopidy:library:albums');
 
   const albums = [
-    ...(source === 'all' || source === 'spotify' ? getLibraryItems(state, 'spotify:library:albums') : []),
-    ...(source === 'all' || source === 'google' ? getLibraryItems(state, 'google:library:albums') : []),
-    ...(source === 'all' || source === 'local' ? getLibraryItems(state, 'mopidy:library:albums') : []),
+    ...(source === 'all' || source === 'spotify' ? spotifyLibrarySelector(state) : []),
+    ...(source === 'all' || source === 'google' ? googleLibrarySelector(state) : []),
+    ...(source === 'all' || source === 'local' ? mopidyLibrarySelector(state) : []),
   ];
 
   return {
     mopidy_uri_schemes: state.mopidy.uri_schemes,
-    load_queue: state.ui.load_queue,
+    loading: loadingSelector(state),
     albums,
     google_available: (state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('gmusic:')),
     spotify_available: state.spotify.access_token,

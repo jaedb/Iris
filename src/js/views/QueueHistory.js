@@ -11,20 +11,13 @@ import * as spotifyActions from '../services/spotify/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import { i18n, I18n } from '../locale';
 import Button from '../components/Button';
-import { arrayOf } from '../util/arrays';
-import { getItemsFromIndex } from '../util/selectors';
+import { queueHistorySelector } from '../util/selectors';
 
 class QueueHistory extends React.Component {
   componentDidMount() {
     const { uiActions: { setWindowTitle } } = this.props;
     setWindowTitle(i18n('queue_history.title'));
     this.loadHistory();
-  }
-
-  shouldComponentUpdate = ({ tracks: nextTracks }) => {
-    const { tracks } = this.props;
-
-    return nextTracks.length !== tracks.length;
   }
 
   loadHistory = () => {
@@ -47,6 +40,8 @@ class QueueHistory extends React.Component {
       tracks,
       uiActions,
     } = this.props;
+
+    console.log('rendering')
 
     const options = (
       <Button
@@ -84,25 +79,9 @@ class QueueHistory extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  const {
-    mopidy: {
-      queue_history,
-    },
-  } = state;
-
-  const uris = arrayOf('uri', queue_history);
-  const storedTracks = getItemsFromIndex(state, uris);
-
-  const tracks = queue_history.map((item) => ({
-    ...item,
-    ...(storedTracks[item.uri] || {}),
-  }));
-
-  return {
-    tracks,
-  };
-};
+const mapStateToProps = (state) => ({
+  tracks: queueHistorySelector(state),
+});
 
 const mapDispatchToProps = (dispatch) => ({
   uiActions: bindActionCreators(uiActions, dispatch),
