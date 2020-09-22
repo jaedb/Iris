@@ -40,9 +40,27 @@ const makeLibrarySelector = (uri) => createSelector(
   },
 );
 
+const getMopidySearchResults = (state, props) => (
+  state.mopidy.search_results && state.mopidy.search_results[props.type]
+);
+const getSpotifySearchResults = (state, props) => (
+  state.spotify.search_results && state.spotify.search_results[props.type]
+);
+const makeSearchResultsSelector = () => createSelector(
+  [getMopidySearchResults, getSpotifySearchResults, getItems],
+  (mopidySearchResults, spotifySearchResults, items) => {
+    const uris = [
+      ...mopidySearchResults || [],
+      ...spotifySearchResults || [],
+    ];
+    return indexToArray(items, uris);
+  },
+);
+
 export {
   makeItemSelector,
   makeLibrarySelector,
   makeLoadingSelector,
+  makeSearchResultsSelector,
   queueHistorySelector,
 };

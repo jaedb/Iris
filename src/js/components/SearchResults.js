@@ -1,18 +1,15 @@
-import { pick } from 'lodash';
 import React from 'react';
 import { connect } from 'react-redux';
-import { titleCase, getIndexedRecords } from '../util/helpers';
-import { sortItems, indexToArray } from '../util/arrays';
+import { sortItems } from '../util/arrays';
 import URILink from './URILink';
 import Icon from './Icon';
 import AlbumGrid from './AlbumGrid';
 import ArtistGrid from './ArtistGrid';
 import PlaylistGrid from './PlaylistGrid';
 import TrackList from './TrackList';
-import LazyLoadListener from './LazyLoadListener';
 import { I18n } from '../locale';
 import Button from './Button';
-import { getSearchResults } from '../util/selectors';
+import { makeSearchResultsSelector } from '../util/selectors';
 
 const SearchResults = ({
   type,
@@ -23,6 +20,7 @@ const SearchResults = ({
   all,
   results: rawResults,
 }) => {
+  console.log('rendering', type, query);
   const encodedTerm = encodeURIComponent(query.term);
   let results = rawResults;
 
@@ -93,15 +91,16 @@ const SearchResults = ({
   );
 };
 
-const mapStateToProps = (state, ownProps) => ({
-  uri_schemes_priority: state.ui.uri_schemes_priority || [],
-  results: [
-    ...getSearchResults(state, 'mopidy', ownProps.type, ownProps.query),
-    ...getSearchResults(state, 'spotify', ownProps.type, ownProps.query),
-  ],
-  sort: state.ui.search_results_sort || 'followers',
-  sort_reverse: !!state.ui.search_results_sort_reverse,
-});
+const mapStateToProps = (state, ownProps) => {
+  const searchResultsSelector = makeSearchResultsSelector();
+
+  return {
+    uri_schemes_priority: state.ui.uri_schemes_priority || [],
+    results: searchResultsSelector(state, ownProps),
+    sort: state.ui.search_results_sort,
+    sort_reverse: state.ui.search_results_sort_reverse,
+  };
+};
 
 const mapDispatchToProps = () => ({});
 
