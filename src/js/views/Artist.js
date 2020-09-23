@@ -162,8 +162,8 @@ class Artist extends React.Component {
     let {
       tracks,
       related_artists,
-      albums,
     } = artist;
+    let { albums } = this.props;
 
     if (sort && albums) {
       albums = sortItems(albums, sort, sort_reverse);
@@ -402,8 +402,6 @@ class Artist extends React.Component {
       history,
     } = this.props;
 
-    console.log('artist render', loading)
-
     if (loading) {
       return <Loader body loading />;
     } else if (!artist) {
@@ -525,14 +523,16 @@ const mapStateToProps = (state, ownProps) => {
   const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`]);
   const artistSelector = makeItemSelector(uri);
   const artist = artistSelector(state);
+  let albums = [];
   if (artist && artist.albums_uris) {
     const albumsSelector = makeItemSelector(artist.albums_uris);
-    artist.albums = albumsSelector(state);
+    albums = albumsSelector(state);
   }
 
   return {
     uri,
     artist,
+    albums,
     loading: loadingSelector(state),
     theme: state.ui.theme,
     slim_mode: state.ui.slim_mode,

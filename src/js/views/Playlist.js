@@ -27,6 +27,7 @@ import {
   decodeMopidyUri,
 } from '../util/helpers';
 import { i18n, I18n } from '../locale';
+import { makeItemSelector, makeLoadingSelector } from '../util/selectors';
 
 class Playlist extends React.Component {
   constructor(props) {
@@ -272,16 +273,14 @@ class Playlist extends React.Component {
     const {
       uri,
       playlist,
-      load_queue,
+      loading,
       slim_mode,
     } = this.props;
 
     console.log('RENDERING')
 
-    const playlist_id = getFromUri('playlistid', uri);
-
     if (!playlist) {
-      if (isLoading(load_queue, [`(.*)${playlist_id}(.*)`])) {
+      if (loading) {
         return <Loader body loading />;
       }
       return (
@@ -351,13 +350,6 @@ class Playlist extends React.Component {
 
         {this.renderActions()}
 
-        {
-          (!playlist.tracks || playlist.tracks.length <= 0)
-          && isLoading(load_queue, [`(.*)${playlist_id}/tracks(.*)`])
-          && (
-            <Loader body loading />
-          )
-        }
         <section className="list-wrapper">
           <TrackList
             uri={playlist.uri}
@@ -368,6 +360,8 @@ class Playlist extends React.Component {
             reorderTracks={this.reorderTracks}
           />
         </section>
+
+        {loading && <Loader body loading />}
       </div>
     );
   }
@@ -379,10 +373,6 @@ const mapStateToProps = (state, ownProps) => {
       allow_reporting,
       slim_mode,
       theme,
-      load_queue,
-    } = {},
-    core: {
-      items,
     } = {},
     spotify: {
       library_playlists: spotify_library_playlists,
@@ -395,14 +385,17 @@ const mapStateToProps = (state, ownProps) => {
   } = state;
 
   const uri = decodeMopidyUri(ownProps.match.params.uri);
+  const playlistId = getFromUri('playlistid', uri);
+  const itemSelector = makeItemSelector(uri);
+  const loadingSelector = makeLoadingSelector([`(.*)${playlistId}(?!.*(following))(.*)`]);
 
   return {
     uri,
     allow_reporting,
     slim_mode,
     theme,
-    load_queue,
-    playlist: items[uri],
+    loading: loadingSelector(state),
+    playlist: itemSelector(state),
     spotify_library_playlists,
     local_library_playlists,
     spotify_authorized,

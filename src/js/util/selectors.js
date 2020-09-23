@@ -4,13 +4,13 @@ import { isLoading } from './helpers';
 
 const getItems = (state) => state.core.items;
 
-const makeItemSelector = (uris) => createSelector(
+const makeItemSelector = (uriOrUris) => createSelector(
   [getItems],
   (items) => {
-    if (Array.isArray(uris)) {
-      return indexToArray(items, uris);
+    if (Array.isArray(uriOrUris)) {
+      return indexToArray(items, uriOrUris);
     }
-    return items[uris];
+    return items[uriOrUris];
   },
 );
 
