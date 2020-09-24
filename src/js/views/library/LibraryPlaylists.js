@@ -19,6 +19,7 @@ import { I18n, i18n } from '../../locale';
 import { collate } from '../../util/format';
 import { isLoading } from '../../util/helpers';
 import Loader from '../../components/Loader';
+import { makeLibrarySelector, makeLoadingSelector } from '../../util/selectors';
 
 class LibraryPlaylists extends React.Component {
   constructor(props) {
@@ -133,28 +134,21 @@ class LibraryPlaylists extends React.Component {
 
   renderView = () => {
     const {
-      spotify_library,
-      mopidy_library,
-      items,
       sort,
       sort_reverse,
       view,
       source,
-      load_queue,
+      loading,
     } = this.props;
     const {
       filter,
       limit,
     } = this.state;
+    let { playlists } = this.props;
 
-    if (isLoading(load_queue, ['(.*):library:playlists'])) {
+    if (loading) {
       return <Loader body loading />;
     }
-
-    let playlists = [
-      ...(source === 'all' || source === 'spotify' ? collate(spotify_library, { items }).items : []),
-      ...(source === 'all' || source === 'local' ? collate(mopidy_library, { items }).items : []),
-    ];
 
     if (sort) {
       playlists = sortItems(playlists, sort, sort_reverse);
@@ -204,7 +198,19 @@ class LibraryPlaylists extends React.Component {
     );
   }
 
-  render() {
+  render = () => {
+    const {
+      uiActions,
+      spotify_available,
+      source,
+      sort,
+      sort_reverse,
+      view,
+    } = this.props;
+    const {
+      filter,
+    } = this.state;
+
     const source_options = [
       {
         value: 'all',
@@ -216,7 +222,7 @@ class LibraryPlaylists extends React.Component {
       },
     ];
 
-    if (this.props.spotify_available) {
+    if (spotify_available) {
       source_options.push({
         value: 'spotify',
         label: i18n('services.spotify.title'),
@@ -268,34 +274,34 @@ class LibraryPlaylists extends React.Component {
     const options = (
       <span>
         <FilterField
-          initialValue={this.state.filter}
+          initialValue={filter}
           handleChange={(value) => this.setState({ filter: value })}
-          onSubmit={e => this.props.uiActions.hideContextMenu()}
+          onSubmit={() => uiActions.hideContextMenu()}
         />
         <DropdownField
           icon="swap_vert"
           name={i18n('fields.sort')}
-          value={this.props.sort}
+          value={sort}
           valueAsLabel
           options={sort_options}
-          selected_icon={this.props.sort ? (this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
-          handleChange={(value) => { this.setSort(value); this.props.uiActions.hideContextMenu(); }}
+          selected_icon={sort ? (sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
+          handleChange={(value) => { this.setSort(value); uiActions.hideContextMenu(); }}
         />
         <DropdownField
           icon="visibility"
           name={i18n('fields.view')}
           valueAsLabel
-          value={this.props.view}
+          value={view}
           options={view_options}
-          handleChange={(value) => { this.props.uiActions.set({ library_playlists_view: value }); this.props.uiActions.hideContextMenu(); }}
+          handleChange={(value) => { uiActions.set({ library_playlists_view: value }); uiActions.hideContextMenu(); }}
         />
         <DropdownField
           icon="cloud"
           name={i18n('fields.source')}
           valueAsLabel
-          value={this.props.source}
+          value={source}
           options={source_options}
-          handleChange={(value) => { this.props.uiActions.set({ library_playlists_source: value }); this.props.uiActions.hideContextMenu(); }}
+          handleChange={(value) => { uiActions.set({ library_playlists_source: value }); uiActions.hideContextMenu(); }}
         />
         <Button
           to="/playlist/create"
@@ -319,7 +325,7 @@ class LibraryPlaylists extends React.Component {
 
     return (
       <div className="view library-playlists-view">
-        <Header options={options} uiActions={this.props.uiActions}>
+        <Header options={options} uiActions={uiActions}>
           <Icon name="queue_music" type="material" />
           <I18n path="library.playlists.title" />
         </Header>
@@ -330,20 +336,29 @@ class LibraryPlaylists extends React.Component {
 }
 
 const mapStateToProps = (state) => {
+  const source = state.ui.library_playlists_source || 'all';
+  const loadingSelector = makeLoadingSelector(['(.*):library:playlists']);
+  const spotifyLibrarySelector = makeLibrarySelector('spotify:library:playlists');
+  const googleLibrarySelector = makeLibrarySelector('google:library:playlists');
+  const mopidyLibrarySelector = makeLibrarySelector('mopidy:library:playlists');
+
+  const playlists = [
+    ...(source === 'all' || source === 'spotify' ? spotifyLibrarySelector(state) : []),
+    ...(source === 'all' || source === 'google' ? googleLibrarySelector(state) : []),
+    ...(source === 'all' || source === 'local' ? mopidyLibrarySelector(state) : []),
+  ];
+
   return {
     slim_mode: state.ui.slim_mode,
     mopidy_uri_schemes: state.mopidy.uri_schemes,
     spotify_available: state.spotify.access_token,
-    items: state.core.items,
-    mopidy_library: state.core.libraries['mopidy:library:playlists'] || { items_uris: [] },
-    spotify_library: state.core.libraries['spotify:library:playlists'] || { items_uris: [] },
-    load_queue: state.ui.load_queue,
+    playlists,
+    loading: loadingSelector(state),
+    source,
     me_id: (state.spotify.me ? state.spotify.me.id : false),
     view: state.ui.library_playlists_view,
-    source: (state.ui.library_playlists_source ? state.ui.library_playlists_source : 'all'),
     sort: (state.ui.library_playlists_sort ? state.ui.library_playlists_sort : null),
     sort_reverse: (state.ui.library_playlists_sort_reverse ? state.ui.library_playlists_sort_reverse : false),
-    playlists: state.core.playlists,
   };
 };
 

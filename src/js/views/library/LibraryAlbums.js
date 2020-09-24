@@ -56,6 +56,18 @@ class LibraryAlbums extends React.Component {
     this.getGoogleLibrary();
     this.getSpotifyLibrary();
   }
+  /*
+  componentDidUpdate(prevProps, prevState) {
+    Object.entries(this.props).forEach(([key, val]) =>
+      prevProps[key] !== val && console.log(`Prop '${key}' changed`)
+    );
+    if (this.state) {
+      Object.entries(this.state).forEach(([key, val]) =>
+        prevState[key] !== val && console.log(`State '${key}' changed`)
+      );
+    }
+  }
+  */
 
   componentDidUpdate = ({ source: prevSource }) => {
     const { source } = this.props;
@@ -65,40 +77,6 @@ class LibraryAlbums extends React.Component {
       this.getGoogleLibrary();
       this.getSpotifyLibrary();
     }
-  }
-
-  shouldComponentUpdate = ({
-    albums: prevAlbums,
-    sort: prevSort,
-    sort_reverse: prevSortReverse,
-    source: prevSource,
-    view: prevView,
-  },
-  {
-    filter: prevFilter,
-    limit: prevLimit,
-  }) => {
-    const {
-      albums,
-      sort,
-      sort_reverse,
-      source,
-      view,
-    } = this.props;
-    const {
-      filter,
-      limit,
-    } = this.state;
-
-    if (prevAlbums.length !== albums.length) return true;
-    if (prevSource !== source) return true;
-    if (prevSort !== sort) return true;
-    if (prevSortReverse !== sort_reverse) return true;
-    if (prevView !== view) return true;
-    if (prevFilter !== filter) return true;
-    if (prevLimit !== limit) return true;
-
-    return false;
   }
 
   onRefresh = () => {
@@ -215,6 +193,8 @@ class LibraryAlbums extends React.Component {
       filter,
     } = this.state;
     let { albums } = this.props;
+
+    console.log('library albums render', loading, albums.length);
 
     if (loading) {
       return <Loader body loading />;
@@ -414,15 +394,15 @@ const mapStateToProps = (state) => {
   ];
 
   return {
-    mopidy_uri_schemes: state.mopidy.uri_schemes,
     loading: loadingSelector(state),
+    mopidy_uri_schemes: state.mopidy.uri_schemes,
     albums,
     google_available: (state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('gmusic:')),
     spotify_available: state.spotify.access_token,
     view: state.ui.library_albums_view,
     source,
-    sort: (state.ui.library_albums_sort ? state.ui.library_albums_sort : null),
-    sort_reverse: (state.ui.library_albums_sort_reverse ? state.ui.library_albums_sort_reverse : false),
+    sort: state.ui.library_albums_sort,
+    sort_reverse: state.ui.library_albums_sort_reverse,
   };
 };
 

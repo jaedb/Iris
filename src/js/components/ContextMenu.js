@@ -545,13 +545,13 @@ class ContextMenu extends React.Component {
       },
     } = this.props;
 
-    if (!items || items.length <= 0 || !items[0].artists_uris || items[0].artists_uris.length <= 0) {
+    if (!items || items.length <= 0 || !items[0].artists || items[0].artists.length <= 0) {
       return null;
     }
     hideContextMenu();
 
     // note: we can only go to one artist (even if this item has multiple artists, just go to the first one)
-    push(buildLink(items[0].artists_uris[0]));
+    push(buildLink(items[0].artists[0].uri));
   }
 
   goToUser = () => {

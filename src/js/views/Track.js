@@ -28,7 +28,7 @@ import {
 } from '../util/helpers';
 import { i18n, I18n } from '../locale';
 import Button from '../components/Button';
-import { getItemFromIndex } from '../util/selectors';
+import { makeLoadingSelector, makeItemSelector } from '../util/selectors';
 
 class Track extends React.Component {
   componentDidMount() {
@@ -217,13 +217,13 @@ class Track extends React.Component {
     const {
       uri,
       track,
-      load_queue,
+      loading,
       slim_mode,
       uiActions,
       genius_authorized,
     } = this.props;
 
-    if (isLoading(load_queue, [`(.*)${uri}(.*)`])) {
+    if (loading) {
       return <Loader body loading />;
     }
 
@@ -350,12 +350,14 @@ const rebuildUri = (uri) => {
 const mapStateToProps = (state, ownProps) => {
   let uri = decodeURIComponent(ownProps.match.params.uri);
   uri = rebuildUri(uri);
+  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`]);
+  const trackSelector = makeItemSelector(uri);
 
   return {
     uri,
     slim_mode: state.ui.slim_mode,
-    load_queue: state.ui.load_queue,
-    track: getItemFromIndex(state, uri),
+    loading: loadingSelector(state),
+    track: trackSelector(state),
     spotify_library_albums: state.spotify.library_albums,
     local_library_albums: state.mopidy.library_albums,
     lastfm_authorized: state.lastfm.authorization,

@@ -421,7 +421,6 @@ const CoreMiddleware = (function () {
         break;
 
       case 'LOAD_ARTIST':
-        console.log(action);
         const fetchArtist = () => {
           switch (uriSource(action.uri)) {
             case 'spotify':
@@ -585,7 +584,7 @@ const CoreMiddleware = (function () {
         break;
 
       case 'LOAD_LIBRARY':
-        store.dispatch(uiActions.startLoading(action.uri));
+        store.dispatch(uiActions.startLoading(action.uri, action.uri));
         const fetchLibrary = () => {
           switch (uriSource(action.uri)) {
             case 'spotify':
@@ -975,7 +974,7 @@ const CoreMiddleware = (function () {
         break;
 
       case 'RESTORE_ITEMS_FROM_COLD_STORE':
-        store.dispatch(uiActions.stopLoading(action.items));
+        store.dispatch(uiActions.stopLoading(arrayOf('uri', action.items)));
         next(action);
         break;
 

@@ -331,7 +331,7 @@ class LibraryArtists extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  const source = state.ui.library_albums_source ? state.ui.library_albums_source : 'all';
+  const source = state.ui.library_artists_source || 'all';
   const loadingSelector = makeLoadingSelector(['(.*):library:artists']);
   const spotifyLibrarySelector = makeLibrarySelector('spotify:library:artists');
   const googleLibrarySelector = makeLibrarySelector('google:library:artists');

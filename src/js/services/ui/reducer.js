@@ -131,7 +131,7 @@ export default function reducer(ui = {}, action) {
     case 'STOP_LOADING':
       return {
         ...ui,
-        load_queue: omit(load_queue, action.keys),
+        load_queue: omit(ui.load_queue, action.keys),
       };
 
     case 'START_PROCESS':

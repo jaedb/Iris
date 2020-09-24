@@ -325,7 +325,12 @@ const MopidyMiddleware = (function () {
         break;
 
       case 'SET_WINDOW_FOCUS':
-
+        /**
+         * Disabled because it causes so many requests without any conscious user input.
+         * Will monitor to see if it has any adverse impact.
+         */
+        
+         /*
         // Focus has just been regained
         if (action.window_focus === true) {
           store.dispatch(mopidyActions.getCurrentTrack());
@@ -337,6 +342,8 @@ const MopidyMiddleware = (function () {
           store.dispatch(mopidyActions.getRepeat());
           store.dispatch(mopidyActions.getTimePosition());
         }
+        */
+        next(action);
         break;
 
       case 'MOPIDY_REQUEST':
@@ -1797,7 +1804,7 @@ const MopidyMiddleware = (function () {
           });
         break;
 
-      case 'MOPIDY_GET_ARTIST':
+      case 'MOPIDY_GET_ARTIST': {
         request(store, 'library.lookup', { uris: [action.uri] })
           .then((_response) => {
             if (!_response) return;
@@ -1807,15 +1814,14 @@ const MopidyMiddleware = (function () {
             const albums = [];
             for (let i = 0; i < response.length; i++) {
               if (response[i].album) {
-                var album = {
+                const album = {
                   ...response[i].album,
                   uri: response[i].album.uri,
                 };
                 if (album) {
-                  function getByURI(albumToCheck) {
-                    return album.uri == albumToCheck.uri;
-                  }
-                  const existingAlbum = albums.find(getByURI);
+                  const existingAlbum = albums.find(
+                    (albumToCheck) => album.uri === albumToCheck.uri,
+                  );
                   if (!existingAlbum) {
                     albums.push(album);
                   }
@@ -1828,7 +1834,13 @@ const MopidyMiddleware = (function () {
 
             // Get the artist object from the track. This is a bit ugly because it's a simplified
             // (Mopidy) artist object but gives us enough to fetch their name and artwork.
-            const raw_artist = response[0].artists.find((item) => item.uri === action.uri);
+            let raw_artist = null;
+            response.forEach((track) => {
+              const matchingArtist = track.artists.find((artist) => artist.uri === action.uri);
+              if (matchingArtist) {
+                raw_artist = matchingArtist;
+              }
+            });
 
             const artist = {
               uri: action.uri,
@@ -1839,16 +1851,22 @@ const MopidyMiddleware = (function () {
             };
 
             store.dispatch(coreActions.itemLoaded(artist));
-            store.dispatch(lastfmActions.getArtist(artist.uri, artist.name, artist.musicbrainz_id));
 
-            // Load supprting information from LastFM and Discogs
-            if (store.getState().spotify.enabled) {
-              store.dispatch(spotifyActions.getArtistImages(artist));
-            } else {
-              store.dispatch(discogsActions.getArtistImages(artist.uri, artist));
+            // We may not have a raw_artist if the tracks' artist is not found (ie the requested
+            // artist may be the albumartist).
+            if (raw_artist) {
+              store.dispatch(lastfmActions.getArtist(artist.uri, artist.name, artist.musicbrainz_id));
+
+              // Load supprting information from LastFM and Discogs
+              if (store.getState().spotify.enabled) {
+                store.dispatch(spotifyActions.getArtistImages(artist));
+              } else {
+                store.dispatch(discogsActions.getArtistImages(artist.uri, artist));
+              }
             }
           });
         break;
+      }
 
       case 'MOPIDY_GET_ARTISTS':
         request(store, 'library.lookup', { uris: action.uris })
