@@ -114,7 +114,7 @@ specs:
 services:
   mopidy:
     title: Mopidy
-    local: Local
+    local: Lokalnie
     adding_uris: 'Dodawanie %{count} URI'
     searching_providers: 'Wyszukiwanie %{count} dostawców Mopidy'
     loading_albums: 'Ładowanie %{count} lokalnych albumów'
@@ -134,8 +134,8 @@ services:
     title: Icecast
   lastfm:
     title: LastFM
-    love: Love
-    unlove: Unlove
+    love: Lubię to
+    unlove: Nie lubię tego
 
 ##
 # Components
@@ -268,7 +268,7 @@ debug:
   create_notification: Stwórz powiadomienie
   create_process: Stwórz powiadomienie procesu
   run_test: Uruchom test procesu
-  call: Wezwij
+  call: Zawołaj funkcję
   data: Dane
   examples: Przykłady
 playlist:
@@ -304,7 +304,7 @@ track:
   explicit: Explicit
   disc_number: 'Dysk %{number}'
   track_number: 'Ścieżka %{number}'
-  unknown_album: Unknown album
+  unknown_album: Nieznany album
   want_lyrics: 'Potrzebujesz tekstu utworu? Autoryzuj Geniusa w '
 settings:
   title: Ustawienia
@@ -366,7 +366,7 @@ settings:
     reset: Resetuj wszystkie ustawienia
   about:
     title: O projekcie
-    blurb_1: ' jest otwartoźródłowym prowadzonym przez '
+    blurb_1: ' jest otwartoźródłowym projektem prowadzonym przez '
     blurb_2: '. Jest dostarczane bez jakichkolwiek gwarancji. Jeśli zapłaciłeś komukolwiek za to oprogramowanie, skontaktuj się z nami.'
     donate: Wesprzyj
     github: GitHub
@@ -529,4 +529,4 @@ modal:
       subtitle: 'Użytkownik udostępnił Ci swoją konfigurację. Zawiera ona:'
       do_you_want_to_import: Czy chcesz to zaimportować?
       import_now: Importuj teraz
-      successful: Import udany
+      successful: Import zakończony sukcesem
