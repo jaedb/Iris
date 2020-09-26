@@ -198,24 +198,17 @@ export default function reducer(core = {}, action) {
          * Remove an item from an index
          * */
 
-    case 'REMOVE_FROM_INDEX':
-      var index = { ...core[action.index_name] };
+    case 'REMOVE_ITEM': {
+      const items = { ...core.items };
 
-      // We have a new key to redirect to
       if (action.new_key) {
-            	index[action.key] = {
-            		moved_to: action.new_key,
-            	};
-
-        // No redirection, so just a clean delete
+        items[action.key] = { moved_to: action.new_key };
       } else {
-            	delete index[action.key];
+        delete items[action.key];
       }
 
-      var updated_core = {};
-      updated_core[action.index_name] = index;
-
-      return { ...core, ...updated_core };
+      return { ...core, items };
+    }
 
 
       /**

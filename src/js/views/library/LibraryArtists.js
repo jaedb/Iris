@@ -309,6 +309,7 @@ class LibraryArtists extends React.Component {
         />
         <Button
           noHover
+          discrete
           onClick={this.onRefresh}
           tracking={{ category: 'LibraryArtists', action: 'Refresh' }}
         >

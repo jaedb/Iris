@@ -21,6 +21,7 @@ import {
   formatArtists,
   formatArtist,
   formatPlaylist,
+  formatPlaylists,
 } from '../../util/format';
 import {
   arrayOf,
@@ -1558,7 +1559,7 @@ const MopidyMiddleware = (function () {
 
 
       case 'MOPIDY_GET_PLAYLIST':
-        request(store, 'playlists.lookup', action.data)
+        request(store, 'playlists.lookup', { uri: action.uri })
           .then((response) => {
             if (!response) return;
 
@@ -1669,7 +1670,7 @@ const MopidyMiddleware = (function () {
                 if (action.key !== playlist.uri) {
                   // Remove old playlist (by old key/uri) from index
                   // By providing the new key, the old playlist gets replaced with a redirector object
-                  store.dispatch(coreActions.removeFromIndex('playlists', action.key, playlist.uri));
+                  store.dispatch(coreActions.removeItem(action.key, playlist.uri));
                   store.dispatch(coreActions.removePinned(action.key));
                   store.dispatch(coreActions.addPinned(playlist));
                 }
@@ -1723,24 +1724,20 @@ const MopidyMiddleware = (function () {
       case 'MOPIDY_CREATE_PLAYLIST':
         request(store, 'playlists.create', { name: action.name, uri_scheme: action.scheme })
           .then((response) => {
+            const playlist = {
+              ...formatPlaylist(response),
+              ...action,
+            };
             store.dispatch(uiActions.createNotification({ content: 'Created playlist' }));
-            store.dispatch(coreActions.itemLoaded(response));
-            store.dispatch({
-              type: 'MOPIDY_LIBRARY_PLAYLIST_CREATED',
-              key: response.uri,
-            });
+            store.dispatch(coreActions.addToLibrary('mopidy:library:playlists', playlist));
           });
         break;
 
       case 'MOPIDY_DELETE_PLAYLIST':
         request(store, 'playlists.delete', { uri: action.uri })
-          .then((response) => {
+          .then(() => {
             store.dispatch(uiActions.createNotification({ content: 'Deleted playlist' }));
-            store.dispatch(coreActions.removeFromIndex('playlists', action.uri));
-            store.dispatch({
-              type: 'MOPIDY_LIBRARY_PLAYLIST_DELETED',
-              key: action.uri,
-            });
+            store.dispatch(coreActions.removeFromLibrary('mopidy:library:playlists', action.uri));
           });
         break;
 

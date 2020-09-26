@@ -188,27 +188,6 @@ const CoreMiddleware = (function () {
 
         break;
 
-      // Get assets from all of our providers
-      case 'GET_LIBRARY_PLAYLISTS':
-        store.dispatch(spotifyActions.getLibraryPlaylists());
-        store.dispatch(mopidyActions.getLibraryPlaylists());
-        next(action);
-        break;
-
-      // Get assets from all of our providers
-      case 'GET_LIBRARY_ALBUMS':
-        store.dispatch(spotifyActions.getLibraryAlbums());
-        store.dispatch(mopidyActions.getLibraryAlbums());
-        next(action);
-        break;
-
-      // Get assets from all of our providers
-      case 'GET_LIBRARY_ARTISTS':
-        store.dispatch(spotifyActions.getLibraryArtists());
-        store.dispatch(mopidyActions.getLibraryArtists());
-        next(action);
-        break;
-
       case 'RESTART':
         location.reload();
         break;
@@ -336,7 +315,7 @@ const CoreMiddleware = (function () {
               break;
 
             default:
-              store.dispatch(mopidyActions.getTrack(action.uri));
+              store.dispatch(mopidyActions.getTrack(action.uri, action.options));
               break;
           }
         };
@@ -384,7 +363,7 @@ const CoreMiddleware = (function () {
               break;
 
             default:
-              store.dispatch(mopidyActions.getAlbum(action.uri));
+              store.dispatch(mopidyActions.getAlbum(action.uri, action.options));
               break;
           };
         };
@@ -432,7 +411,7 @@ const CoreMiddleware = (function () {
               break;
 
             default:
-              store.dispatch(mopidyActions.getArtist(action.uri));
+              store.dispatch(mopidyActions.getArtist(action.uri, action.options));
               break;
           }
         };
@@ -498,7 +477,7 @@ const CoreMiddleware = (function () {
               break;
 
             default:
-              store.dispatch(mopidyActions.getPlaylist(action.uri));
+              store.dispatch(mopidyActions.getPlaylist(action.uri, action.options));
               break;
           }
         };
@@ -636,6 +615,39 @@ const CoreMiddleware = (function () {
         next(action);
         break;
 
+      case 'ADD_TO_LIBRARY': {
+        const library = store.getState().core.libraries[action.uri];
+        if (library) {
+          library.items_uris.push(action.item.uri);
+          store.dispatch(coreActions.libraryLoaded(library));
+        } else {
+          // Clear our stored library. This prevents the next call to possibly restore a stale
+          // library listing.
+          localForage.removeItem(action.uri);
+        }
+        console.log(action);
+        console.log(library);
+        store.dispatch(coreActions.itemLoaded({ ...action.item, in_library: true }));
+        next(action);
+        break;
+      }
+
+      case 'REMOVE_FROM_LIBRARY': {
+        const library = store.getState().core.libraries[action.uri];
+        if (library) {
+          const items_uris = library.items_uris.filter((uri) => uri !== action.itemUri);
+          store.dispatch(coreActions.libraryLoaded({
+            ...library,
+            items_uris,
+          }));
+        }
+
+        store.dispatch(coreActions.removeItem(action.itemUri));
+        localForage.removeItem(action.itemUri);
+
+        next(action);
+        break;
+      }
 
       /**
        * Index actions

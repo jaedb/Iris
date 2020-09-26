@@ -175,6 +175,22 @@ export function loadLibrary(uri, options = {}) {
   };
 }
 
+export function addToLibrary(uri, item) {
+  return {
+    type: 'ADD_TO_LIBRARY',
+    uri,
+    item,
+  };
+}
+
+export function removeFromLibrary(uri, itemUri) {
+  return {
+    type: 'REMOVE_FROM_LIBRARY',
+    uri,
+    itemUri,
+  };
+}
+
 
 /**
  * Record loaders
@@ -265,10 +281,9 @@ export function loadedMore(parent_type, parent_key, records_type, records_data, 
   };
 }
 
-export function removeFromIndex(index_name, key, new_key = null) {
+export function removeItem(key, new_key = null) {
   return {
-    type: 'REMOVE_FROM_INDEX',
-    index_name,
+    type: 'REMOVE_ITEM',
     key,
     new_key,
   };
@@ -349,7 +364,7 @@ export function savePlaylist(uri, name, description = '', is_public = false, is_
 export function createPlaylist(scheme, name, description = '', is_public = false, is_collaborative = false) {
   switch (scheme) {
     case 'spotify':
-      if (description == '') {
+      if (description === '') {
         description = null;
       }
       return spotifyActions.createPlaylist(name, description, is_public, is_collaborative);

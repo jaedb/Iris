@@ -277,8 +277,6 @@ class Playlist extends React.Component {
       slim_mode,
     } = this.props;
 
-    console.log('RENDERING')
-
     if (!playlist) {
       if (loading) {
         return <Loader body loading />;

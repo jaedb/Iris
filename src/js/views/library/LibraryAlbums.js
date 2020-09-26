@@ -182,8 +182,6 @@ class LibraryAlbums extends React.Component {
     } = this.state;
     let { albums } = this.props;
 
-    console.log('library albums render', loading, albums.length);
-
     if (loading) {
       return <Loader body loading />;
     }
@@ -347,6 +345,7 @@ class LibraryAlbums extends React.Component {
         />
         <Button
           noHover
+          discrete
           onClick={this.onRefresh}
           tracking={{ category: 'LibraryAlbums', action: 'Refresh' }}
         >

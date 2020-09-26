@@ -22,6 +22,7 @@ import {
   formatTrack,
 } from '../../util/format';
 import URILink from '../../components/URILink';
+import { getItem } from '../../util/selectors';
 
 const coreActions = require('../../services/core/actions');
 const uiActions = require('../../services/ui/actions');
@@ -737,35 +738,35 @@ export function clearAutocompleteResults(field_id = null) {
 
 export function following(uri, method = 'GET') {
   return (dispatch, getState) => {
-    const asset_name = uriType(uri);
+    const type = uriType(uri);
     let endpoint;
     let data;
     let is_following = null;
-    const asset = getState().core[`${asset_name}s`] && getState().core[`${asset_name}s`][uri];
+    const asset = getItem(getState(), uri) || {};
 
-    if (method == 'PUT') {
+    if (method === 'PUT') {
       is_following = true;
-    } else if (method == 'DELETE') {
+    } else if (method === 'DELETE') {
       is_following = false;
     }
 
-    switch (asset_name) {
+    switch (type) {
       case 'track':
-        if (method == 'GET') {
+        if (method === 'GET') {
           endpoint = `me/tracks/contains?ids=${getFromUri('trackid', uri)}`;
         } else {
           endpoint = `me/tracks?ids=${getFromUri('trackid', uri)}`;
         }
         break;
       case 'album':
-        if (method == 'GET') {
+        if (method === 'GET') {
           endpoint = `me/albums/contains?ids=${getFromUri('albumid', uri)}`;
         } else {
           endpoint = `me/albums?ids=${getFromUri('albumid', uri)}`;
         }
         break;
       case 'artist':
-        if (method == 'GET') {
+        if (method === 'GET') {
           endpoint = `me/following/contains?type=artist&ids=${getFromUri('artistid', uri)}`;
         } else {
           endpoint = `me/following?type=artist&ids=${getFromUri('artistid', uri)}`;
@@ -773,7 +774,7 @@ export function following(uri, method = 'GET') {
         }
         break;
       case 'user':
-        if (method == 'GET') {
+        if (method === 'GET') {
           endpoint = `me/following/contains?type=user&ids=${getFromUri('userid', uri)}`;
         } else {
           endpoint = `me/following?type=user&ids=${getFromUri('userid', uri)}`;
@@ -781,7 +782,7 @@ export function following(uri, method = 'GET') {
         }
         break;
       case 'playlist':
-        if (method == 'GET') {
+        if (method === 'GET') {
           endpoint = `playlists/${getFromUri('playlistid', uri)}/followers/contains?ids=${getState().spotify.me.id}`;
         } else {
           endpoint = `playlists/${getFromUri('playlistid', uri)}/followers?`;
@@ -795,23 +796,20 @@ export function following(uri, method = 'GET') {
       .then(
         (response) => {
           if (Array.isArray(response) && response.length > 0) {
-            is_following = response[0];
+            asset.in_library = response[0];
           } else {
-            is_following = is_following;
+            asset.in_library = is_following;
           }
 
-          dispatch(coreActions.itemLoaded({
-            uri,
-            in_library: is_following,
-          }));
-
           if (method === 'DELETE') {
+            dispatch(coreActions.removeFromLibrary(`spotify:library:${type}s`, uri));
             dispatch(uiActions.createNotification({
-              content: <span>Removed <URILink uri={uri}>{asset ? asset.name : asset_name}</URILink> from library</span>,
+              content: <span>Removed <URILink uri={uri}>{asset ? asset.name : type}</URILink> from library</span>,
             }));
           } else if (method === 'PUT' || method === 'POST') {
+            dispatch(coreActions.addToLibrary(`spotify:library:${type}s`, asset));
             dispatch(uiActions.createNotification({
-              content: <span>Added <URILink uri={uri}>{asset ? asset.name : asset_name}</URILink> to library</span>,
+              content: <span>Added <URILink uri={uri}>{asset ? asset.name : type}</URILink> to library</span>,
             }));
           }
         },

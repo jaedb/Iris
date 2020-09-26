@@ -611,7 +611,7 @@ class ContextMenu extends React.Component {
     hideContextMenu();
   }
 
-  refetch = () => {
+  refresh = () => {
     const {
       uiActions: {
         hideContextMenu,
@@ -1117,11 +1117,11 @@ class ContextMenu extends React.Component {
       </div>
     );
 
-    const refetch = (
+    const refresh = (
       <div className="context-menu__item">
-        <a className="context-menu__item__link" onClick={this.refetch}>
+        <a className="context-menu__item__link" onClick={this.refresh}>
           <span className="context-menu__item__label">
-            <I18n path="context_menu.refetch" />
+            <I18n path="context_menu.refresh" />
           </span>
         </a>
       </div>
@@ -1139,7 +1139,7 @@ class ContextMenu extends React.Component {
             <div className="context-menu__divider" />
             {go_to_artist}
             {copy_uris}
-            {refetch}
+            {refresh}
           </div>
         );
       case 'artist':
@@ -1152,7 +1152,7 @@ class ContextMenu extends React.Component {
             <div className="context-menu__divider" />
             {context.source === 'spotify' && go_to_recommendations}
             {copy_uris}
-            {refetch}
+            {refresh}
           </div>
         );
       case 'playlist':
@@ -1175,7 +1175,7 @@ class ContextMenu extends React.Component {
                 {delete_playlist}
               </div>
             )}
-            {refetch}
+            {refresh}
           </div>
         );
       case 'current-track':

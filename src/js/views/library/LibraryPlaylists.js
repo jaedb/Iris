@@ -304,6 +304,15 @@ class LibraryPlaylists extends React.Component {
           handleChange={(value) => { uiActions.set({ library_playlists_source: value }); uiActions.hideContextMenu(); }}
         />
         <Button
+          noHover
+          discrete
+          onClick={this.onRefresh}
+          tracking={{ category: 'LibraryAlbums', action: 'Refresh' }}
+        >
+          <Icon name="refresh" />
+          <I18n path="actions.refresh" />
+        </Button>
+        <Button
           to="/playlist/create"
           noHover
           discrete
@@ -311,14 +320,6 @@ class LibraryPlaylists extends React.Component {
         >
           <Icon name="add_box" />
           <I18n path="actions.add" />
-        </Button>
-        <Button
-          noHover
-          onClick={this.onRefresh}
-          tracking={{ category: 'LibraryAlbums', action: 'Refresh' }}
-        >
-          <Icon name="refresh" />
-          <I18n path="actions.refresh" />
         </Button>
       </span>
     );
