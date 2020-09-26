@@ -1,23 +1,24 @@
+import { memoize } from 'lodash';
 import { createSelector } from 'reselect';
 import { indexToArray } from './arrays';
 import { isLoading } from './helpers';
 
 const getItems = (state) => state.core.items;
+const getLoadQueue = (state) => state.ui.load_queue;
+const getLibraries = (state) => state.core.libraries;
 
-const makeItemSelector = (uriOrUris) => createSelector(
+const makeItemSelector = (uri) => createSelector(
   [getItems],
   (items) => {
-    if (Array.isArray(uriOrUris)) {
-      return indexToArray(items, uriOrUris);
+    if (Array.isArray(uri)) {
+      return indexToArray(items, uri);
     }
-    return items[uriOrUris];
+    return items[uri];
   },
 );
-
-const getLoadQueue = (state) => state.ui.load_queue;
 const makeLoadingSelector = (keys) => createSelector(
   [getLoadQueue],
-  (items) => isLoading(items, keys),
+  (loadQueue) => isLoading(loadQueue, keys),
 );
 
 const getQueueHistory = (state) => state.mopidy.queue_history;
@@ -29,14 +30,14 @@ const queueHistorySelector = createSelector(
   })),
 );
 
-const getLibraries = (state) => state.core.libraries;
-const makeLibrarySelector = (uri) => createSelector(
+const makeLibrarySelector = (uris) => createSelector(
   [getLibraries, getItems],
   (libraries, items) => {
-    const library = libraries[uri];
-    if (!library || !library.items_uris.length) return [];
-
-    return indexToArray(items, library.items_uris);
+    const itemUris = indexToArray(libraries, uris).reduce(
+      (acc, library) => [...acc, ...library.items_uris],
+      [],
+    );
+    return indexToArray(items, itemUris);
   },
 );
 
@@ -47,7 +48,7 @@ const getSpotifySearchResults = (state, props) => (
   state.spotify.search_results && state.spotify.search_results[props.type]
 );
 const makeSearchResultsSelector = () => createSelector(
-  [getMopidySearchResults, getSpotifySearchResults, getItems],
+  [getMopidySearchResults, getSpotifySearchResults, itemsSelector],
   (mopidySearchResults, spotifySearchResults, items) => {
     const uris = [
       ...mopidySearchResults || [],

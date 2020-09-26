@@ -338,21 +338,18 @@ class LibraryPlaylists extends React.Component {
 const mapStateToProps = (state) => {
   const source = state.ui.library_playlists_source || 'all';
   const loadingSelector = makeLoadingSelector(['(.*):library:playlists']);
-  const spotifyLibrarySelector = makeLibrarySelector('spotify:library:playlists');
-  const googleLibrarySelector = makeLibrarySelector('google:library:playlists');
-  const mopidyLibrarySelector = makeLibrarySelector('mopidy:library:playlists');
 
-  const playlists = [
-    ...(source === 'all' || source === 'spotify' ? spotifyLibrarySelector(state) : []),
-    ...(source === 'all' || source === 'google' ? googleLibrarySelector(state) : []),
-    ...(source === 'all' || source === 'local' ? mopidyLibrarySelector(state) : []),
-  ];
+  const libraryUris = [];
+  if (source === 'all' || source === 'local') libraryUris.push('mopidy:library:playlists');
+  if (source === 'all' || source === 'spotify') libraryUris.push('spotify:library:playlists');
+  if (source === 'all' || source === 'google') libraryUris.push('google:library:playlists');
+  const librarySelector = makeLibrarySelector(libraryUris);
 
   return {
     slim_mode: state.ui.slim_mode,
     mopidy_uri_schemes: state.mopidy.uri_schemes,
     spotify_available: state.spotify.access_token,
-    playlists,
+    playlists: librarySelector(state),
     loading: loadingSelector(state),
     source,
     me_id: (state.spotify.me ? state.spotify.me.id : false),

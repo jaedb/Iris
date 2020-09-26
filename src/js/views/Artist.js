@@ -402,6 +402,8 @@ class Artist extends React.Component {
       history,
     } = this.props;
 
+    console.log('render!')
+
     if (loading) {
       return <Loader body loading />;
     } else if (!artist) {

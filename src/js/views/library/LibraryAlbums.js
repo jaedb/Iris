@@ -56,18 +56,6 @@ class LibraryAlbums extends React.Component {
     this.getGoogleLibrary();
     this.getSpotifyLibrary();
   }
-  /*
-  componentDidUpdate(prevProps, prevState) {
-    Object.entries(this.props).forEach(([key, val]) =>
-      prevProps[key] !== val && console.log(`Prop '${key}' changed`)
-    );
-    if (this.state) {
-      Object.entries(this.state).forEach(([key, val]) =>
-        prevState[key] !== val && console.log(`State '${key}' changed`)
-      );
-    }
-  }
-  */
 
   componentDidUpdate = ({ source: prevSource }) => {
     const { source } = this.props;
@@ -383,20 +371,17 @@ class LibraryAlbums extends React.Component {
 const mapStateToProps = (state) => {
   const source = state.ui.library_albums_source ? state.ui.library_albums_source : 'all';
   const loadingSelector = makeLoadingSelector(['(.*):library:albums']);
-  const spotifyLibrarySelector = makeLibrarySelector('spotify:library:albums');
-  const googleLibrarySelector = makeLibrarySelector('google:library:albums');
-  const mopidyLibrarySelector = makeLibrarySelector('mopidy:library:albums');
 
-  const albums = [
-    ...(source === 'all' || source === 'spotify' ? spotifyLibrarySelector(state) : []),
-    ...(source === 'all' || source === 'google' ? googleLibrarySelector(state) : []),
-    ...(source === 'all' || source === 'local' ? mopidyLibrarySelector(state) : []),
-  ];
+  const libraryUris = [];
+  if (source === 'all' || source === 'local') libraryUris.push('mopidy:library:albums');
+  if (source === 'all' || source === 'spotify') libraryUris.push('spotify:library:albums');
+  if (source === 'all' || source === 'google') libraryUris.push('google:library:albums');
+  const librarySelector = makeLibrarySelector(libraryUris);
 
   return {
     loading: loadingSelector(state),
     mopidy_uri_schemes: state.mopidy.uri_schemes,
-    albums,
+    albums: librarySelector(state),
     google_available: (state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('gmusic:')),
     spotify_available: state.spotify.access_token,
     view: state.ui.library_albums_view,

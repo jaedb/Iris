@@ -333,27 +333,18 @@ class LibraryArtists extends React.Component {
 const mapStateToProps = (state) => {
   const source = state.ui.library_artists_source || 'all';
   const loadingSelector = makeLoadingSelector(['(.*):library:artists']);
-  const spotifyLibrarySelector = makeLibrarySelector('spotify:library:artists');
-  const googleLibrarySelector = makeLibrarySelector('google:library:artists');
-  const mopidyLibrarySelector = makeLibrarySelector('mopidy:library:artists');
 
-  const artists = [
-    ...(source === 'all' || source === 'spotify' ? spotifyLibrarySelector(state) : []),
-    ...(source === 'all' || source === 'google' ? googleLibrarySelector(state) : []),
-    ...(source === 'all' || source === 'local' ? mopidyLibrarySelector(state) : []),
-  ];
-
-  /**
-   TODO
-   Apply sort, filter and source rules to the selector.
-   This will mean we have a universal selector for all libraries. WIN!
-  **/
+  const libraryUris = [];
+  if (source === 'all' || source === 'local') libraryUris.push('mopidy:library:artists');
+  if (source === 'all' || source === 'spotify') libraryUris.push('spotify:library:artists');
+  if (source === 'all' || source === 'google') libraryUris.push('google:library:artists');
+  const librarySelector = makeLibrarySelector(libraryUris);
 
   return {
     mopidy_uri_schemes: state.mopidy.uri_schemes,
     google_available: (state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('gmusic:')),
     spotify_available: (state.spotify.access_token),
-    artists,
+    artists: librarySelector(state),
     loading: loadingSelector(state),
     source,
     sort: (state.ui.library_artists_sort ? state.ui.library_artists_sort : null),

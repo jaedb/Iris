@@ -26,7 +26,7 @@ import {
   sourceIcon,
 } from '../util/helpers';
 import Button from '../components/Button';
-import { makeLoadingSelector, makeItemSelector } from '../util/selectors';
+import { makeLoadingSelector, makeItemSelector, makeLibrarySelector } from '../util/selectors';
 
 export class Album extends React.Component {
   componentDidMount = () => {
@@ -169,6 +169,8 @@ export class Album extends React.Component {
       loading,
       slim_mode,
     } = this.props;
+
+    console.log('Album.render')
 
     if (loading) {
       return <Loader body loading />;
