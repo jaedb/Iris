@@ -25,7 +25,9 @@ const indexToArray = (index, keys) => {
  * @return Array
  * */
 const arrayOf = (property, items = []) => {
-  return compact(items.map((item) => item[property]));
+  const array = [];
+  items.forEach((item) => (item[property] !== undefined ? array.push(item[property]) : null));
+  return array;
 };
 
 
