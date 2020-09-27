@@ -80,7 +80,7 @@ export default function reducer(mopidy = {}, action) {
       return { ...mopidy, mute: action.mute };
 
     case 'MOPIDY_TIME_POSITION':
-      return mopidy;//{ ...mopidy, time_position: action.time_position };
+      return { ...mopidy, time_position: action.time_position };
 
     case 'MOPIDY_QUEUE_HISTORY':
       var history = [];
