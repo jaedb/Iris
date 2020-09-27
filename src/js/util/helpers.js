@@ -154,6 +154,10 @@ const uriType = function (uri) {
     return 'track';
   }
 
+  if (exploded[0] === 'sc') {
+    return 'track';
+  }
+
   if (exploded[0] === 'youtube') {
     const youtubeParts = exploded[1].split('/');
     if (youtubeParts[0] === 'video') {
