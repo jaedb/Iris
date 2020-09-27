@@ -17,7 +17,6 @@ Features
 * Browse and manage your playlists and tracks
 * Discover new, popular and related music (powered by Spotify)
 * Multiple language support. [Want to provide a translation?](https://github.com/jaedb/Iris/wiki/Contributing#translations)
-* Freely hosted, auto-updated interface available ([beta](https://jaedb.github.io/Iris/#/))
 * Integration with:
   * [Spotify](https://developer.spotify.com/web-api/)
   * [LastFM](https://www.last.fm/api)
