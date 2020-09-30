@@ -189,7 +189,7 @@ class LibraryBrowseDirectory extends React.Component {
     subdirectories = subdirectories.slice(0, limit);
     let all_tracks = null;
     let tracks = null;
-    const limit_remaining = limit - subdirectories;
+    const limit_remaining = limit - subdirectories.length;
     if (limit_remaining > 0) {
       all_tracks = (directory.tracks && directory.tracks.length > 0 ? directory.tracks : null);
       all_tracks = sortItems(all_tracks, 'name');
