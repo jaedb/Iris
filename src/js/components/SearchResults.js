@@ -20,7 +20,6 @@ const SearchResults = ({
   all,
   results: rawResults,
 }) => {
-  console.log('rendering', type, query);
   const encodedTerm = encodeURIComponent(query.term);
   let results = rawResults;
 

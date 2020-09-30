@@ -118,7 +118,7 @@ export class App extends React.Component {
     if (changed.length > 0) {
       changed.forEach((k) => params.delete(k))
       const url = window.location.toString().replace(window.location.search, params.toString())
-      console.log('settings changed:', changed, 'redirect to:', url)
+      console.log(`Settings changed, redirecting to ${url}`, changed);
       window.location.assign(url)
     }
 

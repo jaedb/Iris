@@ -148,6 +148,7 @@ const rootPersistConfig = {
     'ui',
     'core',
     'spotify',
+    'pusher',
   ],
   debug: window.test_mode,
 };
@@ -165,6 +166,15 @@ const corePersistConfig = {
     'tracks',
     'libraries', // We manually hydrate this, so we can handle the rehydration of library items
   ],
+};
+
+const pusherPersistConfig = {
+  key: 'pusher',
+  storage: localForage,
+  blacklist: [
+    'connections',
+  ],
+  debug: window.test_mode,
 };
 
 const mopidyPersistConfig = {
@@ -228,7 +238,7 @@ const rootReducer = combineReducers({
   ui: persistReducer(uiPersistConfig, ui),
   mopidy: persistReducer(mopidyPersistConfig, mopidy),
   spotify: persistReducer(spotifyPersistConfig, spotify),
-  pusher,
+  pusher: persistReducer(pusherPersistConfig, pusher),
   lastfm,
   genius,
   google,

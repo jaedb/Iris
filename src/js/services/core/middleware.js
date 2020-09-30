@@ -625,8 +625,6 @@ const CoreMiddleware = (function () {
           // library listing.
           localForage.removeItem(action.uri);
         }
-        console.log(action);
-        console.log(library);
         store.dispatch(coreActions.itemLoaded({ ...action.item, in_library: true }));
         next(action);
         break;
@@ -784,31 +782,16 @@ const CoreMiddleware = (function () {
         var tracks_loaded = [];
 
         for (const raw_artist of action.artists) {
-          console.log(raw_artist);
           var artist = formatArtist(raw_artist);
           artist = { ...artists_index[artist.uri], ...artist };
-/*
-          // Migrate nested tracks objects into references to our tracks index
-          if (raw_artist.tracks) {
-            var tracks = formatTracks(raw_artist.tracks);
-            var tracks_uris = arrayOf('uri', tracks);
-            artist.tracks_uris = tracks_uris;
-            tracks_loaded = [...tracks_loaded, ...tracks];
-          }*/
-
           artists_loaded.push(artist);
         }
 
-        action.artists = artists_loaded;
-/*
-        if (tracks_loaded.length > 0) {
-          store.dispatch(coreActions.tracksLoaded(tracks_loaded));
-        }
-        */
-
         store.dispatch(coreActions.updateColdStore(artists_loaded));
-        
-        next(action);
+        next({
+          ...action,
+          artists: artists_loaded,
+        });
         break;
 
       case 'PLAYLISTS_LOADED':

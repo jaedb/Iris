@@ -137,18 +137,18 @@ class LibraryPlaylists extends React.Component {
       sort,
       sort_reverse,
       view,
-      source,
       loading,
+      playlists: playlistsProp,
     } = this.props;
     const {
       filter,
       limit,
     } = this.state;
-    let { playlists } = this.props;
 
     if (loading) {
       return <Loader body loading />;
     }
+    let playlists = [...playlistsProp];
 
     if (sort) {
       playlists = sortItems(playlists, sort, sort_reverse);

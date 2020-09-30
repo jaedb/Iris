@@ -209,6 +209,7 @@ class Queue extends React.Component {
         shuffleTracklist,
       },
     } = this.props;
+
     const { limit } = this.state;
     const total_queue_tracks = queue_tracks.length;
     const tracks = queue_tracks.slice(0, limit);
@@ -329,19 +330,20 @@ class Queue extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  let { current_track } = state.core;
   const {
+    current_track: core_current_track,
     items,
     queue,
     queue_metadata,
   } = state.core;
   const queue_tracks = [];
+  let current_track = {};
 
   if (queue && items) {
     for (const queue_track of queue) {
       let track = {
         ...queue_track,
-        playing: current_track && current_track.tlid == queue_track.tlid,
+        playing: core_current_track && core_current_track.tlid == queue_track.tlid,
       };
 
       // If we have the track in our index, merge it in.

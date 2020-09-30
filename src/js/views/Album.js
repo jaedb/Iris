@@ -170,8 +170,6 @@ export class Album extends React.Component {
       slim_mode,
     } = this.props;
 
-    console.log('Album.render')
-
     if (loading) {
       return <Loader body loading />;
     } else if (!album) {

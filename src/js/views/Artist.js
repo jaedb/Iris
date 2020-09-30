@@ -402,8 +402,6 @@ class Artist extends React.Component {
       history,
     } = this.props;
 
-    console.log('render!')
-
     if (loading) {
       return <Loader body loading />;
     } else if (!artist) {
@@ -525,7 +523,7 @@ const mapStateToProps = (state, ownProps) => {
   const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`]);
   const artistSelector = makeItemSelector(uri);
   const artist = artistSelector(state);
-  let albums = [];
+  let albums = null;
   if (artist && artist.albums_uris) {
     const albumsSelector = makeItemSelector(artist.albums_uris);
     albums = albumsSelector(state);

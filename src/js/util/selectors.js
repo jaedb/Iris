@@ -1,4 +1,3 @@
-import { memoize } from 'lodash';
 import { createSelector } from 'reselect';
 import { indexToArray } from './arrays';
 import { isLoading } from './helpers';

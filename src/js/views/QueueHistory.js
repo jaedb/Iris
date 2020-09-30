@@ -41,8 +41,6 @@ class QueueHistory extends React.Component {
       uiActions,
     } = this.props;
 
-    console.log('rendering')
-
     const options = (
       <Button
         onClick={this.onBack}

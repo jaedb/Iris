@@ -2182,43 +2182,47 @@ const MopidyMiddleware = (function () {
           });
         break;
 
-      case 'MOPIDY_GET_LIBRARY_PLAYLISTS':
+      case 'MOPIDY_GET_LIBRARY_PLAYLISTS': {
         request(store, 'playlists.asList')
-          .then((response) => {
+          .then((listResponse) => {
 
             // Remove any Spotify playlists. These will be handled by our Spotify API
-            const playlist_uris = arrayOf('uri', response).filter(
-              (uri) => uriSource(uri) !== 'spotify',
+            const playlist_uris = arrayOf('uri', listResponse).filter(
+              (playlistUri) => uriSource(playlistUri) !== 'spotify',
             );
             const libraryPlaylists = [];
 
-            // get the full playlist objects
-            playlist_uris.forEach((uri, index) => {
-              request(store, 'playlists.lookup', { uri })
-                .then((response) => {
-                  libraryPlaylists.push(
-                    formatPlaylist({
-                      name: response.name,
-                      uri: response.uri,
-                      can_edit: uriSource(response.uri) === 'm3u',
-                      last_modified: response.last_modified,
-                      // By not including actual tracks they will be fetched when needed. We don't
-                      // want these simple tracks because they don't contain duration, artist, etc.
-                      tracks_total: response.tracks ? response.tracks.length : null,
-                    }),
-                  );
+            if (playlist_uris.length) {
+              playlist_uris.forEach((uri, index) => {
+                request(store, 'playlists.lookup', { uri })
+                  .then((response) => {
+                    libraryPlaylists.push(
+                      formatPlaylist({
+                        name: response.name,
+                        uri: response.uri,
+                        can_edit: uriSource(response.uri) === 'm3u',
+                        last_modified: response.last_modified,
+                        // By not including actual tracks they will be fetched when needed. We don't
+                        // want these simple tracks because they don't contain duration, artist, etc.
+                        tracks_total: response.tracks ? response.tracks.length : null,
+                      }),
+                    );
 
-                  if (index === playlist_uris.length - 1) {
-                    store.dispatch(coreActions.itemsLoaded(libraryPlaylists));
-                    store.dispatch(coreActions.libraryLoaded({
-                      uri: 'mopidy:library:playlists',
-                      items_uris: arrayOf('uri', libraryPlaylists),
-                    }));
-                  }
-                });
-            });
+                    if (index === playlist_uris.length - 1) {
+                      store.dispatch(coreActions.itemsLoaded(libraryPlaylists));
+                      store.dispatch(coreActions.libraryLoaded({
+                        uri: 'mopidy:library:playlists',
+                        items_uris: arrayOf('uri', libraryPlaylists),
+                      }));
+                    }
+                  });
+              });
+            } else {
+              store.dispatch(uiActions.stopLoading('mopidy:library:playlists'));
+            }
           });
         break;
+      }
 
       case 'MOPIDY_GET_LIBRARY_ALBUMS':
         request(store, 'library.browse', { uri: store.getState().mopidy.library_albums_uri })
