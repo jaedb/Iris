@@ -147,7 +147,7 @@ export function getMe() {
  * */
 export function getTrackLyrics(uri, path) {
   return (dispatch, getState) => {
-    dispatch(coreActions.trackLoaded({
+    dispatch(coreActions.itemLoaded({
       uri,
       lyrics: null,
       lyrics_path: null,
@@ -187,7 +187,9 @@ export function getTrackLyrics(uri, path) {
             lyrics_html = lyrics_html.replace(/(\[)/g, '<span class="mid_grey-text">[');
             lyrics_html = lyrics_html.replace(/(\])/g, ']</span>');
 
-            dispatch(coreActions.trackLoaded({
+            console.debug(lyrics_html);
+
+            dispatch(coreActions.itemLoaded({
               uri,
               lyrics: lyrics_html,
               lyrics_path: path,
@@ -232,7 +234,7 @@ export function findTrackLyrics(track = null) {
                 path: response.hits[i].result.path,
               });
             }
-            dispatch(coreActions.trackLoaded({
+            dispatch(coreActions.itemLoaded({
               uri: track.uri,
               lyrics_results,
             }));

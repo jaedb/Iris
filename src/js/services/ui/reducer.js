@@ -1,3 +1,4 @@
+import { omit } from 'lodash';
 
 export default function reducer(ui = {}, action) {
   switch (action.type) {
@@ -124,15 +125,14 @@ export default function reducer(ui = {}, action) {
 
     case 'START_LOADING':
       var load_queue = { ...(ui.load_queue ? ui.load_queue : {}) };
-      load_queue[action.key] = action.source;
+      load_queue[action.key] = action.source || action.key;
       return { ...ui, load_queue };
 
     case 'STOP_LOADING':
-      var load_queue = { ...(ui.load_queue ? ui.load_queue : {}) };
-      if (load_queue[action.key]) {
-        delete load_queue[action.key];
-      }
-      return { ...ui, load_queue };
+      return {
+        ...ui,
+        load_queue: omit(ui.load_queue, action.keys),
+      };
 
     case 'START_PROCESS':
     case 'UPDATE_PROCESS':
@@ -197,6 +197,8 @@ export default function reducer(ui = {}, action) {
       }
       return { ...ui, processes };
 
+    case 'SUPPRESS_BROADCAST':
+      return { ...ui, suppressed_broadcasts: [...(ui.suppressed_broadcasts || []), action.key] };
 
     default:
       return ui;

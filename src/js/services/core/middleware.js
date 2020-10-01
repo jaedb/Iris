@@ -1,9 +1,10 @@
-
 import React from 'react';
 import ReactGA from 'react-ga';
+import localForage from 'localforage';
+import { compact } from 'lodash';
 import { arrayOf } from '../../util/arrays';
 import URILink from '../../components/URILink';
-import { uriSource, upgradeSpotifyPlaylistUris, uriType } from '../../util/helpers';
+import { uriSource, upgradeSpotifyPlaylistUris, uriType, titleCase } from '../../util/helpers';
 import {
   formatTracks,
   formatTrack,
@@ -12,18 +13,17 @@ import {
   formatArtist,
   formatPlaylist,
   formatUser,
+  formatSimpleObjects,
 } from '../../util/format';
 import { handleException } from './actions';
 
 const coreActions = require('./actions.js');
 const uiActions = require('../ui/actions.js');
 const mopidyActions = require('../mopidy/actions.js');
+const googleActions = require('../google/actions.js');
 const spotifyActions = require('../spotify/actions.js');
 
 const CoreMiddleware = (function () {
-  /**
-     * The actual middleware inteceptor
-     * */
   return (store) => (next) => (action = {}) => {
     const {
       core,
@@ -31,6 +31,12 @@ const CoreMiddleware = (function () {
       mopidy,
       spotify,
     } = store.getState();
+
+    window.localForage = localForage;
+
+    // Attach store to window variable. This enables debug tools to directly call on
+    // store.getState()
+    window._store = store;
 
     switch (action.type) {
       case 'HANDLE_EXCEPTION':
@@ -182,27 +188,6 @@ const CoreMiddleware = (function () {
 
         break;
 
-      // Get assets from all of our providers
-      case 'GET_LIBRARY_PLAYLISTS':
-        store.dispatch(spotifyActions.getLibraryPlaylists());
-        store.dispatch(mopidyActions.getLibraryPlaylists());
-        next(action);
-        break;
-
-      // Get assets from all of our providers
-      case 'GET_LIBRARY_ALBUMS':
-        store.dispatch(spotifyActions.getLibraryAlbums());
-        store.dispatch(mopidyActions.getLibraryAlbums());
-        next(action);
-        break;
-
-      // Get assets from all of our providers
-      case 'GET_LIBRARY_ARTISTS':
-        store.dispatch(spotifyActions.getLibraryArtists());
-        store.dispatch(mopidyActions.getLibraryArtists());
-        next(action);
-        break;
-
       case 'RESTART':
         location.reload();
         break;
@@ -309,122 +294,229 @@ const CoreMiddleware = (function () {
        * */
       case 'LOAD_ITEMS':
         action.uris.forEach((uri) => {
+          store.dispatch(uiActions.startLoading(uri));
           store.dispatch({
             type: `LOAD_${uriType(uri).toUpperCase()}`,
             uri,
-            force_reload: action.force_reload,
+            options: action.options,
           });
         });
         break;
 
-      case 'LOAD_TRACK':
+      case 'LOAD_TRACK': {
+        const fetchTrack = () => {
+          switch (uriSource(action.uri)) {
+            case 'spotify':
+              store.dispatch(spotifyActions.getTrack(action.uri, action.options));
+
+              if (spotify.me) {
+                store.dispatch(spotifyActions.following(action.uri));
+              }
+              break;
+
+            default:
+              store.dispatch(mopidyActions.getTrack(action.uri, action.options));
+              break;
+          }
+        };
+
+        if (action.options.forceRefetch) {
+          console.info(`Force-refetching "${action.uri}"`);
+          fetchTrack();
+          break;
+        }
         if (
-          !action.force_reload
-          && store.getState().core.tracks[action.uri]) {
-          console.info(`Loading "${action.uri}" from index`);
+          store.getState().core.items[action.uri]
+          && store.getState().core.items[action.uri].images
+        ) {
+          console.info(`${action.uri}" already in index`);
+          store.dispatch(uiActions.stopLoading(action.uri));
           break;
         }
 
-        switch (uriSource(action.uri)) {
-          case 'spotify':
-            store.dispatch(spotifyActions.getTrack(action.uri));
+        localForage.getItem(action.uri).then((result) => {
+          if (result) {
+            console.info(`Loading "${action.uri}" from database`);
+            store.dispatch(coreActions.restoreItemsFromColdStore([result]));
 
-            if (spotify.me) {
-              store.dispatch(spotifyActions.following(action.uri));
+            if (!result.images) {
+              fetchTrack();
             }
-            break;
-
-          default:
-            store.dispatch(mopidyActions.getTrack(action.uri));
-            break;
-        }
+          } else {
+            fetchTrack();
+          }
+        });
 
         next(action);
         break;
+      }
 
       case 'LOAD_ALBUM':
+        const fetchAlbum = () => {
+          switch (uriSource(action.uri)) {
+            case 'spotify':
+              store.dispatch(spotifyActions.getAlbum(action.uri, action.options));
+
+              if (spotify.me) {
+                store.dispatch(spotifyActions.following(action.uri));
+              }
+              break;
+
+            default:
+              store.dispatch(mopidyActions.getAlbum(action.uri, action.options));
+              break;
+          };
+        };
+
+        if (action.options.forceRefetch) {
+          console.info(`Force-refetching "${action.uri}"`);
+          fetchAlbum();
+          break;
+        }
         if (
-          !action.force_reload
-          && store.getState().core.albums[action.uri]
-          && store.getState().core.albums[action.uri].tracks_uris) {
-          console.info(`Loading "${action.uri}" from index`);
+          store.getState().core.items[action.uri]
+          && (!action.options.full || store.getState().core.items[action.uri].tracks)
+        ) {
+          console.info(`${action.uri}" already in index`);
+          store.dispatch(uiActions.stopLoading(action.uri));
           break;
         }
 
-        switch (uriSource(action.uri)) {
-          case 'spotify':
-            store.dispatch(spotifyActions.getAlbum(action.uri));
+        localForage.getItem(action.uri).then((result) => {
+          if (result) {
+            console.info(`Loading "${action.uri}" from database`);
+            store.dispatch(coreActions.restoreItemsFromColdStore([result]));
 
-            if (spotify.me) {
-              store.dispatch(spotifyActions.following(action.uri));
+            // We don't have the complete Album, so refetch
+            if (!result.tracks) {
+              fetchAlbum();
             }
-            break;
-
-          default:
-            store.dispatch(mopidyActions.getAlbum(action.uri));
-            break;
-        }
+          } else {
+            fetchAlbum();
+          }
+        });
 
         next(action);
         break;
 
       case 'LOAD_ARTIST':
+        const fetchArtist = () => {
+          switch (uriSource(action.uri)) {
+            case 'spotify':
+              store.dispatch(spotifyActions.getArtist(action.uri, action.options));
+
+              if (spotify.me) {
+                store.dispatch(spotifyActions.following(action.uri));
+              }
+              break;
+
+            default:
+              store.dispatch(mopidyActions.getArtist(action.uri, action.options));
+              break;
+          }
+        };
+
+        if (action.options.forceRefetch) {
+          console.info(`Force-refetching "${action.uri}"`);
+          fetchArtist();
+          break;
+        }
         if (
-          !action.force_reload
-          && store.getState().core.artists[action.uri]
-          && store.getState().core.artists[action.uri].albums_uris
-          && store.getState().core.artists[action.uri].tracks_uris) {
-          console.info(`Loading "${action.uri}" from index`);
+          store.getState().core.items[action.uri]
+          && (
+            !action.options.full
+            || (
+              store.getState().core.items[action.uri].tracks
+              && store.getState().core.items[action.uri].albums_uris
+              && store.getState().core.items[action.uri].images
+            )
+          )
+        ) {
+          console.info(`${action.uri}" already in index`);
+          store.dispatch(coreActions.loadItems(store.getState().core.items[action.uri].albums_uris));
+          store.dispatch(uiActions.stopLoading(action.uri));
           break;
         }
 
-        switch (uriSource(action.uri)) {
-          case 'spotify':
-            store.dispatch(spotifyActions.getArtist(action.uri, true));
+        localForage.getItem(action.uri).then((artist) => {
+          if (artist) {
+            console.info(`Restoring "${action.uri}" and ${artist.albums_uris ? artist.albums_uris.length : 0} albums from database`);
+            store.dispatch(coreActions.restoreItemsFromColdStore([artist]));
 
-            if (spotify.me) {
-              store.dispatch(spotifyActions.following(action.uri));
+            if (artist.albums_uris) {
+              const promises = artist.albums_uris.map((albumUri) => localForage.getItem(albumUri));
+              console.time('restoring')
+              Promise.all(promises).then(
+                (albums) => {
+                  store.dispatch(coreActions.restoreItemsFromColdStore(compact(albums)));
+                  console.timeEnd('restoring')
+                },
+              );
             }
-            break;
 
-          default:
-            store.dispatch(mopidyActions.getArtist(action.uri));
-            break;
-        }
+            if (action.options.full && (!artist.tracks || !artist.albums_uris || !artist.images)) {
+              fetchArtist();
+            }
+          } else {
+            fetchArtist();
+          }
+        });
 
         next(action);
         break;
 
       case 'LOAD_PLAYLIST':
+        const fetchPlaylist = () => {
+          switch (uriSource(action.uri)) {
+            case 'spotify':
+              store.dispatch(spotifyActions.getPlaylist(action.uri, action.options));
+
+              if (spotify.me) {
+                store.dispatch(spotifyActions.following(action.uri));
+              }
+              break;
+
+            default:
+              store.dispatch(mopidyActions.getPlaylist(action.uri, action.options));
+              break;
+          }
+        };
+
+        if (action.options.forceRefetch) {
+          console.info(`Force-refetching "${action.uri}"`);
+          fetchPlaylist();
+          break;
+        }
         if (
-          !action.force_reload
-          && store.getState().core.playlists[action.uri]
-          && store.getState().core.playlists[action.uri].tracks_uris !== undefined
+          store.getState().core.items[action.uri]
+          && (
+            !action.options.full
+            || store.getState().core.items[action.uri].tracks
+          )
         ) {
-          console.info(`Loading "${action.uri}" from index`);
+          console.info(`${action.uri}" already in index`);
+          store.dispatch(uiActions.stopLoading(action.uri));
           break;
         }
 
-        switch (uriSource(action.uri)) {
-          case 'spotify':
-            store.dispatch(spotifyActions.getPlaylist(action.uri));
-
-            if (spotify.me) {
-              store.dispatch(spotifyActions.following(action.uri));
+        localForage.getItem(action.uri).then((result) => {
+          if (result) {
+            console.info(`Restoring "${action.uri}" from database`);
+            store.dispatch(coreActions.restoreItemsFromColdStore([result]));
+            if (!action.options.full || !result.tracks) {
+              fetchPlaylist();
             }
-            break;
-
-          default:
-            store.dispatch(mopidyActions.getPlaylist(action.uri));
-            break;
-        }
+          } else {
+            fetchPlaylist();
+          }
+        });
 
         next(action);
         break;
 
       case 'LOAD_USER':
         if (
-          !action.force_reload
+          !action.options.forceRefetch
           && store.getState().core.users[action.uri]
           && store.getState().core.users[action.uri].playlists_uris) {
           console.info(`Loading "${action.uri}" from index`);
@@ -450,7 +542,7 @@ const CoreMiddleware = (function () {
 
       case 'LOAD_USER_PLAYLISTS':
         if (
-          !action.force_reload
+          !action.options.forceRefetch
           && store.getState().core.users[action.uri]
           && store.getState().core.users[action.uri].playlists_uris) {
           console.info(`Loading "${action.uri}" playlists from index`);
@@ -470,17 +562,105 @@ const CoreMiddleware = (function () {
         next(action);
         break;
 
+      case 'LOAD_LIBRARY':
+        store.dispatch(uiActions.startLoading(action.uri, action.uri));
+        const fetchLibrary = () => {
+          switch (uriSource(action.uri)) {
+            case 'spotify':
+              store.dispatch(
+                spotifyActions[`getLibrary${titleCase(uriType(action.uri))}`](action.options.forceRefetch),
+              );
+              break;
+            case 'google':
+              store.dispatch(
+                googleActions[`getLibrary${titleCase(uriType(action.uri))}`](),
+              );
+              break;
+            default:
+              store.dispatch(
+                mopidyActions[`getLibrary${titleCase(uriType(action.uri))}`](),
+              );
+              break;
+          }
+        };
+
+        if (action.options.forceRefetch) {
+          console.info(`Force-refetching "${action.uri}"`);
+          fetchLibrary();
+          break;
+        }
+        if (store.getState().core.libraries[action.uri]) {
+          console.info(`${action.uri}" already in index`);
+          store.dispatch(uiActions.stopLoading(action.uri));
+          break;
+        }
+
+        localForage.getItem(action.uri).then((library) => {
+          if (library) {
+            console.info(`Restoring "${action.uri}" and ${library.items_uris.length} items from database`);
+
+            const promises = library.items_uris.map((libraryItem) => localForage.getItem(libraryItem));
+            Promise.all(promises).then(
+              (libraryItems) => {
+                store.dispatch(coreActions.restoreItemsFromColdStore(compact(libraryItems)));
+                store.dispatch(coreActions.restoreLibraryFromColdStore(library));
+              },
+            );
+
+          } else {
+            fetchLibrary();
+          }
+        });
+
+        next(action);
+        break;
+
+      case 'ADD_TO_LIBRARY': {
+        const library = store.getState().core.libraries[action.uri];
+        if (library) {
+          library.items_uris.push(action.item.uri);
+          store.dispatch(coreActions.libraryLoaded(library));
+        } else {
+          // Clear our stored library. This prevents the next call to possibly restore a stale
+          // library listing.
+          localForage.removeItem(action.uri);
+        }
+        store.dispatch(coreActions.itemLoaded({ ...action.item, in_library: true }));
+        next(action);
+        break;
+      }
+
+      case 'REMOVE_FROM_LIBRARY': {
+        const library = store.getState().core.libraries[action.uri];
+        if (library) {
+          const items_uris = library.items_uris.filter((uri) => uri !== action.itemUri);
+          store.dispatch(coreActions.libraryLoaded({
+            ...library,
+            items_uris,
+          }));
+        }
+
+        store.dispatch(coreActions.removeItem(action.itemUri));
+        localForage.removeItem(action.itemUri);
+
+        next(action);
+        break;
+      }
 
       /**
        * Index actions
        * These modify our asset indexes, which are used globally
        * */
 
-      case 'CURRENT_TRACK_LOADED':
-        store.dispatch(coreActions.trackLoaded(action.track));
-        action.track = formatTrack(action.track);
-        next(action);
+      case 'CURRENT_TRACK_LOADED': {
+        const track = formatTrack(action.track);
+        store.dispatch(coreActions.itemLoaded(track));
+        next({
+          ...action,
+          track,
+        });
         break;
+      }
 
       case 'QUEUE_LOADED':
         store.dispatch(coreActions.tracksLoaded(action.tracks));
@@ -529,13 +709,6 @@ const CoreMiddleware = (function () {
 
         action.tracks = tracks_loaded;
 
-        if (artists_loaded.length > 0) {
-          store.dispatch(coreActions.artistsLoaded(artists_loaded));
-        }
-        if (albums_loaded.length > 0) {
-          store.dispatch(coreActions.albumsLoaded(albums_loaded));
-        }
-
         next(action);
         break;
 
@@ -553,20 +726,14 @@ const CoreMiddleware = (function () {
           }
 
           if (raw_album.tracks) {
-            album.tracks_uris = [];
-
-            for (var track of raw_album.tracks) {
-              if (!track.album) {
-                track.album = formatSimpleObject(album);
-              }
-              album.tracks_uris.push(track.uri);
-              tracks_loaded.push(track);
-            }
+            album.tracks = raw_album.tracks.map((track) => ({
+              ...formatTrack(track),
+              album: formatSimpleObject(album)
+            }));
           }
 
           if (raw_album.artists) {
-            album.artists_uris = arrayOf('uri', raw_album.artists);
-            artists_loaded = [...artists_loaded, ...raw_album.artists];
+            album.artists = formatSimpleObjects(raw_album.artists);
           }
 
           albums_loaded.push(album);
@@ -575,12 +742,37 @@ const CoreMiddleware = (function () {
         action.albums = albums_loaded;
 
         if (artists_loaded.length > 0) {
-          store.dispatch(coreActions.artistsLoaded(artists_loaded));
+          store.dispatch(coreActions.items(artists_loaded));
         }
         if (tracks_loaded.length > 0) {
-          store.dispatch(coreActions.tracksLoaded(tracks_loaded));
+          store.dispatch(coreActions.items(tracks_loaded));
         }
 
+        store.dispatch(coreActions.updateColdStore(albums_loaded));
+
+        next(action);
+        break;
+
+      case 'ITEMS_LOADED':
+        const mergedItems = [];
+        action.items.forEach((item) => {
+          mergedItems.push({
+            ...core.items[item.uri] || {},
+            ...item,
+          });
+        });
+
+        store.dispatch(uiActions.stopLoading(arrayOf('uri', action.items)));
+        store.dispatch(coreActions.updateColdStore(mergedItems));
+        next({
+          ...action,
+          items: mergedItems,
+        });
+        break;
+
+      case 'LIBRARY_LOADED':
+        store.dispatch(uiActions.stopLoading(action.library.uri));
+        store.dispatch(coreActions.updateColdStore([action.library]));
         next(action);
         break;
 
@@ -591,52 +783,15 @@ const CoreMiddleware = (function () {
 
         for (const raw_artist of action.artists) {
           var artist = formatArtist(raw_artist);
-
-          // Already have an artist in the index
-          if (artists_index[artist.uri]) {
-            // And we've already got some images, make sure we merge the arrays,
-            // rather than overwriting
-            if (artists_index[artist.uri].images && artist.images) {
-              const existing_images = artists_index[artist.uri].images;
-              let are_new_images = true;
-
-              // loop all extisting images to make sure we're not adding one that
-              // we already have
-              for (const existing_image of existing_images) {
-                // We only need to check one size, the formatter should insist on consistency
-                // Note that we depend on having a one-item array of images provided per action
-                if (existing_image.huge == artist.images[0].huge) {
-                  are_new_images = false;
-                }
-              }
-
-              // Only if they're new images should we merge them in
-              if (are_new_images) {
-                artist.images = Object.assign([], [...existing_images, ...artist.images]);
-              }
-            }
-
-            artist = { ...artists_index[artist.uri], ...artist };
-          }
-
-          // Migrate nested tracks objects into references to our tracks index
-          if (raw_artist.tracks) {
-            var tracks = formatTracks(raw_artist.tracks);
-            var tracks_uris = arrayOf('uri', tracks);
-            artist.tracks_uris = tracks_uris;
-            tracks_loaded = [...tracks_loaded, ...tracks];
-          }
-
+          artist = { ...artists_index[artist.uri], ...artist };
           artists_loaded.push(artist);
         }
 
-        action.artists = artists_loaded;
-
-        if (tracks_loaded.length > 0) {
-          store.dispatch(coreActions.tracksLoaded(tracks_loaded));
-        }
-
-        next(action);
+        store.dispatch(coreActions.updateColdStore(artists_loaded));
+        next({
+          ...action,
+          artists: artists_loaded,
+        });
         break;
 
       case 'PLAYLISTS_LOADED':
@@ -655,7 +810,7 @@ const CoreMiddleware = (function () {
 
             case 'spotify':
               if (spotify.authorization && spotify.me) {
-                playlist.can_edit = (playlist.owner.id == spotify.me.id);
+                playlist.can_edit = (playlist.owner && playlist.owner.id == spotify.me.id);
               }
           }
 
@@ -811,6 +966,27 @@ const CoreMiddleware = (function () {
           })),
         ));
         next(action);
+        break;
+
+      case 'RESTORE_ITEMS_FROM_COLD_STORE':
+        store.dispatch(uiActions.stopLoading(arrayOf('uri', action.items)));
+        next(action);
+        break;
+
+      case 'RESTORE_LIBRARY_FROM_COLD_STORE':
+        store.dispatch(uiActions.stopLoading(action.library.uri));
+        next(action);
+        break;
+
+      // TODO: Relocate this
+      case 'UPDATE_COLD_STORE':
+        if (action.items) {
+          action.items.map((item) => {
+            localForage.getItem(item.uri).then((result) => {
+              localForage.setItem(item.uri, { ...(result || {}), ...item });
+            });
+          });
+        }
         break;
 
       // This action is irrelevant to us, pass it on to the next middleware

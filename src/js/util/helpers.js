@@ -1,3 +1,5 @@
+import { indexToArray } from "./arrays";
+
 /**
  * Returns a function, that, as long as it continues to be invoked, will not
  * be triggered. The function will be called after it stops being called for
@@ -172,6 +174,8 @@ const uriType = function (uri) {
   }
 
   switch (exploded[1]) {
+    case 'library':
+      return exploded[2];
     case 'track':
     case 'artist':
     case 'album':
@@ -184,7 +188,7 @@ const uriType = function (uri) {
       }
       return exploded[1];
     default:
-      return '';
+      return exploded[1];
   }
 };
 
@@ -363,20 +367,26 @@ let isObject = function (value) {
  * @param key = string (the string to lookup)
  * @return boolean
  * */
-const isLoading = function (load_queue = [], keys = []) {
-  // Loop all of our load queue items
-  for (const load_queue_key in load_queue) {
-    // Make sure it's not a root object method
-    if (load_queue.hasOwnProperty(load_queue_key)) {
-      // Loop all the keys we're looking for
-      for (let i = 0; i < keys.length; i++) {
-        if (load_queue[load_queue_key].includes(keys[i])) {
-          return true;
-        }
-      }
+const isLoading = function (load_queue = {}, keys = []) {
+  if (!load_queue || !keys) return false;
+
+  const queue_keys = indexToArray(load_queue);
+  const matches = keys.reduce((acc, key) => {
+    let regex = '';
+    try {
+      regex = new RegExp(key);
+    } catch {
+      console.error('Invalid regular expression', keys);
+      return acc;
     }
-  }
-  return false;
+
+    return [
+      ...acc,
+      ...(queue_keys.filter((qk) => qk.match(regex))),
+    ];
+  }, []);
+
+  return matches.length > 0;
 };
 
 

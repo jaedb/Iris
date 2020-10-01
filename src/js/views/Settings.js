@@ -3,6 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Route, Link } from 'react-router-dom';
+import localForage from 'localforage';
 import ConfirmationButton from '../components/Fields/ConfirmationButton';
 import PusherConnectionList from '../components/PusherConnectionList';
 import SourcesPriority from '../components/Fields/SourcesPriority';
@@ -70,10 +71,30 @@ class Settings extends React.Component {
   }
 
   resetAllSettings = () => {
-    localStorage.clear();
-    window.location = '#';
-    window.location.reload(true);
+    localForage.clear(() => {
+      console.debug('Cleared settings, reloading...');
+      window.location = '#';
+      window.location.reload(true);
+    });
     return false;
+  }
+
+  resetStorage = () => {
+    localForage.keys().then((keys) => {
+      const keysToKeep = ['persist:root', 'persist:ui', 'persist:spotify'];
+      const keysToRemove = keys.filter((key) => keysToKeep.indexOf(key) < 0);
+
+      keysToRemove.forEach((key, index) => {
+        localForage.removeItem(key).then(() => {
+          console.debug(`Removed ${key}`);
+          if (index === keysToRemove.length) {
+            console.debug('Reloading...');
+            window.location = '#';
+            window.location.reload(true);
+          }
+        });
+      });
+    });
   }
 
   resetServiceWorkerAndCache = () => {
@@ -530,10 +551,6 @@ class Settings extends React.Component {
             >
               <I18n path="settings.advanced.restart" />
             </Button>
-            <ConfirmationButton
-              content={i18n('settings.advanced.reset')}
-              onConfirm={this.resetAllSettings}
-            />
             <Button
               type="destructive"
               onClick={this.resetServiceWorkerAndCache}
@@ -541,6 +558,17 @@ class Settings extends React.Component {
             >
               <I18n path="settings.advanced.reset_cache" />
             </Button>
+            <Button
+              type="destructive"
+              onClick={this.resetStorage}
+              tracking={{ category: 'System', action: 'ResetStorage' }}
+            >
+              <I18n path="settings.advanced.reset_storage" />
+            </Button>
+            <ConfirmationButton
+              content={i18n('settings.advanced.reset')}
+              onConfirm={this.resetAllSettings}
+            />
           </div>
 
           <h4 className="underline">

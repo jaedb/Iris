@@ -264,7 +264,7 @@ const localstorageMiddleware = (function () {
           },
         );
         break;
-
+/*
       case 'SUPPRESS_BROADCAST':
         var ui = storage.get('ui');
         if (ui.suppressed_broadcasts !== undefined) {
@@ -282,6 +282,7 @@ const localstorageMiddleware = (function () {
           },
         );
         break;
+        */
 
         /**
          * Experimental saving of stores to localStorage

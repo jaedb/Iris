@@ -66,6 +66,37 @@ export default function reducer(core = {}, action) {
          * and appended to their relevant index.
          * */
 
+    case 'ITEM_LOADED':
+      return {
+        ...core,
+        items: {
+          ...core.items,
+          [action.item.uri]: action.item,
+        },
+      };
+
+    case 'ITEMS_LOADED':
+      const mergedItems = action.items.reduce(
+        (obj, item) => (obj[item.uri] = item, obj),
+        {},
+      );
+      return {
+        ...core,
+        items: {
+          ...core.items,
+          ...mergedItems,
+        },
+      };
+
+    case 'LIBRARY_LOADED':
+      return {
+        ...core,
+        libraries: {
+          ...core.libraries,
+          [action.library.uri]: action.library,
+        },
+      };
+
     case 'TRACKS_LOADED':
       var tracks = { ...core.tracks };
       for (const track of action.tracks) {
@@ -139,29 +170,45 @@ export default function reducer(core = {}, action) {
       users[action.uri] = user;
       return { ...core, users };
 
+    case 'RESTORE_LIBRARY_FROM_COLD_STORE':
+      const { libraries } = core;
+      libraries[action.library.uri] = {
+        ...(libraries[action.library.uri] || {}),
+        ...action.library,
+      };
+      return {
+        ...core,
+        libraries,
+      };
+
+    case 'RESTORE_ITEMS_FROM_COLD_STORE':
+      const { items } = core;
+      action.items.forEach((item) => {
+        items[item.uri] = {
+          ...(items[item.uri] || {}),
+          ...item,
+        };
+      });
+      return {
+        ...core,
+        items,
+      };
 
       /**
          * Remove an item from an index
          * */
 
-    case 'REMOVE_FROM_INDEX':
-      var index = { ...core[action.index_name] };
+    case 'REMOVE_ITEM': {
+      const items = { ...core.items };
 
-      // We have a new key to redirect to
       if (action.new_key) {
-            	index[action.key] = {
-            		moved_to: action.new_key,
-            	};
-
-        // No redirection, so just a clean delete
+        items[action.key] = { moved_to: action.new_key };
       } else {
-            	delete index[action.key];
+        delete items[action.key];
       }
 
-      var updated_core = {};
-      updated_core[action.index_name] = index;
-
-      return { ...core, ...updated_core };
+      return { ...core, items };
+    }
 
 
       /**
@@ -292,12 +339,6 @@ export default function reducer(core = {}, action) {
           tracks,
           tracks_more,
         },
-      };
-
-    case 'UPDATE_PINNED':
-      return {
-        ...core,
-        pinned: action.pinned,
       };
 
     default:

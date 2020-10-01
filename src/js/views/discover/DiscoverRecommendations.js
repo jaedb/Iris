@@ -1,7 +1,7 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { compact } from 'lodash';
 import InputRange from 'react-input-range';
 import AlbumGrid from '../../components/AlbumGrid';
 import TrackList from '../../components/TrackList';
@@ -16,6 +16,7 @@ import Icon from '../../components/Icon';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
+import * as coreActions from '../../services/core/actions';
 import {
   isLoading,
   getFromUri,
@@ -195,10 +196,10 @@ class Discover extends React.Component {
       uiActions: {
         showContextMenu,
       },
-      tracks: tracksProp,
+      items: itemsProp,
     } = this.props;
 
-    const tracks = indexToArray(tracksProp, tracks_uris);
+    const tracks = indexToArray(itemsProp, tracks_uris);
 
     showContextMenu({
       e,
@@ -211,9 +212,8 @@ class Discover extends React.Component {
 
   handleURLSeeds = () => {
     const {
-      spotifyActions: {
-        getArtist,
-        getTrack,
+      coreActions: {
+        loadItems,
       },
       match: {
         params: {
@@ -226,19 +226,7 @@ class Discover extends React.Component {
     // We'd need to do this if our URL has been encoded so the whole URL can become
     // it's own URI (eg iris:discover:spotify_artist_1234) where we can't use ":"
     const seeds = seedsProp.split('_').join(':').split(',');
-
-    for (let i = 0; i < seeds.length; i++) {
-      switch (uriType(seeds[i])) {
-        case 'artist':
-          getArtist(seeds[i]);
-          break;
-        case 'track':
-          getTrack(seeds[i]);
-          break;
-        default:
-          break;
-      }
-    }
+    loadItems(seeds);
 
     this.setState(
       { seeds },
@@ -251,7 +239,7 @@ class Discover extends React.Component {
       seeds,
     } = this.state;
 
-    var uri = 'iris:discover';
+    let uri = 'iris:discover';
     if (seeds) {
       uri += ':';
       for (var i = 0; i < seeds.length; i++) {
@@ -325,8 +313,7 @@ class Discover extends React.Component {
 
   renderSeeds = () => {
     const {
-      tracks,
-      artists,
+      items,
     } = this.props;
     const {
       seeds,
@@ -338,34 +325,22 @@ class Discover extends React.Component {
         const uri = seeds[i];
 
         switch (uriType(uri)) {
-          case 'track':
-            if (typeof (tracks[uri]) !== 'undefined') {
-              seeds_objects.push(tracks[uri]);
-            } else {
-              seeds_objects.push({
-                name: 'Loading...',
-                uri,
-              });
-            }
-            break;
-          case 'artist':
-            if (typeof (artists[uri]) !== 'undefined') {
-              seeds_objects.push(artists[uri]);
-            } else {
-              seeds_objects.push({
-                name: 'Loading...',
-                uri,
-              });
-            }
-            break;
           case 'genre':
-            var name = getFromUri('genreid', uri);
+            const name = getFromUri('genreid', uri);
             seeds_objects.push({
               name: (name.charAt(0).toUpperCase() + name.slice(1)).replace('-', ' '),
               uri,
             });
             break;
           default:
+            if (typeof (items[uri]) !== 'undefined') {
+              seeds_objects.push(items[uri]);
+            } else {
+              seeds_objects.push({
+                name: 'Loading...',
+                uri,
+              });
+            }
             break;
         }
       }
@@ -475,44 +450,16 @@ class Discover extends React.Component {
         albums_uris,
         artists_uris,
       } = {},
-      tracks: tracksProp,
-      artists: artistsProp,
-      albums: albumsProp,
+      items: itemsProp,
     } = this.props;
 
     if (!albums_uris === undefined || artists_uris === undefined) {
       return <div className="content-wrapper recommendations-results" />;
     }
 
-    const tracks = [];
-    if (tracks_uris && tracksProp) {
-      for (var i = 0; i < tracks_uris.length; i++) {
-        var uri = tracks_uris[i];
-        if (tracksProp.hasOwnProperty(uri)) {
-          tracks.push(tracksProp[uri]);
-        }
-      }
-    }
-
-    const artists = [];
-    if (artists_uris && artistsProp) {
-      for (var i = 0; i < artists_uris.length; i++) {
-        var uri = artists_uris[i];
-        if (artistsProp.hasOwnProperty(uri)) {
-          artists.push(artistsProp[uri]);
-        }
-      }
-    }
-
-    const albums = [];
-    if (albums_uris && albumsProp) {
-      for (var i = 0; i < albums_uris.length; i++) {
-        var uri = albums_uris[i];
-        if (albumsProp.hasOwnProperty(uri)) {
-          albums.push(albumsProp[uri]);
-        }
-      }
-    }
+    const tracks = compact(tracks_uris.map((uri) => itemsProp[uri]));
+    const artists = compact(artists_uris.map((uri) => itemsProp[uri]));
+    const albums = compact(albums_uris.map((uri) => itemsProp[uri]));
 
     // Complete records not yet in our index
     if (tracks.length <= 0 && artists.length <= 0 && albums.length <= 0) {
@@ -640,9 +587,7 @@ class Discover extends React.Component {
 
 const mapStateToProps = (state) => ({
   theme: state.ui.theme,
-  albums: state.core.albums,
-  artists: state.core.artists,
-  tracks: state.core.tracks,
+  items: state.core.items,
   genres: (state.core.genres ? state.core.genres : []),
   authorized: state.spotify.authorization,
   load_queue: state.ui.load_queue,
@@ -654,6 +599,7 @@ const mapDispatchToProps = (dispatch) => ({
   uiActions: bindActionCreators(uiActions, dispatch),
   mopidyActions: bindActionCreators(mopidyActions, dispatch),
   spotifyActions: bindActionCreators(spotifyActions, dispatch),
+  coreActions: bindActionCreators(coreActions, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Discover);

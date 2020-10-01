@@ -11,15 +11,12 @@ import * as spotifyActions from '../services/spotify/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import { i18n, I18n } from '../locale';
 import Button from '../components/Button';
+import { queueHistorySelector } from '../util/selectors';
 
 class QueueHistory extends React.Component {
   componentDidMount() {
     const { uiActions: { setWindowTitle } } = this.props;
     setWindowTitle(i18n('queue_history.title'));
-    this.loadHistory();
-  }
-
-  componentDidUpdate = () => {
     this.loadHistory();
   }
 
@@ -40,8 +37,7 @@ class QueueHistory extends React.Component {
 
   render = () => {
     const {
-      queue_history,
-      tracks: tracksProp,
+      tracks,
       uiActions,
     } = this.props;
 
@@ -58,11 +54,6 @@ class QueueHistory extends React.Component {
       </Button>
     );
 
-    const tracks = queue_history.map((item) => ({
-      ...item,
-      ...(tracksProp[item.uri] || {}),
-    }));
-
     return (
       <div className="view queue-history-view">
         <Header options={options} uiActions={uiActions}>
@@ -70,24 +61,24 @@ class QueueHistory extends React.Component {
             <Icon name="play_arrow" type="material" />
           </I18n>
         </Header>
-        <section className="content-wrapper">
-          <TrackList
-            uri="iris:queue-history"
-            className="queue-history-track-list"
-            track_context="history"
-            tracks={tracks}
-            show_source_icon
-          />
-        </section>
-
+        {tracks && (
+          <section className="content-wrapper">
+            <TrackList
+              uri="iris:queue-history"
+              className="queue-history-track-list"
+              track_context="history"
+              tracks={tracks}
+              show_source_icon
+            />
+          </section>
+        )}
       </div>
     );
   }
 }
 
 const mapStateToProps = (state) => ({
-  tracks: (state.core.tracks ? state.core.tracks : {}),
-  queue_history: (state.mopidy.queue_history ? state.mopidy.queue_history : []),
+  tracks: queueHistorySelector(state),
 });
 
 const mapDispatchToProps = (dispatch) => ({

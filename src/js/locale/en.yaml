@@ -173,6 +173,7 @@ context_menu:
   discover_similar: Discover similar
   start_radio: Start radio
   copy_uri: Copy URI(s)
+  refresh: Refresh
 dropzones:
   dragging_things: 'Dragging %{count} things'
 playback_controls:
@@ -228,6 +229,7 @@ artist:
   overview:
     title: Overview
     top_tracks: Top tracks
+    albums: Albums
     related_artists:
       title: Related artists
       more: All related artists
@@ -363,6 +365,7 @@ settings:
     share_configuration: Share configuration
     restart: Restart server
     reset_cache: Reset cache
+    reset_storage: Reset storage
     reset: Reset all settings
   about:
     title: About

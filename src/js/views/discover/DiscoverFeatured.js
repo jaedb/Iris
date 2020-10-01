@@ -12,11 +12,12 @@ import * as spotifyActions from '../../services/spotify/actions';
 import { isLoading } from '../../util/helpers';
 import { i18n, I18n } from '../../locale';
 import Button from '../../components/Button';
+import { indexToArray } from '../../util/arrays';
 
 class DiscoverFeatured extends React.Component {
   componentDidMount() {
     const {
-      featured_playlists,
+      uris,
       uiActions: {
         setWindowTitle,
       },
@@ -26,7 +27,7 @@ class DiscoverFeatured extends React.Component {
     } = this.props;
 
     setWindowTitle(i18n('discover.featured.title'));
-    if (!featured_playlists) getFeaturedPlaylists();
+    if (!uris) getFeaturedPlaylists();
   }
 
   onRefresh = () => {
@@ -39,7 +40,7 @@ class DiscoverFeatured extends React.Component {
       },
     } = this.props;
     hideContextMenu();
-    getFeaturedPlaylists();
+    getFeaturedPlaylists(true);
   }
 
   handleContextMenu = (e, item) => {
@@ -63,11 +64,11 @@ class DiscoverFeatured extends React.Component {
     const {
       load_queue,
       uiActions,
-      featured_playlists,
-      playlists,
+      uris,
+      items,
     } = this.props;
 
-    if (isLoading(load_queue, ['spotify_browse/featured-playlists'])) {
+    if (isLoading(load_queue, ['(.*)spotify_browse/featured-playlists(.*)'])) {
       return (
         <div className="view discover-featured-view preserve-3d">
           <Header className="overlay" uiActions={uiActions}>
@@ -79,15 +80,7 @@ class DiscoverFeatured extends React.Component {
       );
     }
 
-    const items = [];
-    if (featured_playlists) {
-      for (let i = 0; i < featured_playlists.playlists.length; i++) {
-        const uri = featured_playlists.playlists[i];
-        if (playlists.hasOwnProperty(uri)) {
-          items.push(playlists[uri]);
-        }
-      }
-    }
+    const playlists = indexToArray(items, uris || []);
 
     const options = (
       <Button
@@ -107,7 +100,7 @@ class DiscoverFeatured extends React.Component {
           <I18n path="discover.featured.title" />
         </Header>
         <section className="content-wrapper grid-wrapper">
-          {items && <PlaylistGrid playlists={items} />}
+          {<PlaylistGrid playlists={playlists} />}
         </section>
       </div>
     );
@@ -117,8 +110,8 @@ class DiscoverFeatured extends React.Component {
 const mapStateToProps = (state) => ({
   theme: state.ui.theme,
   load_queue: state.ui.load_queue,
-  featured_playlists: state.spotify.featured_playlists,
-  playlists: state.core.playlists,
+  uris: state.spotify && state.spotify.featured_playlists ? state.spotify.featured_playlists.uris : null,
+  items: state.core.items,
 });
 
 const mapDispatchToProps = (dispatch) => ({

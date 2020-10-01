@@ -3,6 +3,7 @@ import { bindActionCreators } from 'redux';
 import { Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
 import ReactGA from 'react-ga';
+import localForage from 'localforage';
 import * as Sentry from '@sentry/browser';
 
 import Sidebar from './components/Sidebar';
@@ -117,7 +118,7 @@ export class App extends React.Component {
     if (changed.length > 0) {
       changed.forEach((k) => params.delete(k))
       const url = window.location.toString().replace(window.location.search, params.toString())
-      console.log('settings changed:', changed, 'redirect to:', url)
+      console.log(`Settings changed, redirecting to ${url}`, changed);
       window.location.assign(url)
     }
 
@@ -161,7 +162,7 @@ export class App extends React.Component {
     if (snapcast_enabled) {
       snapcastActions.connect();
     }
-    coreActions.getBroadcasts();
+    uiActions.getBroadcasts();
 
     if (!initial_setup_complete) {
       history.push('/initial-setup');

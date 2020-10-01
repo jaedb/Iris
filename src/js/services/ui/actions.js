@@ -1,5 +1,45 @@
-
 import { generateGuid } from '../../util/helpers';
+import { handleException } from '../core/actions';
+
+export function getBroadcasts() {
+  return (dispatch, getState) => {
+    const config = {
+      method: 'GET',
+      timeout: 15000,
+    };
+
+    // Fetch the "iris_broadcasts.json" file from Gist (or "_test" for test mode)
+    if (getState().ui.test_mode) {
+      config.url = 'https://gist.githubusercontent.com/jaedb/cb3a5ee6909632abb2e0fe66d4c8c311/raw';
+    } else {
+      config.url = 'https://gist.githubusercontent.com/jaedb/b677dccf80daf3ccb2ef12e96e495677/raw';
+    }
+
+    $.ajax(config).then(
+      (response) => {
+        dispatch({
+          type: 'BROADCASTS_LOADED',
+          broadcasts: JSON.parse(response),
+        });
+      },
+      (xhr, status, error) => {
+        dispatch(
+          handleException(
+            'Could not fetch broadcasts from GitHub',
+            {
+              config,
+              xhr,
+              status,
+              error,
+            },
+            null,
+            false,
+          ),
+        );
+      },
+    );
+  };
+}
 
 export function setWindowTitle(title = null, play_state = null) {
   return {
@@ -223,15 +263,15 @@ export function removeNotification(key, manual = false) {
 export function startLoading(key, source) {
   return {
     type: 'START_LOADING',
-    source,
     key,
+    source,
   };
 }
 
-export function stopLoading(key) {
+export function stopLoading(keys) {
   return {
     type: 'STOP_LOADING',
-    key,
+    keys: Array.isArray(keys) ? keys : [keys],
   };
 }
 

@@ -12,9 +12,9 @@ const indexToArray = (index, keys) => {
   if (!index) return [];
 
   if (keys) {
-    return keys.map((key) => index[key]);
+    return compact(keys.map((key) => index[key]));
   }
-  return Object.keys(index).map((key) => index[key]);
+  return compact(Object.keys(index).map((key) => index[key]));
 };
 
 /**

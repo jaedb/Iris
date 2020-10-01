@@ -74,9 +74,17 @@
           display: none;
         }
 
-        &.sidebar__menu__item--active {
-          background: transparent;
-          color: colour(turquoise) !important;
+        &.sidebar__menu__item {
+          color: colour(mid_grey);
+
+          @include theme('light') {
+            color: colour(soft_grey);
+          }
+
+          &--active {
+            background: transparent;
+            color: colour(turquoise) !important;
+          }
         }
       }
 

@@ -18,11 +18,7 @@ import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import * as spotifyActions from '../services/spotify/actions';
-import {
-  titleCase,
-  getIndexedRecords,
-} from '../util/helpers';
-import { sortItems } from '../util/arrays';
+import { titleCase } from '../util/helpers';
 import { i18n } from '../locale';
 
 class Search extends React.Component {
@@ -46,28 +42,20 @@ class Search extends React.Component {
 
     // Auto-focus on the input field
     $(document).find('.search-form input').focus();
+    this.digestUri();
   }
 
   componentDidUpdate = ({
     type: prevType,
     term: prevTerm,
-    mopidy_connected: prev_mopidy_connected,
   }) => {
     const {
       type: typeProp,
       term: termProp,
-      mopidy_connected,
-      uri_schemes_search_enabled,
     } = this.props;
     const { type, term } = this.state;
 
-    // Already connected, but search properties changed
-    if (prev_mopidy_connected && mopidy_connected) {
-      if (prevType !== typeProp || prevTerm !== termProp) {
-        this.digestUri();
-      }
-    // Connected
-    } else if (!prev_mopidy_connected && mopidy_connected && uri_schemes_search_enabled) {
+    if (prevType !== typeProp || prevTerm !== termProp) {
       this.search(type, term);
     }
   }
@@ -148,7 +136,6 @@ class Search extends React.Component {
       uiActions: {
         setWindowTitle,
       },
-      mopidy_connected,
       uri_schemes_search_enabled,
       mopidyActions,
       spotifyActions,
@@ -174,7 +161,7 @@ class Search extends React.Component {
 
     setWindowTitle(i18n('search.title_window', { term: decodeURIComponent(term) }));
 
-    if (type && term && mopidy_connected && uri_schemes_search_enabled) {
+    if (type && term) {
       if (mopidyTerm !== term || mopidyType !== type) {
         mopidyActions.clearSearchResults();
         mopidyActions.getSearchResults(type, term);
@@ -324,13 +311,7 @@ class Search extends React.Component {
 const mapStateToProps = (state, ownProps) => ({
   type: ownProps.match.params.type,
   term: ownProps.match.params.term,
-  mopidy_connected: state.mopidy.connected,
-  albums: (state.core.albums ? state.core.albums : []),
-  artists: (state.core.artists ? state.core.artists : []),
-  playlists: (state.core.playlists ? state.core.playlists : []),
-  tracks: (state.core.tracks ? state.core.tracks : []),
   uri_schemes_search_enabled: (state.ui.uri_schemes_search_enabled ? state.ui.uri_schemes_search_enabled : []),
-  uri_schemes_priority: (state.ui.uri_schemes_priority ? state.ui.uri_schemes_priority : []),
   uri_schemes: (state.mopidy.uri_schemes ? state.mopidy.uri_schemes : []),
   mopidy_search_results: (state.mopidy.search_results ? state.mopidy.search_results : {}),
   spotify_search_results: (state.spotify.search_results ? state.spotify.search_results : {}),

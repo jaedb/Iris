@@ -15,9 +15,14 @@ import {
   formatPlaylist,
   formatUser,
   formatAlbum,
+  formatArtist,
+  formatArtists,
+  formatAlbums,
+  formatImages,
+  formatTrack,
 } from '../../util/format';
 import URILink from '../../components/URILink';
-import { i18n } from '../../locale';
+import { getItem } from '../../util/selectors';
 
 const coreActions = require('../../services/core/actions');
 const uiActions = require('../../services/ui/actions');
@@ -329,13 +334,7 @@ export function getTrack(uri) {
     request(dispatch, getState, `tracks/${getFromUri('trackid', uri)}`)
       .then(
         (response) => {
-          dispatch(coreActions.trackLoaded(response));
-        },
-        (error) => {
-          dispatch(coreActions.handleException(
-            'Could not load track',
-            error,
-          ));
+          dispatch(coreActions.itemLoaded(formatTrack(response)));
         },
       );
   };
@@ -361,7 +360,7 @@ export function getLibraryTracks() {
   };
 }
 
-export function getFeaturedPlaylists() {
+export function getFeaturedPlaylists(forceRefetch = false) {
   return (dispatch, getState) => {
     dispatch({ type: 'SPOTIFY_FEATURED_PLAYLISTS_LOADED', data: false });
 
@@ -380,31 +379,30 @@ export function getFeaturedPlaylists() {
     if (sec < 10) sec = `0${sec}`;
 
     const timestamp = `${year}-${month}-${day}T${hour}:${min}:${sec}`;
+    let endpoint = 'browse/featured-playlists?limit=50';
+    endpoint += `&country=${getState().spotify.country}`;
+    endpoint += `&locale=${getState().spotify.locale}`;
+    endpoint += `&timestamp=${timestamp}`;
+    if (forceRefetch) endpoint += `&refetch=${Date.now()}`;
 
-    request(dispatch, getState, `browse/featured-playlists?limit=50&country=${getState().spotify.country}&locale=${getState().spotify.locale}timestamp=${timestamp}`)
+    request(dispatch, getState, endpoint)
       .then(
         (response) => {
-          const playlists = [];
-          for (let i = 0; i < response.playlists.items.length; i++) {
-            playlists.push({
+          const playlists = response.playlists.items.map(
+            (raw_playlist) => {
+              const playlist = formatPlaylist(raw_playlist);
+              delete playlist.tracks; // Don't overwrite (we may already have loaded these)
+              return playlist;
+            },
+          );
 
-              ...response.playlists.items[i],
-              is_completely_loaded: false,
-              can_edit: (getState().spotify.me && response.playlists.items[i].owner.id == getState().spotify.me.id),
-              tracks_total: response.playlists.items[i].tracks.total,
-            });
-          }
-
-          dispatch({
-            type: 'PLAYLISTS_LOADED',
-            playlists,
-          });
+          dispatch(coreActions.itemsLoaded(playlists));
 
           dispatch({
             type: 'SPOTIFY_FEATURED_PLAYLISTS_LOADED',
             data: {
               message: response.message,
-              playlists: upgradeSpotifyPlaylistUris(arrayOf('uri', response.playlists.items)),
+              uris: upgradeSpotifyPlaylistUris(arrayOf('uri', playlists)),
             },
           });
         },
@@ -438,9 +436,14 @@ export function getCategories() {
   };
 }
 
-export function getCategory(id) {
+export function getCategory(id, forceRefetch = false) {
   return (dispatch, getState) => {
-    request(dispatch, getState, `browse/categories/${id}?country=${getState().spotify.country}&locale=${getState().spotify.locale}`)
+    let endpoint = `browse/categories/${id}`;
+    endpoint += `?country=${getState().spotify.country}`;
+    endpoint += `&locale=${getState().spotify.locale}`;
+    if (forceRefetch) endpoint += `&refetch=${Date.now()}`;
+
+    request(dispatch, getState, endpoint)
       .then(
         (response) => {
           dispatch({
@@ -462,9 +465,15 @@ export function getCategory(id) {
   };
 }
 
-export function getCategoryPlaylists(id) {
+export function getCategoryPlaylists(id, forceRefetch = false) {
   return (dispatch, getState) => {
-    request(dispatch, getState, `browse/categories/${id}/playlists?limit=50&country=${getState().spotify.country}&locale=${getState().spotify.locale}`)
+    let endpoint = `browse/categories/${id}/playlists`;
+    endpoint += '?limit=50';
+    endpoint += `&country=${getState().spotify.country}`;
+    endpoint += `&locale=${getState().spotify.locale}`;
+    if (forceRefetch) endpoint += `&refetch=${Date.now()}`;
+
+    request(dispatch, getState, endpoint)
       .then(
         (response) => {
           dispatch({
@@ -483,9 +492,15 @@ export function getCategoryPlaylists(id) {
   };
 }
 
-export function getNewReleases() {
+export function getNewReleases(forceRefetch = false) {
   return (dispatch, getState) => {
-    request(dispatch, getState, `browse/new-releases?country=${getState().spotify.country}&limit=50`)
+    let endpoint = 'browse/new-releases';
+    endpoint += '?limit=50';
+    endpoint += '&offset=0';
+    endpoint += `&country=${getState().spotify.country}`;
+    if (forceRefetch) endpoint += `&refetch=${Date.now()}`;
+
+    request(dispatch, getState, endpoint)
       .then(
         (response) => {
           dispatch({
@@ -592,23 +607,19 @@ export function getSearchResults(type, term, limit = 50, offset = 0) {
 
           if (response.artists !== undefined) {
             dispatch({
-              type: 'ARTISTS_LOADED',
-              artists: response.artists.items,
-            });
-            dispatch({
               type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
               context: 'artists',
               query: { type, term },
               results: arrayOf('uri', response.artists.items),
               more: response.artists.next,
             });
+            // TODO: Loading items into index causes massive performance issue
+            // Not the formatter, not coldstorage (async) and not building new index
+            dispatch(coreActions.itemsLoaded(formatArtists(response.artists.items)));
           }
 
           if (response.albums !== undefined) {
-            dispatch({
-              type: 'ALBUMS_LOADED',
-              albums: response.albums.items,
-            });
+            dispatch(coreActions.itemsLoaded(formatAlbums(response.albums.items)));
             dispatch({
               type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
               context: 'albums',
@@ -624,10 +635,7 @@ export function getSearchResults(type, term, limit = 50, offset = 0) {
               can_edit: (getState().spotify.me && item.owner.id === getState().spotify.me.id),
               tracks_total: item.tracks.total,
             }));
-            dispatch({
-              type: 'PLAYLISTS_LOADED',
-              playlists,
-            });
+            dispatch(coreActions.itemsLoaded(playlists));
 
             dispatch({
               type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
@@ -684,19 +692,19 @@ export function getAutocompleteResults(field_id, query, types = ['album', 'artis
           }
 
           if (response.artists && response.artists.items) {
-            dispatch(coreActions.artistsLoaded(response.artists.items));
+            dispatch(coreActions.itemsLoaded(response.artists.items));
           }
 
           if (response.albums && response.albums.items) {
-            dispatch(coreActions.albumsLoaded(response.albums.items));
+            dispatch(coreActions.itemsLoaded(response.albums.items));
           }
 
           if (response.playlists && response.playlists.items) {
-            dispatch(coreActions.playlistsLoaded(response.playlists.items));
+            dispatch(coreActions.itemsLoaded(response.playlists.items));
           }
 
           if (response.tracks && response.tracks.items) {
-            dispatch(coreActions.tracksLoaded(response.tracks.items));
+            dispatch(coreActions.itemsLoaded(response.tracks.items));
           }
 
           dispatch({
@@ -730,35 +738,35 @@ export function clearAutocompleteResults(field_id = null) {
 
 export function following(uri, method = 'GET') {
   return (dispatch, getState) => {
-    const asset_name = uriType(uri);
+    const type = uriType(uri);
     let endpoint;
     let data;
     let is_following = null;
-    const asset = getState().core[`${asset_name}s`] && getState().core[`${asset_name}s`][uri];
+    const asset = getItem(getState(), uri) || {};
 
-    if (method == 'PUT') {
+    if (method === 'PUT') {
       is_following = true;
-    } else if (method == 'DELETE') {
+    } else if (method === 'DELETE') {
       is_following = false;
     }
 
-    switch (asset_name) {
+    switch (type) {
       case 'track':
-        if (method == 'GET') {
+        if (method === 'GET') {
           endpoint = `me/tracks/contains?ids=${getFromUri('trackid', uri)}`;
         } else {
           endpoint = `me/tracks?ids=${getFromUri('trackid', uri)}`;
         }
         break;
       case 'album':
-        if (method == 'GET') {
+        if (method === 'GET') {
           endpoint = `me/albums/contains?ids=${getFromUri('albumid', uri)}`;
         } else {
           endpoint = `me/albums?ids=${getFromUri('albumid', uri)}`;
         }
         break;
       case 'artist':
-        if (method == 'GET') {
+        if (method === 'GET') {
           endpoint = `me/following/contains?type=artist&ids=${getFromUri('artistid', uri)}`;
         } else {
           endpoint = `me/following?type=artist&ids=${getFromUri('artistid', uri)}`;
@@ -766,7 +774,7 @@ export function following(uri, method = 'GET') {
         }
         break;
       case 'user':
-        if (method == 'GET') {
+        if (method === 'GET') {
           endpoint = `me/following/contains?type=user&ids=${getFromUri('userid', uri)}`;
         } else {
           endpoint = `me/following?type=user&ids=${getFromUri('userid', uri)}`;
@@ -774,7 +782,7 @@ export function following(uri, method = 'GET') {
         }
         break;
       case 'playlist':
-        if (method == 'GET') {
+        if (method === 'GET') {
           endpoint = `playlists/${getFromUri('playlistid', uri)}/followers/contains?ids=${getState().spotify.me.id}`;
         } else {
           endpoint = `playlists/${getFromUri('playlistid', uri)}/followers?`;
@@ -788,24 +796,20 @@ export function following(uri, method = 'GET') {
       .then(
         (response) => {
           if (Array.isArray(response) && response.length > 0) {
-            is_following = response[0];
+            asset.in_library = response[0];
           } else {
-            is_following = is_following;
+            asset.in_library = is_following;
           }
 
-          dispatch({
-            type: `SPOTIFY_LIBRARY_${asset_name.toUpperCase()}_CHECK`,
-            key: uri,
-            in_library: is_following,
-          });
-
           if (method === 'DELETE') {
+            dispatch(coreActions.removeFromLibrary(`spotify:library:${type}s`, uri));
             dispatch(uiActions.createNotification({
-              content: <span>Removed <URILink uri={uri}>{asset ? asset.name : asset_name}</URILink> from library</span>,
+              content: <span>Removed <URILink uri={uri}>{asset ? asset.name : type}</URILink> from library</span>,
             }));
           } else if (method === 'PUT' || method === 'POST') {
+            dispatch(coreActions.addToLibrary(`spotify:library:${type}s`, asset));
             dispatch(uiActions.createNotification({
-              content: <span>Added <URILink uri={uri}>{asset ? asset.name : asset_name}</URILink> to library</span>,
+              content: <span>Added <URILink uri={uri}>{asset ? asset.name : type}</URILink> to library</span>,
             }));
           }
         },
@@ -888,38 +892,6 @@ export function resolveRadioSeeds(radio) {
 
 
 /**
- * Get my favorites
- *
- * @param uri string
- * */
-export function getFavorites(limit = 50, term = 'long_term') {
-  return (dispatch, getState) => {
-    dispatch({ type: 'SPOTIFY_FAVORITES_LOADED', artists: [], tracks: [] });
-
-    $.when(
-      request(dispatch, getState, `me/top/artists?limit=${limit}&time_range=${term}`),
-      request(dispatch, getState, `me/top/tracks?limit=${limit}&time_range=${term}`),
-
-    ).then(
-      (artists_response, tracks_response) => {
-        dispatch({
-          type: 'SPOTIFY_FAVORITES_LOADED',
-          artists: artists_response.items,
-          tracks: tracks_response.items,
-        });
-      },
-      (artists_error, tracks_error) => {
-        dispatch(coreActions.handleException(
-          'Could not load favorites',
-          { ...artists_error, ...tracks_error },
-        ));
-      },
-    );
-  };
-}
-
-
-/**
  * Get our recommendations
  * This is based off our 'favorites' and then we use those as seeds
  *
@@ -974,7 +946,7 @@ export function getRecommendations(uris = [], limit = 20, tunabilities = null) {
     request(dispatch, getState, endpoint)
       .then(
         (response) => {
-          const tracks = Object.assign([], response.tracks);
+          const tracks = Object.assign([], formatTracks(response.tracks));
 
           // We only get simple artist objects, so we need to
           // get the full object. We'll add URIs to our recommendations
@@ -989,7 +961,7 @@ export function getRecommendations(uris = [], limit = 20, tunabilities = null) {
               // is not one of the seeds
               if (!artists_uris.includes(artist.uri) && !artists_ids.includes(artist.id)) {
                 artists_uris.push(artist.uri);
-                dispatch(getArtist(artist.uri));
+                dispatch(getArtist(artist.uri, false));
               }
             }
           }
@@ -1011,11 +983,11 @@ export function getRecommendations(uris = [], limit = 20, tunabilities = null) {
           }
 
           if (albums.length > 0) {
-            dispatch(coreActions.albumsLoaded(albums));
+            dispatch(coreActions.itemsLoaded(albums));
           }
 
           if (tracks.length > 0) {
-            dispatch(coreActions.tracksLoaded(tracks));
+            dispatch(coreActions.itemsLoaded(tracks));
           }
 
           dispatch({
@@ -1074,127 +1046,62 @@ export function getGenres() {
  * @param uri string
  * @param full boolean (whether we want a full artist object)
  * */
-export function getArtist(uri, full = false) {
+export function getArtist(uri, { full, forceRefetch }) {
   return (dispatch, getState) => {
-    // Start with an empty object
-    // As each requests completes, they'll add to this object
-    const artist = {};
+    let endpoint = `artists/${getFromUri('artistid', uri)}`;
+    if (forceRefetch) endpoint += `?refetch=${Date.now()}`;
 
-    // We need our artist, obviously
-    const requests = [
-      request(dispatch, getState, `artists/${getFromUri('artistid', uri)}`, 'GET', false, true)
-        .then(
-          (response) => {
-            Object.assign(artist, response);
-          },
-          (error) => {
-            dispatch(coreActions.handleException(
-              'Could not load artist',
-              error,
-            ));
-          },
-        ),
-    ];
+    request(dispatch, getState, endpoint, 'GET', false, true)
+      .then(
+        (response) => {
+          const artist = formatArtist(response);
+          dispatch(coreActions.itemLoaded(artist));
+          dispatch(lastfmActions.getArtist(uri, artist.name, artist.mbid));
+        },
+      );
 
     // Do we want a full artist, with all supporting material?
     if (full) {
-      requests.push(
-        request(dispatch, getState, `artists/${getFromUri('artistid', uri)}/top-tracks?country=${getState().spotify.country}`)
-          .then(
-            (response) => {
-              Object.assign(artist, response);
-            },
-            (error) => {
-              dispatch(coreActions.handleException(
-                'Could not load artist\'s top tracks',
-                error,
-              ));
-            },
-          ),
-      );
 
-      requests.push(
-        request(dispatch, getState, `artists/${getFromUri('artistid', uri)}/related-artists`)
-          .then(
-            (response) => {
-              dispatch(coreActions.artistsLoaded(response.artists));
-              Object.assign(artist, { related_artists_uris: arrayOf('uri', response.artists) });
-            },
-            (error) => {
-              dispatch(coreActions.handleException(
-                'Could not load artist\'s related artists',
-                error,
-              ));
-            },
-          ),
-      );
-    }
-
-    // Run our requests
-    $.when.apply($, requests).then(() => {
-      if (artist.musicbrainz_id) {
-        dispatch(lastfmActions.getArtist(artist.uri, false, artist.musicbrainz_id));
-      } else {
-        dispatch(lastfmActions.getArtist(artist.uri, artist.name.replace('&', 'and')));
-      }
-
-      dispatch(coreActions.artistLoaded(artist));
-
-      // Now go get our artist albums
-      if (full) {
-        request(dispatch, getState, `artists/${getFromUri('artistid', uri)}/albums?market=${getState().spotify.country}`)
-          .then(
-            (response) => {
-              dispatch({
-                type: 'SPOTIFY_ARTIST_ALBUMS_LOADED',
-                artist_uri: uri,
-                data: response,
-              });
-            },
-            (error) => {
-              dispatch(coreActions.handleException(
-                'Could not load artist\'s albums',
-                error,
-              ));
-            },
-          );
-      }
-    });
-  };
-}
-
-export function getArtists(uris) {
-  return (dispatch, getState) => {
-    // now get all the artists for this album (full objects)
-    let ids = '';
-    for (let i = 0; i < uris.length; i++) {
-      if (ids != '') ids += ',';
-      ids += getFromUri('artistid', uris[i]);
-    }
-
-    request(dispatch, getState, `artists/?ids=${ids}`)
-      .then(
-        (response) => {
-          for (var i = i; i < response.length; i++) {
-            const artist = response;
-            for (var i = 0; i < artist.albums.length; i++) {
-              dispatch({
-                type: 'ALBUM_LOADED',
-                album: artist.albums[i],
-              });
-            }
-            artist.albums_uris = arrayOf('uri', artist.albums);
-            artist.albums_more = artist.albums.next;
-            dispatch(coreActions.artistLoaded(artist));
+      // All albums (gets all pages, may take some time to iterate them all)
+      let albums = [];
+      const fetchAlbums = (endpoint) => request(dispatch, getState, endpoint)
+        .then((response) => {
+          albums = [...albums, ...formatAlbums(response.items)];
+          if (response.next) {
+            fetchAlbums(response.next);
+          } else {
+            dispatch(coreActions.itemLoaded({
+              uri,
+              albums_uris: arrayOf('uri', albums),
+            }));
+            dispatch(coreActions.itemsLoaded(albums));
           }
-        },
-        (error) => {
-          dispatch(coreActions.handleException(
-            'Could not load artists',
-            error,
-          ));
-        },
-      );
+        });
+      fetchAlbums(`artists/${getFromUri('artistid', uri)}/albums?limit=50&include_groups=album,single&market=${getState().spotify.country}`);
+
+      // Get top tracks
+      request(dispatch, getState, `artists/${getFromUri('artistid', uri)}/top-tracks?country=${getState().spotify.country}`)
+        .then(
+          (response) => {
+            dispatch(coreActions.itemLoaded({
+              uri,
+              tracks: formatTracks(response.tracks),
+            }));
+          },
+        );
+
+      // Related artists
+      request(dispatch, getState, `artists/${getFromUri('artistid', uri)}/related-artists`)
+        .then(
+          (response) => {
+            dispatch(coreActions.itemLoaded({
+              uri,
+              related_artists: formatArtists(response.artists),
+            }));
+          },
+        );
+    }
   };
 }
 
@@ -1204,48 +1111,38 @@ export function getArtistImages(artist) {
     request(dispatch, getState, `search?q=${artist.name}&type=artist`)
       .then(response => {
         if (response.artists.items.length > 0) {
-          const updatedArtist = {
+          dispatch(coreActions.itemLoaded({
             uri: artist.uri,
-            images: response.artists.items[0].images,
-          }
-          dispatch(coreActions.artistLoaded(updatedArtist));
+            images: [formatImages(response.artists.items[0].images)],
+          }));
         }
-      },
-        error => {
-          dispatch(coreActions.handleException(
-            'Could not load artists',
-            error,
-          ));
-        },
-      );
+      });
   };
 }
 
-
 export function playArtistTopTracks(uri) {
   return (dispatch, getState) => {
-    const { artists } = getState().core;
+    const {
+      items: {
+        [uri]: artist,
+      },
+    } = getState().core;
 
     // Do we have this artist (and their tracks) in our index already?
-    if (typeof (artists[uri]) !== 'undefined' && typeof (artists[uri].tracks) !== 'undefined') {
-      const uris = arrayOf('uri', artists[uri].tracks);
+    if (artist && artist.tracks) {
+      const uris = arrayOf('uri', artist.tracks);
       dispatch(mopidyActions.playURIs(uris, uri));
-
-      // We need to load the artist's top tracks first
     } else {
-      request(dispatch, getState, `artists/${getFromUri('artistid', uri)}/top-tracks?country=${getState().spotify.country}`)
-        .then(
-          (response) => {
-            const uris = arrayOf('uri', response.tracks);
-            dispatch(mopidyActions.playURIs(uris, uri));
-          },
-          (error) => {
-            dispatch(coreActions.handleException(
-              'Could not play artist\'s top tracks',
-              error,
-            ));
-          },
-        );
+      request(
+        dispatch,
+        getState,
+        `artists/${getFromUri('artistid', uri)}/top-tracks?country=${getState().spotify.country}`,
+      ).then(
+        (response) => {
+          const uris = arrayOf('uri', response.tracks);
+          dispatch(mopidyActions.playURIs(uris, uri));
+        },
+      );
     }
   };
 }
@@ -1319,56 +1216,37 @@ export function getUserPlaylists(uri) {
  *
  * @oaram uri string
  * */
-export function getAlbum(uri) {
+export function getAlbum(uri, { full, forceRefetch }) {
   return (dispatch, getState) => {
-    // get the album
-    request(dispatch, getState, `albums/${getFromUri('albumid', uri)}`)
+    let endpoint = `albums/${getFromUri('albumid', uri)}`;
+    if (forceRefetch) endpoint += `?refetch=${Date.now()}`;
+
+    request(dispatch, getState, endpoint)
       .then(
         (response) => {
-          // dispatch our loaded artists (simple objects)
-          dispatch(coreActions.artistsLoaded(response.artists));
-
-          const tracks = Object.assign([], response.tracks.items);
-
-          const album = {
+          dispatch(coreActions.itemLoaded({
             ...formatAlbum(response),
-            artists_uris: arrayOf('uri', response.artists),
-            tracks_uris: arrayOf('uri', tracks),
-            tracks_more: response.tracks.next,
-            tracks_total: response.tracks.total,
-          };
+          }));
 
-          // add our album to all the tracks
-          for (var i = 0; i < tracks.length; i++) {
-            tracks[i].album = {
-              name: album.name,
-              uri: album.uri,
-            };
+          if (full) {
+            let tracks = formatTracks(response.tracks.items);
+            const fetchTracks = (endpoint) => request(dispatch, getState, endpoint)
+              .then((response) => {
+                tracks = [...tracks, ...formatTracks(response.items)];
+                if (response.next) {
+                  fetchTracks(response.next);
+                } else {
+                  dispatch(coreActions.itemLoaded({
+                    uri,
+                    tracks,
+                  }));
+                }
+              });
+
+            if (response.tracks.next) {
+              fetchTracks(response.tracks.next);
+            }
           }
-
-          dispatch(coreActions.albumLoaded(album));
-          dispatch(coreActions.tracksLoaded(tracks));
-
-          // now get all the artists for this album (full objects)
-          // we do this to get the artist artwork
-          const artist_ids = [];
-          for (var i = 0; i < response.artists.length; i++) {
-            artist_ids.push(getFromUri('artistid', response.artists[i].uri));
-          }
-
-          // get all album artists as full objects
-          request(dispatch, getState, `artists/?ids=${artist_ids}`)
-            .then(
-              (response) => {
-                dispatch(coreActions.artistsLoaded(response.artists));
-              },
-              (error) => {
-                dispatch(coreActions.handleException(
-                  'Could not load album\'s artists',
-                  error,
-                ));
-              },
-            );
         },
         (error) => {
           dispatch(coreActions.handleException(
@@ -1398,18 +1276,11 @@ export function createPlaylist(name, description, is_public, is_collaborative) {
     request(dispatch, getState, `users/${getState().spotify.me.id}/playlists/`, 'POST', data)
       .then(
         (response) => {
-          dispatch({
-            type: 'PLAYLIST_LOADED',
-            key: response.uri,
-            playlist: {
-
-              ...response,
-              can_edit: true,
-              tracks: [],
-              tracks_more: null,
-              tracks_total: 0,
-            },
-          });
+          dispatch(coreActions.itemLoaded({
+            ...formatPlaylist(response),
+            can_edit: true,
+            tracks: [],
+          }));
 
           dispatch({
             type: 'LIBRARY_PLAYLISTS_LOADED',
@@ -1494,12 +1365,17 @@ export function savePlaylist(uri, name, description, is_public, is_collaborative
   };
 }
 
-export function getPlaylist(uri) {
+export function getPlaylist(uri, { full, forceRefetch, callbackAction }) {
   return (dispatch, getState) => {
-    // get the main playlist object
-    request(dispatch, getState, `playlists/${getFromUri('playlistid', uri)}?market=${getState().spotify.country}`)
+    let endpoint = `playlists/${getFromUri('playlistid', uri)}`;
+    endpoint += `?market=${getState().spotify.country}`;
+    if (forceRefetch) endpoint += `&refetch=${Date.now()}`;
+
+    request(dispatch, getState, endpoint)
       .then(
         (response) => {
+          let tracks = formatTracks(response.tracks.items);
+
           // convert links in description
           let description = null;
           if (response.description) {
@@ -1509,22 +1385,53 @@ export function getPlaylist(uri) {
             description = description.split('<a href="spotify:user:').join('<a href="#' + '/user/spotify:user:');
           }
 
-          const tracks = formatTracks(response.tracks.items);
-
-          const playlist = {
-
+          dispatch(coreActions.itemLoaded({
             ...formatPlaylist(response),
-            is_completely_loaded: true,
-            user_uri: response.owner.uri,
-            tracks_uris: tracks ? arrayOf('uri', tracks) : null,
-            tracks_more: response.tracks.next,
-            tracks_total: response.tracks.total,
+            can_edit: (getState().spotify.me && getState().spotify.me.id === response.owner.id),
             description,
-          };
+          }));
 
-          dispatch(coreActions.userLoaded(formatUser(response.owner)));
-          dispatch(coreActions.tracksLoaded(tracks));
-          dispatch(coreActions.playlistLoaded(playlist));
+          if (full) {
+            const fetchTracks = (endpoint) => request(dispatch, getState, endpoint)
+              .then((response) => {
+                tracks = [...tracks, ...formatTracks(response.items)];
+                if (response.next) {
+                  fetchTracks(response.next);
+                } else {
+                  dispatch(coreActions.itemLoaded({
+                    uri,
+                    tracks,
+                  }));
+
+                  if (callbackAction) {
+                    switch (callbackAction.name) {
+                      case 'enqueue':
+                        dispatch(mopidyActions.enqueueURIs(
+                          arrayOf('uri', tracks),
+                          uri,
+                          callbackAction.play_next,
+                          callbackAction.at_position,
+                          callbackAction.offset,
+                        ));
+                        break;
+                      case 'play':
+                        dispatch(mopidyActions.playURIs(
+                          arrayOf('uri', tracks),
+                          uri,
+                          callbackAction.shuffle,
+                        ));
+                        break;
+                      default:
+                        break;
+                    }
+                  }
+                }
+              });
+
+            if (response.tracks.next) {
+              fetchTracks(response.tracks.next);
+            }
+          };
         },
         (error) => {
           dispatch(coreActions.handleException(
@@ -1624,8 +1531,26 @@ export function getLibraryTracksAndPlayProcessor(data) {
  * Recursively get .next until we have all tracks
  * */
 
-export function getAllPlaylistTracks(uri, shuffle = false, callback_action = null, play_next = false, at_position = null, offset = 0) {
+export function getAllPlaylistTracks(
+  uri,
+  shuffle = false,
+  callback_action = null,
+  play_next = false,
+  at_position = null,
+  offset = 0,
+) {
   return (dispatch, getState) => {
+
+
+
+
+
+    if (data.callback_action == 'enqueue') {
+      dispatch(mopidyActions.enqueueURIs(uris, data.uri, data.play_next, data.at_position, data.offset));
+    } else {
+      dispatch(mopidyActions.playURIs(uris, data.uri));
+    }
+
     dispatch(uiActions.startProcess(
       'SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR',
       'Loading playlist tracks',
@@ -1811,229 +1736,84 @@ export function flushLibrary() {
   };
 }
 
-
-/**
- * Playlists
- * */
-
-export function getLibraryPlaylists() {
+export function getLibraryPlaylists(forceRefetch) {
   return (dispatch, getState) => {
-    const last_run = getState().ui.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR;
+    let libraryItems = [];
+    const fetchLibraryPlaylists = (endpoint) => request(dispatch, getState, endpoint)
+      .then((response) => {
+        const items = response.items.map(
+          (item) => ({
+            ...formatPlaylist(item),
+            in_library: true,
+            can_edit: (getState().spotify.me && item.owner.id === getState().spotify.me.id),
+          }),
+        );
+        libraryItems = [...libraryItems, ...items];
+        if (response.next) {
+          fetchLibraryPlaylists(`${response.next}${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
+        } else {
+          dispatch(coreActions.itemsLoaded(libraryItems));
+          dispatch(coreActions.libraryLoaded({
+            uri: 'spotify:library:playlists',
+            items_uris: arrayOf('uri', libraryItems),
+          }));
+        }
+      });
 
-    if (!last_run) {
-      dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR', 'Loading Spotify playlists', { next: 'me/playlists?limit=50' }));
-    } else if (last_run.status === 'cancelled') {
-      dispatch(uiActions.resumeProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'));
-
-      // We've already finished, but the status has been flushed
-    } else if (last_run.status === 'finished' && !getState().spotify.library_playlists_loaded_all) {
-      dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR', 'Loading Spotify playlists', { next: 'me/playlists?limit=50' }));
-    }
+    fetchLibraryPlaylists(`me/playlists?limit=50${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
   };
 }
 
-export function getLibraryPlaylistsProcessor(data) {
+export function getLibraryAlbums(forceRefetch) {
   return (dispatch, getState) => {
-    request(dispatch, getState, data.next)
-      .then(
-        (response) => {
-          dispatch({
-            type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED',
-            playlists: response.items,
-          });
+    let libraryItems = [];
+    const fetchLibraryAlbums = (endpoint) => request(dispatch, getState, endpoint)
+      .then((response) => {
+        const items = response.items.map(
+          (item) => ({
+            ...formatAlbum(item),
+            in_library: true,
+          }),
+        );
+        libraryItems = [...libraryItems, ...items];
+        if (response.next) {
+          fetchLibraryAlbums(`${response.next}${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
+        } else {
+          dispatch(coreActions.itemsLoaded(libraryItems));
+          dispatch(coreActions.libraryLoaded({
+            uri: 'spotify:library:albums',
+            items_uris: arrayOf('uri', libraryItems),
+          }));
+        }
+      });
 
-          // Check to see if we've been cancelled
-          if (getState().ui.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR !== undefined) {
-            const processor = getState().ui.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR;
-
-            if (processor.status == 'cancelling') {
-              dispatch(uiActions.processCancelled('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'));
-              return false;
-            }
-          }
-
-          // We got a next link, so we've got more work to be done
-          if (response.next) {
-            const { total } = response;
-            const loaded = getState().spotify.library_playlists.length;
-            const remaining = total - loaded;
-            dispatch(uiActions.updateProcess(
-              'SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR',
-              `Loading ${remaining} Spotify playlists`,
-              {
-                next: response.next,
-                total: response.total,
-                remaining,
-              },
-            ));
-            dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR', { next: response.next }));
-          } else {
-            dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'));
-            dispatch({ type: 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED_ALL' });
-          }
-        },
-        () => {
-          dispatch(uiActions.processFinished(
-            'SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR',
-            {
-              content: i18n(
-                'errors.could_not_load_library',
-                {
-                  name: i18n('library.playlists.title'),
-                  provider: i18n('services.spotify.title'),
-                },
-              ),
-              level: 'error',
-            },
-          ));
-        },
-      );
+    fetchLibraryAlbums(`me/albums?limit=50${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
   };
 }
 
-
-/**
- * Artists
- * */
-
-export function getLibraryArtists() {
+export function getLibraryArtists(forceRefetch) {
   return (dispatch, getState) => {
-    const last_run = getState().ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR;
+    let libraryItems = [];
+    const fetchLibraryArtists = (endpoint) => request(dispatch, getState, endpoint)
+      .then((response) => {
+        const items = response.artists.items.map(
+          (item) => ({
+            ...formatArtist(item),
+            in_library: true,
+          }),
+        );
+        libraryItems = [...libraryItems, ...items];
+        if (response.next) {
+          fetchLibraryArtists(`${response.next}${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
+        } else {
+          dispatch(coreActions.itemsLoaded(libraryItems));
+          dispatch(coreActions.libraryLoaded({
+            uri: 'spotify:library:artists',
+            items_uris: arrayOf('uri', libraryItems),
+          }));
+        }
+      });
 
-    if (!last_run) {
-      dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR', 'Loading Spotify artists', { next: 'me/following?type=artist&limit=50' }));
-    } else if (last_run.status === 'cancelled') {
-      dispatch(uiActions.resumeProcess('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'));
-
-      // We've already finished, but the status has been flushed
-    } else if (last_run.status === 'finished' && !getState().spotify.library_artists_loaded_all) {
-      dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR', 'Loading Spotify artists', { next: 'me/following?type=artist&limit=50' }));
-    }
-  };
-}
-
-export function getLibraryArtistsProcessor(data) {
-  return (dispatch, getState) => {
-    request(dispatch, getState, data.next)
-      .then(
-        (response) => {
-          dispatch({
-            type: 'SPOTIFY_LIBRARY_ARTISTS_LOADED',
-            artists: response.artists.items,
-          });
-          // We got a next link, so we've got more work to be done
-          if (response.artists.next) {
-            const { total } = response.artists;
-            const loaded = getState().spotify.library_artists.length;
-            const remaining = total - loaded;
-            dispatch(uiActions.updateProcess(
-              'SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR',
-              `Loading ${remaining} Spotify artists`,
-              {
-                next: response.artists.next,
-                total: response.artists.total,
-                remaining,
-              },
-            ));
-            dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR', { next: response.artists.next }));
-          } else {
-            dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'));
-          }
-        },
-        () => {
-          dispatch(uiActions.processFinished(
-            'SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR',
-            {
-              content: i18n(
-                'errors.could_not_load_library',
-                {
-                  name: i18n('library.artists.title'),
-                  provider: i18n('services.spotify.title'),
-                },
-              ),
-              level: 'error',
-            },
-          ));
-        },
-      );
-  };
-}
-
-
-/**
- * ALbums
- * */
-
-export function getLibraryAlbums() {
-  return (dispatch, getState) => {
-    const last_run = getState().ui.processes.SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR;
-
-    if (!last_run) {
-      dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR', 'Loading Spotify albums', { next: 'me/albums?limit=50' }));
-    } else if (last_run.status === 'cancelled') {
-      dispatch(uiActions.updateProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR', 'Loading Spotify albums', { next: 'me/albums?limit=50' }));
-
-      // We've already finished, but the status has been flushed
-    } else if (last_run.status === 'finished' && !getState().spotify.library_albums_loaded_all) {
-      dispatch(uiActions.startProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR', 'Loading Spotify albums', { next: 'me/albums?limit=50' }));
-    }
-  };
-}
-
-export function getLibraryAlbumsProcessor(data) {
-  return (dispatch, getState) => {
-    request(dispatch, getState, data.next)
-      .then(
-        (response) => {
-          dispatch({
-            type: 'SPOTIFY_LIBRARY_ALBUMS_LOADED',
-            albums: response.items,
-          });
-
-          // Check to see if we've been cancelled
-          if (getState().ui.processes.SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR !== undefined) {
-            const processor = getState().ui.processes.SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR;
-
-            if (processor.status == 'cancelling') {
-              dispatch(uiActions.processCancelled('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'));
-              return false;
-            }
-          }
-
-          // We got a next link, so we've got more work to be done
-          if (response.next) {
-            const { total } = response;
-            const loaded = getState().spotify.library_albums.length;
-            const remaining = total - loaded;
-            dispatch(uiActions.updateProcess(
-              'SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR',
-              `Loading ${remaining} Spotify albums`,
-              {
-                next: response.next,
-                total: response.total,
-                remaining,
-              },
-            ));
-            dispatch(uiActions.runProcess('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR', { next: response.next }));
-          } else {
-            dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'));
-          }
-        },
-        () => {
-          dispatch(uiActions.processFinished(
-            'SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR',
-            {
-              content: i18n(
-                'errors.could_not_load_library',
-                {
-                  name: i18n('library.albums.title'),
-                  provider: i18n('services.spotify.title'),
-                },
-              ),
-              level: 'error',
-            },
-          ));
-        },
-      );
+    fetchLibraryArtists(`me/following?type=artist&limit=50${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
   };
 }

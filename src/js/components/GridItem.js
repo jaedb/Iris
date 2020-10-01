@@ -32,7 +32,7 @@ export default class GridItem extends React.Component {
       case 'album':
         // If Mopidy doesn't find any images, then it will pass on the call to LastFM
         if (mopidyActions) {
-          mopidyActions.getImages('albums', [item.uri]);
+          mopidyActions.getImages([item.uri]);
         }
         break;
 
@@ -62,11 +62,11 @@ export default class GridItem extends React.Component {
   }) => {
     switch (uriType(uri)) {
       case 'playlist':
-        return tracks_total ? (
+        return (
           <span className="grid__item__secondary__content">
-            <I18n path="specs.tracks" count={tracks_total} />
+            <I18n path="specs.tracks" count={tracks_total || 0} />
           </span>
-        ) : null;
+        );
 
       case 'artist':
         return (

@@ -185,39 +185,14 @@ class EditRadio extends React.Component {
   }
 
   mapSeeds = () => {
-    const {
-      seeds,
-    } = this.state;
-    const {
-      tracks = {},
-      artists = {},
-    } = this.props;
+    const { seeds } = this.state;
+    const { items } = this.props;
 
     if (!seeds) {
       return [];
     }
 
-    return seeds.slice(0, 5).map((uri) => {
-      switch (uriType(uri)) {
-        case 'artist':
-          if (artists[uri]) {
-            return artists[uri];
-          }
-          break;
-        case 'track':
-          if (tracks[uri]) {
-            return tracks[uri];
-          }
-          break;
-        default:
-          break;
-      }
-
-      return {
-        unresolved: true,
-        uri,
-      };
-    });
+    return seeds.slice(0, 5).map((uri) => items[uri] || { uri, unresolved: true });
   }
 
   render = () => {
@@ -281,7 +256,7 @@ class EditRadio extends React.Component {
           </div>
 
           <div className="actions centered-text">
-            {this.state.enabled && (
+            {enabled && (
               <Button
                 type="destructive"
                 size="large"
@@ -292,7 +267,7 @@ class EditRadio extends React.Component {
               </Button>
             )}
 
-            {this.state.enabled ? (
+            {enabled ? (
               <Button
                 type="primary"
                 size="large"
@@ -318,10 +293,9 @@ class EditRadio extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state) => ({
   radio: state.core.radio,
-  artists: state.core.artists,
-  tracks: state.core.tracks,
+  items: state.core.items,
 });
 
 const mapDispatchToProps = (dispatch) => ({

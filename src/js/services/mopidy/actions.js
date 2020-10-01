@@ -405,10 +405,9 @@ export function shuffleTracklist() {
  * Asset-oriented actions
  * */
 
-export function getImages(context, uris) {
+export function getImages(uris) {
   return {
     type: 'MOPIDY_GET_IMAGES',
-    context,
     uris,
   };
 }
@@ -432,10 +431,11 @@ export function getLibraryPlaylists() {
   return { type: 'MOPIDY_GET_LIBRARY_PLAYLISTS' };
 }
 
-export function getPlaylist(uri) {
+export function getPlaylist(uri, options) {
   return {
     type: 'MOPIDY_GET_PLAYLIST',
-    data: { uri },
+    uri,
+    options,
   };
 }
 
@@ -479,10 +479,11 @@ export function clearLibraryArtists() {
   };
 }
 
-export function getArtist(uri) {
+export function getArtist(uri, options) {
   return {
     type: 'MOPIDY_GET_ARTIST',
     uri,
+    options,
   };
 }
 
@@ -494,10 +495,11 @@ export function getArtists(uris, processor = null) {
   };
 }
 
-export function getAlbum(uri) {
+export function getAlbum(uri, options) {
   return {
     type: 'MOPIDY_GET_ALBUM',
     uri,
+    options,
   };
 }
 
