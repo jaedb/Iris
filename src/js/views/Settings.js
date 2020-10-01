@@ -619,7 +619,7 @@ class Settings extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => state;
+const mapStateToProps = (state) => state;
 
 const mapDispatchToProps = (dispatch) => ({
   coreActions: bindActionCreators(coreActions, dispatch),

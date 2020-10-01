@@ -20,6 +20,13 @@ export function setEnabled(enabled) {
   };
 }
 
+export function setStreamingEnabled(streaming_enabled) {
+  return {
+    type: 'SNAPCAST_SET',
+    data: { streaming_enabled },
+  };
+}
+
 export function connect() {
   return {
     type: 'SNAPCAST_CONNECT',

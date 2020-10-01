@@ -272,7 +272,12 @@ const SnapcastMiddleware = (function () {
 
       case 'SNAPCAST_SET_ENABLED':
         store.dispatch(snapcastActions.set({ enabled: action.enabled }));
-        store.dispatch(action.enabled ? snapcastActions.connect() : snapcastActions.disconnect());
+        if (!action.enabled) {
+          store.dispatch(snapcastActions.set({ streaming_enabled: false }));
+          store.dispatch(snapcastActions.disconnect());
+        } else {
+          store.dispatch(snapcastActions.connect());
+        }
         break;
 
       case 'SNAPCAST_GET_SERVER':

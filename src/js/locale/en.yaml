@@ -185,6 +185,7 @@ playback_controls:
   unmute: Unmute
 snapcast:
   enabled: Enabled
+  streaming_enabled: Streaming enabled
   show_disconnected_clients: Show disconnected clients
   no_connected_clients: No connected clients
   host: Host
