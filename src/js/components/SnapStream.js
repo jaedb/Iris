@@ -777,8 +777,8 @@ class SnapStream {
         console.info("Message not handled, type: " + type);
       }
     };
-    this.streamsocket.onopen = (ev) => {
-      console.log("Snapcast web streaming connected");
+    this.streamsocket.onopen = (e) => {
+      console.log('SnapStream socket opened', e);
       let hello = new HelloMessage();
       hello.mac = "00:00:00:00:00:00";
       hello.arch = "web";
@@ -789,9 +789,12 @@ class SnapStream {
       this.syncTime();
       this.syncHandle = window.setInterval(() => this.syncTime(), 1000);
     };
-    this.streamsocket.onerror = (ev) => { alert("error: " + ev.type); }; //this.onError(ev);
-    this.streamsocket.onclose = (ev) => {
-      stop();
+    this.streamsocket.onerror = (e) => {
+      console.error('SnapStream socket error', e);
+    };
+    this.streamsocket.onclose = (e) => {
+      console.log('SnapStream socket closed', e);
+      this.stop();
     };
     // this.ageBuffer = new Array<number>();
     this.timeProvider = new TimeProvider();
@@ -801,7 +804,7 @@ class SnapStream {
     msg.sent.setMilliseconds(this.timeProvider.now());
     msg.id = ++this.msgId;
     if (this.streamsocket.readyState != this.streamsocket.OPEN) {
-      stop();
+      this.stop();
     }
     else {
       this.streamsocket.send(msg.serialize());
