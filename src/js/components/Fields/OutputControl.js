@@ -157,7 +157,7 @@ class OutputControl extends React.Component {
     const snapcastGroups = this.snapcastGroups();
     const commands = this.commands();
 
-    if (!snapcastGroups && !localStreaming && !commands) {
+    if (!snapcastGroups && !commands) {
       return (
         <div className="output-control__items output-control__items--no-results">
           <p className="no-results">
@@ -169,7 +169,6 @@ class OutputControl extends React.Component {
     return (
       <div className="output-control__items">
         {commands}
-        {localStreaming}
         {snapcastGroups}
       </div>
     );
