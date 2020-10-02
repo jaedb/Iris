@@ -278,47 +278,6 @@ class Services extends React.Component {
     );
   }
 
-  renderIcecast() {
-    const { core, coreActions } = this.props;
-    return (
-      <div>
-        <div className="field checkbox">
-          <div className="name">
-            <I18n path="settings.services.icecast.enable.label" />
-          </div>
-          <div className="input">
-            <label>
-              <input
-                type="checkbox"
-                name="ssl"
-                checked={core.http_streaming_enabled}
-                onChange={() => coreActions.set({ http_streaming_enabled: !core.http_streaming_enabled })}
-              />
-              <span className="label">
-                <I18n path="settings.services.icecast.enable.description" />
-              </span>
-            </label>
-          </div>
-        </div>
-        <label className="field">
-          <div className="name">
-            <I18n path="settings.services.icecast.location.label" />
-          </div>
-          <div className="input">
-            <TextField
-              onChange={(value) => coreActions.set({ http_streaming_url: value })}
-              value={core.http_streaming_url}
-              autosave
-            />
-            <div className="description">
-              <I18n path="settings.services.icecast.location.description" />
-            </div>
-          </div>
-        </label>
-      </div>
-    );
-  }
-
   renderMenu() {
     if (this.props.spotify.me && this.props.core.users[this.props.spotify.me.uri]) {
       var spotify_icon = <Thumbnail className="menu-item__thumbnail" circle size="small" images={this.props.core.users[this.props.spotify.me.uri].images} />;
@@ -415,23 +374,6 @@ class Services extends React.Component {
               )}
             </div>
           </Link>
-          <Link history={this.props.history} className="menu-item menu-item--icecast" activeClassName="menu-item--active" to="/settings/services/icecast" scrollTo="#services-menu">
-            <div className="menu-item__inner">
-              <Icon className="menu-item__icon" name="wifi_tethering" />
-              <div className="menu-item__title">
-                <I18n path="services.icecast.title" />
-              </div>
-              {this.props.core.http_streaming_enabled ? (
-                <span className="status green-text">
-                  <I18n path="settings.services.enabled" />
-                </span>
-              ) : (
-                <span className="status mid_grey-text">
-                  <I18n path="settings.services.disabled" />
-                </span>
-              )}
-            </div>
-          </Link>
         </div>
       </div>
     );
@@ -446,8 +388,6 @@ class Services extends React.Component {
         return <div className="sub-tabs__content">{this.renderLastfm()}</div>;
       case 'genius':
         return <div className="sub-tabs__content">{this.renderGenius()}</div>;
-      case 'icecast':
-        return <div className="sub-tabs__content">{this.renderIcecast()}</div>;
       case 'snapcast':
         return <div className="sub-tabs__content">{<Snapcast match={this.props.match} />}</div>;
       default:
@@ -465,7 +405,7 @@ class Services extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => state;
+const mapStateToProps = (state) => state;
 
 const mapDispatchToProps = (dispatch) => ({
   coreActions: bindActionCreators(coreActions, dispatch),

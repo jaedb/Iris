@@ -151,14 +151,6 @@ export function calculateGroupVolume(id, clients) {
   };
 }
 
-
-
-/**
- * Record loaders
- *
- * We've got a loaded record, now we just need to plug it in to our state and stores.
- * */
-
 export function serverLoaded(server) {
   return {
     type: 'SNAPCAST_SERVER_LOADED',

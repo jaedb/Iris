@@ -9,31 +9,79 @@ class Stream extends React.Component {
   constructor(props) {
     super(props);
 
+    console.log(props);
+
     if (props.enabled && props.streaming_enabled) {
-      this.snapstream = new SnapStream('192.168.1.201', 1780);
+      this.start();
+    }
+  }
+
+  start = () => {
+    const {
+      host,
+      port,
+      ssl,
+      username,
+    } = this.props;
+
+    if (this.snapstream) {
+      this.snapstream.play();
     } else {
+      const protocol = (ssl ? 'wss' : 'ws');
+      console.log(protocol, host, port, username);
+      this.snapstream = new SnapStream(protocol, host, port, 'Iris');
+    }
+  }
+
+  stop = () => {
+    if (this.snapstream) {
+      this.snapstream.stop();
       this.snapstream = null;
     }
   }
 
-  componentDidUpdate = () => {
-    const { enabled, streaming_enabled } = this.props;
+  componentDidUpdate = ({
+    streaming_enabled: prevStreamingEnabled,
+  }) => {
+    const {
+      enabled,
+      streaming_enabled,
+    } = this.props;
 
-    if (enabled && streaming_enabled && !this.snapstream) {
-      this.snapstream = new SnapStream('192.168.1.201', 1780);
+    if (!prevStreamingEnabled && enabled && streaming_enabled) {
+      this.start();
     }
-    if ((!enabled || !streaming_enabled) && this.snapstream) {
-      this.snapstream = null;
+    if (!enabled || !streaming_enabled) {
+      this.stop();
     }
   }
 
   render = () => null;
 }
 
-const mapStateToProps = (state) => ({
-  enabled: state.snapcast.enabled,
-  streaming_enabled: state.snapcast.streaming_enabled,
-});
+const mapStateToProps = (state) => {
+  const {
+    snapcast: {
+      enabled,
+      streaming_enabled,
+      host,
+      port,
+      ssl,
+    },
+    pusher: {
+      username,
+    },
+  } = state;
+
+  return {
+    enabled,
+    streaming_enabled,
+    host,
+    port,
+    ssl,
+    username,
+  };
+};
 
 const mapDispatchToProps = (dispatch) => ({
   coreActions: bindActionCreators(coreActions, dispatch),

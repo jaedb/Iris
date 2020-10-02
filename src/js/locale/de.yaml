@@ -118,8 +118,6 @@ services:
     want_lyrics: 'Wollen Sie Liedtexte? Genius autorisieren in '
   google:
     title: Google
-  icecast:
-    title: Icecast
   lastfm:
     title: LastFM
     love: Liebe es
@@ -385,13 +383,6 @@ settings:
       locale:
         title: Sprache
         description: ISO 639 Sprachcode in Kleinbuchstaben und ein großgeschriebener ISO 3166-1 alpha-2 Ländercode, verbunden mit einem Unterstrich (z.B. 'de_DE')
-    icecast:
-      enable:
-        label: Aktivieren
-        description: Audio an diesen Browser streamen
-      location:
-        label: Standort
-        description: Die vollständige URL zu Ihrem Stream-Endpunkt
 user:
   title: Benutzer
   title_window: '%{name} (Benutzer)'

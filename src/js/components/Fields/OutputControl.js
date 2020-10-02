@@ -153,42 +153,8 @@ class OutputControl extends React.Component {
     );
   }
 
-  localStreaming() {
-    const {
-      http_streaming_enabled,
-      http_streaming_volume,
-      http_streaming_mute,
-      coreActions,
-    } = this.props;
-
-    if (!http_streaming_enabled) return null;
-
-    return (
-      <div className="output-control__item outputs__item--icecast">
-        <div className="output-control__item__name">
-          Local browser
-        </div>
-        <div className="output-control__item__controls">
-          <MuteControl
-            className="output-control__item__mute"
-            noTooltip
-            mute={http_streaming_mute}
-            onMuteChange={(mute) => coreActions.set({ http_streaming_mute: mute })}
-          />
-          <VolumeControl
-            className="output-control__item__volume"
-            volume={http_streaming_volume}
-            mute={http_streaming_mute}
-            onVolumeChange={(percent) => coreActions.set({ http_streaming_volume: percent })}
-          />
-        </div>
-      </div>
-    );
-  }
-
   renderOutputs() {
     const snapcastGroups = this.snapcastGroups();
-    const localStreaming = this.localStreaming();
     const commands = this.commands();
 
     if (!snapcastGroups && !localStreaming && !commands) {
@@ -220,7 +186,7 @@ class OutputControl extends React.Component {
     }
 
     // No customisable outputs
-    if (!this.props.http_streaming_enabled && !this.props.snapcast_enabled && !this.props.pusher_commands) {
+    if (!this.props.snapcast_enabled && !this.props.pusher_commands) {
       return (
         <span className="output-control disabled">
           <button className="control speakers"><Icon name="speaker" /></button>
@@ -235,10 +201,7 @@ class OutputControl extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
-  http_streaming_enabled: state.core.http_streaming_enabled,
-  http_streaming_volume: parseInt(state.core.http_streaming_volume) || 50,
-  http_streaming_mute: state.core.http_streaming_mute,
+const mapStateToProps = (state) => ({
   pusher_connected: state.pusher.connected,
   snapcast_enabled: (state.pusher.config ? state.pusher.config.snapcast_enabled : null),
   show_disconnected_clients: (state.ui.snapcast_show_disconnected_clients !== undefined ? state.ui.snapcast_show_disconnected_clients : false),

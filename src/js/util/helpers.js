@@ -496,6 +496,10 @@ const iconFromKeyword = (name) => {
       icon: 'smartphone',
       words: ['phone', 'mobile']
     },
+    {
+      icon: 'web',
+      words: ['web', 'browser', 'iris']
+    },
   ];
   for (let item of iconWords) {
     for (let word of item.words) {

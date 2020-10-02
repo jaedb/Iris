@@ -712,7 +712,7 @@ const formatClient = function (data) {
       if (data.volume.percent) {
         client.volume = data.volume.percent;
       }
-      if (data.volume.muted) {
+      if (data.volume.muted !== undefined) {
         client.mute = data.volume.muted;
       }
     }

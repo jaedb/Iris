@@ -17,16 +17,7 @@ export default function reducer(snapcast = {}, action) {
       return { ...snapcast, server: action.server };
 
     case 'SNAPCAST_CLIENTS_LOADED':
-      if (action.flush) {
-        var clients = {};
-      } else {
-        var clients = { ...snapcast.clients };
-      }
-
-      for (const client of action.clients) {
-        clients[client.id] = client;
-      }
-      return { ...snapcast, clients };
+      return { ...snapcast, clients: action.clients };
 
     case 'SNAPCAST_GROUPS_LOADED':
       if (action.flush) {
