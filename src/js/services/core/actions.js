@@ -159,7 +159,7 @@ export function loadUser(uri, options = {}) {
   };
 }
 
-export function loadUserPlaylists(uri, options) {
+export function loadUserPlaylists(uri, options = {}) {
   return {
     type: 'LOAD_USER_PLAYLISTS',
     uri,

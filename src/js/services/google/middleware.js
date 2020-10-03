@@ -1,7 +1,12 @@
-import { arrayOf } from '../../util/arrays';
+import { compact } from 'lodash';
+import { arrayOf, indexToArray } from '../../util/arrays';
+import {
+  formatAlbum,
+  formatArtists,
+  formatTracks,
+} from '../../util/format';
 const coreActions = require('../core/actions');
 const mopidyActions = require('../mopidy/actions');
-const uiActions = require('../ui/actions');
 
 const GoogleMiddleware = (function () {
   // A Google request is an alias of the Mopidy request
@@ -18,113 +23,98 @@ const GoogleMiddleware = (function () {
 
   return (store) => (next) => (action) => {
     switch (action.type) {
-      case 'GOOGLE_GET_LIBRARY_ALBUMS':
-        var last_run = store.getState().ui.processes.GOOGLE_LIBRARY_ALBUMS_PROCESSOR;
-
-        if (!last_run) {
-          request(
-            store,
-            'library.browse',
-            {
-              uri: 'gmusic:album',
-            },
-            (response) => {
-              if (response.length <= 0) {
-                return;
-              }
-
-              const uris = arrayOf('uri', response);
-              store.dispatch({
-                type: 'GOOGLE_LIBRARY_ALBUMS_LOADED',
-                uris,
-              });
-
-              // Start our process to load the full album objects
-              store.dispatch(uiActions.startProcess(
-                'GOOGLE_LIBRARY_ALBUMS_PROCESSOR',
-                `Loading ${uris.length} Google albums`,
-                {
-                  uris,
-                  total: uris.length,
-                  remaining: uris.length,
-                },
-              ));
-            },
-          );
-        } else if (last_run.status === 'cancelled') {
-          store.dispatch(uiActions.resumeProcess('GOOGLE_LIBRARY_ALBUMS_PROCESSOR'));
-        } else if (last_run.status === 'finished') {
-          // TODO: do we want to force a refresh?
-        }
-        break;
-
-      case 'GOOGLE_LIBRARY_ALBUMS_PROCESSOR':
-        if (store.getState().ui.processes.GOOGLE_LIBRARY_ALBUMS_PROCESSOR !== undefined) {
-          const processor = store.getState().ui.processes.GOOGLE_LIBRARY_ALBUMS_PROCESSOR;
-
-          if (processor.status === 'cancelling') {
-            store.dispatch(uiActions.processCancelled('GOOGLE_LIBRARY_ALBUMS_PROCESSOR'));
-            return false;
-          }
-        }
-
-        var uris = Object.assign([], action.data.uris);
-        var uris_to_load = uris.splice(0, 50);
-
-        if (uris_to_load.length > 0) {
-          store.dispatch(uiActions.updateProcess(
-            'GOOGLE_LIBRARY_ALBUMS_PROCESSOR',
-            `Loading ${uris.length} Google albums`,
-            {
-              uris,
-              remaining: uris.length,
-            },
-          ));
-          store.dispatch(mopidyActions.getAlbums(uris_to_load, { name: 'GOOGLE_LIBRARY_ALBUMS_PROCESSOR', data: { uris } }));
-        } else {
-          store.dispatch(uiActions.processFinished('GOOGLE_LIBRARY_ALBUMS_PROCESSOR'));
-        }
-
-        break;
-
-      case 'GOOGLE_GET_LIBRARY_ARTISTS':
+      case 'GOOGLE_GET_LIBRARY_ALBUMS': {
         request(
           store,
           'library.browse',
-          {
-            uri: 'gmusic:artist',
-          },
-          (response) => {
-            if (response.length <= 0) {
-              return;
-            }
+          { uri: 'gmusic:album' },
+          (browseResponse) => {
+            const allUris = arrayOf('uri', browseResponse);
+            const run = () => {
+              if (allUris.length) {
+                const uris = allUris.splice(0, 5);
+                request(
+                  store,
+                  'library.lookup',
+                  { uris },
+                  (lookupResponse) => {
+                    const libraryAlbums = compact(indexToArray(lookupResponse).map((tracks) => {
+                      if (tracks.length) {
+                        return {
+                          artists: tracks[0].artists ? formatArtists(tracks[0].artists) : null,
+                          tracks: formatTracks(tracks),
+                          last_modified: tracks[0].last_modified,
+                          ...formatAlbum(tracks[0].album),
+                        };
+                      }
+                    }));
 
-            const uris = [];
-            for (let i = 0; i < response.length; i++) {
-              // Convert local URI to actual artist URI
-              // See https://github.com/mopidy/mopidy-local-sqlite/issues/39
-              response[i].uri = response[i].uri.replace('local:directory?albumartist=', '');
-              uris.push(response[i].uri);
-            }
+                    if (libraryAlbums.length) {
+                      store.dispatch(coreActions.itemsLoaded(libraryAlbums));
+                    }
+                    run();
+                  },
+                );
+              } else {
+                store.dispatch(coreActions.libraryLoaded({
+                  uri: 'google:library:albums',
+                  items_uris: arrayOf('uri', allUris),
+                }));
+              }
+            };
 
-            store.dispatch(coreActions.artistsLoaded(response));
-
-            store.dispatch({
-              type: 'GOOGLE_LIBRARY_ARTISTS_LOADED',
-              uris,
-            });
-          },
-          (error) => {
-            store.dispatch(coreActions.handleException(
-              'Could not load Google artists',
-              error,
-            ));
+            run();
           },
         );
         break;
+      }
 
+      case 'GOOGLE_GET_LIBRARY_ARTISTS': {
+        request(
+          store,
+          'library.browse',
+          { uri: 'gmusic:artist' },
+          (browseResponse) => {
+            const allUris = arrayOf('uri', browseResponse);
+            const run = () => {
+              if (allUris.length) {
+                const uris = allUris.splice(0, 5);
+                request(
+                  store,
+                  'library.lookup',
+                  { uris },
+                  (lookupResponse) => {
+                    const libraryArtists = compact(indexToArray(lookupResponse).map((tracks) => {
+                      if (tracks.length) {
+                        return {
+                          artists: tracks[0].artists ? formatArtists(tracks[0].artists) : null,
+                          tracks: formatTracks(tracks),
+                          last_modified: tracks[0].last_modified,
+                          ...formatAlbum(tracks[0].album),
+                        };
+                      }
+                    }));
 
-        // This action is irrelevant to us, pass it on to the next middleware
+                    if (libraryArtists.length) {
+                      store.dispatch(coreActions.itemsLoaded(libraryArtists));
+                    }
+                    run();
+                  },
+                );
+              } else {
+                store.dispatch(coreActions.libraryLoaded({
+                  uri: 'google:library:artists',
+                  items_uris: arrayOf('uri', allUris),
+                }));
+              }
+            };
+
+            run();
+          },
+        );
+        break;
+      }
+
       default:
         return next(action);
     }

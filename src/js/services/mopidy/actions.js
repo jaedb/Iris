@@ -487,14 +487,6 @@ export function getArtist(uri, options) {
   };
 }
 
-export function getArtists(uris, processor = null) {
-  return {
-    type: 'MOPIDY_GET_ARTISTS',
-    uris,
-    processor,
-  };
-}
-
 export function getAlbum(uri, options) {
   return {
     type: 'MOPIDY_GET_ALBUM',

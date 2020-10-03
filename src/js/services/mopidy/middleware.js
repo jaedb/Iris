@@ -937,8 +937,6 @@ const MopidyMiddleware = (function () {
         break;
 
       case 'MOPIDY_REORDER_TRACKLIST':
-
-        // add our first track
         request(store, 'tracklist.move', { start: action.range_start, end: action.range_start + action.range_length, to_position: action.insert_before })
           .then(
             () => {
@@ -1025,9 +1023,7 @@ const MopidyMiddleware = (function () {
             },
           ));
         }
-
         break;
-
 
       case 'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR':
         var last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR;
@@ -1548,15 +1544,7 @@ const MopidyMiddleware = (function () {
             // Kick things off with the tracks
             process_tracks();
         }
-
         break;
-
-
-      /**
-           * =============================================================== PLAYLIST(S) ==========
-           * ======================================================================================
-           * */
-
 
       case 'MOPIDY_GET_PLAYLIST':
         request(store, 'playlists.lookup', { uri: action.uri })
@@ -1590,7 +1578,6 @@ const MopidyMiddleware = (function () {
         break;
 
       case 'MOPIDY_ADD_PLAYLIST_TRACKS':
-
         request(store, 'playlists.lookup', { uri: action.key })
           .then((response) => {
             const tracks = [];
@@ -1620,7 +1607,6 @@ const MopidyMiddleware = (function () {
         break;
 
       case 'MOPIDY_REMOVE_PLAYLIST_TRACKS':
-
         // reverse order our indexes (otherwise removing from top will affect the keys following)
         function descending(a, b) {
           return b - a;
@@ -1646,7 +1632,6 @@ const MopidyMiddleware = (function () {
         break;
 
       case 'MOPIDY_SAVE_PLAYLIST':
-
         // Even though we have the full playlist in our index, our "playlists.save" request
         // requires a Mopidy playlist object (with updates)
         request(store, 'playlists.lookup', { uri: action.key })
@@ -1741,14 +1726,6 @@ const MopidyMiddleware = (function () {
           });
         break;
 
-
-      /**
-           * =============================================================== ALBUM(S) =============
-           * ======================================================================================
-           * */
-
-
-
       case 'MOPIDY_GET_ALBUM':
         request(store, 'library.lookup', { uris: [action.uri] })
           .then((_response) => {
@@ -1771,33 +1748,6 @@ const MopidyMiddleware = (function () {
             if (!album.images) {
               store.dispatch(mopidyActions.getImages([album.uri]));
             }
-          });
-        break;
-
-
-      /**
-      * =============================================================== ARTIST(S) ============
-      * ======================================================================================
-      **/
-  
-      case 'MOPIDY_GET_LIBRARY_ARTISTSXXXXXXXXXXXX':
-        const uri = store.getState().mopidy.library_artists_uri;
-        request(store, 'library.browse', { uri })
-          .then((response) => {
-            if (response.length <= 0) return;
-
-            const uris = [];
-            for (let i = 0; i < response.length; i++) {
-              response[i].uri = response[i].uri.replace('local:directory?albumartist=', '').replace('local:directory?artist=', '');
-              uris.push(response[i].uri);
-            }
-
-            store.dispatch(coreActions.artistsLoaded(response));
-
-            store.dispatch({
-              type: 'MOPIDY_LIBRARY_ARTISTS_LOADED',
-              uris,
-            });
           });
         break;
 
@@ -1864,39 +1814,6 @@ const MopidyMiddleware = (function () {
           });
         break;
       }
-
-      case 'MOPIDY_GET_ARTISTS':
-        request(store, 'library.lookup', { uris: action.uris })
-          .then((_response) => {
-            if (!_response || _response.length) return;
-
-            const response = indexToArray(_response);
-            const artists = response.map((item) => ({
-              ...item.artists[0],
-              provider: 'mopidy',
-            }));
-
-            store.dispatch(coreActions.itemsLoaded(artists));
-
-            // Re-run any consequential processes in 100ms. This allows a small window for other
-            // server requests before our next batch. It's a little crude but it means the server isn't
-            // locked until we're completely done.
-            if (action.processor) {
-              setTimeout(
-                () => {
-                  store.dispatch(uiActions.runProcess(action.processor.name, action.processor.data));
-                },
-                100,
-              );
-            }
-          });
-        break;
-
-
-      /**
-           * =============================================================== TRACKS ================
-           * ======================================================================================
-           * */
 
       case 'MOPIDY_GET_QUEUE':
         request(store, 'tracklist.getTlTracks')

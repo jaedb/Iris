@@ -6,21 +6,22 @@ import ErrorMessage from '../components/ErrorMessage';
 import Thumbnail from '../components/Thumbnail';
 import PlaylistGrid from '../components/PlaylistGrid';
 import FollowButton from '../components/Fields/FollowButton';
-import LazyLoadListener from '../components/LazyLoadListener';
 import Parallax from '../components/Parallax';
-import NiceNumber, { nice_number } from '../components/NiceNumber';
+import { nice_number } from '../components/NiceNumber';
 import Loader from '../components/Loader';
 import Icon from '../components/Icon';
 import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
 import * as spotifyActions from '../services/spotify/actions';
 import {
-  isLoading,
   getFromUri,
   sourceIcon,
 } from '../util/helpers';
-import { collate } from '../util/format';
 import { i18n, I18n } from '../locale';
+import {
+  makeItemSelector,
+  makeLoadingSelector,
+} from '../util/selectors';
 
 class User extends React.Component {
   componentDidMount() {
@@ -28,13 +29,11 @@ class User extends React.Component {
       uri,
       coreActions: {
         loadUser,
-        loadUserPlaylists,
       },
     } = this.props;
 
     this.setWindowTitle();
-    loadUser(uri);
-    loadUserPlaylists(uri);
+    loadUser(uri, { full: true });
   }
 
   componentDidUpdate = ({
@@ -98,17 +97,15 @@ class User extends React.Component {
   render = () => {
     const {
       uri,
-      load_queue,
-      user: userProp,
+      isLoading,
+      user,
       playlists,
       slim_mode,
     } = this.props;
 
-    const user_id = getFromUri('userid', uri);
-
-    if (!userProp) {
-      if (isLoading(load_queue, [`spotify_users/${user_id}`, `spotify_users/${user_id}/playlists/?`])) {
-        return <Loader body loading />
+    if (!user) {
+      if (isLoading) {
+        return <Loader body loading />;
       }
       return (
         <ErrorMessage type="not-found" title="Not found">
@@ -119,7 +116,6 @@ class User extends React.Component {
       );
     }
 
-    const user = collate(userProp, { playlists });
     const image = user.images ? user.images.huge : null;
 
     return (
@@ -151,9 +147,9 @@ class User extends React.Component {
                           <Icon type="fontawesome" name={sourceIcon(user.uri)} />
                         </li>
                       )}
-                      {user.playlists_total && (
+                      {playlists && (
                         <li>
-                          <I18n path="specs.playlists" count={nice_number(user.playlists_total)} />
+                          <I18n path="specs.playlists" count={nice_number(playlists.length)} />
                         </li>
                       )}
                       {user.followers && (
@@ -181,12 +177,7 @@ class User extends React.Component {
             <h4>
               <I18n path="playlist.title_plural" />
             </h4>
-            <PlaylistGrid playlists={user.playlists} />
-            <LazyLoadListener
-              loadKey={user.playlists_more}
-              showLoader={user.playlists_more}
-              loadMore={this.loadMore}
-            />
+            <PlaylistGrid playlists={playlists} />
           </section>
         </div>
       </div>
@@ -196,13 +187,21 @@ class User extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   const uri = decodeURIComponent(ownProps.match.params.uri);
+  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`]);
+  const userSelector = makeItemSelector(uri);
+  const user = userSelector(state);
+  let playlists = null;
+  if (user && user.playlists_uris) {
+    const playlistsSelector = makeItemSelector(user.playlists_uris);
+    playlists = playlistsSelector(state);
+  }
   return {
     uri,
     me: state.spotify.me,
-    load_queue: state.ui.load_queue,
     spotify_authorized: state.spotify.authorization,
-    playlists: state.core.playlists,
-    user: (state.core.users[uri] !== undefined ? state.core.users[uri] : false),
+    user,
+    playlists,
+    loading: loadingSelector(state),
   };
 };
 

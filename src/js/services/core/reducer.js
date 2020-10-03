@@ -97,60 +97,6 @@ export default function reducer(core = {}, action) {
         },
       };
 
-    case 'TRACKS_LOADED':
-      var tracks = { ...core.tracks };
-      for (const track of action.tracks) {
-        tracks[track.uri] = track;
-      }
-      return { ...core, tracks };
-
-    case 'ALBUMS_LOADED':
-      var albums = { ...core.albums };
-      for (const album of action.albums) {
-        albums[album.uri] = album;
-      }
-      return { ...core, albums };
-
-    case 'ARTISTS_LOADED':
-      var artists = { ...core.artists };
-      for (var artist of action.artists) {
-        artists[artist.uri] = artist;
-      }
-      return { ...core, artists };
-
-    case 'PLAYLISTS_LOADED':
-      var playlists = { ...core.playlists };
-      for (var playlist of action.playlists) {
-        playlists[playlist.uri] = playlist;
-      }
-      return { ...core, playlists };
-
-    case 'USERS_LOADED':
-      var users = { ...core.users };
-      for (var user of action.users) {
-        users[user.uri] = user;
-      }
-      return { ...core, users };
-
-
-    case 'ARTIST_ALBUMS_LOADED':
-      var artists = { ...core.artists };
-      var albums_uris = [];
-      if (artists[action.artist_uri].albums_uris) {
-        albums_uris = artists[action.artist_uri].albums_uris;
-      }
-
-      var artist = {
-
-        ...artists[action.artist_uri],
-        albums_uris: [...albums_uris, ...action.albums_uris],
-        albums_more: action.more,
-        albums_total: action.total,
-      };
-      artists[action.artist_uri] = artist;
-      return { ...core, artists };
-
-
     case 'USER_PLAYLISTS_LOADED':
       var users = { ...core.users };
       var existing_playlists_uris = [];
@@ -210,32 +156,6 @@ export default function reducer(core = {}, action) {
       return { ...core, items };
     }
 
-
-      /**
-         * Playlists
-         * */
-
-    case 'PLAYLIST_TRACKS':
-      var playlists = { ...core.playlists };
-      var playlist = { ...playlists[action.key], tracks_uris: action.tracks_uris };
-
-      playlists[action.key] = playlist;
-      return { ...core, playlists };
-
-    case 'LIBRARY_PLAYLISTS_LOADED':
-      if (core.library_playlists) {
-        var library_playlists = [...core.library_playlists, ...action.uris];
-      } else {
-        var library_playlists = action.uris;
-      }
-
-      library_playlists = removeDuplicates(library_playlists);
-
-      return {
-        ...core,
-        library_playlists,
-        library_playlists_started: true,
-      };
 
 
       /**

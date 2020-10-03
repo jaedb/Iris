@@ -515,6 +515,66 @@ const CoreMiddleware = (function () {
         break;
 
       case 'LOAD_USER':
+        const fetchUser = () => {
+          switch (uriSource(action.uri)) {
+            case 'spotify':
+              store.dispatch(spotifyActions.getUser(action.uri, action.options));
+
+              if (spotify.me) {
+                store.dispatch(spotifyActions.following(action.uri));
+              }
+              break;
+
+            default:
+              // No mopidy user model
+              break;
+          }
+        };
+
+        if (action.options.forceRefetch) {
+          console.info(`Force-refetching "${action.uri}"`);
+          fetchUser();
+          break;
+        }
+        if (
+          store.getState().core.items[action.uri]
+          && (
+            !action.options.full
+            || store.getState().core.items[action.uri].playlists_uris
+          )
+        ) {
+          console.info(`${action.uri}" already in index`);
+          store.dispatch(coreActions.loadItems(store.getState().core.items[action.uri].playlists_uris));
+          store.dispatch(uiActions.stopLoading(action.uri));
+          break;
+        }
+
+        localForage.getItem(action.uri).then((user) => {
+          if (user) {
+            console.info(`Restoring "${action.uri}" and ${user.playlists_uris ? user.playlists_uris.length : 0} playlists from database`);
+            store.dispatch(coreActions.restoreItemsFromColdStore([user]));
+
+            if (user.playlists_uris) {
+              const promises = user.playlists_uris.map((playlistUri) => localForage.getItem(playlistUri));
+              Promise.all(promises).then(
+                (playlists) => {
+                  store.dispatch(coreActions.restoreItemsFromColdStore(compact(playlists)));
+                },
+              );
+            }
+
+            if (action.options.full && !user.playlists_uris) {
+              fetchUser();
+            }
+          } else {
+            fetchUser();
+          }
+        });
+
+        next(action);
+        break;
+
+      case 'LOAD_USERXXX':
         if (
           !action.options.forceRefetch
           && store.getState().core.users[action.uri]
@@ -525,33 +585,11 @@ const CoreMiddleware = (function () {
 
         switch (uriSource(action.uri)) {
           case 'spotify':
-            store.dispatch(spotifyActions.getUser(action.uri));
+            store.dispatch(spotifyActions.getUser(action.uri, action.options));
 
             if (spotify.me) {
               store.dispatch(spotifyActions.following(action.uri));
             }
-            break;
-
-          default:
-            // No Mopidy mechanism for users
-            break;
-        }
-
-        next(action);
-        break;
-
-      case 'LOAD_USER_PLAYLISTS':
-        if (
-          !action.options.forceRefetch
-          && store.getState().core.users[action.uri]
-          && store.getState().core.users[action.uri].playlists_uris) {
-          console.info(`Loading "${action.uri}" playlists from index`);
-          break;
-        }
-
-        switch (uriSource(action.uri)) {
-          case 'spotify':
-            store.dispatch(spotifyActions.getUserPlaylists(action.uri));
             break;
 
           default:

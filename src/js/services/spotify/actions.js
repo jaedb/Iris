@@ -13,6 +13,7 @@ import {
 import {
   formatTracks,
   formatPlaylist,
+  formatPlaylists,
   formatUser,
   formatAlbum,
   formatArtist,
@@ -1153,55 +1154,39 @@ export function playArtistTopTracks(uri) {
  * ======================================================================================
  * */
 
-export function getUser(uri) {
+export function getUser(uri, { full, forceRefetch }) {
   return (dispatch, getState) => {
-    request(dispatch, getState, `users/${getFromUri('userid', uri)}`)
+    const userId = getFromUri('userid', uri);
+    let endpoint = `users/${userId}`;
+    if (forceRefetch) endpoint += `?refetch=${Date.now()}`;
+
+    request(dispatch, getState, endpoint, 'GET', false, true)
       .then(
         (response) => {
-          dispatch(coreActions.userLoaded(formatUser(response)));
-        },
-        (error) => {
-          dispatch(coreActions.handleException(
-            'Could not load user',
-            error,
-          ));
+          const user = formatUser(response);
+          dispatch(coreActions.itemLoaded(user));
         },
       );
-  };
-}
 
-export function getUserPlaylists(uri) {
-  return (dispatch, getState) => {
-    // get the first page of playlists
-    request(dispatch, getState, `users/${getFromUri('userid', uri)}/playlists?limit=40`)
-      .then(
-        (response) => {
-          const playlists = [];
-          for (const raw_playlist of response.items) {
-            let can_edit = false;
-            if (getState().spotify.me && raw_playlist.owner.id == getState().spotify.me.id) {
-              can_edit = true;
-            }
-
-            const playlist = {
-
-              ...formatPlaylist(raw_playlist),
-              can_edit,
-              tracks_total: raw_playlist.tracks.total,
-            };
-
-            playlists.push(playlist);
+    if (full) {
+      let playlists = [];
+      const fetchPlaylists = (endpoint) => request(dispatch, getState, endpoint)
+        .then((response) => {
+          playlists = [...playlists, ...formatPlaylists(response.items)];
+          if (response.next) {
+            fetchPlaylists(response.next);
+          } else {
+            dispatch(coreActions.itemLoaded({
+              uri,
+              playlists_uris: arrayOf('uri', playlists),
+            }));
+            dispatch(coreActions.itemsLoaded(playlists));
           }
-
-          dispatch(coreActions.userPlaylistsLoaded(uri, playlists, response.next, response.total));
-        },
-        (error) => {
-          dispatch(coreActions.handleException(
-            'Could not load user\'s playlists',
-            error,
-          ));
-        },
+        });
+      fetchPlaylists(
+        `users/${userId}/playlists?limit=40${forceRefetch ? `&refetch=${Date.now()}` : ''}`,
       );
+    };
   };
 }
 
