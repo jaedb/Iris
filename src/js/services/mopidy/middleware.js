@@ -1969,11 +1969,17 @@ const MopidyMiddleware = (function () {
                 }
               }
             },
+            (error) => {
+              store.dispatch(coreActions.handleException(
+                `Mopidy: ${error.message ? error.message : 'Could not get next track'}`,
+                error,
+              ));
+            },
           );
         break;
 
       case 'MOPIDY_GET_TRACKS':
-        request(store, 'library.lookup', { uris: [action.uris] })
+        request(store, 'library.lookup', { uris: action.uris })
           .then(
             (_response) => {
               if (!_response) return;
