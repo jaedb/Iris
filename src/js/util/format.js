@@ -258,6 +258,13 @@ const formatUsers = function (records = []) {
   }
   return formatted;
 };
+const formatCategories = function (records = []) {
+  const formatted = [];
+  for (const record of records) {
+	    formatted.push(formatCategory(record));
+  }
+  return formatted;
+};
 const formatSimpleObjects = function (records = []) {
   const formatted = [];
   for (const record of records) {
@@ -726,6 +733,38 @@ const formatClient = function (data) {
 };
 
 /**
+ * Spotify playlists category
+ *
+ * @param data obj
+ * @return obj
+ * */
+const formatCategory = function (data) {
+  const category = {};
+  const fields = [
+    'id',
+    'uri',
+    'name',
+    'playlists_uris',
+  ];
+
+  for (const field of fields) {
+    if (data.hasOwnProperty(field)) {
+      category[field] = data[field];
+    }
+  }
+
+  if (!category.uri && data.id) {
+    category.uri = `spotify:category:${data.id}`;
+  }
+  
+  if (data.icons) {
+    category.images = formatImages(data.icons);
+  }
+
+  return category;
+};
+
+/**
  * Format a snapcast client object into a universal format
  *
  * @param data obj
@@ -909,6 +948,8 @@ export {
   formatTracks,
   formatClient,
   formatGroup,
+  formatCategory,
+  formatCategories,
   collate,
   collateLibrary,
 };
@@ -932,6 +973,8 @@ export default {
   formatTracks,
   formatClient,
   formatGroup,
+  formatCategory,
+  formatCategories,
   collate,
   collateLibrary,
 };

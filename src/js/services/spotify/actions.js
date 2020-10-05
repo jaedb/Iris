@@ -11,6 +11,8 @@ import {
   upgradeSpotifyPlaylistUris,
 } from '../../util/helpers';
 import {
+  formatCategory,
+  formatCategories,
   formatTracks,
   formatPlaylist,
   formatPlaylists,
@@ -424,7 +426,7 @@ export function getCategories() {
         (response) => {
           dispatch({
             type: 'SPOTIFY_CATEGORIES_LOADED',
-            categories: response.categories.items,
+            categories: formatCategories(response.categories.items),
           });
         },
         (error) => {
@@ -437,55 +439,44 @@ export function getCategories() {
   };
 }
 
-export function getCategory(id, forceRefetch = false) {
+export function getCategory(uri, { forceRefetch } = {}) {
   return (dispatch, getState) => {
+    const id = getFromUri('categoryid', uri);
     let endpoint = `browse/categories/${id}`;
     endpoint += `?country=${getState().spotify.country}`;
     endpoint += `&locale=${getState().spotify.locale}`;
     if (forceRefetch) endpoint += `&refetch=${Date.now()}`;
 
+    let plEndpoint = `browse/categories/${id}/playlists`;
+    plEndpoint += '?limit=50';
+    plEndpoint += `&country=${getState().spotify.country}`;
+    plEndpoint += `&locale=${getState().spotify.locale}`;
+    if (forceRefetch) plEndpoint += `&refetch=${Date.now()}`;
+
     request(dispatch, getState, endpoint)
       .then(
         (response) => {
-          dispatch({
-            type: 'SPOTIFY_CATEGORY_LOADED',
-            category: {
-              uri: `category:${response.id}`,
-              playlist_uris: null,
-              ...response,
-            },
-          });
+          const category = formatCategory(response);
+
+          let playlists = [];
+          const fetchPlaylists = (plEndpoint) => request(dispatch, getState, plEndpoint)
+            .then((response) => {
+              playlists = [...playlists, ...formatPlaylists(response.playlists.items)];
+              if (response.playlists.next) {
+                fetchPlaylists(response.playlists.next);
+              } else {
+                dispatch(coreActions.itemLoaded({
+                  ...category,
+                  playlists_uris: arrayOf('uri', playlists),
+                }));
+                dispatch(coreActions.itemsLoaded(playlists));
+              }
+            });
+          fetchPlaylists(plEndpoint);
         },
         (error) => {
           dispatch(coreActions.handleException(
             'Could not load category',
-            error,
-          ));
-        },
-      );
-  };
-}
-
-export function getCategoryPlaylists(id, forceRefetch = false) {
-  return (dispatch, getState) => {
-    let endpoint = `browse/categories/${id}/playlists`;
-    endpoint += '?limit=50';
-    endpoint += `&country=${getState().spotify.country}`;
-    endpoint += `&locale=${getState().spotify.locale}`;
-    if (forceRefetch) endpoint += `&refetch=${Date.now()}`;
-
-    request(dispatch, getState, endpoint)
-      .then(
-        (response) => {
-          dispatch({
-            type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED',
-            uri: `category:${id}`,
-            playlists: response.playlists,
-          });
-        },
-        (error) => {
-          dispatch(coreActions.handleException(
-            'Could not load category playlists',
             error,
           ));
         },
@@ -1510,134 +1501,6 @@ export function getLibraryTracksAndPlayProcessor(data) {
   };
 }
 
-/**
- * Get all tracks for a playlist
- *
- * Recursively get .next until we have all tracks
- * */
-
-export function getAllPlaylistTracks(
-  uri,
-  shuffle = false,
-  callback_action = null,
-  play_next = false,
-  at_position = null,
-  offset = 0,
-) {
-  return (dispatch, getState) => {
-
-
-
-
-
-    if (data.callback_action == 'enqueue') {
-      dispatch(mopidyActions.enqueueURIs(uris, data.uri, data.play_next, data.at_position, data.offset));
-    } else {
-      dispatch(mopidyActions.playURIs(uris, data.uri));
-    }
-
-    dispatch(uiActions.startProcess(
-      'SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR',
-      'Loading playlist tracks',
-      {
-        uri,
-        next: `playlists/${getFromUri('playlistid', uri)}/tracks?market=${getState().spotify.country}`,
-        shuffle,
-        play_next,
-        at_position,
-        offset,
-        callback_action,
-      },
-    ));
-  };
-}
-
-export function getAllPlaylistTracksProcessor(data) {
-  return (dispatch, getState) => {
-    request(dispatch, getState, data.next)
-      .then(
-        (response) => {
-          // Check to see if we've been cancelled
-          if (getState().ui.processes.SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR !== undefined) {
-            const processor = getState().ui.processes.SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR;
-
-            if (processor.status == 'cancelling') {
-              dispatch(uiActions.processCancelled('SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR'));
-              return false;
-            }
-          }
-
-          // Add on our new batch of loaded tracks
-          let tracks = [];
-          const new_tracks = [];
-          for (const item of response.items) {
-            if (item.track) {
-              new_tracks.push(item.track);
-            }
-          }
-          if (data.tracks) {
-            tracks = [...data.tracks, ...new_tracks];
-          } else {
-            tracks = new_tracks;
-          }
-
-          // We got a next link, so we've got more work to be done
-          if (response.next) {
-            dispatch(uiActions.updateProcess(
-              'SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR',
-              `Loading ${response.total - tracks.length} playlist tracks`,
-              {
-                ...data,
-                next: response.next,
-                total: response.total,
-                remaining: response.total - tracks.length,
-              },
-            ));
-            dispatch(uiActions.runProcess(
-              'SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR',
-              {
-                ...data,
-                next: response.next,
-                tracks,
-              },
-            ));
-          } else {
-            // Seeing as we now have all the playlist's tracks, add them to the playlist we have
-            // in our index for quicker reuse next time
-            dispatch(coreActions.loadedMore(
-              'playlist',
-              data.uri,
-              'track',
-              { tracks },
-            ));
-
-            let uris = arrayOf('uri', tracks);
-
-            if (data.shuffle) {
-              uris = shuffle(uris);
-            }
-
-            // We don't bother "finishing", we just want it "finished" immediately
-            // This bypasses the fade transition for a more smooth transition between two
-            // processes that flow together
-            dispatch(uiActions.removeProcess('SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR'));
-
-            if (data.callback_action == 'enqueue') {
-              dispatch(mopidyActions.enqueueURIs(uris, data.uri, data.play_next, data.at_position, data.offset));
-            } else {
-              dispatch(mopidyActions.playURIs(uris, data.uri));
-            }
-          }
-        },
-        (error) => {
-          dispatch(coreActions.handleException(
-            'Could not load tracks to play playlist',
-            error,
-          ));
-        },
-      );
-  };
-}
 
 export function addTracksToPlaylist(uri, tracks_uris) {
   return (dispatch, getState) => {

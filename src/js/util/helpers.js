@@ -131,10 +131,9 @@ const getCurrentPusherConnection = function (connections, connectionid) {
  * @param uri = string
  * */
 let uriSource = function (uri) {
-  if (!uri) {
-    return false;
-  }
-  const exploded = uri.split(':');
+  if (!uri) return false;
+
+  const exploded = `${uri}`.split(':');
   return exploded[0];
 };
 /**
@@ -146,7 +145,7 @@ let uriSource = function (uri) {
 const uriType = function (uri) {
   if (!uri) return null;
 
-  const exploded = uri.split(':');
+  const exploded = `${uri}`.split(':');
 
   if (exploded[0] === 'm3u') {
     return 'playlist';
@@ -226,9 +225,9 @@ const sourceIcon = function (uri, source = null) {
  * @param element = string, the element we wish to extract
  * @param uri = string
  * */
-const getFromUri = function (element, uri = '') {
-  const exploded = uri.split(':');
-  const namespace = exploded[0];
+const getFromUri = function (element, uri) {
+  if (!uri) return null;
+  const exploded = `${uri}`.split(':');
 
   switch (element) {
     case 'mbid':
@@ -277,6 +276,12 @@ const getFromUri = function (element, uri = '') {
 
     case 'genreid':
       if (exploded[1] == 'genre') {
+        return exploded[2];
+      }
+      break;
+
+    case 'categoryid':
+      if (exploded[1] == 'category') {
         return exploded[2];
       }
       break;

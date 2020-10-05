@@ -23,6 +23,97 @@ const mopidyActions = require('../mopidy/actions.js');
 const googleActions = require('../google/actions.js');
 const spotifyActions = require('../spotify/actions.js');
 
+/**
+ * Ensure we have an item in our index
+ * If it's not there, attempt to fetch it from our cold storage
+ * If it's not their either, call the provided fetch()
+ *
+ * @param {*} Object { store, action, fetch, dependents}
+ */
+const ensureItemLoaded = ({
+  store,
+  action,
+  fetch,
+  dependents = [],
+}) => {
+  const {
+    uri,
+    options: {
+      forceRefetch,
+      full,
+    },
+  } = action;
+  const {
+    core: {
+      items: {
+        [uri]: item,
+      } = {},
+    } = {},
+  } = store.getState();
+
+  // Forced refetch bypasses everything
+  if (forceRefetch) {
+    console.info(`Force-refetching "${uri}"`);
+    fetch();
+    return;
+  }
+
+  // Already-loaded asset; check we have all of it's dependents
+  if (item) {
+    const loadableDependents = dependents.filter((k) => item[k] && item[k].length > 0);
+    if (!full || (loadableDependents.length === dependents.length)) {
+      console.info(`"${uri}" already in index`);
+      loadableDependents.forEach(
+        (dependent) => store.dispatch(coreActions.loadItems(item[dependent])),
+      );
+      store.dispatch(uiActions.stopLoading(uri));
+      return;
+    }
+  }
+
+  localForage.getItem(uri).then((restoredItem) => {
+    if (!restoredItem) {
+      fetch();
+      return;
+    }
+
+    const loadableDependents = dependents.filter(
+      (k) => restoredItem[k] && restoredItem[k].length > 0,
+    );
+    console.info(`Restoring "${uri}" from database`);
+    store.dispatch(coreActions.restoreItemsFromColdStore([restoredItem]));
+
+    if (full) {
+      // We already have the dependents of our restored item, so restore them.
+      // We assume that because THIS item is in the coldstore, its dependents
+      // are as well.
+      if (dependents.length && loadableDependents.length === dependents.length) {
+        const dependentUris = loadableDependents.reduce(
+          (acc, dependent) => [...acc, ...restoredItem[dependent]],
+          [],
+        );
+
+        console.info(`Restoring ${dependentUris.length} dependents from database`);
+
+        const restoreAllDependents = dependentUris.map(
+          (dependentUri) => localForage.getItem(dependentUri),
+        );
+        Promise.all(restoreAllDependents).then(
+          (dependentItems) => {
+            store.dispatch(
+              coreActions.restoreItemsFromColdStore(
+                compact(dependentItems), // Squash nulls (ie items not found in coldstore)
+              ),
+            );
+          },
+        );
+      } else {
+        fetch();
+      }
+    }
+  });
+}
+
 const CoreMiddleware = (function () {
   return (store) => (next) => (action = {}) => {
     const {
@@ -304,7 +395,7 @@ const CoreMiddleware = (function () {
         break;
 
       case 'LOAD_TRACK': {
-        const fetchTrack = () => {
+        const fetch = () => {
           switch (uriSource(action.uri)) {
             case 'spotify':
               store.dispatch(spotifyActions.getTrack(action.uri, action.options));
@@ -319,154 +410,67 @@ const CoreMiddleware = (function () {
               break;
           }
         };
-
-        if (action.options.forceRefetch) {
-          console.info(`Force-refetching "${action.uri}"`);
-          fetchTrack();
-          break;
-        }
-        if (
-          store.getState().core.items[action.uri]
-          && store.getState().core.items[action.uri].images
-        ) {
-          console.info(`${action.uri}" already in index`);
-          store.dispatch(uiActions.stopLoading(action.uri));
-          break;
-        }
-
-        localForage.getItem(action.uri).then((result) => {
-          if (result) {
-            console.info(`Loading "${action.uri}" from database`);
-            store.dispatch(coreActions.restoreItemsFromColdStore([result]));
-
-            if (!result.images) {
-              fetchTrack();
-            }
-          } else {
-            fetchTrack();
-          }
+        ensureItemLoaded({
+          store,
+          action,
+          fetch,
+          dependents: ['images'],
         });
 
         next(action);
         break;
       }
 
-      case 'LOAD_ALBUM':
-        const fetchAlbum = () => {
+      case 'LOAD_ALBUM': {
+        const fetch = () => {
           switch (uriSource(action.uri)) {
             case 'spotify':
               store.dispatch(spotifyActions.getAlbum(action.uri, action.options));
-
               if (spotify.me) {
                 store.dispatch(spotifyActions.following(action.uri));
               }
               break;
-
             default:
               store.dispatch(mopidyActions.getAlbum(action.uri, action.options));
               break;
           };
         };
-
-        if (action.options.forceRefetch) {
-          console.info(`Force-refetching "${action.uri}"`);
-          fetchAlbum();
-          break;
-        }
-        if (
-          store.getState().core.items[action.uri]
-          && (!action.options.full || store.getState().core.items[action.uri].tracks)
-        ) {
-          console.info(`${action.uri}" already in index`);
-          store.dispatch(uiActions.stopLoading(action.uri));
-          break;
-        }
-
-        localForage.getItem(action.uri).then((result) => {
-          if (result) {
-            console.info(`Loading "${action.uri}" from database`);
-            store.dispatch(coreActions.restoreItemsFromColdStore([result]));
-
-            // We don't have the complete Album, so refetch
-            if (!result.tracks) {
-              fetchAlbum();
-            }
-          } else {
-            fetchAlbum();
-          }
+        ensureItemLoaded({
+          store,
+          action,
+          fetch,
+          dependents: ['tracks'],
         });
-
         next(action);
         break;
+      }
 
-      case 'LOAD_ARTIST':
-        const fetchArtist = () => {
+      case 'LOAD_ARTIST': {
+        const fetch = () => {
           switch (uriSource(action.uri)) {
             case 'spotify':
               store.dispatch(spotifyActions.getArtist(action.uri, action.options));
-
               if (spotify.me) {
                 store.dispatch(spotifyActions.following(action.uri));
               }
               break;
-
             default:
               store.dispatch(mopidyActions.getArtist(action.uri, action.options));
               break;
           }
         };
-
-        if (action.options.forceRefetch) {
-          console.info(`Force-refetching "${action.uri}"`);
-          fetchArtist();
-          break;
-        }
-        if (
-          store.getState().core.items[action.uri]
-          && (
-            !action.options.full
-            || (
-              store.getState().core.items[action.uri].tracks
-              && store.getState().core.items[action.uri].albums_uris
-              && store.getState().core.items[action.uri].images
-            )
-          )
-        ) {
-          console.info(`${action.uri}" already in index`);
-          store.dispatch(coreActions.loadItems(store.getState().core.items[action.uri].albums_uris));
-          store.dispatch(uiActions.stopLoading(action.uri));
-          break;
-        }
-
-        localForage.getItem(action.uri).then((artist) => {
-          if (artist) {
-            console.info(`Restoring "${action.uri}" and ${artist.albums_uris ? artist.albums_uris.length : 0} albums from database`);
-            store.dispatch(coreActions.restoreItemsFromColdStore([artist]));
-
-            if (artist.albums_uris) {
-              const promises = artist.albums_uris.map((albumUri) => localForage.getItem(albumUri));
-              console.time('restoring')
-              Promise.all(promises).then(
-                (albums) => {
-                  store.dispatch(coreActions.restoreItemsFromColdStore(compact(albums)));
-                  console.timeEnd('restoring')
-                },
-              );
-            }
-
-            if (action.options.full && (!artist.tracks || !artist.albums_uris || !artist.images)) {
-              fetchArtist();
-            }
-          } else {
-            fetchArtist();
-          }
+        ensureItemLoaded({
+          store,
+          action,
+          fetch,
+          dependents: ['tracks', 'albums_uris'],
         });
-
         next(action);
         break;
+      }
 
-      case 'LOAD_PLAYLIST':
-        const fetchPlaylist = () => {
+      case 'LOAD_PLAYLIST': {
+        const fetch = () => {
           switch (uriSource(action.uri)) {
             case 'spotify':
               store.dispatch(spotifyActions.getPlaylist(action.uri, action.options));
@@ -481,121 +485,57 @@ const CoreMiddleware = (function () {
               break;
           }
         };
-
-        if (action.options.forceRefetch) {
-          console.info(`Force-refetching "${action.uri}"`);
-          fetchPlaylist();
-          break;
-        }
-        if (
-          store.getState().core.items[action.uri]
-          && (
-            !action.options.full
-            || store.getState().core.items[action.uri].tracks
-          )
-        ) {
-          console.info(`${action.uri}" already in index`);
-          store.dispatch(uiActions.stopLoading(action.uri));
-          break;
-        }
-
-        localForage.getItem(action.uri).then((result) => {
-          if (result) {
-            console.info(`Restoring "${action.uri}" from database`);
-            store.dispatch(coreActions.restoreItemsFromColdStore([result]));
-            if (!action.options.full || !result.tracks) {
-              fetchPlaylist();
-            }
-          } else {
-            fetchPlaylist();
-          }
+        ensureItemLoaded({
+          store,
+          action,
+          fetch,
+          dependents: ['tracks'],
         });
-
         next(action);
         break;
+      }
 
-      case 'LOAD_USER':
-        const fetchUser = () => {
+      case 'LOAD_USER': {
+        const fetch = () => {
           switch (uriSource(action.uri)) {
             case 'spotify':
               store.dispatch(spotifyActions.getUser(action.uri, action.options));
-
               if (spotify.me) {
                 store.dispatch(spotifyActions.following(action.uri));
               }
               break;
-
             default:
               // No mopidy user model
               break;
           }
         };
-
-        if (action.options.forceRefetch) {
-          console.info(`Force-refetching "${action.uri}"`);
-          fetchUser();
-          break;
-        }
-        if (
-          store.getState().core.items[action.uri]
-          && (
-            !action.options.full
-            || store.getState().core.items[action.uri].playlists_uris
-          )
-        ) {
-          console.info(`${action.uri}" already in index`);
-          store.dispatch(coreActions.loadItems(store.getState().core.items[action.uri].playlists_uris));
-          store.dispatch(uiActions.stopLoading(action.uri));
-          break;
-        }
-
-        localForage.getItem(action.uri).then((user) => {
-          if (user) {
-            console.info(`Restoring "${action.uri}" and ${user.playlists_uris ? user.playlists_uris.length : 0} playlists from database`);
-            store.dispatch(coreActions.restoreItemsFromColdStore([user]));
-
-            if (user.playlists_uris) {
-              const promises = user.playlists_uris.map((playlistUri) => localForage.getItem(playlistUri));
-              Promise.all(promises).then(
-                (playlists) => {
-                  store.dispatch(coreActions.restoreItemsFromColdStore(compact(playlists)));
-                },
-              );
-            }
-
-            if (action.options.full && !user.playlists_uris) {
-              fetchUser();
-            }
-          } else {
-            fetchUser();
-          }
+        ensureItemLoaded({
+          store,
+          dependents: ['playlists_uris'],
+          action,
+          fetch,
         });
-
         next(action);
         break;
+      }
 
-      case 'LOAD_USERXXX':
-        if (
-          !action.options.forceRefetch
-          && store.getState().core.users[action.uri]
-          && store.getState().core.users[action.uri].playlists_uris) {
-          console.info(`Loading "${action.uri}" from index`);
-          break;
-        }
-
-        switch (uriSource(action.uri)) {
-          case 'spotify':
-            store.dispatch(spotifyActions.getUser(action.uri, action.options));
-
-            if (spotify.me) {
-              store.dispatch(spotifyActions.following(action.uri));
-            }
-            break;
-
-          default:
-            // No Mopidy mechanism for users
-            break;
-        }
+      case 'LOAD_CATEGORY':
+        const fetch = () => {
+          switch (uriSource(action.uri)) {
+            case 'spotify':
+              store.dispatch(spotifyActions.getCategory(action.uri, action.options));
+              break;
+            default:
+              // No mopidy category model
+              break;
+          }
+        };
+        ensureItemLoaded({
+          store,
+          dependents: ['playlists_uris'],
+          action,
+          fetch,
+        });
 
         next(action);
         break;
@@ -644,7 +584,6 @@ const CoreMiddleware = (function () {
                 store.dispatch(coreActions.restoreLibraryFromColdStore(library));
               },
             );
-
           } else {
             fetchLibrary();
           }
@@ -653,13 +592,19 @@ const CoreMiddleware = (function () {
         next(action);
         break;
 
+      case 'UNLOAD_LIBRARY': {
+        localForage.removeItem(action.uri);
+        next(action);
+        break;
+      }
+
       case 'ADD_TO_LIBRARY': {
         const library = store.getState().core.libraries[action.uri];
         if (library) {
           library.items_uris.push(action.item.uri);
           store.dispatch(coreActions.libraryLoaded(library));
         } else {
-          // Clear our stored library. This prevents the next call to possibly restore a stale
+          // Clear our stored library. This prevents the next call from possibly restoring a stale
           // library listing.
           localForage.removeItem(action.uri);
         }
@@ -706,91 +651,6 @@ const CoreMiddleware = (function () {
         next(action);
         break;
 
-      case 'TRACKS_LOADED':
-        var tracks_index = { ...core.tracks };
-        var artists_index = core.artists;
-        var albums_index = core.albums;
-        var tracks_loaded = [];
-        var artists_loaded = [];
-        var albums_loaded = [];
-
-        for (const raw_track of action.tracks) {
-          var track = formatTrack(raw_track);
-
-          if (tracks_index[track.uri] !== undefined) {
-            track = { ...tracks_index[track.uri], ...track };
-          }
-
-          if (raw_track.album) {
-            track.album = formatSimpleObject(raw_track.album);
-
-            if (!albums_index[raw_track.album.uri]) {
-              albums_loaded.push(raw_track.album);
-            }
-          }
-
-          if (raw_track.artists && raw_track.artists.length > 0) {
-            track.artists = [];
-
-            for (var artist of raw_track.artists) {
-              track.artists.push(formatSimpleObject(artist));
-
-              // Not already in our index, so let's add it
-              if (!artists_index[artist.uri]) {
-                artists_loaded.push(artist);
-              }
-            }
-          }
-
-          tracks_loaded.push(track);
-        }
-
-        action.tracks = tracks_loaded;
-
-        next(action);
-        break;
-
-      case 'ALBUMS_LOADED':
-        var albums_index = { ...core.albums };
-        var albums_loaded = [];
-        var artists_loaded = [];
-        var tracks_loaded = [];
-
-        for (const raw_album of action.albums) {
-          let album = formatAlbum(raw_album);
-
-          if (albums_index[album.uri]) {
-            album = { ...albums_index[album.uri], ...album };
-          }
-
-          if (raw_album.tracks) {
-            album.tracks = raw_album.tracks.map((track) => ({
-              ...formatTrack(track),
-              album: formatSimpleObject(album)
-            }));
-          }
-
-          if (raw_album.artists) {
-            album.artists = formatSimpleObjects(raw_album.artists);
-          }
-
-          albums_loaded.push(album);
-        }
-
-        action.albums = albums_loaded;
-
-        if (artists_loaded.length > 0) {
-          store.dispatch(coreActions.items(artists_loaded));
-        }
-        if (tracks_loaded.length > 0) {
-          store.dispatch(coreActions.items(tracks_loaded));
-        }
-
-        store.dispatch(coreActions.updateColdStore(albums_loaded));
-
-        next(action);
-        break;
-
       case 'ITEMS_LOADED':
         const mergedItems = [];
         action.items.forEach((item) => {
@@ -811,100 +671,6 @@ const CoreMiddleware = (function () {
       case 'LIBRARY_LOADED':
         store.dispatch(uiActions.stopLoading(action.library.uri));
         store.dispatch(coreActions.updateColdStore([action.library]));
-        next(action);
-        break;
-
-      case 'ARTISTS_LOADED':
-        var artists_index = { ...core.artists };
-        var artists_loaded = [];
-        var tracks_loaded = [];
-
-        for (const raw_artist of action.artists) {
-          var artist = formatArtist(raw_artist);
-          artist = { ...artists_index[artist.uri], ...artist };
-          artists_loaded.push(artist);
-        }
-
-        store.dispatch(coreActions.updateColdStore(artists_loaded));
-        next({
-          ...action,
-          artists: artists_loaded,
-        });
-        break;
-
-      case 'PLAYLISTS_LOADED':
-        var playlists_index = { ...core.playlists };
-        var playlists_loaded = [];
-        var tracks_loaded = [];
-
-        for (var playlist of action.playlists) {
-          playlist = formatPlaylist(playlist);
-
-          // Detect editability
-          switch (uriSource(playlist.uri)) {
-            case 'm3u':
-              playlist.can_edit = true;
-              break;
-
-            case 'spotify':
-              if (spotify.authorization && spotify.me) {
-                playlist.can_edit = (playlist.owner && playlist.owner.id == spotify.me.id);
-              }
-          }
-
-          // Already have this playlist partially in our index
-          if (playlists_index[playlist.uri]) {
-            playlist = { ...playlists_index[playlist.uri], ...playlist };
-
-            // Setup placeholder tracks_uris
-            if (playlist.tracks_uris === undefined) {
-              playlist.tracks_uris = [];
-            }
-          }
-
-          // Load our tracks
-          if (playlist.tracks) {
-            var tracks = formatTracks(playlist.tracks);
-            var tracks_uris = arrayOf('uri', tracks);
-            playlist.tracks_uris = tracks_uris;
-            delete playlist.tracks;
-            tracks_loaded = [...tracks_loaded, ...tracks];
-          }
-
-          // Update index
-          playlists_loaded.push(playlist);
-        }
-
-        action.playlists = playlists_loaded;
-
-        if (tracks_loaded.length > 0) {
-          store.dispatch(coreActions.tracksLoaded(tracks_loaded));
-        }
-
-        next(action);
-        break;
-
-      case 'USERS_LOADED':
-        var users_index = { ...core.users };
-        var users_loaded = [];
-
-        for (let user of action.users) {
-          user = formatUser(user);
-
-          if (users_index[user.uri]) {
-            user = { ...users_index[user.uri], ...user };
-          }
-
-          users_loaded.push(user);
-        }
-
-        action.users = users_loaded;
-
-        next(action);
-        break;
-
-      case 'USER_PLAYLISTS_LOADED':
-        store.dispatch(coreActions.playlistsLoaded(action.playlists));
         next(action);
         break;
 

@@ -97,6 +97,15 @@ export default function reducer(core = {}, action) {
         },
       };
 
+    case 'UNLOAD_LIBRARY': {
+      const libraries = { ...core.libraries };
+      delete libraries[action.uri];
+      return {
+        ...core,
+        libraries,
+      };
+    }
+
     case 'USER_PLAYLISTS_LOADED':
       var users = { ...core.users };
       var existing_playlists_uris = [];

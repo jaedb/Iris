@@ -1863,7 +1863,7 @@ const MopidyMiddleware = (function () {
             uri: track.uri,
           });
 
-          store.dispatch(coreActions.loadItem(track.uri));
+          store.dispatch(coreActions.loadItem(track.uri, { full: true }));
         }
         break;
 

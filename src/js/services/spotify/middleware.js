@@ -120,109 +120,13 @@ const SpotifyMiddleware = (function () {
         break;
       }
 
-      // TODO: This can go
-      case 'SPOTIFY_ARTIST_ALBUMS_LOADED':
-        store.dispatch(coreActions.albumsLoaded(action.data.items));
-        store.dispatch({
-          type: 'ARTIST_ALBUMS_LOADED',
-          artist_uri: action.artist_uri,
-          albums_uris: arrayOf('uri', action.data.items),
-          more: action.data.next,
-          total: action.data.total,
-        });
+      case 'SPOTIFY_FLUSH_LIBRARY': {
+        store.dispatch(coreActions.unloadLibrary('spotify:library:artists'));
+        store.dispatch(coreActions.unloadLibrary('spotify:library:albums'));
+        store.dispatch(coreActions.unloadLibrary('spotify:library:playlists'));
+        store.dispatch(coreActions.unloadLibrary('spotify:library:tracks'));
         break;
-
-      case 'SPOTIFY_USER_PLAYLISTS_LOADED':
-        var playlists = [];
-        for (var i = 0; i < action.data.items.length; i++) {
-          var playlist = {
-
-            ...action.data.items[i],
-            tracks_total: action.data.items[i].tracks.total,
-          };
-
-          // remove our tracklist. It'll overwrite any full records otherwise
-          delete playlist.tracks;
-
-          playlists.push(playlist);
-        }
-
-        store.dispatch({
-          type: 'PLAYLISTS_LOADED',
-          playlists,
-        });
-
-        store.dispatch({
-          type: 'USER_PLAYLISTS_LOADED',
-          key: action.key,
-          uris: arrayOf('uri', playlists),
-          more: action.data.next,
-          total: action.data.total,
-        });
-        break;
-
-        /*
-
-            case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED':
-                var playlists = []
-                for (var i = 0; i < action.data.playlists.items.length; i++){
-                    var playlist = Object.assign(
-                        {},
-                        action.data.playlists.items[i],
-                        {
-                            tracks_total: action.data.playlists.items[i].tracks.total
-                        }
-                    )
-
-                    // remove our tracklist. It'll overwrite any full records otherwise
-                    delete playlist.tracks
-
-                    playlists.push(playlist)
-                }
-
-                store.dispatch({
-                    type: 'PLAYLISTS_LOADED',
-                    playlists: playlists
-                });
-
-                store.dispatch({
-                    type: 'CATEGORY_PLAYLISTS_LOADED',
-                    key: action.key,
-                    uris: arrayOf('uri',playlists),
-                    more: action.data.playlists.next,
-                    total: action.data.playlists.total
-                });
-                break
-                */
-
-      case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED':
-        store.dispatch(coreActions.playlistsLoaded(action.playlists.items));
-
-        action.uris = arrayOf('uri', action.playlists.items);
-        action.more = action.playlists.next;
-        action.total = action.playlists.total;
-        delete action.playlists;
-
-        // Upgrade our URIs
-        action.uris = upgradeSpotifyPlaylistUris(action.uris);
-
-        next(action);
-        break;
-
-      case 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED_MORE':
-        store.dispatch({
-          type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED',
-          uri: action.uri,
-          playlists: action.data.playlists,
-        });
-        break;
-
-      case 'SPOTIFY_CATEGORY_LOADED':
-        store.dispatch({
-          type: 'SPOTIFY_CATEGORIES_LOADED',
-          categories: [action.category],
-        });
-        break;
+      }
 
       case 'SPOTIFY_CATEGORIES_LOADED':
         var categories_index = { ...spotify.categories };

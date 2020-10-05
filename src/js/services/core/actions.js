@@ -204,6 +204,12 @@ export function libraryLoaded(library) {
     library,
   };
 }
+export function unloadLibrary(uri) {
+  return {
+    type: 'UNLOAD_LIBRARY',
+    uri,
+  };
+}
 export function itemsLoaded(items) {
   return {
     type: 'ITEMS_LOADED',
@@ -212,6 +218,12 @@ export function itemsLoaded(items) {
 }
 export function itemLoaded(item) {
   return itemsLoaded([item]);
+}
+export function unloadItem(uri) {
+  return {
+    type: 'UNLOAD_ITEM',
+    uri,
+  };
 }
 
 export function tracksLoaded(tracks) {

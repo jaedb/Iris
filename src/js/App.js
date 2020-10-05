@@ -321,7 +321,7 @@ export class App extends React.Component {
                     />
                     <Route
                       exact
-                      path="/discover/categories/:id"
+                      path="/discover/categories/:uri"
                       component={DiscoverCategory}
                     />
                     <Route

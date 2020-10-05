@@ -14,10 +14,10 @@ export default memo(({
       {
 				categories.map((category) => (
           <GridItem
-            key={category.id}
+            key={category.uri}
             type="category"
             item={category}
-            link={`/discover/categories/${encodeURIComponent(category.id)}`}
+            link={`/discover/categories/${encodeURIComponent(category.uri)}`}
           />
 				))
 			}
