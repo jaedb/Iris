@@ -65,12 +65,6 @@ export function clearCurrentTrack() {
   };
 }
 
-export function cachebustHttpStream() {
-  return {
-    type: 'CACHEBUST_HTTP_STREAM',
-  };
-}
-
 export function clearStorage() {
   return {
     type: 'CLEAR_STORAGE',
@@ -218,12 +212,6 @@ export function itemsLoaded(items) {
 }
 export function itemLoaded(item) {
   return itemsLoaded([item]);
-}
-export function unloadItem(uri) {
-  return {
-    type: 'UNLOAD_ITEM',
-    uri,
-  };
 }
 
 export function tracksLoaded(tracks) {

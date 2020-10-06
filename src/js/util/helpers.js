@@ -131,7 +131,7 @@ const getCurrentPusherConnection = function (connections, connectionid) {
  * @param uri = string
  * */
 let uriSource = function (uri) {
-  if (!uri) return false;
+  if (!uri) return '';
 
   const exploded = `${uri}`.split(':');
   return exploded[0];
@@ -143,7 +143,7 @@ let uriSource = function (uri) {
  * @return string
  * */
 const uriType = function (uri) {
-  if (!uri) return null;
+  if (!uri) return '';
 
   const exploded = `${uri}`.split(':');
 
@@ -441,7 +441,7 @@ const getIndexedRecords = function (index, uris) {
  * @param string String
  * @return String
  * */
-const titleCase = function (string) {
+const titleCase = function (string = '') {
   return string.charAt(0).toUpperCase() + string.slice(1);
 };
 

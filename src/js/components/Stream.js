@@ -9,8 +9,6 @@ class Stream extends React.Component {
   constructor(props) {
     super(props);
 
-    console.log(props);
-
     if (props.enabled && props.streaming_enabled) {
       this.start();
     }
@@ -28,7 +26,6 @@ class Stream extends React.Component {
       this.snapstream.play();
     } else {
       const protocol = (ssl ? 'wss' : 'ws');
-      console.log(protocol, host, port, username);
       this.snapstream = new SnapStream(protocol, host, port, 'Iris');
     }
   }

@@ -62,12 +62,15 @@ class Queue extends React.Component {
 
   componentDidMount() {
     const {
-      uiActions: { setWindowTitle },
-      location: { limit } = {},
+      uiActions: {
+        setWindowTitle,
+      },
+      location: {
+        limit,
+      } = {},
     } = this.props;
-    if (limit) {
-      this.setState({ limit });
-    }
+
+    if (limit) this.setState({ limit });
     setWindowTitle(i18n('now_playing.title'));
   }
 
@@ -86,7 +89,7 @@ class Queue extends React.Component {
     } = this.props;
 
     if (added_from_uri && added_from_uri !== prev_added_from_uri) {
-      loadItem(added_from_uri);
+      loadItem(added_from_uri, { full: false });
     }
   }
 

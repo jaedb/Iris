@@ -30,11 +30,13 @@ const spotifyActions = require('../spotify/actions.js');
  *
  * @param {*} Object { store, action, fetch, dependents}
  */
-const ensureItemLoaded = ({
+const ensureLoaded = ({
   store,
+  containerName = 'items',
   action,
   fetch,
   dependents = [],
+  fullDependents = [],
 }) => {
   const {
     uri,
@@ -45,11 +47,32 @@ const ensureItemLoaded = ({
   } = action;
   const {
     core: {
-      items: {
+      [containerName]: {
         [uri]: item,
       } = {},
     } = {},
   } = store.getState();
+
+  const getMissingDependents = (parent) => {
+    const allDependents = [...dependents, ...fullDependents];
+    if (!parent) return allDependents;
+    if (full) {
+      return allDependents.filter((dep) => parent[dep] === undefined || parent[dep] === null);
+    }
+    return dependents.filter((dep) => parent[dep] === undefined || parent[dep] === null);
+  };
+
+  const getDependentUris = (parent) => {
+    if (!parent) return [];
+
+    return [...dependents, ...fullDependents].reduce(
+      (acc, dependent) => [
+        ...acc,
+        ...(dependent.match(new RegExp('/(.*)_uri(.*)')) ? parent[dependent] : []),
+      ],
+      [],
+    );
+  };
 
   // Forced refetch bypasses everything
   if (forceRefetch) {
@@ -58,61 +81,51 @@ const ensureItemLoaded = ({
     return;
   }
 
-  // Already-loaded asset; check we have all of it's dependents
+  // Item already in our index?
   if (item) {
-    const loadableDependents = dependents.filter((k) => item[k] && item[k].length > 0);
-    if (!full || (loadableDependents.length === dependents.length)) {
-      console.info(`"${uri}" already in index`);
-      loadableDependents.forEach(
+    if (getMissingDependents(item).length === 0) {
+      console.info(`"${uri}" and all dependents already in index`);
+      store.dispatch(uiActions.stopLoading(uri));
+
+      getDependentUris(item).forEach(
         (dependent) => store.dispatch(coreActions.loadItems(item[dependent])),
       );
-      store.dispatch(uiActions.stopLoading(uri));
       return;
     }
   }
 
+  // What about in the coldstore?
   localForage.getItem(uri).then((restoredItem) => {
-    if (!restoredItem) {
+    if (!restoredItem || getMissingDependents(restoredItem).length > 0) {
       fetch();
       return;
     }
 
-    const loadableDependents = dependents.filter(
-      (k) => restoredItem[k] && restoredItem[k].length > 0,
-    );
     console.info(`Restoring "${uri}" from database`);
     store.dispatch(coreActions.restoreItemsFromColdStore([restoredItem]));
 
-    if (full) {
-      // We already have the dependents of our restored item, so restore them.
-      // We assume that because THIS item is in the coldstore, its dependents
-      // are as well.
-      if (dependents.length && loadableDependents.length === dependents.length) {
-        const dependentUris = loadableDependents.reduce(
-          (acc, dependent) => [...acc, ...restoredItem[dependent]],
-          [],
-        );
+    // We already have the dependents of our restored item, so restore them.
+    // We assume that because THIS item is in the coldstore, its dependents
+    // are as well.
+    const dependentUris = getDependentUris(restoredItem);
+    if (dependentUris.length > 0) {
+      console.info(`Restoring ${dependentUris.length} dependents from database`);
 
-        console.info(`Restoring ${dependentUris.length} dependents from database`);
-
-        const restoreAllDependents = dependentUris.map(
-          (dependentUri) => localForage.getItem(dependentUri),
-        );
-        Promise.all(restoreAllDependents).then(
-          (dependentItems) => {
-            store.dispatch(
-              coreActions.restoreItemsFromColdStore(
-                compact(dependentItems), // Squash nulls (ie items not found in coldstore)
-              ),
-            );
-          },
-        );
-      } else {
-        fetch();
-      }
+      const restoreAllDependents = dependentUris.map(
+        (dependentUri) => localForage.getItem(dependentUri),
+      );
+      Promise.all(restoreAllDependents).then(
+        (dependentItems) => {
+          store.dispatch(
+            coreActions.restoreItemsFromColdStore(
+              compact(dependentItems), // Squash nulls (ie items not found in coldstore)
+            ),
+          );
+        },
+      );
     }
   });
-}
+};
 
 const CoreMiddleware = (function () {
   return (store) => (next) => (action = {}) => {
@@ -410,7 +423,7 @@ const CoreMiddleware = (function () {
               break;
           }
         };
-        ensureItemLoaded({
+        ensureLoaded({
           store,
           action,
           fetch,
@@ -435,11 +448,12 @@ const CoreMiddleware = (function () {
               break;
           };
         };
-        ensureItemLoaded({
+        ensureLoaded({
           store,
           action,
           fetch,
-          dependents: ['tracks'],
+          dependents: ['images'],
+          fullDependents: ['tracks'],
         });
         next(action);
         break;
@@ -459,11 +473,12 @@ const CoreMiddleware = (function () {
               break;
           }
         };
-        ensureItemLoaded({
+        ensureLoaded({
           store,
           action,
           fetch,
-          dependents: ['tracks', 'albums_uris'],
+          dependents: ['images'],
+          fullDependents: ['tracks', 'albums_uris'],
         });
         next(action);
         break;
@@ -485,11 +500,12 @@ const CoreMiddleware = (function () {
               break;
           }
         };
-        ensureItemLoaded({
+        ensureLoaded({
           store,
           action,
           fetch,
-          dependents: ['tracks'],
+          dependents: ['images'],
+          fullDependents: ['tracks'],
         });
         next(action);
         break;
@@ -509,11 +525,11 @@ const CoreMiddleware = (function () {
               break;
           }
         };
-        ensureItemLoaded({
+        ensureLoaded({
           store,
-          dependents: ['playlists_uris'],
           action,
           fetch,
+          fullDependents: ['playlists_uris'],
         });
         next(action);
         break;
@@ -530,11 +546,11 @@ const CoreMiddleware = (function () {
               break;
           }
         };
-        ensureItemLoaded({
+        ensureLoaded({
           store,
-          dependents: ['playlists_uris'],
           action,
           fetch,
+          fullDependents: ['playlists_uris'],
         });
 
         next(action);

@@ -1365,6 +1365,10 @@ export function getPlaylist(uri, { full, forceRefetch, callbackAction }) {
             ...formatPlaylist(response),
             can_edit: (getState().spotify.me && getState().spotify.me.id === response.owner.id),
             description,
+            // Remove tracks unless we're looking for the full object. This allows our detector
+            // to accurately identify whether we've loaded *ALL* the tracks. Without this, it
+            // doesn't know if we've loaded all tracks, or just the first page.
+            ...(full ? {} : { tracks: null }),
           }));
 
           if (full) {
