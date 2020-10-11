@@ -273,7 +273,7 @@ export class Album extends React.Component {
               <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(album.wiki) }}></p>
               <br />
               <div className="mid_grey-text">
-                <I18n path="album.wiki.published" params={{ date: album.wiki_publish_date }} />
+                <I18n path="album.wiki.published" date={album.wiki_publish_date} />
               </div>
             </div>
           </section>
