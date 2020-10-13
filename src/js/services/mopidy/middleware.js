@@ -9,6 +9,7 @@ import {
   uriSource,
   setFavicon,
   titleCase,
+  encodeMopidyUri,
 } from '../../util/helpers';
 import {
   digestMopidyImages,
@@ -277,9 +278,7 @@ const MopidyMiddleware = (function () {
       },
     ));
 
-    /**
-     * Process our results. Each type has a different method of formatting and destructuring.
-     */
+    // Each type has a different method of formatting and destructuring.
     const processResults = {
       albums: (response) => {
         const result = response[0];
@@ -342,7 +341,10 @@ const MopidyMiddleware = (function () {
             return item.name.toLowerCase().includes(term.toLowerCase());
           },
         );
-        return formatPlaylists(playlists);
+        return playlists.map((playlist) => ({
+          ...formatPlaylist(playlist),
+          uri: encodeMopidyUri(playlist.uri),
+        }));
       },
       tracks: (response) => {
         const { tracks = [] } = response[0];
