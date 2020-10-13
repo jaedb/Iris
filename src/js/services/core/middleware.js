@@ -264,33 +264,89 @@ const CoreMiddleware = (function () {
         next(action);
         break;
 
-      case 'SEARCH_STARTED':
-        if (ui.allow_reporting) {
-          ReactGA.event({ category: 'Search', action: 'Started', label: `${action.type}: ${action.query}` });
+      case 'START_SEARCH': {
+        const { query } = action;
+        const {
+          ui: {
+            allow_reporting,
+            uri_schemes_search_enabled = [],
+            search_settings,
+          },
+        } = store.getState();
+
+        if (allow_reporting) {
+          ReactGA.event({
+            category: 'Search',
+            action: 'Started',
+            label: `${query.type}: ${query.term}`,
+          });
         }
+
+        console.info(`Searching for ${query.type} matching "${query.term}"`);
+
+        // Trigger reducer immediately; this will hose out any previous results
         next(action);
 
-        // backends that can handle more than just track results
-        // make sure they are available and respect our settings
-        const uri_schemes = ui.search_uri_schemes || mopidy.uri_schemes;
-        const available_full_uri_schemes = ['local:', 'file:', 'gmusic:'];
-        const full_uri_schemes = available_full_uri_schemes.filter(
-          (full_uri_scheme) => uri_schemes.indexOf(full_uri_scheme) > -1
-        );
-
-        // initiate spotify searching
-        if (!action.only_mopidy) {
-          if (!ui.search_settings || ui.search_settings.spotify) {
-            store.dispatch(spotifyActions.getSearchResults(action.query));
+        if (uri_schemes_search_enabled.includes('spotify:')) {
+          if (!search_settings || search_settings.spotify) {
+            store.dispatch(spotifyActions.getSearchResults(query));
           }
         }
-
-        // backend searching (mopidy)
-        store.dispatch(
-          mopidyActions.getSearchResults(action.search_type, action.query, 100, full_uri_schemes),
-        );
-
+        store.dispatch(mopidyActions.getSearchResults(
+          query,
+          100,
+          uri_schemes_search_enabled.filter((i) => i !== 'spotify:'), // Omit Spotify; handled above
+        ));
         break;
+      }
+
+      case 'SEARCH_RESULTS_LOADED': {
+        const {
+          query: {
+            term,
+            type,
+          },
+          resultType,
+          results,
+        } = action;
+        const {
+          core: {
+            search_results: {
+              query: {
+                term: prevTerm,
+                type: prevType,
+              } = {},
+              ...allResults
+            } = {},
+          } = {},
+        } = store.getState();
+
+        // Add to our existing results, so long as the search term is the same
+        const search_results = {
+          query: { term, type },
+          ...(term === prevTerm && type === prevType ? allResults : {}),
+        };
+
+        console.log({
+          term,
+          type,
+          prevTerm,
+          prevType,
+          allResults,
+        });
+
+        // Merge our new results with the existing (if any)
+        search_results[resultType] = [
+          ...(search_results[resultType] || []),
+          ...results,
+        ];
+
+        next({
+          ...action,
+          search_results,
+        });
+        break;
+      }
 
       case 'RESTART':
         location.reload();

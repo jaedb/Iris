@@ -7,6 +7,7 @@ const getItems = (state) => state.core.items;
 const getLoadQueue = (state) => state.ui.load_queue;
 const getLibrary = (state, uri) => state.core.libraries[uri];
 const getLibraries = (state) => state.core.libraries;
+const getSearchResults = (state) => state.core.search_results;
 
 const makeItemSelector = (uri) => createSelector(
   [getItems],
@@ -42,20 +43,11 @@ const makeLibrarySelector = (uris) => createSelector(
   },
 );
 
-const getMopidySearchResults = (state, props) => (
-  state.mopidy.search_results && state.mopidy.search_results[props.type]
-);
-const getSpotifySearchResults = (state, props) => (
-  state.spotify.search_results && state.spotify.search_results[props.type]
-);
-const makeSearchResultsSelector = () => createSelector(
-  [getMopidySearchResults, getSpotifySearchResults, getItems],
-  (mopidySearchResults, spotifySearchResults, items) => {
-    const uris = [
-      ...mopidySearchResults || [],
-      ...spotifySearchResults || [],
-    ];
-    return indexToArray(items, uris);
+const makeSearchResultsSelector = (term, type) => createSelector(
+  [getSearchResults],
+  (searchResults) => {
+    if (!searchResults || searchResults.query.term !== term) return [];
+    return searchResults[type] || [];
   },
 );
 

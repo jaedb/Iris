@@ -563,13 +563,7 @@ export function getMore(url, core_action = null, custom_action = null, extra_dat
   };
 }
 
-export function clearSearchResults() {
-  return {
-    type: 'SPOTIFY_CLEAR_SEARCH_RESULTS',
-  };
-}
-
-export function getSearchResults(type, term, limit = 50, offset = 0) {
+export function getSearchResults({ type, term }, limit = 50, offset = 0) {
   return (dispatch, getState) => {
     dispatch(uiActions.startProcess('SPOTIFY_GET_SEARCH_RESULTS_PROCESSOR', 'Searching Spotify'));
 
@@ -588,54 +582,39 @@ export function getSearchResults(type, term, limit = 50, offset = 0) {
       .then(
         (response) => {
           if (response.tracks !== undefined) {
-            dispatch({
-              type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
-              context: 'tracks',
-              query: { type, term },
-              results: formatTracks(response.tracks.items),
-              more: response.tracks.next,
-            });
+            dispatch(coreActions.searchResultsLoaded(
+              { term, type },
+              'tracks',
+              formatTracks(response.tracks.items),
+            ));
           }
 
           if (response.artists !== undefined) {
-            dispatch({
-              type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
-              context: 'artists',
-              query: { type, term },
-              results: arrayOf('uri', response.artists.items),
-              more: response.artists.next,
-            });
-            // TODO: Loading items into index causes massive performance issue
-            // Not the formatter, not coldstorage (async) and not building new index
-            dispatch(coreActions.itemsLoaded(formatArtists(response.artists.items)));
+            dispatch(coreActions.searchResultsLoaded(
+              { term, type },
+              'artists',
+              formatArtists(response.artists.items),
+            ));
           }
 
           if (response.albums !== undefined) {
-            dispatch(coreActions.itemsLoaded(formatAlbums(response.albums.items)));
-            dispatch({
-              type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
-              context: 'albums',
-              query: { type, term },
-              results: arrayOf('uri', response.albums.items),
-              more: response.albums.next,
-            });
+            dispatch(coreActions.searchResultsLoaded(
+              { term, type },
+              'albums',
+              formatAlbums(response.albums.items),
+            ));
           }
 
           if (response.playlists !== undefined) {
             const playlists = response.playlists.items.map((item) => ({
               ...formatPlaylist(item),
               can_edit: (getState().spotify.me && item.owner.id === getState().spotify.me.id),
-              tracks_total: item.tracks.total,
             }));
-            dispatch(coreActions.itemsLoaded(playlists));
-
-            dispatch({
-              type: 'SPOTIFY_SEARCH_RESULTS_LOADED',
-              context: 'playlists',
-              query: { type, term },
-              results: arrayOf('uri', playlists),
-              more: response.playlists.next,
-            });
+            dispatch(coreActions.searchResultsLoaded(
+              { term, type },
+              'playlists',
+              playlists,
+            ));
           }
 
           dispatch(uiActions.processFinished('SPOTIFY_GET_SEARCH_RESULTS_PROCESSOR'));

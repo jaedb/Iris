@@ -162,6 +162,7 @@ const corePersistConfig = {
     'albums',
     'artists',
     'playlists',
+    'search_results',
     'users',
     'tracks',
     'libraries', // We manually hydrate this, so we can handle the rehydration of library items
@@ -252,7 +253,6 @@ const store = createStore(
   state,
   applyMiddleware(
     thunk,
-    localstorageMiddleware,
     coreMiddleware,
     uiMiddleware,
     mopidyMiddleware,

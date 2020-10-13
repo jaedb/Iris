@@ -2,12 +2,13 @@
 import ReactGA from 'react-ga';
 import Mopidy from 'mopidy';
 import { sha256 } from 'js-sha256';
-import { sampleSize } from 'lodash';
+import { sampleSize, uniqBy } from 'lodash';
 import { i18n } from '../../locale';
 import {
   generateGuid,
   uriSource,
   setFavicon,
+  titleCase,
 } from '../../util/helpers';
 import {
   digestMopidyImages,
@@ -239,14 +240,140 @@ const MopidyMiddleware = (function () {
     });
   };
 
+  /**
+   * Process our search queries queue. We process one item in the queue and then
+   * reiterate if there are any items remaining.
+   *
+   * @param {Object} store
+   * @param {Array} queries
+   */
+  const processSearchQueue = (store, queue) => {
+    const {
+      type,
+      term,
+      requestType,
+      uri_scheme,
+      method = 'library.search',
+      data,
+    } = queue.shift();
+    const processor = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS;
+
+    if (processor && processor.status === 'cancelling') {
+      store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS'));
+      return;
+    }
+
+    store.dispatch(uiActions.updateProcess(
+      'MOPIDY_GET_SEARCH_RESULTS',
+      i18n(
+        'services.mopidy.searching',
+        {
+          provider: titleCase(uri_scheme.replace(':', '')),
+          type: requestType,
+        },
+      ),
+      {
+        remaining: queue.length,
+      },
+    ));
+
+    /**
+     * Process our results. Each type has a different method of formatting and destructuring.
+     */
+    const processResults = {
+      albums: (response) => {
+        const result = response[0];
+        const albums = {};
+        if (result.albums) {
+          result.albums.forEach((album) => {
+            if (album.uri) {
+              albums[album.uri] = {
+                ...albums[album.uri],
+                ...formatAlbum(album),
+              };
+            }
+          });
+        }
+        if (result.tracks) {
+          result.tracks.forEach((track) => {
+            if (track.album && track.album.uri) {
+              albums[track.album.uri] = {
+                ...albums[track.album.uri],
+                ...formatAlbum(track.album),
+              };
+            }
+          });
+        }
+        return indexToArray(albums);
+      },
+      artists: (response) => {
+        const result = response[0];
+        const artists = {};
+        if (result.artists) {
+          result.artists.forEach((artist) => {
+            if (artist.uri) {
+              artists[artist.uri] = {
+                ...artists[artist.uri],
+                ...formatArtist(artist),
+              };
+            }
+          });
+        }
+        if (result.tracks) {
+          result.tracks.forEach((track) => {
+            if (track.artists) {
+              track.artists.forEach((artist) => {
+                if (artist && artist.uri) {
+                  artists[artist.uri] = {
+                    ...artists[artist.uri],
+                    ...formatArtist(artist),
+                  };
+                }
+              });
+            }
+          });
+        }
+        return indexToArray(artists);
+      },
+      playlists: () => {},
+      tracks: (response) => {
+        const { tracks = [] } = response[0];
+        return tracks;
+      },
+    };
+
+    request(
+      store,
+      method,
+      data,
+    ).then(
+      (response) => {
+        if (response.length > 0) {
+          store.dispatch(coreActions.searchResultsLoaded(
+            { term, type },
+            requestType,
+            processResults[requestType](response),
+          ));
+        }
+
+        if (queue.length) {
+          processSearchQueue(store, queue);
+        } else {
+          store.dispatch(uiActions.processFinished(
+            'MOPIDY_GET_SEARCH_RESULTS',
+          ));
+        }
+      },
+    );
+  };
 
   /**
-     * Middleware
-     *
-     * This behaves like an action interceptor. We listen for specific actions
-     * and handle special functionality. If the action is not in our switch, then
-     * it just proceeds to the next middleware, or default functionality
-     * */
+   * Middleware
+   *
+   * This behaves like an action interceptor. We listen for specific actions
+   * and handle special functionality. If the action is not in our switch, then
+   * it just proceeds to the next middleware, or default functionality
+   * */
   return (store) => (next) => (action) => {
     switch (action.type) {
       case 'MOPIDY_CONNECT':
@@ -992,559 +1119,61 @@ const MopidyMiddleware = (function () {
            * */
 
 
-      case 'MOPIDY_GET_SEARCH_RESULTS':
+      case 'MOPIDY_GET_SEARCH_RESULTS': {
+        const {
+          uri_schemes = [],
+          query = {},
+        } = action;
+        const types = query.type === 'all'
+          ? ['artists', 'albums', 'tracks']
+          : [query.type];
 
-        // Flush out our previous results
-        store.dispatch({ type: 'MOPIDY_CLEAR_SEARCH_RESULTS' });
+        const queue = [];
+        uri_schemes.forEach(
+          (uri_scheme) => types.forEach(
+            (type) => {
+              const item = {
+                type: query.type,
+                term: query.term,
+                requestType: type,
+                uri_scheme,
+              };
+              switch (type) {
+                case 'tracks':
+                  item.data = { query: { track_name: [query.term] }, uris: [uri_scheme] };
+                  break;
+                case 'artists':
+                  item.data = { query: { artist: [query.term] }, uris: [uri_scheme] };
+                  break;
+                case 'albums':
+                  item.data = { query: { album: [query.term] }, uris: [uri_scheme] };
+                  break;
+                case 'playlistsXX': // Once we have the result handler, uncomment this
+                  item.method = 'playlists.asList';
+                  item.data = {};
+                  break;
+                default:
+                  break;
+              }
+              queue.push(item);
+            },
+          ),
+        );
 
-        var uri_schemes_to_ignore = ['spotify:'];
-        var uri_schemes = Object.assign([], store.getState().ui.uri_schemes_search_enabled);
-        for (var i = 0; i < uri_schemes.length; i++) {
-          if (uri_schemes_to_ignore.includes(uri_schemes[i])) {
-            uri_schemes.splice(i, 1);
-          }
-        }
-        var uri_schemes_total = uri_schemes.length;
-        var uri_scheme = uri_schemes.shift();
-
-        if (uri_schemes_total <= 0) {
-          store.dispatch(uiActions.createNotification({ content: 'No sources selected', level: 'warning' }));
-        } else {
+        if (queue.length) {
           store.dispatch(uiActions.startProcess(
-            'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
-            i18n('services.mopidy.searching_providers', { count: uri_schemes_total }),
+            'MOPIDY_GET_SEARCH_RESULTS',
+            i18n('services.mopidy.searching'),
             {
-              query: action.query,
-              limit: action.limit,
-              total: uri_schemes_total,
-              remaining: uri_schemes.length,
-              uri_scheme,
-              uri_schemes,
+              total: queue.length,
+              remaining: queue.length,
             },
           ));
+
+          processSearchQueue(store, queue);
         }
         break;
-
-      case 'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR':
-        var last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR;
-
-        // Cancelling
-        if (last_run && last_run.status == 'cancelling') {
-          store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
-          return;
-
-          // No more schemes, so we're done!
-        } if (!action.data.uri_scheme) {
-          store.dispatch(uiActions.processFinished('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
-          return;
-        }
-
-        // Construct our next batch's task
-        var next_uri_schemes = Object.assign([], action.data.uri_schemes);
-        var next_uri_scheme = next_uri_schemes.shift();
-
-        // Update UI for this round
-        store.dispatch(uiActions.updateProcess(
-          'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
-          `Searching ${action.data.uri_scheme.replace(':', '')}`,
-          {
-            remaining: action.data.uri_schemes.length,
-          },
-        ));
-
-        switch (action.data.query.type) {
-          case 'albums':
-            var last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR;
-            if (last_run && last_run.status === 'cancelling') {
-              store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
-              return;
-            }
-
-            store.dispatch(uiActions.updateProcess(
-              'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
-              `Searching ${action.data.uri_scheme.replace(':', '')}`,
-            ));
-
-            var continue_process = () => {
-              store.dispatch(uiActions.runProcess(
-                'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
-                {
-                  query: action.data.query,
-                  limit: action.data.limit,
-                  uri_scheme: next_uri_scheme,
-                  uri_schemes: next_uri_schemes,
-                },
-              ));
-            };
-
-            request(store, 'library.search', { query: { album: [action.data.query.term] }, uris: [action.data.uri_scheme] })
-              .then(
-                (response) => {
-                  if (response.length > 0) {
-                    let albums = [];
-
-                    // Merge our proper album response container
-                    if (response[0].albums) {
-                      albums = [...response[0].albums, ...albums];
-                    }
-
-                    // Pull the Album objects from our track responses
-                    if (response[0].tracks) {
-                      for (let i = 0; i < response[0].tracks.length; i++) {
-                        if (response[0].tracks[i].album !== undefined && response[0].tracks[i].album.uri !== undefined) {
-                          albums.push(response[0].tracks[i].album);
-                        }
-                      }
-                    }
-
-                    store.dispatch(coreActions.itemsLoaded(albums));
-
-                    // and plug in their URIs
-                    store.dispatch({
-                      type: 'MOPIDY_SEARCH_RESULTS_LOADED',
-                      query: action.data.query,
-                      results: albums_uris,
-                      context: 'albums',
-                    });
-                  }
-
-                  continue_process();
-                },
-                (error) => {
-                  store.dispatch(coreActions.handleException(
-                    `Mopidy: ${error.message ? error.message : 'Search failed'}`,
-                    error,
-                  ));
-                  continue_process();
-                },
-              );
-            break;
-
-          case 'artists':
-            var last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR;
-            if (last_run && last_run.status === 'cancelling') {
-              store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
-              return;
-            }
-
-            store.dispatch(uiActions.updateProcess(
-              'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
-              `Searching ${action.data.uri_scheme.replace(':', '')}`,
-            ));
-
-            var continue_process = () => {
-              store.dispatch(uiActions.runProcess(
-                'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
-                {
-                  query: action.data.query,
-                  limit: action.data.limit,
-                  uri_scheme: next_uri_scheme,
-                  uri_schemes: next_uri_schemes,
-                },
-              ));
-            };
-
-            request(store, 'library.search', { query: { artist: [action.data.query.term] }, uris: [action.data.uri_scheme] })
-              .then(
-                (response) => {
-                  if (response.length > 0) {
-                    let artists_uris = [];
-
-                    // Pull actual artist objects
-                    if (response[0].artists) {
-                      for (var i = 0; i < response[0].artists.length; i++) {
-                        artists_uris.push(response[0].artists.uri);
-                      }
-                    }
-
-                    // Digest track artists into actual artist results
-                    if (response[0].tracks) {
-                      for (var i = 0; i < response[0].tracks.length; i++) {
-                        if (response[0].tracks[i].artists) {
-                          for (let j = 0; j < response[0].tracks[i].artists.length; j++) {
-                            const artist = response[0].tracks[i].artists[j];
-                            if (artist.uri) {
-                              artists_uris.push(artist.uri);
-                            }
-                          }
-                        }
-                      }
-                    }
-
-                    artists_uris = removeDuplicates(artists_uris);
-                    store.dispatch(coreActions.loadItems(artists_uris));
-
-                    // and plug in their URIs
-                    store.dispatch({
-                      type: 'MOPIDY_SEARCH_RESULTS_LOADED',
-                      query: action.data.query,
-                      context: 'artists',
-                      results: artists_uris,
-                    });
-                  }
-
-                  continue_process();
-                },
-                (error) => {
-                  store.dispatch(coreActions.handleException(
-                    `Mopidy: ${error.message ? error.message : 'Search failed'}`,
-                    error,
-                  ));
-                  continue_process();
-                },
-              );
-            break;
-
-          case 'playlists':
-            var last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR;
-            if (last_run && last_run.status === 'cancelling') {
-              store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
-              return;
-            }
-
-            store.dispatch(uiActions.updateProcess(
-              'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
-              'Searching playlists',
-            ));
-
-            var continue_process = () => {
-              store.dispatch(uiActions.processFinished('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
-            };
-
-            request(store, 'playlists.asList')
-              .then(
-                (response) => {
-                  if (response.length > 0) {
-                    const playlists_uris = [];
-
-                    for (var i = 0; i < response.length; i++) {
-                      const playlist = response[i];
-                      if (playlist.name.includes(action.data.query) && action.data.uri_schemes.includes(`${uriSource(playlist.uri)}:`)) {
-                        playlists_uris.push(playlist.uri);
-                      }
-                    }
-
-                    // load each playlist
-                    for (var i = 0; i < playlists_uris.length; i++) {
-                      store.dispatch(mopidyActions.getPlaylist(playlists_uris[i]));
-                    }
-
-                    // and plug in their URIs
-                    store.dispatch({
-                      type: 'MOPIDY_SEARCH_RESULTS_LOADED',
-                      query: action.data.query,
-                      context: 'playlists',
-                      results: playlists_uris,
-                    });
-                  }
-                  continue_process();
-                },
-                (error) => {
-                  store.dispatch(coreActions.handleException(
-                    `Mopidy: ${error.message ? error.message : 'Search failed'}`,
-                    error,
-                  ));
-                  continue_process();
-                },
-              );
-            break;
-
-          case 'tracks':
-            var last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR;
-            if (last_run && last_run.status === 'cancelling') {
-              store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
-              return;
-            }
-
-            store.dispatch(uiActions.updateProcess(
-              'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
-              `Searching ${action.data.uri_scheme.replace(':', '')}`,
-            ));
-
-            var continue_process = () => {
-              store.dispatch(uiActions.runProcess(
-                'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
-                {
-                  query: action.data.query,
-                  limit: action.data.limit,
-                  uri_scheme: next_uri_scheme,
-                  uri_schemes: next_uri_schemes,
-                },
-              ));
-            };
-
-            request(store, 'library.search', { query: { any: [action.data.query.term] }, uris: [action.data.uri_scheme] })
-              .then(
-                (response) => {
-                  if (response.length > 0 && response[0].tracks !== undefined) {
-                    const { tracks } = response[0];
-
-                    store.dispatch({
-                      type: 'MOPIDY_SEARCH_RESULTS_LOADED',
-                      query: action.data.query,
-                      context: 'tracks',
-                      results: formatTracks(tracks),
-                    });
-                  }
-                  continue_process();
-                },
-                (error) => {
-                  store.dispatch(coreActions.handleException(
-                    `Mopidy: ${error.message ? error.message : 'Search failed'}`,
-                    error,
-                  ));
-                  continue_process();
-                },
-              );
-
-            break;
-
-          case 'all':
-          default:
-            var process_tracks = () => {
-              const last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR;
-              if (last_run && last_run.status == 'cancelling') {
-                store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
-                return;
-              }
-
-              store.dispatch(uiActions.updateProcess(
-                'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
-                `Searching ${action.data.uri_scheme.replace(':', '')} tracks`,
-                {
-                  remaining: (action.data.uri_schemes.length) + 1,
-                },
-              ));
-              request(store, 'library.search', { query: { any: [action.data.query.term] }, uris: [action.data.uri_scheme] })
-                .then(
-                  (response) => {
-                    if (response.length > 0 && response[0].tracks !== undefined) {
-                      const { tracks } = response[0];
-
-                      store.dispatch({
-                        type: 'MOPIDY_SEARCH_RESULTS_LOADED',
-                        query: action.data.query,
-                        context: 'tracks',
-                        results: formatTracks(tracks),
-                      });
-                    }
-
-                    process_albums();
-                  },
-                  (error) => {
-                    store.dispatch(coreActions.handleException(
-                      `Mopidy: ${error.message ? error.message : 'Search failed'}`,
-                      error,
-                    ));
-                    process_albums();
-                  },
-                );
-            };
-
-            var process_albums = () => {
-              // Quick check to see if we should be cancelling
-              const last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR;
-              if (last_run && last_run.status == 'cancelling') {
-                store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
-                return;
-              }
-
-              store.dispatch(uiActions.updateProcess(
-                'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
-                `Searching ${action.data.uri_scheme.replace(':', '')} albums`,
-                {
-                  remaining: (action.data.uri_schemes.length) + 0.75,
-                },
-              ));
-              request(store, 'library.search', { query: { album: [action.data.query.term] }, uris: [action.data.uri_scheme] })
-                .then(
-                  (response) => {
-                    if (response.length > 0) {
-                      let albums = [];
-
-                      // Merge actual album responses first
-                      if (response[0].albums) {
-                        albums = [...response[0].albums, ...albums];
-                      }
-
-                      // Then digest tracks albums
-                      if (response[0].tracks) {
-                        for (let i = 0; i < response[0].tracks.length; i++) {
-                          if (response[0].tracks[i].album !== undefined && response[0].tracks[i].album.uri !== undefined) {
-                            albums.push(response[0].tracks[i].album);
-                          }
-                        }
-                      }
-
-                      let albums_uris = arrayOf('uri', albums);
-                      albums_uris = removeDuplicates(albums_uris);
-
-                      store.dispatch(coreActions.itemsLoaded(formatAlbums(albums)));
-
-                      // and plug in their URIs
-                      store.dispatch({
-                        type: 'MOPIDY_SEARCH_RESULTS_LOADED',
-                        query: action.data.query,
-                        context: 'albums',
-                        results: albums_uris,
-                      });
-                    }
-
-                    process_artists();
-                  },
-                  (error) => {
-                    store.dispatch(coreActions.handleException(
-                      `Mopidy: ${error.message ? error.message : 'Search failed'}`,
-                      error,
-                    ));
-                    process_artists();
-                  },
-                );
-            };
-
-            var process_artists = () => {
-              // Quick check to see if we should be cancelling
-              const last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR;
-              if (last_run && last_run.status == 'cancelling') {
-                store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
-                return;
-              }
-
-              store.dispatch(uiActions.updateProcess(
-                'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
-                `Searching ${action.data.uri_scheme.replace(':', '')} artists`,
-                {
-                  remaining: (action.data.uri_schemes.length) + 0.5,
-                },
-              ));
-              request(store, 'library.search', { query: { artist: [action.data.query.term] }, uris: [action.data.uri_scheme] })
-                .then(
-                  (response) => {
-                    if (response.length > 0) {
-                      let artists_uris = [];
-
-                      // Pull our actual artists objects
-                      if (response[0].artists) {
-                        for (var i = 0; i < response[0].artists.length; i++) {
-                          artists_uris.push(response[0].artists.uri);
-                        }
-                      }
-
-                      // Digest tracks artists
-                      if (response[0].tracks) {
-                        for (var i = 0; i < response[0].tracks.length; i++) {
-                          if (response[0].tracks[i].artists) {
-                            for (let j = 0; j < response[0].tracks[i].artists.length; j++) {
-                              const artist = response[0].tracks[i].artists[j];
-                              if (artist.uri) {
-                                artists_uris.push(artist.uri);
-                              }
-                            }
-                          }
-                        }
-                      }
-
-                      artists_uris = removeDuplicates(artists_uris);
-                      store.dispatch(coreActions.loadItems(artists_uris));
-
-                      // and plug in their URIs
-                      store.dispatch({
-                        type: 'MOPIDY_SEARCH_RESULTS_LOADED',
-                        query: action.data.query,
-                        context: 'artists',
-                        results: artists_uris,
-                      });
-                    }
-
-                    process_playlists();
-                  },
-                  (error) => {
-                    store.dispatch(coreActions.handleException(
-                      `Mopidy: ${error.message ? error.message : 'Search failed'}`,
-                      error,
-                    ));
-                    process_playlists();
-                  },
-                );
-            };
-            var process_playlists = () => {
-              // Quick check to see if we should be cancelling
-              const last_run = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS_PROCESSOR;
-              if (last_run && last_run.status == 'cancelling') {
-                store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS_PROCESSOR'));
-                return;
-              }
-
-              if (action.data.uri_scheme == 'm3u:') {
-                store.dispatch(uiActions.updateProcess(
-                  'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
-                  `Searching ${action.data.uri_scheme.replace(':', '')} playlists`,
-                  {
-                    remaining: (action.data.uri_schemes.length) + 0.25,
-                  },
-                ));
-                request(store, 'playlists.asList')
-                  .then(
-                    (response) => {
-                      if (response.length > 0) {
-                        let playlists_uris = [];
-                        for (var i = 0; i < response.length; i++) {
-                          const playlist = response[i];
-                          if (playlist.name.includes(action.data.query.term) && action.data.uri_schemes.includes(`${uriSource(playlist.uri)}:`)) {
-                            playlists_uris.push(playlist.uri);
-                          }
-                        }
-
-                        playlists_uris = playlists_uris;
-
-                        // load each playlist
-                        for (var i = 0; i < playlists_uris.length; i++) {
-                          store.dispatch(mopidyActions.getPlaylist(playlists_uris[i]));
-                        }
-
-                        // and plug in their URIs
-                        store.dispatch({
-                          type: 'MOPIDY_SEARCH_RESULTS_LOADED',
-                          query: action.data.query,
-                          context: 'playlists',
-                          results: playlists_uris,
-                        });
-                      }
-
-                      finished();
-                    },
-                    (error) => {
-                      store.dispatch(coreActions.handleException(
-                        `Mopidy: ${error.message ? error.message : 'Search failed'}`,
-                        error,
-                      ));
-                      finished();
-                    },
-                  );
-              } else {
-                finished();
-              }
-            };
-
-            var finished = () => {
-              // We're finally done searching for types on this provider
-              // On to the next scheme!
-              store.dispatch(uiActions.runProcess(
-                'MOPIDY_GET_SEARCH_RESULTS_PROCESSOR',
-                {
-                  query: action.data.query,
-                  limit: action.data.limit,
-                  uri_scheme: next_uri_scheme,
-                  uri_schemes: next_uri_schemes,
-                  remaining: action.data.uri_schemes.length,
-                },
-              ));
-            };
-
-            // Kick things off with the tracks
-            process_tracks();
-        }
-        break;
+      }
 
       case 'MOPIDY_GET_PLAYLIST':
         request(store, 'playlists.lookup', { uri: action.uri })

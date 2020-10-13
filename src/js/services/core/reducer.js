@@ -167,9 +167,9 @@ export default function reducer(core = {}, action) {
 
 
 
-      /**
-         * Genres
-         * */
+    /**
+     * Genres
+     * */
 
     case 'SPOTIFY_GENRES_LOADED':
       return { ...core, genres: action.genres };
@@ -183,92 +183,28 @@ export default function reducer(core = {}, action) {
         },
       };
 
-
-      /**
-         * Search results
-         * */
-
-    case 'SEARCH_STARTED':
+    /**
+     * Search results
+     * */
+    case 'START_SEARCH':
       return {
         ...core,
         search_results: {
-          artists_uris: [],
-          albums_uris: [],
-          playlists_uris: [],
+          query: action.query,
+          artists: [],
+          albums: [],
+          playlists: [],
           tracks: [],
         },
       };
 
-    case 'SEARCH_RESULTS_LOADED':
-
-      // artists
-      if (core.search_results && core.search_results.artists_uris) {
-        var { artists_uris } = core.search_results;
-      } else {
-        var artists_uris = [];
-      }
-      if (action.artists_uris) artists_uris = [...artists_uris, ...action.artists_uris];
-
-      // more tracks
-      if (typeof (action.artists_more) !== 'undefined') var { artists_more } = action;
-      else if (core.search_results && core.search_results.artists_more) var { artists_more } = core.search_results;
-      else var artists_more = null;
-
-
-      // albums
-      if (core.search_results && core.search_results.albums_uris) {
-        var { albums_uris } = core.search_results;
-      } else {
-        var albums_uris = [];
-      }
-      if (action.albums_uris) albums_uris = [...albums_uris, ...action.albums_uris];
-
-      // more tracks
-      if (typeof (action.albums_more) !== 'undefined') var { albums_more } = action;
-      else if (core.search_results && core.search_results.albums_more) var { albums_more } = core.search_results;
-      else var albums_more = null;
-
-
-      // playlists
-      if (core.search_results && core.search_results.playlists_uris) {
-        var { playlists_uris } = core.search_results;
-      } else {
-        var playlists_uris = [];
-      }
-      if (action.playlists_uris) playlists_uris = [...playlists_uris, ...action.playlists_uris];
-
-      // more tracks
-      if (typeof (action.playlists_more) !== 'undefined') var { playlists_more } = action;
-      else if (core.search_results && core.search_results.playlists_more) var { playlists_more } = core.search_results;
-      else var playlists_more = null;
-
-
-      // tracks
-      if (core.search_results && core.search_results.tracks) {
-        var { tracks } = core.search_results;
-      } else {
-        var tracks = [];
-      }
-      if (action.tracks) tracks = [...tracks, ...formatTracks(action.tracks)];
-
-      // more tracks
-      if (typeof (action.tracks_more) !== 'undefined') var { tracks_more } = action;
-      else if (core.search_results && core.search_results.tracks_more) var { tracks_more } = core.search_results;
-      else var tracks_more = null;
-
+    case 'SEARCH_RESULTS_LOADED': {
+      const { search_results } = action;
       return {
         ...core,
-        search_results: {
-          artists_more,
-          artists_uris: removeDuplicates(artists_uris),
-          albums_more,
-          albums_uris: removeDuplicates(albums_uris),
-          playlists_more,
-          playlists_uris: removeDuplicates(playlists_uris),
-          tracks,
-          tracks_more,
-        },
+        search_results,
       };
+    }
 
     default:
       return core;

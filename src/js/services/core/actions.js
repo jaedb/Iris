@@ -5,15 +5,6 @@ import { uriSource } from '../../util/helpers';
 const spotifyActions = require('../../services/spotify/actions');
 const mopidyActions = require('../../services/mopidy/actions');
 
-export function startSearch(search_type, query, only_mopidy = false) {
-  return {
-    type: 'SEARCH_STARTED',
-    search_type,
-    query,
-    only_mopidy,
-  };
-}
-
 export function handleException(message, data = {}, description = null, show_notification = true) {
   if (!message) {
     if (data.message) {
@@ -89,6 +80,26 @@ export function updateColdStore(items) {
   return {
     type: 'UPDATE_COLD_STORE',
     items,
+  };
+}
+
+/**
+ * Search results
+ */
+
+export function startSearch(query) {
+  return {
+    type: 'START_SEARCH',
+    query,
+  };
+}
+
+export function searchResultsLoaded(query, resultType, results) {
+  return {
+    type: 'SEARCH_RESULTS_LOADED',
+    query,
+    resultType,
+    results,
   };
 }
 

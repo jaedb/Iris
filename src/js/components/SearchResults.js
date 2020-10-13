@@ -91,13 +91,21 @@ const SearchResults = ({
 };
 
 const mapStateToProps = (state, ownProps) => {
-  const searchResultsSelector = makeSearchResultsSelector();
+  const { query: { term }, type } = ownProps;
+  const {
+    ui: {
+      uri_schemes_priority = [],
+      search_results_sort: sort = 'name',
+      search_results_sort_reverse: sort_reverse = false,
+    },
+  } = state;
+  const searchResultsSelector = makeSearchResultsSelector(term, type);
 
   return {
-    uri_schemes_priority: state.ui.uri_schemes_priority || [],
-    results: searchResultsSelector(state, ownProps),
-    sort: state.ui.search_results_sort,
-    sort_reverse: state.ui.search_results_sort_reverse,
+    results: searchResultsSelector(state),
+    uri_schemes_priority,
+    sort,
+    sort_reverse,
   };
 };
 

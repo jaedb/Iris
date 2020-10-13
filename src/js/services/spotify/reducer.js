@@ -184,36 +184,6 @@ export default function reducer(spotify = {}, action) {
         library_tracks_more: action.data.next,
       };
 
-    case 'SPOTIFY_CLEAR_SEARCH_RESULTS':
-      return { ...spotify, search_results: {} };
-
-    case 'SPOTIFY_SEARCH_RESULTS_LOADED':
-
-      // Fetch or create our container
-      if (spotify.search_results) {
-        var search_results = { ...spotify.search_results };
-      } else {
-        var search_results = {};
-      }
-
-      search_results = {
-        ...search_results,
-        query: action.query,
-      };
-
-      if (search_results.results) {
-        search_results[action.context] = [...search_results[action.context], ...action.results];
-      } else {
-        search_results[action.context] = action.results;
-      }
-
-      if (action.more) {
-        search_results[`${action.context}_more`] = action.more;
-      } else {
-        search_results[`${action.context}_more`] = null;
-      }
-      return { ...spotify, search_results };
-
     default:
       return spotify;
   }

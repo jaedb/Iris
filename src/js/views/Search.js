@@ -96,8 +96,6 @@ class Search extends React.Component {
   }
 
   onSourceClose = () => {
-    spotifyActions.clearSearchResults();
-    mopidyActions.clearSearchResults();
     this.search();
   };
 
@@ -118,38 +116,22 @@ class Search extends React.Component {
 
   clearSearch = () => {
     const {
-      spotifyActions,
-      mopidyActions,
       uiActions: {
         setWindowTitle,
       },
     } = this.props;
 
-    spotifyActions.clearSearchResults();
-    mopidyActions.clearSearchResults();
     setWindowTitle(i18n('search.title'));
     this.setState({ term: '' });
   }
 
   search = () => {
     const {
+      coreActions: {
+        startSearch,
+      },
       uiActions: {
         setWindowTitle,
-      },
-      uri_schemes_search_enabled,
-      mopidyActions,
-      spotifyActions,
-      mopidy_search_results: {
-        query: {
-          term: mopidyTerm,
-          type: mopidyType,
-        } = {},
-      },
-      spotify_search_results: {
-        query: {
-          term: spotifyTerm,
-          type: spotifyType,
-        } = {},
       },
     } = this.props;
     const {
@@ -157,20 +139,21 @@ class Search extends React.Component {
       term,
     } = this.state;
 
-    console.info(`Searching for ${type} matching "${term}"`);
-
     setWindowTitle(i18n('search.title_window', { term: decodeURIComponent(term) }));
 
-    if (type && term) {
-      if (mopidyTerm !== term || mopidyType !== type) {
-        mopidyActions.clearSearchResults();
-        mopidyActions.getSearchResults(type, term);
-      }
+    /**
+     * TODO: Searches are being triggered when navigating to type subviews, despite already having
+     * results. This might be a consequence of having providers merging their results into one array
+     */
 
-      if ((spotifyTerm !== term || spotifyType !== type) && uri_schemes_search_enabled.includes('spotify:')) {
-        spotifyActions.clearSearchResults();
+    if (type && term) {
+      startSearch({ type, term });
+      /*
+      mopidyActions.getSearchResults(type, term);
+
+      if (uri_schemes_search_enabled.includes('spotify:')) {
         spotifyActions.getSearchResults(type, term);
-      }
+      }*/
     }
   }
 
@@ -311,11 +294,9 @@ class Search extends React.Component {
 const mapStateToProps = (state, ownProps) => ({
   type: ownProps.match.params.type,
   term: ownProps.match.params.term,
-  uri_schemes_search_enabled: (state.ui.uri_schemes_search_enabled ? state.ui.uri_schemes_search_enabled : []),
-  uri_schemes: (state.mopidy.uri_schemes ? state.mopidy.uri_schemes : []),
-  mopidy_search_results: (state.mopidy.search_results ? state.mopidy.search_results : {}),
-  spotify_search_results: (state.spotify.search_results ? state.spotify.search_results : {}),
-  sort: (state.ui.search_results_sort ? state.ui.search_results_sort : 'followers.total'),
+  uri_schemes_search_enabled: state.ui.uri_schemes_search_enabled || [],
+  uri_schemes: state.mopidy.uri_schemes || [],
+  sort: state.ui.search_results_sort || 'followers.total',
   sort_reverse: (!!state.ui.search_results_sort_reverse),
 });
 

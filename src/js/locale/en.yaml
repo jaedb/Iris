@@ -116,6 +116,7 @@ services:
     title: Mopidy
     local: Local
     adding_uris: 'Adding %{count} URI(s)'
+    searching: 'Searching %{provider} %{type}'
     searching_providers: 'Searching %{count} Mopidy providers'
     loading_albums: 'Loading %{count} local albums'
   spotify:
