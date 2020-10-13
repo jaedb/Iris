@@ -335,7 +335,15 @@ const MopidyMiddleware = (function () {
         }
         return indexToArray(artists);
       },
-      playlists: () => {},
+      playlists: (response) => {
+        const playlists = response.filter(
+          (item) => {
+            if (!item.uri.includes(uri_scheme)) return false;
+            return item.name.toLowerCase().includes(term.toLowerCase());
+          },
+        );
+        return formatPlaylists(playlists);
+      },
       tracks: (response) => {
         const { tracks = [] } = response[0];
         return tracks;
@@ -1125,7 +1133,7 @@ const MopidyMiddleware = (function () {
           query = {},
         } = action;
         const types = query.type === 'all'
-          ? ['artists', 'albums', 'tracks']
+          ? ['artists', 'albums', 'tracks', 'playlists']
           : [query.type];
 
         const queue = [];
@@ -1148,7 +1156,7 @@ const MopidyMiddleware = (function () {
                 case 'albums':
                   item.data = { query: { album: [query.term] }, uris: [uri_scheme] };
                   break;
-                case 'playlistsXX': // Once we have the result handler, uncomment this
+                case 'playlists':
                   item.method = 'playlists.asList';
                   item.data = {};
                   break;
