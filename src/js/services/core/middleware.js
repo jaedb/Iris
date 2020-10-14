@@ -9,11 +9,6 @@ import {
   formatTracks,
   formatTrack,
   formatSimpleObject,
-  formatAlbum,
-  formatArtist,
-  formatPlaylist,
-  formatUser,
-  formatSimpleObjects,
 } from '../../util/format';
 import { handleException } from './actions';
 
@@ -66,10 +61,12 @@ const ensureLoaded = ({
     if (!parent) return [];
 
     return [...dependents, ...fullDependents].reduce(
-      (acc, dependent) => [
-        ...acc,
-        ...(dependent.match(new RegExp('/(.*)_uri(.*)')) ? parent[dependent] : []),
-      ],
+      (acc, dependent) => {
+        return [
+          ...acc,
+          ...(dependent.match(new RegExp('(.*)_uri(.*)')) ? parent[dependent] : []),
+        ];
+      },
       [],
     );
   };
@@ -86,10 +83,7 @@ const ensureLoaded = ({
     if (getMissingDependents(item).length === 0) {
       console.info(`"${uri}" and all dependents already in index`);
       store.dispatch(uiActions.stopLoading(uri));
-
-      getDependentUris(item).forEach(
-        (dependent) => store.dispatch(coreActions.loadItems(item[dependent])),
-      );
+      coreActions.loadItems(getDependentUris(item));
       return;
     }
   }
@@ -327,14 +321,6 @@ const CoreMiddleware = (function () {
           ...(term === prevTerm && type === prevType ? allResults : {}),
         };
 
-        console.log({
-          term,
-          type,
-          prevTerm,
-          prevType,
-          allResults,
-        });
-
         // Merge our new results with the existing (if any)
         search_results[resultType] = [
           ...(search_results[resultType] || []),
@@ -352,98 +338,89 @@ const CoreMiddleware = (function () {
         location.reload();
         break;
 
-      /**
-           * Playlist manipulation
-           * */
-      case 'PLAYLIST_TRACKS':
-        const playlist_tracks = formatTracks(action.tracks);
-
-        store.dispatch({
-          type: 'TRACKS_LOADED',
-          tracks: playlist_tracks,
-        });
-
-        next({ ...action, tracks_uris: arrayOf('uri', playlist_tracks) });
-        break;
-
-      case 'PLAYLIST_TRACKS_ADDED':
-        const asset = store.getState().core.playlists[action.key];
+      case 'PLAYLIST_TRACKS_ADDED': {
+        const {
+          key,
+          tracks_uris,
+        } = action;
+        const {
+          core: {
+            items: {
+              [key]: asset,
+            },
+          },
+        } = store.getState();
         store.dispatch(uiActions.createNotification({
-          content: <span>Added {action.tracks_uris.length} tracks to <URILink uri={action.key}>{asset ? asset.name : 'playlist'}</URILink></span>,
+          content: (
+            <span>
+              Added {tracks_uris.length} tracks to <URILink uri={key}>{asset ? asset.name : 'playlist'}</URILink>
+            </span>
+          ),
         }));
-        switch (uriSource(action.key)) {
+
+        switch (uriSource(key)) {
           case 'spotify':
-            store.dispatch(spotifyActions.getPlaylist(action.key));
+            store.dispatch(spotifyActions.getPlaylist(key));
             break;
           case 'm3u':
-            store.dispatch(mopidyActions.getPlaylist(action.key));
+            store.dispatch(mopidyActions.getPlaylist(key));
             break;
           default:
             break;
         }
         next(action);
         break;
+      }
 
-      case 'PLAYLIST_TRACKS_REORDERED':
-        var playlists = { ...core.playlists };
-        var playlist = { ...playlists[action.key] };
-        var tracks_uris = Object.assign([], playlist.tracks_uris);
+      case 'PLAYLIST_TRACKS_REORDERED': {
+        const {
+          key,
+          snapshot_id,
+        } = action;
+        let { insert_before } = action;
+        const playlist = { ...core.items[key] };
+        const tracks = Object.assign([], playlist.tracks);
 
         // handle insert_before offset if we're moving BENEATH where we're slicing tracks
-        var { insert_before } = action;
         if (insert_before > action.range_start) {
           insert_before -= action.range_length;
         }
 
         // cut our moved tracks into a new array
-        var tracks_to_move = tracks_uris.splice(action.range_start, action.range_length);
+        const tracks_to_move = tracks.splice(action.range_start, action.range_length);
         tracks_to_move.reverse();
 
-        for (i = 0; i < tracks_to_move.length; i++) {
-          tracks_uris.splice(insert_before, 0, tracks_to_move[i]);
+        for (let i = 0; i < tracks_to_move.length; i++) {
+          tracks.splice(insert_before, 0, tracks_to_move[i]);
         }
 
-        var snapshot_id = null;
-        if (action.snapshot_id) {
-          snapshot_id = action.snapshot_id;
-        }
-
-        // Update our playlist
-        playlist.tracks_uris = tracks_uris;
-        playlist.snapshot_id = snapshot_id;
-
-        // Trigger normal playlist updating
-        store.dispatch({
-          type: 'PLAYLISTS_LOADED',
-          playlists: [playlist],
-        });
+        store.dispatch(coreActions.itemLoaded({
+          ...playlist,
+          tracks,
+          snapshot_id,
+        }));
         break;
+      }
 
-      case 'PLAYLIST_TRACKS_REMOVED':
-        var playlists = { ...core.playlists };
-        var playlist = { ...playlists[action.key] };
-        var tracks_uris = Object.assign([], playlist.tracks_uris);
-
-        var indexes = action.tracks_indexes.reverse();
-        for (var i = 0; i < indexes.length; i++) {
-          tracks_uris.splice(indexes[i], 1);
+      case 'PLAYLIST_TRACKS_REMOVED': {
+        const {
+          key,
+          snapshot_id,
+        } = action;
+        const playlist = { ...core.items[key] };
+        const tracks = Object.assign([], playlist.tracks);
+        const indexes = action.tracks_indexes.reverse();
+        for (let i = 0; i < indexes.length; i++) {
+          tracks.splice(indexes[i], 1);
         }
 
-        var snapshot_id = null;
-        if (action.snapshot_id) {
-          snapshot_id = action.snapshot_id;
-        }
-
-        // Update our playlist
-        playlist.tracks_uris = tracks_uris;
-        playlist.snapshot_id = snapshot_id;
-
-        // Trigger normal playlist updating
-        store.dispatch({
-          type: 'PLAYLISTS_LOADED',
-          playlists: [playlist],
-        });
+        store.dispatch(coreActions.itemLoaded({
+          ...playlist,
+          tracks,
+          snapshot_id,
+        }));
         break;
+      }
 
       /**
        * Asset Load commands

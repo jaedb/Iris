@@ -2,7 +2,7 @@
 import ReactGA from 'react-ga';
 import Mopidy from 'mopidy';
 import { sha256 } from 'js-sha256';
-import { sampleSize, uniqBy } from 'lodash';
+import { sampleSize, compact } from 'lodash';
 import { i18n } from '../../locale';
 import {
   generateGuid,
@@ -1147,18 +1147,23 @@ const MopidyMiddleware = (function () {
                 term: query.term,
                 requestType: type,
                 uri_scheme,
+                data: {
+                  uris: [uri_scheme],
+                },
               };
               switch (type) {
                 case 'tracks':
-                  item.data = { query: { track_name: [query.term] }, uris: [uri_scheme] };
+                  item.data.query = { any: [query.term] };
                   break;
                 case 'artists':
-                  item.data = { query: { artist: [query.term] }, uris: [uri_scheme] };
+                  item.data.query = { artist: [query.term] };
                   break;
                 case 'albums':
-                  item.data = { query: { album: [query.term] }, uris: [uri_scheme] };
+                  item.data.query = { album: [query.term] };
                   break;
                 case 'playlists':
+                  // Searching for playlists is not supported, so we get a simple
+                  // list of names and perform a client-side regex match
                   item.method = 'playlists.asList';
                   item.data = {};
                   break;
@@ -1489,22 +1494,19 @@ const MopidyMiddleware = (function () {
           );
         break;
 
-      case 'MOPIDY_CURRENT_TRACK_LOADED':
-
-        // Let the UI know we're finished transition
+      case 'MOPIDY_CURRENT_TRACK_LOADED': {
         store.dispatch(uiActions.setCurrentTrackTransition(false));
-
-        var track = formatTrack(action.tl_track);
+        const track = formatTrack(action.tl_track);
         if (track.uri) {
           store.dispatch({
             type: 'CURRENT_TRACK_LOADED',
             track,
             uri: track.uri,
           });
-
           store.dispatch(coreActions.loadItem(track.uri, { full: true }));
         }
         break;
+      }
 
       case 'MOPIDY_GET_NEXT_TRACK':
         request(store, 'tracklist.getNextTlid')
@@ -1539,10 +1541,11 @@ const MopidyMiddleware = (function () {
           .then(
             (_response) => {
               if (!_response) return;
+              const tracks = compact(indexToArray(_response).map(
+                (results) => (results.length ? formatTrack(results[0]) : null),
+              ));
 
-              const tracks = indexToArray(_response);
-
-              store.dispatch(coreActions.itemsLoaded(formatTracks(tracks)));
+              store.dispatch(coreActions.itemsLoaded(tracks));
 
               if (action.get_images) {
                 store.dispatch(mopidyActions.getImages(arrayOf('uri', tracks)));
@@ -1588,15 +1591,10 @@ const MopidyMiddleware = (function () {
           );
         break;
 
-
-      /**
-           * =============================================================== IMAGES ===============
-           * ======================================================================================
-           * */
-
-      case 'MOPIDY_GET_IMAGES':
+      case 'MOPIDY_GET_IMAGES': {
+        const { uris } = action;
         if (action.uris) {
-          request(store, 'library.getImages', { uris: action.uris })
+          request(store, 'library.getImages', { uris })
             .then((response) => {
               const itemsWithImages = [];
               Object.keys(response).forEach((uri) => {
@@ -1620,6 +1618,7 @@ const MopidyMiddleware = (function () {
 
         next(action);
         break;
+      }
 
 
       /**

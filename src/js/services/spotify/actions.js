@@ -1509,23 +1509,28 @@ export function addTracksToPlaylist(uri, tracks_uris) {
 
 export function deleteTracksFromPlaylist(uri, snapshot_id, tracks_indexes) {
   return (dispatch, getState) => {
-    request(dispatch, getState, `playlists/${getFromUri('playlistid', uri)}/tracks`, 'DELETE', { snapshot_id, positions: tracks_indexes })
-      .then(
-        (response) => {
-          dispatch({
-            type: 'PLAYLIST_TRACKS_REMOVED',
-            key: uri,
-            tracks_indexes,
-            snapshot_id: response.snapshot_id,
-          });
-        },
-        (error) => {
-          dispatch(coreActions.handleException(
-            'Could not remove tracks from playlist',
-            error,
-          ));
-        },
-      );
+    request(
+      dispatch,
+      getState,
+      `playlists/${getFromUri('playlistid', uri)}/tracks`,
+      'DELETE',
+      { snapshot_id, positions: tracks_indexes },
+    ).then(
+      (response) => {
+        dispatch({
+          type: 'PLAYLIST_TRACKS_REMOVED',
+          key: uri,
+          tracks_indexes,
+          snapshot_id: response.snapshot_id,
+        });
+      },
+      (error) => {
+        dispatch(coreActions.handleException(
+          'Could not remove tracks from playlist',
+          error,
+        ));
+      },
+    );
   };
 }
 

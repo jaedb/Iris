@@ -89,11 +89,11 @@ const SpotifyMiddleware = (function () {
         store.dispatch(spotifyActions.createPlaylist(action.name, action.description, action.is_private, action.is_collaborative));
         break;
 
-      case 'SPOTIFY_REMOVE_PLAYLIST_TRACKS':
-        var playlist = { ...store.getState().core.playlists[action.key] };
-        store.dispatch(spotifyActions.deleteTracksFromPlaylist(playlist.uri, playlist.snapshot_id, action.tracks_indexes));
+      case 'SPOTIFY_REMOVE_PLAYLIST_TRACKS': {
+        const { snapshot_id } = store.getState().core.items[action.key] || {};
+        store.dispatch(spotifyActions.deleteTracksFromPlaylist(action.key, snapshot_id, action.tracks_indexes));
         break;
-
+      }
 
       case 'SPOTIFY_ADD_PLAYLIST_TRACKS':
         store.dispatch(spotifyActions.addTracksToPlaylist(action.key, action.tracks_uris));

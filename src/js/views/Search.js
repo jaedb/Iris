@@ -96,7 +96,7 @@ class Search extends React.Component {
   }
 
   onSourceClose = () => {
-    this.search();
+    this.search(true);
   };
 
   digestUri = () => {
@@ -125,13 +125,17 @@ class Search extends React.Component {
     this.setState({ term: '' });
   }
 
-  search = () => {
+  search = (force = false) => {
     const {
       coreActions: {
         startSearch,
       },
       uiActions: {
         setWindowTitle,
+      },
+      search_results_query: {
+        type: existingType,
+        term: existingTerm,
       },
     } = this.props;
     const {
@@ -141,25 +145,9 @@ class Search extends React.Component {
 
     setWindowTitle(i18n('search.title_window', { term: decodeURIComponent(term) }));
 
-    /**
-     * TODO: Searches are being triggered when navigating to type subviews, despite already having
-     * results. This might be a consequence of having providers merging their results into one array
-     */
-
-    if (type && term) {
+    if ((type && term && (force || existingType !== type || existingTerm !== term))) {
       startSearch({ type, term });
-      /*
-      mopidyActions.getSearchResults(type, term);
-
-      if (uri_schemes_search_enabled.includes('spotify:')) {
-        spotifyActions.getSearchResults(type, term);
-      }*/
     }
-  }
-
-  loadMore = (type) => {
-    alert(`load more: ${type}`);
-    // this.props.spotifyActions.getURL(this.props['spotify_'+type+'_more'], 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_'+type.toUpperCase());
   }
 
   setSort = (value) => {
@@ -291,14 +279,41 @@ class Search extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
-  type: ownProps.match.params.type,
-  term: ownProps.match.params.term,
-  uri_schemes_search_enabled: state.ui.uri_schemes_search_enabled || [],
-  uri_schemes: state.mopidy.uri_schemes || [],
-  sort: state.ui.search_results_sort || 'followers.total',
-  sort_reverse: (!!state.ui.search_results_sort_reverse),
-});
+const mapStateToProps = (state, ownProps) => {
+  const {
+    match: {
+      params: {
+        type,
+        term,
+      },
+    },
+  } = ownProps;
+  const {
+    mopidy: {
+      uri_schemes = [],
+    },
+    ui: {
+      uri_schemes_search_enabled = [],
+      search_results_sort: sort = 'followers.total',
+      search_results_sort_reverse,
+    },
+    core: {
+      search_results: {
+        query: search_results_query = {},
+      } = {},
+    },
+  } = state;
+
+  return {
+    type,
+    term,
+    uri_schemes,
+    uri_schemes_search_enabled,
+    sort,
+    sort_reverse: !!search_results_sort_reverse,
+    search_results_query,
+  };
+};
 
 const mapDispatchToProps = (dispatch) => ({
   coreActions: bindActionCreators(coreActions, dispatch),
