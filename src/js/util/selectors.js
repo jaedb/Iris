@@ -8,6 +8,7 @@ const getLoadQueue = (state) => state.ui.load_queue;
 const getLibrary = (state, uri) => state.core.libraries[uri];
 const getLibraries = (state) => state.core.libraries;
 const getSearchResults = (state) => state.core.search_results;
+const getGridGlowEnabled = (state) => state.ui.grid_glow_enabled;
 
 const makeItemSelector = (uri) => createSelector(
   [getItems],
@@ -54,6 +55,7 @@ const makeSearchResultsSelector = (term, type) => createSelector(
 export {
   getItem,
   getLibrary,
+  getGridGlowEnabled,
   makeItemSelector,
   makeLibrarySelector,
   makeLoadingSelector,

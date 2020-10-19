@@ -125,7 +125,10 @@ const CoreMiddleware = (function () {
   return (store) => (next) => (action = {}) => {
     const {
       core,
-      ui,
+      ui: {
+        allow_reporting,
+        log_actions,
+      },
       mopidy,
       spotify,
     } = store.getState();
@@ -135,6 +138,16 @@ const CoreMiddleware = (function () {
     // Attach store to window variable. This enables debug tools to directly call on
     // store.getState()
     window._store = store;
+
+    if (log_actions) {
+      const ignored_actions = [
+        'START_LOADING',
+        'STOP_LOADING',
+      ];
+      if (!ignored_actions.includes(action.type)) {
+        console.log(action);
+      }
+    }
 
     switch (action.type) {
       case 'HANDLE_EXCEPTION':
@@ -185,7 +198,7 @@ const CoreMiddleware = (function () {
         };
 
         // Log with Analytics
-        if (ui.allow_reporting) {
+        if (allow_reporting) {
           ReactGA.event({
             category: 'Error',
             action: message,
@@ -210,49 +223,49 @@ const CoreMiddleware = (function () {
         break;
 
       case 'PLAY_PLAYLIST':
-        if (ui.allow_reporting) {
+        if (allow_reporting) {
           ReactGA.event({ category: 'Playlist', action: 'Play', label: action.uri });
         }
         next(action);
         break;
 
       case 'SAVE_PLAYLIST':
-        if (ui.allow_reporting) {
+        if (allow_reporting) {
           ReactGA.event({ category: 'Playlist', action: 'Save', label: action.key });
         }
         next(action);
         break;
 
       case 'CREATE_PLAYLIST':
-        if (ui.allow_reporting) {
+        if (allow_reporting) {
           ReactGA.event({ category: 'Playlist', action: 'Create', label: +action.name });
         }
         next(action);
         break;
 
       case 'REORDER_PLAYLIST_TRACKS':
-        if (ui.allow_reporting) {
+        if (allow_reporting) {
           ReactGA.event({ category: 'Playlist', action: 'Reorder tracks', label: action.key });
         }
         next(action);
         break;
 
       case 'ADD_PLAYLIST_TRACKS':
-        if (ui.allow_reporting) {
+        if (allow_reporting) {
           ReactGA.event({ category: 'Playlist', action: 'Add tracks', label: action.playlist_uri });
         }
         next(action);
         break;
 
       case 'REMOVE_PLAYLIST_TRACKS':
-        if (ui.allow_reporting) {
+        if (allow_reporting) {
           ReactGA.event({ category: 'Playlist', action: 'Remove tracks', label: action.playlist_uri });
         }
         next(action);
         break;
 
       case 'DELETE_PLAYLIST':
-        if (ui.allow_reporting) {
+        if (allow_reporting) {
           ReactGA.event({ category: 'Playlist', action: 'Delete', label: action.uri });
         }
         next(action);

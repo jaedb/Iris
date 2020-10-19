@@ -38,7 +38,7 @@ class DebugInfo extends React.Component {
   }
 
   renderLoadQueue = () => {
-    const { ui: { load_queue } } = this.props;
+    const { load_queue } = this.props;
     if (!load_queue) return <div className="debug-info-item mid_grey-text">Nothing loading</div>;
 
     const queue = indexToArray(load_queue);
@@ -56,19 +56,13 @@ class DebugInfo extends React.Component {
   render = () => {
     const localStorageUsage = this.localStorageSize();
     const {
-      core: {
-        items = {},
-      },
-      ui: {
-        notifications = {},
-        processes = {},
-        slim_mode,
-        test_mode,
-        selected_tracks = [],
-      },
-      mopidy: {
-        enqueue_uris_batches = [],
-      },
+      items = {},
+      notifications = {},
+      processes = {},
+      slim_mode,
+      test_mode,
+      selected_tracks = [],
+      enqueue_uris_batches = [],
     } = this.props;
 
     return (
@@ -144,11 +138,35 @@ class DebugInfo extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  core: state.core,
-  ui: state.ui,
-  mopidy: state.mopidy,
-});
+const mapStateToProps = (state) => {
+  const {
+    core: {
+      items,
+    },
+    ui: {
+      notifications,
+      processes,
+      slim_mode,
+      test_mode,
+      selected_tracks,
+      load_queue,
+    },
+    mopidy: {
+      enqueue_uris_batches,
+    },
+  } = state;
+
+  return {
+    items,
+    notifications,
+    processes,
+    slim_mode,
+    test_mode,
+    selected_tracks,
+    enqueue_uris_batches,
+    load_queue,
+  };
+};
 
 const mapDispatchToProps = (dispatch) => ({
   uiActions: bindActionCreators(uiActions, dispatch),

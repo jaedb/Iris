@@ -1,5 +1,5 @@
-
 import React from 'react';
+import { connect } from 'react-redux';
 import {
   uriType,
   scrollTo,
@@ -11,7 +11,7 @@ import Thumbnail from './Thumbnail';
 import LinksSentence from './LinksSentence';
 import { I18n } from '../locale';
 
-export default class GridItem extends React.Component {
+class GridItem extends React.Component {
   componentDidMount() {
     const {
       mopidyActions,
@@ -99,7 +99,9 @@ export default class GridItem extends React.Component {
       link: customLink,
       type,
       show_source_icon,
+      grid_glow_enabled,
     } = this.props;
+
     let { item } = this.props;
 
     if (!item) return null;
@@ -115,7 +117,7 @@ export default class GridItem extends React.Component {
         onContextMenu={this.onContextMenu}
       >
         <Thumbnail
-          glow
+          glow={grid_glow_enabled}
           size="medium"
           className="grid__item__thumbnail"
           images={item.images || item.icons}
@@ -134,3 +136,17 @@ export default class GridItem extends React.Component {
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  const {
+    ui: {
+      grid_glow_enabled,
+    },
+  } = state;
+
+  return {
+    grid_glow_enabled,
+  };
+};
+
+export default connect(mapStateToProps)(GridItem);

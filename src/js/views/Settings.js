@@ -372,6 +372,20 @@ class Settings extends React.Component {
                   <I18n path="settings.interface.behavior.wide_scrollbars" />
                 </span>
               </label>
+              <label>
+                <input
+                  type="checkbox"
+                  name="grid_glow_enabled"
+                  checked={ui.grid_glow_enabled}
+                  onChange={() => uiActions.set({ grid_glow_enabled: !ui.grid_glow_enabled })}
+                />
+                <span className="label tooltip">
+                  <I18n path="settings.interface.behavior.grid_glow" />
+                  <span className="tooltip__content">
+                    <I18n path="settings.interface.behavior.grid_glow_tooltip" />
+                  </span>
+                </span>
+              </label>
             </div>
           </div>
 

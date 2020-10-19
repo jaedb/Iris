@@ -11,12 +11,8 @@ import LazyLoadListener from '../../components/LazyLoadListener';
 import Icon from '../../components/Icon';
 import * as uiActions from '../../services/ui/actions';
 import * as coreActions from '../../services/core/actions';
-import {
-  uriSource, isLoading,
-} from '../../util/helpers';
 import { sortItems, applyFilter } from '../../util/arrays';
 import { I18n, i18n } from '../../locale';
-import { collate, collateLibrary } from '../../util/format';
 import Button from '../../components/Button';
 import Loader from '../../components/Loader';
 import {
@@ -53,7 +49,6 @@ class LibraryArtists extends React.Component {
     setWindowTitle(i18n('library.artists.title'));
 
     this.getMopidyLibrary();
-    this.getGoogleLibrary();
     this.getSpotifyLibrary();
   }
 

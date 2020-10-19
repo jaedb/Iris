@@ -5,8 +5,10 @@ import {
   formatArtists,
   formatTracks,
 } from '../../util/format';
+import { i18n } from '../../locale';
 const coreActions = require('../core/actions');
 const mopidyActions = require('../mopidy/actions');
+const uiActions = require('../ui/actions');
 
 const GoogleMiddleware = (function () {
   // A Google request is an alias of the Mopidy request
@@ -70,15 +72,61 @@ const GoogleMiddleware = (function () {
       }
 
       case 'GOOGLE_GET_LIBRARY_ARTISTS': {
+        store.dispatch(uiActions.updateProcess(
+          'GOOGLE_GET_LIBRARY_ARTISTS',
+          i18n(
+            'common.loading_library',
+            {
+              provider: i18n('services.google.title'),
+              type: i18n('artist.title'),
+            },
+          ),
+        ));
+
         request(
           store,
           'library.browse',
           { uri: 'gmusic:artist' },
           (browseResponse) => {
+            store.dispatch(uiActions.updateProcess(
+              'GOOGLE_GET_LIBRARY_ARTISTS',
+              i18n(
+                'common.loading_library',
+                {
+                  provider: i18n('services.google.title'),
+                  type: i18n('artist.title'),
+                },
+              ),
+              {
+                remaining: browseResponse.length,
+                total: browseResponse.length,
+              },
+            ));
+
             const allUris = arrayOf('uri', browseResponse);
             const run = () => {
-              if (allUris.length) {
-                const uris = allUris.splice(0, 5);
+              const uris = allUris.splice(0, 5);
+              const processor = store.getState().ui.processes.GOOGLE_GET_LIBRARY_ARTISTS;
+  
+              if (processor && processor.status === 'cancelling') {
+                store.dispatch(uiActions.processCancelled('GOOGLE_GET_LIBRARY_ARTISTS'));
+                return;
+              }
+              store.dispatch(uiActions.updateProcess(
+                'GOOGLE_GET_LIBRARY_ARTISTS',
+                i18n(
+                  'common.loading_library',
+                  {
+                    provider: i18n('services.google.title'),
+                    type: i18n('artist.title'),
+                  },
+                ),
+                {
+                  remaining: allUris.length,
+                },
+              ));
+
+              if (uris.length) {
                 request(
                   store,
                   'library.lookup',
@@ -102,6 +150,7 @@ const GoogleMiddleware = (function () {
                   },
                 );
               } else {
+                store.dispatch(uiActions.processFinished('GOOGLE_GET_LIBRARY_ARTISTS'));
                 store.dispatch(coreActions.libraryLoaded({
                   uri: 'google:library:artists',
                   items_uris: arrayOf('uri', allUris),

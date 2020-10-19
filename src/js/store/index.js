@@ -61,6 +61,7 @@ let state = {
     notifications: {},
     processes: {},
     suppressed_broadcasts: [],
+    grid_glow_enabled: true,
   },
   mopidy: {
     connected: false,
