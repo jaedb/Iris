@@ -135,67 +135,56 @@ export default function reducer(ui = {}, action) {
       };
 
     case 'START_PROCESS':
-    case 'UPDATE_PROCESS':
-      var processes = { ...(ui.processes || []) };
-      var last_run = processes[action.key];
-      var status = 'running';
-      if (last_run) {
-        var data = { ...last_run.data, ...action.data };
-        if (action.type === 'UPDATE_PROCESS') status = last_run.status;
-      } else {
-        var { data } = action;
-      }
+    case 'UPDATE_PROCESS': {
+      const processes = { ...(ui.processes || []) };
       processes[action.key] = {
         key: action.key,
-        content: action.content,
-        description: action.description,
-        level: action.level,
-        status,
-        data,
+        ...processes[action.key] || { notification: true },
+        ...(action.type === 'START_PROCESS' ? { status: 'running', remaining: 0, total: 0 } : {}),
+        ...action.process,
       };
       return { ...ui, processes };
+    }
 
-    case 'RESUME_PROCESS':
-      var processes = { ...(ui.processes ? ui.processes : {}) };
-      if (processes[action.key]) {
-        processes[action.key] = { ...processes[action.key], status: 'running' };
-      }
-      return { ...ui, processes };
-
-    case 'CANCEL_PROCESS':
-      var processes = { ...(ui.processes ? ui.processes : {}) };
+    case 'CANCEL_PROCESS': {
+      const processes = { ...(ui.processes ? ui.processes : {}) };
       if (processes[action.key]) {
         processes[action.key] = { ...processes[action.key], status: 'cancelling' };
       }
       return { ...ui, processes };
+    }
 
-    case 'PROCESS_CANCELLED':
+    case 'PROCESS_CANCELLED': {
       var processes = { ...(ui.processes ? ui.processes : {}) };
       if (processes[action.key]) {
         processes[action.key] = { ...processes[action.key], status: 'cancelled' };
       }
       return { ...ui, processes };
+    }
 
-    case 'PROCESS_FINISHED':
+    case 'PROCESS_FINISHED': {
       var processes = { ...(ui.processes ? ui.processes : {}) };
       if (processes[action.key]) {
         processes[action.key] = { ...processes[action.key], status: 'finished' };
       }
       return { ...ui, processes };
+    }
 
-    case 'CLOSE_PROCESS':
+    case 'CLOSE_PROCESS': {
       var processes = { ...(ui.processes ? ui.processes : {}) };
       if (processes[action.key]) {
         processes[action.key] = { ...processes[action.key], closing: true };
       }
       return { ...ui, processes };
+    }
 
-    case 'REMOVE_PROCESS':
+    case 'REMOVE_PROCESS': {
       var processes = { ...(ui.processes ? ui.processes : {}) };
       if (processes[action.key]) {
         processes[action.key] = { ...processes[action.key], status: 'completed', closing: false };
       }
       return { ...ui, processes };
+    }
 
     case 'SUPPRESS_BROADCAST':
       return { ...ui, suppressed_broadcasts: [...(ui.suppressed_broadcasts || []), action.key] };

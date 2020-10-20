@@ -5,6 +5,7 @@ import { isLoading } from './helpers';
 const getItem = (state, uri) => state.core.items[uri];
 const getItems = (state) => state.core.items;
 const getLoadQueue = (state) => state.ui.load_queue;
+const getProcesses = (state) => state.ui.processes;
 const getLibrary = (state, uri) => state.core.libraries[uri];
 const getLibraries = (state) => state.core.libraries;
 const getSearchResults = (state) => state.core.search_results;
@@ -52,6 +53,21 @@ const makeSearchResultsSelector = (term, type) => createSelector(
   },
 );
 
+const makeProcessProgressSelector = (keys) => createSelector(
+  [getProcesses],
+  (processes) => {
+    const selectedProcesses = keys.map((key) => processes[key] || {});
+    let total = 0;
+    let remaining = 0;
+    selectedProcesses.forEach((process) => {
+      if (process.total) total += process.total;
+      if (process.remaining) remaining += process.remaining;
+    });
+    console.log({ total, remaining })
+    return total && remaining ? ((total - remaining) / total).toFixed(4) : 0;
+  },
+);
+
 export {
   getItem,
   getLibrary,
@@ -60,5 +76,6 @@ export {
   makeLibrarySelector,
   makeLoadingSelector,
   makeSearchResultsSelector,
+  makeProcessProgressSelector,
   queueHistorySelector,
 };

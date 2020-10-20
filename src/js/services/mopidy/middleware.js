@@ -1724,6 +1724,14 @@ const MopidyMiddleware = (function () {
        * My Music libraries
        */
       case 'MOPIDY_GET_LIBRARY_ARTISTS':
+        store.dispatch(
+          uiActions.startProcess(
+            'MOPIDY_GET_LIBRARY_ARTISTS',
+            {
+              notification: false,
+            },
+          ),
+        );
         request(store, 'library.browse', { uri: store.getState().mopidy.library_artists_uri })
           .then((raw_response) => {
             if (raw_response.length <= 0) return;
@@ -1740,10 +1748,20 @@ const MopidyMiddleware = (function () {
               uri: 'mopidy:library:artists',
               items_uris: arrayOf('uri', response),
             }));
+            store.dispatch(uiActions.processFinished('MOPIDY_GET_LIBRARY_ARTISTS'));
           });
         break;
 
       case 'MOPIDY_GET_LIBRARY_PLAYLISTS': {
+        store.dispatch(
+          uiActions.startProcess(
+            'MOPIDY_GET_LIBRARY_PLAYLISTS',
+            {
+              notification: false,
+            },
+          ),
+        );
+
         request(store, 'playlists.asList')
           .then((listResponse) => {
 
@@ -1752,6 +1770,16 @@ const MopidyMiddleware = (function () {
               (playlistUri) => uriSource(playlistUri) !== 'spotify',
             );
             const libraryPlaylists = [];
+
+            store.dispatch(
+              uiActions.updateProcess(
+                'MOPIDY_GET_LIBRARY_PLAYLISTS',
+                {
+                  total: playlist_uris.length,
+                  remaining: playlist_uris.length,
+                },
+              ),
+            );
 
             if (playlist_uris.length) {
               playlist_uris.forEach((uri, index) => {
@@ -1769,26 +1797,57 @@ const MopidyMiddleware = (function () {
                       }),
                     );
 
+                    store.dispatch(
+                      uiActions.updateProcess(
+                        'MOPIDY_GET_LIBRARY_PLAYLISTS',
+                        {
+                          remaining: playlist_uris.length - index - 1,
+                        },
+                      ),
+                    );
+
                     if (index === playlist_uris.length - 1) {
                       store.dispatch(coreActions.itemsLoaded(libraryPlaylists));
                       store.dispatch(coreActions.libraryLoaded({
                         uri: 'mopidy:library:playlists',
                         items_uris: arrayOf('uri', libraryPlaylists),
                       }));
+                      store.dispatch(uiActions.processFinished('MOPIDY_GET_LIBRARY_PLAYLISTS'));
                     }
                   });
               });
             } else {
               store.dispatch(uiActions.stopLoading('mopidy:library:playlists'));
+              store.dispatch(uiActions.processFinished('MOPIDY_GET_LIBRARY_PLAYLISTS'));
             }
           });
         break;
       }
 
       case 'MOPIDY_GET_LIBRARY_ALBUMS':
+        store.dispatch(
+          uiActions.startProcess(
+            'MOPIDY_GET_LIBRARY_ALBUMS',
+            {
+              notification: false,
+            },
+          ),
+        );
+
         request(store, 'library.browse', { uri: store.getState().mopidy.library_albums_uri })
           .then((response) => {
             const uris = arrayOf('uri', response);
+
+            store.dispatch(
+              uiActions.updateProcess(
+                'MOPIDY_GET_LIBRARY_ALBUMS',
+                {
+                  total: uris.length,
+                  remaining: uris.length,
+                },
+              ),
+            );
+
             request(store, 'library.lookup', { uris })
               .then((response) => {
                 const libraryAlbums = indexToArray(response).map((tracks) => ({
@@ -1798,11 +1857,14 @@ const MopidyMiddleware = (function () {
                   ...formatAlbum(tracks[0].album),
                 }));
 
+                console.log('LOADED', response);
+
                 store.dispatch(coreActions.itemsLoaded(libraryAlbums));
                 store.dispatch(coreActions.libraryLoaded({
                   uri: 'mopidy:library:albums',
                   items_uris: arrayOf('uri', libraryAlbums),
                 }));
+                store.dispatch(uiActions.processFinished('MOPIDY_GET_LIBRARY_ALBUMS'));
               });
           });
         break;

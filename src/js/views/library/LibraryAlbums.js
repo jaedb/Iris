@@ -21,6 +21,7 @@ import Loader from '../../components/Loader';
 import {
   makeLibrarySelector,
   makeLoadingSelector,
+  makeProcessProgressSelector,
 } from '../../util/selectors';
 
 class LibraryAlbums extends React.Component {
@@ -175,6 +176,7 @@ class LibraryAlbums extends React.Component {
       sort_reverse,
       view,
       loading,
+      loading_progress,
     } = this.props;
     const {
       limit,
@@ -183,7 +185,8 @@ class LibraryAlbums extends React.Component {
     let { albums } = this.props;
 
     if (loading) {
-      return <Loader body loading />;
+      console.log(loading_progress);
+      return <Loader body loading progress={loading_progress} />
     }
 
     if (sort) {
@@ -376,9 +379,15 @@ const mapStateToProps = (state) => {
   if (source === 'all' || source === 'spotify') libraryUris.push('spotify:library:albums');
   if (source === 'all' || source === 'google') libraryUris.push('google:library:albums');
   const librarySelector = makeLibrarySelector(libraryUris);
+  const processProgressSelector = makeProcessProgressSelector([
+    'MOPIDY_GET_LIBRARY_ALBUMS',
+    'SPOTIFY_GET_LIBRARY_ALBUMS',
+    'GOOGLE_GET_LIBRARY_ALBUMS',
+  ]);
 
   return {
     loading: loadingSelector(state),
+    loading_progress: processProgressSelector(state),
     mopidy_uri_schemes: state.mopidy.uri_schemes,
     albums: librarySelector(state),
     google_available: (state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('gmusic:')),

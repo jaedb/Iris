@@ -182,25 +182,6 @@ const UIMiddleware = (function () {
         next(action);
         break;
 
-      case 'START_PROCESS':
-        store.dispatch({
-          type: action.key,
-          data: action.data,
-        });
-        store.dispatch({
-          type: `${action.key}_STARTED`,
-        });
-        next(action);
-        break;
-
-      case 'RESUME_PROCESS':
-        store.dispatch({
-          type: action.key,
-          data: store.getState().ui.processes[action.key].data,
-        });
-        next(action);
-        break;
-
       case 'PROCESS_CANCELLED':
         store.dispatch({
           type: `${action.key}_CANCELLED`,

@@ -275,31 +275,19 @@ export function stopLoading(keys) {
   };
 }
 
-export function startProcess(key, content, data = {}, description = null) {
+export function startProcess(key, process) {
   return {
     type: 'START_PROCESS',
     key,
-    data,
-    content,
-    description,
+    process,
   };
 }
 
-export function resumeProcess(key) {
-  return {
-    type: 'RESUME_PROCESS',
-    key,
-  };
-}
-
-export function updateProcess(key, content, data = {}, description = null, level = 'info') {
+export function updateProcess(key, process) {
   return {
     type: 'UPDATE_PROCESS',
     key,
-    content,
-    data,
-    description,
-    level,
+    process,
   };
 }
 

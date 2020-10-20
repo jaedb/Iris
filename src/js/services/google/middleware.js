@@ -26,15 +26,37 @@ const GoogleMiddleware = (function () {
   return (store) => (next) => (action) => {
     switch (action.type) {
       case 'GOOGLE_GET_LIBRARY_ALBUMS': {
+        store.dispatch(
+          uiActions.updateProcess(action.type, { notification: false }),
+        );
+
         request(
           store,
           'library.browse',
           { uri: 'gmusic:album' },
           (browseResponse) => {
             const allUris = arrayOf('uri', browseResponse);
+
+            store.dispatch(uiActions.updateProcess(
+              'GOOGLE_GET_LIBRARY_ALBUMS',
+              {
+                remaining: allUris.length,
+                total: allUris.length,
+              },
+            ));
+
             const run = () => {
               if (allUris.length) {
                 const uris = allUris.splice(0, 5);
+                const processor = store.getState().ui.processes[action.type];
+
+                if (processor && processor.status === 'cancelling') {
+                  store.dispatch(uiActions.processCancelled(action.type));
+                  store.dispatch(uiActions.stopLoading('google:library:artists'));
+                  return;
+                }
+                store.dispatch(uiActions.updateProcess(action.type, { remaining: allUris.length }));
+
                 request(
                   store,
                   'library.lookup',
@@ -58,6 +80,7 @@ const GoogleMiddleware = (function () {
                   },
                 );
               } else {
+                store.dispatch(uiActions.processFinished(action.type));
                 store.dispatch(coreActions.libraryLoaded({
                   uri: 'google:library:albums',
                   items_uris: arrayOf('uri', allUris),
@@ -72,16 +95,7 @@ const GoogleMiddleware = (function () {
       }
 
       case 'GOOGLE_GET_LIBRARY_ARTISTS': {
-        store.dispatch(uiActions.updateProcess(
-          'GOOGLE_GET_LIBRARY_ARTISTS',
-          i18n(
-            'common.loading_library',
-            {
-              provider: i18n('services.google.title'),
-              type: i18n('artist.title'),
-            },
-          ),
-        ));
+        store.dispatch(uiActions.updateProcess(action.type, { notification: false }));
 
         request(
           store,
@@ -89,14 +103,7 @@ const GoogleMiddleware = (function () {
           { uri: 'gmusic:artist' },
           (browseResponse) => {
             store.dispatch(uiActions.updateProcess(
-              'GOOGLE_GET_LIBRARY_ARTISTS',
-              i18n(
-                'common.loading_library',
-                {
-                  provider: i18n('services.google.title'),
-                  type: i18n('artist.title'),
-                },
-              ),
+              action.type,
               {
                 remaining: browseResponse.length,
                 total: browseResponse.length,
@@ -106,25 +113,14 @@ const GoogleMiddleware = (function () {
             const allUris = arrayOf('uri', browseResponse);
             const run = () => {
               const uris = allUris.splice(0, 5);
-              const processor = store.getState().ui.processes.GOOGLE_GET_LIBRARY_ARTISTS;
-  
+              const processor = store.getState().ui.processes[action.type];
+
               if (processor && processor.status === 'cancelling') {
-                store.dispatch(uiActions.processCancelled('GOOGLE_GET_LIBRARY_ARTISTS'));
+                store.dispatch(uiActions.processCancelled(action.type));
+                store.dispatch(uiActions.stopLoading('google:library:artists'));
                 return;
               }
-              store.dispatch(uiActions.updateProcess(
-                'GOOGLE_GET_LIBRARY_ARTISTS',
-                i18n(
-                  'common.loading_library',
-                  {
-                    provider: i18n('services.google.title'),
-                    type: i18n('artist.title'),
-                  },
-                ),
-                {
-                  remaining: allUris.length,
-                },
-              ));
+              store.dispatch(uiActions.updateProcess(action.type, { remaining: allUris.length }));
 
               if (uris.length) {
                 request(
@@ -150,7 +146,7 @@ const GoogleMiddleware = (function () {
                   },
                 );
               } else {
-                store.dispatch(uiActions.processFinished('GOOGLE_GET_LIBRARY_ARTISTS'));
+                store.dispatch(uiActions.processFinished(action.type));
                 store.dispatch(coreActions.libraryLoaded({
                   uri: 'google:library:artists',
                   items_uris: arrayOf('uri', allUris),
