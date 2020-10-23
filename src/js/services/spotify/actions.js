@@ -342,7 +342,7 @@ export function getTrack(uri) {
       );
   };
 }
-
+/*
 export function getLibraryTracks() {
   return (dispatch, getState) => {
     request(dispatch, getState, 'me/tracks?limit=50')
@@ -362,6 +362,7 @@ export function getLibraryTracks() {
       );
   };
 }
+*/
 
 export function getFeaturedPlaylists(forceRefetch = false) {
   return (dispatch, getState) => {
@@ -564,8 +565,9 @@ export function getMore(url, core_action = null, custom_action = null, extra_dat
 }
 
 export function getSearchResults({ type, term }, limit = 50, offset = 0) {
+  const processKey = 'SPOTIFY_GET_SEARCH_RESULTS';
   return (dispatch, getState) => {
-    dispatch(uiActions.startProcess('SPOTIFY_GET_SEARCH_RESULTS_PROCESSOR', 'Searching Spotify'));
+    dispatch(uiActions.startProcess(processKey, 'Searching Spotify'));
 
     let typeString = type.replace(/s+$/, '');
     if (typeString === 'all') {
@@ -617,7 +619,7 @@ export function getSearchResults({ type, term }, limit = 50, offset = 0) {
             ));
           }
 
-          dispatch(uiActions.processFinished('SPOTIFY_GET_SEARCH_RESULTS_PROCESSOR'));
+          dispatch(uiActions.processFinished(processKey));
         },
         (error) => {
           dispatch(coreActions.handleException(
@@ -1320,7 +1322,7 @@ export function savePlaylist(uri, name, description, is_public, is_collaborative
   };
 }
 
-export function getPlaylist(uri, { full, forceRefetch, callbackAction }) {
+export function getPlaylist(uri, { full, forceRefetch, callbackAction } = {}) {
   return (dispatch, getState) => {
     let endpoint = `playlists/${getFromUri('playlistid', uri)}`;
     endpoint += `?market=${getState().spotify.country}`;
@@ -1566,24 +1568,18 @@ export function reorderPlaylistTracks(uri, range_start, range_length, insert_bef
  * ======================================================================================
  * */
 
-export function flushLibrary() {
-  return {
-    type: 'SPOTIFY_FLUSH_LIBRARY',
-  };
-}
-
 export function getLibraryPlaylists(forceRefetch) {
   return (dispatch, getState) => {
     const processKey = 'SPOTIFY_GET_LIBRARY_PLAYLISTS';
-    dispatch(uiActions.updateProcess(processKey, { notification: false }));
+    dispatch(uiActions.startProcess(processKey, { notification: false }));
 
     let libraryItems = [];
-    const fetchLibraryPlaylists = (endpoint) => request(dispatch, getState, endpoint)
+    const fetch = (endpoint) => request(dispatch, getState, endpoint)
       .then((response) => {
         const processor = getState().ui.processes[processKey];
         if (processor && processor.status === 'cancelling') {
+          dispatch(uiActions.stopLoading('spotify:library:playlists'));
           dispatch(uiActions.processCancelled(processKey));
-          dispatch(uiActions.stopLoading('spotify:library:albums'));
           return;
         }
 
@@ -1601,7 +1597,7 @@ export function getLibraryPlaylists(forceRefetch) {
         );
         libraryItems = [...libraryItems, ...items];
         if (response.next) {
-          fetchLibraryPlaylists(`${response.next}${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
+          fetch(`${response.next}${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
         } else {
           dispatch(uiActions.processFinished(processKey));
           dispatch(coreActions.itemsLoaded(libraryItems));
@@ -1612,17 +1608,17 @@ export function getLibraryPlaylists(forceRefetch) {
         }
       });
 
-    fetchLibraryPlaylists(`me/playlists?limit=50${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
+      fetch(`me/playlists?limit=50${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
   };
 }
 
 export function getLibraryAlbums(forceRefetch) {
   return (dispatch, getState) => {
     const processKey = 'SPOTIFY_GET_LIBRARY_ALBUMS';
-    dispatch(uiActions.updateProcess(processKey, { notification: false }));
+    dispatch(uiActions.startProcess(processKey, { notification: false }));
 
     let libraryItems = [];
-    const fetchLibraryAlbums = (endpoint) => request(dispatch, getState, endpoint)
+    const fetch = (endpoint) => request(dispatch, getState, endpoint)
       .then((response) => {
         const processor = getState().ui.processes[processKey];
         if (processor && processor.status === 'cancelling') {
@@ -1645,7 +1641,7 @@ export function getLibraryAlbums(forceRefetch) {
         libraryItems = [...libraryItems, ...items];
 
         if (response.next) {
-          fetchLibraryAlbums(`${response.next}${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
+          fetch(`${response.next}${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
         } else {
           dispatch(uiActions.processFinished(processKey));
           dispatch(coreActions.itemsLoaded(libraryItems));
@@ -1656,17 +1652,17 @@ export function getLibraryAlbums(forceRefetch) {
         }
       });
 
-    fetchLibraryAlbums(`me/albums?limit=50${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
+    fetch(`me/albums?limit=50${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
   };
 }
 
 export function getLibraryArtists(forceRefetch) {
   return (dispatch, getState) => {
     const processKey = 'SPOTIFY_GET_LIBRARY_ARTISTS';
-    dispatch(uiActions.updateProcess(processKey, { notification: false }));
+    dispatch(uiActions.startProcess(processKey, { notification: false }));
 
     let libraryItems = [];
-    const fetchLibraryArtists = (endpoint) => request(dispatch, getState, endpoint)
+    const fetch = (endpoint) => request(dispatch, getState, endpoint)
       .then((response) => {
         const processor = getState().ui.processes[processKey];
         if (processor && processor.status === 'cancelling') {
@@ -1677,7 +1673,10 @@ export function getLibraryArtists(forceRefetch) {
 
         dispatch(uiActions.updateProcess(
           processKey,
-          { total: response.artists.total, remaining: response.artists.total - libraryItems.length },
+          {
+            total: response.artists.total,
+            remaining: response.artists.total - libraryItems.length,
+          },
         ));
 
         const items = response.artists.items.map(
@@ -1688,7 +1687,7 @@ export function getLibraryArtists(forceRefetch) {
         );
         libraryItems = [...libraryItems, ...items];
         if (response.next) {
-          fetchLibraryArtists(`${response.next}${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
+          fetch(`${response.next}${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
         } else {
           dispatch(uiActions.processFinished(processKey));
           dispatch(coreActions.itemsLoaded(libraryItems));
@@ -1699,6 +1698,49 @@ export function getLibraryArtists(forceRefetch) {
         }
       });
 
-    fetchLibraryArtists(`me/following?type=artist&limit=50${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
+    fetch(`me/following?type=artist&limit=50${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
+  };
+}
+
+export function getLibraryTracks(forceRefetch) {
+  return (dispatch, getState) => {
+    const processKey = 'SPOTIFY_GET_LIBRARY_TRACKS';
+    dispatch(uiActions.startProcess(processKey, { notification: false }));
+
+    let libraryItems = [];
+    const fetch = (endpoint) => request(dispatch, getState, endpoint)
+      .then((response) => {
+        const processor = getState().ui.processes[processKey];
+        if (processor && processor.status === 'cancelling') {
+          dispatch(uiActions.processCancelled(processKey));
+          dispatch(uiActions.stopLoading('spotify:library:tracks'));
+          return;
+        }
+
+        dispatch(uiActions.updateProcess(
+          processKey,
+          { total: response.total, remaining: response.total - libraryItems.length },
+        ));
+
+        const items = response.items.map(
+          (item) => ({
+            ...formatTrack(item),
+            in_library: true,
+          }),
+        );
+        libraryItems = [...libraryItems, ...items];
+        if (response.next) {
+          fetch(`${response.next}${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
+        } else {
+          dispatch(uiActions.processFinished(processKey));
+          dispatch(coreActions.itemsLoaded(libraryItems));
+          dispatch(coreActions.libraryLoaded({
+            uri: 'spotify:library:tracks',
+            items_uris: arrayOf('uri', libraryItems),
+          }));
+        }
+      });
+
+    fetch(`me/tracks?limit=50${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
   };
 }

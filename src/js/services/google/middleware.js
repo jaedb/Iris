@@ -26,9 +26,7 @@ const GoogleMiddleware = (function () {
   return (store) => (next) => (action) => {
     switch (action.type) {
       case 'GOOGLE_GET_LIBRARY_ALBUMS': {
-        store.dispatch(
-          uiActions.updateProcess(action.type, { notification: false }),
-        );
+        store.dispatch(uiActions.startProcess(action.type, { notification: false }) );
 
         request(
           store,
@@ -38,7 +36,7 @@ const GoogleMiddleware = (function () {
             const allUris = arrayOf('uri', browseResponse);
 
             store.dispatch(uiActions.updateProcess(
-              'GOOGLE_GET_LIBRARY_ALBUMS',
+              action.type,
               {
                 remaining: allUris.length,
                 total: allUris.length,
@@ -83,7 +81,7 @@ const GoogleMiddleware = (function () {
                 store.dispatch(uiActions.processFinished(action.type));
                 store.dispatch(coreActions.libraryLoaded({
                   uri: 'google:library:albums',
-                  items_uris: arrayOf('uri', allUris),
+                  items_uris: arrayOf('uri', browseResponse),
                 }));
               }
             };
@@ -95,7 +93,7 @@ const GoogleMiddleware = (function () {
       }
 
       case 'GOOGLE_GET_LIBRARY_ARTISTS': {
-        store.dispatch(uiActions.updateProcess(action.type, { notification: false }));
+        store.dispatch(uiActions.startProcess(action.type, { notification: false }));
 
         request(
           store,
@@ -149,7 +147,7 @@ const GoogleMiddleware = (function () {
                 store.dispatch(uiActions.processFinished(action.type));
                 store.dispatch(coreActions.libraryLoaded({
                   uri: 'google:library:artists',
-                  items_uris: arrayOf('uri', allUris),
+                  items_uris: arrayOf('uri', browseResponse),
                 }));
               }
             };

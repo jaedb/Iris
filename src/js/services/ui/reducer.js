@@ -148,9 +148,16 @@ export default function reducer(ui = {}, action) {
 
     case 'CANCEL_PROCESS': {
       const processes = { ...(ui.processes ? ui.processes : {}) };
-      if (processes[action.key]) {
-        processes[action.key] = { ...processes[action.key], status: 'cancelling' };
-      }
+      action.keys.forEach((key) => {
+        if (processes[key]) {
+          processes[key] = {
+            ...processes[key],
+            status: 'cancelling',
+            total: undefined,
+            remaining: undefined,
+          };
+        }
+      });
       return { ...ui, processes };
     }
 

@@ -56,15 +56,17 @@ const makeSearchResultsSelector = (term, type) => createSelector(
 const makeProcessProgressSelector = (keys) => createSelector(
   [getProcesses],
   (processes) => {
-    const selectedProcesses = keys.map((key) => processes[key] || {});
+    const selectedProcesses = keys
+      .map((key) => processes[key] || {})
+      .filter((i) => i.status === 'running');
+
     let total = 0;
     let remaining = 0;
     selectedProcesses.forEach((process) => {
       if (process.total) total += process.total;
       if (process.remaining) remaining += process.remaining;
     });
-    console.log({ total, remaining })
-    return total && remaining ? ((total - remaining) / total).toFixed(4) : 0;
+    return total && remaining ? ((total - remaining) / total).toFixed(4) : 1;
   },
 );
 

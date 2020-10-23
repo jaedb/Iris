@@ -32,12 +32,12 @@ export default memo((props) => {
   const {
     body,
     loading,
-    finished = false,
+    finished,
     mini,
     lazy,
     white,
     className = '',
-    progress = null,
+    progress,
   } = props;
 
   if (!loading && !finished) {
@@ -85,7 +85,7 @@ export default memo((props) => {
     );
   }
 
-  if (progress) {
+  if (progress !== undefined) {
     classNameString += ' loader--progress';
     return (
       <div className={classNameString}>

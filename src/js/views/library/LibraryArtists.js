@@ -21,6 +21,12 @@ import {
   makeProcessProgressSelector,
 } from '../../util/selectors';
 
+const processKeys = [
+  'MOPIDY_GET_LIBRARY_ARTISTS',
+  'SPOTIFY_GET_LIBRARY_ARTISTS',
+  'GOOGLE_GET_LIBRARY_ARTISTS',
+];
+
 class LibraryArtists extends React.Component {
   constructor(props) {
     super(props);
@@ -63,13 +69,20 @@ class LibraryArtists extends React.Component {
     }
   }
 
-  onRefresh = () => {
+  refresh = () => {
     const { uiActions: { hideContextMenu } } = this.props;
 
     hideContextMenu();
     this.getMopidyLibrary(true);
     this.getGoogleLibrary(true);
     this.getSpotifyLibrary(true);
+  }
+
+  cancelRefresh = () => {
+    const { uiActions: { hideContextMenu, cancelProcess } } = this.props;
+
+    hideContextMenu();
+    cancelProcess(processKeys);
   }
 
   setSort = (value) => {
@@ -151,7 +164,6 @@ class LibraryArtists extends React.Component {
       sort,
       sort_reverse,
       view,
-      loading,
       loading_progress,
     } = this.props;
     const {
@@ -160,7 +172,7 @@ class LibraryArtists extends React.Component {
     } = this.state;
     let { artists } = this.props;
 
-    if (loading) {
+    if (loading_progress < 1) {
       return <Loader body loading progress={loading_progress} />
     }
 
@@ -215,7 +227,9 @@ class LibraryArtists extends React.Component {
     const {
       spotify_available,
       google_available,
+      loading_progress,
     } = this.props;
+    const loading = loading_progress < 1;
 
     const source_options = [
       {
@@ -307,11 +321,11 @@ class LibraryArtists extends React.Component {
         <Button
           noHover
           discrete
-          onClick={this.onRefresh}
+          onClick={loading ? this.cancelRefresh : this.refresh}
           tracking={{ category: 'LibraryArtists', action: 'Refresh' }}
         >
-          <Icon name="refresh" />
-          <I18n path="actions.refresh" />
+          {loading ? <Icon name="close" /> : <Icon name="refresh" /> }
+          {loading ? <I18n path="actions.cancel" /> : <I18n path="actions.refresh" /> }
         </Button>
       </span>
     );
@@ -330,18 +344,13 @@ class LibraryArtists extends React.Component {
 
 const mapStateToProps = (state) => {
   const source = state.ui.library_artists_source || 'all';
-  const loadingSelector = makeLoadingSelector(['(.*):library:artists']);
 
   const libraryUris = [];
   if (source === 'all' || source === 'local') libraryUris.push('mopidy:library:artists');
   if (source === 'all' || source === 'spotify') libraryUris.push('spotify:library:artists');
   if (source === 'all' || source === 'google') libraryUris.push('google:library:artists');
   const librarySelector = makeLibrarySelector(libraryUris);
-  const processProgressSelector = makeProcessProgressSelector([
-    'MOPIDY_GET_LIBRARY_ARTISTS',
-    'SPOTIFY_GET_LIBRARY_ARTISTS',
-    'GOOGLE_GET_LIBRARY_ARTISTS',
-  ]);
+  const processProgressSelector = makeProcessProgressSelector(processKeys);
 
   return {
     loading_progress: processProgressSelector(state),
@@ -349,7 +358,6 @@ const mapStateToProps = (state) => {
     google_available: (state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('gmusic:')),
     spotify_available: (state.spotify.access_token),
     artists: librarySelector(state),
-    loading: loadingSelector(state),
     source,
     sort: (state.ui.library_artists_sort ? state.ui.library_artists_sort : null),
     sort_reverse: (state.ui.library_artists_sort_reverse ? state.ui.library_artists_sort_reverse : false),

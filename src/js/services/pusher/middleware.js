@@ -1,6 +1,7 @@
 
 import ReactGA from 'react-ga';
 import { uriType, generateGuid } from '../../util/helpers';
+import { trackEvent } from '../../components/Trackable';
 
 const coreActions = require('../core/actions');
 const uiActions = require('../ui/actions');
@@ -532,15 +533,14 @@ const PusherMiddleware = (function () {
 
       /**
        * Commands
-       **/
-
-      case 'PUSHER_GET_COMMANDS':
+       * */
+      case 'PUSHER_GET_COMMANDS': {
         request(store, 'get_commands')
           .then(
             (response) => {
               store.dispatch(pusherActions.commandsUpdated(response.commands));
             },
-            (error) => {
+            () => {
               // We're not too worried about capturing errors here
               // It's also likely to fail where UI has been updated but
               // server hasn't been restarted yet.
@@ -549,24 +549,25 @@ const PusherMiddleware = (function () {
           );
         next(action);
         break;
+      }
 
-      case 'PUSHER_SET_COMMAND':
-        var commands = { ...pusher.commands };
-
-        if (commands[action.command.id]) {
-          var command = { ...commands[action.command.id], ...action.command };
-        } else {
-          var { command } = action;
-        }
-        commands[action.command.id] = command;
+      case 'PUSHER_SET_COMMAND': {
+        const commands = {
+          ...pusher.commands,
+          [action.command.id]: {
+            ...(pusher.commands[action.command.id] || {}),
+            ...action.command,
+          },
+        };
 
         store.dispatch(pusherActions.setCommands(commands));
         break;
+      }
 
-      case 'PUSHER_SET_COMMANDS':
+      case 'PUSHER_SET_COMMANDS': {
         request(store, 'set_commands', { commands: action.commands })
           .then(
-            (response) => {
+            () => {
               // No action required, the change will be broadcast
             },
             (error) => {
@@ -579,14 +580,15 @@ const PusherMiddleware = (function () {
 
         next(action);
         break;
+      }
 
-      case 'PUSHER_REMOVE_COMMAND':
-        var commands_index = { ...pusher.commands };
+      case 'PUSHER_REMOVE_COMMAND': {
+        const commands_index = { ...pusher.commands };
         delete commands_index[action.id];
 
         request(store, 'set_commands', { commands: commands_index })
           .then(
-            (response) => {
+            () => {
               // No action required, the change will be broadcast
             },
             (error) => {
@@ -599,32 +601,34 @@ const PusherMiddleware = (function () {
 
         next(action);
         break;
+      }
 
-      case 'PUSHER_RUN_COMMAND':
-        var command = { ...pusher.commands[action.id] };
-        var notification_key = `command_${action.id}`;
+      case 'PUSHER_RUN_COMMAND': {
+        const notification_key = `command_${action.id}`;
 
         if (action.notify) {
           store.dispatch(uiActions.startProcess(notification_key, 'Running command'));
         }
 
         request(store, 'run_command', { id: action.id })
-          .then((response) => {
-            console.log('Command response', response);
+          .then(() => {
             store.dispatch(uiActions.removeProcess(notification_key));
             if (action.notify) {
-              store.dispatch(uiActions.createNotification({ key: notification_key, level: 'warning', content: 'Command sent' }));
+              store.dispatch(uiActions.createNotification({
+                key: notification_key,
+                content: 'Command sent',
+              }));
             }
           },
-            (error) => {
-              store.dispatch(uiActions.removeProcess(notification_key));
-              store.dispatch(coreActions.handleException(
-                'Could not run command',
-                error,
-              ));
-            });
-
+          (error) => {
+            store.dispatch(uiActions.removeProcess(notification_key));
+            store.dispatch(coreActions.handleException(
+              'Could not run command',
+              error,
+            ));
+          });
         break;
+      }
 
 
       /**
@@ -654,26 +658,26 @@ const PusherMiddleware = (function () {
         break;
 
       case 'PUSHER_START_RADIO':
-      case 'PUSHER_UPDATE_RADIO':
-        if (store.getState().ui.allow_reporting) {
-          ReactGA.event({ category: 'Pusher', action: 'Start radio', label: action.uris.join() });
-        }
+      case 'PUSHER_UPDATE_RADIO': {
+        trackEvent({ category: 'Pusher', action: 'Start radio', label: action.uris.join() });
 
-        // start our UI process notification
-        if (action.type == 'PUSHER_UPDATE_RADIO') {
-          store.dispatch(uiActions.startProcess('PUSHER_RADIO_PROCESS', 'Updating radio'));
-        } else {
-          store.dispatch(uiActions.startProcess('PUSHER_RADIO_PROCESS', 'Starting radio'));
-        }
+        store.dispatch(
+          uiActions.startProcess(
+            action.type,
+            {
+              content: `${action.type === 'PUSHER_UPDATE_RADIO' ? 'Updating' : 'Starting'} radio`,
+            },
+          ),
+        );
 
-        var data = {
-          reset: (action.type == 'PUSHER_START_RADIO'),
+        const data = {
+          reset: (action.type === 'PUSHER_START_RADIO'),
           seed_artists: [],
           seed_genres: [],
           seed_tracks: [],
         };
 
-        for (let i = 0; i < action.uris.length; i++) {
+        for (let i = 0; i < action.uris.length; i += 1) {
           switch (uriType(action.uris[i])) {
             case 'artist':
               data.seed_artists.push(action.uris[i]);
@@ -684,15 +688,16 @@ const PusherMiddleware = (function () {
             case 'genre':
               data.seed_genres.push(action.uris[i]);
               break;
+            default:
+              break;
           }
         }
 
-        if (action.type == 'PUSHER_START_RADIO') {
+        if (action.type === 'PUSHER_START_RADIO') {
           store.dispatch(pusherActions.deliverBroadcast(
             'notification',
             {
               notification: {
-                level: 'warning',
                 content: `${pusher.username} is starting radio mode`,
               },
             },
@@ -702,14 +707,14 @@ const PusherMiddleware = (function () {
         request(store, 'change_radio', data)
           .then(
             (response) => {
-              store.dispatch(uiActions.processFinished('PUSHER_RADIO_PROCESS'));
-              if (response.status == 0) {
+              store.dispatch(uiActions.processFinished(action.type));
+              if (response.status === 0) {
                 store.dispatch(uiActions.createNotification({ content: response.message, level: 'error' }));
               }
               store.dispatch(pusherActions.radioChanged(response.radio));
             },
             (error) => {
-              store.dispatch(uiActions.processFinished('PUSHER_RADIO_PROCESS'));
+              store.dispatch(uiActions.processFinished(action.type));
               store.dispatch(coreActions.handleException(
                 'Could not change radio',
                 error,
@@ -717,25 +722,22 @@ const PusherMiddleware = (function () {
             },
           );
         break;
+      }
 
-      case 'PUSHER_STOP_RADIO':
+      case 'PUSHER_STOP_RADIO': {
         store.dispatch(uiActions.createNotification({ content: 'Stopping radio' }));
-
-        if (store.getState().ui.allow_reporting) {
-          ReactGA.event({ category: 'Pusher', action: 'Stop radio' });
-        }
+        trackEvent({ category: 'Pusher', action: 'Stop radio' });
 
         store.dispatch(pusherActions.deliverBroadcast(
           'notification',
           {
             notification: {
-              level: 'warning',
               content: `${pusher.username} stopped radio mode`,
             },
           },
         ));
 
-        var data = {
+        const data = {
           seed_artists: [],
           seed_genres: [],
           seed_tracks: [],
@@ -753,28 +755,17 @@ const PusherMiddleware = (function () {
             },
           );
         break;
-
-
-      /**
-           * Notifications and alerts
-           * */
+      }
 
       case 'PUSHER_BROWSER_NOTIFICATION':
         store.dispatch(uiActions.createBrowserNotification(action));
         break;
 
       case 'PUSHER_NOTIFICATION':
-        var data = {
-
+        store.dispatch(uiActions.createNotification({
           ...action, type: action.notification_type,
-        };
-        store.dispatch(uiActions.createNotification(data));
+        }));
         break;
-
-
-      /**
-           * Server actions
-           * */
 
       case 'PUSHER_RELOAD':
         // Hard reload. This doesn't strictly clear the cache, but our compiler's
@@ -812,12 +803,11 @@ const PusherMiddleware = (function () {
         next(action);
         break;
 
-      case 'PUSHER_CONFIG':
-
+      case 'PUSHER_CONFIG': {
         // Set default country/locale (unless we've already been configured)
-        var { spotify } = store.getState();
-        var spotify_updated = false;
-        var spotify_updates = {};
+        const { spotify } = store.getState();
+        const spotify_updates = {};
+        let spotify_updated = false;
 
         if (!spotify.country && action.config.country) {
           spotify_updates.country = action.config.country;
@@ -848,6 +838,7 @@ const PusherMiddleware = (function () {
 
         next(action);
         break;
+      }
 
       case 'PUSHER_DEBUG':
         request(store, action.message.method, action.message.data)
@@ -867,13 +858,9 @@ const PusherMiddleware = (function () {
 
       case 'PUSHER_ERROR':
         store.dispatch(uiActions.createNotification(action.message, 'bad'));
-        if (store.getState().ui.allow_reporting) {
-          ReactGA.event({ category: 'Pusher', action: 'Error', label: action.message });
-        }
+        trackEvent({ category: 'Pusher', action: 'Error', label: action.message });
         break;
 
-
-      // This action is irrelevant to us, pass it on to the next middleware
       default:
         return next(action);
     }

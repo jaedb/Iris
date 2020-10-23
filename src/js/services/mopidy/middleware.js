@@ -2,7 +2,7 @@
 import ReactGA from 'react-ga';
 import Mopidy from 'mopidy';
 import { sha256 } from 'js-sha256';
-import { sampleSize, compact } from 'lodash';
+import { sampleSize, compact, chunk } from 'lodash';
 import { i18n } from '../../locale';
 import {
   generateGuid,
@@ -257,7 +257,8 @@ const MopidyMiddleware = (function () {
       method = 'library.search',
       data,
     } = queue.shift();
-    const processor = store.getState().ui.processes.MOPIDY_GET_SEARCH_RESULTS;
+    const processKey = 'MOPIDY_GET_SEARCH_RESULTS';
+    const processor = store.getState().ui.processes[processKey];
 
     if (processor && processor.status === 'cancelling') {
       store.dispatch(uiActions.processCancelled('MOPIDY_GET_SEARCH_RESULTS'));
@@ -265,7 +266,7 @@ const MopidyMiddleware = (function () {
     }
 
     store.dispatch(uiActions.updateProcess(
-      'MOPIDY_GET_SEARCH_RESULTS',
+      processKey,
       i18n(
         'services.mopidy.searching',
         {
@@ -369,9 +370,7 @@ const MopidyMiddleware = (function () {
         if (queue.length) {
           processSearchQueue(store, queue);
         } else {
-          store.dispatch(uiActions.processFinished(
-            'MOPIDY_GET_SEARCH_RESULTS',
-          ));
+          store.dispatch(uiActions.processFinished(processKey));
         }
       },
     );
@@ -862,11 +861,42 @@ const MopidyMiddleware = (function () {
           break;
         }
 
+        let remaining = action.uris.length;
+        let at_position = action.at_position;
+
+        // Uris are to go immediately after the currently-playing track (which could be paused)
+        if (action.play_next) {
+          const {
+            current_track,
+            queue,
+          } = store.getState().core;
+          if (current_track) {
+            for (let i = 0; i < queue.length; i += 1) {
+              if (queue[i].tlid === current_track.tlid) {
+                at_position = i + 1;
+                break;
+              }
+            }
+          }
+        }
+
+        store.dispatch(uiActions.startProcess(
+          action.type,
+          {
+            content: i18n('services.mopidy.adding_uris', { count: remaining }),
+            remaining,
+            total: remaining,
+          },
+        ));
+
         store.dispatch(pusherActions.deliverBroadcast(
           'notification',
           {
             notification: {
-              content: `${store.getState().pusher.username} is adding ${action.uris.length} URIs to queue`,
+              content: i18n(
+                'services.mopidy.adding_uris_broadcast',
+                { username: store.getState().pusher.username, count: remaining },
+              ),
               icon: (
                 store.getState().core.current_track
                   ? getTrackIcon(store.getState().core.current_track, store.getState().core)
@@ -876,125 +906,65 @@ const MopidyMiddleware = (function () {
           },
         ));
 
-        const uris = Object.assign([], action.uris);
-        const batches = [];
-        const batch_size = 5;
-        while (uris.length > 0) {
-          batches.push({
-            uris: uris.splice(0, batch_size),
-            at_position: action.at_position,
-            play_next: action.play_next,
-            offset: action.offset + (batch_size * batches.length),
-            from_uri: action.from_uri,
-          });
-        }
+        // Prepare our URIS into batches. This allows performance gain of several URIs at once
+        // (which is a blocking request), but not so many that it locks the Mopidy server.
+        // It allows a window of opportunity for other requests to complete before we proceed to
+        // the next batch.
+        const batchSize = 5;
+        const batches = chunk(action.uris, batchSize);
 
-        next({
-          ...action,
-          batches,
-        });
-
-        store.dispatch(uiActions.startProcess(
-          'MOPIDY_ENQUEUE_URIS_PROCESSOR',
-          i18n('services.mopidy.adding_uris', { count: action.uris.length }),
-          {
-            batches,
-            remaining: action.uris.length,
-            total: action.uris.length,
-          },
-        ));
-        break;
-      }
-
-      case 'MOPIDY_ENQUEUE_URIS_PROCESSOR': {
-        const last_run = store.getState().ui.processes.MOPIDY_ENQUEUE_URIS_PROCESSOR;
-
-        if (last_run && last_run.status == 'cancelling') {
-          store.dispatch(uiActions.processCancelled('MOPIDY_ENQUEUE_URIS_PROCESSOR'));
-          return;
-        } if (action.data.batches && action.data.batches.length > 0) {
-          var batches = Object.assign([], action.data.batches);
-          var batch = batches[0];
-          let total_uris = 0;
-          for (var i = 0; i < batches.length; i++) {
-            total_uris += batches[i].uris.length;
-          }
-          batches.shift();
-          store.dispatch(uiActions.updateProcess(
-            'MOPIDY_ENQUEUE_URIS_PROCESSOR',
-            `Adding ${total_uris} URI(s)`,
-            {
-              remaining: total_uris,
-            },
-          ));
-
-          // no batches means we're done here
-        } else {
-          store.dispatch(uiActions.processFinished('MOPIDY_ENQUEUE_URIS_PROCESSOR'));
-          break;
-        }
-
-        const {
-          current_track,
-          queue,
-        } = store.getState().core;
-        let current_track_index = -1;
-
-        if (current_track) {
-          for (var i = 0; i < queue.length; i++) {
-            if (queue[i].tlid == current_track.tlid) {
-              current_track_index = i;
-              break;
-            }
-          }
-        }
-
-        var params = { uris: batch.uris };
-
-        // Play this batch next
-        if (batch.play_next) {
-          // Make sure we're playing something first
-          if (current_track_index > -1) {
-            params.at_position = current_track_index + batch.offset + 1;
-
-            // Default to top of queue if we're not playing
-          } else {
-            params.at_position = 0 + batch.offset;
+        // This is our process iterator
+        const run = () => {
+          const processor = store.getState().ui.processes[action.type];
+          if (processor && processor.status === 'cancelling') {
+            store.dispatch(uiActions.processCancelled(action.type));
+            return;
           }
 
-          // A specific position has been defined
-          // NOTE: This is likely to be wrong as the original action is unaware of batches or other client requests
-        } else if (batch.at_position) {
-          params.at_position = batch.at_position + batch.offset;
-        }
+          const uris = batches.shift();
 
-        request(store, 'tracklist.add', params)
-          .then(
-            (response) => {
-              // add metadata to queue
-              const tlids = [];
-              for (let i = 0; i < response.length; i++) {
-                tlids.push(response[i].tlid);
-              }
-              store.dispatch(pusherActions.addQueueMetadata(tlids, batch.from_uri));
+          request(store, 'tracklist.add', { uris, at_position })
+            .then(
+              (response) => {
+                const tlids = response.map((track) => track.tlid);
+                store.dispatch(pusherActions.addQueueMetadata(tlids, action.from_uri));
 
-              // Re-run the batch checker in 100ms. This allows a small window for other
-              // server requests before our next batch. It's a little crude but it means the server isn't
-              // locked until we're completely done.
-              setTimeout(
-                () => {
-                  store.dispatch(uiActions.runProcess(action.type, { batches }));
-                },
-                100,
-              );
-            },
-            (error) => {
-              store.dispatch(coreActions.handleException(
-                `Mopidy: ${error.message ? error.message : 'Adding tracks failed'}`,
-                error,
-              ));
-            },
-          );
+                // Re-run the batch checker in 100ms. This allows a small window for other server
+                // requests before our next batch. A little crude but it means the server isn't
+                // locked until we're completely done.
+                setTimeout(
+                  () => {
+                    if (!batches.length) {
+                      store.dispatch(uiActions.processFinished(action.type));
+                    } else {
+                      remaining -= uris.length;
+                      if (at_position !== null) at_position += uris.length;
+                      store.dispatch(
+                        uiActions.updateProcess(
+                          action.type,
+                          {
+                            remaining,
+                            content: i18n('services.mopidy.adding_uris', { count: remaining }),
+                          },
+                        ),
+                      );
+                      run();
+                    }
+                  },
+                  100,
+                );
+              },
+              (error) => {
+                store.dispatch(uiActions.processFinished(action.type));
+                store.dispatch(coreActions.handleException(
+                  `Mopidy: ${error.message || 'Adding tracks failed'}`,
+                  error,
+                ));
+              },
+            );
+        };
+
+        run(); // Kick off the loop
         break;
       }
 
@@ -1724,14 +1694,8 @@ const MopidyMiddleware = (function () {
        * My Music libraries
        */
       case 'MOPIDY_GET_LIBRARY_ARTISTS':
-        store.dispatch(
-          uiActions.startProcess(
-            'MOPIDY_GET_LIBRARY_ARTISTS',
-            {
-              notification: false,
-            },
-          ),
-        );
+        store.dispatch(uiActions.startProcess(action.type, { notification: false }));
+
         request(store, 'library.browse', { uri: store.getState().mopidy.library_artists_uri })
           .then((raw_response) => {
             if (raw_response.length <= 0) return;
@@ -1748,19 +1712,12 @@ const MopidyMiddleware = (function () {
               uri: 'mopidy:library:artists',
               items_uris: arrayOf('uri', response),
             }));
-            store.dispatch(uiActions.processFinished('MOPIDY_GET_LIBRARY_ARTISTS'));
+            store.dispatch(uiActions.processFinished(action.type));
           });
         break;
 
       case 'MOPIDY_GET_LIBRARY_PLAYLISTS': {
-        store.dispatch(
-          uiActions.startProcess(
-            'MOPIDY_GET_LIBRARY_PLAYLISTS',
-            {
-              notification: false,
-            },
-          ),
-        );
+        store.dispatch(uiActions.startProcess(action.type, { notification: false }));
 
         request(store, 'playlists.asList')
           .then((listResponse) => {
@@ -1799,7 +1756,7 @@ const MopidyMiddleware = (function () {
 
                     store.dispatch(
                       uiActions.updateProcess(
-                        'MOPIDY_GET_LIBRARY_PLAYLISTS',
+                        action.type,
                         {
                           remaining: playlist_uris.length - index - 1,
                         },
@@ -1812,35 +1769,28 @@ const MopidyMiddleware = (function () {
                         uri: 'mopidy:library:playlists',
                         items_uris: arrayOf('uri', libraryPlaylists),
                       }));
-                      store.dispatch(uiActions.processFinished('MOPIDY_GET_LIBRARY_PLAYLISTS'));
+                      store.dispatch(uiActions.processFinished(action.type));
                     }
                   });
               });
             } else {
               store.dispatch(uiActions.stopLoading('mopidy:library:playlists'));
-              store.dispatch(uiActions.processFinished('MOPIDY_GET_LIBRARY_PLAYLISTS'));
+              store.dispatch(uiActions.processFinished(action.type));
             }
           });
         break;
       }
 
       case 'MOPIDY_GET_LIBRARY_ALBUMS':
-        store.dispatch(
-          uiActions.startProcess(
-            'MOPIDY_GET_LIBRARY_ALBUMS',
-            {
-              notification: false,
-            },
-          ),
-        );
+        store.dispatch(uiActions.startProcess(action.type, { notification: false }));
 
         request(store, 'library.browse', { uri: store.getState().mopidy.library_albums_uri })
-          .then((response) => {
-            const uris = arrayOf('uri', response);
+          .then((browseResponse) => {
+            const uris = arrayOf('uri', browseResponse);
 
             store.dispatch(
               uiActions.updateProcess(
-                'MOPIDY_GET_LIBRARY_ALBUMS',
+                action.type,
                 {
                   total: uris.length,
                   remaining: uris.length,
@@ -1849,29 +1799,82 @@ const MopidyMiddleware = (function () {
             );
 
             request(store, 'library.lookup', { uris })
-              .then((response) => {
-                const libraryAlbums = indexToArray(response).map((tracks) => ({
+              .then((lookupResponse) => {
+                const libraryAlbums = indexToArray(lookupResponse).map((tracks) => ({
                   artists: tracks[0].artists ? formatArtists(tracks[0].artists) : null,
                   tracks: formatTracks(tracks),
                   last_modified: tracks[0].last_modified,
                   ...formatAlbum(tracks[0].album),
                 }));
 
-                console.log('LOADED', response);
-
                 store.dispatch(coreActions.itemsLoaded(libraryAlbums));
                 store.dispatch(coreActions.libraryLoaded({
                   uri: 'mopidy:library:albums',
                   items_uris: arrayOf('uri', libraryAlbums),
                 }));
-                store.dispatch(uiActions.processFinished('MOPIDY_GET_LIBRARY_ALBUMS'));
+                store.dispatch(uiActions.processFinished(action.type));
               });
           });
         break;
 
-      // This action is irrelevant to us, pass it on to the next middleware
+      case 'MOPIDY_GET_LIBRARY_TRACKS':
+        store.dispatch(uiActions.startProcess(action.type, { notification: false }));
+
+        request(store, 'library.browse', { uri: 'local:directory?type=track' })
+          .then((browseResponse) => {
+            const allUris = arrayOf('uri', browseResponse);
+
+            store.dispatch(uiActions.updateProcess(
+              action.type,
+              {
+                remaining: allUris.length,
+                total: allUris.length,
+              },
+            ));
+
+            const run = () => {
+              if (allUris.length) {
+                const uris = allUris.splice(0, 100);
+                const processor = store.getState().ui.processes[action.type];
+
+                if (processor && processor.status === 'cancelling') {
+                  store.dispatch(uiActions.processCancelled(action.type));
+                  store.dispatch(uiActions.stopLoading('mopidy:library:tracks'));
+                  return;
+                }
+                store.dispatch(uiActions.updateProcess(action.type, { remaining: allUris.length }));
+
+                request(store, 'library.lookup', { uris })
+                  .then(
+                    (lookupResponse) => {
+                      const libraryItems = compact(
+                        indexToArray(lookupResponse).map(
+                          (results) => (results.length ? formatTrack(results[0]) : null),
+                        ),
+                      );
+
+                      if (libraryItems.length) {
+                        store.dispatch(coreActions.itemsLoaded(libraryItems));
+                      }
+                      run();
+                    },
+                  );
+              } else {
+                store.dispatch(uiActions.processFinished(action.type));
+                store.dispatch(coreActions.libraryLoaded({
+                  uri: 'mopidy:library:tracks',
+                  items_uris: arrayOf('uri', browseResponse),
+                }));
+              }
+            };
+
+            run();
+          });
+        break;
+
       default:
-        return next(action);
+        next(action);
+        break;
     }
   };
 }());

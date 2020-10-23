@@ -298,10 +298,10 @@ export function runProcess(key, data = {}) {
   };
 }
 
-export function cancelProcess(key) {
+export function cancelProcess(keys) {
   return {
     type: 'CANCEL_PROCESS',
-    key,
+    keys: Array.isArray(keys) ? keys : [keys],
   };
 }
 

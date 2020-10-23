@@ -16,10 +16,17 @@ import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
 import { applyFilter, removeDuplicates, sortItems } from '../../util/arrays';
 import { I18n, i18n } from '../../locale';
-import { collate } from '../../util/format';
-import { isLoading } from '../../util/helpers';
 import Loader from '../../components/Loader';
-import { makeLibrarySelector, makeLoadingSelector } from '../../util/selectors';
+import {
+  makeLibrarySelector,
+  makeLoadingSelector,
+  makeProcessProgressSelector,
+} from '../../util/selectors';
+
+const processKeys = [
+  'MOPIDY_GET_LIBRARY_PLAYLISTS',
+  'SPOTIFY_GET_LIBRARY_PLAYLISTS',
+];
 
 class LibraryPlaylists extends React.Component {
   constructor(props) {
@@ -55,12 +62,19 @@ class LibraryPlaylists extends React.Component {
     this.getSpotifyLibrary();
   }
 
-  onRefresh = () => {
+  refresh = () => {
     const { uiActions: { hideContextMenu } } = this.props;
 
     hideContextMenu();
     this.getMopidyLibrary(true);
     this.getSpotifyLibrary(true);
+  }
+
+  cancelRefresh = () => {
+    const { uiActions: { hideContextMenu, cancelProcess } } = this.props;
+
+    hideContextMenu();
+    cancelProcess(processKeys);
   }
 
   getMopidyLibrary = (forceRefetch = false) => {
@@ -137,7 +151,7 @@ class LibraryPlaylists extends React.Component {
       sort,
       sort_reverse,
       view,
-      loading,
+      loading_progress,
       playlists: playlistsProp,
     } = this.props;
     const {
@@ -145,8 +159,8 @@ class LibraryPlaylists extends React.Component {
       limit,
     } = this.state;
 
-    if (loading) {
-      return <Loader body loading />;
+    if (loading_progress < 1) {
+      return <Loader body loading progress={loading_progress} />;
     }
     let playlists = [...playlistsProp];
 
@@ -206,10 +220,12 @@ class LibraryPlaylists extends React.Component {
       sort,
       sort_reverse,
       view,
+      loading_progress,
     } = this.props;
     const {
       filter,
     } = this.state;
+    const loading = loading_progress < 1;
 
     const source_options = [
       {
@@ -306,11 +322,11 @@ class LibraryPlaylists extends React.Component {
         <Button
           noHover
           discrete
-          onClick={this.onRefresh}
+          onClick={loading ? this.cancelRefresh : this.refresh}
           tracking={{ category: 'LibraryAlbums', action: 'Refresh' }}
         >
-          <Icon name="refresh" />
-          <I18n path="actions.refresh" />
+          {loading ? <Icon name="close" /> : <Icon name="refresh" /> }
+          {loading ? <I18n path="actions.cancel" /> : <I18n path="actions.refresh" /> }
         </Button>
         <Button
           to="/playlist/create"
@@ -338,20 +354,20 @@ class LibraryPlaylists extends React.Component {
 
 const mapStateToProps = (state) => {
   const source = state.ui.library_playlists_source || 'all';
-  const loadingSelector = makeLoadingSelector(['(.*):library:playlists']);
 
   const libraryUris = [];
   if (source === 'all' || source === 'local') libraryUris.push('mopidy:library:playlists');
   if (source === 'all' || source === 'spotify') libraryUris.push('spotify:library:playlists');
   if (source === 'all' || source === 'google') libraryUris.push('google:library:playlists');
   const librarySelector = makeLibrarySelector(libraryUris);
+  const processProgressSelector = makeProcessProgressSelector(processKeys);
 
   return {
     slim_mode: state.ui.slim_mode,
     mopidy_uri_schemes: state.mopidy.uri_schemes,
     spotify_available: state.spotify.access_token,
     playlists: librarySelector(state),
-    loading: loadingSelector(state),
+    loading_progress: processProgressSelector(state),
     source,
     me_id: (state.spotify.me ? state.spotify.me.id : false),
     view: state.ui.library_playlists_view,

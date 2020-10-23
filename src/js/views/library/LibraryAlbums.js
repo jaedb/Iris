@@ -20,9 +20,14 @@ import { i18n, I18n } from '../../locale';
 import Loader from '../../components/Loader';
 import {
   makeLibrarySelector,
-  makeLoadingSelector,
   makeProcessProgressSelector,
 } from '../../util/selectors';
+
+const processKeys = [
+  'MOPIDY_GET_LIBRARY_ALBUMS',
+  'SPOTIFY_GET_LIBRARY_ALBUMS',
+  'GOOGLE_GET_LIBRARY_ALBUMS',
+];
 
 class LibraryAlbums extends React.Component {
   constructor(props) {
@@ -68,13 +73,20 @@ class LibraryAlbums extends React.Component {
     }
   }
 
-  onRefresh = () => {
+  refresh = () => {
     const { uiActions: { hideContextMenu } } = this.props;
 
     hideContextMenu();
     this.getMopidyLibrary(true);
     this.getGoogleLibrary(true);
     this.getSpotifyLibrary(true);
+  }
+
+  cancelRefresh = () => {
+    const { uiActions: { hideContextMenu, cancelProcess } } = this.props;
+
+    hideContextMenu();
+    cancelProcess(processKeys);
   }
 
   getMopidyLibrary = (forceRefetch = false) => {
@@ -175,7 +187,6 @@ class LibraryAlbums extends React.Component {
       sort,
       sort_reverse,
       view,
-      loading,
       loading_progress,
     } = this.props;
     const {
@@ -184,9 +195,8 @@ class LibraryAlbums extends React.Component {
     } = this.state;
     let { albums } = this.props;
 
-    if (loading) {
-      console.log(loading_progress);
-      return <Loader body loading progress={loading_progress} />
+    if (loading_progress < 1) {
+      return <Loader body loading progress={loading_progress} />;
     }
 
     if (sort) {
@@ -245,11 +255,13 @@ class LibraryAlbums extends React.Component {
       source,
       sort_reverse,
       uiActions,
+      loading_progress,
     } = this.props;
     const {
       filter,
       per_page,
     } = this.state;
+    const loading = loading_progress < 1;
 
     const source_options = [
       {
@@ -349,11 +361,11 @@ class LibraryAlbums extends React.Component {
         <Button
           noHover
           discrete
-          onClick={this.onRefresh}
+          onClick={loading ? this.cancelRefresh : this.refresh}
           tracking={{ category: 'LibraryAlbums', action: 'Refresh' }}
         >
-          <Icon name="refresh" />
-          <I18n path="actions.refresh" />
+          {loading ? <Icon name="close" /> : <Icon name="refresh" /> }
+          {loading ? <I18n path="actions.cancel" /> : <I18n path="actions.refresh" /> }
         </Button>
       </div>
     );
@@ -372,21 +384,15 @@ class LibraryAlbums extends React.Component {
 
 const mapStateToProps = (state) => {
   const source = state.ui.library_albums_source ? state.ui.library_albums_source : 'all';
-  const loadingSelector = makeLoadingSelector(['(.*):library:albums']);
 
   const libraryUris = [];
   if (source === 'all' || source === 'local') libraryUris.push('mopidy:library:albums');
   if (source === 'all' || source === 'spotify') libraryUris.push('spotify:library:albums');
   if (source === 'all' || source === 'google') libraryUris.push('google:library:albums');
   const librarySelector = makeLibrarySelector(libraryUris);
-  const processProgressSelector = makeProcessProgressSelector([
-    'MOPIDY_GET_LIBRARY_ALBUMS',
-    'SPOTIFY_GET_LIBRARY_ALBUMS',
-    'GOOGLE_GET_LIBRARY_ALBUMS',
-  ]);
+  const processProgressSelector = makeProcessProgressSelector(processKeys);
 
   return {
-    loading: loadingSelector(state),
     loading_progress: processProgressSelector(state),
     mopidy_uri_schemes: state.mopidy.uri_schemes,
     albums: librarySelector(state),
