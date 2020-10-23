@@ -195,7 +195,7 @@ class LibraryAlbums extends React.Component {
     } = this.state;
     let { albums } = this.props;
 
-    if (loading_progress < 1) {
+    if (loading_progress !== null) {
       return <Loader body loading progress={loading_progress} />;
     }
 
@@ -261,7 +261,7 @@ class LibraryAlbums extends React.Component {
       filter,
       per_page,
     } = this.state;
-    const loading = loading_progress < 1;
+    const loading = loading_progress !== null;
 
     const source_options = [
       {

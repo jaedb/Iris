@@ -17,7 +17,6 @@ import Button from '../../components/Button';
 import Loader from '../../components/Loader';
 import {
   makeLibrarySelector,
-  makeLoadingSelector,
   makeProcessProgressSelector,
 } from '../../util/selectors';
 
@@ -172,8 +171,8 @@ class LibraryArtists extends React.Component {
     } = this.state;
     let { artists } = this.props;
 
-    if (loading_progress < 1) {
-      return <Loader body loading progress={loading_progress} />
+    if (loading_progress !== null) {
+      return <Loader body loading progress={loading_progress} />;
     }
 
     if (sort) {
@@ -229,7 +228,7 @@ class LibraryArtists extends React.Component {
       google_available,
       loading_progress,
     } = this.props;
-    const loading = loading_progress < 1;
+    const loading = loading_progress !== null;
 
     const source_options = [
       {

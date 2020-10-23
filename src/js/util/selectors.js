@@ -60,13 +60,15 @@ const makeProcessProgressSelector = (keys) => createSelector(
       .map((key) => processes[key] || {})
       .filter((i) => i.status === 'running');
 
+    if (!selectedProcesses.length) return null;
+
     let total = 0;
     let remaining = 0;
     selectedProcesses.forEach((process) => {
       if (process.total) total += process.total;
       if (process.remaining) remaining += process.remaining;
     });
-    return total && remaining ? ((total - remaining) / total).toFixed(4) : 1;
+    return total && remaining ? ((total - remaining) / total).toFixed(4) : 0;
   },
 );
 

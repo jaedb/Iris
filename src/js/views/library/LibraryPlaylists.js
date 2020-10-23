@@ -159,7 +159,7 @@ class LibraryPlaylists extends React.Component {
       limit,
     } = this.state;
 
-    if (loading_progress < 1) {
+    if (loading_progress !== null) {
       return <Loader body loading progress={loading_progress} />;
     }
     let playlists = [...playlistsProp];
@@ -225,7 +225,7 @@ class LibraryPlaylists extends React.Component {
     const {
       filter,
     } = this.state;
-    const loading = loading_progress < 1;
+    const loading = loading_progress !== null;
 
     const source_options = [
       {
