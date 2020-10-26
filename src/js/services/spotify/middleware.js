@@ -80,7 +80,7 @@ const SpotifyMiddleware = (function () {
 
       case 'SPOTIFY_USER_LOADED':
         if (store.getState().ui.allow_reporting && action.data) {
-                	ReactGA.event({ category: 'User', action: 'Load', label: action.data.uri });
+          ReactGA.event({ category: 'User', action: 'Load', label: action.data.uri });
         }
         next(action);
         break;
@@ -154,142 +154,6 @@ const SpotifyMiddleware = (function () {
         next(action);
         break;
 
-      case 'SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR':
-        const playlistProcessor = store.getState().ui.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR || {};
-        switch (playlistProcessor.status) {
-          case 'cancelling':
-            store.dispatch(uiActions.processCancelled('SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR'));
-            break;
-
-          case 'cancelled':
-            break;
-
-          default:
-            store.dispatch(spotifyActions.getLibraryPlaylistsProcessor(action.data));
-            break;
-        }
-        break;
-
-      case 'SPOTIFY_LIBRARY_PLAYLISTS_LOADED':
-        var playlists = [];
-        for (var playlist of action.playlists) {
-          Object.assign(
-            playlist,
-            {
-              uri: playlist.uri.replace(/spotify:user:([^:]*?):/i, 'spotify:'),
-              can_edit: (store.getState().spotify.me && store.getState().spotify.me.id == playlist.owner.id),
-              source: 'spotify',
-              in_library: true, // assumed because we asked for library items
-              tracks_total: playlist.tracks.total,
-            },
-          );
-
-          // remove our tracklist. It'll overwrite any full records otherwise
-          delete playlist.tracks;
-
-          playlists.push(playlist);
-        }
-
-        store.dispatch({
-          type: 'PLAYLISTS_LOADED',
-          playlists,
-        });
-
-        // Append our action with the uris. This gets handed down to subsequent middleware and our reducer.
-        action.uris = arrayOf('uri', playlists);
-        next(action);
-        break;
-
-      case 'SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR':
-        const artistsProcessor = store.getState().ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR || {};
-        switch (artistsProcessor.status) {
-          case 'cancelling':
-            store.dispatch(uiActions.processCancelled('SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR'));
-            break;
-
-          case 'cancelled':
-            break;
-
-          default:
-            store.dispatch(spotifyActions.getLibraryArtistsProcessor(action.data));
-            break;
-        }
-        break;
-
-      case 'SPOTIFY_LIBRARY_ARTISTS_LOADED':
-        var artists = [];
-        for (var i = 0; i < action.artists.length; i++) {
-          artists.push(
-            {
-
-              ...action.artists[i],
-              source: 'spotify',
-              in_library: true, // assumed because we asked for library items
-
-            },
-          );
-        }
-        store.dispatch({
-          type: 'ARTISTS_LOADED',
-          artists,
-        });
-
-        // Append our action with the uris. This gets handed down to subsequent middleware and our reducer.
-        action.uris = arrayOf('uri', artists);
-        next(action);
-        break;
-
-      case 'SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR':
-        const albumsProcessor = store.getState().ui.processes.SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR || {};
-        switch (albumsProcessor.status) {
-          case 'cancelling':
-            store.dispatch(uiActions.processCancelled('SPOTIFY_GET_LIBRARY_ALBUMS_PROCESSOR'));
-            break;
-
-          case 'cancelled':
-            break;
-
-          default:
-            store.dispatch(spotifyActions.getLibraryAlbumsProcessor(action.data));
-            break;
-        }
-        break;
-
-      case 'SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR':
-        store.dispatch(spotifyActions.getLibraryTracksAndPlayProcessor(action.data));
-        break;
-
-      case 'SPOTIFY_GET_ALL_PLAYLIST_TRACKS_PROCESSOR':
-        store.dispatch(spotifyActions.getAllPlaylistTracksProcessor(action.data));
-        break;
-
-      case 'SPOTIFY_LIBRARY_ALBUMS_LOADED':
-        var albums = [];
-        for (var i = 0; i < action.albums.length; i++) {
-          albums.push(
-            {
-
-              ...action.albums[i].album,
-              in_library: true, // assumed because we asked for library items
-              source: 'spotify',
-              added_at: action.albums[i].added_at,
-              tracks: action.albums[i].album.tracks.items,
-              tracks_more: action.albums[i].album.tracks.next,
-              tracks_total: action.albums[i].album.tracks.total,
-            },
-          );
-        }
-
-        store.dispatch({
-          type: 'ALBUMS_LOADED',
-          albums,
-        });
-
-        // Append our action with the uris. This gets handed down to subsequent middleware and our reducer.
-        action.uris = arrayOf('uri', albums);
-        next(action);
-        break;
-
       case 'SPOTIFY_FAVORITES_LOADED':
         if (action.artists.length > 0) {
           store.dispatch({
@@ -304,17 +168,6 @@ const SpotifyMiddleware = (function () {
             tracks: action.tracks,
           });
           action.tracks_uris = arrayOf('uri', action.tracks);
-        }
-        next(action);
-        break;
-
-      case 'SPOTIFY_LIBRARY_TRACKS_LOADED':
-      case 'SPOTIFY_LIBRARY_TRACKS_LOADED_MORE':
-        if (action.data) {
-          store.dispatch({
-            type: 'TRACKS_LOADED',
-            tracks: action.data.items,
-          });
         }
         next(action);
         break;
@@ -336,17 +189,18 @@ const SpotifyMiddleware = (function () {
         }
 
         if (store.getState().ui.allow_reporting) {
-	                const hashed_username = sha256(me.id);
-	                ReactGA.set({ userId: hashed_username });
-	                ReactGA.event({ category: 'Spotify', action: 'Authorization verified', label: hashed_username });
-	            }
+          const hashed_username = sha256(me.id);
+          ReactGA.set({ userId: hashed_username });
+          ReactGA.event({ category: 'Spotify', action: 'Authorization verified', label: hashed_username });
+        }
 
         store.dispatch(coreActions.userLoaded(me));
-        action.me = me;
-        next(action);
+        next({
+          ...action,
+          me,
+        });
         break;
 
-        // This action is irrelevant to us, pass it on to the next middleware
       default:
         return next(action);
     }

@@ -139,7 +139,7 @@ export default function reducer(ui = {}, action) {
       const processes = { ...(ui.processes || []) };
       processes[action.key] = {
         key: action.key,
-        ...processes[action.key] || { notification: true },
+        ...processes[action.key] || { status: 'running', notification: true },
         ...(action.type === 'START_PROCESS' ? { status: 'running', remaining: 0, total: 0 } : {}),
         ...action.process,
       };

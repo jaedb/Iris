@@ -31,6 +31,7 @@ const coreActions = require('../../services/core/actions');
 const uiActions = require('../../services/ui/actions');
 const mopidyActions = require('../../services/mopidy/actions');
 const lastfmActions = require('../../services/lastfm/actions');
+const geniusActions = require('../../services/genius/actions');
 
 /**
  * Send an ajax request to the Spotify API
@@ -326,43 +327,28 @@ export function getMe() {
   };
 }
 
+export function getTrack(uri, { forceRefetch, full }) {
+  return (dispatch, getState) => {
+    let endpoint = `tracks/${getFromUri('trackid', uri)}`;
+    if (forceRefetch) endpoint += `?refetch=${Date.now()}`;
 
-/**
- * Get a single track
- *
- * @param uri string
- * */
-export function getTrack(uri) {
-  return (dispatch, getState) => {
-    request(dispatch, getState, `tracks/${getFromUri('trackid', uri)}`)
+    request(dispatch, getState, endpoint)
       .then(
         (response) => {
-          dispatch(coreActions.itemLoaded(formatTrack(response)));
+          const track = formatTrack(response);
+          dispatch(coreActions.itemLoaded(track));
+          if (full) {
+            if (getState().lastfm.authorization) {
+              dispatch(lastfmActions.getTrack(uri));
+            }
+            if (getState().genius.authorization) {
+              dispatch(geniusActions.findTrackLyrics(uri));
+            }
+          }
         },
       );
   };
 }
-/*
-export function getLibraryTracks() {
-  return (dispatch, getState) => {
-    request(dispatch, getState, 'me/tracks?limit=50')
-      .then(
-        (response) => {
-          dispatch({
-            type: 'SPOTIFY_LIBRARY_TRACKS_LOADED',
-            data: response,
-          });
-        },
-        (error) => {
-          dispatch(coreActions.handleException(
-            'Could not get library tracks',
-            error,
-          ));
-        },
-      );
-  };
-}
-*/
 
 export function getFeaturedPlaylists(forceRefetch = false) {
   return (dispatch, getState) => {
@@ -422,7 +408,12 @@ export function getFeaturedPlaylists(forceRefetch = false) {
 
 export function getCategories() {
   return (dispatch, getState) => {
-    request(dispatch, getState, `browse/categories?limit=50&country=${getState().spotify.country}&locale=${getState().spotify.locale}`)
+    let endpoint = 'browse/categories';
+    endpoint += '?limit=50';
+    endpoint += `&country=${getState().spotify.country}`;
+    endpoint += `&locale=${getState().spotify.locale}`;
+
+    request(dispatch, getState, endpoint)
       .then(
         (response) => {
           dispatch({
@@ -1328,6 +1319,12 @@ export function getPlaylist(uri, { full, forceRefetch, callbackAction } = {}) {
     endpoint += `?market=${getState().spotify.country}`;
     if (forceRefetch) endpoint += `&refetch=${Date.now()}`;
 
+    // TODO
+    // When we have a callbackAction, start the process. To do this:
+    // 1. Create unified callbackAction naming convention
+    // 2. Start process here
+    // 3. Update process as tracks are loaded and enqueue occurs
+
     request(dispatch, getState, endpoint)
       .then(
         (response) => {
@@ -1403,89 +1400,6 @@ export function getPlaylist(uri, { full, forceRefetch, callbackAction } = {}) {
       );
   };
 }
-
-/**
- * Get all library tracks
- *
- * Recursively get .next until we have all tracks
- * */
-
-export function getLibraryTracksAndPlay(uri) {
-  return (dispatch, getState) => {
-    dispatch(uiActions.startProcess(
-      'SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR',
-      'Loading library tracks',
-      {
-        uri,
-        next: 'me/tracks',
-      },
-    ));
-  };
-}
-
-export function getLibraryTracksAndPlayProcessor(data) {
-  return (dispatch, getState) => {
-    request(dispatch, getState, data.next)
-      .then(
-        (response) => {
-          // Check to see if we've been cancelled
-          if (getState().ui.processes.SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR !== undefined) {
-            const processor = getState().ui.processes.SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR;
-
-            if (processor.status == 'cancelling') {
-              dispatch(uiActions.processCancelled('SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR'));
-              return false;
-            }
-          }
-
-          // Add on our new batch of loaded tracks
-          let uris = [];
-          const new_uris = [];
-          for (let i = 0; i < response.items.length; i++) {
-            new_uris.push(response.items[i].track.uri);
-          }
-          if (data.uris) {
-            uris = [...data.uris, ...new_uris];
-          } else {
-            uris = new_uris;
-          }
-
-          // We got a next link, so we've got more work to be done
-          if (response.next) {
-            dispatch(uiActions.updateProcess(
-              'SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR',
-              `Loading ${response.total - uris.length} library tracks`,
-              {
-                next: response.next,
-                total: response.total,
-                remaining: response.total - uris.length,
-              },
-            ));
-            dispatch(uiActions.runProcess(
-              'SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR',
-              {
-                next: response.next,
-                uris,
-              },
-            ));
-          } else {
-            dispatch(mopidyActions.playURIs(uris, data.uri));
-            dispatch(uiActions.processFinished('SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR'));
-          }
-        },
-        () => {
-          dispatch(uiActions.processFinished(
-            'SPOTIFY_GET_LIBRARY_TRACKS_AND_PLAY_PROCESSOR',
-            {
-              content: 'Could not load library tracks',
-              level: 'error',
-            },
-          ));
-        },
-      );
-  };
-}
-
 
 export function addTracksToPlaylist(uri, tracks_uris) {
   return (dispatch, getState) => {

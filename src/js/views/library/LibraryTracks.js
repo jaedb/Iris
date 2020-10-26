@@ -248,16 +248,8 @@ class LibraryTracks extends React.Component {
         label: i18n('fields.filters.artist'),
       },
       {
-        value: 'last_modified',
-        label: i18n('fields.filters.updated'),
-      },
-      {
-        value: 'tracks_uris.length',
-        label: i18n('fields.filters.tracks'),
-      },
-      {
-        value: 'uri',
-        label: i18n('fields.filters.source'),
+        value: 'album.name',
+        label: i18n('fields.filters.album'),
       },
     ];
 

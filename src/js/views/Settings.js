@@ -32,6 +32,7 @@ class Settings extends React.Component {
       mopidy_port: this.props.mopidy.port,
       mopidy_library_artists_uri: this.props.mopidy.library_artists_uri,
       mopidy_library_albums_uri: this.props.mopidy.library_albums_uri,
+      mopidy_library_tracks_uri: this.props.mopidy.library_tracks_uri,
       pusher_username: this.props.pusher.username,
       input_in_focus: null,
     };
@@ -481,6 +482,23 @@ class Settings extends React.Component {
               />
               <div className="description">
                 <I18n path="settings.advanced.album_uri.description" />
+              </div>
+            </div>
+          </label>
+
+          <label className="field">
+            <div className="name">
+              <I18n path="settings.advanced.track_uri.label" />
+            </div>
+            <div className="input">
+              <TextField
+                type="text"
+                value={this.state.mopidy_library_tracks_uri}
+                onChange={(value) => this.onMopidySettingChanged('mopidy_library_tracks_uri', value)}
+                autosave
+              />
+              <div className="description">
+                <I18n path="settings.advanced.track_uri.description" />
               </div>
             </div>
           </label>

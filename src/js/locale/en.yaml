@@ -68,6 +68,7 @@ fields:
     as_loaded: As loaded
     name: Name
     artist: Artist
+    album: Album
     updated: Updated
     tracks: Tracks
     source: Source
@@ -360,6 +361,9 @@ settings:
     album_uri:
       label: Album library URI
       description: URI used for collecting library albums
+    track_uri:
+      label: Track library URI
+      description: URI used for collecting library tracks
     connections:
       label: Connections
     version:

@@ -454,16 +454,16 @@ export function getDirectory(uri) {
   };
 }
 
-export function getTracks(uris, get_images) {
+export function getTracks(uris, options) {
   return {
     type: 'MOPIDY_GET_TRACKS',
     uris,
-    get_images,
+    options,
   };
 }
 
-export function getTrack(uri) {
-  return getTracks([uri], true);
+export function getTrack(uri, options) {
+  return getTracks([uri], options);
 }
 
 export function getLibraryArtists(uri = null) {

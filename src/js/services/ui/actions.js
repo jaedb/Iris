@@ -312,11 +312,11 @@ export function processCancelled(key) {
   };
 }
 
-export function processFinished(key, completionMessage = null) {
+export function processFinished(key, completionNotification) {
   return {
     type: 'PROCESS_FINISHED',
     key,
-    completionMessage,
+    completionNotification,
   };
 }
 

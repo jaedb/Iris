@@ -38,18 +38,12 @@ class Track extends React.Component {
       coreActions: {
         loadItem,
       },
-      genius_authorized,
-      geniusActions: { findTrackLyrics },
     } = this.props;
 
     loadItem(uri);
 
     if (track) {
       this.setWindowTitle(track);
-
-      if (genius_authorized && track.artists && !track.lyrics_results) {
-        findTrackLyrics(track);
-      }
     }
   }
 
@@ -75,10 +69,6 @@ class Track extends React.Component {
 
     if (prevUri !== uri) {
       loadItem(uri);
-
-      if (genius_authorized && track.artists) {
-        findTrackLyrics(track);
-      }
     }
 
     // We have just received our full track or our track artists

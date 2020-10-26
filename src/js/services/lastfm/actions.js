@@ -6,6 +6,7 @@ import {
   formatAlbum,
 } from '../../util/format';
 import { generateGuid } from '../../util/helpers';
+import { makeItemSelector } from '../../util/selectors';
 
 const coreActions = require('../core/actions');
 const uiActions = require('../ui/actions');
@@ -178,7 +179,8 @@ export function getMe() {
 
 export function getTrack(uri) {
   return (dispatch, getState) => {
-    const track = getState().core.items[uri];
+    const selector = makeItemSelector(uri);
+    const track = selector(getState());
     if (!track || !track.artists) {
       dispatch(coreActions.handleException(
         'Could not get LastFM track',

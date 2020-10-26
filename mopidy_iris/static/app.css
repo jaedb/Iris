@@ -4363,52 +4363,49 @@ select {
     font-size: 3rem;
     padding-bottom: 0.5rem; }
 
-.loader__spinner {
+.loader__ring {
   height: 120px;
   width: 120px;
   margin: 0 auto;
   position: relative; }
-  .loader__spinner__background, .loader__spinner__foreground {
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
-    border-radius: 100%;
-    border-style: solid;
-    border-width: 2px;
-    border-color: transparent; }
-  .loader__spinner__background {
+  .loader__ring__progress, .loader__ring__background, .loader__ring__foreground {
     position: absolute;
-    top: 0;
-    left: 0;
-    border-color: rgba(128, 128, 128, 0.35); }
-  .loader__spinner__foreground {
-    animation-name: spin;
-    animation-duration: 0.5s;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-    border-right-color: #32b5f2; }
-
-.loader--progress .loader__spinner__progress {
-  transform: rotate(-90deg) translate(3px, -3px);
-  position: absolute; }
-  .loader--progress .loader__spinner__progress__circle {
+    transform-origin: 50% 50%; }
+  .loader__ring__progress {
     -webkit-transition: all 0.2s ease-in-out;
     -moz-transition: all 0.2s ease-in-out;
     -o-transition: all 0.2s ease-in-out;
     transition: all 0.2s ease-in-out;
-    stroke: #aaaaaa; }
+    transform: rotate(-90deg);
+    position: absolute;
+    stroke: rgba(128, 128, 128, 0.25); }
+  .loader__ring__background {
+    stroke: rgba(128, 128, 128, 0.25); }
+  .loader__ring__foreground {
+    animation-name: spin;
+    animation-duration: 0.5s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    stroke: #32b5f2; }
 
-.loader--white .loader__spinner__foreground {
-  border-right-color: #FFFFFF; }
+.loader--white .loader__ring__foreground {
+  stroke: #FFFFFF; }
 
 .loader--body {
-  padding: 35vh 0; }
+  padding: 35vh 0;
+  text-align: center; }
 
 .loader--mini {
   padding: 0; }
-  .loader--mini .loader__spinner {
+  .loader--mini .loader__ring {
     width: 20px;
     height: 20px; }
+    .loader--mini .loader__ring__progress {
+      stroke: gray; }
+    .loader--mini .loader__ring__background {
+      stroke: rgba(128, 128, 128, 0.5); }
+    .loader--mini .loader__ring__foreground {
+      stroke: #FFFFFF; }
   .loader--mini .loader__offline {
     display: none; }
 
@@ -6034,7 +6031,7 @@ main header {
   position: fixed;
   bottom: 75px;
   right: 15px;
-  z-index: 97;
+  z-index: 99;
   pointer-events: none;
   width: 300; }
   .notifications .notification {

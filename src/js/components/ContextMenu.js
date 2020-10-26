@@ -567,9 +567,9 @@ class ContextMenu extends React.Component {
       },
     } = this.props;
 
-    if (!items || items.length <= 0 || !items[0].user_uri) return null;
+    if (!items || items.length <= 0 || !items[0].user) return null;
     hideContextMenu();
-    push(buildLink(items[0].user_uri));
+    push(buildLink(items[0].user.uri));
   }
 
   goToTrack = () => {
@@ -1241,6 +1241,7 @@ class ContextMenu extends React.Component {
             {context.items_count === 1 && go_to_track}
             <div className="context-menu__divider" />
             {copy_uris}
+            {refresh}
           </div>
         );
     }

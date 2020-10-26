@@ -85,6 +85,7 @@ let state = {
     uri_schemes: [],
     library_albums_uri: 'local:directory?type=album',
     library_artists_uri: 'local:directory?type=artist&role=albumartist',
+    library_tracks_uri: 'local:directory?type=track',
   },
   pusher: {
     connected: false,

@@ -119,16 +119,27 @@ const PusherMiddleware = (function () {
 
         // Local scan
         case 'local_scan_started':
-          store.dispatch(uiActions.updateProcess('local_scan', 'Scanning local library'));
+          store.dispatch(uiActions.updateProcess(
+            'local_scan', { content: 'Scanning local library' },
+          ));
           break;
         case 'local_scan_updated':
-          store.dispatch(uiActions.updateProcess('local_scan', 'Scanning local library', {}, params.output));
+          store.dispatch(uiActions.updateProcess(
+            'local_scan',
+            {
+              content: 'Scanning local library',
+              data: {},
+              description: params.output,
+            },
+          ));
           break;
         case 'local_scan_finished':
           store.dispatch(uiActions.processFinished(
             'local_scan',
             {
-              content: 'Local scan finished', description: params.output, sticky: true,
+              content: 'Local scan finished',
+              description: params.output,
+              sticky: true,
             },
           ));
           break;
@@ -143,13 +154,17 @@ const PusherMiddleware = (function () {
 
         // Upgrade
         case 'upgrade_started':
-          store.dispatch(uiActions.updateProcess('upgrade', 'Upgrading'));
+          store.dispatch(uiActions.updateProcess('upgrade', { content: 'Upgrading' }));
           break;
         case 'upgrade_updated':
-          store.dispatch(uiActions.updateProcess('upgrade', 'Upgrading', {}, params.output));
+          store.dispatch(uiActions.updateProcess(
+            'upgrade', { content: 'Upgrading', data: {}, description: params.output },
+          ));
           break;
         case 'upgrade_finished':
-          store.dispatch(uiActions.updateProcess('upgrade', 'Restarting to complete upgrade'));
+          store.dispatch(uiActions.updateProcess(
+            'upgrade', { content: 'Restarting to complete upgrade' },
+          ));
           break;
         case 'upgrade_error':
           store.dispatch(uiActions.processFinished(
@@ -162,10 +177,12 @@ const PusherMiddleware = (function () {
 
         // Restart
         case 'restart_started':
-          store.dispatch(uiActions.removeProcess('upgrade', 'Restarting'));
+          store.dispatch(uiActions.removeProcess('upgrade', { content: 'Restarting' }));
           break;
         case 'restart_updated':
-          store.dispatch(uiActions.updateProcess('upgrade', 'Restarting', {}, params.output));
+          store.dispatch(uiActions.updateProcess(
+            'upgrade', { content: 'Restarting', data: {}, description: params.output },
+          ));
           break;
         case 'restart_error':
           store.dispatch(uiActions.processFinished(
@@ -178,16 +195,20 @@ const PusherMiddleware = (function () {
 
         // Test
         case 'test_started':
-          store.dispatch(uiActions.updateProcess('test', 'Running test', {}, params.output));
+          store.dispatch(uiActions.updateProcess(
+            'test', { content: 'Running test', data: {}, description: params.output },
+          ));
           break;
         case 'test_updated':
-          store.dispatch(uiActions.updateProcess('test', 'Running test'));
+          store.dispatch(uiActions.updateProcess('test', { content: 'Running test' }));
           break;
         case 'test_finished':
           store.dispatch(uiActions.processFinished(
             'test',
             {
-              content: 'Test finished', description: params.output, sticky: true,
+              content: 'Test finished',
+              description: params.output,
+              sticky: true,
             },
           ));
           break;

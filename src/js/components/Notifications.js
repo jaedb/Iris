@@ -176,7 +176,7 @@ class Notifications extends React.Component {
       remaining,
       level = 'info',
       content,
-      description = null,
+      description,
       status,
       closing,
       key,

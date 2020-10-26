@@ -1,5 +1,6 @@
 
 import { generateGuid } from '../../util/helpers';
+import { makeItemSelector } from '../../util/selectors';
 
 const coreActions = require('../core/actions');
 const uiActions = require('../ui/actions');
@@ -187,7 +188,7 @@ export function getTrackLyrics(uri, path) {
             lyrics_html = lyrics_html.replace(/(\[)/g, '<span class="mid_grey-text">[');
             lyrics_html = lyrics_html.replace(/(\])/g, ']</span>');
 
-            console.debug(lyrics_html);
+            //console.debug(lyrics_html);
 
             dispatch(coreActions.itemLoaded({
               uri,
@@ -211,9 +212,19 @@ export function getTrackLyrics(uri, path) {
   };
 }
 
-export function findTrackLyrics(track = null) {
+export function findTrackLyrics(uri) {
   return (dispatch, getState) => {
-    if (!track) return;
+    const selector = makeItemSelector(uri);
+    const track = selector(getState());
+    if (!track || !track.artists) {
+      dispatch(coreActions.handleException(
+        'Could not get Genius lyrics',
+        {},
+        'Not in index or has no artists',
+      ));
+      return;
+    }
+
     let query = '';
     query += `${track.artists[0].name} `;
     query += track.name;

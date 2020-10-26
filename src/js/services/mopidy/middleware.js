@@ -15,7 +15,6 @@ import {
   digestMopidyImages,
   formatImages,
   formatAlbum,
-  formatAlbums,
   formatTrack,
   formatTracks,
   formatSimpleObject,
@@ -23,12 +22,10 @@ import {
   formatArtists,
   formatArtist,
   formatPlaylist,
-  formatPlaylists,
 } from '../../util/format';
 import {
   arrayOf,
   shuffle,
-  removeDuplicates,
   applyFilter,
   sortItems,
   indexToArray,
@@ -41,6 +38,7 @@ const spotifyActions = require('../spotify/actions.js');
 const pusherActions = require('../pusher/actions.js');
 const googleActions = require('../google/actions.js');
 const lastfmActions = require('../lastfm/actions.js');
+const geniusActions = require('../genius/actions.js');
 const discogsActions = require('../discogs/actions.js');
 
 const MopidyMiddleware = (function () {
@@ -814,11 +812,7 @@ const MopidyMiddleware = (function () {
         store.dispatch(
           coreActions.loadItem(
             action.uri,
-            false,
-            {
-              name: 'play',
-              shuffle: action.shuffle,
-            },
+            { full: true, callbackAction: { name: 'play', shuffle: action.shuffle } },
           ),
         );
         break;
@@ -1506,7 +1500,8 @@ const MopidyMiddleware = (function () {
           );
         break;
 
-      case 'MOPIDY_GET_TRACKS':
+      case 'MOPIDY_GET_TRACKS': {
+        const { options: { full } } = action;
         request(store, 'library.lookup', { uris: action.uris })
           .then(
             (_response) => {
@@ -1516,9 +1511,17 @@ const MopidyMiddleware = (function () {
               ));
 
               store.dispatch(coreActions.itemsLoaded(tracks));
+              store.dispatch(mopidyActions.getImages(arrayOf('uri', tracks)));
 
-              if (action.get_images) {
-                store.dispatch(mopidyActions.getImages(arrayOf('uri', tracks)));
+              if (full) {
+                tracks.forEach((track) => {
+                  if (store.getState().lastfm.authorization) {
+                    store.dispatch(lastfmActions.getTrack(track.uri));
+                  }
+                  if (store.getState().genius.authorization) {
+                    store.dispatch(geniusActions.findTrackLyrics(track.uri));
+                  }
+                });
               }
             },
             (error) => {
@@ -1529,6 +1532,7 @@ const MopidyMiddleware = (function () {
             },
           );
         break;
+      }
 
       case 'VIEW__GET_RANDOM_TRACKS':
         request(store, 'library.browse', { uri: 'local:directory?type=track' })
@@ -1786,41 +1790,61 @@ const MopidyMiddleware = (function () {
 
         request(store, 'library.browse', { uri: store.getState().mopidy.library_albums_uri })
           .then((browseResponse) => {
-            const uris = arrayOf('uri', browseResponse);
+            const allUris = arrayOf('uri', browseResponse);
 
-            store.dispatch(
-              uiActions.updateProcess(
-                action.type,
-                {
-                  total: uris.length,
-                  remaining: uris.length,
-                },
-              ),
-            );
+            store.dispatch(uiActions.updateProcess(
+              action.type,
+              {
+                remaining: allUris.length,
+                total: allUris.length,
+              },
+            ));
 
-            request(store, 'library.lookup', { uris })
-              .then((lookupResponse) => {
-                const libraryAlbums = indexToArray(lookupResponse).map((tracks) => ({
-                  artists: tracks[0].artists ? formatArtists(tracks[0].artists) : null,
-                  tracks: formatTracks(tracks),
-                  last_modified: tracks[0].last_modified,
-                  ...formatAlbum(tracks[0].album),
-                }));
+            const run = () => {
+              if (allUris.length) {
+                const uris = allUris.splice(0, 100);
+                const processor = store.getState().ui.processes[action.type];
 
-                store.dispatch(coreActions.itemsLoaded(libraryAlbums));
+                if (processor && processor.status === 'cancelling') {
+                  store.dispatch(uiActions.processCancelled(action.type));
+                  store.dispatch(uiActions.stopLoading('mopidy:library:albums'));
+                  return;
+                }
+                store.dispatch(uiActions.updateProcess(action.type, { remaining: allUris.length }));
+
+                request(store, 'library.lookup', { uris })
+                  .then(
+                    (lookupResponse) => {
+                      const libraryItems = indexToArray(lookupResponse).map((tracks) => ({
+                        artists: tracks[0].artists ? formatArtists(tracks[0].artists) : null,
+                        tracks: formatTracks(tracks),
+                        last_modified: tracks[0].last_modified,
+                        ...formatAlbum(tracks[0].album),
+                      }));
+
+                      if (libraryItems.length) {
+                        store.dispatch(coreActions.itemsLoaded(libraryItems));
+                      }
+                      run();
+                    },
+                  );
+              } else {
+                store.dispatch(uiActions.processFinished(action.type));
                 store.dispatch(coreActions.libraryLoaded({
                   uri: 'mopidy:library:albums',
-                  items_uris: arrayOf('uri', libraryAlbums),
+                  items_uris: arrayOf('uri', browseResponse),
                 }));
-                store.dispatch(uiActions.processFinished(action.type));
-              });
+              }
+            };
+
+            run();
           });
         break;
 
       case 'MOPIDY_GET_LIBRARY_TRACKS':
         store.dispatch(uiActions.startProcess(action.type, { notification: false }));
 
-        request(store, 'library.browse', { uri: 'local:directory?type=track' })
+        request(store, 'library.browse', { uri: store.getState().mopidy.library_tracks_uri })
           .then((browseResponse) => {
             const allUris = arrayOf('uri', browseResponse);
 

@@ -81,13 +81,14 @@ const ensureLoaded = ({
   // Item already in our index?
   if (item) {
     if (getMissingDependents(item).length === 0) {
-      console.info(`"${uri}" and all dependents already in index`);
-
-      // TODO
-      // When an item is in the index, we assume the dependents are loaded as well, which in the
-      // case of local artists is not true. Ie a local artist's albums are not auto-loaded.
       store.dispatch(uiActions.stopLoading(uri));
-      coreActions.loadItems(getDependentUris(item));
+      console.info(`"${uri}" already in index`);
+
+      const dependentUris = getDependentUris(item);
+      if (dependentUris.length) {
+        console.log(`Loading ${dependentUris.length} dependents`);
+        store.dispatch(coreActions.loadItems(dependentUris));
+      }
       return;
     }
   }
@@ -479,6 +480,7 @@ const CoreMiddleware = (function () {
           action,
           fetch,
           dependents: ['images'],
+          fullDependents: ['lyrics_results'],
         });
 
         next(action);
