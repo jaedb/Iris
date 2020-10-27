@@ -265,14 +265,14 @@ const MopidyMiddleware = (function () {
 
     store.dispatch(uiActions.updateProcess(
       processKey,
-      i18n(
-        'services.mopidy.searching',
-        {
-          provider: titleCase(uri_scheme.replace(':', '')),
-          type: requestType,
-        },
-      ),
       {
+        content: i18n(
+          'services.mopidy.searching',
+          {
+            provider: titleCase(uri_scheme.replace(':', '')),
+            type: requestType,
+          },
+        ),
         remaining: queue.length,
       },
     ));
@@ -1141,9 +1141,9 @@ const MopidyMiddleware = (function () {
 
         if (queue.length) {
           store.dispatch(uiActions.startProcess(
-            'MOPIDY_GET_SEARCH_RESULTS',
-            i18n('services.mopidy.searching'),
+            action.type,
             {
+              content: i18n('services.mopidy.searching'),
               total: queue.length,
               remaining: queue.length,
             },
@@ -1734,7 +1734,7 @@ const MopidyMiddleware = (function () {
 
             store.dispatch(
               uiActions.updateProcess(
-                'MOPIDY_GET_LIBRARY_PLAYLISTS',
+                action.type,
                 {
                   total: playlist_uris.length,
                   remaining: playlist_uris.length,

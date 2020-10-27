@@ -558,7 +558,7 @@ export function getMore(url, core_action = null, custom_action = null, extra_dat
 export function getSearchResults({ type, term }, limit = 50, offset = 0) {
   const processKey = 'SPOTIFY_GET_SEARCH_RESULTS';
   return (dispatch, getState) => {
-    dispatch(uiActions.startProcess(processKey, 'Searching Spotify'));
+    dispatch(uiActions.startProcess(processKey, { content: 'Searching Spotify' }));
 
     let typeString = type.replace(/s+$/, '');
     if (typeString === 'all') {
