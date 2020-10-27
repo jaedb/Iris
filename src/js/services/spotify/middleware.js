@@ -1,15 +1,12 @@
-
 import ReactGA from 'react-ga';
 import { sha256 } from 'js-sha256';
-
 import { arrayOf } from '../../util/arrays';
-import { upgradeSpotifyPlaylistUris } from '../../util/helpers';
 import {
-  formatTracks,
   formatImages,
   formatUser,
   formatAlbums,
 } from '../../util/format';
+
 const coreActions = require('../core/actions');
 const uiActions = require('../ui/actions');
 const spotifyActions = require('./actions');
@@ -25,7 +22,7 @@ const SpotifyMiddleware = (function () {
           ReactGA.event({ category: 'Spotify', action: 'Authorization granted' });
         }
 
-        // Flush out the previous user's library
+        // Flush out the previous user's libraries
         store.dispatch(spotifyActions.flushLibrary());
 
         next(action);
@@ -180,7 +177,7 @@ const SpotifyMiddleware = (function () {
         next(action);
         break;
 
-      case 'SPOTIFY_ME_LOADED':
+      case 'SPOTIFY_ME_LOADED': {
         var me = { ...formatUser(action.me) };
 
         // We are Anonymous currently so use 'me' name as my Pusher username
@@ -200,6 +197,7 @@ const SpotifyMiddleware = (function () {
           me,
         });
         break;
+      }
 
       default:
         return next(action);

@@ -1482,6 +1482,12 @@ export function reorderPlaylistTracks(uri, range_start, range_length, insert_bef
  * ======================================================================================
  * */
 
+export function flushLibrary() {
+  return {
+    type: 'SPOTIFY_FLUSH_LIBRARY',
+  };
+}
+
 export function getLibraryPlaylists(forceRefetch) {
   return (dispatch, getState) => {
     const processKey = 'SPOTIFY_GET_LIBRARY_PLAYLISTS';
@@ -1522,7 +1528,7 @@ export function getLibraryPlaylists(forceRefetch) {
         }
       });
 
-      fetch(`me/playlists?limit=50${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
+    fetch(`me/playlists?limit=50${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
   };
 }
 

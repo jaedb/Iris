@@ -6031,7 +6031,7 @@ main header {
   position: fixed;
   bottom: 75px;
   right: 15px;
-  z-index: 99;
+  z-index: 97;
   pointer-events: none;
   width: 300; }
   .notifications .notification {
