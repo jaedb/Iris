@@ -51,7 +51,7 @@ class ProgressSlider extends React.Component {
  * */
 
 const mapStateToProps = (state, ownProps) => ({
-  current_track: (state.core.current_track && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null),
+  current_track: (state.core.current_track && state.core.items[state.core.current_track.uri] !== undefined ? state.core.items[state.core.current_track.uri] : null),
   connected: state.mopidy.connected,
   time_position: state.mopidy.time_position,
   play_state: state.mopidy.play_state,

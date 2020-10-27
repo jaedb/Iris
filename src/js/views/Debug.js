@@ -186,7 +186,12 @@ class Debug extends React.Component {
                   <I18n path="debug.create_notification" />
                 </Button>
                 <Button
-                  onClick={() => this.props.uiActions.startProcess('test_process', "Test process", {remaining: 68, total: 100})}
+                  onClick={
+                    () => this.props.uiActions.startProcess(
+                      'TEST_PROCESS',
+                      { content: 'Test process', remaining: 68, total: 100 },
+                    )
+                  }
                   tracking={{ category: 'Debug', action: 'Test process' }}
                 >
                   <I18n path="debug.create_process" />

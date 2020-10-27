@@ -121,7 +121,7 @@
 	// be manually triggered with the URL var "?test_mode=1"
 	try {
 		var ui = JSON.parse(localStorage.getItem('ui') );
-		var test_mode = (
+		window.test_mode = (
 			typeof(ui) !== 'undefined'
 			&& ui
 			&& typeof(ui.test_mode) !== 'undefined'
@@ -129,11 +129,11 @@
 		) || window.location.href.indexOf('test_mode=1') > -1;
 	} catch(error){
 		console.error(error);
-		var test_mode = false;
+		window.test_mode = false;
 	}
 
 	// Test mode, use un-minified code
-	if (test_mode){
+	if (window.test_mode){
 		console.debug("Test mode enabled, using un-minified code");
 		css.href = '/iris/app.css?v='+build;
 		js.src = '/iris/app.js?v='+build;

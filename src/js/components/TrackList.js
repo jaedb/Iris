@@ -32,6 +32,14 @@ class TrackList extends React.Component {
   }
 
   handleKeyDown(e) {
+    const {
+      key,
+      altKey,
+      ctrlKey,
+      metaKey,
+      shiftKey,
+    } = e;
+
     // When we're focussed on certian elements, don't fire any shortcuts
     // Typically form inputs
     const ignoreNodes = ['INPUT', 'TEXTAREA'];
@@ -41,20 +49,18 @@ class TrackList extends React.Component {
 
     // Ignore when there are any key modifiers. This enables us to avoid interfering
     // with browser- and OS-default functions.
-    if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) {
+    if (altKey || ctrlKey || metaKey || shiftKey) {
       return;
     }
 
     const tracks_keys = this.digestTracksKeys();
 
-
-    let prevent = false;
-    switch (e.key.toLowerCase()) {
+    switch (key.toLowerCase()) {
       case 'enter':
         if (tracks_keys && tracks_keys.length > 0) {
           this.playTracks();
         }
-        prevent = true;
+        e.preventDefault();
         break;
 
       case 'backspace':
@@ -62,7 +68,7 @@ class TrackList extends React.Component {
         if (tracks_keys && tracks_keys.length > 0) {
           this.removeTracks();
         }
-        prevent = true;
+        e.preventDefault();
         break;
 
       case 'a':
@@ -71,13 +77,8 @@ class TrackList extends React.Component {
           all_tracks.push(this.buildTrackKey(this.props.tracks[i], i));
         }
         this.props.uiActions.setSelectedTracks(all_tracks);
-        prevent = true;
+        e.preventDefault();
         break;
-    }
-
-    if (prevent) {
-      e.preventDefault();
-      return false;
     }
   }
 

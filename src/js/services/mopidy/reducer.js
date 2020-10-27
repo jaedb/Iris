@@ -1,6 +1,3 @@
-
-import { removeDuplicates } from '../../util/arrays';
-
 export default function reducer(mopidy = {}, action) {
   switch (action.type) {
     case 'MOPIDY_SET':
@@ -21,16 +18,16 @@ export default function reducer(mopidy = {}, action) {
       return {
         ...mopidy,
         connected: true,
-            	connecting: false,
-            	restart_running: false,
-            	upgrade_running: false,
+        connecting: false,
+        restart_running: false,
+        upgrade_running: false,
       };
 
     case 'MOPIDY_DISCONNECTED':
       return {
         ...mopidy,
         connected: false,
-            	connecting: false,
+        connecting: false,
       };
 
     case 'MOPIDY_CHANGE_TRACK':
@@ -57,10 +54,9 @@ export default function reducer(mopidy = {}, action) {
     case 'MOPIDY_LOCAL_SCAN_FINISHED':
       return { ...mopidy, local_scan_running: false };
 
-
-      /**
-         * State-oriented actions
-         * */
+    /**
+     * State-oriented actions
+     * */
     case 'MOPIDY_PLAY_STATE':
       return { ...mopidy, play_state: action.play_state };
 
@@ -94,12 +90,10 @@ export default function reducer(mopidy = {}, action) {
       }
       return { ...mopidy, queue_history: history };
 
-
-      /**
-         * Directories
-         * This also facilitates all backend-only music providers (SoundCloud, Dirble, etc)
-         * */
-
+    /**
+     * Directories
+     * This also facilitates all backend-only music providers (SoundCloud, Dirble, etc)
+     * */
     case 'MOPIDY_DIRECTORY_FLUSH':
       return { ...mopidy, directory: null };
 
@@ -109,65 +103,9 @@ export default function reducer(mopidy = {}, action) {
         directory: { ...mopidy.directory, ...action.directory },
       };
 
-
-      /**
-         * Library
-         * */
-
-    case 'MOPIDY_LIBRARY_PLAYLISTS_LOADED':
-      if (mopidy.library_playlists) {
-        var uris = [...mopidy.library_playlists, ...action.uris];
-      } else {
-        var { uris } = action;
-      }
-      return { ...mopidy, library_playlists: removeDuplicates(uris) };
-
-    case 'MOPIDY_LIBRARY_PLAYLISTS_LOADED_ALL':
-      return { ...mopidy, library_playlists_loaded_all: true };
-
-    case 'MOPIDY_LIBRARY_PLAYLIST_CREATED':
-      var library_playlists = [];
-      if (mopidy.library_playlists) {
-        library_playlists = Object.assign([], mopidy.library_playlists);
-      }
-      library_playlists.push(action.key);
-      return { ...mopidy, library_playlists };
-
-    case 'MOPIDY_LIBRARY_PLAYLIST_DELETED':
-      var library_playlists = [];
-      if (mopidy.library_playlists) {
-        library_playlists = Object.assign([], mopidy.library_playlists);
-        library_playlists.splice(library_playlists.indexOf(action.uri), 1);
-      }
-      return { ...mopidy, library_playlists };
-
-    case 'MOPIDY_LIBRARY_ARTISTS_LOADED':
-      if (mopidy.library_artists) {
-        var uris = [...mopidy.library_artists, ...action.uris];
-      } else {
-        var { uris } = action;
-      }
-      return { ...mopidy, library_artists: removeDuplicates(uris) };
-
-    case 'MOPIDY_CLEAR_LIBRARY_ARTISTS':
-      return { ...mopidy, library_artists: null };
-
-    case 'MOPIDY_LIBRARY_ALBUMS_LOADED':
-      if (mopidy.library_albums) {
-        var uris = [...mopidy.library_albums, ...action.uris];
-      } else {
-        var { uris } = action;
-      }
-      return { ...mopidy, library_albums: removeDuplicates(uris) };
-
-    case 'MOPIDY_CLEAR_LIBRARY_ALBUMS':
-      return { ...mopidy, library_albums: null };
-
-
-      /**
-         * Searching
-         * */
-
+    /**
+     * Searching
+     * */
     case 'MOPIDY_CLEAR_SEARCH_RESULTS':
       return { ...mopidy, search_results: {} };
 

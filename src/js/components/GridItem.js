@@ -1,5 +1,5 @@
-
 import React from 'react';
+import { connect } from 'react-redux';
 import {
   uriType,
   scrollTo,
@@ -11,7 +11,7 @@ import Thumbnail from './Thumbnail';
 import LinksSentence from './LinksSentence';
 import { I18n } from '../locale';
 
-export default class GridItem extends React.Component {
+class GridItem extends React.Component {
   componentDidMount() {
     const {
       mopidyActions,
@@ -32,7 +32,7 @@ export default class GridItem extends React.Component {
       case 'album':
         // If Mopidy doesn't find any images, then it will pass on the call to LastFM
         if (mopidyActions) {
-          mopidyActions.getImages('albums', [item.uri]);
+          mopidyActions.getImages([item.uri]);
         }
         break;
 
@@ -62,11 +62,11 @@ export default class GridItem extends React.Component {
   }) => {
     switch (uriType(uri)) {
       case 'playlist':
-        return tracks_total ? (
+        return (
           <span className="grid__item__secondary__content">
-            <I18n path="specs.tracks" count={tracks_total} />
+            <I18n path="specs.tracks" count={tracks_total || 0} />
           </span>
-        ) : null;
+        );
 
       case 'artist':
         return (
@@ -99,7 +99,9 @@ export default class GridItem extends React.Component {
       link: customLink,
       type,
       show_source_icon,
+      grid_glow_enabled,
     } = this.props;
+
     let { item } = this.props;
 
     if (!item) return null;
@@ -115,7 +117,7 @@ export default class GridItem extends React.Component {
         onContextMenu={this.onContextMenu}
       >
         <Thumbnail
-          glow
+          glow={grid_glow_enabled}
           size="medium"
           className="grid__item__thumbnail"
           images={item.images || item.icons}
@@ -134,3 +136,17 @@ export default class GridItem extends React.Component {
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  const {
+    ui: {
+      grid_glow_enabled,
+    },
+  } = state;
+
+  return {
+    grid_glow_enabled,
+  };
+};
+
+export default connect(mapStateToProps)(GridItem);

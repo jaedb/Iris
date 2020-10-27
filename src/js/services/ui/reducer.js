@@ -1,3 +1,4 @@
+import { omit } from 'lodash';
 
 export default function reducer(ui = {}, action) {
   switch (action.type) {
@@ -124,79 +125,76 @@ export default function reducer(ui = {}, action) {
 
     case 'START_LOADING':
       var load_queue = { ...(ui.load_queue ? ui.load_queue : {}) };
-      load_queue[action.key] = action.source;
+      load_queue[action.key] = action.source || action.key;
       return { ...ui, load_queue };
 
     case 'STOP_LOADING':
-      var load_queue = { ...(ui.load_queue ? ui.load_queue : {}) };
-      if (load_queue[action.key]) {
-        delete load_queue[action.key];
-      }
-      return { ...ui, load_queue };
+      return {
+        ...ui,
+        load_queue: omit(ui.load_queue, action.keys),
+      };
 
     case 'START_PROCESS':
-    case 'UPDATE_PROCESS':
-      var processes = { ...(ui.processes || []) };
-      var last_run = processes[action.key];
-      var status = 'running';
-      if (last_run) {
-        var data = { ...last_run.data, ...action.data };
-        if (action.type === 'UPDATE_PROCESS') status = last_run.status;
-      } else {
-        var { data } = action;
-      }
+    case 'UPDATE_PROCESS': {
+      const processes = { ...(ui.processes || []) };
       processes[action.key] = {
         key: action.key,
-        content: action.content,
-        description: action.description,
-        level: action.level,
-        status,
-        data,
+        ...processes[action.key] || { status: 'running', notification: true },
+        ...(action.type === 'START_PROCESS' ? { status: 'running', remaining: 0, total: 0 } : {}),
+        ...action.process,
       };
       return { ...ui, processes };
+    }
 
-    case 'RESUME_PROCESS':
-      var processes = { ...(ui.processes ? ui.processes : {}) };
-      if (processes[action.key]) {
-        processes[action.key] = { ...processes[action.key], status: 'running' };
-      }
+    case 'CANCEL_PROCESS': {
+      const processes = { ...(ui.processes ? ui.processes : {}) };
+      action.keys.forEach((key) => {
+        if (processes[key]) {
+          processes[key] = {
+            ...processes[key],
+            status: 'cancelling',
+            total: undefined,
+            remaining: undefined,
+          };
+        }
+      });
       return { ...ui, processes };
+    }
 
-    case 'CANCEL_PROCESS':
-      var processes = { ...(ui.processes ? ui.processes : {}) };
-      if (processes[action.key]) {
-        processes[action.key] = { ...processes[action.key], status: 'cancelling' };
-      }
-      return { ...ui, processes };
-
-    case 'PROCESS_CANCELLED':
+    case 'PROCESS_CANCELLED': {
       var processes = { ...(ui.processes ? ui.processes : {}) };
       if (processes[action.key]) {
         processes[action.key] = { ...processes[action.key], status: 'cancelled' };
       }
       return { ...ui, processes };
+    }
 
-    case 'PROCESS_FINISHED':
+    case 'PROCESS_FINISHED': {
       var processes = { ...(ui.processes ? ui.processes : {}) };
       if (processes[action.key]) {
         processes[action.key] = { ...processes[action.key], status: 'finished' };
       }
       return { ...ui, processes };
+    }
 
-    case 'CLOSE_PROCESS':
+    case 'CLOSE_PROCESS': {
       var processes = { ...(ui.processes ? ui.processes : {}) };
       if (processes[action.key]) {
         processes[action.key] = { ...processes[action.key], closing: true };
       }
       return { ...ui, processes };
+    }
 
-    case 'REMOVE_PROCESS':
+    case 'REMOVE_PROCESS': {
       var processes = { ...(ui.processes ? ui.processes : {}) };
       if (processes[action.key]) {
         processes[action.key] = { ...processes[action.key], status: 'completed', closing: false };
       }
       return { ...ui, processes };
+    }
 
+    case 'SUPPRESS_BROADCAST':
+      return { ...ui, suppressed_broadcasts: [...(ui.suppressed_broadcasts || []), action.key] };
 
     default:
       return ui;

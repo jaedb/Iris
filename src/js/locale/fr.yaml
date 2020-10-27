@@ -129,8 +129,6 @@ services:
     want_lyrics: 'Vous voulez les paroles ? Autorisez Genius sous '
   google:
     title: Google
-  icecast:
-    title: Icecast
   lastfm:
     title: LastFM
     love: Aimer
@@ -408,13 +406,6 @@ settings:
       locale:
         title: Locale
         description: Code de langage ISO 639 en minuscules et code de pays ISO 3166-1 alpha-2 en majucule, séparés par un tiret bas (par exemple 'fr_FR')
-    icecast:
-      enable:
-        label: Activer
-        description: Envoyer le flux audio sur ce navigateur
-      location:
-        label: Adresse
-        description: URL du flux audio
 user:
   title: Utilisateur
   title_window: '%{name} (utilisateur)'

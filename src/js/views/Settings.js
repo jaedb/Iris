@@ -3,6 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Route, Link } from 'react-router-dom';
+import localForage from 'localforage';
 import ConfirmationButton from '../components/Fields/ConfirmationButton';
 import PusherConnectionList from '../components/PusherConnectionList';
 import SourcesPriority from '../components/Fields/SourcesPriority';
@@ -31,6 +32,7 @@ class Settings extends React.Component {
       mopidy_port: this.props.mopidy.port,
       mopidy_library_artists_uri: this.props.mopidy.library_artists_uri,
       mopidy_library_albums_uri: this.props.mopidy.library_albums_uri,
+      mopidy_library_tracks_uri: this.props.mopidy.library_tracks_uri,
       pusher_username: this.props.pusher.username,
       input_in_focus: null,
     };
@@ -70,10 +72,30 @@ class Settings extends React.Component {
   }
 
   resetAllSettings = () => {
-    localStorage.clear();
-    window.location = '#';
-    window.location.reload(true);
+    localForage.clear(() => {
+      console.debug('Cleared settings, reloading...');
+      window.location = '#';
+      window.location.reload(true);
+    });
     return false;
+  }
+
+  resetStorage = () => {
+    localForage.keys().then((keys) => {
+      const keysToKeep = ['persist:root', 'persist:ui', 'persist:spotify'];
+      const keysToRemove = keys.filter((key) => keysToKeep.indexOf(key) < 0);
+
+      keysToRemove.forEach((key, index) => {
+        localForage.removeItem(key).then(() => {
+          console.debug(`Removed ${key}`);
+          if (index === keysToRemove.length) {
+            console.debug('Reloading...');
+            window.location = '#';
+            window.location.reload(true);
+          }
+        });
+      });
+    });
   }
 
   resetServiceWorkerAndCache = () => {
@@ -351,6 +373,20 @@ class Settings extends React.Component {
                   <I18n path="settings.interface.behavior.wide_scrollbars" />
                 </span>
               </label>
+              <label>
+                <input
+                  type="checkbox"
+                  name="grid_glow_enabled"
+                  checked={ui.grid_glow_enabled}
+                  onChange={() => uiActions.set({ grid_glow_enabled: !ui.grid_glow_enabled })}
+                />
+                <span className="label tooltip">
+                  <I18n path="settings.interface.behavior.grid_glow" />
+                  <span className="tooltip__content">
+                    <I18n path="settings.interface.behavior.grid_glow_tooltip" />
+                  </span>
+                </span>
+              </label>
             </div>
           </div>
 
@@ -450,6 +486,23 @@ class Settings extends React.Component {
             </div>
           </label>
 
+          <label className="field">
+            <div className="name">
+              <I18n path="settings.advanced.track_uri.label" />
+            </div>
+            <div className="input">
+              <TextField
+                type="text"
+                value={this.state.mopidy_library_tracks_uri}
+                onChange={(value) => this.onMopidySettingChanged('mopidy_library_tracks_uri', value)}
+                autosave
+              />
+              <div className="description">
+                <I18n path="settings.advanced.track_uri.description" />
+              </div>
+            </div>
+          </label>
+
           <div className="field pusher-connections">
             <div className="name">
               <I18n path="settings.advanced.connections.label" />
@@ -530,10 +583,6 @@ class Settings extends React.Component {
             >
               <I18n path="settings.advanced.restart" />
             </Button>
-            <ConfirmationButton
-              content={i18n('settings.advanced.reset')}
-              onConfirm={this.resetAllSettings}
-            />
             <Button
               type="destructive"
               onClick={this.resetServiceWorkerAndCache}
@@ -541,6 +590,17 @@ class Settings extends React.Component {
             >
               <I18n path="settings.advanced.reset_cache" />
             </Button>
+            <Button
+              type="destructive"
+              onClick={this.resetStorage}
+              tracking={{ category: 'System', action: 'ResetStorage' }}
+            >
+              <I18n path="settings.advanced.reset_storage" />
+            </Button>
+            <ConfirmationButton
+              content={i18n('settings.advanced.reset')}
+              onConfirm={this.resetAllSettings}
+            />
           </div>
 
           <h4 className="underline">
@@ -591,7 +651,7 @@ class Settings extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => state;
+const mapStateToProps = (state) => state;
 
 const mapDispatchToProps = (dispatch) => ({
   coreActions: bindActionCreators(coreActions, dispatch),

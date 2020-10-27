@@ -13,26 +13,28 @@ import * as spotifyActions from '../../services/spotify/actions';
 import { sourceIcon, decodeMopidyUri } from '../../util/helpers';
 import { sortItems } from '../../util/arrays';
 import { I18n, i18n } from '../../locale';
+import { collate } from '../../util/format';
 
 class AddToPlaylist extends React.Component {
   componentDidMount = () => {
     const {
-      spotify_library_playlists_status,
-      mopidy_library_playlists_status,
+      spotify_library,
+      mopidy_library,
       spotify_available,
-      spotifyActions,
-      mopidyActions,
+      coreActions: {
+        loadLibrary,
+      },
       uiActions: {
         setWindowTitle,
       },
     } = this.props;
 
-    if ((!spotify_library_playlists_status || spotify_library_playlists_status !== 'finished') && spotify_available) {
-      spotifyActions.getLibraryPlaylists();
+    if (!spotify_library && spotify_available) {
+      loadLibrary('spotify:library:playlists');
     }
 
-    if ((!mopidy_library_playlists_status || mopidy_library_playlists_status !== 'finished')) {
-      mopidyActions.getLibraryPlaylists();
+    if (!mopidy_library) {
+      loadLibrary('mopidy:library:playlists');
     }
 
     setWindowTitle(i18n('modal.add_to_playlist.title'));
@@ -50,23 +52,20 @@ class AddToPlaylist extends React.Component {
     window.history.back();
   }
 
-  render = () =>{
-    const { playlists, uris, spotify_library_playlists_status } = this.props;
+  render = () => {
+    const {
+      uris,
+      items,
+      spotify_library = { items_uris: [] },
+      mopidy_library = { items_uris: [] },
+    } = this.props;
 
-    if (!playlists) return (
-      <div className="empty">
-        <I18n path="modal.add_to_playlist.no_editable_playlists" />
-      </div>
-    );
+    let playlists = [
+      ...(collate(spotify_library, { items }).items),
+      ...(collate(mopidy_library, { items }).items),
+    ].filter((playlist) => playlist.can_edit);
 
-    let editablePlaylists = [];
-    for (let uri in playlists) {
-      if (playlists[uri].can_edit) editablePlaylists.push(playlists[uri]);
-    }
-
-    editablePlaylists = sortItems(editablePlaylists, 'name');
-
-    const isLoading = spotify_library_playlists_status === 'running';
+    playlists = sortItems(playlists, 'name');
 
     return (
       <Modal className="modal--add-to-playlist">
@@ -78,34 +77,30 @@ class AddToPlaylist extends React.Component {
             plural={uris.length > 1 ? 's' : ''}
           />
         </h2>
-        {editablePlaylists.length <= 0 && (
+        {playlists.length ? (
+          <div className="list small playlists">
+            {playlists.map((playlist) => (
+              <div
+                className="list__item"
+                key={playlist.uri}
+                onClick={() => this.playlistSelected(playlist.uri)}
+              >
+                <Thumbnail images={playlist.images} size="small" />
+                <h4 className="list__item__name">{ playlist.name }</h4>
+                <ul className="list__item__details details">
+                  <li><Icon type="fontawesome" className="source" name={sourceIcon(playlist.uri)} /></li>
+                  <li className="mid_grey-text">
+                    {`${playlist.tracks_total || 0} tracks`}
+                  </li>
+                </ul>
+              </div>
+            ))}
+          </div>
+        ) : (
           <div className="no-results">
             <I18n path="modal.add_to_playlist.no_playlists" />
           </div>
         )}
-        <div className="list small playlists">
-          {editablePlaylists.map((playlist) => (
-            <div
-              className="list__item"
-              key={playlist.uri}
-              onClick={() => this.playlistSelected(playlist.uri)}
-            >
-              <Thumbnail images={playlist.images} size="small" />
-              <h4 className="list__item__name">{ playlist.name }</h4>
-              <ul className="list__item__details details">
-                <li><Icon type="fontawesome" className="source" name={sourceIcon(playlist.uri)} /></li>
-                <li>
-                  {playlist.tracks_total && (
-                    <span className="mid_grey-text">
-                      {`${playlist.tracks_total} tracks`}
-                    </span>
-                  )}
-                </li>
-              </ul>
-            </div>
-          ))}
-        </div>
-        {isLoading && <Loader body lazy loading />}
       </Modal>
     );
   }
@@ -114,11 +109,10 @@ class AddToPlaylist extends React.Component {
 const mapStateToProps = (state, ownProps) => ({
   uris: (ownProps.match.params.uris ? decodeURIComponent(ownProps.match.params.uris).split(',') : []),
   mopidy_uri_schemes: state.mopidy.uri_schemes,
-  mopidy_library_playlists: state.mopidy.library_playlists,
-  mopidy_library_playlists_status: (state.ui.processes.MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR !== undefined ? state.ui.processes.MOPIDY_LIBRARY_PLAYLISTS_PROCESSOR.status : null),
+  items: state.core.items,
+  mopidy_library: state.core.libraries['mopidy:library:playlists'],
+  spotify_library: state.core.libraries['spotify:library:playlists'],
   spotify_available: state.spotify.access_token,
-  spotify_library_playlists: state.spotify.library_playlists,
-  spotify_library_playlists_status: (state.ui.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR !== undefined ? state.ui.processes.SPOTIFY_GET_LIBRARY_PLAYLISTS_PROCESSOR.status : null),
   load_queue: state.ui.load_queue,
   me_id: (state.spotify.me ? state.spotify.me.id : false),
   playlists: state.core.playlists,

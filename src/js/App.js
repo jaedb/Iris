@@ -3,6 +3,7 @@ import { bindActionCreators } from 'redux';
 import { Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
 import ReactGA from 'react-ga';
+import localForage from 'localforage';
 import * as Sentry from '@sentry/browser';
 
 import Sidebar from './components/Sidebar';
@@ -117,7 +118,7 @@ export class App extends React.Component {
     if (changed.length > 0) {
       changed.forEach((k) => params.delete(k))
       const url = window.location.toString().replace(window.location.search, params.toString())
-      console.log('settings changed:', changed, 'redirect to:', url)
+      console.log(`Settings changed, redirecting to ${url}`, changed);
       window.location.assign(url)
     }
 
@@ -161,7 +162,7 @@ export class App extends React.Component {
     if (snapcast_enabled) {
       snapcastActions.connect();
     }
-    coreActions.getBroadcasts();
+    uiActions.getBroadcasts();
 
     if (!initial_setup_complete) {
       history.push('/initial-setup');
@@ -320,7 +321,7 @@ export class App extends React.Component {
                     />
                     <Route
                       exact
-                      path="/discover/categories/:id"
+                      path="/discover/categories/:uri"
                       component={DiscoverCategory}
                     />
                     <Route
@@ -393,24 +394,53 @@ export class App extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  language: state.ui.language,
-  theme: state.ui.theme,
-  wide_scrollbar_enabled: state.ui.wide_scrollbar_enabled,
-  smooth_scrolling_enabled: state.ui.smooth_scrolling_enabled,
-  hotkeys_enabled: state.ui.hotkeys_enabled,
-  allow_reporting: state.ui.allow_reporting,
-  touch_dragging: state.ui.touch_dragging,
-  initial_setup_complete: state.ui.initial_setup_complete,
-  slim_mode: state.ui.slim_mode,
-  snapcast_enabled: state.snapcast.enabled,
-  spotify_authorized: state.spotify.authorization,
-  sidebar_open: state.ui.sidebar_open,
-  dragging: state.ui.dragger && state.ui.dragger.active,
-  context_menu: state.ui.context_menu,
-  debug_info: state.ui.debug_info,
-  test_mode: state.ui.test_mode,
-});
+const mapStateToProps = (state) => {
+  const {
+    ui: {
+      language,
+      theme,
+      wide_scrollbar_enabled,
+      smooth_scrolling_enabled,
+      hotkeys_enabled,
+      allow_reporting,
+      touch_dragging,
+      initial_setup_complete,
+      slim_mode,
+      sidebar_open,
+      dragger: {
+        active: dragging,
+      } = {},
+      context_menu,
+      debug_info,
+      test_mode,
+    },
+    snapcast: {
+      enabled: snapcast_enabled,
+    },
+    spotify: {
+      authorization: spotify_authorized,
+    },
+  } = state;
+  
+  return {
+    language,
+    theme,
+    wide_scrollbar_enabled,
+    smooth_scrolling_enabled,
+    hotkeys_enabled,
+    allow_reporting,
+    touch_dragging,
+    initial_setup_complete,
+    slim_mode,
+    sidebar_open,
+    dragging,
+    context_menu,
+    debug_info,
+    test_mode,
+    snapcast_enabled,
+    spotify_authorized,
+  };
+};
 
 const mapDispatchToProps = (dispatch) => ({
   coreActions: bindActionCreators(coreActions, dispatch),

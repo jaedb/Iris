@@ -20,26 +20,32 @@ import Loader from '../components/Loader';
 import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
-import * as pusherActions from '../services/pusher/actions';
-import * as lastfmActions from '../services/lastfm/actions';
-import * as spotifyActions from '../services/spotify/actions';
 import {
   uriSource,
-  getFromUri,
-  isLoading,
   sourceIcon,
   titleCase,
 } from '../util/helpers';
 import { collate } from '../util/format';
-import { sortItems, applyFilter } from '../util/arrays';
+import { sortItems, applyFilter, arrayOf } from '../util/arrays';
 import { i18n, I18n } from '../locale';
 import Button from '../components/Button';
 import { trackEvent } from '../components/Trackable';
+import {
+  makeItemSelector,
+  makeLoadingSelector,
+} from '../util/selectors';
 
 class Artist extends React.Component {
   componentDidMount() {
+    const {
+      uri,
+      coreActions: {
+        loadItem,
+      },
+    } = this.props;
+
     this.setWindowTitle();
-    this.props.coreActions.loadArtist(this.props.uri);
+    loadItem(uri, { full: true });
   }
 
   componentDidUpdate = ({
@@ -50,12 +56,12 @@ class Artist extends React.Component {
       uri,
       artist,
       coreActions: {
-        loadArtist,
+        loadItem,
       },
     } = this.props;
 
     if (uri !== prevUri) {
-      loadArtist(uri);
+      loadItem(uri, { full: true });
     }
 
     if (!prevArtist && artist) this.setWindowTitle(artist);
@@ -102,12 +108,14 @@ class Artist extends React.Component {
     const {
       artist: {
         uri,
-        tracks_uris,
+        tracks,
         albums_uris,
       },
-      mopidyActions: { playURIs },
+      mopidyActions: {
+        playURIs,
+      },
     } = this.props;
-    playURIs(tracks_uris || albums_uris, uri);
+    playURIs(arrayOf('uri', tracks) || albums_uris, uri);
   }
 
   setWindowTitle = (artist = this.props.artist) => {
@@ -135,57 +143,34 @@ class Artist extends React.Component {
     });
   }
 
-  loadMore = () => {
-    const {
-      spotifyActions: { getMore },
-      artist: { albums_more },
-      uri,
-    } = this.props;
-
-    getMore(
-      albums_more,
-      {
-        parent_type: 'artist',
-        parent_key: uri,
-        records_type: 'album',
-      },
-    );
-  }
-
   inLibrary = () => {
     const { uri } = this.props;
     const libraryName = `${uriSource(uri)}_library_artists`;
-    const { [libraryName]: library = [] } = this.props;
-    return library.indexOf(uri) > -1;
+    const { [libraryName]: { items_uris } } = this.props;
+    return items_uris.indexOf(uri) > -1;
   }
 
   renderOverview = () => {
     const {
       uri,
       uiActions,
-      artist: artistProp,
-      artists,
-      albums,
-      tracks,
+      artist,
       sort,
       sort_reverse,
       filter,
     } = this.props;
-    const artist = collate(
-      artistProp,
-      {
-        artists,
-        albums,
-        tracks,
-      },
-    );
+    let {
+      tracks,
+      related_artists,
+    } = artist;
+    let { albums } = this.props;
 
-    if (sort && artist.albums) {
-      artist.albums = sortItems(artist.albums, sort, sort_reverse);
+    if (sort && albums) {
+      albums = sortItems(albums, sort, sort_reverse);
     }
 
-    if (filter && artist.albums) {
-      artist.albums = applyFilter('type', filter, artist.albums);
+    if (filter && albums) {
+      albums = applyFilter('type', filter, albums);
     }
 
     const sort_options = [
@@ -220,36 +205,25 @@ class Artist extends React.Component {
         value: 'single',
         label: i18n('artist.albums.filter.singles'),
       },
-      {
-        value: 'compilation',
-        label: i18n('artist.albums.filter.compilations'),
-      },
     ];
-
-    const is_loading_tracks = (
-      !artist.tracks_uris
-      || (artist.tracks_uris && !artist.tracks)
-      || (artist.tracks_uris.length !== artist.tracks.length)
-    );
 
     return (
       <div className="body overview">
-        <div className={`top-tracks col col--w${artist.related_artists && artist.related_artists.length > 0 ? '70' : '100'}`}>
-          {artist.tracks && <h4><I18n path="artist.overview.top_tracks" /></h4>}
+        <div className={`top-tracks col col--w${related_artists && related_artists.length > 0 ? '70' : '100'}`}>
+          {tracks && <h4><I18n path="artist.overview.top_tracks" /></h4>}
           <div className="list-wrapper">
-            <TrackList className="artist-track-list" uri={artist.uri} tracks={artist.tracks ? artist.tracks.splice(0, 10) : []} />
-            <LazyLoadListener showLoader={is_loading_tracks} />
+            <TrackList className="artist-track-list" uri={uri} tracks={tracks ? tracks.slice(0, 10) : []} />
           </div>
         </div>
 
         <div className="col col--w5" />
 
-        {artist.related_artists && artist.related_artists.length > 0 && (
+        {related_artists && related_artists.length > 0 && (
           <div className="col col--w25 related-artists">
             <h4><I18n path="artist.overview.related_artists.title" /></h4>
             <div className="list-wrapper">
               <RelatedArtists
-                artists={artist.related_artists.slice(0, 6)}
+                artists={related_artists.slice(0, 6)}
                 uiActions={uiActions}
               />
             </div>
@@ -264,97 +238,61 @@ class Artist extends React.Component {
 
         <div className="cf" />
 
-        {artist.albums && (
-          <div className="albums">
-            <h4>
-						  <div><I18n path="artist.overview.albums" /></div>
-              <DropdownField
-                icon="swap_vert"
-                name="Sort"
-                value={sort}
-                valueAsLabel
-                options={sort_options}
-                selected_icon={sort ? (sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
-                handleChange={this.onChangeSort}
-              />
-              <DropdownField
-                icon="filter_list"
-                name="Filter"
-                value={filter}
-                valueAsLabel
-                options={filter_options}
-                handleChange={this.onChangeFilter}
-              />
-              {(sort || filter) && (
-                <Button
-                  discrete
-                  type="destructive"
-                  size="small"
-                  onClick={this.onResetFilters}
-                >
-                  <Icon name="clear" />
-                  <I18n path="actions.reset" />
-                </Button>
-              )}
-            </h4>
+        <div className="albums">
+          <h4>
+            <div><I18n path="artist.overview.albums" /></div>
+            <DropdownField
+              icon="swap_vert"
+              name="Sort"
+              value={sort}
+              valueAsLabel
+              options={sort_options}
+              selected_icon={sort ? (sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
+              handleChange={this.onChangeSort}
+            />
+            <DropdownField
+              icon="filter_list"
+              name="Filter"
+              value={filter}
+              valueAsLabel
+              options={filter_options}
+              handleChange={this.onChangeFilter}
+            />
+            {(sort || filter) && (
+              <Button
+                discrete
+                type="destructive"
+                size="small"
+                onClick={this.onResetFilters}
+              >
+                <Icon name="clear" />
+                <I18n path="actions.reset" />
+              </Button>
+            )}
+          </h4>
 
-            <section className="grid-wrapper no-top-padding">
-              <AlbumGrid albums={artist.albums} />
-              <LazyLoadListener
-                loadKey={artist.albums_more}
-                showLoader={artist.albums_more}
-                loadMore={this.loadMore}
-              />
-            </section>
-          </div>
-        )}
+          <section className="grid-wrapper no-top-padding">
+            <AlbumGrid albums={albums} />
+          </section>
+        </div>
       </div>
     );
   }
 
   renderTracks = () => {
-    const {
-      artist: artistProp,
-      artists,
-      tracks,
-    } = this.props;
-
-    const artist = collate(
-      artistProp,
-      {
-        artists,
-        tracks,
-      },
-    );
-
-    const is_loading_tracks = (
-      !artist.tracks_uris
-      || (artist.tracks_uris && !artist.tracks)
-      || (artist.tracks_uris.length !== artist.tracks.length)
-    );
+    const { artist: { uri, tracks } } = this.props;
 
     return (
       <div className="body related-artists">
         <section className="list-wrapper no-top-padding">
-          <TrackList className="artist-track-list" uri={artist.uri} tracks={artist.tracks} />
-          <LazyLoadListener showLoader={is_loading_tracks} />
+          <TrackList className="artist-track-list" uri={uri} tracks={tracks} />
         </section>
       </div>
     );
   }
 
   renderRelatedArtists = () => {
-    const {
-      artist: artistProp,
-      artists,
-    } = this.props;
-
-    const artist = collate(
-      artistProp,
-      {
-        artists,
-      },
-    );
+    const { artist } = this.props;
 
     return (
       <div className="body related-artists">
@@ -378,7 +316,7 @@ class Artist extends React.Component {
       },
     );
 
-    const thumbnails = artist.images && artist.images.map(
+    const thumbnails = artist.images && Array.isArray(artist.images) && artist.images.map(
       (image) => {
         if (!image.huge) return null;
         return (
@@ -459,20 +397,14 @@ class Artist extends React.Component {
   render = () => {
     const {
       uri,
-      load_queue,
+      loading,
       artist,
       history,
     } = this.props;
 
-    if (!artist) {
-      if (
-        isLoading(
-          load_queue,
-          [`spotify_artists/${getFromUri('artistid', uri)}`, 'lastfm_method=artist.getInfo'],
-        )
-      ) {
-        return <Loader body loading />;
-      }
+    if (loading) {
+      return <Loader body loading />;
+    } else if (!artist) {
       return (
         <ErrorMessage type="not-found" title="Not found">
           <p>
@@ -498,7 +430,7 @@ class Artist extends React.Component {
                 <Thumbnail size="medium" circle canZoom type="artist" image={image} />
               </div>
               <div className="heading__content">
-                <h1>{this.props.artist ? this.props.artist.name : null}</h1>
+                <h1>{artist && artist.name}</h1>
                 <div className="actions">
                   <Button
                     type="primary"
@@ -510,7 +442,7 @@ class Artist extends React.Component {
                   {is_spotify && (
                     <FollowButton
                       uri={uri}
-                      is_following={this.inLibrary()}
+                      is_following={artist.in_library}
                     />
                   )}
                   <ContextMenuTrigger className="white" onTrigger={this.handleContextMenu} />
@@ -528,7 +460,7 @@ class Artist extends React.Component {
               >
                 <h4><I18n path="artist.overview.title" /></h4>
               </Link>
-              {artist.tracks_uris && artist.tracks_uris.length > 10 && (
+              {artist.tracks && artist.tracks.length > 10 && (
                 <Link
                   exact
                   history={history}
@@ -540,7 +472,7 @@ class Artist extends React.Component {
                   <h4><I18n path="artist.tracks.title" /></h4>
                 </Link>
               )}
-              {artist.related_artists_uris && (
+              {artist.related_artists && (
                 <Link
                   exact
                   history={history}
@@ -588,17 +520,22 @@ class Artist extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   const uri = decodeURIComponent(ownProps.match.params.uri);
+  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`]);
+  const artistSelector = makeItemSelector(uri);
+  const artist = artistSelector(state);
+  let albums = null;
+  if (artist && artist.albums_uris) {
+    const albumsSelector = makeItemSelector(artist.albums_uris);
+    albums = albumsSelector(state);
+  }
+
   return {
     uri,
+    artist,
+    albums,
+    loading: loadingSelector(state),
     theme: state.ui.theme,
     slim_mode: state.ui.slim_mode,
-    load_queue: state.ui.load_queue,
-    artist: (state.core.artists[uri] !== undefined ? state.core.artists[uri] : false),
-    tracks: state.core.tracks,
-    artists: state.core.artists,
-    spotify_library_artists: state.spotify.library_artists,
-    local_library_artists: state.mopidy.library_artists,
-    albums: (state.core.albums ? state.core.albums : []),
     filter: (state.ui.artist_albums_filter ? state.ui.artist_albums_filter : null),
     sort: (state.ui.artist_albums_sort ? state.ui.artist_albums_sort : null),
     sort_reverse: (!!state.ui.artist_albums_sort_reverse),
@@ -610,9 +547,6 @@ const mapDispatchToProps = (dispatch) => ({
   coreActions: bindActionCreators(coreActions, dispatch),
   uiActions: bindActionCreators(uiActions, dispatch),
   mopidyActions: bindActionCreators(mopidyActions, dispatch),
-  pusherActions: bindActionCreators(pusherActions, dispatch),
-  lastfmActions: bindActionCreators(lastfmActions, dispatch),
-  spotifyActions: bindActionCreators(spotifyActions, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Artist);

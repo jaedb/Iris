@@ -20,7 +20,7 @@ export default class ListItem extends React.Component {
   }
 
   componentDidMount() {
-    const { item, lastfmActions, discogsActions } = this.props;
+    const { item, mopidyActions, discogsActions } = this.props;
     if (!item) return;
 
     // If the item that has just been mounted doesn't have images,
@@ -29,13 +29,13 @@ export default class ListItem extends React.Component {
       switch (uriType(item.uri)) {
         case 'artist':
           if (discogsActions) {
-            discogsActions.getArtistImages(item.uri, item);
+            //discogsActions.getArtistImages(item.uri, item);
           }
           break;
 
         case 'album':
-          if (lastfmActions && item.artists && item.artists.length > 0) {
-            lastfmActions.getAlbum(item.uri, item.artists[0].name, item.name, (item.mbid ? item.mbid : null));
+          if (mopidyActions) {
+            mopidyActions.getImages([item.uri]);
           }
           break;
       }

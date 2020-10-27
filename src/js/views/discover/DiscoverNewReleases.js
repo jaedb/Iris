@@ -11,9 +11,12 @@ import Loader from '../../components/Loader';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
-import { isLoading } from '../../util/helpers';
 import { i18n, I18n } from '../../locale';
 import Button from '../../components/Button';
+import {
+  makeItemSelector,
+  makeLoadingSelector,
+} from '../../util/selectors';
 
 class DiscoverNewReleases extends React.Component {
   componentDidMount() {
@@ -36,14 +39,14 @@ class DiscoverNewReleases extends React.Component {
 
   loadMore = () => {
     const {
-      new_releases_more,
+      more,
       spotifyActions: {
         getMore,
       },
     } = this.props;
 
     getMore(
-      new_releases_more,
+      more,
       null,
       {
         type: 'SPOTIFY_NEW_RELEASES_LOADED',
@@ -68,7 +71,7 @@ class DiscoverNewReleases extends React.Component {
     } = this.props;
 
     hideContextMenu();
-    getNewReleases();
+    getNewReleases(true);
   }
 
   handleContextMenu(e, item) {
@@ -91,14 +94,13 @@ class DiscoverNewReleases extends React.Component {
 
   render = () => {
     const {
-      load_queue,
-      new_releases,
-      albums: albumsProp,
-      new_releases_more,
+      loading,
+      albums,
+      more,
       uiActions,
     } = this.props;
 
-    if (isLoading(load_queue, ['spotify_browse/new-releases'])) {
+    if (loading) {
       return (
         <div className="view discover-new-releases-view">
           <Header>
@@ -108,15 +110,6 @@ class DiscoverNewReleases extends React.Component {
           <Loader body loading />
         </div>
       );
-    }
-
-    const albums = [];
-    if (new_releases) {
-      for (const uri of new_releases) {
-        if (albumsProp.hasOwnProperty(uri)) {
-          albums.push(albumsProp[uri]);
-        }
-      }
     }
 
     const options = (
@@ -140,8 +133,8 @@ class DiscoverNewReleases extends React.Component {
           <AlbumGrid albums={albums} />
         </section>
         <LazyLoadListener
-          loadKey={new_releases_more}
-          showLoader={new_releases_more}
+          loadKey={more}
+          showLoader={more}
           loadMore={this.loadMore}
         />
       </div>
@@ -149,15 +142,29 @@ class DiscoverNewReleases extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  theme: state.ui.theme,
-  load_queue: state.ui.load_queue,
-  artists: state.core.artists,
-  albums: state.core.albums,
-  new_releases: (state.spotify.new_releases ? state.spotify.new_releases : null),
-  new_releases_more: (state.spotify.new_releases_more ? state.spotify.new_releases_more : null),
-  new_releases_total: (state.spotify.new_releases_total ? state.spotify.new_releases_total : null),
-});
+const mapStateToProps = (state) => {
+  const {
+    ui: {
+      theme,
+    },
+    spotify: {
+      new_releases: uris,
+      new_releases_more: more,
+      new_releases_total: total,
+    },
+  } = state;
+  const loadingSelector = makeLoadingSelector(['(.*)new-releases(.*)offset=0(.*)']);
+  const itemSelector = makeItemSelector(uris);
+
+  return {
+    uris,
+    loading: loadingSelector(state),
+    albums: itemSelector(state),
+    more,
+    total,
+    theme,
+  };
+};
 
 const mapDispatchToProps = (dispatch) => ({
   uiActions: bindActionCreators(uiActions, dispatch),

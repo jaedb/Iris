@@ -38,6 +38,7 @@ actions:
   confirm: Are you sure?
   delete: Delete
   remove: Remove
+  cancel: Cancel
 common:
   popularity: Popularity
   name: Name
@@ -48,6 +49,7 @@ common:
   sort: Sort
   filter: Filter
   by: ' by '
+  loading_library: 'Loading %{provider} %{type}'
 fields:
   start_typing: 'Start typing...'
   search: 'Search...'
@@ -66,6 +68,7 @@ fields:
     as_loaded: As loaded
     name: Name
     artist: Artist
+    album: Album
     updated: Updated
     tracks: Tracks
     source: Source
@@ -116,6 +119,8 @@ services:
     title: Mopidy
     local: Local
     adding_uris: 'Adding %{count} URI(s)'
+    adding_uris_broadcast: '%{username} is adding %{count} URI(s)'
+    searching: 'Searching %{provider} %{type}'
     searching_providers: 'Searching %{count} Mopidy providers'
     loading_albums: 'Loading %{count} local albums'
   spotify:
@@ -130,8 +135,6 @@ services:
     want_lyrics: 'Want track lyrics? Authorize Genius in '
   google:
     title: Google
-  icecast:
-    title: Icecast
   lastfm:
     title: LastFM
     love: Love
@@ -173,6 +176,7 @@ context_menu:
   discover_similar: Discover similar
   start_radio: Start radio
   copy_uri: Copy URI(s)
+  refresh: Refresh
 dropzones:
   dragging_things: 'Dragging %{count} things'
 playback_controls:
@@ -184,6 +188,7 @@ playback_controls:
   unmute: Unmute
 snapcast:
   enabled: Enabled
+  streaming_enabled: Streaming enabled
   show_disconnected_clients: Show disconnected clients
   no_connected_clients: No connected clients
   host: Host
@@ -228,6 +233,7 @@ artist:
   overview:
     title: Overview
     top_tracks: Top tracks
+    albums: Albums
     related_artists:
       title: Related artists
       more: All related artists
@@ -333,6 +339,8 @@ settings:
       touch_events: Enable touch events on play controls
       touch_events_tooltip: Allows left- and right-swipe to change tracks
       wide_scrollbars: Use wide scrollbars
+      grid_glow: Thumbnail glow effect
+      grid_glow_tooltip: Disable effect for lower-power devices or older browsers
     sources_priority:
       label: Sources priority
       description: Drag-and-drop to prioritize search providers and results
@@ -353,6 +361,9 @@ settings:
     album_uri:
       label: Album library URI
       description: URI used for collecting library albums
+    track_uri:
+      label: Track library URI
+      description: URI used for collecting library tracks
     connections:
       label: Connections
     version:
@@ -363,6 +374,7 @@ settings:
     share_configuration: Share configuration
     restart: Restart server
     reset_cache: Reset cache
+    reset_storage: Reset storage
     reset: Reset all settings
   about:
     title: About
@@ -411,13 +423,6 @@ settings:
       locale:
         title: Locale
         description: Lowercase ISO 639 language code and an uppercase ISO 3166-1 alpha-2 country code, joined by an underscore (eg 'en_NZ')
-    icecast:
-      enable:
-        label: Enable
-        description: Stream audio to this browser
-      location:
-        label: Location
-        description: The full URL to your stream endpoint
 user:
   title: User
   title_window: '%{name} (user)'

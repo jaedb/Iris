@@ -16,23 +16,12 @@ import Button from '../../components/Button';
 
 const UriListItem = ({
   uri,
-  tracks,
+  items,
   random_tracks,
-  albums,
   remove,
 }) => {
   const type = uriType(uri);
-  let item = null;
-  switch (type) {
-    case 'track':
-      item = tracks[uri];
-      break;
-    case 'album':
-      item = albums[uri];
-      break;
-    default:
-      break;
-  }
+  let item = items[uri];
   if (!item) {
     item = random_tracks.find((track) => track.uri === uri);
   }
@@ -139,13 +128,12 @@ class AddToQueue extends React.Component {
     const uris = text.split(',');
 
     const validatedUris = uris.filter((uri) => uriType(uri));
-
     validatedUris.forEach((uri) => {
       loadItem(uri);
     });
 
     this.setState({ text: '' });
-    viewDataLoaded({ uris: [...prevUris, ...validatedUris] });
+    viewDataLoaded({ uris: [...prevUris, ...uris] }); // We add all uris (validated and otherwise)
   }
 
   removeUri = (uri) => {
@@ -163,8 +151,7 @@ class AddToQueue extends React.Component {
 
   render = () => {
     const {
-      tracks,
-      albums,
+      items,
       view: {
         uris = [],
         random_tracks = [],
@@ -214,9 +201,8 @@ class AddToQueue extends React.Component {
                   {uris.map((uri, index) => (
                     <UriListItem
                       uri={uri}
-                      tracks={tracks}
+                      items={items}
                       random_tracks={random_tracks}
-                      albums={albums}
                       remove={this.removeUri}
                       key={`${uri}_${index}`}
                     />
@@ -286,8 +272,7 @@ class AddToQueue extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  albums: state.core.albums,
-  tracks: state.core.tracks,
+  items: state.core.items,
   view: state.core.view ? state.core.view : {},
 });
 

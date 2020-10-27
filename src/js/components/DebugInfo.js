@@ -6,8 +6,16 @@ import { get as getStorage } from '../util/storage';
 import { isTouchDevice } from '../util/helpers';
 import * as uiActions from '../services/ui/actions';
 import { indexToArray } from '../util/arrays';
+import localForage from 'localforage';
 
 class DebugInfo extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { localForageLength: 0 }
+  }
+  componentDidMount() {
+    localForage.length().then((localForageLength) => this.setState({ localForageLength }))
+  }
   localStorageSize() {
     let data = '';
 
@@ -29,11 +37,11 @@ class DebugInfo extends React.Component {
     };
   }
 
-  renderLoadQueue() {
-    const { ui: { load_queue } } = this.props;
+  renderLoadQueue = () => {
+    const { load_queue } = this.props;
     if (!load_queue) return <div className="debug-info-item mid_grey-text">Nothing loading</div>;
 
-    const queue = indexToArray(load_queue, null, true);
+    const queue = indexToArray(load_queue);
 
     if (queue.length > 0) {
       return (
@@ -45,8 +53,17 @@ class DebugInfo extends React.Component {
     return <div className="debug-info-item mid_grey-text">Nothing loading</div>;
   }
 
-  render() {
+  render = () => {
     const localStorageUsage = this.localStorageSize();
+    const {
+      items = {},
+      notifications = {},
+      processes = {},
+      slim_mode,
+      test_mode,
+      selected_tracks = [],
+      enqueue_uris_batches = [],
+    } = this.props;
 
     return (
       <div className="debug-info">
@@ -65,87 +82,47 @@ class DebugInfo extends React.Component {
         </div>
 
         <div className="debug-info-section">
-          <h5>Indexes</h5>
+          <h5>State</h5>
           <div className="debug-info-item">
-						Albums:
-            {' '}
-            {this.props.core.albums ? Object.keys(this.props.core.albums).length : '0'}
+						{`Items: ${Object.keys(items).length}`}
           </div>
           <div className="debug-info-item">
-						Artists:
-            {' '}
-            {this.props.core.artists ? Object.keys(this.props.core.artists).length : '0'}
+						{`Coldstore items: ${this.state.localForageLength}`}
           </div>
           <div className="debug-info-item">
-						Playlists:
-            {' '}
-            {this.props.core.playlists ? Object.keys(this.props.core.playlists).length : '0'}
+						{`Notifications: ${Object.keys(notifications).length}`}
           </div>
           <div className="debug-info-item">
-						Tracks:
-            {' '}
-            {this.props.core.tracks ? Object.keys(this.props.core.tracks).length : '0'}
+						{`Processes: ${Object.keys(processes).length}`}
           </div>
           <div className="debug-info-item">
-						Users:
-            {' '}
-            {this.props.core.users ? Object.keys(this.props.core.users).length : '0'}
+						{`Enqueue batches: ${enqueue_uris_batches.length}`}
           </div>
           <div className="debug-info-item">
-						Notifications:
-            {' '}
-            {this.props.ui.notifications ? Object.keys(this.props.ui.notifications).length : '0'}
-          </div>
-          <div className="debug-info-item">
-						Processes:
-            {' '}
-            {this.props.ui.processes ? Object.keys(this.props.ui.processes).length : '0'}
-          </div>
-          <div className="debug-info-item">
-						Enqueue batches:
-            {' '}
-            {this.props.mopidy.enqueue_uris_batches ? this.props.mopidy.enqueue_uris_batches.length : '0'}
-          </div>
-          <div className="debug-info-item">
-						Cached URLs:
-            {' '}
-            {Object.keys(getStorage('cache')).length}
+						{`Cached URLs: ${Object.keys(getStorage('cache')).length}`}
           </div>
         </div>
 
         <div className="debug-info-section">
           <h5>Config</h5>
           <div className="debug-info-item">
-						Slim mode:
-            {' '}
-            {this.props.ui.slim_mode ? 'on' : 'off'}
+						{`Slim mode: ${slim_mode ? 'on' : 'off'}`}
           </div>
           <div className="debug-info-item">
-						Test mode:
-            {' '}
-            {this.props.ui.test_mode ? 'on' : 'off'}
+						{`Test mode: ${test_mode ? 'on' : 'off'}`}
           </div>
           <div className="debug-info-item">
-						Touch:
-            {' '}
-            {isTouchDevice() ? 'on' : 'off'}
+						{`Touch: ${isTouchDevice() ? 'on' : 'off'}`}
           </div>
           <div className="debug-info-item">
-						LocalStorage usage:
-            {' '}
-            {localStorageUsage.used}
-kb (~
-            {localStorageUsage.percent}
-%)
+						{`LocalStorage usage: ${localStorageUsage.used}kb (~${localStorageUsage.percent}%)`}
           </div>
           <div className="debug-info-item">
-						Selected tracks:
-            {' '}
-            {this.props.ui.selected_tracks.length}
+						{`Selected tracks: ${selected_tracks.length}`}
             <br />
             {
-							this.props.ui.selected_tracks.map((track_key, index) => (
-  <div key={`${track_key}_${index}`}>{track_key}</div>
+							selected_tracks.map((track_key, index) => (
+                <div key={`${track_key}_${index}`}>{track_key}</div>
 							))
 						}
           </div>
@@ -161,11 +138,35 @@ kb (~
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
-  core: state.core,
-  ui: state.ui,
-  mopidy: state.mopidy,
-});
+const mapStateToProps = (state) => {
+  const {
+    core: {
+      items,
+    },
+    ui: {
+      notifications,
+      processes,
+      slim_mode,
+      test_mode,
+      selected_tracks,
+      load_queue,
+    },
+    mopidy: {
+      enqueue_uris_batches,
+    },
+  } = state;
+
+  return {
+    items,
+    notifications,
+    processes,
+    slim_mode,
+    test_mode,
+    selected_tracks,
+    enqueue_uris_batches,
+    load_queue,
+  };
+};
 
 const mapDispatchToProps = (dispatch) => ({
   uiActions: bindActionCreators(uiActions, dispatch),

@@ -405,10 +405,9 @@ export function shuffleTracklist() {
  * Asset-oriented actions
  * */
 
-export function getImages(context, uris) {
+export function getImages(uris) {
   return {
     type: 'MOPIDY_GET_IMAGES',
-    context,
     uris,
   };
 }
@@ -432,10 +431,11 @@ export function getLibraryPlaylists() {
   return { type: 'MOPIDY_GET_LIBRARY_PLAYLISTS' };
 }
 
-export function getPlaylist(uri) {
+export function getPlaylist(uri, options) {
   return {
     type: 'MOPIDY_GET_PLAYLIST',
-    data: { uri },
+    uri,
+    options,
   };
 }
 
@@ -454,58 +454,22 @@ export function getDirectory(uri) {
   };
 }
 
-export function getTracks(uris, get_images) {
+export function getTracks(uris, options) {
   return {
     type: 'MOPIDY_GET_TRACKS',
     uris,
-    get_images,
+    options,
   };
 }
 
-export function getTrack(uri) {
-  return getTracks([uri], true);
+export function getTrack(uri, options) {
+  return getTracks([uri], options);
 }
 
 export function getLibraryArtists(uri = null) {
   return {
     type: 'MOPIDY_GET_LIBRARY_ARTISTS',
     uri,
-  };
-}
-
-export function clearLibraryArtists() {
-  return {
-    type: 'MOPIDY_CLEAR_LIBRARY_ARTISTS',
-  };
-}
-
-export function getArtist(uri) {
-  return {
-    type: 'MOPIDY_GET_ARTIST',
-    uri,
-  };
-}
-
-export function getArtists(uris, processor = null) {
-  return {
-    type: 'MOPIDY_GET_ARTISTS',
-    uris,
-    processor,
-  };
-}
-
-export function getAlbum(uri) {
-  return {
-    type: 'MOPIDY_GET_ALBUM',
-    uri,
-  };
-}
-
-export function getAlbums(uris, processor = null) {
-  return {
-    type: 'MOPIDY_GET_ALBUMS',
-    uris,
-    processor,
   };
 }
 
@@ -516,21 +480,26 @@ export function getLibraryAlbums(uri = null) {
   };
 }
 
-export function clearLibraryAlbums() {
+export function getLibraryTracks(uri = null) {
   return {
-    type: 'MOPIDY_CLEAR_LIBRARY_ALBUMS',
+    type: 'MOPIDY_GET_LIBRARY_TRACKS',
+    uri,
   };
 }
 
-export function runProcessor(processor) {
+export function getArtist(uri, options) {
   return {
-    type: processor,
+    type: 'MOPIDY_GET_ARTIST',
+    uri,
+    options,
   };
 }
 
-export function cancelProcessor(processor) {
+export function getAlbum(uri, options) {
   return {
-    type: `${processor}_CANCEL`,
+    type: 'MOPIDY_GET_ALBUM',
+    uri,
+    options,
   };
 }
 
@@ -541,29 +510,20 @@ export function view_getRandomTracks(limit = 100) {
   };
 }
 
-
-/**
- * Searching
- * */
-
 export function clearSearchResults() {
   return {
     type: 'MOPIDY_CLEAR_SEARCH_RESULTS',
   };
 }
 
-export function getSearchResults(type, term, limit = 100) {
+export function getSearchResults(query, limit = 100, uri_schemes) {
   return {
     type: 'MOPIDY_GET_SEARCH_RESULTS',
-    query: { type, term },
+    query,
     limit,
+    uri_schemes,
   };
 }
-
-
-/**
- * Other general actions
- * */
 
 export function getQueueHistory() {
   return {

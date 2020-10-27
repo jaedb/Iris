@@ -21,6 +21,7 @@ const available = [
   { key: 'de', name: de.name },
   { key: 'fr', name: fr.name },
   { key: 'nl', name: nl.name },
+  { key: 'sv', name: sv.name },
 ];
 
 export default {

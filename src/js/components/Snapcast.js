@@ -19,6 +19,7 @@ const Snapcast = (props) => {
       host,
       port,
       enabled,
+      streaming_enabled,
       connected,
     },
   } = props;
@@ -40,6 +41,18 @@ const Snapcast = (props) => {
             />
             <span className="label">
               <I18n path="snapcast.enabled" />
+            </span>
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              name="streaming_enabled"
+              checked={streaming_enabled}
+              disabled={!enabled}
+              onChange={() => actions.setStreamingEnabled(!streaming_enabled)}
+            />
+            <span className="label">
+              <I18n path="snapcast.streaming_enabled" />
             </span>
           </label>
           <label>
@@ -88,7 +101,7 @@ const Snapcast = (props) => {
   );
 }
 
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state) => ({
   snapcast: state.snapcast,
   show_disconnected_clients: (
     state.ui.snapcast_show_disconnected_clients !== undefined

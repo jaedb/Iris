@@ -7,9 +7,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const config = {
 	mode: process.env.NODE_ENV,
 	context: path.resolve(__dirname),
-	entry: {
-		js: './src/js/index'
-	},
+	entry: ['@babel/polyfill', './src/js/index'],
 	output: {
 		path: path.resolve(__dirname, 'mopidy_iris/static'),
 		filename: 'app'+(isDev ? '' : '.min')+'.js'

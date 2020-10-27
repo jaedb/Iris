@@ -66,59 +66,45 @@ export default function reducer(core = {}, action) {
          * and appended to their relevant index.
          * */
 
-    case 'TRACKS_LOADED':
-      var tracks = { ...core.tracks };
-      for (const track of action.tracks) {
-        tracks[track.uri] = track;
-      }
-      return { ...core, tracks };
-
-    case 'ALBUMS_LOADED':
-      var albums = { ...core.albums };
-      for (const album of action.albums) {
-        albums[album.uri] = album;
-      }
-      return { ...core, albums };
-
-    case 'ARTISTS_LOADED':
-      var artists = { ...core.artists };
-      for (var artist of action.artists) {
-        artists[artist.uri] = artist;
-      }
-      return { ...core, artists };
-
-    case 'PLAYLISTS_LOADED':
-      var playlists = { ...core.playlists };
-      for (var playlist of action.playlists) {
-        playlists[playlist.uri] = playlist;
-      }
-      return { ...core, playlists };
-
-    case 'USERS_LOADED':
-      var users = { ...core.users };
-      for (var user of action.users) {
-        users[user.uri] = user;
-      }
-      return { ...core, users };
-
-
-    case 'ARTIST_ALBUMS_LOADED':
-      var artists = { ...core.artists };
-      var albums_uris = [];
-      if (artists[action.artist_uri].albums_uris) {
-        albums_uris = artists[action.artist_uri].albums_uris;
-      }
-
-      var artist = {
-
-        ...artists[action.artist_uri],
-        albums_uris: [...albums_uris, ...action.albums_uris],
-        albums_more: action.more,
-        albums_total: action.total,
+    case 'ITEM_LOADED':
+      return {
+        ...core,
+        items: {
+          ...core.items,
+          [action.item.uri]: action.item,
+        },
       };
-      artists[action.artist_uri] = artist;
-      return { ...core, artists };
 
+    case 'ITEMS_LOADED':
+      const mergedItems = action.items.reduce(
+        (obj, item) => (obj[item.uri] = item, obj),
+        {},
+      );
+      return {
+        ...core,
+        items: {
+          ...core.items,
+          ...mergedItems,
+        },
+      };
+
+    case 'LIBRARY_LOADED':
+      return {
+        ...core,
+        libraries: {
+          ...core.libraries,
+          [action.library.uri]: action.library,
+        },
+      };
+
+    case 'UNLOAD_LIBRARY': {
+      const libraries = { ...core.libraries };
+      delete libraries[action.uri];
+      return {
+        ...core,
+        libraries,
+      };
+    }
 
     case 'USER_PLAYLISTS_LOADED':
       var users = { ...core.users };
@@ -139,61 +125,51 @@ export default function reducer(core = {}, action) {
       users[action.uri] = user;
       return { ...core, users };
 
+    case 'RESTORE_LIBRARY_FROM_COLD_STORE':
+      const { libraries } = core;
+      libraries[action.library.uri] = {
+        ...(libraries[action.library.uri] || {}),
+        ...action.library,
+      };
+      return {
+        ...core,
+        libraries,
+      };
+
+    case 'RESTORE_ITEMS_FROM_COLD_STORE':
+      const { items } = core;
+      action.items.forEach((item) => {
+        items[item.uri] = {
+          ...(items[item.uri] || {}),
+          ...item,
+        };
+      });
+      return {
+        ...core,
+        items,
+      };
 
       /**
          * Remove an item from an index
          * */
 
-    case 'REMOVE_FROM_INDEX':
-      var index = { ...core[action.index_name] };
+    case 'REMOVE_ITEM': {
+      const items = { ...core.items };
 
-      // We have a new key to redirect to
       if (action.new_key) {
-            	index[action.key] = {
-            		moved_to: action.new_key,
-            	};
-
-        // No redirection, so just a clean delete
+        items[action.key] = { moved_to: action.new_key };
       } else {
-            	delete index[action.key];
+        delete items[action.key];
       }
 
-      var updated_core = {};
-      updated_core[action.index_name] = index;
-
-      return { ...core, ...updated_core };
+      return { ...core, items };
+    }
 
 
-      /**
-         * Playlists
-         * */
 
-    case 'PLAYLIST_TRACKS':
-      var playlists = { ...core.playlists };
-      var playlist = { ...playlists[action.key], tracks_uris: action.tracks_uris };
-
-      playlists[action.key] = playlist;
-      return { ...core, playlists };
-
-    case 'LIBRARY_PLAYLISTS_LOADED':
-      if (core.library_playlists) {
-        var library_playlists = [...core.library_playlists, ...action.uris];
-      } else {
-        var library_playlists = action.uris;
-      }
-
-      library_playlists = removeDuplicates(library_playlists);
-
-      return {
-        ...core,
-        library_playlists,
-        library_playlists_started: true,
-      };
-
-
-      /**
-         * Genres
-         * */
+    /**
+     * Genres
+     * */
 
     case 'SPOTIFY_GENRES_LOADED':
       return { ...core, genres: action.genres };
@@ -207,98 +183,28 @@ export default function reducer(core = {}, action) {
         },
       };
 
-
-      /**
-         * Search results
-         * */
-
-    case 'SEARCH_STARTED':
+    /**
+     * Search results
+     * */
+    case 'START_SEARCH':
       return {
         ...core,
         search_results: {
-          artists_uris: [],
-          albums_uris: [],
-          playlists_uris: [],
+          query: action.query,
+          artists: [],
+          albums: [],
+          playlists: [],
           tracks: [],
         },
       };
 
-    case 'SEARCH_RESULTS_LOADED':
-
-      // artists
-      if (core.search_results && core.search_results.artists_uris) {
-        var { artists_uris } = core.search_results;
-      } else {
-        var artists_uris = [];
-      }
-      if (action.artists_uris) artists_uris = [...artists_uris, ...action.artists_uris];
-
-      // more tracks
-      if (typeof (action.artists_more) !== 'undefined') var { artists_more } = action;
-      else if (core.search_results && core.search_results.artists_more) var { artists_more } = core.search_results;
-      else var artists_more = null;
-
-
-      // albums
-      if (core.search_results && core.search_results.albums_uris) {
-        var { albums_uris } = core.search_results;
-      } else {
-        var albums_uris = [];
-      }
-      if (action.albums_uris) albums_uris = [...albums_uris, ...action.albums_uris];
-
-      // more tracks
-      if (typeof (action.albums_more) !== 'undefined') var { albums_more } = action;
-      else if (core.search_results && core.search_results.albums_more) var { albums_more } = core.search_results;
-      else var albums_more = null;
-
-
-      // playlists
-      if (core.search_results && core.search_results.playlists_uris) {
-        var { playlists_uris } = core.search_results;
-      } else {
-        var playlists_uris = [];
-      }
-      if (action.playlists_uris) playlists_uris = [...playlists_uris, ...action.playlists_uris];
-
-      // more tracks
-      if (typeof (action.playlists_more) !== 'undefined') var { playlists_more } = action;
-      else if (core.search_results && core.search_results.playlists_more) var { playlists_more } = core.search_results;
-      else var playlists_more = null;
-
-
-      // tracks
-      if (core.search_results && core.search_results.tracks) {
-        var { tracks } = core.search_results;
-      } else {
-        var tracks = [];
-      }
-      if (action.tracks) tracks = [...tracks, ...formatTracks(action.tracks)];
-
-      // more tracks
-      if (typeof (action.tracks_more) !== 'undefined') var { tracks_more } = action;
-      else if (core.search_results && core.search_results.tracks_more) var { tracks_more } = core.search_results;
-      else var tracks_more = null;
-
+    case 'SEARCH_RESULTS_LOADED': {
+      const { search_results } = action;
       return {
         ...core,
-        search_results: {
-          artists_more,
-          artists_uris: removeDuplicates(artists_uris),
-          albums_more,
-          albums_uris: removeDuplicates(albums_uris),
-          playlists_more,
-          playlists_uris: removeDuplicates(playlists_uris),
-          tracks,
-          tracks_more,
-        },
+        search_results,
       };
-
-    case 'UPDATE_PINNED':
-      return {
-        ...core,
-        pinned: action.pinned,
-      };
+    }
 
     default:
       return core;

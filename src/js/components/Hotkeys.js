@@ -33,28 +33,35 @@ class Hotkeys extends React.Component {
       allow_reporting,
     } = this.props;
     let { volume } = this.props;
-    const key = e.key.toLowerCase();
+    let { key } = e;
+    const {
+      target,
+      altKey,
+      ctrlKey,
+      metaKey,
+      shiftKey,
+    } = e;
+    key = key.toLowerCase();
 
     // Ignore text input fields
     if (
-      (e.target.nodeName === 'INPUT' && (e.target.type === 'text' || e.target.type === 'number')) ||
-      e.target.nodeName === 'TEXTAREA' ||
-      (e.target.nodeName === 'BUTTON' && key === ' ')) {
+      (target.nodeName === 'INPUT' && (target.type === 'text' || target.type === 'number')) ||
+      target.nodeName === 'TEXTAREA' ||
+      (target.nodeName === 'BUTTON' && key === ' ')) {
       return;
     }
 
     // Ignore when there are any key modifiers. This enables us to avoid interfering
     // with browser- and OS-default functions.
-    if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) {
+    if (altKey || ctrlKey || metaKey || shiftKey) {
       return;
     }
 
-    let prevent = false;
     switch (key) {
       case ' ':
       case 'p': // Super-useful once you get used to it. This negates the issue where interactive elements
         // are in focus (ie slider) and <space> is reserved for that field's interactivity.
-        if (play_state == 'playing') {
+        if (play_state === 'playing') {
           mopidyActions.pause();
           uiActions.createNotification({ content: 'pause', type: 'shortcut' });
           if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Pause' });
@@ -63,13 +70,13 @@ class Hotkeys extends React.Component {
           uiActions.createNotification({ content: 'play_arrow', type: 'shortcut' });
           if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Play' });
         }
-        prevent = true;
+        e.preventDefault();
         break;
 
       case 's': // Stop
         mopidyActions.stop();
         uiActions.createNotification({ content: 'stop', type: 'shortcut' });
-        prevent = true;
+        e.preventDefault();
         if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Stop' });
         break;
 
@@ -80,14 +87,14 @@ class Hotkeys extends React.Component {
         }
         mopidyActions.setTimePosition(new_position);
         uiActions.createNotification({ content: 'fast_rewind', type: 'shortcut' });
-        prevent = true;
+        e.preventDefault();
         if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Rewind' });
         break;
 
       case 'f': // Seek forwards 30 sec
         mopidyActions.setTimePosition(play_time_position + 30000);
         uiActions.createNotification({ content: 'fast_forward', type: 'shortcut' });
-        prevent = true;
+        e.preventDefault();
         if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Fastforward' });
         break;
 
@@ -95,7 +102,7 @@ class Hotkeys extends React.Component {
       case '<': // Previous track
         mopidyActions.previous();
         uiActions.createNotification({ content: 'skip_previous', type: 'shortcut' });
-        prevent = true;
+        e.preventDefault();
         if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Previous' });
         break;
 
@@ -103,7 +110,7 @@ class Hotkeys extends React.Component {
       case '>': // Next track
         mopidyActions.next();
         uiActions.createNotification({ content: 'skip_next', type: 'shortcut' });
-        prevent = true;
+        e.preventDefault();
         if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Next' });
         break;
 
@@ -120,7 +127,7 @@ class Hotkeys extends React.Component {
           }
           uiActions.createNotification({ content: 'volume_up', type: 'shortcut' });
         }
-        prevent = true;
+        e.preventDefault();
         if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Volume up' });
         break;
 
@@ -136,7 +143,7 @@ class Hotkeys extends React.Component {
           }
         }
         uiActions.createNotification({ content: 'volume_down', type: 'shortcut' });
-        prevent = true;
+        e.preventDefault();
         if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Volume down' });
         break;
 
@@ -150,45 +157,41 @@ class Hotkeys extends React.Component {
           uiActions.createNotification({ content: 'volume_off', type: 'shortcut' });
           if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Mute' });
         }
-        prevent = true;
+        e.preventDefault();
         break;
 
       case 'escape': // Cancel current action/context
         if (dragging) {
           uiActions.dragEnd();
-          prevent = true;
+          e.preventDefault();
           if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Dragging' });
         } else if ($('body').hasClass('modal-open')) {
           window.history.back();
-          prevent = true;
+          e.preventDefault();
           if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Modal' });
         }
         break;
 
       case '1': // Navigation: Queue
         history.push('/queue');
-        prevent = true;
+        e.preventDefault();
         if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Queue' });
         break;
 
       case '2': // Navigation: Search
         history.push('/search');
-        prevent = true;
+        e.preventDefault();
         if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Search' });
         break;
 
       case '3': // Navigation: Kiosk mode
         history.push('/kiosk-mode');
-        prevent = true;
+        e.preventDefault();
         if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Kiosk mode' });
         break;
 
       default:
         break;
-    }
-
-    if (prevent) {
-      e.preventDefault();
     }
   }
 

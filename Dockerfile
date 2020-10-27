@@ -50,6 +50,7 @@ RUN python3.7 -m pip install --no-cache \
   Mopidy-GMusic \
   Mopidy-TuneIn \
   Mopidy-Youtube \
+  Mopidy-SoundCloud \
   # pip not up-to-date for Mopidy-Tidal (https://github.com/tehkillerbee/mopidy-tidal/issues/14)
   git+https://github.com/tehkillerbee/mopidy-tidal.git@master
 

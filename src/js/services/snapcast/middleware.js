@@ -96,8 +96,14 @@ const SnapcastMiddleware = (function () {
           store.dispatch(snapcastActions.groupLoaded(message.params));
           break;
 
+        case 'Group.OnNameChanged':
+          store.dispatch(snapcastActions.groupLoaded(message.params));
+          break;
+
         case 'Server.OnUpdate':
-          store.dispatch(snapcastActions.serverLoaded(message.param));
+          store.dispatch(snapcastActions.serverLoaded(message.params.server.server));
+          store.dispatch(snapcastActions.groupsLoaded(message.params.server.groups, true));
+          store.dispatch(snapcastActions.streamsLoaded(message.params.server.streams, true));
           break;
 
         default:
@@ -272,7 +278,12 @@ const SnapcastMiddleware = (function () {
 
       case 'SNAPCAST_SET_ENABLED':
         store.dispatch(snapcastActions.set({ enabled: action.enabled }));
-        store.dispatch(action.enabled ? snapcastActions.connect() : snapcastActions.disconnect());
+        if (!action.enabled) {
+          store.dispatch(snapcastActions.set({ streaming_enabled: false }));
+          store.dispatch(snapcastActions.disconnect());
+        } else {
+          store.dispatch(snapcastActions.connect());
+        }
         break;
 
       case 'SNAPCAST_GET_SERVER':
@@ -325,24 +336,23 @@ const SnapcastMiddleware = (function () {
         next(action);
         break;
 
-      case 'SNAPCAST_CLIENTS_LOADED':
-        var clients_index = { ...snapcast.clients };
-        var clients_loaded = [];
+      case 'SNAPCAST_CLIENTS_LOADED': {
+        const nextClients = action.flush ? {} : { ...snapcast.clients };
 
         for (const raw_client of action.clients) {
-          var client = formatClient(raw_client);
-
-          if (clients_index[client.id]) {
-            client = { ...clients_index[client.id], ...client };
-          }
-
-          clients_loaded.push(client);
+          const client = formatClient(raw_client);
+          nextClients[client.id] = {
+            ...nextClients[client.id],
+            ...client,
+          };
         }
 
-        action.clients = clients_loaded;
-
-        next(action);
+        next({
+          ...action,
+          clients: nextClients,
+        });
         break;
+      }
 
       case 'SNAPCAST_SET_CLIENT_NAME':
         var client = snapcast.clients[action.id];

@@ -86,23 +86,31 @@ class LibraryBrowseDirectory extends React.Component {
     });
   }
 
-  playAll(e, tracks) {
-    const tracks_uris = arrayOf('uri', tracks);
-    this.props.mopidyActions.playURIs(tracks_uris, `iris:browse:${this.props.uri}`);
-    this.props.uiActions.hideContextMenu();
+  playAll = (tracks) => {
+    const {
+      uri,
+      mopidyActions: {
+        playURIs,
+      },
+      uiActions: {
+        hideContextMenu,
+      },
+    } = this.props;
+
+    playURIs(arrayOf('uri', tracks), `iris:browse:${uri}`);
+    hideContextMenu();
   }
 
-  goBack(e) {
+  goBack = () => {
+    const { uiActions: { hideContextMenu } } = this.props;
+
     window.history.back();
-    this.props.uiActions.hideContextMenu();
+    hideContextMenu();
   }
 
-  renderBreadcrumbs() {
-    if (this.props.uri) {
-      var parent_uri = this.props.uri;
-    } else {
-      return null;
-    }
+  renderBreadcrumbs = () => {
+    const { uri } = this.props;
+    let parent_uri = uri || null;
 
     if (parent_uri.startsWith('file://')) {
       parent_uri = parent_uri.substring(0, parent_uri.lastIndexOf('/'));
@@ -120,11 +128,12 @@ class LibraryBrowseDirectory extends React.Component {
     return null;
   }
 
-  renderSubdirectories(subdirectories) {
-    if (this.props.view === 'list') {
+  renderSubdirectories = (subdirectories) => {
+    const { view } = this.props;
+
+    if (view === 'list') {
       return (
         <List
-          nocontext
           rows={subdirectories}
           className="library-local-directory-list"
           link_prefix="/library/browse/"
@@ -189,7 +198,7 @@ class LibraryBrowseDirectory extends React.Component {
     subdirectories = subdirectories.slice(0, limit);
     let all_tracks = null;
     let tracks = null;
-    const limit_remaining = limit - subdirectories;
+    const limit_remaining = limit - subdirectories.length;
     if (limit_remaining > 0) {
       all_tracks = (directory.tracks && directory.tracks.length > 0 ? directory.tracks : null);
       all_tracks = sortItems(all_tracks, 'name');
@@ -219,7 +228,7 @@ class LibraryBrowseDirectory extends React.Component {
         />
         {tracks && (
           <Button
-            onClick={(e) => { uiActions.hideContextMenu(); this.playAll(e, all_tracks); }}
+            onClick={() => { uiActions.hideContextMenu(); this.playAll(all_tracks); }}
             noHover
             discrete
             tracking={{ category: 'Directory', action: 'Play' }}

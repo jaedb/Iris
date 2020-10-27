@@ -2,116 +2,328 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import Loader from '../../components/Loader';
 import TrackList from '../../components/TrackList';
 import Header from '../../components/Header';
+import DropdownField from '../../components/Fields/DropdownField';
+import FilterField from '../../components/Fields/FilterField';
 import LazyLoadListener from '../../components/LazyLoadListener';
 import Icon from '../../components/Icon';
+import * as coreActions from '../../services/core/actions';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
-import { isLoading } from '../../util/helpers';
-import { I18n, i18n } from '../../locale';
+import { sortItems, applyFilter } from '../../util/arrays';
 import Button from '../../components/Button';
+import { i18n, I18n } from '../../locale';
+import Loader from '../../components/Loader';
+import {
+  makeLibrarySelector,
+  makeProcessProgressSelector,
+} from '../../util/selectors';
+
+const processKeys = [
+  'MOPIDY_GET_LIBRARY_TRACKS',
+  'SPOTIFY_GET_LIBRARY_TRACKS',
+];
 
 class LibraryTracks extends React.Component {
-  componentDidMount() {
-    this.props.uiActions.setWindowTitle(i18n('library.tracks.title'));
+  constructor(props) {
+    super(props);
 
-    if (!this.props.spotify_available) {
-      this.props.uiActions.createNotification({
-        level: 'warning',
-        content: i18n('errors.enable_first', { provider: i18n('services.spotify.title') }),
+    this.state = {
+      filter: '',
+      limit: 50,
+      per_page: 50,
+    };
+  }
+
+  componentDidMount() {
+    const {
+      location: {
+        state = {},
+      },
+      uiActions: {
+        setWindowTitle,
+      },
+    } = this.props;
+
+    // Restore any limit defined in our location state
+    if (state.limit) {
+      this.setState({
+        limit: state.limit,
       });
-    } else if (this.props.library_tracks === undefined) {
-      this.props.spotifyActions.getLibraryTracks();
+    }
+
+    setWindowTitle(i18n('library.tracks.title'));
+    this.getMopidyLibrary();
+    this.getSpotifyLibrary();
+  }
+
+  componentDidUpdate = ({ source: prevSource }) => {
+    const { source } = this.props;
+
+    if (source !== prevSource) {
+      this.getMopidyLibrary();
+      this.getSpotifyLibrary();
     }
   }
 
-  loadMore() {
-    this.props.spotifyActions.getMore(
-      this.props.library_tracks_more,
-      null,
-      {
-        type: 'SPOTIFY_LIBRARY_TRACKS_LOADED_MORE',
+  refresh = () => {
+    const { uiActions: { hideContextMenu } } = this.props;
+
+    hideContextMenu();
+    this.getMopidyLibrary(true);
+    this.getSpotifyLibrary(true);
+  }
+
+  cancelRefresh = () => {
+    const { uiActions: { hideContextMenu, cancelProcess } } = this.props;
+
+    hideContextMenu();
+    cancelProcess(processKeys);
+  }
+
+  getMopidyLibrary = (forceRefetch = false) => {
+    const {
+      source,
+      coreActions: {
+        loadLibrary,
       },
+    } = this.props;
+
+    if (source !== 'local' && source !== 'all') return;
+
+    loadLibrary('mopidy:library:tracks', { forceRefetch });
+  };
+
+  getSpotifyLibrary = (forceRefetch = false) => {
+    const {
+      source,
+      spotify_available,
+      coreActions: {
+        loadLibrary,
+      },
+    } = this.props;
+
+    if (!spotify_available) return;
+    if (source !== 'spotify' && source !== 'all') return;
+
+    loadLibrary('spotify:library:tracks', { forceRefetch });
+  };
+
+  handleContextMenu = (e, item) => {
+    const {
+      uiActions: {
+        showContextMenu,
+      },
+    } = this.props;
+
+    showContextMenu({
+      e,
+      context: 'album',
+      uris: [item.uri],
+      items: [item],
+    });
+  }
+
+  loadMore = () => {
+    const {
+      limit,
+      per_page,
+    } = this.state;
+    const {
+      location: {
+        state,
+      },
+      history,
+    } = this.props;
+
+    const new_limit = limit + per_page;
+    this.setState({ limit: new_limit });
+    history.replace({ state: { ...state, limit: new_limit } });
+  }
+
+  setSort = (value) => {
+    const {
+      sort,
+      sort_reverse,
+      uiActions: {
+        set,
+      },
+    } = this.props;
+
+    let reverse = false;
+    if (sort === value) reverse = !sort_reverse;
+
+    set({
+      library_tracks_sort_reverse: reverse,
+      library_tracks_sort: value,
+    });
+  }
+
+  renderView = () => {
+    const {
+      sort,
+      sort_reverse,
+      loading_progress,
+    } = this.props;
+    const {
+      limit,
+      filter,
+    } = this.state;
+    let { tracks } = this.props;
+
+    if (loading_progress !== null) {
+      return <Loader body loading progress={loading_progress} />;
+    }
+
+    if (sort) {
+      tracks = sortItems(tracks, sort, sort_reverse);
+    }
+
+    if (filter && filter !== '') {
+      tracks = applyFilter('name', filter, tracks);
+    }
+
+    // Apply our lazy-load-rendering
+    const total_tracks = tracks.length;
+    tracks = tracks.slice(0, limit);
+
+    return (
+      <section className="content-wrapper">
+        <TrackList tracks={tracks} />
+        <LazyLoadListener
+          loadKey={total_tracks > limit ? limit : total_tracks}
+          showLoader={limit < total_tracks}
+          loadMore={this.loadMore}
+        />
+      </section>
     );
   }
 
-  playAll() {
-    this.props.spotifyActions.getLibraryTracksAndPlay();
-  }
+  render = () => {
+    const {
+      spotify_available,
+      sort,
+      source,
+      sort_reverse,
+      uiActions,
+      loading_progress,
+    } = this.props;
+    const {
+      filter,
+      per_page,
+    } = this.state;
+    const loading = loading_progress !== null;
 
-  render() {
-    // Note trailing "?" makes sure our context menu in_library checks doesn't interfere
-    if (isLoading(this.props.load_queue, ['spotify_me/tracks?'])) {
-      return (
-        <div className="view library-tracks-view">
-          <Header icon="music" title={i18n('library.tracks.title')} />
-          <Loader body loading />
-        </div>
-      );
+    const source_options = [
+      {
+        value: 'all',
+        label: i18n('fields.filters.all'),
+      },
+      {
+        value: 'local',
+        label: i18n('services.mopidy.local'),
+      },
+    ];
+
+    if (spotify_available) {
+      source_options.push({
+        value: 'spotify',
+        label: i18n('services.spotify.title'),
+      });
     }
 
-    const tracks = [];
-    if (this.props.library_tracks && this.props.tracks) {
-      for (let i = 0; i < this.props.library_tracks.length; i++) {
-        const uri = this.props.library_tracks[i];
-        if (this.props.tracks.hasOwnProperty(uri)) {
-          tracks.push(this.props.tracks[uri]);
-        }
-      }
-    }
+    const sort_options = [
+      {
+        value: null,
+        label: i18n('fields.filters.as_loaded'),
+      },
+      {
+        value: 'name',
+        label: i18n('fields.filters.name'),
+      },
+      {
+        value: 'artists.first.name',
+        label: i18n('fields.filters.artist'),
+      },
+      {
+        value: 'album.name',
+        label: i18n('fields.filters.album'),
+      },
+    ];
 
     const options = (
       <div className="header__options__wrapper">
+        <FilterField
+          initialValue={filter}
+          handleChange={(value) => this.setState({ filter: value, limit: per_page })}
+          onSubmit={() => uiActions.hideContextMenu()}
+        />
+        <DropdownField
+          icon="swap_vert"
+          name={i18n('fields.sort')}
+          value={sort}
+          valueAsLabel
+          options={sort_options}
+          selected_icon={sort ? (sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
+          handleChange={(val) => { this.setSort(val); uiActions.hideContextMenu(); }}
+        />
+        <DropdownField
+          icon="cloud"
+          name={i18n('fields.source')}
+          value={source}
+          valueAsLabel
+          options={source_options}
+          handleChange={(val) => { uiActions.set({ library_tracks_source: val }); uiActions.hideContextMenu(); }}
+        />
         <Button
-          onClick={(e) => this.playAll(e)}
-          tracking={{ category: 'LibraryTracks', action: 'Play' }}
           noHover
           discrete
+          onClick={loading ? this.cancelRefresh : this.refresh}
+          tracking={{ category: 'LibraryTracks', action: 'Refresh' }}
         >
-          <Icon name="play_circle_filled" />
-          <I18n path="actions.play_all" />
+          {loading ? <Icon name="close" /> : <Icon name="refresh" /> }
+          {loading ? <I18n path="actions.cancel" /> : <I18n path="actions.refresh" /> }
         </Button>
       </div>
     );
 
     return (
       <div className="view library-tracks-view">
-        <Header options={options} uiActions={this.props.uiActions}>
-          <Icon name="music_note" type="material" />
-					<I18n path="library.tracks.title" />
+        <Header options={options} uiActions={uiActions}>
+          <Icon name="album" type="material" />
+          <I18n path="library.tracks.title" />
         </Header>
-        <section className="content-wrapper">
-          <TrackList tracks={tracks} />
-          <LazyLoadListener
-            loadKey={this.props.library_tracks_more}
-            showLoader={this.props.library_tracks_more}
-            loadMore={() => this.loadMore()}
-          />
-        </section>
+        {this.renderView()}
       </div>
     );
   }
 }
 
+const mapStateToProps = (state) => {
+  const source = state.ui.library_tracks_source ? state.ui.library_tracks_source : 'all';
 
-/**
- * Export our component
- *
- * We also integrate our global store, using connect()
- * */
+  const libraryUris = [];
+  if (source === 'all' || source === 'local') libraryUris.push('mopidy:library:tracks');
+  if (source === 'all' || source === 'spotify') libraryUris.push('spotify:library:tracks');
+  const librarySelector = makeLibrarySelector(libraryUris);
+  const processProgressSelector = makeProcessProgressSelector(processKeys);
 
-const mapStateToProps = (state, ownProps) => ({
-  load_queue: state.ui.load_queue,
-  tracks: state.core.tracks,
-  spotify_available: state.spotify.access_token,
-  library_tracks: state.spotify.library_tracks,
-  library_tracks_more: state.spotify.library_tracks_more,
-});
+  return {
+    loading_progress: processProgressSelector(state),
+    mopidy_uri_schemes: state.mopidy.uri_schemes,
+    tracks: librarySelector(state),
+    spotify_available: state.spotify.access_token,
+    view: state.ui.library_tracks_view,
+    source,
+    sort: state.ui.library_tracks_sort,
+    sort_reverse: state.ui.library_tracks_sort_reverse,
+  };
+};
 
 const mapDispatchToProps = (dispatch) => ({
+  coreActions: bindActionCreators(coreActions, dispatch),
   uiActions: bindActionCreators(uiActions, dispatch),
   mopidyActions: bindActionCreators(mopidyActions, dispatch),
   spotifyActions: bindActionCreators(spotifyActions, dispatch),

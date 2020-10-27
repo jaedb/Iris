@@ -22,6 +22,7 @@ import {
 } from '../util/helpers';
 import { i18n, I18n } from '../locale';
 import Button from '../components/Button';
+import { indexToArray } from '../util/arrays';
 
 const Artwork = ({
   image,
@@ -61,12 +62,15 @@ class Queue extends React.Component {
 
   componentDidMount() {
     const {
-      uiActions: { setWindowTitle },
-      location: { limit } = {},
+      uiActions: {
+        setWindowTitle,
+      },
+      location: {
+        limit,
+      } = {},
     } = this.props;
-    if (limit) {
-      this.setState({ limit });
-    }
+
+    if (limit) this.setState({ limit });
     setWindowTitle(i18n('now_playing.title'));
   }
 
@@ -79,28 +83,13 @@ class Queue extends React.Component {
   }) => {
     const {
       coreActions: {
-        loadAlbum,
-        loadArtist,
-        loadPlaylist,
+        loadItem,
       },
       added_from_uri,
     } = this.props;
 
     if (added_from_uri && added_from_uri !== prev_added_from_uri) {
-      const item_type = uriType(added_from_uri);
-      switch (item_type) {
-        case 'album':
-          loadAlbum(added_from_uri);
-          break;
-        case 'artist':
-          loadArtist(added_from_uri);
-          break;
-        case 'playlist':
-          loadPlaylist(added_from_uri);
-          break;
-        default:
-          break;
-      }
+      loadItem(added_from_uri, { full: false });
     }
   }
 
@@ -120,7 +109,12 @@ class Queue extends React.Component {
   }
 
   removeTracks = (track_indexes) => {
-    const { queue_tracks, mopidyActions } = this.props;
+    const {
+      queue_tracks,
+      mopidyActions: {
+        removeTracks: doRemoveTracks,
+      },
+    } = this.props;
     const tlids = [];
     for (let i = 0; i < track_indexes.length; i++) {
       const track = queue_tracks[track_indexes[i]];
@@ -130,7 +124,7 @@ class Queue extends React.Component {
     }
 
     if (tlids.length > 0) {
-      mopidyActions.removeTracks(tlids);
+      doRemoveTracks(tlids);
     }
   }
 
@@ -150,61 +144,51 @@ class Queue extends React.Component {
   }
 
   renderAddedFrom = () => {
-    const { added_from_uri } = this.props;
+    const {
+      items,
+      added_from_uri,
+    } = this.props;
     if (!added_from_uri) return null;
 
     const uri_type = uriType(added_from_uri);
-    const items = [];
+    let addedFromItems = [];
 
     // Radio nests it's seed URIs in an encoded URI format
     switch (uri_type){
       case 'radio':
-        const radio_seeds = getFromUri('seeds', added_from_uri);
-
-        for (let seed of radio_seeds) {
-          let item_type = uriType(seed);
-          let item_library = this.props[`${item_type}s`];
-          if (item_library && item_library[seed]) {
-            items.push(item_library[seed]);
-          }
-        }
+        addedFromItems = indexToArray(items, getFromUri('seeds', added_from_uri));
         break;
-
       case 'search':
-        items.push({
+        addedFromItems = [{
           uri: added_from_uri,
           name: `"${getFromUri('searchterm', added_from_uri)}" search`,
-        })
+        }];
         break;
-
       default:
-        const item_library = this.props[`${uri_type}s`];
-        if (item_library && item_library[added_from_uri]) {
-          items.push(item_library[added_from_uri]);
-        }
+        addedFromItems = indexToArray(items, [added_from_uri]);
         break;
     }
 
-    if (items.length <= 0) return null;
+    if (!addedFromItems.length) return null;
 
     return (
       <div className="current-track__added-from">
-        {items[0].images && (
+        {addedFromItems[0].images && (
           <URILink
-            uri={items[0].uri}
+            uri={addedFromItems[0].uri}
             className="current-track__added-from__thumbnail"
           >
             <Thumbnail
-              images={items[0].images}
+              images={addedFromItems[0].images}
               size="small"
-              circle={uriType(items[0].uri) === 'artist'}
+              circle={uriType(addedFromItems[0].uri) === 'artist'}
               type="artist"
             />
           </URILink>
         )}
         <div className="current-track__added-from__text">
           {'Playing from '}
-          <LinksSentence items={items} />
+          <LinksSentence items={addedFromItems} />
           {uri_type === 'radio' && (
             <span className="flag flag--blue">
               {i18n('now_playing.current_track.radio')}
@@ -221,7 +205,14 @@ class Queue extends React.Component {
       queue_tracks,
       theme,
       current_track_uri,
+      spotify_enabled,
+      uiActions,
+      mopidyActions: {
+        clearTracklist,
+        shuffleTracklist,
+      },
     } = this.props;
+
     const { limit } = this.state;
     const total_queue_tracks = queue_tracks.length;
     const tracks = queue_tracks.slice(0, limit);
@@ -235,7 +226,7 @@ class Queue extends React.Component {
 
     const options = (
       <span>
-        {this.props.spotify_enabled && (
+        {spotify_enabled && (
           <Button noHover discrete to="/queue/radio">
             <Icon name="radio" />
             <I18n path="now_playing.context_actions.radio" />
@@ -254,7 +245,7 @@ class Queue extends React.Component {
 
     return (
       <div className="view queue-view preserve-3d">
-        <Header options={options} uiActions={this.props.uiActions}>
+        <Header options={options} uiActions={uiActions}>
           <Icon name="play_arrow" type="material" />
           <I18n path="now_playing.title" />
         </Header>
@@ -293,7 +284,7 @@ class Queue extends React.Component {
                   <li><Dater type="total-time" data={queue_tracks} /></li>
                   {queue_tracks.length > 0 && (
                     <li>
-                      <a onClick={this.props.mopidyActions.shuffleTracklist}>
+                      <a onClick={shuffleTracklist}>
                         <Icon name="shuffle" />
                         <I18n path="now_playing.current_track.shuffle" />
                       </a>
@@ -301,7 +292,7 @@ class Queue extends React.Component {
                   )}
                   {queue_tracks.length > 0 && (
                     <li>
-                      <a onClick={this.props.mopidyActions.clearTracklist}>
+                      <a onClick={clearTracklist}>
                         <Icon name="delete_sweep" />
                         <I18n path="now_playing.current_track.clear" />
                       </a>
@@ -341,32 +332,38 @@ class Queue extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
-  let { current_track } = state.core;
+const mapStateToProps = (state) => {
+  const {
+    current_track: core_current_track,
+    items,
+    queue,
+    queue_metadata,
+  } = state.core;
   const queue_tracks = [];
+  let current_track = {};
 
-  if (state.core.queue && state.core.tracks) {
-    for (const queue_track of state.core.queue) {
+  if (queue && items) {
+    for (const queue_track of queue) {
       let track = {
         ...queue_track,
-        playing: current_track && current_track.tlid == queue_track.tlid,
+        playing: core_current_track && core_current_track.tlid == queue_track.tlid,
       };
 
       // If we have the track in our index, merge it in.
       // We prioritise queue track over index track as queue has unique data, like which track
       // is playing and tlids.
-      if (state.core.tracks.hasOwnProperty(track.uri)) {
+      if (items[track.uri]) {
         track = {
-          ...state.core.tracks[track.uri],
+          ...items[track.uri],
           ...track,
         };
       }
 
       // Now merge in our queue metadata
-      if (state.core.queue_metadata[`tlid_${track.tlid}`] !== undefined) {
+      if (queue_metadata[`tlid_${track.tlid}`] !== undefined) {
         track = {
           ...track,
-          ...state.core.queue_metadata[`tlid_${track.tlid}`],
+          ...queue_metadata[`tlid_${track.tlid}`],
         };
       }
 
@@ -385,10 +382,7 @@ const mapStateToProps = (state, ownProps) => {
     spotify_enabled: state.spotify.enabled,
     radio: state.core.radio,
     radio_enabled: !!(state.core.radio && state.core.radio.enabled),
-    artists: state.core.artists,
-    albums: state.core.albums,
-    playlists: state.core.playlists,
-    tracks: state.core.tracks,
+    items,
     queue_tracks,
     current_track_uri: state.core.current_track_uri,
     current_track,

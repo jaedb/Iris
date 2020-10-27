@@ -182,25 +182,6 @@ const UIMiddleware = (function () {
         next(action);
         break;
 
-      case 'START_PROCESS':
-        store.dispatch({
-          type: action.key,
-          data: action.data,
-        });
-        store.dispatch({
-          type: `${action.key}_STARTED`,
-        });
-        next(action);
-        break;
-
-      case 'RESUME_PROCESS':
-        store.dispatch({
-          type: action.key,
-          data: store.getState().ui.processes[action.key].data,
-        });
-        next(action);
-        break;
-
       case 'PROCESS_CANCELLED':
         store.dispatch({
           type: `${action.key}_CANCELLED`,
@@ -214,17 +195,14 @@ const UIMiddleware = (function () {
           type: `${action.key}_FINISHED`,
         });
 
-        // start a timeout to remove this notification
+        // Start a timeout to remove this notification
         // This gives us time to animate out the notification before we remove the data
-        if (action.completionMessage) {
+        if (action.completionNotification) {
           store.dispatch(uiActions.updateProcess(
             action.key,
-            action.completionMessage.content,
-            {},
-            action.completionMessage.description,
-            action.completionMessage.level,
+            action.completionNotification,
           ));
-          if (!action.completionMessage.sticky) {
+          if (!action.completionNotification.sticky) {
             setTimeout(
               () => {
                 store.dispatch(uiActions.closeProcess(action.key));

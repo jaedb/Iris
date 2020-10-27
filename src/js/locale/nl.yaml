@@ -125,8 +125,6 @@ services:
     want_lyrics: 'Wil je songteksten? Geef Genius toestemming in '
   google:
     title: Google
-  icecast:
-    title: Icecast
   lastfm:
     title: LastFM
     love: Leuk
@@ -391,13 +389,6 @@ settings:
       locale:
         title: Taal
         description: Een ISO 639 taalcode in kleine letters en een ISO 3166-1 alpha-2 landcode in hoofdletters, verbonden met een liggend streepje (bv 'nl_NL' of 'nl_BE')
-    icecast:
-      enable:
-        label: Actief
-        description: Stream audio naar deze browser
-      location:
-        label: Locatie
-        description: De volledige URL naar het stream-eindpunt
 user:
   title: Gebruiker
   title_window: '%{name} (gebruiker)'

@@ -57,21 +57,20 @@ class AddSeedField extends React.Component {
     );
   }
 
-  handleSelect(e, item) {
+  handleSelect = (e, item) => {
+    const {
+      onSelect,
+      spotifyActions: {
+        clearAutocompleteResults,
+      },
+      coreActions: {
+        itemLoaded,
+      },
+    } = this.props;
     this.setState({ value: '' });
-    this.props.onSelect(e, item.uri);
-    this.props.spotifyActions.clearAutocompleteResults(this.id);
-
-    // Add our selected item to our global index
-    switch (uriType(item.uri)) {
-      case 'artist':
-        this.props.coreActions.artistsLoaded(item);
-        break;
-
-      case 'track':
-        this.props.coreActions.tracksLoaded(item);
-        break;
-    }
+    onSelect(e, item.uri);
+    clearAutocompleteResults(this.id);
+    itemLoaded(item);
   }
 
   results() {

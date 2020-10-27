@@ -20,6 +20,13 @@ export function setEnabled(enabled) {
   };
 }
 
+export function setStreamingEnabled(streaming_enabled) {
+  return {
+    type: 'SNAPCAST_SET',
+    data: { streaming_enabled },
+  };
+}
+
 export function connect() {
   return {
     type: 'SNAPCAST_CONNECT',
@@ -143,14 +150,6 @@ export function calculateGroupVolume(id, clients) {
     clients,
   };
 }
-
-
-
-/**
- * Record loaders
- *
- * We've got a loaded record, now we just need to plug it in to our state and stores.
- * */
 
 export function serverLoaded(server) {
   return {

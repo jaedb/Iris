@@ -1,7 +1,5 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
-import { titleCase, getIndexedRecords } from '../util/helpers';
 import { sortItems } from '../util/arrays';
 import URILink from './URILink';
 import Icon from './Icon';
@@ -9,51 +7,23 @@ import AlbumGrid from './AlbumGrid';
 import ArtistGrid from './ArtistGrid';
 import PlaylistGrid from './PlaylistGrid';
 import TrackList from './TrackList';
-import LazyLoadListener from './LazyLoadListener';
 import { I18n } from '../locale';
 import Button from './Button';
+import { makeSearchResultsSelector } from '../util/selectors';
 
 const SearchResults = ({
   type,
   query,
-  loadMore,
-  index,
-  mopidy_search_results,
-  spotify_search_results,
   sort,
   sort_reverse,
   uri_schemes_priority,
   all,
+  results: rawResults,
 }) => {
   const encodedTerm = encodeURIComponent(query.term);
-  const resultsMatchQuery = (results) => {
-    if (!results.query) return false;
-    if (results.query.term !== query.term) return false;
-    if (results.query.type !== query.type) return false;
-    return true;
-  };
-  let results = [];
-  if (resultsMatchQuery(mopidy_search_results) && mopidy_search_results[type]) {
-    results = [
-      ...results,
-      ...(
-        type === 'tracks'
-          ? mopidy_search_results[type]
-          : getIndexedRecords(index, mopidy_search_results[type])
-      ),
-    ];
-  }
+  let results = rawResults;
 
-  if (resultsMatchQuery(spotify_search_results) && spotify_search_results[type]) {
-    results = [
-      ...results,
-      ...(
-        type === 'tracks'
-          ? spotify_search_results[type]
-          : getIndexedRecords(index, spotify_search_results[type])
-      ),
-    ];
-  }
+  if (!results) return null;
 
   let sort_map = null;
   switch (sort) {
@@ -120,14 +90,24 @@ const SearchResults = ({
   );
 };
 
-const mapStateToProps = (state, ownProps) => ({
-  index: state.core[ownProps.type] || [],
-  uri_schemes_priority: state.ui.uri_schemes_priority || [],
-  mopidy_search_results: state.mopidy.search_results || {},
-  spotify_search_results: state.spotify.search_results || {},
-  sort: state.ui.search_results_sort || 'followers',
-  sort_reverse: !!state.ui.search_results_sort_reverse,
-});
+const mapStateToProps = (state, ownProps) => {
+  const { query: { term }, type } = ownProps;
+  const {
+    ui: {
+      uri_schemes_priority = [],
+      search_results_sort: sort = 'name',
+      search_results_sort_reverse: sort_reverse = false,
+    },
+  } = state;
+  const searchResultsSelector = makeSearchResultsSelector(term, type);
+
+  return {
+    results: searchResultsSelector(state),
+    uri_schemes_priority,
+    sort,
+    sort_reverse,
+  };
+};
 
 const mapDispatchToProps = () => ({});
 

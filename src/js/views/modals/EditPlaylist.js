@@ -26,27 +26,29 @@ class EditPlaylist extends React.Component {
   }
 
   componentDidMount() {
-    this.props.uiActions.setWindowTitle(i18n('modal.edit_playlist.title'));
+    const {
+      uri,
+      playlist,
+      coreActions: {
+        loadItem,
+      },
+      uiActions: {
+        setWindowTitle,
+      },
+    } = this.props;
+    
+    setWindowTitle(i18n('modal.edit_playlist.title'));
 
-    if (this.props.playlist) {
+    if (playlist) {
       this.setState({
         loaded: true,
-        name: this.props.playlist.name,
-        description: this.props.playlist.description,
-        public: (this.props.playlist.public == true),
-        collaborative: (this.props.playlist.collaborative == true),
+        name: playlist.name,
+        description: playlist.description,
+        public: (playlist.public === true),
+        collaborative: (playlist.collaborative === true),
       });
     } else {
-      switch (uriSource(this.props.uri)) {
-        case 'spotify':
-          this.props.spotifyActions.getPlaylist(this.props.uri);
-          this.props.spotifyActions.following(this.props.uri);
-          break;
-
-        default:
-          this.props.mopidyActions.getPlaylist(this.props.uri);
-          break;
-      }
+      loadItem(uri);
     }
   }
 
@@ -79,32 +81,13 @@ class EditPlaylist extends React.Component {
     return null;
   }
 
-  savePlaylist(e) {
-    e.preventDefault();
-
-    if (!this.state.name || this.state.name == '') {
-      this.setState({ error: i18n('modal.edit_playlist.name_required') });
-      return false;
-    }
-    this.props.coreActions.savePlaylist(
-      this.props.uri,
-      this.state.name,
-      this.state.description,
-      this.state.public,
-      this.state.collaborative,
-      this.state.image,
-    );
-    window.history.back();
-    return false;
-  }
-
-  setImage(e) {
+  setImage = (e) => {
     const self = this;
 
     // Create a file-reader to import the selected image as a base64 string
     const file_reader = new FileReader();
 
-    	// Once the image is loaded, convert the result
+    // Once the image is loaded, convert the result
     file_reader.addEventListener('load', (e) => {
       const image_base64 = e.target.result.replace('data:image/jpeg;base64,', '');
       self.setState({ image: image_base64 });
@@ -114,7 +97,51 @@ class EditPlaylist extends React.Component {
     file_reader.readAsDataURL(e.target.files[0]);
   }
 
-  renderFields() {
+  savePlaylist = (e) => {
+    const {
+      name,
+      description,
+      public: isPublic,
+      collaborative,
+      image,
+    } = this.state;
+    const {
+      uri,
+      coreActions: {
+        savePlaylist,
+      },
+    } = this.props;
+
+    e.preventDefault();
+
+    if (!name || name == '') {
+      this.setState({ error: i18n('modal.edit_playlist.name_required') });
+      return false;
+    }
+    savePlaylist(
+      uri,
+      name,
+      description,
+      isPublic,
+      collaborative,
+      image,
+    );
+    window.history.back();
+    return false;
+  }
+
+  renderFields = () => {
+    const {
+      uri,
+    } = this.props;
+    const {
+      name,
+      description,
+      public: isPublic,
+      collaborative,
+      image,
+    } = this.state;
+
     switch (uriSource(this.props.uri)) {
       case 'spotify':
         return (
@@ -127,7 +154,7 @@ class EditPlaylist extends React.Component {
                 <input
                   type="text"
                   onChange={(e) => this.setState({ name: e.target.value })}
-                  value={this.state.name}
+                  value={name}
                 />
               </div>
             </div>
@@ -139,7 +166,7 @@ class EditPlaylist extends React.Component {
                 <input
                   type="text"
                   onChange={(e) => this.setState({ description: e.target.value })}
-                  value={this.state.description}
+                  value={description}
                 />
               </div>
             </div>
@@ -167,8 +194,8 @@ class EditPlaylist extends React.Component {
                   <input
                     type="checkbox"
                     name="playlist_private"
-                    checked={this.state.public}
-                    onChange={(e) => this.setState({ public: !this.state.public })}
+                    checked={isPublic}
+                    onChange={() => this.setState({ public: !isPublic })}
                   />
                   <span className="label">
                     <I18n path="modal.edit_playlist.options.public" />
@@ -178,8 +205,8 @@ class EditPlaylist extends React.Component {
                   <input
                     type="checkbox"
                     name="collaborative"
-                    checked={this.state.collaborative}
-                    onChange={(e) => this.setState({ collaborative: !this.state.collaborative })}
+                    checked={collaborative}
+                    onChange={() => this.setState({ collaborative: !collaborative })}
                   />
                   <span className="label">
                     <I18n path="modal.edit_playlist.options.collaborative" />
@@ -189,7 +216,6 @@ class EditPlaylist extends React.Component {
             </div>
           </div>
         );
-        break;
 
       default:
         return (
@@ -202,7 +228,7 @@ class EditPlaylist extends React.Component {
                 <input
                   type="text"
                   onChange={(e) => this.setState({ name: e.target.value })}
-                  value={this.state.name}
+                  value={name}
                 />
               </div>
             </div>
@@ -211,13 +237,17 @@ class EditPlaylist extends React.Component {
     }
   }
 
-  render() {
+  render = () => {
+    const {
+      error,
+    } = this.state;
+
     return (
       <Modal className="modal--edit-playlist">
         <h1>
           <I18n path="modal.edit_playlist.title" />
         </h1>
-        {this.state.error ? <h3 className="red-text">{this.state.error}</h3> : null}
+        {error ? <h3 className="red-text">{error}</h3> : null}
         <form onSubmit={(e) => this.savePlaylist(e)}>
 
           {this.renderFields()}
@@ -252,8 +282,7 @@ const mapStateToProps = (state, ownProps) => {
 
   return {
     uri,
-    playlist: (state.core.playlists[uri] !== undefined ? state.core.playlists[uri] : null),
-    playlists: state.core.playlists,
+    playlist: (state.core.items[uri] !== undefined ? state.core.items[uri] : null),
   };
 };
 

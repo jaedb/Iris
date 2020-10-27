@@ -28,25 +28,22 @@ import {
 } from '../util/helpers';
 import { i18n, I18n } from '../locale';
 import Button from '../components/Button';
+import { makeLoadingSelector, makeItemSelector } from '../util/selectors';
 
 class Track extends React.Component {
   componentDidMount() {
     const {
       uri,
       track,
-      coreActions: { loadTrack },
-      genius_authorized,
-      geniusActions: { findTrackLyrics },
+      coreActions: {
+        loadItem,
+      },
     } = this.props;
 
-    loadTrack(uri);
+    loadItem(uri);
 
     if (track) {
       this.setWindowTitle(track);
-
-      if (genius_authorized && track.artists && !track.lyrics_results) {
-        findTrackLyrics(track);
-      }
     }
   }
 
@@ -60,7 +57,7 @@ class Track extends React.Component {
       genius_authorized,
       lastfm_authorized,
       coreActions: {
-        loadTrack,
+        loadItem,
       },
       geniusActions: {
         findTrackLyrics,
@@ -71,15 +68,11 @@ class Track extends React.Component {
     } = this.props;
 
     if (prevUri !== uri) {
-      loadTrack(uri);
-
-      if (genius_authorized && track.artists) {
-        findTrackLyrics(track);
-      }
+      loadItem(uri);
     }
 
     // We have just received our full track or our track artists
-    if ((!prevTrack && track) || (!prevTrack.artists && track.artists)) {
+    if ((!prevTrack && track) || (prevTrack && !prevTrack.artists && track.artists)) {
       this.setWindowTitle(track);
       if (lastfm_authorized) getTrack(track.uri);
       if (genius_authorized && !track.lyrics_results) findTrackLyrics(track);
@@ -214,28 +207,17 @@ class Track extends React.Component {
     const {
       uri,
       track,
-      albums,
-      load_queue,
+      loading,
       slim_mode,
       uiActions,
       genius_authorized,
     } = this.props;
 
-    if (isLoading(load_queue, [`spotify_track/${getFromUri('trackid', uri)}`])) {
+    if (loading) {
       return <Loader body loading />;
     }
 
     if (!track) return null;
-
-    // Flatten our simple album so we can inherit artwork
-    if (track.album) {
-      const album = albums[track.album.uri];
-
-      if (album && album.images) {
-        track.images = album.images;
-      }
-    }
-
 
     return (
       <div className="view track-view content-wrapper">
@@ -261,7 +243,7 @@ class Track extends React.Component {
             {track.album && !track.album.uri ? track.album.name : null}
             {!track.album && <I18n path="track.unknown_album" />}
             <I18n path="common.by" />
-            <LinksSentence items={track.artists} />
+            {track.artists && <LinksSentence items={track.artists} />}
           </h2>
 
           <ul className="details">
@@ -290,7 +272,7 @@ class Track extends React.Component {
             {track.duration && <li><Dater type="length" data={track.duration} /></li>}
             {track.popularity && (
               <li>
-                <I18n path="stats.popularity" percent={track.popularity} />
+                <I18n path="specs.popularity" percent={track.popularity} />
               </li>
             )}
           </ul>
@@ -358,15 +340,14 @@ const rebuildUri = (uri) => {
 const mapStateToProps = (state, ownProps) => {
   let uri = decodeURIComponent(ownProps.match.params.uri);
   uri = rebuildUri(uri);
+  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`]);
+  const trackSelector = makeItemSelector(uri);
 
   return {
     uri,
     slim_mode: state.ui.slim_mode,
-    load_queue: state.ui.load_queue,
-    track: (state.core.tracks && state.core.tracks[uri] !== undefined ? state.core.tracks[uri] : false),
-    tracks: state.core.tracks,
-    artists: state.core.artists,
-    albums: state.core.albums,
+    loading: loadingSelector(state),
+    track: trackSelector(state),
     spotify_library_albums: state.spotify.library_albums,
     local_library_albums: state.mopidy.library_albums,
     lastfm_authorized: state.lastfm.authorization,

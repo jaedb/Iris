@@ -1,17 +1,20 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Header from '../../components/Header';
 import Icon from '../../components/Icon';
 import PlaylistGrid from '../../components/PlaylistGrid';
-import LazyLoadListener from '../../components/LazyLoadListener';
 import Loader from '../../components/Loader';
+import ErrorMessage from '../../components/ErrorMessage';
+import Button from '../../components/Button';
 import * as uiActions from '../../services/ui/actions';
+import * as coreActions from '../../services/core/actions';
 import * as spotifyActions from '../../services/spotify/actions';
-import { isLoading } from '../../util/helpers';
-import { collate } from '../../util/format';
-import { i18n } from '../../locale';
+import { I18n, i18n } from '../../locale';
+import {
+  makeItemSelector,
+  makeLoadingSelector,
+} from '../../util/selectors';
 
 class DiscoverCategory extends React.Component {
   componentDidMount() {
@@ -20,23 +23,15 @@ class DiscoverCategory extends React.Component {
   }
 
   componentDidUpdate = ({
-    match: {
-      params: {
-        id: prevId,
-      },
-    },
+    uri: prevUri,
     category: prevCategory,
   }) => {
     const {
-      match: {
-        params: {
-          id,
-        },
-      },
+      uri,
       category,
     } = this.props;
 
-    if (prevId !== id) this.loadCategory();
+    if (prevUri !== uri) this.loadCategory();
     if (!prevCategory && category) this.setWindowTitle(category);
   }
 
@@ -54,105 +49,104 @@ class DiscoverCategory extends React.Component {
 
   loadCategory = () => {
     const {
+      uri,
       category,
-      match: {
-        params: { id },
-      },
-      spotifyActions: {
-        getCategory,
-        getCategoryPlaylists,
+      coreActions: {
+        loadItem,
       },
     } = this.props;
 
     if (!category) {
-      getCategory(id);
-    }
-
-    if (!category.playlists_uris) {
-      getCategoryPlaylists(id);
+      loadItem(uri);
     }
   }
 
-  loadMore = () => {
+  refresh = () => {
     const {
-      spotifyActions: {
-        getMore,
+      uri,
+      uiActions: {
+        hideContextMenu,
       },
-      category: {
-        playlists_more,
-      },
-      match: {
-        params: {
-          id,
-        },
+      coreActions: {
+        loadItem,
       },
     } = this.props;
 
-    getMore(
-      playlists_more,
-      null,
-      {
-        type: 'SPOTIFY_CATEGORY_PLAYLISTS_LOADED_MORE',
-        uri: `category:${id}`,
-      },
-    );
+    hideContextMenu();
+    loadItem(uri, { forceRefetch: true });
   }
 
   render = () => {
     const {
-      category: categoryProp,
+      category,
       playlists,
-      load_queue,
+      loading,
       uiActions,
+      uri,
     } = this.props;
 
-    if (isLoading(load_queue, ['spotify_browse/categories/'])) {
+    if (loading) {
+      return <Loader body loading />;
+    }
+    if (!category) {
       return (
-        <div className="view discover-categories-view">
-          <Header>
-            <Icon name="mood" type="material" />
-            {(categoryProp ? categoryProp.name : i18n('discover.category.category'))}
-          </Header>
-          <Loader body loading />
-        </div>
+        <ErrorMessage type="not-found" title="Not found">
+          <p>
+            <I18n path="errors.uri_not_found" uri={uri} />
+          </p>
+        </ErrorMessage>
       );
     }
 
-    if (!categoryProp) {
-      return null;
-    }
-
-    const category = collate(categoryProp, { playlists });
+    const options = (
+      <Button
+        noHover
+        onClick={this.refresh}
+        tracking={{ category: 'DiscoverCategory', action: 'Refresh' }}
+      >
+        <Icon name="refresh" />
+        <I18n path="actions.refresh" />
+      </Button>
+    );
 
     return (
       <div className="view discover-categories-view">
-        <Header uiActions={uiActions}>
+        <Header uiActions={uiActions} options={options}>
           <Icon name="mood" type="material" />
           {category.name}
         </Header>
         <div className="content-wrapper">
           <section className="grid-wrapper">
-            <PlaylistGrid playlists={category.playlists} />
+            <PlaylistGrid playlists={playlists} />
           </section>
-          <LazyLoadListener
-            loadKey={category.playlists_more}
-            showLoader={category.playlists_more}
-            loadMore={this.loadMore}
-          />
         </div>
       </div>
     );
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
-  load_queue: state.ui.load_queue,
-  playlists: state.core.playlists,
-  category: (state.spotify.categories && state.spotify.categories[`category:${ownProps.match.params.id}`] !== undefined ? state.spotify.categories[`category:${ownProps.match.params.id}`] : false),
-});
+const mapStateToProps = (state, ownProps) => {
+  const uri = decodeURIComponent(ownProps.match.params.uri);
+  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`]);
+  const categorySelector = makeItemSelector(uri);
+  const category = categorySelector(state);
+  let playlists = null;
+  if (category && category.playlists_uris) {
+    const playlistsSelector = makeItemSelector(category.playlists_uris);
+    playlists = playlistsSelector(state);
+  }
+
+  return {
+    uri,
+    loading: loadingSelector(state),
+    playlists,
+    category,
+  };
+};
 
 const mapDispatchToProps = (dispatch) => ({
   uiActions: bindActionCreators(uiActions, dispatch),
+  coreActions: bindActionCreators(coreActions, dispatch),
   spotifyActions: bindActionCreators(spotifyActions, dispatch),
 });
 

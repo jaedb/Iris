@@ -32,7 +32,6 @@ const LyricsScroller = ({ content = '', time_position = 1, duration = 100 }) => 
 const Lyrics = ({
   show_lyrics,
   load_queue,
-  genius_authorized,
   time_position = null,
   current_track,
 }) => {
@@ -47,17 +46,6 @@ const Lyrics = ({
       <div className="lyrics">
         <Loader body loading />
       </div>
-    );
-  }
-  if (!genius_authorized) {
-    return (
-      <p className="no-results">
-        <I18n path="services.genius.want_lyrics" />
-        <Link to="/settings/genius" scrollTo="#services-menu">
-          <I18n path="settings.title" />
-        </Link>
-        .
-      </p>
     );
   }
   if (lyrics) {
@@ -144,6 +132,10 @@ class KioskMode extends React.Component {
       current_track,
     } = this.props;
 
+    if (!genius_authorized) {
+      uiActions.createNotification({ level: 'warning', content: `${i18n('track.want_lyrics')} ${i18n('settings.title')}` });
+      return;
+    }
     uiActions.set({ show_lyrics: !show_lyrics });
     if (
       !show_lyrics
@@ -171,6 +163,7 @@ class KioskMode extends React.Component {
       genius_authorized,
       time_position,
     } = this.props;
+    const lyrics_enabled = show_lyrics && genius_authorized;
     if (current_track && current_track.images) {
       var { images } = current_track;
     } else {
@@ -179,7 +172,7 @@ class KioskMode extends React.Component {
 
     const extraControls = (
       <div className="control" onClick={this.toggleLyrics}>
-        {show_lyrics ? <Icon name="toggle_on" className="turquoise-text" />
+        {lyrics_enabled ? <Icon name="toggle_on" className="turquoise-text" />
           : <Icon name="toggle_off" />}
         <div style={{ paddingLeft: '6px', fontWeight: 'bold' }}>
           <I18n path="modal.kiosk.lyrics" />
@@ -194,7 +187,7 @@ class KioskMode extends React.Component {
       >
         <Thumbnail className="background" images={images} placeholder={false} />
 
-        <div className={`player player--${show_lyrics ? 'with' : 'without'}-lyrics`}>
+        <div className={`player player--${lyrics_enabled ? 'with' : 'without'}-lyrics`}>
 
           <div className="track">
             <div className="track__artwork">
@@ -224,7 +217,7 @@ class KioskMode extends React.Component {
         </div>
 
         <Lyrics
-          show_lyrics={show_lyrics}
+          show_lyrics={lyrics_enabled}
           load_queue={load_queue}
           genius_authorized={genius_authorized}
           time_position={time_position}
@@ -237,7 +230,7 @@ class KioskMode extends React.Component {
 
 const mapStateToProps = (state) => ({
   play_state: state.mopidy.play_state,
-  current_track: (state.core.current_track && state.core.tracks[state.core.current_track.uri] !== undefined ? state.core.tracks[state.core.current_track.uri] : null),
+  current_track: (state.core.current_track && state.core.items[state.core.current_track.uri] !== undefined ? state.core.items[state.core.current_track.uri] : null),
   time_position: state.mopidy.time_position,
   load_queue: state.ui.load_queue,
   show_lyrics: state.ui.show_lyrics,

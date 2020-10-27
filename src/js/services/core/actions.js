@@ -5,55 +5,6 @@ import { uriSource } from '../../util/helpers';
 const spotifyActions = require('../../services/spotify/actions');
 const mopidyActions = require('../../services/mopidy/actions');
 
-export function getBroadcasts() {
-  return (dispatch, getState) => {
-    const config = {
-      method: 'GET',
-      timeout: 15000,
-    };
-
-    // Fetch the "iris_broadcasts.json" file from Gist (or "_test" for test mode)
-    if (getState().ui.test_mode) {
-        	config.url = 'https://gist.githubusercontent.com/jaedb/cb3a5ee6909632abb2e0fe66d4c8c311/raw';
-    } else {
-        	config.url = 'https://gist.githubusercontent.com/jaedb/b677dccf80daf3ccb2ef12e96e495677/raw';
-    }
-
-    $.ajax(config).then(
-      (response) => {
-        dispatch({
-          type: 'BROADCASTS_LOADED',
-          broadcasts: JSON.parse(response),
-        });
-      },
-      (xhr, status, error) => {
-        dispatch(
-          handleException(
-            'Could not fetch broadcasts from GitHub',
-            {
-              config,
-              xhr,
-              status,
-              error,
-            },
-            null,
-            false,
-          ),
-        );
-      },
-    );
-  };
-}
-
-export function startSearch(search_type, query, only_mopidy = false) {
-  return {
-    type: 'SEARCH_STARTED',
-    search_type,
-    query,
-    only_mopidy,
-  };
-}
-
 export function handleException(message, data = {}, description = null, show_notification = true) {
   if (!message) {
     if (data.message) {
@@ -105,11 +56,53 @@ export function clearCurrentTrack() {
   };
 }
 
-export function cachebustHttpStream() {
+export function clearStorage() {
   return {
-    type: 'CACHEBUST_HTTP_STREAM',
+    type: 'CLEAR_STORAGE',
   };
 }
+
+export function restoreItemsFromColdStore(items) {
+  return {
+    type: 'RESTORE_ITEMS_FROM_COLD_STORE',
+    items,
+  };
+}
+
+export function restoreLibraryFromColdStore(library) {
+  return {
+    type: 'RESTORE_LIBRARY_FROM_COLD_STORE',
+    library,
+  };
+}
+
+export function updateColdStore(items) {
+  return {
+    type: 'UPDATE_COLD_STORE',
+    items,
+  };
+}
+
+/**
+ * Search results
+ */
+
+export function startSearch(query) {
+  return {
+    type: 'START_SEARCH',
+    query,
+  };
+}
+
+export function searchResultsLoaded(query, resultType, results) {
+  return {
+    type: 'SEARCH_RESULTS_LOADED',
+    query,
+    resultType,
+    results,
+  };
+}
+
 
 /**
  * Record getters
@@ -119,63 +112,87 @@ export function cachebustHttpStream() {
  * relevant service to load the record - all from one neat package.
  * */
 
-export function loadItems(uris, force_reload = false) {
+export function loadItems(uris, options = {}) {
   return {
     type: 'LOAD_ITEMS',
     uris,
-    force_reload,
+    options,
   };
 }
 
-export function loadItem(uri, force_reload = false) {
-  return loadItems([uri], force_reload);
+export function loadItem(uri, options = {}) {
+  return loadItems([uri], options);
 }
 
-export function loadTrack(uri, force_reload = false) {
+export function loadTrack(uri, options = {}) {
   return {
     type: 'LOAD_TRACK',
     uri,
-    force_reload,
+    options,
   };
 }
 
-export function loadAlbum(uri, force_reload = false) {
+export function loadAlbum(uri, options = {}) {
   return {
     type: 'LOAD_ALBUM',
     uri,
-    force_reload,
+    options,
   };
 }
 
-export function loadArtist(uri, force_reload = false) {
+export function loadArtist(uri, options = {}) {
   return {
     type: 'LOAD_ARTIST',
     uri,
-    force_reload,
+    options,
   };
 }
 
-export function loadPlaylist(uri, force_reload = false) {
+export function loadPlaylist(uri, options = {}) {
   return {
     type: 'LOAD_PLAYLIST',
     uri,
-    force_reload,
+    options,
   };
 }
 
-export function loadUser(uri, force_reload = false) {
+export function loadUser(uri, options = {}) {
   return {
     type: 'LOAD_USER',
     uri,
-    force_reload,
+    options,
   };
 }
 
-export function loadUserPlaylists(uri, force_reload = false) {
+export function loadUserPlaylists(uri, options = {}) {
   return {
     type: 'LOAD_USER_PLAYLISTS',
     uri,
-    force_reload,
+    options,
+  };
+}
+
+export function loadLibrary(uri, options = {}) {
+  return {
+    type: 'LOAD_LIBRARY',
+    uri,
+    options,
+  };
+}
+
+export function addToLibrary(uri, item) {
+  return {
+    type: 'ADD_TO_LIBRARY',
+    uri,
+    item,
+  };
+}
+
+export function removeFromLibrary(uri, itemUri) {
+  return {
+    type: 'REMOVE_FROM_LIBRARY',
+    uri,
+    itemUri,
   };
 }
 
@@ -186,19 +203,38 @@ export function loadUserPlaylists(uri, force_reload = false) {
  * We've got a loaded record, now we just need to plug it in to our state and stores.
  * */
 
-export function trackLoaded(track) {
-  return tracksLoaded([track]);
+export function libraryLoaded(library) {
+  return {
+    type: 'LIBRARY_LOADED',
+    library,
+  };
 }
+export function unloadLibrary(uri) {
+  return {
+    type: 'UNLOAD_LIBRARY',
+    uri,
+  };
+}
+export function itemsLoaded(items) {
+  return {
+    type: 'ITEMS_LOADED',
+    items,
+  };
+}
+export function itemLoaded(item) {
+  return itemsLoaded([item]);
+}
+
 export function tracksLoaded(tracks) {
   return {
     type: 'TRACKS_LOADED',
     tracks,
   };
 }
-
-export function artistLoaded(artist) {
-  return artistsLoaded([artist]);
+export function trackLoaded(track) {
+  return tracksLoaded([track]);
 }
+
 export function artistsLoaded(artists) {
   return {
     type: 'ARTISTS_LOADED',
@@ -206,34 +242,34 @@ export function artistsLoaded(artists) {
   };
 }
 
-export function albumLoaded(album) {
-  return albumsLoaded([album]);
-}
 export function albumsLoaded(albums) {
   return {
     type: 'ALBUMS_LOADED',
     albums,
   };
 }
-
-export function playlistLoaded(playlist) {
-  return playlistsLoaded([playlist]);
+export function albumLoaded(album) {
+  return albumsLoaded([album]);
 }
+
 export function playlistsLoaded(playlists) {
   return {
     type: 'PLAYLISTS_LOADED',
     playlists,
   };
 }
-
-export function userLoaded(user) {
-  return usersLoaded([user]);
+export function playlistLoaded(playlist) {
+  return playlistsLoaded([playlist]);
 }
+
 export function usersLoaded(users) {
   return {
     type: 'USERS_LOADED',
     users,
   };
+}
+export function userLoaded(user) {
+  return usersLoaded([user]);
 }
 export function userPlaylistsLoaded(uri, playlists, more = null, total = null) {
   return {
@@ -256,10 +292,9 @@ export function loadedMore(parent_type, parent_key, records_type, records_data, 
   };
 }
 
-export function removeFromIndex(index_name, key, new_key = null) {
+export function removeItem(key, new_key = null) {
   return {
-    type: 'REMOVE_FROM_INDEX',
-    index_name,
+    type: 'REMOVE_ITEM',
     key,
     new_key,
   };
@@ -340,7 +375,7 @@ export function savePlaylist(uri, name, description = '', is_public = false, is_
 export function createPlaylist(scheme, name, description = '', is_public = false, is_collaborative = false) {
   switch (scheme) {
     case 'spotify':
-      if (description == '') {
+      if (description === '') {
         description = null;
       }
       return spotifyActions.createPlaylist(name, description, is_public, is_collaborative);

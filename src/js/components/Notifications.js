@@ -172,10 +172,11 @@ class Notifications extends React.Component {
 
   renderProcess(process) {
     const {
-      data: { total, remaining },
+      total,
+      remaining,
       level = 'info',
       content,
-      description = null,
+      description,
       status,
       closing,
       key,
@@ -252,10 +253,10 @@ class Notifications extends React.Component {
     }
   }
 
-  renderProcesses() {
-    const { processes: processesObj = {} } = this.props;
-    const processes = Object.keys(processesObj).map((key) => processesObj[key]);
-    if (!processes.length) return null;
+  renderProcesses = () => {
+    const { processes: processesObj } = this.props;
+    const processes = indexToArray(processesObj).filter((process) => process.notification);
+    if (!processes) return null;
 
     return (
       <Fragment>

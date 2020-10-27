@@ -10,14 +10,21 @@ import FilterField from '../../components/Fields/FilterField';
 import LazyLoadListener from '../../components/LazyLoadListener';
 import Icon from '../../components/Icon';
 import * as uiActions from '../../services/ui/actions';
-import * as mopidyActions from '../../services/mopidy/actions';
-import * as spotifyActions from '../../services/spotify/actions';
-import * as googleActions from '../../services/google/actions';
-import {
-  uriSource,
-} from '../../util/helpers';
+import * as coreActions from '../../services/core/actions';
 import { sortItems, applyFilter } from '../../util/arrays';
 import { I18n, i18n } from '../../locale';
+import Button from '../../components/Button';
+import Loader from '../../components/Loader';
+import {
+  makeLibrarySelector,
+  makeProcessProgressSelector,
+} from '../../util/selectors';
+
+const processKeys = [
+  'MOPIDY_GET_LIBRARY_ARTISTS',
+  'SPOTIFY_GET_LIBRARY_ARTISTS',
+  'GOOGLE_GET_LIBRARY_ARTISTS',
+];
 
 class LibraryArtists extends React.Component {
   constructor(props) {
@@ -48,7 +55,6 @@ class LibraryArtists extends React.Component {
     setWindowTitle(i18n('library.artists.title'));
 
     this.getMopidyLibrary();
-    this.getGoogleLibrary();
     this.getSpotifyLibrary();
   }
 
@@ -62,67 +68,86 @@ class LibraryArtists extends React.Component {
     }
   }
 
-  getMopidyLibrary = () => {
+  refresh = () => {
+    const { uiActions: { hideContextMenu } } = this.props;
+
+    hideContextMenu();
+    this.getMopidyLibrary(true);
+    this.getGoogleLibrary(true);
+    this.getSpotifyLibrary(true);
+  }
+
+  cancelRefresh = () => {
+    const { uiActions: { hideContextMenu, cancelProcess } } = this.props;
+
+    hideContextMenu();
+    cancelProcess(processKeys);
+  }
+
+  setSort = (value) => {
+    const { sort, sort_reverse, uiActions: { set } } = this.props;
+    let reverse = false;
+    if (sort === value) reverse = !sort_reverse;
+    set({
+      library_artists_sort_reverse: reverse,
+      library_artists_sort: value,
+    });
+  }
+
+  handleContextMenu = (e, item) => {
+    const { uiActions: { showContextMenu } } = this.props;
+    showContextMenu({
+      e,
+      context: 'artist',
+      uris: [item.uri],
+      items: [item],
+    });
+  }
+
+  getMopidyLibrary = (forceRefetch = false) => {
     const {
       source,
-      mopidy_library_artists,
-      mopidyActions: {
-        getLibraryArtists,
+      coreActions: {
+        loadLibrary,
       },
     } = this.props;
 
     if (source !== 'local' && source !== 'all') return;
-    if (mopidy_library_artists) return;
 
-    getLibraryArtists();
+    loadLibrary('mopidy:library:artists', { forceRefetch });
   };
 
-  getGoogleLibrary = () => {
+  getGoogleLibrary = (forceRefetch = false) => {
     const {
       source,
       google_available,
-      google_library_artists,
-      googleActions: {
-        getLibraryArtists,
+      coreActions: {
+        loadLibrary,
       },
     } = this.props;
 
     if (!google_available) return;
     if (source !== 'google' && source !== 'all') return;
-    if (google_library_artists) return;
 
-    getLibraryArtists();
+    loadLibrary('google:library:artists', { forceRefetch });
   };
 
-  getSpotifyLibrary = () => {
+  getSpotifyLibrary = (forceRefetch = false) => {
     const {
       source,
       spotify_available,
-      spotify_library_artists_status,
-      spotifyActions: {
-        getLibraryArtists,
+      coreActions: {
+        loadLibrary,
       },
     } = this.props;
 
     if (!spotify_available) return;
     if (source !== 'spotify' && source !== 'all') return;
-    if (spotify_library_artists_status === 'finished') return;
-    if (spotify_library_artists_status === 'started') return;
 
-    getLibraryArtists();
+    loadLibrary('spotify:library:artists', { forceRefetch });
   };
 
-  handleContextMenu(e, item) {
-    const data = {
-      e,
-      context: 'artist',
-      uris: [item.uri],
-      items: [item],
-    };
-    this.props.uiActions.showContextMenu(data);
-  }
-
-  loadMore() {
+  loadMore = () => {
     const new_limit = this.state.limit + this.state.per_page;
 
     this.setState({ limit: new_limit });
@@ -133,81 +158,36 @@ class LibraryArtists extends React.Component {
     this.props.history.replace({ state });
   }
 
-  setSort(value) {
-    let reverse = false;
-    if (this.props.sort == value) reverse = !this.props.sort_reverse;
+  renderView = () => {
+    const {
+      sort,
+      sort_reverse,
+      view,
+      loading_progress,
+    } = this.props;
+    const {
+      limit,
+      filter,
+    } = this.state;
+    let { artists } = this.props;
 
-    const data = {
-      library_artists_sort_reverse: reverse,
-      library_artists_sort: value,
-    };
-    this.props.uiActions.set(data);
-  }
-
-  renderView() {
-    let artists = [];
-
-    // Mopidy library items
-    if (this.props.mopidy_library_artists && (this.props.source == 'all' || this.props.source == 'local')) {
-      for (uri of this.props.mopidy_library_artists) {
-        // Construct item placeholder. This is used as Mopidy needs to
-        // lookup ref objects to get the full object which can take some time
-        var source = uriSource(uri);
-        var artist = {
-          uri,
-          source,
-        };
-
-        if (this.props.artists.hasOwnProperty(uri)) {
-          artist = this.props.artists[uri];
-        }
-
-        artists.push(artist);
-      }
+    if (loading_progress !== null) {
+      return <Loader body loading progress={loading_progress} />;
     }
 
-    // Google library items
-    if (this.props.google_library_artists && (this.props.source == 'all' || this.props.source == 'google')) {
-      for (uri of this.props.google_library_artists) {
-        // Construct item placeholder. This is used as Mopidy needs to
-        // lookup ref objects to get the full object which can take some time
-        var source = uriSource(uri);
-        var artist = {
-          uri,
-          source,
-        };
-
-        if (this.props.artists.hasOwnProperty(uri)) {
-          artist = this.props.artists[uri];
-        }
-
-        artists.push(artist);
-      }
+    if (sort) {
+      artists = sortItems(artists, sort, sort_reverse);
     }
 
-    // Spotify library items
-    if (this.props.spotify_library_artists && (this.props.source == 'all' || this.props.source == 'spotify')) {
-      for (let i = 0; i < this.props.spotify_library_artists.length; i++) {
-        var uri = this.props.spotify_library_artists[i];
-        if (this.props.artists.hasOwnProperty(uri)) {
-          artists.push(this.props.artists[uri]);
-        }
-      }
-    }
-
-    if (this.props.sort) {
-      artists = sortItems(artists, this.props.sort, this.props.sort_reverse);
-    }
-
-    if (this.state.filter !== '') {
-      artists = applyFilter('name', this.state.filter, artists);
+    if (filter !== '') {
+      artists = applyFilter('name', filter, artists);
     }
 
     // Apply our lazy-load-rendering
     const total_artists = artists.length;
-    artists = artists.slice(0, this.state.limit);
+    artists = artists.slice(0, limit);
 
-    if (this.props.view == 'list') {
+    if (view === 'list') {
       return (
         <section className="content-wrapper">
           <List
@@ -220,8 +200,8 @@ class LibraryArtists extends React.Component {
             link_prefix="/artist/"
           />
           <LazyLoadListener
-            loadKey={total_artists > this.state.limit ? this.state.limit : total_artists}
-            showLoader={this.state.limit < total_artists}
+            loadKey={total_artists > limit ? limit : total_artists}
+            showLoader={limit < total_artists}
             loadMore={() => this.loadMore()}
           />
         </section>
@@ -234,15 +214,22 @@ class LibraryArtists extends React.Component {
           artists={artists}
         />
         <LazyLoadListener
-          loadKey={total_artists > this.state.limit ? this.state.limit : total_artists}
-          showLoader={this.state.limit < total_artists}
+          loadKey={total_artists > limit ? limit : total_artists}
+          showLoader={limit < total_artists}
           loadMore={() => this.loadMore()}
         />
       </section>
     );
   }
 
-  render() {
+  render = () => {
+    const {
+      spotify_available,
+      google_available,
+      loading_progress,
+    } = this.props;
+    const loading = loading_progress !== null;
+
     const source_options = [
       {
         value: 'all',
@@ -254,14 +241,14 @@ class LibraryArtists extends React.Component {
       },
     ];
 
-    if (this.props.spotify_available) {
+    if (spotify_available) {
       source_options.push({
         value: 'spotify',
         label: i18n('services.spotify.title'),
       });
     }
 
-    if (this.props.google_available) {
+    if (google_available) {
       source_options.push({
         value: 'google',
         label: i18n('services.google.title'),
@@ -330,6 +317,15 @@ class LibraryArtists extends React.Component {
           options={source_options}
           handleChange={(value) => { this.props.uiActions.set({ library_artists_source: value }); this.props.uiActions.hideContextMenu(); }}
         />
+        <Button
+          noHover
+          discrete
+          onClick={loading ? this.cancelRefresh : this.refresh}
+          tracking={{ category: 'LibraryArtists', action: 'Refresh' }}
+        >
+          {loading ? <Icon name="close" /> : <Icon name="refresh" /> }
+          {loading ? <I18n path="actions.cancel" /> : <I18n path="actions.refresh" /> }
+        </Button>
       </span>
     );
 
@@ -345,26 +341,32 @@ class LibraryArtists extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  mopidy_uri_schemes: state.mopidy.uri_schemes,
-  mopidy_library_artists: state.mopidy.library_artists,
-  google_available: (state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('gmusic:')),
-  google_library_artists: state.google.library_artists,
-  spotify_available: state.spotify.access_token,
-  spotify_library_artists: state.spotify.library_artists,
-  spotify_library_artists_status: (state.ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR !== undefined ? state.ui.processes.SPOTIFY_GET_LIBRARY_ARTISTS_PROCESSOR.status : null),
-  artists: state.core.artists,
-  source: (state.ui.library_artists_source ? state.ui.library_artists_source : 'all'),
-  sort: (state.ui.library_artists_sort ? state.ui.library_artists_sort : null),
-  sort_reverse: (state.ui.library_artists_sort_reverse ? state.ui.library_artists_sort_reverse : false),
-  view: state.ui.library_artists_view,
-});
+const mapStateToProps = (state) => {
+  const source = state.ui.library_artists_source || 'all';
+
+  const libraryUris = [];
+  if (source === 'all' || source === 'local') libraryUris.push('mopidy:library:artists');
+  if (source === 'all' || source === 'spotify') libraryUris.push('spotify:library:artists');
+  if (source === 'all' || source === 'google') libraryUris.push('google:library:artists');
+  const librarySelector = makeLibrarySelector(libraryUris);
+  const processProgressSelector = makeProcessProgressSelector(processKeys);
+
+  return {
+    loading_progress: processProgressSelector(state),
+    mopidy_uri_schemes: state.mopidy.uri_schemes,
+    google_available: (state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('gmusic:')),
+    spotify_available: (state.spotify.access_token),
+    artists: librarySelector(state),
+    source,
+    sort: (state.ui.library_artists_sort ? state.ui.library_artists_sort : null),
+    sort_reverse: (state.ui.library_artists_sort_reverse ? state.ui.library_artists_sort_reverse : false),
+    view: state.ui.library_artists_view,
+  };
+};
 
 const mapDispatchToProps = (dispatch) => ({
   uiActions: bindActionCreators(uiActions, dispatch),
-  mopidyActions: bindActionCreators(mopidyActions, dispatch),
-  spotifyActions: bindActionCreators(spotifyActions, dispatch),
-  googleActions: bindActionCreators(googleActions, dispatch),
+  coreActions: bindActionCreators(coreActions, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(LibraryArtists);

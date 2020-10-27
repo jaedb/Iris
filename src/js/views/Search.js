@@ -18,11 +18,7 @@ import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import * as spotifyActions from '../services/spotify/actions';
-import {
-  titleCase,
-  getIndexedRecords,
-} from '../util/helpers';
-import { sortItems } from '../util/arrays';
+import { titleCase } from '../util/helpers';
 import { i18n } from '../locale';
 
 class Search extends React.Component {
@@ -46,28 +42,20 @@ class Search extends React.Component {
 
     // Auto-focus on the input field
     $(document).find('.search-form input').focus();
+    this.digestUri();
   }
 
   componentDidUpdate = ({
     type: prevType,
     term: prevTerm,
-    mopidy_connected: prev_mopidy_connected,
   }) => {
     const {
       type: typeProp,
       term: termProp,
-      mopidy_connected,
-      uri_schemes_search_enabled,
     } = this.props;
     const { type, term } = this.state;
 
-    // Already connected, but search properties changed
-    if (prev_mopidy_connected && mopidy_connected) {
-      if (prevType !== typeProp || prevTerm !== termProp) {
-        this.digestUri();
-      }
-    // Connected
-    } else if (!prev_mopidy_connected && mopidy_connected && uri_schemes_search_enabled) {
+    if (prevType !== typeProp || prevTerm !== termProp) {
       this.search(type, term);
     }
   }
@@ -108,9 +96,7 @@ class Search extends React.Component {
   }
 
   onSourceClose = () => {
-    spotifyActions.clearSearchResults();
-    mopidyActions.clearSearchResults();
-    this.search();
+    this.search(true);
   };
 
   digestUri = () => {
@@ -130,39 +116,26 @@ class Search extends React.Component {
 
   clearSearch = () => {
     const {
-      spotifyActions,
-      mopidyActions,
       uiActions: {
         setWindowTitle,
       },
     } = this.props;
 
-    spotifyActions.clearSearchResults();
-    mopidyActions.clearSearchResults();
     setWindowTitle(i18n('search.title'));
     this.setState({ term: '' });
   }
 
-  search = () => {
+  search = (force = false) => {
     const {
+      coreActions: {
+        startSearch,
+      },
       uiActions: {
         setWindowTitle,
       },
-      mopidy_connected,
-      uri_schemes_search_enabled,
-      mopidyActions,
-      spotifyActions,
-      mopidy_search_results: {
-        query: {
-          term: mopidyTerm,
-          type: mopidyType,
-        } = {},
-      },
-      spotify_search_results: {
-        query: {
-          term: spotifyTerm,
-          type: spotifyType,
-        } = {},
+      search_results_query: {
+        type: existingType,
+        term: existingTerm,
       },
     } = this.props;
     const {
@@ -170,26 +143,11 @@ class Search extends React.Component {
       term,
     } = this.state;
 
-    console.info(`Searching for ${type} matching "${term}"`);
-
     setWindowTitle(i18n('search.title_window', { term: decodeURIComponent(term) }));
 
-    if (type && term && mopidy_connected && uri_schemes_search_enabled) {
-      if (mopidyTerm !== term || mopidyType !== type) {
-        mopidyActions.clearSearchResults();
-        mopidyActions.getSearchResults(type, term);
-      }
-
-      if ((spotifyTerm !== term || spotifyType !== type) && uri_schemes_search_enabled.includes('spotify:')) {
-        spotifyActions.clearSearchResults();
-        spotifyActions.getSearchResults(type, term);
-      }
+    if ((type && term && (force || existingType !== type || existingTerm !== term))) {
+      startSearch({ type, term });
     }
-  }
-
-  loadMore = (type) => {
-    alert(`load more: ${type}`);
-    // this.props.spotifyActions.getURL(this.props['spotify_'+type+'_more'], 'SPOTIFY_SEARCH_RESULTS_LOADED_MORE_'+type.toUpperCase());
   }
 
   setSort = (value) => {
@@ -321,22 +279,41 @@ class Search extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
-  type: ownProps.match.params.type,
-  term: ownProps.match.params.term,
-  mopidy_connected: state.mopidy.connected,
-  albums: (state.core.albums ? state.core.albums : []),
-  artists: (state.core.artists ? state.core.artists : []),
-  playlists: (state.core.playlists ? state.core.playlists : []),
-  tracks: (state.core.tracks ? state.core.tracks : []),
-  uri_schemes_search_enabled: (state.ui.uri_schemes_search_enabled ? state.ui.uri_schemes_search_enabled : []),
-  uri_schemes_priority: (state.ui.uri_schemes_priority ? state.ui.uri_schemes_priority : []),
-  uri_schemes: (state.mopidy.uri_schemes ? state.mopidy.uri_schemes : []),
-  mopidy_search_results: (state.mopidy.search_results ? state.mopidy.search_results : {}),
-  spotify_search_results: (state.spotify.search_results ? state.spotify.search_results : {}),
-  sort: (state.ui.search_results_sort ? state.ui.search_results_sort : 'followers.total'),
-  sort_reverse: (!!state.ui.search_results_sort_reverse),
-});
+const mapStateToProps = (state, ownProps) => {
+  const {
+    match: {
+      params: {
+        type,
+        term,
+      },
+    },
+  } = ownProps;
+  const {
+    mopidy: {
+      uri_schemes = [],
+    },
+    ui: {
+      uri_schemes_search_enabled = [],
+      search_results_sort: sort = 'followers.total',
+      search_results_sort_reverse,
+    },
+    core: {
+      search_results: {
+        query: search_results_query = {},
+      } = {},
+    },
+  } = state;
+
+  return {
+    type,
+    term,
+    uri_schemes,
+    uri_schemes_search_enabled,
+    sort,
+    sort_reverse: !!search_results_sort_reverse,
+    search_results_query,
+  };
+};
 
 const mapDispatchToProps = (dispatch) => ({
   coreActions: bindActionCreators(coreActions, dispatch),

@@ -1,3 +1,5 @@
+import { indexToArray } from "./arrays";
+
 /**
  * Returns a function, that, as long as it continues to be invoked, will not
  * be triggered. The function will be called after it stops being called for
@@ -129,10 +131,9 @@ const getCurrentPusherConnection = function (connections, connectionid) {
  * @param uri = string
  * */
 let uriSource = function (uri) {
-  if (!uri) {
-    return false;
-  }
-  const exploded = uri.split(':');
+  if (!uri) return '';
+
+  const exploded = `${uri}`.split(':');
   return exploded[0];
 };
 /**
@@ -142,16 +143,12 @@ let uriSource = function (uri) {
  * @return string
  * */
 const uriType = function (uri) {
-  if (!uri) return null;
+  if (!uri) return '';
 
-  const exploded = uri.split(':');
+  const exploded = `${uri}`.split(':');
 
   if (exploded[0] === 'm3u') {
     return 'playlist';
-  }
-
-  if (exploded[0] === 'yt') {
-    return 'track';
   }
 
   if (exploded[0] === 'youtube') {
@@ -176,6 +173,8 @@ const uriType = function (uri) {
   }
 
   switch (exploded[1]) {
+    case 'library':
+      return exploded[2];
     case 'track':
     case 'artist':
     case 'album':
@@ -188,7 +187,7 @@ const uriType = function (uri) {
       }
       return exploded[1];
     default:
-      return '';
+      return exploded[1];
   }
 };
 
@@ -226,9 +225,9 @@ const sourceIcon = function (uri, source = null) {
  * @param element = string, the element we wish to extract
  * @param uri = string
  * */
-const getFromUri = function (element, uri = '') {
-  const exploded = uri.split(':');
-  const namespace = exploded[0];
+const getFromUri = function (element, uri) {
+  if (!uri) return null;
+  const exploded = `${uri}`.split(':');
 
   switch (element) {
     case 'mbid':
@@ -277,6 +276,12 @@ const getFromUri = function (element, uri = '') {
 
     case 'genreid':
       if (exploded[1] == 'genre') {
+        return exploded[2];
+      }
+      break;
+
+    case 'categoryid':
+      if (exploded[1] == 'category') {
         return exploded[2];
       }
       break;
@@ -367,20 +372,26 @@ let isObject = function (value) {
  * @param key = string (the string to lookup)
  * @return boolean
  * */
-const isLoading = function (load_queue = [], keys = []) {
-  // Loop all of our load queue items
-  for (const load_queue_key in load_queue) {
-    // Make sure it's not a root object method
-    if (load_queue.hasOwnProperty(load_queue_key)) {
-      // Loop all the keys we're looking for
-      for (let i = 0; i < keys.length; i++) {
-        if (load_queue[load_queue_key].includes(keys[i])) {
-          return true;
-        }
-      }
+const isLoading = function (load_queue = {}, keys = []) {
+  if (!load_queue || !keys) return false;
+
+  const queue_keys = indexToArray(load_queue);
+  const matches = keys.reduce((acc, key) => {
+    let regex = '';
+    try {
+      regex = new RegExp(key);
+    } catch {
+      console.error('Invalid regular expression', keys);
+      return acc;
     }
-  }
-  return false;
+
+    return [
+      ...acc,
+      ...(queue_keys.filter((qk) => qk.match(regex))),
+    ];
+  }, []);
+
+  return matches.length > 0;
 };
 
 
@@ -430,7 +441,7 @@ const getIndexedRecords = function (index, uris) {
  * @param string String
  * @return String
  * */
-const titleCase = function (string) {
+const titleCase = function (string = '') {
   return string.charAt(0).toUpperCase() + string.slice(1);
 };
 
@@ -489,6 +500,10 @@ const iconFromKeyword = (name) => {
     {
       icon: 'smartphone',
       words: ['phone', 'mobile']
+    },
+    {
+      icon: 'web',
+      words: ['web', 'browser', 'iris']
     },
   ];
   for (let item of iconWords) {
@@ -579,13 +594,12 @@ const upgradeSpotifyPlaylistUri = function (uri) {
   return upgradeSpotifyPlaylistUris([uri])[0];
 };
 
-
 /**
  * Decode and encode Mopidy playlist URIs
  * This is needed as Mopidy encodes *some* characters in playlist URIs (but not other characters)
  * We need to retain ":" because this a reserved URI separator
  */
-const decodeMopidyUri = function (uri, decodeComponent = true) {
+const decodeMopidyUri = (uri, decodeComponent = true) => {
   let decoded = decodeComponent ? decodeURIComponent(uri) : uri;
   decoded = decoded.replace(/\s/g, '%20'); // space
   decoded = decoded.replace(/\[/g, '%5B'); // [
@@ -596,7 +610,7 @@ const decodeMopidyUri = function (uri, decodeComponent = true) {
   return decoded;
 };
 
-const encodeMopidyUri = function (uri, encodeComponent = true) {
+const encodeMopidyUri = (uri, encodeComponent = true) => {
   let encoded = encodeComponent ? encodeURIComponent(uri) : uri;
   encoded = encoded.replace(/\%20/g, ' '); // space
   encoded = encoded.replace(/\%5B/g, '['); // [

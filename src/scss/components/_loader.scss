@@ -13,70 +13,67 @@
 		}
 	}
 
-	&__spinner {
+	&__ring {
 		height: 120px;
 		width: 120px;
 		margin: 0 auto;
 		position: relative;
 
+		&__progress,
 		&__background,
 		&__foreground {
-			width: 100%;
-			height: 100%;
-			box-sizing: border-box;
-			border: {
-				radius: 100%;
-				style: solid;
-				width: 2px;
-				color: transparent;
-			}
-		}
-
-		&__background {
 			position: absolute;
-			top: 0;
-			left: 0;
-			border-color: rgba(128,128,128,0.35);
+			transform-origin: 50% 50%;
 		}
 
+		&__progress {
+			@include animate();
+			transform: rotate(-90deg);
+			position: absolute;
+			stroke: rgba(128,128,128,0.25);
+		}
+		
+		&__background {
+			stroke: rgba(128,128,128,0.25);
+		}
+		
 		&__foreground {
 			@include spin();
-			border-right-color: colour(blue);
-		}
-	}
-
-	&--progress {
-		.loader__spinner {
-			&__progress {
-				transform: rotate(-90deg) translate(3px, -3px);
-				position: absolute;
-
-				&__circle {
-					@include animate();
-					stroke: rgba(170,170,170,1);
-				}
-			}
+			stroke: colour(blue);
 		}
 	}
 
 	&--white {
-		.loader__spinner {
+		.loader__ring {
 			&__foreground {
-				border-right-color: colour(white);
+				stroke: colour(white);
 			}
 		}
 	}
 
 	&--body {
 		padding: 35vh 0;
+		text-align: center;
 	}
 
 	&--mini {
 		padding: 0;
 
-		.loader__spinner {
+		.loader__ring {
 			width: 20px;
 			height: 20px;
+
+			&__progress {
+				stroke: rgb(128,128,128);
+			}
+			
+			&__background {
+				stroke: rgba(128,128,128,0.5);
+			}
+			
+			&__foreground {
+				stroke: colour(white);
+			}
 		}
 
 		.loader__offline {

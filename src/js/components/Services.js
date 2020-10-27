@@ -20,7 +20,7 @@ import * as pusherActions from '../services/pusher/actions';
 import * as spotifyActions from '../services/spotify/actions';
 import * as lastfmActions from '../services/lastfm/actions';
 import * as geniusActions from '../services/genius/actions';
-import { I18n } from '../locale';
+import { I18n, i18n } from '../locale';
 import Button from './Button';
 
 class Services extends React.Component {
@@ -34,13 +34,13 @@ class Services extends React.Component {
   }
 
   componentDidMount() {
-    if ((this.props.spotify.enabled || this.props.spotify.authorization) && (!this.props.spotify.me || this.props.core.users[this.props.spotify.me.id] === undefined)) {
+    if ((this.props.spotify.enabled || this.props.spotify.authorization) && !this.props.spotify.me) {
       this.props.spotifyActions.getMe();
     }
-    if (this.props.lastfm.authorization && this.props.core.users[`lastfm:user:${this.props.lastfm.authorization.name}`] === undefined) {
+    if (this.props.lastfm.authorization) {
       this.props.lastfmActions.getMe();
     }
-    if (this.props.genius.authorization && (!this.props.genius.me || this.props.core.users[`genius:user:${this.props.genius.me.id}`] === undefined)) {
+    if (this.props.genius.authorization && !this.props.genius.me) {
       this.props.geniusActions.getMe();
     }
   }
@@ -69,41 +69,37 @@ class Services extends React.Component {
     this.props.coreActions.set(data);
   }
 
-  renderSpotify() {
+  renderSpotify = () => {
     const {
-      core,
-      spotify,
+      spotify: {
+        me,
+        authorization,
+        refreshing_token,
+      },
       mopidy,
       spotifyActions,
     } = this.props;
     const { country, locale } = this.state;
-    const user_object = (spotify.me && core.users[spotify.me.uri] ? core.users[spotify.me.uri] : null);
-    if (user_object) {
-      var user = (
-        <URILink className="user" type="user" uri={user_object.uri}>
-          <Thumbnail circle size="small" images={user_object.images} />
-          <span className="user-name">
-            {user_object.name ? user_object.name : user_object.id}
-            {!this.props.spotify.authorization && (
-              <span className="mid_grey-text">
-                {'  ('}
-                <I18n path="settings.services.limited_access" />
-                {')'}
-              </span>
-            )}
-          </span>
-        </URILink>
-      );
-    } else {
-      var user = (
-        <URILink className="user">
-          <Thumbnail circle size="small" />
-          <span className="user-name">
-						<I18n path="settings.services.unknown" />
-          </span>
-        </URILink>
-      );
-    }
+    const user = me ? (
+      <URILink className="user" type="user" uri={me.uri}>
+        <Thumbnail circle size="small" images={me.images} />
+        <span className="user-name">
+          {me.name ? me.name : me.id}
+          {!authorization && (
+            <span className="mid_grey-text">
+              {`  (${i18n('settings.services.limited_access')})`}
+            </span>
+          )}
+        </span>
+      </URILink>
+    ) : (
+      <URILink className="user">
+        <Thumbnail circle size="small" />
+        <span className="user-name">
+          <I18n path="settings.services.unknown" />
+        </span>
+      </URILink>
+    );
 
     let not_installed = null;
 
@@ -168,7 +164,7 @@ class Services extends React.Component {
           <div className="input">
             <SpotifyAuthenticationFrame />
             <Button
-              working={spotify.refreshing_token}
+              working={refreshing_token}
               onClick={() => spotifyActions.refreshingToken()}
               tracking={{ category: 'Spotify', action: 'RefreshToken' }}
             >
@@ -180,31 +176,33 @@ class Services extends React.Component {
     );
   }
 
-  renderLastfm() {
-    const user_object = (this.props.lastfm.me ? this.props.core.users[`lastfm:user:${this.props.lastfm.me.name}`] : null);
-    if (user_object) {
-      var user = (
-        <span className="user">
-          <Thumbnail circle size="small" images={user_object.images} />
-          <span className="user-name">
-            {user_object.name}
-          </span>
+  renderLastfm = () => {
+    const {
+      lastfm: {
+        me,
+        authorization,
+      },
+    } = this.props;
+
+    const user = me ? (
+      <span className="user">
+        <Thumbnail circle size="small" images={me.images} />
+        <span className="user-name">
+          {me.name}
         </span>
-      );
-    } else {
-      var user = (
-        <span className="user">
-          <Thumbnail circle size="small" />
-          <span className="user-name">
-            <I18n path="settings.services.unknown" />
-          </span>
+      </span>
+    ) : (
+      <span className="user">
+        <Thumbnail circle size="small" />
+        <span className="user-name">
+          <I18n path="settings.services.unknown" />
         </span>
-      );
-    }
+      </span>
+    );
 
     return (
       <div>
-        {this.props.lastfm.authorization ? (
+        {authorization ? (
           <div className="field current-user">
             <div className="name">
               <I18n path="settings.services.current_user" />
@@ -229,31 +227,33 @@ class Services extends React.Component {
     );
   }
 
-  renderGenius() {
-    const user_object = (this.props.genius.me ? this.props.core.users[this.props.genius.me.uri] : null);
-    if (user_object) {
-      var user = (
-        <span className="user">
-          <Thumbnail circle size="small" images={user_object.images} />
-          <span className="user-name">
-            {user_object.name}
-          </span>
+  renderGenius = () => {
+    const {
+      genius: {
+        me,
+        authorization,
+      },
+    } = this.props;
+
+    const user = me ? (
+      <span className="user">
+        <Thumbnail circle size="small" images={me.images} />
+        <span className="user-name">
+          {me.name}
         </span>
-      );
-    } else {
-      var user = (
-        <span className="user">
-          <Thumbnail circle size="small" />
-          <span className="user-name">
-            <I18n path="settings.services.unknown" />
-          </span>
+      </span>
+    ) : (
+      <span className="user">
+        <Thumbnail circle size="small" />
+        <span className="user-name">
+          <I18n path="settings.services.unknown" />
         </span>
-      );
-    }
+      </span>
+    );
 
     return (
       <div>
-        {this.props.genius.authorization ? (
+        {authorization && (
           <div className="field current-user">
             <div className="name">
               <I18n path="settings.services.current_user" />
@@ -264,7 +264,7 @@ class Services extends React.Component {
               </div>
             </div>
           </div>
-        ) : null}
+        )}
 
         <div className="field">
           <div className="name">
@@ -278,76 +278,70 @@ class Services extends React.Component {
     );
   }
 
-  renderIcecast() {
-    const { core, coreActions } = this.props;
-    return (
-      <div>
-        <div className="field checkbox">
-          <div className="name">
-            <I18n path="settings.services.icecast.enable.label" />
-          </div>
-          <div className="input">
-            <label>
-              <input
-                type="checkbox"
-                name="ssl"
-                checked={core.http_streaming_enabled}
-                onChange={() => coreActions.set({ http_streaming_enabled: !core.http_streaming_enabled })}
-              />
-              <span className="label">
-                <I18n path="settings.services.icecast.enable.description" />
-              </span>
-            </label>
-          </div>
-        </div>
-        <label className="field">
-          <div className="name">
-            <I18n path="settings.services.icecast.location.label" />
-          </div>
-          <div className="input">
-            <TextField
-              onChange={(value) => coreActions.set({ http_streaming_url: value })}
-              value={core.http_streaming_url}
-              autosave
-            />
-            <div className="description">
-              <I18n path="settings.services.icecast.location.description" />
-            </div>
-          </div>
-        </label>
-      </div>
+  renderMenu = () => {
+    const {
+      spotify: {
+        me: spotifyUser,
+        authorization: spotifyAuthorization,
+      },
+      lastfm: {
+        me: lastfmUser,
+        authorization: lastfmAuthorization,
+      },
+      genius: {
+        me: geniusUser,
+        authorization: geniusAuthorization,
+      },
+      history,
+      snapcast: {
+        enabled: snapcastEnabled,
+        connected: snapcastConnected,
+      }
+    } = this.props;
+
+    const spotify_icon = (
+      <Thumbnail
+        className="menu-item__thumbnail"
+        circle
+        size="small"
+        images={spotifyUser ? spotifyUser.images : null}
+      />
     );
-  }
 
-  renderMenu() {
-    if (this.props.spotify.me && this.props.core.users[this.props.spotify.me.uri]) {
-      var spotify_icon = <Thumbnail className="menu-item__thumbnail" circle size="small" images={this.props.core.users[this.props.spotify.me.uri].images} />;
-    } else {
-      var spotify_icon = <Thumbnail className="menu-item__thumbnail" circle size="small" />;
-    }
+    const lastfm_icon = (
+      <Thumbnail
+        className="menu-item__thumbnail"
+        circle
+        size="small"
+        images={lastfmUser ? lastfmUser.images : null}
+      />
+    );
 
-    if (this.props.lastfm.me && this.props.core.users[this.props.lastfm.me.uri]) {
-      var lastfm_icon = <Thumbnail className="menu-item__thumbnail" circle size="small" images={this.props.core.users[this.props.lastfm.me.uri].images} />;
-    } else {
-      var lastfm_icon = <Icon type="fontawesome" name="lastfm" className="menu-item__icon" />;
-    }
-
-    if (this.props.genius.me && this.props.core.users[this.props.genius.me.uri]) {
-      var genius_icon = <Thumbnail className="menu-item__thumbnail" circle size="small" images={this.props.core.users[this.props.genius.me.uri].images} />;
-    } else {
-      var genius_icon = <Icon name="genius" type="svg" className="menu-item__icon" />;
-    }
+    const genius_icon = (
+      <Thumbnail
+        className="menu-item__thumbnail"
+        circle
+        size="small"
+        images={geniusUser ? geniusUser.images : null}
+      />
+    );
 
     return (
       <div className="sub-tabs__menu menu" id="services-menu">
         <div className="menu__inner">
-          <Link history={this.props.history} className="menu-item menu-item--spotify" activeClassName="menu-item--active" to="/settings/services/spotify" scrollTo="#services-menu">
+          <Link
+            history={history}
+            className="menu-item menu-item--spotify"
+            activeClassName="menu-item--active"
+            to="/settings/services/spotify"
+            scrollTo="#services-menu"
+          >
             <div className="menu-item__inner">
               {spotify_icon}
               <div className="menu-item__title">
                 <I18n path="services.spotify.title" />
               </div>
-              {this.props.spotify.authorization ? (
+              {spotifyAuthorization ? (
                 <span className="status green-text">
                   <I18n path="settings.services.authorized" />
                 </span>
@@ -358,13 +352,19 @@ class Services extends React.Component {
               )}
             </div>
           </Link>
-          <Link history={this.props.history} className="menu-item menu-item--lastfm" activeClassName="menu-item--active" to="/settings/services/lastfm" scrollTo="#services-menu">
+          <Link
+            history={history}
+            className="menu-item menu-item--lastfm"
+            activeClassName="menu-item--active"
+            to="/settings/services/lastfm"
+            scrollTo="#services-menu"
+          >
             <div className="menu-item__inner">
               {lastfm_icon}
               <div className="menu-item__title">
                 <I18n path="services.lastfm.title" />
               </div>
-              {this.props.lastfm.authorization ? (
+              {lastfmAuthorization ? (
                 <span className="status green-text">
                   <I18n path="settings.services.authorized" />
                 </span>
@@ -375,13 +375,19 @@ class Services extends React.Component {
               )}
             </div>
           </Link>
-          <Link history={this.props.history} className="menu-item menu-item--genius" activeClassName="menu-item--active" to="/settings/services/genius" scrollTo="#services-menu">
+          <Link
+            history={history}
+            className="menu-item menu-item--genius"
+            activeClassName="menu-item--active"
+            to="/settings/services/genius"
+            scrollTo="#services-menu"
+          >
             <div className="menu-item__inner">
               {genius_icon}
               <div className="menu-item__title">
                 <I18n path="services.genius.title" />
               </div>
-              {this.props.genius.authorization ? (
+              {geniusAuthorization ? (
                 <span className="status green-text">
                   <I18n path="settings.services.authorized" />
                 </span>
@@ -392,42 +398,31 @@ class Services extends React.Component {
               )}
             </div>
           </Link>
-          <Link history={this.props.history} className="menu-item menu-item--snapcast" activeClassName="menu-item--active" to="/settings/services/snapcast" scrollTo="#services-menu">
+          <Link
+            history={history}
+            className="menu-item menu-item--snapcast"
+            activeClassName="menu-item--active"
+            to="/settings/services/snapcast"
+            scrollTo="#services-menu"
+          >
             <div className="menu-item__inner">
               <Icon className="menu-item__icon" name="devices" />
               <div className="menu-item__title">
                 <I18n path="services.snapcast.title" />
               </div>
-              {!this.props.snapcast.enabled && (
+              {!snapcastEnabled && (
                 <span className="status mid_grey-text">
                   <I18n path="settings.services.disabled" />
                 </span>
               )}
-              {this.props.snapcast.enabled && !this.props.snapcast.connected && (
+              {snapcastEnabled && !snapcastConnected && (
                 <span className="status red-text">
                   <I18n path="settings.services.disconnected" />
                 </span>
               )}
-              {this.props.snapcast.enabled && this.props.snapcast.connected && (
+              {snapcastEnabled && snapcastConnected && (
                 <span className="status green-text">
                   <I18n path="settings.services.connected" />
-                </span>
-              )}
-            </div>
-          </Link>
-          <Link history={this.props.history} className="menu-item menu-item--icecast" activeClassName="menu-item--active" to="/settings/services/icecast" scrollTo="#services-menu">
-            <div className="menu-item__inner">
-              <Icon className="menu-item__icon" name="wifi_tethering" />
-              <div className="menu-item__title">
-                <I18n path="services.icecast.title" />
-              </div>
-              {this.props.core.http_streaming_enabled ? (
-                <span className="status green-text">
-                  <I18n path="settings.services.enabled" />
-                </span>
-              ) : (
-                <span className="status mid_grey-text">
-                  <I18n path="settings.services.disabled" />
                 </span>
               )}
             </div>
@@ -446,8 +441,6 @@ class Services extends React.Component {
         return <div className="sub-tabs__content">{this.renderLastfm()}</div>;
       case 'genius':
         return <div className="sub-tabs__content">{this.renderGenius()}</div>;
-      case 'icecast':
-        return <div className="sub-tabs__content">{this.renderIcecast()}</div>;
       case 'snapcast':
         return <div className="sub-tabs__content">{<Snapcast match={this.props.match} />}</div>;
       default:
@@ -465,7 +458,7 @@ class Services extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => state;
+const mapStateToProps = (state) => state;
 
 const mapDispatchToProps = (dispatch) => ({
   coreActions: bindActionCreators(coreActions, dispatch),

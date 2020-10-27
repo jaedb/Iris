@@ -1,4 +1,4 @@
-
+import { compact } from 'lodash';
 import {
   isObject,
   upgradeSpotifyPlaylistUri,
@@ -38,8 +38,8 @@ const getTrackIcon = function (current_track = false, core = false) {
   if (!core) return false;
   if (!current_track) return false;
   if (typeof (current_track.uri) === 'undefined') return false;
-  if (typeof (core.tracks[current_track.uri]) === 'undefined') return false;
-  const track = core.tracks[current_track.uri];
+  if (typeof (core.items[current_track.uri]) === 'undefined') return false;
+  const track = core.items[current_track.uri];
   if (!track.images) return false;
   return formatImages(track.images).small;
 };
@@ -247,7 +247,7 @@ const formatArtists = function (records = []) {
 const formatPlaylists = function (records = []) {
   const formatted = [];
   for (const record of records) {
-	    formatted.push(formatTrack(record));
+	    formatted.push(formatPlaylist(record));
   }
   return formatted;
 };
@@ -255,6 +255,20 @@ const formatUsers = function (records = []) {
   const formatted = [];
   for (const record of records) {
 	    formatted.push(formatUser(record));
+  }
+  return formatted;
+};
+const formatCategories = function (records = []) {
+  const formatted = [];
+  for (const record of records) {
+	    formatted.push(formatCategory(record));
+  }
+  return formatted;
+};
+const formatSimpleObjects = function (records = []) {
+  const formatted = [];
+  for (const record of records) {
+	    formatted.push(formatSimpleObject(record));
   }
   return formatted;
 };
@@ -270,6 +284,7 @@ const formatAlbum = function (data) {
   const album = {};
   const fields = [
     'uri',
+    'in_library',
     'provider',
     'name',
     'type',
@@ -282,12 +297,17 @@ const formatAlbum = function (data) {
     'wiki_publish_date',
     'popularity',
     'images',
-    'artists_uris',
-    'tracks_uris',
-    'tracks_total',
-    'tracks_more',
-    'artists', // Array of simple records
+    'tracks',
+    'artists',
   ];
+
+  // Nested album object (eg in spotify library)
+  if (data && data.album && isObject(data.album)) {
+    if (data.added_at) {
+      data.album.added_at = data.added_at;
+    }
+    data = data.album;
+  }
 
   // Loop fields and import from data
   for (const field of fields) {
@@ -298,6 +318,16 @@ const formatAlbum = function (data) {
 
   if (album.images && !album.images.formatted) {
     album.images = formatImages(album.images);
+  }
+  if (album.tracks) {
+    if (album.tracks.items) {
+      album.tracks = formatTracks(album.tracks.items);
+    } else {
+      album.tracks = formatTracks(album.tracks);
+    }
+  }
+  if (album.artists) {
+    album.artists = formatSimpleObjects(album.artists);
   }
 
   if (data.last_modified && album.added_at === undefined) {
@@ -329,6 +359,7 @@ const formatArtist = function (data) {
   const artist = {};
   const fields = [
     'uri',
+    'in_library',
     'provider',
     'mbid',
     'name',
@@ -340,13 +371,9 @@ const formatArtist = function (data) {
     'biography',
     'biography_link',
     'biography_publish_date',
-    'related_artists_uris',
+    'related_artists',
     'albums_uris',
-    'albums_total',
-    'albums_more',
-    'tracks_uris',
-    'tracks_total',
-    'tracks_more',
+    'tracks',
   ];
 
   // Loop fields and import from data
@@ -394,6 +421,7 @@ const formatPlaylist = function (data) {
   const playlist = {};
   const fields = [
     'uri',
+    'in_library',
     'snapshot_id',
     'provider',
     'type',
@@ -406,11 +434,9 @@ const formatPlaylist = function (data) {
     'followers',
     'last_modified',
     'can_edit',
-    'owner',
-    'user_uri',
-    'tracks_uris',
+    'user',
+    'tracks',
     'tracks_total',
-    'tracks_more',
   ];
 
   // Loop fields and import from data
@@ -422,6 +448,19 @@ const formatPlaylist = function (data) {
 
   if (playlist.images && !playlist.images.formatted) {
     playlist.images = formatImages(playlist.images);
+  }
+  if (playlist.tracks) {
+    if (Array.isArray(playlist.tracks)) {
+      playlist.tracks = formatTracks(playlist.tracks);
+    } else if (playlist.tracks.items) {
+      playlist.tracks = formatTracks(playlist.tracks.items);
+    } else {
+      playlist.tracks = null;
+    }
+  }
+
+  if (playlist.tracks_total === undefined) {
+    playlist.tracks_total = playlist.tracks ? playlist.tracks.length : 0;
   }
 
   if (data.last_modified_date && playlist.last_modified === undefined) {
@@ -442,13 +481,12 @@ const formatPlaylist = function (data) {
     playlist.last_modified = data.added_at;
   }
 
-  if (data.owner) {
-    playlist.owner = {
+  if (data.owner && playlist.user === undefined) {
+    playlist.user = {
       id: data.owner.id,
       uri: data.owner.uri,
-      name: (data.owner.display_name ? data.owner.display_name : null),
+      name: (data.owner.display_name || data.owner.id),
     };
-    playlist.user_uri = data.owner.uri;
   }
 
   // Spotify upgraded their playlists URI to remove user component (Sept 2018)
@@ -472,6 +510,7 @@ const formatUser = function (data) {
   const user = {};
   const fields = [
     'id',
+    'in_library',
     'uri',
     'provider',
     'name',
@@ -527,6 +566,7 @@ const formatTrack = function (data) {
   const track = {};
   const fields = [
     'uri',
+    'in_library',
     'tlid',
     'provider',
     'name',
@@ -583,38 +623,46 @@ const formatTrack = function (data) {
     track.last_modified = track.added_at;
   }
 
-  if (track.duration === undefined && data.duration_ms !== undefined) {
+  if (data.duration_ms !== undefined) {
     track.duration = data.duration_ms;
-  } else if (track.duration === undefined && data.length !== undefined) {
+  } else if (data.length !== undefined) {
     track.duration = data.length;
   }
 
   if (track.track_number === undefined && data.track_no !== undefined) {
-    	track.track_number = data.track_no;
+    track.track_number = data.track_no;
   }
 
   if (track.disc_number === undefined && data.disc_no !== undefined) {
-    	track.disc_number = data.disc_no;
+    track.disc_number = data.disc_no;
   }
 
   if (track.release_date === undefined && data.date !== undefined) {
-    	track.release_date = data.date;
+    track.release_date = data.date;
   }
 
   if (track.explicit === undefined && data.explicit !== undefined) {
-    	track.is_explicit = data.explicit;
+    track.is_explicit = data.explicit;
   }
 
   // Copy images from albums (if applicable)
   // TOOD: Identify if we stil need this...
   if (data.album && data.album.images) {
-    	if (track.images === undefined || !track.images.formatted) {
-    		track.images = formatImages(data.album.images);
-    	}
+    if (track.images === undefined || !track.images.formatted) {
+      track.images = formatImages(data.album.images);
+    }
   }
 
   if (track.provider === undefined && track.uri !== undefined) {
     track.provider = uriSource(track.uri);
+  }
+
+  if (track.artists) {
+    track.artists = formatSimpleObjects(track.artists);
+  }
+
+  if (track.album) {
+    track.album = formatSimpleObject(track.album);
   }
 
   return track;
@@ -671,7 +719,7 @@ const formatClient = function (data) {
       if (data.volume.percent) {
         client.volume = data.volume.percent;
       }
-      if (data.volume.muted) {
+      if (data.volume.muted !== undefined) {
         client.mute = data.volume.muted;
       }
     }
@@ -682,6 +730,38 @@ const formatClient = function (data) {
   }
 
   return client;
+};
+
+/**
+ * Spotify playlists category
+ *
+ * @param data obj
+ * @return obj
+ * */
+const formatCategory = function (data) {
+  const category = {};
+  const fields = [
+    'id',
+    'uri',
+    'name',
+    'playlists_uris',
+  ];
+
+  for (const field of fields) {
+    if (data.hasOwnProperty(field)) {
+      category[field] = data[field];
+    }
+  }
+
+  if (!category.uri && data.id) {
+    category.uri = `spotify:category:${data.id}`;
+  }
+  
+  if (data.icons) {
+    category.images = formatImages(data.icons);
+  }
+
+  return category;
 };
 
 /**
@@ -714,6 +794,10 @@ const formatGroup = function (data) {
 };
 
 
+const collateLibrary = (uris, itemsIndex) => {
+  return compact(uris.map((uri) => itemsIndex[uri]));
+};
+
 /**
  * Collate an object with external references into a fully self-contained object
  * We merge *_uris references (ie tracks_uris) into the main object
@@ -738,6 +822,7 @@ const collate = function (obj, indexes = {}) {
   if (obj.playlists_uris !== undefined) 		obj.playlists = [];
   if (obj.related_artists_uris !== undefined) obj.related_artists = [];
   if (obj.clients_ids !== undefined) 			obj.clients = [];
+  if (obj.items_uris !== undefined) 			obj.items = [];
 
   if (indexes.artists) {
     if (obj.artists_uris) {
@@ -831,6 +916,16 @@ const collate = function (obj, indexes = {}) {
     }
   }
 
+  if (indexes.items) {
+    if (obj.items_uris) {
+      for (const uri of obj.items_uris) {
+        if (indexes.items[uri]) {
+          obj.items.push(indexes.items[uri]);
+        }
+      }
+    }
+  }
+
   return obj;
 };
 
@@ -840,6 +935,7 @@ export {
   digestMopidyImages,
   formatImages,
   formatSimpleObject,
+  formatSimpleObjects,
   formatAlbum,
   formatAlbums,
   formatArtist,
@@ -852,7 +948,10 @@ export {
   formatTracks,
   formatClient,
   formatGroup,
+  formatCategory,
+  formatCategories,
   collate,
+  collateLibrary,
 };
 
 export default {
@@ -861,6 +960,7 @@ export default {
   digestMopidyImages,
   formatImages,
   formatSimpleObject,
+  formatSimpleObjects,
   formatAlbum,
   formatAlbums,
   formatArtist,
@@ -873,5 +973,8 @@ export default {
   formatTracks,
   formatClient,
   formatGroup,
+  formatCategory,
+  formatCategories,
   collate,
+  collateLibrary,
 };

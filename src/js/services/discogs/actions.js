@@ -1,5 +1,6 @@
 
 import { generateGuid } from '../../util/helpers';
+import { formatArtist } from '../../util/format';
 
 const coreActions = require('../core/actions');
 const uiActions = require('../ui/actions');
@@ -58,11 +59,10 @@ export function getArtistImages(uri, artist) {
         (response) => {
           if (response) {
             if (response.results.length > 0 && response.results[0].cover_image !== undefined) {
-              const updated_artist = {
+              dispatch(coreActions.itemLoaded(formatArtist({
                 uri,
                 images: [response.results[0].cover_image],
-              };
-              dispatch(coreActions.artistLoaded(updated_artist));
+              })));
             } else {
               console.log(`Discogs: No results for artist ${artist.name}`);
             }

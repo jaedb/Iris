@@ -12,9 +12,9 @@ const indexToArray = (index, keys) => {
   if (!index) return [];
 
   if (keys) {
-    return keys.map((key) => index[key]);
+    return compact(keys.map((key) => index[key]));
   }
-  return Object.keys(index).map((key) => index[key]);
+  return compact(Object.keys(index).map((key) => index[key]));
 };
 
 /**
@@ -25,7 +25,9 @@ const indexToArray = (index, keys) => {
  * @return Array
  * */
 const arrayOf = (property, items = []) => {
-  return compact(items.map((item) => item[property]));
+  const array = [];
+  items.forEach((item) => (item[property] !== undefined ? array.push(item[property]) : null));
+  return array;
 };
 
 

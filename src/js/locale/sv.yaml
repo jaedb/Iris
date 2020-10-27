@@ -129,8 +129,6 @@ services:
     want_lyrics: 'Vill du ha låttext? auktorisera Genius i '
   google:
     title: Google
-  icecast:
-    title: Icecast
   lastfm:
     title: LastFM
     love: Love
@@ -410,13 +408,6 @@ settings:
       locale:
         title: Språk
         description: Gemen ISO 639 språkkod och en versal ISO 3166-1 alpha-2 landskod, tillsammans med ett understreck (ex 'sv_SE')
-    icecast:
-      enable:
-        label: Aktivera
-        description: Spela ljud till denna webbläsare
-      location:
-        label: Location
-        description: The full URL to your stream endpoint
 user:
   title: Användare
   title_window: '%{name} (user)'

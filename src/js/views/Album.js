@@ -25,8 +25,8 @@ import {
   isLoading,
   sourceIcon,
 } from '../util/helpers';
-import { collate } from '../util/format';
 import Button from '../components/Button';
+import { makeLoadingSelector, makeItemSelector, makeLibrarySelector } from '../util/selectors';
 
 export class Album extends React.Component {
   componentDidMount = () => {
@@ -34,7 +34,7 @@ export class Album extends React.Component {
       uri,
       album,
       coreActions: {
-        loadAlbum,
+        loadItem,
       },
       lastfmActions: {
         getAlbum,
@@ -42,7 +42,7 @@ export class Album extends React.Component {
     } = this.props;
 
     this.setWindowTitle();
-    loadAlbum(uri);
+    loadItem(uri, { full: true });
 
     if (album) {
       if (album.artists && album.wiki === undefined) {
@@ -72,7 +72,7 @@ export class Album extends React.Component {
       uri,
       album,
       coreActions: {
-        loadAlbum,
+        loadItem,
       },
       lastfmActions: {
         getAlbum,
@@ -80,11 +80,11 @@ export class Album extends React.Component {
     } = this.props;
 
     if (uri !== prevUri) {
-      loadAlbum(uri);
+      loadItem(uri, { full: true });
     }
 
     // We have just received our full album or our album artists
-    if ((!prevAlbum && album) || (!prevAlbum.artists && album.artists)) {
+    if ((!prevAlbum && album)) {
       if (album.artists && album.wiki === undefined) {
         getAlbum(album.uri, album.artists[0].name, album.name);
       }
@@ -165,21 +165,14 @@ export class Album extends React.Component {
   render = () => {
     const {
       uri,
-      album: albumProp,
-      tracks,
-      artists,
-      load_queue,
+      album,
+      loading,
       slim_mode,
     } = this.props;
 
-    if (!albumProp) {
-      if (
-        isLoading(load_queue, [
-          `spotify_albums/${getFromUri('albumid', uri)}`,
-        ])
-      ) {
-        return <Loader body loading />;
-      }
+    if (loading) {
+      return <Loader body loading />;
+    } else if (!album) {
       return (
         <ErrorMessage type="not-found" title="Not found">
           <p>
@@ -188,14 +181,6 @@ export class Album extends React.Component {
         </ErrorMessage>
       );
     }
-
-    const album = collate(albumProp, { tracks, artists });
-
-    const is_loading_tracks = (
-      !album.tracks_uris
-      || (album.tracks_uris && !album.tracks)
-      || album.tracks_uris.length !== album.tracks.length
-    );
 
     return (
       <div className="view album-view content-wrapper preserve-3d">
@@ -226,7 +211,7 @@ export class Album extends React.Component {
               <li>
                 {i18n(
                   'specs.tracks',
-                  { count: album.tracks_total || album.tracks.length },
+                  { count: album.tracks.length },
                 )}
               </li>
             ) : null}
@@ -265,7 +250,7 @@ export class Album extends React.Component {
           {uriSource(uri) === 'spotify' && (
             <FollowButton
               uri={uri}
-              is_following={this.inLibrary()}
+              is_following={album.in_library}
             />
           )}
           <ContextMenuTrigger onTrigger={this.handleContextMenu} />
@@ -276,11 +261,6 @@ export class Album extends React.Component {
             className="album-track-list"
             tracks={album.tracks}
             uri={album.uri}
-          />
-          <LazyLoadListener
-            loadKey={album.tracks_more}
-            showLoader={is_loading_tracks}
-            loadMore={this.loadMore}
           />
         </section>
 
@@ -303,18 +283,14 @@ export class Album extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   const uri = decodeURIComponent(ownProps.match.params.uri);
+  const itemSelector = makeItemSelector(uri);
+  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`]);
   return {
     uri,
     slim_mode: state.ui.slim_mode,
     theme: state.ui.theme,
-    load_queue: state.ui.load_queue,
-    tracks: state.core.tracks,
-    artists: state.core.artists,
-    album:
-      state.core.albums && state.core.albums[uri] !== undefined
-        ? state.core.albums[uri]
-        : false,
-    albums: state.core.albums,
+    album: itemSelector(state),
+    loading: loadingSelector(state),
     spotify_library_albums: state.spotify.library_albums,
     local_library_albums: state.mopidy.library_albums,
     spotify_authorized: state.spotify.authorization,
