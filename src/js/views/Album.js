@@ -21,14 +21,12 @@ import * as spotifyActions from '../services/spotify/actions';
 import * as lastfmActions from '../services/lastfm/actions';
 import {
   uriSource,
-  getFromUri,
-  isLoading,
   sourceIcon,
 } from '../util/helpers';
 import Button from '../components/Button';
-import { makeLoadingSelector, makeItemSelector, makeLibrarySelector } from '../util/selectors';
+import { makeLoadingSelector, makeItemSelector } from '../util/selectors';
 
-export class Album extends React.Component {
+class Album extends React.Component {
   componentDidMount = () => {
     const {
       uri,
@@ -304,6 +302,10 @@ const mapDispatchToProps = (dispatch) => ({
   spotifyActions: bindActionCreators(spotifyActions, dispatch),
   lastfmActions: bindActionCreators(lastfmActions, dispatch),
 });
+
+export {
+  Album,
+};
 
 export default connect(
   mapStateToProps,
