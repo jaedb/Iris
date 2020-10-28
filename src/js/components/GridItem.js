@@ -55,7 +55,8 @@ class GridItem extends React.Component {
 
   renderSecondary = ({
     uri,
-    tracks_total,
+    tracks_total = 0,
+    tracks,
     followers,
     albums_uris,
     artists,
@@ -64,7 +65,7 @@ class GridItem extends React.Component {
       case 'playlist':
         return (
           <span className="grid__item__secondary__content">
-            <I18n path="specs.tracks" count={tracks_total || 0} />
+            <I18n path="specs.tracks" count={tracks.length || tracks_total} />
           </span>
         );
 
@@ -95,7 +96,9 @@ class GridItem extends React.Component {
 
   render = () => {
     const {
-      item: { album },
+      item: {
+        album,
+      } = {},
       link: customLink,
       type,
       show_source_icon,
@@ -147,6 +150,10 @@ const mapStateToProps = (state) => {
   return {
     grid_glow_enabled,
   };
+};
+
+export {
+  GridItem,
 };
 
 export default connect(mapStateToProps)(GridItem);

@@ -628,7 +628,7 @@ const PusherMiddleware = (function () {
         const notification_key = `command_${action.id}`;
 
         if (action.notify) {
-          store.dispatch(uiActions.startProcess(notification_key, 'Running command'));
+          store.dispatch(uiActions.startProcess(notification_key, { content: 'Running command' }));
         }
 
         request(store, 'run_command', { id: action.id })

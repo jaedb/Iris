@@ -375,13 +375,14 @@ let isObject = function (value) {
 const isLoading = function (load_queue = {}, keys = []) {
   if (!load_queue || !keys) return false;
 
-  const queue_keys = indexToArray(load_queue);
+  const queue_keys = Object.keys(load_queue);
   const matches = keys.reduce((acc, key) => {
     let regex = '';
     try {
       regex = new RegExp(key);
     } catch {
-      console.error('Invalid regular expression', keys);
+      // Fucks with unit tests, but helpful for debugging.
+      // console.error('Invalid regular expression', keys);
       return acc;
     }
 

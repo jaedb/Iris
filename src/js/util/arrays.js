@@ -26,7 +26,13 @@ const indexToArray = (index, keys) => {
  * */
 const arrayOf = (property, items = []) => {
   const array = [];
-  items.forEach((item) => (item[property] !== undefined ? array.push(item[property]) : null));
+  items.forEach(
+    (item) => {
+      if (item[property] === undefined) return;
+      if (item[property] === null) return;
+      array.push(item[property]);
+    },
+  );
   return array;
 };
 
