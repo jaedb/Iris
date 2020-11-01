@@ -247,7 +247,7 @@ class Settings extends React.Component {
             <I18n path="settings.interface.title" />
             <a name="interface" />
           </h4>
-          
+
           <div className="field dropdown">
             <div className="name"><I18n path="settings.interface.language.label" /></div>
             <div className="input">
@@ -384,6 +384,20 @@ class Settings extends React.Component {
                   <I18n path="settings.interface.behavior.grid_glow" />
                   <span className="tooltip__content">
                     <I18n path="settings.interface.behavior.grid_glow_tooltip" />
+                  </span>
+                </span>
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  name="reverse_playlist_tracks"
+                  checked={ui.reverse_playlist_tracks}
+                  onChange={() => uiActions.set({ reverse_playlist_tracks: !ui.reverse_playlist_tracks })}
+                />
+                <span className="label tooltip">
+                  <I18n path="settings.interface.behavior.reverse_playlist_tracks" />
+                  <span className="tooltip__content">
+                    <I18n path="settings.interface.behavior.reverse_playlist_tracks_tooltip" />
                   </span>
                 </span>
               </label>

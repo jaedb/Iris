@@ -9,7 +9,6 @@ import Thumbnail from '../components/Thumbnail';
 import PinButton from '../components/Fields/PinButton';
 import { nice_number } from '../components/NiceNumber';
 import { Dater, dater } from '../components/Dater';
-import LazyLoadListener from '../components/LazyLoadListener';
 import FollowButton from '../components/Fields/FollowButton';
 import Loader from '../components/Loader';
 import ContextMenuTrigger from '../components/ContextMenuTrigger';
@@ -22,12 +21,12 @@ import * as spotifyActions from '../services/spotify/actions';
 import {
   uriSource,
   getFromUri,
-  isLoading,
   sourceIcon,
   decodeMopidyUri,
 } from '../util/helpers';
 import { i18n, I18n } from '../locale';
 import { makeItemSelector, makeLoadingSelector } from '../util/selectors';
+import { sortItems } from '../util/arrays';
 
 class Playlist extends React.Component {
   constructor(props) {
@@ -275,6 +274,7 @@ class Playlist extends React.Component {
       playlist,
       loading,
       slim_mode,
+      reverse_playlist_tracks,
     } = this.props;
 
     if (!playlist) {
@@ -294,6 +294,8 @@ class Playlist extends React.Component {
     if (playlist.can_edit) {
       context = 'editable-playlist';
     }
+
+    const tracks = reverse_playlist_tracks ? sortItems(playlist.tracks, '', true) : playlist.tracks;
 
     return (
       <div className="view playlist-view content-wrapper preserve-3d">
@@ -353,7 +355,7 @@ class Playlist extends React.Component {
             uri={playlist.uri}
             className="playlist-track-list"
             track_context={context}
-            tracks={playlist.tracks}
+            tracks={tracks}
             removeTracks={this.removeTracks}
             reorderTracks={this.reorderTracks}
           />
@@ -371,6 +373,7 @@ const mapStateToProps = (state, ownProps) => {
       allow_reporting,
       slim_mode,
       theme,
+      reverse_playlist_tracks,
     } = {},
     spotify: {
       library_playlists: spotify_library_playlists,
@@ -398,6 +401,7 @@ const mapStateToProps = (state, ownProps) => {
     local_library_playlists,
     spotify_authorized,
     spotify_userid: (me && me.id) || null,
+    reverse_playlist_tracks,
   };
 };
 
