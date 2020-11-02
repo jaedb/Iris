@@ -10,7 +10,7 @@ errors:
   no_results: Nic nie znaleziono
   authorization_required: 'Musisz najpierw zautoryzować %{provider}'
   enable_first: 'Odblokuj najpierw %{provider}'
-  no_service_worker: Nie wspierany service worker
+  no_service_worker: Niewspierany service worker
   required: Wymagane
   unknown_error: Nieznany błąd
   need_to_be_online: Musisz być online by załadować ten zasób
@@ -83,7 +83,7 @@ time:
     singular: minuta
     plural: minut
   hours: 
-    short: gdz
+    short: h
     singular: godzina
     plural: godzin
   days: 
@@ -479,11 +479,11 @@ modal:
     provider: Dostawca
     image:
       label: Okładka
-      description: Tylko JPEG, 256kB maks. Zostaw puste by pozostawić okładę bez zmian.
+      description: Tylko JPEG, 256kB maks. Zostaw puste by pozostawić okładkę bez zmian.
     options:
       label: Opcje
       public: Publiczne
-      collaborative: Kolaboracja
+      collaborative: Współpraca
     create_playlist: Stwórz playlistę
   edit_command:
     title: Edytuj komendę
