@@ -268,7 +268,7 @@ debug:
   create_notification: Stwórz powiadomienie
   create_process: Stwórz powiadomienie procesu
   run_test: Uruchom test procesu
-  call: Zawołaj funkcję
+  call: Wywołaj funkcję
   data: Dane
   examples: Przykłady
 playlist:
@@ -458,7 +458,7 @@ library:
 modal:
   add_to_playlist:
     title: Dodaj do playlisty
-    subtitle: 'Wybierz playlistę do dodania %{count} track%{plural} to'
+    subtitle: 'Wybierz playlistę do dodania %{count} utworów'
     no_playlists: Brak dostępnych playlist
     no_editable_playlists: Brak edytowalnych playlist
   add_to_queue:
