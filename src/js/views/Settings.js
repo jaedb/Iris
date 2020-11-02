@@ -387,20 +387,6 @@ class Settings extends React.Component {
                   </span>
                 </span>
               </label>
-              <label>
-                <input
-                  type="checkbox"
-                  name="reverse_playlist_tracks"
-                  checked={ui.reverse_playlist_tracks}
-                  onChange={() => uiActions.set({ reverse_playlist_tracks: !ui.reverse_playlist_tracks })}
-                />
-                <span className="label tooltip">
-                  <I18n path="settings.interface.behavior.reverse_playlist_tracks" />
-                  <span className="tooltip__content">
-                    <I18n path="settings.interface.behavior.reverse_playlist_tracks_tooltip" />
-                  </span>
-                </span>
-              </label>
             </div>
           </div>
 

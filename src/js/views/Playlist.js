@@ -274,7 +274,6 @@ class Playlist extends React.Component {
       playlist,
       loading,
       slim_mode,
-      reverse_playlist_tracks,
     } = this.props;
 
     if (!playlist) {
@@ -294,8 +293,6 @@ class Playlist extends React.Component {
     if (playlist.can_edit) {
       context = 'editable-playlist';
     }
-
-    const tracks = reverse_playlist_tracks ? sortItems(playlist.tracks, '', true) : playlist.tracks;
 
     return (
       <div className="view playlist-view content-wrapper preserve-3d">
@@ -355,7 +352,7 @@ class Playlist extends React.Component {
             uri={playlist.uri}
             className="playlist-track-list"
             track_context={context}
-            tracks={tracks}
+            tracks={playlist.tracks}
             removeTracks={this.removeTracks}
             reorderTracks={this.reorderTracks}
           />
@@ -373,7 +370,6 @@ const mapStateToProps = (state, ownProps) => {
       allow_reporting,
       slim_mode,
       theme,
-      reverse_playlist_tracks,
     } = {},
     spotify: {
       library_playlists: spotify_library_playlists,
@@ -401,7 +397,6 @@ const mapStateToProps = (state, ownProps) => {
     local_library_playlists,
     spotify_authorized,
     spotify_userid: (me && me.id) || null,
-    reverse_playlist_tracks,
   };
 };
 

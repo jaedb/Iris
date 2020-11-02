@@ -341,8 +341,6 @@ settings:
       wide_scrollbars: Use wide scrollbars
       grid_glow: Thumbnail glow effect
       grid_glow_tooltip: Disable effect for lower-power devices or older browsers
-      reverse_playlist_tracks: Reverse playlist tracks
-      reverse_playlist_tracks_tooltip: Sort tracks, most recently-added first
     sources_priority:
       label: Sources priority
       description: Drag-and-drop to prioritize search providers and results
