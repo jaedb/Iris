@@ -55,17 +55,21 @@ class GridItem extends React.Component {
 
   renderSecondary = ({
     uri,
-    tracks_total = 0,
-    tracks,
+    tracks_total,
+    tracks = [],
     followers,
     albums_uris,
     artists,
   }) => {
+    let trackCount = 0;
+    if (tracks) trackCount = tracks.length;
+    if (tracks_total) trackCount = tracks_total;
+
     switch (uriType(uri)) {
       case 'playlist':
         return (
           <span className="grid__item__secondary__content">
-            <I18n path="specs.tracks" count={tracks.length || tracks_total} />
+            <I18n path="specs.tracks" count={trackCount} />
           </span>
         );
 

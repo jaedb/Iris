@@ -9,7 +9,6 @@ import Thumbnail from '../components/Thumbnail';
 import PinButton from '../components/Fields/PinButton';
 import { nice_number } from '../components/NiceNumber';
 import { Dater, dater } from '../components/Dater';
-import LazyLoadListener from '../components/LazyLoadListener';
 import FollowButton from '../components/Fields/FollowButton';
 import Loader from '../components/Loader';
 import ContextMenuTrigger from '../components/ContextMenuTrigger';
@@ -22,12 +21,12 @@ import * as spotifyActions from '../services/spotify/actions';
 import {
   uriSource,
   getFromUri,
-  isLoading,
   sourceIcon,
   decodeMopidyUri,
 } from '../util/helpers';
 import { i18n, I18n } from '../locale';
 import { makeItemSelector, makeLoadingSelector } from '../util/selectors';
+import { sortItems } from '../util/arrays';
 
 class Playlist extends React.Component {
   constructor(props) {

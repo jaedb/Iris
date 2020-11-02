@@ -247,7 +247,7 @@ class Settings extends React.Component {
             <I18n path="settings.interface.title" />
             <a name="interface" />
           </h4>
-          
+
           <div className="field dropdown">
             <div className="name"><I18n path="settings.interface.language.label" /></div>
             <div className="input">

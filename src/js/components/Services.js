@@ -299,31 +299,37 @@ class Services extends React.Component {
       }
     } = this.props;
 
-    const spotify_icon = (
+    const spotify_icon = spotifyUser ? (
       <Thumbnail
         className="menu-item__thumbnail"
         circle
         size="small"
-        images={spotifyUser ? spotifyUser.images : null}
+        images={spotifyUser.images}
       />
+    ) : (
+      <Thumbnail className="menu-item__thumbnail" circle size="small" />
     );
 
-    const lastfm_icon = (
+    const lastfm_icon = lastfmUser ? (
       <Thumbnail
         className="menu-item__thumbnail"
         circle
         size="small"
-        images={lastfmUser ? lastfmUser.images : null}
+        images={lastfmUser.images}
       />
+    ) : (
+      <Icon type="fontawesome" name="lastfm" className="menu-item__icon" />
     );
 
-    const genius_icon = (
+    const genius_icon = geniusUser ? (
       <Thumbnail
         className="menu-item__thumbnail"
         circle
         size="small"
-        images={geniusUser ? geniusUser.images : null}
+        images={geniusUser.images}
       />
+    ) : (
+      <Icon name="genius" type="svg" className="menu-item__icon" />
     );
 
     return (
