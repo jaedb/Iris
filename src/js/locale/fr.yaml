@@ -6,6 +6,7 @@ name: Français
 errors:
   uri_not_found: "Pas de ressource avec l'URI %{uri}"
   could_not_load: Impossible de charger
+  could_not_load_library: 'Impossible de charger %{name} depuis %{provider}'
   no_results: Aucun résultat trouvé
   authorization_required: 'Vous devez autoriser %{provider}'
   enable_first: 'Activez %{provider}'
@@ -13,6 +14,10 @@ errors:
   required: Requis
   unknown_error: Erreur inconnue
   need_to_be_online: Vous devez être connecté pour charger cette ressource
+  nothing_selected: Pas de sélection
+  cannot_reorder:
+    title: Impossible de réordonner
+    description: Désactivez le critère de tri et réessayez
 actions:
   play: Lire
   play_all: Tout lire
@@ -37,6 +42,10 @@ actions:
   confirm: Êtes-vous sûr?
   delete: Supprimer
   remove: Retirer
+  cancel: Annuler
+  created: %{name} créé
+  saved: %{name} sauvegardé
+  deleted: %{name} supprimé
 common:
   popularity: Popularité
   name: Nom
@@ -47,6 +56,7 @@ common:
   sort: Trier
   filter: Filtrer
   by: ' par '
+  loading_library: 'Chargement de %{provider} %{type}'
 fields:
   start_typing: 'Commencez à taper...'
   search: 'Rechercher...'
@@ -65,6 +75,7 @@ fields:
     as_loaded: Tel que chargé
     name: Nom
     artist: Artiste
+    album: Album
     updated: Actualisé
     tracks: Morceaux
     source: Source
@@ -115,6 +126,8 @@ services:
     title: Mopidy
     local: Local
     adding_uris: 'Ajout de %{count} URI(s)'
+    adding_uris_broadcast: '%{username} ajoute %{count} URI(s)'
+    searching: 'Recherche dans %{provider} %{type}'
     searching_providers: 'Recherche parmi %{count} Mopidy services'
     loading_albums: 'Chargement de %{count} albums locaux'
   spotify:
@@ -162,12 +175,15 @@ context_menu:
   play_top_tracks: Lire les meilleurs morceaux
   love_track: Aimer le morceau
   unlove_track: Ne plus aimer le morceau
+  pin: Épingler
+  unpin: Ne plus épingler
   go_to_artist: Vers l'artiste
   go_to_user: Vers l'utilisateur
   track_info: Info sur le morceau
   discover_similar: Découvrir des morceaux similaires
   start_radio: Démarrer la radio
   copy_uri: Copier l'URI
+  refresh: Rafraîchir
 dropzones:
   dragging_things: 'Déplacement de %{count} éléments'
 playback_controls:
@@ -179,6 +195,7 @@ playback_controls:
   unmute: Réactiver le son
 snapcast:
   enabled: Activé
+  streaming_enabled: Diffusion du flux active
   show_disconnected_clients: Montrer les clients déconnectés
   no_connected_clients: Pas de client connecté
   host: Hôte
@@ -217,12 +234,18 @@ album:
   wiki:
     title: À propos
     published: 'Publié : %{date}'
+  tracks:
+    title: Morceaux
+    sort:
+      disc_track: Numéro de morceau
+      name: Nom
 artist:
   title: Artiste
   title_window: '%{name} (artiste)'
   overview:
     title: Aperçu
     top_tracks: Meilleurs morceaux
+    albums: Albums
     related_artists:
       title: Artistes liés
       more: Tous les artistes liés
@@ -270,6 +293,15 @@ playlist:
   title: Liste de lecture
   title_window: '%{name} (liste de lecture)'
   title_plural: Listes de lecture
+  tracks:
+    title: Morceaux
+    sort:
+      default: Défaut
+      sort_id: Tel que chargé
+      added_at: Date d'ajout
+      name: Nom
+      artist: Artiste
+      album: Album
 queue_history:
   title: Historique de lecture
 search:
@@ -328,6 +360,8 @@ settings:
       touch_events: Activer les événements tactiles sur commandes de lecture
       touch_events_tooltip: Autoriser les changements de morceau par balayage de l'écran
       wide_scrollbars: Utiliser des barres de défilement larges
+      grid_glow: Effet incandescent sur les vignettes
+      grid_glow_tooltip: Désactiver l'effet sur les appareils à faible puissance ou les anciens navigateurs
     sources_priority:
       label: Priorité des sources
       description: Glisser-déposer pour réordonner les sources et les résultats
@@ -348,6 +382,9 @@ settings:
     album_uri:
       label: URI de la bibliothèque d'albums
       description: URI utilisée pour collecter les albums de la bibliothèque
+    track_uri:
+      label: URI de la bibliothèque de morceaux
+      description: URI utilisée pour collecter les morceaux de la bibliothèque
     connections:
       label: Connexions
     version:
@@ -358,6 +395,7 @@ settings:
     share_configuration: Partager la configuration
     restart: Redémarrer le serveur
     reset_cache: Réinitialiser le cache
+    reset_storage: Réinitialiser le stockage
     reset: Réinitialiser tous les paramètres
   about:
     title: À propos
@@ -488,7 +526,7 @@ modal:
     headers: En-têtes supplémentaires
   edit_radio:
     title: Radio
-    subtitle: Ajoutez et retirez des graines pour façonner le son de votre radio. Radio utilise le moteur de recommandations de Spotify pour suggérer des pistes similaires à vos graines.
+    subtitle: Ajoutez et retirez des graines pour façonner le son de votre radio. Radio utilise le moteur de recommandations de Spotify pour suggérer des morceaux similaires à vos graines.
     invalid_seed_uri: URI(s) de graines invalide
     too_many_seeds: Seules les 5 premières graines sont prises en compte
     only_spotify_uris: Seules les URIs Spotify sont supportées
