@@ -2891,8 +2891,6 @@ h4 {
     margin-left: auto;
     display: flex;
     align-items: center; }
-    h4 .actions-wrapper .dropdown-field {
-      margin-left: 10px; }
   h4 .button {
     margin-left: 10px; }
   h4.breadcrumbs .icon {
@@ -6428,35 +6426,32 @@ main header {
       .autocomplete-field .results .all-results:hover {
         background: #323232; }
 
-.filter-field form {
-  display: inline-block;
-  position: relative; }
-
-.filter-field .icon {
-  position: absolute;
-  top: 12px;
-  left: 15px;
-  pointer-events: none; }
-
-.filter-field input {
-  -webkit-transition: all 0.2s ease-in-out;
-  -moz-transition: all 0.2s ease-in-out;
-  -o-transition: all 0.2s ease-in-out;
-  transition: all 0.2s ease-in-out;
-  width: 0;
-  padding-left: 25px;
-  border-color: transparent; }
-
-.filter-field:not(.active) input {
-  cursor: pointer;
-  background: transparent !important; }
-
-.filter-field:not(.active):hover .icon {
-  color: #32b5f2; }
-
-.filter-field.active input {
-  width: 180px;
-  padding-left: 35px; }
+.filter-field {
+  font-size: 1rem; }
+  .filter-field form {
+    display: inline-block;
+    position: relative; }
+  .filter-field .icon {
+    position: absolute;
+    top: 12px;
+    left: 15px;
+    pointer-events: none; }
+  .filter-field input {
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+    width: 0;
+    padding-left: 25px;
+    border-color: transparent; }
+  .filter-field:not(.active) input {
+    cursor: pointer;
+    background: transparent !important; }
+  .filter-field:not(.active):hover .icon {
+    color: #32b5f2; }
+  .filter-field.active input {
+    width: 180px;
+    padding-left: 35px; }
 
 #context-menu .filter-field {
   display: block; }

@@ -1704,7 +1704,14 @@ const MopidyMiddleware = (function () {
 
         request(store, 'library.browse', { uri: store.getState().mopidy.library_artists_uri })
           .then((raw_response) => {
-            if (raw_response.length <= 0) return;
+            // No items in our library
+            if (!raw_response.length) {
+              store.dispatch(coreActions.libraryLoaded({
+                uri: 'mopidy:library:artists',
+                items_uris: [],
+              }));
+              store.dispatch(uiActions.processFinished(action.type));
+            }
 
             // Convert local URI to actual artist URI
             // See https://github.com/mopidy/mopidy-local-sqlite/issues/39
@@ -1780,6 +1787,10 @@ const MopidyMiddleware = (function () {
                   });
               });
             } else {
+              store.dispatch(coreActions.libraryLoaded({
+                uri: 'mopidy:library:playlists',
+                items_uris: [],
+              }));
               store.dispatch(uiActions.stopLoading('mopidy:library:playlists'));
               store.dispatch(uiActions.processFinished(action.type));
             }

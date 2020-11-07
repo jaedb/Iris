@@ -13,7 +13,7 @@ import {
   sourceIcon,
   uriType,
 } from '../util/helpers';
-import { I18n } from '../locale';
+import { I18n, i18n } from '../locale';
 
 export default class Track extends React.Component {
   constructor(props) {
@@ -173,15 +173,120 @@ export default class Track extends React.Component {
     this.end_time = timestamp;
   }
 
-  render() {
-    if (!this.props.track) {
-      return null;
+  renderTrackMiddleColumn = () => {
+    const {
+      track_context,
+      track: {
+        added_from,
+        added_by,
+        played_at,
+      } = {},
+    } = this.props;
+
+    let content;
+
+    switch (track_context) {
+      case 'history': {
+        content = (
+          <div className="list__item__column__item list__item__column__item--played_at">
+            {
+              played_at ? (
+                <I18n path="specs.played_ago" time={dater('ago', played_at)} />
+              ) : ('-')
+            }
+          </div>
+        );
+        break;
+      }
+
+      case 'queue': {
+        if (added_from && added_by) {
+          const type = (added_from ? uriType(added_from) : null);
+
+          switch (type) {
+            case 'discover':
+              var link = (
+                <URILink type="recommendations" uri={getFromUri('seeds', added_from)}>
+                  <I18n path="discover.title" />
+                </URILink>
+              );
+              break;
+
+            case 'browse':
+              var link = (
+                <URILink uri={added_from}>
+                  <I18n path="library.browse.title" />
+                </URILink>
+              );
+              break;
+
+            case 'search':
+              var link = (
+                <URILink uri={added_from}>
+                  <I18n path="search.title" />
+                </URILink>
+              );
+              break;
+
+            case 'radio':
+              var link = <I18n path="modal.edit_radio.title" />;
+              break;
+
+            case 'queue-history':
+              var link = <I18n path="queue_history.title" />;
+              break;
+
+            default:
+              var link = <URILink type={type} uri={added_from}>{titleCase(type)}</URILink>;
+          }
+
+          content = (
+            <div className="list__item__column__item list__item__column__item--added">
+              <span className="from">
+                {link}
+              </span>
+              <span className="by by--with-spacing">
+                {`${added_by}`}
+              </span>
+            </div>
+          );
+        } else if (added_by) {
+          content = (
+            <div className="list__item__column__item list__item__column__item--added">
+              <span className="by">{added_by}</span>
+            </div>
+          );
+        }
+        break;
+      }
+
+      default:
+        return null;
     }
 
-    const { track } = this.props;
+    return (
+      <div className="list__item__column list__item__column--middle">
+        {content}
+      </div>
+    );
+  }
+
+  render = () => {
+    const {
+      track,
+      track_context,
+      play_state,
+      selected,
+      can_sort,
+    } = this.props;
+    const {
+      hover,
+    } = this.state;
+
+    if (!track) return null;
+
     let className = 'list__item list__item--track mouse-draggable mouse-selectable mouse-contextable';
     const track_details = [];
-    const track_actions = [];
 
     if (track.artists) {
       track_details.push(
@@ -205,78 +310,9 @@ export default class Track extends React.Component {
       );
     }
 
-    if (this.props.track_context == 'history') {
-      var track_middle_column = (
-        <div className="list__item__column__item list__item__column__item--played_at">
-          {track.played_at ? (
-            <I18n path="specs.played_ago" time={dater('ago', track.played_at)} />
-          ) : ('-')
-          }
-        </div>
-      );
-    } else if (this.props.track_context == 'queue') {
-      if (track.added_from && track.added_by) {
-        const type = (track.added_from ? uriType(track.added_from) : null);
-
-        switch (type) {
-          case 'discover':
-            var link = (
-              <URILink type="recommendations" uri={getFromUri('seeds', track.added_from)}>
-                <I18n path="discover.title" />
-              </URILink>
-            );
-            break;
-
-          case 'browse':
-            var link = (
-              <URILink uri={track.added_from}>
-                <I18n path="library.browse.title" />
-              </URILink>
-            );
-            break;
-
-          case 'search':
-            var link = (
-              <URILink uri={track.added_from}>
-                <I18n path="search.title" />
-              </URILink>
-            );
-            break;
-
-          case 'radio':
-            var link = <I18n path="modal.edit_radio.title" />;
-            break;
-
-          case 'queue-history':
-            var link = <I18n path="queue_history.title" />;
-            break;
-
-          default:
-            var link = <URILink type={type} uri={track.added_from}>{titleCase(type)}</URILink>;
-        }
-
-        var track_middle_column = (
-          <div className="list__item__column__item list__item__column__item--added">
-            <span className="from">
-              {link}
-            </span>
-            <span className="by by--with-spacing">
-              {`${track.added_by}`}
-            </span>
-          </div>
-        );
-      } else if (track.added_by) {
-        var track_middle_column = (
-          <div className="list__item__column__item list__item__column__item--added">
-            <span className="by">{track.added_by}</span>
-          </div>
-        );
-      }
-    }
-
     // If we're touchable, and can sort this tracklist
     let drag_zone = null;
-    if (isTouchDevice() && this.props.can_sort) {
+    if (isTouchDevice() && can_sort) {
       className += ' list__item--has-drag-zone';
 
       drag_zone = (
@@ -289,13 +325,15 @@ export default class Track extends React.Component {
       );
     }
 
-    if (this.props.selected)		className += ' list__item--selected';
-    if (this.props.can_sort)		className += ' list__item--can-sort';
-    if (track.type !== undefined)	className += ` list__item--${track.type}`;
-    if (track.playing)				className += ' list__item--playing';
-    if (this.state.hover)			className += ' list__item--hover';
-    if (track_middle_column)		className += ' list__item--has-middle-column';
-    if (track_details.length > 0)	className += ' list__item--has-details';
+    const track_middle_column = this.renderTrackMiddleColumn();
+
+    if (selected) className += ' list__item--selected';
+    if (can_sort) className += ' list__item--can-sort';
+    if (track.type !== undefined) className += ` list__item--${track.type}`;
+    if (track.playing) className += ' list__item--playing';
+    if (hover) className += ' list__item--hover';
+    if (track_middle_column) className += ' list__item--has-middle-column';
+    if (track_details.length > 0) className += ' list__item--has-details';
 
     return (
       <ErrorBoundary>
@@ -314,26 +352,31 @@ export default class Track extends React.Component {
           <div className="list__item__column list__item__column--name">
             <div className="list__item__column__item--name">
               {track.name ? track.name : <span className="mid_grey-text">{track.uri}</span>}
-              {track.playing ? <Icon className={`js--${this.props.play_state}`} name="playing" type="css" /> : null}
+              {track.playing && <Icon className={`js--${play_state}`} name="playing" type="css" />}
             </div>
-            {track_details ? (
+            {track_details && (
               <ul className="list__item__column__item--details">
                 {track_details}
               </ul>
-            ) : null}
+            )}
           </div>
-          {track_middle_column ? <div className="list__item__column list__item__column--middle">{track_middle_column}</div> : null}
+          {track_middle_column}
           <div className="list__item__column list__item__column--right">
             {drag_zone}
-            {track.is_explicit ? <span className="flag flag--dark">EXPLICIT</span> : null}
+            {track.is_explicit && <span className="flag flag--dark">EXPLICIT</span>}
+            {track_context === 'album' && track.track_number && (
+              <span className="mid_grey-text list__item__column__item list__item__column__item--track-number">
+                <I18n path="track.track_number" number={track.track_number} />
+              </span>
+            )}
             <span className="list__item__column__item list__item__column__item--duration">
               {track.duration ? <Dater type="length" data={track.duration} /> : '-'}
             </span>
-            {this.props.show_source_icon ? (
+            {this.props.show_source_icon && (
               <span className="list__item__column__item list__item__column__item--source">
                 <Icon type="fontawesome" name={sourceIcon(track.uri)} fixedWidth />
               </span>
-            ) : null}
+            )}
             <ContextMenuTrigger className="list__item__column__item--context-menu-trigger subtle" onTrigger={(e) => this.props.handleContextMenu(e)} />
           </div>
         </div>

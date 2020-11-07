@@ -394,42 +394,47 @@ class TrackList extends React.Component {
     return array;
   }
 
-  render() {
-    if (!this.props.tracks || Object.prototype.toString.call(this.props.tracks) !== '[object Array]') {
+  render = () => {
+    const {
+      tracks,
+      track_context,
+      className: classNameProp = '',
+      show_source_icon,
+      selected_tracks = [],
+      play_state,
+      dragger,
+      slim_mode,
+    } = this.props;
+
+    if (!tracks || Object.prototype.toString.call(tracks) !== '[object Array]') {
       return null;
     }
 
-    let className = `list list--tracks ${this.props.track_context}`;
-    if (this.props.className) {
-      className += ` ${this.props.className}`;
-    }
-
     return (
-      <div className={className}>
+      <div className={`list list--tracks ${track_context} ${classNameProp}`}>
         {
-					this.props.tracks.map(
+					tracks.map(
 					  (track, index) => {
-					    const track_key = this.buildTrackKey(track, index);
-					    track.key = track_key;
+					    const key = this.buildTrackKey(track, index);
 					    return (
                 <Track
-                  show_source_icon={this.props.show_source_icon}
-                  key={track_key}
-                  mini_zones={this.props.slim_mode || isTouchDevice()}
-                  track={track}
-                  track_context={this.props.track_context}
-                  can_sort={this.props.track_context == 'queue' || this.props.track_context == 'editable-playlist'}
-                  selected={this.props.selected_tracks.includes(track_key)}
-                  play_state={this.props.play_state}
-                  dragger={this.props.dragger}
-                  handleClick={(e) => this.handleClick(e, track_key)}
-                  handleDoubleClick={(e) => this.handleDoubleClick(e, track_key)}
-                  handleContextMenu={(e) => this.handleContextMenu(e, track_key)}
-                  handleDrag={(e) => this.handleDrag(e, track_key)}
-                  handleDrop={(e) => this.handleDrop(e, track_key)}
-                  handleTap={(e) => this.handleTap(e, track_key)}
-                  handleDoubleTap={(e) => this.handleDoubleTap(e, track_key)}
-                  handleTouchDrag={(e) => this.handleTouchDrag(e, track_key)}
+                  show_source_icon={show_source_icon}
+                  key={key}
+                  mini_zones={slim_mode || isTouchDevice()}
+                  track={{ ...track, key }}
+                  track_context={track_context}
+                  can_sort={track_context === 'queue' || track_context === 'editable-playlist'}
+                  selected={selected_tracks.includes(key)}
+                  play_state={play_state}
+                  dragger={dragger}
+                  handleClick={(e) => this.handleClick(e, key)}
+                  handleDoubleClick={(e) => this.handleDoubleClick(e, key)}
+                  handleContextMenu={(e) => this.handleContextMenu(e, key)}
+                  handleDrag={(e) => this.handleDrag(e, key)}
+                  handleDrop={(e) => this.handleDrop(e, key)}
+                  handleTap={(e) => this.handleTap(e, key)}
+                  handleDoubleTap={(e) => this.handleDoubleTap(e, key)}
+                  handleTouchDrag={(e) => this.handleTouchDrag(e, key)}
                 />
 					    );
 					  },

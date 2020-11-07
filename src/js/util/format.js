@@ -574,6 +574,7 @@ const formatTrack = function (data) {
     'release_date',
     'disc_number',
     'track_number',
+    'disc_track',
     'duration',
     'followers',
     'popularity',
@@ -664,6 +665,8 @@ const formatTrack = function (data) {
   if (track.album) {
     track.album = formatSimpleObject(track.album);
   }
+
+  track.disc_track = track.disc_number + (track.track_number / 10); // Gives us a decimal d.t
 
   return track;
 };

@@ -234,6 +234,11 @@ album:
   wiki:
     title: About
     published: 'Published: %{date}'
+  tracks:
+    title: Tracks
+    sort:
+      disc_track: Track number
+      name: Name
 artist:
   title: Artist
   title_window: '%{name} (artist)'

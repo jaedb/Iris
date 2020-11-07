@@ -15,6 +15,7 @@ import ContextMenuTrigger from '../components/ContextMenuTrigger';
 import URILink from '../components/URILink';
 import Icon from '../components/Icon';
 import DropdownField from '../components/Fields/DropdownField';
+import FilterField from '../components/Fields/FilterField';
 import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
@@ -28,13 +29,17 @@ import {
 import { trackEvent } from '../components/Trackable';
 import { i18n, I18n } from '../locale';
 import { makeItemSelector, makeLoadingSelector } from '../util/selectors';
-import { sortItems } from '../util/arrays';
+import { sortItems, applyFilter } from '../util/arrays';
 
 class Playlist extends React.Component {
   constructor(props) {
     super(props);
 
     let { uri } = props;
+
+    this.state = {
+      filter: '',
+    };
 
     // Spotify upgraded their playlists URI to remove user component (Sept 2018)
     // We accept the old format, and redirect to the new one
@@ -323,6 +328,9 @@ class Playlist extends React.Component {
       sort,
       sort_reverse,
     } = this.props;
+    const {
+      filter,
+    } = this.state;
 
     if (!playlist) {
       if (loading) {
@@ -351,11 +359,11 @@ class Playlist extends React.Component {
       tracks = sortItems(tracks, sort, sort_reverse);
     }
 
+    if (filter && filter !== '') {
+      tracks = applyFilter('name', filter, tracks);
+    }
+
     const sort_options = [
-      {
-        value: null,
-        label: i18n('playlist.tracks.sort.default'),
-      },
       {
         value: 'sort_id',
         label: i18n('playlist.tracks.sort.sort_id'),
@@ -434,6 +442,11 @@ class Playlist extends React.Component {
         <h4 className="no-bottom-margin">
           <I18n path="playlist.tracks.title" />
           <div className="actions-wrapper">
+            <FilterField
+              initialValue={filter}
+              handleChange={(value) => this.setState({ filter: value })}
+              onSubmit={() => uiActions.hideContextMenu()}
+            />
             <DropdownField
               icon="swap_vert"
               name="Sort"
@@ -496,7 +509,7 @@ const mapStateToProps = (state, ownProps) => {
     local_library_playlists,
     spotify_authorized,
     spotify_userid: (me && me.id) || null,
-    sort: (state.ui.playlist_tracks_sort ? state.ui.playlist_tracks_sort : null),
+    sort: (state.ui.playlist_tracks_sort ? state.ui.playlist_tracks_sort : 'sort_id'),
     sort_reverse: (!!state.ui.playlist_tracks_sort_reverse),
   };
 };
