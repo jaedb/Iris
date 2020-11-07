@@ -2876,16 +2876,23 @@ h3 {
 h4 {
   font-family: "Overpass";
   font-weight: 600;
+  display: flex;
   font-size: 1.5rem;
   margin-bottom: 16px;
   font-weight: 700; }
+  h4.no-bottom-margin {
+    margin-bottom: 0; }
   h4.underline {
     padding-bottom: 4px;
     border-bottom: 2px solid rgba(128, 128, 128, 0.35); }
   h4:not(:first-child) {
     padding-top: 40px; }
-  h4 .dropdown-field {
-    margin-left: 10px; }
+  h4 .actions-wrapper {
+    margin-left: auto;
+    display: flex;
+    align-items: center; }
+    h4 .actions-wrapper .dropdown-field {
+      margin-left: 10px; }
   h4 .button {
     margin-left: 10px; }
   h4.breadcrumbs .icon {

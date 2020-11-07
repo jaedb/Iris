@@ -7,6 +7,7 @@ import * as mopidyActions from '../services/mopidy/actions';
 import * as uiActions from '../services/ui/actions';
 import { isTouchDevice } from '../util/helpers';
 import { arrayOf } from '../util/arrays';
+import { i18n } from '../locale';
 
 class TrackList extends React.Component {
   constructor(props) {
@@ -105,14 +106,18 @@ class TrackList extends React.Component {
     );
   }
 
-  handleDrop(e, track_key) {
-    if (this.props.dragger && this.props.dragger.active) {
-      // if this tracklist handles sorting, handle it
-      if (this.props.reorderTracks !== undefined) {
-        const indexes = this.props.dragger.victims_indexes;
-        const tracks = this.digestTracksKeys([track_key]);
-        return this.props.reorderTracks(indexes, tracks[0].index);
-      }
+  handleDrop = (e, track_key) => {
+    const {
+      dragger: {
+        active,
+        victims_indexes,
+      } = {},
+      reorderTracks: doReorderTracks,
+    } = this.props;
+
+    if (active && doReorderTracks) {
+      const tracks = this.digestTracksKeys([track_key]);
+      return doReorderTracks(victims_indexes, tracks[0].index);
     }
     this.touch_dragging_tracks_keys = false;
   }
@@ -280,41 +285,52 @@ class TrackList extends React.Component {
     return false;
   }
 
-  playTracks(tracks_keys = null) {
-    if (tracks_keys !== null) {
-      var selected_tracks = this.digestTracksKeys(tracks_keys);
-    } else {
-      var selected_tracks = this.digestTracksKeys();
-    }
-    const selected_tracks_indexes = arrayOf('index', selected_tracks);
+  playTracks = (tracks_keys = null) => {
+    const {
+      uri,
+      uiActions: {
+        createNotification,
+      },
+      mopidyActions: {
+        playURIs,
+      },
+      playTracks: doPlayTracks,
+    } = this.props;
+
+    const selected_tracks = tracks_keys !== null
+      ? this.digestTracksKeys(tracks_keys)
+      : this.digestTracksKeys();
 
     if (selected_tracks.length <= 0) {
-      return this.props.uiActions.createNotification({ content: 'No tracks selected', level: 'error' });
+      createNotification({ content: i18n('errors.nothing_selected'), level: 'error' });
+      return;
     }
 
-    // Our parent handles playing
-    if (this.props.playTracks !== undefined) {
-      return this.props.playTracks(selected_tracks);
-
-      // Default to playing the URIs
+    if (doPlayTracks) {
+      doPlayTracks(selected_tracks);
+      return;
     }
     const selected_tracks_uris = arrayOf('uri', selected_tracks);
-    return this.props.mopidyActions.playURIs(selected_tracks_uris, this.props.uri);
+    playURIs(selected_tracks_uris, uri);
   }
 
-  removeTracks() {
+  removeTracks = () => {
+    const {
+      uiActions: {
+        createNotification,
+      },
+      removeTracks: doRemoveTracks,
+    } = this.props;
+
     const selected_tracks = this.digestTracksKeys();
 
-    // Our parent has a handler for this
-    if (this.props.removeTracks !== undefined) {
-      const selected_tracks_indexes = arrayOf('index', selected_tracks);
-      return this.props.removeTracks(selected_tracks_indexes);
-
-      // No handler? We can't really do anything then, so notify user
+    if (!doRemoveTracks) {
+      createNotification({ content: `Cannot delete ${selected_tracks.length > 1 ? 'these tracks' : 'this track'}`, level: 'error' });
+      return;
     }
-    this.props.uiActions.createNotification({ content: `Cannot delete ${selected_tracks.length > 1 ? 'these tracks' : 'this track'}`, level: 'error' });
+    const selected_tracks_indexes = arrayOf('index', selected_tracks);
+    doRemoveTracks(selected_tracks_indexes);
   }
-
 
   /**
 	 * Build the track key
@@ -332,7 +348,6 @@ class TrackList extends React.Component {
     key += `@@${this.props.track_context ? this.props.track_context : 'none'}`;
     return key;
   }
-
 
   /**
 	 * Digest our selected tracks
@@ -379,7 +394,6 @@ class TrackList extends React.Component {
     return array;
   }
 
-
   render() {
     if (!this.props.tracks || Object.prototype.toString.call(this.props.tracks) !== '[object Array]') {
       return null;
@@ -398,25 +412,25 @@ class TrackList extends React.Component {
 					    const track_key = this.buildTrackKey(track, index);
 					    track.key = track_key;
 					    return (
-  <Track
-    show_source_icon={this.props.show_source_icon}
-    key={track_key}
-    mini_zones={this.props.slim_mode || isTouchDevice()}
-    track={track}
-    track_context={this.props.track_context}
-    can_sort={this.props.track_context == 'queue' || this.props.track_context == 'editable-playlist'}
-    selected={this.props.selected_tracks.includes(track_key)}
-    play_state={this.props.play_state}
-    dragger={this.props.dragger}
-    handleClick={(e) => this.handleClick(e, track_key)}
-    handleDoubleClick={(e) => this.handleDoubleClick(e, track_key)}
-    handleContextMenu={(e) => this.handleContextMenu(e, track_key)}
-    handleDrag={(e) => this.handleDrag(e, track_key)}
-    handleDrop={(e) => this.handleDrop(e, track_key)}
-    handleTap={(e) => this.handleTap(e, track_key)}
-    handleDoubleTap={(e) => this.handleDoubleTap(e, track_key)}
-    handleTouchDrag={(e) => this.handleTouchDrag(e, track_key)}
-  />
+                <Track
+                  show_source_icon={this.props.show_source_icon}
+                  key={track_key}
+                  mini_zones={this.props.slim_mode || isTouchDevice()}
+                  track={track}
+                  track_context={this.props.track_context}
+                  can_sort={this.props.track_context == 'queue' || this.props.track_context == 'editable-playlist'}
+                  selected={this.props.selected_tracks.includes(track_key)}
+                  play_state={this.props.play_state}
+                  dragger={this.props.dragger}
+                  handleClick={(e) => this.handleClick(e, track_key)}
+                  handleDoubleClick={(e) => this.handleDoubleClick(e, track_key)}
+                  handleContextMenu={(e) => this.handleContextMenu(e, track_key)}
+                  handleDrag={(e) => this.handleDrag(e, track_key)}
+                  handleDrop={(e) => this.handleDrop(e, track_key)}
+                  handleTap={(e) => this.handleTap(e, track_key)}
+                  handleDoubleTap={(e) => this.handleDoubleTap(e, track_key)}
+                  handleTouchDrag={(e) => this.handleTouchDrag(e, track_key)}
+                />
 					    );
 					  },
 					)
@@ -426,7 +440,7 @@ class TrackList extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state) => ({
   play_state: state.mopidy.play_state,
   slim_mode: state.ui.slim_mode,
   selected_tracks: state.ui.selected_tracks,

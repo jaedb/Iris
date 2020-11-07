@@ -14,6 +14,7 @@ import Loader from '../components/Loader';
 import ContextMenuTrigger from '../components/ContextMenuTrigger';
 import URILink from '../components/URILink';
 import Icon from '../components/Icon';
+import DropdownField from '../components/Fields/DropdownField';
 import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
@@ -24,6 +25,7 @@ import {
   sourceIcon,
   decodeMopidyUri,
 } from '../util/helpers';
+import { trackEvent } from '../components/Trackable';
 import { i18n, I18n } from '../locale';
 import { makeItemSelector, makeLoadingSelector } from '../util/selectors';
 import { sortItems } from '../util/arrays';
@@ -126,16 +128,60 @@ class Playlist extends React.Component {
     deletePlaylist(uri);
   }
 
+  onChangeSort = (value) => {
+    const {
+      sort,
+      sort_reverse,
+      uiActions: {
+        set,
+        hideContextMenu,
+      },
+    } = this.props;
+
+    let reverse = false;
+    if (value !== null && sort === value) {
+      reverse = !sort_reverse;
+    }
+
+    set({
+      playlist_tracks_sort_reverse: reverse,
+      playlist_tracks_sort: value,
+    });
+    hideContextMenu();
+    trackEvent({ category: 'Playlist', action: 'SortTracks', label: `${value} ${reverse ? 'DESC' : 'ASC'}` });
+  }
+
   reorderTracks = (indexes, index) => {
     const {
       coreActions: {
         reorderPlaylistTracks,
       },
+      uiActions: {
+        createNotification,
+      },
       playlist: {
         uri,
         snapshot_id,
+        tracks,
       },
+      sort,
+      sort_reverse,
     } = this.props;
+
+    if (sort !== 'sort_id') {
+      createNotification({
+        content: i18n('errors.cannot_reorder.title'),
+        description: i18n('errors.cannot_reorder.description'),
+        level: 'error',
+      });
+      return;
+    }
+
+    if (sort_reverse) {
+      const count = tracks.length - 1;
+      index = count - index + 1;
+      indexes = indexes.map((index) => count - index);
+    }
 
     reorderPlaylistTracks(uri, indexes, index, snapshot_id);
   }
@@ -274,6 +320,8 @@ class Playlist extends React.Component {
       playlist,
       loading,
       slim_mode,
+      sort,
+      sort_reverse,
     } = this.props;
 
     if (!playlist) {
@@ -293,6 +341,42 @@ class Playlist extends React.Component {
     if (playlist.can_edit) {
       context = 'editable-playlist';
     }
+    let {
+      playlist: {
+        tracks,
+      },
+    } = this.props;
+
+    if (sort && tracks) {
+      tracks = sortItems(tracks, sort, sort_reverse);
+    }
+
+    const sort_options = [
+      {
+        value: null,
+        label: i18n('playlist.tracks.sort.default'),
+      },
+      {
+        value: 'sort_id',
+        label: i18n('playlist.tracks.sort.sort_id'),
+      },
+      {
+        value: 'added_at',
+        label: i18n('playlist.tracks.sort.added_at'),
+      },
+      {
+        value: 'name',
+        label: i18n('playlist.tracks.sort.name'),
+      },
+      {
+        value: 'artists.first.name',
+        label: i18n('playlist.tracks.sort.artist'),
+      },
+      {
+        value: 'album.name',
+        label: i18n('playlist.tracks.sort.album'),
+      },
+    ];
 
     return (
       <div className="view playlist-view content-wrapper preserve-3d">
@@ -347,12 +431,27 @@ class Playlist extends React.Component {
 
         {this.renderActions()}
 
-        <section className="list-wrapper">
+        <h4 className="no-bottom-margin">
+          <I18n path="playlist.tracks.title" />
+          <div className="actions-wrapper">
+            <DropdownField
+              icon="swap_vert"
+              name="Sort"
+              value={sort}
+              valueAsLabel
+              options={sort_options}
+              selected_icon={sort ? (sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
+              handleChange={this.onChangeSort}
+            />
+          </div>
+        </h4>
+
+        <section className="list-wrapper no-top-padding">
           <TrackList
             uri={playlist.uri}
             className="playlist-track-list"
             track_context={context}
-            tracks={playlist.tracks}
+            tracks={tracks}
             removeTracks={this.removeTracks}
             reorderTracks={this.reorderTracks}
           />
@@ -397,6 +496,8 @@ const mapStateToProps = (state, ownProps) => {
     local_library_playlists,
     spotify_authorized,
     spotify_userid: (me && me.id) || null,
+    sort: (state.ui.playlist_tracks_sort ? state.ui.playlist_tracks_sort : null),
+    sort_reverse: (!!state.ui.playlist_tracks_sort_reverse),
   };
 };
 

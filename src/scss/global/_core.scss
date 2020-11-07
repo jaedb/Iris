@@ -279,9 +279,14 @@ h3 {
 
 h4 {
   @include feature_font();
+  display: flex;
   font-size: 1.5rem;
   margin-bottom: 16px;
   font-weight: 700;
+
+  &.no-bottom-margin {
+    margin-bottom: 0;
+  }
 
   &.underline {
     padding-bottom: 4px;
@@ -292,8 +297,14 @@ h4 {
     padding-top: 40px;
   }
 
-  .dropdown-field {
-    margin-left: 10px;
+  .actions-wrapper {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+
+    .dropdown-field {
+      margin-left: 10px;
+    }
   }
 
   .button {

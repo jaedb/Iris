@@ -929,6 +929,17 @@ const collate = function (obj, indexes = {}) {
   return obj;
 };
 
+/**
+ * Add the array index as our sort_id.
+ * This allows us a source of truth for the original order of items when we have applied
+ * sort rules in the UI.
+ *
+ * @param {Array} array of objects to have sort_id added
+ */
+const injectSortId = (array) => {
+  return array.map((item, index) => ({ ...item, sort_id: index }));
+};
+
 export {
   toJSON,
   getTrackIcon,
@@ -952,6 +963,7 @@ export {
   formatCategories,
   collate,
   collateLibrary,
+  injectSortId,
 };
 
 export default {
@@ -977,4 +989,5 @@ export default {
   formatCategories,
   collate,
   collateLibrary,
+  injectSortId,
 };

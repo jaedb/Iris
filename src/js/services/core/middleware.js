@@ -15,6 +15,7 @@ import {
   formatTracks,
   formatTrack,
   formatSimpleObject,
+  injectSortId,
 } from '../../util/format';
 import { handleException } from './actions';
 
@@ -284,6 +285,8 @@ const CoreMiddleware = (function () {
         break;
       }
 
+      // This applies our new sort order based on the origional request (rather than a response)
+      // This means we don't need to re-fetch the whole playlist after every sort.
       case 'PLAYLIST_TRACKS_REORDERED': {
         const {
           key,
@@ -306,9 +309,11 @@ const CoreMiddleware = (function () {
           tracks.splice(insert_before, 0, tracks_to_move[i]);
         }
 
+        console.log({ action, tracks: injectSortId(tracks) });
+
         store.dispatch(coreActions.itemLoaded({
           ...playlist,
-          tracks,
+          tracks: injectSortId(tracks),
           snapshot_id,
         }));
         break;

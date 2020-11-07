@@ -99,7 +99,7 @@ class Debug extends React.Component {
       <div className="view debugger-view">
         <Header options={options} uiActions={uiActions}>
           <Icon name="settings" type="material" />
-					<I18n path="debug.title" />
+          <I18n path="debug.title" />
         </Header>
 
         <div className="content-wrapper">

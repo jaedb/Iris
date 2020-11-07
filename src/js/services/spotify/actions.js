@@ -23,6 +23,7 @@ import {
   formatAlbums,
   formatImages,
   formatTrack,
+  injectSortId,
 } from '../../util/format';
 import URILink from '../../components/URILink';
 import { getItem } from '../../util/selectors';
@@ -1328,7 +1329,7 @@ export function getPlaylist(uri, { full, forceRefetch, callbackAction } = {}) {
     request(dispatch, getState, endpoint)
       .then(
         (response) => {
-          let tracks = formatTracks(response.tracks.items);
+          let tracks = injectSortId(formatTracks(response.tracks.items));
 
           // convert links in description
           let description = null;
@@ -1358,7 +1359,7 @@ export function getPlaylist(uri, { full, forceRefetch, callbackAction } = {}) {
                 } else {
                   dispatch(coreActions.itemLoaded({
                     uri,
-                    tracks,
+                    tracks: injectSortId(tracks),
                   }));
 
                   if (callbackAction) {
@@ -1452,10 +1453,14 @@ export function deleteTracksFromPlaylist(uri, snapshot_id, tracks_indexes) {
 
 export function reorderPlaylistTracks(uri, range_start, range_length, insert_before, snapshot_id) {
   return (dispatch, getState) => {
-    request(dispatch, getState, `playlists/${getFromUri('playlistid', uri)}/tracks`, 'PUT', {
-      uri, range_start, range_length, insert_before, snapshot_id,
-    })
-      .then(
+    request(
+      dispatch,
+      getState,
+      `playlists/${getFromUri('playlistid', uri)}/tracks`, 'PUT',
+      {
+        uri, range_start, range_length, insert_before, snapshot_id,
+      },
+    ).then(
         (response) => {
           dispatch({
             type: 'PLAYLIST_TRACKS_REORDERED',
