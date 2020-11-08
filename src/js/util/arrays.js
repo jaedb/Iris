@@ -1,4 +1,4 @@
-import { compact } from 'lodash';
+import { compact, orderBy } from 'lodash';
 import { uriSource } from './helpers';
 
 /**
@@ -131,11 +131,10 @@ const createRange = function (indexes) {
   }
 
   return {
-    	start: first_bunch[0],
-    	length: first_bunch.length,
+    start: first_bunch[0],
+    length: first_bunch.length,
   };
 };
-
 
 /**
  * Sort an array of objects
@@ -145,90 +144,29 @@ const createRange = function (indexes) {
  * @param sort_map = array of value ordering (rather than alphabetical, numerical, etc)
  * @return array
  * */
-const sortItems = function (array, property, reverse = false, sort_map = null) {
+const sortItems = (array, property, reverse = false, sort_map = null) => {
   if (!array || array.length <= 0) {
     return [];
   }
 
-  function get_value(value) {
-    const split = property.split('.');
-    for (const property_element of split) {
-      // Apply sort on a property of the first item of an array
-      if (property_element == 'first') {
-        if (Array.isArray(value) && value.length > 0) {
-          value = value[0];
-          continue;
-        } else {
-          return null;
-        }
-
-        // Just need the length of an array
-      } else if (property_element == 'length') {
-        if (Array.isArray(value)) {
-          return value.length;
-        }
-        return 0;
-
-
-        // No value here
-      } else if (typeof (value[property_element]) === 'undefined') {
-        return null;
-      }
-
-      // Otherwise continue looping to the end of the split property
-      value = value[property_element];
+  // Convert string references into the value of the nested object. Lodash can do this, but not
+  // for non-attribute values (eg tracks.length)
+  const sorter = (item) => {
+    switch (property) {
+      case 'tracks':
+        return item.tracks_total || item.tracks.length;
+      case 'artist':
+        return item.artists && item.artists.length ? item.artists[0].name : undefined;
+      case 'album':
+        return item.album ? item.album.name : undefined;
+      case 'user':
+        return item.user ? item.user.id : undefined;
+      default:
+        return item[property];
     }
+  };
 
-    return value;
-  }
-
-  function compare(a, b) {
-    let a_value = get_value(a);
-    let b_value = get_value(b);
-
-    // Sorting by URI as a reference for sorting by uri source (first component of URI)
-    if (property === 'uri') {
-      a_value = uriSource(a_value);
-      b_value = uriSource(b_value);
-    }
-
-    // Map sorting
-    // Use the index of the string as a sorting mechanism
-    if (sort_map) {
-      const a_index = sort_map.indexOf(`${a_value}:`);
-      const b_index = sort_map.indexOf(`${b_value}:`);
-      if (a_index < b_index) return 1;
-      if (a_index > b_index) return -1;
-
-      // Boolean sorting
-    } else if (typeof a_value === 'boolean' && typeof b_value === 'boolean') {
-      if (a_value && !b_value) return -1;
-      if (!a_value && b_value) return 1;
-
-      // Numeric sorting
-    } else if (typeof a_value === 'number' && typeof b_value === 'number') {
-      if (a_value == null && b_value == null) return 0;
-      if (a_value == null) return -1;
-      if (b_value == null) return 1;
-      if (parseInt(a_value) > parseInt(b_value)) return 1;
-      if (parseInt(a_value) < parseInt(b_value)) return -1;
-
-      // Alphabetic sorting
-    } else {
-      if (a_value && !b_value) return -1;
-      if (!a_value && b_value) return 1;
-      if (!a_value && !b_value) return 0;
-      if (a_value.toLowerCase() > b_value.toLowerCase()) return 1;
-      if (a_value.toLowerCase() < b_value.toLowerCase()) return -1;
-    }
-    return 0;
-  }
-
-  const sorted = Object.assign([], array.sort(compare));
-  if (reverse) {
-    sorted.reverse();
-  }
-  return sorted;
+  return orderBy(array, sorter, (reverse ? 'desc' : 'asc'));
 };
 
 /**
@@ -237,7 +175,7 @@ const sortItems = function (array, property, reverse = false, sort_map = null) {
  * @param Array items
  * @return Array
  * */
-const shuffle = function (array) {
+const shuffle = (array) => {
   let j; let x; let
     i;
   for (i = array.length - 1; i > 0; i--) {

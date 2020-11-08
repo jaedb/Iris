@@ -28,15 +28,15 @@ export default class Track extends React.Component {
     this.start_position = false;
   }
 
-  handleMouseEnter(e) {
+  handleMouseEnter = () => {
     this.setState({ hover: true });
   }
 
-  handleMouseLeave(e) {
+  handleMouseLeave = () => {
     this.setState({ hover: false });
   }
 
-  handleMouseDown(e) {
+  handleMouseDown = (e) => {
     const target = $(e.target);
 
     // Clicked a nested link (ie Artist name), so no dragging required
@@ -57,13 +57,12 @@ export default class Track extends React.Component {
     }
   }
 
-  handleMouseMove(e) {
-    const target = $(e.target);
+  handleMouseMove = (e) => {
+    const {
+      handleDrag,
+    } = this.props;
 
-    // No drag handling means NO
-    if (this.props.handleDrag === undefined) {
-      return false;
-    }
+    if (handleDrag === undefined) return false;
 
     if (this.start_position) {
       const start_x = this.start_position.x;
@@ -71,48 +70,59 @@ export default class Track extends React.Component {
       const threshold = 5;
 
       // Have we dragged outside of our threshold zone?
-      if (e.pageX > start_x + threshold || e.pageX < start_x - threshold || e.pageY > start_y + threshold || e.pageY < start_y - threshold) {
+      if (
+        e.pageX > start_x + threshold
+        || e.pageX < start_x - threshold
+        || e.pageY > start_y + threshold
+        || e.pageY < start_y - threshold
+      ) {
         // Handover to parent for dragging. We can unset all our behaviour now.
-        this.props.handleDrag(e);
+        handleDrag(e);
         this.start_position = false;
       }
     }
   }
 
-  handleMouseUp(e) {
+  handleMouseUp = (e) => {
+    const {
+      dragger,
+      handleDrop,
+      handleClick,
+    } = this.props;
     const target = $(e.target);
 
     // Only listen for left clicks
     if (e.button === 0) {
-      if (this.props.dragger) {
+      if (dragger) {
         e.preventDefault();
 
-        if (this.props.handleDrop !== undefined) {
-          this.props.handleDrop(e);
+        if (handleDrop !== undefined) {
+          handleDrop(e);
         }
       } else if (!target.is('a') && target.closest('a').length <= 0) {
-        this.props.handleClick(e);
+        handleClick(e);
         this.start_position = false;
       }
-
-      // Not left click, then ensure no dragging
-    } else {
-      this.start_position = false;
-      return false;
+      return;
     }
+
+    // Not left click, then ensure no dragging
+    this.start_position = false;
   }
 
-  handleDoubleClick(e) {
-    this.props.handleDoubleClick(e);
+  handleDoubleClick = (e) => {
+    const { handleDoubleClick } = this.props;
+
+    handleDoubleClick(e);
   }
 
-  handleTouchStart(e) {
+  handleTouchStart = (e) => {
+    const { handleTouchDrag } = this.props;
     const target = $(e.target);
     const timestamp = Math.floor(Date.now());
 
-    // Touch-drag zone
     if (target.hasClass('drag-zone')) {
-      this.props.handleTouchDrag(e);
+      handleTouchDrag(e);
       e.preventDefault();
     }
 
@@ -126,7 +136,13 @@ export default class Track extends React.Component {
     return false;
   }
 
-  handleTouchEnd(e) {
+  handleTouchEnd = (e) => {
+    const {
+      handleDoubleTap,
+      handleContextMenu,
+      handleTap,
+    } = this.props;
+
     const target = $(e.target);
     const timestamp = Math.floor(Date.now());
     const tap_distance_threshold = 10;		// Max distance (px) between touchstart and touchend to qualify as a tap
@@ -143,10 +159,12 @@ export default class Track extends React.Component {
 
     // Make sure there's enough distance between start and end before we handle
     // this event as a 'tap'
-    if (this.start_position.x + tap_distance_threshold > end_position.x
-			&& this.start_position.x - tap_distance_threshold < end_position.x
-			&& this.start_position.y + tap_distance_threshold > end_position.y
-			&& this.start_position.y - tap_distance_threshold < end_position.y) {
+    if (
+      this.start_position.x + tap_distance_threshold > end_position.x
+      && this.start_position.x - tap_distance_threshold < end_position.x
+      && this.start_position.y + tap_distance_threshold > end_position.y
+      && this.start_position.y - tap_distance_threshold < end_position.y
+    ) {
       // Clicked a nested link (ie Artist name), so no dragging required
       if (!target.is('a')) {
         e.preventDefault();
@@ -154,20 +172,20 @@ export default class Track extends React.Component {
 
       // Context trigger
       if (target.hasClass('touch-contextable')) {
-        // Update our selection. By not passing touch = true selection will work like a regular click
-        // this.props.handleSelection(e);
-        this.props.handleContextMenu(e);
+        // Update our selection. By not passing touch = true selection will work like a regular
+        // click this.props.handleSelection(e);
+        handleContextMenu(e);
         return false;
       }
 
       // We received a touchend within 300ms ago, so handle as double-tap
       if ((timestamp - this.end_time) > 0 && (timestamp - this.end_time) <= 300) {
-        this.props.handleDoubleTap(e);
+        handleDoubleTap(e);
         e.preventDefault();
         return false;
       }
 
-      this.props.handleTap(e);
+      handleTap(e);
     }
 
     this.end_time = timestamp;
@@ -278,6 +296,8 @@ export default class Track extends React.Component {
       play_state,
       selected,
       can_sort,
+      show_source_icon,
+      handleContextMenu,
     } = this.props;
     const {
       hover,
@@ -339,15 +359,15 @@ export default class Track extends React.Component {
       <ErrorBoundary>
         <div
           className={className}
-          onMouseEnter={(e) => this.handleMouseEnter(e)}
-          onMouseLeave={(e) => this.handleMouseLeave(e)}
-          onMouseDown={(e) => this.handleMouseDown(e)}
-          onMouseUp={(e) => this.handleMouseUp(e)}
-          onMouseMove={(e) => this.handleMouseMove(e)}
-          onDoubleClick={(e) => this.handleDoubleClick(e)}
-          onContextMenu={(e) => this.props.handleContextMenu(e)}
-          onTouchStart={(e) => this.handleTouchStart(e)}
-          onTouchEnd={(e) => this.handleTouchEnd(e)}
+          onMouseEnter={this.handleMouseEnter}
+          onMouseLeave={this.handleMouseLeave}
+          onMouseDown={this.handleMouseDown}
+          onMouseUp={this.handleMouseUp}
+          onMouseMove={this.handleMouseMove}
+          onDoubleClick={this.handleDoubleClick}
+          onContextMenu={handleContextMenu}
+          onTouchStart={this.handleTouchStart}
+          onTouchEnd={this.handleTouchEnd}
         >
           <div className="list__item__column list__item__column--name">
             <div className="list__item__column__item--name">
@@ -366,13 +386,17 @@ export default class Track extends React.Component {
             {track.is_explicit && <span className="flag flag--dark">EXPLICIT</span>}
             {track_context === 'album' && track.track_number && (
               <span className="mid_grey-text list__item__column__item list__item__column__item--track-number">
-                <I18n path="track.track_number" number={track.track_number} />
+                <span>
+                  <I18n path="track.title" />
+                  &nbsp;
+                </span>
+                {track.track_number}
               </span>
             )}
             <span className="list__item__column__item list__item__column__item--duration">
               {track.duration ? <Dater type="length" data={track.duration} /> : '-'}
             </span>
-            {this.props.show_source_icon && (
+            {show_source_icon && (
               <span className="list__item__column__item list__item__column__item--source">
                 <Icon type="fontawesome" name={sourceIcon(track.uri)} fixedWidth />
               </span>

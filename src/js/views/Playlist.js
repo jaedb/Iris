@@ -377,11 +377,11 @@ class Playlist extends React.Component {
         label: i18n('playlist.tracks.sort.name'),
       },
       {
-        value: 'artists.first.name',
+        value: 'artist',
         label: i18n('playlist.tracks.sort.artist'),
       },
       {
-        value: 'album.name',
+        value: 'album',
         label: i18n('playlist.tracks.sort.album'),
       },
     ];

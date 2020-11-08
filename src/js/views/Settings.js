@@ -181,7 +181,7 @@ class Settings extends React.Component {
     } = this.state;
 
     const options = (
-      <span>
+      <>
         <Button
           discrete
           noHover
@@ -202,7 +202,7 @@ class Settings extends React.Component {
             <Icon name="help" />
           </I18n>
         </Button>
-      </span>
+      </>
     );
 
     return (

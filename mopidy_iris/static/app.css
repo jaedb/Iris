@@ -2877,6 +2877,7 @@ h4 {
   font-family: "Overpass";
   font-weight: 600;
   display: flex;
+  align-items: center;
   font-size: 1.5rem;
   margin-bottom: 16px;
   font-weight: 700; }
@@ -4349,6 +4350,8 @@ select {
     display: none; }
   .list__item__column__item--source {
     display: none !important; }
+  .list__item__column__item--track-number span {
+    display: none; }
   .list__item__column__item--added .by {
     display: none; }
   .list__item__column__item--added .from {
@@ -6450,7 +6453,7 @@ main header {
   .filter-field:not(.active):hover .icon {
     color: #32b5f2; }
   .filter-field.active input {
-    width: 180px;
+    width: 150px;
     padding-left: 35px; }
 
 #context-menu .filter-field {

@@ -274,11 +274,11 @@ class LibraryPlaylists extends React.Component {
         label: i18n('fields.filters.editable'),
       },
       {
-        value: 'owner.id',
+        value: 'owner',
         label: i18n('fields.filters.owner'),
       },
       {
-        value: 'tracks_total',
+        value: 'tracks',
         label: i18n('fields.filters.tracks'),
       },
       {
@@ -288,7 +288,7 @@ class LibraryPlaylists extends React.Component {
     ];
 
     const options = (
-      <span>
+      <>
         <FilterField
           initialValue={filter}
           handleChange={(value) => this.setState({ filter: value })}
@@ -337,7 +337,7 @@ class LibraryPlaylists extends React.Component {
           <Icon name="add_box" />
           <I18n path="actions.add" />
         </Button>
-      </span>
+      </>
     );
 
     return (

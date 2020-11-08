@@ -202,7 +202,7 @@ class Artist extends React.Component {
         label: i18n('artist.albums.sort.release_date'),
       },
       {
-        value: 'tracks_uris.length',
+        value: 'tracks',
         label: i18n('artist.albums.sort.track_count'),
       },
     ];

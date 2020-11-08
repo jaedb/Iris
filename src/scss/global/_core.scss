@@ -280,6 +280,7 @@ h3 {
 h4 {
   @include feature_font();
   display: flex;
+  align-items: center;
   font-size: 1.5rem;
   margin-bottom: 16px;
   font-weight: 700;
