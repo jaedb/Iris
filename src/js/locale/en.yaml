@@ -17,7 +17,7 @@ errors:
   nothing_selected: Nothing selected
   cannot_reorder:
     title: Cannot reorder items
-    description: Remove custom sort and try again
+    description: Remove sort/filters and try again
 actions:
   play: Play
   play_all: Play all

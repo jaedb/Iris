@@ -172,8 +172,9 @@ class Playlist extends React.Component {
       sort,
       sort_reverse,
     } = this.props;
+    const { filter } = this.state;
 
-    if (sort !== 'sort_id') {
+    if (sort !== 'sort_id' || filter !== '') {
       createNotification({
         content: i18n('errors.cannot_reorder.title'),
         description: i18n('errors.cannot_reorder.description'),

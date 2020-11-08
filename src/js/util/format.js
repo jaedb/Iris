@@ -298,6 +298,7 @@ const formatAlbum = function (data) {
     'popularity',
     'images',
     'tracks',
+    'tracks_total',
     'artists',
   ];
 
@@ -325,6 +326,7 @@ const formatAlbum = function (data) {
     } else {
       album.tracks = formatTracks(album.tracks);
     }
+    album.tracks_total = album.tracks.length;
   }
   if (album.artists) {
     album.artists = formatSimpleObjects(album.artists);
