@@ -184,7 +184,7 @@ class LibraryPlaylists extends React.Component {
             handleContextMenu={(e, item) => this.handleContextMenu(e, item)}
             rows={playlists}
             thumbnail
-            details={['owner', 'tracks_total', 'last_modified']}
+            details={['owner', 'tracks', 'last_modified']}
             right_column={['source']}
             className="playlists"
             link_prefix="/playlist/"

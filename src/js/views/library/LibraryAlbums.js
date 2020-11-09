@@ -218,7 +218,7 @@ class LibraryAlbums extends React.Component {
             handleContextMenu={this.handleContextMenu}
             rows={albums}
             thumbnail
-            details={['artists', 'tracks_total', 'added_at']}
+            details={['artists', 'tracks', 'added_at']}
             right_column={['added_at']}
             className="albums"
             link_prefix="/album/"

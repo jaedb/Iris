@@ -6436,9 +6436,9 @@ main header {
     position: relative; }
   .filter-field .icon {
     position: absolute;
-    top: 12px;
-    left: 15px;
-    pointer-events: none; }
+    padding: 12px;
+    top: 0;
+    left: 0; }
   .filter-field input {
     -webkit-transition: all 0.2s ease-in-out;
     -moz-transition: all 0.2s ease-in-out;
@@ -6450,11 +6450,16 @@ main header {
   .filter-field:not(.active) input {
     cursor: pointer;
     background: transparent !important; }
+  .filter-field:not(.active) .icon {
+    pointer-events: none; }
   .filter-field:not(.active):hover .icon {
     color: #32b5f2; }
   .filter-field.active input {
     width: 150px;
     padding-left: 35px; }
+  .filter-field.active .icon:hover {
+    color: #cf2d2d;
+    cursor: pointer; }
 
 #context-menu .filter-field {
   display: block; }
@@ -8076,7 +8081,8 @@ main .track-view {
           padding-left: 70px; }
         .modal .content .list.playlists .list__item__name {
           padding-top: 0;
-          margin-bottom: 5px; }
+          margin-bottom: 5px;
+          display: block; }
         .modal .content .list.playlists .list__item .source {
           position: static;
           top: auto;
