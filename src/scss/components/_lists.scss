@@ -322,6 +322,12 @@
 						display: none !important;
 					}
 
+					&--track-number {
+						span {
+							display: none;
+						}
+					}
+
 					&--added {
 
 						.by {

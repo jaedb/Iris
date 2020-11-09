@@ -217,7 +217,7 @@ class LibraryBrowseDirectory extends React.Component {
     ];
 
     const options = (
-      <span>
+      <>
         <DropdownField
           icon="visibility"
           name="View"
@@ -245,7 +245,7 @@ class LibraryBrowseDirectory extends React.Component {
           <Icon name="keyboard_backspace" />
           <I18n path="actions.back" />
         </Button>
-      </span>
+      </>
     );
 
     return (

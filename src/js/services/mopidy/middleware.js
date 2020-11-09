@@ -22,6 +22,7 @@ import {
   formatArtists,
   formatArtist,
   formatPlaylist,
+  injectSortId,
 } from '../../util/format';
 import {
   arrayOf,
@@ -1177,7 +1178,7 @@ const MopidyMiddleware = (function () {
                       ...(fullTracks.length ? fullTracks[0] : {}),
                     };
                   });
-                  playlist.tracks = formatTracks(tracks);
+                  playlist.tracks = injectSortId(formatTracks(tracks));
                   store.dispatch(coreActions.itemLoaded(playlist));
                 });
             }
@@ -1188,13 +1189,9 @@ const MopidyMiddleware = (function () {
       case 'MOPIDY_ADD_PLAYLIST_TRACKS':
         request(store, 'playlists.lookup', { uri: action.key })
           .then((response) => {
-            const tracks = [];
-            for (let i = 0; i < action.tracks_uris.length; i++) {
-              tracks.push({
-                __model__: 'Track',
-                uri: action.tracks_uris[i],
-              });
-            }
+            const tracks = injectSortId(
+              action.tracks_uris.map((uri) => ({ __model__: 'Track', uri })),
+            );
 
             const playlist = { ...response };
             if (playlist.tracks) {
@@ -1204,7 +1201,7 @@ const MopidyMiddleware = (function () {
             }
 
             request(store, 'playlists.save', { playlist })
-              .then((response) => {
+              .then(() => {
                 store.dispatch({
                   type: 'PLAYLIST_TRACKS_ADDED',
                   key: action.key,
@@ -1288,7 +1285,7 @@ const MopidyMiddleware = (function () {
             if (insert_before > range_start) insert_before -= range_length;
 
             // collate our tracks to be moved
-            for (var i = 0; i < range_length; i++) {
+            for (let i = 0; i < range_length; i += 1) {
               // add to FRONT: we work backwards to avoid screwing up our indexes
               tracks_to_move.unshift(tracks[range_start + i]);
             }
@@ -1297,18 +1294,19 @@ const MopidyMiddleware = (function () {
             tracks.splice(range_start, range_length);
 
             // now plug them back in, in their new location
-            for (var i = 0; i < tracks_to_move.length; i++) {
+            for (let i = 0; i < tracks_to_move.length; i += 1) {
               tracks.splice(insert_before, 0, tracks_to_move[i]);
             }
 
-            // update playlist
             playlist = { ...playlist, tracks };
             request(store, 'playlists.save', { playlist })
-              .then((response) => {
+              .then(() => {
                 store.dispatch({
-                  type: 'MOPIDY_RESOLVE_PLAYLIST_TRACKS',
-                  tracks: playlist.tracks,
-                  key: playlist.uri,
+                  type: 'PLAYLIST_TRACKS_REORDERED',
+                  key: action.key,
+                  range_start,
+                  range_length,
+                  insert_before: action.insert_before, // We've adjusted this, so use original
                 });
               });
           });
@@ -1321,7 +1319,9 @@ const MopidyMiddleware = (function () {
               ...formatPlaylist(response),
               ...action,
             };
-            store.dispatch(uiActions.createNotification({ content: 'Created playlist' }));
+            store.dispatch(uiActions.createNotification({
+              content: i18n('actions.created', { name: i18n('playlist.title') }),
+            }));
             store.dispatch(coreActions.addToLibrary('mopidy:library:playlists', playlist));
           });
         break;
@@ -1329,7 +1329,9 @@ const MopidyMiddleware = (function () {
       case 'MOPIDY_DELETE_PLAYLIST':
         request(store, 'playlists.delete', { uri: action.uri })
           .then(() => {
-            store.dispatch(uiActions.createNotification({ content: 'Deleted playlist' }));
+            store.dispatch(uiActions.createNotification({
+              content: i18n('actions.deleted', { name: i18n('playlist.title') }),
+            }));
             store.dispatch(coreActions.removeFromLibrary('mopidy:library:playlists', action.uri));
           });
         break;
@@ -1702,7 +1704,14 @@ const MopidyMiddleware = (function () {
 
         request(store, 'library.browse', { uri: store.getState().mopidy.library_artists_uri })
           .then((raw_response) => {
-            if (raw_response.length <= 0) return;
+            // No items in our library
+            if (!raw_response.length) {
+              store.dispatch(coreActions.libraryLoaded({
+                uri: 'mopidy:library:artists',
+                items_uris: [],
+              }));
+              store.dispatch(uiActions.processFinished(action.type));
+            }
 
             // Convert local URI to actual artist URI
             // See https://github.com/mopidy/mopidy-local-sqlite/issues/39
@@ -1778,6 +1787,10 @@ const MopidyMiddleware = (function () {
                   });
               });
             } else {
+              store.dispatch(coreActions.libraryLoaded({
+                uri: 'mopidy:library:playlists',
+                items_uris: [],
+              }));
               store.dispatch(uiActions.stopLoading('mopidy:library:playlists'));
               store.dispatch(uiActions.processFinished(action.type));
             }

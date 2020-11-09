@@ -10,9 +10,10 @@ import Loader from '../components/Loader';
 import FollowButton from '../components/Fields/FollowButton';
 import { nice_number } from '../components/NiceNumber';
 import { Dater } from '../components/Dater';
-import LazyLoadListener from '../components/LazyLoadListener';
 import ContextMenuTrigger from '../components/ContextMenuTrigger';
 import Icon from '../components/Icon';
+import DropdownField from '../components/Fields/DropdownField';
+import FilterField from '../components/Fields/FilterField';
 import { i18n, I18n } from '../locale';
 import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
@@ -25,8 +26,18 @@ import {
 } from '../util/helpers';
 import Button from '../components/Button';
 import { makeLoadingSelector, makeItemSelector } from '../util/selectors';
+import { applyFilter, sortItems } from '../util/arrays';
+import { trackEvent } from '../components/Trackable';
 
 class Album extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      filter: '',
+    };
+  }
+
   componentDidMount = () => {
     const {
       uri,
@@ -154,6 +165,29 @@ class Album extends React.Component {
     playURIs([uri], uri);
   }
 
+  onChangeSort = (value) => {
+    const {
+      sort,
+      sort_reverse,
+      uiActions: {
+        set,
+        hideContextMenu,
+      },
+    } = this.props;
+
+    let reverse = false;
+    if (value !== null && sort === value) {
+      reverse = !sort_reverse;
+    }
+
+    set({
+      album_tracks_sort_reverse: reverse,
+      album_tracks_sort: value,
+    });
+    hideContextMenu();
+    trackEvent({ category: 'Album', action: 'SortTracks', label: `${value} ${reverse ? 'DESC' : 'ASC'}` });
+  }
+
   inLibrary = () => {
     const { uri } = this.props;
     const library = `${uriSource(uri)}_library_albums`;
@@ -166,7 +200,17 @@ class Album extends React.Component {
       album,
       loading,
       slim_mode,
+      sort,
+      sort_reverse,
     } = this.props;
+    let {
+      album: {
+        tracks,
+      } = {},
+    } = this.props;
+    const {
+      filter,
+    } = this.state;
 
     if (loading) {
       return <Loader body loading />;
@@ -179,6 +223,25 @@ class Album extends React.Component {
         </ErrorMessage>
       );
     }
+
+    if (sort && tracks) {
+      tracks = sortItems(tracks, sort, sort_reverse);
+    }
+
+    if (filter && filter !== '') {
+      tracks = applyFilter('name', filter, tracks);
+    }
+
+    const sort_options = [
+      {
+        value: 'disc_track',
+        label: i18n('album.tracks.sort.disc_track'),
+      },
+      {
+        value: 'name',
+        label: i18n('album.tracks.sort.name'),
+      },
+    ];
 
     return (
       <div className="view album-view content-wrapper preserve-3d">
@@ -255,9 +318,29 @@ class Album extends React.Component {
         </div>
 
         <section className="list-wrapper">
+          <h4 className="no-bottom-margin">
+            <I18n path="album.tracks.title" />
+            <div className="actions-wrapper">
+              <FilterField
+                initialValue={filter}
+                handleChange={(value) => this.setState({ filter: value })}
+                onSubmit={() => uiActions.hideContextMenu()}
+              />
+              <DropdownField
+                icon="swap_vert"
+                name="Sort"
+                value={sort}
+                valueAsLabel
+                options={sort_options}
+                selected_icon={sort ? (sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
+                handleChange={this.onChangeSort}
+              />
+            </div>
+          </h4>
           <TrackList
             className="album-track-list"
-            tracks={album.tracks}
+            tracks={tracks}
+            track_context="album"
             uri={album.uri}
           />
         </section>
@@ -292,6 +375,8 @@ const mapStateToProps = (state, ownProps) => {
     spotify_library_albums: state.spotify.library_albums,
     local_library_albums: state.mopidy.library_albums,
     spotify_authorized: state.spotify.authorization,
+    sort: (state.ui.album_tracks_sort ? state.ui.album_tracks_sort : 'disc_track'),
+    sort_reverse: (!!state.ui.album_tracks_sort_reverse),
   };
 };
 

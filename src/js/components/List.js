@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -10,36 +9,45 @@ import * as discogsActions from '../services/discogs/actions';
 
 class List extends React.Component {
   handleContextMenu(e, item) {
-    if (this.props.handleContextMenu) {
+    const { handleContextMenu } = this.props;
+
+    if (handleContextMenu) {
       e.preventDefault();
-      this.props.handleContextMenu(e, item);
+      handleContextMenu(e, item);
     }
   }
 
-  render() {
-    if (!this.props.rows) return null;
+  render = () => {
+    const {
+      rows,
+      className,
+      lastfmActions,
+      discogsActions,
+      history,
+      link_prefix,
+      thumbnail,
+      details,
+      nocontext,
+    } = this.props;
 
-    let className = 'list';
-    if (this.props.className) {
-      className += ` ${this.props.className}`;
-    }
+    if (!rows) return null;
 
     return (
-      <div className={className}>
+      <div className={`list ${className}`}>
         {
-					this.props.rows.map((item, index) => (
-  <ListItem
-    key={index}
-    item={item}
-    lastfmActions={this.props.lastfmActions}
-    discogsActions={this.props.discogsActions}
-    history={this.props.history}
-    link_prefix={this.props.link_prefix}
-    handleContextMenu={(e) => this.handleContextMenu(e, item)}
-    thumbnail={this.props.thumbnail}
-    details={this.props.details}
-    nocontext={this.props.nocontext}
-  />
+					rows.map((item, index) => (
+            <ListItem
+              key={index}
+              item={item}
+              lastfmActions={lastfmActions}
+              discogsActions={discogsActions}
+              history={history}
+              link_prefix={link_prefix}
+              handleContextMenu={(e) => this.handleContextMenu(e, item)}
+              thumbnail={thumbnail}
+              details={details}
+              nocontext={nocontext}
+            />
 					))
 				}
       </div>
@@ -47,12 +55,10 @@ class List extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({});
-
 const mapDispatchToProps = (dispatch) => ({
   uiActions: bindActionCreators(uiActions, dispatch),
   lastfmActions: bindActionCreators(lastfmActions, dispatch),
   discogsActions: bindActionCreators(discogsActions, dispatch),
 });
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(List));
+export default withRouter(connect(mapDispatchToProps)(List));

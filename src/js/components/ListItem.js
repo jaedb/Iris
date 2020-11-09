@@ -13,12 +13,9 @@ import {
   scrollTo,
 } from '../util/helpers';
 import { I18n } from '../locale';
+import { arrayOf } from '../util/arrays';
 
 export default class ListItem extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
     const { item, mopidyActions, discogsActions } = this.props;
     if (!item) return;
@@ -42,148 +39,186 @@ export default class ListItem extends React.Component {
     }
   }
 
-  handleClick(e) {
-    // make sure we haven't clicked a nested link (ie Artist name)
+  handleClick = (e) => {
+    const {
+      history,
+      link_prefix = '',
+      item: {
+        uri,
+      },
+    } = this.props;
+
     if (e.target.tagName.toLowerCase() !== 'a') {
       e.preventDefault();
-      this.props.history.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(this.props.item.uri));
+      history.push(`${link_prefix}${encodeURIComponent(uri)}`);
       scrollTo();
     }
   }
 
-  handleMouseDown(e) {
-    // make sure we haven't clicked a nested link (ie Artist name)
+  handleMouseDown = (e) => {
+    const {
+      history,
+      link_prefix = '',
+      item: {
+        uri,
+      },
+    } = this.props;
+
     if (e.target.tagName.toLowerCase() !== 'a') {
       e.preventDefault();
-      this.props.history.push((this.props.link_prefix ? this.props.link_prefix : '') + encodeURIComponent(this.props.item.uri));
+      history.push(`${link_prefix}${encodeURIComponent(uri)}`);
       scrollTo();
     }
   }
 
-  handleContextMenu(e) {
-    if (this.props.handleContextMenu) {
+  handleContextMenu = (e) => {
+    const {
+      handleContextMenu,
+      item,
+    } = this.props;
+
+    if (handleContextMenu) {
       e.preventDefault();
-      this.props.handleContextMenu(e, this.props.item);
+      handleContextMenu(e, item);
     }
   }
 
-  renderValue(key_string) {
-    const key = key_string.split('.');
-    let value = Object.assign(this.props.item);
+  /**
+   * TODO
+   * 
+   * THIS WHOLE BLOCK NEEDS A REVISIT.
+   * Surely there is a cleaner way to pull values? Perhaps simplify it like our new sortItems?
+   */
+  renderValue = (key) => {
+    const {
+      item: {
+        [key]: value,
+        ...item
+      } = {},
+    } = this.props;
 
-    for (let i = 0; i < key.length; i++) {
-      if (value[key[i]] === undefined) {
-        return null;
-      } if (typeof (value[key[i]]) === 'string' && value[key[i]].replace(' ', '') == '') {
-        return null;
-      }
-      value = value[key[i]];
+    if (key === 'tracks') {
+      const {
+        tracks_total: total,
+        tracks: array,
+      } = item;
+      if (!total && !array) return null;
+      return <I18n path="specs.tracks" count={total || array.length} />;
+    }
+    if (key === 'artists') {
+      const {
+        artists_total: total,
+        artists_uris: array,
+      } = item;
+      if (!total && !array) return null;
+      return <I18n path="specs.artists" count={total || array.length} />;
+    }
+    if (key === 'albums') {
+      const {
+        albums_total: total,
+        albums_uris: array,
+      } = item;
+      if (!total && !array) return null;
+      return <I18n path="specs.albums" count={total || array.length} />;
     }
 
-    if (key_string === 'tracks_total' || key_string === 'tracks_uris.length') {
-      return (
-        <span>
-          <I18n path="specs.tracks" count={value} />
-        </span>
-      );
+    // All options beyond here don't play well with null/undefined
+    if (!value) return null;
+
+    if (key === 'followers') {
+      return <I18n path="specs.followers" count={value.toLocaleString()} />;
     }
-    if (key_string === 'followers') {
-      return (
-        <span>
-          <I18n path="specs.followers" count={value.toLocaleString()} />
-        </span>
-      );
+    if (key === 'added_at') {
+      return <I18n path="specs.added_ago" time={dater('ago', value)} />;
     }
-    if (key_string === 'added_at') {
-      return (
-        <span>
-          <I18n path="specs.added_ago" time={dater('ago', value)} />
-        </span>
-      );
+    if (key === 'last_modified') {
+      return <I18n path="specs.updated_ago" time={dater('ago', value)} />;
     }
-    if (key_string === 'last_modified') {
-      return (
-        <span>
-          <I18n path="specs.updated_ago" time={dater('ago', value)} />
-        </span>
-      );
+    if (key === 'owner') {
+      return <URILink type="user" uri={value.uri}>{value.id}</URILink>;
     }
-    if (key_string === 'owner') return <URILink type="user" uri={value.uri}>{value.id}</URILink>;
-    if (key_string === 'popularity') return <Popularity full popularity={value} />;
-    if (key_string === 'artists') return <LinksSentence items={value} />;
+    if (key === 'popularity') {
+      return <Popularity full popularity={value} />;
+    }
+
     if (value === true) return <Icon name="check" />;
     if (typeof (value) === 'number') return <span>{value.toLocaleString()}</span>;
-    return <span>{value}</span>;
+    return value;
   }
 
   render() {
-    const { item } = this.props;
+    const {
+      item,
+      middle_column,
+      right_column,
+      thumbnail,
+      details,
+      nocontext,
+    } = this.props;
     if (!item) {
       return null;
     }
 
     let class_name = 'list__item';
-    if (item.type) {
-      class_name += ` list__item--${item.type}`;
-    }
-
-    if (this.props.middle_column) {
-      class_name += ' list__item--has-middle-column';
-    }
-
-    if (this.props.thumbnail) {
-      class_name += ' list__item--has-thumbnail';
-    }
-
-    if (this.props.details) {
-      class_name += ' list__item--has-details';
-    }
+    if (item.type) class_name += ` list__item--${item.type}`;
+    if (middle_column) class_name += ' list__item--has-middle-column';
+    if (thumbnail) class_name += ' list__item--has-thumbnail';
+    if (details) class_name += ' list__item--has-details';
 
     return (
       <div
         className={class_name}
-        onClick={(e) => this.handleClick(e)}
-        onContextMenu={(e) => this.handleContextMenu(e)}
+        onClick={this.handleClick}
+        onContextMenu={this.handleContextMenu}
       >
-
-        {this.props.right_column && !this.props.nocontext
-						&& (
-<div className="list__item__column list__item__column--right">
-  {
-								(this.props.right_column ? this.props.right_column.map((column, index) => (
-  <span className={`list__item__column__item list__item__column__item--${column.replace('.', '_')}`} key={index}>
-    {this.renderValue(column, item)}
-  </span>
-								)) : null)
+        {
+          right_column && !nocontext && (
+            <div className="list__item__column list__item__column--right">
+              {
+								right_column.map((column, index) => (
+                  <span className={`list__item__column__item list__item__column__item--${column.replace('.', '_')}`} key={index}>
+                    {this.renderValue(column, item)}
+                  </span>
+								))
 							}
-
-  {this.props.nocontext ? null : <ContextMenuTrigger className="list__item__column__item list__item__column__item--context-menu-trigger subtle" onTrigger={(e) => this.handleContextMenu(e)} />}
-
-</div>
-						)}
-
+              {!nocontext && (
+                <ContextMenuTrigger
+                  className="list__item__column__item list__item__column__item--context-menu-trigger subtle"
+                  onTrigger={this.handleContextMenu}
+                />
+              )}
+            </div>
+          )
+        }
         <div className="list__item__column list__item__column--name">
-
-          {this.props.thumbnail ? <Thumbnail className="list__item__column__item list__item__column__item--thumbnail" images={(item.images ? item.images : null)} size="small" /> : null}
-
+          {thumbnail && (
+            <Thumbnail
+              className="list__item__column__item list__item__column__item--thumbnail"
+              images={item.images}
+              size="small"
+            />
+          )}
           <div className="list__item__column__item list__item__column__item--name">
-            {item.name !== undefined ? this.renderValue('name') : <span className="grey-text">{item.uri}</span>}
+            {
+              item.name !== undefined
+                ? this.renderValue('name')
+                : <span className="grey-text">{item.uri}</span>
+            }
           </div>
 
-          {this.props.details ? (
+          {details ? (
             <ul className="list__item__column__item list__item__column__item--details details">
               {
-							 	this.props.details.map((detail, index) => {
+							 	details.map((detail, index) => {
 							 	  const value = this.renderValue(detail);
-
-							 	  if (!value) {
-							 	    return null;
-							 	  }
-
+							 	  if (!value) return null;
 							 	  return (
-  <li className={`details__item details__item--${detail.replace('.', '_')}`} key={index}>
-    {value}
-  </li>
+                    <li
+                      className={`details__item details__item--${detail.replace('.', '_')}`}
+                      key={index}
+                    >
+                      {value}
+                    </li>
 							 	  );
 							 	})
 							}
@@ -191,17 +226,20 @@ export default class ListItem extends React.Component {
           ) : null}
         </div>
 
-        {this.props.middle_column ? (
+        {middle_column && (
           <div className="list__item__column list__item__column--middle">
             {
-							(this.props.middle_column ? this.props.middle_column.map((column, index) => (
-  <span className={`list__item__column__item list__item__column__item--${column.replace('.', '_')}`} key={index}>
-    {this.renderValue(column)}
-  </span>
-							)) : null)
+              middle_column.map((column, index) => (
+                <span
+                  className={`list__item__column__item list__item__column__item--${column.replace('.', '_')}`}
+                  key={index}
+                >
+                  {this.renderValue(column)}
+                </span>
+              ))
 						}
           </div>
-        ) : null}
+        )}
       </div>
     );
   }

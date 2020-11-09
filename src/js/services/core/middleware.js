@@ -4,11 +4,18 @@ import localForage from 'localforage';
 import { compact } from 'lodash';
 import { arrayOf } from '../../util/arrays';
 import URILink from '../../components/URILink';
-import { uriSource, upgradeSpotifyPlaylistUris, uriType, titleCase } from '../../util/helpers';
+import {
+  uriSource,
+  upgradeSpotifyPlaylistUris,
+  uriType,
+  titleCase,
+} from '../../util/helpers';
+import { ensureLoaded } from '../../util/library';
 import {
   formatTracks,
   formatTrack,
   formatSimpleObject,
+  injectSortId,
 } from '../../util/format';
 import { handleException } from './actions';
 
@@ -17,114 +24,6 @@ const uiActions = require('../ui/actions.js');
 const mopidyActions = require('../mopidy/actions.js');
 const googleActions = require('../google/actions.js');
 const spotifyActions = require('../spotify/actions.js');
-
-/**
- * Ensure we have an item in our index
- * If it's not there, attempt to fetch it from our cold storage
- * If it's not their either, call the provided fetch()
- *
- * @param {*} Object { store, action, fetch, dependents}
- */
-const ensureLoaded = ({
-  store,
-  containerName = 'items',
-  action,
-  fetch,
-  dependents = [],
-  fullDependents = [],
-}) => {
-  const {
-    uri,
-    options: {
-      forceRefetch,
-      full,
-    },
-  } = action;
-  const {
-    core: {
-      [containerName]: {
-        [uri]: item,
-      } = {},
-    } = {},
-  } = store.getState();
-
-  const getMissingDependents = (parent) => {
-    const allDependents = [...dependents, ...fullDependents];
-    if (!parent) return allDependents;
-    if (full) {
-      return allDependents.filter((dep) => parent[dep] === undefined || parent[dep] === null);
-    }
-    return dependents.filter((dep) => parent[dep] === undefined || parent[dep] === null);
-  };
-
-  const getDependentUris = (parent) => {
-    if (!parent) return [];
-
-    return [...dependents, ...fullDependents].reduce(
-      (acc, dependent) => {
-        return [
-          ...acc,
-          ...(dependent.match(new RegExp('(.*)_uri(.*)')) ? parent[dependent] : []),
-        ];
-      },
-      [],
-    );
-  };
-
-  // Forced refetch bypasses everything
-  if (forceRefetch) {
-    console.info(`Force-refetching "${uri}"`);
-    fetch();
-    return;
-  }
-
-  // Item already in our index?
-  if (item) {
-    if (getMissingDependents(item).length === 0) {
-      store.dispatch(uiActions.stopLoading(uri));
-      console.info(`"${uri}" already in index`);
-
-      const dependentUris = getDependentUris(item);
-      if (dependentUris.length) {
-        console.log(`Loading ${dependentUris.length} dependents`);
-        store.dispatch(coreActions.loadItems(dependentUris));
-      }
-      return;
-    }
-  }
-
-  // What about in the coldstore?
-  localForage.getItem(uri).then((restoredItem) => {
-    if (!restoredItem || getMissingDependents(restoredItem).length > 0) {
-      fetch();
-      return;
-    }
-
-    console.info(`Restoring "${uri}" from database`);
-    store.dispatch(coreActions.restoreItemsFromColdStore([restoredItem]));
-
-    // We already have the dependents of our restored item, so restore them.
-    // We assume that because THIS item is in the coldstore, its dependents
-    // are as well.
-    const dependentUris = getDependentUris(restoredItem);
-    if (dependentUris.length > 0) {
-      console.info(`Restoring ${dependentUris.length} dependents from database`);
-
-      const restoreAllDependents = dependentUris.map(
-        (dependentUri) => localForage.getItem(dependentUri),
-      );
-      Promise.all(restoreAllDependents).then(
-        (dependentItems) => {
-          store.dispatch(
-            coreActions.restoreItemsFromColdStore(
-              compact(dependentItems), // Squash nulls (ie items not found in coldstore)
-            ),
-          );
-        },
-      );
-    }
-  });
-};
 
 const CoreMiddleware = (function () {
   return (store) => (next) => (action = {}) => {
@@ -352,10 +251,6 @@ const CoreMiddleware = (function () {
         break;
       }
 
-      case 'RESTART':
-        location.reload();
-        break;
-
       case 'PLAYLIST_TRACKS_ADDED': {
         const {
           key,
@@ -378,7 +273,6 @@ const CoreMiddleware = (function () {
 
         switch (uriSource(key)) {
           case 'spotify':
-            console.log("GETTING", key)
             store.dispatch(spotifyActions.getPlaylist(key));
             break;
           case 'm3u':
@@ -391,6 +285,8 @@ const CoreMiddleware = (function () {
         break;
       }
 
+      // This applies our new sort order based on the origional request (rather than a response)
+      // This means we don't need to re-fetch the whole playlist after every sort.
       case 'PLAYLIST_TRACKS_REORDERED': {
         const {
           key,
@@ -413,9 +309,11 @@ const CoreMiddleware = (function () {
           tracks.splice(insert_before, 0, tracks_to_move[i]);
         }
 
+        console.log({ action, tracks: injectSortId(tracks) });
+
         store.dispatch(coreActions.itemLoaded({
           ...playlist,
-          tracks,
+          tracks: injectSortId(tracks),
           snapshot_id,
         }));
         break;

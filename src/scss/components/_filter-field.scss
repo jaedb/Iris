@@ -1,5 +1,7 @@
 
 .filter-field {
+	font-size: 1rem;
+
 	form {
 		display: inline-block;
 		position: relative;
@@ -7,9 +9,9 @@
 
 	.icon {
 		position: absolute;
-		top: 12px;
-		left: 15px;
-		pointer-events: none;
+		padding: 12px;
+		top: 0;
+		left: 0;
 	}
 
 	input {
@@ -24,6 +26,10 @@
 			cursor: pointer;
 			background: transparent !important;
 		}
+
+		.icon {
+			pointer-events: none;
+		}
 		
 		&:hover {
 			.icon {
@@ -34,8 +40,15 @@
 
 	&.active {
 		input {
-			width: 180px;
+			width: 150px;
 			padding-left: 35px;
+		}
+
+		.icon {
+			&:hover {
+				color: colour(red);
+				cursor: pointer;
+			}
 		}
 	}
 }

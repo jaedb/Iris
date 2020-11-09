@@ -298,6 +298,7 @@ const formatAlbum = function (data) {
     'popularity',
     'images',
     'tracks',
+    'tracks_total',
     'artists',
   ];
 
@@ -325,6 +326,7 @@ const formatAlbum = function (data) {
     } else {
       album.tracks = formatTracks(album.tracks);
     }
+    album.tracks_total = album.tracks.length;
   }
   if (album.artists) {
     album.artists = formatSimpleObjects(album.artists);
@@ -574,6 +576,7 @@ const formatTrack = function (data) {
     'release_date',
     'disc_number',
     'track_number',
+    'disc_track',
     'duration',
     'followers',
     'popularity',
@@ -664,6 +667,8 @@ const formatTrack = function (data) {
   if (track.album) {
     track.album = formatSimpleObject(track.album);
   }
+
+  track.disc_track = track.disc_number + (track.track_number / 10); // Gives us a decimal d.t
 
   return track;
 };
@@ -929,6 +934,17 @@ const collate = function (obj, indexes = {}) {
   return obj;
 };
 
+/**
+ * Add the array index as our sort_id.
+ * This allows us a source of truth for the original order of items when we have applied
+ * sort rules in the UI.
+ *
+ * @param {Array} array of objects to have sort_id added
+ */
+const injectSortId = (array) => {
+  return array.map((item, index) => ({ ...item, sort_id: index }));
+};
+
 export {
   toJSON,
   getTrackIcon,
@@ -952,6 +968,7 @@ export {
   formatCategories,
   collate,
   collateLibrary,
+  injectSortId,
 };
 
 export default {
@@ -977,4 +994,5 @@ export default {
   formatCategories,
   collate,
   collateLibrary,
+  injectSortId,
 };

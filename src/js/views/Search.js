@@ -186,7 +186,7 @@ class Search extends React.Component {
     const sort_options = [
       { value: 'followers', label: i18n('common.popularity') },
       { value: 'name', label: i18n('common.name') },
-      { value: 'artists.name', label: i18n('common.artist') },
+      { value: 'artist', label: i18n('common.artist') },
       { value: 'duration', label: i18n('common.duration') },
       { value: 'uri', label: i18n('common.source') },
     ];
@@ -197,7 +197,7 @@ class Search extends React.Component {
     }));
 
     const options = (
-      <span>
+      <>
         <DropdownField
           icon="swap_vert"
           name={i18n('common.sort')}
@@ -215,7 +215,7 @@ class Search extends React.Component {
           handleChange={this.onSourceChange}
           onClose={this.onSourceClose}
         />
-      </span>
+      </>
     );
 
     return (

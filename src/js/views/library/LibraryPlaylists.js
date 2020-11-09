@@ -184,7 +184,7 @@ class LibraryPlaylists extends React.Component {
             handleContextMenu={(e, item) => this.handleContextMenu(e, item)}
             rows={playlists}
             thumbnail
-            details={['owner', 'tracks_total', 'last_modified']}
+            details={['owner', 'tracks', 'last_modified']}
             right_column={['source']}
             className="playlists"
             link_prefix="/playlist/"
@@ -274,11 +274,11 @@ class LibraryPlaylists extends React.Component {
         label: i18n('fields.filters.editable'),
       },
       {
-        value: 'owner.id',
+        value: 'owner',
         label: i18n('fields.filters.owner'),
       },
       {
-        value: 'tracks_total',
+        value: 'tracks',
         label: i18n('fields.filters.tracks'),
       },
       {
@@ -288,7 +288,7 @@ class LibraryPlaylists extends React.Component {
     ];
 
     const options = (
-      <span>
+      <>
         <FilterField
           initialValue={filter}
           handleChange={(value) => this.setState({ filter: value })}
@@ -337,7 +337,7 @@ class LibraryPlaylists extends React.Component {
           <Icon name="add_box" />
           <I18n path="actions.add" />
         </Button>
-      </span>
+      </>
     );
 
     return (

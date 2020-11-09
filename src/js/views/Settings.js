@@ -72,7 +72,7 @@ class Settings extends React.Component {
   }
 
   resetAllSettings = () => {
-    localForage.clear(() => {
+    localForage.clear().then(() => {
       console.debug('Cleared settings, reloading...');
       window.location = '#';
       window.location.reload(true);
@@ -181,7 +181,7 @@ class Settings extends React.Component {
     } = this.state;
 
     const options = (
-      <span>
+      <>
         <Button
           discrete
           noHover
@@ -202,7 +202,7 @@ class Settings extends React.Component {
             <Icon name="help" />
           </I18n>
         </Button>
-      </span>
+      </>
     );
 
     return (

@@ -5,7 +5,6 @@ import { bindActionCreators } from 'redux';
 import { Route, Switch } from 'react-router-dom';
 import ErrorMessage from '../components/ErrorMessage';
 import Link from '../components/Link';
-import LazyLoadListener from '../components/LazyLoadListener';
 import TrackList from '../components/TrackList';
 import AlbumGrid from '../components/AlbumGrid';
 import Thumbnail from '../components/Thumbnail';
@@ -15,6 +14,7 @@ import RelatedArtists from '../components/RelatedArtists';
 import FollowButton from '../components/Fields/FollowButton';
 import ContextMenuTrigger from '../components/ContextMenuTrigger';
 import DropdownField from '../components/Fields/DropdownField';
+import FilterField from '../components/Fields/FilterField';
 import Icon from '../components/Icon';
 import Loader from '../components/Loader';
 import * as coreActions from '../services/core/actions';
@@ -36,6 +36,14 @@ import {
 } from '../util/selectors';
 
 class Artist extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      filter: '',
+    };
+  }
+
   componentDidMount() {
     const {
       uri,
@@ -157,8 +165,11 @@ class Artist extends React.Component {
       artist,
       sort,
       sort_reverse,
-      filter,
+      filterType 
     } = this.props;
+    const {
+      filter,
+    } = this.state;
     let {
       tracks,
       related_artists,
@@ -169,8 +180,12 @@ class Artist extends React.Component {
       albums = sortItems(albums, sort, sort_reverse);
     }
 
-    if (filter && albums) {
-      albums = applyFilter('type', filter, albums);
+    if (filterType && albums) {
+      albums = applyFilter('type', filterType, albums);
+    }
+
+    if (filter && filter !== '') {
+      albums = applyFilter('name', filter, albums);
     }
 
     const sort_options = [
@@ -187,12 +202,12 @@ class Artist extends React.Component {
         label: i18n('artist.albums.sort.release_date'),
       },
       {
-        value: 'tracks_uris.length',
+        value: 'tracks',
         label: i18n('artist.albums.sort.track_count'),
       },
     ];
 
-    const filter_options = [
+    const filter_type_options = [
       {
         value: null,
         label: i18n('artist.albums.filter.all'),
@@ -240,35 +255,31 @@ class Artist extends React.Component {
 
         <div className="albums">
           <h4>
-            <div><I18n path="artist.overview.albums" /></div>
-            <DropdownField
-              icon="swap_vert"
-              name="Sort"
-              value={sort}
-              valueAsLabel
-              options={sort_options}
-              selected_icon={sort ? (sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
-              handleChange={this.onChangeSort}
-            />
-            <DropdownField
-              icon="filter_list"
-              name="Filter"
-              value={filter}
-              valueAsLabel
-              options={filter_options}
-              handleChange={this.onChangeFilter}
-            />
-            {(sort || filter) && (
-              <Button
-                discrete
-                type="destructive"
-                size="small"
-                onClick={this.onResetFilters}
-              >
-                <Icon name="clear" />
-                <I18n path="actions.reset" />
-              </Button>
-            )}
+            <I18n path="artist.overview.albums" />
+            <div className="actions-wrapper">
+              <FilterField
+                initialValue={filter}
+                handleChange={(value) => this.setState({ filter: value })}
+                onSubmit={() => uiActions.hideContextMenu()}
+              />
+              <DropdownField
+                icon="swap_vert"
+                name="Sort"
+                value={sort}
+                valueAsLabel
+                options={sort_options}
+                selected_icon={sort ? (sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
+                handleChange={this.onChangeSort}
+              />
+              <DropdownField
+                icon="filter_list"
+                name="Filter"
+                value={filterType}
+                valueAsLabel
+                options={filter_type_options}
+                handleChange={this.onChangeFilter}
+              />
+            </div>
           </h4>
 
           <section className="grid-wrapper no-top-padding">
@@ -536,7 +547,7 @@ const mapStateToProps = (state, ownProps) => {
     loading: loadingSelector(state),
     theme: state.ui.theme,
     slim_mode: state.ui.slim_mode,
-    filter: (state.ui.artist_albums_filter ? state.ui.artist_albums_filter : null),
+    filterType: (state.ui.artist_albums_filter ? state.ui.artist_albums_filter : null),
     sort: (state.ui.artist_albums_sort ? state.ui.artist_albums_sort : null),
     sort_reverse: (!!state.ui.artist_albums_sort_reverse),
     spotify_authorized: state.spotify.authorization,

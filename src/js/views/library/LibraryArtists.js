@@ -194,7 +194,7 @@ class LibraryArtists extends React.Component {
             handleContextMenu={(e, item) => this.handleContextMenu(e, item)}
             rows={artists}
             thumbnail
-            details={['followers']}
+            details={['albums', 'followers']}
             middle_column={['source']}
             className="artists"
             link_prefix="/artist/"
@@ -286,7 +286,7 @@ class LibraryArtists extends React.Component {
     ];
 
     const options = (
-      <span>
+      <>
         <FilterField
           initialValue={this.state.filter}
           handleChange={(value) => this.setState({ filter: value, limit: this.state.per_page })}
@@ -326,7 +326,7 @@ class LibraryArtists extends React.Component {
           {loading ? <Icon name="close" /> : <Icon name="refresh" /> }
           {loading ? <I18n path="actions.cancel" /> : <I18n path="actions.refresh" /> }
         </Button>
-      </span>
+      </>
     );
 
     return (

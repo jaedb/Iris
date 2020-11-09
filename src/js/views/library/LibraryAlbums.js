@@ -215,10 +215,10 @@ class LibraryAlbums extends React.Component {
       return (
         <section className="content-wrapper">
           <List
-            handleContextMenu={(e, item) => this.handleContextMenu(e, item)}
+            handleContextMenu={this.handleContextMenu}
             rows={albums}
             thumbnail
-            details={['artists', 'tracks_uris.length', 'last_modified']}
+            details={['artists', 'tracks', 'added_at']}
             right_column={['added_at']}
             className="albums"
             link_prefix="/album/"
@@ -234,7 +234,7 @@ class LibraryAlbums extends React.Component {
     return (
       <section className="content-wrapper">
         <AlbumGrid
-          handleContextMenu={(e, item) => this.handleContextMenu(e, item)}
+          handleContextMenu={this.handleContextMenu}
           albums={albums}
         />
         <LazyLoadListener
@@ -309,7 +309,7 @@ class LibraryAlbums extends React.Component {
         label: i18n('fields.filters.name'),
       },
       {
-        value: 'artists.first.name',
+        value: 'artist',
         label: i18n('fields.filters.artist'),
       },
       {
@@ -317,7 +317,7 @@ class LibraryAlbums extends React.Component {
         label: i18n('fields.filters.updated'),
       },
       {
-        value: 'tracks_uris.length',
+        value: 'tracks',
         label: i18n('fields.filters.tracks'),
       },
       {
@@ -327,7 +327,7 @@ class LibraryAlbums extends React.Component {
     ];
 
     const options = (
-      <div className="header__options__wrapper">
+      <>
         <FilterField
           initialValue={filter}
           handleChange={(value) => this.setState({ filter: value, limit: per_page })}
@@ -367,7 +367,7 @@ class LibraryAlbums extends React.Component {
           {loading ? <Icon name="close" /> : <Icon name="refresh" /> }
           {loading ? <I18n path="actions.cancel" /> : <I18n path="actions.refresh" /> }
         </Button>
-      </div>
+      </>
     );
 
     return (

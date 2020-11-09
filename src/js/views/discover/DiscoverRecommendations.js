@@ -472,7 +472,7 @@ class Discover extends React.Component {
         <section className="col col--w70 tracks">
           <h4>
             <I18n path="discover.recommendations.tracks" />
-            <div className="pull-right">
+            <div className="actions-wrapper">
               <ContextMenuTrigger onTrigger={this.handleContextMenu} />
               <Button
                 type="primary"

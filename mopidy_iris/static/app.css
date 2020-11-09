@@ -2876,16 +2876,22 @@ h3 {
 h4 {
   font-family: "Overpass";
   font-weight: 600;
+  display: flex;
+  align-items: center;
   font-size: 1.5rem;
   margin-bottom: 16px;
   font-weight: 700; }
+  h4.no-bottom-margin {
+    margin-bottom: 0; }
   h4.underline {
     padding-bottom: 4px;
     border-bottom: 2px solid rgba(128, 128, 128, 0.35); }
   h4:not(:first-child) {
     padding-top: 40px; }
-  h4 .dropdown-field {
-    margin-left: 10px; }
+  h4 .actions-wrapper {
+    margin-left: auto;
+    display: flex;
+    align-items: center; }
   h4 .button {
     margin-left: 10px; }
   h4.breadcrumbs .icon {
@@ -4344,6 +4350,8 @@ select {
     display: none; }
   .list__item__column__item--source {
     display: none !important; }
+  .list__item__column__item--track-number span {
+    display: none; }
   .list__item__column__item--added .by {
     display: none; }
   .list__item__column__item--added .from {
@@ -6421,35 +6429,37 @@ main header {
       .autocomplete-field .results .all-results:hover {
         background: #323232; }
 
-.filter-field form {
-  display: inline-block;
-  position: relative; }
-
-.filter-field .icon {
-  position: absolute;
-  top: 12px;
-  left: 15px;
-  pointer-events: none; }
-
-.filter-field input {
-  -webkit-transition: all 0.2s ease-in-out;
-  -moz-transition: all 0.2s ease-in-out;
-  -o-transition: all 0.2s ease-in-out;
-  transition: all 0.2s ease-in-out;
-  width: 0;
-  padding-left: 25px;
-  border-color: transparent; }
-
-.filter-field:not(.active) input {
-  cursor: pointer;
-  background: transparent !important; }
-
-.filter-field:not(.active):hover .icon {
-  color: #32b5f2; }
-
-.filter-field.active input {
-  width: 180px;
-  padding-left: 35px; }
+.filter-field {
+  font-size: 1rem; }
+  .filter-field form {
+    display: inline-block;
+    position: relative; }
+  .filter-field .icon {
+    position: absolute;
+    padding: 12px;
+    top: 0;
+    left: 0; }
+  .filter-field input {
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+    width: 0;
+    padding-left: 25px;
+    border-color: transparent; }
+  .filter-field:not(.active) input {
+    cursor: pointer;
+    background: transparent !important; }
+  .filter-field:not(.active) .icon {
+    pointer-events: none; }
+  .filter-field:not(.active):hover .icon {
+    color: #32b5f2; }
+  .filter-field.active input {
+    width: 150px;
+    padding-left: 35px; }
+  .filter-field.active .icon:hover {
+    color: #cf2d2d;
+    cursor: pointer; }
 
 #context-menu .filter-field {
   display: block; }
@@ -8071,7 +8081,8 @@ main .track-view {
           padding-left: 70px; }
         .modal .content .list.playlists .list__item__name {
           padding-top: 0;
-          margin-bottom: 5px; }
+          margin-bottom: 5px;
+          display: block; }
         .modal .content .list.playlists .list__item .source {
           position: static;
           top: auto;

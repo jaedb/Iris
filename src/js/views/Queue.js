@@ -225,7 +225,7 @@ class Queue extends React.Component {
     }
 
     const options = (
-      <span>
+      <>
         {spotify_enabled && (
           <Button noHover discrete to="/queue/radio">
             <Icon name="radio" />
@@ -240,7 +240,7 @@ class Queue extends React.Component {
           <Icon name="playlist_add" />
           <I18n path="actions.add" />
         </Button>
-      </span>
+      </>
     );
 
     return (

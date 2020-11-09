@@ -10,72 +10,94 @@ export default class FilterField extends React.Component {
     super(props);
     this.state = {
       value: '',
-      active: (!!this.props.slim_mode),
+      active: (!!props.slim_mode),
     };
 
     this.handleKeyUp = this.handleKeyUp.bind(this);
   }
 
   componentDidMount() {
+    const { initialValue: value } = this.props;
+
     window.addEventListener('keyup', this.handleKeyUp, false);
-    this.setState({ value: this.props.initialValue });
+    this.setState({ value });
   }
 
   componentWillUnmount() {
     window.removeEventListener('keyup', this.handleKeyUp, false);
   }
 
-  handleKeyUp(e) {
-    if (e.keyCode == 27 && !this.props.slim_mode) {
+  handleKeyUp = (e) => {
+    const { slim_mode } = this.props;
+
+    if (e.keyCode === 27 && !slim_mode) {
       e.preventDefault();
-
-      this.setState({
-        value: '',
-        active: false,
-      });
-
-      this.handleChange('');
+      this.handleChange({ target: { value: '' } });
     }
   }
 
-  handleSubmit(e) {
+  handleSubmit = (e) => {
     const { onSubmit } = this.props;
+
     if (onSubmit) onSubmit(e);
     e.preventDefault();
     return false;
   }
 
-  activate() {
+  activate = () => {
     this.setState({ active: true });
   }
 
-  handleChange(value) {
-    this.setState({
-      value,
-      active: (this.props.slim_mode ? true : (value != '')),
-    });
-    this.props.handleChange(value);
+  deactivate = () => {
+    const {
+      handleChange: doHandleChange,
+    } = this.props;
+
+    this.setState({ active: false, value: '' });
+    doHandleChange('');
   }
 
-  handleBlur() {
-    if (this.state.value == '' && !this.props.slim_mode) {
+  handleChange = ({ target: { value } }) => {
+    const {
+      slim_mode,
+      handleChange: doHandleChange,
+    } = this.props;
+
+    this.setState({
+      value,
+      active: (slim_mode ? true : (value !== '')),
+    });
+    doHandleChange(value);
+  }
+
+  handleBlur = () => {
+    const { value } = this.state;
+    const { slim_mode } = this.props;
+
+    if (value === '' && !slim_mode) {
       this.setState({ active: false });
     }
   }
 
-  render() {
+  render = () => {
+    const { value, active } = this.state;
+
     return (
-      <span className={`filter-field ${this.state.active ? 'active' : ''}`} onClick={(e) => this.activate()}>
-        <form onSubmit={e => this.handleSubmit(e)}>
+      <span className={`filter-field ${active ? 'active' : ''}`}>
+        <form onSubmit={this.handleSubmit}>
           <input
             type="text"
             placeholder={i18n('fields.filter')}
-            value={this.state.value}
-            onFocus={(e) => this.activate()}
-            onBlur={(e) => this.handleBlur()}
-            onChange={(e) => this.handleChange(e.target.value)}
+            value={value}
+            onFocus={this.activate}
+            onBlur={this.handleBlur}
+            onChange={this.handleChange}
           />
-          <Icon name="search" type="material" />
+          <Icon
+            name={active ? 'close' : 'search'}
+            type="material"
+            onClick={active ? this.deactivate : null}
+          />
         </form>
       </span>
     );

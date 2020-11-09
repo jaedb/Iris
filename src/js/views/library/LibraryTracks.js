@@ -244,17 +244,17 @@ class LibraryTracks extends React.Component {
         label: i18n('fields.filters.name'),
       },
       {
-        value: 'artists.first.name',
+        value: 'artist',
         label: i18n('fields.filters.artist'),
       },
       {
-        value: 'album.name',
+        value: 'album',
         label: i18n('fields.filters.album'),
       },
     ];
 
     const options = (
-      <div className="header__options__wrapper">
+      <>
         <FilterField
           initialValue={filter}
           handleChange={(value) => this.setState({ filter: value, limit: per_page })}
@@ -286,7 +286,7 @@ class LibraryTracks extends React.Component {
           {loading ? <Icon name="close" /> : <Icon name="refresh" /> }
           {loading ? <I18n path="actions.cancel" /> : <I18n path="actions.refresh" /> }
         </Button>
-      </div>
+      </>
     );
 
     return (

@@ -55,21 +55,19 @@ class Debug extends React.Component {
     debug(JSON.parse(snapcast_data));
   }
 
-  toggleTestMode = (e) => {
+  toggleTestMode = () => {
     const { uiActions: { set }, test_mode } = this.props;
     this.setState({ toggling_test_mode: true });
     set({ test_mode: !test_mode });
 
     // Wait a second to allow state to update, and then refresh
-    setTimeout(location.reload(), 1000);
+    setTimeout(location.reload(), 2500);
   }
 
   render = () => {
     const {
       uiActions,
       spotifyActions,
-      history,
-      test_mode,
       debug_response,
       debug_info,
       log_actions,
@@ -79,12 +77,12 @@ class Debug extends React.Component {
       access_token,
     } = this.props;
     const {
-      toggling_test_mode,
       mopidy_call,
       mopidy_data,
       pusher_data,
       snapcast_data,
     } = this.state;
+    const { test_mode } = window;
 
     const options = (
       <Button
@@ -101,7 +99,7 @@ class Debug extends React.Component {
       <div className="view debugger-view">
         <Header options={options} uiActions={uiActions}>
           <Icon name="settings" type="material" />
-					<I18n path="debug.title" />
+          <I18n path="debug.title" />
         </Header>
 
         <div className="content-wrapper">
@@ -113,8 +111,7 @@ class Debug extends React.Component {
               <div className="input">
                 <Button
                   type={test_mode ? 'destructive' : null}
-                  working={toggling_test_mode}
-                  onClick={this.toggleTestMode}
+                  href={`?test_mode=${test_mode ? '0' : '1'}`}
                   tracking={{ category: 'Debug', action: 'TestMode', label: test_mode ? 'Disable' : 'Enable' }}
                 >
                   <I18n path={`actions.${test_mode ? 'disable' : 'enable'}`} />

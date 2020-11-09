@@ -119,17 +119,14 @@
 
 	// Check for test mode. This is toggled under Settings > Debug > Test mode or can
 	// be manually triggered with the URL var "?test_mode=1"
-	try {
-		var ui = JSON.parse(localStorage.getItem('ui') );
-		window.test_mode = (
-			typeof(ui) !== 'undefined'
-			&& ui
-			&& typeof(ui.test_mode) !== 'undefined'
-			&& ui.test_mode
-		) || window.location.href.indexOf('test_mode=1') > -1;
-	} catch(error){
-		console.error(error);
+	if (window.location.href.indexOf('test_mode=1') > -1) {
+		window.test_mode = true;
+		localStorage.setItem('test_mode', true);
+	} else if (window.location.href.indexOf('test_mode=0') > -1) {
 		window.test_mode = false;
+		localStorage.removeItem('test_mode');
+	} else {
+		window.test_mode = localStorage.getItem('test_mode');
 	}
 
 	// Test mode, use un-minified code
