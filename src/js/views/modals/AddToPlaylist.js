@@ -106,17 +106,39 @@ class AddToPlaylist extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
-  uris: (ownProps.match.params.uris ? decodeURIComponent(ownProps.match.params.uris).split(',') : []),
-  mopidy_uri_schemes: state.mopidy.uri_schemes,
-  items: state.core.items,
-  mopidy_library: state.core.libraries['mopidy:library:playlists'],
-  spotify_library: state.core.libraries['spotify:library:playlists'],
-  spotify_available: state.spotify.access_token,
-  load_queue: state.ui.load_queue,
-  me_id: (state.spotify.me ? state.spotify.me.id : false),
-  playlists: state.core.playlists,
-});
+const mapStateToProps = (state, ownProps) => {
+  const {
+    spotify: {
+      me: {
+        id: me_id,
+      } = {},
+      access_token: spotify_available,
+    },
+    ui: {
+      load_queue,
+    },
+    core: {
+      playlists,
+      items,
+      libraries,
+    },
+    mopidy: {
+      uri_schemes: mopidy_uri_schemes,
+    }
+  } = state;
+
+  return {
+    uris: (ownProps.match.params.uris ? decodeURIComponent(ownProps.match.params.uris).split(',') : []),
+    mopidy_uri_schemes,
+    items,
+    mopidy_library: libraries['mopidy:library:playlists'],
+    spotify_library: libraries['spotify:library:playlists'],
+    spotify_available,
+    load_queue,
+    me_id,
+    playlists,
+  };
+};
 
 const mapDispatchToProps = (dispatch) => ({
   coreActions: bindActionCreators(coreActions, dispatch),
