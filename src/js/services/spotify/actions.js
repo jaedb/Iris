@@ -1314,7 +1314,57 @@ export function savePlaylist(uri, name, description, is_public, is_collaborative
   };
 }
 
-export function getPlaylist(uri, { full, forceRefetch, callbackAction } = {}) {
+export function getPlaylistTracks(uri, { forceRefetch, callbackAction } = {}) {
+  return (dispatch, getState) => {  
+    let initialEndpoint = `playlists/${getFromUri('playlistid', uri)}/tracks`;
+    initialEndpoint += `?market=${getState().spotify.country}`;
+    if (forceRefetch) initialEndpoint += `&refetch=${Date.now()}`;
+
+    let tracks = [];
+
+    const fetchTracks = (endpoint) => request(dispatch, getState, endpoint)
+      .then((response) => {
+        tracks = [...tracks, ...formatTracks(response.items)];
+        if (response.next) {
+          fetchTracks(response.next);
+        } else {
+          dispatch(coreActions.itemLoaded({
+            uri,
+            tracks: injectSortId(tracks), // only inject sort_id when we've loaded them all
+          }));
+
+          if (callbackAction) {
+            switch (callbackAction.name) {
+              case 'enqueue':
+                dispatch(mopidyActions.enqueueURIs(
+                  arrayOf('uri', tracks),
+                  uri,
+                  callbackAction.play_next,
+                  callbackAction.at_position,
+                  callbackAction.offset,
+                ));
+                break;
+              case 'play':
+                dispatch(mopidyActions.playURIs(
+                  arrayOf('uri', tracks),
+                  uri,
+                  callbackAction.shuffle,
+                ));
+                break;
+              default:
+                break;
+            }
+          }
+        }
+      });
+
+    fetchTracks(initialEndpoint);
+  }
+}
+
+export function getPlaylist(uri, options) {
+  const { full, forceRefetch } = options;
+
   return (dispatch, getState) => {
     let endpoint = `playlists/${getFromUri('playlistid', uri)}`;
     endpoint += `?market=${getState().spotify.country}`;
@@ -1329,9 +1379,6 @@ export function getPlaylist(uri, { full, forceRefetch, callbackAction } = {}) {
     request(dispatch, getState, endpoint)
       .then(
         (response) => {
-          let tracks = injectSortId(formatTracks(response.tracks.items));
-
-          // convert links in description
           let description = null;
           if (response.description) {
             description = response.description;
@@ -1344,52 +1391,14 @@ export function getPlaylist(uri, { full, forceRefetch, callbackAction } = {}) {
             ...formatPlaylist(response),
             can_edit: (getState().spotify.me && getState().spotify.me.id === response.owner.id),
             description,
-            // Remove tracks unless we're looking for the full object. This allows our detector
+            // Remove tracks. They're handed by another query which allows our detector
             // to accurately identify whether we've loaded *ALL* the tracks. Without this, it
             // doesn't know if we've loaded all tracks, or just the first page.
-            ...(full ? {} : { tracks: null }),
+            tracks: null,
           }));
 
           if (full) {
-            const fetchTracks = (endpoint) => request(dispatch, getState, endpoint)
-              .then((response) => {
-                tracks = [...tracks, ...formatTracks(response.items)];
-                if (response.next) {
-                  fetchTracks(response.next);
-                } else {
-                  dispatch(coreActions.itemLoaded({
-                    uri,
-                    tracks: injectSortId(tracks),
-                  }));
-
-                  if (callbackAction) {
-                    switch (callbackAction.name) {
-                      case 'enqueue':
-                        dispatch(mopidyActions.enqueueURIs(
-                          arrayOf('uri', tracks),
-                          uri,
-                          callbackAction.play_next,
-                          callbackAction.at_position,
-                          callbackAction.offset,
-                        ));
-                        break;
-                      case 'play':
-                        dispatch(mopidyActions.playURIs(
-                          arrayOf('uri', tracks),
-                          uri,
-                          callbackAction.shuffle,
-                        ));
-                        break;
-                      default:
-                        break;
-                    }
-                  }
-                }
-              });
-
-            if (response.tracks.next) {
-              fetchTracks(response.tracks.next);
-            }
+            dispatch(getPlaylistTracks(uri, options));
           };
         },
         (error) => {
