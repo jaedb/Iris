@@ -86,7 +86,7 @@ class LibraryBrowseDirectory extends React.Component {
     });
   }
 
-  playAll = (tracks) => {
+  playAll = () => {
     const {
       uri,
       mopidyActions: {
@@ -95,9 +95,14 @@ class LibraryBrowseDirectory extends React.Component {
       uiActions: {
         hideContextMenu,
       },
+      directory: {
+        tracks,
+      } = {},
     } = this.props;
 
-    playURIs(arrayOf('uri', tracks), `iris:browse:${uri}`);
+    if (!tracks || !tracks.length) return;
+
+    playURIs(arrayOf('uri', sortItems(tracks, 'name')), `iris:browse:${uri}`);
     hideContextMenu();
   }
 
@@ -199,8 +204,8 @@ class LibraryBrowseDirectory extends React.Component {
     let all_tracks = null;
     let tracks = null;
     const limit_remaining = limit - subdirectories.length;
-    if (limit_remaining > 0) {
-      all_tracks = (directory.tracks && directory.tracks.length > 0 ? directory.tracks : null);
+    if (limit_remaining > 0 && directory.tracks && directory.tracks.length) {
+      all_tracks = directory.tracks;
       all_tracks = sortItems(all_tracks, 'name');
       tracks = all_tracks.slice(0, limit_remaining);
     }
@@ -228,7 +233,7 @@ class LibraryBrowseDirectory extends React.Component {
         />
         {tracks && (
           <Button
-            onClick={() => { uiActions.hideContextMenu(); this.playAll(all_tracks); }}
+            onClick={this.playAll}
             noHover
             discrete
             tracking={{ category: 'Directory', action: 'Play' }}

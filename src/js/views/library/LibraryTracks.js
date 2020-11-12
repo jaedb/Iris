@@ -12,7 +12,7 @@ import * as coreActions from '../../services/core/actions';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
-import { sortItems, applyFilter } from '../../util/arrays';
+import { sortItems, applyFilter, arrayOf } from '../../util/arrays';
 import Button from '../../components/Button';
 import { i18n, I18n } from '../../locale';
 import Loader from '../../components/Loader';
@@ -161,6 +161,34 @@ class LibraryTracks extends React.Component {
     });
   }
 
+  playAll = () => {
+    const {
+      sort,
+      sort_reverse,
+      mopidyActions: {
+        playURIs,
+      },
+      uiActions: {
+        hideContextMenu,
+      },
+    } = this.props;
+    let { tracks } = this.props;
+    const { filter } = this.state;
+
+    if (!tracks || !tracks.length) return;
+
+    if (sort) {
+      tracks = sortItems(tracks, sort, sort_reverse);
+    }
+
+    if (filter && filter !== '') {
+      tracks = applyFilter('name', filter, tracks);
+    }
+
+    playURIs(arrayOf('uri', tracks));
+    hideContextMenu();
+  }
+
   renderView = () => {
     const {
       sort,
@@ -191,7 +219,9 @@ class LibraryTracks extends React.Component {
 
     return (
       <section className="content-wrapper">
-        <TrackList tracks={tracks} />
+        <TrackList
+          tracks={tracks}
+        />
         <LazyLoadListener
           loadKey={total_tracks > limit ? limit : total_tracks}
           showLoader={limit < total_tracks}
@@ -277,6 +307,15 @@ class LibraryTracks extends React.Component {
           options={source_options}
           handleChange={(val) => { uiActions.set({ library_tracks_source: val }); uiActions.hideContextMenu(); }}
         />
+        <Button
+          onClick={this.playAll}
+          noHover
+          discrete
+          tracking={{ category: 'LibraryTracks', action: 'Play' }}
+        >
+          <Icon name="play_circle_filled" />
+          <I18n path="actions.play_all" />
+        </Button>
         <Button
           noHover
           discrete
