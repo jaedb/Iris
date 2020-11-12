@@ -61,7 +61,7 @@ class QueueHistory extends React.Component {
             <Icon name="play_arrow" type="material" />
           </I18n>
         </Header>
-        {tracks && (
+        {tracks.length > 0 && (
           <section className="content-wrapper">
             <TrackList
               uri="iris:queue-history"

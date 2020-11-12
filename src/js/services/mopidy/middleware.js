@@ -228,7 +228,7 @@ const MopidyMiddleware = (function () {
       };
 
       // Give a 5-second leeway for allowing Mopidy to connect, if it isn't already connected
-      if (store.getState().mopidy.connected) {
+      if (socket) {
         doRequest();
       } else {
         console.info('Mopidy not yet connected, waiting 2 seconds');
@@ -1606,19 +1606,35 @@ const MopidyMiddleware = (function () {
         store.dispatch({
           type: 'MOPIDY_DIRECTORY_FLUSH',
         });
+        const uri = action.uri ? decodeURIComponent(action.uri) : null;
 
-        if (action.uri) {
-          request(store, 'library.lookup', { uris: [action.uri] })
+        if (uri) {
+          request(store, 'library.lookup', { uris: [uri] })
             .then((response) => {
-              if (!response[action.uri] || !response[action.uri].length) return;
+              const {
+                [uri]: results = [],
+              } = response;
+
+              if (!results.length) return;
+
+              let result = results[0];
+              if (result.album) {
+                result = {
+                  ...result,
+                  name: result.album.name,
+                };
+              }
+
               store.dispatch({
                 type: 'MOPIDY_DIRECTORY_LOADED',
-                directory: formatSimpleObject(response[action.uri][0]),
+                directory: {
+                  ...formatSimpleObject(result),
+                },
               });
             });
         }
 
-        request(store, 'library.browse', { uri: action.uri })
+        request(store, 'library.browse', { uri })
           .then((response) => {
             const tracks_uris = [];
             const tracks = [];
@@ -1643,8 +1659,8 @@ const MopidyMiddleware = (function () {
                     }
                     return {
                       ...subdir,
-                      images: images,
-                    }
+                      images,
+                    };
                   });
 
                   store.dispatch({

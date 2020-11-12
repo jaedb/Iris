@@ -297,7 +297,7 @@ class ShareConfiguration extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state) => ({
   spotify_authorization: state.spotify.authorization,
   spotify_me: state.spotify.me,
   genius_authorization: state.genius.authorization,

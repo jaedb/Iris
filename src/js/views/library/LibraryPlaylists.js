@@ -354,6 +354,13 @@ class LibraryPlaylists extends React.Component {
 
 const mapStateToProps = (state) => {
   const source = state.ui.library_playlists_source || 'all';
+  const {
+    spotify: {
+      me: {
+        id: me_id,
+      } = {},
+    },
+  } = state;
 
   const libraryUris = [];
   if (source === 'all' || source === 'local') libraryUris.push('mopidy:library:playlists');
@@ -369,7 +376,7 @@ const mapStateToProps = (state) => {
     playlists: librarySelector(state),
     loading_progress: processProgressSelector(state),
     source,
-    me_id: (state.spotify.me ? state.spotify.me.id : false),
+    me_id,
     view: state.ui.library_playlists_view,
     sort: (state.ui.library_playlists_sort ? state.ui.library_playlists_sort : null),
     sort_reverse: (state.ui.library_playlists_sort_reverse ? state.ui.library_playlists_sort_reverse : false),

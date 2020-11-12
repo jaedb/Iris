@@ -370,10 +370,6 @@ class Playlist extends React.Component {
         label: i18n('playlist.tracks.sort.sort_id'),
       },
       {
-        value: 'added_at',
-        label: i18n('playlist.tracks.sort.added_at'),
-      },
-      {
         value: 'name',
         label: i18n('playlist.tracks.sort.name'),
       },
