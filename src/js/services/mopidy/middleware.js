@@ -1611,10 +1611,25 @@ const MopidyMiddleware = (function () {
         if (uri) {
           request(store, 'library.lookup', { uris: [uri] })
             .then((response) => {
-              if (!response[uri] || !response[uri].length) return;
+              const {
+                [uri]: results = [],
+              } = response;
+
+              if (!results.length) return;
+
+              let result = results[0];
+              if (result.album) {
+                result = {
+                  ...result,
+                  name: result.album.name,
+                };
+              }
+
               store.dispatch({
                 type: 'MOPIDY_DIRECTORY_LOADED',
-                directory: formatSimpleObject(response[uri][0]),
+                directory: {
+                  ...formatSimpleObject(result),
+                },
               });
             });
         }
