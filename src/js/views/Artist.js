@@ -40,7 +40,8 @@ class Artist extends React.Component {
     super(props);
 
     this.state = {
-      filter: '',
+      albumsFilter: '',
+      tracksFilter: '',
     };
   }
 
@@ -76,23 +77,33 @@ class Artist extends React.Component {
     if (prevUri !== uri && artist) this.setWindowTitle(artist);
   }
 
-  onResetFilters = () => {
-    this.onChangeFilter(null);
-    this.onChangeSort(null);
-    trackEvent({ category: 'Artist', action: 'FilterAlbums', label: 'Reset' });
+  onChangeTracksFilter = (value) => {
+    this.onChangeFilter('tracks', value);
   }
 
-  onChangeFilter = (value) => {
+  onChangeAlbumsFilter = (value) => {
+    this.onChangeFilter('albums', value);
+  }
+
+  onChangeFilter = (type, value) => {
     const { uiActions: { set, hideContextMenu } } = this.props;
-    set({ artist_albums_filter: value });
+    set({ [`artist_${type}_filter`]: value });
     hideContextMenu();
-    trackEvent({ category: 'Artist', action: 'FilterAlbums', label: value });
+    trackEvent({ category: 'Artist', action: `Filter${type}`, label: value });
   }
 
-  onChangeSort = (value) => {
+  onChangeTracksSort = (value) => {
+    this.onChangeSort('tracks', value);
+  }
+
+  onChangeAlbumsSort = (value) => {
+    this.onChangeSort('albums', value);
+  }
+
+  onChangeSort = (type, value) => {
     const {
-      sort,
-      sort_reverse,
+      [`${type}_sort`]: sort,
+      [`${type}_sort_reverse`]: sort_reverse,
       uiActions: {
         set,
         hideContextMenu,
@@ -105,11 +116,11 @@ class Artist extends React.Component {
     }
 
     set({
-      artist_albums_sort_reverse: reverse,
-      artist_albums_sort: value,
+      [`artist_${type}_sort_reverse`]: reverse,
+      [`artist_${type}_sort`]: value,
     });
     hideContextMenu();
-    trackEvent({ category: 'Artist', action: 'SortAlbums', label: `${value} ${reverse ? 'DESC' : 'ASC'}` });
+    trackEvent({ category: 'Artist', action: `Sort${type}`, label: `${value} ${reverse ? 'DESC' : 'ASC'}` });
   }
 
   onPlay = () => {
@@ -163,12 +174,12 @@ class Artist extends React.Component {
       uri,
       uiActions,
       artist,
-      sort,
-      sort_reverse,
-      filterType 
+      albums_sort: sort,
+      albums_sort_reverse: sort_reverse,
+      filterType,
     } = this.props;
     const {
-      filter,
+      albumsFilter: filter,
     } = this.state;
     let {
       tracks,
@@ -259,7 +270,7 @@ class Artist extends React.Component {
             <div className="actions-wrapper">
               <FilterField
                 initialValue={filter}
-                handleChange={(value) => this.setState({ filter: value })}
+                handleChange={(value) => this.setState({ albumsFilter: value })}
                 onSubmit={() => uiActions.hideContextMenu()}
               />
               <DropdownField
@@ -269,7 +280,7 @@ class Artist extends React.Component {
                 valueAsLabel
                 options={sort_options}
                 selected_icon={sort ? (sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
-                handleChange={this.onChangeSort}
+                handleChange={this.onChangeAlbumsSort}
               />
               <DropdownField
                 icon="filter_list"
@@ -277,7 +288,7 @@ class Artist extends React.Component {
                 value={filterType}
                 valueAsLabel
                 options={filter_type_options}
-                handleChange={this.onChangeFilter}
+                handleChange={this.onChangeAlbumsFilter}
               />
             </div>
           </h4>
@@ -291,12 +302,62 @@ class Artist extends React.Component {
   }
 
   renderTracks = () => {
-    const { artist: { uri, tracks } } = this.props;
+    const {
+      artist: {
+        uri,
+      },
+      tracks_sort: sort,
+      tracks_sort_reverse: sort_reverse,
+    } = this.props;
+    const { tracksFilter: filter } = this.state;
+    let { artist: { tracks } } = this.props;
+
+    if (sort && tracks) {
+      tracks = sortItems(tracks, sort, sort_reverse);
+    }
+
+    if (filter && filter !== '') {
+      tracks = applyFilter('name', filter, tracks);
+    }
+
+    const sort_options = [
+      {
+        value: 'disc_track',
+        label: i18n('album.tracks.sort.disc_track'),
+      },
+      {
+        value: 'name',
+        label: i18n('album.tracks.sort.name'),
+      },
+    ];
 
     return (
       <div className="body related-artists">
         <section className="list-wrapper no-top-padding">
-          <TrackList className="artist-track-list" uri={uri} tracks={tracks} />
+          <h4 className="no-bottom-margin">
+            <I18n path="artist.tracks.title" />
+            <div className="actions-wrapper">
+              <FilterField
+                initialValue={filter}
+                handleChange={(value) => this.setState({ tracksFilter: value })}
+                onSubmit={() => uiActions.hideContextMenu()}
+              />
+              <DropdownField
+                icon="swap_vert"
+                name="Sort"
+                value={sort}
+                valueAsLabel
+                options={sort_options}
+                selected_icon={sort ? (sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
+                handleChange={this.onChangeTracksSort}
+              />
+            </div>
+          </h4>
+          <TrackList
+            className="artist-track-list"
+            uri={uri}
+            tracks={tracks}
+          />
         </section>
       </div>
     );
@@ -547,9 +608,11 @@ const mapStateToProps = (state, ownProps) => {
     loading: loadingSelector(state),
     theme: state.ui.theme,
     slim_mode: state.ui.slim_mode,
-    filterType: (state.ui.artist_albums_filter ? state.ui.artist_albums_filter : null),
-    sort: (state.ui.artist_albums_sort ? state.ui.artist_albums_sort : null),
-    sort_reverse: (!!state.ui.artist_albums_sort_reverse),
+    filterType: state.ui.artist_albums_filter,
+    albums_sort: state.ui.artist_albums_sort,
+    albums_sort_reverse: (!!state.ui.artist_albums_sort_reverse),
+    tracks_sort: state.ui.artist_tracks_sort,
+    tracks_sort_reverse: (!!state.ui.artist_tracks_sort_reverse),
     spotify_authorized: state.spotify.authorization,
   };
 };
