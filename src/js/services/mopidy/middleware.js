@@ -148,6 +148,10 @@ const MopidyMiddleware = (function () {
         );
         break;
 
+      case 'event:streamTitleChanged':
+        store.dispatch(mopidyActions.streamTitleChanged(data.title));
+        break;
+
       case 'event:volumeChanged':
         store.dispatch({ type: 'MOPIDY_VOLUME', volume: data.volume });
         break;
@@ -1471,6 +1475,25 @@ const MopidyMiddleware = (function () {
           });
           store.dispatch(coreActions.loadItem(track.uri, { full: true }));
         }
+        break;
+      }
+
+      case 'MOPIDY_STREAM_TITLE_CHANGED': {
+        const {
+          core: {
+            current_track,
+          },
+        } = store.getState();
+        const track = {
+          ...current_track,
+          name: action.title,
+        };
+
+        store.dispatch({
+          type: 'CURRENT_TRACK_LOADED',
+          track,
+          uri: current_track.uri,
+        });
         break;
       }
 

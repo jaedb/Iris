@@ -1,6 +1,5 @@
 
-import { removeDuplicates, arrayOf } from '../../util/arrays';
-import { formatTracks } from '../../util/format';
+import { arrayOf } from '../../util/arrays';
 
 export default function reducer(core = {}, action) {
   switch (action.type) {
@@ -10,15 +9,20 @@ export default function reducer(core = {}, action) {
     case 'CACHEBUST_HTTP_STREAM':
       return { ...core, http_streaming_cachebuster: new Date().getTime() };
 
-      /**
-         * Current track and tracklist
-         * */
-
     case 'CURRENT_TRACK_LOADED':
       return {
         ...core,
         current_track: action.track,
         current_track_uri: action.uri,
+      };
+
+    case 'MOPIDY_STREAM_TITLE_CHANGED':
+      return {
+        ...core,
+        current_track: {
+          ...core.current_track,
+          name: action.title,
+        },
       };
 
     case 'CLEAR_CURRENT_TRACK':
