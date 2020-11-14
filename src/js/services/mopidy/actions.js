@@ -277,13 +277,6 @@ export function currentTrackLoaded(tl_track) {
   };
 }
 
-export function streamTitleChanged(title) {
-  return {
-    type: 'MOPIDY_STREAM_TITLE_CHANGED',
-    title,
-  };
-}
-
 export function getNextTrack() {
   return {
     type: 'MOPIDY_GET_NEXT_TRACK',
