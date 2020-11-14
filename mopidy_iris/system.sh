@@ -11,8 +11,8 @@ if [[ $1 = "upgrade" ]]; then
 		echo "cd /iris && git checkout master && git pull origin master"
 		UPGRADE="$(cd /iris && git checkout master && git pull origin master)"
 	else
-		echo "sudo python3 -m pip install --upgrade mopidy-iris"
-		UPGRADE="$(sudo python3 -m pip install --upgrade mopidy-iris)"
+		echo "python3 -m pip install --upgrade mopidy-iris"
+		UPGRADE="$(python3 -m pip install --upgrade mopidy-iris)"
 	fi
 	echo -e "${UPGRADE}"
 
@@ -21,7 +21,7 @@ elif [[ $1 = "restart" ]]; then
 		echo -e "Cannot restart Mopidy when running in a Docker container"
 		exit 1
 	else
-		RESTART="$(sudo service mopidy restart)"
+		RESTART="$(service mopidy restart)"
 		echo -e "${RESTART}"
 	fi
 
@@ -30,7 +30,7 @@ elif [[ $1 = "local_scan" ]]; then
 	if $IS_CONTAINER; then
 		SCAN=$(mopidy --config /config/mopidy.conf local scan)
 	else
-		SCAN=$(sudo mopidyctl local scan)
+		SCAN=$(mopidyctl local scan)
 	fi
 	echo -e "Completed in $(($(date +%s) - $START)) seconds"
 
