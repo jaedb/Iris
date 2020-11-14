@@ -270,6 +270,12 @@ export function getCurrentTrack() {
   };
 }
 
+export function getStreamTitle() {
+  return {
+    type: 'MOPIDY_GET_STREAM_TITLE',
+  };
+}
+
 export function currentTrackLoaded(tl_track) {
   return {
     type: 'MOPIDY_CURRENT_TRACK_LOADED',

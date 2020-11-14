@@ -25,6 +25,7 @@ export default function reducer(core = {}, action) {
         ...core,
         current_track: null,
         current_track_uri: null,
+        stream_title: null,
       };
 
     case 'NEXT_TRACK_LOADED':
@@ -47,6 +48,10 @@ export default function reducer(core = {}, action) {
         }
       }
       return { ...core, current_tracklist: tracklist, queue_metadata: action.queue_metadata };
+
+    case 'STREAM_TITLE_CHANGED':
+    case 'STREAM_TITLE_LOADED':
+      return { ...core, stream_title: action.stream_title };
 
     case 'PUSHER_RADIO_LOADED':
     case 'PUSHER_RADIO_STARTED':

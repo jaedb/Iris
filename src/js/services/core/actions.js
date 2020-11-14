@@ -300,13 +300,26 @@ export function removeItem(key, new_key = null) {
   };
 }
 
+export function streamTitleLoaded(stream_title) {
+  return {
+    type: 'STREAM_TITLE_LOADED',
+    stream_title,
+  };
+}
+
+export function streamTitleChanged(stream_title) {
+  return {
+    type: 'STREAM_TITLE_CHANGED',
+    stream_title,
+  };
+}
+
 export function viewDataLoaded(data) {
   return {
     type: 'VIEW_DATA_LOADED',
     data,
   };
 }
-
 
 /**
  * Playlist manipulation

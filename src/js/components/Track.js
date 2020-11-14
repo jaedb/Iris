@@ -293,6 +293,7 @@ export default class Track extends React.Component {
     const {
       track,
       track_context,
+      stream_title,
       play_state,
       selected,
       can_sort,
@@ -312,6 +313,12 @@ export default class Track extends React.Component {
       track_details.push(
         <li className="details__item details__item--artists" key="artists">
           {track.artists ? <LinksSentence items={track.artists} /> : '-'}
+        </li>,
+      );
+    } else if (track.playing && stream_title) {
+      track_details.push(
+        <li className="details__item details__item--artists" key="stream_title">
+          <span className="links-sentence">{stream_title}</span>
         </li>,
       );
     }
