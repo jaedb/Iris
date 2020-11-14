@@ -46,7 +46,15 @@ RUN git clone https://github.com/jaedb/Iris.git /iris \
 RUN python3.7 -m pip install --no-cache \
   tox \
   mopidy-mpd \
+  mopidy-spotify \
   mopidy-local \
+  Mopidy-GMusic \
+  Mopidy-TuneIn \
+  Mopidy-Youtube \
+  Mopidy-SoundCloud \
+  Mopidy-Podcast \
+  # pip not up-to-date for Mopidy-Tidal (https://github.com/tehkillerbee/mopidy-tidal/issues/14)
+  git+https://github.com/tehkillerbee/mopidy-tidal.git@master
 
 # Start helper script.
 COPY docker/entrypoint.sh /entrypoint.sh
