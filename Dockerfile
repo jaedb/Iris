@@ -17,6 +17,7 @@ RUN apt-get update \
     python-dev \
     python-gst-1.0 \
     python3-gst-1.0 \
+    sudo \
   && rm -rf /var/lib/apt/lists/*
 
 # Make python3-gst-1.0 available to non-Debian Python 3.7 installation
@@ -71,7 +72,7 @@ COPY VERSION /
 RUN useradd -ms /bin/bash mopidy
 ENV HOME=/var/lib/mopidy
 RUN set -ex \
- && usermod -G audio,sudo mopidy \
+ && usermod -G audio mopidy \
  && mkdir /var/lib/mopidy/local \
  && chown mopidy:audio -R $HOME /entrypoint.sh /iris \
  && chmod go+rwx -R $HOME /entrypoint.sh /iris \
