@@ -4,16 +4,16 @@ name: 日本語
 # Common and reusable phrases
 ##
 errors:
-  uri_not_found: 'Could not find anything with URI %{uri}'
-  could_not_load: 'Could not load %{name}'
-  could_not_load_library: 'Could not load %{name} from %{provider}'
-  no_results: No results found
-  authorization_required: 'You must authorize %{provider} first'
-  enable_first: 'Enable %{provider} first'
-  no_service_worker: Service worker not supported
-  required: Required
-  unknown_error: Unknown error
-  need_to_be_online: You need to be online load this resource
+  uri_not_found: 'URI %{uri} が見つかりませんでした'
+  could_not_load: '%{name} を読み込めませんでした'
+  could_not_load_library: '%{provider} から %{name} を読み込めませんでした'
+  no_results: 結果が見つかりません
+  authorization_required: '%{provider} の認証を行ってください'
+  enable_first: '%{provider} を有効化してください'
+  no_service_worker: サービスワーカーがサポートされていません
+  required: 必須
+  unknown_error: 不明なエラー
+  need_to_be_online: このリソースを読み込むためにオンラインにならなければいけません
 actions:
   play: 再生
   play_all: すべて再生
@@ -25,7 +25,7 @@ actions:
   add_to_library: ライブラリに追加
   remove_from_library: ライブラリから削除
   add_to_queue: キューに追加
-  reset: Reset
+  reset: リセット
   back: 戻る
   refresh: 再読み込み
   enable: 有効
@@ -114,7 +114,7 @@ specs:
 services:
   mopidy:
     title: Mopidy
-    local: Local
+    local: ローカル
     adding_uris: '%{count} URI(s) を追加中'
     searching_providers: 'Mopidyのプロバイダーから %{count} を検索中'
     loading_albums: '%{count} のローカルアルバムを読み込み中'
@@ -134,8 +134,8 @@ services:
     title: Icecast
   lastfm:
     title: LastFM
-    love: Love
-    unlove: Unlove
+    love: お気に入り登録
+    unlove: お気に入り解除
 
 ##
 # Components
@@ -144,8 +144,8 @@ sidebar:
   now_playing: 再生中
   search: 検索
   discover: 発見
-  genre: Genre / Mood
-  featured_playlists: Featured playlists
+  genre: ジャンル / ムード
+  featured_playlists: 注目のプレイリスト
   new_releases: 新リリース
   my_music: マイミュージック
   playlists: プレイリスト
@@ -174,12 +174,12 @@ context_menu:
   start_radio: ラジオを開始
   copy_uri: URI(s)をコピー
 dropzones:
-  dragging_things: 'Dragging %{count} things'
+  dragging_things: '%{count} 個をドラッグ中'
 playback_controls:
-  consume: Consume
+  consume: コンスーム
   shuffle: シャッフル
   repeat: リピート
-  no_outputs: No outputs
+  no_outputs: 出力なし
   mute: ミュート
   unmute: ミュート解除
 snapcast:
@@ -191,13 +191,13 @@ snapcast:
   name: 名前
   name_disconnected: 名前 (切断済み)
   group: グループ
-  new_group: '+ New group'
-  latency: Latency
+  new_group: '+ 新しいグループ'
+  latency: レイテンシー
   stream: ストリーム
   volume: 音量
 authentication:
-  popup_blocked: Popup blocked. Please allow popups and try again.
-  failed: Authorization failed. %{origin} is not the configured authorization_url.
+  popup_blocked: ポップアップがブロックされました。ポップアップを許可して再使用してください。
+  failed: 認証に失敗しました。 %{origin} は authorization_url に設定されていません。
   log_out: ログアウト
   log_in: ログイン
 
@@ -221,7 +221,7 @@ album:
   title_window: '%{name} による %{artist} (アルバム)'
   wiki:
     title: 概要
-    published: 'Published: %{date}'
+    published: '公開済み: %{date}'
 artist:
   title: アーティスト
   title_window: '%{name} (アーティスト)'
@@ -251,7 +251,7 @@ artist:
       all: すべて
       albums: アルバム
       singles: シングル
-      compilations: Compilations
+      compilations: コンピレーション
 debug:
   title: デバック
   ui:
@@ -276,10 +276,10 @@ playlist:
   title_window: '%{name} (プレイリスト)'
   title_plural: プレイリスト
 queue_history:
-  title: Playback history
+  title: プレイバック履歴
 search:
   title: 検索
-  title_window: 'Search: %{term}'
+  title_window: '検索: %{term}'
   context_actions:
     sort: 並び替え
     source: '(%{count}) ソース'
@@ -301,11 +301,11 @@ track:
   title: トラック
   title_window: '%{name} による %{artists} (トラック)'
   lyrics_origin: '提供元: '
-  explicit: Explicit
+  explicit: 明示
   disc_number: 'ディスク %{number}'
   track_number: 'トラック %{number}'
   unknown_album: 不明なアルバム
-  want_lyrics: 'Want track lyrics? Authorize Genius under '
+  want_lyrics: 'トラックの歌詞が欲しいですか？ Genius を認証する '
 settings:
   title: 設定
   help: ヘルプ
@@ -313,7 +313,7 @@ settings:
     title: サーバー
     username:
       label: ユーザー名
-      description: A non-unique string used to identify this client (no special characters)
+      description: このクライアントを識別するために使用される一意でない文字列(特殊文字なし)
   interface:
     title: 操作
     language:
@@ -321,38 +321,38 @@ settings:
     theme:
       label: テーマ
       auto: 自動
-      auto_tooltip: Detects your browser or OS preference
+      auto_tooltip: ブラウザかOSの設定から検出
       dark: ダーク
       light: ライト
     behavior:
       label: 動作
-      clear_tracklist: Clear tracklist on play of URI(s)
-      clear_tracklist_tooltip: Playing one or more URIs will clear the current play queue first
+      clear_tracklist: URI(s) の再生リストを削除
+      clear_tracklist_tooltip: 1つ以上のURIを再生すると、最初に現在の再生キューがクリアされます
       hotkeys: ホットキーを有効化
       smooth_scrolling: スムーズスクロールを有効化
-      touch_events: Enable touch events on play controls
-      touch_events_tooltip: Allows left- and right-swipe to change tracks
-      wide_scrollbars: Use wide scrollbars
+      touch_events: 再生コントロールにタッチイベントを有効化
+      touch_events_tooltip: 左右スワイプでトラックを変更可能
+      wide_scrollbars: 広いスクロールバーを使用
     sources_priority:
-      label: Sources priority
-      description: Drag-and-drop to prioritize search providers and results
+      label: ソース優先順位
+      description: ソースの優先順位をドラッグ＆ドロップで決める
     reporting:
       label: リポート
-      sublabel: Allow reporting of anonymous usage statistics
-      description: 'This anonymous usage data is important in identifying errors and potential features that make Iris better for everyone. Want to know more? Read the '
+      sublabel: 匿名で使用レポートを送信
+      description: 'この匿名の使用データは、irisをより良いものにするためのエラーや潜在的な機能を特定する上で重要です。もっと知りたいですか？ 読んでください： '
       privacy_policy: プライバシーポリシー
-      are_you_sure: Are you sure you don't want to support this?
+      are_you_sure: 本当に支援しなくていいですか？
     commands:
       label: コマンド
   advanced:
     title: 詳細
-    start_local_scan: Start local scan
+    start_local_scan: ローカルスキャンを開始
     artist_uri:
-      label: Artist library URI
-      description: URI used for collecting library artists
+      label: アーティストライブラリ URI
+      description: アーティストライブラリーの収集に使われるURI
     album_uri:
-      label: Album library URI
-      description: URI used for collecting library albums
+      label: アルバムライブラリ URI
+      description: アルバムライブラリーの収集に使われるURI
     connections:
       label: 接続
     version:
@@ -366,8 +366,8 @@ settings:
     reset: すべての設定をリセット
   about:
     title: 概要
-    blurb_1: ' is an open-source project by '
-    blurb_2: '. It is provided free and with absolutely no warranty. If you paid someone for this software, please let me know.'
+    blurb_1: ' は '
+    blurb_2: 'のオープンソースです。 無償で提供され、保証がありません。もしこのソフトウェアに払いたい場合は私に知らせてください。'
     donate: 寄付
     github: GitHub
   pusher_connection_list:
@@ -375,7 +375,7 @@ settings:
     no_connections: 接続がありません
     you: ' (あなた)'
   servers:
-    inactive: Inactive
+    inactive: 非アクティブ
     connecting: 接続中
     disconnected: 切断
     connected: 接続完了
@@ -404,30 +404,30 @@ settings:
     connected: 接続済み
     disconnected: 切断済み
     spotify:
-      mopidy_spotify_not_running: Mopidy-Spotify extension is not running - you will not be able to play any Spotify tracks
+      mopidy_spotify_not_running: Mopidy-Spotify の拡張機能は起動していません - Spotifyのトラックを再生することができません
       country:
         label: 国
-        description: An ISO 3166-1 alpha-2 の国コード (例： 'NZ')
+        description: ISO 3166-1 alpha-2 の国コード (例： 'NZ')
       locale:
-        title: Locale
-        description: Lowercase ISO 639 language code and an uppercase ISO 3166-1 alpha-2 country code, joined by an underscore (eg 'en_NZ')
+        title: 地域
+        description: 小文字のISO 639言語コードと大文字のISO 3166-1 alpha-2国コードをアンダースコア（例：'en_NZ'）で連結したもの
     icecast:
       enable:
-        label: Enable
-        description: Stream audio to this browser
+        label: 有効化
+        description: このブラウザにオーディオをストリーム配信
       location:
-        label: Location
-        description: The full URL to your stream endpoint
+        label: ロケーション
+        description: ストリームURLのフルURL
 user:
   title: ユーザー
-  title_window: '%{name} (user)'
+  title_window: '%{name} (ユーザー)'
   you: あなた
 discover:
   title: 発見
   categories:
-    title: 'Genre / Mood'
+    title: 'ジャンル / ムード'
   category:
-    title: 'Genre / Mood'
+    title: 'ジャンル / ムード'
     category: カテゴリー
   featured:
     title: 注目のプレイリスト
@@ -438,10 +438,10 @@ discover:
     tracks: トラック
     artists: アーティスト
     albums: アルバム
-    body_title: Explore new music
-    body_subtitle: Add seeds and musical properties below to build your sound
-    too_many_seeds: Too many seeds! You can use up to a total of 5 seed tracks, artists and genres.
-    find_recommendations: Find recommendations
+    body_title: 新しい音楽を発見
+    body_subtitle: 以下にシードと音楽的特性を追加して、あなたのサウンドを作成します
+    too_many_seeds: シードが多すぎます。 シード曲、アーティスト、ジャンルの合計5曲まで使用できます
+    find_recommendations: おすすめを探す
 library:
   albums:
     title: マイアルバム
@@ -457,33 +457,33 @@ library:
     title: マイトラック
 modal:
   add_to_playlist:
-    title: Add to playlist
-    subtitle: 'Select playlist to add %{count} track%{plural} to'
-    no_playlists: No playlists available
-    no_editable_playlists: No editable playlists
+    title: プレイリストに追加
+    subtitle: '追加するプレイリスト %{count} トラック%{plural} '
+    no_playlists: プレイリストはありません
+    no_editable_playlists: 編集可能なプレイリストはありません
   add_to_queue:
-    title: Add to queue
-    subtitle: Add a comma-separated list of URIs to the play queue
+    title: キューに追加
+    subtitle: コンマで区切られたURIのリストをプレイキューに追加する
     uris: URI(s)
-    add_random: Find random tracks
+    add_random: ランダムなトラックを探す
     position:
       label: ポジション
       end: 終わり
-      next: After current track
+      next: このトラックの後
   edit_playlist:
     title: プレイリストを編集
-    title_create: Create playlist
+    title_create: プレイリストを作成
     name_required: 名前は必須です
     name: 名前
     description: 説明
     provider: 提供元
     image:
       label: カバーイメージ
-      description: JPEG のみ, 256kB まで. Leave empty to keep cover image unchanged.
+      description: JPEG のみ、 256kB まで。 空のままにしておくと、カバー画像は変更されません。
     options:
       label: オプション
       public: 公開
-      collaborative: Collaborative
+      collaborative: コラボレーション
     create_playlist: プレイリストを作成
   edit_command:
     title: コマンドを編集
@@ -500,10 +500,10 @@ modal:
     headers: 追加ヘッダー
   edit_radio:
     title: ラジオ
-    subtitle: Add and remove seeds to shape the sound of your radio. Radio uses Spotify's recommendations engine to suggest tracks similar to your seeds.
+    subtitle: シードを追加したり削除したりして、あなたのラジオのサウンドを形作りましょう。ラジオはSpotifyのレコメンドエンジンを使用して、あなたのシードに似たトラックを提案します
     invalid_seed_uri: 間違ったシード URI(s)
-    too_many_seeds: More than 5 seeds provided, ignoring rest
-    only_spotify_uris: Only Spotify URIs are supported
+    too_many_seeds: 5つ以上のシードが提供されました。残りを無視します
+    only_spotify_uris: Spotify URI のみサポートされています
     already_added: URI はすでに追加されています
     no_seeds: シードなし
   initial_setup:
@@ -511,22 +511,22 @@ modal:
     username: ユーザー
   kiosk:
     title: 再生中
-    title_window: '%{name} by %{artist} (now playing)'
+    title_window: '%{name} の %{artist} (再生中)'
     lyrics: 歌詞
   share_configuration:
-    title: Share configuration
-    subtitle: Push your authorizations and interface settings to another, connected user
-    no_peers: No peer connections
-    recipients: Recipients
+    title: 設定を共有
+    subtitle: 認証とインターフェース設定を別の接続されたユーザーにプッシュします
+    no_peers: ピア接続がありません
+    recipients: 受信者
     configurations: 設定
     authorization: '%{service} 認証'
     logged_in_as: '%{name} にログイン'
-    snapcast_description: Server connection details
+    snapcast_description: サーバー接続詳細
     interface: 動作設定
     interface_description: テーマ, 並び替え, フィルター, …
     import:
-      title: Configuration shared
-      subtitle: 'Another user has shared their configuration with you. This includes:'
+      title: 設定を共有
+      subtitle: '別のユーザーが設定をあなたと共有しました:'
       do_you_want_to_import: これをインポートしますか？
       import_now: 今すぐインポート
       successful: インポート成功
