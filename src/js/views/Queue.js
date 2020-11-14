@@ -369,7 +369,10 @@ const mapStateToProps = (state) => {
 
       // Siphon off this track if it's a full representation of our current track
       if (track.playing) {
-        current_track = track;
+        current_track = {
+          ...track,
+          ...core_current_track,
+        };
       }
 
       // Now add our compiled track for our tracklist
