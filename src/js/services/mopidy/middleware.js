@@ -1543,13 +1543,13 @@ const MopidyMiddleware = (function () {
       }
 
       case 'MOPIDY_GET_STREAM_TITLE':
-        request(socket, store, 'playback.getStreamTitle')
+        request(store, 'playback.getStreamTitle')
           .then(
             (stream_title) => {
-              if (stream_title) {
-                store.dispatch(coreActions.streamTitleLoaded(stream_title));
-              }
-            }
+              if (!stream_title) return;
+
+              store.dispatch(coreActions.streamTitleLoaded(stream_title));
+            },
           );
         break;
 

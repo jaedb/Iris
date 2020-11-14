@@ -257,7 +257,9 @@ class PlaybackControls extends React.Component {
               </Link>
               <div className="text">
                 <div className="title">
-                  {current_track ? current_track.name : <span>-</span>}
+                  {stream_title && <span>{stream_title}</span>}
+                  {!stream_title && current_track && <span>{current_track.name}</span>}
+                  {!stream_title && !current_track && <span>-</span>}
                 </div>
                 <div className="artist">
                   {

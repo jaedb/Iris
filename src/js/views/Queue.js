@@ -259,13 +259,15 @@ class Queue extends React.Component {
             />
             <div className="current-track__details">
               <div className="current-track__title">
-                {current_track ? (
+                {stream_title && (
+                  <span>{stream_title}</span>
+                )}
+                {!stream_title && current_track && (
                   <URILink type="track" uri={current_track.uri}>
                     {current_track.name}
                   </URILink>
-                ) : (
-                  <span>-</span>
                 )}
+                {!stream_title && !current_track && (<span>-</span>)}
               </div>
 
               {
@@ -274,9 +276,6 @@ class Queue extends React.Component {
                     className="current-track__artists"
                     items={current_track.artists}
                   />
-                ))
-                || (stream_title && (
-                  <span className="current-track__artists links-sentence">{stream_title}</span>
                 ))
                 || <LinksSentence className="current-track__artists" />
               }
