@@ -94,7 +94,7 @@ const localstorageMiddleware = (function () {
             access_token: action.authorization.access_token,
             refresh_token: action.authorization.refresh_token,
             token_expiry: action.authorization.token_expiry,
-            me: null,
+            me: undefined,
           },
         );
         break;
@@ -103,11 +103,11 @@ const localstorageMiddleware = (function () {
         storage.set(
           'spotify',
           {
-            authorization: null,
-            access_token: null,
-            refresh_token: null,
-            token_expiry: null,
-            me: null,
+            authorization: undefined,
+            access_token: undefined,
+            refresh_token: undefined,
+            token_expiry: undefined,
+            me: undefined,
           },
         );
         break;
@@ -154,8 +154,8 @@ const localstorageMiddleware = (function () {
         storage.set(
           'lastfm',
           {
-            authorization: null,
-            me: null,
+            authorization: undefined,
+            me: undefined,
           },
         );
         break;
@@ -165,7 +165,7 @@ const localstorageMiddleware = (function () {
           'lastfm',
           {
             authorization: action.authorization,
-            me: null,
+            me: undefined,
           },
         );
         break;
@@ -194,10 +194,10 @@ const localstorageMiddleware = (function () {
         storage.set(
           'genius',
           {
-            me: null,
-            authorization: null,
-            authorization_code: null,
-            access_token: null,
+            me: undefined,
+            authorization: undefined,
+            authorization_code: undefined,
+            access_token: undefined,
           },
         );
         break;
@@ -209,7 +209,7 @@ const localstorageMiddleware = (function () {
             authorization: action.authorization,
             authorization_code: action.authorization.authorization_code,
             access_token: action.authorization.access_token,
-            me: null,
+            me: undefined,
           },
         );
         break;
@@ -260,7 +260,7 @@ const localstorageMiddleware = (function () {
         storage.set(
           'snapcast',
           {
-                    	commands: action.commands,
+            commands: action.commands,
           },
         );
         break;

@@ -1,5 +1,13 @@
-.loader {
+h1,
+h2,
+h3,
+h4 {
+	.loader {
+		margin-left: 0.8rem;
+	}
+}
 
+.loader {
 	&__offline {
 		padding: 2rem;
 		color: colour(middle_grey);
@@ -45,6 +53,14 @@
 
 	&--white {
 		.loader__ring {
+			&__progress {
+				stroke: rgb(128,128,128);
+			}
+			
+			&__background {
+				stroke: rgba(128,128,128,0.5);
+			}
+			
 			&__foreground {
 				stroke: colour(white);
 			}
@@ -60,20 +76,8 @@
 		padding: 0;
 
 		.loader__ring {
-			width: 20px;
-			height: 20px;
-
-			&__progress {
-				stroke: rgb(128,128,128);
-			}
-			
-			&__background {
-				stroke: rgba(128,128,128,0.5);
-			}
-			
-			&__foreground {
-				stroke: colour(white);
-			}
+			width: 24px;
+			height: 24px;
 		}
 
 		.loader__offline {
