@@ -144,7 +144,7 @@ const createRange = function (indexes) {
  * @param sort_map = array of value ordering (rather than alphabetical, numerical, etc)
  * @return array
  * */
-const sortItems = (array, property, reverse = false, sort_map = null) => {
+const sortItems = (array, property, reverse = false) => {
   if (!array || array.length <= 0) {
     return [];
   }
@@ -154,7 +154,7 @@ const sortItems = (array, property, reverse = false, sort_map = null) => {
   const sorter = (item) => {
     switch (property) {
       case 'tracks':
-        return item.tracks_total || item.tracks.length;
+        return item.tracks_total || (item.tracks ? item.tracks.length : 0);
       case 'artist':
         return item.artists && item.artists.length ? item.artists[0].name : undefined;
       case 'album':

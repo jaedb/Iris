@@ -26,7 +26,7 @@ export default function reducer(lastfm = {}, action) {
         ...lastfm,
         authorizing: false,
         authorization: false,
-        me: null,
+        me: undefined,
       };
 
     case 'LASTFM_IMPORT_AUTHORIZATION':
@@ -34,7 +34,7 @@ export default function reducer(lastfm = {}, action) {
         ...lastfm,
         authorizing: false,
         authorization: action.authorization,
-        me: null,
+        me: undefined,
       };
 
     default:

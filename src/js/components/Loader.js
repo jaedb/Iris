@@ -113,18 +113,9 @@ export default memo((props) => {
     <div className={classNameString}>
       <LoaderRing
         stroke={mini ? 2 : 3}
-        radius={mini ? 11 : 60}
+        radius={mini ? 12 : 60}
         progress={progress}
       />
-    </div>
-  );
-
-  return (
-    <div className={classNameString}>
-      <div className="loader__spinner">
-        <div className="loader__spinner__background" />
-        <div className="loader__spinner__foreground" />
-      </div>
     </div>
   );
 });

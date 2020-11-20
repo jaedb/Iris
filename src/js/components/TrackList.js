@@ -452,6 +452,7 @@ const mapStateToProps = (state) => ({
   dragger: state.ui.dragger,
   current_track: state.core.current_track,
   context_menu: state.ui.context_menu,
+  stream_title: state.core.stream_title,
 });
 
 const mapDispatchToProps = (dispatch) => ({

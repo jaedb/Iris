@@ -28,10 +28,14 @@ const makeLoadingSelector = (keys) => createSelector(
 const getQueueHistory = (state) => state.mopidy.queue_history;
 const queueHistorySelector = createSelector(
   [getItems, getQueueHistory],
-  (items, queueHistory) => queueHistory.map((item) => ({
-    ...item,
-    ...(items[item.uri] || {}),
-  })),
+  (items, queueHistory) => {
+    if (!queueHistory || !queueHistory.length) return [];
+
+    return queueHistory.map((item) => ({
+      ...item,
+      ...(items[item.uri] || {}),
+    }));
+  },
 );
 
 const makeLibrarySelector = (uris) => createSelector(

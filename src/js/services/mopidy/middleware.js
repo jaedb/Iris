@@ -71,6 +71,7 @@ const MopidyMiddleware = (function () {
         store.dispatch(mopidyActions.getQueue());
         store.dispatch(mopidyActions.getTimePosition());
         store.dispatch(mopidyActions.getUriSchemes());
+        store.dispatch(mopidyActions.getStreamTitle());
 
         // Every 1s update our play position (when playing)
         progress_interval = setInterval(() => {
@@ -136,16 +137,18 @@ const MopidyMiddleware = (function () {
         break;
 
       case 'event:trackPlaybackStarted':
-        store.dispatch(mopidyActions.currentTrackLoaded(data.tl_track));
+        if (data.tl_track) {
+          store.dispatch(mopidyActions.currentTrackLoaded(data.tl_track));
 
-        // Wait a jiffy before we get the next track
-        // We don't want to impede snappyness for this luxury request
-        setTimeout(
-          () => {
-            store.dispatch(mopidyActions.getNextTrack());
-          },
-          1000,
-        );
+          // Wait a jiffy before we get the next track
+          // We don't want to impede snappyness for this luxury request
+          setTimeout(
+            () => {
+              store.dispatch(mopidyActions.getNextTrack());
+            },
+            1000,
+          );
+        }
         break;
 
       case 'event:volumeChanged':
@@ -160,6 +163,10 @@ const MopidyMiddleware = (function () {
         store.dispatch(mopidyActions.getConsume());
         store.dispatch(mopidyActions.getRandom());
         store.dispatch(mopidyActions.getRepeat());
+        break;
+
+      case 'event:streamTitleChanged':
+        store.dispatch(coreActions.streamTitleChanged(data.title));
         break;
 
       default:
@@ -470,6 +477,7 @@ const MopidyMiddleware = (function () {
         // Focus has just been regained
         if (action.window_focus === true) {
           store.dispatch(mopidyActions.getCurrentTrack());
+          store.dispatch(mopidyActions.getStreamTitle());
           store.dispatch(mopidyActions.getPlayState());
           store.dispatch(mopidyActions.getVolume());
           store.dispatch(mopidyActions.getMute());
@@ -1536,6 +1544,17 @@ const MopidyMiddleware = (function () {
         break;
       }
 
+      case 'MOPIDY_GET_STREAM_TITLE':
+        request(store, 'playback.getStreamTitle')
+          .then(
+            (stream_title) => {
+              if (!stream_title) return;
+
+              store.dispatch(coreActions.streamTitleLoaded(stream_title));
+            },
+          );
+        break;
+
       case 'VIEW__GET_RANDOM_TRACKS':
         request(store, 'library.browse', { uri: 'local:directory?type=track' })
           .then(
@@ -1569,28 +1588,28 @@ const MopidyMiddleware = (function () {
 
       case 'MOPIDY_GET_IMAGES': {
         const { uris } = action;
-        if (action.uris) {
-          request(store, 'library.getImages', { uris })
-            .then((response) => {
-              const itemsWithImages = [];
-              Object.keys(response).forEach((uri) => {
-                const images = response[uri];
+        if (!uris) break;
 
-                if (images) {
-                  itemsWithImages.push({
-                    uri,
-                    images: formatImages(digestMopidyImages(store.getState().mopidy, images)),
-                  });
-                } else {
-                  store.dispatch(lastfmActions.getImages(uri));
-                };
-              });
+        request(store, 'library.getImages', { uris })
+          .then((response) => {
+            const itemsWithImages = [];
+            Object.keys(response).forEach((uri) => {
+              const images = response[uri];
 
-              if (itemsWithImages.length) {
-                store.dispatch(coreActions.itemsLoaded(itemsWithImages));
-              }
+              if (images) {
+                itemsWithImages.push({
+                  uri,
+                  images: formatImages(digestMopidyImages(store.getState().mopidy, images)),
+                });
+              } else {
+                store.dispatch(lastfmActions.getImages(uri));
+              };
             });
-        }
+
+            if (itemsWithImages.length) {
+              store.dispatch(coreActions.itemsLoaded(itemsWithImages));
+            }
+          });
 
         next(action);
         break;

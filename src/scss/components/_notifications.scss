@@ -17,6 +17,7 @@
 		pointer-events: all;
 		border-radius: 3px;
 		font-size: 0.9rem;
+		min-width: 200px;
 
 		&__wrapper {
 			display: flex;
@@ -122,8 +123,9 @@
 
 		&--process {
 			position: relative;
-			padding-right: 18px;
-			padding-left: 50px;
+			padding-right: 2rem;
+			padding-left: 3rem;
+			min-width: calc(200px - 3rem); 
 
 			&.cancelling {
 				opacity: 0.5 !important;
@@ -132,8 +134,8 @@
 
 			.loader {
 				position: absolute;
-				top: 11px;
-				left: 13px;
+				top: 9px;
+				left: 9px;
 			}
 		}
 
@@ -148,6 +150,14 @@
 		left: 10px;
 		right: 10px;
 		width: auto;
+
+		.notification {
+			&,
+			&--process {
+				min-width: 0px;
+				width: 100%;
+			}
+		}
 
 		.loading {
 			bottom: 20px;

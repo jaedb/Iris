@@ -357,7 +357,7 @@ settings:
       label: Połączenia
     version:
       label: Wersja
-      upgrade_available: 'Dostępna aktualizacjia (%{version})'
+      upgrade_available: 'Dostępna aktualizacja (%{version})'
       upgrade: 'Zaktualizuj do %{version}'
       up_to_date: Najnowsza wersja
     share_configuration: Udostępnij konfigurację

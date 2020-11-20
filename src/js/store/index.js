@@ -98,15 +98,12 @@ let state = {
     config: {},
   },
   lastfm: {
-    me: null,
     authorization_url: 'https://jamesbarnsley.co.nz/iris/auth_lastfm.php',
   },
   genius: {
-    me: null,
     authorization_url: 'https://jamesbarnsley.co.nz/iris/auth_genius.php',
   },
   spotify: {
-    me: null,
     autocomplete_results: {},
     authorization_url: 'https://jamesbarnsley.co.nz/iris/auth_spotify.php',
   },

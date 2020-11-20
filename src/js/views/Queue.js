@@ -203,6 +203,7 @@ class Queue extends React.Component {
     const {
       current_track,
       queue_tracks,
+      stream_title,
       theme,
       current_track_uri,
       spotify_enabled,
@@ -258,23 +259,26 @@ class Queue extends React.Component {
             />
             <div className="current-track__details">
               <div className="current-track__title">
-                {current_track ? (
+                {stream_title && (
+                  <span>{stream_title}</span>
+                )}
+                {!stream_title && current_track && (
                   <URILink type="track" uri={current_track.uri}>
                     {current_track.name}
                   </URILink>
-                ) : (
-                  <span>-</span>
                 )}
+                {!stream_title && !current_track && (<span>-</span>)}
               </div>
 
-              {current_track ? (
-                <LinksSentence
-                  className="current-track__artists"
-                  items={current_track.artists}
-                />
-              ) : (
-                <LinksSentence className="current-track__artists" />
-              )}
+              {
+                (current_track && current_track.artists && (
+                  <LinksSentence
+                    className="current-track__artists"
+                    items={current_track.artists}
+                  />
+                ))
+                || <LinksSentence className="current-track__artists" />
+              }
 
               {this.renderAddedFrom()}
 
@@ -335,6 +339,7 @@ class Queue extends React.Component {
 const mapStateToProps = (state) => {
   const {
     current_track: core_current_track,
+    stream_title,
     items,
     queue,
     queue_metadata,
@@ -390,6 +395,7 @@ const mapStateToProps = (state) => {
       current_track && current_track.added_from
         ? current_track.added_from
         : null,
+    stream_title,
   };
 };
 

@@ -325,6 +325,7 @@ class Playlist extends React.Component {
       uri,
       playlist,
       loading,
+      loading_tracks,
       slim_mode,
       sort,
       sort_reverse,
@@ -438,6 +439,7 @@ class Playlist extends React.Component {
 
         <h4 className="no-bottom-margin">
           <I18n path="playlist.tracks.title" />
+          {loading_tracks && <Loader loading mini />}
           <div className="actions-wrapper">
             <FilterField
               initialValue={filter}
@@ -466,8 +468,6 @@ class Playlist extends React.Component {
             reorderTracks={this.reorderTracks}
           />
         </section>
-
-        {loading && <Loader body loading />}
       </div>
     );
   }
@@ -494,6 +494,7 @@ const mapStateToProps = (state, ownProps) => {
   const playlistId = getFromUri('playlistid', uri);
   const itemSelector = makeItemSelector(uri);
   const loadingSelector = makeLoadingSelector([`(.*)${playlistId}(?!.*(following))(.*)`]);
+  const loadingTracksSelector = makeLoadingSelector([`(.*)${playlistId}/tracks(.*)`]);
 
   return {
     uri,
@@ -501,6 +502,7 @@ const mapStateToProps = (state, ownProps) => {
     slim_mode,
     theme,
     loading: loadingSelector(state),
+    loading_tracks: loadingTracksSelector(state),
     playlist: itemSelector(state),
     spotify_library_playlists,
     local_library_playlists,

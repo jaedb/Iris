@@ -20,10 +20,10 @@ export default function reducer(genius = {}, action) {
       return {
         ...genius,
         authorizing: false,
-        authorization: null,
-        authorization_code: null,
-        access_token: null,
-        me: null,
+        authorization: undefined,
+        authorization_code: undefined,
+        access_token: undefined,
+        me: undefined,
       };
 
     case 'GENIUS_IMPORT_AUTHORIZATION':
@@ -33,7 +33,7 @@ export default function reducer(genius = {}, action) {
         authorization: action.authorization,
         authorization_code: action.authorization.authorization_code,
         access_token: action.authorization.access_token,
-        me: null,
+        me: undefined,
       };
 
     default:

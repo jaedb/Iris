@@ -375,7 +375,7 @@ let isObject = function (value) {
 const isLoading = function (load_queue = {}, keys = []) {
   if (!load_queue || !keys) return false;
 
-  const queue_keys = Object.keys(load_queue);
+  const queue = indexToArray(load_queue);
   const matches = keys.reduce((acc, key) => {
     let regex = '';
     try {
@@ -388,7 +388,7 @@ const isLoading = function (load_queue = {}, keys = []) {
 
     return [
       ...acc,
-      ...(queue_keys.filter((qk) => qk.match(regex))),
+      ...(queue.filter((qk) => qk.match(regex))),
     ];
   }, []);
 

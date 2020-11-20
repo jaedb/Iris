@@ -186,7 +186,7 @@ class Debug extends React.Component {
                   onClick={
                     () => this.props.uiActions.startProcess(
                       'TEST_PROCESS',
-                      { content: 'Test process', remaining: 68, total: 100 },
+                      { content: 'Test process', remaining: 36, total: 100 },
                     )
                   }
                   tracking={{ category: 'Debug', action: 'Test process' }}

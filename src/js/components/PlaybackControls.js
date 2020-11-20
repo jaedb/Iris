@@ -25,15 +25,17 @@ class PlaybackControls extends React.Component {
     this.state = {
       expanded: false,
       current_track: null,
+      stream_title: null,
       transition_track: null,
       transition_direction: null,
     };
   }
 
-  static getDerivedStateFromProps({ current_track }, state) {
+  static getDerivedStateFromProps({ current_track, stream_title }, state) {
     return {
       ...state,
       current_track,
+      stream_title,
     };
   }
 
@@ -211,6 +213,7 @@ class PlaybackControls extends React.Component {
     const {
       current_track,
       expanded,
+      stream_title,
       transition_track,
       transition_direction,
     } = this.state;
@@ -254,10 +257,17 @@ class PlaybackControls extends React.Component {
               </Link>
               <div className="text">
                 <div className="title">
-                  {current_track ? current_track.name : <span>-</span>}
+                  {stream_title && <span>{stream_title}</span>}
+                  {!stream_title && current_track && <span>{current_track.name}</span>}
+                  {!stream_title && !current_track && <span>-</span>}
                 </div>
                 <div className="artist">
-                  {current_track ? <LinksSentence items={current_track.artists} /> : <LinksSentence />}
+                  {
+                    (current_track && current_track.artists
+                        && <LinksSentence items={current_track.artists} />)
+                    || (stream_title && <span className="links-sentence">{stream_title}</span>)
+                    || <LinksSentence />
+                  }
                 </div>
               </div>
             </div>
@@ -338,11 +348,13 @@ const mapStateToProps = (state) => {
     items,
     next_track_uri,
     current_track,
+    stream_title,
   } = state.core;
 
   return {
     snapcast_enabled: state.pusher.config.snapcast_enabled,
     current_track: current_track ? items[current_track.uri] || current_track : null,
+    stream_title,
     next_track: items[next_track_uri],
     radio_enabled: (!!(state.ui.radio && state.ui.radio.enabled)),
     play_state: state.mopidy.play_state,

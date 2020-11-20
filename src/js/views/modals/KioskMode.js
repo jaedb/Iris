@@ -78,9 +78,11 @@ class KioskMode extends React.Component {
 
   componentDidUpdate = ({
     current_track: prev_current_track,
+    stream_title: prev_stream_title,
   }) => {
     const {
       current_track,
+      stream_title,
       show_lyrics,
       genius_authorized,
       geniusActions: {
@@ -88,8 +90,11 @@ class KioskMode extends React.Component {
       },
     } = this.props;
 
-    if (!prev_current_track && current_track) {
-      this.setWindowTitle(current_track);
+    if (!prev_stream_title && stream_title) {
+      this.setWindowTitle();
+
+    } else if (!prev_current_track && current_track) {
+      this.setWindowTitle();
 
       if (show_lyrics && genius_authorized && current_track && current_track.artists && !current_track.lyrics_results) {
         findTrackLyrics(current_track);
@@ -101,18 +106,23 @@ class KioskMode extends React.Component {
     }
   }
 
-  setWindowTitle(current_track = this.props.current_track) {
-    if (current_track) {
-      let artists = '';
-      for (let i = 0; i < current_track.artists.length; i++) {
-        if (artists != '') {
-          artists += ', ';
-        }
-        artists += current_track.artists[i].name;
-      }
-      this.props.uiActions.setWindowTitle(i18n('modal.kiosk.title_window', { name:current_track.name, artists }));
+  setWindowTitle = () => {
+    const {
+      current_track,
+      stream_title,
+      uiActions: {
+        setWindowTitle,
+      },
+    } = this.props;
+
+    if (stream_title) {
+      const stream = stream_title.split(' - ');
+      setWindowTitle(i18n('modal.kiosk.title_window', { name: stream[1], artist: stream[0] }));
+    } else if (current_track) {
+      const artist = current_track.artists.map((artist) => artist.name).join(', ');
+      setWindowTitle(i18n('modal.kiosk.title_window', { name: current_track.name, artist }));
     } else {
-      this.props.uiActions.setWindowTitle(i18n('modal.kiosk.title'));
+      setWindowTitle(i18n('modal.kiosk.title'));
     }
   }
 
@@ -159,6 +169,7 @@ class KioskMode extends React.Component {
     const {
       show_lyrics,
       current_track,
+      stream_title,
       load_queue,
       genius_authorized,
       time_position,
@@ -194,7 +205,11 @@ class KioskMode extends React.Component {
               <Thumbnail images={images} useImageTag />
             </div>
             <div className="track__info">
-              <div className="title">{ current_track ? current_track.name : <span>-</span> }</div>
+              <div className="title">
+                {stream_title && <span>{stream_title}</span>}
+                {!stream_title && current_track && <span>{current_track.name}</span>}
+                {!stream_title && !current_track && <span>-</span>}
+              </div>
               { current_track ? <LinksSentence nolinks items={current_track.artists} /> : <LinksSentence /> }
             </div>
           </div>
@@ -228,14 +243,40 @@ class KioskMode extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  play_state: state.mopidy.play_state,
-  current_track: (state.core.current_track && state.core.items[state.core.current_track.uri] !== undefined ? state.core.items[state.core.current_track.uri] : null),
-  time_position: state.mopidy.time_position,
-  load_queue: state.ui.load_queue,
-  show_lyrics: state.ui.show_lyrics,
-  genius_authorized: state.genius.authorization,
-});
+const mapStateToProps = (state) => {
+  const {
+    core: {
+      stream_title,
+      current_track: core_current_track,
+      items,
+    },
+    mopidy: {
+      play_state,
+      time_position,
+    },
+    ui: {
+      load_queue,
+      show_lyrics,
+    },
+    genius: {
+      authorization: genius_authorized,
+    },
+  } = state;
+
+  const current_track = core_current_track && items[core_current_track.uri] !== undefined
+    ? items[core_current_track.uri]
+    : null;
+
+  return {
+    play_state,
+    current_track,
+    stream_title,
+    time_position,
+    load_queue,
+    show_lyrics,
+    genius_authorized,
+  };
+};
 
 const mapDispatchToProps = (dispatch) => ({
   uiActions: bindActionCreators(uiActions, dispatch),
