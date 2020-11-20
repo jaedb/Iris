@@ -322,12 +322,12 @@ class Artist extends React.Component {
 
     const sort_options = [
       {
-        value: 'disc_track',
-        label: i18n('album.tracks.sort.disc_track'),
+        value: 'name',
+        label: i18n('artist.tracks.sort.name'),
       },
       {
-        value: 'name',
-        label: i18n('album.tracks.sort.name'),
+        value: 'album',
+        label: i18n('artist.tracks.sort.album'),
       },
     ];
 
@@ -357,6 +357,7 @@ class Artist extends React.Component {
             className="artist-track-list"
             uri={uri}
             tracks={tracks}
+            track_context="artist"
           />
         </section>
       </div>

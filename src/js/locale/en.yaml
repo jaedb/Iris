@@ -251,6 +251,10 @@ artist:
       more: All related artists
   tracks:
     title: Tracks
+    sort:
+      disc_track: Track number
+      name: Name
+      album: Album
   related_artists:
     title: Related artists
   about:
