@@ -137,16 +137,18 @@ const MopidyMiddleware = (function () {
         break;
 
       case 'event:trackPlaybackStarted':
-        store.dispatch(mopidyActions.currentTrackLoaded(data.tl_track));
+        if (data.tl_track) {
+          store.dispatch(mopidyActions.currentTrackLoaded(data.tl_track));
 
-        // Wait a jiffy before we get the next track
-        // We don't want to impede snappyness for this luxury request
-        setTimeout(
-          () => {
-            store.dispatch(mopidyActions.getNextTrack());
-          },
-          1000,
-        );
+          // Wait a jiffy before we get the next track
+          // We don't want to impede snappyness for this luxury request
+          setTimeout(
+            () => {
+              store.dispatch(mopidyActions.getNextTrack());
+            },
+            1000,
+          );
+        }
         break;
 
       case 'event:volumeChanged':
