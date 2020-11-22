@@ -6,6 +6,7 @@ import * as spotifyActions from '../../services/spotify/actions';
 import { isLoading, getFromUri } from '../../util/helpers';
 import { i18n } from '../../locale';
 import { Button } from '../Button';
+import { makeLoadingSelector } from '../../util/selectors';
 
 class FollowButton extends React.Component {
   remove = () => {
@@ -34,23 +35,16 @@ class FollowButton extends React.Component {
       removeText,
       spotify_authorized,
       is_following,
-      load_queue,
+      loading,
     } = this.props;
 
     if (!uri) return null;
-
-    const working = isLoading(load_queue, [
-      'spotify_me/tracks?',
-      'spotify_me/albums?',
-      'spotify_me/following?',
-      `spotify_playlists/${getFromUri('playlistid', uri)}/followers?`,
-    ]);
 
     if (!spotify_authorized) {
       return (
         <Button
           disabled
-          working={working}
+          working={loading}
           onClick={this.unauthorized}
           tracking={{ category: 'FollowButton', action: 'Add (disabled)' }}
         >
@@ -61,7 +55,7 @@ class FollowButton extends React.Component {
       return (
         <Button
           type="destructive"
-          working={working}
+          working={loading}
           onClick={this.remove}
           tracking={{ category: 'FollowButton', action: 'Remove' }}
         >
@@ -72,7 +66,7 @@ class FollowButton extends React.Component {
     return (
       <Button
         onClick={this.add}
-        working={working}
+        working={loading}
         tracking={{ category: 'FollowButton', action: 'Add' }}
       >
         {addText || i18n('actions.add_to_library')}
@@ -81,10 +75,23 @@ class FollowButton extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  load_queue: state.ui.load_queue,
-  spotify_authorized: state.spotify.authorization,
-});
+const mapStateToProps = (state, ownProps) => {
+  const {
+    uri,
+  } = ownProps;
+
+  const loadingSelector = makeLoadingSelector([
+    'spotify_me/tracks?',
+    'spotify_me/albums?',
+    'spotify_me/following?',
+    `spotify_playlists/${getFromUri('playlistid', uri)}/followers?`,
+  ]);
+
+  return {
+    loading: loadingSelector(state),
+    spotify_authorized: state.spotify.authorization,
+  };
+};
 
 const mapDispatchToProps = (dispatch) => ({
   uiActions: bindActionCreators(uiActions, dispatch),

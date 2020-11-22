@@ -6,6 +6,7 @@ import * as uiActions from '../../services/ui/actions';
 import * as lastfmActions from '../../services/lastfm/actions';
 import { i18n } from '../../locale';
 import Button from '../Button';
+import { makeLoadingSelector } from '../../util/selectors';
 
 const FollowButton = ({
   uri,
@@ -14,7 +15,6 @@ const FollowButton = ({
   addText,
   removeText,
   is_loved,
-  className: classNameProp = '',
   lastfm_authorized,
   uiActions: {
     createNotification,
@@ -23,6 +23,7 @@ const FollowButton = ({
     unloveTrack,
     loveTrack,
   },
+  loading,
 }) => {
   const onRemove = () => unloveTrack(uri, artist, track);
   const onAdd = () => loveTrack(uri, artist, track);
@@ -33,17 +34,14 @@ const FollowButton = ({
     });
   };
 
-  if (!uri) {
-    return false;
-  }
-
-  const className = `button ${classNameProp}`;
+  if (!uri) return false;
 
   if (!lastfm_authorized) {
     return (
       <Button
         disabled
         onClick={onDisabledClick}
+        working={loading}
         tracking={{ category: 'Lastfm', action: 'Love', label: 'Disabled' }}
       >
         {addText || i18n('services.lastfm.love')}
@@ -54,6 +52,7 @@ const FollowButton = ({
       <Button
         type="destructive"
         onClick={onRemove}
+        working={loading}
         tracking={{ category: 'Lastfm', action: 'Unlove' }}
       >
         {removeText || i18n('services.lastfm.unlove')}
@@ -63,6 +62,7 @@ const FollowButton = ({
   return (
     <Button
       onClick={onAdd}
+      working={loading}
       tracking={{ category: 'Lastfm', action: 'Love' }}
     >
       {addText || i18n('services.lastfm.love')}
@@ -70,10 +70,13 @@ const FollowButton = ({
   );
 };
 
-const mapStateToProps = (state) => ({
-  load_queue: state.ui.load_queue,
-  lastfm_authorized: state.lastfm.authorization,
-});
+const mapStateToProps = (state) => {
+  const loadingSelector = makeLoadingSelector(['love', 'unlove']);
+  return {
+    loading: loadingSelector(state),
+    lastfm_authorized: state.lastfm.authorization,
+  };
+};
 
 const mapDispatchToProps = (dispatch) => ({
   uiActions: bindActionCreators(uiActions, dispatch),

@@ -1,9 +1,5 @@
-
 import React from 'react';
-import {
-  arrayOf,
-  shuffle,
-} from '../../util/arrays';
+import { arrayOf } from '../../util/arrays';
 import {
   generateGuid,
   getFromUri,
