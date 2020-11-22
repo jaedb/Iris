@@ -19,3 +19,4 @@ docker-compose.yml
 /.tox/
 /__tests__/__pycache__/
 /coverage/
+/docker2/
