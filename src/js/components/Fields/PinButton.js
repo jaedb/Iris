@@ -4,7 +4,7 @@ import * as pusherActions from '../../services/pusher/actions';
 import Icon from '../Icon';
 import Button from '../Button';
 
-const PinButton = ({ item }) => {
+const PinButton = ({ item, unpinIcon = 'star', pinIcon = 'star_border' }) => {
   if (!item || !item.name) return null;
 
   const {
@@ -29,7 +29,7 @@ const PinButton = ({ item }) => {
         onClick={remove}
         tracking={{ category: 'PinButton', action: 'Pin' }}
       >
-        <Icon name="star" />
+        <Icon name={unpinIcon} />
       </Button>
     );
   }
@@ -39,7 +39,7 @@ const PinButton = ({ item }) => {
       onClick={add}
       tracking={{ category: 'PinButton', action: 'Unpin' }}
     >
-      <Icon name="star_border" />
+      <Icon name={pinIcon} />
     </Button>
   );
 };

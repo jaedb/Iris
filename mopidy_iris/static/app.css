@@ -7165,6 +7165,24 @@ main header {
     right: 14px;
     pointer-events: none; }
 
+.pin-list__item {
+  position: relative; }
+  .pin-list__item .button {
+    position: absolute;
+    z-index: 2;
+    left: 2.2em;
+    font-size: 0.85em;
+    opacity: 0; }
+    .pin-list__item .button:not(:hover) {
+      color: #a3a19f; }
+      .light-theme .pin-list__item .button:not(:hover) {
+        color: #51504e; }
+      @media (prefers-color-scheme: light) {
+        .auto-theme .pin-list__item .button:not(:hover) {
+          color: #51504e; } }
+  .pin-list__item:hover .button {
+    opacity: 1; }
+
 .artist-view .body-loader:not(.lazy-loader) {
   padding: 15vh 0; }
 
