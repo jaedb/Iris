@@ -31,7 +31,58 @@ class PlaybackControls extends React.Component {
     };
   }
 
-  static getDerivedStateFromProps({ current_track, stream_title }, state) {
+  componentDidMount() {
+    this.setupPlayer();
+  }
+
+  // Create audio element
+  //
+
+  setupPlayer = () => {
+    const {
+      mopidyActions: {
+        next,
+        previous,
+        pause,
+        play,
+      },
+    } = this.props;
+  
+    if (!this.audioTag) {
+      this.audioTag = document.createElement('audio');
+      document.body.appendChild(this.audioTag);
+      this.audioTag.id = 'audioTag';
+      this.audioTag.src = 'https://ia800206.us.archive.org/16/items/SilentRingtone/silence_64kb.mp3';
+      this.audioTag.loop = true;
+      setTimeout(() => this.audioTag.play(), 1000);
+    }
+    console.debug(navigator.mediaSession)
+
+    navigator.mediaSession.setActionHandler('play', () => play());
+    navigator.mediaSession.setActionHandler('pause', () => pause());
+    navigator.mediaSession.setActionHandler('seekbackward', () => console.log('seekbackward'));
+    navigator.mediaSession.setActionHandler('seekforward', () => console.log('seekforward'));
+    navigator.mediaSession.setActionHandler('previoustrack', () => previous());
+    navigator.mediaSession.setActionHandler('nexttrack', () => next());
+  }
+
+  static getDerivedStateFromProps({ current_track, stream_title, play_state }, state) {
+    if (current_track) {
+      navigator.mediaSession.metadata = new window.MediaMetadata({
+        title: current_track.title,
+        artist: current_track.artists[0].name,
+        artwork: [
+          {
+            src: current_track.images ? current_track.images.medium : '',
+            sizes: '96x96',
+            type: 'image/png',
+          },
+        ]
+      });
+    };
+
+    navigator.mediaSession.playbackState = play_state;
+
     return {
       ...state,
       current_track,
