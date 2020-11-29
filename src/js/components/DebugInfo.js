@@ -1,12 +1,11 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import localForage from 'localforage';
 import { get as getStorage } from '../util/storage';
 import { isTouchDevice } from '../util/helpers';
 import * as uiActions from '../services/ui/actions';
 import { indexToArray } from '../util/arrays';
-import localForage from 'localforage';
 
 class DebugInfo extends React.Component {
   constructor(props) {

@@ -50,6 +50,12 @@ export function set(data) {
   };
 }
 
+export function resetState() {
+  return {
+    type: 'RESET_STATE',
+  };
+}
+
 export function clearCurrentTrack() {
   return {
     type: 'CLEAR_CURRENT_TRACK',

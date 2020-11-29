@@ -50,6 +50,7 @@ import ShareConfiguration from './views/modals/ShareConfiguration';
 import AddToPlaylist from './views/modals/AddToPlaylist';
 import ImageZoom from './views/modals/ImageZoom';
 import EditCommand from './views/modals/EditCommand';
+import Reset from './views/modals/Reset';
 
 import { scrollTo, isTouchDevice } from './util/helpers';
 import storage from './util/storage';
@@ -289,6 +290,7 @@ export class App extends React.Component {
             <Route path="/add-to-playlist/:uris" component={AddToPlaylist} />
             <Route path="/image-zoom" component={ImageZoom} />
             <Route path="/share-configuration" component={ShareConfiguration} />
+            <Route path="/reset" component={Reset} />
             <Route path="/edit-command/:id?" component={EditCommand} />
 
             <Route path="/queue/radio" component={EditRadio} />
