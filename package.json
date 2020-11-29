@@ -32,7 +32,7 @@
     "reselect": "^4.0.0"
   },
   "devDependencies": {
-    "@babel/cli": "7.10.1",
+    "@babel/cli": "^7.12.8",
     "@babel/core": "7.10.1",
     "@babel/plugin-proposal-class-properties": "^7.12.1",
     "@babel/plugin-transform-modules-commonjs": "7.10.1",
