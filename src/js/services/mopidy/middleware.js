@@ -1185,10 +1185,7 @@ const MopidyMiddleware = (function () {
       case 'MOPIDY_ADD_PLAYLIST_TRACKS':
         request(store, 'playlists.lookup', { uri: action.key })
           .then((response) => {
-            const tracks = injectSortId(
-              action.tracks_uris.map((uri) => ({ __model__: 'Track', uri })),
-            );
-
+            const tracks = action.tracks_uris.map((uri) => ({ __model__: 'Track', uri }));
             const playlist = { ...response };
             if (playlist.tracks) {
               playlist.tracks = [...playlist.tracks, ...tracks];
