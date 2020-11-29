@@ -143,7 +143,6 @@ export class App extends React.Component {
     );
     window.addEventListener('focus', this.handleFocusAndBlur, false);
     window.addEventListener('blur', this.handleFocusAndBlur, false);
-    this.listenForUserInteraction();
 
     // Fire up our services
     mopidyActions.connect();
@@ -221,16 +220,11 @@ export class App extends React.Component {
     installPrompt(e);
   }
 
-  listenForUserInteraction = () => {
-    const userInteracted = () => {
-      this.setState({ userHasInteracted: true });
-      window.removeEventListener('mouseover', userInteracted, false);
-      window.removeEventListener('scroll', userInteracted, false);
-      window.removeEventListener('keydown', userInteracted, false);
-    }
-    window.addEventListener('mouseover', userInteracted, false);
-    window.addEventListener('scroll', userInteracted, false);
-    window.addEventListener('keydown', userInteracted, false);
+  userInteracted = () => {
+    const { userHasInteracted } = this.state;
+
+    if (userHasInteracted) return;
+    this.setState({ userHasInteracted: true });
   }
 
   render = () => {
@@ -283,7 +277,11 @@ export class App extends React.Component {
     }
 
     return (
-      <div className={className}>
+      <div
+        className={className}
+        onClick={userHasInteracted ? null : this.userInteracted}
+        onKeyDown={userHasInteracted ? null : this.userInteracted}
+      >
         <div className="body">
           <Switch>
             <Route path="/initial-setup" component={InitialSetup} />
