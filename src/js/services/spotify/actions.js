@@ -1,9 +1,5 @@
-
 import React from 'react';
-import {
-  arrayOf,
-  shuffle,
-} from '../../util/arrays';
+import { arrayOf } from '../../util/arrays';
 import {
   generateGuid,
   getFromUri,
@@ -122,7 +118,6 @@ const request = (dispatch, getState, endpoint, method = 'GET', data = false, cac
   });
 };
 
-
 /**
 * Check an access token validity
 *
@@ -147,9 +142,10 @@ function getToken(dispatch, getState) {
       // Re-check the queue periodically to see if it's finished yet
       // TODO: Look at properly hooking up with the ajax finish event
       setTimeout(
-        () =>
+        () => {
           // Return myself for a re-check
-          getToken(dispatch, getState),
+          getToken(dispatch, getState);
+        },
         1000,
       );
     } else {
@@ -1404,12 +1400,6 @@ export function getPlaylist(uri, options) {
     let endpoint = `playlists/${getFromUri('playlistid', uri)}`;
     endpoint += `?market=${getState().spotify.country}`;
     if (forceRefetch) endpoint += `&refetch=${Date.now()}`;
-
-    // TODO
-    // When we have a callbackAction, start the process. To do this:
-    // 1. Create unified callbackAction naming convention
-    // 2. Start process here
-    // 3. Update process as tracks are loaded and enqueue occurs
 
     request(dispatch, getState, endpoint)
       .then(

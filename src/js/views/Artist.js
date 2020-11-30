@@ -123,17 +123,26 @@ class Artist extends React.Component {
     trackEvent({ category: 'Artist', action: `Sort${type}`, label: `${value} ${reverse ? 'DESC' : 'ASC'}` });
   }
 
-  onPlay = () => {
+  onPlayAll = () => {
     const {
       artist: {
         uri,
         tracks,
         albums_uris,
       },
+      uiActions: {
+        createNotification,
+      },
       mopidyActions: {
         playURIs,
       },
     } = this.props;
+
+    if ((!albums_uris || !albums_uris.length) && (!tracks || !tracks.length)) {
+      createNotification({ content: i18n('errors.no_results'), level: 'warning' });
+      return;
+    }
+
     playURIs(arrayOf('uri', tracks) || albums_uris, uri);
   }
 
@@ -159,6 +168,7 @@ class Artist extends React.Component {
       context: 'artist',
       items: [artist],
       uris: [uri],
+      tracklist_uri: uri,
     });
   }
 
@@ -322,12 +332,12 @@ class Artist extends React.Component {
 
     const sort_options = [
       {
-        value: 'disc_track',
-        label: i18n('album.tracks.sort.disc_track'),
+        value: 'name',
+        label: i18n('artist.tracks.sort.name'),
       },
       {
-        value: 'name',
-        label: i18n('album.tracks.sort.name'),
+        value: 'album',
+        label: i18n('artist.tracks.sort.album'),
       },
     ];
 
@@ -357,6 +367,7 @@ class Artist extends React.Component {
             className="artist-track-list"
             uri={uri}
             tracks={tracks}
+            track_context="artist"
           />
         </section>
       </div>
@@ -506,7 +517,7 @@ class Artist extends React.Component {
                 <div className="actions">
                   <Button
                     type="primary"
-                    onClick={this.onPlay}
+                    onClick={this.onPlayAll}
                     tracking={{ category: 'Artist', action: 'Play' }}
                   >
                     <I18n path="actions.play" />

@@ -2,18 +2,22 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import Link from '../Link';
 import { sortItems } from '../../util/arrays';
+import PinButton from './PinButton';
 
 const PinListItem = ({ item }) => {
   if (!item) return null;
 
   return (
-    <Link
-      to={`/playlist/${item.uri}`}
-      className="sidebar__menu__item sidebar__menu__item--submenu"
-      activeClassName="sidebar__menu__item--active"
-    >
-      {item.name}
-    </Link>
+    <span className="pin-list__item">
+      <PinButton item={item} unpinIcon="delete" />
+      <Link
+        to={`/playlist/${item.uri}`}
+        className="sidebar__menu__item sidebar__menu__item--submenu"
+        activeClassName="sidebar__menu__item--active"
+      >
+        {item.name}
+      </Link>
+    </span>
   );
 };
 

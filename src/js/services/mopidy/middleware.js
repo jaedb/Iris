@@ -773,19 +773,12 @@ const MopidyMiddleware = (function () {
         request(store, 'getUriSchemes')
           .then(
             (response) => {
-              const uri_schemes = response;
+              // Remove unsupported schemes
               const remove = ['http', 'https', 'mms', 'rtmp', 'rtmps', 'rtsp', 'sc', 'yt'];
+              let uri_schemes = response.filter((uri) => remove.indexOf(uri) === -1);
 
-              // remove all our ignored types
-              for (var i = 0; i < remove.length; i++) {
-                const index = uri_schemes.indexOf(remove[i]);
-                if (index > -1) uri_schemes.splice(index, 1);
-              }
-
-              // append with ':' to make them a mopidy URI
-              for (var i = 0; i < uri_schemes.length; i++) {
-                uri_schemes[i] = `${uri_schemes[i]}:`;
-              }
+              // Append with ':' to make them a mopidy URI
+              uri_schemes = uri_schemes.map((uri) => `${uri}:`);
 
               // Enable Iris providers when the backend is available
               store.dispatch(spotifyActions.set({ enabled: uri_schemes.includes('spotify:') }));
@@ -800,11 +793,6 @@ const MopidyMiddleware = (function () {
             },
           );
         break;
-
-
-      /**
-           * Advanced playback events
-           * */
 
       case 'MOPIDY_PLAY_PLAYLIST': {
         const playlist = store.getState().core.items[action.uri];
@@ -1197,10 +1185,7 @@ const MopidyMiddleware = (function () {
       case 'MOPIDY_ADD_PLAYLIST_TRACKS':
         request(store, 'playlists.lookup', { uri: action.key })
           .then((response) => {
-            const tracks = injectSortId(
-              action.tracks_uris.map((uri) => ({ __model__: 'Track', uri })),
-            );
-
+            const tracks = action.tracks_uris.map((uri) => ({ __model__: 'Track', uri }));
             const playlist = { ...response };
             if (playlist.tracks) {
               playlist.tracks = [...playlist.tracks, ...tracks];

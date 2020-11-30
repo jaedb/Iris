@@ -3,7 +3,6 @@ import { bindActionCreators } from 'redux';
 import { Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
 import ReactGA from 'react-ga';
-import localForage from 'localforage';
 import * as Sentry from '@sentry/browser';
 
 import Sidebar from './components/Sidebar';
@@ -51,6 +50,7 @@ import ShareConfiguration from './views/modals/ShareConfiguration';
 import AddToPlaylist from './views/modals/AddToPlaylist';
 import ImageZoom from './views/modals/ImageZoom';
 import EditCommand from './views/modals/EditCommand';
+import Reset from './views/modals/Reset';
 
 import { scrollTo, isTouchDevice } from './util/helpers';
 import storage from './util/storage';
@@ -62,15 +62,15 @@ import * as spotifyActions from './services/spotify/actions';
 import * as lastfmActions from './services/lastfm/actions';
 import * as geniusActions from './services/genius/actions';
 import * as snapcastActions from './services/snapcast/actions';
+import MediaSession from './components/MediaSession';
 
 export class App extends React.Component {
   constructor(props) {
     super(props);
-
-    const {
-      allow_reporting,
-      test_mode,
-    } = this.props;
+    const { allow_reporting } = this.props;
+    this.state = {
+      userHasInteracted: false,
+    };
 
     if (allow_reporting) {
       ReactGA.initialize('UA-64701652-3');
@@ -127,16 +127,6 @@ export class App extends React.Component {
     window.language = props.language;
   }
 
-  componentWillUnmount() {
-    window.removeEventListener(
-      'beforeinstallprompt',
-      this.handleInstallPrompt,
-      false,
-    );
-    window.removeEventListener('focus', this.handleFocusAndBlur, false);
-    window.removeEventListener('blur', this.handleFocusAndBlur, false);
-  }
-
   componentDidMount() {
     const {
       history,
@@ -145,7 +135,6 @@ export class App extends React.Component {
       mopidyActions,
       pusherActions,
       snapcastActions,
-      coreActions,
     } = this.props;
 
     window.addEventListener(
@@ -201,11 +190,21 @@ export class App extends React.Component {
     }
   }
 
+  componentWillUnmount() {
+    window.removeEventListener(
+      'beforeinstallprompt',
+      this.handleInstallPrompt,
+      false,
+    );
+    window.removeEventListener('focus', this.handleFocusAndBlur, false);
+    window.removeEventListener('blur', this.handleFocusAndBlur, false);
+  }
+
   /**
    * Using Visibility API, detect whether the browser is in focus or not
    *
-   * This is used to keep background requests lean, preventing a queue of requests building up
-   * for when focus is retained. Seems most obvious on mobile devices with Chrome as it has throttled
+   * This is used to keep background requests lean, preventing a queue of requests building up for
+   * when focus is retained. Seems most obvious on mobile devices with Chrome as it has throttled
    * quota significantly: https://developers.google.com/web/updates/2017/03/background_tabs
    *
    * @param e Event
@@ -222,28 +221,54 @@ export class App extends React.Component {
     installPrompt(e);
   }
 
-  render() {
-    let className = `${this.props.theme}-theme app-inner`;
+  userInteracted = () => {
+    const { userHasInteracted } = this.state;
+
+    if (userHasInteracted) return;
+    this.setState({ userHasInteracted: true });
+  }
+
+  render = () => {
+    const {
+      uiActions,
+      location,
+      history,
+      debug_info,
+      theme,
+      dragging,
+      touch_dragging,
+      context_menu,
+      sidebar_open,
+      slim_mode,
+      wide_scrollbar_enabled,
+      smooth_scrolling_enabled,
+      hotkeys_enabled,
+    } = this.props;
+    const {
+      userHasInteracted,
+    } = this.state;
+
+    let className = `${theme}-theme app-inner`;
     className += ` ${navigator.onLine ? 'online' : 'offline'}`
-    if (this.props.wide_scrollbar_enabled) {
+    if (wide_scrollbar_enabled) {
       className += ' wide-scrollbar';
     }
-    if (this.props.dragging) {
+    if (dragging) {
       className += ' dragging';
     }
-    if (this.props.sidebar_open) {
+    if (sidebar_open) {
       className += ' sidebar-open';
     }
-    if (this.props.touch_dragging) {
+    if (touch_dragging) {
       className += ' touch-dragging';
     }
-    if (this.props.context_menu) {
+    if (context_menu) {
       className += ' context-menu-open';
     }
-    if (this.props.slim_mode) {
+    if (slim_mode) {
       className += ' slim-mode';
     }
-    if (this.props.smooth_scrolling_enabled) {
+    if (smooth_scrolling_enabled) {
       className += ' smooth-scrolling-enabled';
     }
     if (isTouchDevice()) {
@@ -253,7 +278,11 @@ export class App extends React.Component {
     }
 
     return (
-      <div className={className}>
+      <div
+        className={className}
+        onClick={userHasInteracted ? null : this.userInteracted}
+        onKeyDown={userHasInteracted ? null : this.userInteracted}
+      >
         <div className="body">
           <Switch>
             <Route path="/initial-setup" component={InitialSetup} />
@@ -261,6 +290,7 @@ export class App extends React.Component {
             <Route path="/add-to-playlist/:uris" component={AddToPlaylist} />
             <Route path="/image-zoom" component={ImageZoom} />
             <Route path="/share-configuration" component={ShareConfiguration} />
+            <Route path="/reset" component={Reset} />
             <Route path="/edit-command/:id?" component={EditCommand} />
 
             <Route path="/queue/radio" component={EditRadio} />
@@ -271,13 +301,13 @@ export class App extends React.Component {
             <Route>
               <div>
                 <Sidebar
-                  location={this.props.location}
-                  history={this.props.history}
+                  location={location}
+                  history={history}
                   tabIndex="3"
                 />
                 <PlaybackControls
-                  history={this.props.history}
-                  slim_mode={this.props.slim_mode}
+                  history={history}
+                  slim_mode={slim_mode}
                   tabIndex="2"
                 />
 
@@ -379,16 +409,16 @@ export class App extends React.Component {
         </div>
 
         <ResizeListener
-          uiActions={this.props.uiActions}
-          slim_mode={this.props.slim_mode}
+          uiActions={uiActions}
+          slim_mode={slim_mode}
         />
-        {this.props.hotkeys_enabled && <Hotkeys history={this.props.history} />}
+        {hotkeys_enabled && <Hotkeys history={history} />}
         <ContextMenu />
         <Dragger />
         <Notifications />
-        <Stream />
-
-        {this.props.debug_info ? <DebugInfo /> : null}
+        {userHasInteracted && <Stream />}
+        {userHasInteracted && <MediaSession />}
+        {debug_info && <DebugInfo />}
       </div>
     );
   }
@@ -421,7 +451,7 @@ const mapStateToProps = (state) => {
       authorization: spotify_authorized,
     },
   } = state;
-  
+
   return {
     language,
     theme,

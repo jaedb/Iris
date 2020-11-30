@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   collate,
   formatImages,
@@ -6,7 +7,8 @@ import {
   formatAlbum,
 } from '../../util/format';
 import { generateGuid } from '../../util/helpers';
-import { makeItemSelector } from '../../util/selectors';
+import { makeItemSelector, getItem } from '../../util/selectors';
+import URILink from '../../components/URILink';
 
 const coreActions = require('../core/actions');
 const uiActions = require('../ui/actions');
@@ -357,33 +359,35 @@ export function getImages(context, uri) {
 
 export function loveTrack(uri) {
   return (dispatch, getState) => {
-    const track = getState().core.items[uri];
-    if (getState().core.items[uri] !== undefined) {
-      if (!track.artists) {
-        dispatch(coreActions.handleException(
-          'Could not love LastFM track',
-          track,
-          'Track has no artists',
-        ));
-        return;
-      }
-    } else {
+    const asset = getItem(getState(), uri) || {};
+    if (!asset) {
       dispatch(coreActions.handleException(
         'Could not love LastFM track',
-        track,
+        asset,
         'Could not find track in index',
       ));
       return;
     }
+    if (asset && !asset.artists) {
+      dispatch(coreActions.handleException(
+        'Could not love LastFM track',
+        asset,
+        'Track has no artists',
+      ));
+      return;
+    }
 
-    const artist = encodeURIComponent(track.artists[0].name);
-    const params = `method=track.love&track=${track.name}&artist=${artist}`;
+    const artist = encodeURIComponent(asset.artists[0].name);
+    const params = `method=track.love&track=${asset.name}&artist=${artist}`;
     sendSignedRequest(dispatch, getState, params)
       .then(
-        (response) => {
+        () => {
           dispatch(coreActions.itemLoaded({
             uri,
             userloved: true,
+          }));
+          dispatch(uiActions.createNotification({
+            content: <span>Loved <URILink uri={uri}>{asset ? asset.name : type}</URILink></span>,
           }));
         },
       );
@@ -392,33 +396,35 @@ export function loveTrack(uri) {
 
 export function unloveTrack(uri) {
   return (dispatch, getState) => {
-    if (getState().core.items[uri] !== undefined) {
-      var track = getState().core.items[uri];
-      if (!track.artists) {
-        dispatch(coreActions.handleException(
-          'Could not unlove LastFM track',
-          track,
-          'Track has no artists',
-        ));
-        return;
-      }
-    } else {
+    const asset = getItem(getState(), uri) || {};
+    if (!asset) {
       dispatch(coreActions.handleException(
-        'Could not unlove LastFM track',
-        track,
+        'Could not love LastFM track',
+        asset,
         'Could not find track in index',
       ));
       return;
     }
+    if (asset && !asset.artists) {
+      dispatch(coreActions.handleException(
+        'Could not love LastFM track',
+        asset,
+        'Track has no artists',
+      ));
+      return;
+    }
 
-    const artist = encodeURIComponent(track.artists[0].name);
-    const params = `method=track.unlove&track=${track.name}&artist=${artist}`;
+    const artist = encodeURIComponent(asset.artists[0].name);
+    const params = `method=track.unlove&track=${asset.name}&artist=${artist}`;
     sendSignedRequest(dispatch, getState, params)
       .then(
-        (response) => {
+        () => {
           dispatch(coreActions.itemLoaded({
             uri,
             userloved: false,
+          }));
+          dispatch(uiActions.createNotification({
+            content: <span>Unloved <URILink uri={uri}>{asset ? asset.name : type}</URILink></span>,
           }));
         },
       );

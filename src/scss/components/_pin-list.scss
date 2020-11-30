@@ -1,0 +1,27 @@
+.pin-list {
+  &__item {
+    position: relative;
+
+    .button {
+      position: absolute;
+      z-index: 2;
+      left: 2.2em;
+      font-size: 0.85em;
+      opacity: 0;
+
+      &:not(:hover) {
+        color: colour(mid_grey);
+
+        @include theme('light') {
+          color: colour(soft_grey);
+        }
+      }
+    }
+
+    &:hover {
+      .button {
+        opacity: 1;
+      }
+    }
+  }
+}

@@ -7165,6 +7165,24 @@ main header {
     right: 14px;
     pointer-events: none; }
 
+.pin-list__item {
+  position: relative; }
+  .pin-list__item .button {
+    position: absolute;
+    z-index: 2;
+    left: 2.2em;
+    font-size: 0.85em;
+    opacity: 0; }
+    .pin-list__item .button:not(:hover) {
+      color: #a3a19f; }
+      .light-theme .pin-list__item .button:not(:hover) {
+        color: #51504e; }
+      @media (prefers-color-scheme: light) {
+        .auto-theme .pin-list__item .button:not(:hover) {
+          color: #51504e; } }
+  .pin-list__item:hover .button {
+    opacity: 1; }
+
 .artist-view .body-loader:not(.lazy-loader) {
   padding: 15vh 0; }
 
@@ -8113,14 +8131,14 @@ main .track-view {
       max-width: 100%; }
   .modal--edit-radio form .field input[type="text"], .modal--add-to-queue form .field input[type="text"] {
     padding-right: 80px; }
-  .modal--share-configuration .checkbox-group__item {
+  .modal--share-configuration .checkbox-group__item, .modal--reset .checkbox-group__item {
     padding-bottom: 0.75rem; }
-  .modal--share-configuration .field.checkbox .label {
+  .modal--share-configuration .field.checkbox .label, .modal--reset .field.checkbox .label {
     display: flex; }
-    .modal--share-configuration .field.checkbox .label .title {
+    .modal--share-configuration .field.checkbox .label .title, .modal--reset .field.checkbox .label .title {
       font-size: 1.2rem; }
-    .modal--share-configuration .field.checkbox .label .description {
-      padding-top: 4px; }
+    .modal--share-configuration .field.checkbox .label .description, .modal--reset .field.checkbox .label .description {
+      padding-top: 0; }
   .modal--kiosk-mode {
     background: #000000;
     overflow: hidden; }

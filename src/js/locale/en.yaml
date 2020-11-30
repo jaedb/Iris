@@ -173,6 +173,7 @@ context_menu:
     no_playlists: No writable playlists
   play_next: Play next
   play_top_tracks: Play top tracks
+  play_all_tracks: Play all tracks
   love_track: Love track
   unlove_track: Unlove track
   pin: Pin
@@ -251,6 +252,10 @@ artist:
       more: All related artists
   tracks:
     title: Tracks
+    sort:
+      disc_track: Track number
+      name: Name
+      album: Album
   related_artists:
     title: Related artists
   about:
@@ -394,9 +399,7 @@ settings:
       up_to_date: Up to date
     share_configuration: Share configuration
     restart: Restart server
-    reset_cache: Reset cache
-    reset_storage: Reset storage
-    reset: Reset all settings
+    reset: Reset settings
   about:
     title: About
     blurb_1: ' is an open-source project by '
@@ -556,3 +559,22 @@ modal:
       do_you_want_to_import: Do you want to import this?
       import_now: Import now
       successful: Import successful
+  reset:
+    title: Reset Iris
+    subtitle: Clear your local configuration, storage information or cache
+    items: Reset to defaults
+    preferences:
+      label: Preferences
+      description: Interface customisation
+    database:
+      label: Database
+      description: Local browser-based database of libraries and assets
+    service_worker:
+      label: Service worker
+      description: Re-install service worker
+    cache:
+      label: Fetch cache
+      description: External API requests cache (requires Service Worker)
+    test_mode:
+      label: Test mode
+      description: Verbose logging for diagnosing issues

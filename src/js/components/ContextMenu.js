@@ -898,6 +898,16 @@ class ContextMenu extends React.Component {
       </div>
     );
 
+    const play_artist_all_tracks = (
+      <div className="context-menu__item">
+        <a className="context-menu__item__link" onClick={this.playURIs}>
+          <span className="context-menu__item__label">
+            <I18n path="context_menu.play_all_tracks" />
+          </span>
+        </a>
+      </div>
+    );
+
     const add_to_queue = (
       <div className="context-menu__item">
         <a className="context-menu__item__link" onClick={this.addToQueue}>
@@ -1146,6 +1156,7 @@ class ContextMenu extends React.Component {
         return (
           <div>
             {context.source === 'spotify' && play_artist_top_tracks}
+            {play_artist_all_tracks}
             {context.source === 'spotify' && start_radio}
             {this.canBeInLibrary() && <div className="context-menu__divider" />}
             {this.canBeInLibrary() && toggle_in_library}

@@ -27,9 +27,8 @@ import geniusMiddleware from '../services/genius/middleware';
 import spotifyMiddleware from '../services/spotify/middleware';
 import googleMiddleware from '../services/google/middleware';
 import snapcastMiddleware from '../services/snapcast/middleware';
-import localstorageMiddleware from '../services/localstorage/middleware';
 
-let state = {
+let initialState = {
   core: {
     outputs: [],
     queue: [],
@@ -43,9 +42,6 @@ let state = {
     tracks: {},
     items: {},
     libraries: {},
-    http_streaming_enabled: false,
-    http_streaming_cachebuster: null,
-    http_streaming_url: `http://${window.location.hostname}:8000/mopidy`,
   },
   ui: {
     language: 'en',
@@ -138,7 +134,7 @@ state.snapcast = { ...state.snapcast, ...storage.get('snapcast') };
 */
 
 // Run any migrations
-state = migration(state);
+initialState = migration(initialState);
 
 const rootPersistConfig = {
   key: 'root',
@@ -233,7 +229,7 @@ const uiPersistConfig = {
   debug: window.test_mode,
 };
 
-const rootReducer = combineReducers({
+const appReducer = combineReducers({
   core: persistReducer(corePersistConfig, core),
   ui: persistReducer(uiPersistConfig, ui),
   mopidy: persistReducer(mopidyPersistConfig, mopidy),
@@ -244,12 +240,18 @@ const rootReducer = combineReducers({
   google,
   snapcast,
 });
+const rootReducer = (state, action) => {
+  if (action.type === 'RESET_STATE') {
+    state = initialState;
+  }
+  return appReducer(state, action);
+};
 
 const persistedReducer = persistReducer(rootPersistConfig, rootReducer);
 
 const store = createStore(
   persistedReducer,
-  state,
+  initialState,
   applyMiddleware(
     thunk,
     coreMiddleware,

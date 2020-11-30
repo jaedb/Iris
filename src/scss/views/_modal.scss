@@ -239,7 +239,8 @@
     }
   }
 
-  &--share-configuration {
+  &--share-configuration,
+  &--reset {
     .checkbox-group {
       &__item {
         padding-bottom: 0.75rem;
@@ -255,7 +256,7 @@
         }
 
         .description {
-          padding-top: 4px;
+          padding-top: 0;
         }
       }
     }

@@ -71,62 +71,6 @@ class Settings extends React.Component {
     this.setState({ [name]: value });
   }
 
-  resetAllSettings = () => {
-    localForage.clear().then(() => {
-      console.debug('Cleared settings, reloading...');
-      window.location = '#';
-      window.location.reload(true);
-    });
-    return false;
-  }
-
-  resetStorage = () => {
-    localForage.keys().then((keys) => {
-      const keysToKeep = ['persist:root', 'persist:ui', 'persist:spotify'];
-      const keysToRemove = keys.filter((key) => keysToKeep.indexOf(key) < 0);
-
-      keysToRemove.forEach((key, index) => {
-        localForage.removeItem(key).then(() => {
-          console.debug(`Removed ${key}`);
-          if (index === keysToRemove.length) {
-            console.debug('Reloading...');
-            window.location = '#';
-            window.location.reload(true);
-          }
-        });
-      });
-    });
-  }
-
-  resetServiceWorkerAndCache = () => {
-    const { coreActions: { handleException } } = this.props;
-
-    if ('serviceWorker' in navigator) {
-
-      // Hose out all our caches
-      caches.keys().then(function (cacheNames) {
-        cacheNames.forEach(function (cacheName) {
-          caches.delete(cacheName);
-        });
-      });
-
-      // Unregister all service workers
-      // This forces our SW to bugger off and a new one is registered on refresh
-      navigator.serviceWorker.getRegistrations().then(
-        (registrations) => {
-          for (let registration of registrations) {
-            registration.unregister();
-          }
-        }
-      );
-
-      window.location = '#';
-      window.location.reload(true);
-    } else {
-      handleException(i18n('errors.no_service_worker'));
-    }
-  }
-
   doRestart = () => {
     const { pusherActions: { restart } } = this.props;
     restart();
@@ -584,23 +528,11 @@ class Settings extends React.Component {
               <I18n path="settings.advanced.restart" />
             </Button>
             <Button
+              to="/reset"
               type="destructive"
-              onClick={this.resetServiceWorkerAndCache}
-              tracking={{ category: 'System', action: 'ResetCache' }}
             >
-              <I18n path="settings.advanced.reset_cache" />
+              <I18n path="settings.advanced.reset" />
             </Button>
-            <Button
-              type="destructive"
-              onClick={this.resetStorage}
-              tracking={{ category: 'System', action: 'ResetStorage' }}
-            >
-              <I18n path="settings.advanced.reset_storage" />
-            </Button>
-            <ConfirmationButton
-              content={i18n('settings.advanced.reset')}
-              onConfirm={this.resetAllSettings}
-            />
           </div>
 
           <h4 className="underline">

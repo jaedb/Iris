@@ -391,7 +391,7 @@ export default class Track extends React.Component {
           <div className="list__item__column list__item__column--right">
             {drag_zone}
             {track.is_explicit && <span className="flag flag--dark">EXPLICIT</span>}
-            {track_context === 'album' && track.track_number && (
+            {(track_context === 'album' || track_context === 'artist') && track.track_number && (
               <span className="mid_grey-text list__item__column__item list__item__column__item--track-number">
                 <span>
                   <I18n path="track.title" />

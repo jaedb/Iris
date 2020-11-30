@@ -100,9 +100,9 @@ class CodecMessage extends BaseMessage {
     let decoder = new TextDecoder("utf-8");
     this.codec = decoder.decode(buffer.slice(30, 30 + codecSize));
     let payloadSize = view.getInt32(30 + codecSize, true);
-    console.log("payload size: " + payloadSize);
+    //console.log("payload size: " + payloadSize);
     this.payload = buffer.slice(34 + codecSize, 34 + codecSize + payloadSize);
-    console.log("payload: " + this.payload);
+    //console.log("payload: " + this.payload);
   }
 }
 class TimeMessage extends BaseMessage {
@@ -240,7 +240,7 @@ class PcmChunkMessage extends BaseMessage {
     this.timestamp = new Tv(view.getInt32(26, true), view.getInt32(30, true));
     // this.payloadSize = view.getUint32(34, true);
     this.payload = buffer.slice(38); //, this.payloadSize + 38));// , this.payloadSize);
-    // console.log("ts: " + this.timestamp.sec + " " + this.timestamp.usec + ", payload: " + this.payloadSize + ", len: " + this.payload.byteLength);
+    //console.log("ts: " + this.timestamp.sec + " " + this.timestamp.usec + ", payload: " + this.payloadSize + ", len: " + this.payload.byteLength);
   }
   readFrames(frames) {
     let frameCnt = frames;
@@ -250,7 +250,7 @@ class PcmChunkMessage extends BaseMessage {
     let begin = this.idx * frameSize;
     this.idx += frameCnt;
     let end = begin + frameCnt * frameSize;
-    // console.log("readFrames: " + frames + ", result: " + frameCnt + ", begin: " + begin + ", end: " + end + ", payload: " + this.payload.byteLength);
+    //console.log("readFrames: " + frames + ", result: " + frameCnt + ", begin: " + begin + ", end: " + end + ", payload: " + this.payload.byteLength);
     return this.payload.slice(begin, end);
   }
   getFrameCount() {
@@ -308,7 +308,7 @@ class AudioStream {
   setVolume(percent, muted) {
     let base = 10;
     this.volume = percent / 100; // (Math.pow(base, percent / 100) - 1) / (base - 1);
-    console.log("setVolume: " + percent + " => " + this.volume + ", muted: " + this.muted);
+    //console.log("setVolume: " + percent + " => " + this.volume + ", muted: " + this.muted);
     this.muted = muted;
   }
   addChunk(chunk) {
@@ -321,7 +321,7 @@ class AudioStream {
       // todo: consider buffer ms
       if (age > 5000 + this.bufferMs) {
         this.chunks.shift();
-        console.log("Dropping old chunk: " + age.toFixed(2) + ", left: " + this.chunks.length);
+        //console.log("Dropping old chunk: " + age.toFixed(2) + ", left: " + this.chunks.length);
       }
       else
         break;
@@ -346,18 +346,18 @@ class AudioStream {
       let secs = Math.floor(Date.now() / 1000);
       if (this.lastLog != secs) {
         this.lastLog = secs;
-        console.log("age: " + age.toFixed(2) + ", req: " + reqChunkDuration);
+        //console.log("age: " + age.toFixed(2) + ", req: " + reqChunkDuration);
       }
       if (age < -reqChunkDuration) {
-        console.log("age: " + age.toFixed(2) + " < req: " + reqChunkDuration * -1 + ", chunk.startMs: " + this.chunk.startMs().toFixed(2) + ", timestamp: " + this.chunk.timestamp.getMilliseconds().toFixed(2));
-        console.log("Chunk too young, returning silence");
+        //console.log("age: " + age.toFixed(2) + " < req: " + reqChunkDuration * -1 + ", chunk.startMs: " + this.chunk.startMs().toFixed(2) + ", timestamp: " + this.chunk.timestamp.getMilliseconds().toFixed(2));
+        //console.log("Chunk too young, returning silence");
       }
       else {
         if (Math.abs(age) > 5) {
           // We are 5ms apart, do a hard sync, i.e. don't play faster/slower, 
           // but seek to the desired position instead
           while (this.chunk && age > this.chunk.duration()) {
-            console.log("Chunk too old, dropping (age: " + age.toFixed(2) + " > " + this.chunk.duration().toFixed(2) + ")");
+            //console.log("Chunk too old, dropping (age: " + age.toFixed(2) + " > " + this.chunk.duration().toFixed(2) + ")");
             this.chunk = this.chunks.shift();
             if (!this.chunk)
               break;
@@ -365,11 +365,11 @@ class AudioStream {
           }
           if (this.chunk) {
             if (age > 0) {
-              console.log("Fast forwarding " + age.toFixed(2) + "ms");
+              //console.log("Fast forwarding " + age.toFixed(2) + "ms");
               this.chunk.readFrames(Math.floor(age * this.chunk.sampleFormat.msRate()));
             }
             else if (age < 0) {
-              console.log("Playing silence " + -age.toFixed(2) + "ms");
+              //console.log("Playing silence " + -age.toFixed(2) + "ms");
               let silentFrames = Math.floor(-age * this.chunk.sampleFormat.msRate());
               left.fill(0, 0, silentFrames);
               right.fill(0, 0, silentFrames);
@@ -430,7 +430,7 @@ class AudioStream {
                 left[pos + 1] = left[pos];
                 right[pos + 1] = right[pos];
                 pos++;
-                // console.log("Add: " + pos);
+                //console.log("Add: " + pos);
               }
             }
             pos++;
@@ -440,13 +440,13 @@ class AudioStream {
           }
         }
         if (addFrames != 0)
-          console.debug("Pos: " + pos + ", frames: " + frames + ", add: " + addFrames + ", everyN: " + everyN);
+          //console.debug("Pos: " + pos + ", frames: " + frames + ", add: " + addFrames + ", everyN: " + everyN);
         if (read == readFrames)
           read = frames;
       }
     }
     if (read < frames) {
-      console.log("Failed to get chunk, read: " + read + "/" + frames + ", chunks left: " + this.chunks.length);
+      //console.log("Failed to get chunk, read: " + read + "/" + frames + ", chunks left: " + this.chunks.length);
       left.fill(0, pos);
       right.fill(0, pos);
     }
@@ -484,7 +484,7 @@ class TimeProvider {
       this.diff = sorted[Math.floor(sorted.length / 2)];
     }
     // console.debug("c2s: " + c2s.toFixed(2) + ", s2c: " + s2c.toFixed(2) + ", diff: " + this.diff.toFixed(2) + ", now: " + this.now().toFixed(2) + ", server.now: " + this.serverNow().toFixed(2) + ", win.now: " + window.performance.now().toFixed(2));
-    // console.log("now: " + this.now() + "\t" + this.now() + "\t" + this.now());
+    //console.log("now: " + this.now() + "\t" + this.now() + "\t" + this.now());
   }
   now() {
     if (!this.ctx) {
@@ -561,7 +561,7 @@ class OpusDecoder extends Decoder {
     format.rate = view.getUint32(4, true);
     format.bits = view.getUint16(8, true);
     format.channels = view.getUint16(10, true);
-    console.log("Opus samplerate: " + format.toString());
+    //console.log("Opus samplerate: " + format.toString());
     return format;
   }
   decode(chunk) {
@@ -576,7 +576,7 @@ class FlacDecoder extends Decoder {
     this.decoder = Flac.create_libflac_decoder(true);
     if (this.decoder) {
       let init_status = Flac.init_decoder_stream(this.decoder, this.read_callback_fn.bind(this), this.write_callback_fn.bind(this), this.error_callback_fn.bind(this), this.metadata_callback_fn.bind(this), false);
-      console.log("Flac init: " + init_status);
+      //console.log("Flac init: " + init_status);
       Flac.setOptions(this.decoder, { analyseSubframes: true, analyseResiduals: true });
     }
     this.sampleFormat = new SampleFormat();
@@ -584,37 +584,37 @@ class FlacDecoder extends Decoder {
     // this.pcmChunk  = new PcmChunkMessage();
     // Flac.setOptions(this.decoder, {analyseSubframes: analyse_frames, analyseResiduals: analyse_residuals});
     // flac_ok &= init_status == 0;
-    // console.log("flac init     : " + flac_ok);//DEBUG
+    //console.log("flac init     : " + flac_ok);//DEBUG
   }
   decode(chunk) {
-    // console.log("Flac decode: " + chunk.payload.byteLength);
+    //console.log("Flac decode: " + chunk.payload.byteLength);
     this.flacChunk = chunk.payload.slice(0);
     this.pcmChunk = chunk;
     this.pcmChunk.clearPayload();
     this.cacheInfo = { cachedBlocks: 0, isCachedChunk: true };
-    // console.log("Flac len: " + this.flacChunk.byteLength);
+    //console.log("Flac len: " + this.flacChunk.byteLength);
     while (this.flacChunk.byteLength && Flac.FLAC__stream_decoder_process_single(this.decoder)) {
       let state = Flac.FLAC__stream_decoder_get_state(this.decoder);
-      // console.log("State: " + state);
+      //console.log("State: " + state);
     }
-    // console.log("Pcm payload: " + this.pcmChunk!.payloadSize());
+    //console.log("Pcm payload: " + this.pcmChunk!.payloadSize());
     if (this.cacheInfo.cachedBlocks > 0) {
       let diffMs = this.cacheInfo.cachedBlocks / this.sampleFormat.msRate();
-      // console.log("Cached: " + this.cacheInfo.cachedBlocks + ", " + diffMs + "ms");
+      //console.log("Cached: " + this.cacheInfo.cachedBlocks + ", " + diffMs + "ms");
       this.pcmChunk.timestamp.setMilliseconds(this.pcmChunk.timestamp.getMilliseconds() - diffMs);
     }
     return this.pcmChunk;
   }
   read_callback_fn(bufferSize) {
-    // console.log('  decode read callback, buffer bytes max=', bufferSize);
+    //console.log('  decode read callback, buffer bytes max=', bufferSize);
     if (this.header) {
-      console.log("  header: " + this.header.byteLength);
+      //console.log("  header: " + this.header.byteLength);
       let data = new Uint8Array(this.header);
       this.header = null;
       return { buffer: data, readDataLength: data.byteLength, error: false };
     }
     else if (this.flacChunk) {
-      // console.log("  flacChunk: " + this.flacChunk.byteLength);
+      //console.log("  flacChunk: " + this.flacChunk.byteLength);
       // a fresh read => next call to write will not be from cached data
       this.cacheInfo.isCachedChunk = false;
       let data = new Uint8Array(this.flacChunk.slice(0, Math.min(bufferSize, this.flacChunk.byteLength)));
@@ -624,7 +624,7 @@ class FlacDecoder extends Decoder {
     return { buffer: new Uint8Array(0), readDataLength: 0, error: false };
   }
   write_callback_fn(data, frameInfo) {
-    // console.log("  write frame metadata: " + frameInfo + ", len: " + data.length);
+    //console.log("  write frame metadata: " + frameInfo + ", len: " + data.length);
     if (this.cacheInfo.isCachedChunk) {
       // there was no call to read, so it's some cached data
       this.cacheInfo.cachedBlocks += frameInfo.blocksize;
@@ -633,22 +633,22 @@ class FlacDecoder extends Decoder {
     let view = new DataView(payload);
     for (let channel = 0; channel < frameInfo.channels; ++channel) {
       let channelData = new DataView(data[channel].buffer, 0, data[channel].buffer.byteLength);
-      // console.log("channelData: " + channelData.byteLength + ", blocksize: " + frameInfo.blocksize);
+      //console.log("channelData: " + channelData.byteLength + ", blocksize: " + frameInfo.blocksize);
       for (let i = 0; i < frameInfo.blocksize; ++i) {
         view.setInt16(2 * (frameInfo.channels * i + channel), channelData.getInt16(2 * i, true), true);
       }
     }
     this.pcmChunk.addPayload(payload);
-    // console.log("write: " + payload.byteLength + ", len: " + this.pcmChunk!.payloadSize());
+    //console.log("write: " + payload.byteLength + ", len: " + this.pcmChunk!.payloadSize());
   }
   /** @memberOf decode */
   metadata_callback_fn(data) {
-    console.info('meta data: ', data);
+    //console.info('meta data: ', data);
     // let view = new DataView(data);
     this.sampleFormat.rate = data.sampleRate;
     this.sampleFormat.channels = data.channels;
     this.sampleFormat.bits = data.bitsPerSample;
-    console.log("metadata_callback_fn, sampleformat: " + this.sampleFormat.toString());
+    //console.log("metadata_callback_fn, sampleformat: " + this.sampleFormat.toString());
   }
   /** @memberOf decode */
   error_callback_fn(err, errMsg) {
@@ -712,7 +712,7 @@ class SnapStream {
       let type = view.getUint16(0, true);
       if (type == 1) {
         let codec = new CodecMessage(msg.data);
-        console.log("Codec: " + codec.codec);
+        //console.log("Codec: " + codec.codec);
         if (codec.codec == "flac") {
           this.decoder = new FlacDecoder();
         }
@@ -744,7 +744,7 @@ class SnapStream {
             this.gainNode.gain.value = this.serverSettings.muted ? 0 : this.serverSettings.volumePercent / 100;
             // this.timeProvider = new TimeProvider(this.ctx);
             this.stream = new AudioStream(this.timeProvider, this.sampleFormat, this.bufferMs);
-            console.log("Base latency: " + this.ctx.baseLatency + ", output latency: " + this.ctx.outputLatency);
+            //console.log("Base latency: " + this.ctx.baseLatency + ", output latency: " + this.ctx.outputLatency);
             this.play();
           }
         }
@@ -764,14 +764,14 @@ class SnapStream {
           this.gainNode.gain.value = this.serverSettings.muted ? 0 : this.serverSettings.volumePercent / 100;
         }
         this.bufferMs = this.serverSettings.bufferMs - this.serverSettings.latency;
-        console.log("ServerSettings bufferMs: " + this.serverSettings.bufferMs + ", latency: " + this.serverSettings.latency + ", volume: " + this.serverSettings.volumePercent + ", muted: " + this.serverSettings.muted);
+        //console.log("ServerSettings bufferMs: " + this.serverSettings.bufferMs + ", latency: " + this.serverSettings.latency + ", volume: " + this.serverSettings.volumePercent + ", muted: " + this.serverSettings.muted);
       }
       else if (type == 4) {
         if (this.timeProvider) {
           let time = new TimeMessage(msg.data);
           this.timeProvider.setDiff(time.latency.getMilliseconds(), this.timeProvider.now() - time.sent.getMilliseconds());
         }
-        // console.log("Time sec: " + time.latency.sec + ", usec: " + time.latency.usec + ", diff: " + this.timeProvider.diff);
+        //console.log("Time sec: " + time.latency.sec + ", usec: " + time.latency.usec + ", diff: " + this.timeProvider.diff);
       }
       else {
         console.info("Message not handled, type: " + type);
@@ -814,10 +814,10 @@ class SnapStream {
     let t = new TimeMessage();
     t.latency.setMilliseconds(this.timeProvider.now());
     this.sendMessage(t);
-    // console.log("prepareSource median: " + Math.round(this.median * 10) / 10);
+    //console.log("prepareSource median: " + Math.round(this.median * 10) / 10);
   }
   stopAudio() {
-    if (this.ctx) {
+    if (this.ctx && this.ctx.state !== 'closed') {
       this.ctx.close();
     }
     while (this.audioBuffers.length > 0) {
