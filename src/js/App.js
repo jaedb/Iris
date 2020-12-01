@@ -417,7 +417,7 @@ export class App extends React.Component {
         <Dragger />
         <Notifications />
         {userHasInteracted && <Stream />}
-        {userHasInteracted && <MediaSession />}
+        {userHasInteracted && ('mediaSession' in navigator) && <MediaSession />}
         {debug_info && <DebugInfo />}
       </div>
     );
