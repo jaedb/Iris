@@ -19,7 +19,6 @@ import { I18n, i18n } from '../../locale';
 import Loader from '../../components/Loader';
 import {
   makeLibrarySelector,
-  makeLoadingSelector,
   makeProcessProgressSelector,
 } from '../../util/selectors';
 
