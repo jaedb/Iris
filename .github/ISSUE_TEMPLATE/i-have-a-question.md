@@ -7,11 +7,6 @@ assignees: ''
 
 ---
 
-*What part of Iris is your question about?*
-A breadcrumb or description (eg Settings > Snapcast)
+STOP! QUESTIONS DON'T BELONG IN THE REPOSITORY ISSUE TRACKER.
 
-**Your question**
-A clear and concise description of how I can help.
-
-**Did you want to make a donation to support this support?**
-Answering questions and providing support takes personal time, so please bear this in mind.
+Please instead use the [Mopidy Discourse](https://discourse.mopidy.com/) forum.

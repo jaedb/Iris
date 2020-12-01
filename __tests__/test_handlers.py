@@ -28,7 +28,16 @@ class HttpHandlerTest(tornado.testing.AsyncHTTPTestCase):
         # http_handler.handle_result = mock.Mock()
         # self.handler_mock = http_handler.handle_result
         return tornado.web.Application(
-            [(r"/(.*)", http_handler, {"core": None, "config": {},},)]
+            [
+                (
+                    r"/(.*)",
+                    http_handler,
+                    {
+                        "core": None,
+                        "config": {},
+                    },
+                )
+            ]
         )
 
     def test_get_method(self):
