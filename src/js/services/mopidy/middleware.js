@@ -436,8 +436,14 @@ const MopidyMiddleware = (function () {
         break;
 
       case 'MOPIDY_UPDATE_SERVER':
-        let servers = store.getState().mopidy.servers;
-        servers[action.server.id] = { ...servers[action.server.id], ...action.server };
+        const existingServers = store.getState().mopidy.servers;
+        const servers = {
+          ...existingServers,
+          [action.server.id]: {
+            ...existingServers[action.server.id] || {},
+            ...action.server,
+          },
+        };
         store.dispatch(mopidyActions.updateServers(servers));
         break;
 

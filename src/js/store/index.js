@@ -177,21 +177,8 @@ const mopidyPersistConfig = {
   key: 'mopidy',
   storage: localForage,
   debug: window.test_mode,
-  whitelist: [
-    'consume',
-    'current_server',
-    'host',
-    'port',
-    'library_albums_uri',
-    'library_artists_uri',
-    'mute',
-    'play_state',
-    'random',
-    'repeat',
-    'servers',
-    'ssl',
-    'uri_schemes',
-    'volume',
+  blacklist: [
+    'connected',
   ],
 };
 
