@@ -27,23 +27,30 @@ class MediaSession extends React.Component {
 
   static getDerivedStateFromProps({ current_track, stream_title, play_state }, state) {
     if (current_track) {
+      const {
+        title,
+        album = {},
+        artists = [],
+        images = {},
+      } = current_track;
+
       navigator.mediaSession.metadata = new window.MediaMetadata({
-        title: stream_title || current_track.title,
-        artist: current_track.artists[0].name,
-        album: current_track.album.name,
+        title: stream_title || title,
+        artist: artists.length ? artists[0].name : null,
+        album: album.name,
         artwork: [
           {
-            src: current_track.images ? current_track.images.small : '',
+            src: images ? images.small : '',
             sizes: '96x96',
             type: 'image/png',
           },
           {
-            src: current_track.images ? current_track.images.medium : '',
+            src: images ? images.medium : '',
             sizes: '256x256',
             type: 'image/png',
           },
           {
-            src: current_track.images ? current_track.images.huge : '',
+            src: images ? images.huge : '',
             sizes: '512x512',
             type: 'image/png',
           },
@@ -103,7 +110,7 @@ const mapStateToProps = (state) => {
   } = state.core;
 
   return {
-    current_track: current_track ? items[current_track.uri] || current_track : null,
+    current_track: current_track ? items[current_track.uri] || current_track : {},
     stream_title,
     play_state: state.mopidy.play_state,
     time_position: state.mopidy.time_position,
