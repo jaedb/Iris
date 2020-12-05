@@ -71,7 +71,7 @@ class AddToPlaylist extends React.Component {
       loading_progress,
     } = this.props;
 
-    if (loading_progress !== null) {
+    if (loading_progress) {
       return <Loader body loading progress={loading_progress} />;
     }
 
