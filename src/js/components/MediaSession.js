@@ -39,21 +39,21 @@ class MediaSession extends React.Component {
         artist: artists.length ? artists[0].name : null,
         album: album.name,
         artwork: [
-          {
+          ...(images.small ? [{
             src: images ? images.small : '',
             sizes: '96x96',
             type: 'image/png',
-          },
-          {
+          }] : []),
+          ...(images.medium ? [{
             src: images ? images.medium : '',
             sizes: '256x256',
             type: 'image/png',
-          },
-          {
+          }] : []),
+          ...(images.huge ? [{
             src: images ? images.huge : '',
             sizes: '512x512',
             type: 'image/png',
-          },
+          }] : []),
         ],
       });
     }
