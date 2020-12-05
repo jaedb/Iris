@@ -17,6 +17,10 @@ RUN apt-get update \
     python-dev \
     python-gst-1.0 \
     python3-gst-1.0 \
+    build-essential \
+    libdbus-glib-1-dev \
+    libgirepository1.0-dev \
+    dleyna-server \
   && rm -rf /var/lib/apt/lists/*
 
 # Make python3-gst-1.0 available to non-Debian Python 3.7 installation
@@ -47,11 +51,12 @@ RUN python3.7 -m pip install --no-cache \
   mopidy-mpd \
   mopidy-spotify \
   mopidy-local \
-  Mopidy-GMusic \
   Mopidy-TuneIn \
   Mopidy-Youtube \
   Mopidy-SoundCloud \
   Mopidy-Podcast \
+  Mopidy-dLeyna \
+  dbus-python \
   # pip not up-to-date for Mopidy-Tidal (https://github.com/tehkillerbee/mopidy-tidal/issues/14)
   git+https://github.com/tehkillerbee/mopidy-tidal.git@master
 
