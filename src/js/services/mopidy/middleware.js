@@ -467,11 +467,12 @@ const MopidyMiddleware = (function () {
         );
         break;
 
-      case 'MOPIDY_REMOVE_SERVER':
-        let remaining_servers = store.getState().mopidy.servers;
-        delete remaining_servers[action.id];
-        store.dispatch(mopidyActions.updateServers(remaining_servers));
+      case 'MOPIDY_REMOVE_SERVER': {
+        let servers = { ...store.getState().mopidy.servers };
+        delete servers[action.id];
+        store.dispatch(mopidyActions.updateServers(servers));
         break;
+      }
 
       case 'SET_WINDOW_FOCUS':
         /**
