@@ -34,10 +34,18 @@ class MediaSession extends React.Component {
         images = {},
       } = current_track;
 
+      if (current_track.duration) {
+        navigator.mediaSession.setPositionState({
+          duration: current_track.duration,
+          playbackRate: 1,
+          position: 0,
+        });
+      }
+
       navigator.mediaSession.metadata = new window.MediaMetadata({
-        title: stream_title || title,
-        artist: artists.length ? artists[0].name : null,
-        album: album.name,
+        title: stream_title || title || '-',
+        artist: artists.length ? artists[0].name : '-',
+        album: album.name || '-',
         artwork: [
           ...(images.small ? [{
             src: images ? images.small : '',
@@ -58,7 +66,9 @@ class MediaSession extends React.Component {
       });
     }
 
-    navigator.mediaSession.playbackState = play_state;
+    if (navigator.mediaSession.playbackState !== play_state) {
+      navigator.mediaSession.playbackState = play_state;
+    }
 
     return {
       ...state,
