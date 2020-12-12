@@ -48,17 +48,17 @@ class MediaSession extends React.Component {
         album: album.name || '-',
         artwork: [
           ...(images.small ? [{
-            src: images ? images.small : '',
+            src: images.small,
             sizes: '96x96',
             type: 'image/png',
           }] : []),
           ...(images.medium ? [{
-            src: images ? images.medium : '',
+            src: images.medium,
             sizes: '256x256',
             type: 'image/png',
           }] : []),
           ...(images.huge ? [{
-            src: images ? images.huge : '',
+            src: images.huge,
             sizes: '512x512',
             type: 'image/png',
           }] : []),
