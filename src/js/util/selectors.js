@@ -64,7 +64,7 @@ const makeProcessProgressSelector = (keys) => createSelector(
       .map((key) => processes[key] || {})
       .filter((i) => i.status === 'running');
 
-    if (!selectedProcesses.length) return null;
+    if (!selectedProcesses.length) return undefined;
 
     let total = 0;
     let remaining = 0;
@@ -72,7 +72,11 @@ const makeProcessProgressSelector = (keys) => createSelector(
       if (process.total) total += process.total;
       if (process.remaining) remaining += process.remaining;
     });
-    return total && remaining ? ((total - remaining) / total).toFixed(4) : 0;
+    return {
+      total,
+      remaining,
+      percent: total && remaining ? ((total - remaining) / total).toFixed(4) : 0,
+    };
   },
 );
 

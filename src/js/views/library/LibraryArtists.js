@@ -171,8 +171,10 @@ class LibraryArtists extends React.Component {
     } = this.state;
     let { artists } = this.props;
 
-    if (loading_progress !== null) {
-      return <Loader body loading progress={loading_progress} />;
+    if (loading_progress) {
+      return (
+        <Loader body loading progress={loading_progress} />
+      );
     }
 
     if (sort) {
@@ -228,7 +230,6 @@ class LibraryArtists extends React.Component {
       google_available,
       loading_progress,
     } = this.props;
-    const loading = loading_progress !== null;
 
     const source_options = [
       {
@@ -320,11 +321,11 @@ class LibraryArtists extends React.Component {
         <Button
           noHover
           discrete
-          onClick={loading ? this.cancelRefresh : this.refresh}
+          onClick={loading_progress ? this.cancelRefresh : this.refresh}
           tracking={{ category: 'LibraryArtists', action: 'Refresh' }}
         >
-          {loading ? <Icon name="close" /> : <Icon name="refresh" /> }
-          {loading ? <I18n path="actions.cancel" /> : <I18n path="actions.refresh" /> }
+          {loading_progress ? <Icon name="close" /> : <Icon name="refresh" /> }
+          {loading_progress ? <I18n path="actions.cancel" /> : <I18n path="actions.refresh" /> }
         </Button>
       </>
     );

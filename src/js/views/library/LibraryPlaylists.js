@@ -19,7 +19,6 @@ import { I18n, i18n } from '../../locale';
 import Loader from '../../components/Loader';
 import {
   makeLibrarySelector,
-  makeLoadingSelector,
   makeProcessProgressSelector,
 } from '../../util/selectors';
 
@@ -159,7 +158,7 @@ class LibraryPlaylists extends React.Component {
       limit,
     } = this.state;
 
-    if (loading_progress !== null) {
+    if (loading_progress) {
       return <Loader body loading progress={loading_progress} />;
     }
     let playlists = [...playlistsProp];
@@ -225,7 +224,6 @@ class LibraryPlaylists extends React.Component {
     const {
       filter,
     } = this.state;
-    const loading = loading_progress !== null;
 
     const source_options = [
       {
@@ -322,11 +320,11 @@ class LibraryPlaylists extends React.Component {
         <Button
           noHover
           discrete
-          onClick={loading ? this.cancelRefresh : this.refresh}
+          onClick={loading_progress ? this.cancelRefresh : this.refresh}
           tracking={{ category: 'LibraryAlbums', action: 'Refresh' }}
         >
-          {loading ? <Icon name="close" /> : <Icon name="refresh" /> }
-          {loading ? <I18n path="actions.cancel" /> : <I18n path="actions.refresh" /> }
+          {loading_progress ? <Icon name="close" /> : <Icon name="refresh" /> }
+          {loading_progress ? <I18n path="actions.cancel" /> : <I18n path="actions.refresh" /> }
         </Button>
         <Button
           to="/playlist/create"

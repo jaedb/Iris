@@ -4367,67 +4367,69 @@ h3 .loader,
 h4 .loader {
   margin-left: 0.8rem; }
 
-.loader__offline {
-  padding: 2rem;
-  color: rgba(128, 128, 128, 0.5);
-  text-align: center;
-  font-size: 1rem; }
-  .loader__offline .icon {
-    display: block;
-    font-size: 3rem;
-    padding-bottom: 0.5rem; }
-
-.loader__ring {
-  height: 120px;
-  width: 120px;
-  margin: 0 auto;
-  position: relative; }
-  .loader__ring__progress, .loader__ring__background, .loader__ring__foreground {
-    position: absolute;
-    transform-origin: 50% 50%; }
-  .loader__ring__progress {
-    -webkit-transition: all 0.2s ease-in-out;
-    -moz-transition: all 0.2s ease-in-out;
-    -o-transition: all 0.2s ease-in-out;
-    transition: all 0.2s ease-in-out;
-    transform: rotate(-90deg);
-    position: absolute;
-    stroke: rgba(128, 128, 128, 0.25); }
-  .loader__ring__background {
-    stroke: rgba(128, 128, 128, 0.25); }
-  .loader__ring__foreground {
-    animation-name: spin;
-    animation-duration: 0.5s;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-    stroke: #32b5f2; }
-
-.loader--white .loader__ring__progress {
-  stroke: gray; }
-
-.loader--white .loader__ring__background {
-  stroke: rgba(128, 128, 128, 0.5); }
-
-.loader--white .loader__ring__foreground {
-  stroke: #FFFFFF; }
-
-.loader--body {
-  padding: 35vh 0;
-  text-align: center; }
-
-.loader--mini {
-  padding: 0; }
-  .loader--mini .loader__ring {
-    width: 24px;
-    height: 24px; }
-  .loader--mini .loader__offline {
-    display: none; }
-
-.loader--lazy {
-  padding: 20px; }
-  .loader--lazy .loader__spinner {
-    width: 40px;
-    height: 40px; }
+.loader {
+  position: relative;
+  display: flex;
+  flex-direction: column; }
+  .loader__offline {
+    padding: 2rem;
+    color: rgba(128, 128, 128, 0.5);
+    text-align: center;
+    font-size: 1rem; }
+    .loader__offline .icon {
+      display: block;
+      font-size: 3rem;
+      padding-bottom: 0.5rem; }
+  .loader__progress-text {
+    text-align: center;
+    color: rgba(128, 128, 128, 0.5);
+    margin: -65px auto 0;
+    font-size: 0.82rem; }
+  .loader__ring {
+    height: 120px;
+    width: 120px;
+    margin: 0 auto;
+    position: relative; }
+    .loader__ring__progress, .loader__ring__background, .loader__ring__foreground {
+      position: absolute;
+      transform-origin: 50% 50%; }
+    .loader__ring__progress {
+      -webkit-transition: all 0.2s ease-in-out;
+      -moz-transition: all 0.2s ease-in-out;
+      -o-transition: all 0.2s ease-in-out;
+      transition: all 0.2s ease-in-out;
+      transform: rotate(-90deg);
+      position: absolute;
+      stroke: rgba(128, 128, 128, 0.25); }
+    .loader__ring__background {
+      stroke: rgba(128, 128, 128, 0.25); }
+    .loader__ring__foreground {
+      animation-name: spin;
+      animation-duration: 0.5s;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+      stroke: #32b5f2; }
+  .loader--white .loader__ring__progress {
+    stroke: gray; }
+  .loader--white .loader__ring__background {
+    stroke: rgba(128, 128, 128, 0.5); }
+  .loader--white .loader__ring__foreground {
+    stroke: #FFFFFF; }
+  .loader--body {
+    padding: 35vh 0;
+    text-align: center; }
+  .loader--mini {
+    padding: 0; }
+    .loader--mini .loader__ring {
+      width: 24px;
+      height: 24px; }
+    .loader--mini .loader__offline {
+      display: none; }
+  .loader--lazy {
+    padding: 20px; }
+    .loader--lazy .loader__spinner {
+      width: 40px;
+      height: 40px; }
 
 .dragging * {
   cursor: grabbing !important;

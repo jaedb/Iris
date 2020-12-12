@@ -27,6 +27,7 @@ actions:
   stop: Stop
   add_to_playlist: Add to playlist
   add_to_library: Add to library
+  added_tracks_to: 'Added %{count} tracks to '
   remove_from_library: Remove from library
   add_to_queue: Add to queue
   reset: Reset

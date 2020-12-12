@@ -201,7 +201,7 @@ class LibraryTracks extends React.Component {
     } = this.state;
     let { tracks } = this.props;
 
-    if (loading_progress !== null) {
+    if (loading_progress) {
       return <Loader body loading progress={loading_progress} />;
     }
 
@@ -244,7 +244,6 @@ class LibraryTracks extends React.Component {
       filter,
       per_page,
     } = this.state;
-    const loading = loading_progress !== null;
 
     const source_options = [
       {
@@ -319,11 +318,11 @@ class LibraryTracks extends React.Component {
         <Button
           noHover
           discrete
-          onClick={loading ? this.cancelRefresh : this.refresh}
+          onClick={loading_progress ? this.cancelRefresh : this.refresh}
           tracking={{ category: 'LibraryTracks', action: 'Refresh' }}
         >
-          {loading ? <Icon name="close" /> : <Icon name="refresh" /> }
-          {loading ? <I18n path="actions.cancel" /> : <I18n path="actions.refresh" /> }
+          {loading_progress ? <Icon name="close" /> : <Icon name="refresh" /> }
+          {loading_progress ? <I18n path="actions.cancel" /> : <I18n path="actions.refresh" /> }
         </Button>
       </>
     );

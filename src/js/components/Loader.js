@@ -2,10 +2,10 @@ import React, { memo } from 'react';
 import Icon from './Icon';
 import { I18n } from '../locale';
 
-const LoaderRing = ({ radius, stroke, progress }) => {
+const LoaderRing = ({ radius, stroke, percent }) => {
   const normalizedRadius = radius - stroke * 2;
   const circumference = normalizedRadius * 2 * Math.PI;
-  const strokeDashoffset = circumference - progress * circumference;
+  const strokeDashoffset = circumference - percent * circumference;
 
   return (
     <svg
@@ -13,7 +13,7 @@ const LoaderRing = ({ radius, stroke, progress }) => {
       height={radius * 2}
       width={radius * 2}
     >
-      {progress === null ? (
+      {percent === null ? (
         <circle
           className="loader__ring__background"
           stroke="transparent"
@@ -60,7 +60,11 @@ export default memo((props) => {
     lazy,
     white,
     className = '',
-    progress,
+    progress: {
+      total,
+      remaining,
+      percent,
+    } = {},
   } = props;
 
   if (!loading && !finished) {
@@ -114,8 +118,13 @@ export default memo((props) => {
       <LoaderRing
         stroke={mini ? 2 : 3}
         radius={mini ? 12 : 60}
-        progress={progress}
+        percent={percent}
       />
+      {total > 0 && remaining >= 0 && (
+        <div className="loader__progress-text">
+          {`${total - remaining} / ${total}`}
+        </div>
+      )}
     </div>
   );
 });

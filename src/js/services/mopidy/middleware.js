@@ -436,8 +436,14 @@ const MopidyMiddleware = (function () {
         break;
 
       case 'MOPIDY_UPDATE_SERVER':
-        let servers = store.getState().mopidy.servers;
-        servers[action.server.id] = { ...servers[action.server.id], ...action.server };
+        const existingServers = store.getState().mopidy.servers;
+        const servers = {
+          ...existingServers,
+          [action.server.id]: {
+            ...existingServers[action.server.id] || {},
+            ...action.server,
+          },
+        };
         store.dispatch(mopidyActions.updateServers(servers));
         break;
 
@@ -461,11 +467,12 @@ const MopidyMiddleware = (function () {
         );
         break;
 
-      case 'MOPIDY_REMOVE_SERVER':
-        let remaining_servers = store.getState().mopidy.servers;
-        delete remaining_servers[action.id];
-        store.dispatch(mopidyActions.updateServers(remaining_servers));
+      case 'MOPIDY_REMOVE_SERVER': {
+        let servers = { ...store.getState().mopidy.servers };
+        delete servers[action.id];
+        store.dispatch(mopidyActions.updateServers(servers));
         break;
+      }
 
       case 'SET_WINDOW_FOCUS':
         /**

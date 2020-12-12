@@ -18,6 +18,7 @@ import {
   injectSortId,
 } from '../../util/format';
 import { handleException } from './actions';
+import { I18n } from '../../locale';
 
 const coreActions = require('./actions.js');
 const uiActions = require('../ui/actions.js');
@@ -265,18 +266,18 @@ const CoreMiddleware = (function () {
         } = store.getState();
         store.dispatch(uiActions.createNotification({
           content: (
-            <span>
-              Added {tracks_uris.length} tracks to <URILink uri={key}>{asset ? asset.name : 'playlist'}</URILink>
-            </span>
+            <I18n path="actions.added_tracks_to" count={tracks_uris.length} contentAfter>
+              <URILink uri={key}>{asset ? asset.name : 'playlist'}</URILink>
+            </I18n>
           ),
         }));
 
         switch (uriSource(key)) {
           case 'spotify':
-            store.dispatch(spotifyActions.getPlaylist(key));
+            store.dispatch(spotifyActions.getPlaylist(key, {}));
             break;
           case 'm3u':
-            store.dispatch(mopidyActions.getPlaylist(key));
+            store.dispatch(mopidyActions.getPlaylist(key, {}));
             break;
           default:
             break;

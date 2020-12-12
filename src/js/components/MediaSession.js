@@ -27,31 +27,48 @@ class MediaSession extends React.Component {
 
   static getDerivedStateFromProps({ current_track, stream_title, play_state }, state) {
     if (current_track) {
+      const {
+        title,
+        album = {},
+        artists = [],
+        images = {},
+      } = current_track;
+
+      if (current_track.duration) {
+        navigator.mediaSession.setPositionState({
+          duration: current_track.duration,
+          playbackRate: 1,
+          position: 0,
+        });
+      }
+
       navigator.mediaSession.metadata = new window.MediaMetadata({
-        title: stream_title || current_track.title,
-        artist: current_track.artists[0].name,
-        album: current_track.album.name,
+        title: stream_title || title || '-',
+        artist: artists.length ? artists[0].name : '-',
+        album: album.name || '-',
         artwork: [
-          {
-            src: current_track.images ? current_track.images.small : '',
+          ...(images.small ? [{
+            src: images ? images.small : '',
             sizes: '96x96',
             type: 'image/png',
-          },
-          {
-            src: current_track.images ? current_track.images.medium : '',
+          }] : []),
+          ...(images.medium ? [{
+            src: images ? images.medium : '',
             sizes: '256x256',
             type: 'image/png',
-          },
-          {
-            src: current_track.images ? current_track.images.huge : '',
+          }] : []),
+          ...(images.huge ? [{
+            src: images ? images.huge : '',
             sizes: '512x512',
             type: 'image/png',
-          },
+          }] : []),
         ],
       });
     }
 
-    navigator.mediaSession.playbackState = play_state;
+    if (navigator.mediaSession.playbackState !== play_state) {
+      navigator.mediaSession.playbackState = play_state;
+    }
 
     return {
       ...state,
@@ -103,7 +120,7 @@ const mapStateToProps = (state) => {
   } = state.core;
 
   return {
-    current_track: current_track ? items[current_track.uri] || current_track : null,
+    current_track: current_track ? items[current_track.uri] || current_track : {},
     stream_title,
     play_state: state.mopidy.play_state,
     time_position: state.mopidy.time_position,
