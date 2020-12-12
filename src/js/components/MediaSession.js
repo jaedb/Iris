@@ -21,11 +21,20 @@ class MediaSession extends React.Component {
     mediaSession.setActionHandler('pause', () => this.actionHandler('pause'));
     mediaSession.setActionHandler('seekbackward', () => this.actionHandler('seekbackward'));
     mediaSession.setActionHandler('seekforward', () => this.actionHandler('seekforward'));
+    mediaSession.setActionHandler('seekto', (position) => this.actionHandler('seekto', position));
     mediaSession.setActionHandler('previoustrack', () => this.actionHandler('previous'));
     mediaSession.setActionHandler('nexttrack', () => this.actionHandler('next'));
   }
 
-  static getDerivedStateFromProps({ current_track, stream_title, play_state }, state) {
+  static getDerivedStateFromProps(
+    {
+      current_track,
+      stream_title,
+      play_state,
+      time_position,
+    },
+    state,
+  ) {
     if (current_track) {
       const {
         title,
@@ -35,10 +44,11 @@ class MediaSession extends React.Component {
       } = current_track;
 
       if (current_track.duration) {
+        console.log({ current_track });
         navigator.mediaSession.setPositionState({
-          duration: current_track.duration,
+          duration: current_track.duration / 1000,
           playbackRate: 1,
-          position: 0,
+          position: time_position / 1000,
         });
       }
 
@@ -77,7 +87,7 @@ class MediaSession extends React.Component {
     };
   }
 
-  actionHandler = (action) => {
+  actionHandler = (action, { seekTime } = {}) => {
     const {
       mopidyActions: actions,
       time_position,
@@ -91,6 +101,9 @@ class MediaSession extends React.Component {
       }
       case 'seekforward': {
         return actions.setTimePosition(time_position + 30000); // 30 seconds
+      }
+      case 'seekto': {
+        return actions.setTimePosition(seekTime * 1000);
       }
       default: {
         return actions[action]();
