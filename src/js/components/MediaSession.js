@@ -9,6 +9,7 @@ class MediaSession extends React.Component {
     this.state = {
       current_track: null,
       stream_title: null,
+      audioRef: React.createRef(), // Allows access from within getDerivedStateFromProps
     };
   }
 
@@ -19,8 +20,6 @@ class MediaSession extends React.Component {
 
     mediaSession.setActionHandler('play', () => this.actionHandler('play'));
     mediaSession.setActionHandler('pause', () => this.actionHandler('pause'));
-    mediaSession.setActionHandler('seekbackward', () => this.actionHandler('seekbackward'));
-    mediaSession.setActionHandler('seekforward', () => this.actionHandler('seekforward'));
     mediaSession.setActionHandler('seekto', (position) => this.actionHandler('seekto', position));
     mediaSession.setActionHandler('previoustrack', () => this.actionHandler('previous'));
     mediaSession.setActionHandler('nexttrack', () => this.actionHandler('next'));
@@ -29,7 +28,7 @@ class MediaSession extends React.Component {
   static getDerivedStateFromProps(
     {
       current_track,
-      stream_title,
+      stream_title = null,
       play_state,
       time_position,
     },
@@ -37,25 +36,32 @@ class MediaSession extends React.Component {
   ) {
     if (current_track) {
       const {
-        title,
+        name,
         album = {},
         artists = [],
         images = {},
       } = current_track;
 
       if (current_track.duration) {
-        console.log({ current_track });
-        navigator.mediaSession.setPositionState({
-          duration: current_track.duration / 1000,
-          playbackRate: 1,
-          position: time_position / 1000,
-        });
+        // Only supported on Android as of Chrome 81 and later.
+        if ('setPositionState' in navigator.mediaSession) {
+          const newPositionState = {
+            duration: Math.round(current_track.duration / 1000),
+            position: Math.round(time_position / 1000),
+            playbackRate: 1,
+          };
+          try {
+            navigator.mediaSession.setPositionState(newPositionState);
+          } catch (error) {
+            console.error('Failed to set MediaSession position', { newPositionState, error });
+          }
+        }
       }
 
       navigator.mediaSession.metadata = new window.MediaMetadata({
-        title: stream_title || title || '-',
-        artist: artists.length ? artists[0].name : '-',
-        album: album.name || '-',
+        title: stream_title || name || 'Unknown track',
+        artist: artists.length ? artists[0].name : 'Unknown artist',
+        album: album.name || 'Unknown album',
         artwork: [
           ...(images.small ? [{
             src: images.small,
@@ -78,6 +84,19 @@ class MediaSession extends React.Component {
 
     if (navigator.mediaSession.playbackState !== play_state) {
       navigator.mediaSession.playbackState = play_state;
+      const {
+        audioRef: {
+          current,
+        },
+      } = state;
+
+      if (current) {
+        if (play_state === 'paused') {
+          current.pause();
+        } else {
+          current.play();
+        }
+      }
     }
 
     return {
@@ -112,6 +131,8 @@ class MediaSession extends React.Component {
   }
 
   render = () => {
+    const { audioRef } = this.state;
+
     return (
       // eslint-disable-next-line jsx-a11y/media-has-caption
       <audio
@@ -120,6 +141,7 @@ class MediaSession extends React.Component {
         autoPlay
         loop
         style={{ display: 'none' }}
+        ref={audioRef}
       />
     );
   };
