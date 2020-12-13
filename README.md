@@ -1,6 +1,6 @@
 <img src="https://raw.githubusercontent.com/jaedb/Iris/master/src/assets/logo.png" width="128" />
 
-Iris is an extension for the Mopidy music server. With support for Spotify, LastFM, Snapcast, Icecast and many other extensions, Iris brings all your music into one user-friendly and unified web-based interface that works beautifully, no matter your device.
+Iris is an extension for the Mopidy music server. With support for Spotify, LastFM, Genius, Snapcast and many other extensions, Iris brings all your music into one user-friendly and unified web-based interface that works beautifully, no matter your device.
 
 Built and maintained by James Barnsley.
 
@@ -17,12 +17,12 @@ Features
 * Browse and manage your playlists and tracks
 * Discover new, popular and related music (powered by Spotify)
 * Multiple language support. [Want to provide a translation?](https://github.com/jaedb/Iris/wiki/Contributing#translations)
+* Streaming controls with the ability to play audio from your browser (requires Snapcast)
 * Integration with:
   * [Spotify](https://developer.spotify.com/web-api/)
-  * [LastFM](https://www.last.fm/api)
-  * [Genius](https://docs.genius.com/)
-  * [Snapcast](https://github.com/badaix/snapcast/)
-  * [Icecast](http://icecast.org/)
+  * [LastFM](https://www.last.fm/api) for rich music metadata and artwork
+  * [Genius](https://docs.genius.com/) for lyrics
+  * [Snapcast](https://github.com/badaix/snapcast/) to stream audio to multiple devices
 
 ![Overview](https://raw.githubusercontent.com/jaedb/Iris/master/screenshot.jpg)
 
