@@ -38,10 +38,19 @@ const getDependentUris = ({
 }) => {
   if (!item) return [];
 
+  const getUrisOfDependent = (dep) => {
+    if (!dep.match(new RegExp('(.*)_uri(.*)'))) return [];
+    const uris = item[dep];
+
+    if (uris && Array.isArray(uris)) return uris;
+
+    return [];
+  };
+
   return [...dependents, ...fullDependents].reduce(
     (acc, dep) => [
       ...acc,
-      ...(dep.match(new RegExp('(.*)_uri(.*)')) ? item[dep] : []),
+      ...getUrisOfDependent(dep),
     ],
     [],
   );

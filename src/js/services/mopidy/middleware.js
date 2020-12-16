@@ -42,6 +42,29 @@ const lastfmActions = require('../lastfm/actions.js');
 const geniusActions = require('../genius/actions.js');
 const discogsActions = require('../discogs/actions.js');
 
+/**
+ * Fetch the method of our Mopidy API that is being called, by string
+ *
+ * @param {String} call 
+ * @param {Object} socket 
+ */
+const getController = (call, socket) => {
+  const callParts = call.split('.');
+  const model = callParts[0];
+  const method = callParts[1];
+
+  let controller = null;
+  if (socket && socket[model]) {
+    if (method in socket[model] && socket[model][method]) {
+      controller = socket[model][method];
+    } else {
+      controller = socket[model];
+    }
+  }
+
+  return controller;
+};
+
 const MopidyMiddleware = (function () {
   // container for the actual Mopidy socket
   let socket = null;
@@ -183,69 +206,55 @@ const MopidyMiddleware = (function () {
    * @param string value (optional) = value of the property to pass
    * @return promise
    * */
-  const request = (store, call, value = {}) => {
-    return new Promise((resolve, reject) => {
-      const loader_key = generateGuid();
-      store.dispatch(uiActions.startLoading(loader_key, `mopidy_${call}`));
+  const request = (store, call, value = {}) => new Promise((resolve, reject) => {
+    const loader_key = generateGuid();
+    store.dispatch(uiActions.startLoading(loader_key, `mopidy_${call}`));
 
-      const doRequest = () => {
-        const callParts = call.split('.');
-        const model = callParts[0];
-        const method = callParts[1];
+    const doRequest = () => {
+      const controller = getController(call, socket);
 
-        let controller = null;
-        if (socket && socket[model]) {
-          if (method in socket[model] && socket[model][method]) {
-            controller = socket[model][method];
-          } else {
-            controller = socket[model];
-          }
-        }
+      if (controller) {
+        const timeout = setTimeout(
+          () => {
+            store.dispatch(uiActions.stopLoading(loader_key));
+            reject(new Error('Request timed out'));
+          },
+          30000,
+        );
 
-        if (controller) {
-          const timeout = setTimeout(
-            () => {
+        controller(value)
+          .then(
+            (response) => {
+              clearTimeout(timeout);
               store.dispatch(uiActions.stopLoading(loader_key));
-              reject(new Error('Request timed out'));
+              resolve(response);
             },
-            30000,
+            (error) => {
+              clearTimeout(timeout);
+              store.dispatch(uiActions.stopLoading(loader_key));
+              reject(error);
+            },
           );
-
-          controller(value)
-            .then(
-              (response) => {
-                clearTimeout(timeout);
-                store.dispatch(uiActions.stopLoading(loader_key));
-                resolve(response);
-              },
-              (error) => {
-                clearTimeout(timeout);
-                store.dispatch(uiActions.stopLoading(loader_key));
-                reject(error);
-              },
-            );
-        } else {
-          // Controller (model.method) doesn't exist, or connection not established
-          store.dispatch(uiActions.stopLoading(loader_key));
-          console.warn(
-            'Mopidy request aborted. Either Mopidy is not connected or the request method is invalid. Check the request and your server settings.',
-            { call, value },
-          );
-        }
-      };
-
-      // Give a 5-second leeway for allowing Mopidy to connect, if it isn't already connected
-      if (socket) {
-        doRequest();
       } else {
-        console.info('Mopidy not yet connected, waiting 2 seconds');
-        setTimeout(
-          () => doRequest(),
-          2000,
+        store.dispatch(uiActions.stopLoading(loader_key));
+        console.warn(
+          'Mopidy request aborted. Either Mopidy is not connected or the request method is invalid. Check the request and your server settings.',
+          { call, value, socket, controller },
         );
       }
-    });
-  };
+    };
+
+    // Give a 5-second leeway for allowing Mopidy to connect, if it isn't already connected
+    if (socket && store.getState().mopidy.connected) {
+      doRequest();
+    } else {
+      console.info('Mopidy not yet connected, waiting 2 seconds');
+      setTimeout(
+        () => doRequest(),
+        2000,
+      );
+    }
+  });
 
   /**
    * Process our search queries queue. We process one item in the queue and then
@@ -1163,13 +1172,13 @@ const MopidyMiddleware = (function () {
           .then((response) => {
             if (!response) return;
 
-            const playlist = {
-              ...formatPlaylist(response),
-              uri: response.uri,
+            const playlist = formatPlaylist({
+              images: {}, // Images not yet supported; treat playlist as being fully-loaded
+              ...response,
               type: 'playlist',
               provider: 'mopidy',
               can_edit: true,
-            };
+            });
 
             if (response.tracks) {
               request(store, 'library.lookup', { uris: arrayOf('uri', response.tracks) })
@@ -1184,6 +1193,8 @@ const MopidyMiddleware = (function () {
                   playlist.tracks = injectSortId(formatTracks(tracks));
                   store.dispatch(coreActions.itemLoaded(playlist));
                 });
+            } else {
+              store.dispatch(coreActions.itemLoaded(playlist));
             }
 
           });
@@ -1315,10 +1326,13 @@ const MopidyMiddleware = (function () {
       case 'MOPIDY_CREATE_PLAYLIST':
         request(store, 'playlists.create', { name: action.name, uri_scheme: action.scheme })
           .then((response) => {
-            const playlist = {
-              ...formatPlaylist(response),
+            const playlist = formatPlaylist({
+              ...response,
               ...action,
-            };
+              can_edit: true,
+              type: 'playlist',
+              provider: 'mopidy',
+            });
             store.dispatch(uiActions.createNotification({
               content: i18n('actions.created', { name: i18n('playlist.title') }),
             }));

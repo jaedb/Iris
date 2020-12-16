@@ -52,7 +52,7 @@ class Playlist extends React.Component {
   componentDidMount() {
     const { coreActions: { loadItem }, uri } = this.props;
     this.setWindowTitle();
-    loadItem(uri, { full: true });
+    setTimeout(() => loadItem(uri, { full: true }), 1);
   }
 
   componentDidUpdate = ({
