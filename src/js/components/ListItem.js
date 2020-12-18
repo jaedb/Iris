@@ -100,16 +100,16 @@ export default class ListItem extends React.Component {
     if (key === 'tracks') {
       const {
         tracks_total: total,
-        tracks: array,
       } = item;
-      if (!total && !array) return null;
-      return <I18n path="specs.tracks" count={total || array.length} />;
+      if (!total && !value) return null;
+      return <I18n path="specs.tracks" count={total || value.length} />;
     }
     if (key === 'artists') {
       const {
         artists_total: total,
         artists_uris: array,
       } = item;
+      if (Array.isArray(value)) return <LinksSentence items={value} />;
       if (!total && !array) return null;
       return <I18n path="specs.artists" count={total || array.length} />;
     }

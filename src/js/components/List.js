@@ -27,6 +27,7 @@ class List extends React.Component {
       link_prefix,
       thumbnail,
       details,
+      right_column,
       nocontext,
     } = this.props;
 
@@ -46,6 +47,7 @@ class List extends React.Component {
               handleContextMenu={(e) => this.handleContextMenu(e, item)}
               thumbnail={thumbnail}
               details={details}
+              right_column={right_column}
               nocontext={nocontext}
             />
 					))

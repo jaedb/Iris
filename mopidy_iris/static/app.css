@@ -4271,7 +4271,8 @@ select {
       margin-left: auto;
       z-index: 9;
       flex: 4;
-      justify-content: flex-end; }
+      justify-content: flex-end;
+      order: 2; }
       .list__item__column--right .list__item__column__item {
         padding-left: 10px;
         display: inline-block; }
