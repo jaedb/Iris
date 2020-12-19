@@ -292,7 +292,7 @@ class Album extends React.Component {
             {!slim_mode && album.listeners ? (
               <li>
                 {i18n(
-                  'specs.plays',
+                  'specs.listeners',
                   { count: nice_number(album.listeners) },
                 )}
               </li>
