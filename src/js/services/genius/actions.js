@@ -1,6 +1,6 @@
-
 import { generateGuid } from '../../util/helpers';
 import { makeItemSelector } from '../../util/selectors';
+import { formatUser } from '../../util/format';
 
 const coreActions = require('../core/actions');
 const uiActions = require('../ui/actions');
@@ -124,9 +124,13 @@ export function getMe() {
     sendRequest(dispatch, getState, 'account')
       .then(
         (response) => {
+          const me = formatUser(response.user);
           dispatch({
             type: 'GENIUS_ME_LOADED',
-            me: response.user,
+            me: {
+              ...me,
+              uri: `genius:user:${me.id}`,
+            },
           });
         },
         (error) => {

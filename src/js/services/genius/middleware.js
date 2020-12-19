@@ -1,40 +1,12 @@
-
-import { formatUser } from '../../util/format';
 const coreActions = require('../core/actions');
 const geniusActions = require('./actions');
 
 const GeniusMiddleware = (function () {
   return (store) => (next) => (action) => {
-    const state = store.getState();
 
     switch (action.type) {
       case 'GENIUS_ME_LOADED':
-        var me = formatUser(action.me);
-        Object.assign(
-          me,
-          {
-            uri: `genius:user:${me.id}`,
-          },
-        );
-
-            	store.dispatch({
-            		type: 'GENIUS_USER_LOADED',
-            		user: action.me,
-            	});
-        action.me = me;
-            	next(action);
-            	break;
-
-      case 'GENIUS_USER_LOADED':
-        var user = formatUser(action.user);
-        Object.assign(
-          user,
-          {
-            uri: `genius:user:${user.id}`,
-          },
-        );
-        store.dispatch(coreActions.userLoaded(user));
-        action.user = user;
+        store.dispatch(coreActions.userLoaded(action.me));
         next(action);
         break;
 

@@ -47,11 +47,17 @@ class Reset extends React.Component {
 
     e.preventDefault();
     const tasks = [];
+    const stateKeysToReset = [];
+    const stateKeys = ['mopidy', 'pusher', 'ui', 'spotify', 'snapcast', 'lastfm', 'genius'];
 
     if (preferences) {
       tasks.push(
         new Promise((resolve) => {
-          const keysToRemove = ['persist:root', 'persist:ui', 'persist:spotify', 'persist:pusher'];
+          const keysToRemove = [];
+          stateKeys.forEach((key) => {
+            keysToRemove.push(`persist:${key}`);
+            stateKeysToReset.push(key);
+          });
           keysToRemove.forEach((key, index) => {
             localForage.removeItem(key).then(() => {
               console.debug(`Removed ${key}`);
@@ -67,8 +73,9 @@ class Reset extends React.Component {
       tasks.push(
         new Promise((resolve) => {
           localForage.keys().then((keys) => {
-            const keysToKeep = ['persist:root', 'persist:ui', 'persist:spotify', 'persist:pusher'];
-            const keysToRemove = keys.filter((key) => keysToKeep.indexOf(key) < 0);
+            const keysToRemove = keys.filter(
+              (key) => !stateKeys.includes(key.replace('persist:', '')),
+            );
             keysToRemove.forEach((key, index) => {
               localForage.removeItem(key).then(() => {
                 console.debug(`Removed ${key}`);
@@ -120,9 +127,9 @@ class Reset extends React.Component {
 
     Promise.all(tasks).then(() => {
       console.log('Reset complete, refreshing...');
-      resetState();
+      resetState(stateKeysToReset);
       setTimeout(
-        () => window.location = `/iris${test_mode ? '?test_mode=0' : ''}`,
+        () => window.location = `/iris/settings${test_mode ? '?test_mode=0' : ''}`,
         1000,
       );
     });

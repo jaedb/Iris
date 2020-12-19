@@ -50,9 +50,10 @@ export function set(data) {
   };
 }
 
-export function resetState() {
+export function resetState(stateKeysToReset) {
   return {
     type: 'RESET_STATE',
+    stateKeysToReset,
   };
 }
 
