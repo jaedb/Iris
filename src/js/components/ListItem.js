@@ -128,6 +128,9 @@ export default class ListItem extends React.Component {
     if (key === 'followers') {
       return <I18n path="specs.followers" count={value.toLocaleString()} />;
     }
+    if (key === 'listeners') {
+      return <I18n path="specs.listeners" count={value.toLocaleString()} />;
+    }
     if (key === 'added_at') {
       return <I18n path="specs.added_ago" time={dater('ago', value)} />;
     }

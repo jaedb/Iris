@@ -196,7 +196,7 @@ class LibraryArtists extends React.Component {
             handleContextMenu={(e, item) => this.handleContextMenu(e, item)}
             rows={artists}
             thumbnail
-            details={['followers', 'popularity']}
+            details={['followers', 'listeners']}
             right_column={['source', 'albums']}
             className="artists"
             link_prefix="/artist/"

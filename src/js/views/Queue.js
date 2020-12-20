@@ -348,10 +348,10 @@ const mapStateToProps = (state) => {
   let current_track = {};
 
   if (queue && items) {
-    for (const queue_track of queue) {
+    queue.forEach((queueTrack) => {
       let track = {
-        ...queue_track,
-        playing: core_current_track && core_current_track.tlid == queue_track.tlid,
+        ...queueTrack,
+        playing: core_current_track && core_current_track.tlid === queueTrack.tlid,
       };
 
       // If we have the track in our index, merge it in.
@@ -379,7 +379,7 @@ const mapStateToProps = (state) => {
 
       // Now add our compiled track for our tracklist
       queue_tracks.push(track);
-    }
+    });
   }
 
   return {
