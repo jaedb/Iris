@@ -1,8 +1,7 @@
-
 import React from 'react';
-
 import LinksSentence from './LinksSentence';
-import { Dater, dater } from './Dater';
+import { dater } from './Dater';
+import { nice_number } from './NiceNumber';
 import URILink from './URILink';
 import ContextMenuTrigger from './ContextMenuTrigger';
 import Icon from './Icon';
@@ -13,7 +12,6 @@ import {
   scrollTo,
 } from '../util/helpers';
 import { I18n } from '../locale';
-import { arrayOf } from '../util/arrays';
 
 export default class ListItem extends React.Component {
   componentDidMount() {
@@ -102,7 +100,7 @@ export default class ListItem extends React.Component {
         tracks_total: total,
       } = item;
       if (!total && !value) return null;
-      return <I18n path="specs.tracks" count={total || value.length} />;
+      return <I18n path="specs.tracks" count={nice_number(total || value.length)} />;
     }
     if (key === 'artists') {
       const {
@@ -111,7 +109,7 @@ export default class ListItem extends React.Component {
       } = item;
       if (Array.isArray(value)) return <LinksSentence items={value} />;
       if (!total && !array) return null;
-      return <I18n path="specs.artists" count={total || array.length} />;
+      return <I18n path="specs.artists" count={nice_number(total || array.length)} />;
     }
     if (key === 'albums') {
       const {
@@ -126,10 +124,10 @@ export default class ListItem extends React.Component {
     if (!value) return null;
 
     if (key === 'followers') {
-      return <I18n path="specs.followers" count={value.toLocaleString()} />;
+      return <I18n path="specs.followers" count={nice_number(value)} />;
     }
     if (key === 'listeners') {
-      return <I18n path="specs.listeners" count={value.toLocaleString()} />;
+      return <I18n path="specs.listeners" count={nice_number(value)} />;
     }
     if (key === 'added_at') {
       return <I18n path="specs.added_ago" time={dater('ago', value)} />;

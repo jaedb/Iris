@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -21,14 +20,12 @@ import * as lastfmActions from '../services/lastfm/actions';
 import * as geniusActions from '../services/genius/actions';
 import {
   isLoading,
-  getFromUri,
   sourceIcon,
-  uriSource,
-  uriType,
 } from '../util/helpers';
 import { i18n, I18n } from '../locale';
 import Button from '../components/Button';
 import { makeLoadingSelector, makeItemSelector } from '../util/selectors';
+import { decodeUri } from '../util/format';
 
 class Track extends React.Component {
   componentDidMount() {
@@ -40,7 +37,7 @@ class Track extends React.Component {
       },
     } = this.props;
 
-    loadItem(uri);
+    loadItem(decodeUri(uri));
 
     if (track) {
       this.setWindowTitle(track);
@@ -68,7 +65,7 @@ class Track extends React.Component {
     } = this.props;
 
     if (prevUri !== uri) {
-      loadItem(uri);
+      loadItem(decodeUri(uri));
     }
 
     // We have just received our full track or our track artists
@@ -312,34 +309,8 @@ class Track extends React.Component {
   }
 }
 
-/**
- * Rebuild a track URI with some ugly-ass handling of encoding.
- *
- * Basically the ID part of a Mopidy URI needs to be encoded, but the rest of the URI can't be.
- * This means we need to break down the URI (decoded) and then reconstruct with an encoded ID.
- * This is all required because he URI is passed to us *from* a URL which has been encoded for
- * obvious reasons.
- *
- * @param uri String
- * @return String
- * */
-const rebuildUri = (uri) => {
-  const rebuilt_uri = `${uriSource(uri)}:${uriType(uri)}:`;
-
-  // Escape unreserved characters (RFC 3986)
-  // https://stackoverflow.com/questions/18251399/why-doesnt-encodeuricomponent-encode-single-quotes-apostrophes
-  let id = getFromUri('trackid', uri);
-  id = encodeURIComponent(id).replace(/[!'()*]/g, escape);
-
-  // Reinstate slashes for the Mopidy-Local structure
-  id = id.replace(/%2F/g, '/');
-
-  return rebuilt_uri + id;
-};
-
 const mapStateToProps = (state, ownProps) => {
-  let uri = decodeURIComponent(ownProps.match.params.uri);
-  uri = rebuildUri(uri);
+  const uri = decodeUri(ownProps.match.params.uri);
   const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`]);
   const trackSelector = makeItemSelector(uri);
 

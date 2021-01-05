@@ -3,6 +3,8 @@ import {
   isObject,
   upgradeSpotifyPlaylistUri,
   uriSource,
+  uriType,
+  getFromUri,
 } from './helpers';
 
 /**
@@ -273,6 +275,58 @@ const formatSimpleObjects = function (records = []) {
   return formatted;
 };
 
+/**
+ * Prepare a URI for use in a URL
+ *
+ * Needs to have all special characters encoded to avoid being parsed incorrectly, especially
+ * '/' as this is a URL parameter delimiter
+ * @param {String} uri
+ */
+const encodeUri = (uri) => {
+  return encodeURIComponent(uri);
+};
+
+/**
+ * Rebuild a URI with some ugly-ass handling of encoding.
+ *
+ * Basically the ID part of a Mopidy URI needs to be encoded, but the rest of the URI can't be.
+ * This means we need to break down the URI (decoded) and then reconstruct with an encoded ID.
+ * This is all required because he URI is passed to us *from* a URL which has been encoded for
+ * obvious reasons.
+ *
+ * For example somebackend:track:https://youtube.com/1234 would cause issues with the
+ * https:// section. Our explode-by-':' approach would break this type of URI.
+ *
+ * @param {String} rawUri
+ */
+const decodeUri = (rawUri) => {
+  const uri = decodeURIComponent(rawUri);
+  const source = uriSource(uri);
+  const type = uriType(uri);
+
+  // Escape unreserved characters (RFC 3986)
+  // https://stackoverflow.com/questions/18251399/why-doesnt-encodeuricomponent-encode-single-quotes-apostrophes
+  let id = getFromUri(`${type}id`, uri);
+  id = encodeURIComponent(id).replace(/[!'()*]/g, escape);
+
+  // Reinstate slashes for the Mopidy-Local structure
+  id = id.replace(/%2F/g, '/');
+
+  // Ensure all ':' are uri encoded to lowercase
+  id = id.replace(/%3A/g, '%3a');
+
+  let decoded = `${source}:`;
+  switch (source) {
+    case 'dleyna':
+      // Doesn't contain URI type within it's URI schema *facepalm*
+      break;
+    default:
+      decoded += `${type}:`;
+  }
+  decoded += `${id}`;
+
+  return decoded;
+};
 
 /**
  * Format our album objects into a universal format
@@ -969,6 +1023,8 @@ export {
   collate,
   collateLibrary,
   injectSortId,
+  encodeUri,
+  decodeUri,
 };
 
 export default {
@@ -995,4 +1051,6 @@ export default {
   collate,
   collateLibrary,
   injectSortId,
+  encodeUri,
+  decodeUri,
 };

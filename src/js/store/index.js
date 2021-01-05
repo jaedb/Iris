@@ -154,6 +154,7 @@ const pusherPersistConfig = {
   key: 'pusher',
   storage: localForage,
   blacklist: [
+    'connected',
     'connections',
   ],
   debug: window.test_mode,

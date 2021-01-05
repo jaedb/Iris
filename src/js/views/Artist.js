@@ -34,6 +34,7 @@ import {
   makeItemSelector,
   makeLoadingSelector,
 } from '../util/selectors';
+import { nice_number } from '../components/NiceNumber';
 
 class Artist extends React.Component {
   constructor(props) {
@@ -427,7 +428,7 @@ class Artist extends React.Component {
             <div className="tile">
               <span className="content">
                 <Icon type="fontawesome" name="users" />
-                <I18n path="specs.followers" count={artist.followers.toLocaleString()} />
+                <I18n path="specs.followers" count={nice_number(artist.followers)} />
               </span>
             </div>
           )}
@@ -443,7 +444,7 @@ class Artist extends React.Component {
             <div className="tile">
               <span className="content">
                 <Icon type="fontawesome" name="headphones" />
-                <I18n path="specs.listeners" count={artist.listeners.toLocaleString()} />
+                <I18n path="specs.listeners" count={nice_number(artist.listeners)} />
               </span>
             </div>
           )}

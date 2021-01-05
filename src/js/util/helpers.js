@@ -163,6 +163,10 @@ const uriType = function (uri) {
     return exploded[1];
   }
 
+  if (exploded[0] === 'dleyna') {
+    return 'track';
+  }
+
   if (exploded[0] === 'tunein') {
     switch (exploded[1]) {
       case 'station':
@@ -191,7 +195,6 @@ const uriType = function (uri) {
   }
 };
 
-
 const sourceIcon = function (uri, source = null) {
   if (uri) source = uriSource(uri);
   switch (source) {
@@ -219,19 +222,18 @@ const sourceIcon = function (uri, source = null) {
   }
 };
 
-
 /**
  * Get an element from a URI
  * @param element = string, the element we wish to extract
  * @param uri = string
  * */
-const getFromUri = function (element, uri) {
+const getFromUri = (element, uri) => {
   if (!uri) return null;
   const exploded = `${uri}`.split(':');
 
   switch (element) {
     case 'mbid':
-      var index = exploded.indexOf('mbid');
+      const index = exploded.indexOf('mbid');
       if (index > -1) return exploded[index + 1];
       break;
 
@@ -265,6 +267,9 @@ const getFromUri = function (element, uri) {
     case 'trackid':
       if (exploded[1] == 'track') {
         return exploded[2];
+      }
+      if (exploded[0] === 'dleyna') {
+        return uri.replace('dleyna:', '');
       }
       break;
 
@@ -312,7 +317,6 @@ const getFromUri = function (element, uri) {
   }
 };
 
-
 /**
  * Build a link to an asset. Using the URI type we can ascertain where we need
  * to direct the user (eg /track/local:track:1235.mp3)
@@ -320,17 +324,15 @@ const getFromUri = function (element, uri) {
  * @param $uri = String
  * @return String
  * */
-const buildLink = function (uri) {
-  // Start the link with the URI type
+const buildLink = (uri) => {
   const type = uriType(uri);
   let link = `/${type}/`;
 
   // Encode the whole URI as though it's a component. This makes it URL friendly for
   // all Mopidy backends (some use URIs like local:track:http://rss.com/stuff.mp3) which
   // is never going to work nicely.
-  uri = encodeURIComponent(uri);
-  link += uri;
-
+  link += encodeURIComponent(uri);
+  console.log({ type, link });
   return link;
 };
 
