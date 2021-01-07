@@ -21,21 +21,21 @@
 		box-shadow: 2px 3px 6px rgba(0,0,0,0.2);
 		z-index: 9;
 
-		@include theme('dark') & {
-			color: colour(white);
-			background: lighten(colour(grey), 4%);
+		@include theme('dark') {
+			color: colour('white');
+			background: lighten(colour('grey'), 4%);
 
 			&:after {
-				background: lighten(colour(grey), 4%);
+				background: lighten(colour('grey'), 4%);
 			}
 		}
 
 		@include theme('light') {
-			color: colour(darkest_grey);
-			background: colour(white);
+			color: colour('darkest_grey');
+			background: colour('white');
 
 			&:after {
-				background: colour(white);
+				background: colour('white');
 			}
 		}
 
@@ -144,7 +144,7 @@
 			border-radius: 0;
 			max-height: 50vh;
 
-			@include theme('dark') & {
+			@include theme('dark') {
 				box-shadow: 0 -5px 5px rgba(0, 0, 0, 0.6);
 			}
 

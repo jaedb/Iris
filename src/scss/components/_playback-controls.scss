@@ -17,20 +17,20 @@
     z-index: -1;
   }
 
-  @include theme('dark') & {
-    color: colour(white);
+  @include theme('dark') {
+    color: colour('white');
 
     &__background {
-      background: colour(grey);
+      background: colour('grey');
       box-shadow: 0 -1px 10px rgba(0, 0, 0, 0.6);
     }
   }
 
   @include theme('light') {
-    color: colour(darkest_grey);
+    color: colour('darkest_grey');
 
     &__background {
-      background: colour(white);
+      background: colour('white');
       box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.1);
     }
   }
@@ -140,7 +140,7 @@
         margin-right: 12px;
 
         &__image {
-          background-color: colour(middle_grey);
+          background-color: colour('middle_grey');
         }
 
         &:before {
@@ -156,7 +156,7 @@
           margin-top: -9px;
           text-align: center;
           font-size: 18px;
-          color: colour(white);
+          color: colour('white');
           z-index: 3;
           opacity: 0;
         }
@@ -218,10 +218,10 @@
     display: inline-block;
     vertical-align: bottom;
     background: none;
-    color: colour(white);
+    color: colour('white');
 
     @include theme('light') {
-      color: colour(darkest_grey);
+      color: colour('darkest_grey');
     }
 
     .icon {
@@ -230,7 +230,7 @@
     }
 
     &--active {
-      color: colour(turquoise) !important;
+      color: colour('turquoise') !important;
     }
 
     &:hover,
@@ -252,7 +252,7 @@
 
         &.play {
           @include theme('light') {
-            color: colour(turquoise);
+            color: colour('turquoise');
           }
 
           .icon {

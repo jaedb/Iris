@@ -60,10 +60,10 @@
 
 			&:hover {
 				.menu-item__inner {
-					background: lighten(colour(dark_grey), 4%);
+					background: lighten(colour('dark_grey'), 4%);
 
 					@include theme('light') {
-						background: darken(colour(faint_grey), 4%);
+						background: darken(colour('faint_grey'), 4%);
 					}
 				}
 			}
@@ -76,14 +76,14 @@
 
 			&--active {
 				.menu-item__inner {
-					background: lighten(colour(dark_grey), 4%);
+					background: lighten(colour('dark_grey'), 4%);
 					border-bottom-left-radius: 0;
 					border-bottom-right-radius: 0;
 					padding-bottom: 40px;
 					margin-bottom: 0;
 
 					@include theme('light') {
-						background: darken(colour(faint_grey), 4%);
+						background: darken(colour('faint_grey'), 4%);
 					}
 				}
 			}
@@ -93,14 +93,14 @@
 	&__content {
 		padding: 20px;
 		border-radius: 0 0 3px 3px;
-		background: lighten(colour(dark_grey), 4%);
+		background: lighten(colour('dark_grey'), 4%);
 
 		.field:last-child {
 			padding-bottom: 0;
 		}
 
 		@include theme('light') {
-			background: darken(colour(faint_grey), 4%);
+			background: darken(colour('faint_grey'), 4%);
 		}
 	}
 

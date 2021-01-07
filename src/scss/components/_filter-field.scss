@@ -33,7 +33,7 @@
 		
 		&:hover {
 			.icon {
-				color: colour(blue);
+				color: colour('blue');
 			}
 		}
 	}
@@ -46,7 +46,7 @@
 
 		.icon {
 			&:hover {
-				color: colour(red);
+				color: colour('red');
 				cursor: pointer;
 			}
 		}
@@ -77,7 +77,7 @@
 				border-bottom: 2px solid rgba(128,128,128,0.25);
 
 				&:focus {
-					border-color: colour(white);
+					border-color: colour('white');
 				}
 			}
 		}

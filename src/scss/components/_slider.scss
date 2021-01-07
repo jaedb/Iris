@@ -35,7 +35,7 @@
 				height: 12px;
 				top: -4px;
 				right: -6px;
-				background: lighten(colour(turquoise), 10%);
+				background: lighten(colour('turquoise'), 10%);
 			}
 		}
 	}
@@ -52,7 +52,7 @@
 
 		&__progress {
 			position: absolute;
-			background: colour(turquoise);
+			background: colour('turquoise');
 			pointer-events: none;
 			top: 0;
 			left: 0;
@@ -65,7 +65,7 @@
 				@include animate(0.1s);
 				content: '';
 				display: block;
-				background: colour(turquoise);
+				background: colour('turquoise');
 				position: absolute;
 				top: 0;
 				right: -1px;
@@ -79,10 +79,10 @@
 	&--disabled,
 	&--muted {
 		.slider__track__progress {
-			background: colour(mid_grey);
+			background: colour('mid_grey');
 
 			&:after {
-				background: colour(mid_grey) !important;
+				background: colour('mid_grey') !important;
 			}
 		}
 	}
@@ -95,7 +95,7 @@
 					height: 12px;
 					top: -4px;
 					right: -6px;
-					background: lighten(colour(turquoise), 10%);
+					background: lighten(colour('turquoise'), 10%);
 				}
 			}
 		}
