@@ -10,11 +10,11 @@
 		float: left;
 		padding: 8px 5px 0;
 		border: 0;
-		color: colour(white);
+		color: colour('white');
 		background: transparent;
 
 		@include theme('light') {
-			color: colour(darkest_grey);
+			color: colour('darkest_grey');
 		}
 	}
 
@@ -62,13 +62,13 @@
 
 				&:hover {
 					.menu-item__inner {
-						background: lighten(colour(dark_grey), 8%);
+						background: lighten(colour('dark_grey'), 8%);
 					}
 				}
 
 				&--active {
 					.menu-item__inner {
-						background: lighten(colour(dark_grey), 8%);
+						background: lighten(colour('dark_grey'), 8%);
 						padding-bottom: 30px;
 					}
 				}
@@ -76,17 +76,17 @@
 				@include theme('light') {
 					&:hover{
 						.menu-item__inner {
-							background: darken(colour(faint_grey), 8%);
+							background: darken(colour('faint_grey'), 8%);
 						}
 
 						&:after {
-							background: darken(colour(faint_grey), 8%);
+							background: darken(colour('faint_grey'), 8%);
 						}
 					}
 
 					&--active {
 						.menu-item__inner {
-							background: darken(colour(faint_grey), 8%);
+							background: darken(colour('faint_grey'), 8%);
 						}
 					}
 				}
@@ -98,7 +98,7 @@
 		padding: 20px 20px 0 20px;
 		margin: 0 -20px -20px -20px;
 		border-radius: 0 0 3px 3px;
-		background: lighten(colour(dark_grey), 8%);
+		background: lighten(colour('dark_grey'), 8%);
 
 		.field:last-child {
 			padding-bottom: 0;
@@ -110,7 +110,7 @@
 		}
 
 		@include theme('light') {
-			background: darken(colour(faint_grey), 8%);
+			background: darken(colour('faint_grey'), 8%);
 		}
 
 		&__volume-control {
@@ -195,7 +195,7 @@
 					left: 50%;
 					bottom: 0;
 					width: 1px;
-					background: colour(grey);
+					background: colour('grey');
 					z-index: 0;
 				}
 

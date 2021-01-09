@@ -12,8 +12,8 @@
 		position: relative;
 		padding: 0.9rem 1rem;
 		margin: 0.5rem;
-		background: colour(soft_grey);
-		color: colour(white);
+		background: colour('soft_grey');
+		color: colour('white');
 		pointer-events: all;
 		border-radius: 3px;
 		font-size: 0.9rem;
@@ -86,21 +86,21 @@
 
 		&--good,
 		&--success {
-			background: colour(green);
+			background: colour('green');
 		}
 
 		&--broadcast {
-			background: colour(yellow);
-			color: colour(black);
+			background: colour('yellow');
+			color: colour('black');
 		}
 
 		&--warning {
-			background: colour(orange);
+			background: colour('orange');
 		}
 
 		&--bad,
 		&--error {
-			background: colour(red);
+			background: colour('red');
 		}
 
 		&--shortcut {
@@ -110,8 +110,8 @@
 			height: 400px;
 			width: 400px;
 			margin: -200px 0 0 -200px;
-			background: colour(overlay_dark);
-			color: colour(white);
+			background: colour('overlay_dark');
+			color: colour('white');
 			border-radius: 10px;
 			text-align: center;
 

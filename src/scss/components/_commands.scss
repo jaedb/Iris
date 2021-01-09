@@ -2,7 +2,7 @@
 .commands {
 	&__item {
 		text-align: center;
-		color: colour(white);
+		color: colour('white');
 		display: inline-block;
 		position: relative;
 		width: 26px;
@@ -25,7 +25,7 @@
 			left: 0;
 			width: 100%;
 			padding-bottom: 100%;
-			background: colour(grey);
+			background: colour('grey');
 			z-index: -1;
 			border-radius: 50%;
 			opacity: 1;
