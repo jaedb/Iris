@@ -12,16 +12,16 @@
 		font-size: 12px;
 		font-weight: normal;
 		background: rgba(255,255,255,0.1);
-		color: colour(white);
+		color: colour('white');
 
 		&.sortable-chosen {
-			background: colour(grey);
+			background: colour('grey');
 		}
 
 		.icon {
 			font-size: 14px;
 			padding-right: 0.1em;
-			color: colour(darkest_grey);
+			color: colour('darkest_grey');
 		}
 
 		&:hover {
@@ -29,11 +29,11 @@
 		}
 
 		@include theme('light') {
-			background: colour(faint_grey);
+			background: colour('faint_grey');
 			color: inherit;
 
 			&:hover {
-				background: darken(colour(faint_grey), 4%);
+				background: darken(colour('faint_grey'), 4%);
 			}
 		}
 	}

@@ -3,27 +3,27 @@
  * Our colour map
  **/
 $colours: (
-	turquoise: #08d58f,
-	off_white: #F5F5F5,
-	faint_grey: #f4f2f0,
-	light_grey: #cecac4,
-	mid_grey: #a3a19f,
-	middle_grey: rgba(128,128,128,0.5),
-	soft_grey: #51504e,
-	grey: #383734,
-	dark_grey: #181818,
-	darkest_grey: #121212,
-	secondary_grey: #888888,
-	white: #FFFFFF,
-	black: #000000,
-	red: #cf2d2d,
-	green: #47af2a,
-	blue: #32b5f2,
-	light_blue: #96cfea,
-	yellow: #FFF39C,
-	orange: #f16f19,
-	overlay_dark: rgba(0, 0, 0, 0.88),
-	overlay_light: rgba(255, 255, 255, 0.70)
+	"turquoise": #08d58f,
+	"off_white": #F5F5F5,
+	"faint_grey": #f4f2f0,
+	"light_grey": #cecac4,
+	"mid_grey": #a3a19f,
+	"middle_grey": rgba(128,128,128,0.5),
+	"soft_grey": #51504e,
+	"grey": #383734,
+	"dark_grey": #181818,
+	"darkest_grey": #121212,
+	"secondary_grey": #888888,
+	"white": #FFFFFF,
+	"black": #000000,
+	"red": #cf2d2d,
+	"green": #47af2a,
+	"blue": #32b5f2,
+	"light_blue": #96cfea,
+	"yellow": #FFF39C,
+	"orange": #f16f19,
+	"overlay_dark": rgba(0, 0, 0, 0.88),
+	"overlay_light": rgba(255, 255, 255, 0.70)
 );
 
 
@@ -34,15 +34,15 @@ $colours: (
  **/
 @each $class, $colour in $colours {
 	
-	&.#{$class}-text {
+	.#{$class}-text {
 		color: $colour !important;
 	}
 
-	&.#{$class}-border {
+	.#{$class}-border {
 		border-color: $colour !important;
 	}
 
-	&.#{$class}-background {
+	.#{$class}-background {
 		background-color: $colour !important;
 	}
 }
@@ -71,7 +71,7 @@ $colours: (
 	filter: invert(1);
 }
 
-@mixin gradient_overlay($radius: 0, $opacity: 0){
+@mixin gradient_overlay($radius: 0, $opacity: 0) {
 	position: relative;
 	border-radius: $radius;
 	

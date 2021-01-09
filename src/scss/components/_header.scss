@@ -42,12 +42,12 @@ main {
 				padding: 13px 10px;
 				margin: 0;
 				min-width: 0;
-				color: colour(light_grey);
+				color: colour('light_grey');
 				vertical-align: unset;
 				border: none;
 
 				&:hover {
-					color: colour(blue);
+					color: colour('blue');
 					box-shadow: none;
 
 					&:before {
@@ -56,10 +56,10 @@ main {
 				}
 
 				@include theme('light') {
-					color: colour(darkest_grey);
+					color: colour('darkest_grey');
 
 					&:hover {
-						color: colour(blue);
+						color: colour('blue');
 					}
 
 					&:active {

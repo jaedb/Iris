@@ -7,7 +7,7 @@
     &__liner {
       z-index: 2;
       position: relative;
-      color: colour(white);
+      color: colour('white');
 
       h1 {
         font-size: 3rem;
@@ -17,7 +17,7 @@
 
       h2 {
         padding-bottom: 8px;
-        color: colour(mid_grey);
+        color: colour('mid_grey');
       }
     }
 
@@ -51,7 +51,7 @@
           }
 
           &:after {
-            background: colour(blue);
+            background: colour('blue');
           }
         }
 
@@ -68,7 +68,7 @@
 
         .button {
           background: rgba(100, 100, 100, 0.5);
-          color: colour(white);
+          color: colour('white');
           padding: 16px 20px 14px 20px;
         }
 
@@ -97,7 +97,7 @@
     .seed {
       display: flex;
       align-items: center;
-      color: colour(white);
+      color: colour('white');
       padding: 15px;
 
       .thumbnail-wrapper {
@@ -123,7 +123,7 @@
           vertical-align: middle;
 
           &:hover {
-            color: colour(red);
+            color: colour('red');
           }
         }
 
@@ -134,7 +134,7 @@
       }
 
       @include theme('light') {
-        color: colour(darkest_grey);
+        color: colour('darkest_grey');
       }
     }
   }
@@ -157,7 +157,7 @@
         text-transform: uppercase;
 
         @include theme('light') {
-          color: colour(darkest_grey);
+          color: colour('darkest_grey');
         }
       }
 
@@ -181,7 +181,7 @@
         margin-left: 4px;
 
         &:hover {
-          color: colour(red);
+          color: colour('red');
         }
       }
     }

@@ -14,7 +14,7 @@ h4 {
 
 	&__offline {
 		padding: 2rem;
-		color: colour(middle_grey);
+		color: colour('middle_grey');
 		text-align: center;
 		font-size: 1rem;
 
@@ -27,7 +27,7 @@ h4 {
 
 	&__progress-text {
 		text-align: center;
-		color: colour(middle_grey);
+		color: colour('middle_grey');
 		margin: -65px auto 0;
 		font-size: 0.82rem;
 	}
@@ -58,7 +58,7 @@ h4 {
 		
 		&__foreground {
 			@include spin();
-			stroke: colour(blue);
+			stroke: colour('blue');
 		}
 	}
 
@@ -73,7 +73,7 @@ h4 {
 			}
 			
 			&__foreground {
-				stroke: colour(white);
+				stroke: colour('white');
 			}
 		}
 	}
