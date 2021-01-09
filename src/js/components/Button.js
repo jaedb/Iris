@@ -46,7 +46,7 @@ const Button = ({
 
   let Element = 'button';
   if (to) Element = Link;
-  if (uri) Element = URILink;
+  if (uri) Element = URILink; // MISSING URI TYPE
   if (href) Element = 'a';
 
   const onClick = (e) => {

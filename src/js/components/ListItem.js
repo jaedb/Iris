@@ -107,7 +107,7 @@ export default class ListItem extends React.Component {
         artists_total: total,
         artists_uris: array,
       } = item;
-      if (Array.isArray(value)) return <LinksSentence items={value} />;
+      if (Array.isArray(value)) return <LinksSentence items={value} type="artist" />;
       if (!total && !array) return null;
       return <I18n path="specs.artists" count={nice_number(total || array.length)} />;
     }

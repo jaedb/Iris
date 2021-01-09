@@ -260,7 +260,7 @@ class Album extends React.Component {
             ) : null}
             {album.artists && album.artists.length > 0 ? (
               <li>
-                <LinksSentence items={album.artists} />
+                <LinksSentence items={album.artists} type="artist" />
               </li>
             ) : null}
             {album.release_date ? (

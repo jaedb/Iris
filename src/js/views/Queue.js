@@ -42,7 +42,7 @@ const Artwork = ({
         <Link to="/kiosk-mode" className="thumbnail__actions__item">
           <Icon name="expand" type="fontawesome" />
         </Link>
-        <URILink uri={album_uri} className="thumbnail__actions__item">
+        <URILink type="album" uri={album_uri} className="thumbnail__actions__item">
           <Icon name="album" />
         </URILink>
       </Thumbnail>
@@ -176,6 +176,7 @@ class Queue extends React.Component {
         {addedFromItems[0].images && (
           <URILink
             uri={addedFromItems[0].uri}
+            type={addedFromItems[0].type}
             className="current-track__added-from__thumbnail"
           >
             <Thumbnail
@@ -188,7 +189,10 @@ class Queue extends React.Component {
         )}
         <div className="current-track__added-from__text">
           {'Playing from '}
-          <LinksSentence items={addedFromItems} />
+          <LinksSentence
+            items={addedFromItems}
+            type={addedFromItems[0].type}
+          />
           {uri_type === 'radio' && (
             <span className="flag flag--blue">
               {i18n('now_playing.current_track.radio')}
@@ -270,15 +274,10 @@ class Queue extends React.Component {
                 {!stream_title && !current_track && (<span>-</span>)}
               </div>
 
-              {
-                (current_track && current_track.artists && (
-                  <LinksSentence
-                    className="current-track__artists"
-                    items={current_track.artists}
-                  />
-                ))
-                || <LinksSentence className="current-track__artists" />
-              }
+              <LinksSentence
+                className="current-track__artists"
+                items={current_track ? current_track.artists : null}
+              />
 
               {this.renderAddedFrom()}
 

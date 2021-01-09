@@ -58,7 +58,7 @@ const SearchResults = ({
       <h4>
         {!all && (
           <span>
-            <URILink uri={`iris:search:all:${encodedTerm}`}>
+            <URILink uri={`iris:search:all:${encodedTerm}`} type="search">
               <I18n path="search.title" />
             </URILink>
             {' '}
@@ -68,7 +68,7 @@ const SearchResults = ({
           </span>
         )}
         {all && (
-          <URILink uri={`iris:search:${type}:${encodedTerm}`}>
+          <URILink uri={`iris:search:${type}:${encodedTerm}`} type="search">
             <I18n path={`search.${type}.title`} />
           </URILink>
         )}

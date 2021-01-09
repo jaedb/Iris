@@ -4,8 +4,8 @@ import { uriType as uriTypeHelper } from '../util/helpers';
 
 export default memo((props) => {
   let to = null;
-  let { uri } = props;
-  const uriType = uriTypeHelper(uri);
+  let { uri, type } = props;
+  const uriType = type || uriTypeHelper(uri);
   if (!props.unencoded) {
     uri = encodeURIComponent(uri);
   }

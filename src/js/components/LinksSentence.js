@@ -1,14 +1,13 @@
-
 import React, { memo } from 'react';
 import URILink from './URILink';
 
-export default memo(({ items, className, nolinks }) => {
+const LinksSentence = memo(({ items, className, nolinks }) => {
   if (!items) return <span className={`${className} links-sentence`}>-</span>;
 
   return (
     <span className={`${className} links-sentence`}>
       {
-				items.map(({ name, uri }, index) => {
+				items.map(({ name, uri, type }, index) => {
 				  if (!name) return <span>-</span>;
 
 				  let separator = null;
@@ -27,6 +26,7 @@ export default memo(({ items, className, nolinks }) => {
 							<URILink
 								className="links-sentence__item links-sentence__item--link"
 								uri={uri}
+								type={type}
 							>
 								{name}
 							</URILink>
@@ -44,3 +44,5 @@ export default memo(({ items, className, nolinks }) => {
     </span>
   );
 });
+
+export default LinksSentence;
