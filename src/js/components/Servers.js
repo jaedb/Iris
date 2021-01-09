@@ -1,17 +1,10 @@
-
-import React, { memo, useCallback } from 'react';
+import React from 'react';
 import { useStore, useDispatch } from 'react-redux'
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import Link from './Link';
 import Icon from './Icon';
-import URILink from './URILink';
 import TextField from './Fields/TextField';
 import { indexToArray } from '../util/arrays';
 import { Button } from './Button';
-
-import * as uiActions from '../services/ui/actions';
-import * as coreActions from '../services/core/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import { iconFromKeyword } from '../util/helpers';
 import { I18n } from '../locale';

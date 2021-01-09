@@ -267,7 +267,7 @@ const CoreMiddleware = (function () {
         store.dispatch(uiActions.createNotification({
           content: (
             <I18n path="actions.added_tracks_to" count={tracks_uris.length} contentAfter>
-              <URILink uri={key}>{asset ? asset.name : 'playlist'}</URILink>
+              <URILink type="playlist" uri={key}>{asset ? asset.name : 'playlist'}</URILink>
             </I18n>
           ),
         }));

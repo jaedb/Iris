@@ -237,7 +237,7 @@ class PlaybackControls extends React.Component {
                   {transition_track.name}
                 </div>
                 <div className="artist">
-                  <LinksSentence items={transition_track.artists} nolinks />
+                  <LinksSentence items={transition_track.artists} type="artist" nolinks />
                 </div>
               </div>
             </div>
@@ -264,7 +264,7 @@ class PlaybackControls extends React.Component {
                 <div className="artist">
                   {
                     (current_track && current_track.artists
-                        && <LinksSentence items={current_track.artists} />)
+                        && <LinksSentence items={current_track.artists} type="artist" />)
                     || (stream_title && <span className="links-sentence">{stream_title}</span>)
                     || <LinksSentence />
                   }

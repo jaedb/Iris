@@ -210,7 +210,11 @@ class KioskMode extends React.Component {
                 {!stream_title && current_track && <span>{current_track.name}</span>}
                 {!stream_title && !current_track && <span>-</span>}
               </div>
-              { current_track ? <LinksSentence nolinks items={current_track.artists} /> : <LinksSentence /> }
+              <LinksSentence
+                items={current_track ? current_track.artists : null}
+                type="artist"
+                nolinks
+              />
             </div>
           </div>
 

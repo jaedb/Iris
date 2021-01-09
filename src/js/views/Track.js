@@ -240,7 +240,7 @@ class Track extends React.Component {
             {track.album && !track.album.uri ? track.album.name : null}
             {!track.album && <I18n path="track.unknown_album" />}
             <I18n path="common.by" />
-            {track.artists && <LinksSentence items={track.artists} />}
+            {track.artists && <LinksSentence items={track.artists} type="artist" />}
           </h2>
 
           <ul className="details">

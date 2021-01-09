@@ -335,7 +335,7 @@ const decodeUri = (rawUri) => {
  * @return obj
  * */
 const formatAlbum = function (data) {
-  const album = {};
+  const album = { type: 'album' };
   const fields = [
     'uri',
     'in_library',
@@ -412,7 +412,7 @@ const formatAlbum = function (data) {
  * @return obj
  * */
 const formatArtist = function (data) {
-  const artist = {};
+  const artist = { type: 'artist' };
   const fields = [
     'uri',
     'in_library',
@@ -474,7 +474,7 @@ const formatArtist = function (data) {
  * @return obj
  * */
 const formatPlaylist = function (data) {
-  const playlist = {};
+  const playlist = { type: 'playlist' };
   const fields = [
     'uri',
     'in_library',
@@ -563,7 +563,7 @@ const formatPlaylist = function (data) {
  * @return obj
  * */
 const formatUser = function (data) {
-  const user = {};
+  const user = { type: 'user' };
   const fields = [
     'id',
     'in_library',
@@ -619,7 +619,7 @@ const formatUser = function (data) {
  * @return obj
  * */
 const formatTrack = function (data) {
-  const track = {};
+  const track = { type: 'track' };
   const fields = [
     'uri',
     'in_library',
@@ -734,7 +734,7 @@ const formatTrack = function (data) {
  * @return obj
  * */
 const formatClient = function (data) {
-  const client = {};
+  const client = { type: 'client' };
   const fields = [
     'id',
     'connected',
@@ -798,7 +798,7 @@ const formatClient = function (data) {
  * @return obj
  * */
 const formatCategory = function (data) {
-  const category = {};
+  const category = { type: 'category' };
   const fields = [
     'id',
     'uri',
@@ -830,7 +830,7 @@ const formatCategory = function (data) {
  * @return obj
  * */
 const formatGroup = function (data) {
-  const group = {};
+  const group = { type: 'group' };
   const fields = [
     'id',
     'name',

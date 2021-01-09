@@ -84,14 +84,14 @@ class GridItem extends React.Component {
       case 'album':
         return (
           <span className="grid__item__secondary__content">
-            {artists && <LinksSentence nolinks items={artists} />}
+            {artists && <LinksSentence nolinks items={artists} type="artist" />}
           </span>
         );
 
       default:
         return (
           <span className="grid__item__secondary__content">
-            {artists && <LinksSentence nolinks items={item.artists} /> }
+            {artists && <LinksSentence nolinks items={item.artists} type="artist" /> }
             {followers && <I18n path="specs.followers" count={followers.toLocaleString()} />}
           </span>
         );

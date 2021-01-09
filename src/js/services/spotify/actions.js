@@ -779,12 +779,12 @@ export function following(uri, method = 'GET') {
           if (method === 'DELETE') {
             dispatch(coreActions.removeFromLibrary(`spotify:library:${type}s`, uri));
             dispatch(uiActions.createNotification({
-              content: <span>Removed <URILink uri={uri}>{asset ? asset.name : type}</URILink> from library</span>,
+              content: <span>Removed <URILink type={type} uri={uri}>{asset ? asset.name : type}</URILink> from library</span>,
             }));
           } else if (method === 'PUT' || method === 'POST') {
             dispatch(coreActions.addToLibrary(`spotify:library:${type}s`, asset));
             dispatch(uiActions.createNotification({
-              content: <span>Added <URILink uri={uri}>{asset ? asset.name : type}</URILink> to library</span>,
+              content: <span>Added <URILink type={type} uri={uri}>{asset ? asset.name : type}</URILink> to library</span>,
             }));
           }
         },

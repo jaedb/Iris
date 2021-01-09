@@ -30,7 +30,7 @@ const UriListItem = ({
       {item ? item.name : <span className="mid_grey-text">{uri}</span>}
       {item && item.artists && (
         <I18n path="common.by" contentAfter>
-          <LinksSentence nolinks items={item.artists} />
+          <LinksSentence nolinks items={item.artists} type="artist" />
         </I18n>
       )}
       <span className="mid_grey-text">{` (${type})`}</span>

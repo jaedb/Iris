@@ -387,7 +387,7 @@ export function loveTrack(uri) {
             userloved: true,
           }));
           dispatch(uiActions.createNotification({
-            content: <span>Loved <URILink uri={uri}>{asset ? asset.name : type}</URILink></span>,
+            content: <span>Loved <URILink type="track" uri={uri}>{asset ? asset.name : type}</URILink></span>,
           }));
         },
       );

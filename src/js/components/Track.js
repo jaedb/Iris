@@ -232,7 +232,7 @@ export default class Track extends React.Component {
 
             case 'browse':
               var link = (
-                <URILink uri={added_from}>
+                <URILink type={type} uri={added_from}>
                   <I18n path="library.browse.title" />
                 </URILink>
               );
@@ -240,7 +240,7 @@ export default class Track extends React.Component {
 
             case 'search':
               var link = (
-                <URILink uri={added_from}>
+                <URILink type={type} uri={added_from}>
                   <I18n path="search.title" />
                 </URILink>
               );
@@ -312,7 +312,7 @@ export default class Track extends React.Component {
     if (track.artists) {
       track_details.push(
         <li className="details__item details__item--artists" key="artists">
-          {track.artists ? <LinksSentence items={track.artists} /> : '-'}
+          {track.artists ? <LinksSentence items={track.artists} type="artist" /> : '-'}
         </li>,
       );
     } else if (track.playing && stream_title) {
