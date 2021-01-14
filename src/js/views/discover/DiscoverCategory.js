@@ -52,12 +52,12 @@ class DiscoverCategory extends React.Component {
       uri,
       category,
       coreActions: {
-        loadItem,
+        loadCategory,
       },
     } = this.props;
 
     if (!category) {
-      loadItem(uri);
+      loadCategory(uri);
     }
   }
 
@@ -68,12 +68,12 @@ class DiscoverCategory extends React.Component {
         hideContextMenu,
       },
       coreActions: {
-        loadItem,
+        loadCategory,
       },
     } = this.props;
 
     hideContextMenu();
-    loadItem(uri, { forceRefetch: true });
+    loadCategory(uri, { forceRefetch: true });
   }
 
   render = () => {

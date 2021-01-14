@@ -45,7 +45,7 @@ export default memo((props) => {
       break;
 
     default:
-      to = null;
+      to = `/uri/${uri}`;
   }
 
   if (uri) {

@@ -30,13 +30,13 @@ class EditPlaylist extends React.Component {
       uri,
       playlist,
       coreActions: {
-        loadItem,
+        loadPlaylist,
       },
       uiActions: {
         setWindowTitle,
       },
     } = this.props;
-    
+
     setWindowTitle(i18n('modal.edit_playlist.title'));
 
     if (playlist) {
@@ -48,7 +48,7 @@ class EditPlaylist extends React.Component {
         collaborative: (playlist.collaborative === true),
       });
     } else {
-      loadItem(uri);
+      loadPlaylist(uri);
     }
   }
 

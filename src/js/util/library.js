@@ -70,6 +70,7 @@ const ensureLoaded = ({
   fetch,
   dependents = [],
   fullDependents = [],
+  type,
 }) => {
   const {
     uri,
@@ -115,7 +116,7 @@ const ensureLoaded = ({
       const uris = dependentUris(item);
       if (uris.length) {
         console.log(`Loading ${uris.length} dependents`);
-        store.dispatch(coreActions.loadItems(uris));
+        store.dispatch(coreActions.loadItems(type, uris));
       }
       return;
     }

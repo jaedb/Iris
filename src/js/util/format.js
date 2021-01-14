@@ -307,6 +307,7 @@ const decodeUri = (rawUri) => {
   // Escape unreserved characters (RFC 3986)
   // https://stackoverflow.com/questions/18251399/why-doesnt-encodeuricomponent-encode-single-quotes-apostrophes
   let id = getFromUri(`${type}id`, uri);
+  const rest = uri.substring(uri.indexOf(id) + id.length);
   id = encodeURIComponent(id).replace(/[!'()*]/g, escape);
 
   // Reinstate slashes for the Mopidy-Local structure
@@ -323,7 +324,7 @@ const decodeUri = (rawUri) => {
     default:
       decoded += `${type}:`;
   }
-  decoded += `${id}`;
+  decoded += `${id}${rest}`;
 
   return decoded;
 };

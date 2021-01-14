@@ -119,11 +119,12 @@ export function searchResultsLoaded(query, resultType, results) {
  * relevant service to load the record - all from one neat package.
  * */
 
-export function loadItems(uris, options = {}) {
+export function loadItems(itemType, uris = [], options = {}) {
   return {
     type: 'LOAD_ITEMS',
     uris,
     options,
+    itemType,
   };
 }
 

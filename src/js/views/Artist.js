@@ -50,12 +50,12 @@ class Artist extends React.Component {
     const {
       uri,
       coreActions: {
-        loadItem,
+        loadArtist,
       },
     } = this.props;
 
     this.setWindowTitle();
-    loadItem(uri, { full: true });
+    loadArtist(uri, { full: true });
   }
 
   componentDidUpdate = ({
@@ -66,12 +66,12 @@ class Artist extends React.Component {
       uri,
       artist,
       coreActions: {
-        loadItem,
+        loadArtist,
       },
     } = this.props;
 
     if (uri !== prevUri) {
-      loadItem(uri, { full: true });
+      loadArtist(uri, { full: true });
     }
 
     if (!prevArtist && artist) this.setWindowTitle(artist);

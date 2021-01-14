@@ -823,7 +823,7 @@ const MopidyMiddleware = (function () {
           break;
         }
         store.dispatch(
-          coreActions.loadItem(
+          coreActions.loadPlaylist(
             action.uri,
             { full: true, callbackAction: { name: 'play', shuffle: action.shuffle } },
           ),
@@ -844,7 +844,7 @@ const MopidyMiddleware = (function () {
           break;
         }
         store.dispatch(
-          coreActions.loadItem(
+          coreActions.loadPlaylist(
             action.uri,
             false,
             {
@@ -1167,6 +1167,20 @@ const MopidyMiddleware = (function () {
         break;
       }
 
+      case 'MOPIDY_GET_URIS': {
+        console.log(action);
+        const { uris } = action;
+        request(store, 'library.lookup', { uris })
+          .then((response) => {
+            if (!response) return;
+
+            indexToArray(response).forEach((item) => {
+              console.log(item);
+            });
+          });
+        break;
+      }
+
       case 'MOPIDY_GET_PLAYLIST':
         request(store, 'playlists.lookup', { uri: action.uri })
           .then((response) => {
@@ -1483,7 +1497,7 @@ const MopidyMiddleware = (function () {
             track,
             uri: track.uri,
           });
-          store.dispatch(coreActions.loadItem(track.uri, { full: true }));
+          store.dispatch(coreActions.loadTrack(track.uri, { full: true }));
         }
         break;
       }
@@ -1503,7 +1517,7 @@ const MopidyMiddleware = (function () {
                     uri: track.uri,
                   });
 
-                  store.dispatch(coreActions.loadItem(track.uri));
+                  store.dispatch(coreActions.loadTrack(track.uri));
                 }
               }
             },

@@ -21,6 +21,7 @@ import Artist from './views/Artist';
 import Playlist from './views/Playlist';
 import User from './views/User';
 import Track from './views/Track';
+import UriRedirect from './views/UriRedirect';
 import Queue from './views/Queue';
 import QueueHistory from './views/QueueHistory';
 import Debug from './views/Debug';
@@ -338,6 +339,7 @@ export class App extends React.Component {
                     <Route exact path="/playlist/:uri" component={Playlist} />
                     <Route exact path="/user/:uri" component={User} />
                     <Route exact path="/track/:uri" component={Track} />
+                    <Route exact path="/uri/:uri" component={UriRedirect} />
 
                     <Route
                       exact

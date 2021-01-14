@@ -217,8 +217,15 @@ const sourceIcon = function (uri, source = null) {
     case 'dirble':
       return 'cloud';
 
-    default:
+    case 'spotify':
+    case 'soundcloud':
+    case 'lastfm':
+    case 'youtube':
+    case 'tidal':
       return source;
+
+    default:
+      return 'cloud';
   }
 };
 

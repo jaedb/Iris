@@ -43,7 +43,7 @@ class Album extends React.Component {
       uri,
       album,
       coreActions: {
-        loadItem,
+        loadAlbum,
       },
       lastfmActions: {
         getAlbum,
@@ -51,7 +51,7 @@ class Album extends React.Component {
     } = this.props;
 
     this.setWindowTitle();
-    loadItem(uri, { full: true });
+    loadAlbum(uri, { full: true });
 
     if (album) {
       if (album.artists && album.wiki === undefined) {
@@ -81,7 +81,7 @@ class Album extends React.Component {
       uri,
       album,
       coreActions: {
-        loadItem,
+        loadAlbum,
       },
       lastfmActions: {
         getAlbum,
@@ -89,7 +89,7 @@ class Album extends React.Component {
     } = this.props;
 
     if (uri !== prevUri) {
-      loadItem(uri, { full: true });
+      loadAlbum(uri, { full: true });
     }
 
     // We have just received our full album or our album artists

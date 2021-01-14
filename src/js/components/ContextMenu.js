@@ -11,6 +11,7 @@ import {
   buildLink,
   isLoading,
   throttle,
+  titleCase,
 } from '../util/helpers';
 import {
   arrayOf,
@@ -616,17 +617,26 @@ class ContextMenu extends React.Component {
       uiActions: {
         hideContextMenu,
       },
-      coreActions: {
-        loadItem,
-      },
+      coreActions: actions,
       menu: {
         uris,
       } = {},
     } = this.props;
 
-    const uri = uris[0];
-
-    loadItem(uri, { forceRefetch: true, full: true });
+    let { nice_name } = this.getContext();
+    switch (nice_name) {
+      case 'artist':
+      case 'album':
+      case 'playlist':
+      case 'track':
+      case 'user':
+        const uri = uris[0];
+        actions[`load${titleCase(nice_name)}`](uri, { forceRefetch: true, full: true });
+        break;
+      default:
+        actions.handleException(`Cannot refresh; unexpected URI: ${uri}`);
+        break;
+    }
     hideContextMenu();
   }
 

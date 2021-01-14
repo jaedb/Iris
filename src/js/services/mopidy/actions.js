@@ -406,10 +406,16 @@ export function shuffleTracklist() {
   };
 }
 
-
 /**
  * Asset-oriented actions
  * */
+
+export function getUris(uris) {
+  return {
+    type: 'MOPIDY_GET_URIS',
+    uris,
+  };
+}
 
 export function getImages(uris) {
   return {

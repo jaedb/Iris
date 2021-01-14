@@ -33,11 +33,11 @@ class Track extends React.Component {
       uri,
       track,
       coreActions: {
-        loadItem,
+        loadTrack,
       },
     } = this.props;
 
-    loadItem(decodeUri(uri));
+    loadTrack(decodeUri(uri));
 
     if (track) {
       this.setWindowTitle(track);
@@ -54,7 +54,7 @@ class Track extends React.Component {
       genius_authorized,
       lastfm_authorized,
       coreActions: {
-        loadItem,
+        loadTrack,
       },
       geniusActions: {
         findTrackLyrics,
@@ -65,7 +65,7 @@ class Track extends React.Component {
     } = this.props;
 
     if (prevUri !== uri) {
-      loadItem(decodeUri(uri));
+      loadTrack(decodeUri(uri));
     }
 
     // We have just received our full track or our track artists
