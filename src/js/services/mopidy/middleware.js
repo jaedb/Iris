@@ -1175,7 +1175,7 @@ const MopidyMiddleware = (function () {
             if (!response) return;
 
             indexToArray(response).forEach((item) => {
-              console.log(item);
+              store.dispatch(coreActions[`load${item.___model__}`](item.uri));
             });
           });
         break;
