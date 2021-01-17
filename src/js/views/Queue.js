@@ -83,13 +83,13 @@ class Queue extends React.Component {
   }) => {
     const {
       coreActions: {
-        loadItem,
+        loadUri,
       },
       added_from_uri,
     } = this.props;
 
     if (added_from_uri && added_from_uri !== prev_added_from_uri) {
-      loadItem(added_from_uri, { full: false });
+      loadUri(added_from_uri);
     }
   }
 

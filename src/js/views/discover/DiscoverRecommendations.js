@@ -213,7 +213,7 @@ class Discover extends React.Component {
   handleURLSeeds = () => {
     const {
       coreActions: {
-        loadItems,
+        loadUris,
       },
       match: {
         params: {
@@ -226,7 +226,7 @@ class Discover extends React.Component {
     // We'd need to do this if our URL has been encoded so the whole URL can become
     // it's own URI (eg iris:discover:spotify_artist_1234) where we can't use ":"
     const seeds = seedsProp.split('_').join(':').split(',');
-    loadItems(seeds);
+    loadUris(seeds);
 
     this.setState(
       { seeds },

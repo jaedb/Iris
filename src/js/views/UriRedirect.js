@@ -14,14 +14,14 @@ class UriRedirect extends React.Component {
       uri,
       item,
       coreActions: {
-        loadItem,
+        loadUri,
       },
     } = this.props;
 
     if (item) {
       this.redirect();
     } else {
-      loadItem(uri);
+      loadUri(uri);
     }
 
     this.setWindowTitle();
@@ -34,12 +34,12 @@ class UriRedirect extends React.Component {
       uri,
       item,
       coreActions: {
-        loadItem,
+        loadUri,
       },
     } = this.props;
 
     if (prevUri !== uri) {
-      loadItem(uri);
+      loadUri(uri);
       this.setWindowTitle();
     }
 

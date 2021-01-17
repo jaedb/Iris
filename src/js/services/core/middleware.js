@@ -351,7 +351,6 @@ const CoreMiddleware = (function () {
        * we need to LOAD_URI to ascertain this first.
        * */
       case 'LOAD_ITEMS': {
-        console.log(action);
         const { uris = [], options, itemType = 'uri' } = action;
 
         uris.forEach((uri) => {

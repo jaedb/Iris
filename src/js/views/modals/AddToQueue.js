@@ -121,15 +121,16 @@ class AddToQueue extends React.Component {
         uris: prevUris = [],
       },
       coreActions: {
-        loadItem,
+        loadUri,
         viewDataLoaded,
       },
     } = this.props;
     const uris = text.split(',');
 
+    // TODO: Remove validation
     const validatedUris = uris.filter((uri) => uriType(uri));
     validatedUris.forEach((uri) => {
-      loadItem(uri);
+      loadUri(uri);
     });
 
     this.setState({ text: '' });
