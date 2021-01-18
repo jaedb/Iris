@@ -552,7 +552,7 @@ class ContextMenu extends React.Component {
     hideContextMenu();
 
     // note: we can only go to one artist (even if this item has multiple artists, just go to the first one)
-    push(buildLink(items[0].artists[0].uri));
+    push(buildLink(items[0].artists[0].uri, 'artist'));
   }
 
   goToUser = () => {
@@ -570,7 +570,7 @@ class ContextMenu extends React.Component {
 
     if (!items || items.length <= 0 || !items[0].user) return null;
     hideContextMenu();
-    push(buildLink(items[0].user.uri));
+    push(buildLink(items[0].user.uri, 'user'));
   }
 
   goToTrack = () => {
@@ -588,7 +588,7 @@ class ContextMenu extends React.Component {
 
     if (!uris) return null;
     hideContextMenu();
-    push(buildLink(uris[0]));
+    push(buildLink(uris[0], 'track'));
   }
 
   copyURIs = () => {

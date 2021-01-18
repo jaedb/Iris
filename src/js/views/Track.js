@@ -124,10 +124,13 @@ class Track extends React.Component {
   renderLyricsSelector = () => {
     const {
       track,
-      geniusActions: { getTrackLyrics },
+      geniusActions: {
+        getTrackLyrics,
+      },
+      genius_authorized,
     } = this.props;
 
-    if (track.lyrics_results === undefined || track.lyrics_results === null) {
+    if (!genius_authorized || track.lyrics_results === undefined || track.lyrics_results === null) {
       return null;
     } if (track.lyrics_results.length <= 0) {
       return (
@@ -165,38 +168,30 @@ class Track extends React.Component {
 
   renderLyrics = () => {
     const {
-      load_queue,
       track: {
         lyrics,
         lyrics_path,
       } = {},
+      genius_authorized,
+      loadingLyrics,
     } = this.props;
 
-    if (isLoading(load_queue, ['genius_'])) {
-      return (
-        <div className="lyrics">
-          <Loader body loading />
-        </div>
-      );
-    } if (lyrics) {
-      return (
-        <div className="lyrics">
-          <div className="content" dangerouslySetInnerHTML={{ __html: lyrics }} />
-          <div className="origin mid_grey-text">
-            <I18n path="track.lyrics_origin" />
-            <a
-              href={`https://genius.com${lyrics_path}`}
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              {`https://genius.com${lyrics_path}`}
-            </a>
-          </div>
-        </div>
-      );
-    }
+    if (!lyrics || !genius_authorized || loadingLyrics) return null;
+
     return (
-      <ErrorMessage type="not-found" title={i18n('errors.no_results')} />
+      <div className="lyrics">
+        <div className="content" dangerouslySetInnerHTML={{ __html: lyrics }} />
+        <div className="origin mid_grey-text">
+          <I18n path="track.lyrics_origin" />
+          <a
+            href={`https://genius.com${lyrics_path}`}
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            {`https://genius.com${lyrics_path}`}
+          </a>
+        </div>
+      </div>
     );
   }
 
@@ -208,6 +203,7 @@ class Track extends React.Component {
       slim_mode,
       uiActions,
       genius_authorized,
+      loadingLyrics,
     } = this.props;
 
     if (loading) {
@@ -292,6 +288,11 @@ class Track extends React.Component {
           <ContextMenuTrigger onTrigger={this.handleContextMenu} />
         </div>
 
+        <h4>
+          <I18n path="track.lyrics" />
+          {loadingLyrics && <Loader loading mini />}
+        </h4>
+
         {!genius_authorized && (
           <p className="no-results">
             <I18n path="track.want_lyrics" />
@@ -301,8 +302,8 @@ class Track extends React.Component {
             .
           </p>
         )}
-        {genius_authorized && this.renderLyricsSelector()}
-        {genius_authorized && this.renderLyrics()}
+        {this.renderLyricsSelector()}
+        {this.renderLyrics()}
 
       </div>
     );
@@ -311,13 +312,15 @@ class Track extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   const uri = decodeUri(ownProps.match.params.uri);
-  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`]);
+  const loadingSelector = makeLoadingSelector([`^(?!genius)(.*)${uri}(.*)$`]);
+  const loadingLyricsSelector = makeLoadingSelector([`^genius_(.*)lyrics_${uri}$`]);
   const trackSelector = makeItemSelector(uri);
 
   return {
     uri,
     slim_mode: state.ui.slim_mode,
     loading: loadingSelector(state),
+    loadingLyrics: loadingLyricsSelector(state),
     track: trackSelector(state),
     spotify_library_albums: state.spotify.library_albums,
     local_library_albums: state.mopidy.library_albums,

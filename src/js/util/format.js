@@ -300,9 +300,23 @@ const encodeUri = (uri) => {
  * @param {String} rawUri
  */
 const decodeUri = (rawUri) => {
-  const uri = decodeURIComponent(rawUri);
+  let uri = decodeURIComponent(rawUri);
   const source = uriSource(uri);
   const type = uriType(uri);
+
+  /**
+   * TODO
+   * Why the hell is this so difficult?
+   */
+
+
+   
+  // Reinstate slashes for the Mopidy-Local structure
+  //uri = uri.replace(/%2F/g, '/');
+
+  // Ensure all ':' are uri encoded to lowercase
+  //uri = uri.replace(/%3A/g, '%3a');
+  return uri;
 
   // Escape unreserved characters (RFC 3986)
   // https://stackoverflow.com/questions/18251399/why-doesnt-encodeuricomponent-encode-single-quotes-apostrophes

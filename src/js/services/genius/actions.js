@@ -166,7 +166,7 @@ export function getTrackLyrics(uri, path) {
 
     // add reference to loader queue
     const loader_key = generateGuid();
-    dispatch(uiActions.startLoading(loader_key, 'genius_get_lyrics'));
+    dispatch(uiActions.startLoading(loader_key, `genius_get_lyrics_${uri}`));
 
     function status(response) {
       dispatch(uiActions.stopLoading(loader_key));
@@ -221,13 +221,11 @@ export function findTrackLyrics(uri) {
     const selector = makeItemSelector(uri);
     const track = selector(getState());
     if (!track || !track.artists) {
-      dispatch(coreActions.handleException(
-        'Could not get Genius lyrics',
-        {},
-        'Not in index or has no artists',
-      ));
       return;
     }
+
+    const loader_key = generateGuid();
+    dispatch(uiActions.startLoading(loader_key, `genius_find_lyrics_${uri}`));
 
     let query = '';
     query += `${track.artists[0].name} `;
@@ -257,9 +255,11 @@ export function findTrackLyrics(uri) {
             // Immediately go and get the first result's lyrics
             const lyrics_result = lyrics_results[0];
             dispatch(getTrackLyrics(track.uri, lyrics_result.path));
-          }
+          };
+          dispatch(uiActions.stopLoading(loader_key));
         },
         (error) => {
+          dispatch(uiActions.stopLoading(loader_key));
           dispatch(coreActions.handleException(
             'Could not search for track lyrics',
             error,

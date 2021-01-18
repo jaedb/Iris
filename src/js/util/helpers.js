@@ -200,6 +200,7 @@ const sourceIcon = function (uri, source = null) {
   switch (source) {
     case 'local':
     case 'm3u':
+    case 'file':
       return 'folder';
 
     case 'gmusic':
@@ -329,11 +330,11 @@ const getFromUri = (element, uri) => {
  * to direct the user (eg /track/local:track:1235.mp3)
  *
  * @param $uri = String
+ * @param $type = String, optional
  * @return String
  * */
-const buildLink = (uri) => {
-  const type = uriType(uri);
-  let link = `/${type}/`;
+const buildLink = (uri, type = null) => {
+  let link = `/${type || uriType(uri)}/`;
 
   // Encode the whole URI as though it's a component. This makes it URL friendly for
   // all Mopidy backends (some use URIs like local:track:http://rss.com/stuff.mp3) which
@@ -403,7 +404,6 @@ const isLoading = function (load_queue = {}, keys = []) {
 
   return matches.length > 0;
 };
-
 
 /**
  * Is this app running from the hosted instance?

@@ -41,12 +41,20 @@ const geniusActions = require('../../services/genius/actions');
  * @param cache boolean
  * @return Promise
  * */
-const request = (dispatch, getState, endpoint, method = 'GET', data = false, cache = false) => {
+const request = ({
+  dispatch,
+  getState,
+  endpoint,
+  method = 'GET',
+  data,
+  uri,
+}) => {
   // Add reference to loader queue
   // We do this straight away so that even if we're refreshing the token, it still registers as
   // loading said endpoint
-  const loader_key = generateGuid();
-  dispatch(uiActions.startLoading(loader_key, `spotify_${endpoint}`));
+  const loaderId = generateGuid();
+  const loaderKey = uri ? `spotify_uri_${uri}` : `spotify_${endpoint}`;
+  dispatch(uiActions.startLoading(loaderId, loaderKey));
 
   return new Promise((resolve, reject) => {
     getToken(dispatch, getState)
@@ -78,7 +86,7 @@ const request = (dispatch, getState, endpoint, method = 'GET', data = false, cac
           }
 
           function status(response) {
-            dispatch(uiActions.stopLoading(loader_key));
+            dispatch(uiActions.stopLoading(loaderId));
 
             // TODO: Rate limiting
             if (response.status === 429) {
@@ -306,7 +314,7 @@ export function importAuthorization(authorization) {
  * */
 export function getMe() {
   return (dispatch, getState) => {
-    request(dispatch, getState, 'me')
+    request({ dispatch, getState, endpoint: 'me' })
       .then(
         (response) => {
           dispatch({
@@ -329,7 +337,7 @@ export function getTrack(uri, { forceRefetch, full }) {
     let endpoint = `tracks/${getFromUri('trackid', uri)}`;
     if (forceRefetch) endpoint += `?refetch=${Date.now()}`;
 
-    request(dispatch, getState, endpoint)
+    request({ dispatch, getState, endpoint, uri })
       .then(
         (response) => {
           const track = formatTrack(response);
@@ -372,7 +380,7 @@ export function getFeaturedPlaylists(forceRefetch = false) {
     endpoint += `&timestamp=${timestamp}`;
     if (forceRefetch) endpoint += `&refetch=${Date.now()}`;
 
-    request(dispatch, getState, endpoint)
+    request({ dispatch, getState, endpoint })
       .then(
         (response) => {
           const playlists = response.playlists.items.map(
@@ -410,7 +418,7 @@ export function getCategories() {
     endpoint += `&country=${getState().spotify.country}`;
     endpoint += `&locale=${getState().spotify.locale}`;
 
-    request(dispatch, getState, endpoint)
+    request({ dispatch, getState, endpoint })
       .then(
         (response) => {
           dispatch({
@@ -442,14 +450,17 @@ export function getCategory(uri, { forceRefetch } = {}) {
     plEndpoint += `&locale=${getState().spotify.locale}`;
     if (forceRefetch) plEndpoint += `&refetch=${Date.now()}`;
 
-    request(dispatch, getState, endpoint)
+    request({ dispatch, getState, endpoint })
       .then(
         (response) => {
           const category = formatCategory(response);
 
           let playlists = [];
-          const fetchPlaylists = (plEndpoint) => request(dispatch, getState, plEndpoint)
-            .then((response) => {
+          const fetchPlaylists = (plEndpoint) => request({
+            dispatch,
+            getState,
+            endpoint: plEndpoint,
+          }).then((response) => {
               playlists = [...playlists, ...formatPlaylists(response.playlists.items)];
               if (response.playlists.next) {
                 fetchPlaylists(response.playlists.next);
@@ -481,7 +492,7 @@ export function getNewReleases(forceRefetch = false) {
     endpoint += `&country=${getState().spotify.country}`;
     if (forceRefetch) endpoint += `&refetch=${Date.now()}`;
 
-    request(dispatch, getState, endpoint)
+    request({ dispatch, getState, endpoint })
       .then(
         (response) => {
           dispatch({
@@ -499,9 +510,9 @@ export function getNewReleases(forceRefetch = false) {
   };
 }
 
-export function getURL(url, action_name, key = false) {
+export function getURL(endpoint, action_name, key = false) {
   return (dispatch, getState) => {
-    request(dispatch, getState, url)
+    request({ dispatch, getState, endpoint })
       .then(
         (response) => {
           dispatch({
@@ -520,9 +531,9 @@ export function getURL(url, action_name, key = false) {
   };
 }
 
-export function getMore(url, core_action = null, custom_action = null, extra_data = {}) {
+export function getMore(endpoint, core_action = null, custom_action = null, extra_data = {}) {
   return (dispatch, getState) => {
-    request(dispatch, getState, url)
+    request({ dispatch, getState, endpoint })
       .then(
         (response) => {
           if (core_action) {
@@ -569,13 +580,13 @@ export function getSearchResults({ type, term }, limit = 50, offset = 0) {
       typeString = 'album,artist,playlist,track';
     }
 
-    let url = `search?q=${term}`;
-    url += `&type=${typeString}`;
-    url += `&country=${getState().spotify.country}`;
-    url += `&limit=${limit}`;
-    url += `&offset=${offset}`;
+    let endpoint = `search?q=${term}`;
+    endpoint += `&type=${typeString}`;
+    endpoint += `&country=${getState().spotify.country}`;
+    endpoint += `&limit=${limit}`;
+    endpoint += `&offset=${offset}`;
 
-    request(dispatch, getState, url)
+    request({ dispatch, getState, endpoint })
       .then(
         (response) => {
           if (response.tracks !== undefined) {
@@ -640,7 +651,7 @@ export function getAutocompleteResults(field_id, query, types = ['album', 'artis
     endpoint += `&type=${types.join(',')}`;
     endpoint += `&country=${getState().spotify.country}`;
 
-    request(dispatch, getState, endpoint)
+    request({ dispatch, getState, endpoint })
       .then(
         (response) => {
           const genres = [];
@@ -767,7 +778,7 @@ export function following(uri, method = 'GET') {
         break;
     }
 
-    request(dispatch, getState, endpoint, method, data)
+    request({ dispatch, getState, endpoint, method, data })
       .then(
         (response) => {
           if (Array.isArray(response) && response.length > 0) {
@@ -812,7 +823,7 @@ export function resolveRadioSeeds(radio) {
         artist_ids += getFromUri('artistid', radio.seed_artists[i]);
       }
 
-      request(dispatch, getState, `artists?ids=${artist_ids}`)
+      request({ dispatch, getState, endpoint: `artists?ids=${artist_ids}` })
         .then(
           (response) => {
             if (response && response.artists) {
@@ -840,7 +851,7 @@ export function resolveRadioSeeds(radio) {
         track_ids += getFromUri('trackid', radio.seed_tracks[i]);
       }
 
-      request(dispatch, getState, `tracks?ids=${track_ids}`)
+      request({ dispatch, getState, endpoint: `tracks?ids=${track_ids}` })
         .then(
           (response) => {
             dispatch({
@@ -918,7 +929,7 @@ export function getRecommendations(uris = [], limit = 20, tunabilities = null) {
       }
     }
 
-    request(dispatch, getState, endpoint)
+    request({ dispatch, getState, endpoint })
       .then(
         (response) => {
           const tracks = Object.assign([], formatTracks(response.tracks));
@@ -991,7 +1002,7 @@ export function getRecommendations(uris = [], limit = 20, tunabilities = null) {
  * */
 export function getGenres() {
   return (dispatch, getState) => {
-    request(dispatch, getState, 'recommendations/available-genre-seeds')
+    request({ dispatch, getState, endpoint: 'recommendations/available-genre-seeds' })
       .then(
         (response) => {
           dispatch({
@@ -1026,7 +1037,7 @@ export function getArtist(uri, { full, forceRefetch }) {
     let endpoint = `artists/${getFromUri('artistid', uri)}`;
     if (forceRefetch) endpoint += `?refetch=${Date.now()}`;
 
-    request(dispatch, getState, endpoint, 'GET', false, true)
+    request({ dispatch, getState, endpoint, uri })
       .then(
         (response) => {
           const artist = formatArtist(response);
@@ -1040,7 +1051,7 @@ export function getArtist(uri, { full, forceRefetch }) {
 
       // All albums (gets all pages, may take some time to iterate them all)
       let albums = [];
-      const fetchAlbums = (endpoint) => request(dispatch, getState, endpoint)
+      const fetchAlbums = (endpoint) => request({ dispatch, getState, endpoint })
         .then((response) => {
           albums = [...albums, ...formatAlbums(response.items)];
           if (response.next) {
@@ -1056,7 +1067,10 @@ export function getArtist(uri, { full, forceRefetch }) {
       fetchAlbums(`artists/${getFromUri('artistid', uri)}/albums?limit=50&include_groups=album,single&market=${getState().spotify.country}`);
 
       // Get top tracks
-      request(dispatch, getState, `artists/${getFromUri('artistid', uri)}/top-tracks?country=${getState().spotify.country}`)
+      let tracksEndpoint = `artists/${getFromUri('artistid', uri)}`;
+      tracksEndpoint += `/top-tracks?country=${getState().spotify.country}`;
+      if (forceRefetch) tracksEndpoint += `&refetch=${Date.now()}`;
+      request({ dispatch, getState, endpoint: tracksEndpoint })
         .then(
           (response) => {
             dispatch(coreActions.itemLoaded({
@@ -1067,7 +1081,9 @@ export function getArtist(uri, { full, forceRefetch }) {
         );
 
       // Related artists
-      request(dispatch, getState, `artists/${getFromUri('artistid', uri)}/related-artists`)
+      let relatedEndpoint = `artists/${getFromUri('artistid', uri)}/related-artists`;
+      if (forceRefetch) relatedEndpoint += `?refetch=${Date.now()}`;
+      request({ dispatch, getState, endpoint: relatedEndpoint })
         .then(
           (response) => {
             dispatch(coreActions.itemLoaded({
@@ -1083,7 +1099,7 @@ export function getArtist(uri, { full, forceRefetch }) {
 // Used to get images for non-Spotify artists
 export function getArtistImages(artist) {
   return (dispatch, getState) => {
-    request(dispatch, getState, `search?q=${artist.name}&type=artist`)
+    request({ dispatch, getState, endpoint: `search?q=${artist.name}&type=artist` })
       .then(response => {
         if (response.artists.items.length > 0) {
           dispatch(coreActions.itemLoaded({
@@ -1108,16 +1124,15 @@ export function playArtistTopTracks(uri) {
       const uris = arrayOf('uri', artist.tracks);
       dispatch(mopidyActions.playURIs(uris, uri));
     } else {
-      request(
-        dispatch,
-        getState,
-        `artists/${getFromUri('artistid', uri)}/top-tracks?country=${getState().spotify.country}`,
-      ).then(
-        (response) => {
-          const uris = arrayOf('uri', response.tracks);
-          dispatch(mopidyActions.playURIs(uris, uri));
-        },
-      );
+      let endpoint = `artists/${getFromUri('artistid', uri)}`;
+      endpoint += `/top-tracks?country=${getState().spotify.country}`;
+      request({ dispatch, getState, endpoint })
+        .then(
+          (response) => {
+            const uris = arrayOf('uri', response.tracks);
+            dispatch(mopidyActions.playURIs(uris, uri));
+          },
+        );
     }
   };
 }
@@ -1134,7 +1149,7 @@ export function getUser(uri, { full, forceRefetch }) {
     let endpoint = `users/${userId}`;
     if (forceRefetch) endpoint += `?refetch=${Date.now()}`;
 
-    request(dispatch, getState, endpoint, 'GET', false, true)
+    request({ dispatch, getState, endpoint })
       .then(
         (response) => {
           const user = formatUser(response);
@@ -1144,7 +1159,7 @@ export function getUser(uri, { full, forceRefetch }) {
 
     if (full) {
       let playlists = [];
-      const fetchPlaylists = (endpoint) => request(dispatch, getState, endpoint)
+      const fetchPlaylists = (endpoint) => request({ dispatch, getState, endpoint })
         .then((response) => {
           playlists = [...playlists, ...formatPlaylists(response.items)];
           if (response.next) {
@@ -1180,7 +1195,7 @@ export function getAlbum(uri, { full, forceRefetch }) {
     let endpoint = `albums/${getFromUri('albumid', uri)}`;
     if (forceRefetch) endpoint += `?refetch=${Date.now()}`;
 
-    request(dispatch, getState, endpoint)
+    request({ dispatch, getState, endpoint })
       .then(
         (response) => {
           dispatch(coreActions.itemLoaded({
@@ -1189,7 +1204,7 @@ export function getAlbum(uri, { full, forceRefetch }) {
 
           if (full) {
             let tracks = formatTracks(response.tracks.items);
-            const fetchTracks = (endpoint) => request(dispatch, getState, endpoint)
+            const fetchTracks = (endpoint) => request({ dispatch, getState, endpoint })
               .then((response) => {
                 tracks = [...tracks, ...formatTracks(response.items)];
                 if (response.next) {
@@ -1239,7 +1254,7 @@ export function createPlaylist(name, description, is_public, is_collaborative) {
       },
     } = getState();
 
-    request(dispatch, getState, `users/${meId}/playlists/`, 'POST', data)
+    request({ dispatch, getState, endpoint: `users/${meId}/playlists/`, method: 'POST', data })
       .then(
         (response) => {
           dispatch(coreActions.itemLoaded({
@@ -1291,28 +1306,32 @@ export function savePlaylist(uri, name, description, is_public, is_collaborative
 
           // Save the image
           if (image) {
-            request(dispatch, getState, `users/${meId}/playlists/${getFromUri('playlistid', uri)}/images`, 'PUT', image)
-              .then(
-
-                (response) => {
-                  dispatch({
-                    type: 'PLAYLIST_UPDATED',
-                    key: uri,
-                    playlist: {
-                      name,
-                      public: is_public,
-                      collaborative: is_collaborative,
-                      description,
-                    },
-                  });
-                },
-                (error) => {
-                  dispatch(coreActions.handleException(
-                    'Could not save image',
-                    error,
-                  ));
-                },
-              );
+            request({
+              dispatch,
+              getState,
+              endpoint: `users/${meId}/playlists/${getFromUri('playlistid', uri)}/images`,
+              method: 'PUT',
+              data: image,
+            }).then(
+              () => {
+                dispatch({
+                  type: 'PLAYLIST_UPDATED',
+                  key: uri,
+                  playlist: {
+                    name,
+                    public: is_public,
+                    collaborative: is_collaborative,
+                    description,
+                  },
+                });
+              },
+              (error) => {
+                dispatch(coreActions.handleException(
+                  'Could not save image',
+                  error,
+                ));
+              },
+            );
 
             // No image, so we're done here
           } else {
@@ -1346,7 +1365,7 @@ export function getPlaylistTracks(uri, { forceRefetch, callbackAction } = {}) {
 
     let tracks = [];
 
-    const fetchTracks = (endpoint) => request(dispatch, getState, endpoint)
+    const fetchTracks = (endpoint) => request({ dispatch, getState, endpoint })
       .then((response) => {
         tracks = [...tracks, ...formatTracks(response.items)];
         if (response.next) {
@@ -1401,7 +1420,7 @@ export function getPlaylist(uri, options) {
     endpoint += `?market=${getState().spotify.country}`;
     if (forceRefetch) endpoint += `&refetch=${Date.now()}`;
 
-    request(dispatch, getState, endpoint)
+    request({ dispatch, getState, endpoint })
       .then(
         (response) => {
           let description = null;
@@ -1438,35 +1457,40 @@ export function getPlaylist(uri, options) {
 
 export function addTracksToPlaylist(uri, tracks_uris) {
   return (dispatch, getState) => {
-    request(dispatch, getState, `playlists/${getFromUri('playlistid', uri)}/tracks`, 'POST', { uris: tracks_uris })
-      .then(
-        (response) => {
-          dispatch({
-            type: 'PLAYLIST_TRACKS_ADDED',
-            key: uri,
-            tracks_uris,
-            snapshot_id: response.snapshot_id,
-          });
-        },
-        (error) => {
-          dispatch(coreActions.handleException(
-            'Could not add tracks to playlist',
-            error,
-          ));
-        },
-      );
+    request({
+      dispatch,
+      getState,
+      endpoint: `playlists/${getFromUri('playlistid', uri)}/tracks`,
+      method: 'POST',
+      data: { uris: tracks_uris },
+    }).then(
+      (response) => {
+        dispatch({
+          type: 'PLAYLIST_TRACKS_ADDED',
+          key: uri,
+          tracks_uris,
+          snapshot_id: response.snapshot_id,
+        });
+      },
+      (error) => {
+        dispatch(coreActions.handleException(
+          'Could not add tracks to playlist',
+          error,
+        ));
+      },
+    );
   };
 }
 
 export function deleteTracksFromPlaylist(uri, snapshot_id, tracks_indexes) {
   return (dispatch, getState) => {
-    request(
+    request({
       dispatch,
       getState,
-      `playlists/${getFromUri('playlistid', uri)}/tracks`,
-      'DELETE',
-      { snapshot_id, positions: tracks_indexes },
-    ).then(
+      endpoint: `playlists/${getFromUri('playlistid', uri)}/tracks`,
+      method: 'DELETE',
+      data: { snapshot_id, positions: tracks_indexes },
+    }).then(
       (response) => {
         dispatch({
           type: 'PLAYLIST_TRACKS_REMOVED',
@@ -1487,31 +1511,32 @@ export function deleteTracksFromPlaylist(uri, snapshot_id, tracks_indexes) {
 
 export function reorderPlaylistTracks(uri, range_start, range_length, insert_before, snapshot_id) {
   return (dispatch, getState) => {
-    request(
+    request({
       dispatch,
       getState,
-      `playlists/${getFromUri('playlistid', uri)}/tracks`, 'PUT',
-      {
+      endpoint: `playlists/${getFromUri('playlistid', uri)}/tracks`,
+      method: 'PUT',
+      data: {
         uri, range_start, range_length, insert_before, snapshot_id,
       },
-    ).then(
-        (response) => {
-          dispatch({
-            type: 'PLAYLIST_TRACKS_REORDERED',
-            key: uri,
-            range_start,
-            range_length,
-            insert_before,
-            snapshot_id: response.snapshot_id,
-          });
-        },
-        (error) => {
-          dispatch(coreActions.handleException(
-            'Could not reorder playlist tracks',
-            error,
-          ));
-        },
-      );
+    }).then(
+      (response) => {
+        dispatch({
+          type: 'PLAYLIST_TRACKS_REORDERED',
+          key: uri,
+          range_start,
+          range_length,
+          insert_before,
+          snapshot_id: response.snapshot_id,
+        });
+      },
+      (error) => {
+        dispatch(coreActions.handleException(
+          'Could not reorder playlist tracks',
+          error,
+        ));
+      },
+    );
   };
 }
 
@@ -1540,7 +1565,7 @@ export function getLibraryPlaylists(forceRefetch) {
     dispatch(uiActions.startProcess(processKey, { notification: false }));
 
     let libraryItems = [];
-    const fetch = (endpoint) => request(dispatch, getState, endpoint)
+    const fetch = (endpoint) => request({ dispatch, getState, endpoint })
       .then((response) => {
         const processor = getState().ui.processes[processKey];
         if (processor && processor.status === 'cancelling') {
@@ -1584,7 +1609,7 @@ export function getLibraryAlbums(forceRefetch) {
     dispatch(uiActions.startProcess(processKey, { notification: false }));
 
     let libraryItems = [];
-    const fetch = (endpoint) => request(dispatch, getState, endpoint)
+    const fetch = (endpoint) => request({ dispatch, getState, endpoint })
       .then((response) => {
         const processor = getState().ui.processes[processKey];
         if (processor && processor.status === 'cancelling') {
@@ -1628,7 +1653,7 @@ export function getLibraryArtists(forceRefetch) {
     dispatch(uiActions.startProcess(processKey, { notification: false }));
 
     let libraryItems = [];
-    const fetch = (endpoint) => request(dispatch, getState, endpoint)
+    const fetch = (endpoint) => request({ dispatch, getState, endpoint })
       .then((response) => {
         const processor = getState().ui.processes[processKey];
         if (processor && processor.status === 'cancelling') {
@@ -1652,8 +1677,8 @@ export function getLibraryArtists(forceRefetch) {
           }),
         );
         libraryItems = [...libraryItems, ...items];
-        if (response.next) {
-          fetch(`${response.next}${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
+        if (response.artists.next) {
+          fetch(`${response.artists.next}${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
         } else {
           dispatch(uiActions.processFinished(processKey));
           dispatch(coreActions.itemsLoaded(libraryItems));
@@ -1674,7 +1699,7 @@ export function getLibraryTracks(forceRefetch) {
     dispatch(uiActions.startProcess(processKey, { notification: false }));
 
     let libraryItems = [];
-    const fetch = (endpoint) => request(dispatch, getState, endpoint)
+    const fetch = (endpoint) => request({ dispatch, getState, endpoint })
       .then((response) => {
         const processor = getState().ui.processes[processKey];
         if (processor && processor.status === 'cancelling') {

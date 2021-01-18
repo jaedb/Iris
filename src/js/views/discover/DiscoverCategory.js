@@ -51,13 +51,13 @@ class DiscoverCategory extends React.Component {
     const {
       uri,
       category,
-      coreActions: {
-        loadCategory,
+      spotifyActions: {
+        getCategory,
       },
     } = this.props;
 
     if (!category) {
-      loadCategory(uri);
+      getCategory(uri);
     }
   }
 
@@ -67,13 +67,13 @@ class DiscoverCategory extends React.Component {
       uiActions: {
         hideContextMenu,
       },
-      coreActions: {
-        loadCategory,
+      spotifyActions: {
+        getCategory,
       },
     } = this.props;
 
     hideContextMenu();
-    loadCategory(uri, { forceRefetch: true });
+    getCategory(uri, { forceRefetch: true });
   }
 
   render = () => {

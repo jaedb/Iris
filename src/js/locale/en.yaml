@@ -339,6 +339,7 @@ track:
   track_number: 'Track %{number}'
   unknown_album: Unknown album
   want_lyrics: 'Want track lyrics? Authorize Genius under '
+  lyrics: Lyrics
 settings:
   title: Settings
   help: Help
