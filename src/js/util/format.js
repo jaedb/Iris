@@ -289,10 +289,11 @@ const encodeUri = (uri) => {
 /**
  * Rebuild a URI with some ugly-ass handling of encoding.
  *
- * Basically the ID part of a Mopidy URI needs to be encoded, but the rest of the URI can't be.
- * This means we need to break down the URI (decoded) and then reconstruct with an encoded ID.
- * This is all required because he URI is passed to us *from* a URL which has been encoded for
- * obvious reasons.
+ * We can't just run encodeURIComponent because it will encode ':' and '/' elements which are
+ * required to properly map to Mopidy's internal structure. Some things need encoding, and others
+ * need decoding *sigh*.
+ *
+ * Instead, we pluck the individual encodings as needed.
  *
  * For example somebackend:track:https://youtube.com/1234 would cause issues with the
  * https:// section. Our explode-by-':' approach would break this type of URI.
@@ -301,46 +302,16 @@ const encodeUri = (uri) => {
  */
 const decodeUri = (rawUri) => {
   let uri = decodeURIComponent(rawUri);
-  const source = uriSource(uri);
-  const type = uriType(uri);
+  uri = uri.replace(/,/g, '%2C');
+  uri = uri.replace(/'/g, '%27');
+  uri = uri.replace(/ /g, '%20');
+  uri = uri.replace(/\(/g, '%28');
+  uri = uri.replace(/\)/g, '%29');
+  uri = uri.replace(/\[/g, '%5B');
+  uri = uri.replace(/\]/g, '%5D');
 
-  /**
-   * TODO
-   * Why the hell is this so difficult?
-   */
-
-
-   
-  // Reinstate slashes for the Mopidy-Local structure
-  //uri = uri.replace(/%2F/g, '/');
-
-  // Ensure all ':' are uri encoded to lowercase
-  //uri = uri.replace(/%3A/g, '%3a');
+  console.debug(uri);
   return uri;
-
-  // Escape unreserved characters (RFC 3986)
-  // https://stackoverflow.com/questions/18251399/why-doesnt-encodeuricomponent-encode-single-quotes-apostrophes
-  let id = getFromUri(`${type}id`, uri);
-  const rest = uri.substring(uri.indexOf(id) + id.length);
-  id = encodeURIComponent(id).replace(/[!'()*]/g, escape);
-
-  // Reinstate slashes for the Mopidy-Local structure
-  id = id.replace(/%2F/g, '/');
-
-  // Ensure all ':' are uri encoded to lowercase
-  id = id.replace(/%3A/g, '%3a');
-
-  let decoded = `${source}:`;
-  switch (source) {
-    case 'dleyna':
-      // Doesn't contain URI type within it's URI schema *facepalm*
-      break;
-    default:
-      decoded += `${type}:`;
-  }
-  decoded += `${id}${rest}`;
-
-  return decoded;
 };
 
 /**
