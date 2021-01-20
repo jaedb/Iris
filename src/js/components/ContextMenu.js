@@ -622,8 +622,8 @@ class ContextMenu extends React.Component {
         uris,
       } = {},
     } = this.props;
+    const { nice_name } = this.getContext();
 
-    let { nice_name } = this.getContext();
     switch (nice_name) {
       case 'artist':
       case 'album':

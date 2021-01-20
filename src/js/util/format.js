@@ -309,6 +309,8 @@ const decodeUri = (rawUri) => {
   uri = uri.replace(/\)/g, '%29');
   uri = uri.replace(/\[/g, '%5B');
   uri = uri.replace(/\]/g, '%5D');
+  uri = uri.replace(/ /g, '%20');
+  //uri = uri.replace(/\//g, '%2F');
 
   console.debug(uri);
   return uri;
