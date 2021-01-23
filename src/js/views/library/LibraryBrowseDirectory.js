@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -8,6 +7,7 @@ import List from '../../components/List';
 import TrackList from '../../components/TrackList';
 import GridItem from '../../components/GridItem';
 import DropdownField from '../../components/Fields/DropdownField';
+import FilterField from '../../components/Fields/FilterField';
 import Icon from '../../components/Icon';
 import URILink from '../../components/URILink';
 import ErrorBoundary from '../../components/ErrorBoundary';
@@ -18,9 +18,10 @@ import * as spotifyActions from '../../services/spotify/actions';
 import {
   isLoading,
 } from '../../util/helpers';
-import { arrayOf, sortItems } from '../../util/arrays';
+import { arrayOf, sortItems, applyFilter } from '../../util/arrays';
 import { i18n, I18n } from '../../locale';
 import Button from '../../components/Button';
+import { encodeUri } from '../../util/format';
 
 class LibraryBrowseDirectory extends React.Component {
   constructor(props) {
@@ -153,7 +154,7 @@ class LibraryBrowseDirectory extends React.Component {
             <GridItem
               key={subdirectory.uri}
               type="directory"
-              link={`/library/browse/${encodeURIComponent(subdirectory.uri)}`}
+              link={`/library/browse/${encodeUri(subdirectory.uri)}`}
               item={subdirectory}
               nocontext
             />
@@ -172,6 +173,8 @@ class LibraryBrowseDirectory extends React.Component {
       view,
     } = this.props;
     const {
+      filter,
+      per_page,
       limit,
     } = this.state;
 
@@ -198,6 +201,9 @@ class LibraryBrowseDirectory extends React.Component {
 
     let subdirectories = (directory.subdirectories && directory.subdirectories.length > 0 ? directory.subdirectories : null);
     subdirectories = sortItems(subdirectories, 'name');
+    if (filter && filter !== '') {
+      subdirectories = applyFilter('name', filter, subdirectories);
+    }
 
     const total_items = (directory.tracks ? directory.tracks.length : 0) + (subdirectories ? subdirectories.length : 0);
     subdirectories = subdirectories.slice(0, limit);
@@ -207,6 +213,9 @@ class LibraryBrowseDirectory extends React.Component {
     if (limit_remaining > 0 && directory.tracks && directory.tracks.length) {
       all_tracks = directory.tracks;
       all_tracks = sortItems(all_tracks, 'name');
+      if (filter && filter !== '') {
+        tracks = applyFilter('name', filter, tracks);
+      }
       tracks = all_tracks.slice(0, limit_remaining);
     }
 
@@ -223,6 +232,11 @@ class LibraryBrowseDirectory extends React.Component {
 
     const options = (
       <>
+        <FilterField
+          initialValue={filter}
+          handleChange={(value) => this.setState({ filter: value, limit: per_page })}
+          onSubmit={() => uiActions.hideContextMenu()}
+        />
         <DropdownField
           icon="visibility"
           name="View"

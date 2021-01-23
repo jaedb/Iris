@@ -5,6 +5,7 @@ import * as uiActions from '../../services/ui/actions';
 import { uriType } from '../../util/helpers';
 import Icon from '../Icon';
 import { i18n } from '../../locale';
+import { encodeUri } from '../../util/format';
 
 class SearchForm extends React.Component {
   constructor(props) {
@@ -64,19 +65,19 @@ class SearchForm extends React.Component {
     // check for uri type matching
     switch (uriType(term)) {
       case 'album':
-        history.push(`/album/${encodeURIComponent(term)}`);
+        history.push(`/album/${encodeUri(term)}`);
         break;
 
       case 'artist':
-        history.push(`/artist/${encodeURIComponent(term)}`);
+        history.push(`/artist/${encodeUri(term)}`);
         break;
 
       case 'playlist':
-        history.push(`/playlist/${encodeURIComponent(term)}`);
+        history.push(`/playlist/${encodeUri(term)}`);
         break;
 
       case 'track':
-        history.push(`/track/${encodeURIComponent(term)}`);
+        history.push(`/track/${encodeUri(term)}`);
         break;
 
       default:

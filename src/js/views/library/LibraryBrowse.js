@@ -8,7 +8,7 @@ import Icon from '../../components/Icon';
 import ErrorBoundary from '../../components/ErrorBoundary';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
-import { formatImages } from '../../util/format';
+import { formatImages, encodeUri } from '../../util/format';
 import { I18n, i18n } from '../../locale';
 
 class LibraryBrowse extends React.Component {
@@ -91,7 +91,7 @@ class LibraryBrowse extends React.Component {
 
         grid_items.push({
           name: subdirectory.name,
-          link: `/library/browse/${encodeURIComponent(subdirectory.uri)}`,
+          link: `/library/browse/${encodeUri(subdirectory.uri)}`,
           icons: formatImages(subdirectory.icons),
         });
       }

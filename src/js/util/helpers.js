@@ -1,4 +1,5 @@
 import { indexToArray } from "./arrays";
+import { encodeUri } from "./format";
 
 /**
  * Returns a function, that, as long as it continues to be invoked, will not
@@ -339,8 +340,7 @@ const buildLink = (uri, type = null) => {
   // Encode the whole URI as though it's a component. This makes it URL friendly for
   // all Mopidy backends (some use URIs like local:track:http://rss.com/stuff.mp3) which
   // is never going to work nicely.
-  link += encodeURIComponent(uri);
-  console.log({ type, link });
+  link += encodeUri(uri);
   return link;
 };
 

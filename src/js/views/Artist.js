@@ -25,7 +25,7 @@ import {
   sourceIcon,
   titleCase,
 } from '../util/helpers';
-import { collate } from '../util/format';
+import { collate, encodeUri } from '../util/format';
 import { sortItems, applyFilter, arrayOf } from '../util/arrays';
 import { i18n, I18n } from '../locale';
 import Button from '../components/Button';
@@ -265,7 +265,7 @@ class Artist extends React.Component {
               />
             </div>
             <Button
-              to={`/artist/${encodeURIComponent(uri)}/related-artists`}
+              to={`/artist/${encodeUri(uri)}/related-artists`}
               scrollTo="#sub-views-menu"
             >
               <I18n path="artist.overview.related_artists.more" />
@@ -492,7 +492,7 @@ class Artist extends React.Component {
       return (
         <ErrorMessage type="not-found" title="Not found">
           <p>
-            <I18n path="errors.uri_not_found" uri={encodeURIComponent(uri)} />
+            <I18n path="errors.uri_not_found" uri={uri} />
           </p>
         </ErrorMessage>
       );
@@ -539,7 +539,7 @@ class Artist extends React.Component {
                 history={history}
                 activeClassName="sub-views__option--active"
                 className="sub-views__option"
-                to={`/artist/${encodeURIComponent(uri)}`}
+                to={`/artist/${encodeUri(uri)}`}
                 scrollTo="#sub-views-menu"
               >
                 <h4><I18n path="artist.overview.title" /></h4>
@@ -550,7 +550,7 @@ class Artist extends React.Component {
                   history={history}
                   activeClassName="sub-views__option--active"
                   className="sub-views__option"
-                  to={`/artist/${encodeURIComponent(uri)}/tracks`}
+                  to={`/artist/${encodeUri(uri)}/tracks`}
                   scrollTo="#sub-views-menu"
                 >
                   <h4><I18n path="artist.tracks.title" /></h4>
@@ -562,7 +562,7 @@ class Artist extends React.Component {
                   history={history}
                   activeClassName="sub-views__option--active"
                   className="sub-views__option"
-                  to={`/artist/${encodeURIComponent(uri)}/related-artists`}
+                  to={`/artist/${encodeUri(uri)}/related-artists`}
                   scrollTo="#sub-views-menu"
                 >
                   <h4><I18n path="artist.related_artists.title" /></h4>
@@ -573,7 +573,7 @@ class Artist extends React.Component {
                 history={history}
                 activeClassName="sub-views__option--active"
                 className="sub-views__option"
-                to={`/artist/${encodeURIComponent(uri)}/about`}
+                to={`/artist/${encodeUri(uri)}/about`}
                 scrollTo="#sub-views-menu"
               >
                 <h4><I18n path="artist.about.title" /></h4>

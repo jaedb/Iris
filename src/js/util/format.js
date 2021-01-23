@@ -282,9 +282,15 @@ const formatSimpleObjects = function (records = []) {
  * '/' as this is a URL parameter delimiter
  * @param {String} uri
  */
-const encodeUri = (uri) => {
-  return encodeURIComponent(uri);
-};
+const encodeUri = (rawUri) => {
+  let uri = rawUri;
+  uri = uri.replace(/\//g, '%2F');
+  uri = uri.replace(/\?/g, '%3F');
+
+  return uri;
+
+  //encodeURIComponent(rawUri);
+}
 
 /**
  * Rebuild a URI with some ugly-ass handling of encoding.
@@ -301,6 +307,19 @@ const encodeUri = (uri) => {
  * @param {String} rawUri
  */
 const decodeUri = (rawUri) => {
+  let uri = rawUri;
+  uri = uri.replace(/ /g, '%20');
+  uri = uri.replace(/%2F/g, '/');
+  uri = uri.replace(/%3F/g, '?');
+
+  /**
+   * What if we removed encoding completely? It looks like mopidy URIs are encoded to be URL friendly,
+   * except for slashes. So in principle we could just replace slash with %2F but otherwise not use
+   * encode/decodeUriComponent.
+   */
+  
+  return uri;
+  /*
   let uri = decodeURIComponent(rawUri);
   uri = uri.replace(/,/g, '%2C');
   uri = uri.replace(/'/g, '%27');
@@ -310,10 +329,11 @@ const decodeUri = (rawUri) => {
   uri = uri.replace(/\[/g, '%5B');
   uri = uri.replace(/\]/g, '%5D');
   uri = uri.replace(/ /g, '%20');
+  uri = uri.replace(/#/g, '%23');
   //uri = uri.replace(/\//g, '%2F');
 
-  console.debug(uri);
-  return uri;
+  console.debug({ rawUri, uri });
+  return uri;*/
 };
 
 /**

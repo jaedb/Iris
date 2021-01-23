@@ -1540,8 +1540,6 @@ const MopidyMiddleware = (function () {
                 (results) => (results.length ? formatTrack(results[0]) : null),
               ));
 
-              console.debug({ _response, tracks })
-
               store.dispatch(coreActions.itemsLoaded(tracks));
               store.dispatch(mopidyActions.getImages(arrayOf('uri', tracks)));
 

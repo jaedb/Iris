@@ -3,7 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import GridItem from './GridItem';
-import { collate } from '../util/format';
+import { collate, encodeUri } from '../util/format';
 import * as uiActions from '../services/ui/actions';
 import * as lastfmActions from '../services/lastfm/actions';
 import * as spotifyActions from '../services/spotify/actions';
@@ -47,7 +47,7 @@ class ArtistGrid extends React.Component {
                 type="artist"
                 item={artist}
                 show_source_icon={show_source_icon}
-                onClick={() => { history.push(`/artist/${encodeURIComponent(artist.uri)}`); }}
+                onClick={() => { history.push(`/artist/${encodeUri(artist.uri)}`); }}
                 lastfmActions={lastfmActions}
                 spotifyActions={spotifyActions}
                 spotifyAvailable={spotifyAvailable}

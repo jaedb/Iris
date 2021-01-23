@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { scrollTo } from '../util/helpers';
@@ -42,7 +41,6 @@ export default ({
     // on navigation. Useful for tabs, etc.
     if (!retainScroll) scrollTo(scrollToProp, (scrollToProp));
   };
-
 
   // Decode both links. This handles issues where one link is encoded and the other isn't, but
   // they're otherwise identical

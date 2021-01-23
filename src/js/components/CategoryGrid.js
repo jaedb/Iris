@@ -1,6 +1,7 @@
 
 import React, { memo } from 'react';
 import GridItem from './GridItem';
+import { encodeUri } from '../util/format';
 
 export default memo(({
   categories,
@@ -17,7 +18,7 @@ export default memo(({
             key={category.uri}
             type="category"
             item={category}
-            link={`/discover/categories/${encodeURIComponent(category.uri)}`}
+            link={`/discover/categories/${encodeUri(category.uri)}`}
           />
 				))
 			}

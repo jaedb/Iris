@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as uiActions from '../services/ui/actions';
 import GridItem from './GridItem';
+import { encodeUri } from '../util/format';
 
 class PlaylistGrid extends React.Component {
   handleContextMenu(e, item) {
@@ -35,7 +36,7 @@ class PlaylistGrid extends React.Component {
     type="playlist"
     item={playlist}
     show_source_icon={this.props.show_source_icon}
-    onClick={(e) => { this.props.history.push(`/playlist/${encodeURIComponent(playlist.uri)}`); }}
+    onClick={(e) => { this.props.history.push(`/playlist/${encodeUri(playlist.uri)}`); }}
     onContextMenu={(e) => this.handleContextMenu(e, playlist)}
   />
 					))

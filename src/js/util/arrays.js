@@ -93,6 +93,8 @@ const removeDuplicates = function (array) {
 const applyFilter = function (field, value, array, singular = false) {
   const results = [];
 
+  if (!array || !array.length) return results;
+
   for (let i = 0; i < array.length; i++) {
     if (array[i][field] && String(array[i][field]).toLowerCase().includes(String(value).toLowerCase())) {
       if (singular) {

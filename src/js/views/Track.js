@@ -18,14 +18,120 @@ import * as mopidyActions from '../services/mopidy/actions';
 import * as spotifyActions from '../services/spotify/actions';
 import * as lastfmActions from '../services/lastfm/actions';
 import * as geniusActions from '../services/genius/actions';
-import {
-  isLoading,
-  sourceIcon,
-} from '../util/helpers';
+import { sourceIcon } from '../util/helpers';
 import { i18n, I18n } from '../locale';
 import Button from '../components/Button';
 import { makeLoadingSelector, makeItemSelector } from '../util/selectors';
 import { decodeUri } from '../util/format';
+
+const LyricsSelector = ({
+  track: {
+    uri,
+    lyrics_results,
+    lyrics_path,
+  } = {},
+  getTrackLyrics,
+}) => {
+
+  if (lyrics_results === undefined || lyrics_results === null) return null;
+  if (lyrics_results.length <= 0) {
+    return (
+      <div className="field lyrics-selector">
+        <div className="input">
+          <input type="text" disabled="disabled" value="No results" />
+          <div className="description">
+            <I18n path="services.genius.switch_lyrics_result" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="field lyrics-selector">
+      <div className="input">
+        <SelectField
+          onChange={(value) => getTrackLyrics(uri, value)}
+          options={
+            lyrics_results.map((result) => ({
+              value: result.path,
+              label: result.title,
+              defaultValue: (result.path === lyrics_path),
+            }))
+          }
+        />
+        <div className="description">
+          <I18n path="services.genius.switch_lyrics_result" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const LyricsContent = ({
+  authorized,
+  loading,
+  track: {
+    lyrics,
+    lyrics_path,
+  } = {},
+}) => {
+  if (loading) return <Loader mini />;
+  if (!lyrics && !authorized) {
+    return (
+      <p className="no-results">
+        <I18n path="track.want_lyrics" />
+        <Link to="/settings/services/genius" scrollTo="#services-menu">
+          <I18n path="settings.title" />
+        </Link>
+        .
+      </p>
+    );
+  };
+  if (!lyrics) return null;
+
+  return (
+    <div className="lyrics">
+      <div className="content" dangerouslySetInnerHTML={{ __html: lyrics }} />
+      <div className="origin mid_grey-text">
+        <I18n path="track.lyrics_origin" />
+        <a
+          href={`https://genius.com${lyrics_path}`}
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          {`https://genius.com${lyrics_path}`}
+        </a>
+      </div>
+    </div>
+  );
+}
+
+const Lyrics = ({
+  loading,
+  authorized,
+  track,
+  getTrackLyrics,
+}) => {
+  return (
+    <>
+      <h4>
+        <I18n path="track.lyrics" />
+        {loading && <Loader loading mini />}
+      </h4>
+
+      <LyricsSelector
+        getTrackLyrics={getTrackLyrics}
+        authorized={authorized}
+        track={track}
+      />
+      <LyricsContent
+        track={track}
+        authorized={authorized}
+      />
+    </>
+  );
+}
 
 class Track extends React.Component {
   componentDidMount() {
@@ -85,11 +191,13 @@ class Track extends React.Component {
 
     if (track) {
       let artists = '';
-      for (let i = 0; i < track.artists.length; i++) {
-        if (artists != '') {
-          artists += ', ';
+      if (artists) {
+        for (let i = 0; i < track.artists.length; i++) {
+          if (artists != '') {
+            artists += ', ';
+          }
+          artists += track.artists[i].name;
         }
-        artists += track.artists[i].name;
       }
       setWindowTitle(i18n('track.title_window', { name: track.name, artists }));
     } else {
@@ -121,80 +229,6 @@ class Track extends React.Component {
     playURIs([uri], uri);
   }
 
-  renderLyricsSelector = () => {
-    const {
-      track,
-      geniusActions: {
-        getTrackLyrics,
-      },
-      genius_authorized,
-    } = this.props;
-
-    if (!genius_authorized || track.lyrics_results === undefined || track.lyrics_results === null) {
-      return null;
-    } if (track.lyrics_results.length <= 0) {
-      return (
-        <div className="field lyrics-selector">
-          <div className="input">
-            <input type="text" disabled="disabled" value="No results" />
-            <div className="description">
-              <I18n path="services.genius.switch_lyrics_result" />
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <div className="field lyrics-selector">
-        <div className="input">
-          <SelectField
-            onChange={(value) => getTrackLyrics(track.uri, value)}
-            options={
-              track.lyrics_results.map((result) => ({
-                value: result.path,
-                label: result.title,
-                defaultValue: (result.path === track.lyrics_path),
-              }))
-            }
-          />
-          <div className="description">
-            <I18n path="services.genius.switch_lyrics_result" />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  renderLyrics = () => {
-    const {
-      track: {
-        lyrics,
-        lyrics_path,
-      } = {},
-      genius_authorized,
-      loadingLyrics,
-    } = this.props;
-
-    if (!lyrics || !genius_authorized || loadingLyrics) return null;
-
-    return (
-      <div className="lyrics">
-        <div className="content" dangerouslySetInnerHTML={{ __html: lyrics }} />
-        <div className="origin mid_grey-text">
-          <I18n path="track.lyrics_origin" />
-          <a
-            href={`https://genius.com${lyrics_path}`}
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            {`https://genius.com${lyrics_path}`}
-          </a>
-        </div>
-      </div>
-    );
-  }
-
   render = () => {
     const {
       uri,
@@ -203,6 +237,9 @@ class Track extends React.Component {
       slim_mode,
       uiActions,
       genius_authorized,
+      geniusActions: {
+        getTrackLyrics
+      },
       loadingLyrics,
     } = this.props;
 
@@ -288,22 +325,12 @@ class Track extends React.Component {
           <ContextMenuTrigger onTrigger={this.handleContextMenu} />
         </div>
 
-        <h4>
-          <I18n path="track.lyrics" />
-          {loadingLyrics && <Loader loading mini />}
-        </h4>
-
-        {!genius_authorized && (
-          <p className="no-results">
-            <I18n path="track.want_lyrics" />
-            <Link to="/settings/services/genius" scrollTo="#services-menu">
-              <I18n path="settings.title" />
-            </Link>
-            .
-          </p>
-        )}
-        {this.renderLyricsSelector()}
-        {this.renderLyrics()}
+        <Lyrics
+          loading={loadingLyrics}
+          authorized={genius_authorized}
+          getTrackLyrics={getTrackLyrics}
+          track={track}
+        />
 
       </div>
     );

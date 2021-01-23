@@ -364,26 +364,27 @@ const CoreMiddleware = (function () {
         break;
       }
 
-      case 'LOAD_URI': {
-        const { uri, options } = action;
-        const source = uriSource(uri);
+      case 'LOAD_URIS': {
+        const { uris, options } = action;
 
-        const fetch = () => {
-          // We need to pull type from the URI for Spotify as we use specific HTTP endpoints for
-          // each asset type, and their URIs facilitate this.
-          if (source === 'spotify') {
-            store.dispatch(
-              coreActions[`load${titleCase(uriType(uri))}`](uri, options),
-            );
-          } else {
-            mopidyActions.getUris([uri], options);
-          }
-        };
-
-        ensureLoaded({
-          store,
-          action,
-          fetch,
+        uris.forEach((uri) => {
+          const fetch = () => {
+            const source = uriSource(uri);
+            // We need to pull type from the URI for Spotify as we use specific HTTP endpoints for
+            // each asset type, and their URIs facilitate this.
+            if (source === 'spotify') {
+              store.dispatch(
+                coreActions[`load${titleCase(uriType(uri))}`](uri, options),
+              );
+            } else {
+              mopidyActions.getUris([uri], options);
+            }
+          };
+          ensureLoaded({
+            store,
+            action: { uri, options },
+            fetch,
+          });
         });
         break;
       }

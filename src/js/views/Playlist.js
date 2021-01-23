@@ -30,6 +30,7 @@ import { trackEvent } from '../components/Trackable';
 import { i18n, I18n } from '../locale';
 import { makeItemSelector, makeLoadingSelector } from '../util/selectors';
 import { sortItems, applyFilter } from '../util/arrays';
+import { decodeUri, encodeUri } from '../util/format';
 
 class Playlist extends React.Component {
   constructor(props) {
@@ -45,7 +46,7 @@ class Playlist extends React.Component {
     // We accept the old format, and redirect to the new one
     if (uri.includes('spotify:user:')) {
       uri = uri.replace(/spotify:user:([^:]*?):/i, 'spotify:');
-      props.history.push(`/playlist/${encodeURIComponent(uri)}`);
+      props.history.push(`/playlist/${encodeUri(uri)}`);
     }
   }
 
@@ -76,7 +77,7 @@ class Playlist extends React.Component {
     } = this.props;
 
     if (prevPlaylist && playlist && prevPlaylist.moved_to !== playlist.moved_to) {
-      push(`/playlist/${encodeURIComponent(playlist.moved_to)}`);
+      push(`/playlist/${encodeUri(playlist.moved_to)}`);
     }
 
     if (uri !== prevUri) {
@@ -258,7 +259,7 @@ class Playlist extends React.Component {
               <I18n path="actions.play" />
             </Button>
             <Button
-              to={`/playlist/${encodeURIComponent(uri)}/edit`}
+              to={`/playlist/${encodeUri(uri)}/edit`}
               tracking={{ category: 'Playlist', action: 'Edit' }}
             >
               <I18n path="actions.edit" />
@@ -280,7 +281,7 @@ class Playlist extends React.Component {
                 <I18n path="actions.play" />
               </Button>
               <Button
-                to={`/playlist/${encodeURIComponent(uri)}/edit`}
+                to={`/playlist/${encodeUri(uri)}/edit`}
                 tracking={{ category: 'Playlist', action: 'Edit' }}
               >
                 <I18n path="actions.edit" />
@@ -495,7 +496,7 @@ const mapStateToProps = (state, ownProps) => {
     } = {},
   } = state;
 
-  const uri = decodeMopidyUri(ownProps.match.params.uri);
+  const uri = decodeUri(ownProps.match.params.uri);
   const playlistId = getFromUri('playlistid', uri);
   const itemSelector = makeItemSelector(uri);
   const loadingSelector = makeLoadingSelector([`(.*)${playlistId}(?!.*(following))(.*)`]);

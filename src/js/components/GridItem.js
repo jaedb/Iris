@@ -10,6 +10,7 @@ import Icon from './Icon';
 import Thumbnail from './Thumbnail';
 import LinksSentence from './LinksSentence';
 import { I18n } from '../locale';
+import { encodeUri } from '../util/format';
 
 class GridItem extends React.Component {
   componentDidMount() {
@@ -114,7 +115,7 @@ class GridItem extends React.Component {
     if (!item) return null;
     if (album) item = { ...item, ...album };
 
-    const link = customLink || `/${type}/${encodeURIComponent(item.uri)}`;
+    const link = customLink || `/${type}/${encodeUri(item.uri)}`;
 
     return (
       <Link

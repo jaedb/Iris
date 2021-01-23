@@ -28,6 +28,7 @@ import Button from '../components/Button';
 import { makeLoadingSelector, makeItemSelector } from '../util/selectors';
 import { applyFilter, sortItems } from '../util/arrays';
 import { trackEvent } from '../components/Trackable';
+import { encodeUri } from '../util/format';
 
 class Album extends React.Component {
   constructor(props) {
@@ -218,7 +219,7 @@ class Album extends React.Component {
       return (
         <ErrorMessage type="not-found" title="Not found">
           <p>
-            {i18n('errors.uri_not_found', { uri: encodeURIComponent(uri) })}
+            {i18n('errors.uri_not_found', { uri })}
           </p>
         </ErrorMessage>
       );

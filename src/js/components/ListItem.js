@@ -12,6 +12,7 @@ import {
   scrollTo,
 } from '../util/helpers';
 import { I18n } from '../locale';
+import { encodeUri } from '../util/format';
 
 export default class ListItem extends React.Component {
   componentDidMount() {
@@ -48,7 +49,7 @@ export default class ListItem extends React.Component {
 
     if (e.target.tagName.toLowerCase() !== 'a') {
       e.preventDefault();
-      history.push(`${link_prefix}${encodeURIComponent(uri)}`);
+      history.push(`${link_prefix}${encodeUri(uri)}`);
       scrollTo();
     }
   }
@@ -64,7 +65,7 @@ export default class ListItem extends React.Component {
 
     if (e.target.tagName.toLowerCase() !== 'a') {
       e.preventDefault();
-      history.push(`${link_prefix}${encodeURIComponent(uri)}`);
+      history.push(`${link_prefix}${encodeUri(uri)}`);
       scrollTo();
     }
   }
