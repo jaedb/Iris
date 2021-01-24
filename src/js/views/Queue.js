@@ -173,7 +173,7 @@ class Queue extends React.Component {
 
     return (
       <div className="current-track__added-from">
-        {addedFromItems[0].images && (
+        {addedFromItems[0].images && addedFromItems[0].uri && (
           <URILink
             uri={addedFromItems[0].uri}
             type={addedFromItems[0].type}

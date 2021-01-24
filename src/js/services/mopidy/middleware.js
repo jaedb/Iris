@@ -1194,6 +1194,8 @@ const MopidyMiddleware = (function () {
               can_edit: true,
             });
 
+            console.debug({ playlist })
+
             if (response.tracks) {
               request(store, 'library.lookup', { uris: arrayOf('uri', response.tracks) })
                 .then((tracksResponse) => {
