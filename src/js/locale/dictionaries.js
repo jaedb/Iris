@@ -2,6 +2,7 @@ import { merge } from 'lodash';
 import en from './en.yaml';
 import _de from './de.yaml';
 import _fr from './fr.yaml';
+import _it from './it.yaml';
 import _sv from './sv.yaml';
 import _nl from './nl.yaml';
 import _ja from './ja.yaml';
@@ -13,6 +14,8 @@ const de = {};
 merge(de, en, _de);
 const fr = {};
 merge(fr, en, _fr);
+const it = {};
+merge(it, en, _it);
 const sv = {};
 merge(sv, en, _sv);
 const nl = {};
@@ -26,6 +29,7 @@ const available = [
   { key: 'en', name: en.name },
   { key: 'de', name: de.name },
   { key: 'fr', name: fr.name },
+  { key: 'it', name: it.name },
   { key: 'ja', name: ja.name },
   { key: 'nl', name: nl.name },
   { key: 'pl', name: pl.name },
@@ -36,6 +40,7 @@ export default {
   en,
   de,
   fr,
+  it,
   sv,
   nl,
   ja,
@@ -47,6 +52,7 @@ export {
   en,
   de,
   fr,
+  it,
   sv,
   nl,
   ja,
