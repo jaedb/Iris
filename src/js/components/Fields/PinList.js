@@ -1,8 +1,8 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import Link from '../Link';
 import { sortItems } from '../../util/arrays';
 import PinButton from './PinButton';
+import URILink from '../URILink';
 
 const PinListItem = ({ item }) => {
   if (!item) return null;
@@ -10,13 +10,14 @@ const PinListItem = ({ item }) => {
   return (
     <span className="pin-list__item">
       <PinButton item={item} unpinIcon="delete" />
-      <Link
-        to={`/playlist/${item.uri}`}
+      <URILink
+        uri={item.uri}
+        type="playlist"
         className="sidebar__menu__item sidebar__menu__item--submenu"
         activeClassName="sidebar__menu__item--active"
       >
         {item.name}
-      </Link>
+      </URILink>
     </span>
   );
 };

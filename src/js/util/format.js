@@ -282,14 +282,11 @@ const formatSimpleObjects = function (records = []) {
  * '/' as this is a URL parameter delimiter
  * @param {String} uri
  */
-const encodeUri = (rawUri = '') => {
-  let uri = rawUri;
-  uri = uri.replace(/\//g, '%2F');
-  uri = uri.replace(/\?/g, '%3F');
-  uri = uri.replace(/%/g, '%25');
-  //uri = encodeURIComponent(uri);
+const encodeUri = (uri = '') => {
+  let encoded = encodeURIComponent(uri);
+  encoded = encoded.replace(/%/g, '%25');
 
-  return uri;
+  return encoded;
 }
 
 /**
@@ -308,10 +305,11 @@ const encodeUri = (rawUri = '') => {
  */
 const decodeUri = (rawUri = '') => {
   let uri = rawUri;
-  uri = uri.replace(/ /g, '%20');
+  uri = decodeURIComponent(uri);
   uri = uri.replace(/%2F/g, '/');
-  uri = uri.replace(/%3F/g, '?');
-  //uri = decodeURIComponent(uri);
+  uri = uri.replace(/ /g, '%20');
+  uri = uri.replace(/\[/g, '%5B');
+  uri = uri.replace(/\]/g, '%5D');
 
   return uri;
 };
@@ -711,6 +709,10 @@ const formatTrack = function (data) {
   }
 
   track.disc_track = track.disc_number + (track.track_number / 10); // Gives us a decimal d.t
+
+  // Remove lower-case encoding of ':'
+  // See https://github.com/tkem/mopidy-dleyna/issues/72
+  track.uri = decodeUri(track.uri);
 
   return track;
 };

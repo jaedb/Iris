@@ -277,7 +277,7 @@ class Artist extends React.Component {
 
         <div className="albums">
           <h4>
-            <I18n path="artist.overview.albums" />
+            <I18n path="artist.overview.albums" count={albums ? albums.length : 0} />
             <div className="actions-wrapper">
               <FilterField
                 initialValue={filter}

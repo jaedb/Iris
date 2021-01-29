@@ -1168,7 +1168,6 @@ const MopidyMiddleware = (function () {
       }
 
       case 'MOPIDY_GET_URIS': {
-        console.log(action);
         const { uris } = action;
         request(store, 'library.lookup', { uris })
           .then((response) => {
@@ -1193,8 +1192,6 @@ const MopidyMiddleware = (function () {
               provider: 'mopidy',
               can_edit: true,
             });
-
-            console.debug({ playlist })
 
             if (response.tracks) {
               request(store, 'library.lookup', { uris: arrayOf('uri', response.tracks) })
@@ -1636,12 +1633,6 @@ const MopidyMiddleware = (function () {
         next(action);
         break;
       }
-
-
-      /**
-           * =============================================================== LOCAL ================
-           * ======================================================================================
-           * */
 
       case 'MOPIDY_GET_DIRECTORY':
         store.dispatch({
