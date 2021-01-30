@@ -282,12 +282,14 @@ const formatSimpleObjects = function (records = []) {
  * '/' as this is a URL parameter delimiter
  * @param {String} uri
  */
-const encodeUri = (uri = '') => {
-  let encoded = encodeURIComponent(uri);
-  encoded = encoded.replace(/%/g, '%25');
+const encodeUri = (rawUri = '') => {
+  let uri = encodeURIComponent(rawUri);
 
-  return encoded;
-}
+  // Double-encode percent symbol as Mopidy requires some encoded elements
+  //uri = uri.replace(/%/g, '%25');
+
+  return uri;
+};
 
 /**
  * Rebuild a URI with some ugly-ass handling of encoding.
@@ -306,10 +308,21 @@ const encodeUri = (uri = '') => {
 const decodeUri = (rawUri = '') => {
   let uri = rawUri;
   uri = decodeURIComponent(uri);
-  uri = uri.replace(/%2F/g, '/');
-  uri = uri.replace(/ /g, '%20');
+  uri = uri.replace(/%2F/g, '/'); // We need slashes
+
+  // Some characters that don't require encoding for JS, but do for Mopidy
+  uri = uri.replace(/!/g, '%21');
+  uri = uri.replace(/\*/g, '%2A');
+  uri = uri.replace(/\(/g, '%28');
+  uri = uri.replace(/\)/g, '%29');
   uri = uri.replace(/\[/g, '%5B');
   uri = uri.replace(/\]/g, '%5D');
+  uri = uri.replace(/@/g, '%40');
+  uri = uri.replace(/#/g, '%23');
+  uri = uri.replace(/\$/g, '%24');
+  uri = uri.replace(/'/g, '%27');
+  uri = uri.replace(/,/g, '%2C');
+  uri = uri.replace(/ /g, '%20');
 
   return uri;
 };

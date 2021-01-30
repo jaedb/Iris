@@ -240,6 +240,7 @@ class Playlist extends React.Component {
   renderActions = () => {
     const {
       uri,
+      encodedUri,
       playlist: {
         can_edit,
         name,
@@ -259,7 +260,7 @@ class Playlist extends React.Component {
               <I18n path="actions.play" />
             </Button>
             <Button
-              to={`/playlist/${encodeUri(uri)}/edit`}
+              to={`/playlist/${encodedUri}/edit`}
               tracking={{ category: 'Playlist', action: 'Edit' }}
             >
               <I18n path="actions.edit" />
@@ -281,7 +282,7 @@ class Playlist extends React.Component {
                 <I18n path="actions.play" />
               </Button>
               <Button
-                to={`/playlist/${encodeUri(uri)}/edit`}
+                to={`/playlist/${encodedUri}/edit`}
                 tracking={{ category: 'Playlist', action: 'Edit' }}
               >
                 <I18n path="actions.edit" />
@@ -497,13 +498,13 @@ const mapStateToProps = (state, ownProps) => {
   } = state;
 
   const uri = decodeUri(ownProps.match.params.uri);
-  const playlistId = getFromUri('playlistid', uri);
   const itemSelector = makeItemSelector(uri);
-  const loadingSelector = makeLoadingSelector([`(.*)${playlistId}(?!.*(following))(.*)`]);
-  const loadingTracksSelector = makeLoadingSelector([`(.*)${playlistId}/tracks(.*)`]);
+  const loadingSelector = makeLoadingSelector([`(.*)${uri}(?!.*(following))(.*)`]);
+  const loadingTracksSelector = makeLoadingSelector([`(.*)${uri}(.*)tracks(.*)`]);
 
   return {
     uri,
+    encodedUri: ownProps.match.params.uri,
     allow_reporting,
     slim_mode,
     theme,
