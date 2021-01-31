@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
 // Modified for Iris
 // Original source https://github.com/badaix/snapcast
-const Flac = require('../util/libflac');
+const Flac = require('libflacjs/dist/libflac.js');
 
 function setCookie(key, value, exdays = -1) {
   let d = new Date();

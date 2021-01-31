@@ -13,6 +13,7 @@
     "@sentry/browser": "^5.27.6",
     "history": "^5.0.0",
     "jquery": "^3.5.1",
+    "libflacjs": "^5.4.0",
     "localforage": "^1.9.0",
     "lodash": "^4.17.20",
     "logrocket": "^1.0.14",
