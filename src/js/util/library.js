@@ -115,7 +115,7 @@ const ensureLoaded = ({
 
       const uris = dependentUris(item);
       if (uris.length) {
-        console.log(`Loading ${uris.length} dependents`);
+        console.info(`Loading ${uris.length} dependents`);
         store.dispatch(coreActions.loadItems(type, uris));
       }
       return;
@@ -124,10 +124,7 @@ const ensureLoaded = ({
 
   // What about in the coldstore?
   localForage.getItem(uri).then((restoredItem) => {
-    if (
-      !restoredItem ||
-      missingDependents(restoredItem).length > 0
-    ) {
+    if (!restoredItem || missingDependents(restoredItem).length > 0) {
       fetch();
       return;
     }

@@ -390,18 +390,20 @@ const CoreMiddleware = (function () {
       }
 
       case 'LOAD_TRACK': {
+        const { uri, options } = action;
+
         const fetch = () => {
           switch (uriSource(action.uri)) {
             case 'spotify':
-              store.dispatch(spotifyActions.getTrack(action.uri, action.options));
+              store.dispatch(spotifyActions.getTrack(uri, options));
 
               if (spotify.me) {
-                store.dispatch(spotifyActions.following(action.uri));
+                store.dispatch(spotifyActions.following(uri));
               }
               break;
 
             default:
-              store.dispatch(mopidyActions.getTrack(action.uri, action.options));
+              store.dispatch(mopidyActions.getTrack(uri, options));
               break;
           }
         };
@@ -410,7 +412,7 @@ const CoreMiddleware = (function () {
           action,
           fetch,
           dependents: ['images'],
-          fullDependents: ['lyrics_results'],
+          fullDependents: options.lyrics ? ['lyrics_results'] : [],
           type: 'track',
         });
 

@@ -143,7 +143,7 @@ class Track extends React.Component {
       },
     } = this.props;
 
-    loadTrack(decodeUri(uri));
+    loadTrack(decodeUri(uri), { full: true, lyrics: true });
 
     if (track) {
       this.setWindowTitle(track);
@@ -157,28 +157,13 @@ class Track extends React.Component {
     const {
       uri,
       track,
-      genius_authorized,
-      lastfm_authorized,
       coreActions: {
         loadTrack,
-      },
-      geniusActions: {
-        findTrackLyrics,
-      },
-      lastfmActions: {
-        getTrack,
       },
     } = this.props;
 
     if (prevUri !== uri) {
-      loadTrack(decodeUri(uri));
-    }
-
-    // We have just received our full track or our track artists
-    if ((!prevTrack && track) || (prevTrack && !prevTrack.artists && track.artists)) {
-      this.setWindowTitle(track);
-      if (lastfm_authorized) getTrack(track.uri);
-      if (genius_authorized && !track.lyrics_results) findTrackLyrics(track);
+      loadTrack(decodeUri(uri), { full: true, lyrics: true });
     }
 
     if (!prevTrack && track) this.setWindowTitle(track);
@@ -339,9 +324,11 @@ class Track extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   const uri = decodeUri(ownProps.match.params.uri);
-  const loadingSelector = makeLoadingSelector([`^(?!genius)(.*)${uri}(.*)$`]);
+  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`, '^((?!genius).)*$', '^((?!contains).)*$']);
   const loadingLyricsSelector = makeLoadingSelector([`^genius_(.*)lyrics_${uri}$`]);
   const trackSelector = makeItemSelector(uri);
+
+  console.debug(`^(?!genius)(.*)${uri}(.*)(?!contains)(.*)$`)
 
   return {
     uri,

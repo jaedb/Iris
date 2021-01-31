@@ -1,4 +1,4 @@
-import { indexToArray } from "./arrays";
+import { indexToArray, arrayOf } from "./arrays";
 import { encodeUri } from "./format";
 
 /**
@@ -370,37 +370,42 @@ let isObject = function (value) {
   return value instanceof Object && value.constructor === Object;
 };
 
+/**
+ * Convert an array of strings to an array of RegExp objects
+ * 
+ * @param {Array} keys
+ */
+const toRegExp = function (keys) {
+  return keys.map((key) => {
+    try {
+      return new RegExp(key);
+    } catch {
+      // Fucks with unit tests, but helpful for debugging.
+      // console.error('Could not convert string to RegEx', key);
+      return null;
+    }
+  });
+};
 
 /**
  * Detect if an item is in the loading queue. We simply loop all load items to
- * see if any items contain our searched key.
+ * see if any load queue keys match our 'includes' expression AND our 'excludes' expression(s)
  *
- * TODO: Explore performance of this
- * TODO: Allow wildcards
- *
- * @param load_queue = obj (passed from store)
- * @param key = string (the string to lookup)
- * @return boolean
+ * @param {Object} load_queue (passed from store)
+ * @param {Array} keys array of regex strings
+ * @return {Boolean}
  * */
 const isLoading = function (load_queue = {}, keys = []) {
   if (!load_queue || !keys) return false;
 
+  const expressions = toRegExp(keys);
   const queue = indexToArray(load_queue);
-  const matches = keys.reduce((acc, key) => {
-    let regex = '';
-    try {
-      regex = new RegExp(key);
-    } catch {
-      // Fucks with unit tests, but helpful for debugging.
-      // console.error('Invalid regular expression', keys);
-      return acc;
-    }
 
-    return [
-      ...acc,
-      ...(queue.filter((qk) => qk.match(regex))),
-    ];
-  }, []);
+  const matches = queue.filter((qk) => {
+    const matchingExpressions = keys.filter((exp) => qk.match(exp));
+
+    return (matchingExpressions.length === expressions.length);
+  });
 
   return matches.length > 0;
 };

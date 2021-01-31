@@ -56,6 +56,8 @@ const request = ({
   const loaderKey = `spotify_${uri ? `uri_${uri}` : ''}_endpoint_${endpoint}`;
   dispatch(uiActions.startLoading(loaderId, loaderKey));
 
+  console.debug({ loaderId, loaderKey })
+
   return new Promise((resolve, reject) => {
     getToken(dispatch, getState)
       .then(
@@ -332,7 +334,7 @@ export function getMe() {
   };
 }
 
-export function getTrack(uri, { forceRefetch, full }) {
+export function getTrack(uri, { forceRefetch, full, lyrics }) {
   return (dispatch, getState) => {
     let endpoint = `tracks/${getFromUri('trackid', uri)}`;
     if (forceRefetch) endpoint += `?refetch=${Date.now()}`;
@@ -350,9 +352,9 @@ export function getTrack(uri, { forceRefetch, full }) {
           if (getState().lastfm.authorization) {
             dispatch(lastfmActions.getTrack(uri));
           }
-          if (getState().genius.authorization) {
-            dispatch(geniusActions.findTrackLyrics(uri));
-          }
+        }
+        if (lyrics && getState().genius.authorization) {
+          dispatch(geniusActions.findTrackLyrics(uri));
         }
       },
     );

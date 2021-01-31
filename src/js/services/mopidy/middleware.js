@@ -1530,8 +1530,8 @@ const MopidyMiddleware = (function () {
         break;
 
       case 'MOPIDY_GET_TRACKS': {
-        const { options: { full } } = action;
-        request(store, 'library.lookup', { uris: action.uris })
+        const { uris, options: { full, lyrics } } = action;
+        request(store, 'library.lookup', { uris })
           .then(
             (_response) => {
               if (!_response) return;
@@ -1542,16 +1542,16 @@ const MopidyMiddleware = (function () {
               store.dispatch(coreActions.itemsLoaded(tracks));
               store.dispatch(mopidyActions.getImages(arrayOf('uri', tracks)));
 
-              if (full) {
-                tracks.forEach((track) => {
+              tracks.forEach((track) => {
+                if (full) {
                   if (store.getState().lastfm.authorization) {
                     store.dispatch(lastfmActions.getTrack(track.uri));
                   }
-                  if (store.getState().genius.authorization) {
-                    store.dispatch(geniusActions.findTrackLyrics(track.uri));
-                  }
-                });
-              }
+                }
+                if (lyrics && store.getState().genius.authorization) {
+                  store.dispatch(geniusActions.findTrackLyrics(track.uri));
+                }
+              });
             },
             (error) => {
               store.dispatch(coreActions.handleException(

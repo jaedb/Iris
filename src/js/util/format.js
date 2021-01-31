@@ -278,18 +278,10 @@ const formatSimpleObjects = function (records = []) {
 /**
  * Prepare a URI for use in a URL
  *
- * Needs to have all special characters encoded to avoid being parsed incorrectly, especially
- * '/' as this is a URL parameter delimiter
+ * Simple alias to encodeURIComponent so this can be extended as needed
  * @param {String} uri
  */
-const encodeUri = (rawUri = '') => {
-  let uri = encodeURIComponent(rawUri);
-
-  // Double-encode percent symbol as Mopidy requires some encoded elements
-  //uri = uri.replace(/%/g, '%25');
-
-  return uri;
-};
+const encodeUri = (rawUri = '') => encodeURIComponent(rawUri);
 
 /**
  * Rebuild a URI with some ugly-ass handling of encoding.
@@ -320,6 +312,7 @@ const decodeUri = (rawUri = '') => {
   uri = uri.replace(/@/g, '%40');
   uri = uri.replace(/#/g, '%23');
   uri = uri.replace(/\$/g, '%24');
+  uri = uri.replace(/&/g, '%26');
   uri = uri.replace(/'/g, '%27');
   uri = uri.replace(/,/g, '%2C');
   uri = uri.replace(/ /g, '%20');

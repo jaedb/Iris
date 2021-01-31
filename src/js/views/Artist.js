@@ -604,7 +604,7 @@ class Artist extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   const uri = decodeURIComponent(ownProps.match.params.uri);
-  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`]);
+  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`, '^((?!contains).)*$', '^((?!/albums).)*$', '^((?!related-artists).)*$', '^((?!top-tracks).)*$']);
   const artistSelector = makeItemSelector(uri);
   const artist = artistSelector(state);
   let albums = null;
