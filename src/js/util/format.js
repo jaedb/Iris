@@ -281,7 +281,16 @@ const formatSimpleObjects = function (records = []) {
  * Simple alias to encodeURIComponent so this can be extended as needed
  * @param {String} uri
  */
-const encodeUri = (rawUri = '') => encodeURIComponent(rawUri);
+const encodeUri = (rawUri = '') => {
+  let uri = rawUri;
+
+  // Manually encode %
+  // Needed because React Router History incorrectly handles '%' during encoding/decoding
+  // See https://github.com/jaedb/Iris/issues/674
+  uri = uri.replace(/%25/g, '_PRCNT_');
+  uri = encodeURIComponent(uri);
+  return uri;
+};
 
 /**
  * Rebuild a URI with some ugly-ass handling of encoding.
@@ -299,10 +308,16 @@ const encodeUri = (rawUri = '') => encodeURIComponent(rawUri);
  */
 const decodeUri = (rawUri = '') => {
   let uri = rawUri;
-  uri = decodeURIComponent(uri);
-  uri = uri.replace(/%2F/g, '/'); // We need slashes
 
-  // Some characters that don't require encoding for JS, but do for Mopidy
+  try {
+    uri = decodeURIComponent(uri);
+  } catch {
+    console.error('Could not decode URI', uri);
+  }
+
+  // Some characters must be encoded for Mopidy URI compatibility
+  uri = uri.replace(/%2F/g, '/'); // We need slashes
+  uri = uri.replace(/_PRCNT_/g, '%25'); // Decode '%'
   uri = uri.replace(/!/g, '%21');
   uri = uri.replace(/\*/g, '%2A');
   uri = uri.replace(/\(/g, '%28');
@@ -319,6 +334,12 @@ const decodeUri = (rawUri = '') => {
 
   return uri;
 };
+
+const encodeMopidyUri = (rawUri = '') => {
+  let uri = rawUri;
+
+  return uri;
+}
 
 /**
  * Format our album objects into a universal format
@@ -1021,6 +1042,7 @@ export {
   injectSortId,
   encodeUri,
   decodeUri,
+  encodeMopidyUri,
 };
 
 export default {
@@ -1049,4 +1071,5 @@ export default {
   injectSortId,
   encodeUri,
   decodeUri,
+  encodeMopidyUri,
 };
