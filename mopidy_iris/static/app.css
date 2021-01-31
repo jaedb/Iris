@@ -9742,7 +9742,7 @@ main .track-view .lyrics-selector {
 }
 @media (max-width: 799px) {
   main .track-view {
-    padding-top: 0;
+    padding-top: 10px;
     padding-left: 10px;
   }
   main .track-view .thumbnail-wrapper {

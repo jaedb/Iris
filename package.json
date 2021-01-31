@@ -11,7 +11,7 @@
   "main": "app.js",
   "dependencies": {
     "@sentry/browser": "^5.27.6",
-    "history": "^4.10.1",
+    "history": "^5.0.0",
     "jquery": "^3.5.1",
     "localforage": "^1.9.0",
     "lodash": "^4.17.20",

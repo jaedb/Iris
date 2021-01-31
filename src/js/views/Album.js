@@ -213,9 +213,10 @@ class Album extends React.Component {
       filter,
     } = this.state;
 
-    if (loading) {
-      return <Loader body loading />;
-    } else if (!album) {
+    if (!album) {
+      if (loading) {
+        return <Loader body loading />;
+      }
       return (
         <ErrorMessage type="not-found" title="Not found">
           <p>
@@ -366,7 +367,7 @@ class Album extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   const uri = decodeURIComponent(ownProps.match.params.uri);
   const itemSelector = makeItemSelector(uri);
-  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`, '^((?!contains).)*$', '^((?!me/albums).)*$']);
+  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`, '^((?!contains).)*$', '^((?!me\/albums).)*$']);
   return {
     uri,
     slim_mode: state.ui.slim_mode,

@@ -228,11 +228,18 @@ class Track extends React.Component {
       loadingLyrics,
     } = this.props;
 
-    if (loading) {
-      return <Loader body loading />;
+    if (!track) {
+      if (loading) {
+        return <Loader body loading />;
+      }
+      return (
+        <ErrorMessage type="not-found" title="Not found">
+          <p>
+            {i18n('errors.uri_not_found', { uri })}
+          </p>
+        </ErrorMessage>
+      );
     }
-
-    if (!track) return null;
 
     return (
       <div className="view track-view content-wrapper">
@@ -327,8 +334,6 @@ const mapStateToProps = (state, ownProps) => {
   const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`, '^((?!genius).)*$', '^((?!contains).)*$']);
   const loadingLyricsSelector = makeLoadingSelector([`^genius_(.*)lyrics_${uri}$`]);
   const trackSelector = makeItemSelector(uri);
-
-  console.debug(`^(?!genius)(.*)${uri}(.*)(?!contains)(.*)$`)
 
   return {
     uri,

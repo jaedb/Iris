@@ -56,8 +56,6 @@ const request = ({
   const loaderKey = `spotify_${uri ? `uri_${uri}` : ''}_endpoint_${endpoint}`;
   dispatch(uiActions.startLoading(loaderId, loaderKey));
 
-  console.debug({ loaderId, loaderKey })
-
   return new Promise((resolve, reject) => {
     getToken(dispatch, getState)
       .then(
@@ -1412,7 +1410,7 @@ export function getPlaylistTracks(uri, { forceRefetch, callbackAction } = {}) {
 
     let tracks = [];
 
-    const fetchTracks = (endpoint) => request({ dispatch, getState, endpoint })
+    const fetchTracks = (endpoint) => request({ dispatch, getState, endpoint, uri })
       .then((response) => {
         tracks = [...tracks, ...formatTracks(response.items)];
         if (response.next) {
