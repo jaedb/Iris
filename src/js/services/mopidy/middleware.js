@@ -207,8 +207,9 @@ const MopidyMiddleware = (function () {
    * @return promise
    * */
   const request = (store, call, value = {}) => new Promise((resolve, reject) => {
-    const loader_key = generateGuid();
-    store.dispatch(uiActions.startLoading(loader_key, `mopidy_${call}`));
+    const loaderId = generateGuid();
+    const loaderKey = `mopidy_${call}`;
+    store.dispatch(uiActions.startLoading(loaderId, loaderKey));
 
     const doRequest = () => {
       const controller = getController(call, socket);
@@ -216,7 +217,7 @@ const MopidyMiddleware = (function () {
       if (controller) {
         const timeout = setTimeout(
           () => {
-            store.dispatch(uiActions.stopLoading(loader_key));
+            store.dispatch(uiActions.stopLoading(loaderId));
             reject(new Error('Request timed out'));
           },
           30000,
@@ -226,17 +227,17 @@ const MopidyMiddleware = (function () {
           .then(
             (response) => {
               clearTimeout(timeout);
-              store.dispatch(uiActions.stopLoading(loader_key));
+              store.dispatch(uiActions.stopLoading(loaderId));
               resolve(response);
             },
             (error) => {
               clearTimeout(timeout);
-              store.dispatch(uiActions.stopLoading(loader_key));
+              store.dispatch(uiActions.stopLoading(loaderId));
               reject(error);
             },
           );
       } else {
-        store.dispatch(uiActions.stopLoading(loader_key));
+        store.dispatch(uiActions.stopLoading(loaderId));
         console.warn(
           'Mopidy request aborted. Either Mopidy is not connected or the request method is invalid. Check the request and your server settings.',
           { call, value, socket, controller },
@@ -1635,10 +1636,11 @@ const MopidyMiddleware = (function () {
       }
 
       case 'MOPIDY_GET_DIRECTORY':
-        store.dispatch({
-          type: 'MOPIDY_DIRECTORY_FLUSH',
-        });
         const uri = action.uri ? decodeURIComponent(action.uri) : null;
+        store.dispatch({
+          type: 'MOPIDY_DIRECTORY_LOADING',
+          uri,
+        });
 
         if (uri) {
           request(store, 'library.lookup', { uris: [uri] })
@@ -1648,19 +1650,12 @@ const MopidyMiddleware = (function () {
               } = response;
 
               if (!results.length) return;
-
-              let result = results[0];
-              if (result.album) {
-                result = {
-                  ...result,
-                  name: result.album.name,
-                };
-              }
+              const result = results[0];
 
               store.dispatch({
                 type: 'MOPIDY_DIRECTORY_LOADED',
                 directory: {
-                  ...formatSimpleObject(result),
+                  name: result.album ? result.album.name : result.name,
                 },
               });
             });

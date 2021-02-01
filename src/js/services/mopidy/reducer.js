@@ -94,8 +94,8 @@ export default function reducer(mopidy = {}, action) {
      * Directories
      * This also facilitates all backend-only music providers (SoundCloud, Dirble, etc)
      * */
-    case 'MOPIDY_DIRECTORY_FLUSH':
-      return { ...mopidy, directory: null };
+    case 'MOPIDY_DIRECTORY_LOADING':
+      return { ...mopidy, directory: { uri: action.uri } };
 
     case 'MOPIDY_DIRECTORY_LOADED':
       return {

@@ -15,13 +15,12 @@ import LazyLoadListener from '../../components/LazyLoadListener';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
-import {
-  isLoading,
-} from '../../util/helpers';
 import { arrayOf, sortItems, applyFilter } from '../../util/arrays';
 import { i18n, I18n } from '../../locale';
 import Button from '../../components/Button';
-import { encodeUri } from '../../util/format';
+import { encodeUri, decodeUri } from '../../util/format';
+import { makeLoadingSelector } from '../../util/selectors';
+import ErrorMessage from '../../components/ErrorMessage';
 
 class LibraryBrowseDirectory extends React.Component {
   constructor(props) {
@@ -168,8 +167,8 @@ class LibraryBrowseDirectory extends React.Component {
     const {
       uri,
       directory,
-      load_queue,
       uiActions,
+      loading,
       view,
     } = this.props;
     const {
@@ -180,12 +179,16 @@ class LibraryBrowseDirectory extends React.Component {
 
     let title = i18n('library.browse_directory.title');
 
-    if (!directory || isLoading(load_queue, ['mopidy_browse'])) {
+    if (!directory || (!directory.subdirectories && !directory.tracks)) {
+      if (loading) {
+        return <Loader body loading />;
+      }
       return (
-        <div className="view library-local-view">
-          <Header icon="music" title={title} uiActions={uiActions} />
-          <Loader body loading />
-        </div>
+        <ErrorMessage type="not-found" title="Not found">
+          <p>
+            <I18n path="errors.uri_not_found" uri={uri} />
+          </p>
+        </ErrorMessage>
       );
     }
 
@@ -302,23 +305,26 @@ class LibraryBrowseDirectory extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  // Decode the URI, and then re-encode selected characters
-  // This is needed as Mopidy encodes *some* characters in URIs (but not other characters)
-  // We need to retain ":" because this a reserved URI separator
-  let uri = decodeURIComponent(ownProps.match.params.uri);
-  uri = uri.replace(/\s/g, '%20');	// space
-  uri = uri.replace(/&/g, '%26');		// &
-  uri = uri.replace(/\[/g, '%5B');	// [
-  uri = uri.replace(/\]/g, '%5D');	// ]
-  uri = uri.replace(/\(/g, '%28');	// (
-  uri = uri.replace(/\)/g, '%29');	// )
-  uri = uri.replace(/\#/g, '%23');	// #
+  const {
+    mopidy: {
+      directory: _directory = {},
+    },
+    ui: {
+      library_directory_view: view,
+    },
+  } = state;
+  const uri = decodeUri(ownProps.match.params.uri);
+  const uriMatcher = [uri, decodeURIComponent(uri)]; // Lenient matching due to encoding diffs
+  const directory = _directory && uriMatcher.includes(_directory.uri)
+    ? _directory
+    : undefined;
+  const loadingSelector = makeLoadingSelector(['mopidy_library.(browse|lookup)']);
 
   return {
     uri,
-    load_queue: state.ui.load_queue,
-    directory: state.mopidy.directory,
-    view: state.ui.library_directory_view,
+    loading: loadingSelector(state),
+    directory,
+    view,
   };
 };
 
