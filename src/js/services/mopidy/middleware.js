@@ -3,7 +3,7 @@ import ReactGA from 'react-ga';
 import Mopidy from 'mopidy';
 import { sha256 } from 'js-sha256';
 import { sampleSize, compact, chunk } from 'lodash';
-import { i18n } from '../../locale';
+import { i18n, I18n } from '../../locale';
 import {
   generateGuid,
   uriSource,
@@ -1217,6 +1217,12 @@ const MopidyMiddleware = (function () {
       case 'MOPIDY_ADD_PLAYLIST_TRACKS':
         request(store, 'playlists.lookup', { uri: action.key })
           .then((response) => {
+            if (!response) {
+              store.dispatch(coreActions.handleException(
+                i18n('errors.uri_not_found', { uri: action.key }),
+              ));
+              return;
+            }
             const tracks = action.tracks_uris.map((uri) => ({ __model__: 'Track', uri }));
             const playlist = { ...response };
             if (playlist.tracks) {

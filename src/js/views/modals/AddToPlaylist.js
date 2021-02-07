@@ -10,10 +10,10 @@ import * as coreActions from '../../services/core/actions';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
-import { sourceIcon, decodeMopidyUri } from '../../util/helpers';
+import { sourceIcon } from '../../util/helpers';
 import { sortItems } from '../../util/arrays';
 import { I18n, i18n } from '../../locale';
-import { collate } from '../../util/format';
+import { collate, decodeUri } from '../../util/format';
 import { makeProcessProgressSelector } from '../../util/selectors';
 
 const processKeys = [
@@ -57,7 +57,7 @@ class AddToPlaylist extends React.Component {
       },
       uris,
     } = this.props;
-    const encodedUris = uris.map((uri) => decodeMopidyUri(uri));
+    const encodedUris = uris.map((uri) => decodeUri(uri));
     addTracksToPlaylist(playlist_uri, encodedUris);
     window.history.back();
   }

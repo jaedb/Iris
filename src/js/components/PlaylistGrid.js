@@ -54,8 +54,10 @@ class PlaylistGrid extends React.Component {
   }
 }
 
+const mapStateToProps = (state) => state;
+
 const mapDispatchToProps = (dispatch) => ({
   uiActions: bindActionCreators(uiActions, dispatch),
 });
 
-export default connect(mapDispatchToProps)(PlaylistGrid);
+export default connect(mapStateToProps, mapDispatchToProps)(PlaylistGrid);

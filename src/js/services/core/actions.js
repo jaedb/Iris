@@ -5,7 +5,8 @@ import { uriSource } from '../../util/helpers';
 const spotifyActions = require('../../services/spotify/actions');
 const mopidyActions = require('../../services/mopidy/actions');
 
-export function handleException(message, data = {}, description = null, show_notification = true) {
+export function handleException(message = '', data = {}, description = null, show_notification = true) {
+  console.debug({ message, data })
   if (!message) {
     if (data.message) {
       message = data.message;
