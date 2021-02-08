@@ -213,10 +213,10 @@ class Album extends React.Component {
       filter,
     } = this.state;
 
+    if (loading) {
+      return <Loader body loading />;
+    }
     if (!album) {
-      if (loading) {
-        return <Loader body loading />;
-      }
       return (
         <ErrorMessage type="not-found" title="Not found">
           <p>

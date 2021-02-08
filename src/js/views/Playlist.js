@@ -341,10 +341,10 @@ class Playlist extends React.Component {
       filter,
     } = this.state;
 
+    if (loading) {
+      return <Loader body loading />;
+    }
     if (!playlist) {
-      if (loading) {
-        return <Loader body loading />;
-      }
       return (
         <ErrorMessage type="not-found" title="Not found">
           <p>

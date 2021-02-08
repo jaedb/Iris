@@ -486,10 +486,10 @@ class Artist extends React.Component {
       history,
     } = this.props;
 
+    if (loading) {
+      return <Loader body loading />;
+    }
     if (!artist) {
-      if (loading) {
-        return <Loader body loading />;
-      }
       return (
         <ErrorMessage type="not-found" title="Not found">
           <p>

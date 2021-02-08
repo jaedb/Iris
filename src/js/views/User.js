@@ -97,16 +97,16 @@ class User extends React.Component {
   render = () => {
     const {
       uri,
-      isLoading,
+      loading,
       user,
       playlists,
       slim_mode,
     } = this.props;
 
+    if (loading) {
+      return <Loader body loading />;
+    }
     if (!user) {
-      if (isLoading) {
-        return <Loader body loading />;
-      }
       return (
         <ErrorMessage type="not-found" title="Not found">
           <p>
