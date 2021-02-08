@@ -262,6 +262,23 @@
     }
   }
 
+  &--hotkeys-info {
+    .list {
+      &__item {
+        display: flex;
+
+        pre {
+          display: inline-block;
+          padding: 2px 3px;
+        }
+
+        .description {
+          padding-left: 1rem;
+        }
+      }
+    }
+  }
+
   &--kiosk-mode {
     background: colour('black');
     overflow: hidden;

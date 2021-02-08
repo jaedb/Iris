@@ -54,7 +54,7 @@ class PlaylistGrid extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => state;
+const mapStateToProps = () => ({});
 
 const mapDispatchToProps = (dispatch) => ({
   uiActions: bindActionCreators(uiActions, dispatch),

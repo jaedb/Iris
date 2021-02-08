@@ -211,19 +211,20 @@ main {
       padding: 10px 0;
     }
   }
+}
 
-  pre {
-    padding: 20px;
-    background: rgba(128, 128, 128, 0.5);
-    border-radius: 3px;
-    color: colour('white');
-    white-space: pre-wrap;
-    word-wrap: break-word;
+pre {
+  font-family: 'Consolas', 'Courier New', Courier, monospace;
+  padding: 20px;
+  background: rgba(128, 128, 128, 0.5);
+  border-radius: 3px;
+  color: colour('white');
+  white-space: pre-wrap;
+  word-wrap: break-word;
 
-    @include theme('light') {
-      background: rgba(128, 128, 128, 0.25);
-      color: colour('dark_grey');
-    }
+  @include theme('light') {
+    background: rgba(128, 128, 128, 0.25);
+    color: colour('dark_grey');
   }
 }
 

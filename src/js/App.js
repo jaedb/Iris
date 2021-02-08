@@ -50,6 +50,7 @@ import KioskMode from './views/modals/KioskMode';
 import ShareConfiguration from './views/modals/ShareConfiguration';
 import AddToPlaylist from './views/modals/AddToPlaylist';
 import ImageZoom from './views/modals/ImageZoom';
+import HotkeysInfo from './views/modals/HotkeysInfo';
 import EditCommand from './views/modals/EditCommand';
 import Reset from './views/modals/Reset';
 
@@ -290,6 +291,7 @@ export class App extends React.Component {
             <Route path="/kiosk-mode" component={KioskMode} />
             <Route path="/add-to-playlist/:uris" component={AddToPlaylist} />
             <Route path="/image-zoom" component={ImageZoom} />
+            <Route path="/hotkeys" component={HotkeysInfo} />
             <Route path="/share-configuration" component={ShareConfiguration} />
             <Route path="/reset" component={Reset} />
             <Route path="/edit-command/:id?" component={EditCommand} />

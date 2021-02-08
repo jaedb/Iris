@@ -3645,7 +3645,9 @@ main p {
     padding: 10px 0;
   }
 }
-main pre {
+
+pre {
+  font-family: "Consolas", "Courier New", Courier, monospace;
   padding: 20px;
   background: rgba(128, 128, 128, 0.5);
   border-radius: 3px;
@@ -3653,13 +3655,13 @@ main pre {
   white-space: pre-wrap;
   word-wrap: break-word;
 }
-.light-theme main pre {
+.light-theme pre {
   background: rgba(128, 128, 128, 0.25);
   color: #181818;
 }
 
 @media (prefers-color-scheme: light) {
-  .auto-theme main pre {
+  .auto-theme pre {
     background: rgba(128, 128, 128, 0.25);
     color: #181818;
   }
@@ -10608,6 +10610,16 @@ main .track-view .lyrics-selector {
 }
 .modal--share-configuration .field.checkbox .label .description, .modal--reset .field.checkbox .label .description {
   padding-top: 0;
+}
+.modal--hotkeys-info .list__item {
+  display: flex;
+}
+.modal--hotkeys-info .list__item pre {
+  display: inline-block;
+  padding: 2px 3px;
+}
+.modal--hotkeys-info .list__item .description {
+  padding-left: 1rem;
 }
 .modal--kiosk-mode {
   background: #000000;
