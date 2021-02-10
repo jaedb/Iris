@@ -13,6 +13,7 @@ import {
 } from '../../util/helpers';
 import { i18n, I18n } from '../../locale';
 import { indexToArray } from '../../util/arrays';
+import { makeLoadingSelector } from '../../util/selectors';
 
 class DiscoverCategories extends React.Component {
   componentDidMount() {
@@ -37,21 +38,14 @@ class DiscoverCategories extends React.Component {
 
   render = () => {
     const {
-      load_queue,
-      categories: categoriesProp,
+      loading,
+      categories,
       uiActions,
     } = this.props;
 
-    if (isLoading(load_queue, ['spotify_browse/categories'])) {
-      return (
-        <div className="view discover-categories-view">
-          <Header icon="grid" title={i18n('discover.categories.title')} />
-          <Loader body loading />
-        </div>
-      );
+    if (loading) {
+      return <Loader body loading />;
     }
-
-    const categories = indexToArray(categoriesProp);
 
     return (
       <div className="view discover-categories-view">
@@ -67,10 +61,14 @@ class DiscoverCategories extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  categories: state.spotify.categories,
-  load_queue: state.ui.load_queue,
-});
+const mapStateToProps = (state) => {
+  const loadingSelector = makeLoadingSelector(['(.*)categories(.*)']);
+
+  return {
+    loading: loadingSelector(state),
+    categories: indexToArray(state.spotify.categories),
+  };
+};
 
 const mapDispatchToProps = (dispatch) => ({
   uiActions: bindActionCreators(uiActions, dispatch),

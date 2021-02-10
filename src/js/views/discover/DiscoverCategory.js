@@ -127,7 +127,7 @@ class DiscoverCategory extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   const uri = decodeURIComponent(ownProps.match.params.uri);
-  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`]);
+  const loadingSelector = makeLoadingSelector([`spotify_category_${uri}`]);
   const categorySelector = makeItemSelector(uri);
   const category = categorySelector(state);
   let playlists = null;

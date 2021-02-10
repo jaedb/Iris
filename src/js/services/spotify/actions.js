@@ -445,6 +445,9 @@ export function getCategories() {
 
 export function getCategory(uri, { forceRefetch } = {}) {
   return (dispatch, getState) => {
+    const loaderId = generateGuid();
+    dispatch(uiActions.startLoading(loaderId, `spotify_category_${uri}`));
+
     const id = getFromUri('categoryid', uri);
     let endpoint = `browse/categories/${id}`;
     endpoint += `?country=${getState().spotify.country}`;
@@ -481,6 +484,7 @@ export function getCategory(uri, { forceRefetch } = {}) {
                 playlists_uris: arrayOf('uri', playlists),
               }));
               dispatch(coreActions.itemsLoaded(playlists));
+              dispatch(uiActions.stopLoading(loaderId));
             }
           });
         fetchPlaylists(plEndpoint);

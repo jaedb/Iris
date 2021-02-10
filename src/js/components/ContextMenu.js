@@ -1246,6 +1246,15 @@ class ContextMenu extends React.Component {
             {remove_from_playlist}
           </div>
         );
+      case 'user':
+        return (
+          <div>
+            {this.canBeInLibrary() && toggle_in_library}
+            <div className="context-menu__divider" />
+            {copy_uris}
+            {refresh}
+          </div>
+        );
       default:
         return (
           <div>

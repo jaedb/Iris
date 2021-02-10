@@ -61,19 +61,6 @@ class Album extends React.Component {
     }
   }
 
-  handleContextMenu = (e) => {
-    const {
-      uri,
-      uiActions: {
-        showContextMenu,
-      },
-    } = this.props;
-
-    e.preventDefault();
-    const data = { uris: [uri] };
-    showContextMenu(e, data, 'album', 'click');
-  }
-
   componentDidUpdate = ({
     uri: prevUri,
     album: prevAlbum,
