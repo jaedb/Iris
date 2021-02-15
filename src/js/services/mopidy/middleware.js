@@ -1648,6 +1648,77 @@ const MopidyMiddleware = (function () {
           uri,
         });
 
+        const processResults = (results) => {
+          const tracks = [];
+          const trackUrisToLoad = [];
+          const subdirectories = [];
+
+          results.forEach((item) => {
+            if (item.__model__ === 'Track') {
+              tracks.push(formatTrack(item));
+            } else if (item.type === 'track' && item.__model__ === 'Ref') {
+              tracks.push(formatTrack({ ...item, loading: true }));
+              trackUrisToLoad.push(item.uri);
+            } else {
+              subdirectories.push(item);
+            }
+          });
+
+          store.dispatch({
+            type: 'MOPIDY_DIRECTORY_LOADED',
+            directory: {
+              tracks,
+              subdirectories,
+            },
+          });
+
+          if (trackUrisToLoad.length) {
+            request(store, 'library.lookup', { uris: trackUrisToLoad })
+              .then((response) => {
+                const fullTrackObjects = Object.values(response).reduce(
+                  (acc, results) => {
+                    if (results.length) acc.push(results[0]);
+                    return acc;
+                  },
+                  [],
+                );
+
+                store.dispatch({
+                  type: 'MOPIDY_DIRECTORY_LOADED',
+                  directory: {
+                    tracks: fullTrackObjects,
+                  },
+                });
+              });
+          };
+
+          if (subdirectories.length) {
+            request(store, 'library.getImages', { uris: arrayOf('uri', subdirectories) })
+              .then((response) => {
+                const subdirectories_with_images = subdirectories.map((subdir) => {
+                  let images = response[subdir.uri] || undefined;
+                  if (images) {
+                    images = formatImages(digestMopidyImages(store.getState().mopidy, images));
+                  }
+                  return {
+                    ...subdir,
+                    images,
+                  };
+                });
+
+                store.dispatch({
+                  type: 'MOPIDY_DIRECTORY_LOADED',
+                  directory: {
+                    subdirectories: subdirectories_with_images,
+                  },
+                });
+              });
+          }
+        };
+
+        const getBrowse = () => request(store, 'library.browse', { uri })
+          .then((response) => processResults(response));
+
         if (uri) {
           request(store, 'library.lookup', { uris: [uri] })
             .then((response) => {
@@ -1655,87 +1726,16 @@ const MopidyMiddleware = (function () {
                 [uri]: results = [],
               } = response;
 
-              if (!results.length) return;
-              const result = results[0];
-
-              store.dispatch({
-                type: 'MOPIDY_DIRECTORY_LOADED',
-                directory: {
-                  name: result.album ? result.album.name : result.name,
-                },
-              });
-            });
-        }
-
-        request(store, 'library.browse', { uri })
-          .then((response) => {
-            const tracks_uris = [];
-            const tracks = [];
-            const subdirectories = [];
-
-            for (const item of response) {
-              if (item.type === 'track') {
-                tracks_uris.push(item.uri);
+              // Not all endpoints give us tracks/subdirectories to library.lookup
+              if (!results.length) {
+                getBrowse();
               } else {
-                subdirectories.push(item);
+                processResults(results);
               }
-            }
-
-            if (subdirectories.length > 0) {
-              request(store, 'library.getImages', { uris: arrayOf('uri', subdirectories) })
-                .then((response) => {
-
-                  const subdirectories_with_images = subdirectories.map((subdir) => {
-                    let images = response[subdir.uri] || undefined;
-                    if (images) {
-                      images = formatImages(digestMopidyImages(store.getState().mopidy, images));
-                    }
-                    return {
-                      ...subdir,
-                      images,
-                    };
-                  });
-
-                  store.dispatch({
-                    type: 'MOPIDY_DIRECTORY_LOADED',
-                    directory: {
-                      subdirectories: subdirectories_with_images,
-                    },
-                  });
-                });
-            }
-
-            if (tracks_uris.length > 0) {
-              request(store, 'library.lookup', { uris: tracks_uris })
-                .then((response) => {
-                  if (response.length <= 0) {
-                    return;
-                  }
-
-                  for (const uri in response) {
-                    if (response.hasOwnProperty(uri) && response[uri].length > 0) {
-                      tracks.push(formatTrack(response[uri][0]));
-                    }
-                  }
-
-                  store.dispatch({
-                    type: 'MOPIDY_DIRECTORY_LOADED',
-                    directory: {
-                      tracks,
-                      subdirectories,
-                    },
-                  });
-                });
-            } else {
-              store.dispatch({
-                type: 'MOPIDY_DIRECTORY_LOADED',
-                directory: {
-                  tracks,
-                  subdirectories,
-                },
-              });
-            }
-          });
+            });
+        } else {
+          getBrowse();
+        }
         break;
 
       case 'MOPIDY_DIRECTORY':
