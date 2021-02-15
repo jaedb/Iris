@@ -105,7 +105,7 @@ class LibraryBrowse extends React.Component {
 
         grid_items.push({
           name: subdirectory.name,
-          link: `/library/browse/${encodeUri(subdirectory.uri)}`,
+          link: `/library/browse/${encodeURIComponent(subdirectory.name)}/${encodeUri(subdirectory.uri)}`,
           icons: formatImages(subdirectory.icons),
         });
       }

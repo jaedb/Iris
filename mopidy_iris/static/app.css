@@ -5540,6 +5540,10 @@ h4 .context-menu-trigger, h4 .context-menu-trigger:active {
   position: absolute;
   left: 0;
 }
+.list__item--loading {
+  opacity: 0.5;
+  cursor: wait !important;
+}
 .list__item__column {
   align-items: center;
   flex: 10;
@@ -7796,9 +7800,8 @@ main header {
   box-sizing: border-box;
   padding: 40px;
   margin-bottom: -40px;
-}
-main header h1 {
-  display: inline-block;
+  display: flex;
+  flex-direction: row;
 }
 main header h1 > .icon {
   display: inline-block;
@@ -7807,10 +7810,12 @@ main header h1 > .icon {
   margin-bottom: 8px;
   font-size: 0.9em;
 }
+main header h1 > .text {
+  display: flex;
+  flex-flow: column;
+}
 main header .header__options {
-  position: absolute;
-  top: 2.6rem;
-  right: 40px;
+  margin-left: auto;
 }
 main header .header__options__wrapper {
   display: flex;

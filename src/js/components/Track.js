@@ -358,6 +358,7 @@ export default class Track extends React.Component {
     if (can_sort) className += ' list__item--can-sort';
     if (track.type !== undefined) className += ` list__item--${track.type}`;
     if (track.playing) className += ' list__item--playing';
+    if (track.loading) className += ' list__item--loading';
     if (hover) className += ' list__item--hover';
     if (track_middle_column) className += ' list__item--has-middle-column';
     if (track_details.length > 0) className += ' list__item--has-details';

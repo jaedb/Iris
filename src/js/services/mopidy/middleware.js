@@ -31,6 +31,7 @@ import {
   sortItems,
   indexToArray,
 } from '../../util/arrays';
+import { consoleSandbox } from '@sentry/utils';
 
 const mopidyActions = require('./actions.js');
 const coreActions = require('../core/actions.js');
@@ -1650,15 +1651,19 @@ const MopidyMiddleware = (function () {
 
         const processResults = (results) => {
           const tracks = [];
-          const trackUrisToLoad = [];
           const subdirectories = [];
+          const trackUrisToLoad = [];
+          const subdirectoryImagesToLoad = [];
 
           results.forEach((item) => {
             if (item.__model__ === 'Track') {
               tracks.push(formatTrack(item));
-            } else if (item.type === 'track' && item.__model__ === 'Ref') {
+            } else if (item.__model__ === 'Ref' && item.type === 'track') {
               tracks.push(formatTrack({ ...item, loading: true }));
               trackUrisToLoad.push(item.uri);
+            } else if (item.__model__ === 'Ref' && item.type === 'album') {
+              subdirectories.push(formatAlbum({ ...item, loading: true }));
+              subdirectoryImagesToLoad.push(item.uri);
             } else {
               subdirectories.push(item);
             }
@@ -1667,6 +1672,7 @@ const MopidyMiddleware = (function () {
           store.dispatch({
             type: 'MOPIDY_DIRECTORY_LOADED',
             directory: {
+              uri,
               tracks,
               subdirectories,
             },
@@ -1675,27 +1681,30 @@ const MopidyMiddleware = (function () {
           if (trackUrisToLoad.length) {
             request(store, 'library.lookup', { uris: trackUrisToLoad })
               .then((response) => {
-                const fullTrackObjects = Object.values(response).reduce(
-                  (acc, results) => {
-                    if (results.length) acc.push(results[0]);
-                    return acc;
-                  },
-                  [],
-                );
+
+                // Mash all our full tracks into the refs
+                const fullTrackObjects = tracks.map((track) => {
+                  const fullTrackResults = response[track.uri];
+                  return {
+                    ...track,
+                    ...fullTrackResults.length > 0 ? fullTrackResults[0] : {},
+                  };
+                });
 
                 store.dispatch({
                   type: 'MOPIDY_DIRECTORY_LOADED',
                   directory: {
+                    uri,
                     tracks: fullTrackObjects,
                   },
                 });
               });
           };
 
-          if (subdirectories.length) {
-            request(store, 'library.getImages', { uris: arrayOf('uri', subdirectories) })
+          if (subdirectoryImagesToLoad.length) {
+            request(store, 'library.getImages', { uris: subdirectoryImagesToLoad })
               .then((response) => {
-                const subdirectories_with_images = subdirectories.map((subdir) => {
+                const subdirectoriesWithImages = subdirectories.map((subdir) => {
                   let images = response[subdir.uri] || undefined;
                   if (images) {
                     images = formatImages(digestMopidyImages(store.getState().mopidy, images));
@@ -1709,7 +1718,8 @@ const MopidyMiddleware = (function () {
                 store.dispatch({
                   type: 'MOPIDY_DIRECTORY_LOADED',
                   directory: {
-                    subdirectories: subdirectories_with_images,
+                    uri,
+                    subdirectories: subdirectoriesWithImages,
                   },
                 });
               });
@@ -1727,7 +1737,8 @@ const MopidyMiddleware = (function () {
               } = response;
 
               // Not all endpoints give us tracks/subdirectories to library.lookup
-              if (!results.length) {
+              if (!results.length || uri.startsWith('file:')) {
+                console.info(`No 'library.lookup' results for ${uri}, trying 'library.browse'`);
                 getBrowse();
               } else {
                 processResults(results);

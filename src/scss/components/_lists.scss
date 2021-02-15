@@ -178,6 +178,11 @@
 			}
 		}
 
+		&--loading {
+			opacity: 0.5;
+			cursor: wait !important;
+		}
+
 		&__column {
 			align-items: center;
 			flex: 10;

@@ -4,10 +4,10 @@ main {
 		box-sizing: border-box;
 		padding: 40px;
 		margin-bottom: -40px;
+		display: flex;
+		flex-direction: row;
 
 		h1 {
-			display: inline-block;
-
 			& > .icon {
 				display: inline-block;
 				padding-right: 14px;
@@ -15,12 +15,15 @@ main {
 				margin-bottom: 8px;
 				font-size: 0.9em;
 			}
+
+			& > .text {
+				display: flex;
+				flex-flow: column;
+			}
 		}
 
 		.header__options {
-			position: absolute;
-			top: 2.6rem;
-			right: 40px;
+			margin-left: auto;
 
 			&__wrapper {
 				display: flex;

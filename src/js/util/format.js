@@ -634,6 +634,7 @@ const formatUser = function (data) {
 const formatTrack = function (data) {
   const track = { type: 'track' };
   const fields = [
+    'loading',
     'uri',
     'in_library',
     'tlid',
@@ -736,9 +737,9 @@ const formatTrack = function (data) {
   }
 
   // Produce a sort-friendly disc_track float (XXX.XXX)
-  track.disc_track = `${track.disc_number}`.padStart(3, '0');
+  track.disc_track = `${track.disc_number || 0}`.padStart(3, '0');
   track.disc_track += '.';
-  track.disc_track += `${track.track_number}`.padStart(3, '0');
+  track.disc_track += `${track.track_number || 0}`.padStart(3, '0');
 
   // Remove lower-case encoding of ':'
   // See https://github.com/tkem/mopidy-dleyna/issues/72

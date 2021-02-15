@@ -396,7 +396,7 @@ export class App extends React.Component {
                     />
                     <Route
                       exact
-                      path="/library/browse/:uri"
+                      path="/library/browse/:name/:uri"
                       component={LibraryBrowseDirectory}
                     />
 

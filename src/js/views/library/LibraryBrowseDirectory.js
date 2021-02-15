@@ -22,6 +22,52 @@ import { encodeUri, decodeUri } from '../../util/format';
 import { makeLoadingSelector } from '../../util/selectors';
 import ErrorMessage from '../../components/ErrorMessage';
 
+const Breadcrumbs = ({ uri }) => {
+  let parent_uri = uri || null;
+  if (!parent_uri.startsWith('file://')) return null;
+
+  parent_uri = parent_uri.substring(0, parent_uri.lastIndexOf('/')).replace('file://', '');
+
+  return (
+    <h2 className="description">
+      {decodeURI(parent_uri)}
+    </h2>
+  );
+};
+
+const Subdirectories = ({ items, view }) => {
+  if (!items.length) return null;
+
+  const link = (item) => `/library/browse/${encodeURIComponent(item.name)}/${encodeUri(item.uri)}`;
+
+  if (view === 'list') {
+    return (
+      <List
+        rows={items}
+        className="library-local-directory-list"
+        link={link}
+        nocontext
+      />
+    );
+  }
+
+  return (
+    <div className="grid category-grid">
+      {
+        items.map((item) => (
+          <GridItem
+            key={item.uri}
+            type="directory"
+            link={link(item)}
+            item={item}
+            nocontext
+          />
+        ))
+      }
+    </div>
+  );
+};
+
 class LibraryBrowseDirectory extends React.Component {
   constructor(props) {
     super(props);
@@ -34,15 +80,20 @@ class LibraryBrowseDirectory extends React.Component {
   }
 
   componentDidMount() {
-    // Restore any limit defined in our location state
-    const state = (this.props.location.state ? this.props.location.state : {});
-    if (state.limit) {
-      this.setState({
-        limit: state.limit,
-      });
-    }
+    const {
+      location: {
+        state: {
+          limit,
+        } = {},
+      },
+      uiActions: {
+        setWindowTitle,
+      },
+    } = this.props;
 
-    this.props.uiActions.setWindowTitle(i18n('library.browse_directory.title'));
+    if (limit) this.setState({ limit });
+
+    setWindowTitle(i18n('library.browse_directory.title'));
     this.loadDirectory();
   }
 
@@ -113,56 +164,6 @@ class LibraryBrowseDirectory extends React.Component {
     hideContextMenu();
   }
 
-  renderBreadcrumbs = () => {
-    const { uri } = this.props;
-    let parent_uri = uri || null;
-
-    if (parent_uri.startsWith('file://')) {
-      parent_uri = parent_uri.substring(0, parent_uri.lastIndexOf('/'));
-
-      return (
-        <h4 className="breadcrumbs">
-          <Icon type="fontawesome" name="angle-left" />
-          <URILink type="browse" uri={parent_uri}>
-            {decodeURI(parent_uri)}
-          </URILink>
-        </h4>
-      );
-    }
-
-    return null;
-  }
-
-  renderSubdirectories = (subdirectories) => {
-    const { view } = this.props;
-
-    if (view === 'list') {
-      return (
-        <List
-          rows={subdirectories}
-          className="library-local-directory-list"
-          link_prefix="/library/browse/"
-          nocontext
-        />
-      );
-    }
-    return (
-      <div className="grid category-grid">
-        {
-          subdirectories.map((subdirectory) => (
-            <GridItem
-              key={subdirectory.uri}
-              type="directory"
-              link={`/library/browse/${encodeUri(subdirectory.uri)}`}
-              item={subdirectory}
-              nocontext
-            />
-          ))
-        }
-      </div>
-    );
-  }
-
   render = () => {
     const {
       uri,
@@ -170,14 +171,13 @@ class LibraryBrowseDirectory extends React.Component {
       uiActions,
       loading,
       view,
+      name,
     } = this.props;
     const {
       filter,
       per_page,
       limit,
     } = this.state;
-
-    let title = i18n('library.browse_directory.title');
 
     if (!directory || (!directory.subdirectories && !directory.tracks)) {
       if (loading) {
@@ -191,16 +191,6 @@ class LibraryBrowseDirectory extends React.Component {
         </ErrorMessage>
       );
     }
-
-    if (directory.name) {
-      title = directory.name;
-    } else {
-      const uri_exploded = uri.split(':');
-      if (uri_exploded.length > 0) {
-        title = uri_exploded[0];
-        title = title.charAt(0).toUpperCase() + title.slice(1);
-      }
-    };
 
     let subdirectories = (directory.subdirectories && directory.subdirectories.length > 0 ? directory.subdirectories : null);
     subdirectories = sortItems(subdirectories, 'name');
@@ -274,14 +264,15 @@ class LibraryBrowseDirectory extends React.Component {
       <div className="view library-local-view">
         <Header options={options} uiActions={uiActions}>
           <Icon name="folder" type="material" />
-          {title}
+          <div className="text">
+            {name || i18n('library.browse_directory.title')}
+            <Breadcrumbs uri={uri} />
+          </div>
         </Header>
         <section className="content-wrapper">
           <ErrorBoundary>
 
-            {this.renderBreadcrumbs()}
-
-            {subdirectories ? this.renderSubdirectories(subdirectories) : null}
+            <Subdirectories items={subdirectories} view={view} />
 
             {tracks && (
               <TrackList
@@ -322,6 +313,7 @@ const mapStateToProps = (state, ownProps) => {
 
   return {
     uri,
+    name: decodeURIComponent(ownProps.match.params.name),
     loading: loadingSelector(state),
     directory,
     view,

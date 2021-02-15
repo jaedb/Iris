@@ -42,14 +42,13 @@ export default class ListItem extends React.Component {
     const {
       history,
       link_prefix = '',
-      item: {
-        uri,
-      },
+      link,
+      item,
     } = this.props;
 
     if (e.target.tagName.toLowerCase() !== 'a') {
       e.preventDefault();
-      history.push(`${link_prefix}${encodeUri(uri)}`);
+      history.push(link ? link(item) : `${link_prefix}${encodeUri(item.uri)}`);
       scrollTo();
     }
   }
@@ -58,14 +57,13 @@ export default class ListItem extends React.Component {
     const {
       history,
       link_prefix = '',
-      item: {
-        uri,
-      },
+      link,
+      item,
     } = this.props;
 
     if (e.target.tagName.toLowerCase() !== 'a') {
       e.preventDefault();
-      history.push(`${link_prefix}${encodeUri(uri)}`);
+      history.push(link ? link(item) : `${link_prefix}${encodeUri(item.uri)}`);
       scrollTo();
     }
   }
@@ -148,7 +146,7 @@ export default class ListItem extends React.Component {
     return value;
   }
 
-  render() {
+  render = () => {
     const {
       item,
       middle_column,
@@ -163,6 +161,7 @@ export default class ListItem extends React.Component {
 
     let class_name = 'list__item';
     if (item.type) class_name += ` list__item--${item.type}`;
+    if (item.loading) class_name += ' list__item--loading';
     if (middle_column) class_name += ' list__item--has-middle-column';
     if (thumbnail) class_name += ' list__item--has-thumbnail';
     if (details) class_name += ' list__item--has-details';
