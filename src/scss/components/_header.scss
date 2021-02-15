@@ -15,11 +15,16 @@ main {
 				margin-bottom: 8px;
 				font-size: 0.9em;
 			}
+		}
 
-			& > .text {
-				display: flex;
-				flex-flow: column;
-			}
+		&__text {
+			display: flex;
+			flex-flow: column;
+		}
+
+		h4 {
+			line-height: 1em;
+			opacity: 0.5;
 		}
 
 		.header__options {

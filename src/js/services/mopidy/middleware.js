@@ -1685,9 +1685,13 @@ const MopidyMiddleware = (function () {
                 // Mash all our full tracks into the refs
                 const fullTrackObjects = tracks.map((track) => {
                   const fullTrackResults = response[track.uri];
+
                   return {
                     ...track,
-                    ...fullTrackResults.length > 0 ? fullTrackResults[0] : {},
+                    ...fullTrackResults && fullTrackResults.length > 0
+                      ? formatTrack(fullTrackResults[0])
+                      : {},
+                    loading: false,
                   };
                 });
 

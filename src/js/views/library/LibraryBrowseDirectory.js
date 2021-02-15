@@ -29,9 +29,9 @@ const Breadcrumbs = ({ uri }) => {
   parent_uri = parent_uri.substring(0, parent_uri.lastIndexOf('/')).replace('file://', '');
 
   return (
-    <h2 className="description">
+    <h4>
       {decodeURI(parent_uri)}
-    </h2>
+    </h4>
   );
 };
 
@@ -264,7 +264,7 @@ class LibraryBrowseDirectory extends React.Component {
       <div className="view library-local-view">
         <Header options={options} uiActions={uiActions}>
           <Icon name="folder" type="material" />
-          <div className="text">
+          <div className="header__text">
             {name || i18n('library.browse_directory.title')}
             <Breadcrumbs uri={uri} />
           </div>

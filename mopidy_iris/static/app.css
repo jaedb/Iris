@@ -7810,9 +7810,13 @@ main header h1 > .icon {
   margin-bottom: 8px;
   font-size: 0.9em;
 }
-main header h1 > .text {
+main header__text {
   display: flex;
   flex-flow: column;
+}
+main header h4 {
+  line-height: 1em;
+  opacity: 0.5;
 }
 main header .header__options {
   margin-left: auto;
