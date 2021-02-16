@@ -1679,27 +1679,18 @@ const MopidyMiddleware = (function () {
           });
 
           if (trackUrisToLoad.length) {
+            console.info(`Loading ${trackUrisToLoad.length} track URIs`);
             request(store, 'library.lookup', { uris: trackUrisToLoad })
               .then((response) => {
-
-                // Mash all our full tracks into the refs
-                const fullTrackObjects = tracks.map((track) => {
-                  const fullTrackResults = response[track.uri];
-
-                  return {
-                    ...track,
-                    ...fullTrackResults && fullTrackResults.length > 0
-                      ? formatTrack(fullTrackResults[0])
-                      : {},
-                    loading: false,
-                  };
-                });
+                const fullTrackObjects = Object.values(response).map(
+                  (t) => (t.length > 0 ? formatTrack(t[0]) : undefined),
+                );
 
                 store.dispatch({
                   type: 'MOPIDY_DIRECTORY_LOADED',
                   directory: {
                     uri,
-                    tracks: fullTrackObjects,
+                    tracks: fullTrackObjects.filter((t) => t instanceof Object),
                   },
                 });
               });
