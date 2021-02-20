@@ -27,6 +27,7 @@ actions:
   stop: Arrêter
   add_to_playlist: Ajouter à la liste de lecture
   add_to_library: Ajouter à la bibliothèque
+  added_tracks_to: '%{count} morceaux ajoutés à '
   remove_from_library: Retirer de la bibliothèque
   add_to_queue: Mettre en file d'attente
   reset: Réinitialiser
@@ -173,6 +174,7 @@ context_menu:
     no_playlists: Aucune liste de lecture éditable
   play_next: Lire après le morceau en cours
   play_top_tracks: Lire les meilleurs morceaux
+  play_all_tracks: Lire tous les morceaux
   love_track: Aimer le morceau
   unlove_track: Ne plus aimer le morceau
   pin: Épingler
@@ -251,6 +253,10 @@ artist:
       more: Tous les artistes liés
   tracks:
     title: Morceaux
+    sort:
+      disc_track: Numéro de morceau
+      name: Nom
+      album: Album
   related_artists:
     title: Artistes liés
   about:
@@ -333,6 +339,7 @@ track:
   track_number: 'Morceau %{number}'
   unknown_album: Album inconnu
   want_lyrics: 'Vous voulez les paroles ? Autorisez Genius sous '
+  lyrics: Paroles
 settings:
   title: Paramètres
   help: Aide
@@ -394,8 +401,6 @@ settings:
       up_to_date: À jour
     share_configuration: Partager la configuration
     restart: Redémarrer le serveur
-    reset_cache: Réinitialiser le cache
-    reset_storage: Réinitialiser le stockage
     reset: Réinitialiser tous les paramètres
   about:
     title: À propos
@@ -556,3 +561,39 @@ modal:
       do_you_want_to_import: Voulez-vous importer cette configuration ?
       import_now: Importer
       successful: Import réussi
+  reset:
+    title: Réinitialiser Iris
+    subtitle: Nettoyer la configuration, le stockage ou le cache
+    items: Revenir aux réglages par défaut
+    preferences:
+      label: Préférences
+      description: Paramétrage de l'interface
+    database:
+      label: Base de données
+      description: Base de données du navigateur
+    service_worker:
+      label: Tache de traitement du service
+      description: Rédémarrer la tache de traitement du service
+    cache:
+      label: Cache
+      description: Cache des requêtes aux API externes (dépend de la tache de traitement)
+    test_mode:
+      label: Mode de test
+      description: Logs verbeux pour le diagnostic des problèmes
+  hotkeys_info:
+    title: Touches multimédia
+    keys:
+      info: Multimédia info
+      exit: Annuler l'opération en cours
+      play_pause: Lire/pause
+      stop: Stop
+      next: Morceau suivant
+      previous: Morceau précédent
+      rewind: Reculer de 30 secondes
+      fastforward: Avancer de 30 secondes
+      volume_up: Augmenter le volume de 5%
+      volume_down: Diminuer le volume de 5%
+      mute: Muet
+      kiosk: Mode Kiosk
+      now_playing: Lecture en cours
+      search: Rechercher
