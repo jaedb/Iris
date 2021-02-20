@@ -279,6 +279,13 @@
 					background: none;
 					transform: none;
 					padding: 16px 22px;
+					border: 0;
+					border-radius: 3px;
+
+					&,
+					&:hover {
+						box-shadow: none;
+					}
 
 					@include theme('light') {
 						color: colour('darkest_grey');

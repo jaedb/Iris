@@ -4140,7 +4140,6 @@ h1 .flag, h2 .flag {
   h1 {
     font-size: 2rem;
     line-height: 2rem;
-    display: block;
     letter-spacing: -0.08rem;
   }
 
@@ -5296,6 +5295,11 @@ select option {
     background: none;
     transform: none;
     padding: 16px 22px;
+    border: 0;
+    border-radius: 3px;
+  }
+  .context-menu__section--items .button, .context-menu__section--items .button:hover {
+    box-shadow: none;
   }
   .light-theme .context-menu__section--items .button {
     color: #121212;
