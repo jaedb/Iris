@@ -366,7 +366,7 @@ const MopidyMiddleware = (function () {
       },
       tracks: (response) => {
         const { tracks = [] } = response[0];
-        return tracks;
+        return formatTracks(tracks);
       },
     };
 
