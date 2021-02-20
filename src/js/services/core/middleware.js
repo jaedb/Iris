@@ -267,7 +267,7 @@ const CoreMiddleware = (function () {
         store.dispatch(uiActions.createNotification({
           content: (
             <I18n path="actions.added_tracks_to" count={tracks_uris.length} contentAfter>
-              <URILink uri={key}>{asset ? asset.name : 'playlist'}</URILink>
+              <URILink type="playlist" uri={key}>{asset ? asset.name : 'playlist'}</URILink>
             </I18n>
           ),
         }));
@@ -343,34 +343,67 @@ const CoreMiddleware = (function () {
       /**
        * Asset Load commands
        *
-       * These are called from views and other middleware to load
-       * assets. This is where we can return already indexed records
-       * where appropriate
+       * These are called from views and other middleware to load assets. This is where we can
+       * return already indexed records where appropriate.
+       *
+       * We prefer for all actions to be called with a URI and type, allowing us to direct the
+       * request appropriately. Sometimes we don't know what kind of asset a URI is, in which case
+       * we need to LOAD_URI to ascertain this first.
        * */
-      case 'LOAD_ITEMS':
-        action.uris.forEach((uri) => {
+      case 'LOAD_ITEMS': {
+        const { uris = [], options, itemType = 'uri' } = action;
+
+        uris.forEach((uri) => {
           store.dispatch(uiActions.startLoading(uri));
           store.dispatch({
-            type: `LOAD_${uriType(uri).toUpperCase()}`,
+            type: `LOAD_${itemType.toUpperCase()}`,
             uri,
-            options: action.options,
+            options,
           });
         });
         break;
+      }
+
+      case 'LOAD_URIS': {
+        const { uris, options } = action;
+
+        uris.forEach((uri) => {
+          const fetch = () => {
+            const source = uriSource(uri);
+            // We need to pull type from the URI for Spotify as we use specific HTTP endpoints for
+            // each asset type, and their URIs facilitate this.
+            if (source === 'spotify') {
+              store.dispatch(
+                coreActions[`load${titleCase(uriType(uri))}`](uri, options),
+              );
+            } else {
+              mopidyActions.getUris([uri], options);
+            }
+          };
+          ensureLoaded({
+            store,
+            action: { uri, options },
+            fetch,
+          });
+        });
+        break;
+      }
 
       case 'LOAD_TRACK': {
+        const { uri, options } = action;
+
         const fetch = () => {
           switch (uriSource(action.uri)) {
             case 'spotify':
-              store.dispatch(spotifyActions.getTrack(action.uri, action.options));
+              store.dispatch(spotifyActions.getTrack(uri, options));
 
               if (spotify.me) {
-                store.dispatch(spotifyActions.following(action.uri));
+                store.dispatch(spotifyActions.following(uri));
               }
               break;
 
             default:
-              store.dispatch(mopidyActions.getTrack(action.uri, action.options));
+              store.dispatch(mopidyActions.getTrack(uri, options));
               break;
           }
         };
@@ -379,7 +412,8 @@ const CoreMiddleware = (function () {
           action,
           fetch,
           dependents: ['images'],
-          fullDependents: ['lyrics_results'],
+          fullDependents: options.lyrics ? ['lyrics_results'] : [],
+          type: 'track',
         });
 
         next(action);
@@ -406,6 +440,7 @@ const CoreMiddleware = (function () {
           fetch,
           dependents: ['images'],
           fullDependents: ['tracks'],
+          type: 'album',
         });
         next(action);
         break;
@@ -431,6 +466,7 @@ const CoreMiddleware = (function () {
           fetch,
           dependents: ['images'],
           fullDependents: ['tracks', 'albums_uris'],
+          type: 'artist',
         });
         next(action);
         break;
@@ -458,6 +494,7 @@ const CoreMiddleware = (function () {
           fetch,
           dependents: ['images'],
           fullDependents: ['tracks'],
+          type: 'playlist',
         });
         next(action);
         break;
@@ -482,6 +519,7 @@ const CoreMiddleware = (function () {
           action,
           fetch,
           fullDependents: ['playlists_uris'],
+          type: 'user',
         });
         next(action);
         break;
@@ -503,6 +541,7 @@ const CoreMiddleware = (function () {
           action,
           fetch,
           fullDependents: ['playlists_uris'],
+          type: 'category',
         });
 
         next(action);

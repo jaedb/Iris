@@ -5,7 +5,8 @@ import { uriSource } from '../../util/helpers';
 const spotifyActions = require('../../services/spotify/actions');
 const mopidyActions = require('../../services/mopidy/actions');
 
-export function handleException(message, data = {}, description = null, show_notification = true) {
+export function handleException(message = '', data = {}, description = null, show_notification = true) {
+  console.debug({ message, data })
   if (!message) {
     if (data.message) {
       message = data.message;
@@ -50,9 +51,10 @@ export function set(data) {
   };
 }
 
-export function resetState() {
+export function resetState(stateKeysToReset) {
   return {
     type: 'RESET_STATE',
+    stateKeysToReset,
   };
 }
 
@@ -118,11 +120,24 @@ export function searchResultsLoaded(query, resultType, results) {
  * relevant service to load the record - all from one neat package.
  * */
 
-export function loadItems(uris, options = {}) {
+export function loadUris(uris = [], options = {}) {
+  return {
+    type: 'LOAD_URIS',
+    uris,
+    options,
+  };
+}
+
+export function loadUri(uri, options = {}) {
+  return loadUris([uri], options);
+}
+
+export function loadItems(itemType, uris = [], options = {}) {
   return {
     type: 'LOAD_ITEMS',
     uris,
     options,
+    itemType,
   };
 }
 

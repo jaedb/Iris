@@ -99,7 +99,7 @@ class AddSeedField extends React.Component {
     {type == 'tracks' ? (
       <span className="mid_grey-text">
         {' '}
-        <LinksSentence items={item.artists} nolinks />
+        <LinksSentence items={item.artists} type="artist" nolinks />
       </span>
     ) : null}
   </div>

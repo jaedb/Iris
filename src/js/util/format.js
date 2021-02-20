@@ -3,6 +3,8 @@ import {
   isObject,
   upgradeSpotifyPlaylistUri,
   uriSource,
+  uriType,
+  getFromUri,
 } from './helpers';
 
 /**
@@ -273,6 +275,71 @@ const formatSimpleObjects = function (records = []) {
   return formatted;
 };
 
+/**
+ * Prepare a URI for use in a URL
+ *
+ * Simple alias to encodeURIComponent so this can be extended as needed
+ * @param {String} uri
+ */
+const encodeUri = (rawUri = '') => {
+  let uri = rawUri;
+
+  // Manually encode %
+  // Needed because React Router History incorrectly handles '%' during encoding/decoding
+  // See https://github.com/jaedb/Iris/issues/674
+  uri = uri.replace(/%25/g, '_PRCNT_');
+  uri = encodeURIComponent(uri);
+  return uri;
+};
+
+/**
+ * Rebuild a URI with some ugly-ass handling of encoding.
+ *
+ * We can't just run encodeURIComponent because it will encode ':' and '/' elements which are
+ * required to properly map to Mopidy's internal structure. Some things need encoding, and others
+ * need decoding *sigh*.
+ *
+ * Instead, we pluck the individual encodings as needed.
+ *
+ * For example somebackend:track:https://youtube.com/1234 would cause issues with the
+ * https:// section. Our explode-by-':' approach would break this type of URI.
+ *
+ * @param {String} rawUri
+ */
+const decodeUri = (rawUri = '') => {
+  let uri = rawUri;
+
+  try {
+    uri = decodeURIComponent(uri);
+  } catch {
+    console.error('Could not decode URI', uri);
+  }
+
+  // Some characters must be encoded for Mopidy URI compatibility
+  uri = uri.replace(/%2F/g, '/'); // We need slashes
+  uri = uri.replace(/_PRCNT_/g, '%25'); // Decode '%'
+  uri = uri.replace(/!/g, '%21');
+  uri = uri.replace(/\*/g, '%2A');
+  uri = uri.replace(/\(/g, '%28');
+  uri = uri.replace(/\)/g, '%29');
+  uri = uri.replace(/\[/g, '%5B');
+  uri = uri.replace(/\]/g, '%5D');
+  uri = uri.replace(/@/g, '%40');
+  uri = uri.replace(/#/g, '%23');
+  uri = uri.replace(/\$/g, '%24');
+  uri = uri.replace(/&/g, '%26');
+  uri = uri.replace(/'/g, '%27');
+  uri = uri.replace(/,/g, '%2C');
+  uri = uri.replace(/ /g, '%20');
+
+  return uri;
+};
+
+const encodeMopidyUri = (rawUri = '') => {
+  let uri = rawUri;
+
+  return uri;
+}
 
 /**
  * Format our album objects into a universal format
@@ -281,7 +348,7 @@ const formatSimpleObjects = function (records = []) {
  * @return obj
  * */
 const formatAlbum = function (data) {
-  const album = {};
+  const album = { type: 'album' };
   const fields = [
     'uri',
     'in_library',
@@ -358,7 +425,7 @@ const formatAlbum = function (data) {
  * @return obj
  * */
 const formatArtist = function (data) {
-  const artist = {};
+  const artist = { type: 'artist' };
   const fields = [
     'uri',
     'in_library',
@@ -420,7 +487,7 @@ const formatArtist = function (data) {
  * @return obj
  * */
 const formatPlaylist = function (data) {
-  const playlist = {};
+  const playlist = { type: 'playlist' };
   const fields = [
     'uri',
     'in_library',
@@ -509,7 +576,7 @@ const formatPlaylist = function (data) {
  * @return obj
  * */
 const formatUser = function (data) {
-  const user = {};
+  const user = { type: 'user' };
   const fields = [
     'id',
     'in_library',
@@ -565,8 +632,9 @@ const formatUser = function (data) {
  * @return obj
  * */
 const formatTrack = function (data) {
-  const track = {};
+  const track = { type: 'track' };
   const fields = [
+    'loading',
     'uri',
     'in_library',
     'tlid',
@@ -668,7 +736,14 @@ const formatTrack = function (data) {
     track.album = formatSimpleObject(track.album);
   }
 
-  track.disc_track = track.disc_number + (track.track_number / 10); // Gives us a decimal d.t
+  // Produce a sort-friendly disc_track float (XXX.XXX)
+  track.disc_track = `${track.disc_number || 0}`.padStart(3, '0');
+  track.disc_track += '.';
+  track.disc_track += `${track.track_number || 0}`.padStart(3, '0');
+
+  // Remove lower-case encoding of ':'
+  // See https://github.com/tkem/mopidy-dleyna/issues/72
+  track.uri = decodeUri(track.uri);
 
   return track;
 };
@@ -680,7 +755,7 @@ const formatTrack = function (data) {
  * @return obj
  * */
 const formatClient = function (data) {
-  const client = {};
+  const client = { type: 'client' };
   const fields = [
     'id',
     'connected',
@@ -744,7 +819,7 @@ const formatClient = function (data) {
  * @return obj
  * */
 const formatCategory = function (data) {
-  const category = {};
+  const category = { type: 'category' };
   const fields = [
     'id',
     'uri',
@@ -776,7 +851,7 @@ const formatCategory = function (data) {
  * @return obj
  * */
 const formatGroup = function (data) {
-  const group = {};
+  const group = { type: 'group' };
   const fields = [
     'id',
     'name',
@@ -969,6 +1044,9 @@ export {
   collate,
   collateLibrary,
   injectSortId,
+  encodeUri,
+  decodeUri,
+  encodeMopidyUri,
 };
 
 export default {
@@ -995,4 +1073,7 @@ export default {
   collate,
   collateLibrary,
   injectSortId,
+  encodeUri,
+  decodeUri,
+  encodeMopidyUri,
 };

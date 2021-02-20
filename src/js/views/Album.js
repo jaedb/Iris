@@ -28,6 +28,7 @@ import Button from '../components/Button';
 import { makeLoadingSelector, makeItemSelector } from '../util/selectors';
 import { applyFilter, sortItems } from '../util/arrays';
 import { trackEvent } from '../components/Trackable';
+import { encodeUri } from '../util/format';
 
 class Album extends React.Component {
   constructor(props) {
@@ -43,7 +44,7 @@ class Album extends React.Component {
       uri,
       album,
       coreActions: {
-        loadItem,
+        loadAlbum,
       },
       lastfmActions: {
         getAlbum,
@@ -51,26 +52,13 @@ class Album extends React.Component {
     } = this.props;
 
     this.setWindowTitle();
-    loadItem(uri, { full: true });
+    loadAlbum(uri, { full: true });
 
     if (album) {
       if (album.artists && album.wiki === undefined) {
         getAlbum(album.uri, album.artists[0].name, album.name);
       }
     }
-  }
-
-  handleContextMenu = (e) => {
-    const {
-      uri,
-      uiActions: {
-        showContextMenu,
-      },
-    } = this.props;
-
-    e.preventDefault();
-    const data = { uris: [uri] };
-    showContextMenu(e, data, 'album', 'click');
   }
 
   componentDidUpdate = ({
@@ -81,7 +69,7 @@ class Album extends React.Component {
       uri,
       album,
       coreActions: {
-        loadItem,
+        loadAlbum,
       },
       lastfmActions: {
         getAlbum,
@@ -89,7 +77,7 @@ class Album extends React.Component {
     } = this.props;
 
     if (uri !== prevUri) {
-      loadItem(uri, { full: true });
+      loadAlbum(uri, { full: true });
     }
 
     // We have just received our full album or our album artists
@@ -214,11 +202,12 @@ class Album extends React.Component {
 
     if (loading) {
       return <Loader body loading />;
-    } else if (!album) {
+    }
+    if (!album) {
       return (
         <ErrorMessage type="not-found" title="Not found">
           <p>
-            {i18n('errors.uri_not_found', { uri: encodeURIComponent(uri) })}
+            {i18n('errors.uri_not_found', { uri })}
           </p>
         </ErrorMessage>
       );
@@ -260,7 +249,7 @@ class Album extends React.Component {
             ) : null}
             {album.artists && album.artists.length > 0 ? (
               <li>
-                <LinksSentence items={album.artists} />
+                <LinksSentence items={album.artists} type="artist" />
               </li>
             ) : null}
             {album.release_date ? (
@@ -292,7 +281,7 @@ class Album extends React.Component {
             {!slim_mode && album.listeners ? (
               <li>
                 {i18n(
-                  'specs.plays',
+                  'specs.listeners',
                   { count: nice_number(album.listeners) },
                 )}
               </li>
@@ -365,7 +354,7 @@ class Album extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   const uri = decodeURIComponent(ownProps.match.params.uri);
   const itemSelector = makeItemSelector(uri);
-  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`]);
+  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`, '^((?!contains).)*$', '^((?!me\/albums).)*$']);
   return {
     uri,
     slim_mode: state.ui.slim_mode,

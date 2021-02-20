@@ -13,7 +13,7 @@
 
 		&--selected {
 			&:after {
-				background: colour(grey) !important;
+				background: colour('grey') !important;
 
 				@include theme('light') {
 					background: rgba(128,128,128,0.4) !important;

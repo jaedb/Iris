@@ -4,10 +4,10 @@ main {
 		box-sizing: border-box;
 		padding: 40px;
 		margin-bottom: -40px;
+		display: flex;
+		flex-direction: row;
 
 		h1 {
-			display: inline-block;
-
 			& > .icon {
 				display: inline-block;
 				padding-right: 14px;
@@ -17,10 +17,18 @@ main {
 			}
 		}
 
+		&__text {
+			display: flex;
+			flex-flow: column;
+		}
+
+		h4 {
+			line-height: 1em;
+			opacity: 0.5;
+		}
+
 		.header__options {
-			position: absolute;
-			top: 2.6rem;
-			right: 40px;
+			margin-left: auto;
 
 			&__wrapper {
 				display: flex;
@@ -42,12 +50,12 @@ main {
 				padding: 13px 10px;
 				margin: 0;
 				min-width: 0;
-				color: colour(light_grey);
+				color: colour('light_grey');
 				vertical-align: unset;
 				border: none;
 
 				&:hover {
-					color: colour(blue);
+					color: colour('blue');
 					box-shadow: none;
 
 					&:before {
@@ -56,10 +64,10 @@ main {
 				}
 
 				@include theme('light') {
-					color: colour(darkest_grey);
+					color: colour('darkest_grey');
 
 					&:hover {
-						color: colour(blue);
+						color: colour('blue');
 					}
 
 					&:active {

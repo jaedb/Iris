@@ -2,7 +2,7 @@
   &__option {
     @include feature_font();
     @include animate();
-    color: colour(white);
+    color: colour('white');
     display: inline-block;
     margin-right: 25px;
     font-size: 15px;
@@ -12,7 +12,7 @@
     cursor: pointer;
 
     @include theme('light') {
-      color: colour(darkest_grey);
+      color: colour('darkest_grey');
     }
 
     h4 {
@@ -27,18 +27,18 @@
     }
 
     &--active {
-      border-color: colour(white) !important;
+      border-color: colour('white') !important;
 
       @include theme('light') {
-        border-color: colour(darkest_grey) !important;
+        border-color: colour('darkest_grey') !important;
       }
     }
 
     &:not(.sub-views__option--active):hover {
-      border-color: colour(soft_grey) !important;
+      border-color: colour('soft_grey') !important;
 
       @include theme('light') {
-        border-color: colour(light_grey) !important;
+        border-color: colour('light_grey') !important;
       }
     }
   }

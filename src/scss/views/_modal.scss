@@ -5,16 +5,16 @@
   right: 0;
   bottom: 0;
   left: 0;
-  background: darken(colour(darkest_grey), 2%);
-  color: colour(white);
+  background: darken(colour('darkest_grey'), 2%);
+  color: colour('white');
   overflow-y: auto;
   overflow-x: hidden;
   min-height: 100%;
   z-index: 98;
 
   @include theme('light') {
-    background: darken(colour(faint_grey), 6%);
-    color: colour(darkest_grey);
+    background: darken(colour('faint_grey'), 6%);
+    color: colour('darkest_grey');
   }
 
   .controls {
@@ -32,7 +32,7 @@
       opacity: 0.5;
       cursor: pointer;
       padding: 20px;
-      color: colour(white);
+      color: colour('white');
 
       &:hover {
         opacity: 1;
@@ -43,7 +43,7 @@
       }
 
       @include theme('light') {
-        color: colour(darkest_grey);
+        color: colour('darkest_grey');
       }
     }
   }
@@ -86,7 +86,7 @@
           padding-right: 2%;
           float: left;
           padding-top: 8px;
-          color: colour(mid_grey);
+          color: colour('mid_grey');
         }
 
         .description {
@@ -122,10 +122,10 @@
       }
 
       &:hover {
-        color: colour(turquoise);
+        color: colour('turquoise');
 
         &.remove-uri {
-          color: colour(red);
+          color: colour('red');
         }
       }
 
@@ -262,8 +262,25 @@
     }
   }
 
+  &--hotkeys-info {
+    .list {
+      &__item {
+        display: flex;
+
+        pre {
+          display: inline-block;
+          padding: 2px 3px;
+        }
+
+        .description {
+          padding-left: 1rem;
+        }
+      }
+    }
+  }
+
   &--kiosk-mode {
-    background: colour(black);
+    background: colour('black');
     overflow: hidden;
 
     .content {
@@ -345,7 +362,7 @@
               margin: 0 10px;
 
               @include theme('light') {
-                color: colour(darkest_grey);
+                color: colour('darkest_grey');
               }
             }
           }

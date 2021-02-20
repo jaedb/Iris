@@ -22,6 +22,7 @@ import {
   makeItemSelector,
   makeLoadingSelector,
 } from '../util/selectors';
+import ContextMenuTrigger from '../components/ContextMenuTrigger';
 
 class User extends React.Component {
   componentDidMount() {
@@ -55,6 +56,17 @@ class User extends React.Component {
     }
 
     if (!prevUser && user) this.setWindowTitle(user);
+  }
+
+  handleContextMenu = (e) => {
+    const { user, uri, uiActions: { showContextMenu } } = this.props;
+
+    showContextMenu({
+      e,
+      context: 'user',
+      items: [user],
+      uris: [uri],
+    });
   }
 
   setWindowTitle = (user = this.props.user) => {
@@ -97,16 +109,16 @@ class User extends React.Component {
   render = () => {
     const {
       uri,
-      isLoading,
+      loading,
       user,
       playlists,
       slim_mode,
     } = this.props;
 
+    if (loading) {
+      return <Loader body loading />;
+    }
     if (!user) {
-      if (isLoading) {
-        return <Loader body loading />;
-      }
       return (
         <ErrorMessage type="not-found" title="Not found">
           <p>
@@ -139,6 +151,7 @@ class User extends React.Component {
                       className="primary"
                       uri={user.uri}
                     />
+                    <ContextMenuTrigger onTrigger={this.handleContextMenu} />
                   </div>
                   <h2>
                     <ul className="details">

@@ -32,11 +32,11 @@
 		left: 0;
 		right: 0;
 		z-index: 97;
-		background: colour(dark_grey);
-		color: colour(white);
+		background: colour('dark_grey');
+		color: colour('white');
 
 		.type {
-			&:not(:first-child){
+			&:not(:first-child) {
 				padding-top: 5px;
 			}
 
@@ -50,11 +50,11 @@
 			.result {
 				display: block;
 				padding: 10px 14px;
-				border-top: 1px solid lighten(colour(dark_grey), 10%);
+				border-top: 1px solid lighten(colour('dark_grey'), 10%);
 				cursor: pointer;
 
 				&:hover {
-					background: lighten(colour(dark_grey), 10%);
+					background: lighten(colour('dark_grey'), 10%);
 				}
 			}
 		}
@@ -62,12 +62,12 @@
 		.all-results {
 			display: block;
 			padding: 10px 14px;
-			border-top: 1px solid lighten(colour(dark_grey), 10%);
+			border-top: 1px solid lighten(colour('dark_grey'), 10%);
 			cursor: pointer;
 			font-weight: bold;
 
 			&:hover {
-				background: lighten(colour(dark_grey), 10%);
+				background: lighten(colour('dark_grey'), 10%);
 			}
 		}
 	}

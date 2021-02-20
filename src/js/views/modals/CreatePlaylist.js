@@ -190,7 +190,7 @@ class CreatePlaylist extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state) => ({
   spotify_available: state.spotify.access_token,
 });
 

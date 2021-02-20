@@ -1,8 +1,7 @@
-
 import React from 'react';
-
 import LinksSentence from './LinksSentence';
-import { Dater, dater } from './Dater';
+import { dater } from './Dater';
+import { nice_number } from './NiceNumber';
 import URILink from './URILink';
 import ContextMenuTrigger from './ContextMenuTrigger';
 import Icon from './Icon';
@@ -13,7 +12,7 @@ import {
   scrollTo,
 } from '../util/helpers';
 import { I18n } from '../locale';
-import { arrayOf } from '../util/arrays';
+import { encodeUri } from '../util/format';
 
 export default class ListItem extends React.Component {
   componentDidMount() {
@@ -43,14 +42,13 @@ export default class ListItem extends React.Component {
     const {
       history,
       link_prefix = '',
-      item: {
-        uri,
-      },
+      link,
+      item,
     } = this.props;
 
     if (e.target.tagName.toLowerCase() !== 'a') {
       e.preventDefault();
-      history.push(`${link_prefix}${encodeURIComponent(uri)}`);
+      history.push(link ? link(item) : `${link_prefix}${encodeUri(item.uri)}`);
       scrollTo();
     }
   }
@@ -59,14 +57,13 @@ export default class ListItem extends React.Component {
     const {
       history,
       link_prefix = '',
-      item: {
-        uri,
-      },
+      link,
+      item,
     } = this.props;
 
     if (e.target.tagName.toLowerCase() !== 'a') {
       e.preventDefault();
-      history.push(`${link_prefix}${encodeURIComponent(uri)}`);
+      history.push(link ? link(item) : `${link_prefix}${encodeUri(item.uri)}`);
       scrollTo();
     }
   }
@@ -100,18 +97,18 @@ export default class ListItem extends React.Component {
     if (key === 'tracks') {
       const {
         tracks_total: total,
-        tracks: array,
       } = item;
-      if (!total && !array) return null;
-      return <I18n path="specs.tracks" count={total || array.length} />;
+      if (!total && !value) return null;
+      return <I18n path="specs.tracks" count={nice_number(total || value.length)} />;
     }
     if (key === 'artists') {
       const {
         artists_total: total,
         artists_uris: array,
       } = item;
+      if (Array.isArray(value)) return <LinksSentence items={value} type="artist" />;
       if (!total && !array) return null;
-      return <I18n path="specs.artists" count={total || array.length} />;
+      return <I18n path="specs.artists" count={nice_number(total || array.length)} />;
     }
     if (key === 'albums') {
       const {
@@ -126,7 +123,10 @@ export default class ListItem extends React.Component {
     if (!value) return null;
 
     if (key === 'followers') {
-      return <I18n path="specs.followers" count={value.toLocaleString()} />;
+      return <I18n path="specs.followers" count={nice_number(value)} />;
+    }
+    if (key === 'listeners') {
+      return <I18n path="specs.listeners" count={nice_number(value)} />;
     }
     if (key === 'added_at') {
       return <I18n path="specs.added_ago" time={dater('ago', value)} />;
@@ -146,7 +146,7 @@ export default class ListItem extends React.Component {
     return value;
   }
 
-  render() {
+  render = () => {
     const {
       item,
       middle_column,
@@ -161,6 +161,7 @@ export default class ListItem extends React.Component {
 
     let class_name = 'list__item';
     if (item.type) class_name += ` list__item--${item.type}`;
+    if (item.loading) class_name += ' list__item--loading';
     if (middle_column) class_name += ' list__item--has-middle-column';
     if (thumbnail) class_name += ' list__item--has-thumbnail';
     if (details) class_name += ' list__item--has-details';

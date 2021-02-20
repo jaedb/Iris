@@ -12,6 +12,7 @@ import * as spotifyActions from '../../services/spotify/actions';
 import { arrayOf } from '../../util/arrays';
 import { decodeMopidyUri } from '../../util/helpers';
 import { i18n } from '../../locale';
+import { encodeUri } from '../../util/format';
 
 class Dropzones extends React.Component {
   constructor(props) {
@@ -64,7 +65,7 @@ class Dropzones extends React.Component {
         enqueueURIs(uris, from_uri, true);
         break;
       case 'add_to_playlist':
-        history.push(`/add-to-playlist/${encodeURIComponent(uris.join(','))}`);
+        history.push(`/add-to-playlist/${encodeUri(uris.join(','))}`);
         // uris
         break;
       default:

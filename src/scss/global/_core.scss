@@ -83,13 +83,13 @@ body {
   position: relative;
 
   @include theme('dark', true) {
-    color: colour(light_grey);
-    background: colour(dark_grey);
+    color: colour('light_grey');
+    background: colour('dark_grey');
   }
 
   @include theme('light', true) {
-    color: colour(darkest_grey);
-    background: colour(faint_grey);
+    color: colour('darkest_grey');
+    background: colour('faint_grey');
   }
 }
 
@@ -135,29 +135,29 @@ main {
     }
 
     &::-webkit-scrollbar-track {
-      background: colour(dark_grey);
+      background: colour('dark_grey');
     }
 
     &::-webkit-scrollbar-thumb {
       @include animate();
-      background: colour(grey);
+      background: colour('grey');
 
       &:hover {
-        background: lighten(colour(grey), 10%);
+        background: lighten(colour('grey'), 10%);
       }
     }
   }
 
   .notouch & {
     &::-webkit-scrollbar-track {
-      background: colour(white);
+      background: colour('white');
     }
 
     &::-webkit-scrollbar-thumb {
-      background: colour(light_grey);
+      background: colour('light_grey');
 
       &:hover {
-        background: darken(colour(light_grey), 10%);
+        background: darken(colour('light_grey'), 10%);
       }
     }
   }
@@ -189,7 +189,7 @@ main {
       border-bottom: 1px solid transparent;
 
       &:hover {
-        border-color: colour(mid_grey);
+        border-color: colour('mid_grey');
       }
     }
   }
@@ -211,19 +211,20 @@ main {
       padding: 10px 0;
     }
   }
+}
 
-  pre {
-    padding: 20px;
-    background: rgba(128, 128, 128, 0.5);
-    border-radius: 3px;
-    color: colour(white);
-    white-space: pre-wrap;
-    word-wrap: break-word;
+pre {
+  font-family: 'Consolas', 'Courier New', Courier, monospace;
+  padding: 20px;
+  background: rgba(128, 128, 128, 0.5);
+  border-radius: 3px;
+  color: colour('white');
+  white-space: pre-wrap;
+  word-wrap: break-word;
 
-    @include theme('light') {
-      background: rgba(128, 128, 128, 0.25);
-      color: colour(dark_grey);
-    }
+  @include theme('light') {
+    background: rgba(128, 128, 128, 0.25);
+    color: colour('dark_grey');
   }
 }
 
@@ -233,11 +234,11 @@ h1 {
   font-size: 3.4rem;
   line-height: 3.4rem;
   letter-spacing: -0.15rem;
-  color: colour(white);
+  color: colour('white');
   display: flex;
 
   @include theme('light') {
-    color: colour(darkest_grey);
+    color: colour('darkest_grey');
   }
 }
 
@@ -255,14 +256,14 @@ h2 {
     text-decoration: none;
 
     &:hover {
-      border-bottom: 2px solid colour(white);
+      border-bottom: 2px solid colour('white');
     }
   }
 
   &.grey-text {
     a:hover {
-      color: colour(mid_grey) !important;
-      border-bottom: 2px solid colour(mid_grey);
+      color: colour('mid_grey') !important;
+      border-bottom: 2px solid colour('mid_grey');
     }
   }
 }
@@ -344,7 +345,7 @@ p {
 .no-results {
   text-align: center;
   padding: 40px;
-  color: colour(grey);
+  color: colour('grey');
   font-style: italic;
   font-size: 1.2rem;
 }
@@ -553,7 +554,7 @@ button.placeholder {
 
 footer {
   display: block;
-  color: colour(light_grey);
+  color: colour('light_grey');
   padding-top: 50px;
   padding-bottom: 50px;
   text-align: center;
@@ -588,8 +589,8 @@ footer {
   font-weight: bold;
   display: inline-block;
   padding: 3px 5px 1px;
-  background: colour(light_grey);
-  color: colour(dark_grey);
+  background: colour('light_grey');
+  color: colour('dark_grey');
   border-radius: 3px;
   vertical-align: bottom;
   margin: 0 8px 1px;
@@ -606,31 +607,31 @@ footer {
   }
 
   &--blue {
-    background: colour(blue);
-    color: colour(white);
+    background: colour('blue');
+    color: colour('white');
   }
 
   &--info {
-    background: colour(yellow);
+    background: colour('yellow');
   }
 
   &--warning {
-    background: colour(orange);
-    color: colour(white);
+    background: colour('orange');
+    color: colour('white');
   }
 
   &--error,
   &--bad {
-    background: colour(red);
-    color: colour(white);
+    background: colour('red');
+    color: colour('white');
   }
 
   &--dark {
-    background: lighten(colour(dark_grey), 10%);
-    color: colour(mid_grey);
+    background: lighten(colour('dark_grey'), 10%);
+    color: colour('mid_grey');
 
     @include theme('light') {
-      background: lighten(colour(mid_grey), 25%);
+      background: lighten(colour('mid_grey'), 25%);
     }
   }
 
@@ -648,36 +649,36 @@ footer {
 
 .message {
   padding: 10px 12px 8px;
-  background: colour(yellow);
-  color: colour(dark_grey);
+  background: colour('yellow');
+  color: colour('dark_grey');
   clear: both;
   font-size: 14px;
   border-radius: 3px;
 
   &.info {
-    background: colour(yellow);
+    background: colour('yellow');
   }
 
   &.notice {
-    background: colour(blue);
-    color: colour(white);
+    background: colour('blue');
+    color: colour('white');
   }
 
   &.good,
   &.success {
-    background: colour(green);
-    color: colour(white);
+    background: colour('green');
+    color: colour('white');
   }
 
   &.warning {
-    background: colour(orange);
-    color: colour(white);
+    background: colour('orange');
+    color: colour('white');
   }
 
   &.error,
   &.bad {
-    background: colour(red);
-    color: colour(white);
+    background: colour('red');
+    color: colour('white');
   }
 }
 
@@ -685,7 +686,6 @@ footer {
   h1 {
     font-size: 2rem;
     line-height: 2rem;
-    display: block;
     letter-spacing: -0.08rem;
   }
 

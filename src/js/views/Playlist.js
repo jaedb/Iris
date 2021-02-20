@@ -30,6 +30,7 @@ import { trackEvent } from '../components/Trackable';
 import { i18n, I18n } from '../locale';
 import { makeItemSelector, makeLoadingSelector } from '../util/selectors';
 import { sortItems, applyFilter } from '../util/arrays';
+import { decodeUri, encodeUri } from '../util/format';
 
 class Playlist extends React.Component {
   constructor(props) {
@@ -45,14 +46,19 @@ class Playlist extends React.Component {
     // We accept the old format, and redirect to the new one
     if (uri.includes('spotify:user:')) {
       uri = uri.replace(/spotify:user:([^:]*?):/i, 'spotify:');
-      props.history.push(`/playlist/${encodeURIComponent(uri)}`);
+      props.history.push(`/playlist/${encodeUri(uri)}`);
     }
   }
 
   componentDidMount() {
-    const { coreActions: { loadItem }, uri } = this.props;
+    const {
+      coreActions: {
+        loadPlaylist,
+      },
+      uri,
+    } = this.props;
     this.setWindowTitle();
-    loadItem(uri, { full: true });
+    setTimeout(() => loadPlaylist(uri, { full: true }), 1);
   }
 
   componentDidUpdate = ({
@@ -63,7 +69,7 @@ class Playlist extends React.Component {
       uri,
       playlist,
       coreActions: {
-        loadItem,
+        loadPlaylist,
       },
       history: {
         push,
@@ -71,11 +77,11 @@ class Playlist extends React.Component {
     } = this.props;
 
     if (prevPlaylist && playlist && prevPlaylist.moved_to !== playlist.moved_to) {
-      push(`/playlist/${encodeURIComponent(playlist.moved_to)}`);
+      push(`/playlist/${encodeUri(playlist.moved_to)}`);
     }
 
     if (uri !== prevUri) {
-      loadItem(uri, { full: true });
+      loadPlaylist(uri, { full: true });
     }
 
     if (!prevPlaylist && playlist) this.setWindowTitle(playlist);
@@ -234,6 +240,7 @@ class Playlist extends React.Component {
   renderActions = () => {
     const {
       uri,
+      encodedUri,
       playlist: {
         can_edit,
         name,
@@ -253,7 +260,7 @@ class Playlist extends React.Component {
               <I18n path="actions.play" />
             </Button>
             <Button
-              to={`/playlist/${encodeURIComponent(uri)}/edit`}
+              to={`/playlist/${encodedUri}/edit`}
               tracking={{ category: 'Playlist', action: 'Edit' }}
             >
               <I18n path="actions.edit" />
@@ -275,7 +282,7 @@ class Playlist extends React.Component {
                 <I18n path="actions.play" />
               </Button>
               <Button
-                to={`/playlist/${encodeURIComponent(uri)}/edit`}
+                to={`/playlist/${encodedUri}/edit`}
                 tracking={{ category: 'Playlist', action: 'Edit' }}
               >
                 <I18n path="actions.edit" />
@@ -334,10 +341,10 @@ class Playlist extends React.Component {
       filter,
     } = this.state;
 
+    if (loading) {
+      return <Loader body loading />;
+    }
     if (!playlist) {
-      if (loading) {
-        return <Loader body loading />;
-      }
       return (
         <ErrorMessage type="not-found" title="Not found">
           <p>
@@ -490,14 +497,14 @@ const mapStateToProps = (state, ownProps) => {
     } = {},
   } = state;
 
-  const uri = decodeMopidyUri(ownProps.match.params.uri);
-  const playlistId = getFromUri('playlistid', uri);
+  const uri = decodeUri(ownProps.match.params.uri);
   const itemSelector = makeItemSelector(uri);
-  const loadingSelector = makeLoadingSelector([`(.*)${playlistId}(?!.*(following))(.*)`]);
-  const loadingTracksSelector = makeLoadingSelector([`(.*)${playlistId}/tracks(.*)`]);
+  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`, '^((?!contains).)*$', '^((?!tracks).)*$']);
+  const loadingTracksSelector = makeLoadingSelector([`(.*)${uri}(.*)tracks(.*)`]);
 
   return {
     uri,
+    encodedUri: ownProps.match.params.uri,
     allow_reporting,
     slim_mode,
     theme,

@@ -1,15 +1,16 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Header from '../../components/Header';
 import GridItem from '../../components/GridItem';
+import Loader from '../../components/Loader';
 import Icon from '../../components/Icon';
 import ErrorBoundary from '../../components/ErrorBoundary';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
-import { formatImages } from '../../util/format';
+import { formatImages, encodeUri } from '../../util/format';
 import { I18n, i18n } from '../../locale';
+import { makeLoadingSelector } from '../../util/selectors';
 
 class LibraryBrowse extends React.Component {
   componentDidMount() {
@@ -27,10 +28,23 @@ class LibraryBrowse extends React.Component {
     getDirectory(null);
   }
 
-  render() {
+  render = () => {
+    const {
+      loading,
+      directory,
+      mopidyActions,
+    } = this.props;
+
+    if (!directory) {
+      if (loading) {
+        return <Loader body loading />;
+      }
+      return null;
+    }
+
     const grid_items = [];
-    if (this.props.directory) {
-      for (const subdirectory of this.props.directory.subdirectories) {
+    if (directory.subdirectories) {
+      for (const subdirectory of directory.subdirectories) {
         switch (subdirectory.name) {
           case 'Dirble':
             subdirectory.icons = ['/iris/assets/backgrounds/browse-dirble.jpg'];
@@ -91,7 +105,7 @@ class LibraryBrowse extends React.Component {
 
         grid_items.push({
           name: subdirectory.name,
-          link: `/library/browse/${encodeURIComponent(subdirectory.uri)}`,
+          link: `/library/browse/${encodeURIComponent(subdirectory.name)}/${encodeUri(subdirectory.uri)}`,
           icons: formatImages(subdirectory.icons),
         });
       }
@@ -101,7 +115,7 @@ class LibraryBrowse extends React.Component {
       <div className="view library-local-view">
         <Header>
           <Icon name="folder" type="material" />
-					<I18n path="library.browse.title" />
+          <I18n path="library.browse.title" />
         </Header>
         <section className="content-wrapper">
           <div className="grid grid--tiles">
@@ -113,7 +127,7 @@ class LibraryBrowse extends React.Component {
                       item={item}
                       key={index}
                       link={item.link}
-                      mopidyActions={this.props.mopidyActions}
+                      mopidyActions={mopidyActions}
                       type="browse"
                     />
 								  ),
@@ -127,11 +141,24 @@ class LibraryBrowse extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  load_queue: state.ui.load_queue,
-  directory: state.mopidy.directory,
-  view: state.ui.library_directory_view,
-});
+const mapStateToProps = (state) => {
+  const {
+    mopidy: {
+      directory: _directory = {},
+    },
+    ui: {
+      library_directory_view: view,
+    },
+  } = state;
+  const directory = _directory && _directory.uri === null ? _directory : null;
+  const loadingSelector = makeLoadingSelector(['(.*)mopidy_library.browse(.*)']);
+
+  return {
+    loading: loadingSelector(state),
+    directory,
+    view,
+  };
+};
 
 const mapDispatchToProps = (dispatch) => ({
   uiActions: bindActionCreators(uiActions, dispatch),

@@ -5,7 +5,8 @@ name: Svenska
 ##
 errors:
   uri_not_found: 'Kunde inte hitta något med URI %{uri}'
-  could_not_load: Kunde inte ladda
+  could_not_load: 'Kunde inte ladda %{name}'
+  could_not_load_library: 'Kunde inte ladda %{name} från %{provider}'
   no_results: Inga resultat
   authorization_required: 'Du måste auktorisera %{provider} först'
   enable_first: 'Aktivera %{provider} först'
@@ -13,6 +14,10 @@ errors:
   required: Behövs
   unknown_error: Okänt fel
   need_to_be_online: Du behöver vara online för att ladda denna resurs
+  nothing_selected: Inget markerat
+  cannot_reorder:
+    title: Det går inte att ordna om objekt
+    description: Ta bort sortering/filter och försök igen
 actions:
   play: Spela
   play_all: Spela allt
@@ -37,6 +42,10 @@ actions:
   confirm: Är du säker?
   delete: Radera
   remove: Ta bort
+  cancel: Avbryt
+  created: Skapade %{name}
+  saved: Sparade %{name}
+  deleted: Tog bort %{name}
 common:
   popularity: Populäritet
   name: Namn
@@ -47,6 +56,7 @@ common:
   sort: Sortera
   filter: Filter
   by: ' av '
+  loading_library: 'Laddar %{provider} %{type}'
 fields:
   start_typing: 'Börja skriva...'
   search: 'Sök...'
@@ -65,7 +75,8 @@ fields:
     as_loaded: Som inladdat
     name: Namn
     artist: Artist
-    updated: Updated
+    album: Album
+    updated: Uppdaterad
     tracks: Låtar
     source: Källa
     editable: Ändringsbar
@@ -114,9 +125,11 @@ services:
   mopidy:
     title: Mopidy
     local: Local
-    adding_uris: 'Lägger till %{count} URI(s)'	
-    searching_providers: 'Söker %{count} Mopidy providers'	
-    loading_albums: 'Laddar %{count} lokala album'	
+    adding_uris: 'Lägger till %{count} URI(s)'
+    adding_uris_broadcast: '%{username} Lägger till %{count} URI(s)'
+    searching: 'Söker %{provider} %{type}'
+    searching_providers: 'Söker %{count} Mopidy providers'
+    loading_albums: 'Laddar %{count} lokala album'
   spotify:
     title: Spotify
   pusher:
@@ -160,6 +173,7 @@ context_menu:
     no_playlists: No writable playlists
   play_next: Spela nästa
   play_top_tracks: Spela topplistan
+  play_all_tracks: Spela alla låtar
   love_track: Gilla låten
   unlove_track: Ogilla låten
   pin: Fäst
@@ -170,6 +184,7 @@ context_menu:
   discover_similar: Upptäck liknande
   start_radio: Starta radio
   copy_uri: Kopiera URI(s)
+  refresh: Refresh
 dropzones:
   dragging_things: 'Drar %{count} saker'
 playback_controls:
@@ -181,6 +196,7 @@ playback_controls:
   unmute: Ljud
 snapcast:
   enabled: Aktiverad
+  streaming_enabled: Streaming aktiverad
   show_disconnected_clients: Visa frånkopplade klienter
   no_connected_clients: Inga anslutna klienter
   host: Värd
@@ -219,17 +235,27 @@ album:
   wiki:
     title: Om
     published: 'Publicerad: %{date}'
+  tracks:
+    title: Låtar
+    sort:
+      disc_track: Låtnummer
+      name: Namn
 artist:
   title: Artist
   title_window: '%{name} (artist)'
   overview:
     title: Överblick
     top_tracks: Toppade låtar
+    albums: Album
     related_artists:
       title: Relaterade artister
       more: Alla relaterade artister
   tracks:
     title: Låtar
+    sort:
+      disc_track: Låtnummer
+      name: Namn
+      album: Album
   related_artists:
     title: Relaterade artister
   about:
@@ -238,8 +264,8 @@ artist:
     wiki:
       published: 'Publicerad: %{date}'
       origin: 'Ursprung: '
-  albums:	
-    sort:	
+  albums:
+    sort:
       default: Default	
       name: Namn
       release_date: Datum
@@ -272,6 +298,15 @@ playlist:
   title: Spellista
   title_window: '%{name} (playlist)'
   title_plural: Spellistor
+  tracks:
+    title: Låtar
+    sort:
+      default: Standard
+      sort_id: Som inladdat
+      added_at: Datum tillagd
+      name: Namn
+      artist: Artist
+      album: Album
 queue_history:
   title: Låthistorik
 search:
@@ -330,6 +365,8 @@ settings:
       touch_events: Enable touch events on play controls
       touch_events_tooltip: Allows left- and right-swipe to change tracks
       wide_scrollbars: Use wide scrollbars
+      grid_glow: Thumbnail glow effect
+      grid_glow_tooltip: Inaktivera effekten för lågenergi enheter eller äldre webbläsare
     sources_priority:
       label: Sources priority
       description: Dra och släpp för att prioritera sök resultaten från olika utgivningar
@@ -350,6 +387,9 @@ settings:
     album_uri:
       label: Album library URI
       description: URI used for collecting library albums
+    track_uri:
+      label: Track library URI
+      description: URI used for collecting library tracks
     connections:
       label: Anslutningar
     version:
@@ -359,7 +399,6 @@ settings:
       up_to_date: senaste versionen
     share_configuration: Dela konfiguration
     restart: starta om  servern
-    reset_cache: återställ cache
     reset: Återställ alla inställningar
   about:
     title: Om
@@ -431,7 +470,7 @@ discover:
     body_title: Upptäck ny musik
     body_subtitle: Lägg till frön och musikaliska egenskaper nedanför för att bygga din musiksmak
     too_many_seeds: För många frön! Du kan max använda 5 låtar, artister och genrer.
-    find_recommendations: Hitta rekommendationer 
+    find_recommendations: Hitta rekommendationer
 library:
   albums:
     title: Mina album
@@ -520,3 +559,25 @@ modal:
       do_you_want_to_import: Vill du impotera detta?
       import_now: Importera nu
       successful: Importering lyckades
+  reset:	
+    title: Återställ Iris
+    subtitle: Rensa din lokala konfiguration, lagrings information eller cache
+    items: Återställ till standard 
+    preferences:
+      label: inställningar 
+      description: gränssnitts anpassningar 
+    database:
+      label: Databas
+      description: Lokal webbläsarbaserad databas av bibliotek och tillgångar
+    service_worker:	
+      label: Service worker
+      description: Re-install service worker
+    cache:
+      label: Fetch cache
+      description: External API requests cache (requires Service Worker)
+    test_mode:
+      label: Testläge
+      description: detaljerad loggning för diagnostisering av fel
+  sort: Sortera
+  filter: Filter
+  by: ' av '

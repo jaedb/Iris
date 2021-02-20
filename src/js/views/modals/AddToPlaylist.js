@@ -10,10 +10,10 @@ import * as coreActions from '../../services/core/actions';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
-import { sourceIcon, decodeMopidyUri } from '../../util/helpers';
+import { sourceIcon } from '../../util/helpers';
 import { sortItems } from '../../util/arrays';
 import { I18n, i18n } from '../../locale';
-import { collate } from '../../util/format';
+import { collate, decodeUri } from '../../util/format';
 import { makeProcessProgressSelector } from '../../util/selectors';
 
 const processKeys = [
@@ -57,14 +57,13 @@ class AddToPlaylist extends React.Component {
       },
       uris,
     } = this.props;
-    const encodedUris = uris.map((uri) => decodeMopidyUri(uri));
+    const encodedUris = uris.map((uri) => decodeUri(uri));
     addTracksToPlaylist(playlist_uri, encodedUris);
     window.history.back();
   }
 
-  render = () => {
+  renderList = () => {
     const {
-      uris,
       items,
       spotify_library = { items_uris: [] },
       mopidy_library = { items_uris: [] },
@@ -82,6 +81,39 @@ class AddToPlaylist extends React.Component {
 
     playlists = sortItems(playlists, 'name');
 
+    if (playlists.length > 0 ){
+      return (
+        <div className="list small playlists">
+          {playlists.map((playlist) => (
+            <div
+              className="list__item"
+              key={playlist.uri}
+              onClick={() => this.playlistSelected(playlist.uri)}
+            >
+              <Thumbnail images={playlist.images} size="small" />
+              <h4 className="list__item__name">{ playlist.name }</h4>
+              <ul className="list__item__details details">
+                <li><Icon type="fontawesome" className="source" name={sourceIcon(playlist.uri)} /></li>
+                <li className="mid_grey-text">
+                  {`${playlist.tracks_total || 0} tracks`}
+                </li>
+              </ul>
+            </div>
+          ))}
+        </div>
+      );
+    }
+    
+    return (
+      <div className="no-results">
+        <I18n path="modal.add_to_playlist.no_playlists" />
+      </div>
+    );
+  }
+
+  render = () => {
+    const { uris } = this.props;
+
     return (
       <Modal className="modal--add-to-playlist">
         <h1><I18n path="modal.add_to_playlist.title" /></h1>
@@ -92,30 +124,7 @@ class AddToPlaylist extends React.Component {
             plural={uris.length > 1 ? 's' : ''}
           />
         </h2>
-        {playlists.length ? (
-          <div className="list small playlists">
-            {playlists.map((playlist) => (
-              <div
-                className="list__item"
-                key={playlist.uri}
-                onClick={() => this.playlistSelected(playlist.uri)}
-              >
-                <Thumbnail images={playlist.images} size="small" />
-                <h4 className="list__item__name">{ playlist.name }</h4>
-                <ul className="list__item__details details">
-                  <li><Icon type="fontawesome" className="source" name={sourceIcon(playlist.uri)} /></li>
-                  <li className="mid_grey-text">
-                    {`${playlist.tracks_total || 0} tracks`}
-                  </li>
-                </ul>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="no-results">
-            <I18n path="modal.add_to_playlist.no_playlists" />
-          </div>
-        )}
+        {this.renderList()}
       </Modal>
     );
   }

@@ -136,7 +136,7 @@ class EditRadio extends React.Component {
     } = this.state;
     const {
       coreActions: {
-        loadItem,
+        loadUri,
       },
     } = this.props;
 
@@ -165,7 +165,7 @@ class EditRadio extends React.Component {
         this.setState({ error_message: i18n('modal.edit_radio.too_many_seeds') });
       } else {
         validatedSeeds.push(uris[i]);
-        loadItem(uris[i]);
+        loadUri(uris[i]);
       }
     }
 

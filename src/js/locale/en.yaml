@@ -247,7 +247,7 @@ artist:
   overview:
     title: Overview
     top_tracks: Top tracks
-    albums: Albums
+    albums: 'Albums (%{count})'
     related_artists:
       title: Related artists
       more: All related artists
@@ -339,6 +339,7 @@ track:
   track_number: 'Track %{number}'
   unknown_album: Unknown album
   want_lyrics: 'Want track lyrics? Authorize Genius under '
+  lyrics: Lyrics
 settings:
   title: Settings
   help: Help
@@ -579,3 +580,20 @@ modal:
     test_mode:
       label: Test mode
       description: Verbose logging for diagnosing issues
+  hotkeys_info:
+    title: Hotkeys
+    keys:
+      info: Hotkeys info (this dialog)
+      exit: Cancel the current interaction
+      play_pause: Play/pause
+      stop: Stop
+      next: Next track
+      previous: Previous track
+      rewind: Rewind 30 seconds
+      fastforward: Fast-forward 30 seconds
+      volume_up: Volume up 5%
+      volume_down: Volume down 5%
+      mute: Mute
+      kiosk: Kiosk mode
+      now_playing: Now playing
+      search: Search

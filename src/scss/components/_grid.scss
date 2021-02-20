@@ -29,7 +29,7 @@
     &__secondary {
       @include one_line_text;
       padding-top: 2px;
-      color: colour(secondary_grey);
+      color: colour('secondary_grey');
 
       .source {
         padding-right: 6px;
@@ -74,7 +74,7 @@
         text-align: center;
         font-size: 14px;
         font-weight: 600;
-        color: colour(white);
+        color: colour('white');
         z-index: 2;
       }
     }
@@ -103,11 +103,12 @@
       .grid__item {
         @include grid_item(5);
       }
-      &--single-row {
+      // This doesn't build with dart-sass, and doesn't compile to something that works at all under node-sass
+      /*&--single-row {
         .grid-item:nth-child(1n + 6) {
           display: none;
         }
-      }
+      }*/
     }
   }
 
@@ -126,11 +127,12 @@
       .grid__item {
         @include grid_item(4);
       }
-      &--single-row {
+      // This doesn't build with dart-sass, and doesn't compile to something that works at all under node-sass
+      /*&--single-row {
         .grid-item:nth-child(1n + 5) {
           display: none;
         }
-      }
+      }*/
     }
   }
 
@@ -149,11 +151,12 @@
       .grid__item {
         @include grid_item(4);
       }
-      &--single-row {
+      // This doesn't build with dart-sass, and doesn't compile to something that works at all under node-sass
+      /*&--single-row {
         .grid-item:nth-child(1n + 5) {
           display: none;
         }
-      }
+      }*/
     }
   }
 
@@ -172,11 +175,12 @@
       .grid__item {
         @include grid_item(3, 2%, 4%);
       }
-      &--single-row {
+      // This doesn't build with dart-sass, and doesn't compile to something that works at all under node-sass
+      /*&--single-row {
         .grid-item:nth-child(1n + 4) {
           display: none;
         }
-      }
+      }*/
     }
   }
 
@@ -195,11 +199,12 @@
       .grid__item {
         @include grid_item(2, 2%, 4%);
       }
-      &--single-row {
+      // This doesn't build with dart-sass, and doesn't compile to something that works at all under node-sass
+      /*&--single-row {
         .grid-item:nth-child(1n + 5) {
           display: none;
         }
-      }
+      }*/
     }
   }
 }
@@ -208,7 +213,7 @@
   padding-bottom: 60px;
 
   .tile {
-    color: colour(white);
+    color: colour('white');
     text-align: center;
     position: relative;
     z-index: 1;
@@ -217,7 +222,7 @@
     border-radius: 3px;
 
     @include theme('light') {
-      color: colour(darkest_grey);
+      color: colour('darkest_grey');
     }
 
     .content {
@@ -241,11 +246,11 @@
       display: block;
       width: 100%;
       padding-bottom: 100%;
-      background: lighten(colour(dark_grey), 2%);
+      background: lighten(colour('dark_grey'), 2%);
       z-index: -2;
 
       @include theme('light') {
-        background: darken(colour(faint_grey), 5%);
+        background: darken(colour('faint_grey'), 5%);
       }
     }
 

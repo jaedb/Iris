@@ -25,14 +25,14 @@
 			cursor: pointer;
 
 			.notouch &:hover {
-				color: colour(blue);
+				color: colour('blue');
 			}
 		}
 	}
 
 	&--expanded {
 		.label:not(.button) {
-			color: colour(blue);
+			color: colour('blue');
 		}
 		.dropdown-field__options {
 			display: block;
@@ -66,7 +66,7 @@
 			display: block;
 			width: 6px;
 			height: 6px;
-			background: colour(white);
+			background: colour('white');
 			-ms-transform: rotate(45deg);
 			-webkit-transform: rotate(45deg);
 			transform: rotate(45deg);
@@ -75,20 +75,20 @@
 			right: 9px;
 
 			@include theme('light') {
-				background: colour(white);
+				background: colour('white');
 			}
 		}
 
 		&__liner {
-			color: colour(black);
-			background: colour(white);
+			color: colour('black');
+			background: colour('white');
 			min-width: 120px;
 			max-height: 70vh;
 			overflow-y: auto;
 			border-radius: 3px;
 
 			@include theme('light') {
-				background: colour(white);
+				background: colour('white');
 			}
 		}
 
@@ -98,7 +98,7 @@
 			position: relative;
 			padding: 9px 12px 8px 24px;
 			cursor: pointer;
-			color: colour(darkest_grey);
+			color: colour('darkest_grey');
 
 			.icon {
 				position: absolute;
@@ -108,7 +108,7 @@
 			}
 
 			.notouch &:hover {
-				color: colour(darkest_grey);
+				color: colour('darkest_grey');
 
 				&:before {
 					opacity: 0.15;
@@ -145,10 +145,10 @@
 
 			&,
 			&:hover {
-				color: colour(white);
+				color: colour('white');
 
 				@include theme('light') {
-					color: colour(dark_grey) !important;
+					color: colour('dark_grey') !important;
 				}
 			}
 		}
@@ -169,11 +169,11 @@
 
 			&__liner {
 				background: transparent;
-				color: colour(white) !important;
+				color: colour('white') !important;
 				margin: -3px -5px;
 
 				@include theme('light') {
-					color: colour(dark_grey) !important;
+					color: colour('dark_grey') !important;
 				}
 
 				&:before {
@@ -185,10 +185,10 @@
 				display: block;
 				padding: 3px 5px;
 				border-radius: 0;
-				color: colour(white) !important;
+				color: colour('white') !important;
 
 				@include theme('light') {
-					color: colour(dark_grey) !important;
+					color: colour('dark_grey') !important;
 				}
 
 				&:before {

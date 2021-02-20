@@ -1,4 +1,5 @@
-import { indexToArray } from "./arrays";
+import { indexToArray, arrayOf } from "./arrays";
+import { encodeUri } from "./format";
 
 /**
  * Returns a function, that, as long as it continues to be invoked, will not
@@ -163,6 +164,10 @@ const uriType = function (uri) {
     return exploded[1];
   }
 
+  if (exploded[0] === 'dleyna') {
+    return 'track';
+  }
+
   if (exploded[0] === 'tunein') {
     switch (exploded[1]) {
       case 'station':
@@ -191,12 +196,12 @@ const uriType = function (uri) {
   }
 };
 
-
 const sourceIcon = function (uri, source = null) {
   if (uri) source = uriSource(uri);
   switch (source) {
     case 'local':
     case 'm3u':
+    case 'file':
       return 'folder';
 
     case 'gmusic':
@@ -214,24 +219,30 @@ const sourceIcon = function (uri, source = null) {
     case 'dirble':
       return 'cloud';
 
-    default:
+    case 'spotify':
+    case 'soundcloud':
+    case 'lastfm':
+    case 'youtube':
+    case 'tidal':
       return source;
+
+    default:
+      return 'cloud';
   }
 };
-
 
 /**
  * Get an element from a URI
  * @param element = string, the element we wish to extract
  * @param uri = string
  * */
-const getFromUri = function (element, uri) {
+const getFromUri = (element, uri) => {
   if (!uri) return null;
   const exploded = `${uri}`.split(':');
 
   switch (element) {
     case 'mbid':
-      var index = exploded.indexOf('mbid');
+      const index = exploded.indexOf('mbid');
       if (index > -1) return exploded[index + 1];
       break;
 
@@ -265,6 +276,9 @@ const getFromUri = function (element, uri) {
     case 'trackid':
       if (exploded[1] == 'track') {
         return exploded[2];
+      }
+      if (exploded[0] === 'dleyna') {
+        return uri.replace('dleyna:', '');
       }
       break;
 
@@ -312,25 +326,21 @@ const getFromUri = function (element, uri) {
   }
 };
 
-
 /**
  * Build a link to an asset. Using the URI type we can ascertain where we need
  * to direct the user (eg /track/local:track:1235.mp3)
  *
  * @param $uri = String
+ * @param $type = String, optional
  * @return String
  * */
-const buildLink = function (uri) {
-  // Start the link with the URI type
-  const type = uriType(uri);
-  let link = `/${type}/`;
+const buildLink = (uri, type = null) => {
+  let link = `/${type || uriType(uri)}/`;
 
   // Encode the whole URI as though it's a component. This makes it URL friendly for
   // all Mopidy backends (some use URIs like local:track:http://rss.com/stuff.mp3) which
   // is never going to work nicely.
-  uri = encodeURIComponent(uri);
-  link += uri;
-
+  link += encodeUri(uri);
   return link;
 };
 
@@ -360,41 +370,45 @@ let isObject = function (value) {
   return value instanceof Object && value.constructor === Object;
 };
 
+/**
+ * Convert an array of strings to an array of RegExp objects
+ * 
+ * @param {Array} keys
+ */
+const toRegExp = function (keys) {
+  return keys.map((key) => {
+    try {
+      return new RegExp(key);
+    } catch {
+      // Fucks with unit tests, but helpful for debugging.
+      // console.error('Could not convert string to RegEx', key);
+      return null;
+    }
+  });
+};
 
 /**
  * Detect if an item is in the loading queue. We simply loop all load items to
- * see if any items contain our searched key.
+ * see if any load queue keys match our 'includes' expression AND our 'excludes' expression(s)
  *
- * TODO: Explore performance of this
- * TODO: Allow wildcards
- *
- * @param load_queue = obj (passed from store)
- * @param key = string (the string to lookup)
- * @return boolean
+ * @param {Object} load_queue (passed from store)
+ * @param {Array} keys array of regex strings
+ * @return {Boolean}
  * */
 const isLoading = function (load_queue = {}, keys = []) {
   if (!load_queue || !keys) return false;
 
+  const expressions = toRegExp(keys);
   const queue = indexToArray(load_queue);
-  const matches = keys.reduce((acc, key) => {
-    let regex = '';
-    try {
-      regex = new RegExp(key);
-    } catch {
-      // Fucks with unit tests, but helpful for debugging.
-      // console.error('Invalid regular expression', keys);
-      return acc;
-    }
 
-    return [
-      ...acc,
-      ...(queue.filter((qk) => qk.match(regex))),
-    ];
-  }, []);
+  const matches = queue.filter((qk) => {
+    const matchingExpressions = keys.filter((exp) => qk.match(exp));
+
+    return (matchingExpressions.length === expressions.length);
+  });
 
   return matches.length > 0;
 };
-
 
 /**
  * Is this app running from the hosted instance?

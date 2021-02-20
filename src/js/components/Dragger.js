@@ -52,7 +52,7 @@ class Dragger extends React.Component {
         dropzones[i].classList.remove('hover');
       }
 
-      if (target.classList.contains('dropzone') && !target.classList.contains('hover')) {
+      if (target.classList && target.classList.contains('dropzone') && !target.classList.contains('hover')) {
         target.className += ' hover';
       }
 

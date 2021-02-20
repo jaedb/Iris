@@ -83,12 +83,12 @@
 			background: rgba(0,0,0,0.4);
 			font-size: 2rem;
 			cursor: pointer;
-			color: colour(white);
+			color: colour('white');
 			border: 0 !important;
 			margin: 0 5px;
 
 			&:hover {
-				background: colour(black);
+				background: colour('black');
 			}
 		}
 	}

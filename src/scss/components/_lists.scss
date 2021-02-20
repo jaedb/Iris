@@ -28,7 +28,7 @@
 			bottom: 0;
 			right: 0;
 			height: 3px;
-			background: colour(blue);
+			background: colour('blue');
 			opacity: 0;
 		}
 
@@ -81,7 +81,7 @@
 		}
 /*
 		.icon.source {
-			color: colour(mid_grey);
+			color: colour('mid_grey');
 			position: absolute;
 			top: 16px;
 			right: 40px;
@@ -115,7 +115,7 @@
 				&__column {
 					&__item {
 						&--name {
-							color: colour(turquoise);
+							color: colour('turquoise');
 
 							.icon {
 								padding-left: 5px;
@@ -178,6 +178,11 @@
 			}
 		}
 
+		&--loading {
+			opacity: 0.5;
+			cursor: wait !important;
+		}
+
 		&__column {
 			align-items: center;
 			flex: 10;
@@ -193,6 +198,7 @@
 				z-index: 9;
 				flex: 4;
 				justify-content: flex-end;
+				order: 2;
 
 				.list__item__column__item {
 					padding-left: 10px;
@@ -251,9 +257,11 @@
 					}
 				}
 
-				@include theme('light') .flag {
-					background: colour(light_grey);
-					color: colour(white);
+				@include theme('light') {
+					.flag {
+						background: colour('light_grey');
+						color: colour('white');
+					}
 				}
 			}
 		}
@@ -282,7 +290,7 @@
 					width: 34px;
 					font-size: 14px;
 					display: block;
-					color: colour(mid_grey);
+					color: colour('mid_grey');
 					padding: 0;
 
 					.icon {

@@ -1,7 +1,7 @@
-
 import React from 'react';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { scrollTo } from '../util/helpers';
+import { decodeUri } from '../util/format';
 
 /**
  * Extends react-router's Link but provides the ability to hook in to the navigation event
@@ -43,11 +43,10 @@ export default ({
     if (!retainScroll) scrollTo(scrollToProp, (scrollToProp));
   };
 
-
   // Decode both links. This handles issues where one link is encoded and the other isn't, but
   // they're otherwise identical
-  const link = decodeURIComponent(to);
-  const currentLink = decodeURIComponent(history.location.pathname);
+  const link = decodeUri(to);
+  const currentLink = decodeUri(history.location.pathname);
   const isLinkActive = exact ? currentLink === link : currentLink.startsWith(link);
 
   // We have an active detector method

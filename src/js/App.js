@@ -21,6 +21,7 @@ import Artist from './views/Artist';
 import Playlist from './views/Playlist';
 import User from './views/User';
 import Track from './views/Track';
+import UriRedirect from './views/UriRedirect';
 import Queue from './views/Queue';
 import QueueHistory from './views/QueueHistory';
 import Debug from './views/Debug';
@@ -49,6 +50,7 @@ import KioskMode from './views/modals/KioskMode';
 import ShareConfiguration from './views/modals/ShareConfiguration';
 import AddToPlaylist from './views/modals/AddToPlaylist';
 import ImageZoom from './views/modals/ImageZoom';
+import HotkeysInfo from './views/modals/HotkeysInfo';
 import EditCommand from './views/modals/EditCommand';
 import Reset from './views/modals/Reset';
 
@@ -289,6 +291,7 @@ export class App extends React.Component {
             <Route path="/kiosk-mode" component={KioskMode} />
             <Route path="/add-to-playlist/:uris" component={AddToPlaylist} />
             <Route path="/image-zoom" component={ImageZoom} />
+            <Route path="/hotkeys" component={HotkeysInfo} />
             <Route path="/share-configuration" component={ShareConfiguration} />
             <Route path="/reset" component={Reset} />
             <Route path="/edit-command/:id?" component={EditCommand} />
@@ -338,6 +341,7 @@ export class App extends React.Component {
                     <Route exact path="/playlist/:uri" component={Playlist} />
                     <Route exact path="/user/:uri" component={User} />
                     <Route exact path="/track/:uri" component={Track} />
+                    <Route exact path="/uri/:uri" component={UriRedirect} />
 
                     <Route
                       exact
@@ -392,7 +396,7 @@ export class App extends React.Component {
                     />
                     <Route
                       exact
-                      path="/library/browse/:uri"
+                      path="/library/browse/:name/:uri"
                       component={LibraryBrowseDirectory}
                     />
 

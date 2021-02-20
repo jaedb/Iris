@@ -7,7 +7,7 @@ main .album-view {
       padding-top: 10px;
 
       a:hover {
-        color: darken(colour(mid_grey), 20%);
+        color: darken(colour('mid_grey'), 20%);
       }
     }
 

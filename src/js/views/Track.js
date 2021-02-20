@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -19,16 +18,120 @@ import * as mopidyActions from '../services/mopidy/actions';
 import * as spotifyActions from '../services/spotify/actions';
 import * as lastfmActions from '../services/lastfm/actions';
 import * as geniusActions from '../services/genius/actions';
-import {
-  isLoading,
-  getFromUri,
-  sourceIcon,
-  uriSource,
-  uriType,
-} from '../util/helpers';
+import { sourceIcon } from '../util/helpers';
 import { i18n, I18n } from '../locale';
 import Button from '../components/Button';
 import { makeLoadingSelector, makeItemSelector } from '../util/selectors';
+import { decodeUri } from '../util/format';
+
+const LyricsSelector = ({
+  track: {
+    uri,
+    lyrics_results,
+    lyrics_path,
+  } = {},
+  getTrackLyrics,
+}) => {
+
+  if (lyrics_results === undefined || lyrics_results === null) return null;
+  if (lyrics_results.length <= 0) {
+    return (
+      <div className="field lyrics-selector">
+        <div className="input">
+          <input type="text" disabled="disabled" value="No results" />
+          <div className="description">
+            <I18n path="services.genius.switch_lyrics_result" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="field lyrics-selector">
+      <div className="input">
+        <SelectField
+          onChange={(value) => getTrackLyrics(uri, value)}
+          options={
+            lyrics_results.map((result) => ({
+              value: result.path,
+              label: result.title,
+              defaultValue: (result.path === lyrics_path),
+            }))
+          }
+        />
+        <div className="description">
+          <I18n path="services.genius.switch_lyrics_result" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const LyricsContent = ({
+  authorized,
+  loading,
+  track: {
+    lyrics,
+    lyrics_path,
+  } = {},
+}) => {
+  if (loading) return <Loader mini />;
+  if (!lyrics && !authorized) {
+    return (
+      <p className="no-results">
+        <I18n path="track.want_lyrics" />
+        <Link to="/settings/services/genius" scrollTo="#services-menu">
+          <I18n path="settings.title" />
+        </Link>
+        .
+      </p>
+    );
+  };
+  if (!lyrics) return null;
+
+  return (
+    <div className="lyrics">
+      <div className="content" dangerouslySetInnerHTML={{ __html: lyrics }} />
+      <div className="origin mid_grey-text">
+        <I18n path="track.lyrics_origin" />
+        <a
+          href={`https://genius.com${lyrics_path}`}
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          {`https://genius.com${lyrics_path}`}
+        </a>
+      </div>
+    </div>
+  );
+}
+
+const Lyrics = ({
+  loading,
+  authorized,
+  track,
+  getTrackLyrics,
+}) => {
+  return (
+    <>
+      <h4>
+        <I18n path="track.lyrics" />
+        {loading && <Loader loading mini />}
+      </h4>
+
+      <LyricsSelector
+        getTrackLyrics={getTrackLyrics}
+        authorized={authorized}
+        track={track}
+      />
+      <LyricsContent
+        track={track}
+        authorized={authorized}
+      />
+    </>
+  );
+}
 
 class Track extends React.Component {
   componentDidMount() {
@@ -36,11 +139,11 @@ class Track extends React.Component {
       uri,
       track,
       coreActions: {
-        loadItem,
+        loadTrack,
       },
     } = this.props;
 
-    loadItem(uri);
+    loadTrack(decodeUri(uri), { full: true, lyrics: true });
 
     if (track) {
       this.setWindowTitle(track);
@@ -54,28 +157,13 @@ class Track extends React.Component {
     const {
       uri,
       track,
-      genius_authorized,
-      lastfm_authorized,
       coreActions: {
-        loadItem,
-      },
-      geniusActions: {
-        findTrackLyrics,
-      },
-      lastfmActions: {
-        getTrack,
+        loadTrack,
       },
     } = this.props;
 
     if (prevUri !== uri) {
-      loadItem(uri);
-    }
-
-    // We have just received our full track or our track artists
-    if ((!prevTrack && track) || (prevTrack && !prevTrack.artists && track.artists)) {
-      this.setWindowTitle(track);
-      if (lastfm_authorized) getTrack(track.uri);
-      if (genius_authorized && !track.lyrics_results) findTrackLyrics(track);
+      loadTrack(decodeUri(uri), { full: true, lyrics: true });
     }
 
     if (!prevTrack && track) this.setWindowTitle(track);
@@ -88,11 +176,13 @@ class Track extends React.Component {
 
     if (track) {
       let artists = '';
-      for (let i = 0; i < track.artists.length; i++) {
-        if (artists != '') {
-          artists += ', ';
+      if (artists) {
+        for (let i = 0; i < track.artists.length; i++) {
+          if (artists != '') {
+            artists += ', ';
+          }
+          artists += track.artists[i].name;
         }
-        artists += track.artists[i].name;
       }
       setWindowTitle(i18n('track.title_window', { name: track.name, artists }));
     } else {
@@ -124,85 +214,6 @@ class Track extends React.Component {
     playURIs([uri], uri);
   }
 
-  renderLyricsSelector = () => {
-    const {
-      track,
-      geniusActions: { getTrackLyrics },
-    } = this.props;
-
-    if (track.lyrics_results === undefined || track.lyrics_results === null) {
-      return null;
-    } if (track.lyrics_results.length <= 0) {
-      return (
-        <div className="field lyrics-selector">
-          <div className="input">
-            <input type="text" disabled="disabled" value="No results" />
-            <div className="description">
-              <I18n path="services.genius.switch_lyrics_result" />
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <div className="field lyrics-selector">
-        <div className="input">
-          <SelectField
-            onChange={(value) => getTrackLyrics(track.uri, value)}
-            options={
-              track.lyrics_results.map((result) => ({
-                value: result.path,
-                label: result.title,
-                defaultValue: (result.path === track.lyrics_path),
-              }))
-            }
-          />
-          <div className="description">
-            <I18n path="services.genius.switch_lyrics_result" />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  renderLyrics = () => {
-    const {
-      load_queue,
-      track: {
-        lyrics,
-        lyrics_path,
-      } = {},
-    } = this.props;
-
-    if (isLoading(load_queue, ['genius_'])) {
-      return (
-        <div className="lyrics">
-          <Loader body loading />
-        </div>
-      );
-    } if (lyrics) {
-      return (
-        <div className="lyrics">
-          <div className="content" dangerouslySetInnerHTML={{ __html: lyrics }} />
-          <div className="origin mid_grey-text">
-            <I18n path="track.lyrics_origin" />
-            <a
-              href={`https://genius.com${lyrics_path}`}
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              {`https://genius.com${lyrics_path}`}
-            </a>
-          </div>
-        </div>
-      );
-    }
-    return (
-      <ErrorMessage type="not-found" title={i18n('errors.no_results')} />
-    );
-  }
-
   render = () => {
     const {
       uri,
@@ -211,13 +222,24 @@ class Track extends React.Component {
       slim_mode,
       uiActions,
       genius_authorized,
+      geniusActions: {
+        getTrackLyrics
+      },
+      loadingLyrics,
     } = this.props;
 
-    if (loading) {
-      return <Loader body loading />;
+    if (!track) {
+      if (loading) {
+        return <Loader body loading />;
+      }
+      return (
+        <ErrorMessage type="not-found" title="Not found">
+          <p>
+            {i18n('errors.uri_not_found', { uri })}
+          </p>
+        </ErrorMessage>
+      );
     }
-
-    if (!track) return null;
 
     return (
       <div className="view track-view content-wrapper">
@@ -243,7 +265,7 @@ class Track extends React.Component {
             {track.album && !track.album.uri ? track.album.name : null}
             {!track.album && <I18n path="track.unknown_album" />}
             <I18n path="common.by" />
-            {track.artists && <LinksSentence items={track.artists} />}
+            {track.artists && <LinksSentence items={track.artists} type="artist" />}
           </h2>
 
           <ul className="details">
@@ -295,58 +317,29 @@ class Track extends React.Component {
           <ContextMenuTrigger onTrigger={this.handleContextMenu} />
         </div>
 
-        {!genius_authorized && (
-          <p className="no-results">
-            <I18n path="track.want_lyrics" />
-            <Link to="/settings/services/genius" scrollTo="#services-menu">
-              <I18n path="settings.title" />
-            </Link>
-            .
-          </p>
-        )}
-        {genius_authorized && this.renderLyricsSelector()}
-        {genius_authorized && this.renderLyrics()}
+        <Lyrics
+          loading={loadingLyrics}
+          authorized={genius_authorized}
+          getTrackLyrics={getTrackLyrics}
+          track={track}
+        />
 
       </div>
     );
   }
 }
 
-/**
- * Rebuild a track URI with some ugly-ass handling of encoding.
- *
- * Basically the ID part of a Mopidy URI needs to be encoded, but the rest of the URI can't be.
- * This means we need to break down the URI (decoded) and then reconstruct with an encoded ID.
- * This is all required because he URI is passed to us *from* a URL which has been encoded for
- * obvious reasons.
- *
- * @param uri String
- * @return String
- * */
-const rebuildUri = (uri) => {
-  const rebuilt_uri = `${uriSource(uri)}:${uriType(uri)}:`;
-
-  // Escape unreserved characters (RFC 3986)
-  // https://stackoverflow.com/questions/18251399/why-doesnt-encodeuricomponent-encode-single-quotes-apostrophes
-  let id = getFromUri('trackid', uri);
-  id = encodeURIComponent(id).replace(/[!'()*]/g, escape);
-
-  // Reinstate slashes for the Mopidy-Local structure
-  id = id.replace(/%2F/g, '/');
-
-  return rebuilt_uri + id;
-};
-
 const mapStateToProps = (state, ownProps) => {
-  let uri = decodeURIComponent(ownProps.match.params.uri);
-  uri = rebuildUri(uri);
-  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`]);
+  const uri = decodeUri(ownProps.match.params.uri);
+  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`, '^((?!genius).)*$', '^((?!contains).)*$']);
+  const loadingLyricsSelector = makeLoadingSelector([`^genius_(.*)lyrics_${uri}$`]);
   const trackSelector = makeItemSelector(uri);
 
   return {
     uri,
     slim_mode: state.ui.slim_mode,
     loading: loadingSelector(state),
+    loadingLyrics: loadingLyricsSelector(state),
     track: trackSelector(state),
     spotify_library_albums: state.spotify.library_albums,
     local_library_albums: state.mopidy.library_albums,

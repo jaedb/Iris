@@ -1,8 +1,7 @@
-
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 const nice_number = (value) => {
-  let formatted = parseInt(value);
+  let formatted = parseInt(value, 10);
 
   // > 1 million
   if (formatted > 1000000) {

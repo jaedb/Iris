@@ -10,6 +10,8 @@ import * as spotifyActions from '../../services/spotify/actions';
 import { uriSource } from '../../util/helpers';
 import { i18n, I18n } from '../../locale';
 import Button from '../../components/Button';
+import { decodeUri } from '../../util/format';
+import { makeItemSelector, makeLoadingSelector } from '../../util/selectors';
 
 class EditPlaylist extends React.Component {
   constructor(props) {
@@ -30,13 +32,13 @@ class EditPlaylist extends React.Component {
       uri,
       playlist,
       coreActions: {
-        loadItem,
+        loadPlaylist,
       },
       uiActions: {
         setWindowTitle,
       },
     } = this.props;
-    
+
     setWindowTitle(i18n('modal.edit_playlist.title'));
 
     if (playlist) {
@@ -48,7 +50,7 @@ class EditPlaylist extends React.Component {
         collaborative: (playlist.collaborative === true),
       });
     } else {
-      loadItem(uri);
+      loadPlaylist(uri);
     }
   }
 
@@ -142,7 +144,7 @@ class EditPlaylist extends React.Component {
       image,
     } = this.state;
 
-    switch (uriSource(this.props.uri)) {
+    switch (uriSource(uri)) {
       case 'spotify':
         return (
           <div>
@@ -269,20 +271,14 @@ class EditPlaylist extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  // Decode the URI, and then re-encode selected characters
-  // This is needed as Mopidy encodes *some* characters in playlist URIs (but not other characters)
-  // We need to retain ":" because this a reserved URI separator
-  let uri = decodeURIComponent(ownProps.match.params.uri);
-  uri = uri.replace(/\s/g, '%20');	// space
-  uri = uri.replace(/\[/g, '%5B');	// [
-  uri = uri.replace(/\]/g, '%5D');	// ]
-  uri = uri.replace(/\(/g, '%28');	// (
-  uri = uri.replace(/\)/g, '%29');	// )
-  uri = uri.replace(/\#/g, '%23');	// #
+  const uri = decodeUri(ownProps.match.params.uri);
+  const itemSelector = makeItemSelector(uri);
+  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`, '^((?!contains).)*$', '^((?!tracks).)*$']);
 
   return {
     uri,
-    playlist: (state.core.items[uri] !== undefined ? state.core.items[uri] : null),
+    playlist: itemSelector(state),
+    loading: loadingSelector(state),
   };
 };
 

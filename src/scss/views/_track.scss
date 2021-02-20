@@ -1,4 +1,3 @@
-
 main .track-view {
 	padding-left: 30%;
 	position: relative;
@@ -53,7 +52,7 @@ main .track-view {
 	}
 
 	@include responsive($bp_medium){
-		padding-top: 0;
+		padding-top: 10px;
 		padding-left: 10px;
 
 		.thumbnail-wrapper {

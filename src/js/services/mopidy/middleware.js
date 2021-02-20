@@ -3,7 +3,7 @@ import ReactGA from 'react-ga';
 import Mopidy from 'mopidy';
 import { sha256 } from 'js-sha256';
 import { sampleSize, compact, chunk } from 'lodash';
-import { i18n } from '../../locale';
+import { i18n, I18n } from '../../locale';
 import {
   generateGuid,
   uriSource,
@@ -31,6 +31,7 @@ import {
   sortItems,
   indexToArray,
 } from '../../util/arrays';
+import { consoleSandbox } from '@sentry/utils';
 
 const mopidyActions = require('./actions.js');
 const coreActions = require('../core/actions.js');
@@ -41,6 +42,29 @@ const googleActions = require('../google/actions.js');
 const lastfmActions = require('../lastfm/actions.js');
 const geniusActions = require('../genius/actions.js');
 const discogsActions = require('../discogs/actions.js');
+
+/**
+ * Fetch the method of our Mopidy API that is being called, by string
+ *
+ * @param {String} call 
+ * @param {Object} socket 
+ */
+const getController = (call, socket) => {
+  const callParts = call.split('.');
+  const model = callParts[0];
+  const method = callParts[1];
+
+  let controller = null;
+  if (socket && socket[model]) {
+    if (method in socket[model] && socket[model][method]) {
+      controller = socket[model][method];
+    } else {
+      controller = socket[model];
+    }
+  }
+
+  return controller;
+};
 
 const MopidyMiddleware = (function () {
   // container for the actual Mopidy socket
@@ -183,69 +207,56 @@ const MopidyMiddleware = (function () {
    * @param string value (optional) = value of the property to pass
    * @return promise
    * */
-  const request = (store, call, value = {}) => {
-    return new Promise((resolve, reject) => {
-      const loader_key = generateGuid();
-      store.dispatch(uiActions.startLoading(loader_key, `mopidy_${call}`));
+  const request = (store, call, value = {}) => new Promise((resolve, reject) => {
+    const loaderId = generateGuid();
+    const loaderKey = `mopidy_${call}`;
+    store.dispatch(uiActions.startLoading(loaderId, loaderKey));
 
-      const doRequest = () => {
-        const callParts = call.split('.');
-        const model = callParts[0];
-        const method = callParts[1];
+    const doRequest = () => {
+      const controller = getController(call, socket);
 
-        let controller = null;
-        if (socket && socket[model]) {
-          if (method in socket[model] && socket[model][method]) {
-            controller = socket[model][method];
-          } else {
-            controller = socket[model];
-          }
-        }
+      if (controller) {
+        const timeout = setTimeout(
+          () => {
+            store.dispatch(uiActions.stopLoading(loaderId));
+            reject(new Error('Request timed out'));
+          },
+          30000,
+        );
 
-        if (controller) {
-          const timeout = setTimeout(
-            () => {
-              store.dispatch(uiActions.stopLoading(loader_key));
-              reject(new Error('Request timed out'));
+        controller(value)
+          .then(
+            (response) => {
+              clearTimeout(timeout);
+              store.dispatch(uiActions.stopLoading(loaderId));
+              resolve(response);
             },
-            30000,
+            (error) => {
+              clearTimeout(timeout);
+              store.dispatch(uiActions.stopLoading(loaderId));
+              reject(error);
+            },
           );
-
-          controller(value)
-            .then(
-              (response) => {
-                clearTimeout(timeout);
-                store.dispatch(uiActions.stopLoading(loader_key));
-                resolve(response);
-              },
-              (error) => {
-                clearTimeout(timeout);
-                store.dispatch(uiActions.stopLoading(loader_key));
-                reject(error);
-              },
-            );
-        } else {
-          // Controller (model.method) doesn't exist, or connection not established
-          store.dispatch(uiActions.stopLoading(loader_key));
-          console.warn(
-            'Mopidy request aborted. Either Mopidy is not connected or the request method is invalid. Check the request and your server settings.',
-            { call, value },
-          );
-        }
-      };
-
-      // Give a 5-second leeway for allowing Mopidy to connect, if it isn't already connected
-      if (socket) {
-        doRequest();
       } else {
-        console.info('Mopidy not yet connected, waiting 2 seconds');
-        setTimeout(
-          () => doRequest(),
-          2000,
+        store.dispatch(uiActions.stopLoading(loaderId));
+        console.warn(
+          'Mopidy request aborted. Either Mopidy is not connected or the request method is invalid. Check the request and your server settings.',
+          { call, value, socket, controller },
         );
       }
-    });
-  };
+    };
+
+    // Give a 5-second leeway for allowing Mopidy to connect, if it isn't already connected
+    if (socket && store.getState().mopidy.connected) {
+      doRequest();
+    } else {
+      console.info('Mopidy not yet connected, waiting 2 seconds');
+      setTimeout(
+        () => doRequest(),
+        2000,
+      );
+    }
+  });
 
   /**
    * Process our search queries queue. We process one item in the queue and then
@@ -814,7 +825,7 @@ const MopidyMiddleware = (function () {
           break;
         }
         store.dispatch(
-          coreActions.loadItem(
+          coreActions.loadPlaylist(
             action.uri,
             { full: true, callbackAction: { name: 'play', shuffle: action.shuffle } },
           ),
@@ -835,7 +846,7 @@ const MopidyMiddleware = (function () {
           break;
         }
         store.dispatch(
-          coreActions.loadItem(
+          coreActions.loadPlaylist(
             action.uri,
             false,
             {
@@ -1158,18 +1169,31 @@ const MopidyMiddleware = (function () {
         break;
       }
 
+      case 'MOPIDY_GET_URIS': {
+        const { uris } = action;
+        request(store, 'library.lookup', { uris })
+          .then((response) => {
+            if (!response) return;
+
+            indexToArray(response).forEach((item) => {
+              store.dispatch(coreActions[`load${item.___model__}`](item.uri));
+            });
+          });
+        break;
+      }
+
       case 'MOPIDY_GET_PLAYLIST':
         request(store, 'playlists.lookup', { uri: action.uri })
           .then((response) => {
             if (!response) return;
 
-            const playlist = {
-              ...formatPlaylist(response),
-              uri: response.uri,
+            const playlist = formatPlaylist({
+              images: {}, // Images not yet supported; treat playlist as being fully-loaded
+              ...response,
               type: 'playlist',
               provider: 'mopidy',
               can_edit: true,
-            };
+            });
 
             if (response.tracks) {
               request(store, 'library.lookup', { uris: arrayOf('uri', response.tracks) })
@@ -1184,6 +1208,8 @@ const MopidyMiddleware = (function () {
                   playlist.tracks = injectSortId(formatTracks(tracks));
                   store.dispatch(coreActions.itemLoaded(playlist));
                 });
+            } else {
+              store.dispatch(coreActions.itemLoaded(playlist));
             }
 
           });
@@ -1192,6 +1218,12 @@ const MopidyMiddleware = (function () {
       case 'MOPIDY_ADD_PLAYLIST_TRACKS':
         request(store, 'playlists.lookup', { uri: action.key })
           .then((response) => {
+            if (!response) {
+              store.dispatch(coreActions.handleException(
+                i18n('errors.uri_not_found', { uri: action.key }),
+              ));
+              return;
+            }
             const tracks = action.tracks_uris.map((uri) => ({ __model__: 'Track', uri }));
             const playlist = { ...response };
             if (playlist.tracks) {
@@ -1315,10 +1347,13 @@ const MopidyMiddleware = (function () {
       case 'MOPIDY_CREATE_PLAYLIST':
         request(store, 'playlists.create', { name: action.name, uri_scheme: action.scheme })
           .then((response) => {
-            const playlist = {
-              ...formatPlaylist(response),
+            const playlist = formatPlaylist({
+              ...response,
               ...action,
-            };
+              can_edit: true,
+              type: 'playlist',
+              provider: 'mopidy',
+            });
             store.dispatch(uiActions.createNotification({
               content: i18n('actions.created', { name: i18n('playlist.title') }),
             }));
@@ -1469,7 +1504,7 @@ const MopidyMiddleware = (function () {
             track,
             uri: track.uri,
           });
-          store.dispatch(coreActions.loadItem(track.uri, { full: true }));
+          store.dispatch(coreActions.loadTrack(track.uri, { full: true }));
         }
         break;
       }
@@ -1489,7 +1524,7 @@ const MopidyMiddleware = (function () {
                     uri: track.uri,
                   });
 
-                  store.dispatch(coreActions.loadItem(track.uri));
+                  store.dispatch(coreActions.loadTrack(track.uri));
                 }
               }
             },
@@ -1503,8 +1538,8 @@ const MopidyMiddleware = (function () {
         break;
 
       case 'MOPIDY_GET_TRACKS': {
-        const { options: { full } } = action;
-        request(store, 'library.lookup', { uris: action.uris })
+        const { uris, options: { full, lyrics } } = action;
+        request(store, 'library.lookup', { uris })
           .then(
             (_response) => {
               if (!_response) return;
@@ -1515,16 +1550,16 @@ const MopidyMiddleware = (function () {
               store.dispatch(coreActions.itemsLoaded(tracks));
               store.dispatch(mopidyActions.getImages(arrayOf('uri', tracks)));
 
-              if (full) {
-                tracks.forEach((track) => {
+              tracks.forEach((track) => {
+                if (full) {
                   if (store.getState().lastfm.authorization) {
                     store.dispatch(lastfmActions.getTrack(track.uri));
                   }
-                  if (store.getState().genius.authorization) {
-                    store.dispatch(geniusActions.findTrackLyrics(track.uri));
-                  }
-                });
-              }
+                }
+                if (lyrics && store.getState().genius.authorization) {
+                  store.dispatch(geniusActions.findTrackLyrics(track.uri));
+                }
+              });
             },
             (error) => {
               store.dispatch(coreActions.handleException(
@@ -1607,17 +1642,87 @@ const MopidyMiddleware = (function () {
         break;
       }
 
-
-      /**
-           * =============================================================== LOCAL ================
-           * ======================================================================================
-           * */
-
       case 'MOPIDY_GET_DIRECTORY':
-        store.dispatch({
-          type: 'MOPIDY_DIRECTORY_FLUSH',
-        });
         const uri = action.uri ? decodeURIComponent(action.uri) : null;
+        store.dispatch({
+          type: 'MOPIDY_DIRECTORY_LOADING',
+          uri,
+        });
+
+        const processResults = (results) => {
+          const tracks = [];
+          const subdirectories = [];
+          const trackUrisToLoad = [];
+          const subdirectoryImagesToLoad = [];
+
+          results.forEach((item) => {
+            if (item.__model__ === 'Track') {
+              tracks.push(formatTrack(item));
+            } else if (item.__model__ === 'Ref' && item.type === 'track') {
+              tracks.push(formatTrack({ ...item, loading: true }));
+              trackUrisToLoad.push(item.uri);
+            } else if (item.__model__ === 'Ref' && item.type === 'album') {
+              subdirectories.push(formatAlbum({ ...item, loading: true }));
+              subdirectoryImagesToLoad.push(item.uri);
+            } else {
+              subdirectories.push(item);
+            }
+          });
+
+          store.dispatch({
+            type: 'MOPIDY_DIRECTORY_LOADED',
+            directory: {
+              uri,
+              tracks,
+              subdirectories,
+            },
+          });
+
+          if (trackUrisToLoad.length) {
+            console.info(`Loading ${trackUrisToLoad.length} track URIs`);
+            request(store, 'library.lookup', { uris: trackUrisToLoad })
+              .then((response) => {
+                const fullTrackObjects = Object.values(response).map(
+                  (t) => (t.length > 0 ? formatTrack(t[0]) : undefined),
+                );
+
+                store.dispatch({
+                  type: 'MOPIDY_DIRECTORY_LOADED',
+                  directory: {
+                    uri,
+                    tracks: fullTrackObjects.filter((t) => t instanceof Object),
+                  },
+                });
+              });
+          };
+
+          if (subdirectoryImagesToLoad.length) {
+            request(store, 'library.getImages', { uris: subdirectoryImagesToLoad })
+              .then((response) => {
+                const subdirectoriesWithImages = subdirectories.map((subdir) => {
+                  let images = response[subdir.uri] || undefined;
+                  if (images) {
+                    images = formatImages(digestMopidyImages(store.getState().mopidy, images));
+                  }
+                  return {
+                    ...subdir,
+                    images,
+                  };
+                });
+
+                store.dispatch({
+                  type: 'MOPIDY_DIRECTORY_LOADED',
+                  directory: {
+                    uri,
+                    subdirectories: subdirectoriesWithImages,
+                  },
+                });
+              });
+          }
+        };
+
+        const getBrowse = () => request(store, 'library.browse', { uri })
+          .then((response) => processResults(response));
 
         if (uri) {
           request(store, 'library.lookup', { uris: [uri] })
@@ -1626,94 +1731,17 @@ const MopidyMiddleware = (function () {
                 [uri]: results = [],
               } = response;
 
-              if (!results.length) return;
-
-              let result = results[0];
-              if (result.album) {
-                result = {
-                  ...result,
-                  name: result.album.name,
-                };
-              }
-
-              store.dispatch({
-                type: 'MOPIDY_DIRECTORY_LOADED',
-                directory: {
-                  ...formatSimpleObject(result),
-                },
-              });
-            });
-        }
-
-        request(store, 'library.browse', { uri })
-          .then((response) => {
-            const tracks_uris = [];
-            const tracks = [];
-            const subdirectories = [];
-
-            for (const item of response) {
-              if (item.type === 'track') {
-                tracks_uris.push(item.uri);
+              // Not all endpoints give us tracks/subdirectories to library.lookup
+              if (!results.length || uri.startsWith('file:')) {
+                console.info(`No 'library.lookup' results for ${uri}, trying 'library.browse'`);
+                getBrowse();
               } else {
-                subdirectories.push(item);
+                processResults(results);
               }
-            }
-
-            if (subdirectories.length > 0) {
-              request(store, 'library.getImages', { uris: arrayOf('uri', subdirectories) })
-                .then((response) => {
-
-                  const subdirectories_with_images = subdirectories.map((subdir) => {
-                    let images = response[subdir.uri] || undefined;
-                    if (images) {
-                      images = formatImages(digestMopidyImages(store.getState().mopidy, images));
-                    }
-                    return {
-                      ...subdir,
-                      images,
-                    };
-                  });
-
-                  store.dispatch({
-                    type: 'MOPIDY_DIRECTORY_LOADED',
-                    directory: {
-                      subdirectories: subdirectories_with_images,
-                    },
-                  });
-                });
-            }
-
-            if (tracks_uris.length > 0) {
-              request(store, 'library.lookup', { uris: tracks_uris })
-                .then((response) => {
-                  if (response.length <= 0) {
-                    return;
-                  }
-
-                  for (const uri in response) {
-                    if (response.hasOwnProperty(uri) && response[uri].length > 0) {
-                      tracks.push(formatTrack(response[uri][0]));
-                    }
-                  }
-
-                  store.dispatch({
-                    type: 'MOPIDY_DIRECTORY_LOADED',
-                    directory: {
-                      tracks,
-                      subdirectories,
-                    },
-                  });
-                });
-            } else {
-              store.dispatch({
-                type: 'MOPIDY_DIRECTORY_LOADED',
-                directory: {
-                  tracks,
-                  subdirectories,
-                },
-              });
-            }
-          });
+            });
+        } else {
+          getBrowse();
+        }
         break;
 
       case 'MOPIDY_DIRECTORY':

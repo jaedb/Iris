@@ -232,7 +232,7 @@ export default class Track extends React.Component {
 
             case 'browse':
               var link = (
-                <URILink uri={added_from}>
+                <URILink type={type} uri={added_from}>
                   <I18n path="library.browse.title" />
                 </URILink>
               );
@@ -240,7 +240,7 @@ export default class Track extends React.Component {
 
             case 'search':
               var link = (
-                <URILink uri={added_from}>
+                <URILink type={type} uri={added_from}>
                   <I18n path="search.title" />
                 </URILink>
               );
@@ -312,7 +312,7 @@ export default class Track extends React.Component {
     if (track.artists) {
       track_details.push(
         <li className="details__item details__item--artists" key="artists">
-          {track.artists ? <LinksSentence items={track.artists} /> : '-'}
+          {track.artists ? <LinksSentence items={track.artists} type="artist" /> : '-'}
         </li>,
       );
     } else if (track.playing && stream_title) {
@@ -358,6 +358,7 @@ export default class Track extends React.Component {
     if (can_sort) className += ' list__item--can-sort';
     if (track.type !== undefined) className += ` list__item--${track.type}`;
     if (track.playing) className += ' list__item--playing';
+    if (track.loading) className += ' list__item--loading';
     if (hover) className += ' list__item--hover';
     if (track_middle_column) className += ' list__item--has-middle-column';
     if (track_details.length > 0) className += ' list__item--has-details';

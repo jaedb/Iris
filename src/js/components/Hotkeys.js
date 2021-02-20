@@ -28,7 +28,6 @@ class Hotkeys extends React.Component {
       mute,
       play_time_position,
       history,
-      modal,
       dragging,
       allow_reporting,
     } = this.props;
@@ -58,6 +57,13 @@ class Hotkeys extends React.Component {
     }
 
     switch (key) {
+      case 'i': {
+        history.push('/hotkeys');
+        e.preventDefault();
+        if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Hotkey info' });
+        break;
+      }
+
       case ' ':
       case 'p': // Super-useful once you get used to it. This negates the issue where interactive elements
         // are in focus (ie slider) and <space> is reserved for that field's interactivity.
@@ -73,15 +79,17 @@ class Hotkeys extends React.Component {
         e.preventDefault();
         break;
 
-      case 's': // Stop
+      // Stop
+      case 's': {
         mopidyActions.stop();
         uiActions.createNotification({ content: 'stop', type: 'shortcut' });
         e.preventDefault();
         if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Stop' });
         break;
-
-      case 'b': // Seek backwards 30 sec
-        var new_position = play_time_position - 30000;
+      }
+      // Seek backwards 30 sec
+      case 'r': {
+        let new_position = play_time_position - 30000;
         if (new_position < 0) {
           new_position = 0;
         }
@@ -90,8 +98,9 @@ class Hotkeys extends React.Component {
         e.preventDefault();
         if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Rewind' });
         break;
-
-      case 'f': // Seek forwards 30 sec
+      }
+      // Seek forwards 30 sec
+      case 'f':
         mopidyActions.setTimePosition(play_time_position + 30000);
         uiActions.createNotification({ content: 'fast_forward', type: 'shortcut' });
         e.preventDefault();
@@ -200,11 +209,11 @@ class Hotkeys extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
-  volume: (state.mopidy.volume ? state.mopidy.volume : false),
+const mapStateToProps = (state) => ({
+  volume: state.mopidy.volume,
   mute: state.mopidy.mute,
   play_state: state.mopidy.play_state,
-  play_time_position: parseInt(state.mopidy.time_position),
+  play_time_position: parseInt(state.mopidy.time_position, 10),
   dragging: state.ui.dragger && state.ui.dragger.dragging,
   allow_reporting: state.ui.allow_reporting,
 });

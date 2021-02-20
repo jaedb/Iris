@@ -21,13 +21,7 @@ class List extends React.Component {
     const {
       rows,
       className,
-      lastfmActions,
-      discogsActions,
-      history,
-      link_prefix,
-      thumbnail,
-      details,
-      nocontext,
+      ...rest
     } = this.props;
 
     if (!rows) return null;
@@ -39,14 +33,8 @@ class List extends React.Component {
             <ListItem
               key={index}
               item={item}
-              lastfmActions={lastfmActions}
-              discogsActions={discogsActions}
-              history={history}
-              link_prefix={link_prefix}
               handleContextMenu={(e) => this.handleContextMenu(e, item)}
-              thumbnail={thumbnail}
-              details={details}
-              nocontext={nocontext}
+              {...rest}
             />
 					))
 				}

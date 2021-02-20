@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -8,6 +7,7 @@ import List from '../../components/List';
 import TrackList from '../../components/TrackList';
 import GridItem from '../../components/GridItem';
 import DropdownField from '../../components/Fields/DropdownField';
+import FilterField from '../../components/Fields/FilterField';
 import Icon from '../../components/Icon';
 import URILink from '../../components/URILink';
 import ErrorBoundary from '../../components/ErrorBoundary';
@@ -15,12 +15,58 @@ import LazyLoadListener from '../../components/LazyLoadListener';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
-import {
-  isLoading,
-} from '../../util/helpers';
-import { arrayOf, sortItems } from '../../util/arrays';
+import { arrayOf, sortItems, applyFilter } from '../../util/arrays';
 import { i18n, I18n } from '../../locale';
 import Button from '../../components/Button';
+import { encodeUri, decodeUri } from '../../util/format';
+import { makeLoadingSelector } from '../../util/selectors';
+import ErrorMessage from '../../components/ErrorMessage';
+
+const Breadcrumbs = ({ uri }) => {
+  let parent_uri = uri || null;
+  if (!parent_uri.startsWith('file://')) return null;
+
+  parent_uri = parent_uri.substring(0, parent_uri.lastIndexOf('/')).replace('file://', '');
+
+  return (
+    <h4>
+      {decodeURI(parent_uri)}
+    </h4>
+  );
+};
+
+const Subdirectories = ({ items, view }) => {
+  if (!items.length) return null;
+
+  const link = (item) => `/library/browse/${encodeURIComponent(item.name)}/${encodeUri(item.uri)}`;
+
+  if (view === 'list') {
+    return (
+      <List
+        rows={items}
+        className="library-local-directory-list"
+        link={link}
+        nocontext
+      />
+    );
+  }
+
+  return (
+    <div className="grid category-grid">
+      {
+        items.map((item) => (
+          <GridItem
+            key={item.uri}
+            type="directory"
+            link={link(item)}
+            item={item}
+            nocontext
+          />
+        ))
+      }
+    </div>
+  );
+};
 
 class LibraryBrowseDirectory extends React.Component {
   constructor(props) {
@@ -34,15 +80,20 @@ class LibraryBrowseDirectory extends React.Component {
   }
 
   componentDidMount() {
-    // Restore any limit defined in our location state
-    const state = (this.props.location.state ? this.props.location.state : {});
-    if (state.limit) {
-      this.setState({
-        limit: state.limit,
-      });
-    }
+    const {
+      location: {
+        state: {
+          limit,
+        } = {},
+      },
+      uiActions: {
+        setWindowTitle,
+      },
+    } = this.props;
 
-    this.props.uiActions.setWindowTitle(i18n('library.browse_directory.title'));
+    if (limit) this.setState({ limit });
+
+    setWindowTitle(i18n('library.browse_directory.title'));
     this.loadDirectory();
   }
 
@@ -113,91 +164,39 @@ class LibraryBrowseDirectory extends React.Component {
     hideContextMenu();
   }
 
-  renderBreadcrumbs = () => {
-    const { uri } = this.props;
-    let parent_uri = uri || null;
-
-    if (parent_uri.startsWith('file://')) {
-      parent_uri = parent_uri.substring(0, parent_uri.lastIndexOf('/'));
-
-      return (
-        <h4 className="breadcrumbs">
-          <Icon type="fontawesome" name="angle-left" />
-          <URILink type="browse" uri={parent_uri}>
-            {decodeURI(parent_uri)}
-          </URILink>
-        </h4>
-      );
-    }
-
-    return null;
-  }
-
-  renderSubdirectories = (subdirectories) => {
-    const { view } = this.props;
-
-    if (view === 'list') {
-      return (
-        <List
-          rows={subdirectories}
-          className="library-local-directory-list"
-          link_prefix="/library/browse/"
-          nocontext
-        />
-      );
-    }
-    return (
-      <div className="grid category-grid">
-        {
-          subdirectories.map((subdirectory) => (
-            <GridItem
-              key={subdirectory.uri}
-              type="directory"
-              link={`/library/browse/${encodeURIComponent(subdirectory.uri)}`}
-              item={subdirectory}
-              nocontext
-            />
-          ))
-        }
-      </div>
-    );
-  }
-
   render = () => {
     const {
       uri,
       directory,
-      load_queue,
       uiActions,
+      loading,
       view,
+      name,
     } = this.props;
     const {
+      filter,
+      per_page,
       limit,
     } = this.state;
 
-    let title = i18n('library.browse_directory.title');
-
-    if (!directory || isLoading(load_queue, ['mopidy_browse'])) {
+    if (!directory || (!directory.subdirectories && !directory.tracks)) {
+      if (loading) {
+        return <Loader body loading />;
+      }
       return (
-        <div className="view library-local-view">
-          <Header icon="music" title={title} uiActions={uiActions} />
-          <Loader body loading />
-        </div>
+        <ErrorMessage type="not-found" title="Not found">
+          <p>
+            <I18n path="errors.uri_not_found" uri={uri} />
+          </p>
+        </ErrorMessage>
       );
     }
 
-    if (directory.name) {
-      title = directory.name;
-    } else {
-      const uri_exploded = uri.split(':');
-      if (uri_exploded.length > 0) {
-        title = uri_exploded[0];
-        title = title.charAt(0).toUpperCase() + title.slice(1);
-      }
-    };
-
     let subdirectories = (directory.subdirectories && directory.subdirectories.length > 0 ? directory.subdirectories : null);
     subdirectories = sortItems(subdirectories, 'name');
+    if (filter && filter !== '') {
+      subdirectories = applyFilter('name', filter, subdirectories);
+    }
 
     const total_items = (directory.tracks ? directory.tracks.length : 0) + (subdirectories ? subdirectories.length : 0);
     subdirectories = subdirectories.slice(0, limit);
@@ -207,6 +206,9 @@ class LibraryBrowseDirectory extends React.Component {
     if (limit_remaining > 0 && directory.tracks && directory.tracks.length) {
       all_tracks = directory.tracks;
       all_tracks = sortItems(all_tracks, 'name');
+      if (filter && filter !== '') {
+        tracks = applyFilter('name', filter, tracks);
+      }
       tracks = all_tracks.slice(0, limit_remaining);
     }
 
@@ -223,6 +225,11 @@ class LibraryBrowseDirectory extends React.Component {
 
     const options = (
       <>
+        <FilterField
+          initialValue={filter}
+          handleChange={(value) => this.setState({ filter: value, limit: per_page })}
+          onSubmit={() => uiActions.hideContextMenu()}
+        />
         <DropdownField
           icon="visibility"
           name="View"
@@ -257,14 +264,15 @@ class LibraryBrowseDirectory extends React.Component {
       <div className="view library-local-view">
         <Header options={options} uiActions={uiActions}>
           <Icon name="folder" type="material" />
-          {title}
+          <div className="header__text">
+            {name || i18n('library.browse_directory.title')}
+            <Breadcrumbs uri={uri} />
+          </div>
         </Header>
         <section className="content-wrapper">
           <ErrorBoundary>
 
-            {this.renderBreadcrumbs()}
-
-            {subdirectories ? this.renderSubdirectories(subdirectories) : null}
+            <Subdirectories items={subdirectories} view={view} />
 
             {tracks && (
               <TrackList
@@ -288,23 +296,27 @@ class LibraryBrowseDirectory extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  // Decode the URI, and then re-encode selected characters
-  // This is needed as Mopidy encodes *some* characters in URIs (but not other characters)
-  // We need to retain ":" because this a reserved URI separator
-  let uri = decodeURIComponent(ownProps.match.params.uri);
-  uri = uri.replace(/\s/g, '%20');	// space
-  uri = uri.replace(/&/g, '%26');		// &
-  uri = uri.replace(/\[/g, '%5B');	// [
-  uri = uri.replace(/\]/g, '%5D');	// ]
-  uri = uri.replace(/\(/g, '%28');	// (
-  uri = uri.replace(/\)/g, '%29');	// )
-  uri = uri.replace(/\#/g, '%23');	// #
+  const {
+    mopidy: {
+      directory: _directory = {},
+    },
+    ui: {
+      library_directory_view: view,
+    },
+  } = state;
+  const uri = decodeUri(ownProps.match.params.uri);
+  const uriMatcher = [uri, decodeURIComponent(uri)]; // Lenient matching due to encoding diffs
+  const directory = _directory && uriMatcher.includes(_directory.uri)
+    ? _directory
+    : undefined;
+  const loadingSelector = makeLoadingSelector(['mopidy_library.(browse|lookup)']);
 
   return {
     uri,
-    load_queue: state.ui.load_queue,
-    directory: state.mopidy.directory,
-    view: state.ui.library_directory_view,
+    name: decodeURIComponent(ownProps.match.params.name),
+    loading: loadingSelector(state),
+    directory,
+    view,
   };
 };
 

@@ -16,7 +16,7 @@ input[type="file"],
 select {
   padding: 10px 14px;
   background: rgba(128, 128, 128, 0.05);
-  color: colour(white);
+  color: colour('white');
   font-family: "Overpass", Helvetica, Arial, sans-serif;
   font-size: 14px;
   border-radius: 3px;
@@ -25,7 +25,7 @@ select {
 
   &:focus,
   &:active {
-    border-color: colour(blue);
+    border-color: colour('blue');
   }
 
   &:disabled {
@@ -40,7 +40,7 @@ select {
   }
 
   @include theme('light') {
-    color: colour(darkest_grey);
+    color: colour('darkest_grey');
     background: rgba(255, 255, 255, 0.75);
   }
 
@@ -81,7 +81,7 @@ input[type="radio"] {
     background: rgba(128, 128, 128, 0.05);
 
     @include theme('light') {
-      background: colour(white);
+      background: colour('white');
     }
   }
 
@@ -93,7 +93,7 @@ input[type="radio"] {
     border-radius: 50%;
     position: absolute;
     left: 0.55rem;
-    background: colour(white);
+    background: colour('white');
   }
 
   &:focus + .label:before,
@@ -103,7 +103,7 @@ input[type="radio"] {
 
   @include theme('light') {
     &:checked + .label:after {
-      background: colour(darkest_grey);
+      background: colour('darkest_grey');
     }
   }
 }
@@ -114,7 +114,7 @@ input[type="checkbox"] {
     font-size: 1.2rem;
     line-height: 1.6rem;
     content: "";
-    color: colour(white);
+    color: colour('white');
     display: inline-flex;
     padding: 0 0.2rem;
     height: calc(1.6rem - 2px);
@@ -126,7 +126,7 @@ input[type="checkbox"] {
     background: rgba(128, 128, 128, 0.05);
 
     @include theme('light') {
-      background: colour(white);
+      background: colour('white');
     }
   }
 
@@ -136,12 +136,12 @@ input[type="checkbox"] {
 
   &:focus + .label:before,
   &:active + .label:before {
-    background: colour(mid_grey);
+    background: colour('mid_grey');
   }
 
   @include theme('light') {
     & + .label:before {
-      color: colour(darkest_grey);
+      color: colour('darkest_grey');
     }
   }
 }
@@ -151,8 +151,8 @@ select {
   -webkit-appearance: none;
 
   option {
-    background: colour(white);
-    color: colour(darkest_grey);
+    background: colour('white');
+    color: colour('darkest_grey');
     max-width: 100%;
     box-sizing: border-box;
   }
@@ -171,7 +171,7 @@ select {
   cursor: pointer;
 
   &.destructive {
-    color: colour(red);
+    color: colour('red');
   }
 }
 
@@ -201,7 +201,7 @@ select {
   border: 2px solid transparent;
 
   @include theme('dark') {
-    color: colour(white);
+    color: colour('white');
   }
 
   .icon {
@@ -216,27 +216,29 @@ select {
 
   @include theme('light') {
     &--default {
-      border-color: colour(darkest_grey);
+      border-color: colour('darkest_grey');
 
       &:active {
         background: rgba(128, 128, 128, 0.2);
       }
 
       &:hover {
-        box-shadow: 0 0 10px rgba(colour(darkest_grey), 0.3);
+        box-shadow: 0 0 10px rgba(colour('darkest_grey'), 0.3);
       }
     }
-}
+  }
 
-  @include theme('dark') &--default {
-    border-color: colour(white);
+  @include theme('dark') {
+    &--default {
+      border-color: colour('white');
 
-    &:active {
-      background: rgba(128, 128, 128, 0.2);
-    }
+      &:active {
+        background: rgba(128, 128, 128, 0.2);
+      }
 
-    &:hover {
-      box-shadow: 0 0 10px rgba(colour(white), 0.5);
+      &:hover {
+        box-shadow: 0 0 10px rgba(colour('white'), 0.5);
+      }
     }
   }
 
@@ -260,7 +262,7 @@ select {
     box-shadow: none !important;
 
     &:hover {
-      color: colour(blue);
+      color: colour('blue');
     }
 
     .icon {
@@ -274,17 +276,17 @@ select {
   }
 
   &--primary {
-    background: colour(turquoise);
-    border-color: colour(turquoise);
-    color: colour(white);
+    background: colour('turquoise');
+    border-color: colour('turquoise');
+    color: colour('white');
 
     &:active {
-      background: darken(colour(turquoise), 10%);
-      border-color: darken(colour(turquoise), 10%);
+      background: darken(colour('turquoise'), 10%);
+      border-color: darken(colour('turquoise'), 10%);
     }
 
     &:hover {
-      box-shadow: 0 0 10px rgba(colour(turquoise), 0.5);
+      box-shadow: 0 0 10px rgba(colour('turquoise'), 0.5);
     }
   }
 
@@ -292,7 +294,7 @@ select {
     border-color: rgba(0, 0, 0, 0.8);
 
     &:hover {
-      box-shadow: 0 0 10px rgba(colour(black), 0.3);
+      box-shadow: 0 0 10px rgba(colour('black'), 0.3);
     }
   }
 
@@ -300,56 +302,56 @@ select {
     border-color: rgba(255, 255, 255, 0.8);
 
     &:hover {
-      box-shadow: 0 0 10px rgba(colour(white), 0.3);
+      box-shadow: 0 0 10px rgba(colour('white'), 0.3);
     }
   }
 
   &--secondary {
-    background: colour(blue);
-    color: colour(white);
+    background: colour('blue');
+    color: colour('white');
 
     &:active {
-      background: darken(colour(blue), 10%);
+      background: darken(colour('blue'), 10%);
     }
 
     &:hover {
-      box-shadow: 0 0 10px rgba(colour(blue), 0.5);
+      box-shadow: 0 0 10px rgba(colour('blue'), 0.5);
     }
   }
 
   &--white {
-    background: colour(white);
-    color: colour(black);
+    background: colour('white');
+    color: colour('black');
 
     &:active {
       background: rgba(128, 128, 128, 0.2);
     }
 
     &:hover {
-      box-shadow: 0 0 10px rgba(colour(white), 0.5);
+      box-shadow: 0 0 10px rgba(colour('white'), 0.5);
     }
   }
 
   &--grey {
-    border-color: colour(grey);
+    border-color: colour('grey');
 
     &:hover {
-      box-shadow: 0 0 10px rgba(colour(grey), 0.5);
+      box-shadow: 0 0 10px rgba(colour('grey'), 0.5);
     }
   }
 
   &--black {
-    border-color: colour(darkest_grey);
+    border-color: colour('darkest_grey');
 
     &:hover {
-      box-shadow: 0 0 10px rgba(colour(darkest_grey), 0.3);
+      box-shadow: 0 0 10px rgba(colour('darkest_grey'), 0.3);
     }
   }
 
   &--confirming,
   &--destructive {
-    border-color: colour(red);
-    color: colour(red);
+    border-color: colour('red');
+    color: colour('red');
 
     &:active {
       background: rgba(128, 128, 128, 0.2);
@@ -357,8 +359,8 @@ select {
 
     &:hover,
     &-hover:hover {
-      color: colour(red);
-      box-shadow: 0 0 10px rgba(colour(red), 0.5);
+      color: colour('red');
+      box-shadow: 0 0 10px rgba(colour('red'), 0.5);
     }
   }
 
@@ -374,7 +376,7 @@ select {
       left: 0;
       bottom: 0;
       width: 0;
-      background: colour(middle_grey);
+      background: colour('middle_grey');
       opacity: 0.25;
     }
   }
@@ -405,8 +407,8 @@ select {
       left: 50%;
       margin-left: -0.6em;
       border: 2px solid transparent;
-      border-top-color: colour(middle_grey);
-      border-right-color: colour(middle_grey);
+      border-top-color: colour('middle_grey');
+      border-right-color: colour('middle_grey');
       z-index: 1;
       box-sizing: border-box;
     }
@@ -417,8 +419,8 @@ select {
   &[disabled="disabled"] {
     opacity: 0.5;
     cursor: not-allowed !important;
-    color: colour(mid_grey);
-    border-color: colour(mid_grey);
+    color: colour('mid_grey');
+    border-color: colour('mid_grey');
     background: transparent;
   }
 
@@ -518,7 +520,7 @@ select {
     color: rgba(255, 255, 255, 0.6);
 
     &.error {
-      color: colour(red);
+      color: colour('red');
       display: inline-block;
       opacity: 1;
     }
@@ -594,13 +596,13 @@ select {
     }
 
     .input-range__track--active {
-      background: colour(blue);
+      background: colour('blue');
     }
 
     .input-range__slider-container {
       .input-range__slider {
         cursor: col-resize;
-        background: colour(blue);
+        background: colour('blue');
         border: none;
         top: 0;
         height: 6px;
@@ -639,7 +641,7 @@ select {
     font-size: 0.8rem;
     text-transform: uppercase;
     font-weight: bold;
-    color: colour(green);
+    color: colour('green');
   }
 }
 

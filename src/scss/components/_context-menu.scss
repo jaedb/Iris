@@ -29,7 +29,7 @@
 					width: 100%;
 
 					&__link--close-submenu {
-						color: colour(mid_grey);
+						color: colour('mid_grey');
 					}
 
 					&__label {
@@ -79,8 +79,8 @@
 			}
 
 			.notouch &:active {
-				background: colour(turquoise);
-				color: colour(white);
+				background: colour('turquoise');
+				color: colour('white');
 			}
 
 			.icon {
@@ -104,7 +104,7 @@
 		font-style: normal;
 
 		&.context-menu__item:last-of-type {
-			border-bottom: 1px solid colour(middle_grey);
+			border-bottom: 1px solid colour('middle_grey');
 		}
 	}
 
@@ -112,7 +112,7 @@
 		height: 1px;
 		padding: 0;
 		margin: 0;
-		background: colour(middle_grey);
+		background: colour('middle_grey');
 		opacity: 0.5;
 	}
 
@@ -138,11 +138,11 @@
 		box-shadow: 2px 3px 6px rgba(0,0,0,0.2);
 
 		@include theme('light') {
-			background: colour(white);
+			background: colour('white');
 		}
 
-		@include theme('dark') & {
-			background: colour(grey);
+		@include theme('dark') {
+			background: colour('grey');
 		}
 
 		&--closing {
@@ -160,12 +160,12 @@
 				right: 0;
 				bottom: 0;
 
-				@include theme('dark') & {
-					background: colour(grey);
+				@include theme('dark') {
+					background: colour('grey');
 				}
 
 				@include theme('light') {
-					background: colour(white);
+					background: colour('white');
 				}
 			}
 		}
@@ -204,11 +204,11 @@
 
 		&__title {
 			@include clearfix();
-			color: colour(mid_grey);
+			color: colour('mid_grey');
 			padding: 16px 22px;
 
 			@include theme('light') {
-				color: colour(darkest_grey);
+				color: colour('darkest_grey');
 			}
 
 			.thumbnail {
@@ -275,13 +275,20 @@
 					text-transform: none;
 					font-weight: 700;
 					font-size: 1.2rem;
-					color: colour(white);
+					color: colour('white');
 					background: none;
 					transform: none;
 					padding: 16px 22px;
+					border: 0;
+					border-radius: 3px;
+
+					&,
+					&:hover {
+						box-shadow: none;
+					}
 
 					@include theme('light') {
-						color: colour(darkest_grey);
+						color: colour('darkest_grey');
 					}
 
 					.icon {
@@ -295,8 +302,8 @@
 					&:focus,
 					&:active {
 						@include noanimate();
-						color: colour(white) !important;
-						background: colour(turquoise) !important;
+						color: colour('white') !important;
+						background: colour('turquoise') !important;
 					}
 				}
 			}
@@ -317,7 +324,7 @@
 				box-sizing: border-box;
 
 				@include theme('light') {
-					color: colour(darkest_grey);
+					color: colour('darkest_grey');
 				}
 
 				&:before {
@@ -327,8 +334,8 @@
 				&:focus,
 				&:active {
 					@include noanimate();
-					color: colour(white) !important;
-					background: colour(turquoise) !important;
+					color: colour('white') !important;
+					background: colour('turquoise') !important;
 				}
 			}
 		}

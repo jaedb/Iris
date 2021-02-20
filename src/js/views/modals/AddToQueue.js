@@ -30,7 +30,7 @@ const UriListItem = ({
       {item ? item.name : <span className="mid_grey-text">{uri}</span>}
       {item && item.artists && (
         <I18n path="common.by" contentAfter>
-          <LinksSentence nolinks items={item.artists} />
+          <LinksSentence nolinks items={item.artists} type="artist" />
         </I18n>
       )}
       <span className="mid_grey-text">{` (${type})`}</span>
@@ -121,15 +121,16 @@ class AddToQueue extends React.Component {
         uris: prevUris = [],
       },
       coreActions: {
-        loadItem,
+        loadUri,
         viewDataLoaded,
       },
     } = this.props;
     const uris = text.split(',');
 
+    // TODO: Remove validation
     const validatedUris = uris.filter((uri) => uriType(uri));
     validatedUris.forEach((uri) => {
-      loadItem(uri);
+      loadUri(uri);
     });
 
     this.setState({ text: '' });

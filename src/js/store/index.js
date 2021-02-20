@@ -4,8 +4,6 @@ import localForage from 'localforage';
 import thunk from 'redux-thunk';
 
 import { generateGuid } from '../util/helpers';
-import hardSet from 'redux-persist/lib/stateReconciler/hardSet'
-//import storage from '../util/storage';
 import core from '../services/core/reducer';
 import ui from '../services/ui/reducer';
 import pusher from '../services/pusher/reducer';
@@ -13,7 +11,6 @@ import mopidy from '../services/mopidy/reducer';
 import lastfm from '../services/lastfm/reducer';
 import spotify from '../services/spotify/reducer';
 import snapcast from '../services/snapcast/reducer';
-import google from '../services/google/reducer';
 import genius from '../services/genius/reducer';
 
 import migration from './migration';
@@ -25,7 +22,6 @@ import mopidyMiddleware from '../services/mopidy/middleware';
 import lastfmMiddleware from '../services/lastfm/middleware';
 import geniusMiddleware from '../services/genius/middleware';
 import spotifyMiddleware from '../services/spotify/middleware';
-import googleMiddleware from '../services/google/middleware';
 import snapcastMiddleware from '../services/snapcast/middleware';
 
 let initialState = {
@@ -103,9 +99,6 @@ let initialState = {
     autocomplete_results: {},
     authorization_url: 'https://jamesbarnsley.co.nz/iris/auth_spotify.php',
   },
-  google: {
-    enabled: false,
-  },
   snapcast: {
     enabled: false,
     connected: false,
@@ -120,33 +113,8 @@ let initialState = {
   },
 };
 
-/*
-// load all our stored values from LocalStorage
-state.core = { ...state.core, ...storage.get('core') };
-state.ui = { ...state.ui, ...storage.get('ui') };
-state.mopidy = { ...state.mopidy, ...storage.get('mopidy') };
-state.pusher = { ...state.pusher, ...storage.get('pusher') };
-state.spotify = { ...state.spotify, ...storage.get('spotify') };
-state.lastfm = { ...state.lastfm, ...storage.get('lastfm') };
-state.genius = { ...state.genius, ...storage.get('genius') };
-state.google = { ...state.google, ...storage.get('google') };
-state.snapcast = { ...state.snapcast, ...storage.get('snapcast') };
-*/
-
 // Run any migrations
 initialState = migration(initialState);
-
-const rootPersistConfig = {
-  key: 'root',
-  storage: localForage,
-  blacklist: [
-    'ui',
-    'core',
-    'spotify',
-    'pusher',
-  ],
-  debug: window.test_mode,
-};
 
 const corePersistConfig = {
   key: 'core',
@@ -164,10 +132,29 @@ const corePersistConfig = {
   ],
 };
 
+const geniusPersistConfig = {
+  key: 'genius',
+  storage: localForage,
+  debug: window.test_mode,
+};
+
+const lastfmPersistConfig = {
+  key: 'lastfm',
+  storage: localForage,
+  debug: window.test_mode,
+};
+
+const snapcastPersistConfig = {
+  key: 'snapcast',
+  storage: localForage,
+  debug: window.test_mode,
+};
+
 const pusherPersistConfig = {
   key: 'pusher',
   storage: localForage,
   blacklist: [
+    'connected',
     'connections',
   ],
   debug: window.test_mode,
@@ -222,22 +209,29 @@ const appReducer = combineReducers({
   mopidy: persistReducer(mopidyPersistConfig, mopidy),
   spotify: persistReducer(spotifyPersistConfig, spotify),
   pusher: persistReducer(pusherPersistConfig, pusher),
-  lastfm,
-  genius,
-  google,
-  snapcast,
+  genius: persistReducer(geniusPersistConfig, genius),
+  lastfm: persistReducer(lastfmPersistConfig, lastfm),
+  snapcast: persistReducer(snapcastPersistConfig, snapcast),
 });
 const rootReducer = (state, action) => {
+  let nextState = state;
   if (action.type === 'RESET_STATE') {
-    state = initialState;
+    console.log(action);
+    const { stateKeysToReset } = action;
+    const resetStates = {};
+    stateKeysToReset.forEach((key) => {
+      resetStates[key] = initialState[key];
+    });
+    nextState = {
+      ...state,
+      ...resetStates,
+    };
   }
-  return appReducer(state, action);
+  return appReducer(nextState, action);
 };
 
-const persistedReducer = persistReducer(rootPersistConfig, rootReducer);
-
 const store = createStore(
-  persistedReducer,
+  rootReducer,
   initialState,
   applyMiddleware(
     thunk,
@@ -248,7 +242,6 @@ const store = createStore(
     spotifyMiddleware,
     lastfmMiddleware,
     geniusMiddleware,
-    googleMiddleware,
     snapcastMiddleware,
   ),
 );

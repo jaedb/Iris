@@ -1,4 +1,3 @@
-
 export default function reducer(genius = {}, action) {
   switch (action.type) {
     case 'GENIUS_SET':

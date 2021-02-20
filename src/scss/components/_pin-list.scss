@@ -10,10 +10,10 @@
       opacity: 0;
 
       &:not(:hover) {
-        color: colour(mid_grey);
+        color: colour('mid_grey');
 
         @include theme('light') {
-          color: colour(soft_grey);
+          color: colour('soft_grey');
         }
       }
     }

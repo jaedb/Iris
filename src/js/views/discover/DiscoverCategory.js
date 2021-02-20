@@ -51,13 +51,13 @@ class DiscoverCategory extends React.Component {
     const {
       uri,
       category,
-      coreActions: {
-        loadItem,
+      spotifyActions: {
+        getCategory,
       },
     } = this.props;
 
     if (!category) {
-      loadItem(uri);
+      getCategory(uri);
     }
   }
 
@@ -67,13 +67,13 @@ class DiscoverCategory extends React.Component {
       uiActions: {
         hideContextMenu,
       },
-      coreActions: {
-        loadItem,
+      spotifyActions: {
+        getCategory,
       },
     } = this.props;
 
     hideContextMenu();
-    loadItem(uri, { forceRefetch: true });
+    getCategory(uri, { forceRefetch: true });
   }
 
   render = () => {
@@ -127,7 +127,7 @@ class DiscoverCategory extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   const uri = decodeURIComponent(ownProps.match.params.uri);
-  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`]);
+  const loadingSelector = makeLoadingSelector([`spotify_category_${uri}`]);
   const categorySelector = makeItemSelector(uri);
   const category = categorySelector(state);
   let playlists = null;

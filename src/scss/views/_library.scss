@@ -20,7 +20,7 @@
 		}
 	}
 
-	@include responsive($bp_wide){
+	@include responsive($bp_wide) {
 
 		.albums-detail-subview > .album {
 			.thumbnail {
@@ -34,7 +34,7 @@
 		}
 	}
 
-	@include responsive(600px){
+	@include responsive(600px) {
 		
 		.albums-detail-subview {
 			padding: 20px 0;

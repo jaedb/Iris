@@ -25,7 +25,7 @@ import {
   sourceIcon,
   titleCase,
 } from '../util/helpers';
-import { collate } from '../util/format';
+import { collate, encodeUri } from '../util/format';
 import { sortItems, applyFilter, arrayOf } from '../util/arrays';
 import { i18n, I18n } from '../locale';
 import Button from '../components/Button';
@@ -34,6 +34,7 @@ import {
   makeItemSelector,
   makeLoadingSelector,
 } from '../util/selectors';
+import { nice_number } from '../components/NiceNumber';
 
 class Artist extends React.Component {
   constructor(props) {
@@ -49,12 +50,12 @@ class Artist extends React.Component {
     const {
       uri,
       coreActions: {
-        loadItem,
+        loadArtist,
       },
     } = this.props;
 
     this.setWindowTitle();
-    loadItem(uri, { full: true });
+    loadArtist(uri, { full: true });
   }
 
   componentDidUpdate = ({
@@ -65,12 +66,12 @@ class Artist extends React.Component {
       uri,
       artist,
       coreActions: {
-        loadItem,
+        loadArtist,
       },
     } = this.props;
 
     if (uri !== prevUri) {
-      loadItem(uri, { full: true });
+      loadArtist(uri, { full: true });
     }
 
     if (!prevArtist && artist) this.setWindowTitle(artist);
@@ -264,7 +265,7 @@ class Artist extends React.Component {
               />
             </div>
             <Button
-              to={`/artist/${encodeURIComponent(uri)}/related-artists`}
+              to={`/artist/${encodeUri(uri)}/related-artists`}
               scrollTo="#sub-views-menu"
             >
               <I18n path="artist.overview.related_artists.more" />
@@ -276,7 +277,7 @@ class Artist extends React.Component {
 
         <div className="albums">
           <h4>
-            <I18n path="artist.overview.albums" />
+            <I18n path="artist.overview.albums" count={albums ? albums.length : 0} />
             <div className="actions-wrapper">
               <FilterField
                 initialValue={filter}
@@ -427,7 +428,7 @@ class Artist extends React.Component {
             <div className="tile">
               <span className="content">
                 <Icon type="fontawesome" name="users" />
-                <I18n path="specs.followers" count={artist.followers.toLocaleString()} />
+                <I18n path="specs.followers" count={nice_number(artist.followers)} />
               </span>
             </div>
           )}
@@ -443,7 +444,7 @@ class Artist extends React.Component {
             <div className="tile">
               <span className="content">
                 <Icon type="fontawesome" name="headphones" />
-                <I18n path="specs.listeners" count={artist.listeners.toLocaleString()} />
+                <I18n path="specs.listeners" count={nice_number(artist.listeners)} />
               </span>
             </div>
           )}
@@ -487,11 +488,12 @@ class Artist extends React.Component {
 
     if (loading) {
       return <Loader body loading />;
-    } else if (!artist) {
+    }
+    if (!artist) {
       return (
         <ErrorMessage type="not-found" title="Not found">
           <p>
-            <I18n path="errors.uri_not_found" uri={encodeURIComponent(uri)} />
+            <I18n path="errors.uri_not_found" uri={uri} />
           </p>
         </ErrorMessage>
       );
@@ -538,7 +540,7 @@ class Artist extends React.Component {
                 history={history}
                 activeClassName="sub-views__option--active"
                 className="sub-views__option"
-                to={`/artist/${encodeURIComponent(uri)}`}
+                to={`/artist/${encodeUri(uri)}`}
                 scrollTo="#sub-views-menu"
               >
                 <h4><I18n path="artist.overview.title" /></h4>
@@ -549,7 +551,7 @@ class Artist extends React.Component {
                   history={history}
                   activeClassName="sub-views__option--active"
                   className="sub-views__option"
-                  to={`/artist/${encodeURIComponent(uri)}/tracks`}
+                  to={`/artist/${encodeUri(uri)}/tracks`}
                   scrollTo="#sub-views-menu"
                 >
                   <h4><I18n path="artist.tracks.title" /></h4>
@@ -561,7 +563,7 @@ class Artist extends React.Component {
                   history={history}
                   activeClassName="sub-views__option--active"
                   className="sub-views__option"
-                  to={`/artist/${encodeURIComponent(uri)}/related-artists`}
+                  to={`/artist/${encodeUri(uri)}/related-artists`}
                   scrollTo="#sub-views-menu"
                 >
                   <h4><I18n path="artist.related_artists.title" /></h4>
@@ -572,7 +574,7 @@ class Artist extends React.Component {
                 history={history}
                 activeClassName="sub-views__option--active"
                 className="sub-views__option"
-                to={`/artist/${encodeURIComponent(uri)}/about`}
+                to={`/artist/${encodeUri(uri)}/about`}
                 scrollTo="#sub-views-menu"
               >
                 <h4><I18n path="artist.about.title" /></h4>
@@ -603,7 +605,7 @@ class Artist extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   const uri = decodeURIComponent(ownProps.match.params.uri);
-  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`]);
+  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`, '^((?!contains).)*$', '^((?!albums).)*$', '^((?!related-artists).)*$', '^((?!top-tracks).)*$']);
   const artistSelector = makeItemSelector(uri);
   const artist = artistSelector(state);
   let albums = null;

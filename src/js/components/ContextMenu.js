@@ -11,6 +11,7 @@ import {
   buildLink,
   isLoading,
   throttle,
+  titleCase,
 } from '../util/helpers';
 import {
   arrayOf,
@@ -551,7 +552,7 @@ class ContextMenu extends React.Component {
     hideContextMenu();
 
     // note: we can only go to one artist (even if this item has multiple artists, just go to the first one)
-    push(buildLink(items[0].artists[0].uri));
+    push(buildLink(items[0].artists[0].uri, 'artist'));
   }
 
   goToUser = () => {
@@ -569,7 +570,7 @@ class ContextMenu extends React.Component {
 
     if (!items || items.length <= 0 || !items[0].user) return null;
     hideContextMenu();
-    push(buildLink(items[0].user.uri));
+    push(buildLink(items[0].user.uri, 'user'));
   }
 
   goToTrack = () => {
@@ -587,7 +588,7 @@ class ContextMenu extends React.Component {
 
     if (!uris) return null;
     hideContextMenu();
-    push(buildLink(uris[0]));
+    push(buildLink(uris[0], 'track'));
   }
 
   copyURIs = () => {
@@ -616,17 +617,26 @@ class ContextMenu extends React.Component {
       uiActions: {
         hideContextMenu,
       },
-      coreActions: {
-        loadItem,
-      },
+      coreActions: actions,
       menu: {
         uris,
       } = {},
     } = this.props;
+    const { nice_name } = this.getContext();
 
-    const uri = uris[0];
-
-    loadItem(uri, { forceRefetch: true, full: true });
+    switch (nice_name) {
+      case 'artist':
+      case 'album':
+      case 'playlist':
+      case 'track':
+      case 'user':
+        const uri = uris[0];
+        actions[`load${titleCase(nice_name)}`](uri, { forceRefetch: true, full: true });
+        break;
+      default:
+        actions.handleException(`Cannot refresh; unexpected URI: ${uri}`);
+        break;
+    }
     hideContextMenu();
   }
 
@@ -1234,6 +1244,15 @@ class ContextMenu extends React.Component {
             {copy_uris}
             <div className="context-menu__divider" />
             {remove_from_playlist}
+          </div>
+        );
+      case 'user':
+        return (
+          <div>
+            {this.canBeInLibrary() && toggle_in_library}
+            <div className="context-menu__divider" />
+            {copy_uris}
+            {refresh}
           </div>
         );
       default:

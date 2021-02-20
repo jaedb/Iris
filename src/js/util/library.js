@@ -38,10 +38,19 @@ const getDependentUris = ({
 }) => {
   if (!item) return [];
 
+  const getUrisOfDependent = (dep) => {
+    if (!dep.match(new RegExp('(.*)_uri(.*)'))) return [];
+    const uris = item[dep];
+
+    if (uris && Array.isArray(uris)) return uris;
+
+    return [];
+  };
+
   return [...dependents, ...fullDependents].reduce(
     (acc, dep) => [
       ...acc,
-      ...(dep.match(new RegExp('(.*)_uri(.*)')) ? item[dep] : []),
+      ...getUrisOfDependent(dep),
     ],
     [],
   );
@@ -61,6 +70,7 @@ const ensureLoaded = ({
   fetch,
   dependents = [],
   fullDependents = [],
+  type,
 }) => {
   const {
     uri,
@@ -105,8 +115,8 @@ const ensureLoaded = ({
 
       const uris = dependentUris(item);
       if (uris.length) {
-        console.log(`Loading ${uris.length} dependents`);
-        store.dispatch(coreActions.loadItems(uris));
+        console.info(`Loading ${uris.length} dependents`);
+        store.dispatch(coreActions.loadItems(type, uris));
       }
       return;
     }
@@ -114,10 +124,7 @@ const ensureLoaded = ({
 
   // What about in the coldstore?
   localForage.getItem(uri).then((restoredItem) => {
-    if (
-      !restoredItem ||
-      missingDependents(restoredItem).length > 0
-    ) {
+    if (!restoredItem || missingDependents(restoredItem).length > 0) {
       fetch();
       return;
     }
