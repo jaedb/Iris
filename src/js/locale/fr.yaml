@@ -580,3 +580,20 @@ modal:
     test_mode:
       label: Mode de test
       description: Logs verbeux pour le diagnostic des problèmes
+  hotkeys_info:
+    title: Touches multimédia
+    keys:
+      info: Multimédia info
+      exit: Annuler l'opération en cours
+      play_pause: Lire/pause
+      stop: Stop
+      next: Morceau suivant
+      previous: Morceau précédent
+      rewind: Reculer de 30 secondes
+      fastforward: Avancer de 30 secondes
+      volume_up: Augmenter le volume de 5%
+      volume_down: Diminuer le volume de 5%
+      mute: Muet
+      kiosk: Mode Kiosk
+      now_playing: Lecture en cours
+      search: Rechercher
