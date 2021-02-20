@@ -557,7 +557,7 @@ modal:
     interface_description: Theme, sorting, filters, etc
     import:
       title: Configuration shared
-      subtitle: 'Another user has shared his configuration with you. This includes:'
+      subtitle: 'Another user has shared their configuration with you. This includes:'
       do_you_want_to_import: Do you want to import this?
       import_now: Import now
       successful: Import successful
