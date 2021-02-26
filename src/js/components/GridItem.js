@@ -92,7 +92,7 @@ class GridItem extends React.Component {
       default:
         return (
           <span className="grid__item__secondary__content">
-            {artists && <LinksSentence nolinks items={item.artists} type="artist" /> }
+            {artists && <LinksSentence nolinks items={artists} type="artist" /> }
             {followers && <I18n path="specs.followers" count={followers.toLocaleString()} />}
           </span>
         );
