@@ -1,9 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { FixedSizeGrid as Grid } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
 import * as uiActions from '../services/ui/actions';
 import GridItem from './GridItem';
-import { encodeUri } from '../util/format';
 
 class PlaylistGrid extends React.Component {
   handleContextMenu(e, item) {
@@ -37,19 +38,27 @@ class PlaylistGrid extends React.Component {
     if (mini) className += ' grid--mini';
 
     return (
-      <div className={className}>
-        {
-          playlists.map((playlist) => (
-            <GridItem
-              key={playlist.uri}
-              type="playlist"
-              item={playlist}
-              show_source_icon={show_source_icon}
-              onContextMenu={(e) => this.handleContextMenu(e, playlist)}
-            />
-          ))
-        }
-      </div>
+      <AutoSizer>
+        {({ height, width }) => {
+          const columnCount = 5;
+          const columnWidth = (width / columnCount) - (20 / columnCount); // 20px for scrollbars
+          const rowHeight = columnWidth * 1.2;
+
+          return (
+            <Grid
+              columnCount={columnCount}
+              columnWidth={columnWidth}
+              height={height}
+              rowCount={playlists.length / columnCount}
+              rowHeight={rowHeight}
+              width={width}
+              itemData={playlists}
+            >
+              {GridItem}
+            </Grid>
+          );
+        }}
+      </AutoSizer>
     );
   }
 }

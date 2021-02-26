@@ -1,9 +1,7 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Header from '../../components/Header';
-import ArtistGrid from '../../components/ArtistGrid';
 import List from '../../components/List';
 import DropdownField from '../../components/Fields/DropdownField';
 import FilterField from '../../components/Fields/FilterField';
@@ -15,6 +13,7 @@ import { sortItems, applyFilter } from '../../util/arrays';
 import { I18n, i18n } from '../../locale';
 import Button from '../../components/Button';
 import Loader from '../../components/Loader';
+import { Grid } from '../../components';
 import {
   makeLibrarySelector,
   makeProcessProgressSelector,
@@ -32,8 +31,6 @@ class LibraryArtists extends React.Component {
 
     this.state = {
       filter: '',
-      limit: 50,
-      per_page: 50,
     };
   }
 
@@ -43,14 +40,6 @@ class LibraryArtists extends React.Component {
         setWindowTitle,
       },
     } = this.props;
-
-    // Restore any limit defined in our location state
-    const state = (this.props.location.state ? this.props.location.state : {});
-    if (state.limit) {
-      this.setState({
-        limit: state.limit,
-      });
-    }
 
     setWindowTitle(i18n('library.artists.title'));
 
@@ -166,7 +155,6 @@ class LibraryArtists extends React.Component {
       loading_progress,
     } = this.props;
     const {
-      limit,
       filter,
     } = this.state;
     let { artists } = this.props;
@@ -185,10 +173,6 @@ class LibraryArtists extends React.Component {
       artists = applyFilter('name', filter, artists);
     }
 
-    // Apply our lazy-load-rendering
-    const total_artists = artists.length;
-    artists = artists.slice(0, limit);
-
     if (view === 'list') {
       return (
         <section className="content-wrapper">
@@ -201,25 +185,12 @@ class LibraryArtists extends React.Component {
             className="artists"
             link_prefix="/artist/"
           />
-          <LazyLoadListener
-            loadKey={total_artists > limit ? limit : total_artists}
-            showLoader={limit < total_artists}
-            loadMore={() => this.loadMore()}
-          />
         </section>
       );
     }
     return (
       <section className="content-wrapper">
-        <ArtistGrid
-          handleContextMenu={(e, item) => this.handleContextMenu(e, item)}
-          artists={artists}
-        />
-        <LazyLoadListener
-          loadKey={total_artists > limit ? limit : total_artists}
-          showLoader={limit < total_artists}
-          loadMore={() => this.loadMore()}
-        />
+        <Grid items={artists} />
       </section>
     );
   }

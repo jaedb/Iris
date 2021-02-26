@@ -354,7 +354,6 @@ const formatAlbum = function (data) {
     'in_library',
     'provider',
     'name',
-    'type',
     'last_modified',
     'added_at',
     'release_date',
@@ -407,9 +406,6 @@ const formatAlbum = function (data) {
   if (data.date && !album.date) {
     album.release_date = data.date;
   }
-  if (data.album_type) {
-    album.type = data.album_type;
-  }
   if (album.provider === undefined && album.uri !== undefined) {
     album.provider = uriSource(album.uri);
   }
@@ -432,7 +428,6 @@ const formatArtist = function (data) {
     'provider',
     'mbid',
     'name',
-    'type',
     'popularity',
     'followers',
     'listeners',
@@ -493,7 +488,6 @@ const formatPlaylist = function (data) {
     'in_library',
     'snapshot_id',
     'provider',
-    'type',
     'collaborative',
     'public',
     'name',

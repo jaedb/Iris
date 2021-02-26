@@ -636,6 +636,13 @@ const encodeMopidyUri = (uri, encodeComponent = true) => {
   return encoded;
 };
 
+const getGridItem = ({
+  data,
+  rowIndex,
+  columnIndex,
+  columnCount,
+}) => data[(rowIndex * columnCount) + columnIndex];
+
 export {
   debounce,
   throttle,
@@ -661,6 +668,7 @@ export {
   iconFromKeyword,
   decodeMopidyUri,
   encodeMopidyUri,
+  getGridItem,
 };
 
 export default {
@@ -688,4 +696,5 @@ export default {
   iconFromKeyword,
   decodeMopidyUri,
   encodeMopidyUri,
+  getGridItem,
 };

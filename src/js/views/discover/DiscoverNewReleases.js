@@ -1,10 +1,8 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Header from '../../components/Header';
 import Icon from '../../components/Icon';
-import AlbumGrid from '../../components/AlbumGrid';
 import Parallax from '../../components/Parallax';
 import LazyLoadListener from '../../components/LazyLoadListener';
 import Loader from '../../components/Loader';
@@ -17,6 +15,7 @@ import {
   makeItemSelector,
   makeLoadingSelector,
 } from '../../util/selectors';
+import { Grid } from '../../components';
 
 class DiscoverNewReleases extends React.Component {
   componentDidMount() {
@@ -37,21 +36,16 @@ class DiscoverNewReleases extends React.Component {
     }
   }
 
-  loadMore = () => {
-    const {
-      more,
-      spotifyActions: {
-        getMore,
-      },
-    } = this.props;
+  handleContextMenu(e, item) {
+    const { uriActions: { showContextMenu } } = this.props;
 
-    getMore(
-      more,
-      null,
-      {
-        type: 'SPOTIFY_NEW_RELEASES_LOADED',
-      },
-    );
+    e.preventDefault();
+    showContextMenu({
+      e,
+      context: 'album',
+      uris: [item.uri],
+      items: [item],
+    });
   }
 
   playAlbum = (album) => {
@@ -74,18 +68,6 @@ class DiscoverNewReleases extends React.Component {
     getNewReleases(true);
   }
 
-  handleContextMenu(e, item) {
-    const { uriActions: { showContextMenu } } = this.props;
-
-    e.preventDefault();
-    showContextMenu({
-      e,
-      context: 'album',
-      uris: [item.uri],
-      items: [item],
-    });
-  }
-
   renderIntro = ({ images: { large } = {} } = {}) => (
     <div className="intro preserve-3d">
       <Parallax image={large} blur />
@@ -96,7 +78,6 @@ class DiscoverNewReleases extends React.Component {
     const {
       loading,
       albums,
-      more,
       uiActions,
     } = this.props;
 
@@ -130,13 +111,8 @@ class DiscoverNewReleases extends React.Component {
           <I18n path="discover.new_releases.title" />
         </Header>
         <section className="content-wrapper grid-wrapper">
-          <AlbumGrid albums={albums} />
+          <Grid items={albums} />
         </section>
-        <LazyLoadListener
-          loadKey={more}
-          showLoader={more}
-          loadMore={this.loadMore}
-        />
       </div>
     );
   }

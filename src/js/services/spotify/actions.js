@@ -1082,6 +1082,7 @@ export function getArtist(uri, { full, forceRefetch }) {
           if (response.next) {
             fetchAlbums(response.next);
           } else {
+            console.debug({ albums })
             dispatch(coreActions.itemLoaded({
               uri,
               albums_uris: arrayOf('uri', albums),

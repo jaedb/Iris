@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -7,7 +6,7 @@ import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import * as lastfmActions from '../services/lastfm/actions';
 
-import GridItem from './GridItem';
+import { Grid } from '.';
 
 class AlbumGrid extends React.Component {
   handleContextMenu = (e, item) => {
@@ -33,30 +32,11 @@ class AlbumGrid extends React.Component {
     } = this.props;
 
     if (!albums) return null;
-
-    return (
-      <div className={`grid grid--albums ${className} ${mini ? ' grid--mini' : ''}`}>
-        {
-          albums.map((album) => (
-            <GridItem
-              key={album.uri}
-              type="album"
-              item={album}
-              lastfmActions={lastfmActions}
-              mopidyActions={mopidyActions}
-              show_source_icon={show_source_icon}
-              onContextMenu={(e) => this.handleContextMenu(e, album)}
-            />
-          ))
-        }
-      </div>
-    );
+    return <Grid items={albums} />;
   }
 }
 
-const mapStateToProps = (state) => ({
-  artists: state.core.artists,
-});
+const mapStateToProps = () => ({});
 
 const mapDispatchToProps = (dispatch) => ({
   uiActions: bindActionCreators(uiActions, dispatch),

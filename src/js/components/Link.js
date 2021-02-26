@@ -16,6 +16,7 @@ export default ({
   to,
   exact,
   children,
+  style,
 }) => {
   if (!to) return <span className={className}>{children}</span>;
   const history = useHistory();
@@ -58,6 +59,7 @@ export default ({
       onContextMenu={onContextMenu}
       className={`${className} ${active}`}
       to={to}
+      style={style}
     >
       {children}
     </Link>

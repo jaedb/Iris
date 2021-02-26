@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -6,7 +5,6 @@ import { Route, Switch } from 'react-router-dom';
 import ErrorMessage from '../components/ErrorMessage';
 import Link from '../components/Link';
 import TrackList from '../components/TrackList';
-import AlbumGrid from '../components/AlbumGrid';
 import Thumbnail from '../components/Thumbnail';
 import Parallax from '../components/Parallax';
 import ArtistGrid from '../components/ArtistGrid';
@@ -35,6 +33,7 @@ import {
   makeLoadingSelector,
 } from '../util/selectors';
 import { nice_number } from '../components/NiceNumber';
+import { Grid } from '../components';
 
 class Artist extends React.Component {
   constructor(props) {
@@ -305,7 +304,7 @@ class Artist extends React.Component {
           </h4>
 
           <section className="grid-wrapper no-top-padding">
-            <AlbumGrid albums={albums} />
+            <Grid items={albums} />
           </section>
         </div>
       </div>

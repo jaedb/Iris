@@ -158,11 +158,13 @@ const sortItems = (array, property, reverse = false) => {
       case 'tracks':
         return item.tracks_total || (item.tracks ? item.tracks.length : 0);
       case 'artist':
-        return item.artists && item.artists.length ? item.artists[0].name : undefined;
+        return item?.artists?.length ? item.artists[0].name.toLowerCase() : undefined;
       case 'album':
-        return item.album ? item.album.name : undefined;
+        return item?.album?.name?.toLowerCase();
       case 'user':
-        return item.user ? item.user.id : undefined;
+        return item?.user?.id;
+      case 'name':
+        return item?.name?.toLowerCase();
       default:
         return item[property];
     }

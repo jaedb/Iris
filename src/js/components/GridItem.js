@@ -1,16 +1,61 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import {
-  uriType,
-  scrollTo,
-  sourceIcon,
-} from '../util/helpers';
+import { bindActionCreators } from 'redux';
 import Link from './Link';
 import Icon from './Icon';
 import Thumbnail from './Thumbnail';
 import LinksSentence from './LinksSentence';
 import { I18n } from '../locale';
 import { encodeUri } from '../util/format';
+import { scrollTo, sourceIcon, getGridItem } from '../util/helpers';
+import * as uiActions from '../services/ui/actions';
+
+const SecondaryLine = ({
+  item: {
+    type,
+    tracks_total,
+    tracks = [],
+    followers,
+    albums_uris,
+    artists,
+  } = {},
+}) => {
+  let trackCount = 0;
+  if (tracks) trackCount = tracks.length;
+  if (tracks_total) trackCount = tracks_total;
+
+  switch (type) {
+    case 'playlist':
+      return (
+        <span className="grid__item__secondary__content">
+          <I18n path="specs.tracks" count={trackCount} />
+        </span>
+      );
+
+    case 'artist':
+      return (
+        <span className="grid__item__secondary__content">
+          {followers && <I18n path="specs.followers" count={followers.toLocaleString()} />}
+          {albums_uris && <I18n path="specs.albums" count={albums_uris.length} />}
+        </span>
+      );
+
+    case 'album':
+      return (
+        <span className="grid__item__secondary__content">
+          {artists && <LinksSentence nolinks items={artists} type="artist" />}
+        </span>
+      );
+
+    default:
+      return (
+        <span className="grid__item__secondary__content">
+          {artists && <LinksSentence nolinks items={artists} type="artist" /> }
+          {followers && <I18n path="specs.followers" count={followers.toLocaleString()} />}
+        </span>
+      );
+  }
+};
 
 class GridItem extends React.Component {
   componentDidMount() {
@@ -23,7 +68,7 @@ class GridItem extends React.Component {
 
     if (!item || item.images) return;
 
-    switch (uriType(item.uri)) {
+    switch (item.type) {
       case 'artist':
         if (spotifyActions && spotifyAvailable) {
           //spotifyActions.getArtistImages(item);
@@ -47,100 +92,65 @@ class GridItem extends React.Component {
     return nextProps.item !== item;
   }
 
-  onContextMenu = (e) => {
-    const { onContextMenu } = this.props;
-    if (onContextMenu) {
-      onContextMenu(e);
-    }
-  }
+  onContextMenu(e, item) {
+    const { uiActions: { showContextMenu } } = this.props;
 
-  renderSecondary = ({
-    uri,
-    tracks_total,
-    tracks = [],
-    followers,
-    albums_uris,
-    artists,
-  }) => {
-    let trackCount = 0;
-    if (tracks) trackCount = tracks.length;
-    if (tracks_total) trackCount = tracks_total;
-
-    switch (uriType(uri)) {
-      case 'playlist':
-        return (
-          <span className="grid__item__secondary__content">
-            <I18n path="specs.tracks" count={trackCount} />
-          </span>
-        );
-
-      case 'artist':
-        return (
-          <span className="grid__item__secondary__content">
-            {followers && <I18n path="specs.followers" count={followers.toLocaleString()} />}
-            {albums_uris && <I18n path="specs.albums" count={albums_uris.length} />}
-          </span>
-        );
-
-      case 'album':
-        return (
-          <span className="grid__item__secondary__content">
-            {artists && <LinksSentence nolinks items={artists} type="artist" />}
-          </span>
-        );
-
-      default:
-        return (
-          <span className="grid__item__secondary__content">
-            {artists && <LinksSentence nolinks items={item.artists} type="artist" /> }
-            {followers && <I18n path="specs.followers" count={followers.toLocaleString()} />}
-          </span>
-        );
-    }
+    e.preventDefault();
+    showContextMenu({
+      e,
+      context: item.type,
+      uris: [item.uri],
+      items: [item],
+      tracklist_uri: item.uri,
+    });
   }
 
   render = () => {
     const {
-      item: {
-        album,
-      } = {},
       link: customLink,
-      type,
       show_source_icon,
       grid_glow_enabled,
+      data,
+      item: itemProp,
+      rowIndex,
+      columnIndex,
+      columnCount = 5, // TODO: Make this dynamic from the Grid wrapper
+      style,
     } = this.props;
 
-    let { item } = this.props;
-
+    const item = itemProp || getGridItem({ data, columnIndex, rowIndex, columnCount });
     if (!item) return null;
-    if (album) item = { ...item, ...album };
+    // Not sure what purpose this serves; squashing our album over top of the item?
+    // if (album) item = { ...item, ...album };
 
-    const link = customLink || `/${type}/${encodeUri(item.uri)}`;
+    const link = customLink || `/${item.type}/${encodeUri(item.uri)}`;
 
     return (
-      <Link
-        className={`grid__item grid__item--${type}`}
-        to={link}
-        onClick={scrollTo}
-        onContextMenu={this.onContextMenu}
-      >
-        <Thumbnail
-          glow={grid_glow_enabled}
-          size="medium"
-          className="grid__item__thumbnail"
-          images={item.images || item.icons}
-          type={type}
-        />
-        <div className="grid__item__name">
-          {item.name ? item.name : <span className="opaque-text">{item.uri}</span>}
-        </div>
-        <div className="grid__item__secondary">
-          {show_source_icon && (
-            <Icon name={sourceIcon(item.uri)} type="fontawesome" className="source" />
-          )}
-          {this.renderSecondary(item)}
-        </div>
-      </Link>
+      <div style={style}>
+        <Link
+          className={`grid__item grid__item--${item.type}`}
+          to={link}
+          onClick={scrollTo}
+          onContextMenu={(e) => this.onContextMenu(e, item)}
+        >
+          <Thumbnail
+            glow={grid_glow_enabled}
+            size="medium"
+            className="grid__item__thumbnail"
+            images={item.images || item.icons}
+            type={item.type}
+          />
+          <div className="grid__item__name">
+            {item.name ? item.name : <span className="opaque-text">{item.uri}</span>}
+          </div>
+          <div className="grid__item__secondary">
+            {show_source_icon && (
+              <Icon name={sourceIcon(item.uri)} type="fontawesome" className="source" />
+            )}
+            <SecondaryLine item={item} />
+          </div>
+        </Link>
+      </div>
     );
   }
 }
@@ -161,4 +171,8 @@ export {
   GridItem,
 };
 
-export default connect(mapStateToProps)(GridItem);
+const mapDispatchToProps = (dispatch) => ({
+  uiActions: bindActionCreators(uiActions, dispatch),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(GridItem);

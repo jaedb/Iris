@@ -5,10 +5,9 @@
   }
 
   &__item {
-    position: relative !important;
-    display: inline-block !important;
-    vertical-align: top;
+    display: block;
     border-bottom: 0 !important;
+    margin: 20px;
     cursor: pointer;
 
     &__wrapper {
@@ -85,126 +84,6 @@
           font-size: 16px;
         }
       }
-    }
-  }
-
-  @include responsive(null, $bp_huge) {
-    &--mini {
-      .grid__item {
-        @include grid_item(3);
-      }
-      &--single-row {
-        .grid-item:nth-child(1n + 4) {
-          display: none;
-        }
-      }
-    }
-    &:not(.grid--mini) {
-      .grid__item {
-        @include grid_item(5);
-      }
-      // This doesn't build with dart-sass, and doesn't compile to something that works at all under node-sass
-      /*&--single-row {
-        .grid-item:nth-child(1n + 6) {
-          display: none;
-        }
-      }*/
-    }
-  }
-
-  @include responsive($bp_huge, 1200px) {
-    &--mini {
-      .grid__item {
-        @include grid_item(2);
-      }
-      &--single-row {
-        .grid-item:nth-child(1n + 3) {
-          display: none;
-        }
-      }
-    }
-    &:not(.grid--mini) {
-      .grid__item {
-        @include grid_item(4);
-      }
-      // This doesn't build with dart-sass, and doesn't compile to something that works at all under node-sass
-      /*&--single-row {
-        .grid-item:nth-child(1n + 5) {
-          display: none;
-        }
-      }*/
-    }
-  }
-
-  @include responsive(1200px, 800px) {
-    &--mini {
-      .grid__item {
-        @include grid_item(2);
-      }
-      &--single-row {
-        .grid-item:nth-child(1n + 3) {
-          display: none;
-        }
-      }
-    }
-    &:not(.grid--mini) {
-      .grid__item {
-        @include grid_item(4);
-      }
-      // This doesn't build with dart-sass, and doesn't compile to something that works at all under node-sass
-      /*&--single-row {
-        .grid-item:nth-child(1n + 5) {
-          display: none;
-        }
-      }*/
-    }
-  }
-
-  @include responsive(800px, 500px) {
-    &--mini {
-      .grid__item {
-        @include grid_item(6, 2%, 4%);
-      }
-      &--single-row {
-        .grid-item:nth-child(1n + 7) {
-          display: none;
-        }
-      }
-    }
-    &:not(.grid--mini) {
-      .grid__item {
-        @include grid_item(3, 2%, 4%);
-      }
-      // This doesn't build with dart-sass, and doesn't compile to something that works at all under node-sass
-      /*&--single-row {
-        .grid-item:nth-child(1n + 4) {
-          display: none;
-        }
-      }*/
-    }
-  }
-
-  @include responsive(500px) {
-    &--mini {
-      .grid__item {
-        @include grid_item(3, 2%, 4%);
-      }
-      &--single-row {
-        .grid-item:nth-child(1n + 4) {
-          display: none;
-        }
-      }
-    }
-    &:not(.grid--mini) {
-      .grid__item {
-        @include grid_item(2, 2%, 4%);
-      }
-      // This doesn't build with dart-sass, and doesn't compile to something that works at all under node-sass
-      /*&--single-row {
-        .grid-item:nth-child(1n + 5) {
-          display: none;
-        }
-      }*/
     }
   }
 }
