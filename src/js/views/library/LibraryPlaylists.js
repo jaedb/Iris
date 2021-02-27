@@ -3,7 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Button from '../../components/Button';
-import PlaylistGrid from '../../components/PlaylistGrid';
+import { Grid } from '../../components/Grid';
 import List from '../../components/List';
 import DropdownField from '../../components/Fields/DropdownField';
 import Header from '../../components/Header';
@@ -33,27 +33,15 @@ class LibraryPlaylists extends React.Component {
 
     this.state = {
       filter: '',
-      limit: 50,
-      per_page: 50,
     };
   }
 
   componentDidMount() {
     const {
-      location: {
-        state: {
-          limit,
-        } = {},
-      } = {},
       uiActions: {
         setWindowTitle,
       },
     } = this.props;
-    if (limit) {
-      this.setState({
-        limit,
-      });
-    }
 
     setWindowTitle(i18n('library.playlists.title'));
 
@@ -134,17 +122,6 @@ class LibraryPlaylists extends React.Component {
     this.props.uiActions.showContextMenu(data);
   }
 
-  loadMore() {
-    const new_limit = this.state.limit + this.state.per_page;
-
-    this.setState({ limit: new_limit });
-
-    // Set our pagination to location state
-    const state = (this.props.location && this.props.location.state ? this.props.location.state : {});
-    state.limit = new_limit;
-    this.props.history.replace({ state });
-  }
-
   renderView = () => {
     const {
       sort,
@@ -155,7 +132,6 @@ class LibraryPlaylists extends React.Component {
     } = this.props;
     const {
       filter,
-      limit,
     } = this.state;
 
     if (loading_progress) {
@@ -172,10 +148,6 @@ class LibraryPlaylists extends React.Component {
       playlists = applyFilter('name', filter, playlists);
     }
 
-    // Apply our lazy-load-rendering
-    const total_playlists = playlists.length;
-    playlists = playlists.slice(0, limit);
-
     if (view === 'list') {
       return (
         <section className="content-wrapper">
@@ -188,25 +160,12 @@ class LibraryPlaylists extends React.Component {
             className="playlists"
             link_prefix="/playlist/"
           />
-          <LazyLoadListener
-            loadKey={total_playlists > limit ? limit : total_playlists}
-            loading={limit < total_playlists}
-            loadMore={() => this.loadMore()}
-          />
         </section>
       );
     }
     return (
       <section className="content-wrapper">
-        <PlaylistGrid
-          handleContextMenu={(e, item) => this.handleContextMenu(e, item)}
-          playlists={playlists}
-        />
-        <LazyLoadListener
-          loadKey={total_playlists > limit ? limit : total_playlists}
-          loading={limit < total_playlists}
-          loadMore={() => this.loadMore()}
-        />
+        <Grid items={playlists} />
       </section>
     );
   }

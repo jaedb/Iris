@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import PlaylistGrid from '../../components/PlaylistGrid';
+import { Grid } from '../../components/Grid';
 import Header from '../../components/Header';
 import Icon from '../../components/Icon';
 import Loader from '../../components/Loader';
@@ -100,7 +99,7 @@ class DiscoverFeatured extends React.Component {
           <I18n path="discover.featured.title" />
         </Header>
         <section className="content-wrapper grid-wrapper">
-          {<PlaylistGrid playlists={playlists} />}
+          <Grid items={playlists} />
         </section>
       </div>
     );

@@ -1,13 +1,11 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import AlbumGrid from '../../components/AlbumGrid';
 import List from '../../components/List';
 import Header from '../../components/Header';
 import DropdownField from '../../components/Fields/DropdownField';
 import FilterField from '../../components/Fields/FilterField';
-import LazyLoadListener from '../../components/LazyLoadListener';
+import { Grid } from '../../components/Grid';
 import Icon from '../../components/Icon';
 import * as coreActions from '../../services/core/actions';
 import * as uiActions from '../../services/ui/actions';
@@ -35,27 +33,15 @@ class LibraryAlbums extends React.Component {
 
     this.state = {
       filter: '',
-      limit: 50,
-      per_page: 50,
     };
   }
 
   componentDidMount() {
     const {
-      location: {
-        state = {},
-      },
       uiActions: {
         setWindowTitle,
       },
     } = this.props;
-
-    // Restore any limit defined in our location state
-    if (state.limit) {
-      this.setState({
-        limit: state.limit,
-      });
-    }
 
     setWindowTitle(i18n('library.albums.title'));
     this.getMopidyLibrary();
@@ -147,23 +133,6 @@ class LibraryAlbums extends React.Component {
     });
   }
 
-  loadMore = () => {
-    const {
-      limit,
-      per_page,
-    } = this.state;
-    const {
-      location: {
-        state,
-      },
-      history,
-    } = this.props;
-
-    const new_limit = limit + per_page;
-    this.setState({ limit: new_limit });
-    history.replace({ state: { ...state, limit: new_limit } });
-  }
-
   setSort = (value) => {
     const {
       sort,
@@ -190,7 +159,6 @@ class LibraryAlbums extends React.Component {
       loading_progress,
     } = this.props;
     const {
-      limit,
       filter,
     } = this.state;
     let { albums } = this.props;
@@ -207,10 +175,6 @@ class LibraryAlbums extends React.Component {
       albums = applyFilter('name', filter, albums);
     }
 
-    // Apply our lazy-load-rendering
-    const total_albums = albums.length;
-    albums = albums.slice(0, limit);
-
     if (view === 'list') {
       return (
         <section className="content-wrapper">
@@ -223,25 +187,12 @@ class LibraryAlbums extends React.Component {
             className="albums"
             link_prefix="/album/"
           />
-          <LazyLoadListener
-            loadKey={total_albums > limit ? limit : total_albums}
-            showLoader={limit < total_albums}
-            loadMore={this.loadMore}
-          />
         </section>
       );
     }
     return (
       <section className="content-wrapper">
-        <AlbumGrid
-          handleContextMenu={this.handleContextMenu}
-          albums={albums}
-        />
-        <LazyLoadListener
-          loadKey={total_albums > limit ? limit : total_albums}
-          showLoader={limit < total_albums}
-          loadMore={this.loadMore}
-        />
+        <Grid items={albums} />
       </section>
     );
   }

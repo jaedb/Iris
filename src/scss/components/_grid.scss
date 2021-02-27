@@ -11,6 +11,12 @@
     border-bottom: 0 !important;
     cursor: pointer;
 
+    &__inner {
+      @include fadein();
+      display: block;
+      border: 0 !important;
+    }
+
     &__wrapper {
       display: inline-block;
     }

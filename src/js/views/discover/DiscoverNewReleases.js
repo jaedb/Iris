@@ -1,10 +1,9 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Header from '../../components/Header';
 import Icon from '../../components/Icon';
-import AlbumGrid from '../../components/AlbumGrid';
+import { Grid } from '../../components/Grid';
 import Parallax from '../../components/Parallax';
 import LazyLoadListener from '../../components/LazyLoadListener';
 import Loader from '../../components/Loader';
@@ -130,7 +129,7 @@ class DiscoverNewReleases extends React.Component {
           <I18n path="discover.new_releases.title" />
         </Header>
         <section className="content-wrapper grid-wrapper">
-          <AlbumGrid albums={albums} />
+          <Grid items={albums} />
         </section>
         <LazyLoadListener
           loadKey={more}

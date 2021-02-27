@@ -5,7 +5,7 @@ import Loader from '../../components/Loader';
 import Header from '../../components/Header';
 import List from '../../components/List';
 import TrackList from '../../components/TrackList';
-import GridItem from '../../components/GridItem';
+import { Grid } from '../../components/Grid';
 import DropdownField from '../../components/Fields/DropdownField';
 import FilterField from '../../components/Fields/FilterField';
 import Icon from '../../components/Icon';
@@ -51,21 +51,7 @@ const Subdirectories = ({ items, view }) => {
     );
   }
 
-  return (
-    <div className="grid category-grid">
-      {
-        items.map((item) => (
-          <GridItem
-            key={item.uri}
-            type="directory"
-            link={link(item)}
-            item={item}
-            nocontext
-          />
-        ))
-      }
-    </div>
-  );
+  return <Grid items={items} nocontext link={(item) => link(item)} />
 };
 
 class LibraryBrowseDirectory extends React.Component {
