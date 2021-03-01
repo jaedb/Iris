@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import handleViewport from 'react-in-viewport';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -69,7 +69,7 @@ const GridItemComponent = ({
   show_source_icon,
   grid_glow_enabled,
   spotify_available,
-  isFirstInGrid,
+  isFirst,
   uiActions: {
     showContextMenu,
   },
@@ -90,7 +90,7 @@ const GridItemComponent = ({
   // Listen for changes to our height, and pass it up to our Grid. This is then used to build the
   // placeholder elements when out of viewport. We only care about the first item because this
   // represents the same heights for everything else (in almost all circumstances).
-  if (isFirstInGrid && forwardedRef.current) {
+  if (isFirst && forwardedRef.current) {
     const { current: { clientHeight } } = forwardedRef;
     if (clientHeight !== itemHeight) {
       setItemHeight(clientHeight);
@@ -134,7 +134,7 @@ const GridItemComponent = ({
 
   return (
     <span className={`grid__item grid__item--${item.type}`} ref={forwardedRef}>
-      {inViewport || isFirstInGrid ? (
+      {inViewport || isFirst ? (
         <Link
           to={to}
           onClick={scrollTo}

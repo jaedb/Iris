@@ -377,39 +377,41 @@ export default class Track extends React.Component {
           onTouchStart={this.handleTouchStart}
           onTouchEnd={this.handleTouchEnd}
         >
-          <div className="list__item__column list__item__column--name">
-            <div className="list__item__column__item--name">
-              {track.name ? track.name : <span className="mid_grey-text">{track.uri}</span>}
-              {track.playing && <Icon className={`js--${play_state}`} name="playing" type="css" />}
+          <div className="list__item__inner">
+            <div className="list__item__column list__item__column--name">
+              <div className="list__item__column__item--name">
+                {track.name ? track.name : <span className="mid_grey-text">{track.uri}</span>}
+                {track.playing && <Icon className={`js--${play_state}`} name="playing" type="css" />}
+              </div>
+              {track_details && (
+                <ul className="list__item__column__item--details">
+                  {track_details}
+                </ul>
+              )}
             </div>
-            {track_details && (
-              <ul className="list__item__column__item--details">
-                {track_details}
-              </ul>
-            )}
-          </div>
-          {track_middle_column}
-          <div className="list__item__column list__item__column--right">
-            {drag_zone}
-            {track.is_explicit && <span className="flag flag--dark">EXPLICIT</span>}
-            {(track_context === 'album' || track_context === 'artist') && track.track_number && (
-              <span className="mid_grey-text list__item__column__item list__item__column__item--track-number">
-                <span>
-                  <I18n path="track.title" />
-                  &nbsp;
+            {track_middle_column}
+            <div className="list__item__column list__item__column--right">
+              {drag_zone}
+              {track.is_explicit && <span className="flag flag--dark">EXPLICIT</span>}
+              {(track_context === 'album' || track_context === 'artist') && track.track_number && (
+                <span className="mid_grey-text list__item__column__item list__item__column__item--track-number">
+                  <span>
+                    <I18n path="track.title" />
+                    &nbsp;
+                  </span>
+                  {track.track_number}
                 </span>
-                {track.track_number}
+              )}
+              <span className="list__item__column__item list__item__column__item--duration">
+                {track.duration ? <Dater type="length" data={track.duration} /> : '-'}
               </span>
-            )}
-            <span className="list__item__column__item list__item__column__item--duration">
-              {track.duration ? <Dater type="length" data={track.duration} /> : '-'}
-            </span>
-            {show_source_icon && (
-              <span className="list__item__column__item list__item__column__item--source">
-                <Icon type="fontawesome" name={sourceIcon(track.uri)} fixedWidth />
-              </span>
-            )}
-            <ContextMenuTrigger className="list__item__column__item--context-menu-trigger subtle" onTrigger={(e) => this.props.handleContextMenu(e)} />
+              {show_source_icon && (
+                <span className="list__item__column__item list__item__column__item--source">
+                  <Icon type="fontawesome" name={sourceIcon(track.uri)} fixedWidth />
+                </span>
+              )}
+              <ContextMenuTrigger className="list__item__column__item--context-menu-trigger subtle" onTrigger={(e) => this.props.handleContextMenu(e)} />
+            </div>
           </div>
         </div>
       </ErrorBoundary>

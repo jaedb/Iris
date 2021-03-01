@@ -2,10 +2,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Header from '../../components/Header';
-import List from '../../components/List';
 import DropdownField from '../../components/Fields/DropdownField';
 import FilterField from '../../components/Fields/FilterField';
 import { Grid } from '../../components/Grid';
+import { List } from '../../components/List';
 import Icon from '../../components/Icon';
 import * as uiActions from '../../services/ui/actions';
 import * as coreActions from '../../services/core/actions';
@@ -165,13 +165,11 @@ class LibraryArtists extends React.Component {
       return (
         <section className="content-wrapper">
           <List
-            handleContextMenu={(e, item) => this.handleContextMenu(e, item)}
-            rows={artists}
-            thumbnail
+            items={artists}
             details={['followers', 'listeners']}
             right_column={['source', 'albums']}
             className="artists"
-            link_prefix="/artist/"
+            thumbnail
           />
         </section>
       );

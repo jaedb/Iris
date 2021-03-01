@@ -1,14 +1,12 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Button from '../../components/Button';
 import { Grid } from '../../components/Grid';
-import List from '../../components/List';
+import { List } from '../../components/List';
 import DropdownField from '../../components/Fields/DropdownField';
 import Header from '../../components/Header';
 import FilterField from '../../components/Fields/FilterField';
-import LazyLoadListener from '../../components/LazyLoadListener';
 import Icon from '../../components/Icon';
 import * as coreActions from '../../services/core/actions';
 import * as uiActions from '../../services/ui/actions';
@@ -152,13 +150,10 @@ class LibraryPlaylists extends React.Component {
       return (
         <section className="content-wrapper">
           <List
-            handleContextMenu={(e, item) => this.handleContextMenu(e, item)}
-            rows={playlists}
+            items={playlists}
             thumbnail
             details={['owner', 'tracks', 'last_modified']}
             right_column={['source']}
-            className="playlists"
-            link_prefix="/playlist/"
           />
         </section>
       );

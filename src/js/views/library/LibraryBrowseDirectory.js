@@ -3,13 +3,12 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Loader from '../../components/Loader';
 import Header from '../../components/Header';
-import List from '../../components/List';
 import TrackList from '../../components/TrackList';
 import { Grid } from '../../components/Grid';
+import { List } from '../../components/List';
 import DropdownField from '../../components/Fields/DropdownField';
 import FilterField from '../../components/Fields/FilterField';
 import Icon from '../../components/Icon';
-import URILink from '../../components/URILink';
 import ErrorBoundary from '../../components/ErrorBoundary';
 import LazyLoadListener from '../../components/LazyLoadListener';
 import * as uiActions from '../../services/ui/actions';
@@ -43,9 +42,9 @@ const Subdirectories = ({ items, view }) => {
   if (view === 'list') {
     return (
       <List
-        rows={items}
+        items={items}
         className="library-local-directory-list"
-        link={link}
+        getLink={link}
         nocontext
       />
     );

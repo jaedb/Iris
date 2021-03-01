@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -32,8 +31,6 @@ class LibraryTracks extends React.Component {
 
     this.state = {
       filter: '',
-      limit: 50,
-      per_page: 50,
     };
   }
 
@@ -46,13 +43,6 @@ class LibraryTracks extends React.Component {
         setWindowTitle,
       },
     } = this.props;
-
-    // Restore any limit defined in our location state
-    if (state.limit) {
-      this.setState({
-        limit: state.limit,
-      });
-    }
 
     setWindowTitle(i18n('library.tracks.title'));
     this.getMopidyLibrary();
@@ -124,23 +114,6 @@ class LibraryTracks extends React.Component {
       uris: [item.uri],
       items: [item],
     });
-  }
-
-  loadMore = () => {
-    const {
-      limit,
-      per_page,
-    } = this.state;
-    const {
-      location: {
-        state,
-      },
-      history,
-    } = this.props;
-
-    const new_limit = limit + per_page;
-    this.setState({ limit: new_limit });
-    history.replace({ state: { ...state, limit: new_limit } });
   }
 
   setSort = (value) => {

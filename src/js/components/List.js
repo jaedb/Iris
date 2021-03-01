@@ -1,52 +1,39 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { withRouter } from 'react-router';
-import ListItem from './ListItem';
-import * as uiActions from '../services/ui/actions';
-import * as lastfmActions from '../services/lastfm/actions';
-import * as discogsActions from '../services/discogs/actions';
+import React, { useState } from 'react';
+import { ListItem } from './ListItem';
+import ErrorBoundary from './ErrorBoundary';
 
-class List extends React.Component {
-  handleContextMenu(e, item) {
-    const { handleContextMenu } = this.props;
+const List = ({
+  items,
+  className,
+  ...rest
+}) => {
+  if (!items || !items.length) return null;
+  const [itemHeight, setItemHeight] = useState(0);
 
-    if (handleContextMenu) {
-      e.preventDefault();
-      handleContextMenu(e, item);
-    }
-  }
-
-  render = () => {
-    const {
-      rows,
-      className,
-      ...rest
-    } = this.props;
-
-    if (!rows) return null;
-
-    return (
-      <div className={`list ${className}`}>
+  return (
+    <div className={`list ${className}`}>
+      <ErrorBoundary>
         {
-					rows.map((item, index) => (
+          items.map((item, index) => (
             <ListItem
-              key={index}
+              key={`${index}_${item.uri || item.name}`}
               item={item}
-              handleContextMenu={(e) => this.handleContextMenu(e, item)}
+              itemHeight={itemHeight || '300px'}
+              isFirst={index === 0}
+              setItemHeight={setItemHeight}
               {...rest}
             />
-					))
-				}
-      </div>
-    );
-  }
+          ))
+        }
+      </ErrorBoundary>
+    </div>
+  );
+};
+
+export default {
+  List,
 }
 
-const mapDispatchToProps = (dispatch) => ({
-  uiActions: bindActionCreators(uiActions, dispatch),
-  lastfmActions: bindActionCreators(lastfmActions, dispatch),
-  discogsActions: bindActionCreators(discogsActions, dispatch),
-});
-
-export default withRouter(connect(mapDispatchToProps)(List));
+export {
+  List,
+};

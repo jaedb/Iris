@@ -21,7 +21,7 @@ const Grid = memo(({
               item={item}
               getLink={getLink}
               itemHeight={itemHeight || '300px'}
-              isFirstInGrid={index === 0}
+              isFirst={index === 0}
               setItemHeight={setItemHeight}
             />
           ))
