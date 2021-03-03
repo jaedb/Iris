@@ -167,8 +167,7 @@ class LibraryArtists extends React.Component {
           <List
             items={artists}
             details={['followers', 'listeners']}
-            right_column={['source', 'albums']}
-            className="artists"
+            right_column={['albums']}
             thumbnail
           />
         </section>

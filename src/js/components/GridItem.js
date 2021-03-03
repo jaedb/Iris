@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import handleViewport from 'react-in-viewport';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import { scrollTo, sourceIcon } from '../util/helpers';
 import Link from './Link';
 import Icon from './Icon';
@@ -11,7 +10,6 @@ import { I18n } from '../locale';
 import { encodeUri } from '../util/format';
 
 import * as uiActions from '../services/ui/actions';
-import * as lastfmActions from '../services/lastfm/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import * as spotifyActions from '../services/spotify/actions';
 
@@ -62,65 +60,48 @@ const SecondaryLine = ({
   }
 };
 
-const GridItemComponent = ({
+const GridItemActual = ({
   item: itemProp,
-  itemHeight,
   getLink,
   show_source_icon,
-  grid_glow_enabled,
-  spotify_available,
-  isFirst,
-  uiActions: {
-    showContextMenu,
-  },
-  mopidyActions: {
-    getImages: getMopidyImages,
-  },
-  spotifyActions: {
-    getArtistImages: getSpotifyImages,
-  },
-  inViewport,
-  forwardedRef,
-  setItemHeight,
 }) => {
-  if (!itemProp) return null;
   let item = itemProp;
   if (item.album) item = { ...item, ...item.album };
 
-  // Listen for changes to our height, and pass it up to our Grid. This is then used to build the
-  // placeholder elements when out of viewport. We only care about the first item because this
-  // represents the same heights for everything else (in almost all circumstances).
-  if (isFirst && forwardedRef.current) {
-    const { current: { clientHeight } } = forwardedRef;
-    if (clientHeight !== itemHeight) {
-      setItemHeight(clientHeight);
-    }
-  }
+  const dispatch = useDispatch();
+  const grid_glow_enabled = useSelector((state) => state.ui.grid_glow_enabled);
+  const spotify_available = useSelector((state) => state.spotify.access_token);
 
   const onContextMenu = (e) => {
     e.preventDefault();
-    showContextMenu({
-      e,
-      context: item.type,
-      uris: [item.uri],
-      items: [item],
-      tracklist_uri: item.uri, // not needed?
-    });
+    dispatch(
+      uiActions.showContextMenu({
+        e,
+        context: item.type,
+        uris: [item.uri],
+        items: [item],
+        tracklist_uri: item.uri, // not needed?
+      }),
+    );
   };
 
   // Load images
-  if (!item.images && inViewport) {
-    switch (item.type) {
-      case 'artist':
-        if (spotify_available) getSpotifyImages(item);
-        break;
-      case 'album':
-        getMopidyImages([item.uri]);
-        break;
-      default:
-        break;
+  useEffect(() => {
+    if (!item.images) {
+      switch (item.type) {
+        case 'artist':
+          if (spotify_available) {
+            dispatch(spotifyActions.getArtistImages(item));
+          }
+          break;
+        case 'album':
+          dispatch(mopidyActions.getImages([item.uri]));
+          break;
+        default:
+          break;
+      }
     }
-  }
+  }, [item.images]);
 
   // Build link
   let to = '';
@@ -133,31 +114,62 @@ const GridItemComponent = ({
   }
 
   return (
-    <span className={`grid__item grid__item--${item.type}`} ref={forwardedRef}>
+    <Link
+      to={to}
+      onClick={scrollTo}
+      onContextMenu={onContextMenu}
+      className="grid__item__inner"
+    >
+      <Thumbnail
+        glow={grid_glow_enabled}
+        size="medium"
+        className="grid__item__thumbnail"
+        images={item.images || item.icons}
+        type={item.type}
+      />
+      <div className="grid__item__name">
+        {item.name ? item.name : <span className="opaque-text">{item.uri}</span>}
+      </div>
+      <div className="grid__item__secondary">
+        {show_source_icon && (
+          <Icon name={sourceIcon(item.uri)} type="fontawesome" className="source" />
+        )}
+        <SecondaryLine item={item} />
+      </div>
+    </Link>
+  );
+};
+
+const GridItemIndex = ({
+  item: itemProp,
+  itemHeight,
+  getLink,
+  show_source_icon,
+  isFirst,
+  inViewport,
+  forwardedRef,
+  setItemHeight,
+}) => {
+  if (!itemProp) return null;
+
+  // Listen for changes to our height, and pass it up to our Grid. This is then used to build the
+  // placeholder elements when out of viewport. We only care about the first item because this
+  // represents the same heights for everything else (in almost all circumstances).
+  const { current: { clientHeight } = {} } = forwardedRef;
+  useEffect(() => {
+    if (isFirst && clientHeight !== itemHeight) {
+      setItemHeight(clientHeight);
+    }
+  }, [clientHeight]);
+
+  return (
+    <span className={`grid__item grid__item--${itemProp.type}`} ref={forwardedRef}>
       {inViewport || isFirst ? (
-        <Link
-          to={to}
-          onClick={scrollTo}
-          onContextMenu={onContextMenu}
-          className="grid__item__inner"
-        >
-          <Thumbnail
-            glow={grid_glow_enabled}
-            size="medium"
-            className="grid__item__thumbnail"
-            images={item.images || item.icons}
-            type={item.type}
-          />
-          <div className="grid__item__name">
-            {item.name ? item.name : <span className="opaque-text">{item.uri}</span>}
-          </div>
-          <div className="grid__item__secondary">
-            {show_source_icon && (
-              <Icon name={sourceIcon(item.uri)} type="fontawesome" className="source" />
-            )}
-            <SecondaryLine item={item} />
-          </div>
-        </Link>
+        <GridItemActual
+          item={itemProp}
+          getLink={getLink}
+          show_source_icon={show_source_icon}
+        />
       ) : (
         <div style={{ height: itemHeight }} />
       )}
@@ -165,30 +177,7 @@ const GridItemComponent = ({
   );
 };
 
-const mapStateToProps = (state) => {
-  const {
-    ui: {
-      grid_glow_enabled,
-    },
-    spotify: {
-      access_token: spotify_available,
-    },
-  } = state;
-
-  return {
-    grid_glow_enabled,
-    spotify_available,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => ({
-  uiActions: bindActionCreators(uiActions, dispatch),
-  lastfmActions: bindActionCreators(lastfmActions, dispatch),
-  mopidyActions: bindActionCreators(mopidyActions, dispatch),
-  spotifyActions: bindActionCreators(spotifyActions, dispatch),
-});
-
-const GridItem = connect(mapStateToProps, mapDispatchToProps)(handleViewport(GridItemComponent));
+const GridItem = handleViewport(GridItemIndex);
 
 export {
   GridItem,

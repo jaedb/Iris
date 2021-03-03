@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import handleViewport from 'react-in-viewport';
 import { useDispatch, useSelector } from 'react-redux';
 import LinksSentence from './LinksSentence';
@@ -75,7 +75,137 @@ const getValue = (item = {}, name = '') => {
   return value;
 };
 
-const ListItemComponent = ({
+const ListItemActual = ({
+  item,
+  middle_column,
+  right_column,
+  details,
+  thumbnail,
+  nocontext,
+  getLink,
+}) => {
+  const dispatch = useDispatch();
+  const spotify_available = useSelector((state) => state.spotify.access_token);
+
+  // Load images
+  useEffect(() => {
+    if (!item.images) {
+      switch (item.type) {
+        case 'artist':
+          if (spotify_available) {
+            dispatch(spotifyActions.getArtistImages(item));
+          }
+          break;
+        case 'album':
+          dispatch(mopidyActions.getImages([item.uri]));
+          break;
+        default:
+          break;
+      }
+    }
+  }, [item.images]);
+
+  let to = '';
+  if (getLink) {
+    to = getLink(item);
+  } else if (item.link) {
+    to = item.link;
+  } else {
+    to = `/${item.type}/${encodeUri(item.uri)}`;
+  }
+
+  const onContextMenu = (e) => {
+    e.preventDefault();
+    dispatch(
+      uiActions.showContextMenu({
+        e,
+        context: item.type,
+        uris: [item.uri],
+        items: [item],
+        tracklist_uri: item.uri, // not needed?
+      }),
+    );
+  };
+
+  return (
+    <Link to={to} className="list__item__inner" onContextMenu={onContextMenu}>
+      {
+        right_column && !nocontext && (
+          <div className="list__item__column list__item__column--right">
+            {
+              right_column.map((column) => (
+                <span
+                  className={`list__item__column__item list__item__column__item--${column.replace('.', '_')}`}
+                  key={`${column}`}
+                >
+                  {getValue(item, column)}
+                </span>
+              ))
+            }
+            {!nocontext && (
+              <ContextMenuTrigger
+                className="list__item__column__item list__item__column__item--context-menu-trigger subtle"
+                onTrigger={onContextMenu}
+              />
+            )}
+          </div>
+        )
+      }
+      <div className="list__item__column list__item__column--name">
+        {thumbnail && (
+          <Thumbnail
+            className="list__item__column__item list__item__column__item--thumbnail"
+            images={item.images}
+            size="small"
+          />
+        )}
+        <div className="list__item__column__item list__item__column__item--name">
+          {
+            item.name !== undefined
+              ? getValue(item, 'name')
+              : <span className="grey-text">{item.uri}</span>
+          }
+        </div>
+
+        {details ? (
+          <ul className="list__item__column__item list__item__column__item--details details">
+            {
+              details.map((detail) => {
+                const value = getValue(item, detail);
+                if (!value) return null;
+                return (
+                  <li
+                    className={`details__item details__item--${detail.replace('.', '_')}`}
+                    key={detail}
+                  >
+                    {value}
+                  </li>
+                );
+              })
+            }
+          </ul>
+        ) : null}
+      </div>
+
+      {middle_column && (
+        <div className="list__item__column list__item__column--middle">
+          {
+            middle_column.map((column) => (
+              <span
+                className={`list__item__column__item list__item__column__item--${column.replace('.', '_')}`}
+                key={column}
+              >
+                {getValue(item, column)}
+              </span>
+            ))
+          }
+        </div>
+      )}
+    </Link>
+  );
+};
+
+const ListItemIndex = ({
   item,
   middle_column,
   right_column,
@@ -89,18 +219,18 @@ const ListItemComponent = ({
   itemHeight,
   setItemHeight,
 }) => {
-  if (!item) return null;
 
   // Listen for changes to our height, and pass it up to our Grid. This is then used to build the
   // placeholder elements when out of viewport. We only care about the first item because this
   // represents the same heights for everything else (in almost all circumstances).
-  if (isFirst && forwardedRef.current) {
-    const { current: { clientHeight } } = forwardedRef;
-    if (clientHeight !== itemHeight) {
-      console.debug({ clientHeight, itemHeight })
+  const { current: { clientHeight } = {} } = forwardedRef;
+  useEffect(() => {
+    if (isFirst && clientHeight !== itemHeight) {
       setItemHeight(clientHeight);
     }
-  }
+  }, [clientHeight]);
+
+  if (!item) return null;
 
   let class_name = 'list__item';
   if (item.type) class_name += ` list__item--${item.type}`;
@@ -109,122 +239,26 @@ const ListItemComponent = ({
   if (thumbnail) class_name += ' list__item--has-thumbnail';
   if (details) class_name += ' list__item--has-details';
 
-  // Return our placeholder as soon as possible, avoiding additional hooks and code
-  if (!inViewport && !isFirst) {
-    return (
-      <div className={class_name} ref={forwardedRef}>
-        <div style={{ height: itemHeight }} />
-      </div>
-    );
-  }
-
-  // Build link
-  let to = '';
-  if (getLink) {
-    to = getLink(item);
-  } else if (item.link) {
-    to = item.link;
-  } else {
-    to = `/${item.type}/${encodeUri(item.uri)}`;
-  }
-
-  const dispatch = useDispatch();
-  const onContextMenu = (e) => {
-    e.preventDefault();
-    dispatch(
-      uiActions.showContextMenu({
-        e,
-        context: item.type,
-        uris: [item.uri],
-        items: [item],
-        tracklist_uri: item.uri, // not needed?
-      }),
-    );
-  };
-  const grid_glow_enabled = useSelector((state) => state.ui.grid_glow_enabled);
-  const spotify_available = useSelector((state) => state.spotify.access_token);
-
   return (
-    <div className={class_name} onContextMenu={onContextMenu} ref={forwardedRef}>
-      <Link to={to} className="list__item__inner">
-        {
-          right_column && !nocontext && (
-            <div className="list__item__column list__item__column--right">
-              {
-                right_column.map((column) => (
-                  <span
-                    className={`list__item__column__item list__item__column__item--${column.replace('.', '_')}`}
-                    key={`${column}`}
-                  >
-                    {getValue(item, column)}
-                  </span>
-                ))
-              }
-              {!nocontext && (
-                <ContextMenuTrigger
-                  className="list__item__column__item list__item__column__item--context-menu-trigger subtle"
-                  onTrigger={onContextMenu}
-                />
-              )}
-            </div>
-          )
-        }
-        <div className="list__item__column list__item__column--name">
-          {thumbnail && (
-            <Thumbnail
-              className="list__item__column__item list__item__column__item--thumbnail"
-              images={item.images}
-              size="small"
-            />
-          )}
-          <div className="list__item__column__item list__item__column__item--name">
-            {
-              item.name !== undefined
-                ? getValue(item, 'name')
-                : <span className="grey-text">{item.uri}</span>
-            }
-          </div>
-
-          {details ? (
-            <ul className="list__item__column__item list__item__column__item--details details">
-              {
-                details.map((detail) => {
-                  const value = getValue(item, detail);
-                  if (!value) return null;
-                  return (
-                    <li
-                      className={`details__item details__item--${detail.replace('.', '_')}`}
-                      key={detail}
-                    >
-                      {value}
-                    </li>
-                  );
-                })
-              }
-            </ul>
-          ) : null}
-        </div>
-
-        {middle_column && (
-          <div className="list__item__column list__item__column--middle">
-            {
-              middle_column.map((column) => (
-                <span
-                  className={`list__item__column__item list__item__column__item--${column.replace('.', '_')}`}
-                  key={column}
-                >
-                  {getValue(item, column)}
-                </span>
-              ))
-            }
-          </div>
-        )}
-      </Link>
+    <div className={class_name} ref={forwardedRef}>
+      {isFirst || inViewport ? (
+        <ListItemActual
+          item={item}
+          middle_column={middle_column}
+          right_column={right_column}
+          details={details}
+          thumbnail={thumbnail}
+          nocontext={nocontext}
+          getLink={getLink}
+        />
+      ) : (
+        <div style={{ height: itemHeight }} />
+      )}
     </div>
   );
 };
 
-const ListItem = handleViewport(ListItemComponent);
+const ListItem = handleViewport(ListItemIndex);
 
 export {
   ListItem,

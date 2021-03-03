@@ -12,7 +12,7 @@
     cursor: pointer;
 
     &__inner {
-      @include fadein();
+      @include fadein(0.1s, 0px, 0, 0, 'fadein_flat');
       display: block;
       border: 0 !important;
     }
