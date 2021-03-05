@@ -11,6 +11,8 @@ const Grid = memo(({
   if (!items || !items.length) return null;
   const [itemHeight, setItemHeight] = useState(0);
 
+  console.debug('Render Grid')
+
   return (
     <div className={`grid grid--${items[0].type}s ${className} ${mini ? 'grid--mini' : ''}`}>
       <ErrorBoundary>

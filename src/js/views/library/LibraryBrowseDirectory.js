@@ -280,6 +280,7 @@ class LibraryBrowseDirectory extends React.Component {
   }
 }
 
+const loadingSelector = makeLoadingSelector(['mopidy_library.(browse|lookup)']);
 const mapStateToProps = (state, ownProps) => {
   const {
     mopidy: {
@@ -294,7 +295,6 @@ const mapStateToProps = (state, ownProps) => {
   const directory = _directory && uriMatcher.includes(_directory.uri)
     ? _directory
     : undefined;
-  const loadingSelector = makeLoadingSelector(['mopidy_library.(browse|lookup)']);
 
   return {
     uri,

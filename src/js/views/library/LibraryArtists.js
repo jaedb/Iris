@@ -16,6 +16,7 @@ import Loader from '../../components/Loader';
 import {
   makeLibrarySelector,
   makeProcessProgressSelector,
+  getLibrarySource,
 } from '../../util/selectors';
 
 const processKeys = [
@@ -298,28 +299,19 @@ class LibraryArtists extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  const source = state.ui.library_artists_source || 'all';
-
-  const libraryUris = [];
-  if (source === 'all' || source === 'local') libraryUris.push('mopidy:library:artists');
-  if (source === 'all' || source === 'spotify') libraryUris.push('spotify:library:artists');
-  if (source === 'all' || source === 'google') libraryUris.push('google:library:artists');
-  const librarySelector = makeLibrarySelector(libraryUris);
-  const processProgressSelector = makeProcessProgressSelector(processKeys);
-
-  return {
-    loading_progress: processProgressSelector(state),
-    mopidy_uri_schemes: state.mopidy.uri_schemes,
-    google_available: (state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('gmusic:')),
-    spotify_available: (state.spotify.access_token),
-    artists: librarySelector(state),
-    source,
-    sort: (state.ui.library_artists_sort ? state.ui.library_artists_sort : null),
-    sort_reverse: (state.ui.library_artists_sort_reverse ? state.ui.library_artists_sort_reverse : false),
-    view: state.ui.library_artists_view,
-  };
-};
+const librarySelector = makeLibrarySelector('artists');
+const processProgressSelector = makeProcessProgressSelector(processKeys);
+const mapStateToProps = (state) => ({
+  loading_progress: processProgressSelector(state),
+  mopidy_uri_schemes: state.mopidy.uri_schemes,
+  google_available: (state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('gmusic:')),
+  spotify_available: (state.spotify.access_token),
+  artists: librarySelector(state, 'artists'),
+  source: getLibrarySource(state, 'artists'),
+  sort: (state.ui.library_artists_sort ? state.ui.library_artists_sort : null),
+  sort_reverse: (state.ui.library_artists_sort_reverse ? state.ui.library_artists_sort_reverse : false),
+  view: state.ui.library_artists_view,
+});
 
 const mapDispatchToProps = (dispatch) => ({
   uiActions: bindActionCreators(uiActions, dispatch),

@@ -18,6 +18,7 @@ import Loader from '../../components/Loader';
 import {
   makeLibrarySelector,
   makeProcessProgressSelector,
+  getLibrarySource,
 } from '../../util/selectors';
 
 const processKeys = [
@@ -312,26 +313,18 @@ class LibraryTracks extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  const source = state.ui.library_tracks_source ? state.ui.library_tracks_source : 'all';
-
-  const libraryUris = [];
-  if (source === 'all' || source === 'local') libraryUris.push('mopidy:library:tracks');
-  if (source === 'all' || source === 'spotify') libraryUris.push('spotify:library:tracks');
-  const librarySelector = makeLibrarySelector(libraryUris);
-  const processProgressSelector = makeProcessProgressSelector(processKeys);
-
-  return {
-    loading_progress: processProgressSelector(state),
-    mopidy_uri_schemes: state.mopidy.uri_schemes,
-    tracks: librarySelector(state),
-    spotify_available: state.spotify.access_token,
-    view: state.ui.library_tracks_view,
-    source,
-    sort: state.ui.library_tracks_sort,
-    sort_reverse: state.ui.library_tracks_sort_reverse,
-  };
-};
+const librarySelector = makeLibrarySelector('tracks');
+const processProgressSelector = makeProcessProgressSelector(processKeys);
+const mapStateToProps = (state) => ({
+  loading_progress: processProgressSelector(state),
+  mopidy_uri_schemes: state.mopidy.uri_schemes,
+  tracks: librarySelector(state),
+  spotify_available: state.spotify.access_token,
+  view: state.ui.library_tracks_view,
+  source: getLibrarySource(state, 'tracks'),
+  sort: state.ui.library_tracks_sort,
+  sort_reverse: state.ui.library_tracks_sort_reverse,
+});
 
 const mapDispatchToProps = (dispatch) => ({
   coreActions: bindActionCreators(coreActions, dispatch),

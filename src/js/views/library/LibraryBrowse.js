@@ -126,6 +126,7 @@ class LibraryBrowse extends React.Component {
   }
 }
 
+const loadingSelector = makeLoadingSelector(['(.*)mopidy_library.browse(.*)']);
 const mapStateToProps = (state) => {
   const {
     mopidy: {
@@ -136,7 +137,6 @@ const mapStateToProps = (state) => {
     },
   } = state;
   const directory = _directory && _directory.uri === null ? _directory : null;
-  const loadingSelector = makeLoadingSelector(['(.*)mopidy_library.browse(.*)']);
 
   return {
     loading: loadingSelector(state),

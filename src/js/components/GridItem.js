@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import handleViewport from 'react-in-viewport';
 import { scrollTo, sourceIcon } from '../util/helpers';
