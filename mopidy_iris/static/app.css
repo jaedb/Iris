@@ -7344,39 +7344,6 @@ h4 .loader {
   border-bottom: 0 !important;
   cursor: pointer;
 }
-.grid__item__inner {
-  /**
-   * TODO: Because this is built at first use of fadein, all subsequent users will be using
-   * the same keyframes
-   */
-  animation-delay: 0;
-  -webkit-animation-fill-mode: forwards;
-  animation-fill-mode: forwards;
-  animation-name: "fadein_flat";
-  animation-duration: 0.1s;
-  animation-timing-function: linear;
-  animation-iteration-count: 1;
-  display: block;
-  border: 0 !important;
-}
-@keyframes fadein_flat {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-@keyframes fadein {
-  0% {
-    opacity: 0;
-    transform: translateY(0px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0px);
-  }
-}
 .grid__item__wrapper {
   display: inline-block;
 }
@@ -7386,6 +7353,9 @@ h4 .loader {
   -o-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
   max-width: 100%;
+}
+.grid__item__thumbnail__image {
+  transform: scale(0.98);
 }
 .grid__item__name {
   white-space: nowrap;

@@ -42,11 +42,12 @@ const getLibrarySource = (state, name) => state.ui[`library_${name}_source`] || 
 const makeLibrarySelector = (name) => createSelector(
   [getLibraries, getItems, getLibrarySource],
   (libraries, items, source) => {
-    console.debug('Running library selector', { libraries, items, source})
     const uris = [];
     if (source === 'all' || source === 'local') uris.push(`mopidy:library:${name}`);
     if (source === 'all' || source === 'spotify') uris.push(`spotify:library:${name}`);
     if (source === 'all' || source === 'google') uris.push(`google:library:${name}`);
+
+    console.debug('SelectingLibrary', { lib: Object.keys(libraries).length, it: Object.keys(items).length, source, uris })
 
     const itemUris = indexToArray(libraries, uris).reduce(
       (acc, library) => [...acc, ...library.items_uris],

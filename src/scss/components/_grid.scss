@@ -11,12 +11,6 @@
     border-bottom: 0 !important;
     cursor: pointer;
 
-    &__inner {
-      @include fadein(0.1s, 0px, 0, 0, 'fadein_flat');
-      display: block;
-      border: 0 !important;
-    }
-
     &__wrapper {
       display: inline-block;
     }
@@ -24,6 +18,10 @@
     &__thumbnail {
       @include animate();
       max-width: 100%;
+      
+      &__image {
+        transform: scale(0.98);
+      }
     }
 
     &__name {

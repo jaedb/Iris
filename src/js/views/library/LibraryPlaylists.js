@@ -316,6 +316,8 @@ const mapStateToProps = (state) => {
     },
   } = state;
 
+  console.debug(Object.keys(state.core.libraries).length)
+
   return {
     slim_mode: state.ui.slim_mode,
     mopidy_uri_schemes: state.mopidy.uri_schemes,

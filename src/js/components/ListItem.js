@@ -75,7 +75,7 @@ const getValue = (item = {}, name = '') => {
   return value;
 };
 
-const ListItemActual = ({
+const ListItem = ({
   item,
   middle_column,
   right_column,
@@ -84,6 +84,8 @@ const ListItemActual = ({
   nocontext,
   getLink,
 }) => {
+  if (!item) return null;
+
   const dispatch = useDispatch();
   const spotify_available = useSelector((state) => state.spotify.access_token);
 
@@ -127,8 +129,15 @@ const ListItemActual = ({
     );
   };
 
+  let className = 'list__item';
+  if (item.type) className += ` list__item--${item.type}`;
+  if (item.loading) className += ' list__item--loading';
+  if (middle_column) className += ' list__item--has-middle-column';
+  if (thumbnail) className += ' list__item--has-thumbnail';
+  if (details) className += ' list__item--has-details';
+
   return (
-    <Link to={to} className="list__item__inner" onContextMenu={onContextMenu}>
+    <Link to={to} className={className} onContextMenu={onContextMenu}>
       {
         right_column && !nocontext && (
           <div className="list__item__column list__item__column--right">
@@ -204,61 +213,6 @@ const ListItemActual = ({
     </Link>
   );
 };
-
-const ListItemIndex = ({
-  item,
-  middle_column,
-  right_column,
-  thumbnail,
-  details,
-  nocontext,
-  forwardedRef,
-  getLink,
-  isFirst,
-  inViewport,
-  itemHeight,
-  setItemHeight,
-}) => {
-
-  // Listen for changes to our height, and pass it up to our Grid. This is then used to build the
-  // placeholder elements when out of viewport. We only care about the first item because this
-  // represents the same heights for everything else (in almost all circumstances).
-  const { current: { clientHeight } = {} } = forwardedRef;
-  useEffect(() => {
-    if (isFirst && clientHeight !== itemHeight) {
-      setItemHeight(clientHeight);
-    }
-  }, [clientHeight]);
-
-  if (!item) return null;
-
-  let class_name = 'list__item';
-  if (item.type) class_name += ` list__item--${item.type}`;
-  if (item.loading) class_name += ' list__item--loading';
-  if (middle_column) class_name += ' list__item--has-middle-column';
-  if (thumbnail) class_name += ' list__item--has-thumbnail';
-  if (details) class_name += ' list__item--has-details';
-
-  return (
-    <div className={class_name} ref={forwardedRef}>
-      {isFirst || inViewport ? (
-        <ListItemActual
-          item={item}
-          middle_column={middle_column}
-          right_column={right_column}
-          details={details}
-          thumbnail={thumbnail}
-          nocontext={nocontext}
-          getLink={getLink}
-        />
-      ) : (
-        <div style={{ height: itemHeight }} />
-      )}
-    </div>
-  );
-};
-
-const ListItem = handleViewport(ListItemIndex);
 
 export {
   ListItem,

@@ -1,6 +1,5 @@
-import React, { useEffect, memo } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import handleViewport from 'react-in-viewport';
 import { scrollTo, sourceIcon } from '../util/helpers';
 import Link from './Link';
 import Icon from './Icon';
@@ -60,7 +59,7 @@ const SecondaryLine = ({
   }
 };
 
-const GridItemActual = ({
+const GridItem = ({
   item: itemProp,
   getLink,
   show_source_icon,
@@ -118,7 +117,7 @@ const GridItemActual = ({
       to={to}
       onClick={scrollTo}
       onContextMenu={onContextMenu}
-      className="grid__item__inner"
+      className={`grid__item grid__item--${itemProp.type}`}
     >
       <Thumbnail
         glow={grid_glow_enabled}
@@ -139,45 +138,6 @@ const GridItemActual = ({
     </Link>
   );
 };
-
-const GridItemIndex = ({
-  item: itemProp,
-  itemHeight,
-  getLink,
-  show_source_icon,
-  isFirst,
-  inViewport,
-  forwardedRef,
-  setItemHeight,
-}) => {
-  if (!itemProp) return null;
-
-  // Listen for changes to our height, and pass it up to our Grid. This is then used to build the
-  // placeholder elements when out of viewport. We only care about the first item because this
-  // represents the same heights for everything else (in almost all circumstances).
-  const { current: { clientHeight } = {} } = forwardedRef;
-  useEffect(() => {
-    if (isFirst && clientHeight !== itemHeight) {
-      setItemHeight(clientHeight);
-    }
-  }, [clientHeight]);
-
-  return (
-    <span className={`grid__item grid__item--${itemProp.type}`} ref={forwardedRef}>
-      {inViewport || isFirst ? (
-        <GridItemActual
-          item={itemProp}
-          getLink={getLink}
-          show_source_icon={show_source_icon}
-        />
-      ) : (
-        <div style={{ height: itemHeight }} />
-      )}
-    </span>
-  );
-};
-
-const GridItem = handleViewport(GridItemIndex);
 
 export {
   GridItem,
