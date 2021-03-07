@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import handleViewport from 'react-in-viewport';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import LinksSentence from './LinksSentence';
 import { dater } from './Dater';
 import { nice_number } from './NiceNumber';
@@ -12,6 +12,7 @@ import Popularity from './Popularity';
 import Link from './Link';
 import { I18n } from '../locale';
 import { encodeUri } from '../util/format';
+import { scrollTo } from '../util/helpers';
 
 import * as uiActions from '../services/ui/actions';
 import * as lastfmActions from '../services/lastfm/actions';
@@ -88,6 +89,7 @@ const ListItem = ({
 
   const dispatch = useDispatch();
   const spotify_available = useSelector((state) => state.spotify.access_token);
+  const history = useHistory();
 
   // Load images
   useEffect(() => {
@@ -107,15 +109,6 @@ const ListItem = ({
     }
   }, [item.images]);
 
-  let to = '';
-  if (getLink) {
-    to = getLink(item);
-  } else if (item.link) {
-    to = item.link;
-  } else {
-    to = `/${item.type}/${encodeUri(item.uri)}`;
-  }
-
   const onContextMenu = (e) => {
     e.preventDefault();
     dispatch(
@@ -128,6 +121,30 @@ const ListItem = ({
       }),
     );
   };
+  
+  /**
+   * Handled as a click, rather than an object so we can direct to a link, UNLESS we have clicked
+   * on a sub-link (we may have nested links to Albums for example). HTML does not allow nested
+   * <a> tags.
+   * 
+   * @param {Object} e 
+   */
+  const onClick = (e) => {
+    let to = '';
+    if (getLink) {
+      to = getLink(item);
+    } else if (item.link) {
+      to = item.link;
+    } else {
+      to = `/${item.type}/${encodeUri(item.uri)}`;
+    }
+
+    if (e.target.tagName.toLowerCase() !== 'a') {
+      e.preventDefault();
+      history.push(to);
+      scrollTo();
+    }
+  }
 
   let className = 'list__item';
   if (item.type) className += ` list__item--${item.type}`;
@@ -137,7 +154,11 @@ const ListItem = ({
   if (details) className += ' list__item--has-details';
 
   return (
-    <Link to={to} className={className} onContextMenu={onContextMenu}>
+    <div
+      className={className}
+      onContextMenu={onContextMenu}
+      onClick={onClick}
+    >
       {
         right_column && !nocontext && (
           <div className="list__item__column list__item__column--right">
@@ -210,7 +231,7 @@ const ListItem = ({
           }
         </div>
       )}
-    </Link>
+    </div>
   );
 };
 

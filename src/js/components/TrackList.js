@@ -8,6 +8,7 @@ import * as uiActions from '../services/ui/actions';
 import { isTouchDevice } from '../util/helpers';
 import { arrayOf } from '../util/arrays';
 import { i18n } from '../locale';
+import { SmartList } from './SmartList';
 
 class TrackList extends React.Component {
   constructor(props) {
@@ -398,12 +399,12 @@ class TrackList extends React.Component {
     const {
       tracks,
       track_context,
-      className: classNameProp = '',
+      className = '',
       show_source_icon,
       selected_tracks = [],
       play_state,
-      dragger,
       slim_mode,
+      ...rest
     } = this.props;
 
     if (!tracks || Object.prototype.toString.call(tracks) !== '[object Array]') {
@@ -411,7 +412,22 @@ class TrackList extends React.Component {
     }
 
     return (
-      <div className={`list list--tracks ${track_context} ${classNameProp}`}>
+      <div className={`list list--tracks ${track_context} ${className}`}>
+        <SmartList
+          items={tracks}
+          itemComponent={Track}
+          itemProps={{
+            buildTrackKey: (track, index) => this.buildTrackKey(track, index),
+            play_state,
+            show_source_icon,
+            track_context,
+            handleClick: (e, key) => this.handleClick(e, key),
+            ...rest,
+          }}
+        />
+      </div>
+    );
+  /*
         {
 					tracks.map(
 					  (track, index) => {
@@ -426,7 +442,6 @@ class TrackList extends React.Component {
                   can_sort={track_context === 'queue' || track_context === 'editable-playlist'}
                   selected={selected_tracks.includes(key)}
                   play_state={play_state}
-                  dragger={dragger}
                   handleClick={(e) => this.handleClick(e, key)}
                   handleDoubleClick={(e) => this.handleDoubleClick(e, key)}
                   handleContextMenu={(e) => this.handleContextMenu(e, key)}
@@ -441,7 +456,7 @@ class TrackList extends React.Component {
 					)
 				}
       </div>
-    );
+    );*/
   }
 }
 
