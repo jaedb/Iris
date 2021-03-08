@@ -5143,10 +5143,14 @@ select option {
 }
 @media (max-width: 799px) {
   .context-menu {
+    /**
+     * TODO: Because this is built at first use of fadein, all subsequent users will be using
+     * the same keyframes
+     */
     animation-delay: 0;
     -webkit-animation-fill-mode: forwards;
     animation-fill-mode: forwards;
-    animation-name: fadein;
+    animation-name: "fadein";
     animation-duration: 0.2s;
     animation-timing-function: linear;
     animation-iteration-count: 1;
@@ -5156,6 +5160,14 @@ select option {
     left: 0 !important;
     margin: 0 !important;
     text-align: center;
+  }
+  @keyframes fadein_flat {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
   }
   @keyframes fadein {
     0% {
@@ -7342,6 +7354,9 @@ h4 .loader {
   transition: all 0.2s ease-in-out;
   max-width: 100%;
 }
+.grid__item__thumbnail__image {
+  transform: scale(0.98);
+}
 .grid__item__name {
   white-space: nowrap;
   overflow: hidden;
@@ -7354,7 +7369,6 @@ h4 .loader {
   overflow: hidden;
   text-overflow: ellipsis;
   padding-top: 2px;
-  color: #888888;
 }
 .grid__item__secondary .source {
   padding-right: 6px;
@@ -7927,10 +7941,14 @@ main header.overlay {
   width: 300;
 }
 .notifications .notification {
+  /**
+   * TODO: Because this is built at first use of fadein, all subsequent users will be using
+   * the same keyframes
+   */
   animation-delay: 0;
   -webkit-animation-fill-mode: forwards;
   animation-fill-mode: forwards;
-  animation-name: fadein;
+  animation-name: "fadein";
   animation-duration: 0.2s;
   animation-timing-function: linear;
   animation-iteration-count: 1;
@@ -7944,10 +7962,18 @@ main header.overlay {
   font-size: 0.9rem;
   min-width: 200px;
 }
+@keyframes fadein_flat {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
 @keyframes fadein {
   0% {
     opacity: 0;
-    transform: translateY(5px);
+    transform: translateY(0px);
   }
   100% {
     opacity: 1;
@@ -10367,10 +10393,14 @@ main .track-view .lyrics-selector {
 }
 
 .modal {
+  /**
+   * TODO: Because this is built at first use of fadein, all subsequent users will be using
+   * the same keyframes
+   */
   animation-delay: 0;
   -webkit-animation-fill-mode: forwards;
   animation-fill-mode: forwards;
-  animation-name: fadein;
+  animation-name: "fadein";
   animation-duration: 0.2s;
   animation-timing-function: linear;
   animation-iteration-count: 1;
@@ -10386,10 +10416,18 @@ main .track-view .lyrics-selector {
   min-height: 100%;
   z-index: 98;
 }
+@keyframes fadein_flat {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
 @keyframes fadein {
   0% {
     opacity: 0;
-    transform: translateY(5px);
+    transform: translateY(0px);
   }
   100% {
     opacity: 1;

@@ -8,6 +8,7 @@ import * as uiActions from '../services/ui/actions';
 import { isTouchDevice } from '../util/helpers';
 import { arrayOf } from '../util/arrays';
 import { i18n } from '../locale';
+import { SmartList } from './SmartList';
 
 class TrackList extends React.Component {
   constructor(props) {
@@ -398,12 +399,12 @@ class TrackList extends React.Component {
     const {
       tracks,
       track_context,
-      className: classNameProp = '',
+      className = '',
       show_source_icon,
       selected_tracks = [],
       play_state,
-      dragger,
       slim_mode,
+      dragger,
     } = this.props;
 
     if (!tracks || Object.prototype.toString.call(tracks) !== '[object Array]') {
@@ -411,36 +412,29 @@ class TrackList extends React.Component {
     }
 
     return (
-      <div className={`list list--tracks ${track_context} ${classNameProp}`}>
-        {
-					tracks.map(
-					  (track, index) => {
-					    const key = this.buildTrackKey(track, index);
-					    return (
-                <Track
-                  show_source_icon={show_source_icon}
-                  key={key}
-                  mini_zones={slim_mode || isTouchDevice()}
-                  track={{ ...track, key }}
-                  track_context={track_context}
-                  can_sort={track_context === 'queue' || track_context === 'editable-playlist'}
-                  selected={selected_tracks.includes(key)}
-                  play_state={play_state}
-                  dragger={dragger}
-                  handleClick={(e) => this.handleClick(e, key)}
-                  handleDoubleClick={(e) => this.handleDoubleClick(e, key)}
-                  handleContextMenu={(e) => this.handleContextMenu(e, key)}
-                  handleDrag={(e) => this.handleDrag(e, key)}
-                  handleDrop={(e) => this.handleDrop(e, key)}
-                  handleTap={(e) => this.handleTap(e, key)}
-                  handleDoubleTap={(e) => this.handleDoubleTap(e, key)}
-                  handleTouchDrag={(e) => this.handleTouchDrag(e, key)}
-                />
-					    );
-					  },
-					)
-				}
-      </div>
+      <SmartList
+        className={`list list--tracks ${track_context} ${className}`}
+        items={tracks}
+        itemComponent={Track}
+        itemProps={{
+          dragger,
+          buildTrackKey: (track, index) => this.buildTrackKey(track, index),
+          play_state,
+          show_source_icon,
+          track_context,
+          selected_tracks,
+          can_sort: track_context === 'queue' || track_context === 'editable-playlist',
+          mini_zones: slim_mode || isTouchDevice(),
+          handleClick: (e, key) => this.handleClick(e, key),
+          handleDoubleClick: (e, key) => this.handleDoubleClick(e, key),
+          handleContextMenu: (e, key) => this.handleContextMenu(e, key),
+          handleDrag: (e, key) => this.handleDrag(e, key),
+          handleDrop: (e, key) => this.handleDrop(e, key),
+          handleTap: (e, key) => this.handleTap(e, key),
+          handleDoubleTap: (e, key) => this.handleDoubleTap(e, key),
+          handleTouchDrag: (e, key) => this.handleTouchDrag(e, key),
+        }}
+      />
     );
   }
 }

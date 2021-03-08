@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -19,6 +18,7 @@ import Loader from '../../components/Loader';
 import {
   makeLibrarySelector,
   makeProcessProgressSelector,
+  getLibrarySource,
 } from '../../util/selectors';
 
 const processKeys = [
@@ -32,8 +32,6 @@ class LibraryTracks extends React.Component {
 
     this.state = {
       filter: '',
-      limit: 50,
-      per_page: 50,
     };
   }
 
@@ -46,13 +44,6 @@ class LibraryTracks extends React.Component {
         setWindowTitle,
       },
     } = this.props;
-
-    // Restore any limit defined in our location state
-    if (state.limit) {
-      this.setState({
-        limit: state.limit,
-      });
-    }
 
     setWindowTitle(i18n('library.tracks.title'));
     this.getMopidyLibrary();
@@ -124,23 +115,6 @@ class LibraryTracks extends React.Component {
       uris: [item.uri],
       items: [item],
     });
-  }
-
-  loadMore = () => {
-    const {
-      limit,
-      per_page,
-    } = this.state;
-    const {
-      location: {
-        state,
-      },
-      history,
-    } = this.props;
-
-    const new_limit = limit + per_page;
-    this.setState({ limit: new_limit });
-    history.replace({ state: { ...state, limit: new_limit } });
   }
 
   setSort = (value) => {
@@ -339,26 +313,18 @@ class LibraryTracks extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  const source = state.ui.library_tracks_source ? state.ui.library_tracks_source : 'all';
-
-  const libraryUris = [];
-  if (source === 'all' || source === 'local') libraryUris.push('mopidy:library:tracks');
-  if (source === 'all' || source === 'spotify') libraryUris.push('spotify:library:tracks');
-  const librarySelector = makeLibrarySelector(libraryUris);
-  const processProgressSelector = makeProcessProgressSelector(processKeys);
-
-  return {
-    loading_progress: processProgressSelector(state),
-    mopidy_uri_schemes: state.mopidy.uri_schemes,
-    tracks: librarySelector(state),
-    spotify_available: state.spotify.access_token,
-    view: state.ui.library_tracks_view,
-    source,
-    sort: state.ui.library_tracks_sort,
-    sort_reverse: state.ui.library_tracks_sort_reverse,
-  };
-};
+const librarySelector = makeLibrarySelector('tracks');
+const processProgressSelector = makeProcessProgressSelector(processKeys);
+const mapStateToProps = (state) => ({
+  loading_progress: processProgressSelector(state),
+  mopidy_uri_schemes: state.mopidy.uri_schemes,
+  tracks: librarySelector(state),
+  spotify_available: state.spotify.access_token,
+  view: state.ui.library_tracks_view,
+  source: getLibrarySource(state, 'tracks'),
+  sort: state.ui.library_tracks_sort,
+  sort_reverse: state.ui.library_tracks_sort_reverse,
+});
 
 const mapDispatchToProps = (dispatch) => ({
   coreActions: bindActionCreators(coreActions, dispatch),

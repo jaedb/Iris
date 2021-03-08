@@ -18,6 +18,10 @@
     &__thumbnail {
       @include animate();
       max-width: 100%;
+      
+      &__image {
+        transform: scale(0.98);
+      }
     }
 
     &__name {
@@ -29,7 +33,6 @@
     &__secondary {
       @include one_line_text;
       padding-top: 2px;
-      color: colour('secondary_grey');
 
       .source {
         padding-right: 6px;
