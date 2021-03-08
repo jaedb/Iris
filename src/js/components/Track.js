@@ -38,6 +38,11 @@ export default class Track extends React.Component {
     this.setState({ hover: false });
   }
 
+  handleContextMenu = (e) => {
+    const { handleContextMenu } = this.props;
+    handleContextMenu(e, this.key);
+  }
+
   handleMouseDown = (e) => {
     const target = $(e.target);
 
@@ -79,7 +84,7 @@ export default class Track extends React.Component {
         || e.pageY < start_y - threshold
       ) {
         // Handover to parent for dragging. We can unset all our behaviour now.
-        handleDrag(e);
+        handleDrag(e, this.key);
         this.start_position = false;
       }
     }
@@ -99,10 +104,10 @@ export default class Track extends React.Component {
         e.preventDefault();
 
         if (handleDrop !== undefined) {
-          handleDrop(e);
+          handleDrop(e, this.key);
         }
       } else if (!target.is('a') && target.closest('a').length <= 0) {
-        handleClick(e);
+        handleClick(e, this.key);
         this.start_position = false;
       }
       return;
@@ -115,7 +120,7 @@ export default class Track extends React.Component {
   handleDoubleClick = (e) => {
     const { handleDoubleClick } = this.props;
 
-    handleDoubleClick(e);
+    handleDoubleClick(e, this.key);
   }
 
   handleTouchStart = (e) => {
@@ -124,7 +129,7 @@ export default class Track extends React.Component {
     const timestamp = Math.floor(Date.now());
 
     if (target.hasClass('drag-zone')) {
-      handleTouchDrag(e);
+      handleTouchDrag(e, this.key);
       e.preventDefault();
     }
 
@@ -176,18 +181,18 @@ export default class Track extends React.Component {
       if (target.hasClass('touch-contextable')) {
         // Update our selection. By not passing touch = true selection will work like a regular
         // click this.props.handleSelection(e);
-        handleContextMenu(e);
+        handleContextMenu(e, this.key);
         return false;
       }
 
       // We received a touchend within 300ms ago, so handle as double-tap
       if ((timestamp - this.end_time) > 0 && (timestamp - this.end_time) <= 300) {
-        handleDoubleTap(e);
+        handleDoubleTap(e, this.key);
         e.preventDefault();
         return false;
       }
 
-      handleTap(e);
+      handleTap(e, this.key);
     }
 
     this.end_time = timestamp;
@@ -196,7 +201,7 @@ export default class Track extends React.Component {
   renderTrackMiddleColumn = () => {
     const {
       track_context,
-      track: {
+      item: {
         added_from,
         added_by,
         played_at,
@@ -297,10 +302,9 @@ export default class Track extends React.Component {
       track_context,
       stream_title,
       play_state,
-      selected,
+      selected_tracks,
       can_sort,
       show_source_icon,
-      handleContextMenu,
     } = this.props;
     const {
       hover,
@@ -356,7 +360,7 @@ export default class Track extends React.Component {
 
     const track_middle_column = this.renderTrackMiddleColumn();
 
-    if (selected) className += ' list__item--selected';
+    if (selected_tracks.includes(this.key)) className += ' list__item--selected';
     if (can_sort) className += ' list__item--can-sort';
     if (item.type !== undefined) className += ` list__item--${item.type}`;
     if (item.playing) className += ' list__item--playing';
@@ -375,7 +379,7 @@ export default class Track extends React.Component {
           onMouseUp={this.handleMouseUp}
           onMouseMove={this.handleMouseMove}
           onDoubleClick={this.handleDoubleClick}
-          onContextMenu={handleContextMenu}
+          onContextMenu={this.handleContextMenu}
           onTouchStart={this.handleTouchStart}
           onTouchEnd={this.handleTouchEnd}
         >

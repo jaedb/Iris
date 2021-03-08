@@ -15,6 +15,7 @@ const SmartListBatch = handleViewport(
     itemProps,
     batchIndex,
     chunkSize,
+    className = 'smart-list__batch',
   }) => {
     // Listen for changes to our height, and pass it up to our Grid. This is then used to build the
     // placeholder elements when out of viewport. We only care about the first item because this
@@ -32,7 +33,7 @@ const SmartListBatch = handleViewport(
     }
 
     return (
-      <div className="smart-list__batch" ref={forwardedRef}>
+      <div className={className} ref={forwardedRef}>
         {inViewport || isFirst ? (
           <div style={isFirst ? {} : { minHeight: itemHeight }}>
             {
@@ -60,6 +61,7 @@ const SmartList = memo(({
   chunkSize = 20,
   initialHeight = '50vh',
   itemProps,
+  className,
 }) => {
   if (!items || !items.length) return null;
   if (!itemComponent) return null;
@@ -72,6 +74,7 @@ const SmartList = memo(({
         chunk(items, chunkSize).map((chunked, index) => (
           <SmartListBatch
             key={`smart-list__batch-${index}`} // Yeah yeah, I know; TODO
+            className={className}
             items={chunked}
             itemHeight={itemHeight}
             itemComponent={itemComponent}

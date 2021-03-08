@@ -10,13 +10,13 @@ const List = ({
   if (!items || !items.length) return null;
 
   return (
-    <div className={`list ${className}`}>
-      <SmartList
-        items={items}
-        itemComponent={ListItem}
-        itemProps={rest}
-      />
-    </div>
+    <SmartList
+      className={`list ${className}`}
+      items={items}
+      itemComponent={ListItem}
+      itemProps={rest}
+      chunkSize={10}
+    />
   );
 };
 

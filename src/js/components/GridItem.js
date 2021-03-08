@@ -29,32 +29,32 @@ const SecondaryLine = ({
   switch (type) {
     case 'playlist':
       return (
-        <span className="grid__item__secondary__content">
-          <I18n path="specs.tracks" count={trackCount} />
-        </span>
+        <ul className="grid__item__secondary__content details">
+          <li><I18n path="specs.tracks" count={trackCount} /></li>
+        </ul>
       );
 
     case 'artist':
       return (
-        <span className="grid__item__secondary__content">
-          {followers && <I18n path="specs.followers" count={followers.toLocaleString()} />}
-          {albums_uris && <I18n path="specs.albums" count={albums_uris.length} />}
-        </span>
+        <ul className="grid__item__secondary__content details">
+          {followers && <li><I18n path="specs.followers" count={followers.toLocaleString()} /></li>}
+          {albums_uris && <li><I18n path="specs.albums" count={albums_uris.length} /></li>}
+        </ul>
       );
 
     case 'album':
       return (
-        <span className="grid__item__secondary__content">
-          {artists && <LinksSentence nolinks items={artists} type="artist" />}
-        </span>
+        <ul className="grid__item__secondary__content details">
+          <li>{artists && <LinksSentence nolinks items={artists} type="artist" />}</li>
+        </ul>
       );
 
     default:
       return (
-        <span className="grid__item__secondary__content">
-          {artists && <LinksSentence nolinks items={artists} type="artist" /> }
-          {followers && <I18n path="specs.followers" count={followers.toLocaleString()} />}
-        </span>
+        <ul className="grid__item__secondary__content details">
+          {artists && <li><LinksSentence nolinks items={artists} type="artist" /></li> }
+          {followers && <li><I18n path="specs.followers" count={followers.toLocaleString()} /></li>}
+        </ul>
       );
   }
 };
@@ -115,7 +115,6 @@ const GridItem = ({
   return (
     <Link
       to={to}
-      onClick={scrollTo}
       onContextMenu={onContextMenu}
       className={`grid__item grid__item--${itemProp.type}`}
     >

@@ -11,13 +11,12 @@ const Grid = memo(({
   if (!items || !items.length) return null;
 
   return (
-    <div className={`grid grid--${items[0].type}s ${className} ${mini ? 'grid--mini' : ''}`}>
-      <SmartList
-        items={items}
-        itemComponent={GridItem}
-        itemProps={{ getLink }}
-      />
-    </div>
+    <SmartList
+      className={`grid grid--${items[0].type}s ${className} ${mini ? 'grid--mini' : ''}`}
+      items={items}
+      itemComponent={GridItem}
+      itemProps={{ getLink }}
+    />
   );
 });
 
