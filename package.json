@@ -15,7 +15,7 @@
     "jquery": "^3.5.1",
     "libflacjs": "^5.4.0",
     "localforage": "^1.9.0",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "logrocket": "^1.0.14",
     "mopidy": "^0.5",
     "react": "^16.14.0",
