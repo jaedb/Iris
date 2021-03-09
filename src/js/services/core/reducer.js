@@ -123,7 +123,7 @@ export default function reducer(core = {}, action) {
       return { ...core, users };
 
     case 'RESTORE_LIBRARY_FROM_COLD_STORE':
-      const { libraries } = core;
+      const libraries = { ...core.libraries };
       libraries[action.library.uri] = {
         ...(libraries[action.library.uri] || {}),
         ...action.library,
@@ -133,8 +133,8 @@ export default function reducer(core = {}, action) {
         libraries,
       };
 
-    case 'RESTORE_ITEMS_FROM_COLD_STORE':
-      const { items } = core;
+    case 'RESTORE_ITEMS_FROM_COLD_STORE': {
+      const items = { ...core.items };
       action.items.forEach((item) => {
         items[item.uri] = {
           ...(items[item.uri] || {}),
@@ -145,14 +145,10 @@ export default function reducer(core = {}, action) {
         ...core,
         items,
       };
-
-      /**
-         * Remove an item from an index
-         * */
+    }
 
     case 'REMOVE_ITEM': {
       const items = { ...core.items };
-
       if (action.new_key) {
         items[action.key] = { moved_to: action.new_key };
       } else {
@@ -161,12 +157,6 @@ export default function reducer(core = {}, action) {
 
       return { ...core, items };
     }
-
-
-
-    /**
-     * Genres
-     * */
 
     case 'SPOTIFY_GENRES_LOADED':
       return { ...core, genres: action.genres };

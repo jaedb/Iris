@@ -13,7 +13,7 @@ errors:
   no_service_worker: Service worker not supported
   required: Required
   unknown_error: Unknown error
-  need_to_be_online: You need to be online load this resource
+  need_to_be_online: You need to be online to load this resource
   nothing_selected: Nothing selected
   cannot_reorder:
     title: Cannot reorder items
@@ -139,7 +139,7 @@ services:
     title: Snapcast
   genius:
     title: Genius
-    switch_lyrics_result: Switch to another lyrics seach result
+    switch_lyrics_result: Switch to another lyrics search result
     want_lyrics: 'Want track lyrics? Authorize Genius in '
   google:
     title: Google

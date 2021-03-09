@@ -3,10 +3,8 @@ import { connect } from 'react-redux';
 import { sortItems } from '../util/arrays';
 import URILink from './URILink';
 import Icon from './Icon';
-import AlbumGrid from './AlbumGrid';
-import ArtistGrid from './ArtistGrid';
-import PlaylistGrid from './PlaylistGrid';
 import TrackList from './TrackList';
+import { Grid } from './Grid';
 import { I18n } from '../locale';
 import Button from './Button';
 import { makeSearchResultsSelector } from '../util/selectors';
@@ -74,9 +72,9 @@ const SearchResults = ({
         )}
       </h4>
       <section className="grid-wrapper">
-        {type === 'artists' && <ArtistGrid artists={results} show_source_icon mini={all} />}
-        {type === 'albums' && <AlbumGrid albums={results} show_source_icon mini={all} />}
-        {type === 'playlists' && <PlaylistGrid playlists={results} show_source_icon mini={all} />}
+        {type === 'artists' && <Grid items={results} show_source_icon mini={all} />}
+        {type === 'albums' && <Grid items={results} show_source_icon mini={all} />}
+        {type === 'playlists' && <Grid items={results} show_source_icon mini={all} />}
         {type === 'tracks' && <TrackList tracks={results} uri={`iris:search:${query.type}:${encodedTerm}`} show_source_icon />}
         {/*<LazyLoadListener enabled={this.props.artists_more && spotify_search_enabled} loadMore={loadMore} />*/}
 

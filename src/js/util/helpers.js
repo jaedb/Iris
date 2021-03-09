@@ -540,6 +540,7 @@ const iconFromKeyword = (name) => {
  * @param smooth_scroll Boolean (optional)
  * */
 const scrollTo = function (target = null, smooth_scroll = false) {
+  console.debug('scrollTo', { target, smooth_scroll })
   const main = document.getElementById('main');
 
   // Remove our smooth-scroll class

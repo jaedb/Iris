@@ -3,13 +3,12 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Loader from '../../components/Loader';
 import Header from '../../components/Header';
-import List from '../../components/List';
 import TrackList from '../../components/TrackList';
-import GridItem from '../../components/GridItem';
+import { Grid } from '../../components/Grid';
+import { List } from '../../components/List';
 import DropdownField from '../../components/Fields/DropdownField';
 import FilterField from '../../components/Fields/FilterField';
 import Icon from '../../components/Icon';
-import URILink from '../../components/URILink';
 import ErrorBoundary from '../../components/ErrorBoundary';
 import LazyLoadListener from '../../components/LazyLoadListener';
 import * as uiActions from '../../services/ui/actions';
@@ -43,29 +42,15 @@ const Subdirectories = ({ items, view }) => {
   if (view === 'list') {
     return (
       <List
-        rows={items}
+        items={items}
         className="library-local-directory-list"
-        link={link}
+        getLink={link}
         nocontext
       />
     );
   }
 
-  return (
-    <div className="grid category-grid">
-      {
-        items.map((item) => (
-          <GridItem
-            key={item.uri}
-            type="directory"
-            link={link(item)}
-            item={item}
-            nocontext
-          />
-        ))
-      }
-    </div>
-  );
+  return <Grid items={items} nocontext link={(item) => link(item)} />
 };
 
 class LibraryBrowseDirectory extends React.Component {
@@ -74,24 +59,15 @@ class LibraryBrowseDirectory extends React.Component {
 
     this.state = {
       filter: '',
-      limit: 50,
-      per_page: 50,
     };
   }
 
   componentDidMount() {
     const {
-      location: {
-        state: {
-          limit,
-        } = {},
-      },
       uiActions: {
         setWindowTitle,
       },
     } = this.props;
-
-    if (limit) this.setState({ limit });
 
     setWindowTitle(i18n('library.browse_directory.title'));
     this.loadDirectory();
@@ -114,27 +90,6 @@ class LibraryBrowseDirectory extends React.Component {
     } = this.props;
 
     getDirectory(uri);
-  }
-
-  loadMore = () => {
-    const {
-      limit: prevLimit,
-      per_page,
-    } = this.state;
-    const {
-      history,
-      location: {
-        state: prevState = {},
-      },
-    } = this.props;
-
-    const limit = prevLimit + per_page;
-    this.setState({ limit });
-
-    history.replace({
-      ...prevState,
-      limit,
-    });
   }
 
   playAll = () => {
@@ -173,11 +128,7 @@ class LibraryBrowseDirectory extends React.Component {
       view,
       name,
     } = this.props;
-    const {
-      filter,
-      per_page,
-      limit,
-    } = this.state;
+    const { filter } = this.state;
 
     if (!directory || (!directory.subdirectories && !directory.tracks)) {
       if (loading) {
@@ -192,24 +143,13 @@ class LibraryBrowseDirectory extends React.Component {
       );
     }
 
-    let subdirectories = (directory.subdirectories && directory.subdirectories.length > 0 ? directory.subdirectories : null);
+    let subdirectories = directory?.subdirectories;
+    let tracks = directory?.tracks;
     subdirectories = sortItems(subdirectories, 'name');
+    tracks = sortItems(tracks, 'name');
     if (filter && filter !== '') {
       subdirectories = applyFilter('name', filter, subdirectories);
-    }
-
-    const total_items = (directory.tracks ? directory.tracks.length : 0) + (subdirectories ? subdirectories.length : 0);
-    subdirectories = subdirectories.slice(0, limit);
-    let all_tracks = null;
-    let tracks = null;
-    const limit_remaining = limit - subdirectories.length;
-    if (limit_remaining > 0 && directory.tracks && directory.tracks.length) {
-      all_tracks = directory.tracks;
-      all_tracks = sortItems(all_tracks, 'name');
-      if (filter && filter !== '') {
-        tracks = applyFilter('name', filter, tracks);
-      }
-      tracks = all_tracks.slice(0, limit_remaining);
+      tracks = applyFilter('name', filter, tracks);
     }
 
     const view_options = [
@@ -227,7 +167,7 @@ class LibraryBrowseDirectory extends React.Component {
       <>
         <FilterField
           initialValue={filter}
-          handleChange={(value) => this.setState({ filter: value, limit: per_page })}
+          handleChange={(value) => this.setState({ filter: value })}
           onSubmit={() => uiActions.hideContextMenu()}
         />
         <DropdownField
@@ -274,18 +214,10 @@ class LibraryBrowseDirectory extends React.Component {
 
             <Subdirectories items={subdirectories} view={view} />
 
-            {tracks && (
-              <TrackList
-                tracks={tracks}
-                uri={`iris:browse:${uri}`}
-                className="library-local-track-list"
-              />
-            )}
-
-            <LazyLoadListener
-              loadKey={total_items > limit ? limit : total_items}
-              showLoader={limit < total_items}
-              loadMore={this.loadMore}
+            <TrackList
+              tracks={tracks}
+              uri={`iris:browse:${uri}`}
+              className="library-local-track-list"
             />
 
           </ErrorBoundary>
@@ -295,6 +227,7 @@ class LibraryBrowseDirectory extends React.Component {
   }
 }
 
+const loadingSelector = makeLoadingSelector(['mopidy_library.(browse|lookup)']);
 const mapStateToProps = (state, ownProps) => {
   const {
     mopidy: {
@@ -309,7 +242,6 @@ const mapStateToProps = (state, ownProps) => {
   const directory = _directory && uriMatcher.includes(_directory.uri)
     ? _directory
     : undefined;
-  const loadingSelector = makeLoadingSelector(['mopidy_library.(browse|lookup)']);
 
   return {
     uri,

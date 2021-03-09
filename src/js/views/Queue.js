@@ -51,15 +51,6 @@ const Artwork = ({
 }
 
 class Queue extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      limit: 50,
-      per_page: 50,
-    };
-  }
-
   componentDidMount() {
     const {
       uiActions: {
@@ -91,21 +82,6 @@ class Queue extends React.Component {
     if (added_from_uri && added_from_uri !== prev_added_from_uri) {
       loadUri(added_from_uri);
     }
-  }
-
-  loadMore = () => {
-    const { limit, per_page } = this.state;
-    const { location, history } = this.props;
-    const new_limit = limit + per_page;
-
-    this.setState({ limit: new_limit });
-
-    // Set our pagination to location state
-    const state = location && location.state
-      ? location.state
-      : {};
-    state.limit = new_limit;
-    history.replace({ state });
   }
 
   removeTracks = (track_indexes) => {
@@ -218,10 +194,6 @@ class Queue extends React.Component {
       },
     } = this.props;
 
-    const { limit } = this.state;
-    const total_queue_tracks = queue_tracks.length;
-    const tracks = queue_tracks.slice(0, limit);
-
     let current_track_image = null;
     if (current_track && current_track_uri) {
       if (current_track.images !== undefined && current_track.images) {
@@ -312,23 +284,13 @@ class Queue extends React.Component {
               show_source_icon
               track_context="queue"
               className="queue-track-list"
-              tracks={tracks}
+              tracks={queue_tracks}
               removeTracks={this.removeTracks}
               playTracks={this.playTracks}
               playTrack={this.playTrack}
               reorderTracks={this.reorderTracks}
             />
           </section>
-
-          <LazyLoadListener
-            loadKey={
-              total_queue_tracks > limit
-                ? limit
-                : total_queue_tracks
-            }
-            showLoader={limit < total_queue_tracks}
-            loadMore={this.loadMore}
-          />
         </div>
       </div>
     );
