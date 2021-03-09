@@ -141,6 +141,7 @@ class DiscoverNewReleases extends React.Component {
   }
 }
 
+const loadingSelector = makeLoadingSelector(['(.*)new-releases(.*)offset=0(.*)']);
 const mapStateToProps = (state) => {
   const {
     ui: {
@@ -152,7 +153,6 @@ const mapStateToProps = (state) => {
       new_releases_total: total,
     },
   } = state;
-  const loadingSelector = makeLoadingSelector(['(.*)new-releases(.*)offset=0(.*)']);
   const itemSelector = makeItemSelector(uris);
 
   return {
