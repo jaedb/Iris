@@ -4,7 +4,7 @@ import { ListItem } from './ListItem'
 
 const List = ({
   items,
-  className,
+  className = '',
   ...rest
 }) => {
   if (!items || !items.length) return null;

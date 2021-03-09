@@ -12,7 +12,7 @@ import Popularity from './Popularity';
 import Link from './Link';
 import { I18n } from '../locale';
 import { encodeUri } from '../util/format';
-import { scrollTo } from '../util/helpers';
+import { scrollTo, sourceIcon } from '../util/helpers';
 
 import * as uiActions from '../services/ui/actions';
 import * as lastfmActions from '../services/lastfm/actions';
@@ -47,6 +47,8 @@ const getValue = (item = {}, name = '') => {
       if (!total && !array) return null;
       return <I18n path="specs.albums" count={total || array.length} />;
     }
+    case 'source':
+      return <Icon type="fontawesome" name={sourceIcon(item.uri)} fixedWidth />;
     default:
       break;
   }

@@ -181,8 +181,8 @@ class LibraryAlbums extends React.Component {
         <section className="content-wrapper">
           <List
             items={albums}
-            details={['artists', 'followers', 'listeners']}
-            right_column={['tracks']}
+            details={['artists', 'tracks', 'followers']}
+            right_column={['source']}
             thumbnail
           />
         </section>
