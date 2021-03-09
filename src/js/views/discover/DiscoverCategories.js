@@ -1,16 +1,15 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Header from '../../components/Header';
 import Icon from '../../components/Icon';
-import CategoryGrid from '../../components/CategoryGrid';
+import { Grid } from '../../components/Grid';
 import Loader from '../../components/Loader';
 import * as uiActions from '../../services/ui/actions';
 import * as spotifyActions from '../../services/spotify/actions';
 import {
-  isLoading,
-} from '../../util/helpers';
+  encodeUri,
+} from '../../util/format';
 import { i18n, I18n } from '../../locale';
 import { indexToArray } from '../../util/arrays';
 import { makeLoadingSelector } from '../../util/selectors';
@@ -54,7 +53,11 @@ class DiscoverCategories extends React.Component {
           <I18n path="discover.categories.title" />
         </Header>
         <section className="content-wrapper grid-wrapper">
-          <CategoryGrid categories={categories} />
+          <Grid
+            className="grid--tiles"
+            items={categories}
+            getLink={(item) => `/discover/categories/${encodeUri(item.uri)}`}
+          />
         </section>
       </div>
     );

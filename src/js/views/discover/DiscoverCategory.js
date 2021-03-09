@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Header from '../../components/Header';
 import Icon from '../../components/Icon';
-import PlaylistGrid from '../../components/PlaylistGrid';
+import { Grid } from '../../components/Grid';
 import Loader from '../../components/Loader';
 import ErrorMessage from '../../components/ErrorMessage';
 import Button from '../../components/Button';
@@ -117,7 +117,7 @@ class DiscoverCategory extends React.Component {
         </Header>
         <div className="content-wrapper">
           <section className="grid-wrapper">
-            <PlaylistGrid playlists={playlists} />
+            <Grid items={playlists} />
           </section>
         </div>
       </div>

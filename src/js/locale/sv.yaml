@@ -28,10 +28,11 @@ actions:
   add_to_playlist: Lägg till i spellista
   add_to_library: Lägg till i biblioteket
   remove_from_library: Ta bort från biblioteket
+  added_tracks_to: 'la till %{count} låtar till '
   add_to_queue: Lägg till i kön
   reset: Återställ
   back: Tillbaka
-  refresh: Refresh
+  refresh: Uppdatera
   enable: Aktivera
   disable: Inaktivera
   send: Skicka
@@ -334,10 +335,11 @@ track:
   title_window: '%{name} av %{artists} (track)'
   lyrics_origin: 'Origin: '
   explicit: Explicit
-  disc_number: 'Disc %{number}'
-  track_number: 'Track %{number}'
+  disc_number: 'Skiva %{number}'
+  track_number: 'Låt %{number}'
   unknown_album: Okänt album
   want_lyrics: 'Vill du ha låttext? Auktorisera Genius under '
+  lyrics: Låttext
 settings:
   title: Inställningar
   help: Hjälp
@@ -578,6 +580,20 @@ modal:
     test_mode:
       label: Testläge
       description: detaljerad loggning för diagnostisering av fel
-  sort: Sortera
-  filter: Filter
-  by: ' av '
+  hotkeys_info:
+    title: Snabbknappar
+    keys:
+      info: Hotkeys info (this dialog)
+      exit: Avbryt den aktuella interaktionen
+      play_pause: Spela/pausa
+      stop: Stopp
+      next: Nästa låt
+      previous: Tidigare låt
+      rewind: Spola tillbaka 30 sekunder
+      fastforward: spola fram 30 sekunder
+      volume_up: Höj volymen med 5%
+      volume_down: Sänk volymen med 5%
+      mute: Tysta
+      kiosk: Kiosk läge
+      now_playing: Nu spelas
+      search: Sök

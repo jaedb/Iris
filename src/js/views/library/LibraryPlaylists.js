@@ -1,14 +1,12 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Button from '../../components/Button';
-import PlaylistGrid from '../../components/PlaylistGrid';
-import List from '../../components/List';
+import { Grid } from '../../components/Grid';
+import { List } from '../../components/List';
 import DropdownField from '../../components/Fields/DropdownField';
 import Header from '../../components/Header';
 import FilterField from '../../components/Fields/FilterField';
-import LazyLoadListener from '../../components/LazyLoadListener';
 import Icon from '../../components/Icon';
 import * as coreActions from '../../services/core/actions';
 import * as uiActions from '../../services/ui/actions';
@@ -20,6 +18,7 @@ import Loader from '../../components/Loader';
 import {
   makeLibrarySelector,
   makeProcessProgressSelector,
+  getLibrarySource,
 } from '../../util/selectors';
 
 const processKeys = [
@@ -33,27 +32,15 @@ class LibraryPlaylists extends React.Component {
 
     this.state = {
       filter: '',
-      limit: 50,
-      per_page: 50,
     };
   }
 
   componentDidMount() {
     const {
-      location: {
-        state: {
-          limit,
-        } = {},
-      } = {},
       uiActions: {
         setWindowTitle,
       },
     } = this.props;
-    if (limit) {
-      this.setState({
-        limit,
-      });
-    }
 
     setWindowTitle(i18n('library.playlists.title'));
 
@@ -134,17 +121,6 @@ class LibraryPlaylists extends React.Component {
     this.props.uiActions.showContextMenu(data);
   }
 
-  loadMore() {
-    const new_limit = this.state.limit + this.state.per_page;
-
-    this.setState({ limit: new_limit });
-
-    // Set our pagination to location state
-    const state = (this.props.location && this.props.location.state ? this.props.location.state : {});
-    state.limit = new_limit;
-    this.props.history.replace({ state });
-  }
-
   renderView = () => {
     const {
       sort,
@@ -155,7 +131,6 @@ class LibraryPlaylists extends React.Component {
     } = this.props;
     const {
       filter,
-      limit,
     } = this.state;
 
     if (loading_progress) {
@@ -172,41 +147,21 @@ class LibraryPlaylists extends React.Component {
       playlists = applyFilter('name', filter, playlists);
     }
 
-    // Apply our lazy-load-rendering
-    const total_playlists = playlists.length;
-    playlists = playlists.slice(0, limit);
-
     if (view === 'list') {
       return (
         <section className="content-wrapper">
           <List
-            handleContextMenu={(e, item) => this.handleContextMenu(e, item)}
-            rows={playlists}
+            items={playlists}
             thumbnail
             details={['owner', 'tracks', 'last_modified']}
             right_column={['source']}
-            className="playlists"
-            link_prefix="/playlist/"
-          />
-          <LazyLoadListener
-            loadKey={total_playlists > limit ? limit : total_playlists}
-            loading={limit < total_playlists}
-            loadMore={() => this.loadMore()}
           />
         </section>
       );
     }
     return (
       <section className="content-wrapper">
-        <PlaylistGrid
-          handleContextMenu={(e, item) => this.handleContextMenu(e, item)}
-          playlists={playlists}
-        />
-        <LazyLoadListener
-          loadKey={total_playlists > limit ? limit : total_playlists}
-          loading={limit < total_playlists}
-          loadMore={() => this.loadMore()}
-        />
+        <Grid items={playlists} />
       </section>
     );
   }
@@ -350,8 +305,9 @@ class LibraryPlaylists extends React.Component {
   }
 }
 
+const librarySelector = makeLibrarySelector('playlists');
+const processProgressSelector = makeProcessProgressSelector(processKeys);
 const mapStateToProps = (state) => {
-  const source = state.ui.library_playlists_source || 'all';
   const {
     spotify: {
       me: {
@@ -360,20 +316,13 @@ const mapStateToProps = (state) => {
     },
   } = state;
 
-  const libraryUris = [];
-  if (source === 'all' || source === 'local') libraryUris.push('mopidy:library:playlists');
-  if (source === 'all' || source === 'spotify') libraryUris.push('spotify:library:playlists');
-  if (source === 'all' || source === 'google') libraryUris.push('google:library:playlists');
-  const librarySelector = makeLibrarySelector(libraryUris);
-  const processProgressSelector = makeProcessProgressSelector(processKeys);
-
   return {
     slim_mode: state.ui.slim_mode,
     mopidy_uri_schemes: state.mopidy.uri_schemes,
     spotify_available: state.spotify.access_token,
-    playlists: librarySelector(state),
+    playlists: librarySelector(state, 'playlists'),
     loading_progress: processProgressSelector(state),
-    source,
+    source: getLibrarySource(state, 'playlists'),
     me_id,
     view: state.ui.library_playlists_view,
     sort: (state.ui.library_playlists_sort ? state.ui.library_playlists_sort : null),

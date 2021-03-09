@@ -6,6 +6,7 @@ import _sv from './sv.yaml';
 import _nl from './nl.yaml';
 import _ja from './ja.yaml';
 import _pl from './pl.yaml';
+import _it from './it.yaml';
 
 // Merge languages with English. This provides English fallbacks to untranslated
 // fields without breaking the UI (with blanks)
@@ -21,11 +22,14 @@ const ja = {};
 merge(ja, en, _ja);
 const pl = {};
 merge(pl, en, _pl);
+const it = {};
+merge(it, en, _it);
 
 const available = [
   { key: 'en', name: en.name },
   { key: 'de', name: de.name },
   { key: 'fr', name: fr.name },
+  { key: 'it', name: it.name },
   { key: 'ja', name: ja.name },
   { key: 'nl', name: nl.name },
   { key: 'pl', name: pl.name },
@@ -40,6 +44,7 @@ export default {
   nl,
   ja,
   pl,
+  it,
   available,
 };
 
@@ -51,5 +56,6 @@ export {
   nl,
   ja,
   pl,
+  it,
   available,
 };

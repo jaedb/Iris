@@ -2,10 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Header from '../../components/Header';
-import GridItem from '../../components/GridItem';
+import { Grid } from '../../components/Grid';
 import Loader from '../../components/Loader';
 import Icon from '../../components/Icon';
-import ErrorBoundary from '../../components/ErrorBoundary';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import { formatImages, encodeUri } from '../../util/format';
@@ -119,21 +118,7 @@ class LibraryBrowse extends React.Component {
         </Header>
         <section className="content-wrapper">
           <div className="grid grid--tiles">
-            <ErrorBoundary>
-              {
-								grid_items.map(
-								  (item, index) => (
-                    <GridItem
-                      item={item}
-                      key={index}
-                      link={item.link}
-                      mopidyActions={mopidyActions}
-                      type="browse"
-                    />
-								  ),
-								)
-							}
-            </ErrorBoundary>
+            <Grid items={grid_items} />
           </div>
         </section>
       </div>
@@ -141,6 +126,7 @@ class LibraryBrowse extends React.Component {
   }
 }
 
+const loadingSelector = makeLoadingSelector(['(.*)mopidy_library.browse(.*)']);
 const mapStateToProps = (state) => {
   const {
     mopidy: {
@@ -151,7 +137,6 @@ const mapStateToProps = (state) => {
     },
   } = state;
   const directory = _directory && _directory.uri === null ? _directory : null;
-  const loadingSelector = makeLoadingSelector(['(.*)mopidy_library.browse(.*)']);
 
   return {
     loading: loadingSelector(state),

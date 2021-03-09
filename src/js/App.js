@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Profiler } from 'react';
 import { bindActionCreators } from 'redux';
 import { Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
