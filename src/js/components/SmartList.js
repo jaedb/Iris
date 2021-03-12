@@ -6,7 +6,6 @@ import ErrorBoundary from './ErrorBoundary';
 const SmartListBatch = handleViewport(
   ({
     items,
-    isFirst,
     inViewport,
     forwardedRef,
     setItemHeight,
@@ -16,6 +15,8 @@ const SmartListBatch = handleViewport(
     batchIndex,
     chunkSize,
     className = '',
+    isFirst,
+    isLast,
   }) => {
     // Listen for changes to our height, and pass it up to our Grid. This is then used to build the
     // placeholder elements when out of viewport. We only care about the first item because this
@@ -34,8 +35,11 @@ const SmartListBatch = handleViewport(
 
     return (
       <div className={`smart-list__batch ${className}`} ref={forwardedRef}>
-        {inViewport || isFirst ? (
-          <div className="smart-list__batch__inner" style={isFirst ? {} : { minHeight: itemHeight }}>
+        {inViewport || isFirst || isLast ? (
+          <div
+            className="smart-list__batch__inner"
+            style={isFirst || isLast ? {} : { minHeight: itemHeight }}
+          >
             {
               items.map((item, index) => (
                 <ItemComponent
@@ -67,11 +71,12 @@ const SmartList = memo(({
   if (!itemComponent) return null;
 
   const [itemHeight, setItemHeight] = useState(initialHeight);
+  const chunks = chunk(items, chunkSize);
 
   return (
     <ErrorBoundary>
       {
-        chunk(items, chunkSize).map((chunked, index) => (
+        chunks.map((chunked, index) => (
           <SmartListBatch
             key={`smart-list__batch-${index}`} // Yeah yeah, I know; TODO
             className={className}
@@ -81,8 +86,9 @@ const SmartList = memo(({
             itemProps={itemProps}
             batchIndex={index}
             chunkSize={chunkSize}
-            isFirst={index === 0}
             setItemHeight={setItemHeight}
+            isFirst={index === 0}
+            isLast={index === chunks.length - 1}
           />
         ))
       }

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import LinksSentence from './LinksSentence';
 import { dater } from './Dater';
 import { nice_number } from './NiceNumber';
@@ -9,13 +9,12 @@ import ContextMenuTrigger from './ContextMenuTrigger';
 import Icon from './Icon';
 import Thumbnail from './Thumbnail';
 import Popularity from './Popularity';
-import Link from './Link';
 import { I18n } from '../locale';
 import { encodeUri } from '../util/format';
-import { scrollTo, sourceIcon } from '../util/helpers';
+import { sourceIcon } from '../util/helpers';
+import { updateScrollPosition } from './Link';
 
 import * as uiActions from '../services/ui/actions';
-import * as lastfmActions from '../services/lastfm/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import * as spotifyActions from '../services/spotify/actions';
 
@@ -92,6 +91,7 @@ const ListItem = ({
   const dispatch = useDispatch();
   const spotify_available = useSelector((state) => state.spotify.access_token);
   const history = useHistory();
+  const location = useLocation();
 
   // Load images
   useEffect(() => {
@@ -142,11 +142,11 @@ const ListItem = ({
     }
 
     if (e.target.tagName.toLowerCase() !== 'a') {
+      updateScrollPosition({ location, history });
       e.preventDefault();
       history.push(to);
-      scrollTo();
     }
-  }
+  };
 
   let className = 'list__item';
   if (item.type) className += ` list__item--${item.type}`;
