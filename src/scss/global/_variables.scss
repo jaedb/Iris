@@ -400,3 +400,8 @@ $bp_shallow: 650px;
     );
   }
 }
+
+@mixin horizontal_scroll {
+  white-space: nowrap;
+  overflow-x: auto;
+}

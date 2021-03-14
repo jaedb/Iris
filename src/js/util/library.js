@@ -115,7 +115,7 @@ const ensureLoaded = ({
 
       const uris = dependentUris(item);
       if (uris.length) {
-        console.info(`Loading ${uris.length} dependents`);
+        console.info(`Loading ${uris.length} dependents`, { uris });
         store.dispatch(coreActions.loadItems(type, uris));
       }
       return;

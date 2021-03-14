@@ -29,6 +29,7 @@
       }
 
       .actions {
+        @include horizontal_scroll;
         .context-menu-trigger {
           color: colour('white');
 

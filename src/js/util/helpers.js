@@ -548,7 +548,6 @@ const scrollTo = function (target = null, smooth_scroll = false) {
     // Target is a number, so treat as pixel position
     if (target && Number.isInteger(target)) {
       if (typeof main.scrollTo === 'function') {
-        console.debug('Scrolling to', { main, target })
         main.scrollTo(0, target);
       }
 

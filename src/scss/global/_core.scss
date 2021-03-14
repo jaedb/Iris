@@ -561,6 +561,7 @@ footer {
 }
 
 .details {
+  @include horizontal_scroll;
   list-style-type: none;
   opacity: 0.5;
 

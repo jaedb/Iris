@@ -43,9 +43,9 @@ actions:
   delete: Wissen
   remove: Verwijderen
   cancel: Annuleren
-  created: %{name} aangemaakt
-  saved: %{name} opgeslagen
-  deleted: %{name} verwijderd
+  created: '%{name} aangemaakt'
+  saved: '%{name} opgeslagen'
+  deleted: '%{name} verwijderd'
 common:
   popularity: Populariteit
   name: Naam
