@@ -4005,6 +4005,8 @@ footer {
 }
 
 .details {
+  white-space: nowrap;
+  overflow-x: auto;
   list-style-type: none;
   opacity: 0.5;
 }
@@ -9435,6 +9437,10 @@ main header.overlay {
   font-size: 5rem;
   line-height: 5rem;
 }
+.artist-view .intro .liner .actions {
+  white-space: nowrap;
+  overflow-x: auto;
+}
 .artist-view .intro .liner .actions .context-menu-trigger {
   color: #FFFFFF;
 }
@@ -9566,6 +9572,10 @@ main header.overlay {
   font-size: 5rem;
   line-height: 5rem;
 }
+.user-view .intro .liner .actions {
+  white-space: nowrap;
+  overflow-x: auto;
+}
 .user-view .intro .liner .heading {
   display: flex;
   align-items: center;
@@ -9591,20 +9601,28 @@ main header.overlay {
   }
 }
 @media (max-width: 799px) {
-  .user-view .intro .thumbnail {
-    float: none;
-    margin: 0 auto 20px;
-  }
-  .user-view .intro .heading {
-    display: block;
-  }
-  .user-view .intro .heading__thumbnail {
-    display: none;
-  }
   .user-view .intro .liner {
     padding: 15vh 10px 0;
   }
-  .user-view .intro h1 {
+  .user-view .intro .liner .thumbnail {
+    float: none;
+    margin: 0 auto 20px;
+  }
+  .user-view .intro .liner .heading {
+    display: block;
+  }
+  .user-view .intro .liner .heading__thumbnail {
+    display: none;
+  }
+  .user-view .intro .liner .heading__content__details {
+    flex-flow: column;
+    align-items: flex-start;
+  }
+  .user-view .intro .liner .heading__content__details h2 {
+    order: -1;
+    padding-bottom: 1rem;
+  }
+  .user-view .intro .liner h1 {
     padding-top: 0;
     font-size: 3rem;
     line-height: 3rem;
@@ -9625,6 +9643,8 @@ main .album-view .title .details {
   padding: 25px 0 30px;
 }
 main .album-view .actions {
+  white-space: nowrap;
+  overflow-x: auto;
   padding-bottom: 30px;
 }
 main .album-view .thumbnail-wrapper {
@@ -9662,6 +9682,9 @@ main .album-view .wiki {
     padding: 40px 0 0 0;
     text-align: center;
   }
+  main .album-view .title h1 {
+    display: block;
+  }
   main .album-view .title .description {
     padding-top: 10px;
   }
@@ -9693,6 +9716,8 @@ main .playlist-view .title .details {
   padding: 25px 0 30px;
 }
 main .playlist-view .actions {
+  white-space: nowrap;
+  overflow-x: auto;
   padding-bottom: 30px;
 }
 main .playlist-view .thumbnail-wrapper {
@@ -9726,6 +9751,9 @@ main .playlist-view .thumbnail-wrapper .thumbnail {
   main .playlist-view .title {
     padding: 40px 0 0 0;
     text-align: center;
+  }
+  main .playlist-view .title h1 {
+    display: block;
   }
   main .playlist-view .title .description {
     padding-top: 10px;
@@ -9817,6 +9845,8 @@ main .track-view .lyrics-selector {
 @media (max-width: 499px) {
   main .track-view .actions {
     padding: 0;
+    white-space: nowrap;
+    overflow-x: auto;
   }
 }
 
