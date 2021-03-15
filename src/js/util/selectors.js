@@ -21,6 +21,17 @@ const makeItemSelector = (uri) => createSelector(
     return items[uri];
   },
 );
+const makeArtistSelector = (uri) => createSelector(
+  [getItems],
+  (items) => {
+    const artist = items[uri];
+    const albums = artist?.albums_uris ? indexToArray(items, artist.albums_uris) : [];
+    return {
+      ...artist,
+      albums,
+    };
+  },
+);
 const makeLoadingSelector = (keys) => createSelector(
   [getLoadQueue],
   (loadQueue) => isLoading(loadQueue, keys),
@@ -94,6 +105,7 @@ export {
   getLibrarySource,
   getDragger,
   makeItemSelector,
+  makeArtistSelector,
   makeLibrarySelector,
   makeLoadingSelector,
   makeSearchResultsSelector,
