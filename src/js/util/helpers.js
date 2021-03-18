@@ -384,7 +384,7 @@ const toRegExp = function (keys) {
       // console.error('Could not convert string to RegEx', key);
       return null;
     }
-  });
+  }).filter((exp) => exp); // Filter out failed conversions
 };
 
 /**
@@ -399,6 +399,8 @@ const isLoading = function (load_queue = {}, keys = []) {
   if (!load_queue || !keys) return false;
 
   const expressions = toRegExp(keys);
+  if (!expressions.length) return false;
+
   const queue = indexToArray(load_queue);
 
   const matches = queue.filter((qk) => {

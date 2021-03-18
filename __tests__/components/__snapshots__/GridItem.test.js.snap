@@ -1,0 +1,212 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<GridItem /> should handle album 1`] = `
+<a
+  className="grid__item grid__item--album "
+  data-qa-file="Link"
+  data-qa-node="RouterLink"
+  href="/album/local%3Aalbum%3Amd5%3A66fbea3593ba96a15a9d4188bebab50b"
+  onClick={[Function]}
+  onContextMenu={[Function]}
+>
+  <div
+    className="thumbnail thumbnail--loaded thumbnail--medium grid__item__thumbnail"
+    data-qa-file="Thumbnail"
+    data-qa-node="div"
+  >
+    <i
+      className="icon icon--material thumbnail__placeholder"
+      data-qa-file="Icon"
+      data-qa-node="i"
+    >
+      album
+    </i>
+    <div
+      className="thumbnail__image"
+      data-qa-file="Thumbnail"
+      data-qa-node="div"
+      style={
+        Object {
+          "backgroundImage": "url(\\"/local/17338e740316f18dbb5e3331ac6be6c1-500x500.jpeg\\")",
+        }
+      }
+    />
+    <div
+      className="thumbnail__actions"
+      data-qa-file="Thumbnail"
+      data-qa-node="div"
+    />
+  </div>
+  <div
+    className="grid__item__name"
+    data-qa-file="GridItem"
+    data-qa-node="div"
+  >
+    Sirens of the Sea
+  </div>
+  <div
+    className="grid__item__secondary"
+    data-qa-file="GridItem"
+    data-qa-node="div"
+  >
+    <ul
+      className="grid__item__secondary__content details"
+      data-qa-file="GridItem"
+      data-qa-node="ul"
+    >
+      <li
+        data-qa-file="GridItem"
+        data-qa-node="li"
+      >
+        <span
+          className="undefined links-sentence"
+          data-qa-file="LinksSentence"
+          data-qa-node="span"
+        >
+          <span
+            data-qa-file="LinksSentence"
+            data-qa-node="span"
+          >
+            <span
+              data-qa-file="LinksSentence"
+              data-qa-node="span"
+            >
+              Above & Beyond
+            </span>
+          </span>
+        </span>
+      </li>
+    </ul>
+  </div>
+</a>
+`;
+
+exports[`<GridItem /> should handle artist 1`] = `
+<a
+  className="grid__item grid__item--artist "
+  data-qa-file="Link"
+  data-qa-node="RouterLink"
+  href="/artist/local%3Aartist%3Amd5%3A4f6e4f979e2c40c5e6ad1735804c29bc"
+  onClick={[Function]}
+  onContextMenu={[Function]}
+>
+  <div
+    className="thumbnail thumbnail--loaded thumbnail--medium grid__item__thumbnail"
+    data-qa-file="Thumbnail"
+    data-qa-node="div"
+  >
+    <i
+      className="icon icon--material thumbnail__placeholder"
+      data-qa-file="Icon"
+      data-qa-node="i"
+    >
+      perm_identity
+    </i>
+    <div
+      className="thumbnail__image"
+      data-qa-file="Thumbnail"
+      data-qa-node="div"
+      style={
+        Object {
+          "backgroundImage": "url(\\"https://i.scdn.co/image/4dc7080ef509c36203a131a0eab8dd5e4800d7c2\\")",
+        }
+      }
+    />
+    <div
+      className="thumbnail__actions"
+      data-qa-file="Thumbnail"
+      data-qa-node="div"
+    />
+  </div>
+  <div
+    className="grid__item__name"
+    data-qa-file="GridItem"
+    data-qa-node="div"
+  >
+    Above & Beyond
+  </div>
+  <div
+    className="grid__item__secondary"
+    data-qa-file="GridItem"
+    data-qa-node="div"
+  >
+    <ul
+      className="grid__item__secondary__content details"
+      data-qa-file="GridItem"
+      data-qa-node="ul"
+    >
+      <li
+        data-qa-file="GridItem"
+        data-qa-node="li"
+      >
+        2 albums
+      </li>
+    </ul>
+  </div>
+</a>
+`;
+
+exports[`<GridItem /> should handle playlist 1`] = `
+<a
+  className="grid__item grid__item--playlist "
+  data-qa-file="Link"
+  data-qa-node="RouterLink"
+  href="/playlist/m3u%3ALocal%20tester.m3u8"
+  onClick={[Function]}
+  onContextMenu={[Function]}
+>
+  <div
+    className="thumbnail thumbnail--loaded thumbnail--medium grid__item__thumbnail"
+    data-qa-file="Thumbnail"
+    data-qa-node="div"
+  >
+    <i
+      className="icon icon--material thumbnail__placeholder"
+      data-qa-file="Icon"
+      data-qa-node="i"
+    >
+      queue_music
+    </i>
+    <div
+      className="thumbnail__image"
+      data-qa-file="Thumbnail"
+      data-qa-node="div"
+      style={
+        Object {
+          "backgroundImage": "url(\\"null\\")",
+        }
+      }
+    />
+    <div
+      className="thumbnail__actions"
+      data-qa-file="Thumbnail"
+      data-qa-node="div"
+    />
+  </div>
+  <div
+    className="grid__item__name"
+    data-qa-file="GridItem"
+    data-qa-node="div"
+  >
+    Local tester
+  </div>
+  <div
+    className="grid__item__secondary"
+    data-qa-file="GridItem"
+    data-qa-node="div"
+  >
+    <ul
+      className="grid__item__secondary__content details"
+      data-qa-file="GridItem"
+      data-qa-node="ul"
+    >
+      <li
+        data-qa-file="GridItem"
+        data-qa-node="li"
+      >
+        13 tracks
+      </li>
+    </ul>
+  </div>
+</a>
+`;

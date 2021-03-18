@@ -8,7 +8,7 @@ import { isLoading } from '../../src/js/util/helpers';
 
 describe('isLoading', () => {
   const load_queue = {
-    'spotify:playlist:123': 'Some load queue value',
+    'guid1234ABC': 'spotify:playlist:123',
     'stuff:and_things': 'stuff:and_things',
   };
 
