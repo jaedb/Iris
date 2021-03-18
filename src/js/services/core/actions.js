@@ -1,12 +1,10 @@
-
 import { createRange, removeDuplicates } from '../../util/arrays';
 import { uriSource } from '../../util/helpers';
 
-const spotifyActions = require('../../services/spotify/actions');
-const mopidyActions = require('../../services/mopidy/actions');
+const spotifyActions = require('../spotify/actions');
+const mopidyActions = require('../mopidy/actions');
 
 export function handleException(message = '', data = {}, description = null, show_notification = true) {
-  console.debug({ message, data })
   if (!message) {
     if (data.message) {
       message = data.message;
