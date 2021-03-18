@@ -17,6 +17,7 @@ main .album-view {
   }
 
   .actions {
+    @include horizontal_scroll;
     padding-bottom: 30px;
   }
 
@@ -58,6 +59,10 @@ main .album-view {
     .title {
       padding: 40px 0 0 0;
       text-align: center;
+
+      h1 {
+        display: block;
+      }
 
       .description {
         padding-top: 10px;

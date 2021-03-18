@@ -564,6 +564,12 @@ footer {
   list-style-type: none;
   opacity: 0.5;
 
+  &--one-line {
+    @include responsive($bp_medium) {
+      @include horizontal_scroll;
+    }
+  }
+
   li {
     display: inline-flex;
 

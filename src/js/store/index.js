@@ -216,7 +216,6 @@ const appReducer = combineReducers({
 const rootReducer = (state, action) => {
   let nextState = state;
   if (action.type === 'RESET_STATE') {
-    console.log(action);
     const { stateKeysToReset } = action;
     const resetStates = {};
     stateKeysToReset.forEach((key) => {

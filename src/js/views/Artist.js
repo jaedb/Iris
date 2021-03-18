@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -6,10 +5,9 @@ import { Route, Switch } from 'react-router-dom';
 import ErrorMessage from '../components/ErrorMessage';
 import Link from '../components/Link';
 import TrackList from '../components/TrackList';
-import AlbumGrid from '../components/AlbumGrid';
 import Thumbnail from '../components/Thumbnail';
 import Parallax from '../components/Parallax';
-import ArtistGrid from '../components/ArtistGrid';
+import { Grid } from '../components/Grid';
 import RelatedArtists from '../components/RelatedArtists';
 import FollowButton from '../components/Fields/FollowButton';
 import ContextMenuTrigger from '../components/ContextMenuTrigger';
@@ -74,8 +72,7 @@ class Artist extends React.Component {
       loadArtist(uri, { full: true });
     }
 
-    if (!prevArtist && artist) this.setWindowTitle(artist);
-    if (prevUri !== uri && artist) this.setWindowTitle(artist);
+    if (prevArtist?.uri !== artist?.uri && artist) this.setWindowTitle(artist);
   }
 
   onChangeTracksFilter = (value) => {
@@ -305,7 +302,7 @@ class Artist extends React.Component {
           </h4>
 
           <section className="grid-wrapper no-top-padding">
-            <AlbumGrid albums={albums} />
+            <Grid items={albums} />
           </section>
         </div>
       </div>
@@ -381,7 +378,7 @@ class Artist extends React.Component {
     return (
       <div className="body related-artists">
         <section className="grid-wrapper no-top-padding">
-          <ArtistGrid artists={artist.related_artists} />
+          <Grid items={artist.related_artists} />
         </section>
       </div>
     );
@@ -603,8 +600,8 @@ class Artist extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
-  const uri = decodeURIComponent(ownProps.match.params.uri);
+const mapStateToProps = (state, props) => {
+  const uri = decodeURIComponent(props.match.params.uri);
   const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`, '^((?!contains).)*$', '^((?!albums).)*$', '^((?!related-artists).)*$', '^((?!top-tracks).)*$']);
   const artistSelector = makeItemSelector(uri);
   const artist = artistSelector(state);

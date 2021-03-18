@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Profiler } from 'react';
 import { bindActionCreators } from 'redux';
 import { Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -161,29 +161,35 @@ export class App extends React.Component {
   }
 
   componentDidUpdate({
-    location: prevLocation,
+    location: {
+      pathname: prevPathname,
+    },
   }) {
     const {
-      location = {},
+      location: {
+        pathname,
+        state: {
+          scroll_position,
+        } = {},
+      } = {},
       allow_reporting,
       uiActions,
       context_menu,
     } = this.props;
 
     // When we have navigated to a new route
-    if (location !== prevLocation) {
+    if (pathname !== prevPathname) {
       // Log our pageview
       if (allow_reporting) {
-        ReactGA.set({ page: location.pathname });
-        ReactGA.pageview(location.pathname);
+        ReactGA.set({ page: pathname });
+        ReactGA.pageview(pathname);
       }
 
       // If the location has a "scroll_position" state variable, scroll to it.
       // This is invisibly injected to the history by the Link component when navigating, so
       // hitting back in the browser allows us to restore the position
-      const location_state = location.state || {};
-      if (location_state.scroll_position) {
-        scrollTo(parseInt(location_state.scroll_position), false);
+      if (scroll_position) {
+        scrollTo(parseInt(scroll_position, 10), false);
       }
 
       uiActions.toggleSidebar(false);

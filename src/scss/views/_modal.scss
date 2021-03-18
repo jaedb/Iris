@@ -506,13 +506,14 @@
         }
       }
 
-      .list {
+      .list,
+      .list.small {
         .list__item {
-          float: none !important;
+          float: none;
           width: auto;
-          margin-left: 0 !important;
+          margin-left: 0;
           border-top: 0;
-          width: auto !important;
+          width: 100%;
           margin: 0;
 
           &.draggable {

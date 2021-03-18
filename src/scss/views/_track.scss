@@ -86,6 +86,8 @@ main .track-view {
 
 		.actions {
 			padding: 0;
+			white-space: nowrap;
+			overflow-x: auto;
 		}
 	}
 }

@@ -1,43 +1,48 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { BrowserRouter } from 'react-router-dom';
+import TestRenderer from 'react-test-renderer';
 import { GridItem } from '../../src/js/components/GridItem';
+import { core } from '../state';
+
+jest.mock('react-redux', () => ({
+  useSelector: jest.fn(),
+  useDispatch: () => jest.fn(),
+}));
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useHistory: () => ({
+    location: {
+      pathname: 'iris.local:6680/iris/artist/123:abc',
+    },
+  }),
+  useLocation: () => ({
+    pathname: 'iris.local:6680/iris/artist/123:abc',
+  }),
+}));
 
 describe('<GridItem />', () => {
-
   it('should handle album', () => {
-    const item = {
-      uri: 'spotify:album:alpha',
-      name: 'One',
-    };
-    const dom = shallow(<GridItem item={item} />);
-    expect(dom.find('.grid__item__name').text()).toEqual('One');
-    expect(dom.find('.grid__item__secondary__content').length).toBe(1);
+    const result = TestRenderer.create(
+      <BrowserRouter>
+        <GridItem item={core.items['local:album:md5:66fbea3593ba96a15a9d4188bebab50b']} />
+      </BrowserRouter>
+    ).toJSON();
+    expect(result).toMatchSnapshot();
   });
-
   it('should handle artist', () => {
-    const item = {
-      uri: 'spotify:artist:alpha',
-      name: 'Alpha',
-      followers: 123,
-      albums_uris: ['spotify:album:beta'],
-    };
-    const dom = shallow(<GridItem item={item} />);
-    expect(dom.find('.grid__item__name').text()).toEqual('Alpha');
-    expect(dom.find('.grid__item__secondary__content').childAt(0).render().text()).toEqual('123 followers');
-    expect(dom.find('.grid__item__secondary__content').childAt(1).render().text()).toEqual('1 albums');
+    const result = TestRenderer.create(
+      <BrowserRouter>
+        <GridItem item={core.items['local:artist:md5:4f6e4f979e2c40c5e6ad1735804c29bc']} />
+      </BrowserRouter>
+    ).toJSON();
+    expect(result).toMatchSnapshot();
   });
-
   it('should handle playlist', () => {
-    const item = {
-      uri: 'spotify:playlist:alpha',
-      name: 'One',
-      tracks: [
-        { uri: 'spotify:track:123' },
-        { uri: 'spotify:track:456' },
-      ],
-    };
-    const dom = shallow(<GridItem item={item} />);
-    expect(dom.find('.grid__item__name').text()).toEqual('One');
-    expect(dom.find('.grid__item__secondary__content').render().text()).toEqual('2 tracks');
+    const result = TestRenderer.create(
+      <BrowserRouter>
+        <GridItem item={core.items['m3u:Local%20tester.m3u8']} />
+      </BrowserRouter>
+    ).toJSON();
+    expect(result).toMatchSnapshot();
   });
 });

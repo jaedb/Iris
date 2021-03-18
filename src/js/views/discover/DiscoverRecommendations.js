@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { compact } from 'lodash';
 import InputRange from 'react-input-range';
-import AlbumGrid from '../../components/AlbumGrid';
+import { Grid } from '../../components/Grid';
 import TrackList from '../../components/TrackList';
 import Thumbnail from '../../components/Thumbnail';
 import Parallax from '../../components/Parallax';
@@ -497,7 +497,7 @@ class Discover extends React.Component {
           <br />
           <section>
             <h4><I18n path="discover.recommendations.albums" /></h4>
-            <AlbumGrid className="grid--mini" albums={albums} />
+            <Grid items={albums} mini />
           </section>
         </div>
 

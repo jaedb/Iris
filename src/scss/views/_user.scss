@@ -14,6 +14,10 @@
 				line-height: 5rem;
 			}
 
+			.actions {
+				@include horizontal_scroll;
+			}
+
       .heading {
         display: flex;
         align-items: center;
@@ -54,28 +58,39 @@
 
 	@include responsive($bp_medium){
 		.intro {
-
-			.thumbnail {
-				float: none;
-				margin: 0 auto 20px;
-			}
-
-			.heading {
-				display: block;
-
-				&__thumbnail {
-					display: none;
-				}
-			}
-
 			.liner {
 				padding: 15vh 10px 0;
-			}
 
-			h1 {
-				padding-top: 0;
-				font-size: 3rem;
-				line-height: 3rem;
+				.thumbnail {
+					float: none;
+					margin: 0 auto 20px;
+				}
+
+				.heading {
+					display: block;
+
+					&__thumbnail {
+						display: none;
+					}
+
+					&__content {
+						&__details {
+							flex-flow: column;
+							align-items: flex-start;
+
+							h2 {
+								order: -1;
+								padding-bottom: 1rem;
+							}
+						}
+					}
+				}
+
+				h1 {
+					padding-top: 0;
+					font-size: 3rem;
+					line-height: 3rem;
+				}
 			}
 		}
 	}

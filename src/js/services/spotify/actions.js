@@ -893,156 +893,6 @@ export function resolveRadioSeeds(radio) {
 
 
 /**
- * =============================================================== DISCOVER =============
- * ======================================================================================
- * */
-
-
-/**
- * Get our recommendations
- * This is based off our 'favorites' and then we use those as seeds
- *
- * @param uris = array of artist or track URIs or a genre string
- * */
-export function getRecommendations(uris = [], limit = 20, tunabilities = null) {
-  return (dispatch, getState) => {
-    dispatch({ type: 'CLEAR_SPOTIFY_RECOMMENDATIONS' });
-
-    // build our starting point
-    const artists_ids = [];
-    const tracks_ids = [];
-    const genres = [];
-
-    for (let i = 0; i < uris.length; i++) {
-      const uri = uris[i];
-
-      switch (uriType(uri)) {
-        case 'artist':
-          artists_ids.push(getFromUri('artistid', uri));
-          break;
-
-        case 'track':
-          tracks_ids.push(getFromUri('trackid', uri));
-          break;
-
-        case 'genre':
-          genres.push(getFromUri('genreid', uri));
-          break;
-
-        case 'default':
-          genres.push(uri);
-          break;
-      }
-    }
-
-    // construct our endpoint URL with all the appropriate arguments
-    let endpoint = 'recommendations';
-    endpoint += `?seed_artists=${artists_ids.join(',')}`;
-    endpoint += `&seed_tracks=${tracks_ids.join(',')}`;
-    endpoint += `&seed_genres=${genres.join(',')}`;
-    endpoint += `&limit=${limit}`;
-
-    if (tunabilities) {
-      for (const key in tunabilities) {
-        if (tunabilities.hasOwnProperty(key)) {
-          endpoint += `&${key}=${tunabilities[key]}`;
-        }
-      }
-    }
-
-    request({ dispatch, getState, endpoint })
-      .then(
-        (response) => {
-          const tracks = Object.assign([], formatTracks(response.tracks));
-
-          // We only get simple artist objects, so we need to
-          // get the full object. We'll add URIs to our recommendations
-          // anyway so we can proceed in the meantime
-          const artists_uris = [];
-          if (tracks.length > artists_ids.length && tracks.length > 10) {
-            while (artists_uris.length < 6) {
-              var random_index = Math.round(Math.random() * (tracks.length - 1));
-              const artist = tracks[random_index].artists[0];
-
-              // Make sure this artist is not already in our sample, and
-              // is not one of the seeds
-              if (!artists_uris.includes(artist.uri) && !artists_ids.includes(artist.id)) {
-                artists_uris.push(artist.uri);
-                dispatch(getArtist(artist.uri, false));
-              }
-            }
-          }
-
-          // Copy already loaded albums into array
-          const albums = [];
-          const albums_uris = [];
-          if (tracks.length > 10) {
-            while (albums.length < 6) {
-              var random_index = Math.round(Math.random() * (tracks.length - 1));
-              const { album } = tracks[random_index];
-
-              // Make sure this album is not already in our sample
-              if (!albums_uris.includes(album.uri)) {
-                albums_uris.push(album.uri);
-                albums.push(album);
-              }
-            }
-          }
-
-          if (albums.length > 0) {
-            dispatch(coreActions.itemsLoaded(albums));
-          }
-
-          if (tracks.length > 0) {
-            dispatch(coreActions.itemsLoaded(tracks));
-          }
-
-          dispatch({
-            type: 'SPOTIFY_RECOMMENDATIONS_LOADED',
-            seeds_uris: uris,
-            tracks_uris: arrayOf('uri', tracks),
-            artists_uris,
-            albums_uris: arrayOf('uri', albums),
-          });
-        },
-        (error) => {
-          dispatch(coreActions.handleException(
-            'Could not load recommendations',
-            error,
-          ));
-        },
-      );
-  };
-}
-
-
-/**
- * Get all the available genres
- *
- * @param uri string
- * */
-export function getGenres() {
-  return (dispatch, getState) => {
-    request({ dispatch, getState, endpoint: 'recommendations/available-genre-seeds' })
-      .then(
-        (response) => {
-          dispatch({
-            type: 'SPOTIFY_GENRES_LOADED',
-            genres: response.genres,
-          });
-        },
-        (error) => {
-          dispatch(coreActions.handleException(
-            'Could not load genres',
-            error,
-          ));
-        },
-      );
-  };
-}
-
-
-/**
  * =============================================================== ARTIST(S) ============
  * ======================================================================================
  * */
@@ -1053,7 +903,7 @@ export function getGenres() {
  * @param uri string
  * @param full boolean (whether we want a full artist object)
  * */
-export function getArtist(uri, { full, forceRefetch }) {
+export function getArtist(uri, { full, forceRefetch } = {}) {
   return (dispatch, getState) => {
     let endpoint = `artists/${getFromUri('artistid', uri)}`;
     if (forceRefetch) endpoint += `?refetch=${Date.now()}`;
@@ -1168,7 +1018,7 @@ export function playArtistTopTracks(uri) {
  * ======================================================================================
  * */
 
-export function getUser(uri, { full, forceRefetch }) {
+export function getUser(uri, { full, forceRefetch } = {}) {
   return (dispatch, getState) => {
     const userId = getFromUri('userid', uri);
     let endpoint = `users/${userId}`;
@@ -1219,7 +1069,7 @@ export function getUser(uri, { full, forceRefetch }) {
  *
  * @oaram uri string
  * */
-export function getAlbum(uri, { full, forceRefetch }) {
+export function getAlbum(uri, { full, forceRefetch } = {}) {
   return (dispatch, getState) => {
     let endpoint = `albums/${getFromUri('albumid', uri)}`;
     if (forceRefetch) endpoint += `?refetch=${Date.now()}`;
@@ -1454,7 +1304,7 @@ export function getPlaylistTracks(uri, { forceRefetch, callbackAction } = {}) {
   }
 }
 
-export function getPlaylist(uri, options) {
+export function getPlaylist(uri, options = {}) {
   const { full, forceRefetch } = options;
 
   return (dispatch, getState) => {
@@ -1589,6 +1439,148 @@ export function reorderPlaylistTracks(uri, range_start, range_length, insert_bef
         ));
       },
     );
+  };
+}
+
+/**
+ * =============================================================== DISCOVER =============
+ * ======================================================================================
+ * */
+
+/**
+ * Get our recommendations
+ * This is based off our 'favorites' and then we use those as seeds
+ *
+ * @param uris = array of artist or track URIs or a genre string
+ * */
+export function getRecommendations(uris = [], limit = 20, tunabilities = null) {
+  return (dispatch, getState) => {
+    dispatch({ type: 'CLEAR_SPOTIFY_RECOMMENDATIONS' });
+
+    // build our starting point
+    const artists_ids = [];
+    const tracks_ids = [];
+    const genres = [];
+
+    for (let i = 0; i < uris.length; i++) {
+      const uri = uris[i];
+
+      switch (uriType(uri)) {
+        case 'artist':
+          artists_ids.push(getFromUri('artistid', uri));
+          break;
+        case 'track':
+          tracks_ids.push(getFromUri('trackid', uri));
+          break;
+        case 'genre':
+          genres.push(getFromUri('genreid', uri));
+          break;
+        case 'default':
+          genres.push(uri);
+          break;
+        default:
+          break;
+      }
+    }
+
+    // construct our endpoint URL with all the appropriate arguments
+    let endpoint = 'recommendations';
+    endpoint += `?seed_artists=${artists_ids.join(',')}`;
+    endpoint += `&seed_tracks=${tracks_ids.join(',')}`;
+    endpoint += `&seed_genres=${genres.join(',')}`;
+    endpoint += `&limit=${limit}`;
+
+    if (tunabilities) {
+      for (const key in tunabilities) {
+        if (tunabilities.hasOwnProperty(key)) {
+          endpoint += `&${key}=${tunabilities[key]}`;
+        }
+      }
+    }
+
+    request({ dispatch, getState, endpoint })
+      .then(
+        (response) => {
+          const tracks = Object.assign([], formatTracks(response.tracks));
+
+          // We only get simple artist objects, so we need to
+          // get the full object. We'll add URIs to our recommendations
+          // anyway so we can proceed in the meantime
+          const artists_uris = [];
+          if (tracks.length > artists_ids.length && tracks.length > 10) {
+            while (artists_uris.length < 6) {
+              const randomArtistIndex = Math.round(Math.random() * (tracks.length - 1));
+              const artist = tracks[randomArtistIndex].artists[0];
+
+              // Make sure this artist is not already in our sample, and
+              // is not one of the seeds
+              if (!artists_uris.includes(artist.uri) && !artists_ids.includes(artist.id)) {
+                artists_uris.push(artist.uri);
+                dispatch(getArtist(artist.uri));
+              }
+            }
+          }
+
+          // Copy already loaded albums into array
+          const albums_uris = [];
+          if (tracks.length > 10) {
+            while (albums_uris.length < 6) {
+              const randomAlbumIndex = Math.round(Math.random() * (tracks.length - 1));
+              const { album } = tracks[randomAlbumIndex];
+
+              // Make sure this album is not already in our sample
+              if (!albums_uris.includes(album.uri)) {
+                albums_uris.push(album.uri);
+                dispatch(getAlbum(album.uri));
+              }
+            }
+          }
+
+          if (tracks.length > 0) {
+            dispatch(coreActions.itemsLoaded(tracks));
+          }
+
+          dispatch({
+            type: 'SPOTIFY_RECOMMENDATIONS_LOADED',
+            seeds_uris: uris,
+            tracks_uris: arrayOf('uri', tracks),
+            artists_uris,
+            albums_uris,
+          });
+        },
+        (error) => {
+          dispatch(coreActions.handleException(
+            'Could not load recommendations',
+            error,
+          ));
+        },
+      );
+  };
+}
+
+
+/**
+ * Get all the available genres
+ *
+ * @param uri string
+ * */
+export function getGenres() {
+  return (dispatch, getState) => {
+    request({ dispatch, getState, endpoint: 'recommendations/available-genre-seeds' })
+      .then(
+        (response) => {
+          dispatch({
+            type: 'SPOTIFY_GENRES_LOADED',
+            genres: response.genres,
+          });
+        },
+        (error) => {
+          dispatch(coreActions.handleException(
+            'Could not load genres',
+            error,
+          ));
+        },
+      );
   };
 }
 

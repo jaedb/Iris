@@ -98,7 +98,19 @@ $bp_shallow: 650px;
   animation-iteration-count: infinite;
 }
 
-@mixin fadein($duration: 0.2s, $distance: 5px, $opacity: 0, $delay: 0) {
+@mixin fadein($duration: 0.2s, $distance: 0px, $opacity: 0, $delay: 0, $animation_name: 'fadein') {
+  /**
+   * TODO: Because this is built at first use of fadein, all subsequent users will be using
+   * the same keyframes
+   */
+  @keyframes fadein_flat {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
   @keyframes fadein {
     0% {
       opacity: $opacity;
@@ -113,7 +125,7 @@ $bp_shallow: 650px;
   animation-delay: $delay;
   -webkit-animation-fill-mode: forwards;
   animation-fill-mode: forwards;
-  animation-name: fadein;
+  animation-name: $animation_name;
   animation-duration: $duration;
   animation-timing-function: linear;
   animation-iteration-count: 1;
@@ -387,4 +399,9 @@ $bp_shallow: 650px;
       rgba(100,100,100,1)
     );
   }
+}
+
+@mixin horizontal_scroll {
+  white-space: nowrap;
+  overflow-x: auto;
 }

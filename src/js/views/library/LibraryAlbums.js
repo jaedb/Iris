@@ -1,13 +1,11 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import AlbumGrid from '../../components/AlbumGrid';
-import List from '../../components/List';
 import Header from '../../components/Header';
 import DropdownField from '../../components/Fields/DropdownField';
 import FilterField from '../../components/Fields/FilterField';
-import LazyLoadListener from '../../components/LazyLoadListener';
+import { Grid } from '../../components/Grid';
+import { List } from '../../components/List';
 import Icon from '../../components/Icon';
 import * as coreActions from '../../services/core/actions';
 import * as uiActions from '../../services/ui/actions';
@@ -21,6 +19,7 @@ import Loader from '../../components/Loader';
 import {
   makeLibrarySelector,
   makeProcessProgressSelector,
+  getLibrarySource,
 } from '../../util/selectors';
 
 const processKeys = [
@@ -35,27 +34,15 @@ class LibraryAlbums extends React.Component {
 
     this.state = {
       filter: '',
-      limit: 50,
-      per_page: 50,
     };
   }
 
   componentDidMount() {
     const {
-      location: {
-        state = {},
-      },
       uiActions: {
         setWindowTitle,
       },
     } = this.props;
-
-    // Restore any limit defined in our location state
-    if (state.limit) {
-      this.setState({
-        limit: state.limit,
-      });
-    }
 
     setWindowTitle(i18n('library.albums.title'));
     this.getMopidyLibrary();
@@ -147,23 +134,6 @@ class LibraryAlbums extends React.Component {
     });
   }
 
-  loadMore = () => {
-    const {
-      limit,
-      per_page,
-    } = this.state;
-    const {
-      location: {
-        state,
-      },
-      history,
-    } = this.props;
-
-    const new_limit = limit + per_page;
-    this.setState({ limit: new_limit });
-    history.replace({ state: { ...state, limit: new_limit } });
-  }
-
   setSort = (value) => {
     const {
       sort,
@@ -190,7 +160,6 @@ class LibraryAlbums extends React.Component {
       loading_progress,
     } = this.props;
     const {
-      limit,
       filter,
     } = this.state;
     let { albums } = this.props;
@@ -207,41 +176,21 @@ class LibraryAlbums extends React.Component {
       albums = applyFilter('name', filter, albums);
     }
 
-    // Apply our lazy-load-rendering
-    const total_albums = albums.length;
-    albums = albums.slice(0, limit);
-
     if (view === 'list') {
       return (
         <section className="content-wrapper">
           <List
-            handleContextMenu={this.handleContextMenu}
-            rows={albums}
+            items={albums}
+            details={['artists', 'tracks', 'followers']}
+            right_column={['source']}
             thumbnail
-            details={['artists']}
-            right_column={['added_at', 'tracks']}
-            className="albums"
-            link_prefix="/album/"
-          />
-          <LazyLoadListener
-            loadKey={total_albums > limit ? limit : total_albums}
-            showLoader={limit < total_albums}
-            loadMore={this.loadMore}
           />
         </section>
       );
     }
     return (
       <section className="content-wrapper">
-        <AlbumGrid
-          handleContextMenu={this.handleContextMenu}
-          albums={albums}
-        />
-        <LazyLoadListener
-          loadKey={total_albums > limit ? limit : total_albums}
-          showLoader={limit < total_albums}
-          loadMore={this.loadMore}
-        />
+        <Grid items={albums} />
       </section>
     );
   }
@@ -381,29 +330,19 @@ class LibraryAlbums extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  const source = state.ui.library_albums_source ? state.ui.library_albums_source : 'all';
-
-  const libraryUris = [];
-  if (source === 'all' || source === 'local') libraryUris.push('mopidy:library:albums');
-  if (source === 'all' || source === 'spotify') libraryUris.push('spotify:library:albums');
-  if (source === 'all' || source === 'google') libraryUris.push('google:library:albums');
-  const librarySelector = makeLibrarySelector(libraryUris);
-  const processProgressSelector = makeProcessProgressSelector(processKeys);
-
-  return {
-    loading_progress: processProgressSelector(state),
-    mopidy_uri_schemes: state.mopidy.uri_schemes,
-    albums: librarySelector(state),
-    google_available: (state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('gmusic:')),
-    spotify_available: state.spotify.access_token,
-    view: state.ui.library_albums_view,
-    source,
-    sort: state.ui.library_albums_sort,
-    sort_reverse: state.ui.library_albums_sort_reverse,
-  };
-};
-
+const librarySelector = makeLibrarySelector('albums');
+const processProgressSelector = makeProcessProgressSelector(processKeys);
+const mapStateToProps = (state) => ({
+  loading_progress: processProgressSelector(state),
+  mopidy_uri_schemes: state.mopidy.uri_schemes,
+  albums: librarySelector(state, 'albums'),
+  google_available: (state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('gmusic:')),
+  spotify_available: state.spotify.access_token,
+  view: state.ui.library_albums_view,
+  source: getLibrarySource(state, 'albums'),
+  sort: state.ui.library_albums_sort,
+  sort_reverse: state.ui.library_albums_sort_reverse,
+});
 const mapDispatchToProps = (dispatch) => ({
   coreActions: bindActionCreators(coreActions, dispatch),
   uiActions: bindActionCreators(uiActions, dispatch),

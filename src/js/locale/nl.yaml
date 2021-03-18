@@ -13,22 +13,27 @@ errors:
   required: Vereist
   unknown_error: Onbekende fout
   need_to_be_online: Je moet online zijn om deze bron te laden
+  nothing_selected: Niets geselecteerd
+  cannot_reorder:
+    title: Kan items niet herschikken
+    description: Verwijder sortering/filters en probeer opnieuw
 actions:
   play: Afspelen
   play_all: Alles afspelen
   play_next: Volgende afspelen
   shuffle_play: Willekeurig afspelen
-  pause: Pause
+  pause: Pauzeer
   stop: Stop
   add_to_playlist: Toevoegen aan afspeellijst
   add_to_library: Toevoegen aan bibliotheek
+  added_tracks_to: 'Voeg %{count} tracks toe aan '
   remove_from_library: Verwijderen uit bibliotheek
   add_to_queue: Toevoegen aan wachtlijst
   reset: Resetten
   back: Terug
   refresh: Ververs
   enable: Activeren
-  disable: Desactiveren
+  disable: Deactiveren
   send: Versturen
   save: Opslaan
   start: Starten
@@ -37,6 +42,10 @@ actions:
   confirm: Weet je dit zeker?
   delete: Wissen
   remove: Verwijderen
+  cancel: Annuleren
+  created: '%{name} aangemaakt'
+  saved: '%{name} opgeslagen'
+  deleted: '%{name} verwijderd'
 common:
   popularity: Populariteit
   name: Naam
@@ -47,6 +56,7 @@ common:
   sort: Sorteren
   filter: Filteren
   by: ' door '
+  loading_library: 'Bezig met laden %{provider} %{type}'
 fields:
   start_typing: 'Begin te typen...'
   search: 'Zoek...'
@@ -57,6 +67,7 @@ fields:
   items_to_add:
     label: Toe te voegen items
     placeholder: Geen item
+  filter: Filter
   filters:
     all: Alles
     thumbnails: Miniaturen
@@ -64,6 +75,7 @@ fields:
     as_loaded: Zoals geladen
     name: Naam
     artist: Artiest
+    album: Album
     updated: Gewijzigd
     tracks: Tracks
     source: Bron
@@ -112,7 +124,12 @@ specs:
 services:
   mopidy:
     title: Mopidy
-    local: Loal
+    local: Lokaal
+    adding_uris: 'Bezig met toevoegen van %{count} URI(s)'
+    adding_uris_broadcast: '%{username} is %{count} URI(s) aan het toevoegen'
+    searching: 'Bezig met zoeken %{provider} %{type}'
+    searching_providers: 'Bezg met zoeken naar %{count} Mopidy providers'
+    loading_albums: 'Bezig met laden van %{count} lokale albums'
   spotify:
     title: Spotify
   pusher:
@@ -156,23 +173,30 @@ context_menu:
     no_playlists: Geen bewerkbare afspeellijsten
   play_next: Als volgende afspelen
   play_top_tracks: Top tracks afspelen
+  play_all_tracks: Speel alle tracks af
   love_track: Leuk vinden
   unlove_track: Niet leuk vinden
+  pin: Maak vast
+  unpin: Maak los
   go_to_artist: Ga naar artiest
   go_to_user: Ga naar gebruiker
-  track_info: Track info
+  track_info: Track informatie
   discover_similar: Ontdek gelijkaardig
   start_radio: Start radio
   copy_uri: URI('s) kopiëren
+  refresh: Verversen
 dropzones:
-  dragging_things: 'Versleep %{count} zaken'
+  dragging_things: 'Versleep %{count} dingen'
 playback_controls:
   consume: Consumeren
   shuffle: Willekeurig
   repeat: Herhalen
-  no_outputs: No outputs
+  no_outputs: Geen uitvoer(en)
+  mute: Dempen
+  unmute: Dempen opheffen
 snapcast:
   enabled: Geactiveerd
+  streaming_enabled: Streaming ingeschakeld
   show_disconnected_clients: Toon niet-verbonden clients
   no_connected_clients: Geen verbonden clients
   host: Host
@@ -186,7 +210,7 @@ snapcast:
   volume: Volume
 authentication:
   popup_blocked: Popup geblokkeerd. Laat popups toe en probeer het opnieuw.
-  failed: Autorisatie gefaald. %{origin} is niet de ingestelde autorisation_url.
+  failed: Autorisatie mislukt. %{origin} is niet de ingestelde autorisation_url.
   log_out: Afmelden
   log_in: Aanmelden
 
@@ -211,17 +235,27 @@ album:
   wiki:
     title: Over
     published: 'Uitgebracht: %{date}'
+  tracks:
+    title: Tracks
+    sort:
+      disc_track: Track nummer
+      name: Naam
 artist:
   title: Artiest
   title_window: '%{name} (artiest)'
   overview:
     title: Overzicht
     top_tracks: Top tracks
+    albums: Albums
     related_artists:
       title: Verwante artiesten
       more: Alle verwante artiesten
   tracks:
     title: Tracks
+    sort:
+      disc_track: Track nummer
+      name: Naam
+      album: Album
   related_artists:
     title: Verwante artiesten
   about:
@@ -230,6 +264,17 @@ artist:
     wiki:
       published: 'Uitgebracht: %{date}'
       origin: 'Bron: '
+  albums:
+    sort:
+      default: Standaard
+      name: Naam
+      release_date: Datum
+      track_count: Tracks
+    filter:
+      all: Alle
+      albums: Albums
+      singles: Singles
+      compilations: Compilaties
 debug:
   title: Foutopsporing
   ui:
@@ -253,6 +298,15 @@ playlist:
   title: Afspeellijst
   title_window: '%{name} (afspeellijst)'
   title_plural: Afspeellijsten
+  tracks:
+    title: Tracks
+    sort:
+      default: Standaard
+      sort_id: Als geladen
+      added_at: Toevoegdatum
+      name: Naam
+      artist: Artiest
+      album: Album
 queue_history:
   title: Afspeelgeschiedenis
 search:
@@ -310,6 +364,7 @@ settings:
       smooth_scrolling: Vloeiend scrollen activeren
       touch_events: Veegbewegingen voor afspeelbediening activeren
       touch_events_tooltip: Maakt het mogelijk om naar links of rechts te vegen om van tracks te veranderen
+      grid_glow: Miniatuur gloei effect
       wide_scrollbars: Gebruik brede schuifbalken
     sources_priority:
       label: Prioriteit bronnen
@@ -331,16 +386,18 @@ settings:
     album_uri:
       label: URI albumbibliotheek
       description: URI gebruikt voor het samenstellen van de albumbibliotheek
+    track_uri:
+      label: URI trackbibliotheek
+      description: URI gebruikt voor het samenstellen van de trackbibliotheek
     connections:
       label: Verbindingen
     version:
       label: Versie
       upgrade_available: 'Nieuwe versie beschikbaar (%{version})'
-      upgrade: 'Opwaarderen naar %{version}'
+      upgrade: 'Bijwerken naar %{version}'
       up_to_date: Actueel
     share_configuration: Deel configuratie
     restart: Herstart server
-    reset_cache: Wis cachegeheugen
     reset: Alle instellingen terugzetten
   about:
     title: Over
@@ -385,7 +442,7 @@ settings:
       mopidy_spotify_not_running: Mopidy-Spotify-extensie is niet actief - je zal geen muziek van Spotify kunnen afspelen
       country:
         label: Land
-        description: Een ISO 3166-1 alpha-2 landcode (eg 'NZ')
+        description: Een ISO 3166-1 alpha-2 landcode (eg 'NL')
       locale:
         title: Taal
         description: Een ISO 639 taalcode in kleine letters en een ISO 3166-1 alpha-2 landcode in hoofdletters, verbonden met een liggend streepje (bv 'nl_NL' of 'nl_BE')
@@ -410,8 +467,8 @@ discover:
     artists: Artiesten
     albums: Albums
     body_title: Verken nieuwe muziek
-    body_subtitle: Zaai muzikale kenmerken om jouw unieke sound samen te stellen
-    too_many_seeds: Te veel zaadjes! Je kan maximaal 5 tracks, artiesten en genres toevoegen.
+    body_subtitle: Geef muzikale kenmerken op om jouw unieke sound samen te stellen
+    too_many_seeds: Te veel kenmerken! Je kan maximaal 5 tracks, artiesten en genres toevoegen.
     find_recommendations: Vind aanbevelingen
 library:
   albums:
@@ -433,7 +490,7 @@ modal:
     no_playlists: Geen afspeellijsten beschikbaar
     no_editable_playlists: Geen bewerkbare afspeellijsten
   add_to_queue:
-    title: Toevoegen aan wachtlijst
+    title: Toevoegen aan wachtrij
     subtitle: Voeg een door komma's gescheiden lijst van URI's toe aan de wachtrij
     uris: URI('s)
     add_random: Willekeurig toevoegen
@@ -471,12 +528,12 @@ modal:
     headers: Aanvullende headers
   edit_radio:
     title: Radio
-    subtitle: Zaai muzikale kenmerken om de sound van jouw radio vorm te geven. Radio gebruikt Spotify's aanbevelingen om tracks te suggereren die vergelijkbaar zijn met jouw zaden.
-    invalid_seed_uri: Ongeldige zaad-URI('s)
-    too_many_seeds: Meer dan 5 zaden opgegeven, verwaarloos de rest
+    subtitle: Geef muzikale kenmerken op om de smaak van jouw radio vorm te geven. Radio gebruikt Spotify's aanbevelingen om tracks te suggereren die vergelijkbaar zijn met jouw kenmerken.
+    invalid_seed_uri: Ongeldige kenmerken-URI('s)
+    too_many_seeds: Meer dan 5 kenmerken opgegeven, de rest wordt verwaarloos
     only_spotify_uris: Elkel Spotify URI's worden ondersteund
     already_added: URI reeds toegevoegd
-    no_seeds: Geen zaden
+    no_seeds: Geen kenmerken
   initial_setup:
     title: Welkom op Iris
     username: Gebruikersnaam
@@ -501,3 +558,22 @@ modal:
       do_you_want_to_import: Wil je dit importeren?
       import_now: Nu importeren
       successful: Importeren geslaagd
+  reset:
+    title: Reset Iris
+    subtitle: Wis je lokale local configuratie, opslag informatie or geheugen
+    items: Reset naar de standaard waarde
+    preferences:
+      label: Instellingen
+      description: Gebruikersinterface aanpassingen
+    database:
+      label: Database
+      description: Lokale browser-gebaseerde database van de bibliotheken en assets
+    service_worker:
+      label: Service worker
+      description: Herinstalleer de service worker
+    cache:
+      label: Haal cache op
+      description: Exteren API aanroepen cache (vereist Service Worker)
+    test_mode:
+      label: Test modus
+      description: Uitgebreide logging voor diagnostische problemen

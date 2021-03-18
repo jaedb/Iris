@@ -1,3 +1,8 @@
+.smart-list__batch:first-child {
+	.list__item:first-child {
+		border-top: none;
+	}
+}
 
 .list {
 	&__item {
@@ -17,6 +22,11 @@
 		border-radius: 3px;
 		justify-content: space-between;
 		align-content: center;
+		border-top: 1px solid rgba(128,128,128,0.05);
+
+		@include theme('light') {
+			border-top-color: rgba(128,128,128,0.1);
+		}
 
 		&:before {
 			pointer-events: none;
@@ -32,13 +42,6 @@
 			opacity: 0;
 		}
 
-		&:not(:first-child){
-			border-top: 1px solid rgba(128,128,128,0.05);
-
-			@include theme('light') {
-				border-top-color: rgba(128,128,128,0.1);
-			}
-		}
 
 		:root .notouch:not(.dragging) &:not(.list__item--no-interaction){
 			cursor: pointer;
@@ -78,6 +81,10 @@
 
 		.context-menu-trigger {
 			margin: 0 0 0 0.5rem;
+		}
+
+		.details {
+			overflow-x: visible;
 		}
 /*
 		.icon.source {
@@ -162,7 +169,7 @@
 
 					&__item {
 						&--details {
-							min-height: 1em;
+							min-height: 1.28em;
 						}
 
 						&--thumbnail {

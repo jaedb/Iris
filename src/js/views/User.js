@@ -1,10 +1,9 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import ErrorMessage from '../components/ErrorMessage';
 import Thumbnail from '../components/Thumbnail';
-import PlaylistGrid from '../components/PlaylistGrid';
+import { Grid } from '../components/Grid';
 import FollowButton from '../components/Fields/FollowButton';
 import Parallax from '../components/Parallax';
 import { nice_number } from '../components/NiceNumber';
@@ -154,7 +153,7 @@ class User extends React.Component {
                     <ContextMenuTrigger onTrigger={this.handleContextMenu} />
                   </div>
                   <h2>
-                    <ul className="details">
+                    <ul className="details details--one-line">
                       {!slim_mode && (
                         <li className="source">
                           <Icon type="fontawesome" name={sourceIcon(user.uri)} />
@@ -190,7 +189,7 @@ class User extends React.Component {
             <h4>
               <I18n path="playlist.title_plural" />
             </h4>
-            <PlaylistGrid playlists={playlists} />
+            <Grid items={playlists} />
           </section>
         </div>
       </div>

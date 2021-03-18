@@ -384,7 +384,7 @@ const toRegExp = function (keys) {
       // console.error('Could not convert string to RegEx', key);
       return null;
     }
-  });
+  }).filter((exp) => exp); // Filter out failed conversions
 };
 
 /**
@@ -399,6 +399,8 @@ const isLoading = function (load_queue = {}, keys = []) {
   if (!load_queue || !keys) return false;
 
   const expressions = toRegExp(keys);
+  if (!expressions.length) return false;
+
   const queue = indexToArray(load_queue);
 
   const matches = queue.filter((qk) => {
@@ -542,44 +544,42 @@ const iconFromKeyword = (name) => {
 const scrollTo = function (target = null, smooth_scroll = false) {
   const main = document.getElementById('main');
 
-  // Remove our smooth-scroll class
-  if (!smooth_scroll) {
-    main.classList.remove('smooth-scroll');
-  }
+  const performScroll = () => {
+    if (!smooth_scroll) main.classList.remove('smooth-scroll');
 
-  // Target is a number, so treat as pixel position
-  if (target && Number.isInteger(target)) {
-    if (typeof main.scrollTo === 'function') {
-      main.scrollTop = target;
-    }
-
+    // Target is a number, so treat as pixel position
+    if (target && Number.isInteger(target)) {
+      if (typeof main.scrollTo === 'function') {
+        main.scrollTo(0, target);
+      }
 
     // Target is a string representing a DOM element by class/id
-  } else if (target) {
-    let element = null;
+    } else if (target) {
+      let element = null;
 
-    if (target.charAt(0) == '#') {
-      element = document.getElementById(target.substring(1));
-    } else if (target.charAt(0) == '.') {
-      element = document.getElementsByClassName(target.substring(1));
-      if (element.length > 0) {
-        element = element[0];
+      if (target.charAt(0) === '#') {
+        element = document.getElementById(target.substring(1));
+      } else if (target.charAt(0) === '.') {
+        element = document.getElementsByClassName(target.substring(1));
+        if (element.length > 0) {
+          element = element[0];
+        }
+      } else {
+        console.error(`Invalid target type '${target}'. Must start with '#' or '.'.`);
+      }
+
+      if (element && typeof element.scrollIntoView === 'function') {
+        element.scrollIntoView();
       }
     } else {
-      console.error(`Invalid target type '${target}'. Must start with '#' or '.'.`);
+      main.scrollTop = 0;
     }
 
-    if (element && typeof element.scrollIntoView === 'function') {
-      element.scrollIntoView();
-    }
-  } else {
-    main.scrollTop = 0;
-  }
+    if (!smooth_scroll) main.classList.add('smooth-scroll');
+  };
 
-  // Now reinstate smooth scroll
-  if (!smooth_scroll) {
-    main.classList.add('smooth-scroll');
-  }
+  // Give .main a moment to render it's contents
+  setTimeout(performScroll, 1);
 };
 
 

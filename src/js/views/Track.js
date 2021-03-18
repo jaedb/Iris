@@ -268,7 +268,7 @@ class Track extends React.Component {
             {track.artists && <LinksSentence items={track.artists} type="artist" />}
           </h2>
 
-          <ul className="details">
+          <ul className="details details--one-line">
             {!slim_mode && (
               <li className="source">
                 <Icon type="fontawesome" name={sourceIcon(uri)} />

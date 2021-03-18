@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -19,6 +18,7 @@ import Loader from '../../components/Loader';
 import {
   makeLibrarySelector,
   makeProcessProgressSelector,
+  getLibrarySource,
 } from '../../util/selectors';
 
 const processKeys = [
@@ -32,27 +32,15 @@ class LibraryTracks extends React.Component {
 
     this.state = {
       filter: '',
-      limit: 50,
-      per_page: 50,
     };
   }
 
   componentDidMount() {
     const {
-      location: {
-        state = {},
-      },
       uiActions: {
         setWindowTitle,
       },
     } = this.props;
-
-    // Restore any limit defined in our location state
-    if (state.limit) {
-      this.setState({
-        limit: state.limit,
-      });
-    }
 
     setWindowTitle(i18n('library.tracks.title'));
     this.getMopidyLibrary();
@@ -126,23 +114,6 @@ class LibraryTracks extends React.Component {
     });
   }
 
-  loadMore = () => {
-    const {
-      limit,
-      per_page,
-    } = this.state;
-    const {
-      location: {
-        state,
-      },
-      history,
-    } = this.props;
-
-    const new_limit = limit + per_page;
-    this.setState({ limit: new_limit });
-    history.replace({ state: { ...state, limit: new_limit } });
-  }
-
   setSort = (value) => {
     const {
       sort,
@@ -196,7 +167,6 @@ class LibraryTracks extends React.Component {
       loading_progress,
     } = this.props;
     const {
-      limit,
       filter,
     } = this.state;
     let { tracks } = this.props;
@@ -213,20 +183,9 @@ class LibraryTracks extends React.Component {
       tracks = applyFilter('name', filter, tracks);
     }
 
-    // Apply our lazy-load-rendering
-    const total_tracks = tracks.length;
-    tracks = tracks.slice(0, limit);
-
     return (
       <section className="content-wrapper">
-        <TrackList
-          tracks={tracks}
-        />
-        <LazyLoadListener
-          loadKey={total_tracks > limit ? limit : total_tracks}
-          showLoader={limit < total_tracks}
-          loadMore={this.loadMore}
-        />
+        <TrackList tracks={tracks} />
       </section>
     );
   }
@@ -242,7 +201,6 @@ class LibraryTracks extends React.Component {
     } = this.props;
     const {
       filter,
-      per_page,
     } = this.state;
 
     const source_options = [
@@ -286,7 +244,7 @@ class LibraryTracks extends React.Component {
       <>
         <FilterField
           initialValue={filter}
-          handleChange={(value) => this.setState({ filter: value, limit: per_page })}
+          handleChange={(value) => this.setState({ filter: value })}
           onSubmit={() => uiActions.hideContextMenu()}
         />
         <DropdownField
@@ -339,26 +297,18 @@ class LibraryTracks extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  const source = state.ui.library_tracks_source ? state.ui.library_tracks_source : 'all';
-
-  const libraryUris = [];
-  if (source === 'all' || source === 'local') libraryUris.push('mopidy:library:tracks');
-  if (source === 'all' || source === 'spotify') libraryUris.push('spotify:library:tracks');
-  const librarySelector = makeLibrarySelector(libraryUris);
-  const processProgressSelector = makeProcessProgressSelector(processKeys);
-
-  return {
-    loading_progress: processProgressSelector(state),
-    mopidy_uri_schemes: state.mopidy.uri_schemes,
-    tracks: librarySelector(state),
-    spotify_available: state.spotify.access_token,
-    view: state.ui.library_tracks_view,
-    source,
-    sort: state.ui.library_tracks_sort,
-    sort_reverse: state.ui.library_tracks_sort_reverse,
-  };
-};
+const librarySelector = makeLibrarySelector('tracks');
+const processProgressSelector = makeProcessProgressSelector(processKeys);
+const mapStateToProps = (state) => ({
+  loading_progress: processProgressSelector(state),
+  mopidy_uri_schemes: state.mopidy.uri_schemes,
+  tracks: librarySelector(state),
+  spotify_available: state.spotify.access_token,
+  view: state.ui.library_tracks_view,
+  source: getLibrarySource(state, 'tracks'),
+  sort: state.ui.library_tracks_sort,
+  sort_reverse: state.ui.library_tracks_sort_reverse,
+});
 
 const mapDispatchToProps = (dispatch) => ({
   coreActions: bindActionCreators(coreActions, dispatch),

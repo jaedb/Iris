@@ -10,6 +10,7 @@ const getLibrary = (state, uri) => state.core.libraries[uri];
 const getLibraries = (state) => state.core.libraries;
 const getSearchResults = (state) => state.core.search_results;
 const getGridGlowEnabled = (state) => state.ui.grid_glow_enabled;
+const getDragger = (state) => state.ui.dragger;
 
 const makeItemSelector = (uri) => createSelector(
   [getItems],
@@ -18,6 +19,17 @@ const makeItemSelector = (uri) => createSelector(
       return indexToArray(items, uri);
     }
     return items[uri];
+  },
+);
+const makeArtistSelector = (uri) => createSelector(
+  [getItems],
+  (items) => {
+    const artist = items[uri];
+    const albums = artist?.albums_uris ? indexToArray(items, artist.albums_uris) : [];
+    return {
+      ...artist,
+      albums,
+    };
   },
 );
 const makeLoadingSelector = (keys) => createSelector(
@@ -38,9 +50,15 @@ const queueHistorySelector = createSelector(
   },
 );
 
-const makeLibrarySelector = (uris) => createSelector(
-  [getLibraries, getItems],
-  (libraries, items) => {
+const getLibrarySource = (state, name) => state.ui[`library_${name}_source`] || 'all';
+const makeLibrarySelector = (name) => createSelector(
+  [getLibraries, getItems, getLibrarySource],
+  (libraries, items, source) => {
+    const uris = [];
+    if (source === 'all' || source === 'local') uris.push(`mopidy:library:${name}`);
+    if (source === 'all' || source === 'spotify') uris.push(`spotify:library:${name}`);
+    if (source === 'all' || source === 'google') uris.push(`google:library:${name}`);
+
     const itemUris = indexToArray(libraries, uris).reduce(
       (acc, library) => [...acc, ...library.items_uris],
       [],
@@ -84,7 +102,10 @@ export {
   getItem,
   getLibrary,
   getGridGlowEnabled,
+  getLibrarySource,
+  getDragger,
   makeItemSelector,
+  makeArtistSelector,
   makeLibrarySelector,
   makeLoadingSelector,
   makeSearchResultsSelector,
