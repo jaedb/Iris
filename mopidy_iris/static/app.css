@@ -4005,10 +4005,14 @@ footer {
 }
 
 .details {
-  white-space: nowrap;
-  overflow-x: auto;
   list-style-type: none;
   opacity: 0.5;
+}
+@media (max-width: 799px) {
+  .details--one-line {
+    white-space: nowrap;
+    overflow-x: auto;
+  }
 }
 .details li {
   display: inline-flex;
@@ -5498,6 +5502,9 @@ h4 .context-menu-trigger, h4 .context-menu-trigger:active {
 }
 .list__item .context-menu-trigger {
   margin: 0 0 0 0.5rem;
+}
+.list__item .details {
+  overflow-x: visible;
 }
 .list__item.field {
   padding: 0 !important;
@@ -10951,15 +10958,17 @@ main .track-view .lyrics-selector {
     width: auto;
     float: none;
   }
-  .modal .content .list .list__item {
-    float: none !important;
+  .modal .content .list .list__item,
+.modal .content .list.small .list__item {
+    float: none;
     width: auto;
-    margin-left: 0 !important;
+    margin-left: 0;
     border-top: 0;
-    width: auto !important;
+    width: 100%;
     margin: 0;
   }
-  .modal .content .list .list__item.draggable .drag-handle {
+  .modal .content .list .list__item.draggable .drag-handle,
+.modal .content .list.small .list__item.draggable .drag-handle {
     padding-top: 14px;
     padding-bottom: 14px;
   }

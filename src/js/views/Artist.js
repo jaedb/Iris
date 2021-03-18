@@ -29,7 +29,7 @@ import { i18n, I18n } from '../locale';
 import Button from '../components/Button';
 import { trackEvent } from '../components/Trackable';
 import {
-  makeArtistSelector,
+  makeItemSelector,
   makeLoadingSelector,
 } from '../util/selectors';
 import { nice_number } from '../components/NiceNumber';
@@ -72,8 +72,7 @@ class Artist extends React.Component {
       loadArtist(uri, { full: true });
     }
 
-    if (!prevArtist && artist) this.setWindowTitle(artist);
-    if (prevUri !== uri && artist) this.setWindowTitle(artist);
+    if (prevArtist?.uri !== artist?.uri && artist) this.setWindowTitle(artist);
   }
 
   onChangeTracksFilter = (value) => {
@@ -193,8 +192,8 @@ class Artist extends React.Component {
     let {
       tracks,
       related_artists,
-      albums,
     } = artist;
+    let { albums } = this.props;
 
     if (sort && albums) {
       albums = sortItems(albums, sort, sort_reverse);
@@ -604,12 +603,18 @@ class Artist extends React.Component {
 const mapStateToProps = (state, props) => {
   const uri = decodeURIComponent(props.match.params.uri);
   const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`, '^((?!contains).)*$', '^((?!albums).)*$', '^((?!related-artists).)*$', '^((?!top-tracks).)*$']);
-  const artistSelector = makeArtistSelector(uri);
+  const artistSelector = makeItemSelector(uri);
   const artist = artistSelector(state);
+  let albums = null;
+  if (artist && artist.albums_uris) {
+    const albumsSelector = makeItemSelector(artist.albums_uris);
+    albums = albumsSelector(state);
+  }
 
   return {
     uri,
     artist,
+    albums,
     loading: loadingSelector(state),
     theme: state.ui.theme,
     slim_mode: state.ui.slim_mode,

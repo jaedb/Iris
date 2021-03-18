@@ -91,19 +91,13 @@ class Album extends React.Component {
   }
 
   setWindowTitle = (album = this.props.album) => {
-    const { uiActions: { setWindowTitle }, artists } = this.props;
+    const { uiActions: { setWindowTitle } } = this.props;
 
     if (album) {
-      let artistNames = [];
-      if (album.artists_uris && artists) {
-        for (let i = 0; i < album.artists_uris.length; i++) {
-          const uri = album.artists_uris[i];
-          if (artists.hasOwnProperty(uri)) {
-            artistNames.push(artists[uri].name);
-          }
-        }
-      }
-      setWindowTitle(i18n('album.title_window', { name: album.name, artist: artistNames.join() }));
+      setWindowTitle(i18n('album.title_window', {
+        name: album.name,
+        artist: album.artists?.map((artist) => artist.name).join(),
+      }));
     } else {
       setWindowTitle(i18n('album.title'));
     }
@@ -241,7 +235,7 @@ class Album extends React.Component {
         <div className="title">
           <h1>{album.name}</h1>
 
-          <ul className="details">
+          <ul className="details details--one-line">
             {!slim_mode ? (
               <li className="source">
                 <Icon type="fontawesome" name={sourceIcon(album.uri)} />

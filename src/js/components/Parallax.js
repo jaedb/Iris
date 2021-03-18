@@ -7,13 +7,13 @@ const Parallax = ({
   fixedHeight,
   image: url,
   animate = true,
+  inViewport,
+  forwardedRef,
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentUrl, setCurrentUrl] = useState();
 
   const loadImage = (urlToLoad) => {
-    console.debug('loadImage', { urlToLoad, currentUrl, url, isLoaded })
-
     setCurrentUrl(urlToLoad);
     if (urlToLoad && urlToLoad !== '') {
       setIsLoaded(isCached(urlToLoad));
@@ -37,20 +37,22 @@ const Parallax = ({
 
   let className = 'parallax preserve-3d';
   className += ` parallax--${fixedHeight ? 'fixed' : 'flexible'}-height`;
-  if (blur) className += ' parallax--blur';
+  if (blur && inViewport) className += ' parallax--blur';
   if (isLoaded) className += ' parallax--loaded';
   if (animate) className += ' parallax--animate';
 
   const style = isLoaded && currentUrl ? { backgroundImage: `url("${currentUrl}")` } : {};
 
   return (
-    <div className={className}>
-      <div className="parallax__layer preserve-3d">
-        <div className="parallax__image" style={style} />
-        <div className="parallax__overlay" />
-      </div>
+    <div className={className} ref={forwardedRef}>
+      {inViewport && (
+        <div className="parallax__layer preserve-3d">
+          <div className="parallax__image" style={style} />
+          <div className="parallax__overlay" />
+        </div>
+      )}
     </div>
   );
 }
 
-export default Parallax;
+export default handleViewport(Parallax);

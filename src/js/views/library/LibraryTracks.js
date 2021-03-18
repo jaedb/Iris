@@ -37,9 +37,6 @@ class LibraryTracks extends React.Component {
 
   componentDidMount() {
     const {
-      location: {
-        state = {},
-      },
       uiActions: {
         setWindowTitle,
       },
@@ -170,7 +167,6 @@ class LibraryTracks extends React.Component {
       loading_progress,
     } = this.props;
     const {
-      limit,
       filter,
     } = this.state;
     let { tracks } = this.props;
@@ -187,20 +183,9 @@ class LibraryTracks extends React.Component {
       tracks = applyFilter('name', filter, tracks);
     }
 
-    // Apply our lazy-load-rendering
-    const total_tracks = tracks.length;
-    tracks = tracks.slice(0, limit);
-
     return (
       <section className="content-wrapper">
-        <TrackList
-          tracks={tracks}
-        />
-        <LazyLoadListener
-          loadKey={total_tracks > limit ? limit : total_tracks}
-          showLoader={limit < total_tracks}
-          loadMore={this.loadMore}
-        />
+        <TrackList tracks={tracks} />
       </section>
     );
   }
@@ -216,7 +201,6 @@ class LibraryTracks extends React.Component {
     } = this.props;
     const {
       filter,
-      per_page,
     } = this.state;
 
     const source_options = [
@@ -260,7 +244,7 @@ class LibraryTracks extends React.Component {
       <>
         <FilterField
           initialValue={filter}
-          handleChange={(value) => this.setState({ filter: value, limit: per_page })}
+          handleChange={(value) => this.setState({ filter: value })}
           onSubmit={() => uiActions.hideContextMenu()}
         />
         <DropdownField

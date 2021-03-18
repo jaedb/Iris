@@ -407,7 +407,7 @@ class Playlist extends React.Component {
             />
           )}
 
-          <ul className="details">
+          <ul className="details details--one-line">
             {!slim_mode && (
               <li className="source">
                 <Icon type="fontawesome" name={sourceIcon(playlist.uri)} />

@@ -153,7 +153,7 @@ class User extends React.Component {
                     <ContextMenuTrigger onTrigger={this.handleContextMenu} />
                   </div>
                   <h2>
-                    <ul className="details">
+                    <ul className="details details--one-line">
                       {!slim_mode && (
                         <li className="source">
                           <Icon type="fontawesome" name={sourceIcon(user.uri)} />
