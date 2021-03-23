@@ -65,6 +65,7 @@ import * as lastfmActions from './services/lastfm/actions';
 import * as geniusActions from './services/genius/actions';
 import * as snapcastActions from './services/snapcast/actions';
 import MediaSession from './components/MediaSession';
+import ErrorBoundary from './components/ErrorBoundary';
 
 export class App extends React.Component {
   constructor(props) {
@@ -94,6 +95,7 @@ export class App extends React.Component {
               message.match(/Websocket/i)
               || message.match(/NotSupportedError/i)
               || message.match(/Non-Error promise rejection captured with keys: call, message, value/i)
+              || message.match(/Cannot read property 'addChunk' of undefined/i)
             )
           ) {
             return null;
@@ -426,7 +428,7 @@ export class App extends React.Component {
         <ContextMenu />
         <Dragger />
         <Notifications />
-        {userHasInteracted && <Stream />}
+        {userHasInteracted && <ErrorBoundary silent><Stream /></ErrorBoundary>}
         {userHasInteracted && ('mediaSession' in navigator) && <MediaSession />}
         {debug_info && <DebugInfo />}
       </div>
