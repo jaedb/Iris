@@ -123,13 +123,13 @@ const ListItem = ({
       }),
     );
   };
-  
+
   /**
    * Handled as a click, rather than an object so we can direct to a link, UNLESS we have clicked
    * on a sub-link (we may have nested links to Albums for example). HTML does not allow nested
    * <a> tags.
-   * 
-   * @param {Object} e 
+   *
+   * @param {Object} e
    */
   const onClick = (e) => {
     let to = '';

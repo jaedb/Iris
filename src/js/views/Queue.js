@@ -48,7 +48,7 @@ const Artwork = ({
       </Thumbnail>
     </div>
   );
-}
+};
 
 class Queue extends React.Component {
   componentDidMount() {
@@ -130,7 +130,7 @@ class Queue extends React.Component {
     let addedFromItems = [];
 
     // Radio nests it's seed URIs in an encoded URI format
-    switch (uri_type){
+    switch (uri_type) {
       case 'radio':
         addedFromItems = indexToArray(items, getFromUri('seeds', added_from_uri));
         break;

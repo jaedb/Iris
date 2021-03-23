@@ -1,4 +1,3 @@
-
 export function set(data) {
   return {
     type: 'SNAPCAST_SET',

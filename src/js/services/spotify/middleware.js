@@ -178,7 +178,7 @@ const SpotifyMiddleware = (function () {
         break;
 
       case 'SPOTIFY_ME_LOADED': {
-        var me = { ...formatUser(action.me) };
+        const me = { ...formatUser(action.me) };
 
         // We are Anonymous currently so use 'me' name as my Pusher username
         if (store.getState().pusher.username == 'Anonymous') {

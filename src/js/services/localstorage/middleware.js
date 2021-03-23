@@ -1,4 +1,3 @@
-
 import storage from '../../util/storage';
 
 const localstorageMiddleware = (function () {
@@ -264,7 +263,7 @@ const localstorageMiddleware = (function () {
           },
         );
         break;
-/*
+        /*
       case 'SUPPRESS_BROADCAST':
         var ui = storage.get('ui');
         if (ui.suppressed_broadcasts !== undefined) {

@@ -13,7 +13,7 @@ const i18n = (path, params = {}, transform) => {
   let value = get((dictionary), path, '');
   value = value.replace(
     paramsRegExp,
-    (replaceText, key) => params.hasOwnProperty(key) ? params[key] : '',
+    (replaceText, key) => (params.hasOwnProperty(key) ? params[key] : ''),
   );
 
   switch (transform) {
@@ -44,11 +44,11 @@ const I18n = ({
     return i18n(path, params, transform);
   }
   return (
-    <Fragment>
+    <>
       {!contentAfter && children}
       {i18n(path, params, transform)}
       {contentAfter && children}
-    </Fragment>
+    </>
   );
 };
 

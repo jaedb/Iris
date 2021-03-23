@@ -12,7 +12,6 @@ const updateScrollPosition = ({
     pathname,
   },
 }) => {
-
   // Fetch the current scroll position of our #main element and save to our history's state, so
   // clicking 'back' etc will restore the previous scroll position.
   // This doesn't trigger lazy-load elements (unless scrolling exposes the LazyLoader component).
@@ -29,10 +28,10 @@ const updateScrollPosition = ({
     },
   );
 
-  // And now scroll to the top of the page. This can be disabled to allow in-page navigation of 
+  // And now scroll to the top of the page. This can be disabled to allow in-page navigation of
   // tabs, etc
   if (!retainScroll) scrollTo(scrollTarget, (scrollTarget));
-}
+};
 
 /**
  * Extends react-router's Link but provides the ability to hook in to the navigation event
@@ -51,7 +50,9 @@ const Link = ({
   if (!to) return <span className={className}>{children}</span>;
   const history = useHistory();
   const location = useLocation();
-  const onClick = () => updateScrollPosition({ history, location, retainScroll, scrollTarget });
+  const onClick = () => updateScrollPosition({
+    history, location, retainScroll, scrollTarget,
+  });
 
   // Decode both links. This handles issues where one link is encoded and the other isn't, but
   // they're otherwise identical

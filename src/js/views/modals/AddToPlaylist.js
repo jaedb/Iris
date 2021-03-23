@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -81,7 +80,7 @@ class AddToPlaylist extends React.Component {
 
     playlists = sortItems(playlists, 'name');
 
-    if (playlists.length > 0 ){
+    if (playlists.length > 0) {
       return (
         <div className="list small playlists">
           {playlists.map((playlist) => (
@@ -103,7 +102,7 @@ class AddToPlaylist extends React.Component {
         </div>
       );
     }
-    
+
     return (
       <div className="no-results">
         <I18n path="modal.add_to_playlist.no_playlists" />

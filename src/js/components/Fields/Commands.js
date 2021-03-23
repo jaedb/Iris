@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Sortable from 'react-sortablejs';
 import Icon from '../Icon';

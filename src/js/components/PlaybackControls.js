@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -231,7 +230,7 @@ class PlaybackControls extends React.Component {
           direction={transition_direction}
         >
           {transition_track && transition_direction && (
-            <div className={`current-track current-track__outgoing`}>
+            <div className="current-track current-track__outgoing">
               <div className="text">
                 <div className="title">
                   {transition_track.name}

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { throttle } from '../../util/helpers';
 
@@ -21,8 +20,8 @@ export default class VolumeControl extends React.Component {
       vertical,
     } = this.props;
 
-    let sliderClassName = "slider slider--volume";
-    if (mute) sliderClassName += " slider--muted";
+    let sliderClassName = 'slider slider--volume';
+    if (mute) sliderClassName += ' slider--muted';
 
     return (
       <div className={`slider__wrapper slider__wrapper--${vertical ? 'vertical' : 'horiztonal'} ${className}`}>

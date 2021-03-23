@@ -36,7 +36,6 @@ const arrayOf = (property, items = []) => {
   return array;
 };
 
-
 /**
  * Merge duplicated items in an array
  *
@@ -62,7 +61,6 @@ const mergeDuplicates = function (list, key) {
   return clean_list;
 };
 
-
 /**
  * Remove duplicate items in a simple array
  *
@@ -79,7 +77,6 @@ const removeDuplicates = function (array) {
 
   return unique;
 };
-
 
 /**
  * Apply a partial text search on an array of objects
@@ -106,7 +103,6 @@ const applyFilter = function (field, value, array, singular = false) {
 
   return results;
 };
-
 
 /**
  * Convert a list of indexes to a useable range

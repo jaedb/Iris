@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { throttle } from '../util/helpers';
 import Loader from './Loader';
@@ -43,7 +42,6 @@ export default class LazyLoadListener extends React.Component {
 
       // At, or half a screen from bottom of the page
 		  if (scrollTop > (scrollHeight - offsetHeight - (window_height / 2))) {
-
         // Immediately stop listening to avoid duplicating pagination requests
         this.setState(
           { listening: false },

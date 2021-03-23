@@ -1,4 +1,3 @@
-
 import ReactGA from 'react-ga';
 import { uriType, generateGuid } from '../../util/helpers';
 import { trackEvent } from '../../components/Trackable';
@@ -11,7 +10,6 @@ const geniusActions = require('../genius/actions');
 const spotifyActions = require('../spotify/actions');
 
 const PusherMiddleware = (function () {
-
   // container for the actual websocket
   let socket = null;
 
@@ -491,9 +489,9 @@ const PusherMiddleware = (function () {
         next(action);
         break;
 
-      /**
+        /**
        * Pinned uris
-       **/
+       * */
 
       case 'PUSHER_GET_PINNED':
         request(store, 'get_pinned')
@@ -650,7 +648,6 @@ const PusherMiddleware = (function () {
           });
         break;
       }
-
 
       /**
            * Radio

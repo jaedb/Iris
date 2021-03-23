@@ -1,4 +1,3 @@
-
 /**
  * Storage handler
  * All localStorage tasks are handled below. This means we can detect for localStorage issues in one place
@@ -15,7 +14,7 @@ const storageFactory = (function () {
     return result && storage;
   } catch (exception) {
     return false;
-  };
+  }
 }());
 
 /**
@@ -81,7 +80,7 @@ const cache = {
     }
   },
   set: (key, data) => {
-    let cache = get('cache', {});
+    const cache = get('cache', {});
     cache[`"${key}"`] = data;
     set('cache', cache);
     return true;
@@ -90,7 +89,6 @@ const cache = {
     set('cache', {}, true);
   },
 };
-
 
 /**
  * Check if an image URL is cached or not

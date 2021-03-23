@@ -1,4 +1,3 @@
-
 export default function reducer(pusher = {}, action) {
   switch (action.type) {
     case 'PUSHER_CONNECT':

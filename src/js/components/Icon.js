@@ -1,8 +1,9 @@
-
 import React, { memo } from 'react';
 import FontAwesome from 'react-fontawesome';
 
-export default memo(({ name, type, className, onClick }) => {
+export default memo(({
+  name, type, className, onClick,
+}) => {
   if (!name || name === '') return null;
 
   const fullClassName = `icon icon--${type || 'material'} ${className || ''}`;

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -46,18 +45,18 @@ class PusherConnectionList extends React.Component {
 					  }
 
 					  return (
-              <div className={is_me ? 'connection cf me' : 'connection cf'} key={connection.connection_id}>
-                <div className="col col--w30">
-                  { connection.username }
-                  {is_me && <I18n path="settings.pusher_connection_list.you" />}
-                </div>
-                <div className="col col--w70">
-                  {connection.ip}
-                  <span className="mid_grey-text">
-                    {` (${connection.connection_id})`}
-                  </span>
-                </div>
-              </div>
+  <div className={is_me ? 'connection cf me' : 'connection cf'} key={connection.connection_id}>
+    <div className="col col--w30">
+      { connection.username }
+      {is_me && <I18n path="settings.pusher_connection_list.you" />}
+    </div>
+    <div className="col col--w70">
+      {connection.ip}
+      <span className="mid_grey-text">
+        {` (${connection.connection_id})`}
+      </span>
+    </div>
+  </div>
 					  );
 					})
 				}

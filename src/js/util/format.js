@@ -88,7 +88,6 @@ const digestMopidyImages = function (mopidy, images) {
   return digested;
 };
 
-
 /**
  * Format image URLs into a consistent size-based object
  * We digest all our known image source formats into a universal small,medium,large,huge object
@@ -193,7 +192,6 @@ const formatImages = function (data) {
 
   return sizes;
 };
-
 
 /**
  * Format a simple object
@@ -339,10 +337,10 @@ const decodeUri = (rawUri = '') => {
 };
 
 const encodeMopidyUri = (rawUri = '') => {
-  let uri = rawUri;
+  const uri = rawUri;
 
   return uri;
-}
+};
 
 /**
  * Format our album objects into a universal format
@@ -417,7 +415,6 @@ const formatAlbum = function (data) {
   return album;
 };
 
-
 /**
  * Format our artist objects into a universal format
  *
@@ -477,7 +474,6 @@ const formatArtist = function (data) {
 
   return artist;
 };
-
 
 /**
  * Format our playlist objects into a universal format
@@ -566,7 +562,6 @@ const formatPlaylist = function (data) {
   return playlist;
 };
 
-
 /**
  * Format a user objects into a universal format
  *
@@ -621,7 +616,6 @@ const formatUser = function (data) {
 
   return user;
 };
-
 
 /**
  * Format tracks into our universal format
@@ -834,7 +828,7 @@ const formatCategory = function (data) {
   if (!category.uri && data.id) {
     category.uri = `spotify:category:${data.id}`;
   }
-  
+
   if (data.icons) {
     category.images = formatImages(data.icons);
   }
@@ -871,10 +865,7 @@ const formatGroup = function (data) {
   return group;
 };
 
-
-const collateLibrary = (uris, itemsIndex) => {
-  return compact(uris.map((uri) => itemsIndex[uri]));
-};
+const collateLibrary = (uris, itemsIndex) => compact(uris.map((uri) => itemsIndex[uri]));
 
 /**
  * Collate an object with external references into a fully self-contained object
@@ -1014,9 +1005,7 @@ const collate = function (obj, indexes = {}) {
  *
  * @param {Array} array of objects to have sort_id added
  */
-const injectSortId = (array) => {
-  return array.map((item, index) => ({ ...item, sort_id: index }));
-};
+const injectSortId = (array) => array.map((item, index) => ({ ...item, sort_id: index }));
 
 export {
   toJSON,

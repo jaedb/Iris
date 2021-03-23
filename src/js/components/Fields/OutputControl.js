@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -60,7 +59,7 @@ class OutputControl extends React.Component {
       snapcastActions,
       snapcast_groups,
       snapcast_clients: clients,
-      show_disconnected_clients
+      show_disconnected_clients,
     } = this.props;
 
     const groups = indexToArray(snapcast_groups);
@@ -115,7 +114,7 @@ class OutputControl extends React.Component {
                   />
                 </div>
               </div>
-            )
+            );
           })
         }
       </div>

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -296,7 +295,7 @@ class Services extends React.Component {
       snapcast: {
         enabled: snapcastEnabled,
         connected: snapcastConnected,
-      }
+      },
     } = this.props;
 
     const spotify_icon = spotifyUser ? (
@@ -448,7 +447,7 @@ class Services extends React.Component {
       case 'genius':
         return <div className="sub-tabs__content">{this.renderGenius()}</div>;
       case 'snapcast':
-        return <div className="sub-tabs__content">{<Snapcast match={this.props.match} />}</div>;
+        return <div className="sub-tabs__content"><Snapcast match={this.props.match} /></div>;
       default:
         return null;
     }

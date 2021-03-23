@@ -1,4 +1,3 @@
-
 export default function reducer(snapcast = {}, action) {
   switch (action.type) {
     case 'SNAPCAST_SET':
@@ -8,7 +7,7 @@ export default function reducer(snapcast = {}, action) {
       return { ...snapcast, connected: true, connecting: false };
 
     case 'SNAPCAST_CONNECTING':
-        return { ...snapcast, connecting: true, connected: false };
+      return { ...snapcast, connecting: true, connected: false };
 
     case 'SNAPCAST_DISCONNECTED':
       return { ...snapcast, connected: false, connecting: false };
@@ -30,7 +29,7 @@ export default function reducer(snapcast = {}, action) {
         groups[group.id] = {
           ...(groups[group.id] ? groups[group.id] : {}),
           ...group,
-        }
+        };
       }
       return { ...snapcast, groups };
 

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -75,7 +74,8 @@ class Dragger extends React.Component {
 
     return (
       <div
-        className="dragger" style={{
+        className="dragger"
+        style={{
           left: position_x,
           top: position_y,
         }}

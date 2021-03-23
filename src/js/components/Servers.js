@@ -1,5 +1,5 @@
 import React from 'react';
-import { useStore, useDispatch } from 'react-redux'
+import { useStore, useDispatch } from 'react-redux';
 import Link from './Link';
 import Icon from './Icon';
 import TextField from './Fields/TextField';
@@ -125,7 +125,7 @@ const Servers = ({
             <TextField
               type="text"
               value={server.name}
-              onChange={value => dispatch(mopidyActions.updateServer({ id: server.id, name: value }))}
+              onChange={(value) => dispatch(mopidyActions.updateServer({ id: server.id, name: value }))}
               autosave
             />
           </div>
@@ -137,7 +137,7 @@ const Servers = ({
           <div className="input">
             <TextField
               value={server.host}
-              onChange={value => dispatch(mopidyActions.updateServer({ id: server.id, host: value }))}
+              onChange={(value) => dispatch(mopidyActions.updateServer({ id: server.id, host: value }))}
               autosave
             />
           </div>
@@ -150,7 +150,7 @@ const Servers = ({
             <TextField
               type="text"
               value={server.port}
-              onChange={value => dispatch(mopidyActions.updateServer({ id: server.id, port: value }))}
+              onChange={(value) => dispatch(mopidyActions.updateServer({ id: server.id, port: value }))}
               autosave
             />
           </div>

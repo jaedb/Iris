@@ -104,7 +104,7 @@ const sendSignedRequest = (dispatch, getState, params) => new Promise((resolve, 
     dispatch(uiActions.stopLoading(loader_key));
 
     if (response.status >= 200 && response.status < 300) {
-      return Promise.resolve(response)
+      return Promise.resolve(response);
     }
     return Promise.reject(new Error(response.statusText));
   }
@@ -124,7 +124,6 @@ const sendSignedRequest = (dispatch, getState, params) => new Promise((resolve, 
       reject(error);
     });
 });
-
 
 /**
  * Handle authorization process
@@ -150,7 +149,6 @@ export function importAuthorization(authorization) {
     authorization,
   };
 }
-
 
 /**
  * Non-signed requests
@@ -286,7 +284,6 @@ export function getAlbum(uri, artist, album, mbid = false) {
   };
 }
 
-
 export function getImages(context, uri) {
   return (dispatch, getState) => {
     let record = getState().core[context][uri];
@@ -352,7 +349,6 @@ export function getImages(context, uri) {
   };
 }
 
-
 /**
  * Signed requests
  * */
@@ -387,7 +383,10 @@ export function loveTrack(uri) {
             userloved: true,
           }));
           dispatch(uiActions.createNotification({
-            content: <span>Loved <URILink type="track" uri={uri}>{asset ? asset.name : type}</URILink></span>,
+            content: <span>
+              Loved
+              <URILink type="track" uri={uri}>{asset ? asset.name : type}</URILink>
+                     </span>,
           }));
         },
       );
@@ -424,7 +423,10 @@ export function unloveTrack(uri) {
             userloved: false,
           }));
           dispatch(uiActions.createNotification({
-            content: <span>Unloved <URILink uri={uri}>{asset ? asset.name : type}</URILink></span>,
+            content: <span>
+              Unloved
+              <URILink uri={uri}>{asset ? asset.name : type}</URILink>
+                     </span>,
           }));
         },
       );

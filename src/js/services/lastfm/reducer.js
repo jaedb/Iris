@@ -1,4 +1,3 @@
-
 export default function reducer(lastfm = {}, action) {
   switch (action.type) {
     case 'LASTFM_CONNECT':

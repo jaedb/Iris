@@ -1,4 +1,3 @@
-
 import { arrayOf } from '../../util/arrays';
 
 export default function reducer(core = {}, action) {
@@ -55,7 +54,6 @@ export default function reducer(core = {}, action) {
     case 'RADIO_SEEDS_RESOLVED':
       var radio = { ...core.radio, resolved_seeds: action.resolved_seeds };
       return { ...core, radio };
-
 
       /**
          * Index updates

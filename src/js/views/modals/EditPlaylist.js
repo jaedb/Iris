@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -183,13 +182,13 @@ class EditPlaylist extends React.Component {
                   onChange={(e) => this.setImage(e)}
                 />
                 <div className="description">
-									<I18n path="modal.edit_playlist.image.description" />
+                  <I18n path="modal.edit_playlist.image.description" />
                 </div>
               </div>
             </div>
             <div className="field checkbox white">
               <div className="name">
-								<I18n path="modal.edit_playlist.options.label" />
+                <I18n path="modal.edit_playlist.options.label" />
               </div>
               <div className="input">
                 <label>

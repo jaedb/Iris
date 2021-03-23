@@ -1,4 +1,3 @@
-
 import { memo } from 'react';
 import { i18n } from '../locale';
 
@@ -86,7 +85,6 @@ const dater = (type, data) => {
       }
       var date = new Date(data);
       return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-
 
     case 'ago':
       var date = new Date(data);

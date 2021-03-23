@@ -97,7 +97,6 @@ export default function reducer(ui = {}, action) {
     case 'CLOSE_MODAL':
       return { ...ui, modal: false };
 
-
       /**
          * Notifications
          * */
@@ -117,7 +116,6 @@ export default function reducer(ui = {}, action) {
       var notifications = { ...ui.notifications };
       delete notifications[action.key];
       return { ...ui, notifications };
-
 
       /**
          * Loading and processes

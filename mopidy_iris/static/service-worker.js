@@ -5,7 +5,7 @@ const blacklist = [
   'me/tracks',
   'me/albums',
   'me/following',
-  'refresh_spotify_token'
+  'refresh_spotify_token',
 ];
 function inBlacklist(url) {
   for (const item of blacklist) {
@@ -16,11 +16,9 @@ function inBlacklist(url) {
   return false;
 }
 
-self.addEventListener('activate', function(event) {
+self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(cacheNames.map((cacheName) => caches.delete(cacheName)));
-    })
+    caches.keys().then((cacheNames) => Promise.all(cacheNames.map((cacheName) => caches.delete(cacheName)))),
   );
 });
 
@@ -30,41 +28,39 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
 
     // Opens Cache objects that start with 'font'.
-    caches.open('iris').then((cache) => {
-      return cache.match(request)
-        .then((response) => {
-          if (response) {
-            return response;
-          }
+    caches.open('iris').then((cache) => cache.match(request)
+      .then((response) => {
+        if (response) {
+          return response;
+        }
 
-          // Not cached, so we make the request, return that and also save response in cache
-          return fetch(request)
-            .then((liveResponse) => {
-              const isBlacklisted = inBlacklist(request.url);
+        // Not cached, so we make the request, return that and also save response in cache
+        return fetch(request)
+          .then((liveResponse) => {
+            const isBlacklisted = inBlacklist(request.url);
 
-              // Only cache successful GET requests
-              if (
-                !isBlacklisted
+            // Only cache successful GET requests
+            if (
+              !isBlacklisted
                 && request.method === 'GET'
                 && liveResponse.status >= 200
                 && liveResponse.status < 400
-              ) {
-                // Fixes Edge browser "'chrome-extension' is unsupported" issue
-                // See https://stackoverflow.com/questions/49157622/service-worker-typeerror-when-opening-chrome-extension
-                if (!/^https?:$/i.test(new URL(request.url).protocol)) return;
+            ) {
+              // Fixes Edge browser "'chrome-extension' is unsupported" issue
+              // See https://stackoverflow.com/questions/49157622/service-worker-typeerror-when-opening-chrome-extension
+              if (!/^https?:$/i.test(new URL(request.url).protocol)) return;
 
-                cache.put(request, liveResponse.clone());
-              } else {
-                console.info(`Not caching ${isBlacklisted ? '(blacklisted) ' : ''}${request.method} ${request.url}`);
-              }
+              cache.put(request, liveResponse.clone());
+            } else {
+              console.info(`Not caching ${isBlacklisted ? '(blacklisted) ' : ''}${request.method} ${request.url}`);
+            }
 
-              return liveResponse;
-            });
+            return liveResponse;
+          });
 
         // Exceptions from match() or fetch()
-        }).catch((error) => {
-          throw error;
-        });
-    }),
+      }).catch((error) => {
+        throw error;
+      })),
   );
 });

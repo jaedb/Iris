@@ -1,4 +1,3 @@
-
 import React, { memo } from 'react';
 import Thumbnail from './Thumbnail';
 import URILink from './URILink';
@@ -7,7 +6,7 @@ export default memo(({ artists, uiActions: { showContextMenu } = {} }) => {
   if (!artists) return null;
 
   const onContextMenu = (e, item) => {
-    if (showContextMenu){
+    if (showContextMenu) {
       e.preventDefault();
       showContextMenu({
         e,

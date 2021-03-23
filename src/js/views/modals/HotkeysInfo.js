@@ -28,30 +28,28 @@ class HotkeysInfo extends React.Component {
     setWindowTitle('Hotkeys');
   }
 
-  render = () => {
-    return (
-      <Modal className="modal--hotkeys-info">
-        <h1><I18n path="modal.hotkeys_info.title" /></h1>
-        <div className="list small playlists">
-          {hotkeys.map((hotkey) => (
-            <div className="list__item" key={hotkey.label}>
-              {hotkey.keys.map((key, index) => (
-                <>
-                  <pre>
-                    {key}
-                  </pre>
-                  {index === 0 && hotkey.keys.length > 1 && ' or '}
-                </>
-              ))}
-              <span className="description">
-                {i18n(`modal.hotkeys_info.keys.${hotkey.label}`)}
-              </span>
-            </div>
-          ))}
-        </div>
-      </Modal>
-    );
-  }
+  render = () => (
+    <Modal className="modal--hotkeys-info">
+      <h1><I18n path="modal.hotkeys_info.title" /></h1>
+      <div className="list small playlists">
+        {hotkeys.map((hotkey) => (
+          <div className="list__item" key={hotkey.label}>
+            {hotkey.keys.map((key, index) => (
+              <>
+                <pre>
+                  {key}
+                </pre>
+                {index === 0 && hotkey.keys.length > 1 && ' or '}
+              </>
+            ))}
+            <span className="description">
+              {i18n(`modal.hotkeys_info.keys.${hotkey.label}`)}
+            </span>
+          </div>
+        ))}
+      </div>
+    </Modal>
+  )
 }
 
 const mapStateToProps = () => ({});

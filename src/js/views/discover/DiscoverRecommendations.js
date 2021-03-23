@@ -242,7 +242,7 @@ class Discover extends React.Component {
     let uri = 'iris:discover';
     if (seeds) {
       uri += ':';
-      for (var i = 0; i < seeds.length; i++) {
+      for (let i = 0; i < seeds.length; i++) {
         if (i > 0) {
           uri += ',';
         }
@@ -363,22 +363,22 @@ class Discover extends React.Component {
             }
 
 					  return (
-              <div className={`seed${seed.images ? ' has-thumbnail' : ''}`} key={seed.uri}>
-                {images && (
-                  <URILink className="thumbnail-wrapper" type={type} uri={seed.uri}>
-                    <Thumbnail images={images} circle={seed.type === 'artist'} size="small" />
-                  </URILink>
-                )}
-                <div className="seed__details">
-                  <div className="seed__label">
-                    <span className="seed__label__text">{titleCase(type)}</span>
-                    <Icon name="close" className="seed__label__remove" onClick={() => this.removeSeed(index)} />
-                  </div>
-                  <div className="seed__label__name">{seed.name}</div>
-                </div>
-              </div>
+  <div className={`seed${seed.images ? ' has-thumbnail' : ''}`} key={seed.uri}>
+    {images && (
+    <URILink className="thumbnail-wrapper" type={type} uri={seed.uri}>
+      <Thumbnail images={images} circle={seed.type === 'artist'} size="small" />
+    </URILink>
+    )}
+    <div className="seed__details">
+      <div className="seed__label">
+        <span className="seed__label__text">{titleCase(type)}</span>
+        <Icon name="close" className="seed__label__remove" onClick={() => this.removeSeed(index)} />
+      </div>
+      <div className="seed__label__name">{seed.name}</div>
+    </div>
+  </div>
 					  );
-					})
+          })
 				}
       </div>
     );
@@ -514,7 +514,7 @@ class Discover extends React.Component {
       tunabilities,
       seeds,
     } = this.state;
-  
+
     const is_loading = isLoading(load_queue, ['spotify_recommendations']);
     const addable_tunabilities = [];
     for (const key in this.state.tunabilities) {

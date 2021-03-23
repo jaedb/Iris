@@ -1,4 +1,3 @@
-
 import { generateGuid } from '../../util/helpers';
 import { formatArtist } from '../../util/format';
 
@@ -13,7 +12,6 @@ const uiActions = require('../ui/actions');
  * @param params = String
  * */
 const sendRequest = (dispatch, getState, endpoint, params) => new Promise((resolve, reject) => {
-
   const key = 'CXIwsVMAjrXIVitBWgqd';
   const secret = 'KiEUfwKpebxRnEHlKoXnYIftJxeuqjTK';
   const url = `https://api.discogs.com/${endpoint}?${params}`;
@@ -27,7 +25,7 @@ const sendRequest = (dispatch, getState, endpoint, params) => new Promise((resol
     mode: 'cors',
     headers: {
       'User-Agent': 'Iris/1.0',
-      'Authorization': `Discogs key=${key}, secret=${secret}`
+      Authorization: `Discogs key=${key}, secret=${secret}`,
     },
   };
 
@@ -35,19 +33,18 @@ const sendRequest = (dispatch, getState, endpoint, params) => new Promise((resol
     dispatch(uiActions.stopLoading(loader_key));
 
     if (response.status >= 200 && response.status < 300) {
-      return Promise.resolve(response)
-    } else {
-      return Promise.reject(new Error(response.statusText))
+      return Promise.resolve(response);
     }
+    return Promise.reject(new Error(response.statusText));
   }
 
   fetch(url, config)
     .then(status)
-    .then(response => response.json())
-    .then(data => {
+    .then((response) => response.json())
+    .then((data) => {
       resolve(data);
     })
-    .catch(error => {
+    .catch((error) => {
       reject(error);
     });
 });

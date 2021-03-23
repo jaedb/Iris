@@ -1,4 +1,3 @@
-
 export default (props) => {
   window.addEventListener('resize', handleWindowResize, false);
 

@@ -44,9 +44,9 @@ class Hotkeys extends React.Component {
 
     // Ignore text input fields
     if (
-      (target.nodeName === 'INPUT' && (target.type === 'text' || target.type === 'number')) ||
-      target.nodeName === 'TEXTAREA' ||
-      (target.nodeName === 'BUTTON' && key === ' ')) {
+      (target.nodeName === 'INPUT' && (target.type === 'text' || target.type === 'number'))
+      || target.nodeName === 'TEXTAREA'
+      || (target.nodeName === 'BUTTON' && key === ' ')) {
       return;
     }
 

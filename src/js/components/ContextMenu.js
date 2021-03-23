@@ -1,4 +1,3 @@
-
 import React, { createRef } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -664,9 +663,10 @@ class ContextMenu extends React.Component {
               onClick={() => {
                 setSelectedTracks([]);
                 hideContextMenu();
-              }}>
-                <Icon name="close" />
-              </span>
+              }}
+            >
+              <Icon name="close" />
+            </span>
           </div>
         </div>
       );
@@ -768,7 +768,7 @@ class ContextMenu extends React.Component {
     } = this.props;
 
     let list = null;
-    let isLoading = false;
+    const isLoading = false;
 
     if (submenu === 'add-to-playlist') {
       let playlists = [
@@ -796,7 +796,6 @@ class ContextMenu extends React.Component {
       );
       if (playlists.length) {
         list = playlists.map((playlist) => {
-
           // Allows us to css target last-child
           const ElementTag = playlist.is_pinned ? 'em' : 'span';
 
@@ -825,7 +824,7 @@ class ContextMenu extends React.Component {
           >
             <span className="context-menu__item__label">
               <Icon name="arrow_back" />
-              <span> 
+              <span>
                 <I18n path="actions.back" />
               </span>
             </span>
@@ -978,15 +977,15 @@ class ContextMenu extends React.Component {
           'spotify_me/tracks/contains',
           'spotify_me/playlists/contains',
           'spotify_me/albums/contains',
-          'spotify_me/artists/contains'
-        ]
+          'spotify_me/artists/contains',
+        ],
       )
     ) {
       toggle_in_library = (
         <div className="context-menu__item">
           <a className="context-menu__item__link">
             <span className="context-menu__item__label mid_grey-text">
-							<I18n path="actions.add_to_library" />
+              <I18n path="actions.add_to_library" />
             </span>
           </a>
         </div>
@@ -1010,7 +1009,7 @@ class ContextMenu extends React.Component {
         <div className="context-menu__item">
           <a className="context-menu__item__link">
             <span className="context-menu__item__label mid_grey-text">
-							<I18n path="context_menu.love_track" />
+              <I18n path="context_menu.love_track" />
             </span>
           </a>
         </div>
@@ -1027,7 +1026,7 @@ class ContextMenu extends React.Component {
       );
     }
 
-    let toggle_pinned = (
+    const toggle_pinned = (
       <div className="context-menu__item">
         <a className="context-menu__item__link" onClick={() => this.togglePinned(context.is_pinned)}>
           <span className="context-menu__item__label">
