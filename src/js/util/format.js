@@ -332,6 +332,9 @@ const decodeUri = (rawUri = '') => {
   uri = uri.replace(/,/g, '%2C');
   uri = uri.replace(/ /g, '%20');
 
+  // Re-encode any accented characters. Most Mopidy backends expect encoding of these.
+  uri = uri.replace(/[À-ÖØ-öø-ÿ]/g, (char) => encodeURIComponent(char));
+
   return uri;
 };
 
