@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -66,7 +65,7 @@ class Settings extends React.Component {
         set,
       },
     } = this.props;
-    const shortName = name.replace('mopidy_','');
+    const shortName = name.replace('mopidy_', '');
     set({ [shortName]: value });
     this.setState({ [name]: value });
   }
@@ -278,7 +277,7 @@ class Settings extends React.Component {
                   onChange={() => uiActions.set({ hotkeys_enabled: !ui.hotkeys_enabled })}
                 />
                 <span className="label">
-                <I18n path="settings.interface.behavior.hotkeys" />
+                  <I18n path="settings.interface.behavior.hotkeys" />
                 </span>
               </label>
               <label>

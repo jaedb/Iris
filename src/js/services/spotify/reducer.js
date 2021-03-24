@@ -1,4 +1,3 @@
-
 import { removeDuplicates, arrayOf } from '../../util/arrays';
 import { formatTracks } from '../../util/format';
 
@@ -73,7 +72,6 @@ export default function reducer(spotify = {}, action) {
 
     case 'SPOTIFY_FEATURED_PLAYLISTS_LOADED':
       return { ...spotify, featured_playlists: action.data };
-
 
     case 'SPOTIFY_NEW_RELEASES_LOADED':
       var new_releases = [];
@@ -153,14 +151,13 @@ export default function reducer(spotify = {}, action) {
         genres: action.genres,
       };
 
-
       /**
          * Categories
          * */
 
     case 'SPOTIFY_CATEGORIES_LOADED':
       var categories = { ...spotify.categories };
-      for (var category of action.categories) {
+      for (const category of action.categories) {
         categories[category.uri] = category;
       }
       return { ...spotify, categories };

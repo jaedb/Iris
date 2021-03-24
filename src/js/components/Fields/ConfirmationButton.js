@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { i18n } from '../../locale';
 import Button from '../Button';

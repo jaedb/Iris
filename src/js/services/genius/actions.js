@@ -90,7 +90,6 @@ const sendRequest = (dispatch, getState, endpoint, method = 'GET', data = false)
     });
 });
 
-
 /**
  * Handle authorization process
  * */
@@ -114,7 +113,6 @@ export function importAuthorization(authorization) {
     authorization,
   };
 }
-
 
 /**
  * Get current user
@@ -192,7 +190,7 @@ export function getTrackLyrics(uri, path) {
             lyrics_html = lyrics_html.replace(/(\[)/g, '<span class="mid_grey-text">[');
             lyrics_html = lyrics_html.replace(/(\])/g, ']</span>');
 
-            //console.debug(lyrics_html);
+            // console.debug(lyrics_html);
 
             dispatch(coreActions.itemLoaded({
               uri,
@@ -255,7 +253,7 @@ export function findTrackLyrics(uri) {
             // Immediately go and get the first result's lyrics
             const lyrics_result = lyrics_results[0];
             dispatch(getTrackLyrics(track.uri, lyrics_result.path));
-          };
+          }
           dispatch(uiActions.stopLoading(loader_key));
         },
         (error) => {

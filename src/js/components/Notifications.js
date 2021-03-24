@@ -1,4 +1,3 @@
-
 import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -259,9 +258,9 @@ class Notifications extends React.Component {
     if (!processes) return null;
 
     return (
-      <Fragment>
+      <>
         {processes.map((process) => this.renderProcess(process))}
-      </Fragment>
+      </>
     );
   }
 

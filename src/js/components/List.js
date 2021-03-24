@@ -1,6 +1,6 @@
 import React from 'react';
 import { SmartList } from './SmartList';
-import { ListItem } from './ListItem'
+import { ListItem } from './ListItem';
 
 const List = ({
   items,

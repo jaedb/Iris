@@ -248,7 +248,7 @@ class LibraryArtists extends React.Component {
         <FilterField
           initialValue={this.state.filter}
           handleChange={(value) => this.setState({ filter: value, limit: this.state.per_page })}
-          onSubmit={e => this.props.uiActions.hideContextMenu()}
+          onSubmit={(e) => this.props.uiActions.hideContextMenu()}
         />
         <DropdownField
           icon="swap_vert"
@@ -291,7 +291,7 @@ class LibraryArtists extends React.Component {
       <div className="view library-artists-view">
         <Header options={options} uiActions={this.props.uiActions}>
           <Icon name="recent_actors" type="material" />
-					<I18n path="library.artists.title" />
+          <I18n path="library.artists.title" />
         </Header>
         {this.renderView()}
       </div>

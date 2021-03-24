@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -27,7 +26,7 @@ const LyricsScroller = ({ content = '', time_position = 1, duration = 100 }) => 
       />
     </div>
   );
-}
+};
 
 const Lyrics = ({
   show_lyrics,
@@ -56,12 +55,11 @@ const Lyrics = ({
         duration={duration}
       />
     );
-  };
+  }
   return null;
 };
 
 class KioskMode extends React.Component {
-
   componentDidMount() {
     const {
       current_track,
@@ -92,7 +90,6 @@ class KioskMode extends React.Component {
 
     if (!prev_stream_title && stream_title) {
       this.setWindowTitle();
-
     } else if (!prev_current_track && current_track) {
       this.setWindowTitle();
 

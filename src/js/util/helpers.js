@@ -1,5 +1,5 @@
-import { indexToArray, arrayOf } from "./arrays";
-import { encodeUri } from "./format";
+import { indexToArray, arrayOf } from './arrays';
+import { encodeUri } from './format';
 
 /**
  * Returns a function, that, as long as it continues to be invoked, will not
@@ -31,7 +31,6 @@ const debounce = function (fn, wait, immediate) {
   };
 };
 
-
 const throttle = function (fn, delay) {
   let lastCall = 0;
   return function (...args) {
@@ -43,9 +42,6 @@ const throttle = function (fn, delay) {
     return fn(...args);
   };
 };
-
-
-
 
 /**
  * Set the app's favicon to a specific image.
@@ -70,7 +66,6 @@ const setFavicon = function (filename) {
   }
 };
 
-
 /**
  * Digest a react-router's location.search string into an array of values
  *
@@ -87,7 +82,7 @@ const queryString = (key, string, compact = true) => {
     // happens when redirecting from an OAuth failure.
     if (subElements[0] === key) {
       results = subElements[1].split(',').map(
-        item => decodeURIComponent(item.replace(/\+/g, '%20')),
+        (item) => decodeURIComponent(item.replace(/\+/g, '%20')),
       );
     }
     return [...accumulator, ...results];
@@ -97,8 +92,6 @@ const queryString = (key, string, compact = true) => {
   if (compact && results.length === 0) return null;
   return results;
 };
-
-
 
 const generateGuid = function (type = 'numeric', length = 12) {
   // numeric
@@ -131,7 +124,7 @@ const getCurrentPusherConnection = function (connections, connectionid) {
  * Figure out a URI's source namespace
  * @param uri = string
  * */
-let uriSource = function (uri) {
+const uriSource = function (uri) {
   if (!uri) return '';
 
   const exploded = `${uri}`.split(':');
@@ -303,9 +296,9 @@ const getFromUri = (element, uri) => {
     case 'seeds':
       if (exploded[1] == 'discover') {
         return exploded[2];
-      } else if (exploded[1] === 'radio') {
+      } if (exploded[1] === 'radio') {
         const seeds = exploded[2].split(',');
-        return seeds.map(seed => seed.replace(/_/gi, ':'));
+        return seeds.map((seed) => seed.replace(/_/gi, ':'));
       }
       break;
 
@@ -360,19 +353,18 @@ const isNumeric = function (value) {
   return !isNaN(parseFloat(value)) && isFinite(value);
 };
 
-
 /**
  * Figure out if a value is an object
  * @param value = mixed
  * @return boolean
  * */
-let isObject = function (value) {
+const isObject = function (value) {
   return value instanceof Object && value.constructor === Object;
 };
 
 /**
  * Convert an array of strings to an array of RegExp objects
- * 
+ *
  * @param {Array} keys
  */
 const toRegExp = function (keys) {
@@ -421,11 +413,10 @@ const isLoading = function (load_queue = {}, keys = []) {
  * */
 const isHosted = function (hosts = ['jaedb.github.io']) {
   const {
-    hostname
+    hostname,
   } = window.location;
   return hosts.includes(hostname);
 };
-
 
 /**
  * Get indexed record(s) by URI from our asset index
@@ -451,7 +442,6 @@ const getIndexedRecords = function (index, uris) {
   return records;
 };
 
-
 /**
  * Uppercase-ify the first character of a string
  *
@@ -467,70 +457,70 @@ const titleCase = function (string = '') {
  */
 const iconFromKeyword = (name) => {
   const iconWords = [{
-      icon: 'business',
-      words: ['office', 'work']
-    },
-    {
-      icon: 'king_bed',
-      words: ['bed']
-    },
-    {
-      icon: 'weekend',
-      words: ['lounge', 'tv', 'sitting room']
-    },
-    {
-      icon: 'directions_car',
-      words: ['garage', 'basement']
-    },
-    {
-      icon: 'local_laundry_service',
-      words: ['laundry']
-    },
-    {
-      icon: 'fitness_center',
-      words: ['gym']
-    },
-    {
-      icon: 'kitchen',
-      words: ['kitchen']
-    },
-    {
-      icon: 'deck',
-      words: ['deck', 'outside']
-    },
-    {
-      icon: 'restaurant_menu',
-      words: ['dining', 'dinner']
-    },
-    {
-      icon: 'laptop',
-      words: ['laptop']
-    },
-    {
-      icon: 'bug_report',
-      words: ['test', 'debug']
-    },
-    {
-      icon: 'child_care',
-      words: ['kids', 'baby']
-    },
-    {
-      icon: 'smartphone',
-      words: ['phone', 'mobile']
-    },
-    {
-      icon: 'web',
-      words: ['web', 'browser', 'iris']
-    },
+    icon: 'business',
+    words: ['office', 'work'],
+  },
+  {
+    icon: 'king_bed',
+    words: ['bed'],
+  },
+  {
+    icon: 'weekend',
+    words: ['lounge', 'tv', 'sitting room'],
+  },
+  {
+    icon: 'directions_car',
+    words: ['garage', 'basement'],
+  },
+  {
+    icon: 'local_laundry_service',
+    words: ['laundry'],
+  },
+  {
+    icon: 'fitness_center',
+    words: ['gym'],
+  },
+  {
+    icon: 'kitchen',
+    words: ['kitchen'],
+  },
+  {
+    icon: 'deck',
+    words: ['deck', 'outside'],
+  },
+  {
+    icon: 'restaurant_menu',
+    words: ['dining', 'dinner'],
+  },
+  {
+    icon: 'laptop',
+    words: ['laptop'],
+  },
+  {
+    icon: 'bug_report',
+    words: ['test', 'debug'],
+  },
+  {
+    icon: 'child_care',
+    words: ['kids', 'baby'],
+  },
+  {
+    icon: 'smartphone',
+    words: ['phone', 'mobile'],
+  },
+  {
+    icon: 'web',
+    words: ['web', 'browser', 'iris'],
+  },
   ];
-  for (let item of iconWords) {
-    for (let word of item.words) {
+  for (const item of iconWords) {
+    for (const word of item.words) {
       if (name.match(new RegExp(`(${word})`, 'gi'))) {
         return item.icon;
       }
     }
-  };
-}
+  }
+};
 
 /**
  * Scroll to the top of the page
@@ -581,7 +571,6 @@ const scrollTo = function (target = null, smooth_scroll = false) {
   // Give .main a moment to render it's contents
   setTimeout(performScroll, 1);
 };
-
 
 /**
  * Upgrade one or many Spotify Playlist URIs

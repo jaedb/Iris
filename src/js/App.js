@@ -65,6 +65,7 @@ import * as lastfmActions from './services/lastfm/actions';
 import * as geniusActions from './services/genius/actions';
 import * as snapcastActions from './services/snapcast/actions';
 import MediaSession from './components/MediaSession';
+import ErrorBoundary from './components/ErrorBoundary';
 
 export class App extends React.Component {
   constructor(props) {
@@ -94,6 +95,7 @@ export class App extends React.Component {
               message.match(/Websocket/i)
               || message.match(/NotSupportedError/i)
               || message.match(/Non-Error promise rejection captured with keys: call, message, value/i)
+              || message.match(/Cannot read property 'addChunk' of undefined/i)
             )
           ) {
             return null;
@@ -105,23 +107,23 @@ export class App extends React.Component {
     }
 
     // Load query param settings
-    const configs = ['ui', 'spotify', 'pusher', 'snapcast', 'mopidy', 'google', 'lastfm', 'genius']
-    const params = new URLSearchParams(window.location.search)
-    var changed = []
-    var urlParams = params.forEach((v, k) => {
+    const configs = ['ui', 'spotify', 'pusher', 'snapcast', 'mopidy', 'google', 'lastfm', 'genius'];
+    const params = new URLSearchParams(window.location.search);
+    const changed = [];
+    const urlParams = params.forEach((v, k) => {
       if (!configs.includes(k)) return;
       try {
-        storage.set(k, JSON.parse(v))
-        changed.push(k)
+        storage.set(k, JSON.parse(v));
+        changed.push(k);
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
-    })
+    });
     if (changed.length > 0) {
-      changed.forEach((k) => params.delete(k))
-      const url = window.location.toString().replace(window.location.search, params.toString())
+      changed.forEach((k) => params.delete(k));
+      const url = window.location.toString().replace(window.location.search, params.toString());
       console.log(`Settings changed, redirecting to ${url}`, changed);
-      window.location.assign(url)
+      window.location.assign(url);
     }
 
     this.handleInstallPrompt = this.handleInstallPrompt.bind(this);
@@ -257,7 +259,7 @@ export class App extends React.Component {
     } = this.state;
 
     let className = `${theme}-theme app-inner`;
-    className += ` ${navigator.onLine ? 'online' : 'offline'}`
+    className += ` ${navigator.onLine ? 'online' : 'offline'}`;
     if (wide_scrollbar_enabled) {
       className += ' wide-scrollbar';
     }
@@ -426,7 +428,7 @@ export class App extends React.Component {
         <ContextMenu />
         <Dragger />
         <Notifications />
-        {userHasInteracted && <Stream />}
+        {userHasInteracted && <ErrorBoundary silent><Stream /></ErrorBoundary>}
         {userHasInteracted && ('mediaSession' in navigator) && <MediaSession />}
         {debug_info && <DebugInfo />}
       </div>

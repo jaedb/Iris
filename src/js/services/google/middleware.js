@@ -6,6 +6,7 @@ import {
   formatTracks,
 } from '../../util/format';
 import { i18n } from '../../locale';
+
 const coreActions = require('../core/actions');
 const mopidyActions = require('../mopidy/actions');
 const uiActions = require('../ui/actions');
@@ -26,7 +27,7 @@ const GoogleMiddleware = (function () {
   return (store) => (next) => (action) => {
     switch (action.type) {
       case 'GOOGLE_GET_LIBRARY_ALBUMS': {
-        store.dispatch(uiActions.startProcess(action.type, { notification: false }) );
+        store.dispatch(uiActions.startProcess(action.type, { notification: false }));
 
         request(
           store,

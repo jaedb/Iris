@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -128,7 +127,7 @@ class EditCommand extends React.Component {
 
           <div className="field textarea white">
             <div className="name">
-							<I18n path="modal.edit_command.name" />
+              <I18n path="modal.edit_command.name" />
             </div>
             <div className="input">
               <TextField
@@ -141,7 +140,7 @@ class EditCommand extends React.Component {
 
           <div className="field radio white">
             <div className="name">
-							<I18n path="modal.edit_command.colour" />
+              <I18n path="modal.edit_command.colour" />
             </div>
             <div className="input">
               <ColourField
@@ -153,7 +152,7 @@ class EditCommand extends React.Component {
 
           <div className="field radio white">
             <div className="name">
-							<I18n path="modal.edit_command.icon" />
+              <I18n path="modal.edit_command.icon" />
             </div>
             <div className="input">
               <IconField
@@ -166,7 +165,7 @@ class EditCommand extends React.Component {
 
           <div className="field textarea white">
             <div className="name">
-							<I18n path="modal.edit_command.url" />
+              <I18n path="modal.edit_command.url" />
             </div>
             <div className="input">
               <TextField
@@ -179,7 +178,7 @@ class EditCommand extends React.Component {
 
           <div className="field radio white">
             <div className="name">
-							<I18n path="modal.edit_command.method.label" />
+              <I18n path="modal.edit_command.method.label" />
             </div>
             <div className="input">
               <label>
@@ -212,7 +211,7 @@ class EditCommand extends React.Component {
           {method === 'POST' && (
           <div className="field textarea white">
             <div className="name">
-							<I18n path="modal.edit_command.data" />
+              <I18n path="modal.edit_command.data" />
             </div>
             <div className="input">
               <textarea
@@ -226,7 +225,7 @@ class EditCommand extends React.Component {
 
           <div className="field textarea white">
             <div className="name">
-							<I18n path="modal.edit_command.headers" />
+              <I18n path="modal.edit_command.headers" />
             </div>
             <div className="input">
               <textarea
@@ -236,7 +235,6 @@ class EditCommand extends React.Component {
               />
             </div>
           </div>
-
 
           <div className="actions centered-text">
             {command && (

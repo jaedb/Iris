@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Icon from '../Icon';
 
@@ -32,7 +31,7 @@ export default class TextField extends React.Component {
   }
 
   handleFocus = () => {
-    this.setState({ in_focus: true, saved: false, });
+    this.setState({ in_focus: true, saved: false });
   }
 
   handleBlur = () => {

@@ -76,7 +76,7 @@ const SearchResults = ({
         {type === 'albums' && <Grid items={results} show_source_icon mini={all} />}
         {type === 'playlists' && <Grid items={results} show_source_icon mini={all} />}
         {type === 'tracks' && <TrackList tracks={results} uri={`iris:search:${query.type}:${encodedTerm}`} show_source_icon />}
-        {/*<LazyLoadListener enabled={this.props.artists_more && spotify_search_enabled} loadMore={loadMore} />*/}
+        {/* <LazyLoadListener enabled={this.props.artists_more && spotify_search_enabled} loadMore={loadMore} /> */}
 
         {resultsCount > results.length && (
           <Button uri={`iris:search:${type}:${encodedTerm}`} debug>

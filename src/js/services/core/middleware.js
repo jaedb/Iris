@@ -79,7 +79,6 @@ const CoreMiddleware = (function () {
           }
         }
 
-
         // Strip out non-essential store info
         delete exported_state.core.albums;
         delete exported_state.core.artists;
@@ -432,7 +431,7 @@ const CoreMiddleware = (function () {
             default:
               store.dispatch(mopidyActions.getAlbum(action.uri, action.options));
               break;
-          };
+          }
         };
         ensureLoaded({
           store,
@@ -681,7 +680,7 @@ const CoreMiddleware = (function () {
         next(action);
         break;
 
-      /**
+        /**
            * Loaded more linked assets
            * Often fired during lazy-loading or async asset grabbing.
            * We link the parent to these indexed records by {type}s_uris
@@ -718,7 +717,7 @@ const CoreMiddleware = (function () {
 
         // Merge any extra data (eg more_track's albums)
         if (action.extra_data) {
-          records = records.map(record => ({ ...record, ...action.extra_data }));
+          records = records.map((record) => ({ ...record, ...action.extra_data }));
         }
 
         // If we're a list of playlists, we need to manually filter Spotify's new URI structure

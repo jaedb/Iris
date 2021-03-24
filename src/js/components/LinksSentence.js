@@ -23,21 +23,21 @@ const LinksSentence = memo(({ items, className, nolinks }) => {
 				    var content = <span>{name}</span>;
 				  } else {
 				    var content = (
-							<URILink
-								className="links-sentence__item links-sentence__item--link"
-								uri={uri}
-								type={type}
-							>
-								{name}
-							</URILink>
-						);
+  <URILink
+    className="links-sentence__item links-sentence__item--link"
+    uri={uri}
+    type={type}
+  >
+    {name}
+  </URILink>
+				    );
 				  }
 
 				  return (
-						<span key={`index_${uri}`}>
-							{content}
-							{separator}
-						</span>
+  <span key={`index_${uri}`}>
+    {content}
+    {separator}
+  </span>
 				  );
 				})
 			}

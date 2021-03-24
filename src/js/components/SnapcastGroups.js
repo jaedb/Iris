@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -51,7 +50,7 @@ const SnapcastGroups = (props) => {
         (acc, client) => acc + (client.volume || 0),
         0,
       ) / groupClients.length;
-    };
+    }
 
     return (
       <div className="snapcast__group" key={group.id}>
@@ -112,15 +111,15 @@ const SnapcastGroups = (props) => {
         />
       </div>
     );
-  }
+  };
 
   const renderMenuItem = (simpleGroup) => {
     const group = collate(simpleGroup, { clients });
     const anyClients = (
       !show_disconnected_clients && (
-        !group.clients ||
-        !group.clients.length ||
-        !group.clients.filter((client) => client.connected).length
+        !group.clients
+        || !group.clients.length
+        || !group.clients.filter((client) => client.connected).length
       )
     );
     return (
@@ -143,7 +142,7 @@ const SnapcastGroups = (props) => {
         </div>
       </Link>
     );
-  }
+  };
 
   return (
     <div className="sub-tabs snapcast__groups" id="services-snapcast-groups">
@@ -155,7 +154,7 @@ const SnapcastGroups = (props) => {
       {renderGroup()}
     </div>
   );
-}
+};
 
 const mapStateToProps = (state, ownProps) => ({
   show_disconnected_clients: (

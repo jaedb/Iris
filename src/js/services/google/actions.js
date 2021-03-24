@@ -1,4 +1,3 @@
-
 export function set(data) {
   return {
     type: 'GOOGLE_SET',

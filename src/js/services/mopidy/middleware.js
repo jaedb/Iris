@@ -1,8 +1,8 @@
-
 import ReactGA from 'react-ga';
 import Mopidy from 'mopidy';
 import { sha256 } from 'js-sha256';
 import { sampleSize, compact, chunk } from 'lodash';
+import { consoleSandbox } from '@sentry/utils';
 import { i18n, I18n } from '../../locale';
 import {
   generateGuid,
@@ -31,7 +31,6 @@ import {
   sortItems,
   indexToArray,
 } from '../../util/arrays';
-import { consoleSandbox } from '@sentry/utils';
 
 const mopidyActions = require('./actions.js');
 const coreActions = require('../core/actions.js');
@@ -46,8 +45,8 @@ const discogsActions = require('../discogs/actions.js');
 /**
  * Fetch the method of our Mopidy API that is being called, by string
  *
- * @param {String} call 
- * @param {Object} socket 
+ * @param {String} call
+ * @param {Object} socket
  */
 const getController = (call, socket) => {
   const callParts = call.split('.');
@@ -241,7 +240,9 @@ const MopidyMiddleware = (function () {
         store.dispatch(uiActions.stopLoading(loaderId));
         console.warn(
           'Mopidy request aborted. Either Mopidy is not connected or the request method is invalid. Check the request and your server settings.',
-          { call, value, socket, controller },
+          {
+            call, value, socket, controller,
+          },
         );
       }
     };
@@ -479,7 +480,7 @@ const MopidyMiddleware = (function () {
         break;
 
       case 'MOPIDY_REMOVE_SERVER': {
-        let servers = { ...store.getState().mopidy.servers };
+        const servers = { ...store.getState().mopidy.servers };
         delete servers[action.id];
         store.dispatch(mopidyActions.updateServers(servers));
         break;
@@ -490,8 +491,8 @@ const MopidyMiddleware = (function () {
          * Disabled because it causes so many requests without any conscious user input.
          * Will monitor to see if it has any adverse impact.
          */
-        
-         /*
+
+        /*
         // Focus has just been regained
         if (action.window_focus === true) {
           store.dispatch(mopidyActions.getCurrentTrack());
@@ -531,9 +532,9 @@ const MopidyMiddleware = (function () {
           );
         break;
 
-      /**
+        /**
        * General playback
-       **/
+       * */
 
       case 'MOPIDY_PLAY_STATE':
         store.dispatch(uiActions.setWindowTitle(null, action.play_state));
@@ -871,7 +872,7 @@ const MopidyMiddleware = (function () {
         }
 
         let remaining = action.uris.length;
-        let at_position = action.at_position;
+        let { at_position } = action;
 
         // Uris are to go immediately after the currently-playing track (which could be paused)
         if (action.play_next) {
@@ -1101,12 +1102,10 @@ const MopidyMiddleware = (function () {
           );
         break;
 
-
         /**
            * =============================================================== SEARCHING ============
            * ======================================================================================
            * */
-
 
       case 'MOPIDY_GET_SEARCH_RESULTS': {
         const {
@@ -1211,7 +1210,6 @@ const MopidyMiddleware = (function () {
             } else {
               store.dispatch(coreActions.itemLoaded(playlist));
             }
-
           });
         break;
 
@@ -1607,7 +1605,7 @@ const MopidyMiddleware = (function () {
                         ...uris,
                       ],
                     }));
-                  }
+                  },
                 );
             },
           );
@@ -1630,7 +1628,7 @@ const MopidyMiddleware = (function () {
                 });
               } else {
                 store.dispatch(lastfmActions.getImages(uri));
-              };
+              }
             });
 
             if (itemsWithImages.length) {
@@ -1694,7 +1692,7 @@ const MopidyMiddleware = (function () {
                   },
                 });
               });
-          };
+          }
 
           if (subdirectoryImagesToLoad.length) {
             request(store, 'library.getImages', { uris: subdirectoryImagesToLoad })
@@ -1772,7 +1770,7 @@ const MopidyMiddleware = (function () {
             // See https://github.com/mopidy/mopidy-local-sqlite/issues/39
             const response = raw_response.map((artist) => ({
               ...formatArtist(artist),
-              uri: artist.uri.replace('local:directory?albumartist=', '').replace('local:directory?artist=', '')
+              uri: artist.uri.replace('local:directory?albumartist=', '').replace('local:directory?artist=', ''),
             }));
 
             store.dispatch(coreActions.itemsLoaded(response));
@@ -1789,7 +1787,6 @@ const MopidyMiddleware = (function () {
 
         request(store, 'playlists.asList')
           .then((listResponse) => {
-
             // Remove any Spotify playlists. These will be handled by our Spotify API
             const playlist_uris = arrayOf('uri', listResponse).filter(
               (playlistUri) => uriSource(playlistUri) !== 'spotify',

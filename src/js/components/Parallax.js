@@ -53,6 +53,6 @@ const Parallax = ({
       )}
     </div>
   );
-}
+};
 
 export default handleViewport(Parallax);

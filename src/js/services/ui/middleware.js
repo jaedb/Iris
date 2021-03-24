@@ -1,5 +1,5 @@
-
 import ReactGA from 'react-ga';
+
 const uiActions = require('./actions.js');
 
 const UIMiddleware = (function () {

@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as coreActions from '../services/core/actions';
-import { SnapStream } from './SnapStream';
+import { SnapStream } from './SnapStream.tsx';
 
 class Stream extends React.Component {
   constructor(props) {
@@ -19,14 +18,13 @@ class Stream extends React.Component {
       host,
       port,
       ssl,
-      username,
     } = this.props;
 
     if (this.snapstream) {
       this.snapstream.play();
     } else {
-      const protocol = (ssl ? 'wss' : 'ws');
-      this.snapstream = new SnapStream(protocol, host, port, 'Iris');
+      const baseUrl = `${ssl ? 'wss' : 'ws'}://${host}:${port}`;
+      this.snapstream = new SnapStream(baseUrl);
     }
   }
 

@@ -189,7 +189,7 @@ class Artist extends React.Component {
     const {
       albumsFilter: filter,
     } = this.state;
-    let {
+    const {
       tracks,
       related_artists,
     } = artist;
@@ -405,7 +405,7 @@ class Artist extends React.Component {
             <Thumbnail size="huge" canZoom fill images={image} />
           </div>
         );
-      }
+      },
     );
 
     return (

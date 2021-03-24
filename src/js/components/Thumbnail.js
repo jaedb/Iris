@@ -1,4 +1,3 @@
-
 import React, { memo } from 'react';
 import Link from './Link';
 import Icon from './Icon';
@@ -37,7 +36,7 @@ export default memo((props) => {
 
   const image = mapImageSizes();
   let class_name = 'thumbnail thumbnail--loaded';
-  if (props.fill) class_name += ` thumbnail--fill`;
+  if (props.fill) class_name += ' thumbnail--fill';
   if (props.size) class_name += ` thumbnail--${props.size}`;
   if (props.circle) class_name += ' thumbnail--circle';
   if (props.className) class_name += ` ${props.className}`;
@@ -77,7 +76,7 @@ export default memo((props) => {
       {props.glow && image && (
         <div
           className="thumbnail__image thumbnail__image--glow"
-          style={{ backgroundImage: `url("${image}")`}}
+          style={{ backgroundImage: `url("${image}")` }}
         />
       )}
       <div className="thumbnail__actions">

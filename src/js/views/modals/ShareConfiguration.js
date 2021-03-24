@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -66,7 +65,7 @@ class ShareConfiguration extends React.Component {
         enabled: this.props.snapcast.enabled,
         host: this.props.snapcast.host,
         port: this.props.snapcast.port,
-      }
+      };
     }
 
     for (const recipient of this.state.recipients) {
@@ -105,7 +104,9 @@ class ShareConfiguration extends React.Component {
                     <div>
                       <div className="title">{connection.username}</div>
                       <div className="description mid_grey-text">
-                        ({connection.ip})
+                        (
+                        {connection.ip}
+                        )
                       </div>
                     </div>
                   </div>

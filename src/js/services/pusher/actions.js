@@ -1,4 +1,3 @@
-
 export function setPort(port) {
   return {
     type: 'PUSHER_SET_PORT',
@@ -201,10 +200,9 @@ export function addQueueMetadata(tlids = [], from_uri = null) {
   };
 }
 
-
 /**
  * Pinned URIs
- **/
+ * */
 
 export function getPinned() {
   return {
@@ -239,7 +237,6 @@ export function pinnedUpdated(pinned) {
     pinned,
   };
 }
-
 
 /**
  * Commands (buttons)

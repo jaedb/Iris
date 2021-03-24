@@ -1,4 +1,3 @@
-
 import ReactGA from 'react-ga';
 import { sha256 } from 'js-sha256';
 import {
@@ -32,7 +31,7 @@ const SnapcastMiddleware = (function () {
 
     // Some messages are arrays of messages
     if (Array.isArray(message)) {
-      message.map(messageItem => handleMessage(ws, store, messageItem));
+      message.map((messageItem) => handleMessage(ws, store, messageItem));
       return;
     }
 
@@ -155,7 +154,6 @@ const SnapcastMiddleware = (function () {
     const { snapcast } = store.getState();
 
     switch (action.type) {
-
       case 'SNAPCAST_CONNECT':
         if (socket) socket.close();
         clearTimeout(reconnectTimer);
@@ -307,7 +305,7 @@ const SnapcastMiddleware = (function () {
         var groups_index = { ...snapcast.groups };
         var clients_loaded = [];
 
-        const groups_loaded = action.groups.map(raw_group => {
+        const groups_loaded = action.groups.map((raw_group) => {
           let group = formatGroup(raw_group);
 
           if (groups_index[group.id]) {
@@ -363,7 +361,7 @@ const SnapcastMiddleware = (function () {
 
         request(store, 'Client.SetName', params)
           .then(
-            response => {
+            (response) => {
               store.dispatch(snapcastActions.clientLoaded(
                 {
                   id: action.id,
@@ -386,7 +384,7 @@ const SnapcastMiddleware = (function () {
 
         request(store, 'Client.SetVolume', params)
           .then(
-            response => {
+            (response) => {
               store.dispatch(snapcastActions.clientLoaded(
                 {
                   id: action.id,
@@ -395,7 +393,7 @@ const SnapcastMiddleware = (function () {
                 },
               ));
             },
-            error => {
+            (error) => {
               store.dispatch(coreActions.handleException(
                 'Error',
                 error,
@@ -417,7 +415,7 @@ const SnapcastMiddleware = (function () {
 
         request(store, 'Client.SetVolume', params)
           .then(
-            response => {
+            (response) => {
               store.dispatch(snapcastActions.clientLoaded(
                 {
                   id: action.id,
@@ -440,7 +438,7 @@ const SnapcastMiddleware = (function () {
                 error,
                 error.message,
               ));
-            }
+            },
           );
         break;
 
@@ -453,7 +451,7 @@ const SnapcastMiddleware = (function () {
 
         request(store, 'Client.SetLatency', params)
           .then(
-            response => {
+            (response) => {
               store.dispatch(snapcastActions.clientLoaded(
                 {
                   id: action.id,
@@ -461,7 +459,7 @@ const SnapcastMiddleware = (function () {
                 },
               ));
             },
-            error => {
+            (error) => {
               store.dispatch(coreActions.handleException(
                 'Error',
                 error,
@@ -526,24 +524,24 @@ const SnapcastMiddleware = (function () {
         break;
 
       case 'SNAPCAST_SET_GROUP_NAME':
-          var group = snapcast.groups[action.id];
-          var params = {
-            id: action.id,
-            name: action.name,
-          };
+        var group = snapcast.groups[action.id];
+        var params = {
+          id: action.id,
+          name: action.name,
+        };
 
-          request(store, 'Group.SetName', params)
-            .then(
-              response => {
-                store.dispatch(snapcastActions.groupLoaded(
-                  {
-                    id: action.id,
-                    name: response.name,
-                  },
-                ));
-              },
-            );
-          break;
+        request(store, 'Group.SetName', params)
+          .then(
+            (response) => {
+              store.dispatch(snapcastActions.groupLoaded(
+                {
+                  id: action.id,
+                  name: response.name,
+                },
+              ));
+            },
+          );
+        break;
 
       case 'SNAPCAST_SET_GROUP_STREAM':
         var group = store.getState().snapcast.groups[action.id];
@@ -554,7 +552,7 @@ const SnapcastMiddleware = (function () {
 
         request(store, 'Group.SetStream', params)
           .then(
-            response => {
+            (response) => {
               store.dispatch(snapcastActions.groupLoaded(
                 {
                   id: action.id,
@@ -562,7 +560,7 @@ const SnapcastMiddleware = (function () {
                 },
               ));
             },
-            error => {
+            (error) => {
               store.dispatch(coreActions.handleException(
                 'Could not change stream',
                 error,
@@ -581,7 +579,7 @@ const SnapcastMiddleware = (function () {
 
         request(store, 'Group.SetMute', params)
           .then(
-            response => {
+            (response) => {
               store.dispatch(snapcastActions.groupLoaded(
                 {
                   id: action.id,
@@ -589,7 +587,7 @@ const SnapcastMiddleware = (function () {
                 },
               ));
             },
-            error => {
+            (error) => {
               store.dispatch(coreActions.handleException(
                 'Could not toggle mute',
                 error,
@@ -636,7 +634,7 @@ const SnapcastMiddleware = (function () {
         store.dispatch(snapcastActions.groupLoaded({
           id: action.id,
           volume: action.percent,
-        }))
+        }));
         break;
 
       default:

@@ -32,7 +32,6 @@ const LyricsSelector = ({
   } = {},
   getTrackLyrics,
 }) => {
-
   if (lyrics_results === undefined || lyrics_results === null) return null;
   if (lyrics_results.length <= 0) {
     return (
@@ -66,7 +65,7 @@ const LyricsSelector = ({
       </div>
     </div>
   );
-}
+};
 
 const LyricsContent = ({
   authorized,
@@ -87,7 +86,7 @@ const LyricsContent = ({
         .
       </p>
     );
-  };
+  }
   if (!lyrics) return null;
 
   return (
@@ -105,33 +104,31 @@ const LyricsContent = ({
       </div>
     </div>
   );
-}
+};
 
 const Lyrics = ({
   loading,
   authorized,
   track,
   getTrackLyrics,
-}) => {
-  return (
-    <>
-      <h4>
-        <I18n path="track.lyrics" />
-        {loading && <Loader loading mini />}
-      </h4>
+}) => (
+  <>
+    <h4>
+      <I18n path="track.lyrics" />
+      {loading && <Loader loading mini />}
+    </h4>
 
-      <LyricsSelector
-        getTrackLyrics={getTrackLyrics}
-        authorized={authorized}
-        track={track}
-      />
-      <LyricsContent
-        track={track}
-        authorized={authorized}
-      />
-    </>
-  );
-}
+    <LyricsSelector
+      getTrackLyrics={getTrackLyrics}
+      authorized={authorized}
+      track={track}
+    />
+    <LyricsContent
+      track={track}
+      authorized={authorized}
+    />
+  </>
+);
 
 class Track extends React.Component {
   componentDidMount() {
@@ -223,7 +220,7 @@ class Track extends React.Component {
       uiActions,
       genius_authorized,
       geniusActions: {
-        getTrackLyrics
+        getTrackLyrics,
       },
       loadingLyrics,
     } = this.props;

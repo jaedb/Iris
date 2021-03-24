@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux';
 import * as pusherActions from '../../services/pusher/actions';
 import Icon from '../Icon';
 import Button from '../Button';

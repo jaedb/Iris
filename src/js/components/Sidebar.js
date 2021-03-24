@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -12,7 +11,6 @@ import * as mopidyActions from '../services/mopidy/actions';
 import { I18n, i18n } from '../locale';
 
 class Sidebar extends React.Component {
-
   closeSidebar = () => {
     const {
       uiActions: {

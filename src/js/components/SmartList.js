@@ -31,7 +31,7 @@ const SmartListBatch = handleViewport(
     const itemIndex = (bi = 0, ii = 0) => {
       if (bi === 0) return ii;
       return ii + (chunkSize * bi);
-    }
+    };
 
     return (
       <div className={`smart-list__batch ${className}`} ref={forwardedRef}>

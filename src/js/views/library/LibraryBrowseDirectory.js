@@ -50,7 +50,13 @@ const Subdirectories = ({ items, view }) => {
     );
   }
 
-  return <Grid items={items} nocontext link={(item) => link(item)} />
+  return (
+    <Grid
+      items={items}
+      getLink={link}
+      nocontext
+    />
+  );
 };
 
 class LibraryBrowseDirectory extends React.Component {

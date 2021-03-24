@@ -109,7 +109,6 @@ export function searchResultsLoaded(query, resultType, results) {
   };
 }
 
-
 /**
  * Record getters
  *
@@ -214,7 +213,6 @@ export function removeFromLibrary(uri, itemUri) {
     itemUri,
   };
 }
-
 
 /**
  * Record loaders
@@ -476,7 +474,6 @@ export function addTracksToPlaylist(uri, tracks_uris) {
       };
   }
 }
-
 
 /**
  * Asset libraries

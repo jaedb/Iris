@@ -10,11 +10,13 @@ import { indexToArray } from '../util/arrays';
 class DebugInfo extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { localForageLength: 0 }
+    this.state = { localForageLength: 0 };
   }
+
   componentDidMount() {
-    localForage.length().then((localForageLength) => this.setState({ localForageLength }))
+    localForage.length().then((localForageLength) => this.setState({ localForageLength }));
   }
+
   localStorageSize() {
     let data = '';
 
@@ -69,12 +71,12 @@ class DebugInfo extends React.Component {
 
         <div className="debug-info-section">
           <div className="debug-info-item">
-						Version:
+            Version:
             {' '}
             {version}
           </div>
           <div className="debug-info-item">
-						Build:
+            Build:
             {' '}
             {build}
           </div>
@@ -83,45 +85,45 @@ class DebugInfo extends React.Component {
         <div className="debug-info-section">
           <h5>State</h5>
           <div className="debug-info-item">
-						{`Items: ${Object.keys(items).length}`}
+            {`Items: ${Object.keys(items).length}`}
           </div>
           <div className="debug-info-item">
-						{`Coldstore items: ${this.state.localForageLength}`}
+            {`Coldstore items: ${this.state.localForageLength}`}
           </div>
           <div className="debug-info-item">
-						{`Notifications: ${Object.keys(notifications).length}`}
+            {`Notifications: ${Object.keys(notifications).length}`}
           </div>
           <div className="debug-info-item">
-						{`Processes: ${Object.keys(processes).length}`}
+            {`Processes: ${Object.keys(processes).length}`}
           </div>
           <div className="debug-info-item">
-						{`Enqueue batches: ${enqueue_uris_batches.length}`}
+            {`Enqueue batches: ${enqueue_uris_batches.length}`}
           </div>
           <div className="debug-info-item">
-						{`Cached URLs: ${Object.keys(getStorage('cache')).length}`}
+            {`Cached URLs: ${Object.keys(getStorage('cache')).length}`}
           </div>
         </div>
 
         <div className="debug-info-section">
           <h5>Config</h5>
           <div className="debug-info-item">
-						{`Slim mode: ${slim_mode ? 'on' : 'off'}`}
+            {`Slim mode: ${slim_mode ? 'on' : 'off'}`}
           </div>
           <div className="debug-info-item">
-						{`Test mode: ${test_mode ? 'on' : 'off'}`}
+            {`Test mode: ${test_mode ? 'on' : 'off'}`}
           </div>
           <div className="debug-info-item">
-						{`Touch: ${isTouchDevice() ? 'on' : 'off'}`}
+            {`Touch: ${isTouchDevice() ? 'on' : 'off'}`}
           </div>
           <div className="debug-info-item">
-						{`LocalStorage usage: ${localStorageUsage.used}kb (~${localStorageUsage.percent}%)`}
+            {`LocalStorage usage: ${localStorageUsage.used}kb (~${localStorageUsage.percent}%)`}
           </div>
           <div className="debug-info-item">
-						{`Selected tracks: ${selected_tracks.length}`}
+            {`Selected tracks: ${selected_tracks.length}`}
             <br />
             {
 							selected_tracks.map((track_key, index) => (
-                <div key={`${track_key}_${index}`}>{track_key}</div>
+  <div key={`${track_key}_${index}`}>{track_key}</div>
 							))
 						}
           </div>

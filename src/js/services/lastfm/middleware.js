@@ -1,6 +1,6 @@
-
 import ReactGA from 'react-ga';
 import { formatUser } from '../../util/format';
+
 const coreActions = require('../core/actions');
 const uiActions = require('../ui/actions');
 const lastfmActions = require('./actions');
@@ -28,7 +28,7 @@ const LastfmMiddleware = (function () {
         setTimeout(() => { store.dispatch(lastfmActions.getMe()); }, 100);
 
         next(action);
-        break;      
+        break;
 
       case 'LASTFM_AUTHORIZATION_REVOKED':
         if (store.getState().ui.allow_reporting) {

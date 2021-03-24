@@ -1,4 +1,3 @@
-
 import React from 'react';
 import VolumeControl from './Fields/VolumeControl';
 import MuteControl from './Fields/MuteControl';
@@ -7,7 +6,9 @@ import TextField from './Fields/TextField';
 import SelectField from './Fields/SelectField';
 import { I18n, i18n } from '../locale';
 
-const SnapcastClients = ({ actions, group, clients, groups }) => {
+const SnapcastClients = ({
+  actions, group, clients, groups,
+}) => {
   if (!clients || clients.length <= 0) {
     return (
       <p className="no-results">
@@ -105,6 +106,6 @@ const SnapcastClients = ({ actions, group, clients, groups }) => {
       }
     </div>
   );
-}
+};
 
 export default SnapcastClients;

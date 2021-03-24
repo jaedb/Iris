@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -91,7 +90,7 @@ class Playlist extends React.Component {
   setWindowTitle = (playlist = this.props.playlist) => {
     const { uiActions: { setWindowTitle } } = this.props;
     setWindowTitle(
-      playlist ? i18n('playlist.title_window', { name: playlist.name }) : i18n('playlist.title')
+      playlist ? i18n('playlist.title_window', { name: playlist.name }) : i18n('playlist.title'),
     );
   }
 

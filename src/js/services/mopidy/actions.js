@@ -259,7 +259,6 @@ export function getUriSchemes() {
   };
 }
 
-
 /**
  * Advanced playback actions
  * */
@@ -370,7 +369,6 @@ export function enqueueURIsBatchDone() {
     type: 'MOPIDY_ENQUEUE_URIS_BATCH_DONE',
   };
 }
-
 
 /**
  * Playlist maniopulation

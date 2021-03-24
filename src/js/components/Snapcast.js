@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -99,7 +98,7 @@ const Snapcast = (props) => {
       {connected && enabled && <SnapcastGroups match={match} history={history} />}
     </div>
   );
-}
+};
 
 const mapStateToProps = (state) => ({
   snapcast: state.snapcast,

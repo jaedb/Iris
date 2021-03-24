@@ -1,5 +1,4 @@
-
-const isDev = process.env.NODE_ENV !== "production";
+const isDev = process.env.NODE_ENV !== 'production';
 const path = require('path');
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -24,7 +23,7 @@ const config = {
 				]
 			},
 			{
-				test: /\.js$/,
+				test: /.(js|jsx|ts|tsx)$/,
 				exclude: /node_modules/,
 				use: [
 					{

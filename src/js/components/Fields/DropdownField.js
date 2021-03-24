@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Icon from '../Icon';
 import { removeDuplicates } from '../../util/arrays';
@@ -32,7 +31,7 @@ export default class DropdownField extends React.Component {
 
   setExpanded(expanded = !this.state.expanded) {
     if (expanded) {
-      this.setState({ expanded, changed: false, });
+      this.setState({ expanded, changed: false });
       window.addEventListener('click', this.handleClick, false);
     } else {
       this.setState({ expanded });
@@ -94,17 +93,15 @@ export default class DropdownField extends React.Component {
       // Value not set, default to first option
       if (value === null || value === undefined) {
         selectedOptions = [optionsProp[0]];
-      } else {
-        if (this.isMultiSelect()) {
-          for (let multiSelectValue of value) {
-            selectedOptions = [
-              ...selectedOptions,
-              ...optionsProp.filter(option => option.value === multiSelectValue),
-            ];
-          }
-        } else {
-          selectedOptions = optionsProp.filter(option => option.value === value);
+      } else if (this.isMultiSelect()) {
+        for (const multiSelectValue of value) {
+          selectedOptions = [
+            ...selectedOptions,
+            ...optionsProp.filter((option) => option.value === multiSelectValue),
+          ];
         }
+      } else {
+        selectedOptions = optionsProp.filter((option) => option.value === value);
       }
     }
 
@@ -143,7 +140,7 @@ export default class DropdownField extends React.Component {
 
     let className = `dropdown-field ${classNameProp}`;
     if (expanded) className += ' dropdown-field--expanded';
-    if (no_status_icon)  className += ' dropdown-field--no-status-icon';
+    if (no_status_icon) className += ' dropdown-field--no-status-icon';
     if (no_label) className += ' dropdown-field--no-label';
     if (button) className += ' dropdown-field--buttonify';
 
@@ -155,7 +152,7 @@ export default class DropdownField extends React.Component {
     return (
       <div className={className} data-uid={this.uid}>
         <div className={`dropdown-field__label${button ? ` button ${button}` : ''}`} onClick={(e) => this.setExpanded()}>
-          {icon ? <Icon name={icon} type={icon_type ? icon_type : 'material'} /> : null}
+          {icon ? <Icon name={icon} type={icon_type || 'material'} /> : null}
           {!noLabel && (
             <span className="text">
               <span className="dropdown-field__label__value">
@@ -174,14 +171,14 @@ export default class DropdownField extends React.Component {
 							options.map((option) => {
 							  const is_selected = selectedOptions.includes(option);
 							  return (
-                  <div
-                    className={`dropdown-field__options__item ${option.className ? option.className : ''}`}
-                    key={option.value}
-                    onClick={(e) => this.handleChange(option.value, is_selected)}
-                  >
-                    {!no_status_icon && is_selected && selected_icon}
-                    {option.label}
-                  </div>
+  <div
+    className={`dropdown-field__options__item ${option.className ? option.className : ''}`}
+    key={option.value}
+    onClick={(e) => this.handleChange(option.value, is_selected)}
+  >
+    {!no_status_icon && is_selected && selected_icon}
+    {option.label}
+  </div>
 							  );
 							})
 						}

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -94,7 +93,7 @@ class InitialSetup extends React.Component {
 
           <div className="field text">
             <div className="name">
-							<I18n path="settings.server.username.label" />
+              <I18n path="settings.server.username.label" />
             </div>
             <div className="input">
               <input
@@ -151,12 +150,13 @@ class InitialSetup extends React.Component {
                   <I18n path="settings.interface.reporting.description" />
                   <a href="https://github.com/jaedb/Iris/wiki/Terms-of-use#privacy-policy" target="_blank">
                     <I18n path="settings.interface.reporting.privacy_policy" />
-                  </a>.
+                  </a>
+                  .
                   {!this.state.allow_reporting && (
-                    <span className="red-text">
-                      <br />
-                      <I18n path="settings.interface.reporting.are_you_sure" />
-                    </span>
+                  <span className="red-text">
+                    <br />
+                    <I18n path="settings.interface.reporting.are_you_sure" />
+                  </span>
                   )}
                 </p>
               </div>

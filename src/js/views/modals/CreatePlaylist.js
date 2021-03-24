@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -40,7 +39,6 @@ class CreatePlaylist extends React.Component {
     );
     window.history.back();
 
-
     return false;
   }
 
@@ -78,7 +76,7 @@ class CreatePlaylist extends React.Component {
 
             <div className="field checkbox white">
               <div className="name">
-								<I18n path="modal.edit_playlist.options.label" />
+                <I18n path="modal.edit_playlist.options.label" />
               </div>
               <div className="input">
                 <label>
@@ -140,7 +138,7 @@ class CreatePlaylist extends React.Component {
 
           <div className="field radio white">
             <div className="name">
-							<I18n path="modal.edit_playlist.provider" />
+              <I18n path="modal.edit_playlist.provider" />
             </div>
             <div className="input">
               <label>
@@ -160,7 +158,7 @@ class CreatePlaylist extends React.Component {
                   type="radio"
                   name="scheme"
                   value="spotify"
-                  disabled={!spotify_available }
+                  disabled={!spotify_available}
                   checked={this.state.scheme === 'spotify'}
                   onChange={(e) => this.setState({ scheme: e.target.value })}
                 />

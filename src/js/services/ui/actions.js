@@ -198,7 +198,6 @@ export function installPrompt(event) {
   };
 }
 
-
 /**
  * Notifications
  *
@@ -254,7 +253,6 @@ export function removeNotification(key, manual = false) {
     manual,
   };
 }
-
 
 /**
  * Loaders
