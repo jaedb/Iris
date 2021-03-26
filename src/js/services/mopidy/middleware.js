@@ -2,14 +2,12 @@ import ReactGA from 'react-ga';
 import Mopidy from 'mopidy';
 import { sha256 } from 'js-sha256';
 import { sampleSize, compact, chunk } from 'lodash';
-import { consoleSandbox } from '@sentry/utils';
-import { i18n, I18n } from '../../locale';
+import { i18n } from '../../locale';
 import {
   generateGuid,
   uriSource,
   setFavicon,
   titleCase,
-  encodeMopidyUri,
 } from '../../util/helpers';
 import {
   digestMopidyImages,
@@ -362,7 +360,7 @@ const MopidyMiddleware = (function () {
         );
         return playlists.map((playlist) => ({
           ...formatPlaylist(playlist),
-          uri: encodeMopidyUri(playlist.uri),
+          uri: playlist.uri,
         }));
       },
       tracks: (response) => {

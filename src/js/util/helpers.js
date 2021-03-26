@@ -598,33 +598,6 @@ const upgradeSpotifyPlaylistUri = function (uri) {
   return upgradeSpotifyPlaylistUris([uri])[0];
 };
 
-/**
- * Decode and encode Mopidy playlist URIs
- * This is needed as Mopidy encodes *some* characters in playlist URIs (but not other characters)
- * We need to retain ":" because this a reserved URI separator
- */
-const decodeMopidyUri = (uri, decodeComponent = true) => {
-  let decoded = decodeComponent ? decodeURIComponent(uri) : uri;
-  decoded = decoded.replace(/\s/g, '%20'); // space
-  decoded = decoded.replace(/\[/g, '%5B'); // [
-  decoded = decoded.replace(/\]/g, '%5D'); // ]
-  decoded = decoded.replace(/\(/g, '%28'); // (
-  decoded = decoded.replace(/\)/g, '%29'); // )
-  decoded = decoded.replace(/\#/g, '%23'); // #
-  return decoded;
-};
-
-const encodeMopidyUri = (uri, encodeComponent = true) => {
-  let encoded = encodeComponent ? encodeURIComponent(uri) : uri;
-  encoded = encoded.replace(/\%20/g, ' '); // space
-  encoded = encoded.replace(/\%5B/g, '['); // [
-  encoded = encoded.replace(/\%5D/g, ']'); // ]
-  encoded = encoded.replace(/\%28/g, '('); // (
-  encoded = encoded.replace(/\%29/g, ')'); // )
-  encoded = encoded.replace(/\%23/g, '#'); // #
-  return encoded;
-};
-
 export {
   debounce,
   throttle,
@@ -648,8 +621,6 @@ export {
   upgradeSpotifyPlaylistUris,
   upgradeSpotifyPlaylistUri,
   iconFromKeyword,
-  decodeMopidyUri,
-  encodeMopidyUri,
 };
 
 export default {
@@ -675,6 +646,4 @@ export default {
   upgradeSpotifyPlaylistUris,
   upgradeSpotifyPlaylistUri,
   iconFromKeyword,
-  decodeMopidyUri,
-  encodeMopidyUri,
 };

@@ -21,9 +21,7 @@ import * as mopidyActions from '../services/mopidy/actions';
 import * as spotifyActions from '../services/spotify/actions';
 import {
   uriSource,
-  getFromUri,
   sourceIcon,
-  decodeMopidyUri,
 } from '../util/helpers';
 import { trackEvent } from '../components/Trackable';
 import { i18n, I18n } from '../locale';

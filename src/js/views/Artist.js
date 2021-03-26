@@ -23,7 +23,7 @@ import {
   sourceIcon,
   titleCase,
 } from '../util/helpers';
-import { collate, encodeUri } from '../util/format';
+import { collate, encodeUri, decodeUri } from '../util/format';
 import { sortItems, applyFilter, arrayOf } from '../util/arrays';
 import { i18n, I18n } from '../locale';
 import Button from '../components/Button';
@@ -601,7 +601,7 @@ class Artist extends React.Component {
 }
 
 const mapStateToProps = (state, props) => {
-  const uri = decodeURIComponent(props.match.params.uri);
+  const uri = decodeUri(props.match.params.uri);
   const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`, '^((?!contains).)*$', '^((?!albums).)*$', '^((?!related-artists).)*$', '^((?!top-tracks).)*$']);
   const artistSelector = makeItemSelector(uri);
   const artist = artistSelector(state);
