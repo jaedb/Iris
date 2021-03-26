@@ -140,7 +140,7 @@ class Track extends React.Component {
       },
     } = this.props;
 
-    loadTrack(decodeUri(uri), { full: true, lyrics: true });
+    loadTrack(uri, { full: true, lyrics: true });
 
     if (track) {
       this.setWindowTitle(track);
@@ -160,7 +160,7 @@ class Track extends React.Component {
     } = this.props;
 
     if (prevUri !== uri) {
-      loadTrack(decodeUri(uri), { full: true, lyrics: true });
+      loadTrack(uri, { full: true, lyrics: true });
     }
 
     if (!prevTrack && track) this.setWindowTitle(track);

@@ -56,9 +56,8 @@ const Link = ({
 
   // Decode both links. This handles issues where one link is encoded and the other isn't, but
   // they're otherwise identical
-  const link = decodeUri(to);
-  const currentLink = decodeUri(history.location.pathname);
-  const isLinkActive = exact ? currentLink === link : currentLink.startsWith(link);
+  const currentLink = history?.location?.pathname || '';
+  const isLinkActive = exact ? currentLink === to : currentLink.startsWith(to);
 
   // We have an active detector method
   // This is used almost solely by the Sidebar navigation

@@ -9,7 +9,6 @@ import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as spotifyActions from '../../services/spotify/actions';
 import { arrayOf } from '../../util/arrays';
-import { decodeMopidyUri } from '../../util/helpers';
 import { i18n } from '../../locale';
 import { encodeUri } from '../../util/format';
 
@@ -94,7 +93,7 @@ class Dropzones extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state) => ({
   dragger: state.ui.dragger,
 });
 

@@ -275,71 +275,34 @@ const formatSimpleObjects = function (records = []) {
 
 /**
  * Prepare a URI for use in a URL
- *
- * Simple alias to encodeURIComponent so this can be extended as needed
  * @param {String} uri
  */
 const encodeUri = (rawUri = '') => {
-  let uri = rawUri;
-
-  // Manually encode %
-  // Needed because React Router History incorrectly handles '%' during encoding/decoding
-  // See https://github.com/jaedb/Iris/issues/674
-  uri = uri.replace(/%25/g, '_PRCNT_');
-  uri = encodeURIComponent(uri);
-  return uri;
+  try {
+    return btoa(unescape(encodeURIComponent(rawUri)));
+  } catch {
+    console.error('Failed to encode', rawUri);
+    return null;
+  }
 };
 
 /**
- * Rebuild a URI with some ugly-ass handling of encoding.
+ * Reconstruct a URI from a URL-friendly base64 string, back into its original form
  *
- * We can't just run encodeURIComponent because it will encode ':' and '/' elements which are
- * required to properly map to Mopidy's internal structure. Some things need encoding, and others
- * need decoding *sigh*.
+ * Why base64? Some Mopidy backends have varying encoding styles, and handling all of these became
+ * unweildy. Instead we take whatever Mopidy gives us, convert to binary, and then base64 it.
  *
- * Instead, we pluck the individual encodings as needed.
- *
- * For example somebackend:track:https://youtube.com/1234 would cause issues with the
- * https:// section. Our explode-by-':' approach would break this type of URI.
- *
+ * Even when a URI is not URIEncoded, the browser will do some of it's own encoding/decoding which
+ * we can avoid by giving a base64 string.
  * @param {String} rawUri
  */
 const decodeUri = (rawUri = '') => {
-  let uri = rawUri;
-
   try {
-    uri = decodeURIComponent(uri);
+    return decodeURIComponent(escape(atob(rawUri)));
   } catch {
-    console.error('Could not decode URI', uri);
+    console.error('Failed to decode', rawUri);
+    return null;
   }
-
-  // Some characters must be encoded for Mopidy URI compatibility
-  uri = uri.replace(/%2F/g, '/'); // We need slashes
-  uri = uri.replace(/_PRCNT_/g, '%25'); // Decode '%'
-  uri = uri.replace(/!/g, '%21');
-  uri = uri.replace(/\*/g, '%2A');
-  uri = uri.replace(/\(/g, '%28');
-  uri = uri.replace(/\)/g, '%29');
-  uri = uri.replace(/\[/g, '%5B');
-  uri = uri.replace(/\]/g, '%5D');
-  uri = uri.replace(/@/g, '%40');
-  uri = uri.replace(/#/g, '%23');
-  uri = uri.replace(/\$/g, '%24');
-  uri = uri.replace(/&/g, '%26');
-  uri = uri.replace(/'/g, '%27');
-  uri = uri.replace(/,/g, '%2C');
-  uri = uri.replace(/ /g, '%20');
-
-  // Re-encode any accented characters. Most Mopidy backends expect encoding of these.
-  uri = uri.replace(/[À-ÖØ-öø-ÿ]/g, (char) => encodeURIComponent(char));
-
-  return uri;
-};
-
-const encodeMopidyUri = (rawUri = '') => {
-  const uri = rawUri;
-
-  return uri;
 };
 
 /**
@@ -735,7 +698,7 @@ const formatTrack = function (data) {
 
   // Remove lower-case encoding of ':'
   // See https://github.com/tkem/mopidy-dleyna/issues/72
-  track.uri = decodeUri(track.uri);
+  track.uri = track.uri.replace('%3a', '%3A');
 
   return track;
 };
@@ -1033,7 +996,6 @@ export {
   injectSortId,
   encodeUri,
   decodeUri,
-  encodeMopidyUri,
 };
 
 export default {
@@ -1062,5 +1024,4 @@ export default {
   injectSortId,
   encodeUri,
   decodeUri,
-  encodeMopidyUri,
 };

@@ -153,13 +153,13 @@ describe('buildLink', () => {
   it('should build uri into link as a string', () => {
     let link = helpers.buildLink('spotify:album:123');
     expect(typeof (link)).toBe('string');
-    expect(link).toBe('/album/spotify%3Aalbum%3A123');
+    expect(link).toBe('/album/c3BvdGlmeTphbGJ1bToxMjM=');
   });
 
   it('should handle special characters', () => {
     let link = helpers.buildLink('spotify:album:http://test.com/123!@#$%^&[];<>/?" .mp3');
     expect(typeof (link)).toBe('string');
-    expect(link).toBe('/album/spotify%3Aalbum%3Ahttp%3A%2F%2Ftest.com%2F123!%40%23%24%25%5E%26%5B%5D%3B%3C%3E%2F%3F%22%20.mp3');
+    expect(link).toBe('/album/c3BvdGlmeTphbGJ1bTpodHRwOi8vdGVzdC5jb20vMTIzIUAjJCVeJltdOzw+Lz8iIC5tcDM=');
   });
 });
 

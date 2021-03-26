@@ -28,7 +28,7 @@ import Button from '../components/Button';
 import { makeLoadingSelector, makeItemSelector } from '../util/selectors';
 import { applyFilter, sortItems } from '../util/arrays';
 import { trackEvent } from '../components/Trackable';
-import { encodeUri } from '../util/format';
+import { encodeUri, decodeUri } from '../util/format';
 
 class Album extends React.Component {
   constructor(props) {
@@ -346,7 +346,7 @@ class Album extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const uri = decodeURIComponent(ownProps.match.params.uri);
+  const uri = decodeUri(ownProps.match.params.uri);
   const itemSelector = makeItemSelector(uri);
   const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`, '^((?!contains).)*$', '^((?!me\/albums).)*$']);
   return {
