@@ -21,6 +21,8 @@ module.exports = {
     "\\.yaml$": "yaml-jest",
     "^.+\\.jsx$": "babel-jest",
     "^.+\\.js$": "babel-jest",
+    "^.+\\.ts$": "babel-jest",
+    "^.+\\.tsx$": "babel-jest",
   },
   coverageReporters: [
     "lcov",
