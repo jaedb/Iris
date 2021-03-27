@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import get from 'lodash/get';
 import dictionaries from './dictionaries';
 import { titleCase } from '../util/helpers';
