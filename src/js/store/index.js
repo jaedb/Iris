@@ -47,6 +47,7 @@ let initialState = {
     playback_controls_touch_enabled: true,
     allow_reporting: true,
     wide_scrollbar_enabled: false,
+    hide_scrollbars: false,
     window_focus: true,
     slim_mode: false,
     selected_tracks: [],
