@@ -1108,7 +1108,10 @@ class ContextMenu extends React.Component {
 
     const edit_playlist = (
       <div className="context-menu__item">
-        <Link className="context-menu__item__link" to={`/playlist/${context.item.uri}/edit`}>
+        <Link
+          className="context-menu__item__link"
+          to={`${buildLink(context.item.uri, 'playlist')}/edit`}
+        >
           <span className="context-menu__item__label">
             <I18n path="actions.edit" />
           </span>
