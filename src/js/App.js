@@ -1,4 +1,4 @@
-import React, { Profiler } from 'react';
+import React from 'react';
 import { bindActionCreators } from 'redux';
 import { Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -251,6 +251,7 @@ export class App extends React.Component {
       sidebar_open,
       slim_mode,
       wide_scrollbar_enabled,
+      hide_scrollbars,
       smooth_scrolling_enabled,
       hotkeys_enabled,
     } = this.props;
@@ -280,6 +281,9 @@ export class App extends React.Component {
     }
     if (smooth_scrolling_enabled) {
       className += ' smooth-scrolling-enabled';
+    }
+    if (hide_scrollbars) {
+      className += ' hide-scrollbars';
     }
     if (isTouchDevice()) {
       className += ' touch';
@@ -442,6 +446,7 @@ const mapStateToProps = (state) => {
       language,
       theme,
       wide_scrollbar_enabled,
+      hide_scrollbars,
       smooth_scrolling_enabled,
       hotkeys_enabled,
       allow_reporting,
@@ -468,6 +473,7 @@ const mapStateToProps = (state) => {
     language,
     theme,
     wide_scrollbar_enabled,
+    hide_scrollbars,
     smooth_scrolling_enabled,
     hotkeys_enabled,
     allow_reporting,

@@ -3601,6 +3601,10 @@ main .parallax {
 .notouch main::-webkit-scrollbar-thumb:hover {
   background: #b7b1a8;
 }
+.hide-scrollbars main::-webkit-scrollbar {
+  display: none;
+  scrollbar-width: none;
+}
 .modal-open main {
   left: 0;
   bottom: 0;
