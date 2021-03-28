@@ -215,7 +215,7 @@ export function getTrack(uri) {
   };
 }
 
-export function getArtist(uri, name, mbid = false) {
+export function getArtist(uri, name, mbid = false, nolang=false) {
   return (dispatch, getState) => {
     if (mbid) {
       var params = `method=artist.getInfo&mbid=${mbid}`;
@@ -224,10 +224,21 @@ export function getArtist(uri, name, mbid = false) {
       name = encodeURIComponent(name);
       var params = `method=artist.getInfo&artist=${name}`;
     }
+    const lang = !nolang ? window.language : undefined;
+    if (lang !== undefined) {
+      params += `&lang=${lang}`;
+    }
     sendRequest(dispatch, getState, params)
       .then(
         (response) => {
           if (response.artist) {
+            if (!nolang) {
+              if (lang !== undefined && lang !== 'en' &&
+                  (!response.artist.bio || response.artist.bio.content == '')) {
+                  getArtist(uri, name, mbid, true)(dispatch, getState);
+                  return;
+              }
+            }
             dispatch(
               coreActions.itemLoaded(
                 formatArtist({
