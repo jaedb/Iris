@@ -1,47 +1,38 @@
-import React from 'react';
 import ReactGA from 'react-ga';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { useHotkeys, useIsHotkeyPressed } from 'react-hotkeys-hook';
+import { indexToArray, sortItems, applyFilter } from '../util/arrays';
+import { collate } from '../util/format';
 
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
+import * as snapcastActions from '../services/snapcast/actions';
 
-class Hotkeys extends React.Component {
-  constructor(props) {
-    super(props);
-    this.handleKeyDown = this.handleKeyDown.bind(this);
-  }
-
-  componentDidMount() {
-    window.addEventListener('keydown', this.handleKeyDown, false);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.handleKeyDown, false);
-  }
-
-  handleKeyDown(e) {
-    const {
-      play_state,
-      mopidyActions,
-      uiActions,
-      mute,
-      play_time_position,
-      history,
-      dragging,
-      allow_reporting,
-    } = this.props;
-    let { volume } = this.props;
-    let { key } = e;
+const Hotkeys = ({
+  play_state,
+  mopidyActions,
+  uiActions,
+  snapcastActions,
+  mute,
+  play_time_position,
+  history,
+  dragging,
+  allow_reporting,
+  volume,
+  snapcast_groups,
+  snapcast_clients,
+  show_disconnected_clients,
+}) => {
+  const prepare = ({ e, label, callback }) => {
     const {
       target,
       altKey,
       ctrlKey,
       metaKey,
       shiftKey,
+      key,
     } = e;
-    key = key.toLowerCase();
-
     // Ignore text input fields
     if (
       (target.nodeName === 'INPUT' && (target.type === 'text' || target.type === 'number'))
@@ -56,157 +47,185 @@ class Hotkeys extends React.Component {
       return;
     }
 
-    switch (key) {
-      case 'i': {
-        history.push('/hotkeys');
-        e.preventDefault();
-        if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Hotkey info' });
-        break;
-      }
-
-      case ' ':
-      case 'p': // Super-useful once you get used to it. This negates the issue where interactive elements
-        // are in focus (ie slider) and <space> is reserved for that field's interactivity.
-        if (play_state === 'playing') {
-          mopidyActions.pause();
-          uiActions.createNotification({ content: 'pause', type: 'shortcut' });
-          if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Pause' });
-        } else {
-          mopidyActions.play();
-          uiActions.createNotification({ content: 'play_arrow', type: 'shortcut' });
-          if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Play' });
-        }
-        e.preventDefault();
-        break;
-
-      // Stop
-      case 's': {
-        mopidyActions.stop();
-        uiActions.createNotification({ content: 'stop', type: 'shortcut' });
-        e.preventDefault();
-        if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Stop' });
-        break;
-      }
-      // Seek backwards 30 sec
-      case 'r': {
-        let new_position = play_time_position - 30000;
-        if (new_position < 0) {
-          new_position = 0;
-        }
-        mopidyActions.setTimePosition(new_position);
-        uiActions.createNotification({ content: 'fast_rewind', type: 'shortcut' });
-        e.preventDefault();
-        if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Rewind' });
-        break;
-      }
-      // Seek forwards 30 sec
-      case 'f':
-        mopidyActions.setTimePosition(play_time_position + 30000);
-        uiActions.createNotification({ content: 'fast_forward', type: 'shortcut' });
-        e.preventDefault();
-        if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Fastforward' });
-        break;
-
-      case ',':
-      case '<': // Previous track
-        mopidyActions.previous();
-        uiActions.createNotification({ content: 'skip_previous', type: 'shortcut' });
-        e.preventDefault();
-        if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Previous' });
-        break;
-
-      case '.':
-      case '>': // Next track
-        mopidyActions.next();
-        uiActions.createNotification({ content: 'skip_next', type: 'shortcut' });
-        e.preventDefault();
-        if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Next' });
-        break;
-
-      case '=':
-      case '+': // Volume up
-        if (volume !== 'false') {
-          volume += 5;
-          if (volume > 100) {
-            volume = 100;
-          }
-          mopidyActions.setVolume(volume);
-          if (mute) {
-            mopidyActions.setMute(false);
-          }
-          uiActions.createNotification({ content: 'volume_up', type: 'shortcut' });
-        }
-        e.preventDefault();
-        if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Volume up' });
-        break;
-
-      case '-': // Volume down
-        if (volume !== 'false') {
-          volume -= 5;
-          if (volume < 0) {
-            volume = 0;
-          }
-          mopidyActions.setVolume(volume);
-          if (mute) {
-            mopidyActions.setMute(false);
-          }
-        }
-        uiActions.createNotification({ content: 'volume_down', type: 'shortcut' });
-        e.preventDefault();
-        if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Volume down' });
-        break;
-
-      case '0': // Mute
-        if (mute) {
-          mopidyActions.setMute(false);
-          uiActions.createNotification({ content: 'volume_up', type: 'shortcut' });
-          if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Unmute' });
-        } else {
-          mopidyActions.setMute(true);
-          uiActions.createNotification({ content: 'volume_off', type: 'shortcut' });
-          if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Mute' });
-        }
-        e.preventDefault();
-        break;
-
-      case 'escape': // Cancel current action/context
-        if (dragging) {
-          uiActions.dragEnd();
-          e.preventDefault();
-          if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Dragging' });
-        } else if ($('body').hasClass('modal-open')) {
-          window.history.back();
-          e.preventDefault();
-          if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Modal' });
-        }
-        break;
-
-      case '1': // Navigation: Queue
-        history.push('/queue');
-        e.preventDefault();
-        if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Queue' });
-        break;
-
-      case '2': // Navigation: Search
-        history.push('/search');
-        e.preventDefault();
-        if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Search' });
-        break;
-
-      case '3': // Navigation: Kiosk mode
-        history.push('/kiosk-mode');
-        e.preventDefault();
-        if (allow_reporting) ReactGA.event({ category: 'Hotkey', action: key, label: 'Kiosk mode' });
-        break;
-
-      default:
-        break;
+    if (allow_reporting) {
+      ReactGA.event({ category: 'Hotkey', action: e.key, label });
     }
+    e.preventDefault();
+    callback();
+  };
+
+  const isPressed = useIsHotkeyPressed();
+  const onePressed = isPressed('1');
+  const twoPressed = isPressed('2');
+  const threePressed = isPressed('3');
+  const fourPressed = isPressed('4');
+  const fivePressed = isPressed('5');
+
+  useHotkeys('i', (e) => prepare({
+    e,
+    label: 'Hotkey info',
+    callback: () => {
+      history.push('/hotkeys');
+    },
+  }));
+
+  useHotkeys('space,p', (e) => prepare({
+    e,
+    label: 'Play/pause',
+    callback: () => {
+      if (play_state === 'playing') {
+        mopidyActions.pause();
+        uiActions.createNotification({ content: 'pause', type: 'shortcut' });
+      } else {
+        mopidyActions.play();
+        uiActions.createNotification({ content: 'play_arrow', type: 'shortcut' });
+      }
+    },
+  }), {}, [play_state]);
+
+  useHotkeys('s', (e) => prepare({
+    e,
+    label: 'Stop',
+    callback: () => {
+      mopidyActions.stop();
+      uiActions.createNotification({ content: 'stop', type: 'shortcut' });
+    },
+  }));
+
+  useHotkeys('r', (e) => prepare({
+    e,
+    label: 'Rewind',
+    callback: () => {
+      let new_position = play_time_position - 30000;
+      if (new_position < 0) {
+        new_position = 0;
+      }
+      mopidyActions.setTimePosition(new_position);
+      uiActions.createNotification({ content: 'fast_rewind', type: 'shortcut' });
+    },
+  }));
+
+  useHotkeys('f', (e) => prepare({
+    e,
+    label: 'Fastforward',
+    callback: () => {
+      mopidyActions.setTimePosition(play_time_position + 30000);
+      uiActions.createNotification({ content: 'fast_forward', type: 'shortcut' });
+    },
+  }));
+
+  useHotkeys(',', (e) => prepare({
+    e,
+    label: 'Previous',
+    callback: () => {
+      mopidyActions.previous();
+      uiActions.createNotification({ content: 'skip_previous', type: 'shortcut' });
+    },
+  }));
+
+  useHotkeys('.', (e) => prepare({
+    e,
+    label: 'Next',
+    callback: () => {
+      mopidyActions.next();
+      uiActions.createNotification({ content: 'skip_next', type: 'shortcut' });
+    },
+  }));
+
+  useHotkeys('=,1+=,2+=,3+=,4+=,5+=', (e, handler) => prepare({
+    e,
+    label: 'Volume up',
+    callback: () => {
+      uiActions.createNotification({ content: 'volume_up', type: 'shortcut' });
+      if (handler.key === '=') {
+        if (volume !== 'false') {
+          let nextVolume = volume + 5;
+          if (nextVolume > 100) nextVolume = 100;
+          mopidyActions.setVolume(nextVolume);
+          if (mute) {
+            mopidyActions.setMute(false);
+          }
+        }
+      } else {
+        const index = parseInt(handler.key.replace('+='), 10);
+        setSnapcastVolume(index - 1, 5);
+      }
+    },
+  }), {}, [volume, mute]);
+
+  useHotkeys('-,1+-,2+-,3+-,4+-,5+-', (e, handler) => prepare({
+    e,
+    label: 'Volume down',
+    callback: () => {
+      uiActions.createNotification({ content: 'volume_down', type: 'shortcut' });
+      if (handler.key === '-') {
+        if (volume !== 'false') {
+          let nextVolume = volume - 5;
+          if (nextVolume < 0) nextVolume = 0;
+          mopidyActions.setVolume(nextVolume);
+          if (mute) {
+            mopidyActions.setMute(false);
+          }
+        }
+      } else {
+        const index = parseInt(handler.key.replace('+-'), 10);
+        setSnapcastVolume(index - 1, -5);
+      }
+    },
+  }), {}, [volume, mute]);
+
+  useHotkeys('0', (e) => prepare({
+    e,
+    label: 'Mute/unmute',
+    callback: () => {
+      if (mute) {
+        mopidyActions.setMute(false);
+        uiActions.createNotification({ content: 'volume_up', type: 'shortcut' });
+      } else {
+        mopidyActions.setMute(true);
+        uiActions.createNotification({ content: 'volume_off', type: 'shortcut' });
+      }
+    },
+  }), {}, [mute]);
+
+  useHotkeys('escape', (e) => prepare({
+    e,
+    label: 'Escape',
+    callback: () => {
+      if (dragging) {
+        uiActions.dragEnd();
+        e.preventDefault();
+      } else if ($('body').hasClass('modal-open')) {
+        window.history.back();
+        e.preventDefault();
+      }
+    },
+  }), {}, [dragging]);
+
+  const setSnapcastVolume = (index, adjustment) => {
+    console.debug({ index, adjustment });
+    const simpleGroups = indexToArray(snapcast_groups);
+    if (simpleGroups.length <= 0) return false;
+
+    let group = sortItems(simpleGroups, 'name')[index];
+    if (!group) return false;
+    group = collate(group, { clients: snapcast_clients });
+    let { clients: groupClients } = group;
+    if (!groupClients) return false;
+    if (!show_disconnected_clients) {
+      groupClients = groupClients.filter((c) => c.connected);
+    }
+
+    const volume = groupClients.reduce(
+      (acc, client) => acc + (client.volume || 0),
+      0,
+    ) / groupClients.length;
+
+    snapcastActions.setGroupVolume(group.id, volume + adjustment, volume);
+    uiActions.createNotification({ content: 'volume_up', type: 'shortcut' });
   }
 
-  render() {
-    return null;
-  }
+  return null;
 }
 
 const mapStateToProps = (state) => ({
@@ -216,11 +235,15 @@ const mapStateToProps = (state) => ({
   play_time_position: parseInt(state.mopidy.time_position, 10),
   dragging: state.ui.dragger && state.ui.dragger.dragging,
   allow_reporting: state.ui.allow_reporting,
+  snapcast_groups: state.snapcast.groups,
+  snapcast_clients: state.snapcast.clients,
+  show_disconnected_clients: state.ui.snapcast_show_disconnected_clients || false,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   uiActions: bindActionCreators(uiActions, dispatch),
   mopidyActions: bindActionCreators(mopidyActions, dispatch),
+  snapcastActions: bindActionCreators(snapcastActions, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Hotkeys);

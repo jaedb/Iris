@@ -38,7 +38,7 @@ const CheckboxSetting = ({
         checked={checked}
         onChange={() => dispatch(uiActions.set({ [name]: !checked }))}
       />
-      <span className={`label ${tooltip ? 'tooltip' :''}`}>
+      <span className={`label ${tooltip ? 'tooltip' : ''}`}>
         {label}
         {tooltip && (
           <span className="tooltip__content">

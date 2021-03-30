@@ -15,6 +15,7 @@ import {
   makeItemSelector,
   makeLoadingSelector,
 } from '../../util/selectors';
+import { decodeUri } from '../../util/format';
 
 class DiscoverCategory extends React.Component {
   componentDidMount() {
@@ -126,7 +127,7 @@ class DiscoverCategory extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const uri = decodeURIComponent(ownProps.match.params.uri);
+  const uri = decodeUri(ownProps.match.params.uri);
   const loadingSelector = makeLoadingSelector([`spotify_category_${uri}`]);
   const categorySelector = makeItemSelector(uri);
   const category = categorySelector(state);
