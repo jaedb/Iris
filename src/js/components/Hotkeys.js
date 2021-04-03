@@ -203,7 +203,6 @@ const Hotkeys = ({
   }), {}, [dragging]);
 
   const setSnapcastVolume = (index, adjustment) => {
-    console.debug({ index, adjustment });
     const simpleGroups = indexToArray(snapcast_groups);
     if (simpleGroups.length <= 0) return false;
 
@@ -216,12 +215,12 @@ const Hotkeys = ({
       groupClients = groupClients.filter((c) => c.connected);
     }
 
-    const volume = groupClients.reduce(
+    const groupVolume = groupClients.reduce(
       (acc, client) => acc + (client.volume || 0),
       0,
     ) / groupClients.length;
 
-    snapcastActions.setGroupVolume(group.id, volume + adjustment, volume);
+    snapcastActions.setGroupVolume(group.id, groupVolume + adjustment, groupVolume);
     uiActions.createNotification({ content: 'volume_up', type: 'shortcut' });
   }
 

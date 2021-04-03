@@ -5474,6 +5474,10 @@ h4 .context-menu-trigger, h4 .context-menu-trigger:active {
   background: #32b5f2;
   opacity: 0;
 }
+.list__item--no-interaction {
+  cursor: default !important;
+  background: none !important;
+}
 :root .notouch:not(.dragging) .list__item:not(.list__item--no-interaction) {
   cursor: pointer;
 }
@@ -7104,7 +7108,7 @@ h4 .loader {
   padding: 0.75em 0.85em;
   margin: 0 1.1em;
   border-radius: 3px;
-  line-break: anywhere;
+  line-break: after-white-space;
 }
 .dark-theme .sidebar__menu__item {
   position: relative;
@@ -10652,7 +10656,6 @@ main .track-view .lyrics-selector {
 .modal .content .list.playlists .list__item {
   margin: 5px 0;
   padding: 10px;
-  cursor: pointer;
 }
 .modal .content .list.playlists .list__item:before {
   display: none;

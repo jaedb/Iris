@@ -42,6 +42,10 @@
 			opacity: 0;
 		}
 
+		&--no-interaction {
+			cursor: default !important;
+			background: none !important;
+		}
 
 		:root .notouch:not(.dragging) &:not(.list__item--no-interaction){
 			cursor: pointer;
