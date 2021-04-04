@@ -4,6 +4,7 @@ Iris is an extension for the Mopidy music server. With support for Spotify, Last
 
 Built and maintained by James Barnsley.
 
+[![Downloads](https://static.pepy.tech/personalized-badge/mopidy-iris?period=total&units=international_system&left_color=grey&right_color=green&left_text=Downloads)](https://pepy.tech/project/mopidy-iris)
 [![npm](https://img.shields.io/npm/v/mopidy-iris.svg?style=flat-square)]()
 ![badge](https://img.shields.io/pypi/v/mopidy-iris.svg?style=flat-square)
 ![badge](https://img.shields.io/badge/unique_monthly_users-4,000+-brightgreen.svg?style=flat-square)
