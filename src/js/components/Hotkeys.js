@@ -1,8 +1,8 @@
 import ReactGA from 'react-ga';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { useHotkeys, useIsHotkeyPressed } from 'react-hotkeys-hook';
-import { indexToArray, sortItems, applyFilter } from '../util/arrays';
+import { useHotkeys } from 'react-hotkeys-hook';
+import { indexToArray, sortItems } from '../util/arrays';
 import { collate } from '../util/format';
 
 import * as uiActions from '../services/ui/actions';
@@ -33,13 +33,8 @@ const Hotkeys = ({
       shiftKey,
       key,
     } = e;
-    // Ignore text input fields
-    if (
-      (target.nodeName === 'INPUT' && (target.type === 'text' || target.type === 'number'))
-      || target.nodeName === 'TEXTAREA'
-      || (target.nodeName === 'BUTTON' && key === ' ')) {
-      return;
-    }
+    // Ignore buttons (spacebar triggers it); input fields are ignored by the plugin
+    if (target.nodeName === 'BUTTON' && key === ' ') return;
 
     // Ignore when there are any key modifiers. This enables us to avoid interfering
     // with browser- and OS-default functions.
@@ -54,20 +49,59 @@ const Hotkeys = ({
     callback();
   };
 
-  const isPressed = useIsHotkeyPressed();
-  const onePressed = isPressed('1');
-  const twoPressed = isPressed('2');
-  const threePressed = isPressed('3');
-  const fourPressed = isPressed('4');
-  const fivePressed = isPressed('5');
+  const getSnapcastGroup = (index) => {
+    const simpleGroups = indexToArray(snapcast_groups);
+    if (simpleGroups.length <= 0) return false;
 
-  useHotkeys('i', (e) => prepare({
-    e,
-    label: 'Hotkey info',
-    callback: () => {
-      history.push('/hotkeys');
-    },
-  }));
+    const group = sortItems(simpleGroups, 'name')[index];
+    if (!group) return false;
+
+    return collate(group, { clients: snapcast_clients });
+  }
+
+  const setSnapcastVolume = (index, adjustment) => {
+    const group = getSnapcastGroup(index);
+    let { clients: groupClients } = group || {};
+    if (!groupClients) return false;
+    if (!show_disconnected_clients) {
+      groupClients = groupClients.filter((c) => c.connected);
+    }
+
+    const groupVolume = groupClients.reduce(
+      (acc, client) => acc + (client.volume || 0),
+      0,
+    ) / groupClients.length;
+
+    if (group.mute) snapcastActions.setGroupMute(group.id, false);
+    snapcastActions.setGroupVolume(group.id, groupVolume + adjustment, groupVolume);
+    uiActions.createNotification({
+      content: adjustment > 0 ? 'volume_up' : 'volume_down',
+      title: group.name,
+      type: 'shortcut',
+    });
+  };
+
+  const toggleSnapcastMute = (index) => {
+    const group = getSnapcastGroup(index);
+    const nextMute = group.mute !== true;
+
+    snapcastActions.setGroupMute(group.id, nextMute);
+    uiActions.createNotification({
+      content: nextMute ? 'volume_off' : 'volume_up',
+      title: group.name,
+      type: 'shortcut',
+    });
+  };
+
+  useHotkeys('i', (e) => {
+    prepare({
+      e,
+      label: 'Hotkey info',
+      callback: () => {
+        history.push('/hotkeys');
+      },
+    });
+  });
 
   useHotkeys('space,p', (e) => prepare({
     e,
@@ -136,9 +170,9 @@ const Hotkeys = ({
     e,
     label: 'Volume up',
     callback: () => {
-      uiActions.createNotification({ content: 'volume_up', type: 'shortcut' });
       if (handler.key === '=') {
         if (volume !== 'false') {
+          uiActions.createNotification({ content: 'volume_up', title: 'Master', type: 'shortcut' });
           let nextVolume = volume + 5;
           if (nextVolume > 100) nextVolume = 100;
           mopidyActions.setVolume(nextVolume);
@@ -151,15 +185,15 @@ const Hotkeys = ({
         setSnapcastVolume(index - 1, 5);
       }
     },
-  }), {}, [volume, mute]);
+  }), {}, [volume, mute, snapcast_groups]);
 
   useHotkeys('-,1+-,2+-,3+-,4+-,5+-', (e, handler) => prepare({
     e,
     label: 'Volume down',
     callback: () => {
-      uiActions.createNotification({ content: 'volume_down', type: 'shortcut' });
       if (handler.key === '-') {
         if (volume !== 'false') {
+          uiActions.createNotification({ content: 'volume_down', title: 'Master', type: 'shortcut' });
           let nextVolume = volume - 5;
           if (nextVolume < 0) nextVolume = 0;
           mopidyActions.setVolume(nextVolume);
@@ -172,21 +206,26 @@ const Hotkeys = ({
         setSnapcastVolume(index - 1, -5);
       }
     },
-  }), {}, [volume, mute]);
+  }), {}, [volume, mute, snapcast_groups]);
 
-  useHotkeys('0', (e) => prepare({
+  useHotkeys('0,1+0,2+0,3+0,4+0,5+0', (e, handler) => prepare({
     e,
     label: 'Mute/unmute',
     callback: () => {
-      if (mute) {
-        mopidyActions.setMute(false);
-        uiActions.createNotification({ content: 'volume_up', type: 'shortcut' });
+      if (handler.key === '0') {
+        if (mute) {
+          mopidyActions.setMute(false);
+          uiActions.createNotification({ content: 'volume_up', title: 'Master', type: 'shortcut' });
+        } else {
+          mopidyActions.setMute(true);
+          uiActions.createNotification({ content: 'volume_off', title: 'Master', type: 'shortcut' });
+        }
       } else {
-        mopidyActions.setMute(true);
-        uiActions.createNotification({ content: 'volume_off', type: 'shortcut' });
+        const index = parseInt(handler.key.replace('+0'), 10);
+        toggleSnapcastMute(index - 1);
       }
     },
-  }), {}, [mute]);
+  }), {}, [volume, mute, snapcast_groups]);
 
   useHotkeys('escape', (e) => prepare({
     e,
@@ -201,28 +240,6 @@ const Hotkeys = ({
       }
     },
   }), {}, [dragging]);
-
-  const setSnapcastVolume = (index, adjustment) => {
-    const simpleGroups = indexToArray(snapcast_groups);
-    if (simpleGroups.length <= 0) return false;
-
-    let group = sortItems(simpleGroups, 'name')[index];
-    if (!group) return false;
-    group = collate(group, { clients: snapcast_clients });
-    let { clients: groupClients } = group;
-    if (!groupClients) return false;
-    if (!show_disconnected_clients) {
-      groupClients = groupClients.filter((c) => c.connected);
-    }
-
-    const groupVolume = groupClients.reduce(
-      (acc, client) => acc + (client.volume || 0),
-      0,
-    ) / groupClients.length;
-
-    snapcastActions.setGroupVolume(group.id, groupVolume + adjustment, groupVolume);
-    uiActions.createNotification({ content: 'volume_up', type: 'shortcut' });
-  }
 
   return null;
 }

@@ -596,6 +596,7 @@ modal:
       fastforward: Fast-forward 30 seconds
       volume_up: Volume up 5%
       volume_down: Volume down 5%
-      mute: Mute
+      mute: Toggle mute
       snapcast_volume_up: Volume up for Snapcast client (where n is 1-9)
       snapcast_volume_down: Volume down for Snapcast client (where n is 1-9)
+      snapcast_mute: Toggle mute for Snapcast client (where n is 1-9)
