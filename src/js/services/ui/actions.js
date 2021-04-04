@@ -219,7 +219,7 @@ export function createNotification(data) {
 
   // Shortcut notifications are short and sweet
   if (data.type === 'shortcut') {
-    data.duration = 0.4;
+    data.duration = 0.6;
   }
 
   return {

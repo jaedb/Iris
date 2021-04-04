@@ -1,6 +1,6 @@
 {
   "name": "mopidy-iris",
-  "version": "3.57.3",
+  "version": "3.57.4",
   "description": "Mopidy HTTP interface",
   "repository": "https://github.com/jaedb/iris",
   "author": "James Barnsley <james@barnsley.nz>",
@@ -22,6 +22,7 @@
     "react-dom": "^16.14.0",
     "react-fontawesome": "^1.7.1",
     "react-ga": "^3.3.0",
+    "react-hotkeys-hook": "^3.3.0",
     "react-in-viewport": "^1.0.0-alpha.16",
     "react-input-range": "1.3.0",
     "react-redux": "^7.2.2",

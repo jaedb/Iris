@@ -16,6 +16,7 @@ import {
   getFromUri,
   sourceIcon,
 } from '../util/helpers';
+import { decodeUri } from '../util/format';
 import { i18n, I18n } from '../locale';
 import {
   makeItemSelector,
@@ -198,7 +199,7 @@ class User extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const uri = decodeURIComponent(ownProps.match.params.uri);
+  const uri = decodeUri(ownProps.match.params.uri);
   const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`]);
   const userSelector = makeItemSelector(uri);
   const user = userSelector(state);

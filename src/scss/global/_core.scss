@@ -162,6 +162,13 @@ main {
     }
   }
 
+  .hide-scrollbars & {
+    &::-webkit-scrollbar {
+      display: none;
+      scrollbar-width: none;
+    }
+  }
+
   .modal-open & {
     left: 0;
     bottom: 0;

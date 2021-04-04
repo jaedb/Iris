@@ -363,12 +363,15 @@ settings:
       clear_tracklist: Clear tracklist on play of URI(s)
       clear_tracklist_tooltip: Playing one or more URIs will clear the current play queue first
       hotkeys: Enable hotkeys
-      smooth_scrolling: Enable smooth scrolling
       touch_events: Enable touch events on play controls
       touch_events_tooltip: Allows left- and right-swipe to change tracks
-      wide_scrollbars: Use wide scrollbars
       grid_glow: Thumbnail glow effect
       grid_glow_tooltip: Disable effect for lower-power devices or older browsers
+    scrolling:
+      label: Scrolling
+      wide: Wide scrollbars
+      hidden: Hidden scrollbars
+      smooth_scrolling: Smooth scroll
     sources_priority:
       label: Sources priority
       description: Drag-and-drop to prioritize search providers and results
@@ -593,7 +596,7 @@ modal:
       fastforward: Fast-forward 30 seconds
       volume_up: Volume up 5%
       volume_down: Volume down 5%
-      mute: Mute
-      kiosk: Kiosk mode
-      now_playing: Now playing
-      search: Search
+      mute: Toggle mute
+      snapcast_volume_up: Volume up for Snapcast client (where n is 1-9)
+      snapcast_volume_down: Volume down for Snapcast client (where n is 1-9)
+      snapcast_mute: Toggle mute for Snapcast client (where n is 1-9)

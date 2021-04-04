@@ -1,5 +1,5 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Route, Link } from 'react-router-dom';
 import localForage from 'localforage';
@@ -22,6 +22,33 @@ import * as spotifyActions from '../services/spotify/actions';
 import { isHosted } from '../util/helpers';
 import { i18n, I18n, languagesAvailable } from '../locale';
 import Button from '../components/Button';
+
+const CheckboxSetting = ({
+  name,
+  checked,
+  label,
+  tooltip,
+}) => {
+  const dispatch = useDispatch();
+  return (
+    <label>
+      <input
+        type="checkbox"
+        name={name}
+        checked={checked}
+        onChange={() => dispatch(uiActions.set({ [name]: !checked }))}
+      />
+      <span className={`label ${tooltip ? 'tooltip' : ''}`}>
+        {label}
+        {tooltip && (
+          <span className="tooltip__content">
+            {tooltip}
+          </span>
+        )}
+      </span>
+    </label>
+  );
+};
 
 class Settings extends React.Component {
   constructor(props) {
@@ -255,81 +282,50 @@ class Settings extends React.Component {
           <div className="field checkbox">
             <div className="name"><I18n path="settings.interface.behavior.label" /></div>
             <div className="input">
-              <label>
-                <input
-                  type="checkbox"
-                  name="log_actions"
-                  checked={ui.clear_tracklist_on_play}
-                  onChange={() => uiActions.set({ clear_tracklist_on_play: !ui.clear_tracklist_on_play })}
-                />
-                <span className="label tooltip">
-                  <I18n path="settings.interface.behavior.clear_tracklist" />
-                  <span className="tooltip__content">
-                    <I18n path="settings.interface.behavior.clear_tracklist_tooltip" />
-                  </span>
-                </span>
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  name="hotkeys_enabled"
-                  checked={ui.hotkeys_enabled}
-                  onChange={() => uiActions.set({ hotkeys_enabled: !ui.hotkeys_enabled })}
-                />
-                <span className="label">
-                  <I18n path="settings.interface.behavior.hotkeys" />
-                </span>
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  name="smooth_scrolling_enabled"
-                  checked={ui.smooth_scrolling_enabled}
-                  onChange={(e) => uiActions.set({ smooth_scrolling_enabled: !ui.smooth_scrolling_enabled })}
-                />
-                <span className="label">
-                  <I18n path="settings.interface.behavior.smooth_scrolling" />
-                </span>
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  name="playback_controls_touch_enabled"
-                  checked={ui.playback_controls_touch_enabled}
-                  onChange={(e) => uiActions.set({ playback_controls_touch_enabled: !ui.playback_controls_touch_enabled })}
-                />
-                <span className="label tooltip">
-                  <I18n path="settings.interface.behavior.touch_events" />
-                  <span className="tooltip__content">
-                    <I18n path="settings.interface.behavior.touch_events_tooltip" />
-                  </span>
-                </span>
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  name="wide_scrollbar_enabled"
-                  checked={ui.wide_scrollbar_enabled}
-                  onChange={() => uiActions.set({ wide_scrollbar_enabled: !ui.wide_scrollbar_enabled })}
-                />
-                <span className="label">
-                  <I18n path="settings.interface.behavior.wide_scrollbars" />
-                </span>
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  name="grid_glow_enabled"
-                  checked={ui.grid_glow_enabled}
-                  onChange={() => uiActions.set({ grid_glow_enabled: !ui.grid_glow_enabled })}
-                />
-                <span className="label tooltip">
-                  <I18n path="settings.interface.behavior.grid_glow" />
-                  <span className="tooltip__content">
-                    <I18n path="settings.interface.behavior.grid_glow_tooltip" />
-                  </span>
-                </span>
-              </label>
+              <CheckboxSetting
+                name="clear_tracklist_on_play"
+                checked={ui.clear_tracklist_on_play}
+                label={i18n('settings.interface.behavior.clear_tracklist')}
+                tooltip={i18n('settings.interface.behavior.clear_tracklist_tooltip')}
+              />
+              <CheckboxSetting
+                name="hotkeys_enabled"
+                checked={ui.hotkeys_enabled}
+                label={i18n('settings.interface.behavior.hotkeys')}
+              />
+              <CheckboxSetting
+                name="playback_controls_touch_enabled"
+                checked={ui.playback_controls_touch_enabled}
+                label={i18n('settings.interface.behavior.touch_events')}
+                tooltip={i18n('settings.interface.behavior.touch_events_tooltip')}
+              />
+              <CheckboxSetting
+                name="grid_glow_enabled"
+                checked={ui.grid_glow_enabled}
+                label={i18n('settings.interface.behavior.grid_glow')}
+                tooltip={i18n('settings.interface.behavior.grid_glow_tooltip')}
+              />
+            </div>
+          </div>
+
+          <div className="field checkbox">
+            <div className="name"><I18n path="settings.interface.scrolling.label" /></div>
+            <div className="input">
+              <CheckboxSetting
+                name="smooth_scrolling_enabled"
+                checked={ui.smooth_scrolling_enabled}
+                label={i18n('settings.interface.scrolling.smooth_scrolling')}
+              />
+              <CheckboxSetting
+                name="wide_scrollbar_enabled"
+                checked={ui.wide_scrollbar_enabled}
+                label={i18n('settings.interface.scrolling.wide')}
+              />
+              <CheckboxSetting
+                name="hide_scrollbars"
+                checked={ui.hide_scrollbars}
+                label={i18n('settings.interface.scrolling.hidden')}
+              />
             </div>
           </div>
 
@@ -355,17 +351,11 @@ class Settings extends React.Component {
                 <I18n path="settings.interface.reporting.label" />
               </div>
               <div className="input">
-                <label>
-                  <input
-                    type="checkbox"
-                    name="allow_reporting"
-                    checked={ui.allow_reporting}
-                    onChange={() => uiActions.set({ allow_reporting: !ui.allow_reporting })}
-                  />
-                  <span className="label">
-                    <I18n path="settings.interface.reporting.sublabel" />
-                  </span>
-                </label>
+                <CheckboxSetting
+                  name="allow_reporting"
+                  checked={ui.allow_reporting}
+                  label={i18n('settings.interface.reporting.sublabel')}
+                />
                 <div className="description">
                   <I18n path="settings.interface.reporting.description" />
                   <a href="https://github.com/jaedb/Iris/wiki/Terms-of-use#privacy-policy" target="_blank"><I18n path="settings.interface.reporting.privacy_policy" /></a>

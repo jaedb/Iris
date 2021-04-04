@@ -72,7 +72,7 @@ class OutputControl extends React.Component {
     return (
       <div>
         {
-          groups.map((simpleGroup) => {
+          sortItems(groups, 'name').map((simpleGroup) => {
             const group = collate(simpleGroup, { clients });
             let { clients: groupClients = [] } = group;
             if (!show_disconnected_clients) {
@@ -202,7 +202,7 @@ class OutputControl extends React.Component {
 const mapStateToProps = (state) => ({
   pusher_connected: state.pusher.connected,
   snapcast_enabled: (state.pusher.config ? state.pusher.config.snapcast_enabled : null),
-  show_disconnected_clients: (state.ui.snapcast_show_disconnected_clients !== undefined ? state.ui.snapcast_show_disconnected_clients : false),
+  show_disconnected_clients: state.ui.snapcast_show_disconnected_clients || false,
   snapcast_clients: state.snapcast.clients,
   snapcast_groups: state.snapcast.groups,
   snapcast_streams: state.snapcast.streams,

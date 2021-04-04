@@ -38,7 +38,7 @@
       padding: 0.75em 0.85em;
       margin: 0 1.1em;
       border-radius: 3px;
-      line-break: anywhere;
+      line-break: after-white-space;
 
       @include theme('dark') {
         @include gradient_overlay(3px);

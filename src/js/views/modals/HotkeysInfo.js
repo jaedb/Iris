@@ -6,20 +6,20 @@ import * as uiActions from '../../services/ui/actions';
 import { I18n, i18n } from '../../locale';
 
 const hotkeys = [
-  { label: 'info', keys: ['i'] },
-  { label: 'play_pause', keys: ['p', 'spacebar'] },
-  { label: 'stop', keys: ['s'] },
-  { label: 'rewind', keys: ['r'] },
-  { label: 'fastforward', keys: ['f'] },
-  { label: 'next', keys: ['.', '>'] },
-  { label: 'previous', keys: [',', '<'] },
-  { label: 'volume_up', keys: ['=', '+'] },
-  { label: 'volume_down', keys: ['-', '_'] },
-  { label: 'mute', keys: ['0'] },
-  { label: 'exit', keys: ['esc'] },
-  { label: 'now_playing', keys: ['1'] },
-  { label: 'search', keys: ['2'] },
-  { label: 'kiosk', keys: ['3'] },
+  { label: 'info', keysets: [['i']] },
+  { label: 'play_pause', keysets: [['p'], ['spacebar']] },
+  { label: 'stop', keysets: [['s']] },
+  { label: 'rewind', keysets: [['r']] },
+  { label: 'fastforward', keysets: [['f']] },
+  { label: 'next', keysets: [['.'], ['>']] },
+  { label: 'previous', keysets: [[','], ['<']] },
+  { label: 'volume_up', keysets: [['=']] },
+  { label: 'volume_down', keysets: [['-']] },
+  { label: 'mute', keysets: [['0']] },
+  { label: 'snapcast_volume_up', keysets: [['n', '=']] },
+  { label: 'snapcast_volume_down', keysets: [['n', '=']] },
+  { label: 'snapcast_mute', keysets: [['n', '0']] },
+  { label: 'exit', keysets: [['esc']] },
 ];
 
 class HotkeysInfo extends React.Component {
@@ -33,13 +33,18 @@ class HotkeysInfo extends React.Component {
       <h1><I18n path="modal.hotkeys_info.title" /></h1>
       <div className="list small playlists">
         {hotkeys.map((hotkey) => (
-          <div className="list__item" key={hotkey.label}>
-            {hotkey.keys.map((key, index) => (
+          <div className="list__item list__item--no-interaction" key={hotkey.label}>
+            {hotkey.keysets.map((keyset, keysetIndex) => (
               <>
-                <pre>
-                  {key}
-                </pre>
-                {index === 0 && hotkey.keys.length > 1 && ' or '}
+                {keyset.map((key, keyIndex) => (
+                  <>
+                    <pre>
+                      {key}
+                    </pre>
+                    {keyIndex === 0 && keyset.length > 1 && ' + '}
+                  </>
+                ))}
+                {keysetIndex === 0 && hotkey.keysets.length > 1 && ' or '}
               </>
             ))}
             <span className="description">

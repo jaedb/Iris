@@ -56,8 +56,7 @@ class AddToPlaylist extends React.Component {
       },
       uris,
     } = this.props;
-    const encodedUris = uris.map((uri) => decodeUri(uri));
-    addTracksToPlaylist(playlist_uri, encodedUris);
+    addTracksToPlaylist(playlist_uri, uris);
     window.history.back();
   }
 
@@ -146,11 +145,12 @@ const mapStateToProps = (state, ownProps) => {
       uri_schemes: mopidy_uri_schemes,
     },
   } = state;
-
   const processProgressSelector = makeProcessProgressSelector(processKeys);
+  const unencodedUris = ownProps.match.params?.uris.split(',');
+  const uris = unencodedUris ? unencodedUris.map((uri) => decodeUri(uri)) : [];
 
   return {
-    uris: (ownProps.match.params.uris ? decodeURIComponent(ownProps.match.params.uris).split(',') : []),
+    uris,
     mopidy_uri_schemes,
     items,
     mopidy_library: libraries['mopidy:library:playlists'] || { items_uris: [] },

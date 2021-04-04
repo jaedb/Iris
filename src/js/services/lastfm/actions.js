@@ -215,19 +215,32 @@ export function getTrack(uri) {
   };
 }
 
-export function getArtist(uri, name, mbid = false) {
+export function getArtist(uri, name, mbid = false, noLanguage = false) {
   return (dispatch, getState) => {
+    let params = 'method=artist.getInfo&';
     if (mbid) {
-      var params = `method=artist.getInfo&mbid=${mbid}`;
+      params += `mbid=${mbid}`;
     } else {
-      name = name.replace('&', 'and');
-      name = encodeURIComponent(name);
-      var params = `method=artist.getInfo&artist=${name}`;
+      params += `&artist=${encodeURIComponent(name.replace('&', 'and'))}`;
+    }
+    const language = !noLanguage ? window.language : undefined;
+    if (language !== undefined) {
+      params += `&lang=${language}`;
     }
     sendRequest(dispatch, getState, params)
       .then(
         (response) => {
           if (response.artist) {
+            if (!noLanguage) {
+              if (
+                language !== undefined
+                && language !== 'en'
+                && (!response.artist.bio || response.artist.bio.content === '')
+              ) {
+                getArtist(uri, name, mbid, true)(dispatch, getState);
+                return;
+              }
+            }
             dispatch(
               coreActions.itemLoaded(
                 formatArtist({
@@ -236,7 +249,7 @@ export function getArtist(uri, name, mbid = false) {
                   biography: response.artist.bio.content,
                   biography_publish_date: response.artist.bio.published,
                   biography_link: response.artist.bio.links.link.href,
-                  listeners: parseInt(response.artist.stats.listeners),
+                  listeners: parseInt(response.artist.stats.listeners, 10),
                 }),
               ),
             );

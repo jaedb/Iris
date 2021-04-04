@@ -59,6 +59,9 @@ class Notifications extends React.Component {
                   <div className="notification__wrapper" key={notification.key}>
                     <div className={`notification notification--shortcut${notification.closing ? ' closing' : ''}`} data-duration={notification.duration}>
                       <Icon name={notification.content} />
+                      {notification.title && (
+                        <h4 className="notification__title">{notification.title}</h4>
+                      )}
                     </div>
                   </div>
                 );
