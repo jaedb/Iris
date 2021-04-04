@@ -8119,6 +8119,14 @@ main header.overlay {
   font-size: 200px;
   line-height: 400px;
 }
+.notifications .notification--shortcut .notification__title {
+  position: absolute;
+  display: block;
+  bottom: 5%;
+  right: 0;
+  left: 0;
+  text-align: center;
+}
 .notifications .notification--process {
   position: relative;
   padding-right: 2rem;

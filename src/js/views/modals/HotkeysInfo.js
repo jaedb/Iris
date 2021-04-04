@@ -16,9 +16,10 @@ const hotkeys = [
   { label: 'volume_up', keysets: [['=']] },
   { label: 'volume_down', keysets: [['-']] },
   { label: 'mute', keysets: [['0']] },
-  { label: 'exit', keysets: [['esc']] },
   { label: 'snapcast_volume_up', keysets: [['n', '=']] },
   { label: 'snapcast_volume_down', keysets: [['n', '=']] },
+  { label: 'snapcast_mute', keysets: [['n', '0']] },
+  { label: 'exit', keysets: [['esc']] },
 ];
 
 class HotkeysInfo extends React.Component {
