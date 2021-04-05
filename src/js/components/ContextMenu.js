@@ -1257,6 +1257,12 @@ class ContextMenu extends React.Component {
             {refresh}
           </div>
         );
+      case 'directory':
+        return (
+          <div>
+            {copy_uris}
+          </div>
+        );
       default:
         return (
           <div>
