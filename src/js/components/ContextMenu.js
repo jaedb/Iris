@@ -158,7 +158,18 @@ class ContextMenu extends React.Component {
   handleMouseDown = (e) => {
     const { menu, uiActions: { hideContextMenu } } = this.props;
 
-    if (menu && $(e.target).closest('.context-menu').length <= 0 && $(e.target).closest('.context-menu-trigger').length <= 0) {
+    if (
+      menu
+      && $(e.target).closest('.context-menu').length <= 0
+      && $(e.target).closest('.context-menu-trigger').length <= 0
+      && !(
+        (e.which === 3 || e.button === 2) &&
+        (
+          $(e.target).closest('.grid__item').length > 0
+          || $(e.target).closest('.list__item').length > 0
+        )
+      )
+    ) {
       hideContextMenu();
     }
   }
@@ -1255,6 +1266,12 @@ class ContextMenu extends React.Component {
             <div className="context-menu__divider" />
             {copy_uris}
             {refresh}
+          </div>
+        );
+      case 'directory':
+        return (
+          <div>
+            {copy_uris}
           </div>
         );
       default:
