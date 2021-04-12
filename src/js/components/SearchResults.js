@@ -56,7 +56,7 @@ const SearchResults = ({
       <h4>
         {!all && (
           <span>
-            <URILink uri={`iris:search:all:${encodedTerm}`} type="search">
+            <URILink uri={`iris:search:all:${encodedTerm}`} uriType="search" unencoded>
               <I18n path="search.title" />
             </URILink>
             {' '}
@@ -66,7 +66,7 @@ const SearchResults = ({
           </span>
         )}
         {all && (
-          <URILink uri={`iris:search:${type}:${encodedTerm}`} type="search">
+          <URILink uri={`iris:search:${type}:${encodedTerm}`} uriType="search" unencoded>
             <I18n path={`search.${type}.title`} />
           </URILink>
         )}
@@ -79,7 +79,7 @@ const SearchResults = ({
         {/* <LazyLoadListener enabled={this.props.artists_more && spotify_search_enabled} loadMore={loadMore} /> */}
 
         {resultsCount > results.length && (
-          <Button uri={`iris:search:${type}:${encodedTerm}`} debug>
+          <Button uri={`iris:search:${type}:${encodedTerm}`} uriType="search" unencoded>
             <I18n path={`search.${type}.more`} count={resultsCount} />
           </Button>
         )}
@@ -89,7 +89,12 @@ const SearchResults = ({
 };
 
 const mapStateToProps = (state, ownProps) => {
-  const { query: { term }, type } = ownProps;
+  const {
+    query: {
+      term,
+    },
+    type,
+  } = ownProps;
   const {
     ui: {
       uri_schemes_priority = [],

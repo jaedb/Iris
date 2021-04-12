@@ -24,6 +24,7 @@ const Button = ({
   onClick: onClickProp,
   to,
   uri,
+  uriType,
   ...rest
 }) => {
   const classNames = [];
@@ -46,7 +47,7 @@ const Button = ({
 
   let Element = 'button';
   if (to) Element = Link;
-  if (uri) Element = URILink; // MISSING URI TYPE
+  if (uri) Element = URILink;
   if (href) Element = 'a';
 
   const onClick = (e) => {
@@ -63,7 +64,7 @@ const Button = ({
 
   return (
     <Element
-      type={submit ? 'submit' : 'button'}
+      type={uri ? uriType : (submit ? 'submit' : 'button')}
       className={`button ${className} ${classNames.map((s) => ` button--${s}`).join(' ')}`}
       disabled={disabled}
       to={to}
