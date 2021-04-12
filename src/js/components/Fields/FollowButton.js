@@ -65,17 +65,8 @@ const FollowButton = ({
   );
 }
 
-const mapStateToProps = (state, ownProps) => {
-  const {
-    uri,
-  } = ownProps;
-
-  const loadingSelector = makeLoadingSelector([
-    'spotify_me/tracks?',
-    'spotify_me/albums?',
-    'spotify_me/following?',
-    `spotify_playlists/${getFromUri('playlistid', uri)}/followers?`,
-  ]);
+const mapStateToProps = (state) => {
+  const loadingSelector = makeLoadingSelector(['(.*)(follow)|(me\/albums)(.*)']);
 
   return {
     loading: loadingSelector(state),
