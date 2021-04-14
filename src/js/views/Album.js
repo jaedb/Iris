@@ -2,6 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
+import sanitizeHtml from 'sanitize-html';
+
 import ErrorMessage from '../components/ErrorMessage';
 import TrackList from '../components/TrackList';
 import Thumbnail from '../components/Thumbnail';
@@ -332,10 +334,10 @@ class Album extends React.Component {
           <section className="wiki">
             <h4 className="wiki__title">{i18n('album.wiki.title')}</h4>
             <div className="wiki__text">
-              <p>{album.wiki}</p>
+              <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(album.wiki) }}></p>
               <br />
               <div className="mid_grey-text">
-                <I18n path="album.wiki.published" params={{ date: album.wiki_publish_date }} />
+                <I18n path="album.wiki.published" date={album.wiki_publish_date} />
               </div>
             </div>
           </section>

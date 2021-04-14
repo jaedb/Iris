@@ -2,6 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Route, Switch } from 'react-router-dom';
+
+import sanitizeHtml from 'sanitize-html';
+
 import ErrorMessage from '../components/ErrorMessage';
 import Link from '../components/Link';
 import TrackList from '../components/TrackList';
@@ -452,7 +455,7 @@ class Artist extends React.Component {
             <br />
             {artist.biography && (
               <div className="biography-text">
-                <p>{artist.biography}</p>
+                <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(artist.biography) }}></p>
                 <br />
                 <div className="mid_grey-text">
                   <I18n path="artist.about.wiki.published" date={artist.biography_publish_date} />

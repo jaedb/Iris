@@ -9498,6 +9498,7 @@ main header.overlay {
 }
 .artist-view .body.about .biography .biography-text {
   overflow-wrap: break-word;
+  white-space: pre-wrap;
 }
 @media (max-width: 999px) {
   .artist-view .intro .liner .heading__thumbnail {
@@ -9683,6 +9684,10 @@ main .album-view .thumbnail-wrapper .thumbnail {
 }
 main .album-view .wiki {
   padding-top: 40px;
+}
+main .album-view .wiki__text {
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
 }
 @media (max-width: 799px) {
   main .album-view {
