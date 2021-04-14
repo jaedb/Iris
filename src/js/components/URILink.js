@@ -3,13 +3,17 @@ import Link from './Link';
 import { uriType as uriTypeHelper } from '../util/helpers';
 import { encodeUri } from '../util/format';
 
-export default memo((props) => {
+export default memo(({
+  type,
+  uri: rawUri,
+  className,
+  handleContextMenu,
+  children,
+  unencoded,
+}) => {
   let to = null;
-  let { uri, type } = props;
-  const uriType = type || uriTypeHelper(uri);
-  if (!props.unencoded) {
-    uri = encodeUri(uri);
-  }
+  const uriType = type || uriTypeHelper(rawUri);
+  const uri = (!unencoded) ? encodeUri(rawUri) : rawUri;
 
   switch (uriType) {
     case 'playlist':
@@ -41,7 +45,7 @@ export default memo((props) => {
       break;
 
     case 'search':
-      var exploded = uri.split('%3A');
+      var exploded = uri.split(':');
       to = `/search/${exploded[2]}/${exploded[3]}`;
       break;
 
@@ -52,17 +56,17 @@ export default memo((props) => {
   if (uri) {
     return (
       <Link
-        className={props.className ? props.className : null}
+        className={className}
         to={to}
-        onContextMenu={(e) => (props.handleContextMenu ? props.handleContextMenu(e) : null)}
+        onContextMenu={handleContextMenu}
       >
-        {props.children}
+        {children}
       </Link>
     );
   }
   return (
-    <span className={props.className ? props.className : null}>
-      {props.children}
+    <span className={className}>
+      {children}
     </span>
   );
 });

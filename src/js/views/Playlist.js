@@ -496,7 +496,7 @@ const mapStateToProps = (state, ownProps) => {
 
   const uri = decodeUri(ownProps.match.params.uri);
   const itemSelector = makeItemSelector(uri);
-  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`, '^((?!contains).)*$', '^((?!tracks).)*$']);
+  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`, '^((?!contains).)*$', '^((?!tracks).)*$', '^((?!followers).)*$']);
   const loadingTracksSelector = makeLoadingSelector([`(.*)${uri}(.*)tracks(.*)`]);
 
   return {

@@ -811,6 +811,7 @@ export function following(uri, method = 'GET') {
           dispatch(uiActions.createNotification({
             content: <span>
               Removed
+              {' '}
               <URILink type={type} uri={uri}>{asset ? asset.name : type}</URILink>
               {' '}
               from library
@@ -821,6 +822,7 @@ export function following(uri, method = 'GET') {
           dispatch(uiActions.createNotification({
             content: <span>
               Added
+              {' '}
               <URILink type={type} uri={uri}>{asset ? asset.name : type}</URILink>
               {' '}
               to library

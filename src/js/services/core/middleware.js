@@ -628,10 +628,11 @@ const CoreMiddleware = (function () {
             items_uris,
           }));
         }
-
-        store.dispatch(coreActions.removeItem(action.itemUri));
+        store.dispatch(coreActions.itemLoaded({
+          uri: action.itemUri,
+          in_library: false,
+        }));
         localForage.removeItem(action.itemUri);
-
         next(action);
         break;
       }

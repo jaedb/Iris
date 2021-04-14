@@ -348,7 +348,7 @@ class Album extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   const uri = decodeUri(ownProps.match.params.uri);
   const itemSelector = makeItemSelector(uri);
-  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`, '^((?!contains).)*$', '^((?!me\/albums).)*$']);
+  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`, '^((?!contains).)*$', '^((?!me\/albums).)*$', '^((?!followers).)*$']);
   return {
     uri,
     slim_mode: state.ui.slim_mode,

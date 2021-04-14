@@ -3,89 +3,70 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as uiActions from '../../services/ui/actions';
 import * as spotifyActions from '../../services/spotify/actions';
-import { isLoading, getFromUri } from '../../util/helpers';
+import { getFromUri } from '../../util/helpers';
 import { i18n } from '../../locale';
 import { Button } from '../Button';
 import { makeLoadingSelector } from '../../util/selectors';
 
-class FollowButton extends React.Component {
-  remove = () => {
-    const { spotifyActions: actions, uri } = this.props;
-    actions.following(uri, 'DELETE');
-  }
+const FollowButton = ({
+  spotifyActions: {
+    following,
+  },
+  uiActions: {
+    createNotification,
+  },
+  uri,
+  addText,
+  removeText,
+  spotify_authorized,
+  is_following,
+  loading,
+}) => {
+  const remove = () => following(uri, 'DELETE');
+  const add = () => following(uri, 'PUT');
+  const unauthorized = () => createNotification({
+    content: i18n('errors.authorization_required', { provider: i18n('services.spotify.title') }),
+    level: 'warning',
+  });
 
-  add = () => {
-    const { spotifyActions: actions, uri } = this.props;
-    actions.following(uri, 'PUT');
-  }
+  if (!uri) return null;
 
-  unauthorized = () => {
-    const { uiActions: { createNotification } } = this.props;
-
-    createNotification({
-      content: i18n('errors.authorization_required', { provider: i18n('services.spotify.title') }),
-      level: 'warning',
-    });
-  }
-
-  render = () => {
-    const {
-      uri,
-      addText,
-      removeText,
-      spotify_authorized,
-      is_following,
-      loading,
-    } = this.props;
-
-    if (!uri) return null;
-
-    if (!spotify_authorized) {
-      return (
-        <Button
-          disabled
-          working={loading}
-          onClick={this.unauthorized}
-          tracking={{ category: 'FollowButton', action: 'Add (disabled)' }}
-        >
-          {addText || i18n('actions.add_to_library')}
-        </Button>
-      );
-    } if (is_following === true) {
-      return (
-        <Button
-          type="destructive"
-          working={loading}
-          onClick={this.remove}
-          tracking={{ category: 'FollowButton', action: 'Remove' }}
-        >
-          {removeText || i18n('actions.remove_from_library')}
-        </Button>
-      );
-    }
+  if (!spotify_authorized) {
     return (
       <Button
-        onClick={this.add}
+        disabled
         working={loading}
-        tracking={{ category: 'FollowButton', action: 'Add' }}
+        onClick={unauthorized}
+        tracking={{ category: 'FollowButton', action: 'Add (disabled)' }}
       >
         {addText || i18n('actions.add_to_library')}
       </Button>
     );
+  } if (is_following === true) {
+    return (
+      <Button
+        type="destructive"
+        working={loading}
+        onClick={remove}
+        tracking={{ category: 'FollowButton', action: 'Remove' }}
+      >
+        {removeText || i18n('actions.remove_from_library')}
+      </Button>
+    );
   }
+  return (
+    <Button
+      onClick={add}
+      working={loading}
+      tracking={{ category: 'FollowButton', action: 'Add' }}
+    >
+      {addText || i18n('actions.add_to_library')}
+    </Button>
+  );
 }
 
-const mapStateToProps = (state, ownProps) => {
-  const {
-    uri,
-  } = ownProps;
-
-  const loadingSelector = makeLoadingSelector([
-    'spotify_me/tracks?',
-    'spotify_me/albums?',
-    'spotify_me/following?',
-    `spotify_playlists/${getFromUri('playlistid', uri)}/followers?`,
-  ]);
+const mapStateToProps = (state) => {
+  const loadingSelector = makeLoadingSelector(['(.*)(follow)|(me\/albums)(.*)']);
 
   return {
     loading: loadingSelector(state),
