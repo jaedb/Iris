@@ -38,6 +38,11 @@ main .album-view {
     padding-top: 40px;
   }
 
+  .wiki__text {
+      overflow-wrap: break-word;
+      white-space: pre-wrap;
+  }
+
   @include responsive($bp_medium) {
     padding-top: 0;
     padding-left: 10px;
