@@ -45,9 +45,11 @@ class MediaSession extends React.Component {
       if (current_track.duration) {
         // Only supported on Android as of Chrome 81 and later.
         if ('setPositionState' in navigator.mediaSession) {
+          const duration = Math.round(current_track.duration / 1000);
+          const position = Math.round(time_position / 1000);
           const newPositionState = {
-            duration: Math.round(current_track.duration / 1000),
-            position: Math.round(time_position / 1000),
+            duration,
+            position: position > duration ? duration : position, // Can't be > than duration!
             playbackRate: 1,
           };
           try {

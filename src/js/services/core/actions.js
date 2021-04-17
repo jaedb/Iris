@@ -190,10 +190,11 @@ export function loadUserPlaylists(uri, options = {}) {
   };
 }
 
-export function loadLibrary(uri, options = {}) {
+export function loadLibrary(uri, uriType, options = {}) {
   return {
     type: 'LOAD_LIBRARY',
     uri,
+    uriType,
     options,
   };
 }

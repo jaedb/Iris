@@ -1654,6 +1654,7 @@ export function getLibraryPlaylists(forceRefetch) {
           dispatch(coreActions.itemsLoaded(libraryItems));
           dispatch(coreActions.libraryLoaded({
             uri: 'spotify:library:playlists',
+            type: 'playlists',
             items_uris: arrayOf('uri', libraryItems),
           }));
         }
@@ -1698,6 +1699,7 @@ export function getLibraryAlbums(forceRefetch) {
           dispatch(coreActions.itemsLoaded(libraryItems));
           dispatch(coreActions.libraryLoaded({
             uri: 'spotify:library:albums',
+            type: 'albums',
             items_uris: arrayOf('uri', libraryItems),
           }));
         }
@@ -1744,6 +1746,7 @@ export function getLibraryArtists(forceRefetch) {
           dispatch(coreActions.itemsLoaded(libraryItems));
           dispatch(coreActions.libraryLoaded({
             uri: 'spotify:library:artists',
+            type: 'artists',
             items_uris: arrayOf('uri', libraryItems),
           }));
         }
@@ -1787,6 +1790,7 @@ export function getLibraryTracks(forceRefetch) {
           dispatch(coreActions.itemsLoaded(libraryItems));
           dispatch(coreActions.libraryLoaded({
             uri: 'spotify:library:tracks',
+            type: 'tracks',
             items_uris: arrayOf('uri', libraryItems),
           }));
         }

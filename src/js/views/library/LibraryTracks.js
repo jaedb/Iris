@@ -81,7 +81,7 @@ class LibraryTracks extends React.Component {
 
     if (source !== 'local' && source !== 'all') return;
 
-    loadLibrary('mopidy:library:tracks', { forceRefetch });
+    loadLibrary('mopidy:library:tracks', 'tracks', { forceRefetch });
   };
 
   getSpotifyLibrary = (forceRefetch = false) => {
@@ -96,7 +96,7 @@ class LibraryTracks extends React.Component {
     if (!spotify_available) return;
     if (source !== 'spotify' && source !== 'all') return;
 
-    loadLibrary('spotify:library:tracks', { forceRefetch });
+    loadLibrary('spotify:library:tracks', 'tracks', { forceRefetch });
   };
 
   handleContextMenu = (e, item) => {

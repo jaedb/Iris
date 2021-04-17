@@ -73,7 +73,7 @@ class LibraryPlaylists extends React.Component {
 
     if (source !== 'local' && source !== 'all') return;
 
-    loadLibrary('mopidy:library:playlists', { forceRefetch });
+    loadLibrary('mopidy:library:playlists', 'playlists', { forceRefetch });
   };
 
   getSpotifyLibrary = (forceRefetch = false) => {
@@ -88,7 +88,7 @@ class LibraryPlaylists extends React.Component {
     if (!spotify_available) return;
     if (source !== 'spotify' && source !== 'all') return;
 
-    loadLibrary('spotify:library:playlists', { forceRefetch });
+    loadLibrary('spotify:library:playlists', 'playlists', { forceRefetch });
   };
 
   componentDidUpdate = ({ source: prevSource }) => {

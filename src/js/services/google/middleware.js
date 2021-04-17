@@ -82,6 +82,7 @@ const GoogleMiddleware = (function () {
                 store.dispatch(uiActions.processFinished(action.type));
                 store.dispatch(coreActions.libraryLoaded({
                   uri: 'google:library:albums',
+                  type: action.uriType,
                   items_uris: arrayOf('uri', browseResponse),
                 }));
               }
@@ -148,6 +149,7 @@ const GoogleMiddleware = (function () {
                 store.dispatch(uiActions.processFinished(action.type));
                 store.dispatch(coreActions.libraryLoaded({
                   uri: 'google:library:artists',
+                  type: action.uriType,
                   items_uris: arrayOf('uri', browseResponse),
                 }));
               }
