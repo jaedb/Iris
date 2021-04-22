@@ -19,6 +19,7 @@ import {
   makeLibrarySelector,
   makeProcessProgressSelector,
   getLibrarySource,
+  makeProvidersSelector,
 } from '../../util/selectors';
 
 const processKeys = [
@@ -71,6 +72,7 @@ class LibraryAlbums extends React.Component {
   getLibraries = (forceRefetch = false) => {
     const {
       source,
+      providers,
       coreActions: {
         loadLibrary,
       },
@@ -78,7 +80,7 @@ class LibraryAlbums extends React.Component {
 
     let uris = [];
     if (source === 'all') {
-      uris = this.sourceOptions().map((o) => o.value).filter((u) => u !== 'all');
+      uris = providers.map((p) => p.uri);
     } else {
       uris.push(source);
     }
@@ -161,52 +163,12 @@ class LibraryAlbums extends React.Component {
     );
   }
 
-  sourceOptions = () => {
-    const {
-      spotify_available,
-      google_available,
-      youtube_available,
-    } = this.props;
-    const options = [
-      {
-        value: 'all',
-        label: i18n('fields.filters.all'),
-      },
-      {
-        value: 'local:directory?type=album',
-        label: i18n('services.mopidy.local'),
-      },
-    ];
-
-    if (youtube_available) {
-      options.push({
-        value: 'ytmusic:album',
-        label: i18n('services.youtube.title'),
-      });
-    }
-
-    if (google_available) {
-      options.push({
-        value: 'gmusic:album',
-        label: i18n('services.google.title'),
-      });
-    }
-
-    if (spotify_available) {
-      options.push({
-        value: 'spotify:library:albums',
-        label: i18n('services.spotify.title'),
-      });
-    }
-
-    return options;
-  }
-
   render = () => {
     const {
       sort,
       view,
       source,
+      providers,
       sort_reverse,
       uiActions,
       loading_progress,
@@ -283,7 +245,13 @@ class LibraryAlbums extends React.Component {
           name={i18n('fields.source')}
           value={source}
           valueAsLabel
-          options={this.sourceOptions()}
+          options={[
+            {
+              value: 'all',
+              label: i18n('fields.filters.all'),
+            },
+            ...providers.map((p) => ({ value: p.uri, label: p.title })),
+          ]}
           handleChange={(val) => { uiActions.set({ library_albums_source: val }); uiActions.hideContextMenu(); }}
         />
         <Button
@@ -312,13 +280,12 @@ class LibraryAlbums extends React.Component {
 
 const librarySelector = makeLibrarySelector('albums');
 const processProgressSelector = makeProcessProgressSelector(processKeys);
+const providersSelector = makeProvidersSelector('albums');
 const mapStateToProps = (state) => ({
   loading_progress: processProgressSelector(state),
   uri_schemes: state.mopidy.uri_schemes,
   albums: librarySelector(state, 'albums'),
-  spotify_available: state.spotify.access_token,
-  google_available: state.mopidy?.uri_schemes?.includes('gmusic:'),
-  youtube_available: state.mopidy?.uri_schemes?.includes('ytmusic:'),
+  providers: providersSelector(state),
   view: state.ui.library_albums_view,
   source: getLibrarySource(state, 'albums'),
   sort: state.ui.library_albums_sort,

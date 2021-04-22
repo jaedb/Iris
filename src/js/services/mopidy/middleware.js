@@ -1857,6 +1857,7 @@ const MopidyMiddleware = (function () {
 
         request(store, 'library.browse', { uri: action.uri })
           .then((browseResponse) => {
+            console.debug({ action, browseResponse })
             const allUris = arrayOf('uri', browseResponse);
 
             store.dispatch(uiActions.updateProcess(
