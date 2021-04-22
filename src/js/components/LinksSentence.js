@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import URILink from './URILink';
 
-const LinksSentence = memo(({ items, className, nolinks }) => {
+const LinksSentence = memo(({ items, itemType, className, nolinks }) => {
   if (!items) return <span className={`${className} links-sentence`}>-</span>;
 
   return (
@@ -23,13 +23,13 @@ const LinksSentence = memo(({ items, className, nolinks }) => {
 				    var content = <span>{name}</span>;
 				  } else {
 				    var content = (
-  <URILink
-    className="links-sentence__item links-sentence__item--link"
-    uri={uri}
-    type={type}
-  >
-    {name}
-  </URILink>
+							<URILink
+								className="links-sentence__item links-sentence__item--link"
+								uri={uri}
+								type={type || itemType}
+							>
+								{name}
+							</URILink>
 				    );
 				  }
 
