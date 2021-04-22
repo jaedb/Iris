@@ -1753,12 +1753,13 @@ const MopidyMiddleware = (function () {
       case 'MOPIDY_GET_LIBRARY_ARTISTS':
         store.dispatch(uiActions.startProcess(action.type, { notification: false }));
 
-        request(store, 'library.browse', { uri: store.getState().mopidy.library_artists_uri })
+        request(store, 'library.browse', { uri: action.uri })
           .then((raw_response) => {
             // No items in our library
             if (!raw_response.length) {
               store.dispatch(coreActions.libraryLoaded({
                 uri: 'mopidy:library:artists',
+                type: action.uriType,
                 items_uris: [],
               }));
               store.dispatch(uiActions.processFinished(action.type));
@@ -1773,7 +1774,8 @@ const MopidyMiddleware = (function () {
 
             store.dispatch(coreActions.itemsLoaded(response));
             store.dispatch(coreActions.libraryLoaded({
-              uri: 'mopidy:library:artists',
+              uri: action.uri,
+              type: 'artists',
               items_uris: arrayOf('uri', response),
             }));
             store.dispatch(uiActions.processFinished(action.type));
@@ -1830,6 +1832,7 @@ const MopidyMiddleware = (function () {
                       store.dispatch(coreActions.itemsLoaded(libraryPlaylists));
                       store.dispatch(coreActions.libraryLoaded({
                         uri: 'mopidy:library:playlists',
+                        type: action.uriType,
                         items_uris: arrayOf('uri', libraryPlaylists),
                       }));
                       store.dispatch(uiActions.processFinished(action.type));
@@ -1838,7 +1841,8 @@ const MopidyMiddleware = (function () {
               });
             } else {
               store.dispatch(coreActions.libraryLoaded({
-                uri: 'mopidy:library:playlists',
+                uri: action.uri,
+                type: 'playlists',
                 items_uris: [],
               }));
               store.dispatch(uiActions.stopLoading('mopidy:library:playlists'));
@@ -1851,8 +1855,9 @@ const MopidyMiddleware = (function () {
       case 'MOPIDY_GET_LIBRARY_ALBUMS':
         store.dispatch(uiActions.startProcess(action.type, { notification: false }));
 
-        request(store, 'library.browse', { uri: store.getState().mopidy.library_albums_uri })
+        request(store, 'library.browse', { uri: action.uri })
           .then((browseResponse) => {
+            console.debug({ action, browseResponse })
             const allUris = arrayOf('uri', browseResponse);
 
             store.dispatch(uiActions.updateProcess(
@@ -1865,12 +1870,12 @@ const MopidyMiddleware = (function () {
 
             const run = () => {
               if (allUris.length) {
-                const uris = allUris.splice(0, 100);
+                const uris = allUris.splice(0, 10);
                 const processor = store.getState().ui.processes[action.type];
 
                 if (processor && processor.status === 'cancelling') {
                   store.dispatch(uiActions.processCancelled(action.type));
-                  store.dispatch(uiActions.stopLoading('mopidy:library:albums'));
+                  store.dispatch(uiActions.stopLoading(action.uri));
                   return;
                 }
                 store.dispatch(uiActions.updateProcess(action.type, { remaining: allUris.length }));
@@ -1878,12 +1883,22 @@ const MopidyMiddleware = (function () {
                 request(store, 'library.lookup', { uris })
                   .then(
                     (lookupResponse) => {
-                      const libraryItems = indexToArray(lookupResponse).map((tracks) => ({
-                        artists: tracks[0].artists ? formatArtists(tracks[0].artists) : null,
-                        tracks: formatTracks(tracks),
-                        last_modified: tracks[0].last_modified,
-                        ...formatAlbum(tracks[0].album),
-                      }));
+                      const libraryItems = [];
+                      indexToArray(lookupResponse).forEach(
+                        (tracks) => {
+                          if (tracks.length <= 0) {
+                            console.info('Ignoring item; no results in lookup');
+                            return;
+                          }
+
+                          libraryItems.push({
+                            artists: tracks[0].artists ? formatArtists(tracks[0].artists) : null,
+                            tracks: formatTracks(tracks),
+                            last_modified: tracks[0].last_modified,
+                            ...formatAlbum(tracks[0].album),
+                          });
+                        },
+                      );
 
                       if (libraryItems.length) {
                         store.dispatch(coreActions.itemsLoaded(libraryItems));
@@ -1894,7 +1909,8 @@ const MopidyMiddleware = (function () {
               } else {
                 store.dispatch(uiActions.processFinished(action.type));
                 store.dispatch(coreActions.libraryLoaded({
-                  uri: 'mopidy:library:albums',
+                  uri: action.uri,
+                  type: 'albums',
                   items_uris: arrayOf('uri', browseResponse),
                 }));
               }
@@ -1907,7 +1923,7 @@ const MopidyMiddleware = (function () {
       case 'MOPIDY_GET_LIBRARY_TRACKS':
         store.dispatch(uiActions.startProcess(action.type, { notification: false }));
 
-        request(store, 'library.browse', { uri: store.getState().mopidy.library_tracks_uri })
+        request(store, 'library.browse', { uri: action.uri })
           .then((browseResponse) => {
             const allUris = arrayOf('uri', browseResponse);
 
@@ -1949,7 +1965,8 @@ const MopidyMiddleware = (function () {
               } else {
                 store.dispatch(uiActions.processFinished(action.type));
                 store.dispatch(coreActions.libraryLoaded({
-                  uri: 'mopidy:library:tracks',
+                  uri: action.uri,
+                  type: 'tracks',
                   items_uris: arrayOf('uri', browseResponse),
                 }));
               }

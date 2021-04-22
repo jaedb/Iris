@@ -1,6 +1,7 @@
 import { createSelector } from 'reselect';
 import { indexToArray } from './arrays';
 import { isLoading } from './helpers';
+import { i18n } from '../locale';
 
 const getItem = (state, uri) => state.core.items[uri];
 const getItems = (state) => state.core.items;
@@ -54,12 +55,11 @@ const getLibrarySource = (state, name) => state.ui[`library_${name}_source`] || 
 const makeLibrarySelector = (name) => createSelector(
   [getLibraries, getItems, getLibrarySource],
   (libraries, items, source) => {
-    const uris = [];
-    if (source === 'all' || source === 'local') uris.push(`mopidy:library:${name}`);
-    if (source === 'all' || source === 'spotify') uris.push(`spotify:library:${name}`);
-    if (source === 'all' || source === 'google') uris.push(`google:library:${name}`);
+    const selectedLibraries = source === 'all'
+      ? indexToArray(libraries).filter((l) => l.type === name)
+      : indexToArray(libraries, [source]);
 
-    const itemUris = indexToArray(libraries, uris).reduce(
+    const itemUris = selectedLibraries.reduce(
       (acc, library) => [...acc, ...library.items_uris],
       [],
     );
@@ -98,6 +98,72 @@ const makeProcessProgressSelector = (keys) => createSelector(
   },
 );
 
+const providers = {
+  albums: [
+    {
+      scheme: 'local:',
+      uri: 'local:directory?type=album',
+      title: i18n('services.mopidy.local'),
+    },
+    {
+      scheme: 'gmusic:',
+      uri: 'gmusic:album',
+      title: i18n('services.google.title'),
+    },
+    {
+      scheme: 'spotify:',
+      uri: 'spotify:library:albums',
+      title: i18n('services.spotify.title'),
+    },
+    {
+      scheme: 'ytmusic:',
+      uri: 'ytmusic:album',
+      title: i18n('services.youtube.title'),
+    },
+  ],
+  artists: [
+    {
+      scheme: 'local:',
+      uri: 'local:directory?type=artist&role=albumartist',
+      title: i18n('services.mopidy.local'),
+    },
+    {
+      scheme: 'gmusic:',
+      uri: 'gmusic:artist',
+      title: i18n('services.google.title'),
+    },
+    {
+      scheme: 'spotify:',
+      uri: 'spotify:library:artists',
+      title: i18n('services.spotify.title'),
+    },
+    {
+      scheme: 'ytmusic:',
+      uri: 'ytmusic:artist',
+      title: i18n('services.youtube.title'),
+    },
+  ],
+  tracks: [
+    {
+      scheme: 'local:',
+      uri: 'local:directory?type=track',
+      title: i18n('services.mopidy.local'),
+    },
+    {
+      scheme: 'spotify:',
+      uri: 'spotify:library:tracks',
+      title: i18n('services.spotify.title'),
+    },
+  ],
+};
+const getUriSchemes = (state) => state.mopidy.uri_schemes;
+const makeProvidersSelector = (context) => createSelector(
+  [getUriSchemes],
+  (schemes) => {
+    return providers[context]?.filter((p) => schemes.indexOf(p.scheme) > -1);
+  },
+);
+
 export {
   getItem,
   getLibrary,
@@ -111,4 +177,5 @@ export {
   makeSearchResultsSelector,
   makeProcessProgressSelector,
   queueHistorySelector,
+  makeProvidersSelector,
 };

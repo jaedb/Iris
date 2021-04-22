@@ -26,6 +26,7 @@ import {
 import { arrayOf, indexToArray } from '../../util/arrays';
 import { i18n, I18n } from '../../locale';
 import Button from '../../components/Button';
+import { decodeUri } from '../../util/format';
 
 class Discover extends React.Component {
   constructor(props) {
@@ -222,10 +223,7 @@ class Discover extends React.Component {
       },
     } = this.props;
 
-    // Rejoin if we've had to uri-encode these as strings
-    // We'd need to do this if our URL has been encoded so the whole URL can become
-    // it's own URI (eg iris:discover:spotify_artist_1234) where we can't use ":"
-    const seeds = seedsProp.split('_').join(':').split(',');
+    const seeds = seedsProp.split(',').map((uri) => decodeUri(uri));
     loadUris(seeds);
 
     this.setState(

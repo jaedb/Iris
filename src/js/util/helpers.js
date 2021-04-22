@@ -215,9 +215,13 @@ const sourceIcon = function (uri, source = null) {
     case 'spotify':
     case 'soundcloud':
     case 'lastfm':
-    case 'youtube':
     case 'tidal':
       return source;
+
+    case 'youtube':
+    case 'yt':
+    case 'ytmusic':
+      return 'youtube';
 
     default:
       return 'cloud';

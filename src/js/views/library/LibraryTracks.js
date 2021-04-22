@@ -19,6 +19,7 @@ import {
   makeLibrarySelector,
   makeProcessProgressSelector,
   getLibrarySource,
+  makeProvidersSelector,
 } from '../../util/selectors';
 
 const processKeys = [
@@ -43,16 +44,14 @@ class LibraryTracks extends React.Component {
     } = this.props;
 
     setWindowTitle(i18n('library.tracks.title'));
-    this.getMopidyLibrary();
-    this.getSpotifyLibrary();
+    this.getLibraries();
   }
 
   componentDidUpdate = ({ source: prevSource }) => {
     const { source } = this.props;
 
     if (source !== prevSource) {
-      this.getMopidyLibrary();
-      this.getSpotifyLibrary();
+      this.getLibraries();
     }
   }
 
@@ -60,8 +59,7 @@ class LibraryTracks extends React.Component {
     const { uiActions: { hideContextMenu } } = this.props;
 
     hideContextMenu();
-    this.getMopidyLibrary(true);
-    this.getSpotifyLibrary(true);
+    this.getLibraries(true);
   }
 
   cancelRefresh = () => {
@@ -71,32 +69,22 @@ class LibraryTracks extends React.Component {
     cancelProcess(processKeys);
   }
 
-  getMopidyLibrary = (forceRefetch = false) => {
+  getLibraries = (forceRefetch = false) => {
     const {
       source,
+      providers,
       coreActions: {
         loadLibrary,
       },
     } = this.props;
 
-    if (source !== 'local' && source !== 'all') return;
-
-    loadLibrary('mopidy:library:tracks', { forceRefetch });
-  };
-
-  getSpotifyLibrary = (forceRefetch = false) => {
-    const {
-      source,
-      spotify_available,
-      coreActions: {
-        loadLibrary,
-      },
-    } = this.props;
-
-    if (!spotify_available) return;
-    if (source !== 'spotify' && source !== 'all') return;
-
-    loadLibrary('spotify:library:tracks', { forceRefetch });
+    let uris = [];
+    if (source === 'all') {
+      uris = providers.map((p) => p.uri);
+    } else {
+      uris.push(source);
+    }
+    uris.forEach((uri) => loadLibrary(uri, 'tracks', { forceRefetch }));
   };
 
   handleContextMenu = (e, item) => {
@@ -192,9 +180,9 @@ class LibraryTracks extends React.Component {
 
   render = () => {
     const {
-      spotify_available,
       sort,
       source,
+      providers,
       sort_reverse,
       uiActions,
       loading_progress,
@@ -202,24 +190,6 @@ class LibraryTracks extends React.Component {
     const {
       filter,
     } = this.state;
-
-    const source_options = [
-      {
-        value: 'all',
-        label: i18n('fields.filters.all'),
-      },
-      {
-        value: 'local',
-        label: i18n('services.mopidy.local'),
-      },
-    ];
-
-    if (spotify_available) {
-      source_options.push({
-        value: 'spotify',
-        label: i18n('services.spotify.title'),
-      });
-    }
 
     const sort_options = [
       {
@@ -261,8 +231,19 @@ class LibraryTracks extends React.Component {
           name={i18n('fields.source')}
           value={source}
           valueAsLabel
-          options={source_options}
-          handleChange={(val) => { uiActions.set({ library_tracks_source: val }); uiActions.hideContextMenu(); }}
+          options={[
+            {
+              value: 'all',
+              label: i18n('fields.filters.all'),
+            },
+            ...providers.map((p) => ({ value: p.uri, label: p.title })),
+          ]}
+          handleChange={
+            (val) => {
+              uiActions.set({ library_tracks_source: val });
+              uiActions.hideContextMenu();
+            }
+          }
         />
         <Button
           onClick={this.playAll}
@@ -299,13 +280,14 @@ class LibraryTracks extends React.Component {
 
 const librarySelector = makeLibrarySelector('tracks');
 const processProgressSelector = makeProcessProgressSelector(processKeys);
+const providersSelector = makeProvidersSelector('tracks');
 const mapStateToProps = (state) => ({
   loading_progress: processProgressSelector(state),
   mopidy_uri_schemes: state.mopidy.uri_schemes,
-  tracks: librarySelector(state),
-  spotify_available: state.spotify.access_token,
+  tracks: librarySelector(state, 'tracks'),
   view: state.ui.library_tracks_view,
   source: getLibrarySource(state, 'tracks'),
+  providers: providersSelector(state),
   sort: state.ui.library_tracks_sort,
   sort_reverse: state.ui.library_tracks_sort_reverse,
 });

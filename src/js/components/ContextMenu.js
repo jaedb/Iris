@@ -761,8 +761,12 @@ class ContextMenu extends React.Component {
       },
     } = this.props;
     if (submenu !== name && name === 'add-to-playlist') {
-      if (spotify_available && !spotify_library.length) loadLibrary('spotify:library:playlists');
-      if (!mopidy_library.length) loadLibrary('mopidy:library:playlists');
+      if (spotify_available && !spotify_library.length) {
+        loadLibrary('spotify:library:playlists', 'playlists');
+      }
+      if (!mopidy_library.length) {
+        loadLibrary('mopidy:library:playlists', 'playlists');
+      }
     }
 
     this.setState({ submenu: name });

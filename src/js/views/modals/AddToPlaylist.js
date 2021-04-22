@@ -39,11 +39,11 @@ class AddToPlaylist extends React.Component {
     } = this.props;
 
     if (!spotify_library.length && spotify_available) {
-      loadLibrary('spotify:library:playlists');
+      loadLibrary('spotify:library:playlists', 'playlists');
     }
 
     if (!mopidy_library.length) {
-      loadLibrary('mopidy:library:playlists');
+      loadLibrary('mopidy:library:playlists', 'playlists');
     }
 
     setWindowTitle(i18n('modal.add_to_playlist.title'));
