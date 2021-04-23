@@ -156,11 +156,12 @@ const providers = {
     },
   ],
 };
-const getUriSchemes = (state) => state.mopidy.uri_schemes;
+const getUriSchemes = (state) => state.mopidy.uri_schemes || [];
 const makeProvidersSelector = (context) => createSelector(
   [getUriSchemes],
   (schemes) => {
-    return providers[context]?.filter((p) => schemes.indexOf(p.scheme) > -1);
+    if (!providers[context]) return [];
+    return providers[context].filter((p) => schemes.indexOf(p.scheme) > -1);
   },
 );
 
