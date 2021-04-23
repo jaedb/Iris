@@ -29,7 +29,7 @@ import * as mopidyActions from '../services/mopidy/actions';
 import * as lastfmActions from '../services/lastfm/actions';
 import * as spotifyActions from '../services/spotify/actions';
 import { I18n, i18n } from '../locale';
-import { collate } from '../util/format';
+import { collate, encodeUri } from '../util/format';
 
 class ContextMenu extends React.Component {
   constructor(props) {
@@ -540,7 +540,9 @@ class ContextMenu extends React.Component {
     } = this.props;
 
     hideContextMenu();
-    push(`/discover/recommendations/${arrayOf('uri', items).join(',')}`);
+    const uris = arrayOf('uri', items);
+    const discoverUri = encodeUri(`iris:discover:${uris.map((uri) => encodeUri(uri)).join(',')}`);
+    push(`/discover/recommendations/${discoverUri}`);
   }
 
   goToArtist = () => {

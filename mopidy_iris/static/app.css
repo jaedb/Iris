@@ -7207,6 +7207,9 @@ h4 .loader {
 .sidebar__menu__item--submenu.sidebar__menu__item {
   color: #a3a19f;
 }
+.sidebar__menu__item--submenu.sidebar__menu__item:before, .sidebar__menu__item--submenu.sidebar__menu__item:after {
+  display: none;
+}
 .light-theme .sidebar__menu__item--submenu.sidebar__menu__item {
   color: #51504e;
 }
@@ -7217,8 +7220,8 @@ h4 .loader {
   }
 }
 
-.sidebar__menu__item--submenu.sidebar__menu__item--active {
-  background: transparent;
+.sidebar__menu__item--submenu.sidebar__menu__item.active {
+  background: transparent !important;
   color: #08d58f !important;
 }
 .sidebar__menu__item--active {

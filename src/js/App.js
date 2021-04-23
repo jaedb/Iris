@@ -357,7 +357,7 @@ export class App extends React.Component {
 
                     <Route
                       exact
-                      path="/discover/recommendations/:seeds?"
+                      path="/discover/recommendations/:uri?"
                       component={DiscoverRecommendations}
                     />
                     <Route

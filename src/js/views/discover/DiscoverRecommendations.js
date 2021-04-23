@@ -26,7 +26,7 @@ import {
 import { arrayOf, indexToArray } from '../../util/arrays';
 import { i18n, I18n } from '../../locale';
 import Button from '../../components/Button';
-import { decodeUri } from '../../util/format';
+import { decodeUri, encodeUri } from '../../util/format';
 
 class Discover extends React.Component {
   constructor(props) {
@@ -160,14 +160,14 @@ class Discover extends React.Component {
       },
       match: {
         params: {
-          seeds,
+          uri,
         },
       },
     } = this.props;
 
     setWindowTitle(i18n('discover.recommendations.title'));
 
-    if (seeds) {
+    if (uri) {
       this.handleURLSeeds();
     }
   }
@@ -175,18 +175,18 @@ class Discover extends React.Component {
   componentDidUpdate = ({
     match: {
       params: {
-        seeds: prevSeeds,
+        uri: prevUri,
       },
     },
   }) => {
     const {
       match: {
         params: {
-          seeds,
+          uri,
         },
       },
     } = this.props;
-    if (prevSeeds !== seeds) this.handleURLSeeds();
+    if (prevUri !== uri) this.handleURLSeeds();
   }
 
   handleContextMenu = (e) => {
@@ -218,14 +218,16 @@ class Discover extends React.Component {
       },
       match: {
         params: {
-          seeds: seedsProp,
+          uri: uriProp,
         },
       },
     } = this.props;
+    const uri = decodeUri(uriProp);
+    if (!uri) return;
 
-    const seeds = seedsProp.split(',').map((uri) => decodeUri(uri));
+    const seeds = uri.replace('iris:discover:', '').split(',').map((seed) => decodeUri(seed));
+    console.debug({ uri, uriProp, seeds })
     loadUris(seeds);
-
     this.setState(
       { seeds },
       () => this.getRecommendations(),
@@ -233,22 +235,8 @@ class Discover extends React.Component {
   }
 
   uri = () => {
-    const {
-      seeds,
-    } = this.state;
-
-    let uri = 'iris:discover';
-    if (seeds) {
-      uri += ':';
-      for (let i = 0; i < seeds.length; i++) {
-        if (i > 0) {
-          uri += ',';
-        }
-        uri += seeds[i].split(':').join('_');
-      }
-    }
-
-    return uri;
+    const { seeds } = this.state;
+    return `iris:discover${seeds ? `:${seeds.map((s) => encodeUri(s)).join(',')}` : ''}`;
   }
 
   getRecommendations = () => {
@@ -533,8 +521,8 @@ class Discover extends React.Component {
 
     return (
       <div className="view discover-view preserve-3d">
+        {theme === 'dark' && <Parallax image="/iris/assets/backgrounds/discover.jpg" />}
         <div className="intro preserve-3d">
-          {theme === 'dark' && <Parallax image="/iris/assets/backgrounds/discover.jpg" />}
           <div className="intro__liner">
             <h1><I18n path="discover.recommendations.body_title" /></h1>
             <h2><I18n path="discover.recommendations.body_subtitle" /></h2>
