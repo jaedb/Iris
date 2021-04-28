@@ -7,6 +7,7 @@ const Grid = memo(({
   className = '',
   mini = false,
   getLink,
+  sourceIcon,
 }) => {
   if (!items || !items.length) return null;
 
@@ -15,7 +16,7 @@ const Grid = memo(({
       className={`grid grid--${items[0].type}s ${className} ${mini ? 'grid--mini' : ''}`}
       items={items}
       itemComponent={GridItem}
-      itemProps={{ getLink }}
+      itemProps={{ getLink, sourceIcon }}
     />
   );
 });

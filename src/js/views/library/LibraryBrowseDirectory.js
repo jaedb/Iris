@@ -55,6 +55,7 @@ const Subdirectories = ({ items, view }) => {
       items={items}
       getLink={link}
       nocontext
+      sourceIcon={false}
     />
   );
 };

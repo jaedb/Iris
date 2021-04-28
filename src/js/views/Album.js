@@ -196,8 +196,6 @@ class Album extends React.Component {
       filter,
     } = this.state;
 
-    console.debug({ uri })
-
     if (loading) {
       return <Loader body loading />;
     }

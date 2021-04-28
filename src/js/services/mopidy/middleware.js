@@ -206,7 +206,7 @@ const MopidyMiddleware = (function () {
    * */
   const request = (store, call, value = {}) => new Promise((resolve, reject) => {
     const loaderId = generateGuid();
-    const loaderKey = `mopidy_${call}`;
+    const loaderKey = `mopidy_${call}_${value?.uri || ''}_${value?.uris?.join('_') || ''}`;
     store.dispatch(uiActions.startLoading(loaderId, loaderKey));
 
     const doRequest = () => {
@@ -1184,9 +1184,12 @@ const MopidyMiddleware = (function () {
           .then((response) => {
             if (!response) return;
 
+            console.debug({ response })
+
             const playlist = formatPlaylist({
               images: {}, // Images not yet supported; treat playlist as being fully-loaded
               ...response,
+              uri: action.uri, // Patch in the requested URI
               type: 'playlist',
               provider: 'mopidy',
               can_edit: true,
