@@ -1663,6 +1663,13 @@ const MopidyMiddleware = (function () {
             } else if (item.__model__ === 'Ref' && item.type === 'album') {
               subdirectories.push(formatAlbum({ ...item, loading: true }));
               subdirectoryImagesToLoad.push(item.uri);
+            } else if (item.__model__ === 'Ref' && item.type === 'artist') {
+              subdirectories.push(formatArtist({ ...item, loading: true }));
+              subdirectoryImagesToLoad.push(item.uri);
+            } else if (item.__model__ === 'Ref' && item.type === 'playlist') {
+              console.debug('playlist', { item })
+              subdirectories.push(formatPlaylist({ ...item, loading: true }));
+              subdirectoryImagesToLoad.push(item.uri);
             } else {
               subdirectories.push(item);
             }

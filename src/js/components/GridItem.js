@@ -104,8 +104,9 @@ const GridItem = ({
 
   // Build link
   let to = '';
-  if (getLink) {
-    to = getLink(item);
+  const getLinkResult = getLink ? getLink(item) : undefined;
+  if (getLinkResult) {
+    to = getLinkResult;
   } else if (item.link) {
     to = item.link;
   } else {

@@ -31,7 +31,6 @@ class LibraryBrowse extends React.Component {
     const {
       loading,
       directory,
-      mopidyActions,
     } = this.props;
 
     if (!directory) {
