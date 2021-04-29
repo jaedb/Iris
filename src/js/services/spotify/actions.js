@@ -940,7 +940,7 @@ export function getArtist(uri, { full, forceRefetch } = {}) {
         .then((response) => {
           albums = [...albums, ...formatAlbums(response.items)];
           if (response.next) {
-            fetchAlbums(response.next);
+            fetchAlbums(`${response.next}${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
           } else {
             dispatch(coreActions.itemLoaded({
               uri,
@@ -1057,7 +1057,7 @@ export function getUser(uri, { full, forceRefetch } = {}) {
         .then((response) => {
           playlists = [...playlists, ...formatPlaylists(response.items)];
           if (response.next) {
-            fetchPlaylists(response.next);
+            fetchPlaylists(`${response.next}${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
           } else {
             dispatch(coreActions.itemLoaded({
               uri,
@@ -1110,7 +1110,7 @@ export function getAlbum(uri, { full, forceRefetch } = {}) {
             (response) => {
               tracks = [...tracks, ...formatTracks(response.items)];
               if (response.next) {
-                fetchTracks(response.next);
+                fetchTracks(`${response.next}${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
               } else {
                 dispatch(coreActions.itemLoaded({
                   uri,
@@ -1284,7 +1284,7 @@ export function getPlaylistTracks(uri, { forceRefetch, callbackAction } = {}) {
       .then((response) => {
         tracks = [...tracks, ...formatTracks(response.items)];
         if (response.next) {
-          fetchTracks(response.next);
+          fetchTracks(`${response.next}${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
         } else {
           dispatch(coreActions.itemLoaded({
             uri,
