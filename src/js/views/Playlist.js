@@ -12,7 +12,7 @@ import FollowButton from '../components/Fields/FollowButton';
 import Loader from '../components/Loader';
 import ContextMenuTrigger from '../components/ContextMenuTrigger';
 import URILink from '../components/URILink';
-import Icon from '../components/Icon';
+import Icon, { SourceIcon } from '../components/Icon';
 import DropdownField from '../components/Fields/DropdownField';
 import FilterField from '../components/Fields/FilterField';
 import * as coreActions from '../services/core/actions';
@@ -407,7 +407,7 @@ class Playlist extends React.Component {
           <ul className="details details--one-line">
             {!slim_mode && (
               <li className="source">
-                <Icon type="fontawesome" name={sourceIcon(playlist.uri)} />
+                <SourceIcon uri={playlist.uri} />
               </li>
             )}
             {playlist.user && (

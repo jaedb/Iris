@@ -1184,10 +1184,7 @@ const MopidyMiddleware = (function () {
           .then((response) => {
             if (!response) return;
 
-            console.debug({ response })
-
             const playlist = formatPlaylist({
-              images: {}, // Images not yet supported; treat playlist as being fully-loaded
               ...response,
               uri: action.uri, // Patch in the requested URI
               type: 'playlist',
@@ -1210,6 +1207,10 @@ const MopidyMiddleware = (function () {
                 });
             } else {
               store.dispatch(coreActions.itemLoaded(playlist));
+            }
+
+            if (!playlist.images) {
+              store.dispatch(mopidyActions.getImages([playlist.uri]));
             }
           });
         break;

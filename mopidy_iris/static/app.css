@@ -5438,13 +5438,6 @@ h4 .context-menu-trigger, h4 .context-menu-trigger:active {
   justify-content: space-between;
   align-content: center;
   border-top: 1px solid rgba(128, 128, 128, 0.05);
-  /*
-  		.icon.source {
-  			color: colour('mid_grey');
-  			position: absolute;
-  			top: 16px;
-  			right: 40px;
-  		}*/
 }
 .list__item::after {
   content: "";
@@ -6152,6 +6145,19 @@ h4 .loader {
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: "liga";
 }
+.icon--svg.source img {
+  max-width: 1rem;
+}
+.dark-theme .icon--svg.source {
+  filter: brightness(0) invert(1);
+}
+
+@media (prefers-color-scheme: dark) {
+  .auto-theme .icon--svg.source {
+    filter: brightness(0) invert(1);
+  }
+}
+
 .icon--spin {
   animation-name: spin;
   animation-duration: 1s;

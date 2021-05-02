@@ -1,6 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import Icon from './Icon';
+import Icon, { SourceIcon } from './Icon';
 import LinksSentence from './LinksSentence';
 import { Dater, dater } from './Dater';
 import URILink from './URILink';
@@ -10,11 +9,9 @@ import {
   getFromUri,
   titleCase,
   isTouchDevice,
-  sourceIcon,
   uriType,
 } from '../util/helpers';
-import { I18n, i18n } from '../locale';
-import { getDragger } from '../util/selectors';
+import { I18n } from '../locale';
 
 export default class Track extends React.Component {
   constructor(props) {
@@ -412,7 +409,7 @@ export default class Track extends React.Component {
             </span>
             {show_source_icon && (
               <span className="list__item__column__item list__item__column__item--source">
-                <Icon type="fontawesome" name={sourceIcon(item.uri)} fixedWidth />
+                <SourceIcon uri={item.uri} fixedWidth />
               </span>
             )}
             <ContextMenuTrigger className="list__item__column__item--context-menu-trigger subtle" onTrigger={(e) => this.props.handleContextMenu(e)} />

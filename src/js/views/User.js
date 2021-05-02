@@ -8,13 +8,12 @@ import FollowButton from '../components/Fields/FollowButton';
 import Parallax from '../components/Parallax';
 import { nice_number } from '../components/NiceNumber';
 import Loader from '../components/Loader';
-import Icon from '../components/Icon';
+import { SourceIcon } from '../components/Icon';
 import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
 import * as spotifyActions from '../services/spotify/actions';
 import {
   getFromUri,
-  sourceIcon,
 } from '../util/helpers';
 import { decodeUri } from '../util/format';
 import { i18n, I18n } from '../locale';
@@ -157,7 +156,7 @@ class User extends React.Component {
                     <ul className="details details--one-line">
                       {!slim_mode && (
                         <li className="source">
-                          <Icon type="fontawesome" name={sourceIcon(user.uri)} />
+                          <SourceIcon uri={user.uri} />
                         </li>
                       )}
                       {playlists && (

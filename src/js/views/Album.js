@@ -13,7 +13,7 @@ import FollowButton from '../components/Fields/FollowButton';
 import { nice_number } from '../components/NiceNumber';
 import { Dater } from '../components/Dater';
 import ContextMenuTrigger from '../components/ContextMenuTrigger';
-import Icon from '../components/Icon';
+import Icon, { SourceIcon } from '../components/Icon';
 import DropdownField from '../components/Fields/DropdownField';
 import FilterField from '../components/Fields/FilterField';
 import { i18n, I18n } from '../locale';
@@ -240,7 +240,7 @@ class Album extends React.Component {
           <ul className="details details--one-line">
             {!slim_mode ? (
               <li className="source">
-                <Icon type="fontawesome" name={sourceIcon(album.uri)} />
+                <SourceIcon uri={album.uri} />
               </li>
             ) : null}
             {album.artists && album.artists.length > 0 ? (

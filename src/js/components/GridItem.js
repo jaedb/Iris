@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { sourceIcon as getSourceIcon } from '../util/helpers';
 import Link from './Link';
-import Icon from './Icon';
+import { SourceIcon } from './Icon';
 import Thumbnail from './Thumbnail';
 import LinksSentence from './LinksSentence';
 import { I18n } from '../locale';
@@ -53,7 +52,7 @@ const SecondaryLine = ({
 
   return (
     <ul className="grid__item__secondary__content details">
-      {sourceIcon && <Icon name={getSourceIcon(uri)} type="fontawesome" className="source" />}
+      {sourceIcon && <SourceIcon uri={uri} />}
       {items()}
     </ul>
   );

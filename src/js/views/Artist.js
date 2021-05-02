@@ -16,14 +16,13 @@ import FollowButton from '../components/Fields/FollowButton';
 import ContextMenuTrigger from '../components/ContextMenuTrigger';
 import DropdownField from '../components/Fields/DropdownField';
 import FilterField from '../components/Fields/FilterField';
-import Icon from '../components/Icon';
+import Icon, { SourceIcon } from '../components/Icon';
 import Loader from '../components/Loader';
 import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import {
   uriSource,
-  sourceIcon,
   titleCase,
 } from '../util/helpers';
 import { collate, encodeUri, decodeUri } from '../util/format';
@@ -417,7 +416,7 @@ class Artist extends React.Component {
           {thumbnails}
           <div className="tile">
             <span className="content">
-              <Icon type="fontawesome" name={sourceIcon(artist.uri)} />
+              <SourceIcon uri={artist.uri} />
               <I18n
                 path="artist.about.source"
                 source={titleCase(uriSource(artist.uri))}
