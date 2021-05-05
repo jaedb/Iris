@@ -1668,9 +1668,19 @@ const MopidyMiddleware = (function () {
               subdirectories.push(formatArtist({ ...item, loading: true }));
               subdirectoryImagesToLoad.push(item.uri);
             } else if (item.__model__ === 'Ref' && item.type === 'playlist') {
-              console.debug('playlist', { item })
-              subdirectories.push(formatPlaylist({ ...item, loading: true }));
-              subdirectoryImagesToLoad.push(item.uri);
+              // Tidal moods and genres incorrectly marked as Playlist type
+              if (
+                item.uri.indexOf('tidal:mood') > -1 ||
+                item.uri.indexOf('tidal:genre') > -1
+              ) {
+                subdirectories.push({
+                  ...item,
+                  type: 'directory',
+                });
+              } else {
+                subdirectories.push(formatPlaylist({ ...item, loading: true }));
+                subdirectoryImagesToLoad.push(item.uri);
+              }
             } else {
               subdirectories.push(item);
             }
@@ -1770,7 +1780,7 @@ const MopidyMiddleware = (function () {
             if (!raw_response.length) {
               store.dispatch(coreActions.libraryLoaded({
                 uri: 'mopidy:library:artists',
-                type: action.uriType,
+                type: 'artists',
                 items_uris: [],
               }));
               store.dispatch(uiActions.processFinished(action.type));
@@ -1796,70 +1806,134 @@ const MopidyMiddleware = (function () {
       case 'MOPIDY_GET_LIBRARY_PLAYLISTS': {
         store.dispatch(uiActions.startProcess(action.type, { notification: false }));
 
-        request(store, 'playlists.asList')
-          .then((listResponse) => {
-            // Remove any Spotify playlists. These will be handled by our Spotify API
-            const playlist_uris = arrayOf('uri', listResponse).filter(
-              (playlistUri) => uriSource(playlistUri) !== 'spotify',
-            );
-            const libraryPlaylists = [];
+        // Built-in playlist support works differently to other providers
+        if (action.uri === 'm3u:playlists') {
+          request(store, 'playlists.asList')
+            .then((listResponse) => {
+              const libraryPlaylists = [];
+              const playlist_uris = arrayOf('uri', listResponse).filter(
+                (pUri) => (pUri.indexOf('m3u') > -1),
+              );
+              store.dispatch(
+                uiActions.updateProcess(
+                  action.type,
+                  {
+                    total: playlist_uris.length,
+                    remaining: playlist_uris.length,
+                  },
+                ),
+              );
 
-            store.dispatch(
-              uiActions.updateProcess(
-                action.type,
-                {
-                  total: playlist_uris.length,
-                  remaining: playlist_uris.length,
-                },
-              ),
-            );
+              if (playlist_uris.length) {
+                playlist_uris.forEach((uri, index) => {
+                  request(store, 'playlists.lookup', { uri })
+                    .then((response) => {
+                      if (response) {
+                        libraryPlaylists.push(
+                          formatPlaylist({
+                            name: response.name,
+                            uri: response.uri,
+                            can_edit: uriSource(response.uri) === 'm3u',
+                            last_modified: response.last_modified,
+                            // By not including actual tracks they will be fetched when needed. We don't
+                            // want these simple tracks because they don't contain duration, artist, etc.
+                            tracks_total: response.tracks ? response.tracks.length : null,
+                          }),
+                        );
+                      }
 
-            if (playlist_uris.length) {
-              playlist_uris.forEach((uri, index) => {
-                request(store, 'playlists.lookup', { uri })
-                  .then((response) => {
-                    libraryPlaylists.push(
-                      formatPlaylist({
-                        name: response.name,
-                        uri: response.uri,
-                        can_edit: uriSource(response.uri) === 'm3u',
-                        last_modified: response.last_modified,
-                        // By not including actual tracks they will be fetched when needed. We don't
-                        // want these simple tracks because they don't contain duration, artist, etc.
-                        tracks_total: response.tracks ? response.tracks.length : null,
-                      }),
-                    );
+                      store.dispatch(
+                        uiActions.updateProcess(
+                          action.type,
+                          {
+                            remaining: playlist_uris.length - index - 1,
+                          },
+                        ),
+                      );
 
-                    store.dispatch(
-                      uiActions.updateProcess(
-                        action.type,
-                        {
-                          remaining: playlist_uris.length - index - 1,
-                        },
-                      ),
-                    );
+                      if (index === playlist_uris.length - 1) {
+                        store.dispatch(coreActions.itemsLoaded(libraryPlaylists));
+                        store.dispatch(coreActions.libraryLoaded({
+                          uri: action.uri,
+                          type: 'playlists',
+                          items_uris: arrayOf('uri', libraryPlaylists),
+                        }));
+                        store.dispatch(uiActions.processFinished(action.type));
+                      }
+                    });
+                });
+              } else {
+                store.dispatch(coreActions.libraryLoaded({
+                  uri: action.uri,
+                  type: 'playlists',
+                  items_uris: [],
+                }));
+                store.dispatch(uiActions.stopLoading('mopidy:library:playlists'));
+                store.dispatch(uiActions.processFinished(action.type));
+              }
+            });
+        } else {
+          request(store, 'library.browse', { uri: action.uri })
+            .then((browseResponse) => {
+              const libraryPlaylists = [];
 
-                    if (index === playlist_uris.length - 1) {
-                      store.dispatch(coreActions.itemsLoaded(libraryPlaylists));
-                      store.dispatch(coreActions.libraryLoaded({
-                        uri: 'mopidy:library:playlists',
-                        type: action.uriType,
-                        items_uris: arrayOf('uri', libraryPlaylists),
-                      }));
-                      store.dispatch(uiActions.processFinished(action.type));
-                    }
-                  });
-              });
-            } else {
-              store.dispatch(coreActions.libraryLoaded({
-                uri: action.uri,
-                type: 'playlists',
-                items_uris: [],
-              }));
-              store.dispatch(uiActions.stopLoading('mopidy:library:playlists'));
-              store.dispatch(uiActions.processFinished(action.type));
-            }
-          });
+              store.dispatch(
+                uiActions.updateProcess(
+                  action.type,
+                  {
+                    total: browseResponse.length,
+                    remaining: browseResponse.length,
+                  },
+                ),
+              );
+
+              if (browseResponse.length) {
+                browseResponse.forEach((playlist, index) => {
+                  request(store, 'library.lookup', { uris: [playlist.uri] })
+                    .then((response) => {
+                      if (response) {
+                        libraryPlaylists.push(
+                          formatPlaylist({
+                            name: playlist.name,
+                            uri: playlist.uri,
+                            can_edit: uriSource(playlist.uri) === 'm3u',
+                            last_modified: playlist.last_modified,
+                            tracks: formatTracks(response[playlist.uri]),
+                          }),
+                        );
+                      }
+
+                      store.dispatch(
+                        uiActions.updateProcess(
+                          action.type,
+                          {
+                            remaining: browseResponse.length - index - 1,
+                          },
+                        ),
+                      );
+
+                      if (index === browseResponse.length - 1) {
+                        store.dispatch(coreActions.itemsLoaded(libraryPlaylists));
+                        store.dispatch(coreActions.libraryLoaded({
+                          uri: action.uri,
+                          type: 'playlists',
+                          items_uris: arrayOf('uri', libraryPlaylists),
+                        }));
+                        store.dispatch(uiActions.processFinished(action.type));
+                      }
+                    });
+                });
+              } else {
+                store.dispatch(coreActions.libraryLoaded({
+                  uri: action.uri,
+                  type: 'playlists',
+                  items_uris: [],
+                }));
+                store.dispatch(uiActions.stopLoading('mopidy:library:playlists'));
+                store.dispatch(uiActions.processFinished(action.type));
+              }
+            });
+        }
         break;
       }
 
@@ -1868,7 +1942,6 @@ const MopidyMiddleware = (function () {
 
         request(store, 'library.browse', { uri: action.uri })
           .then((browseResponse) => {
-            console.debug({ action, browseResponse })
             const allUris = arrayOf('uri', browseResponse);
 
             store.dispatch(uiActions.updateProcess(

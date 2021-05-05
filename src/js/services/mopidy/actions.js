@@ -437,8 +437,11 @@ export function deletePlaylist(uri) {
   };
 }
 
-export function getLibraryPlaylists() {
-  return { type: 'MOPIDY_GET_LIBRARY_PLAYLISTS' };
+export function getLibraryPlaylists(uri) {
+  return {
+    type: 'MOPIDY_GET_LIBRARY_PLAYLISTS',
+    uri,
+  };
 }
 
 export function getPlaylist(uri, options) {

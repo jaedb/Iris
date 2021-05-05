@@ -149,6 +149,8 @@ services:
     unlove: Unlove
   youtube:
     title: YouTube
+  tidal:
+    title: Tidal
 
 ##
 # Components

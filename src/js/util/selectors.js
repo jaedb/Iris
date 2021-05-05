@@ -99,6 +99,23 @@ const makeProcessProgressSelector = (keys) => createSelector(
 );
 
 const providers = {
+  playlists: [
+    {
+      scheme: 'm3u:',
+      uri: 'm3u:playlists',
+      title: i18n('services.mopidy.local'),
+    },
+    {
+      scheme: 'spotify:',
+      uri: 'spotify:library:playlists',
+      title: i18n('services.spotify.title'),
+    },
+    {
+      scheme: 'tidal:',
+      uri: 'tidal:my_playlists',
+      title: i18n('services.tidal.title'),
+    },
+  ],
   albums: [
     {
       scheme: 'local:',
@@ -114,6 +131,11 @@ const providers = {
       scheme: 'spotify:',
       uri: 'spotify:library:albums',
       title: i18n('services.spotify.title'),
+    },
+    {
+      scheme: 'tidal:',
+      uri: 'tidal:my_albums',
+      title: i18n('services.tidal.title'),
     },
     {
       scheme: 'ytmusic:',
@@ -136,6 +158,11 @@ const providers = {
       scheme: 'spotify:',
       uri: 'spotify:library:artists',
       title: i18n('services.spotify.title'),
+    },
+    {
+      scheme: 'tidal:',
+      uri: 'tidal:my_artists',
+      title: i18n('services.tidal.title'),
     },
     {
       scheme: 'ytmusic:',
