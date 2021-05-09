@@ -24,6 +24,7 @@ RUN apt-get update \
     libdbus-glib-1-dev \
     libgirepository1.0-dev \
     dleyna-server \
+    sudo \
   && rm -rf /var/lib/apt/lists/*
 
 # Install libspotify-dev from apt.mopidy.com
