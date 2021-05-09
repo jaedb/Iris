@@ -1340,7 +1340,7 @@ class ContextMenu extends React.Component {
   }
 }
 
-const librarySelector = makeLibrarySelector('playlists');
+const librarySelector = makeLibrarySelector('playlists', false);
 const providersSelector = makeProvidersSelector('playlists');
 const processProgressSelector = makeProcessProgressSelector(processKeys);
 

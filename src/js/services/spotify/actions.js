@@ -22,7 +22,7 @@ import {
   injectSortId,
 } from '../../util/format';
 import URILink from '../../components/URILink';
-import { getItem } from '../../util/selectors';
+import { getItem, providers, getProvider } from '../../util/selectors';
 
 const coreActions = require('../core/actions');
 const uiActions = require('../ui/actions');
@@ -1171,10 +1171,10 @@ export function createPlaylist(name, description, is_public, is_collaborative) {
             tracks: [],
           }));
 
-          dispatch({
-            type: 'LIBRARY_PLAYLISTS_LOADED',
-            uris: [response.uri],
-          });
+          dispatch(coreActions.addToLibrary(
+            getProvider('playlists', 'spotify:')?.uri,
+            response,
+          ));
 
           dispatch(uiActions.createNotification({ content: 'Created playlist' }));
         },

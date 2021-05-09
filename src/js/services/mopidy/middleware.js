@@ -29,6 +29,7 @@ import {
   sortItems,
   indexToArray,
 } from '../../util/arrays';
+import { getProvider } from '../../util/selectors';
 
 const mopidyActions = require('./actions.js');
 const coreActions = require('../core/actions.js');
@@ -1357,7 +1358,10 @@ const MopidyMiddleware = (function () {
             store.dispatch(uiActions.createNotification({
               content: i18n('actions.created', { name: i18n('playlist.title') }),
             }));
-            store.dispatch(coreActions.addToLibrary('mopidy:library:playlists', playlist));
+            store.dispatch(coreActions.addToLibrary(
+              getProvider('playlists', 'm3u:')?.uri,
+              playlist,
+            ));
           });
         break;
 

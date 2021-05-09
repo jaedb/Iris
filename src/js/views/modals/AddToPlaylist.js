@@ -120,7 +120,7 @@ class AddToPlaylist extends React.Component {
   }
 }
 
-const librarySelector = makeLibrarySelector('playlists');
+const librarySelector = makeLibrarySelector('playlists', false);
 const processProgressSelector = makeProcessProgressSelector(processKeys);
 const providersSelector = makeProvidersSelector('playlists');
 const mapStateToProps = (state, ownProps) => {

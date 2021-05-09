@@ -52,10 +52,10 @@ const queueHistorySelector = createSelector(
 );
 
 const getLibrarySource = (state, name) => state.ui[`library_${name}_source`] || 'all';
-const makeLibrarySelector = (name) => createSelector(
+const makeLibrarySelector = (name, filtered = true) => createSelector(
   [getLibraries, getItems, getLibrarySource],
   (libraries, items, source) => {
-    const selectedLibraries = source === 'all'
+    const selectedLibraries = !filtered || source === 'all'
       ? indexToArray(libraries).filter((l) => l.type === name)
       : indexToArray(libraries, [source]);
 
@@ -183,6 +183,7 @@ const providers = {
     },
   ],
 };
+const getProvider = (type, scheme) => providers[type]?.find((p) => p.scheme === scheme);
 const getUriSchemes = (state) => state.mopidy.uri_schemes || [];
 const makeProvidersSelector = (context) => createSelector(
   [getUriSchemes],
@@ -206,4 +207,5 @@ export {
   makeProcessProgressSelector,
   queueHistorySelector,
   makeProvidersSelector,
+  getProvider,
 };
