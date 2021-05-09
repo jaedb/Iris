@@ -310,7 +310,7 @@ export class App extends React.Component {
 
             <Route path="/queue/radio" component={EditRadio} />
             <Route path="/queue/add-uri" component={AddToQueue} />
-            <Route path="/playlist/create" component={CreatePlaylist} />
+            <Route path="/playlist/create/:uris?" component={CreatePlaylist} />
             <Route path="/playlist/:uri/edit" component={EditPlaylist} />
 
             <Route>

@@ -175,6 +175,7 @@ sidebar:
 context_menu:
   add_to_playlist:
     title: Add to playlist
+    new_playlist: Create playlist
     no_playlists: No writable playlists
   play_next: Play next
   play_top_tracks: Play top tracks
@@ -511,6 +512,7 @@ modal:
   edit_playlist:
     title: Edit playlist
     title_create: Create playlist
+    subtitle: 'And add %{count} track%{plural}'
     name_required: Name is required
     name: Name
     description: Description

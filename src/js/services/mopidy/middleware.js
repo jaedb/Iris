@@ -1346,7 +1346,11 @@ const MopidyMiddleware = (function () {
         break;
 
       case 'MOPIDY_CREATE_PLAYLIST':
-        request(store, 'playlists.create', { name: action.name, uri_scheme: action.scheme })
+        const data = {
+          name: action.playlist.name,
+          uri_scheme: action.playlist.scheme,
+        };
+        request(store, 'playlists.create', data)
           .then((response) => {
             const playlist = formatPlaylist({
               ...response,
@@ -1358,6 +1362,12 @@ const MopidyMiddleware = (function () {
             store.dispatch(uiActions.createNotification({
               content: i18n('actions.created', { name: i18n('playlist.title') }),
             }));
+            if (action.playlist.tracks_uris) {
+              store.dispatch(coreActions.addTracksToPlaylist(
+                playlist.uri,
+                action.playlist.tracks_uris,
+              ));
+            }
             store.dispatch(coreActions.addToLibrary(
               getProvider('playlists', 'm3u:')?.uri,
               playlist,

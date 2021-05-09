@@ -403,16 +403,12 @@ export function savePlaylist(uri, name, description = '', is_public = false, is_
   }
 }
 
-export function createPlaylist(scheme, name, description = '', is_public = false, is_collaborative = false) {
-  switch (scheme) {
+export function createPlaylist(playlist) {
+  switch (playlist.scheme) {
     case 'spotify':
-      if (description === '') {
-        description = null;
-      }
-      return spotifyActions.createPlaylist(name, description, is_public, is_collaborative);
-
+      return spotifyActions.createPlaylist(playlist);
     default:
-      return mopidyActions.createPlaylist(name, scheme);
+      return mopidyActions.createPlaylist(playlist);
   }
 }
 

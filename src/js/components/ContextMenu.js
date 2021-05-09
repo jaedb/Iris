@@ -783,8 +783,12 @@ class ContextMenu extends React.Component {
     const {
       playlists: allPlaylists,
       loading_progress,
+      menu: {
+        uris,
+      } = {},
     } = this.props;
 
+    const encodedUris = uris && uris.length > 0 ? encodeUri(uris.join(',')) : '';
     let list = null;
     if (submenu === 'add-to-playlist') {
       let playlists = compact(allPlaylists.map((playlist) => {
@@ -841,6 +845,16 @@ class ContextMenu extends React.Component {
               </span>
             </span>
           </a>
+        </div>
+        <div className="context-menu__item">
+          <Link className="context-menu__item__link" to={`playlist/create/${encodedUris}`}>
+            <span className="context-menu__item__label">
+              <Icon name="add" />
+              <span>
+                <I18n path="context_menu.add_to_playlist.new_playlist" />
+              </span>
+            </span>
+          </Link>
         </div>
         {loading_progress ? (
           <div className="context-menu__item context-menu__item--loader">

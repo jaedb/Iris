@@ -22,7 +22,8 @@ import {
   injectSortId,
 } from '../../util/format';
 import URILink from '../../components/URILink';
-import { getItem, providers, getProvider } from '../../util/selectors';
+import { i18n } from '../../locale';
+import { getItem, getProvider } from '../../util/selectors';
 
 const coreActions = require('../core/actions');
 const uiActions = require('../ui/actions');
@@ -1140,13 +1141,13 @@ export function getAlbum(uri, { full, forceRefetch } = {}) {
  * ======================================================================================
  * */
 
-export function createPlaylist(name, description, is_public, is_collaborative) {
+export function createPlaylist(playlist) {
   return (dispatch, getState) => {
     const data = {
-      name,
-      description,
-      public: is_public,
-      collaborative: is_collaborative,
+      name: playlist.name,
+      description: playlist.description || '',
+      public: playlist.public,
+      collaborative: playlist.collaborative,
     };
     const {
       spotify: {
@@ -1176,7 +1177,12 @@ export function createPlaylist(name, description, is_public, is_collaborative) {
             response,
           ));
 
-          dispatch(uiActions.createNotification({ content: 'Created playlist' }));
+          dispatch(uiActions.createNotification({
+            content: i18n('actions.created', { name: i18n('playlist.title') }),
+          }));
+          if (playlist.tracks_uris) {
+            dispatch(coreActions.addTracksToPlaylist(response.uri, playlist.tracks_uris));
+          }
         },
         (error) => {
           dispatch(coreActions.handleException(

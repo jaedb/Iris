@@ -422,11 +422,10 @@ export function getImages(uris) {
   };
 }
 
-export function createPlaylist(name, scheme) {
+export function createPlaylist(playlist) {
   return {
     type: 'MOPIDY_CREATE_PLAYLIST',
-    name,
-    scheme,
+    playlist,
   };
 }
 
