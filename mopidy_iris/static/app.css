@@ -8709,18 +8709,9 @@ main header.overlay {
 .sub-tabs__menu .menu-item__icon.icon--svg {
   opacity: 0.8;
 }
-.light-theme .sub-tabs__menu .menu-item__icon.icon--svg {
-  -webkit-filter: invert(1);
-  filter: invert(1);
+.sub-tabs__menu .menu-item__icon.icon--svg img {
+  height: 1em;
 }
-
-@media (prefers-color-scheme: light) {
-  .auto-theme .sub-tabs__menu .menu-item__icon.icon--svg {
-    -webkit-filter: invert(1);
-    filter: invert(1);
-  }
-}
-
 .sub-tabs__menu .menu-item__title {
   margin: 0;
   padding: 0;
