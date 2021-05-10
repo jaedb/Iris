@@ -152,8 +152,7 @@ export function getTrackLyrics(uri, path) {
   return (dispatch, getState) => {
     dispatch(coreActions.itemLoaded({
       uri,
-      lyrics: null,
-      lyrics_path: null,
+      lyrics: undefined,
     }));
 
     const url = `//${getState().mopidy.host}:${getState().mopidy.port}/iris/http/get_lyrics?path=${path}&connection_id=${getState().pusher.connection_id}`;
@@ -181,23 +180,24 @@ export function getTrackLyrics(uri, path) {
       .then((data) => {
         if (data.result) {
           const html = $(data.result);
-          let lyrics = html.find('.lyrics');
-          if (lyrics.length > 0) {
-            lyrics = lyrics.first();
-            lyrics.find('a').replaceWith((k, v) => v);
+          // Give the JS thread a moment to render the complex page (lots of JS within it)
+          setTimeout(() => {
+            let lyrics = html.find('div[class^="Lyrics__Container"], div.lyrics');
+            if (lyrics.length > 0) {
+              lyrics = lyrics.first();
+              lyrics.find('a').replaceWith((k, v) => v);
 
-            let lyrics_html = lyrics.html();
-            lyrics_html = lyrics_html.replace(/(\[)/g, '<span class="mid_grey-text">[');
-            lyrics_html = lyrics_html.replace(/(\])/g, ']</span>');
+              let lyrics_html = lyrics.html();
+              lyrics_html = lyrics_html.replace(/(\[)/g, '<span class="mid_grey-text">[');
+              lyrics_html = lyrics_html.replace(/(\])/g, ']</span>');
 
-            // console.debug(lyrics_html);
-
-            dispatch(coreActions.itemLoaded({
-              uri,
-              lyrics: lyrics_html,
-              lyrics_path: path,
-            }));
-          }
+              dispatch(coreActions.itemLoaded({
+                uri,
+                lyrics: lyrics_html,
+                lyrics_path: path,
+              }));
+            }
+          }, 500);
         } else {
           dispatch(coreActions.handleException(
             'Could not get track lyrics',
