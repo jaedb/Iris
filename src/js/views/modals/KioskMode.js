@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import Link from '../../components/Link';
 import Modal from './Modal';
 import Thumbnail from '../../components/Thumbnail';
 import LinksSentence from '../../components/LinksSentence';
@@ -12,7 +11,7 @@ import * as mopidyActions from '../../services/mopidy/actions';
 import * as geniusActions from '../../services/genius/actions';
 import { isLoading } from '../../util/helpers';
 import { i18n, I18n } from '../../locale';
-import { makeItemSelector } from '../../util/selectors';
+import { makeItemSelector, makeLoadingSelector } from '../../util/selectors';
 
 const LyricsScroller = ({
   content = '',
@@ -33,17 +32,17 @@ const LyricsScroller = ({
 
 const Lyrics = ({
   show_lyrics,
-  load_queue,
   time_position = null,
   current_track,
 }) => {
   if (!show_lyrics) {
     return null;
   }
-
+  const loadingSelector = makeLoadingSelector(['genius_(.*)']);
+  const loading = useSelector(loadingSelector);
   const { lyrics, duration } = current_track || {};
 
-  if (isLoading(load_queue, ['genius_'])) {
+  if (loading) {
     return (
       <div className="lyrics">
         <Loader body loading />
@@ -225,6 +224,6 @@ const KioskMode = () => {
       />
     </Modal>
   );
-}
+};
 
 export default KioskMode;
