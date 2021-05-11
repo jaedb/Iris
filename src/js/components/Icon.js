@@ -1,8 +1,12 @@
 import React, { memo } from 'react';
 import FontAwesome from 'react-fontawesome';
+import { sourceIcon } from '../util/helpers';
 
-export default memo(({
-  name, type, className, onClick,
+const Icon = memo(({
+  name,
+  type,
+  className,
+  onClick,
 }) => {
   if (!name || name === '') return null;
 
@@ -10,13 +14,37 @@ export default memo(({
 
   switch (type) {
     case 'svg':
-      return <img className={fullClassName} src={`/iris/assets/icons/${name}.svg`} onClick={onClick} />;
+      return (
+        <span className={fullClassName}>
+          <img
+            src={`/iris/assets/icons/${name}.svg`}
+            onClick={onClick}
+            alt={`${name} icon`}
+          />
+        </span>
+      );
 
     case 'gif':
-      return <img className={fullClassName} src={`/iris/assets/icons/${name}.gif`} onClick={onClick} />;
+      return (
+        <span className={fullClassName}>
+          <img
+            className={fullClassName}
+            src={`/iris/assets/icons/${name}.gif`}
+            onClick={onClick}
+            alt={`${name} icon`}
+          />
+        </span>
+      );
 
     case 'fontawesome':
-      return <FontAwesome className={fullClassName} type="fontawesome" name={name} onClick={onClick} />;
+      return (
+        <FontAwesome
+          className={fullClassName}
+          type="fontawesome"
+          name={name}
+          onClick={onClick}
+        />
+      );
 
     case 'css':
       if (name === 'playing') {
@@ -34,3 +62,25 @@ export default memo(({
       return <i className={fullClassName} onClick={onClick}>{name}</i>;
   }
 });
+
+const SourceIcon = ({
+  uri,
+  ...rest
+}) => {
+  const source = sourceIcon(uri);
+
+  switch (source) {
+    case 'genius':
+    case 'tidal':
+      return <Icon name={source} type="svg" className="source" {...rest} />;
+    default:
+      return <Icon name={source} type="fontawesome" className="source" {...rest} />;
+  }
+};
+
+export default Icon;
+
+export {
+  Icon,
+  SourceIcon,
+};

@@ -6,6 +6,7 @@ import { get as getStorage } from '../util/storage';
 import { isTouchDevice } from '../util/helpers';
 import * as uiActions from '../services/ui/actions';
 import { indexToArray } from '../util/arrays';
+import { decodeUri } from '../util/format';
 
 class DebugInfo extends React.Component {
   constructor(props) {

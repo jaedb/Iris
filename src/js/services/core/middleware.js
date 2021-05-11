@@ -552,17 +552,12 @@ const CoreMiddleware = (function () {
           switch (uriSource(action.uri)) {
             case 'spotify':
               store.dispatch(
-                spotifyActions[`getLibrary${titleCase(uriType(action.uri))}`](action.options.forceRefetch),
-              );
-              break;
-            case 'google':
-              store.dispatch(
-                googleActions[`getLibrary${titleCase(uriType(action.uri))}`](),
+                spotifyActions[`getLibrary${titleCase(action.uriType)}`](action.options.forceRefetch),
               );
               break;
             default:
               store.dispatch(
-                mopidyActions[`getLibrary${titleCase(uriType(action.uri))}`](),
+                mopidyActions[`getLibrary${titleCase(action.uriType)}`](action.uri),
               );
               break;
           }

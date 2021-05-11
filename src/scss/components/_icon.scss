@@ -32,6 +32,18 @@
 		font-feature-settings: 'liga';
 	}
 
+	&--svg {
+		&.source {
+			img {
+				max-width: 1rem;
+			}
+
+			@include theme('dark') {
+				filter: brightness(0) invert(1);
+			}
+		}
+	}
+
 	&--spin {
 		@include spin(1s);
 		padding: 0 0.32em !important;

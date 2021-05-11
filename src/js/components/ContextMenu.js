@@ -15,7 +15,6 @@ import {
 import {
   arrayOf,
   sortItems,
-  indexToArray,
 } from '../util/arrays';
 import Link from './Link';
 import Icon from './Icon';
@@ -28,8 +27,18 @@ import * as pusherActions from '../services/pusher/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import * as lastfmActions from '../services/lastfm/actions';
 import * as spotifyActions from '../services/spotify/actions';
-import { I18n, i18n } from '../locale';
-import { collate } from '../util/format';
+import { I18n } from '../locale';
+import { encodeUri } from '../util/format';
+import {
+  makeProcessProgressSelector,
+  makeProvidersSelector,
+  makeLibrarySelector,
+} from '../util/selectors';
+
+const processKeys = [
+  'MOPIDY_GET_LIBRARY_PLAYLISTS',
+  'SPOTIFY_GET_LIBRARY_PLAYLISTS',
+];
 
 class ContextMenu extends React.Component {
   constructor(props) {
@@ -540,7 +549,9 @@ class ContextMenu extends React.Component {
     } = this.props;
 
     hideContextMenu();
-    push(`/discover/recommendations/${arrayOf('uri', items).join(',')}`);
+    const uris = arrayOf('uri', items);
+    const discoverUri = encodeUri(`iris:discover:${uris.map((uri) => encodeUri(uri)).join(',')}`);
+    push(`/discover/recommendations/${discoverUri}`);
   }
 
   goToArtist = () => {
@@ -748,24 +759,21 @@ class ContextMenu extends React.Component {
 
   setSubmenu = (name) => {
     const { submenu } = this.state;
+    if (submenu !== name && name === 'add-to-playlist') {
+      this.getLibraries();
+    }
+
+    this.setState({ submenu: name });
+  }
+
+  getLibraries = () => {
     const {
-      spotify_available,
-      spotify_library_playlists: {
-        items_uris: spotify_library,
-      },
-      mopidy_library_playlists: {
-        items_uris: mopidy_library,
-      },
+      providers,
       coreActions: {
         loadLibrary,
       },
     } = this.props;
-    if (submenu !== name && name === 'add-to-playlist') {
-      if (spotify_available && !spotify_library.length) loadLibrary('spotify:library:playlists');
-      if (!mopidy_library.length) loadLibrary('mopidy:library:playlists');
-    }
-
-    this.setState({ submenu: name });
+    providers.forEach((provider) => loadLibrary(provider.uri, 'playlists'));
   }
 
   closeSubmenu = () => this.setState({ submenu: null });
@@ -773,20 +781,17 @@ class ContextMenu extends React.Component {
   renderSubmenu = () => {
     const { submenu } = this.state;
     const {
-      items,
-      spotify_library_playlists,
-      mopidy_library_playlists,
+      playlists: allPlaylists,
+      loading_progress,
+      menu: {
+        uris,
+      } = {},
     } = this.props;
 
+    const encodedUris = uris && uris.length > 0 ? encodeUri(uris.join(',')) : '';
     let list = null;
-    const isLoading = false;
-
     if (submenu === 'add-to-playlist') {
-      let playlists = [
-        ...(collate(spotify_library_playlists, { items }).items || []),
-        ...(collate(mopidy_library_playlists, { items }).items || []),
-      ];
-      playlists = compact(playlists.map((playlist) => {
+      let playlists = compact(allPlaylists.map((playlist) => {
         if (!playlist.can_edit) return null;
         return {
           ...playlist,
@@ -841,7 +846,17 @@ class ContextMenu extends React.Component {
             </span>
           </a>
         </div>
-        {isLoading ? (
+        <div className="context-menu__item">
+          <Link className="context-menu__item__link" to={`playlist/create/${encodedUris}`}>
+            <span className="context-menu__item__label">
+              <Icon name="add" />
+              <span>
+                <I18n path="context_menu.add_to_playlist.new_playlist" />
+              </span>
+            </span>
+          </Link>
+        </div>
+        {loading_progress ? (
           <div className="context-menu__item context-menu__item--loader">
             <Loader className="context-menu__item" mini loading />
           </div>
@@ -1339,13 +1354,23 @@ class ContextMenu extends React.Component {
   }
 }
 
+const librarySelector = makeLibrarySelector('playlists', false);
+const providersSelector = makeProvidersSelector('playlists');
+const processProgressSelector = makeProcessProgressSelector(processKeys);
+
 const mapStateToProps = (state) => ({
+  providers: providersSelector(state),
+  playlists: librarySelector(state, 'playlists'),
+  loading_progress: processProgressSelector(state),
   menu: state.ui.context_menu,
   load_queue: state.ui.load_queue,
   processes: state.ui.processes,
   current_track: state.core.current_track,
   current_tracklist: state.core.current_tracklist,
   queue_metadata: state.core.queue_metadata,
+  pinned: state.pusher.pinned,
+  lastfm_authorized: state.lastfm.authorization,
+  // TODO: Delete all of the below
   spotify_available: state.spotify.access_token,
   spotify_library_playlists: state.core.libraries['spotify:library:playlists'] || { items_uris: [] },
   spotify_library_artists: state.core.libraries['spotify:library:artists'] || { items_uris: [] },
@@ -1355,8 +1380,6 @@ const mapStateToProps = (state) => ({
   mopidy_library_artists: state.core.libraries['mopidy:library:artists'] || { items_uris: [] },
   mopidy_library_albums: state.core.libraries['mopidy:library:albums'] || { items_uris: [] },
   items: state.core.items,
-  pinned: state.pusher.pinned,
-  lastfm_authorized: state.lastfm.authorization,
 });
 
 const mapDispatchToProps = (dispatch) => ({

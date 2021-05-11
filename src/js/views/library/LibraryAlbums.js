@@ -10,7 +10,6 @@ import Icon from '../../components/Icon';
 import * as coreActions from '../../services/core/actions';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
-import * as googleActions from '../../services/google/actions';
 import * as spotifyActions from '../../services/spotify/actions';
 import { sortItems, applyFilter } from '../../util/arrays';
 import Button from '../../components/Button';
@@ -20,12 +19,12 @@ import {
   makeLibrarySelector,
   makeProcessProgressSelector,
   getLibrarySource,
+  makeProvidersSelector,
 } from '../../util/selectors';
 
 const processKeys = [
   'MOPIDY_GET_LIBRARY_ALBUMS',
   'SPOTIFY_GET_LIBRARY_ALBUMS',
-  'GOOGLE_GET_LIBRARY_ALBUMS',
 ];
 
 class LibraryAlbums extends React.Component {
@@ -45,18 +44,14 @@ class LibraryAlbums extends React.Component {
     } = this.props;
 
     setWindowTitle(i18n('library.albums.title'));
-    this.getMopidyLibrary();
-    this.getGoogleLibrary();
-    this.getSpotifyLibrary();
+    this.getLibraries();
   }
 
   componentDidUpdate = ({ source: prevSource }) => {
     const { source } = this.props;
 
     if (source !== prevSource) {
-      this.getMopidyLibrary();
-      this.getGoogleLibrary();
-      this.getSpotifyLibrary();
+      this.getLibraries();
     }
   }
 
@@ -64,9 +59,7 @@ class LibraryAlbums extends React.Component {
     const { uiActions: { hideContextMenu } } = this.props;
 
     hideContextMenu();
-    this.getMopidyLibrary(true);
-    this.getGoogleLibrary(true);
-    this.getSpotifyLibrary(true);
+    this.getLibraries(true);
   }
 
   cancelRefresh = () => {
@@ -76,47 +69,22 @@ class LibraryAlbums extends React.Component {
     cancelProcess(processKeys);
   }
 
-  getMopidyLibrary = (forceRefetch = false) => {
+  getLibraries = (forceRefetch = false) => {
     const {
       source,
+      providers,
       coreActions: {
         loadLibrary,
       },
     } = this.props;
 
-    if (source !== 'local' && source !== 'all') return;
-
-    loadLibrary('mopidy:library:albums', { forceRefetch });
-  };
-
-  getGoogleLibrary = (forceRefetch = false) => {
-    const {
-      source,
-      google_available,
-      coreActions: {
-        loadLibrary,
-      },
-    } = this.props;
-
-    if (!google_available) return;
-    if (source !== 'google' && source !== 'all') return;
-
-    loadLibrary('google:library:albums', { forceRefetch });
-  };
-
-  getSpotifyLibrary = (forceRefetch = false) => {
-    const {
-      source,
-      spotify_available,
-      coreActions: {
-        loadLibrary,
-      },
-    } = this.props;
-
-    if (!spotify_available) return;
-    if (source !== 'spotify' && source !== 'all') return;
-
-    loadLibrary('spotify:library:albums', { forceRefetch });
+    let uris = [];
+    if (source === 'all') {
+      uris = providers.map((p) => p.uri);
+    } else {
+      uris.push(source);
+    }
+    uris.forEach((uri) => loadLibrary(uri, 'albums', { forceRefetch }));
   };
 
   handleContextMenu = (e, item) => {
@@ -197,11 +165,10 @@ class LibraryAlbums extends React.Component {
 
   render = () => {
     const {
-      spotify_available,
-      google_available,
       sort,
       view,
       source,
+      providers,
       sort_reverse,
       uiActions,
       loading_progress,
@@ -210,31 +177,6 @@ class LibraryAlbums extends React.Component {
       filter,
       per_page,
     } = this.state;
-
-    const source_options = [
-      {
-        value: 'all',
-        label: i18n('fields.filters.all'),
-      },
-      {
-        value: 'local',
-        label: i18n('services.mopidy.local'),
-      },
-    ];
-
-    if (spotify_available) {
-      source_options.push({
-        value: 'spotify',
-        label: i18n('services.spotify.title'),
-      });
-    }
-
-    if (google_available) {
-      source_options.push({
-        value: 'google',
-        label: i18n('services.google.title'),
-      });
-    }
 
     const view_options = [
       {
@@ -303,7 +245,13 @@ class LibraryAlbums extends React.Component {
           name={i18n('fields.source')}
           value={source}
           valueAsLabel
-          options={source_options}
+          options={[
+            {
+              value: 'all',
+              label: i18n('fields.filters.all'),
+            },
+            ...providers.map((p) => ({ value: p.uri, label: p.title })),
+          ]}
           handleChange={(val) => { uiActions.set({ library_albums_source: val }); uiActions.hideContextMenu(); }}
         />
         <Button
@@ -332,12 +280,12 @@ class LibraryAlbums extends React.Component {
 
 const librarySelector = makeLibrarySelector('albums');
 const processProgressSelector = makeProcessProgressSelector(processKeys);
+const providersSelector = makeProvidersSelector('albums');
 const mapStateToProps = (state) => ({
   loading_progress: processProgressSelector(state),
-  mopidy_uri_schemes: state.mopidy.uri_schemes,
+  uri_schemes: state.mopidy.uri_schemes,
   albums: librarySelector(state, 'albums'),
-  google_available: (state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('gmusic:')),
-  spotify_available: state.spotify.access_token,
+  providers: providersSelector(state),
   view: state.ui.library_albums_view,
   source: getLibrarySource(state, 'albums'),
   sort: state.ui.library_albums_sort,
@@ -347,7 +295,6 @@ const mapDispatchToProps = (dispatch) => ({
   coreActions: bindActionCreators(coreActions, dispatch),
   uiActions: bindActionCreators(uiActions, dispatch),
   mopidyActions: bindActionCreators(mopidyActions, dispatch),
-  googleActions: bindActionCreators(googleActions, dispatch),
   spotifyActions: bindActionCreators(spotifyActions, dispatch),
 });
 

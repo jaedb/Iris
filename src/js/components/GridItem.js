@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { scrollTo, sourceIcon } from '../util/helpers';
 import Link from './Link';
-import Icon from './Icon';
+import { SourceIcon } from './Icon';
 import Thumbnail from './Thumbnail';
 import LinksSentence from './LinksSentence';
 import { I18n } from '../locale';
@@ -13,12 +12,14 @@ import * as mopidyActions from '../services/mopidy/actions';
 import * as spotifyActions from '../services/spotify/actions';
 
 const SecondaryLine = ({
+  sourceIcon = true,
   item: {
+    uri,
     type,
     tracks_total,
     tracks = [],
     followers,
-    albums_uris,
+    albums_uris = [],
     artists,
   } = {},
 }) => {
@@ -26,43 +27,41 @@ const SecondaryLine = ({
   if (tracks) trackCount = tracks.length;
   if (tracks_total) trackCount = tracks_total;
 
-  switch (type) {
-    case 'playlist':
-      return (
-        <ul className="grid__item__secondary__content details">
-          <li><I18n path="specs.tracks" count={trackCount} /></li>
-        </ul>
-      );
+  const items = () => {
+    switch (type) {
+      case 'playlist':
+        return <li><I18n path="specs.tracks" count={trackCount} /></li>;
+      case 'artist':
+        return (
+          <>
+            {followers > 0 && <li><I18n path="specs.followers" count={followers.toLocaleString()} /></li>}
+            {albums_uris.length > 0 && <li><I18n path="specs.albums" count={albums_uris.length} /></li>}
+          </>
+        );
+      case 'album':
+        return <li>{artists && <LinksSentence nolinks items={artists} type="artist" />}</li>;
+      default:
+        return (
+          <>
+            {artists && <li><LinksSentence nolinks items={artists} type="artist" /></li> }
+            {followers && <li><I18n path="specs.followers" count={followers.toLocaleString()} /></li>}
+          </>
+        );
+    }
+  };
 
-    case 'artist':
-      return (
-        <ul className="grid__item__secondary__content details">
-          {followers && <li><I18n path="specs.followers" count={followers.toLocaleString()} /></li>}
-          {albums_uris && <li><I18n path="specs.albums" count={albums_uris.length} /></li>}
-        </ul>
-      );
-
-    case 'album':
-      return (
-        <ul className="grid__item__secondary__content details">
-          <li>{artists && <LinksSentence nolinks items={artists} type="artist" />}</li>
-        </ul>
-      );
-
-    default:
-      return (
-        <ul className="grid__item__secondary__content details">
-          {artists && <li><LinksSentence nolinks items={artists} type="artist" /></li> }
-          {followers && <li><I18n path="specs.followers" count={followers.toLocaleString()} /></li>}
-        </ul>
-      );
-  }
+  return (
+    <ul className="grid__item__secondary__content details">
+      {sourceIcon && <SourceIcon uri={uri} />}
+      {items()}
+    </ul>
+  );
 };
 
 const GridItem = ({
   item: itemProp,
   getLink,
-  show_source_icon,
+  sourceIcon,
 }) => {
   let item = itemProp;
   if (item.album) item = { ...item, ...item.album };
@@ -104,8 +103,9 @@ const GridItem = ({
 
   // Build link
   let to = '';
-  if (getLink) {
-    to = getLink(item);
+  const getLinkResult = getLink ? getLink(item) : undefined;
+  if (getLinkResult) {
+    to = getLinkResult;
   } else if (item.link) {
     to = item.link;
   } else {
@@ -129,10 +129,7 @@ const GridItem = ({
         {item.name ? item.name : <span className="opaque-text">{item.uri}</span>}
       </div>
       <div className="grid__item__secondary">
-        {show_source_icon && (
-          <Icon name={sourceIcon(item.uri)} type="fontawesome" className="source" />
-        )}
-        <SecondaryLine item={item} />
+        <SecondaryLine item={item} sourceIcon={sourceIcon} />
       </div>
     </Link>
   );

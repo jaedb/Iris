@@ -22,7 +22,8 @@ import {
   injectSortId,
 } from '../../util/format';
 import URILink from '../../components/URILink';
-import { getItem } from '../../util/selectors';
+import { i18n } from '../../locale';
+import { getItem, getProvider } from '../../util/selectors';
 
 const coreActions = require('../core/actions');
 const uiActions = require('../ui/actions');
@@ -940,7 +941,7 @@ export function getArtist(uri, { full, forceRefetch } = {}) {
         .then((response) => {
           albums = [...albums, ...formatAlbums(response.items)];
           if (response.next) {
-            fetchAlbums(response.next);
+            fetchAlbums(`${response.next}${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
           } else {
             dispatch(coreActions.itemLoaded({
               uri,
@@ -1057,7 +1058,7 @@ export function getUser(uri, { full, forceRefetch } = {}) {
         .then((response) => {
           playlists = [...playlists, ...formatPlaylists(response.items)];
           if (response.next) {
-            fetchPlaylists(response.next);
+            fetchPlaylists(`${response.next}${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
           } else {
             dispatch(coreActions.itemLoaded({
               uri,
@@ -1110,7 +1111,7 @@ export function getAlbum(uri, { full, forceRefetch } = {}) {
             (response) => {
               tracks = [...tracks, ...formatTracks(response.items)];
               if (response.next) {
-                fetchTracks(response.next);
+                fetchTracks(`${response.next}${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
               } else {
                 dispatch(coreActions.itemLoaded({
                   uri,
@@ -1140,13 +1141,13 @@ export function getAlbum(uri, { full, forceRefetch } = {}) {
  * ======================================================================================
  * */
 
-export function createPlaylist(name, description, is_public, is_collaborative) {
+export function createPlaylist(playlist) {
   return (dispatch, getState) => {
     const data = {
-      name,
-      description,
-      public: is_public,
-      collaborative: is_collaborative,
+      name: playlist.name,
+      description: playlist.description || '',
+      public: playlist.public,
+      collaborative: playlist.collaborative,
     };
     const {
       spotify: {
@@ -1171,12 +1172,17 @@ export function createPlaylist(name, description, is_public, is_collaborative) {
             tracks: [],
           }));
 
-          dispatch({
-            type: 'LIBRARY_PLAYLISTS_LOADED',
-            uris: [response.uri],
-          });
+          dispatch(coreActions.addToLibrary(
+            getProvider('playlists', 'spotify:')?.uri,
+            response,
+          ));
 
-          dispatch(uiActions.createNotification({ content: 'Created playlist' }));
+          dispatch(uiActions.createNotification({
+            content: i18n('actions.created', { name: i18n('playlist.title') }),
+          }));
+          if (playlist.tracks_uris) {
+            dispatch(coreActions.addTracksToPlaylist(response.uri, playlist.tracks_uris));
+          }
         },
         (error) => {
           dispatch(coreActions.handleException(
@@ -1284,7 +1290,7 @@ export function getPlaylistTracks(uri, { forceRefetch, callbackAction } = {}) {
       .then((response) => {
         tracks = [...tracks, ...formatTracks(response.items)];
         if (response.next) {
-          fetchTracks(response.next);
+          fetchTracks(`${response.next}${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
         } else {
           dispatch(coreActions.itemLoaded({
             uri,
@@ -1654,6 +1660,7 @@ export function getLibraryPlaylists(forceRefetch) {
           dispatch(coreActions.itemsLoaded(libraryItems));
           dispatch(coreActions.libraryLoaded({
             uri: 'spotify:library:playlists',
+            type: 'playlists',
             items_uris: arrayOf('uri', libraryItems),
           }));
         }
@@ -1698,6 +1705,7 @@ export function getLibraryAlbums(forceRefetch) {
           dispatch(coreActions.itemsLoaded(libraryItems));
           dispatch(coreActions.libraryLoaded({
             uri: 'spotify:library:albums',
+            type: 'albums',
             items_uris: arrayOf('uri', libraryItems),
           }));
         }
@@ -1744,6 +1752,7 @@ export function getLibraryArtists(forceRefetch) {
           dispatch(coreActions.itemsLoaded(libraryItems));
           dispatch(coreActions.libraryLoaded({
             uri: 'spotify:library:artists',
+            type: 'artists',
             items_uris: arrayOf('uri', libraryItems),
           }));
         }
@@ -1787,6 +1796,7 @@ export function getLibraryTracks(forceRefetch) {
           dispatch(coreActions.itemsLoaded(libraryItems));
           dispatch(coreActions.libraryLoaded({
             uri: 'spotify:library:tracks',
+            type: 'tracks',
             items_uris: arrayOf('uri', libraryItems),
           }));
         }

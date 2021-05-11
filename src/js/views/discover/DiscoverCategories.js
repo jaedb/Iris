@@ -57,6 +57,7 @@ class DiscoverCategories extends React.Component {
             className="grid--tiles"
             items={categories}
             getLink={(item) => `/discover/categories/${encodeUri(item.uri)}`}
+            sourceIcon={false}
           />
         </section>
       </div>

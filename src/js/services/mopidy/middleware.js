@@ -29,6 +29,7 @@ import {
   sortItems,
   indexToArray,
 } from '../../util/arrays';
+import { getProvider } from '../../util/selectors';
 
 const mopidyActions = require('./actions.js');
 const coreActions = require('../core/actions.js');
@@ -206,7 +207,7 @@ const MopidyMiddleware = (function () {
    * */
   const request = (store, call, value = {}) => new Promise((resolve, reject) => {
     const loaderId = generateGuid();
-    const loaderKey = `mopidy_${call}`;
+    const loaderKey = `mopidy_${call}_${value?.uri || ''}_${value?.uris?.join('_') || ''}`;
     store.dispatch(uiActions.startLoading(loaderId, loaderKey));
 
     const doRequest = () => {
@@ -1185,8 +1186,8 @@ const MopidyMiddleware = (function () {
             if (!response) return;
 
             const playlist = formatPlaylist({
-              images: {}, // Images not yet supported; treat playlist as being fully-loaded
               ...response,
+              uri: action.uri, // Patch in the requested URI
               type: 'playlist',
               provider: 'mopidy',
               can_edit: true,
@@ -1207,6 +1208,10 @@ const MopidyMiddleware = (function () {
                 });
             } else {
               store.dispatch(coreActions.itemLoaded(playlist));
+            }
+
+            if (!playlist.images) {
+              store.dispatch(mopidyActions.getImages([playlist.uri]));
             }
           });
         break;
@@ -1341,7 +1346,11 @@ const MopidyMiddleware = (function () {
         break;
 
       case 'MOPIDY_CREATE_PLAYLIST':
-        request(store, 'playlists.create', { name: action.name, uri_scheme: action.scheme })
+        const data = {
+          name: action.playlist.name,
+          uri_scheme: action.playlist.scheme,
+        };
+        request(store, 'playlists.create', data)
           .then((response) => {
             const playlist = formatPlaylist({
               ...response,
@@ -1353,7 +1362,16 @@ const MopidyMiddleware = (function () {
             store.dispatch(uiActions.createNotification({
               content: i18n('actions.created', { name: i18n('playlist.title') }),
             }));
-            store.dispatch(coreActions.addToLibrary('mopidy:library:playlists', playlist));
+            if (action.playlist.tracks_uris) {
+              store.dispatch(coreActions.addTracksToPlaylist(
+                playlist.uri,
+                action.playlist.tracks_uris,
+              ));
+            }
+            store.dispatch(coreActions.addToLibrary(
+              getProvider('playlists', 'm3u:')?.uri,
+              playlist,
+            ));
           });
         break;
 
@@ -1660,6 +1678,23 @@ const MopidyMiddleware = (function () {
             } else if (item.__model__ === 'Ref' && item.type === 'album') {
               subdirectories.push(formatAlbum({ ...item, loading: true }));
               subdirectoryImagesToLoad.push(item.uri);
+            } else if (item.__model__ === 'Ref' && item.type === 'artist') {
+              subdirectories.push(formatArtist({ ...item, loading: true }));
+              subdirectoryImagesToLoad.push(item.uri);
+            } else if (item.__model__ === 'Ref' && item.type === 'playlist') {
+              // Tidal moods and genres incorrectly marked as Playlist type
+              if (
+                item.uri.indexOf('tidal:mood') > -1 ||
+                item.uri.indexOf('tidal:genre') > -1
+              ) {
+                subdirectories.push({
+                  ...item,
+                  type: 'directory',
+                });
+              } else {
+                subdirectories.push(formatPlaylist({ ...item, loading: true }));
+                subdirectoryImagesToLoad.push(item.uri);
+              }
             } else {
               subdirectories.push(item);
             }
@@ -1753,12 +1788,13 @@ const MopidyMiddleware = (function () {
       case 'MOPIDY_GET_LIBRARY_ARTISTS':
         store.dispatch(uiActions.startProcess(action.type, { notification: false }));
 
-        request(store, 'library.browse', { uri: store.getState().mopidy.library_artists_uri })
+        request(store, 'library.browse', { uri: action.uri })
           .then((raw_response) => {
             // No items in our library
             if (!raw_response.length) {
               store.dispatch(coreActions.libraryLoaded({
                 uri: 'mopidy:library:artists',
+                type: 'artists',
                 items_uris: [],
               }));
               store.dispatch(uiActions.processFinished(action.type));
@@ -1773,7 +1809,8 @@ const MopidyMiddleware = (function () {
 
             store.dispatch(coreActions.itemsLoaded(response));
             store.dispatch(coreActions.libraryLoaded({
-              uri: 'mopidy:library:artists',
+              uri: action.uri,
+              type: 'artists',
               items_uris: arrayOf('uri', response),
             }));
             store.dispatch(uiActions.processFinished(action.type));
@@ -1783,75 +1820,141 @@ const MopidyMiddleware = (function () {
       case 'MOPIDY_GET_LIBRARY_PLAYLISTS': {
         store.dispatch(uiActions.startProcess(action.type, { notification: false }));
 
-        request(store, 'playlists.asList')
-          .then((listResponse) => {
-            // Remove any Spotify playlists. These will be handled by our Spotify API
-            const playlist_uris = arrayOf('uri', listResponse).filter(
-              (playlistUri) => uriSource(playlistUri) !== 'spotify',
-            );
-            const libraryPlaylists = [];
+        // Built-in playlist support works differently to other providers
+        if (action.uri === 'm3u:playlists') {
+          request(store, 'playlists.asList')
+            .then((listResponse) => {
+              const libraryPlaylists = [];
+              const playlist_uris = arrayOf('uri', listResponse).filter(
+                (pUri) => (pUri.indexOf('m3u') > -1),
+              );
+              store.dispatch(
+                uiActions.updateProcess(
+                  action.type,
+                  {
+                    total: playlist_uris.length,
+                    remaining: playlist_uris.length,
+                  },
+                ),
+              );
 
-            store.dispatch(
-              uiActions.updateProcess(
-                action.type,
-                {
-                  total: playlist_uris.length,
-                  remaining: playlist_uris.length,
-                },
-              ),
-            );
+              if (playlist_uris.length) {
+                playlist_uris.forEach((uri, index) => {
+                  request(store, 'playlists.lookup', { uri })
+                    .then((response) => {
+                      if (response) {
+                        libraryPlaylists.push(
+                          formatPlaylist({
+                            name: response.name,
+                            uri: response.uri,
+                            can_edit: uriSource(response.uri) === 'm3u',
+                            last_modified: response.last_modified,
+                            // By not including actual tracks they will be fetched when needed. We don't
+                            // want these simple tracks because they don't contain duration, artist, etc.
+                            tracks_total: response.tracks ? response.tracks.length : null,
+                          }),
+                        );
+                      }
 
-            if (playlist_uris.length) {
-              playlist_uris.forEach((uri, index) => {
-                request(store, 'playlists.lookup', { uri })
-                  .then((response) => {
-                    libraryPlaylists.push(
-                      formatPlaylist({
-                        name: response.name,
-                        uri: response.uri,
-                        can_edit: uriSource(response.uri) === 'm3u',
-                        last_modified: response.last_modified,
-                        // By not including actual tracks they will be fetched when needed. We don't
-                        // want these simple tracks because they don't contain duration, artist, etc.
-                        tracks_total: response.tracks ? response.tracks.length : null,
-                      }),
-                    );
+                      store.dispatch(
+                        uiActions.updateProcess(
+                          action.type,
+                          {
+                            remaining: playlist_uris.length - index - 1,
+                          },
+                        ),
+                      );
 
-                    store.dispatch(
-                      uiActions.updateProcess(
-                        action.type,
-                        {
-                          remaining: playlist_uris.length - index - 1,
-                        },
-                      ),
-                    );
+                      if (index === playlist_uris.length - 1) {
+                        store.dispatch(coreActions.itemsLoaded(libraryPlaylists));
+                        store.dispatch(coreActions.libraryLoaded({
+                          uri: action.uri,
+                          type: 'playlists',
+                          items_uris: arrayOf('uri', libraryPlaylists),
+                        }));
+                        store.dispatch(uiActions.processFinished(action.type));
+                      }
+                    });
+                });
+              } else {
+                store.dispatch(coreActions.libraryLoaded({
+                  uri: action.uri,
+                  type: 'playlists',
+                  items_uris: [],
+                }));
+                store.dispatch(uiActions.stopLoading('mopidy:library:playlists'));
+                store.dispatch(uiActions.processFinished(action.type));
+              }
+            });
+        } else {
+          request(store, 'library.browse', { uri: action.uri })
+            .then((browseResponse) => {
+              const libraryPlaylists = [];
 
-                    if (index === playlist_uris.length - 1) {
-                      store.dispatch(coreActions.itemsLoaded(libraryPlaylists));
-                      store.dispatch(coreActions.libraryLoaded({
-                        uri: 'mopidy:library:playlists',
-                        items_uris: arrayOf('uri', libraryPlaylists),
-                      }));
-                      store.dispatch(uiActions.processFinished(action.type));
-                    }
-                  });
-              });
-            } else {
-              store.dispatch(coreActions.libraryLoaded({
-                uri: 'mopidy:library:playlists',
-                items_uris: [],
-              }));
-              store.dispatch(uiActions.stopLoading('mopidy:library:playlists'));
-              store.dispatch(uiActions.processFinished(action.type));
-            }
-          });
+              store.dispatch(
+                uiActions.updateProcess(
+                  action.type,
+                  {
+                    total: browseResponse.length,
+                    remaining: browseResponse.length,
+                  },
+                ),
+              );
+
+              if (browseResponse.length) {
+                browseResponse.forEach((playlist, index) => {
+                  request(store, 'library.lookup', { uris: [playlist.uri] })
+                    .then((response) => {
+                      if (response) {
+                        libraryPlaylists.push(
+                          formatPlaylist({
+                            name: playlist.name,
+                            uri: playlist.uri,
+                            can_edit: uriSource(playlist.uri) === 'm3u',
+                            last_modified: playlist.last_modified,
+                            tracks: formatTracks(response[playlist.uri]),
+                          }),
+                        );
+                      }
+
+                      store.dispatch(
+                        uiActions.updateProcess(
+                          action.type,
+                          {
+                            remaining: browseResponse.length - index - 1,
+                          },
+                        ),
+                      );
+
+                      if (index === browseResponse.length - 1) {
+                        store.dispatch(coreActions.itemsLoaded(libraryPlaylists));
+                        store.dispatch(coreActions.libraryLoaded({
+                          uri: action.uri,
+                          type: 'playlists',
+                          items_uris: arrayOf('uri', libraryPlaylists),
+                        }));
+                        store.dispatch(uiActions.processFinished(action.type));
+                      }
+                    });
+                });
+              } else {
+                store.dispatch(coreActions.libraryLoaded({
+                  uri: action.uri,
+                  type: 'playlists',
+                  items_uris: [],
+                }));
+                store.dispatch(uiActions.stopLoading('mopidy:library:playlists'));
+                store.dispatch(uiActions.processFinished(action.type));
+              }
+            });
+        }
         break;
       }
 
       case 'MOPIDY_GET_LIBRARY_ALBUMS':
         store.dispatch(uiActions.startProcess(action.type, { notification: false }));
 
-        request(store, 'library.browse', { uri: store.getState().mopidy.library_albums_uri })
+        request(store, 'library.browse', { uri: action.uri })
           .then((browseResponse) => {
             const allUris = arrayOf('uri', browseResponse);
 
@@ -1865,12 +1968,12 @@ const MopidyMiddleware = (function () {
 
             const run = () => {
               if (allUris.length) {
-                const uris = allUris.splice(0, 100);
+                const uris = allUris.splice(0, 10);
                 const processor = store.getState().ui.processes[action.type];
 
                 if (processor && processor.status === 'cancelling') {
                   store.dispatch(uiActions.processCancelled(action.type));
-                  store.dispatch(uiActions.stopLoading('mopidy:library:albums'));
+                  store.dispatch(uiActions.stopLoading(action.uri));
                   return;
                 }
                 store.dispatch(uiActions.updateProcess(action.type, { remaining: allUris.length }));
@@ -1878,12 +1981,22 @@ const MopidyMiddleware = (function () {
                 request(store, 'library.lookup', { uris })
                   .then(
                     (lookupResponse) => {
-                      const libraryItems = indexToArray(lookupResponse).map((tracks) => ({
-                        artists: tracks[0].artists ? formatArtists(tracks[0].artists) : null,
-                        tracks: formatTracks(tracks),
-                        last_modified: tracks[0].last_modified,
-                        ...formatAlbum(tracks[0].album),
-                      }));
+                      const libraryItems = [];
+                      indexToArray(lookupResponse).forEach(
+                        (tracks) => {
+                          if (tracks.length <= 0) {
+                            console.info('Ignoring item; no results in lookup');
+                            return;
+                          }
+
+                          libraryItems.push({
+                            artists: tracks[0].artists ? formatArtists(tracks[0].artists) : null,
+                            tracks: formatTracks(tracks),
+                            last_modified: tracks[0].last_modified,
+                            ...formatAlbum(tracks[0].album),
+                          });
+                        },
+                      );
 
                       if (libraryItems.length) {
                         store.dispatch(coreActions.itemsLoaded(libraryItems));
@@ -1894,7 +2007,8 @@ const MopidyMiddleware = (function () {
               } else {
                 store.dispatch(uiActions.processFinished(action.type));
                 store.dispatch(coreActions.libraryLoaded({
-                  uri: 'mopidy:library:albums',
+                  uri: action.uri,
+                  type: 'albums',
                   items_uris: arrayOf('uri', browseResponse),
                 }));
               }
@@ -1907,7 +2021,7 @@ const MopidyMiddleware = (function () {
       case 'MOPIDY_GET_LIBRARY_TRACKS':
         store.dispatch(uiActions.startProcess(action.type, { notification: false }));
 
-        request(store, 'library.browse', { uri: store.getState().mopidy.library_tracks_uri })
+        request(store, 'library.browse', { uri: action.uri })
           .then((browseResponse) => {
             const allUris = arrayOf('uri', browseResponse);
 
@@ -1949,7 +2063,8 @@ const MopidyMiddleware = (function () {
               } else {
                 store.dispatch(uiActions.processFinished(action.type));
                 store.dispatch(coreActions.libraryLoaded({
-                  uri: 'mopidy:library:tracks',
+                  uri: action.uri,
+                  type: 'tracks',
                   items_uris: arrayOf('uri', browseResponse),
                 }));
               }

@@ -77,12 +77,17 @@
         &.sidebar__menu__item {
           color: colour('mid_grey');
 
+          &:before,
+          &:after {
+            display: none;
+          }
+
           @include theme('light') {
             color: colour('soft_grey');
           }
 
-          &--active {
-            background: transparent;
+          &.active {
+            background: transparent !important;
             color: colour('turquoise') !important;
           }
         }

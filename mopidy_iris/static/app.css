@@ -79,6 +79,8 @@
   height: 1rem;
   position: relative;
   width: 100%; }
+
+/*# sourceMappingURL=index.css.map */
 @charset "UTF-8";
 /*!
  *  Font Awesome 4.7.0 by @davegandy - http://fontawesome.io - @fontawesome
@@ -5438,13 +5440,6 @@ h4 .context-menu-trigger, h4 .context-menu-trigger:active {
   justify-content: space-between;
   align-content: center;
   border-top: 1px solid rgba(128, 128, 128, 0.05);
-  /*
-  		.icon.source {
-  			color: colour('mid_grey');
-  			position: absolute;
-  			top: 16px;
-  			right: 40px;
-  		}*/
 }
 .list__item::after {
   content: "";
@@ -6152,6 +6147,19 @@ h4 .loader {
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: "liga";
 }
+.icon--svg.source img {
+  max-width: 1rem;
+}
+.dark-theme .icon--svg.source {
+  filter: brightness(0) invert(1);
+}
+
+@media (prefers-color-scheme: dark) {
+  .auto-theme .icon--svg.source {
+    filter: brightness(0) invert(1);
+  }
+}
+
 .icon--spin {
   animation-name: spin;
   animation-duration: 1s;
@@ -7207,6 +7215,9 @@ h4 .loader {
 .sidebar__menu__item--submenu.sidebar__menu__item {
   color: #a3a19f;
 }
+.sidebar__menu__item--submenu.sidebar__menu__item:before, .sidebar__menu__item--submenu.sidebar__menu__item:after {
+  display: none;
+}
 .light-theme .sidebar__menu__item--submenu.sidebar__menu__item {
   color: #51504e;
 }
@@ -7217,8 +7228,8 @@ h4 .loader {
   }
 }
 
-.sidebar__menu__item--submenu.sidebar__menu__item--active {
-  background: transparent;
+.sidebar__menu__item--submenu.sidebar__menu__item.active {
+  background: transparent !important;
   color: #08d58f !important;
 }
 .sidebar__menu__item--active {
@@ -8700,18 +8711,9 @@ main header.overlay {
 .sub-tabs__menu .menu-item__icon.icon--svg {
   opacity: 0.8;
 }
-.light-theme .sub-tabs__menu .menu-item__icon.icon--svg {
-  -webkit-filter: invert(1);
-  filter: invert(1);
+.sub-tabs__menu .menu-item__icon.icon--svg img {
+  height: 1em;
 }
-
-@media (prefers-color-scheme: light) {
-  .auto-theme .sub-tabs__menu .menu-item__icon.icon--svg {
-    -webkit-filter: invert(1);
-    filter: invert(1);
-  }
-}
-
 .sub-tabs__menu .menu-item__title {
   margin: 0;
   padding: 0;

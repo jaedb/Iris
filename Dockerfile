@@ -1,12 +1,16 @@
-FROM circleci/python:3.7.5
-
+FROM debian:stable
 
 # Switch to the root user while we do our changes
 USER root
 
 # Install GStreamer and other required Debian packages
 RUN apt-get update \
-  && apt-get install -y \
+  && apt-get install -y --no-install-recommends \
+    wget \
+    gnupg2 \
+    git \
+    python3-setuptools \
+    python3-pip \
     dumb-init \
     graphviz-dev \
     gstreamer1.0-plugins-bad \
@@ -14,17 +18,14 @@ RUN apt-get update \
     gstreamer1.0-plugins-ugly \
     gstreamer1.0-pulseaudio \
     libasound2-dev \
-    python-dev \
-    python-gst-1.0 \
+    python3-dev \
     python3-gst-1.0 \
     build-essential \
     libdbus-glib-1-dev \
     libgirepository1.0-dev \
     dleyna-server \
+    sudo \
   && rm -rf /var/lib/apt/lists/*
-
-# Make python3-gst-1.0 available to non-Debian Python 3.7 installation
-RUN ln -s /usr/lib/python3/dist-packages/gi /usr/local/lib/python3.7/site-packages/gi
 
 # Install libspotify-dev from apt.mopidy.com
 RUN wget -q -O - https://apt.mopidy.com/mopidy.gpg \
@@ -39,23 +40,26 @@ RUN wget -q -O - https://apt.mopidy.com/mopidy.gpg \
 # installing using pip.
 RUN git clone https://github.com/jaedb/Iris.git /iris \
  && cd /iris \
- && python3.7 setup.py develop \
+ && python3 setup.py develop \
  && mkdir -p /var/lib/mopidy/.config \
  && ln -s /config /var/lib/mopidy/.config/mopidy \
  # Allow mopidy user to run system commands (restart, local scan, etc)
  && echo "mopidy ALL=NOPASSWD: /iris/mopidy_iris/system.sh" >> /etc/sudoers
 
 # Install additional Python dependencies
-RUN python3.7 -m pip install --no-cache \
+RUN python3 -m pip install --no-cache \
   tox \
   mopidy-mpd \
   mopidy-spotify \
   mopidy-local \
   Mopidy-TuneIn \
   Mopidy-Youtube \
+  Mopidy-YTMusic \
   Mopidy-SoundCloud \
   Mopidy-Podcast \
   Mopidy-dLeyna \
+  Mopidy-Jellyfin \
+  Mopidy-MusicBox-Webclient \
   dbus-python \
   # pip not up-to-date for Mopidy-Tidal (https://github.com/tehkillerbee/mopidy-tidal/issues/14)
   git+https://github.com/tehkillerbee/mopidy-tidal.git@master

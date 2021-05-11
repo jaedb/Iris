@@ -422,11 +422,10 @@ export function getImages(uris) {
   };
 }
 
-export function createPlaylist(name, scheme) {
+export function createPlaylist(playlist) {
   return {
     type: 'MOPIDY_CREATE_PLAYLIST',
-    name,
-    scheme,
+    playlist,
   };
 }
 
@@ -437,8 +436,11 @@ export function deletePlaylist(uri) {
   };
 }
 
-export function getLibraryPlaylists() {
-  return { type: 'MOPIDY_GET_LIBRARY_PLAYLISTS' };
+export function getLibraryPlaylists(uri) {
+  return {
+    type: 'MOPIDY_GET_LIBRARY_PLAYLISTS',
+    uri,
+  };
 }
 
 export function getPlaylist(uri, options) {

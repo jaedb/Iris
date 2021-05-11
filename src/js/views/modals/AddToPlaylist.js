@@ -12,8 +12,12 @@ import * as spotifyActions from '../../services/spotify/actions';
 import { sourceIcon } from '../../util/helpers';
 import { sortItems } from '../../util/arrays';
 import { I18n, i18n } from '../../locale';
-import { collate, decodeUri } from '../../util/format';
-import { makeProcessProgressSelector } from '../../util/selectors';
+import { decodeUri } from '../../util/format';
+import {
+  makeProcessProgressSelector,
+  makeProvidersSelector,
+  makeLibrarySelector,
+} from '../../util/selectors';
 
 const processKeys = [
   'MOPIDY_GET_LIBRARY_PLAYLISTS',
@@ -23,31 +27,25 @@ const processKeys = [
 class AddToPlaylist extends React.Component {
   componentDidMount = () => {
     const {
-      spotify_library: {
-        items_uris: spotify_library,
-      },
-      mopidy_library: {
-        items_uris: mopidy_library,
-      },
-      spotify_available,
-      coreActions: {
-        loadLibrary,
-      },
       uiActions: {
         setWindowTitle,
       },
     } = this.props;
 
-    if (!spotify_library.length && spotify_available) {
-      loadLibrary('spotify:library:playlists');
-    }
-
-    if (!mopidy_library.length) {
-      loadLibrary('mopidy:library:playlists');
-    }
-
+    this.getLibraries();
     setWindowTitle(i18n('modal.add_to_playlist.title'));
   }
+
+  getLibraries = () => {
+    const {
+      providers,
+      coreActions: {
+        loadLibrary,
+      },
+    } = this.props;
+
+    providers.forEach((provider) => loadLibrary(provider.uri, 'playlists'));
+  };
 
   playlistSelected = (playlist_uri) => {
     const {
@@ -62,9 +60,7 @@ class AddToPlaylist extends React.Component {
 
   renderList = () => {
     const {
-      items,
-      spotify_library = { items_uris: [] },
-      mopidy_library = { items_uris: [] },
+      playlists: allPlaylists,
       loading_progress,
     } = this.props;
 
@@ -72,11 +68,7 @@ class AddToPlaylist extends React.Component {
       return <Loader body loading progress={loading_progress} />;
     }
 
-    let playlists = [
-      ...(collate(spotify_library, { items }).items),
-      ...(collate(mopidy_library, { items }).items),
-    ].filter((playlist) => playlist.can_edit);
-
+    let playlists = allPlaylists.filter((playlist) => playlist.can_edit);
     playlists = sortItems(playlists, 'name');
 
     if (playlists.length > 0) {
@@ -128,6 +120,9 @@ class AddToPlaylist extends React.Component {
   }
 }
 
+const librarySelector = makeLibrarySelector('playlists', false);
+const processProgressSelector = makeProcessProgressSelector(processKeys);
+const providersSelector = makeProvidersSelector('playlists');
 const mapStateToProps = (state, ownProps) => {
   const {
     spotify: {
@@ -136,29 +131,18 @@ const mapStateToProps = (state, ownProps) => {
       } = {},
       access_token: spotify_available,
     },
-    core: {
-      playlists,
-      items,
-      libraries,
-    },
-    mopidy: {
-      uri_schemes: mopidy_uri_schemes,
-    },
   } = state;
-  const processProgressSelector = makeProcessProgressSelector(processKeys);
-  const unencodedUris = ownProps.match.params?.uris.split(',');
-  const uris = unencodedUris ? unencodedUris.map((uri) => decodeUri(uri)) : [];
+
+  const unencodedUris = ownProps.match.params?.uris;
+  const uris = unencodedUris ? decodeUri(unencodedUris).split(',') : [];
 
   return {
     uris,
-    mopidy_uri_schemes,
-    items,
-    mopidy_library: libraries['mopidy:library:playlists'] || { items_uris: [] },
-    spotify_library: libraries['spotify:library:playlists'] || { items_uris: [] },
+    providers: providersSelector(state),
+    playlists: librarySelector(state, 'playlists'),
     spotify_available,
     loading_progress: processProgressSelector(state),
     me_id,
-    playlists,
   };
 };
 

@@ -88,9 +88,22 @@ class SearchForm extends React.Component {
     return false;
   }
 
+  onReset = () => {
+    const { onReset: doReset } = this.props;
+
+    this.setState(
+      {
+        term: '',
+        pristine: true,
+      },
+      () => {
+        doReset();
+      },
+    );
+  }
+
   render = () => {
     const { term } = this.state;
-    const { onReset } = this.props;
 
     return (
       <form className="search-form" onSubmit={this.onSubmit}>
@@ -105,7 +118,7 @@ class SearchForm extends React.Component {
           />
         </label>
         {term && (
-          <Icon name="close" className="search-form__reset" onClick={onReset} />
+          <Icon name="close" className="search-form__reset" onClick={this.onReset} />
         )}
       </form>
     );

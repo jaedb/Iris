@@ -31,7 +31,6 @@ class LibraryBrowse extends React.Component {
     const {
       loading,
       directory,
-      mopidyActions,
     } = this.props;
 
     if (!directory) {
@@ -98,6 +97,10 @@ class LibraryBrowse extends React.Component {
             subdirectory.icons = ['/iris/assets/backgrounds/browse-google.jpg'];
             break;
 
+          case 'YouTube Music':
+            subdirectory.icons = ['/iris/assets/backgrounds/browse-youtube.jpg'];
+            break;
+
           default:
             subdirectory.icons = ['/iris/assets/backgrounds/browse-default.jpg'];
         }
@@ -118,7 +121,7 @@ class LibraryBrowse extends React.Component {
         </Header>
         <section className="content-wrapper">
           <div className="grid grid--tiles">
-            <Grid items={grid_items} />
+            <Grid items={grid_items} sourceIcon={false} />
           </div>
         </section>
       </div>

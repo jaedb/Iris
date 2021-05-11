@@ -27,6 +27,7 @@ actions:
   stop: Stop
   add_to_playlist: Add to playlist
   add_to_library: Add to library
+  create_playlist_and_add: New playlist
   added_tracks_to: 'Added %{count} tracks to '
   remove_from_library: Remove from library
   add_to_queue: Add to queue
@@ -147,6 +148,10 @@ services:
     title: LastFM
     love: Love
     unlove: Unlove
+  youtube:
+    title: YouTube
+  tidal:
+    title: Tidal
 
 ##
 # Components
@@ -171,6 +176,7 @@ sidebar:
 context_menu:
   add_to_playlist:
     title: Add to playlist
+    new_playlist: Create playlist
     no_playlists: No writable playlists
   play_next: Play next
   play_top_tracks: Play top tracks
@@ -507,6 +513,7 @@ modal:
   edit_playlist:
     title: Edit playlist
     title_create: Create playlist
+    subtitle: 'And add %{count} track%{plural}'
     name_required: Name is required
     name: Name
     description: Description

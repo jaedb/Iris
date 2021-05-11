@@ -18,6 +18,7 @@ import Loader from '../../components/Loader';
 import {
   makeLibrarySelector,
   makeProcessProgressSelector,
+  makeProvidersSelector,
   getLibrarySource,
 } from '../../util/selectors';
 
@@ -44,16 +45,14 @@ class LibraryPlaylists extends React.Component {
 
     setWindowTitle(i18n('library.playlists.title'));
 
-    this.getMopidyLibrary();
-    this.getSpotifyLibrary();
+    this.getLibraries();
   }
 
   refresh = () => {
     const { uiActions: { hideContextMenu } } = this.props;
 
     hideContextMenu();
-    this.getMopidyLibrary(true);
-    this.getSpotifyLibrary(true);
+    this.getLibraries(true);
   }
 
   cancelRefresh = () => {
@@ -63,46 +62,35 @@ class LibraryPlaylists extends React.Component {
     cancelProcess(processKeys);
   }
 
-  getMopidyLibrary = (forceRefetch = false) => {
-    const {
-      source,
-      coreActions: {
-        loadLibrary,
-      },
-    } = this.props;
-
-    if (source !== 'local' && source !== 'all') return;
-
-    loadLibrary('mopidy:library:playlists', { forceRefetch });
-  };
-
-  getSpotifyLibrary = (forceRefetch = false) => {
-    const {
-      source,
-      spotify_available,
-      coreActions: {
-        loadLibrary,
-      },
-    } = this.props;
-
-    if (!spotify_available) return;
-    if (source !== 'spotify' && source !== 'all') return;
-
-    loadLibrary('spotify:library:playlists', { forceRefetch });
-  };
-
   componentDidUpdate = ({ source: prevSource }) => {
     const { source } = this.props;
 
     if (source !== prevSource) {
-      this.getMopidyLibrary();
-      this.getSpotifyLibrary();
+      this.getLibraries();
     }
   }
 
+  getLibraries = (forceRefetch = false) => {
+    const {
+      source,
+      providers,
+      coreActions: {
+        loadLibrary,
+      },
+    } = this.props;
+
+    let uris = [];
+    if (source === 'all') {
+      uris = providers.map((p) => p.uri);
+    } else {
+      uris.push(source);
+    }
+    uris.forEach((uri) => loadLibrary(uri, 'playlists', { forceRefetch }));
+  };
+
   setSort(value) {
     let reverse = false;
-    if (this.props.sort == value) reverse = !this.props.sort_reverse;
+    if (this.props.sort === value) reverse = !this.props.sort_reverse;
 
     const data = {
       library_playlists_sort_reverse: reverse,
@@ -169,7 +157,7 @@ class LibraryPlaylists extends React.Component {
   render = () => {
     const {
       uiActions,
-      spotify_available,
+      providers,
       source,
       sort,
       sort_reverse,
@@ -179,24 +167,6 @@ class LibraryPlaylists extends React.Component {
     const {
       filter,
     } = this.state;
-
-    const source_options = [
-      {
-        value: 'all',
-        label: i18n('fields.filters.all'),
-      },
-      {
-        value: 'local',
-        label: i18n('services.mopidy.local'),
-      },
-    ];
-
-    if (spotify_available) {
-      source_options.push({
-        value: 'spotify',
-        label: i18n('services.spotify.title'),
-      });
-    }
 
     const view_options = [
       {
@@ -269,7 +239,13 @@ class LibraryPlaylists extends React.Component {
           name={i18n('fields.source')}
           valueAsLabel
           value={source}
-          options={source_options}
+          options={[
+            {
+              value: 'all',
+              label: i18n('fields.filters.all'),
+            },
+            ...providers.map((p) => ({ value: p.uri, label: p.title })),
+          ]}
           handleChange={(value) => { uiActions.set({ library_playlists_source: value }); uiActions.hideContextMenu(); }}
         />
         <Button
@@ -307,6 +283,7 @@ class LibraryPlaylists extends React.Component {
 
 const librarySelector = makeLibrarySelector('playlists');
 const processProgressSelector = makeProcessProgressSelector(processKeys);
+const providersSelector = makeProvidersSelector('playlists');
 const mapStateToProps = (state) => {
   const {
     spotify: {
@@ -318,8 +295,7 @@ const mapStateToProps = (state) => {
 
   return {
     slim_mode: state.ui.slim_mode,
-    mopidy_uri_schemes: state.mopidy.uri_schemes,
-    spotify_available: state.spotify.access_token,
+    providers: providersSelector(state),
     playlists: librarySelector(state, 'playlists'),
     loading_progress: processProgressSelector(state),
     source: getLibrarySource(state, 'playlists'),

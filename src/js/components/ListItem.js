@@ -6,12 +6,11 @@ import { dater } from './Dater';
 import { nice_number } from './NiceNumber';
 import URILink from './URILink';
 import ContextMenuTrigger from './ContextMenuTrigger';
-import Icon from './Icon';
+import Icon, { SourceIcon } from './Icon';
 import Thumbnail from './Thumbnail';
 import Popularity from './Popularity';
 import { I18n } from '../locale';
 import { encodeUri } from '../util/format';
-import { sourceIcon } from '../util/helpers';
 import { updateScrollPosition } from './Link';
 
 import * as uiActions from '../services/ui/actions';
@@ -47,7 +46,7 @@ const getValue = (item = {}, name = '') => {
       return <I18n path="specs.albums" count={total || array.length} />;
     }
     case 'source':
-      return <Icon type="fontawesome" name={sourceIcon(item.uri)} fixedWidth />;
+      return <SourceIcon uri={item.uri} fixedWidth />;
     default:
       break;
   }
@@ -133,8 +132,9 @@ const ListItem = ({
    */
   const onClick = (e) => {
     let to = '';
-    if (getLink) {
-      to = getLink(item);
+    const getLinkResult = getLink ? getLink(item) : undefined;
+    if (getLinkResult) {
+      to = getLinkResult;
     } else if (item.link) {
       to = item.link;
     } else {

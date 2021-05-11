@@ -17,12 +17,12 @@ import {
   makeLibrarySelector,
   makeProcessProgressSelector,
   getLibrarySource,
+  makeProvidersSelector,
 } from '../../util/selectors';
 
 const processKeys = [
   'MOPIDY_GET_LIBRARY_ARTISTS',
   'SPOTIFY_GET_LIBRARY_ARTISTS',
-  'GOOGLE_GET_LIBRARY_ARTISTS',
 ];
 
 class LibraryArtists extends React.Component {
@@ -42,18 +42,14 @@ class LibraryArtists extends React.Component {
     } = this.props;
 
     setWindowTitle(i18n('library.artists.title'));
-
-    this.getMopidyLibrary();
-    this.getSpotifyLibrary();
+    this.getLibraries();
   }
 
   componentDidUpdate = ({ source: prevSource }) => {
     const { source } = this.props;
 
     if (source !== prevSource) {
-      this.getMopidyLibrary();
-      this.getGoogleLibrary();
-      this.getSpotifyLibrary();
+      this.getLibraries();
     }
   }
 
@@ -61,9 +57,7 @@ class LibraryArtists extends React.Component {
     const { uiActions: { hideContextMenu } } = this.props;
 
     hideContextMenu();
-    this.getMopidyLibrary(true);
-    this.getGoogleLibrary(true);
-    this.getSpotifyLibrary(true);
+    this.getLibraries(true);
   }
 
   cancelRefresh = () => {
@@ -93,47 +87,22 @@ class LibraryArtists extends React.Component {
     });
   }
 
-  getMopidyLibrary = (forceRefetch = false) => {
+  getLibraries = (forceRefetch = false) => {
     const {
       source,
+      providers,
       coreActions: {
         loadLibrary,
       },
     } = this.props;
 
-    if (source !== 'local' && source !== 'all') return;
-
-    loadLibrary('mopidy:library:artists', { forceRefetch });
-  };
-
-  getGoogleLibrary = (forceRefetch = false) => {
-    const {
-      source,
-      google_available,
-      coreActions: {
-        loadLibrary,
-      },
-    } = this.props;
-
-    if (!google_available) return;
-    if (source !== 'google' && source !== 'all') return;
-
-    loadLibrary('google:library:artists', { forceRefetch });
-  };
-
-  getSpotifyLibrary = (forceRefetch = false) => {
-    const {
-      source,
-      spotify_available,
-      coreActions: {
-        loadLibrary,
-      },
-    } = this.props;
-
-    if (!spotify_available) return;
-    if (source !== 'spotify' && source !== 'all') return;
-
-    loadLibrary('spotify:library:artists', { forceRefetch });
+    let uris = [];
+    if (source === 'all') {
+      uris = providers.map((p) => p.uri);
+    } else {
+      uris.push(source);
+    }
+    uris.forEach((uri) => loadLibrary(uri, 'artists', { forceRefetch }));
   };
 
   renderView = () => {
@@ -183,35 +152,9 @@ class LibraryArtists extends React.Component {
 
   render = () => {
     const {
-      spotify_available,
-      google_available,
       loading_progress,
+      providers,
     } = this.props;
-
-    const source_options = [
-      {
-        value: 'all',
-        label: i18n('fields.filters.all'),
-      },
-      {
-        value: 'local',
-        label: i18n('services.mopidy.local'),
-      },
-    ];
-
-    if (spotify_available) {
-      source_options.push({
-        value: 'spotify',
-        label: i18n('services.spotify.title'),
-      });
-    }
-
-    if (google_available) {
-      source_options.push({
-        value: 'google',
-        label: i18n('services.google.title'),
-      });
-    }
 
     const view_options = [
       {
@@ -272,7 +215,13 @@ class LibraryArtists extends React.Component {
           name={i18n('fields.source')}
           value={this.props.source}
           valueAsLabel
-          options={source_options}
+          options={[
+            {
+              value: 'all',
+              label: i18n('fields.filters.all'),
+            },
+            ...providers.map((p) => ({ value: p.uri, label: p.title })),
+          ]}
           handleChange={(value) => { this.props.uiActions.set({ library_artists_source: value }); this.props.uiActions.hideContextMenu(); }}
         />
         <Button
@@ -301,11 +250,11 @@ class LibraryArtists extends React.Component {
 
 const librarySelector = makeLibrarySelector('artists');
 const processProgressSelector = makeProcessProgressSelector(processKeys);
+const providersSelector = makeProvidersSelector('artists');
 const mapStateToProps = (state) => ({
   loading_progress: processProgressSelector(state),
-  mopidy_uri_schemes: state.mopidy.uri_schemes,
-  google_available: (state.mopidy.uri_schemes && state.mopidy.uri_schemes.includes('gmusic:')),
-  spotify_available: (state.spotify.access_token),
+  uri_schemes: state.mopidy.uri_schemes,
+  providers: providersSelector(state),
   artists: librarySelector(state, 'artists'),
   source: getLibrarySource(state, 'artists'),
   sort: (state.ui.library_artists_sort ? state.ui.library_artists_sort : null),
