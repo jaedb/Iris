@@ -44,9 +44,9 @@ actions:
   delete: Borrar
   remove: Eliminar
   cancel: Cancelar
-  created: %{name} creado
-  saved: %{name} guardado
-  deleted: %{name} borrado
+  created: '%{name} creado'
+  saved: '%{name} guardado'
+  deleted: '%{name} borrado'
 common:
   popularity: Popularidad
   name: Nombre
