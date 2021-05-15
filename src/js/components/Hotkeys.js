@@ -1,6 +1,5 @@
 import ReactGA from 'react-ga';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { indexToArray, sortItems } from '../util/arrays';
 import { collate } from '../util/format';
@@ -9,21 +8,17 @@ import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import * as snapcastActions from '../services/snapcast/actions';
 
-const Hotkeys = ({
-  play_state,
-  mopidyActions,
-  uiActions,
-  snapcastActions,
-  mute,
-  play_time_position,
-  history,
-  dragging,
-  allow_reporting,
-  volume,
-  snapcast_groups,
-  snapcast_clients,
-  show_disconnected_clients,
-}) => {
+const Hotkeys = () => {
+  const dispatch = useDispatch();
+  const volume = useSelector((state) => state.mopidy.volume);
+  const mute = useSelector((state) => state.mopidy.mute);
+  const play_state = useSelector((state) => state.mopidy.play_state);
+  const play_time_position = useSelector((state) => parseInt(state.mopidy.time_position, 10));
+  const dragging = useSelector((state) => state.ui.dragger?.dragging);
+  const allow_reporting = useSelector((state) => state.ui.allow_reporting);
+  const snapcast_groups = useSelector((state) => state.snapcast.groups);
+  const snapcast_clients = useSelector((state) => state.snapcast.clients);
+  const show_disconnected_clients = useSelector((state) => state.ui?.snapcast_show_disconnected_clients);
   const prepare = ({ e, label, callback }) => {
     const {
       target,
@@ -73,24 +68,24 @@ const Hotkeys = ({
     ) / groupClients.length;
 
     if (group.mute) snapcastActions.setGroupMute(group.id, false);
-    snapcastActions.setGroupVolume(group.id, groupVolume + adjustment, groupVolume);
-    uiActions.createNotification({
+    dispatch(snapcastActions.setGroupVolume(group.id, groupVolume + adjustment, groupVolume));
+    dispatch(uiActions.createNotification({
       content: adjustment > 0 ? 'volume_up' : 'volume_down',
       title: group.name,
       type: 'shortcut',
-    });
+    }));
   };
 
   const toggleSnapcastMute = (index) => {
     const group = getSnapcastGroup(index);
     const nextMute = group.mute !== true;
 
-    snapcastActions.setGroupMute(group.id, nextMute);
-    uiActions.createNotification({
+    dispatch(snapcastActions.setGroupMute(group.id, nextMute));
+    dispatch(uiActions.createNotification({
       content: nextMute ? 'volume_off' : 'volume_up',
       title: group.name,
       type: 'shortcut',
-    });
+    }));
   };
 
   useHotkeys('i', (e) => {
@@ -108,11 +103,11 @@ const Hotkeys = ({
     label: 'Play/pause',
     callback: () => {
       if (play_state === 'playing') {
-        mopidyActions.pause();
-        uiActions.createNotification({ content: 'pause', type: 'shortcut' });
+        dispatch(mopidyActions.pause());
+        dispatch(uiActions.createNotification({ content: 'pause', type: 'shortcut' }));
       } else {
-        mopidyActions.play();
-        uiActions.createNotification({ content: 'play_arrow', type: 'shortcut' });
+        dispatch(mopidyActions.play());
+        dispatch(uiActions.createNotification({ content: 'play_arrow', type: 'shortcut' }));
       }
     },
   }), {}, [play_state]);
@@ -121,8 +116,8 @@ const Hotkeys = ({
     e,
     label: 'Stop',
     callback: () => {
-      mopidyActions.stop();
-      uiActions.createNotification({ content: 'stop', type: 'shortcut' });
+      dispatch(mopidyActions.stop());
+      dispatch(uiActions.createNotification({ content: 'stop', type: 'shortcut' }));
     },
   }));
 
@@ -134,8 +129,8 @@ const Hotkeys = ({
       if (new_position < 0) {
         new_position = 0;
       }
-      mopidyActions.setTimePosition(new_position);
-      uiActions.createNotification({ content: 'fast_rewind', type: 'shortcut' });
+      dispatch(mopidyActions.setTimePosition(new_position));
+      dispatch(uiActions.createNotification({ content: 'fast_rewind', type: 'shortcut' }));
     },
   }));
 
@@ -143,8 +138,8 @@ const Hotkeys = ({
     e,
     label: 'Fastforward',
     callback: () => {
-      mopidyActions.setTimePosition(play_time_position + 30000);
-      uiActions.createNotification({ content: 'fast_forward', type: 'shortcut' });
+      dispatch(mopidyActions.setTimePosition(play_time_position + 30000));
+      dispatch(uiActions.createNotification({ content: 'fast_forward', type: 'shortcut' }));
     },
   }));
 
@@ -152,8 +147,8 @@ const Hotkeys = ({
     e,
     label: 'Previous',
     callback: () => {
-      mopidyActions.previous();
-      uiActions.createNotification({ content: 'skip_previous', type: 'shortcut' });
+      dispatch(mopidyActions.previous());
+      dispatch(uiActions.createNotification({ content: 'skip_previous', type: 'shortcut' }));
     },
   }));
 
@@ -161,8 +156,8 @@ const Hotkeys = ({
     e,
     label: 'Next',
     callback: () => {
-      mopidyActions.next();
-      uiActions.createNotification({ content: 'skip_next', type: 'shortcut' });
+      dispatch(mopidyActions.next());
+      dispatch(uiActions.createNotification({ content: 'skip_next', type: 'shortcut' }));
     },
   }));
 
@@ -172,12 +167,12 @@ const Hotkeys = ({
     callback: () => {
       if (handler.key === '=') {
         if (volume !== 'false') {
-          uiActions.createNotification({ content: 'volume_up', title: 'Master', type: 'shortcut' });
+          dispatch(uiActions.createNotification({ content: 'volume_up', title: 'Master', type: 'shortcut' }));
           let nextVolume = volume + 5;
           if (nextVolume > 100) nextVolume = 100;
-          mopidyActions.setVolume(nextVolume);
+          dispatch(mopidyActions.setVolume(nextVolume));
           if (mute) {
-            mopidyActions.setMute(false);
+            dispatch(mopidyActions.setMute(false));
           }
         }
       } else {
@@ -193,12 +188,12 @@ const Hotkeys = ({
     callback: () => {
       if (handler.key === '-') {
         if (volume !== 'false') {
-          uiActions.createNotification({ content: 'volume_down', title: 'Master', type: 'shortcut' });
+          dispatch(uiActions.createNotification({ content: 'volume_down', title: 'Master', type: 'shortcut' }));
           let nextVolume = volume - 5;
           if (nextVolume < 0) nextVolume = 0;
-          mopidyActions.setVolume(nextVolume);
+          dispatch(mopidyActions.setVolume(nextVolume));
           if (mute) {
-            mopidyActions.setMute(false);
+            dispatch(mopidyActions.setMute(false));
           }
         }
       } else {
@@ -214,11 +209,11 @@ const Hotkeys = ({
     callback: () => {
       if (handler.key === '0') {
         if (mute) {
-          mopidyActions.setMute(false);
-          uiActions.createNotification({ content: 'volume_up', title: 'Master', type: 'shortcut' });
+          dispatch(mopidyActions.setMute(false));
+          dispatch(uiActions.createNotification({ content: 'volume_up', title: 'Master', type: 'shortcut' }));
         } else {
-          mopidyActions.setMute(true);
-          uiActions.createNotification({ content: 'volume_off', title: 'Master', type: 'shortcut' });
+          dispatch(mopidyActions.setMute(true));
+          dispatch(uiActions.createNotification({ content: 'volume_off', title: 'Master', type: 'shortcut' }));
         }
       } else {
         const index = parseInt(handler.key.replace('+0'), 10);
@@ -232,7 +227,7 @@ const Hotkeys = ({
     label: 'Escape',
     callback: () => {
       if (dragging) {
-        uiActions.dragEnd();
+        dispatch(uiActions.dragEnd());
         e.preventDefault();
       } else if ($('body').hasClass('modal-open')) {
         window.history.back();
@@ -242,24 +237,6 @@ const Hotkeys = ({
   }), {}, [dragging]);
 
   return null;
-}
+};
 
-const mapStateToProps = (state) => ({
-  volume: state.mopidy.volume,
-  mute: state.mopidy.mute,
-  play_state: state.mopidy.play_state,
-  play_time_position: parseInt(state.mopidy.time_position, 10),
-  dragging: state.ui.dragger && state.ui.dragger.dragging,
-  allow_reporting: state.ui.allow_reporting,
-  snapcast_groups: state.snapcast.groups,
-  snapcast_clients: state.snapcast.clients,
-  show_disconnected_clients: state.ui.snapcast_show_disconnected_clients || false,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  uiActions: bindActionCreators(uiActions, dispatch),
-  mopidyActions: bindActionCreators(mopidyActions, dispatch),
-  snapcastActions: bindActionCreators(snapcastActions, dispatch),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Hotkeys);
+export default Hotkeys;

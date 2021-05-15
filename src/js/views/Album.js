@@ -334,7 +334,7 @@ class Album extends React.Component {
           <section className="wiki">
             <h4 className="wiki__title">{i18n('album.wiki.title')}</h4>
             <div className="wiki__text">
-              <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(album.wiki) }}></p>
+              <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(album.wiki) }} />
               <br />
               <div className="mid_grey-text">
                 <I18n path="album.wiki.published" date={album.wiki_publish_date} />

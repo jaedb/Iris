@@ -17,6 +17,7 @@
       "plugins": [
         "react-element-info",
         "@babel/plugin-transform-runtime",
+        ["polyfill-corejs3", { "method": "usage-global" }]
       ],
       "presets": [
         "@babel/preset-env",
