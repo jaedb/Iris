@@ -7,7 +7,7 @@ Built and maintained by James Barnsley.
 [![Downloads](https://static.pepy.tech/personalized-badge/mopidy-iris?period=total&units=international_system&left_color=grey&right_color=green&left_text=Downloads)](https://pepy.tech/project/mopidy-iris)
 [![npm](https://img.shields.io/npm/v/mopidy-iris.svg?style=flat-square)]()
 ![badge](https://img.shields.io/pypi/v/mopidy-iris.svg?style=flat-square)
-![badge](https://img.shields.io/badge/unique_monthly_users-4,000+-brightgreen.svg?style=flat-square)
+![badge](https://img.shields.io/badge/unique_monthly_users-7,000+-brightgreen.svg?style=flat-square)
 [![badge](https://img.shields.io/badge/donate-paypal-blue.svg?style=flat-square)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=james%40barnsley%2enz&lc=NZ&item_name=James%20Barnsley&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted)
 
 Features

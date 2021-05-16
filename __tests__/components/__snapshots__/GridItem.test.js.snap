@@ -54,6 +54,13 @@ exports[`<GridItem /> should handle album 1`] = `
       data-qa-file="GridItem"
       data-qa-node="ul"
     >
+      <span
+        aria-hidden={true}
+        className="fa fa-folder icon icon--fontawesome source"
+        data-qa-file="Icon"
+        data-qa-node="FontAwesome"
+        type="fontawesome"
+      />
       <li
         data-qa-file="GridItem"
         data-qa-node="li"
@@ -135,6 +142,13 @@ exports[`<GridItem /> should handle artist 1`] = `
       data-qa-file="GridItem"
       data-qa-node="ul"
     >
+      <span
+        aria-hidden={true}
+        className="fa fa-folder icon icon--fontawesome source"
+        data-qa-file="Icon"
+        data-qa-node="FontAwesome"
+        type="fontawesome"
+      />
       <li
         data-qa-file="GridItem"
         data-qa-node="li"
@@ -200,6 +214,13 @@ exports[`<GridItem /> should handle playlist 1`] = `
       data-qa-file="GridItem"
       data-qa-node="ul"
     >
+      <span
+        aria-hidden={true}
+        className="fa fa-folder icon icon--fontawesome source"
+        data-qa-file="Icon"
+        data-qa-node="FontAwesome"
+        type="fontawesome"
+      />
       <li
         data-qa-file="GridItem"
         data-qa-node="li"

@@ -158,7 +158,9 @@ state.core.items['local:album:md5:66fbea3593ba96a15a9d4188bebab50b'] = {
 		medium: "/local/17338e740316f18dbb5e3331ac6be6c1-500x500.jpeg",
 		large: "/local/17338e740316f18dbb5e3331ac6be6c1-500x500.jpeg",
 		huge: "/local/17338e740316f18dbb5e3331ac6be6c1-500x500.jpeg"
-	}
+  },
+  wiki: 'Wiki text',
+  wiki_publish_date: '2021-01-01',
 };
 
 /**
