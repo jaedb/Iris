@@ -72,19 +72,27 @@ class Reset extends React.Component {
     if (database) {
       tasks.push(
         new Promise((resolve) => {
-          localForage.keys().then((keys) => {
-            const keysToRemove = keys.filter(
-              (key) => !stateKeys.includes(key.replace('persist:', '')),
-            );
-            keysToRemove.forEach((key, index) => {
-              localForage.removeItem(key).then(() => {
-                console.debug(`Removed ${key}`);
-                if (index === keysToRemove.length - 1) {
-                  resolve();
-                }
-              });
-            });
-          });
+          // Fetch all our core keys and store them in memory while we wipe the whole database,
+          // then we restore them back. This is much faster than checking keys and deleting items
+          // one-by-one
+          Promise.all(
+            stateKeys.map((key) => localForage.getItem(`persist:${key}`)),
+          ).then(
+            (items) => {
+              localForage.clear().then(
+                () => {
+                  console.debug({ items });
+                  Promise.all(
+                    items.map(
+                      (item, index) => localForage.setItem(`persist:${stateKeys[index]}`, item),
+                    ),
+                  ).then(
+                    () => resolve(),
+                  );
+                },
+              );
+            },
+          );
         }),
       );
     }
