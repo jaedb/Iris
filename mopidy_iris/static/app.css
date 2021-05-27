@@ -6150,12 +6150,12 @@ h4 .loader {
 .icon--svg.source img {
   max-width: 1rem;
 }
-.dark-theme .icon--svg.source {
+.dark-theme .icon--svg {
   filter: brightness(0) invert(1);
 }
 
 @media (prefers-color-scheme: dark) {
-  .auto-theme .icon--svg.source {
+  .auto-theme .icon--svg {
     filter: brightness(0) invert(1);
   }
 }

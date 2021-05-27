@@ -37,10 +37,10 @@
 			img {
 				max-width: 1rem;
 			}
+		}
 
-			@include theme('dark') {
-				filter: brightness(0) invert(1);
-			}
+		@include theme('dark') {
+			filter: brightness(0) invert(1);
 		}
 	}
 

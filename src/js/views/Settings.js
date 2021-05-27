@@ -463,10 +463,10 @@ class Settings extends React.Component {
                 </a>
                 {' '}
                 <span className="mid_grey-text tooltip">
-                  {build}
-                  {build && (
+                  {window.build}
+                  {window.build && (
                     <span className="tooltip__content">
-                      {dater('ago', parseInt(build, 10) * 1000)} ago
+                      {`${dater('ago', parseInt(window.build, 10) * 1000)} ago`}
                     </span>
                   )}
                 </span>
