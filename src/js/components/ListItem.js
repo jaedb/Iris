@@ -138,7 +138,7 @@ const ListItem = ({
     } else if (item.link) {
       to = item.link;
     } else {
-      to = `/${item.type}/${encodeUri(item.uri)}`;
+      to = `/${item.type}/${encodeUri(item.uri)}${item.name ? `/${item.name}` : ''}`;
     }
 
     if (e.target.tagName.toLowerCase() !== 'a') {

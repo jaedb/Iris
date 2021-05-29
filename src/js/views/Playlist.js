@@ -53,9 +53,10 @@ class Playlist extends React.Component {
         loadPlaylist,
       },
       uri,
+      name,
     } = this.props;
     this.setWindowTitle();
-    setTimeout(() => loadPlaylist(uri, { full: true }), 1);
+    setTimeout(() => loadPlaylist(uri, { full: true, name }), 1);
   }
 
   componentDidUpdate = ({
@@ -64,6 +65,7 @@ class Playlist extends React.Component {
   }) => {
     const {
       uri,
+      name,
       playlist,
       coreActions: {
         loadPlaylist,
@@ -78,7 +80,7 @@ class Playlist extends React.Component {
     }
 
     if (uri !== prevUri) {
-      loadPlaylist(uri, { full: true });
+      loadPlaylist(uri, { full: true, name });
     }
 
     if (!prevPlaylist && playlist) this.setWindowTitle(playlist);
@@ -99,12 +101,13 @@ class Playlist extends React.Component {
       },
       playlist,
       uri,
+      name,
     } = this.props;
 
     showContextMenu({
       e,
       context: 'playlist',
-      items: [playlist],
+      items: [{ name, ...playlist }],
       uris: [uri],
     });
   }
@@ -502,6 +505,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     uri,
     encodedUri: ownProps.match.params.uri,
+    name: ownProps.match.params.name,
     allow_reporting,
     slim_mode,
     theme,
