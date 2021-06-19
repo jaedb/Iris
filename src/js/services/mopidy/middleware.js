@@ -29,7 +29,7 @@ import {
   sortItems,
   indexToArray,
 } from '../../util/arrays';
-import { getProvider } from '../../util/selectors';
+import { getProvider, getSortSelector } from '../../util/selectors';
 
 const mopidyActions = require('./actions.js');
 const coreActions = require('../core/actions.js');
@@ -814,10 +814,11 @@ const MopidyMiddleware = (function () {
 
       case 'MOPIDY_PLAY_PLAYLIST': {
         const playlist = store.getState().core.items[action.uri];
+        const { sortField, sortReverse } = getSortSelector(store.getState(), 'playlist_tracks');
         if (playlist && playlist.tracks) {
           store.dispatch(
             mopidyActions.playURIs(
-              arrayOf('uri', playlist.tracks),
+              arrayOf('uri', sortItems(playlist.tracks, sortField, sortReverse)),
               action.uri,
               action.shuffle,
             ),

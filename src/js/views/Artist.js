@@ -592,7 +592,7 @@ class Artist extends React.Component {
             <Route exact path="/artist/:id/about">
               {this.renderAbout()}
             </Route>
-            <Route exact path="/artist/:id">
+            <Route exact path="/artist/:id/:name?">
               {this.renderOverview()}
             </Route>
           </Switch>

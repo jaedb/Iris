@@ -81,6 +81,12 @@ class DebugInfo extends React.Component {
             {' '}
             {build}
           </div>
+          <div className="debug-info-item">
+            Dimensions:
+            {' '}
+            {`${document.documentElement.clientWidth} (${window.innerWidth})w `}
+            {`${document.documentElement.clientHeight} (${window.innerHeight})h `}
+          </div>
         </div>
 
         <div className="debug-info-section">

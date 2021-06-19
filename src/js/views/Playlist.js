@@ -12,20 +12,17 @@ import FollowButton from '../components/Fields/FollowButton';
 import Loader from '../components/Loader';
 import ContextMenuTrigger from '../components/ContextMenuTrigger';
 import URILink from '../components/URILink';
-import Icon, { SourceIcon } from '../components/Icon';
+import { SourceIcon } from '../components/Icon';
 import DropdownField from '../components/Fields/DropdownField';
 import FilterField from '../components/Fields/FilterField';
 import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import * as spotifyActions from '../services/spotify/actions';
-import {
-  uriSource,
-  sourceIcon,
-} from '../util/helpers';
+import { uriSource } from '../util/helpers';
 import { trackEvent } from '../components/Trackable';
 import { i18n, I18n } from '../locale';
-import { makeItemSelector, makeLoadingSelector } from '../util/selectors';
+import { makeItemSelector, makeLoadingSelector, getSortSelector } from '../util/selectors';
 import { sortItems, applyFilter } from '../util/arrays';
 import { decodeUri, encodeUri } from '../util/format';
 
@@ -141,8 +138,8 @@ class Playlist extends React.Component {
 
   onChangeSort = (value) => {
     const {
-      sort,
-      sort_reverse,
+      sortField,
+      sortReverse,
       uiActions: {
         set,
         hideContextMenu,
@@ -150,8 +147,8 @@ class Playlist extends React.Component {
     } = this.props;
 
     let reverse = false;
-    if (value !== null && sort === value) {
-      reverse = !sort_reverse;
+    if (value !== null && sortField === value) {
+      reverse = !sortReverse;
     }
 
     set({
@@ -501,6 +498,7 @@ const mapStateToProps = (state, ownProps) => {
   const itemSelector = makeItemSelector(uri);
   const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`, '^((?!contains).)*$', '^((?!tracks).)*$', '^((?!followers).)*$']);
   const loadingTracksSelector = makeLoadingSelector([`(.*)${uri}(.*)tracks(.*)`]);
+  const { sortField, sortReverse } = getSortSelector(state, 'playlist_tracks');
 
   return {
     uri,
@@ -516,8 +514,8 @@ const mapStateToProps = (state, ownProps) => {
     local_library_playlists,
     spotify_authorized,
     spotify_userid: (me && me.id) || null,
-    sort: (state.ui.playlist_tracks_sort ? state.ui.playlist_tracks_sort : 'sort_id'),
-    sort_reverse: (!!state.ui.playlist_tracks_sort_reverse),
+    sortField,
+    sortReverse,
   };
 };
 

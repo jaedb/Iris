@@ -192,6 +192,10 @@ const makeProvidersSelector = (context) => createSelector(
     return providers[context].filter((p) => schemes.indexOf(p.scheme) > -1);
   },
 );
+const getSortSelector = (state, context) => ({
+  sortField: state.ui[`${context}_sort`] || 'sort_id',
+  sortReverse: state.ui[`${context}_sort_reverse`],
+});
 
 export {
   getItem,
@@ -208,4 +212,5 @@ export {
   queueHistorySelector,
   makeProvidersSelector,
   getProvider,
+  getSortSelector,
 };

@@ -285,27 +285,27 @@ $bp_shallow: 650px;
   $min_height: null
 ) {
   @if $max_width and $max_height {
-    @media (max-width: $max_width - 1), (max-height: $max_height - 1) {
+    @media (max-width: $max_width), (max-height: $max_height) {
       @content;
     }
   } @else if $max_width and $min_width {
-    @media (max-width: $max_width - 1) and (min-width: $min_width) {
+    @media (max-width: $max_width) and (min-width: $min_width + 1) {
       @content;
     }
   } @else if $max_width {
-    @media (max-width: $max_width - 1) {
+    @media (max-width: $max_width) {
       @content;
     }
   } @else if $max_height {
-    @media (max-height: $max_height - 1) {
+    @media (max-height: $max_height) {
       @content;
     }
   } @else if $min_width {
-    @media (min-width: $min_width) {
+    @media (min-width: $min_width + 1) {
       @content;
     }
   } @else if $min_height {
-    @media (min-height: $min_height) {
+    @media (min-height: $min_height + 1) {
       @content;
     }
   }
