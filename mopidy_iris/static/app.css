@@ -4990,8 +4990,11 @@ select option {
 .context-menu__section--submenu .context-menu__item {
   width: 100%;
 }
-.context-menu__section--submenu .context-menu__item__link--close-submenu {
+.context-menu__section--submenu .context-menu__item--functional {
   color: #a3a19f;
+}
+.context-menu__section--submenu .context-menu__item--functional:last-of-type {
+  border-bottom: 1px solid rgba(128, 128, 128, 0.5);
 }
 .context-menu__section--submenu .context-menu__item__label .icon {
   margin-bottom: 0.4em;

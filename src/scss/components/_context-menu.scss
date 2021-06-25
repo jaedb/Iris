@@ -28,8 +28,12 @@
 				&__item {
 					width: 100%;
 
-					&__link--close-submenu {
+					&--functional {
 						color: colour('mid_grey');
+
+						&:last-of-type {
+							border-bottom: 1px solid colour('middle_grey');
+						}
 					}
 
 					&__label {
