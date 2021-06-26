@@ -3497,10 +3497,16 @@ html {
     font-size: 16px;
   }
 }
-@media (max-width: 350px) {
+@media (max-width: 360px) {
   body,
 html {
     font-size: 12px;
+  }
+}
+@media only screen and (max-width: 360px) and (-webkit-min-device-pixel-ratio: 3), only screen and (max-width: 360px) and (min--moz-device-pixel-ratio: 3), only screen and (max-width: 360px) and (-o-min-device-pixel-ratio: 3), only screen and (max-width: 360px) and (min-device-pixel-ratio: 3), only screen and (max-width: 360px) and (min-resolution: 288dpi), only screen and (max-width: 360px) and (min-resolution: 3dppx) {
+  body,
+html {
+    font-size: 14px;
   }
 }
 
@@ -4180,7 +4186,7 @@ h1 .flag, h2 .flag {
     padding-left: 20px;
   }
 }
-@media (max-width: 350px) {
+@media (max-width: 360px) {
   h1 {
     font-size: 1.6rem;
     line-height: 1.6rem;
@@ -4753,7 +4759,7 @@ select option {
     margin-bottom: 10px;
   }
 }
-@media (max-width: 350px) {
+@media (max-width: 360px) {
   .button {
     padding-left: 20px;
     padding-right: 20px;
@@ -6828,7 +6834,7 @@ h4 .loader {
     padding: 14px 8px;
   }
 }
-@media (max-width: 350px) {
+@media (max-width: 360px) {
   .playback-controls .current-track__wrapper {
     width: 50%;
   }
@@ -7772,7 +7778,7 @@ h4 .loader {
     margin-left: 0;
   }
 }
-@media (max-width: 350px) {
+@media (max-width: 360px) {
   .tiles.artist-stats .tile .text {
     font-size: 14px;
   }

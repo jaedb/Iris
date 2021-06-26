@@ -69,23 +69,20 @@ class DebugInfo extends React.Component {
 
     return (
       <div className="debug-info">
-
         <div className="debug-info-section">
           <div className="debug-info-item">
-            Version:
-            {' '}
-            {version}
+            {`Version: ${version}`}
           </div>
           <div className="debug-info-item">
-            Build:
-            {' '}
-            {build}
+            {`Build: ${build}`}
           </div>
           <div className="debug-info-item">
-            Dimensions:
-            {' '}
+            {'Dimensions: '}
             {`${document.documentElement.clientWidth} (${window.innerWidth})w `}
             {`${document.documentElement.clientHeight} (${window.innerHeight})h `}
+          </div>
+          <div className="debug-info-item">
+            {`Pixel ratio: ${window.devicePixelRatio}`}
           </div>
         </div>
 

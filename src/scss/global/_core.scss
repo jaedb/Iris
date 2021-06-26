@@ -51,6 +51,9 @@ html {
 
   @include responsive($bp_narrow) {
     font-size: 12px;
+    @include resolution(3) {
+      font-size: 14px;
+    }
   }
 }
 
