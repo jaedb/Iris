@@ -1,9 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
 import sanitizeHtml from 'sanitize-html';
-
 import ErrorMessage from '../components/ErrorMessage';
 import TrackList from '../components/TrackList';
 import Thumbnail from '../components/Thumbnail';
@@ -30,82 +28,80 @@ import { decodeUri } from '../util/format';
 
 const SORT_KEY = 'album_tracks';
 
-class Album extends React.Component {
-  constructor(props) {
-    super(props);
+const Album = ({
+  uri,
+  album: albumProp,
+  sortField,
+  sortReverse,
+  loading,
+  slim_mode,
+  coreActions: {
+    loadAlbum,
+  },
+  lastfmActions: {
+    getAlbum,
+  },
+  uiActions: {
+    setSort,
+    setWindowTitle,
+    showContextMenu,
+    hideContextMenu,
+  },
+  mopidyActions: {
+    playURIs,
+  },
+}) => {
+  const [filter, setFilter] = useState('');
+  const [album, setAlbum] = useState({});
 
-    this.state = {
-      filter: '',
+  let tracks = album ?.tracks || [];
+  if (sortField && tracks) tracks = sortItems(tracks, sortField, sortReverse);
+  if (filter && filter !== '') tracks = applyFilter('name', filter, tracks);
+
+  useEffect(
+    () => {
+      if (uri) {
+        loadAlbum(uri, { full: true });
+      }
+    },
+    [uri],
+  );
+
+  useEffect(() => {
+    if (albumProp && !album) {
+      if (albumProp.artists && albumProp.wiki === undefined) {
+        getAlbum(albumProp.uri, albumProp.artists[0].name, albumProp.name);
+      }
     };
-  }
+    setAlbum(albumProp);
+  }, [albumProp])
 
-  componentDidMount = () => {
-    const {
-      uri,
-      album,
-      coreActions: {
-        loadAlbum,
-      },
-      lastfmActions: {
-        getAlbum,
-      },
-    } = this.props;
-
-    this.setWindowTitle();
-    loadAlbum(uri, { full: true });
-
-    if (album) {
-      if (album.artists && album.wiki === undefined) {
-        getAlbum(album.uri, album.artists[0].name, album.name);
-      }
-    }
-  }
-
-  componentDidUpdate = ({
-    uri: prevUri,
-    album: prevAlbum,
-  }) => {
-    const {
-      uri,
-      album,
-      coreActions: {
-        loadAlbum,
-      },
-      lastfmActions: {
-        getAlbum,
-      },
-    } = this.props;
-
-    if (uri !== prevUri) {
-      loadAlbum(uri, { full: true });
-    }
-
-    // We have just received our full album or our album artists
-    if ((!prevAlbum && album)) {
-      if (album.artists && album.wiki === undefined) {
-        getAlbum(album.uri, album.artists[0].name, album.name);
-      }
-    }
-
-    if (!prevAlbum && album) this.setWindowTitle(album);
-  }
-
-  setWindowTitle = (album = this.props.album) => {
-    const { uiActions: { setWindowTitle } } = this.props;
-
+  useEffect(() => {
     if (album) {
       setWindowTitle(i18n('album.title_window', {
         name: album.name,
-        artist: album.artists?.map((artist) => artist.name).join(),
+        artist: album.artists ? album.artists.map((artist) => artist.name).join(', ') : '',
       }));
     } else {
       setWindowTitle(i18n('album.title'));
     }
+  }, [album]);
+
+  if (loading) {
+    return <Loader body loading />;
   }
 
-  handleContextMenu = (e) => {
-    const { album, uri, uiActions: { showContextMenu } } = this.props;
+  if (!album) {
+    return (
+      <ErrorMessage type="not-found" title="Not found">
+        <p>
+          {i18n('errors.uri_not_found', { uri })}
+        </p>
+      </ErrorMessage>
+    );
+  }
 
+  const handleContextMenu = (e) => {
     showContextMenu({
       e,
       context: 'album',
@@ -114,49 +110,9 @@ class Album extends React.Component {
     });
   }
 
-  loadMore = () => {
-    const {
-      spotifyActions: {
-        getMore,
-      },
-      album: {
-        uri,
-        name,
-        tracks_more,
-      } = {},
-    } = this.props;
+  const play = () => playURIs([uri], uri);
 
-    getMore(
-      tracks_more, {
-        parent_type: 'album',
-        parent_key: uri,
-        records_type: 'track',
-      },
-      null,
-      {
-        album: {
-          uri,
-          name,
-        },
-      },
-    );
-  }
-
-  play = () => {
-    const { uri, mopidyActions: { playURIs } } = this.props;
-    playURIs([uri], uri);
-  }
-
-  onChangeSort = (field) => {
-    const {
-      sortField,
-      sortReverse,
-      uiActions: {
-        setSort,
-        hideContextMenu,
-      },
-    } = this.props;
-
+  const onChangeSort = (field) => {
     let reverse = false;
     if (field !== null && sortField === field) {
       reverse = !sortReverse;
@@ -166,179 +122,133 @@ class Album extends React.Component {
     hideContextMenu();
   }
 
-  inLibrary = () => {
-    const { uri } = this.props;
-    const library = `${uriSource(uri)}_library_albums`;
-    return (this.props[library] && this.props[library].indexOf(this.props.uri) > -1);
-  }
+  const sort_options = [
+    {
+      value: 'disc_track',
+      label: i18n('album.tracks.sort.disc_track'),
+    },
+    {
+      value: 'name',
+      label: i18n('album.tracks.sort.name'),
+    },
+  ];
 
-  render = () => {
-    const {
-      uri,
-      album,
-      loading,
-      slim_mode,
-      sortField,
-      sortReverse,
-    } = this.props;
-    let {
-      album: {
-        tracks,
-      } = {},
-    } = this.props;
-    const {
-      filter,
-    } = this.state;
-
-    if (loading) {
-      return <Loader body loading />;
-    }
-    if (!album) {
-      return (
-        <ErrorMessage type="not-found" title="Not found">
-          <p>
-            {i18n('errors.uri_not_found', { uri })}
-          </p>
-        </ErrorMessage>
-      );
-    }
-
-    if (sortField && tracks) {
-      tracks = sortItems(tracks, sortField, sortReverse);
-    }
-
-    if (filter && filter !== '') {
-      tracks = applyFilter('name', filter, tracks);
-    }
-
-    const sort_options = [
-      {
-        value: 'disc_track',
-        label: i18n('album.tracks.sort.disc_track'),
-      },
-      {
-        value: 'name',
-        label: i18n('album.tracks.sort.name'),
-      },
-    ];
-
-    return (
-      <div className="view album-view content-wrapper preserve-3d">
-        <div className="thumbnail-wrapper">
-          <Thumbnail size="large" glow canZoom images={album.images} type="album" />
-        </div>
-
-        <div className="title">
-          <h1>{album.name}</h1>
-
-          <ul className="details details--one-line">
-            {!slim_mode ? (
-              <li className="source">
-                <SourceIcon uri={album.uri} />
-              </li>
-            ) : null}
-            {album.artists && album.artists.length > 0 ? (
-              <li>
-                <LinksSentence items={album.artists} type="artist" />
-              </li>
-            ) : null}
-            {album.release_date ? (
-              <li>
-                <Dater type="date" data={album.release_date} />
-              </li>
-            ) : null}
-            {album.tracks ? (
-              <li>
-                {i18n(
-                  'specs.tracks',
-                  { count: album.tracks.length },
-                )}
-              </li>
-            ) : null}
-            {!slim_mode && album.tracks ? (
-              <li>
-                <Dater type="total-time" data={album.tracks} />
-              </li>
-            ) : null}
-            {!slim_mode && album.play_count ? (
-              <li>
-                {i18n(
-                  'specs.plays',
-                  { count: nice_number(album.play_count) },
-                )}
-              </li>
-            ) : null}
-            {!slim_mode && album.listeners ? (
-              <li>
-                {i18n(
-                  'specs.listeners',
-                  { count: nice_number(album.listeners) },
-                )}
-              </li>
-            ) : null}
-          </ul>
-        </div>
-
-        <div className="actions">
-          <Button
-            type="primary"
-            onClick={this.play}
-            tracking={{ category: 'Album', action: 'Play' }}
-          >
-            <I18n path="actions.play" />
-          </Button>
-          {uriSource(uri) === 'spotify' && (
-            <FollowButton
-              uri={uri}
-              is_following={album.in_library}
-            />
-          )}
-          <ContextMenuTrigger onTrigger={this.handleContextMenu} />
-        </div>
-
-        <section className="list-wrapper">
-          <h4 className="no-bottom-margin">
-            <I18n path="album.tracks.title" />
-            <div className="actions-wrapper">
-              <FilterField
-                initialValue={filter}
-                handleChange={(value) => this.setState({ filter: value })}
-                onSubmit={() => uiActions.hideContextMenu()}
-              />
-              <DropdownField
-                icon="swap_vert"
-                name="Sort"
-                value={sortField}
-                valueAsLabel
-                options={sort_options}
-                selected_icon={sortField ? (sortReverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
-                handleChange={this.onChangeSort}
-              />
-            </div>
-          </h4>
-          <TrackList
-            className="album-track-list"
-            tracks={tracks}
-            track_context="album"
-            uri={album.uri}
-          />
-        </section>
-
-        {album.wiki ? (
-          <section className="wiki">
-            <h4 className="wiki__title">{i18n('album.wiki.title')}</h4>
-            <div className="wiki__text">
-              <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(album.wiki) }} />
-              <br />
-              <div className="mid_grey-text">
-                <I18n path="album.wiki.published" date={album.wiki_publish_date} />
-              </div>
-            </div>
-          </section>
-        ) : null}
+  return (
+    <div className="view album-view content-wrapper preserve-3d">
+      <div className="thumbnail-wrapper">
+        <Thumbnail size="large" glow canZoom images={album.images} type="album" />
       </div>
-    );
-  }
+
+      <div className="title">
+        <h1>{album.name}</h1>
+
+        <ul className="details details--one-line">
+          {!slim_mode ? (
+            <li className="source">
+              <SourceIcon uri={album.uri} />
+            </li>
+          ) : null}
+          {album.artists && album.artists.length > 0 ? (
+            <li>
+              <LinksSentence items={album.artists} type="artist" />
+            </li>
+          ) : null}
+          {album.release_date ? (
+            <li>
+              <Dater type="date" data={album.release_date} />
+            </li>
+          ) : null}
+          {album.tracks ? (
+            <li>
+              {i18n(
+                'specs.tracks',
+                { count: album.tracks.length },
+              )}
+            </li>
+          ) : null}
+          {!slim_mode && album.tracks ? (
+            <li>
+              <Dater type="total-time" data={album.tracks} />
+            </li>
+          ) : null}
+          {!slim_mode && album.play_count ? (
+            <li>
+              {i18n(
+                'specs.plays',
+                { count: nice_number(album.play_count) },
+              )}
+            </li>
+          ) : null}
+          {!slim_mode && album.listeners ? (
+            <li>
+              {i18n(
+                'specs.listeners',
+                { count: nice_number(album.listeners) },
+              )}
+            </li>
+          ) : null}
+        </ul>
+      </div>
+
+      <div className="actions">
+        <Button
+          type="primary"
+          onClick={play}
+          tracking={{ category: 'Album', action: 'Play' }}
+        >
+          <I18n path="actions.play" />
+        </Button>
+        {uriSource(uri) === 'spotify' && (
+          <FollowButton
+            uri={uri}
+            is_following={album.in_library}
+          />
+        )}
+        <ContextMenuTrigger onTrigger={handleContextMenu} />
+      </div>
+
+      <section className="list-wrapper">
+        <h4 className="no-bottom-margin">
+          <I18n path="album.tracks.title" />
+          <div className="actions-wrapper">
+            <FilterField
+              initialValue={filter}
+              handleChange={setFilter}
+              onSubmit={hideContextMenu}
+            />
+            <DropdownField
+              icon="swap_vert"
+              name="Sort"
+              value={sortField}
+              valueAsLabel
+              options={sort_options}
+              selected_icon={sortField ? (sortReverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
+              handleChange={onChangeSort}
+            />
+          </div>
+        </h4>
+        <TrackList
+          className="album-track-list"
+          tracks={tracks}
+          track_context="album"
+          uri={album.uri}
+        />
+      </section>
+
+      {album.wiki ? (
+        <section className="wiki">
+          <h4 className="wiki__title">{i18n('album.wiki.title')}</h4>
+          <div className="wiki__text">
+            <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(album.wiki) }} />
+            <br />
+            <div className="mid_grey-text">
+              <I18n path="album.wiki.published" date={album.wiki_publish_date} />
+            </div>
+          </div>
+        </section>
+      ) : null}
+    </div>
+  );
 }
 
 const mapStateToProps = (state, ownProps) => {
