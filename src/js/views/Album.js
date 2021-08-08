@@ -13,7 +13,7 @@ import FollowButton from '../components/Fields/FollowButton';
 import { nice_number } from '../components/NiceNumber';
 import { Dater } from '../components/Dater';
 import ContextMenuTrigger from '../components/ContextMenuTrigger';
-import Icon, { SourceIcon } from '../components/Icon';
+import { SourceIcon } from '../components/Icon';
 import DropdownField from '../components/Fields/DropdownField';
 import FilterField from '../components/Fields/FilterField';
 import { i18n, I18n } from '../locale';
@@ -22,15 +22,13 @@ import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import * as spotifyActions from '../services/spotify/actions';
 import * as lastfmActions from '../services/lastfm/actions';
-import {
-  uriSource,
-  sourceIcon,
-} from '../util/helpers';
+import { uriSource } from '../util/helpers';
 import Button from '../components/Button';
-import { makeLoadingSelector, makeItemSelector } from '../util/selectors';
+import { makeLoadingSelector, makeItemSelector, getSortSelector } from '../util/selectors';
 import { applyFilter, sortItems } from '../util/arrays';
-import { trackEvent } from '../components/Trackable';
-import { encodeUri, decodeUri } from '../util/format';
+import { decodeUri } from '../util/format';
+
+const SORT_KEY = 'album_tracks';
 
 class Album extends React.Component {
   constructor(props) {
@@ -149,27 +147,23 @@ class Album extends React.Component {
     playURIs([uri], uri);
   }
 
-  onChangeSort = (value) => {
+  onChangeSort = (field) => {
     const {
-      sort,
-      sort_reverse,
+      sortField,
+      sortReverse,
       uiActions: {
-        set,
+        setSort,
         hideContextMenu,
       },
     } = this.props;
 
     let reverse = false;
-    if (value !== null && sort === value) {
-      reverse = !sort_reverse;
+    if (field !== null && sortField === field) {
+      reverse = !sortReverse;
     }
 
-    set({
-      album_tracks_sort_reverse: reverse,
-      album_tracks_sort: value,
-    });
+    setSort(SORT_KEY, field, reverse);
     hideContextMenu();
-    trackEvent({ category: 'Album', action: 'SortTracks', label: `${value} ${reverse ? 'DESC' : 'ASC'}` });
   }
 
   inLibrary = () => {
@@ -184,8 +178,8 @@ class Album extends React.Component {
       album,
       loading,
       slim_mode,
-      sort,
-      sort_reverse,
+      sortField,
+      sortReverse,
     } = this.props;
     let {
       album: {
@@ -209,8 +203,8 @@ class Album extends React.Component {
       );
     }
 
-    if (sort && tracks) {
-      tracks = sortItems(tracks, sort, sort_reverse);
+    if (sortField && tracks) {
+      tracks = sortItems(tracks, sortField, sortReverse);
     }
 
     if (filter && filter !== '') {
@@ -314,10 +308,10 @@ class Album extends React.Component {
               <DropdownField
                 icon="swap_vert"
                 name="Sort"
-                value={sort}
+                value={sortField}
                 valueAsLabel
                 options={sort_options}
-                selected_icon={sort ? (sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
+                selected_icon={sortField ? (sortReverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
                 handleChange={this.onChangeSort}
               />
             </div>
@@ -351,6 +345,8 @@ const mapStateToProps = (state, ownProps) => {
   const uri = decodeUri(ownProps.match.params.uri);
   const itemSelector = makeItemSelector(uri);
   const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`, '^((?!contains).)*$', '^((?!me\/albums).)*$', '^((?!followers).)*$']);
+  const [sortField, sortReverse] = getSortSelector(state, SORT_KEY, 'disc_track');
+
   return {
     uri,
     slim_mode: state.ui.slim_mode,
@@ -360,8 +356,8 @@ const mapStateToProps = (state, ownProps) => {
     spotify_library_albums: state.spotify.library_albums,
     local_library_albums: state.mopidy.library_albums,
     spotify_authorized: state.spotify.authorization,
-    sort: (state.ui.album_tracks_sort ? state.ui.album_tracks_sort : 'disc_track'),
-    sort_reverse: (!!state.ui.album_tracks_sort_reverse),
+    sortField,
+    sortReverse,
   };
 };
 

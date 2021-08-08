@@ -26,6 +26,8 @@ import { makeItemSelector, makeLoadingSelector, getSortSelector } from '../util/
 import { sortItems, applyFilter } from '../util/arrays';
 import { decodeUri, encodeUri } from '../util/format';
 
+const SORT_KEY = 'playlist_tracks';
+
 class Playlist extends React.Component {
   constructor(props) {
     super(props);
@@ -136,27 +138,23 @@ class Playlist extends React.Component {
     deletePlaylist(uri);
   }
 
-  onChangeSort = (value) => {
+  onChangeSort = (field) => {
     const {
       sortField,
       sortReverse,
       uiActions: {
-        set,
+        setSort,
         hideContextMenu,
       },
     } = this.props;
 
     let reverse = false;
-    if (value !== null && sortField === value) {
+    if (field !== null && sortField === field) {
       reverse = !sortReverse;
     }
 
-    set({
-      playlist_tracks_sort_reverse: reverse,
-      playlist_tracks_sort: value,
-    });
+    setSort(SORT_KEY, field, reverse);
     hideContextMenu();
-    trackEvent({ category: 'Playlist', action: 'SortTracks', label: `${value} ${reverse ? 'DESC' : 'ASC'}` });
   }
 
   reorderTracks = (indexes, index) => {
@@ -172,12 +170,12 @@ class Playlist extends React.Component {
         snapshot_id,
         tracks,
       },
-      sort,
-      sort_reverse,
+      sortField,
+      sortReverse,
     } = this.props;
     const { filter } = this.state;
 
-    if (sort !== 'sort_id' || filter !== '') {
+    if (sortField !== 'sort_id' || filter !== '') {
       createNotification({
         content: i18n('errors.cannot_reorder.title'),
         description: i18n('errors.cannot_reorder.description'),
@@ -186,7 +184,7 @@ class Playlist extends React.Component {
       return;
     }
 
-    if (sort_reverse) {
+    if (sortReverse) {
       const count = tracks.length - 1;
       index = count - index + 1;
       indexes = indexes.map((index) => count - index);
@@ -331,8 +329,8 @@ class Playlist extends React.Component {
       loading,
       loading_tracks,
       slim_mode,
-      sort,
-      sort_reverse,
+      sortField,
+      sortReverse,
     } = this.props;
     const {
       filter,
@@ -361,8 +359,8 @@ class Playlist extends React.Component {
       },
     } = this.props;
 
-    if (sort && tracks) {
-      tracks = sortItems(tracks, sort, sort_reverse);
+    if (sortField && tracks) {
+      tracks = sortItems(tracks, sortField, sortReverse);
     }
 
     if (filter && filter !== '') {
@@ -453,10 +451,10 @@ class Playlist extends React.Component {
             <DropdownField
               icon="swap_vert"
               name="Sort"
-              value={sort}
+              value={sortField}
               valueAsLabel
               options={sort_options}
-              selected_icon={sort ? (sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
+              selected_icon={sortField ? (sortReverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
               handleChange={this.onChangeSort}
             />
           </div>
@@ -498,7 +496,7 @@ const mapStateToProps = (state, ownProps) => {
   const itemSelector = makeItemSelector(uri);
   const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`, '^((?!contains).)*$', '^((?!tracks).)*$', '^((?!followers).)*$']);
   const loadingTracksSelector = makeLoadingSelector([`(.*)${uri}(.*)tracks(.*)`]);
-  const { sortField, sortReverse } = getSortSelector(state, 'playlist_tracks');
+  const [sortField, sortReverse] = getSortSelector(state, SORT_KEY);
 
   return {
     uri,

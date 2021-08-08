@@ -7,31 +7,32 @@ import TrackList from './TrackList';
 import { Grid } from './Grid';
 import { I18n } from '../locale';
 import Button from './Button';
-import { makeSearchResultsSelector } from '../util/selectors';
+import { makeSearchResultsSelector, getSortSelector } from '../util/selectors';
 
 const SearchResults = ({
   type,
   query,
-  sort,
-  sort_reverse,
+  sortField,
+  sortReverse: sortReverseProp,
   uri_schemes_priority,
   all,
   results: rawResults,
 }) => {
   const encodedTerm = encodeURIComponent(query.term);
   let results = rawResults;
+  let sortReverse = sortReverseProp;
 
   if (!results) return null;
 
   let sort_map = null;
-  switch (sort) {
+  switch (sortField) {
     case 'uri':
       sort_map = uri_schemes_priority;
       break;
     case 'followers':
       // Followers (aka popularlity works in reverse-numerical order)
       // Ie "more popular" is a bigger number
-      sort_reverse = !sort_reverse;
+      sortReverse = !sortReverse;
       break;
     default:
       break;
@@ -39,8 +40,8 @@ const SearchResults = ({
 
   results = sortItems(
     results,
-    (type === 'tracks' && sort === 'followers' ? 'popularity' : sort),
-    sort_reverse,
+    (type === 'tracks' && sortField === 'followers' ? 'popularity' : sortField),
+    sortReverse,
     sort_map,
   );
 
@@ -98,17 +99,16 @@ const mapStateToProps = (state, ownProps) => {
   const {
     ui: {
       uri_schemes_priority = [],
-      search_results_sort: sort = 'name',
-      search_results_sort_reverse: sort_reverse = false,
     },
   } = state;
   const searchResultsSelector = makeSearchResultsSelector(term, type);
+  const { sortField, sortReverse } = getSortSelector(state, 'search_results');
 
   return {
     results: searchResultsSelector(state),
     uri_schemes_priority,
-    sort,
-    sort_reverse,
+    sortField,
+    sortReverse,
   };
 };
 

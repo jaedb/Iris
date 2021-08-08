@@ -20,8 +20,10 @@ import {
   makeProcessProgressSelector,
   getLibrarySource,
   makeProvidersSelector,
+  getSortSelector,
 } from '../../util/selectors';
 
+const SORT_KEY = 'library_tracks';
 const processKeys = [
   'MOPIDY_GET_LIBRARY_TRACKS',
   'SPOTIFY_GET_LIBRARY_TRACKS',
@@ -102,28 +104,29 @@ class LibraryTracks extends React.Component {
     });
   }
 
-  setSort = (value) => {
+  onSortChange = (field) => {
     const {
-      sort,
-      sort_reverse,
+      sortField,
+      sortReverse,
       uiActions: {
-        set,
+        setSort,
+        hideContextMenu,
       },
     } = this.props;
 
     let reverse = false;
-    if (sort === value) reverse = !sort_reverse;
+    if (field !== null && sortField === field) {
+      reverse = !sortReverse;
+    }
 
-    set({
-      library_tracks_sort_reverse: reverse,
-      library_tracks_sort: value,
-    });
+    setSort(SORT_KEY, field, reverse);
+    hideContextMenu();
   }
 
   playAll = () => {
     const {
-      sort,
-      sort_reverse,
+      sortField,
+      sortReverse,
       mopidyActions: {
         playURIs,
       },
@@ -136,8 +139,8 @@ class LibraryTracks extends React.Component {
 
     if (!tracks || !tracks.length) return;
 
-    if (sort) {
-      tracks = sortItems(tracks, sort, sort_reverse);
+    if (sortField) {
+      tracks = sortItems(tracks, sortField, sortReverse);
     }
 
     if (filter && filter !== '') {
@@ -150,8 +153,8 @@ class LibraryTracks extends React.Component {
 
   renderView = () => {
     const {
-      sort,
-      sort_reverse,
+      sortField,
+      sortReverse,
       loading_progress,
     } = this.props;
     const {
@@ -163,8 +166,8 @@ class LibraryTracks extends React.Component {
       return <Loader body loading progress={loading_progress} />;
     }
 
-    if (sort) {
-      tracks = sortItems(tracks, sort, sort_reverse);
+    if (sortField) {
+      tracks = sortItems(tracks, sortField, sortReverse);
     }
 
     if (filter && filter !== '') {
@@ -180,10 +183,10 @@ class LibraryTracks extends React.Component {
 
   render = () => {
     const {
-      sort,
       source,
       providers,
-      sort_reverse,
+      sortField,
+      sortReverse,
       uiActions,
       loading_progress,
     } = this.props;
@@ -220,11 +223,11 @@ class LibraryTracks extends React.Component {
         <DropdownField
           icon="swap_vert"
           name={i18n('fields.sort')}
-          value={sort}
+          value={sortField}
           valueAsLabel
           options={sort_options}
-          selected_icon={sort ? (sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
-          handleChange={(val) => { this.setSort(val); uiActions.hideContextMenu(); }}
+          selected_icon={sortField ? (sortReverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
+          handleChange={this.onSortChange}
         />
         <DropdownField
           icon="cloud"
@@ -281,16 +284,20 @@ class LibraryTracks extends React.Component {
 const librarySelector = makeLibrarySelector('tracks');
 const processProgressSelector = makeProcessProgressSelector(processKeys);
 const providersSelector = makeProvidersSelector('tracks');
-const mapStateToProps = (state) => ({
-  loading_progress: processProgressSelector(state),
-  mopidy_uri_schemes: state.mopidy.uri_schemes,
-  tracks: librarySelector(state, 'tracks'),
-  view: state.ui.library_tracks_view,
-  source: getLibrarySource(state, 'tracks'),
-  providers: providersSelector(state),
-  sort: state.ui.library_tracks_sort,
-  sort_reverse: state.ui.library_tracks_sort_reverse,
-});
+const mapStateToProps = (state) => {
+  const [sortField, sortReverse] = getSortSelector(state, SORT_KEY, null);
+
+  return {
+    loading_progress: processProgressSelector(state),
+    mopidy_uri_schemes: state.mopidy.uri_schemes,
+    tracks: librarySelector(state, 'tracks'),
+    view: state.ui.library_tracks_view,
+    source: getLibrarySource(state, 'tracks'),
+    providers: providersSelector(state),
+    sortField,
+    sortReverse,
+  };
+};
 
 const mapDispatchToProps = (dispatch) => ({
   coreActions: bindActionCreators(coreActions, dispatch),

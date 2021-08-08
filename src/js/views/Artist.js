@@ -33,8 +33,12 @@ import { trackEvent } from '../components/Trackable';
 import {
   makeItemSelector,
   makeLoadingSelector,
+  getSortSelector,
 } from '../util/selectors';
 import { nice_number } from '../components/NiceNumber';
+
+const ALBUM_SORT_KEY = 'artist_albums';
+const TRACK_SORT_KEY = 'artist_tracks';
 
 class Artist extends React.Component {
   constructor(props) {
@@ -93,34 +97,31 @@ class Artist extends React.Component {
   }
 
   onChangeTracksSort = (value) => {
-    this.onChangeSort('tracks', value);
+    this.onChangeSort(TRACK_SORT_KEY, value);
   }
 
   onChangeAlbumsSort = (value) => {
-    this.onChangeSort('albums', value);
+    this.onChangeSort(ALBUM_SORT_KEY, value);
   }
 
-  onChangeSort = (type, value) => {
+  onChangeSort = (key, field) => {
+    const prefix = key.replace('artist_');
     const {
-      [`${type}_sort`]: sort,
-      [`${type}_sort_reverse`]: sort_reverse,
+      [`${prefix}SortField`]: sortField,
+      [`${prefix}SortReverse`]: sortReverse,
       uiActions: {
-        set,
+        setSort,
         hideContextMenu,
       },
     } = this.props;
 
     let reverse = false;
-    if (value !== null && sort === value) {
-      reverse = !sort_reverse;
+    if (field !== null && sortField === field) {
+      reverse = !sortReverse;
     }
 
-    set({
-      [`artist_${type}_sort_reverse`]: reverse,
-      [`artist_${type}_sort`]: value,
-    });
+    setSort(key, field, reverse);
     hideContextMenu();
-    trackEvent({ category: 'Artist', action: `Sort${type}`, label: `${value} ${reverse ? 'DESC' : 'ASC'}` });
   }
 
   onPlayAll = () => {
@@ -184,8 +185,8 @@ class Artist extends React.Component {
       uri,
       uiActions,
       artist,
-      albums_sort: sort,
-      albums_sort_reverse: sort_reverse,
+      albumSortField,
+      albumSortReverse,
       filterType,
     } = this.props;
     const {
@@ -197,8 +198,8 @@ class Artist extends React.Component {
     } = artist;
     let { albums } = this.props;
 
-    if (sort && albums) {
-      albums = sortItems(albums, sort, sort_reverse);
+    if (albumSortField && albums) {
+      albums = sortItems(albums, albumSortField, albumSortReverse);
     }
 
     if (filterType && albums) {
@@ -286,10 +287,10 @@ class Artist extends React.Component {
               <DropdownField
                 icon="swap_vert"
                 name="Sort"
-                value={sort}
+                value={albumSortField}
                 valueAsLabel
                 options={sort_options}
-                selected_icon={sort ? (sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
+                selected_icon={albumSortField ? (albumSortReverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
                 handleChange={this.onChangeAlbumsSort}
               />
               <DropdownField
@@ -316,14 +317,14 @@ class Artist extends React.Component {
       artist: {
         uri,
       },
-      tracks_sort: sort,
-      tracks_sort_reverse: sort_reverse,
+      trackSortField,
+      trackSortReverse,
     } = this.props;
     const { tracksFilter: filter } = this.state;
     let { artist: { tracks } } = this.props;
 
-    if (sort && tracks) {
-      tracks = sortItems(tracks, sort, sort_reverse);
+    if (trackSortField && tracks) {
+      tracks = sortItems(tracks, trackSortField, trackSortReverse);
     }
 
     if (filter && filter !== '') {
@@ -355,10 +356,10 @@ class Artist extends React.Component {
               <DropdownField
                 icon="swap_vert"
                 name="Sort"
-                value={sort}
+                value={trackSortField}
                 valueAsLabel
                 options={sort_options}
-                selected_icon={sort ? (sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
+                selected_icon={trackSortField ? (trackSortReverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
                 handleChange={this.onChangeTracksSort}
               />
             </div>
@@ -612,6 +613,8 @@ const mapStateToProps = (state, props) => {
     const albumsSelector = makeItemSelector(artist.albums_uris);
     albums = albumsSelector(state);
   }
+  const [albumSortField, albumSortReverse] = getSortSelector(state, ALBUM_SORT_KEY, null);
+  const [trackSortField, trackSortReverse] = getSortSelector(state, TRACK_SORT_KEY, null);
 
   return {
     uri,
@@ -621,10 +624,10 @@ const mapStateToProps = (state, props) => {
     theme: state.ui.theme,
     slim_mode: state.ui.slim_mode,
     filterType: state.ui.artist_albums_filter,
-    albums_sort: state.ui.artist_albums_sort,
-    albums_sort_reverse: (!!state.ui.artist_albums_sort_reverse),
-    tracks_sort: state.ui.artist_tracks_sort,
-    tracks_sort_reverse: (!!state.ui.artist_tracks_sort_reverse),
+    albumSortField,
+    albumSortReverse,
+    trackSortField,
+    trackSortReverse,
     spotify_authorized: state.spotify.authorization,
   };
 };
