@@ -1,10 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Route, Switch } from 'react-router-dom';
-
 import sanitizeHtml from 'sanitize-html';
-
 import ErrorMessage from '../components/ErrorMessage';
 import Link from '../components/Link';
 import TrackList from '../components/TrackList';
@@ -16,6 +14,8 @@ import FollowButton from '../components/Fields/FollowButton';
 import ContextMenuTrigger from '../components/ContextMenuTrigger';
 import DropdownField from '../components/Fields/DropdownField';
 import FilterField from '../components/Fields/FilterField';
+import ArtistAbout from './subviews/ArtistAbout';
+import ArtistOverview from './subviews/ArtistOverview';
 import Icon, { SourceIcon } from '../components/Icon';
 import Loader from '../components/Loader';
 import * as coreActions from '../services/core/actions';
@@ -40,80 +40,58 @@ import { nice_number } from '../components/NiceNumber';
 const ALBUM_SORT_KEY = 'artist_albums';
 const TRACK_SORT_KEY = 'artist_tracks';
 
-class Artist extends React.Component {
-  constructor(props) {
-    super(props);
+const Artist = ({
+  uri,
+  loading,
+  history,
+  artist: artistProp,
+  coreActions: {
+    loadArtist,
+  },
+  uiActions: {
+    set,
+    setSort,
+    setWindowTitle,
+    hideContextMenu,
+    createNotification,
+  },
+  mopidyActions: {
+    playURIs,
+  },
+  ...props
+}) => {
+  const [artist, setArtist] = useState({});
 
-    this.state = {
-      albumsFilter: '',
-      tracksFilter: '',
-    };
-  }
+  useEffect(
+    () => {
+      if (uri) {
+        loadArtist(uri, { full: true });
+      }
+    },
+    [uri],
+  );
 
-  componentDidMount() {
-    const {
-      uri,
-      coreActions: {
-        loadArtist,
-      },
-    } = this.props;
-
-    this.setWindowTitle();
-    loadArtist(uri, { full: true });
-  }
-
-  componentDidUpdate = ({
-    uri: prevUri,
-    artist: prevArtist,
-  }) => {
-    const {
-      uri,
-      artist,
-      coreActions: {
-        loadArtist,
-      },
-    } = this.props;
-
-    if (uri !== prevUri) {
-      loadArtist(uri, { full: true });
+  useEffect(() => {
+    if (artistProp) {
+      setWindowTitle(i18n('artist.title_window', { name: artistProp.name }));
+    } else {
+      setWindowTitle(i18n('artist.title'));
     }
+    setArtist(artistProp);
+  }, [artistProp]);
 
-    if (prevArtist?.uri !== artist?.uri && artist) this.setWindowTitle(artist);
-  }
-
-  onChangeTracksFilter = (value) => {
-    this.onChangeFilter('tracks', value);
-  }
-
-  onChangeAlbumsFilter = (value) => {
-    this.onChangeFilter('albums', value);
-  }
-
-  onChangeFilter = (type, value) => {
-    const { uiActions: { set, hideContextMenu } } = this.props;
+  const onChangeFilter = (type, value) => {
     set({ [`artist_${type}_filter`]: value });
     hideContextMenu();
     trackEvent({ category: 'Artist', action: `Filter${type}`, label: value });
   }
 
-  onChangeTracksSort = (value) => {
-    this.onChangeSort(TRACK_SORT_KEY, value);
-  }
-
-  onChangeAlbumsSort = (value) => {
-    this.onChangeSort(ALBUM_SORT_KEY, value);
-  }
-
-  onChangeSort = (key, field) => {
+  const onChangeSort = (key, field) => {
     const prefix = key.replace('artist_');
     const {
       [`${prefix}SortField`]: sortField,
       [`${prefix}SortReverse`]: sortReverse,
-      uiActions: {
-        setSort,
-        hideContextMenu,
-      },
-    } = this.props;
+    } = props;
 
     let reverse = false;
     if (field !== null && sortField === field) {
@@ -124,20 +102,12 @@ class Artist extends React.Component {
     hideContextMenu();
   }
 
-  onPlayAll = () => {
+  const onPlayAll = () => {
     const {
-      artist: {
-        uri,
-        tracks,
-        albums_uris,
-      },
-      uiActions: {
-        createNotification,
-      },
-      mopidyActions: {
-        playURIs,
-      },
-    } = this.props;
+      uri,
+      tracks,
+      albums_uris,
+    } = album;
 
     if ((!albums_uris || !albums_uris.length) && (!tracks || !tracks.length)) {
       createNotification({ content: i18n('errors.no_results'), level: 'warning' });
@@ -147,23 +117,7 @@ class Artist extends React.Component {
     playURIs(arrayOf('uri', tracks) || albums_uris, uri);
   }
 
-  setWindowTitle = (artist = this.props.artist) => {
-    const { uiActions: { setWindowTitle } } = this.props;
-
-    if (artist) {
-      setWindowTitle(i18n('artist.title_window', { name: artist.name }));
-    } else {
-      setWindowTitle(i18n('artist.title'));
-    }
-  }
-
-  handleContextMenu = (e) => {
-    const {
-      artist,
-      uri,
-      uiActions: { showContextMenu },
-    } = this.props;
-
+  const handleContextMenu = (e) => {
     showContextMenu({
       e,
       context: 'artist',
@@ -173,146 +127,8 @@ class Artist extends React.Component {
     });
   }
 
-  inLibrary = () => {
-    const { uri } = this.props;
-    const libraryName = `${uriSource(uri)}_library_artists`;
-    const { [libraryName]: { items_uris } } = this.props;
-    return items_uris.indexOf(uri) > -1;
-  }
 
-  renderOverview = () => {
-    const {
-      uri,
-      uiActions,
-      artist,
-      albumSortField,
-      albumSortReverse,
-      filterType,
-    } = this.props;
-    const {
-      albumsFilter: filter,
-    } = this.state;
-    const {
-      tracks,
-      related_artists,
-    } = artist;
-    let { albums } = this.props;
-
-    if (albumSortField && albums) {
-      albums = sortItems(albums, albumSortField, albumSortReverse);
-    }
-
-    if (filterType && albums) {
-      albums = applyFilter('type', filterType, albums);
-    }
-
-    if (filter && filter !== '') {
-      albums = applyFilter('name', filter, albums);
-    }
-
-    const sort_options = [
-      {
-        value: null,
-        label: i18n('artist.albums.sort.default'),
-      },
-      {
-        value: 'name',
-        label: i18n('artist.albums.sort.name'),
-      },
-      {
-        value: 'release_date',
-        label: i18n('artist.albums.sort.release_date'),
-      },
-      {
-        value: 'tracks',
-        label: i18n('artist.albums.sort.track_count'),
-      },
-    ];
-
-    const filter_type_options = [
-      {
-        value: null,
-        label: i18n('artist.albums.filter.all'),
-      },
-      {
-        value: 'album',
-        label: i18n('artist.albums.filter.albums'),
-      },
-      {
-        value: 'single',
-        label: i18n('artist.albums.filter.singles'),
-      },
-    ];
-
-    return (
-      <div className="body overview">
-        <div className={`top-tracks col col--w${related_artists && related_artists.length > 0 ? '70' : '100'}`}>
-          {tracks && <h4><I18n path="artist.overview.top_tracks" /></h4>}
-          <div className="list-wrapper">
-            <TrackList className="artist-track-list" uri={uri} tracks={tracks ? tracks.slice(0, 10) : []} />
-          </div>
-        </div>
-
-        <div className="col col--w5" />
-
-        {related_artists && related_artists.length > 0 && (
-          <div className="col col--w25 related-artists">
-            <h4><I18n path="artist.overview.related_artists.title" /></h4>
-            <div className="list-wrapper">
-              <RelatedArtists
-                artists={related_artists.slice(0, 6)}
-                uiActions={uiActions}
-              />
-            </div>
-            <Button
-              to={`/artist/${encodeUri(uri)}/related-artists`}
-              scrollTo="#sub-views-menu"
-            >
-              <I18n path="artist.overview.related_artists.more" />
-            </Button>
-          </div>
-        )}
-
-        <div className="cf" />
-
-        <div className="albums">
-          <h4>
-            <I18n path="artist.overview.albums" count={albums ? albums.length : 0} />
-            <div className="actions-wrapper">
-              <FilterField
-                initialValue={filter}
-                handleChange={(value) => this.setState({ albumsFilter: value })}
-                onSubmit={() => uiActions.hideContextMenu()}
-              />
-              <DropdownField
-                icon="swap_vert"
-                name="Sort"
-                value={albumSortField}
-                valueAsLabel
-                options={sort_options}
-                selected_icon={albumSortField ? (albumSortReverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
-                handleChange={this.onChangeAlbumsSort}
-              />
-              <DropdownField
-                icon="filter_list"
-                name="Filter"
-                value={filterType}
-                valueAsLabel
-                options={filter_type_options}
-                handleChange={this.onChangeAlbumsFilter}
-              />
-            </div>
-          </h4>
-
-          <section className="grid-wrapper no-top-padding">
-            <Grid items={albums} />
-          </section>
-        </div>
-      </div>
-    );
-  }
-
-  renderTracks = () => {
+  const renderTracks = () => {
     const {
       artist: {
         uri,
@@ -375,7 +191,7 @@ class Artist extends React.Component {
     );
   }
 
-  renderRelatedArtists = () => {
+  const renderRelatedArtists = () => {
     const { artist } = this.props;
 
     return (
@@ -387,220 +203,126 @@ class Artist extends React.Component {
     );
   }
 
-  renderAbout = () => {
-    const {
-      artist: artistProp,
-      artists,
-    } = this.props;
 
-    const artist = collate(
-      artistProp,
-      {
-        artists,
-      },
-    );
 
-    const thumbnails = artist.images && Array.isArray(artist.images) && artist.images.map(
-      (image) => {
-        if (!image.huge) return null;
-        return (
-          <div className="tile thumbnail-wrapper" key={image.huge}>
-            <Thumbnail size="huge" canZoom fill images={image} />
-          </div>
-        );
-      },
-    );
-
+  if (loading) {
+    return <Loader body loading />;
+  }
+  if (!artist) {
     return (
-      <div className="body about">
-        <div className="col col--w40 tiles artist-stats">
-          {thumbnails}
-          <div className="tile">
-            <span className="content">
-              <SourceIcon uri={artist.uri} />
-              <I18n
-                path="artist.about.source"
-                source={titleCase(uriSource(artist.uri))}
-              />
-            </span>
-          </div>
-          {artist.followers && (
-            <div className="tile">
-              <span className="content">
-                <Icon type="fontawesome" name="users" />
-                <I18n path="specs.followers" count={nice_number(artist.followers)} />
-              </span>
-            </div>
-          )}
-          {artist.popularity && (
-            <div className="tile">
-              <span className="content">
-                <Icon type="fontawesome" name="fire" />
-                <I18n path="specs.popularity" percent={artist.popularity} />
-              </span>
-            </div>
-          )}
-          {artist.listeners && (
-            <div className="tile">
-              <span className="content">
-                <Icon type="fontawesome" name="headphones" />
-                <I18n path="specs.listeners" count={nice_number(artist.listeners)} />
-              </span>
-            </div>
-          )}
-        </div>
+      <ErrorMessage type="not-found" title="Not found">
+        <p>
+          <I18n path="errors.uri_not_found" uri={uri} />
+        </p>
+      </ErrorMessage>
+    );
+  }
 
-        <div className="col col--w60 biography">
-          <section>
-            <br />
-            {artist.biography && (
-              <div className="biography-text">
-                <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(artist.biography) }}></p>
-                <br />
-                <div className="mid_grey-text">
-                  <I18n path="artist.about.wiki.published" date={artist.biography_publish_date} />
-                </div>
-                <div className="mid_grey-text">
-                  <I18n path="artist.about.wiki.origin" />
-                  <a
-                    href={artist.biography_link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {artist.biography_link}
-                  </a>
-                </div>
+  const scheme = uriSource(uri);
+  const image = (artist.images && artist.images.length) ? artist.images[0].huge : null;
+  const is_spotify = (scheme === 'spotify');
+
+  return (
+    <div className="view artist-view preserve-3d">
+      <div className="intro preserve-3d">
+
+        <Parallax image={image} />
+
+        <div className="liner">
+          <div className="heading">
+            <div className="heading__thumbnail">
+              <Thumbnail size="medium" circle canZoom type="artist" image={image} />
+            </div>
+            <div className="heading__content">
+              <h1>{artist && artist.name}</h1>
+              <div className="actions">
+                <Button
+                  type="primary"
+                  onClick={onPlayAll}
+                  tracking={{ category: 'Artist', action: 'Play' }}
+                >
+                  <I18n path="actions.play" />
+                </Button>
+                {is_spotify && (
+                  <FollowButton
+                    uri={uri}
+                    is_following={artist.in_library}
+                  />
+                )}
+                <ContextMenuTrigger className="white" onTrigger={handleContextMenu} />
               </div>
+            </div>
+          </div>
+          <div className="sub-views" id="sub-views-menu">
+            <Link
+              exact
+              history={history}
+              activeClassName="sub-views__option--active"
+              className="sub-views__option"
+              to={`/artist/${encodeUri(uri)}`}
+              scrollTo="#sub-views-menu"
+            >
+              <h4><I18n path="artist.overview.title" /></h4>
+            </Link>
+            {artist.tracks && artist.tracks.length > 10 && (
+              <Link
+                exact
+                history={history}
+                activeClassName="sub-views__option--active"
+                className="sub-views__option"
+                to={`/artist/${encodeUri(uri)}/tracks`}
+                scrollTo="#sub-views-menu"
+              >
+                <h4><I18n path="artist.tracks.title" /></h4>
+              </Link>
             )}
-          </section>
-        </div>
-      </div>
-    );
-  }
-
-  render = () => {
-    const {
-      uri,
-      loading,
-      artist,
-      history,
-    } = this.props;
-
-    if (loading) {
-      return <Loader body loading />;
-    }
-    if (!artist) {
-      return (
-        <ErrorMessage type="not-found" title="Not found">
-          <p>
-            <I18n path="errors.uri_not_found" uri={uri} />
-          </p>
-        </ErrorMessage>
-      );
-    }
-
-    const scheme = uriSource(uri);
-    const image = (artist.images && artist.images.length) ? artist.images[0].huge : null;
-    const is_spotify = (scheme === 'spotify');
-
-    return (
-      <div className="view artist-view preserve-3d">
-        <div className="intro preserve-3d">
-
-          <Parallax image={image} />
-
-          <div className="liner">
-            <div className="heading">
-              <div className="heading__thumbnail">
-                <Thumbnail size="medium" circle canZoom type="artist" image={image} />
-              </div>
-              <div className="heading__content">
-                <h1>{artist && artist.name}</h1>
-                <div className="actions">
-                  <Button
-                    type="primary"
-                    onClick={this.onPlayAll}
-                    tracking={{ category: 'Artist', action: 'Play' }}
-                  >
-                    <I18n path="actions.play" />
-                  </Button>
-                  {is_spotify && (
-                    <FollowButton
-                      uri={uri}
-                      is_following={artist.in_library}
-                    />
-                  )}
-                  <ContextMenuTrigger className="white" onTrigger={this.handleContextMenu} />
-                </div>
-              </div>
-            </div>
-            <div className="sub-views" id="sub-views-menu">
+            {artist.related_artists && (
               <Link
                 exact
                 history={history}
                 activeClassName="sub-views__option--active"
                 className="sub-views__option"
-                to={`/artist/${encodeUri(uri)}`}
+                to={`/artist/${encodeUri(uri)}/related-artists`}
                 scrollTo="#sub-views-menu"
               >
-                <h4><I18n path="artist.overview.title" /></h4>
+                <h4><I18n path="artist.related_artists.title" /></h4>
               </Link>
-              {artist.tracks && artist.tracks.length > 10 && (
-                <Link
-                  exact
-                  history={history}
-                  activeClassName="sub-views__option--active"
-                  className="sub-views__option"
-                  to={`/artist/${encodeUri(uri)}/tracks`}
-                  scrollTo="#sub-views-menu"
-                >
-                  <h4><I18n path="artist.tracks.title" /></h4>
-                </Link>
-              )}
-              {artist.related_artists && (
-                <Link
-                  exact
-                  history={history}
-                  activeClassName="sub-views__option--active"
-                  className="sub-views__option"
-                  to={`/artist/${encodeUri(uri)}/related-artists`}
-                  scrollTo="#sub-views-menu"
-                >
-                  <h4><I18n path="artist.related_artists.title" /></h4>
-                </Link>
-              )}
-              <Link
-                exact
-                history={history}
-                activeClassName="sub-views__option--active"
-                className="sub-views__option"
-                to={`/artist/${encodeUri(uri)}/about`}
-                scrollTo="#sub-views-menu"
-              >
-                <h4><I18n path="artist.about.title" /></h4>
-              </Link>
-            </div>
+            )}
+            <Link
+              exact
+              history={history}
+              activeClassName="sub-views__option--active"
+              className="sub-views__option"
+              to={`/artist/${encodeUri(uri)}/about`}
+              scrollTo="#sub-views-menu"
+            >
+              <h4><I18n path="artist.about.title" /></h4>
+            </Link>
           </div>
         </div>
-        <div className="content-wrapper">
-          <Switch>
-            <Route exact path="/artist/:id/related-artists">
-              {this.renderRelatedArtists()}
-            </Route>
-            <Route exact path="/artist/:id/tracks">
-              {this.renderTracks()}
-            </Route>
-            <Route exact path="/artist/:id/about">
-              {this.renderAbout()}
-            </Route>
-            <Route exact path="/artist/:id/:name?">
-              {this.renderOverview()}
-            </Route>
-          </Switch>
-        </div>
       </div>
-    );
-  }
+      <div className="content-wrapper">
+        <Switch>
+          <Route exact path="/artist/:id/related-artists">
+            {/* {this.renderRelatedArtists()} */}
+          </Route>
+          <Route exact path="/artist/:id/tracks">
+            {/* {this.renderTracks()} */}
+          </Route>
+          <Route exact path="/artist/:id/about">
+            <ArtistAbout
+              artist={artist}
+            />
+          </Route>
+          <Route exact path="/artist/:id/:name?">
+            <ArtistOverview
+              artist={artist}
+            />
+          </Route>
+        </Switch>
+      </div>
+    </div>
+  );
 }
 
 const mapStateToProps = (state, props) => {
@@ -614,7 +336,6 @@ const mapStateToProps = (state, props) => {
     albums = albumsSelector(state);
   }
   const [albumSortField, albumSortReverse] = getSortSelector(state, ALBUM_SORT_KEY, null);
-  const [trackSortField, trackSortReverse] = getSortSelector(state, TRACK_SORT_KEY, null);
 
   return {
     uri,
@@ -626,8 +347,6 @@ const mapStateToProps = (state, props) => {
     filterType: state.ui.artist_albums_filter,
     albumSortField,
     albumSortReverse,
-    trackSortField,
-    trackSortReverse,
     spotify_authorized: state.spotify.authorization,
   };
 };

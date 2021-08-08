@@ -74,7 +74,7 @@ const Album = ({
       }
     };
     setAlbum(albumProp);
-  }, [albumProp])
+  }, [albumProp]);
 
   useEffect(() => {
     if (album) {
