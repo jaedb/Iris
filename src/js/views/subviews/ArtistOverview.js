@@ -15,7 +15,7 @@ import {
   setSort,
 } from '../../services/ui/actions';
 
-const SORT_KEY = 'artist_tracks';
+const SORT_KEY = 'artist_albums';
 
 export default ({
   artist,

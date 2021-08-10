@@ -2,63 +2,50 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Route, Switch } from 'react-router-dom';
-import sanitizeHtml from 'sanitize-html';
 import ErrorMessage from '../components/ErrorMessage';
 import Link from '../components/Link';
-import TrackList from '../components/TrackList';
 import Thumbnail from '../components/Thumbnail';
 import Parallax from '../components/Parallax';
-import { Grid } from '../components/Grid';
-import RelatedArtists from '../components/RelatedArtists';
 import FollowButton from '../components/Fields/FollowButton';
 import ContextMenuTrigger from '../components/ContextMenuTrigger';
-import DropdownField from '../components/Fields/DropdownField';
-import FilterField from '../components/Fields/FilterField';
 import ArtistAbout from './subviews/ArtistAbout';
 import ArtistOverview from './subviews/ArtistOverview';
-import Icon, { SourceIcon } from '../components/Icon';
+import ArtistTracks from './subviews/ArtistTracks';
+import ArtistRelated from './subviews/ArtistRelated';
 import Loader from '../components/Loader';
 import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import {
   uriSource,
-  titleCase,
 } from '../util/helpers';
-import { collate, encodeUri, decodeUri } from '../util/format';
-import { sortItems, applyFilter, arrayOf } from '../util/arrays';
+import { encodeUri, decodeUri } from '../util/format';
+import { arrayOf } from '../util/arrays';
 import { i18n, I18n } from '../locale';
 import Button from '../components/Button';
 import { trackEvent } from '../components/Trackable';
 import {
   makeItemSelector,
   makeLoadingSelector,
-  getSortSelector,
 } from '../util/selectors';
-import { nice_number } from '../components/NiceNumber';
-
-const ALBUM_SORT_KEY = 'artist_albums';
-const TRACK_SORT_KEY = 'artist_tracks';
 
 const Artist = ({
   uri,
   loading,
   history,
   artist: artistProp,
+  albums,
   coreActions: {
     loadArtist,
   },
   uiActions: {
-    set,
-    setSort,
     setWindowTitle,
-    hideContextMenu,
+    showContextMenu,
     createNotification,
   },
   mopidyActions: {
     playURIs,
   },
-  ...props
 }) => {
   const [artist, setArtist] = useState({});
 
@@ -80,34 +67,11 @@ const Artist = ({
     setArtist(artistProp);
   }, [artistProp]);
 
-  const onChangeFilter = (type, value) => {
-    set({ [`artist_${type}_filter`]: value });
-    hideContextMenu();
-    trackEvent({ category: 'Artist', action: `Filter${type}`, label: value });
-  }
-
-  const onChangeSort = (key, field) => {
-    const prefix = key.replace('artist_');
-    const {
-      [`${prefix}SortField`]: sortField,
-      [`${prefix}SortReverse`]: sortReverse,
-    } = props;
-
-    let reverse = false;
-    if (field !== null && sortField === field) {
-      reverse = !sortReverse;
-    }
-
-    setSort(key, field, reverse);
-    hideContextMenu();
-  }
-
   const onPlayAll = () => {
     const {
-      uri,
       tracks,
       albums_uris,
-    } = album;
+    } = artist;
 
     if ((!albums_uris || !albums_uris.length) && (!tracks || !tracks.length)) {
       createNotification({ content: i18n('errors.no_results'), level: 'warning' });
@@ -126,84 +90,6 @@ const Artist = ({
       tracklist_uri: uri,
     });
   }
-
-
-  const renderTracks = () => {
-    const {
-      artist: {
-        uri,
-      },
-      trackSortField,
-      trackSortReverse,
-    } = this.props;
-    const { tracksFilter: filter } = this.state;
-    let { artist: { tracks } } = this.props;
-
-    if (trackSortField && tracks) {
-      tracks = sortItems(tracks, trackSortField, trackSortReverse);
-    }
-
-    if (filter && filter !== '') {
-      tracks = applyFilter('name', filter, tracks);
-    }
-
-    const sort_options = [
-      {
-        value: 'name',
-        label: i18n('artist.tracks.sort.name'),
-      },
-      {
-        value: 'album',
-        label: i18n('artist.tracks.sort.album'),
-      },
-    ];
-
-    return (
-      <div className="body related-artists">
-        <section className="list-wrapper no-top-padding">
-          <h4 className="no-bottom-margin">
-            <I18n path="artist.tracks.title" />
-            <div className="actions-wrapper">
-              <FilterField
-                initialValue={filter}
-                handleChange={(value) => this.setState({ tracksFilter: value })}
-                onSubmit={() => uiActions.hideContextMenu()}
-              />
-              <DropdownField
-                icon="swap_vert"
-                name="Sort"
-                value={trackSortField}
-                valueAsLabel
-                options={sort_options}
-                selected_icon={trackSortField ? (trackSortReverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
-                handleChange={this.onChangeTracksSort}
-              />
-            </div>
-          </h4>
-          <TrackList
-            className="artist-track-list"
-            uri={uri}
-            tracks={tracks}
-            track_context="artist"
-          />
-        </section>
-      </div>
-    );
-  }
-
-  const renderRelatedArtists = () => {
-    const { artist } = this.props;
-
-    return (
-      <div className="body related-artists">
-        <section className="grid-wrapper no-top-padding">
-          <Grid items={artist.related_artists} />
-        </section>
-      </div>
-    );
-  }
-
-
 
   if (loading) {
     return <Loader body loading />;
@@ -304,20 +190,16 @@ const Artist = ({
       <div className="content-wrapper">
         <Switch>
           <Route exact path="/artist/:id/related-artists">
-            {/* {this.renderRelatedArtists()} */}
+            <ArtistRelated artist={artist} />
           </Route>
           <Route exact path="/artist/:id/tracks">
-            {/* {this.renderTracks()} */}
+            <ArtistTracks artist={artist} />
           </Route>
           <Route exact path="/artist/:id/about">
-            <ArtistAbout
-              artist={artist}
-            />
+            <ArtistAbout artist={artist} />
           </Route>
           <Route exact path="/artist/:id/:name?">
-            <ArtistOverview
-              artist={artist}
-            />
+            <ArtistOverview artist={artist} albums={albums} />
           </Route>
         </Switch>
       </div>
@@ -335,7 +217,6 @@ const mapStateToProps = (state, props) => {
     const albumsSelector = makeItemSelector(artist.albums_uris);
     albums = albumsSelector(state);
   }
-  const [albumSortField, albumSortReverse] = getSortSelector(state, ALBUM_SORT_KEY, null);
 
   return {
     uri,
@@ -344,9 +225,6 @@ const mapStateToProps = (state, props) => {
     loading: loadingSelector(state),
     theme: state.ui.theme,
     slim_mode: state.ui.slim_mode,
-    filterType: state.ui.artist_albums_filter,
-    albumSortField,
-    albumSortReverse,
     spotify_authorized: state.spotify.authorization,
   };
 };
