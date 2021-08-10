@@ -222,7 +222,7 @@ export default class Track extends React.Component {
       }
 
       case 'queue': {
-        if (added_from && added_by) {
+        if (added_from) {
           const type = (added_from ? uriType(added_from) : null);
 
           switch (type) {
@@ -267,9 +267,11 @@ export default class Track extends React.Component {
               <span className="from">
                 {link}
               </span>
-              <span className="by by--with-spacing">
-                {`${added_by}`}
-              </span>
+              {added_by && (
+                <span className="by by--with-spacing">
+                  {`${added_by}`}
+                </span>
+              )}
             </div>
           );
         } else if (added_by) {
