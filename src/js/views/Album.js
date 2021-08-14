@@ -54,7 +54,7 @@ const Album = ({
   const [filter, setFilter] = useState('');
   const [album, setAlbum] = useState({});
 
-  let tracks = album ?.tracks || [];
+  let tracks = album?.tracks || [];
   if (sortField && tracks) tracks = sortItems(tracks, sortField, sortReverse);
   if (filter && filter !== '') tracks = applyFilter('name', filter, tracks);
 
@@ -101,16 +101,12 @@ const Album = ({
     );
   }
 
-  const handleContextMenu = (e) => {
-    showContextMenu({
-      e,
-      context: 'album',
-      items: [album],
-      uris: [uri],
-    });
-  }
-
-  const play = () => playURIs([uri], uri);
+  const handleContextMenu = (e) => showContextMenu({
+    e,
+    context: 'album',
+    items: [album],
+    uris: [uri],
+  });
 
   const onChangeSort = (field) => {
     let reverse = false;
@@ -120,7 +116,7 @@ const Album = ({
 
     setSort(SORT_KEY, field, reverse);
     hideContextMenu();
-  }
+  };
 
   const sort_options = [
     {
@@ -193,7 +189,7 @@ const Album = ({
       <div className="actions">
         <Button
           type="primary"
-          onClick={play}
+          onClick={() => playURIs([uri], uri)}
           tracking={{ category: 'Album', action: 'Play' }}
         >
           <I18n path="actions.play" />
