@@ -51,9 +51,7 @@ const Artist = ({
 
   useEffect(
     () => {
-      if (uri) {
-        loadArtist(uri, { full: true });
-      }
+      if (uri) loadArtist(uri, { full: true });
     },
     [uri],
   );
@@ -81,15 +79,13 @@ const Artist = ({
     playURIs(arrayOf('uri', tracks) || albums_uris, uri);
   }
 
-  const handleContextMenu = (e) => {
-    showContextMenu({
-      e,
-      context: 'artist',
-      items: [artist],
-      uris: [uri],
-      tracklist_uri: uri,
-    });
-  }
+  const handleContextMenu = (e) => showContextMenu({
+    e,
+    context: 'artist',
+    items: [artist],
+    uris: [uri],
+    tracklist_uri: uri,
+  });
 
   if (loading) {
     return <Loader body loading />;
