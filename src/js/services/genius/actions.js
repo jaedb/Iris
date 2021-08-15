@@ -237,13 +237,19 @@ export function findTrackLyrics(uri) {
       .then(
         (response) => {
           if (response.hits && response.hits.length > 0) {
+            const standardized_track_artist_name = track.artists[0].name.toLowerCase();
             const lyrics_results = [];
             for (let i = 0; i < response.hits.length; i++) {
-              lyrics_results.push({
-                title: response.hits[i].result.full_title,
-                url: response.hits[i].result.url,
-                path: response.hits[i].result.path,
-              });
+              const result = response.hits[i].result;
+              const result_artist_name = result.primary_artist ? result.primary_artist.name : null;
+              if (result_artist_name &&
+                  result_artist_name.toLowerCase() === standardized_track_artist_name) {
+                lyrics_results.push({
+                  title: result.full_title,
+                  url: result.url,
+                  path: result.path,
+                });
+              }
             }
             dispatch(coreActions.itemLoaded({
               uri: track.uri,
