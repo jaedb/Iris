@@ -132,8 +132,6 @@ const Playlist = ({
     loadPlaylist,
     reorderPlaylistTracks,
     removeTracksFromPlaylist,
-    addPinned,
-    removePinned,
   },
   uiActions: {
     setSort,
