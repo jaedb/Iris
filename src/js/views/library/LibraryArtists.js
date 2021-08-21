@@ -18,8 +18,10 @@ import {
   makeProcessProgressSelector,
   getLibrarySource,
   makeProvidersSelector,
+  getSortSelector,
 } from '../../util/selectors';
 
+const SORT_KEY = 'library_artists';
 const processKeys = [
   'MOPIDY_GET_LIBRARY_ARTISTS',
   'SPOTIFY_GET_LIBRARY_ARTISTS',
@@ -67,14 +69,23 @@ class LibraryArtists extends React.Component {
     cancelProcess(processKeys);
   }
 
-  setSort = (value) => {
-    const { sort, sort_reverse, uiActions: { set } } = this.props;
+  onSortChange = (field) => {
+    const {
+      sortField,
+      sortReverse,
+      uiActions: {
+        setSort,
+        hideContextMenu,
+      },
+    } = this.props;
+
     let reverse = false;
-    if (sort === value) reverse = !sort_reverse;
-    set({
-      library_artists_sort_reverse: reverse,
-      library_artists_sort: value,
-    });
+    if (field !== null && sortField === field) {
+      reverse = !sortReverse;
+    }
+
+    setSort(SORT_KEY, field, reverse);
+    hideContextMenu();
   }
 
   handleContextMenu = (e, item) => {
@@ -107,8 +118,8 @@ class LibraryArtists extends React.Component {
 
   renderView = () => {
     const {
-      sort,
-      sort_reverse,
+      sortField,
+      sortReverse,
       view,
       loading_progress,
     } = this.props;
@@ -123,8 +134,8 @@ class LibraryArtists extends React.Component {
       );
     }
 
-    if (sort) {
-      artists = sortItems(artists, sort, sort_reverse);
+    if (sortField) {
+      artists = sortItems(artists, sortField, sortReverse);
     }
 
     if (filter !== '') {
@@ -154,6 +165,8 @@ class LibraryArtists extends React.Component {
     const {
       loading_progress,
       providers,
+      sortField,
+      sortReverse,
     } = this.props;
 
     const view_options = [
@@ -196,11 +209,11 @@ class LibraryArtists extends React.Component {
         <DropdownField
           icon="swap_vert"
           name={i18n('fields.sort')}
-          value={this.props.sort}
+          value={sortField}
           valueAsLabel
           options={sort_options}
-          selected_icon={this.props.sort ? (this.props.sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
-          handleChange={(value) => { this.setSort(value); this.props.uiActions.hideContextMenu(); }}
+          selected_icon={sortField ? (sortReverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
+          handleChange={this.onSortChange}
         />
         <DropdownField
           icon="visibility"
@@ -251,16 +264,20 @@ class LibraryArtists extends React.Component {
 const librarySelector = makeLibrarySelector('artists');
 const processProgressSelector = makeProcessProgressSelector(processKeys);
 const providersSelector = makeProvidersSelector('artists');
-const mapStateToProps = (state) => ({
-  loading_progress: processProgressSelector(state),
-  uri_schemes: state.mopidy.uri_schemes,
-  providers: providersSelector(state),
-  artists: librarySelector(state, 'artists'),
-  source: getLibrarySource(state, 'artists'),
-  sort: (state.ui.library_artists_sort ? state.ui.library_artists_sort : null),
-  sort_reverse: (state.ui.library_artists_sort_reverse ? state.ui.library_artists_sort_reverse : false),
-  view: state.ui.library_artists_view,
-});
+const mapStateToProps = (state) => {
+  const [sortField, sortReverse] = getSortSelector(state, SORT_KEY, null);
+
+  return {
+    loading_progress: processProgressSelector(state),
+    uri_schemes: state.mopidy.uri_schemes,
+    providers: providersSelector(state),
+    artists: librarySelector(state, 'artists'),
+    source: getLibrarySource(state, 'artists'),
+    sortField,
+    sortReverse,
+    view: state.ui.library_artists_view,
+  };
+};
 
 const mapDispatchToProps = (dispatch) => ({
   uiActions: bindActionCreators(uiActions, dispatch),

@@ -20,8 +20,10 @@ import {
   makeProcessProgressSelector,
   getLibrarySource,
   makeProvidersSelector,
+  getSortSelector,
 } from '../../util/selectors';
 
+const SORT_KEY = 'library_albums';
 const processKeys = [
   'MOPIDY_GET_LIBRARY_ALBUMS',
   'SPOTIFY_GET_LIBRARY_ALBUMS',
@@ -102,28 +104,29 @@ class LibraryAlbums extends React.Component {
     });
   }
 
-  setSort = (value) => {
+  onSortChange = (field) => {
     const {
-      sort,
-      sort_reverse,
+      sortField,
+      sortReverse,
       uiActions: {
-        set,
+        setSort,
+        hideContextMenu,
       },
     } = this.props;
 
     let reverse = false;
-    if (sort === value) reverse = !sort_reverse;
+    if (field !== null && sortField === field) {
+      reverse = !sortReverse;
+    }
 
-    set({
-      library_albums_sort_reverse: reverse,
-      library_albums_sort: value,
-    });
+    setSort(SORT_KEY, field, reverse);
+    hideContextMenu();
   }
 
   renderView = () => {
     const {
-      sort,
-      sort_reverse,
+      sortField,
+      sortReverse,
       view,
       loading_progress,
     } = this.props;
@@ -136,8 +139,8 @@ class LibraryAlbums extends React.Component {
       return <Loader body loading progress={loading_progress} />;
     }
 
-    if (sort) {
-      albums = sortItems(albums, sort, sort_reverse);
+    if (sortField) {
+      albums = sortItems(albums, sortField, sortReverse);
     }
 
     if (filter && filter !== '') {
@@ -165,11 +168,11 @@ class LibraryAlbums extends React.Component {
 
   render = () => {
     const {
-      sort,
       view,
       source,
       providers,
-      sort_reverse,
+      sortField,
+      sortReverse,
       uiActions,
       loading_progress,
     } = this.props;
@@ -226,11 +229,11 @@ class LibraryAlbums extends React.Component {
         <DropdownField
           icon="swap_vert"
           name={i18n('fields.sort')}
-          value={sort}
+          value={sortField}
           valueAsLabel
           options={sort_options}
-          selected_icon={sort ? (sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
-          handleChange={(val) => { this.setSort(val); uiActions.hideContextMenu(); }}
+          selected_icon={sortField ? (sortReverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
+          handleChange={this.onSortChange}
         />
         <DropdownField
           icon="visibility"
@@ -281,16 +284,20 @@ class LibraryAlbums extends React.Component {
 const librarySelector = makeLibrarySelector('albums');
 const processProgressSelector = makeProcessProgressSelector(processKeys);
 const providersSelector = makeProvidersSelector('albums');
-const mapStateToProps = (state) => ({
-  loading_progress: processProgressSelector(state),
-  uri_schemes: state.mopidy.uri_schemes,
-  albums: librarySelector(state, 'albums'),
-  providers: providersSelector(state),
-  view: state.ui.library_albums_view,
-  source: getLibrarySource(state, 'albums'),
-  sort: state.ui.library_albums_sort,
-  sort_reverse: state.ui.library_albums_sort_reverse,
-});
+const mapStateToProps = (state) => {
+  const [sortField, sortReverse] = getSortSelector(state, SORT_KEY, null);
+
+  return {
+    loading_progress: processProgressSelector(state),
+    uri_schemes: state.mopidy.uri_schemes,
+    albums: librarySelector(state, 'albums'),
+    providers: providersSelector(state),
+    view: state.ui.library_albums_view,
+    source: getLibrarySource(state, 'albums'),
+    sortField,
+    sortReverse,
+  };
+};
 const mapDispatchToProps = (dispatch) => ({
   coreActions: bindActionCreators(coreActions, dispatch),
   uiActions: bindActionCreators(uiActions, dispatch),

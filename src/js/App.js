@@ -344,16 +344,16 @@ export class App extends React.Component {
                       path="/search/:type?/:term?"
                       component={Search}
                     />
-                    <Route exact path="/album/:uri" component={Album} />
                     <Route
                       exact
                       path="/artist/:uri/:sub_view?"
                       component={Artist}
                     />
-                    <Route exact path="/playlist/:uri" component={Playlist} />
-                    <Route exact path="/user/:uri" component={User} />
-                    <Route exact path="/track/:uri" component={Track} />
-                    <Route exact path="/uri/:uri" component={UriRedirect} />
+                    <Route exact path="/album/:uri/:name?" component={Album} />
+                    <Route exact path="/playlist/:uri/:name?" component={Playlist} />
+                    <Route exact path="/user/:uri/:name?" component={User} />
+                    <Route exact path="/track/:uri/:name?" component={Track} />
+                    <Route exact path="/uri/:uri/:name?" component={UriRedirect} />
 
                     <Route
                       exact

@@ -17,6 +17,15 @@ export default function reducer(ui = {}, action) {
     case 'UI_SET':
       return { ...ui, ...action.data };
 
+    case 'UI_SET_SORT':
+      return {
+        ...ui,
+        sort: {
+          ...ui.sort,
+          [action.key]: action.sort,
+        },
+      };
+
     case 'SET_WINDOW_TITLE':
       if (action.title) {
         return { ...ui, window_title: action.title };

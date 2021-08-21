@@ -139,6 +139,7 @@ const ListItem = ({
       to = item.link;
     } else {
       to = `/${item.type}/${encodeUri(item.uri)}`;
+      if (item.name && item.type !== 'artist') to += `/${item.name}`;
     }
 
     if (e.target.tagName.toLowerCase() !== 'a') {

@@ -22,6 +22,7 @@ import * as spotifyActions from '../services/spotify/actions';
 import { isHosted } from '../util/helpers';
 import { i18n, I18n, languagesAvailable } from '../locale';
 import Button from '../components/Button';
+import { dater } from '../components/Dater';
 
 const CheckboxSetting = ({
   name,
@@ -461,8 +462,13 @@ class Settings extends React.Component {
                   {pusher.version.current}
                 </a>
                 {' '}
-                <span className="mid_grey-text">
-                  {build}
+                <span className="mid_grey-text tooltip">
+                  {window.build}
+                  {window.build && (
+                    <span className="tooltip__content">
+                      {`${dater('ago', parseInt(window.build, 10) * 1000)} ago`}
+                    </span>
+                  )}
                 </span>
                 {pusher.version.upgrade_available ? (
                   <a

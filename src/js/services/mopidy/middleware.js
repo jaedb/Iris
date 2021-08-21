@@ -29,7 +29,7 @@ import {
   sortItems,
   indexToArray,
 } from '../../util/arrays';
-import { getProvider } from '../../util/selectors';
+import { getProvider, getSortSelector } from '../../util/selectors';
 
 const mopidyActions = require('./actions.js');
 const coreActions = require('../core/actions.js');
@@ -814,10 +814,11 @@ const MopidyMiddleware = (function () {
 
       case 'MOPIDY_PLAY_PLAYLIST': {
         const playlist = store.getState().core.items[action.uri];
+        const { sortField, sortReverse } = getSortSelector(store.getState(), 'playlist_tracks');
         if (playlist && playlist.tracks) {
           store.dispatch(
             mopidyActions.playURIs(
-              arrayOf('uri', playlist.tracks),
+              arrayOf('uri', sortItems(playlist.tracks, sortField, sortReverse)),
               action.uri,
               action.shuffle,
             ),
@@ -1180,41 +1181,60 @@ const MopidyMiddleware = (function () {
         break;
       }
 
-      case 'MOPIDY_GET_PLAYLIST':
-        request(store, 'playlists.lookup', { uri: action.uri })
-          .then((response) => {
-            if (!response) return;
-
-            const playlist = formatPlaylist({
-              ...response,
-              uri: action.uri, // Patch in the requested URI
-              type: 'playlist',
-              provider: 'mopidy',
-              can_edit: true,
-            });
-
-            if (response.tracks) {
-              request(store, 'library.lookup', { uris: arrayOf('uri', response.tracks) })
-                .then((tracksResponse) => {
-                  const tracks = response.tracks.map((simpleTrack) => {
-                    const fullTracks = tracksResponse[simpleTrack.uri];
-                    return {
-                      ...simpleTrack,
-                      ...(fullTracks.length ? fullTracks[0] : {}),
-                    };
-                  });
-                  playlist.tracks = injectSortId(formatTracks(tracks));
-                  store.dispatch(coreActions.itemLoaded(playlist));
+      case 'MOPIDY_GET_PLAYLIST': {
+        const processResponse = (response, fetchTracks = true) => {
+          const playlist = formatPlaylist({
+            can_edit: true,
+            provider: 'mopidy',
+            ...response,
+            uri: action.uri, // Patch in the requested URI
+            type: 'playlist',
+          });
+          if (response.tracks && fetchTracks) {
+            request(store, 'library.lookup', { uris: arrayOf('uri', response.tracks) })
+              .then((tracksResponse) => {
+                const tracks = response.tracks.map((simpleTrack) => {
+                  const fullTracks = tracksResponse[simpleTrack.uri];
+                  return {
+                    ...simpleTrack,
+                    ...(fullTracks.length ? fullTracks[0] : {}),
+                  };
                 });
-            } else {
-              store.dispatch(coreActions.itemLoaded(playlist));
-            }
+                playlist.tracks = injectSortId(formatTracks(tracks));
+                store.dispatch(coreActions.itemLoaded(playlist));
+              });
+          } else {
+            store.dispatch(coreActions.itemLoaded(playlist));
+          }
 
-            if (!playlist.images) {
-              store.dispatch(mopidyActions.getImages([playlist.uri]));
+          if (!playlist.images) {
+            store.dispatch(mopidyActions.getImages([playlist.uri]));
+          }
+        };
+
+        request(store, 'playlists.lookup', { uri: action.uri })
+          .then((playlistResponse) => {
+            if (playlistResponse) {
+              // Got a playlist from our playlists core, this is typically because it's a local
+              // playlist, or one that our backend user owns.
+              processResponse(playlistResponse);
+            } else {
+              console.info('Playlist not in playlists, fetching using library', action.uri);
+              // No match, so let's try fetching from foreign provider. This needs to happen when we
+              // don't have a HTTP API (eg Spotify) but the playlist is not ours (eg Tidal browse)
+              request(store, 'library.lookup', { uris: [action.uri] })
+                .then(({ [action.uri]: libraryResponse } = {}) => {
+                  if (!libraryResponse) return;
+                  processResponse({
+                    tracks: libraryResponse,
+                    can_edit: false,
+                    ...action.options.name ? { name: action.options.name } : {},
+                  }, false);
+                });
             }
           });
         break;
+      }
 
       case 'MOPIDY_ADD_PLAYLIST_TRACKS':
         request(store, 'playlists.lookup', { uri: action.key })
@@ -1728,6 +1748,7 @@ const MopidyMiddleware = (function () {
           }
 
           if (subdirectoryImagesToLoad.length) {
+            console.info(`Loading ${subdirectoryImagesToLoad.length} subdirectory URIs`);
             request(store, 'library.getImages', { uris: subdirectoryImagesToLoad })
               .then((response) => {
                 const subdirectoriesWithImages = subdirectories.map((subdir) => {

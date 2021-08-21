@@ -55,6 +55,7 @@ let initialState = {
     processes: {},
     suppressed_broadcasts: [],
     grid_glow_enabled: true,
+    sort: {},
   },
   mopidy: {
     connected: false,

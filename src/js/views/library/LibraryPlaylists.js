@@ -20,8 +20,10 @@ import {
   makeProcessProgressSelector,
   makeProvidersSelector,
   getLibrarySource,
+  getSortSelector,
 } from '../../util/selectors';
 
+const SORT_KEY = 'library_playlists';
 const processKeys = [
   'MOPIDY_GET_LIBRARY_PLAYLISTS',
   'SPOTIFY_GET_LIBRARY_PLAYLISTS',
@@ -88,15 +90,23 @@ class LibraryPlaylists extends React.Component {
     uris.forEach((uri) => loadLibrary(uri, 'playlists', { forceRefetch }));
   };
 
-  setSort(value) {
-    let reverse = false;
-    if (this.props.sort === value) reverse = !this.props.sort_reverse;
+  onSortChange = (field) => {
+    const {
+      sortField,
+      sortReverse,
+      uiActions: {
+        setSort,
+        hideContextMenu,
+      },
+    } = this.props;
 
-    const data = {
-      library_playlists_sort_reverse: reverse,
-      library_playlists_sort: value,
-    };
-    this.props.uiActions.set(data);
+    let reverse = false;
+    if (field !== null && sortField === field) {
+      reverse = !sortReverse;
+    }
+
+    setSort(SORT_KEY, field, reverse);
+    hideContextMenu();
   }
 
   handleContextMenu(e, item) {
@@ -111,8 +121,8 @@ class LibraryPlaylists extends React.Component {
 
   renderView = () => {
     const {
-      sort,
-      sort_reverse,
+      sortField,
+      sortReverse,
       view,
       loading_progress,
       playlists: playlistsProp,
@@ -126,8 +136,8 @@ class LibraryPlaylists extends React.Component {
     }
     let playlists = [...playlistsProp];
 
-    if (sort) {
-      playlists = sortItems(playlists, sort, sort_reverse);
+    if (sortField) {
+      playlists = sortItems(playlists, sortField, sortReverse);
     }
     playlists = removeDuplicates(playlists);
 
@@ -159,8 +169,8 @@ class LibraryPlaylists extends React.Component {
       uiActions,
       providers,
       source,
-      sort,
-      sort_reverse,
+      sortField,
+      sortReverse,
       view,
       loading_progress,
     } = this.props;
@@ -220,11 +230,11 @@ class LibraryPlaylists extends React.Component {
         <DropdownField
           icon="swap_vert"
           name={i18n('fields.sort')}
-          value={sort}
+          value={sortField}
           valueAsLabel
           options={sort_options}
-          selected_icon={sort ? (sort_reverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
-          handleChange={(value) => { this.setSort(value); uiActions.hideContextMenu(); }}
+          selected_icon={sortField ? (sortReverse ? 'keyboard_arrow_up' : 'keyboard_arrow_down') : null}
+          handleChange={this.onSortChange}
         />
         <DropdownField
           icon="visibility"
@@ -292,6 +302,7 @@ const mapStateToProps = (state) => {
       } = {},
     },
   } = state;
+  const [sortField, sortReverse] = getSortSelector(state, SORT_KEY, null);
 
   return {
     slim_mode: state.ui.slim_mode,
@@ -301,8 +312,8 @@ const mapStateToProps = (state) => {
     source: getLibrarySource(state, 'playlists'),
     me_id,
     view: state.ui.library_playlists_view,
-    sort: (state.ui.library_playlists_sort ? state.ui.library_playlists_sort : null),
-    sort_reverse: (state.ui.library_playlists_sort_reverse ? state.ui.library_playlists_sort_reverse : false),
+    sortField,
+    sortReverse,
   };
 };
 

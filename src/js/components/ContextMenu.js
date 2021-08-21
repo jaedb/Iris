@@ -799,7 +799,7 @@ class ContextMenu extends React.Component {
         };
       }));
       playlists = sortItems(playlists, 'name');
-      playlists = sortItems(playlists, 'is_pinned');
+      playlists = sortItems(playlists, 'is_pinned', true);
 
       list = (
         <span className="context-menu__item">
@@ -833,9 +833,9 @@ class ContextMenu extends React.Component {
 
     return (
       <div className="context-menu__section context-menu__section--submenu">
-        <div className="context-menu__item">
+        <div className="context-menu__item context-menu__item--functional">
           <a
-            className="context-menu__item__link context-menu__item__link--close-submenu"
+            className="context-menu__item__link"
             onClick={this.closeSubmenu}
           >
             <span className="context-menu__item__label">
@@ -846,8 +846,8 @@ class ContextMenu extends React.Component {
             </span>
           </a>
         </div>
-        <div className="context-menu__item">
-          <Link className="context-menu__item__link" to={`playlist/create/${encodedUris}`}>
+        <div className="context-menu__item context-menu__item--functional">
+          <Link className="context-menu__item__link" to={`/playlist/create/${encodedUris}`}>
             <span className="context-menu__item__label">
               <Icon name="add" />
               <span>

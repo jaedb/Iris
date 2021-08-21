@@ -22,7 +22,8 @@ import { sourceIcon } from '../util/helpers';
 import { i18n, I18n } from '../locale';
 import Button from '../components/Button';
 import { makeLoadingSelector, makeItemSelector } from '../util/selectors';
-import { decodeUri } from '../util/format';
+import { decodeUri, encodeUri } from '../util/format';
+import URILink from '../components/URILink';
 
 const LyricsSelector = ({
   track: {
@@ -258,7 +259,7 @@ class Track extends React.Component {
 
           <h1>{track.name}</h1>
           <h2>
-            {track.album && track.album.uri && <Link to={`/album/${track.album.uri}`}>{track.album.name}</Link>}
+            {track?.album?.uri && <URILink uri={track.album.uri} type="album">{track.album.name}</URILink>}
             {track.album && !track.album.uri ? track.album.name : null}
             {!track.album && <I18n path="track.unknown_album" />}
             <I18n path="common.by" />

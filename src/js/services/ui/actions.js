@@ -191,6 +191,17 @@ export function set(data) {
   };
 }
 
+export function setSort(key, field, reverse) {
+  return {
+    type: 'UI_SET_SORT',
+    key,
+    sort: {
+      field,
+      reverse,
+    },
+  };
+}
+
 export function installPrompt(event) {
   return {
     type: 'INSTALL_PROMPT',
