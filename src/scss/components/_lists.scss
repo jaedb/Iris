@@ -106,6 +106,10 @@
 			word-break: break-all;
 		}
 
+		&--disabled {
+			opacity: 0.5;
+		}
+
 		&--selected {
 			background: rgba(125, 125, 125, 0.15) !important;
 
