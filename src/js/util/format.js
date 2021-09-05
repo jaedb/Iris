@@ -592,6 +592,7 @@ const formatTrack = function (data) {
     'loading',
     'uri',
     'in_library',
+    'is_playable',
     'tlid',
     'provider',
     'name',

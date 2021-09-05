@@ -110,7 +110,10 @@ const GridItem = ({
     to = item.link;
   } else {
     to = `/${item.type}/${encodeUri(item.uri)}`;
-    if (item.name && item.type !== 'artist') to += `/${item.name}`;
+    if (item.name && item.type !== 'artist') {
+      // Strip out "%"; this causes conflicts with our uri decoder
+      to += `/${item.name.replace('%','')}`;
+    }
   }
 
   return (

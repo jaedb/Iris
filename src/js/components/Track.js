@@ -11,7 +11,7 @@ import {
   isTouchDevice,
   uriType,
 } from '../util/helpers';
-import { I18n } from '../locale';
+import { I18n, i18n } from '../locale';
 
 const MiddleColumn = ({
   track_context,
@@ -333,6 +333,7 @@ const Track = ({
   if (item.type !== undefined) className += ` list__item--${item.type}`;
   if (item.playing) className += ' list__item--playing';
   if (item.loading) className += ' list__item--loading';
+  if (item.is_playable === false) className += ' list__item--disabled';
   if (hover) className += ' list__item--hover';
   if (track_middle_column) className += ' list__item--has-middle-column';
   if (track_details.length > 0) className += ' list__item--has-details';
@@ -365,7 +366,8 @@ const Track = ({
         {track_middle_column}
         <div className="list__item__column list__item__column--right">
           {drag_zone}
-          {item.is_explicit && <span className="flag flag--dark">EXPLICIT</span>}
+          {item.is_explicit && <span className="flag flag--dark">{i18n('track.explicit').toUpperCase()}</span>}
+          {item.is_playable === false && <span className="flag flag--dark">{i18n('track.unplayable').toUpperCase()}</span>}
           {(track_context === 'album' || track_context === 'artist') && item.track_number && (
             <span className="mid_grey-text list__item__column__item list__item__column__item--track-number">
               <span>

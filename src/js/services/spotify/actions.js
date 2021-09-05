@@ -419,6 +419,9 @@ export function getFeaturedPlaylists(forceRefetch = false) {
 
 export function getCategories() {
   return (dispatch, getState) => {
+    const loaderId = generateGuid();
+    dispatch(uiActions.startLoading(loaderId, 'spotify_categories'));
+
     let endpoint = 'browse/categories';
     endpoint += '?limit=50';
     endpoint += `&country=${getState().spotify.country}`;
@@ -427,12 +430,31 @@ export function getCategories() {
     request({ dispatch, getState, endpoint })
       .then(
         (response) => {
-          dispatch({
-            type: 'SPOTIFY_CATEGORIES_LOADED',
-            categories: formatCategories(response.categories.items),
+          let results = formatCategories(response.categories.items);
+
+          const fetchResults = (resultsEndpoint) => request({
+            dispatch,
+            getState,
+            endpoint: resultsEndpoint,
+          }).then((response) => {
+            results = [
+              ...results,
+              ...formatCategories(response.categories.items),
+            ];
+            if (response.categories.next) {
+              fetchResults(response.categories.next);
+            } else {
+              dispatch({
+                type: 'SPOTIFY_CATEGORIES_LOADED',
+                categories: results,
+              });
+              dispatch(uiActions.stopLoading(loaderId));
+            }
           });
+          fetchResults(endpoint);
         },
         (error) => {
+          dispatch(uiActions.stopLoading(loaderId));
           dispatch(coreActions.handleException(
             'Could not load categories',
             error,
@@ -1288,7 +1310,10 @@ export function getPlaylistTracks(uri, { forceRefetch, callbackAction } = {}) {
       dispatch, getState, endpoint, uri,
     })
       .then((response) => {
-        tracks = [...tracks, ...formatTracks(response.items)];
+        tracks = [
+          ...tracks,
+          ...formatTracks(response.items.filter((i) => i.track)), // Omit falsy tracks, #748
+        ];
         if (response.next) {
           fetchTracks(`${response.next}${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
         } else {

@@ -818,7 +818,14 @@ const MopidyMiddleware = (function () {
         if (playlist && playlist.tracks) {
           store.dispatch(
             mopidyActions.playURIs(
-              arrayOf('uri', sortItems(playlist.tracks, sortField, sortReverse)),
+              arrayOf(
+                'uri',
+                sortItems(
+                  playlist.tracks.filter((t) => t?.is_playable !== false),
+                  sortField,
+                  sortReverse,
+                ),
+              ),
               action.uri,
               action.shuffle,
             ),

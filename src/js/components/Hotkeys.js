@@ -132,7 +132,7 @@ const Hotkeys = () => {
       dispatch(mopidyActions.setTimePosition(new_position));
       dispatch(uiActions.createNotification({ content: 'fast_rewind', type: 'shortcut' }));
     },
-  }));
+  }), {}, [play_time_position]);
 
   useHotkeys('f', (e) => prepare({
     e,
@@ -141,7 +141,7 @@ const Hotkeys = () => {
       dispatch(mopidyActions.setTimePosition(play_time_position + 30000));
       dispatch(uiActions.createNotification({ content: 'fast_forward', type: 'shortcut' }));
     },
-  }));
+  }), {}, [play_time_position]);
 
   useHotkeys(',', (e) => prepare({
     e,

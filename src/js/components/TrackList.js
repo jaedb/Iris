@@ -44,7 +44,7 @@ const TrackList = ({
       window.removeEventListener('touchmove', onTouchMove, false);
       window.removeEventListener('touchend', onTouchEnd, false);
     }
-  }, []);
+  }, [selected_tracks]);
 
   const onKeyDown = (e) => {
     const {

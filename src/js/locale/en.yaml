@@ -340,6 +340,7 @@ track:
   title_window: '%{name} by %{artists} (track)'
   lyrics_origin: 'Origin: '
   explicit: Explicit
+  unplayable: Unplayable
   disc_number: 'Disc %{number}'
   track_number: 'Track %{number}'
   unknown_album: Unknown album
