@@ -419,6 +419,9 @@ export function getFeaturedPlaylists(forceRefetch = false) {
 
 export function getCategories() {
   return (dispatch, getState) => {
+    const loaderId = generateGuid();
+    dispatch(uiActions.startLoading(loaderId, 'spotify_categories'));
+
     let endpoint = 'browse/categories';
     endpoint += '?limit=50';
     endpoint += `&country=${getState().spotify.country}`;
@@ -445,11 +448,13 @@ export function getCategories() {
                 type: 'SPOTIFY_CATEGORIES_LOADED',
                 categories: results,
               });
+              dispatch(uiActions.stopLoading(loaderId));
             }
           });
           fetchResults(endpoint);
         },
         (error) => {
+          dispatch(uiActions.stopLoading(loaderId));
           dispatch(coreActions.handleException(
             'Could not load categories',
             error,
