@@ -5530,6 +5530,9 @@ h4 .context-menu-trigger, h4 .context-menu-trigger:active {
 .list__item .uri-placeholder {
   word-break: break-all;
 }
+.list__item--disabled {
+  opacity: 0.5;
+}
 .list__item--selected {
   background: rgba(125, 125, 125, 0.15) !important;
 }
