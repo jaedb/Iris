@@ -34,6 +34,7 @@ import {
   makeProvidersSelector,
   makeLibrarySelector,
 } from '../util/selectors';
+import AddedFrom from './AddedFrom';
 
 const processKeys = [
   'MOPIDY_GET_LIBRARY_PLAYLISTS',
@@ -696,49 +697,20 @@ class ContextMenu extends React.Component {
 
     if (context.items_count === 1 && context.name === 'queue-track' && context.item !== undefined) {
       if (queue_metadata[`tlid_${context.item.tlid}`] !== undefined) {
-        const metadata = queue_metadata[`tlid_${context.item.tlid}`];
-
-        if (metadata.added_from && metadata.added_by) {
-          const type = (metadata.added_from ? uriType(metadata.added_from) : null);
-
-          switch (type) {
-            case 'discover':
-              var link = (
-                <URILink type="recommendations" uri={getFromUri('seeds', metadata.added_from)}>
-                  <I18n path="discover.title" transform="lower" />
-                </URILink>
-              );
-              break;
-
-            case 'browse':
-              var link = (
-                <URILink type="browse" uri={metadata.added_from.replace('iris:browse:', '')}>
-                  <I18n path="library.browse.title" transform="lower" />
-                </URILink>
-              );
-              break;
-
-            case 'search':
-              var link = (
-                <URILink type="search" uri={metadata.added_from.replace('iris:', '')}>
-                  <I18n path="search.title" transform="lower" />
-                </URILink>
-              );
-              break;
-
-            default:
-              var link = <URILink type={type} uri={metadata.added_from}>{type}</URILink>;
-          }
-
-          return (
-            <div className="context-menu__title">
-              <div className="context-menu__title__text">
-                {`${metadata.added_by} added from `}
-                {link}
-              </div>
-            </div>
-          );
-        }
+        const {
+          added_from,
+          added_by,
+        } = queue_metadata[`tlid_${context.item.tlid}`] || {};
+        return (
+          <div className="context-menu__title">
+            <AddedFrom
+              uri={added_from}
+              by={added_by}
+              className="context-menu__title__text"
+              inline
+            />
+          </div>
+        );
       }
     }
 

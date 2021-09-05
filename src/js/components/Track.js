@@ -5,13 +5,9 @@ import { Dater, dater } from './Dater';
 import URILink from './URILink';
 import ContextMenuTrigger from './ContextMenuTrigger';
 import ErrorBoundary from './ErrorBoundary';
-import {
-  getFromUri,
-  titleCase,
-  isTouchDevice,
-  uriType,
-} from '../util/helpers';
+import { isTouchDevice } from '../util/helpers';
 import { I18n, i18n } from '../locale';
+import AddedFrom from './AddedFrom';
 
 const MiddleColumn = ({
   track_context,
@@ -36,71 +32,16 @@ const MiddleColumn = ({
       );
       break;
     }
-
     case 'queue': {
-      if (added_from) {
-        const type = (added_from ? uriType(added_from) : null);
-        let link = null;
-
-        switch (type) {
-          case 'discover':
-            link = (
-              <URILink type="recommendations" uri={getFromUri('seeds', added_from)}>
-                <I18n path="discover.title" />
-              </URILink>
-            );
-            break;
-
-          case 'browse':
-            link = (
-              <URILink type={type} uri={added_from}>
-                <I18n path="library.browse.title" />
-              </URILink>
-            );
-            break;
-
-          case 'search':
-            link = (
-              <URILink type={type} uri={added_from}>
-                <I18n path="search.title" />
-              </URILink>
-            );
-            break;
-
-          case 'radio':
-            link = <I18n path="modal.edit_radio.title" />;
-            break;
-
-          case 'queue-history':
-            link = <I18n path="queue_history.title" />;
-            break;
-
-          default:
-            link = <URILink type={type} uri={added_from}>{titleCase(type)}</URILink>;
-        }
-
-        content = (
-          <div className="list__item__column__item list__item__column__item--added">
-            <span className="from">
-              {link}
-            </span>
-            {added_by && (
-              <span className="by by--with-spacing">
-                {`${added_by}`}
-              </span>
-            )}
-          </div>
-        );
-      } else if (added_by) {
-        content = (
-          <div className="list__item__column__item list__item__column__item--added">
-            <span className="by">{added_by}</span>
-          </div>
-        );
-      }
+      content = (
+        <AddedFrom
+          uri={added_from}
+          by={added_by}
+          className="list__item__column__item list__item__column__item--added"
+        />
+      );
       break;
     }
-
     default:
       return null;
   }
