@@ -427,10 +427,27 @@ export function getCategories() {
     request({ dispatch, getState, endpoint })
       .then(
         (response) => {
-          dispatch({
-            type: 'SPOTIFY_CATEGORIES_LOADED',
-            categories: formatCategories(response.categories.items),
+          let results = formatCategories(response.categories.items);
+
+          const fetchResults = (resultsEndpoint) => request({
+            dispatch,
+            getState,
+            endpoint: resultsEndpoint,
+          }).then((response) => {
+            results = [
+              ...results,
+              ...formatCategories(response.categories.items),
+            ];
+            if (response.categories.next) {
+              fetchResults(response.categories.next);
+            } else {
+              dispatch({
+                type: 'SPOTIFY_CATEGORIES_LOADED',
+                categories: results,
+              });
+            }
           });
+          fetchResults(endpoint);
         },
         (error) => {
           dispatch(coreActions.handleException(
