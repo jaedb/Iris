@@ -1288,7 +1288,10 @@ export function getPlaylistTracks(uri, { forceRefetch, callbackAction } = {}) {
       dispatch, getState, endpoint, uri,
     })
       .then((response) => {
-        tracks = [...tracks, ...formatTracks(response.items)];
+        tracks = [
+          ...tracks,
+          ...formatTracks(response.items.filter((i) => i.track)), // Omit falsy tracks, #748
+        ];
         if (response.next) {
           fetchTracks(`${response.next}${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
         } else {
