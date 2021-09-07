@@ -83,7 +83,7 @@ export default ({
     <div className={`${className} tooltip`}>
       {link}
       <span className="tooltip__content">
-        {i18n('specs.added_from_by', { by, name: type })}
+        {i18n('specs.added_by', { by })}
       </span>
     </div>
   );

@@ -118,7 +118,7 @@ specs:
   plays: '%{count} plays'
   popularity: '%{percent}% popularity'
   added_from: 'Added from '
-  added_from_by: 'Added from %{name} by %{by}'
+  added_by: 'Added by %{by}'
   added_ago: 'Added %{time} ago'
   edited: 'Edited '
   edited_ago: 'Edited %{time} ago'
