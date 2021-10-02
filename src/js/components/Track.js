@@ -84,7 +84,7 @@ const Track = ({
   const onMouseLeave = () => setHover(false);
   const onContextMenu = (e) => handleContextMenu(e, key);
   const onDoubleClick = (e) => handleDoubleClick(e, key);
-  const updateCurrentEvent = (data) => setCurrentEvent({ ...currentEvent, ...data });
+  const updateCurrentEvent = (data) => setCurrentEvent((prev) => ({ ...prev, ...data }));
 
   const onMouseDown = (e) => {
     const target = $(e.target);
@@ -107,7 +107,7 @@ const Track = ({
     } else {
       updateCurrentEvent({ start_position: false });
     }
-  }
+  };
 
   const onMouseMove = (e) => {
     if (handleDrag === undefined) return false;
