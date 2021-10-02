@@ -102,7 +102,7 @@ const TrackList = ({
 
     // Dragging a non-selected track. We need to deselect everything
     // else and select only this track
-    if (!nextSelectedTracks.includes(track_key)) {
+    if (!selected_tracks.includes(track_key)) {
       setSelectedTracks([track_key]);
       nextSelectedTracks = digestTracksKeys([track_key]);
     } else {
