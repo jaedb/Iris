@@ -124,6 +124,7 @@ specs:
   edited_ago: 'Edited %{time} ago'
   played_ago: 'Played %{time} ago'
 services:
+  restore_defaults: Restore defaults
   mopidy:
     title: Mopidy
     local: Local

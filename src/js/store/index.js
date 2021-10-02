@@ -104,9 +104,8 @@ let initialState = {
   snapcast: {
     enabled: false,
     connected: false,
-    host: window.location.hostname,
+    host: 'localhost',
     port: '1780',
-    ssl: (window.location.protocol === 'https:'),
     streams: {},
     groups: {},
     clients: {},
