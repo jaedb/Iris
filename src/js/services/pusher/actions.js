@@ -1,3 +1,10 @@
+export function set(data) {
+  return {
+    type: 'PUSHER_SET',
+    data,
+  };
+}
+
 export function setPort(port) {
   return {
     type: 'PUSHER_SET_PORT',
