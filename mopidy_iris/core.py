@@ -394,6 +394,9 @@ class IrisCore(pykka.ThreadingActor):
                 "spotify_username": spotify_username,
                 "country": self.config["iris"]["country"],
                 "locale": self.config["iris"]["locale"],
+                "snapcast_enabled": self.config["iris"]["snapcast_enabled"],
+                "snapcast_host": self.config["iris"]["snapcast_host"],
+                "snapcast_port": self.config["iris"]["snapcast_port"],
                 "spotify_authorization_url": self.config["iris"][
                     "spotify_authorization_url"
                 ],

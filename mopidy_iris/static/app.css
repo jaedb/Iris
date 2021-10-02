@@ -8922,6 +8922,7 @@ main header.overlay {
 
 .snapcast button {
   margin-bottom: 0px;
+  margin-top: 0px;
 }
 .snapcast__mute-control {
   display: inline-block;

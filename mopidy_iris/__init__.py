@@ -3,7 +3,7 @@ import pathlib
 
 from mopidy import config, ext
 
-__version__ = "3.58.3"
+__version__ = "3.59.0"
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +27,9 @@ class Extension(ext.Extension):
         schema["enabled"] = config.Boolean()
         schema["country"] = config.String()
         schema["locale"] = config.String()
+        schema["snapcast_enabled"] = config.Boolean()
+        schema["snapcast_host"] = config.String()
+        schema["snapcast_port"] = config.String()
         schema["spotify_authorization_url"] = config.String()
         schema["lastfm_authorization_url"] = config.String()
         schema["genius_authorization_url"] = config.String()

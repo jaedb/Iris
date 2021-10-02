@@ -117,12 +117,14 @@ specs:
   playlists: '%{count} playlists'
   plays: '%{count} plays'
   popularity: '%{percent}% popularity'
-  added: 'Added '
+  added_from: 'Added from '
+  added_by: 'Added by %{by}'
   added_ago: 'Added %{time} ago'
   edited: 'Edited '
   edited_ago: 'Edited %{time} ago'
   played_ago: 'Played %{time} ago'
 services:
+  restore_defaults: Restore defaults
   mopidy:
     title: Mopidy
     local: Local
