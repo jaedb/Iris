@@ -121,7 +121,6 @@ export class App extends React.Component {
             case 'snapcast':
             case 'mopidy':
               this.props[`${key}Actions`].set(json);
-              changed.push(key);
               break;
             default:
               break;
