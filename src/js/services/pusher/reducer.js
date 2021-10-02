@@ -17,6 +17,9 @@ export default function reducer(pusher = {}, action) {
     case 'PUSHER_DISCONNECTED':
       return { ...pusher, connected: false, connecting: false };
 
+    case 'PUSHER_SET':
+      return { ...pusher, ...action.data };
+
     case 'PUSHER_SET_PORT':
       return { ...pusher, port: action.port };
 

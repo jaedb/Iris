@@ -94,6 +94,7 @@ export class App extends React.Component {
             && (
               message.match(/Websocket/i)
               || message.match(/NotSupportedError/i)
+              || message.match(/NotSupportedError: The element has no supported sources./i)
               || message.match(/Non-Error promise rejection captured with keys: call, message, value/i)
               || message.match(/Cannot read property 'addChunk' of undefined/i)
             )
@@ -106,24 +107,29 @@ export class App extends React.Component {
       });
     }
 
-    // Load query param settings
-    const configs = ['ui', 'spotify', 'pusher', 'snapcast', 'mopidy', 'google', 'lastfm', 'genius'];
+    // Accept incoming preconfiguration via URL parameters and inject into application state.
+    // For example: iris?snapcast={"enabled":true,"host":"myserver.local"}
     const params = new URLSearchParams(window.location.search);
-    const changed = [];
-    const urlParams = params.forEach((v, k) => {
-      if (!configs.includes(k)) return;
-      try {
-        storage.set(k, JSON.parse(v));
-        changed.push(k);
-      } catch (error) {
-        console.error(error);
-      }
-    });
-    if (changed.length > 0) {
-      changed.forEach((k) => params.delete(k));
-      const url = window.location.toString().replace(window.location.search, params.toString());
-      console.log(`Settings changed, redirecting to ${url}`, changed);
-      window.location.assign(url);
+    if (params) {
+      params.forEach((value, key) => {
+        try {
+          const json = JSON.parse(value);
+          switch (key) {
+            case 'ui':
+            case 'spotify':
+            case 'pusher':
+            case 'snapcast':
+            case 'mopidy':
+              this.props[`${key}Actions`].set(json);
+              break;
+            default:
+              break;
+          }
+        } catch (e) {
+          console.error('Preconfiguration failed', { e, key, value })
+          return;
+        }
+      });
     }
 
     this.handleInstallPrompt = this.handleInstallPrompt.bind(this);
