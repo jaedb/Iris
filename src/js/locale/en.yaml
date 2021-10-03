@@ -424,6 +424,7 @@ settings:
     no_connections: No connections
     you: ' (you)'
   servers:
+    current_track: Current track
     inactive: Inactive
     connecting: Connecting
     disconnected: Disconnected

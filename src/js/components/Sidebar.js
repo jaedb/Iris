@@ -1,14 +1,43 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import { connect, useSelector, useDispatch } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { withRouter } from 'react-router';
 import Link from './Link';
 import Icon from './Icon';
 import Dropzones from './Fields/Dropzones';
 import PinList from './Fields/PinList';
+import DropdownField from './Fields/DropdownField';
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import { I18n, i18n } from '../locale';
+import { indexToArray } from '../util/arrays';
+
+const ServerSwitcher = () => {
+  const servers = useSelector((state) => state.mopidy.servers);
+  const serversArray = indexToArray(servers);
+  const current_server = useSelector((state) => state.mopidy.current_server);
+  const dispatch = useDispatch();
+  if (!serversArray || serversArray.length <= 1) return null;
+
+  const onChange = (id) => dispatch(mopidyActions.setCurrentServer(servers[id]));
+
+  return (
+    <div style={{
+      width: '100%',
+      color: 'black',
+    }}>
+      <DropdownField
+        className="sidebar__menu__item"
+        icon="dns"
+        name="Server"
+        value={current_server}
+        valueAsLabel
+        options={serversArray.map((server) => ({ value: server.id, label: server.name }))}
+        handleChange={onChange}
+      />
+    </div>
+  );
+}
 
 class Sidebar extends React.Component {
   closeSidebar = () => {
@@ -89,6 +118,7 @@ class Sidebar extends React.Component {
       <aside className="sidebar">
         <div className="sidebar__liner">
           <nav className="sidebar__menu">
+            <ServerSwitcher />
 
             <section className="sidebar__menu__section">
               <Link to="/queue" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
