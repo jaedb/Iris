@@ -478,6 +478,17 @@ const MopidyMiddleware = (function () {
         );
         break;
 
+      case 'MOPIDY_GET_SERVER_STATE': {
+        const server = store.getState().mopidy.servers[action.id];
+        fetch(`http://${server.host}:${server.port}/iris/http/get_server_state`)
+          .then((response) => response.json())
+          .then(({ result }) => {
+            store.dispatch(mopidyActions.updateServer({ ...server, ...result }));
+          });
+
+        break;
+      }
+
       case 'MOPIDY_REMOVE_SERVER': {
         const servers = { ...store.getState().mopidy.servers };
         delete servers[action.id];

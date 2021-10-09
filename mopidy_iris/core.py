@@ -13,6 +13,7 @@ import pickle
 from pkg_resources import parse_version
 from tornado.escape import json_encode
 from tornado.httpclient import AsyncHTTPClient, HTTPRequest
+from mopidy.models.serialize import ModelJSONEncoder
 
 from . import Extension
 from .system import IrisSystemThread
@@ -1149,6 +1150,34 @@ class IrisCore(pykka.ThreadingActor):
             )
             logger.debug(error)
             return error
+
+    ##
+    # Get a summary of this server's state.
+    # This is a collection of RPC-available requests, but those cannot be called via CORS, so this
+    # serves as a proxy for other Mopidy instances to be able to collect states.
+    ##
+    async def get_server_state(self, *args, **kwargs):
+        callback = kwargs.get("callback", False)
+        request = kwargs.get("request", False)
+        current_track = self.core.playback.get_current_track().get()
+
+        # We dump the JSON to convert the Track to JSON, but we need to then loads back to JSON
+        # for the response.
+        response = json.loads(
+            json.dumps(
+                {
+                    "playback_state": self.core.playback.get_state().get(),
+                    "current_track": current_track,
+                },
+                cls=ModelJSONEncoder
+            )
+        )
+
+        if callback:
+            callback(response)
+        else:
+            return response
+        
 
     ##
     # Simple test method to debug access to system tasks

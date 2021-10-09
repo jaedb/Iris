@@ -5,6 +5,7 @@ import Icon from './Icon';
 import TextField from './Fields/TextField';
 import { indexToArray } from '../util/arrays';
 import { Button } from './Button';
+import * as pusherActions from '../services/pusher/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import { iconFromKeyword } from '../util/helpers';
 import { I18n } from '../locale';
@@ -15,25 +16,25 @@ import {
 } from '../util/format';
 import Thumbnail from './Thumbnail';
 
-const callServer = ({ endpoint, method, params }) => new Promise((resolve, reject) => {
+const callServer = ({ server, method, params }) => new Promise((resolve, reject) => {
   const body = {
     jsonrpc: '2.0',
     id: 1,
+    host: server.host,
+    port: server.port,
     method,
     params,
   };
-  fetch(endpoint, {
-    method: 'POST',
-    mode: 'no-cors',
-    credentials: 'same-origin',
-    headers: {
-      'Content-Type': 'application/json',
+  fetch(
+    `http://192.168.1.201:6680/iris/http/get_from_peer`,
+    {
+      method: 'POST',
+      body: JSON.stringify(body),
     },
-    body: JSON.stringify(body),
-  })
-    .then((response) => response.json())
-    .then(({ result }) => resolve(result))
-    .catch((error) => { console.debug({ error }); reject() });
+  )
+  .then((response) => response.json())
+  .then(({ result }) => resolve(result))
+  .catch(() => reject());
 });
 
 const Server = ({
@@ -41,63 +42,29 @@ const Server = ({
   current_server,
 }) => {
   if (!server) return null;
-  const { id } = server;
+  const { id, current_track, playback_state } = server;
   const dispatch = useDispatch();
-  const [currentTrack, setCurrentTrack] = useState();
-  const [playState, setPlayState] = useState();
 
   useEffect(() => {
-    const endpoint = `http://${server.host}:${server.port}/mopidy/rpc`;
-    callServer({
-      endpoint,
-      method: 'core.playback.get_current_track',
-    }).then(
-      (track) => {
-        callServer({
-          endpoint,
-          method: 'core.library.get_images',
-          params: {
-            uris: [track.uri],
-          },
-        }).then(({ [track.uri]: images }) => {
-          console.debug({ track })
-          setCurrentTrack({
-            ...track,
-            images: images ? formatImages(digestMopidyImages(server, images)) : null,
-          });
-        });
-      },
-      () => setCurrentTrack(null),
-    );
-
-    callServer({
-      endpoint,
-      method: 'core.playback.get_state',
-    }).then(setPlayState, setPlayState);
+    if (id !== 'default') dispatch(mopidyActions.getServerState(id));
   }, [id]);
-
-  const remove = () => {
-    dispatch(mopidyActions.removeServer(server.id));
-  };
-
-  const setAsCurrent = () => {
-    dispatch(mopidyActions.setCurrentServer(server));
-  };
+  const remove = () => dispatch(mopidyActions.removeServer(server.id));
+  const setAsCurrent = () => dispatch(mopidyActions.setCurrentServer(server));
 
   return (
     <div className="sub-tabs__content">
       <label className="field">
         <div className="name">
           <I18n path="settings.servers.current_track" />
-          {playState ? ` (${playState})` : ''}
+          {playback_state ? ` (${playback_state})` : ''}
         </div>
         <div className="input">
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <Thumbnail images={currentTrack?.images} size="small" />
+            <Thumbnail images={current_track?.images} size="small" />
             <div style={{ paddingLeft: '1rem' }}>
-              <div>{currentTrack?.name}</div>
+              <div>{current_track?.name}</div>
               <em>
-                <LinksSentence items={currentTrack?.artists} type="artist" nolinks />
+                <LinksSentence items={current_track?.artists} type="artist" nolinks />
               </em>
             </div>
           </div>

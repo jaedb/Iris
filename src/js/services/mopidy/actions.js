@@ -42,6 +42,13 @@ export function setCurrentServer(server) {
   };
 }
 
+export function getServerState(id) {
+  return {
+    type: 'MOPIDY_GET_SERVER_STATE',
+    id,
+  };
+}
+
 export function removeServer(id) {
   return {
     type: 'MOPIDY_REMOVE_SERVER',

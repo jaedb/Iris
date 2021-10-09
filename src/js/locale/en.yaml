@@ -171,6 +171,7 @@ sidebar:
   tracks: Tracks
   browse: Browse
   settings: Settings
+  servers: Servers
   not_connected: '%{name} not connected'
   browser_offline: Browser offline
   update_available: Update available
@@ -610,3 +611,5 @@ modal:
       snapcast_volume_up: Volume up for Snapcast client (where n is 1-9)
       snapcast_volume_down: Volume down for Snapcast client (where n is 1-9)
       snapcast_mute: Toggle mute for Snapcast client (where n is 1-9)
+  servers:
+    title: Server selector
