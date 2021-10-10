@@ -66,20 +66,20 @@ const digestMopidyImages = function (mopidy, images) {
         url = images[i].uri;
       }
 
-	        // Amend our URL
-	        images[i].url = url;
+      // Amend our URL
+      images[i].url = url;
 
       // Replace local images to point directly to our Mopidy server
-	        if (url && url.startsWith('/images/')) {
-	            url = `//${mopidy.host}:${mopidy.port}${url}`;
-	        }
+      if (url && url.startsWith('/images/')) {
+        url = `//${mopidy.host}:${mopidy.port}${url}`;
+      }
 
-	    // String-based image
+	  // String-based image
     } else if (typeof images[i] === 'string') {
       // Replace local images to point directly to our Mopidy server
-	        if (images[i].startsWith('/images/')) {
-	            images[i] = `//${mopidy.host}:${mopidy.port}${images[i]}`;
-	        }
+      if (images[i].startsWith('/images/')) {
+        images[i] = `//${mopidy.host}:${mopidy.port}${images[i]}`;
+      }
     }
 
     digested.push(images[i]);

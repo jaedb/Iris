@@ -10678,28 +10678,28 @@ main .track-view .lyrics-selector {
 .modal .content .list__item:hover {
   background: rgba(255, 255, 255, 0.1);
 }
-.modal .content .list.playlists {
+.modal .content .list.small {
   padding-top: 40px;
 }
-.modal .content .list.playlists .list__item {
+.modal .content .list.small .list__item {
   margin: 5px 0;
   padding: 10px;
 }
-.modal .content .list.playlists .list__item:before {
+.modal .content .list.small .list__item:before {
   display: none;
 }
-.modal .content .list.playlists .list__item .thumbnail {
+.modal .content .list.small .list__item .thumbnail {
   float: left;
 }
-.modal .content .list.playlists .list__item__name, .modal .content .list.playlists .list__item__details {
+.modal .content .list.small .list__item__name, .modal .content .list.small .list__item__details {
   padding-left: 70px;
 }
-.modal .content .list.playlists .list__item__name {
+.modal .content .list.small .list__item__name {
   padding-top: 0;
   margin-bottom: 5px;
   display: block;
 }
-.modal .content .list.playlists .list__item .source {
+.modal .content .list.small .list__item .source {
   position: static;
   top: auto;
   left: auto;

@@ -1161,17 +1161,27 @@ class IrisCore(pykka.ThreadingActor):
         request = kwargs.get("request", False)
         current_track = self.core.playback.get_current_track().get()
 
+        if current_track:
+            current_track = json.loads(json.dumps(current_track, cls=ModelJSONEncoder))
+            images = self.core.library.get_images([current_track["uri"]]).get()
+            logger.error("-----------images")
+            logger.error(images)
+            if images:
+                current_track["images"] = json.loads(
+                    json.dumps(
+                        images[current_track["uri"]],
+                        cls=ModelJSONEncoder
+                    )
+                )
+
+        
+
         # We dump the JSON to convert the Track to JSON, but we need to then loads back to JSON
         # for the response.
-        response = json.loads(
-            json.dumps(
-                {
-                    "playback_state": self.core.playback.get_state().get(),
-                    "current_track": current_track,
-                },
-                cls=ModelJSONEncoder
-            )
-        )
+        response = {
+            "playback_state": self.core.playback.get_state().get(),
+            "current_track": current_track,
+        }
 
         if callback:
             callback(response)

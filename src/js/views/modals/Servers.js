@@ -33,7 +33,7 @@ const Servers = () => {
         <I18n path="modal.servers.title" />
       </h1>
 
-      <form>
+      <div className="list small">
         <>
           {servers.map((server) => {
             const {
@@ -44,25 +44,21 @@ const Servers = () => {
             } = server;
 
             return (
-              <div key={id} onClick={() => onClick(server)}>
-                <h3>
+              <div key={id} onClick={() => onClick(server)} className="list__item">
+                <Thumbnail images={current_track?.images} size="small" />
+                <h4 className="list__item__name">
                   {name}
                   {playback_state ? ` (${playback_state})` : ''}
-                </h3>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <Thumbnail images={current_track?.images} size="small" />
-                  <div style={{ paddingLeft: '1rem' }}>
-                    <div>{current_track?.name}</div>
-                    <em>
-                      <LinksSentence items={current_track?.artists} type="artist" nolinks />
-                    </em>
-                  </div>
-                </div>
+                </h4>
+                <ul className="list__item__details details">
+                  <li>{current_track?.name}</li>
+                  <li><LinksSentence items={current_track?.artists} type="artist" nolinks /></li>
+                </ul>
               </div>
             );
           })}
         </>
-      </form>
+      </div>
     </Modal>
   );
 }

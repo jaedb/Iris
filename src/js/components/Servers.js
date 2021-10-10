@@ -10,32 +10,7 @@ import * as mopidyActions from '../services/mopidy/actions';
 import { iconFromKeyword } from '../util/helpers';
 import { I18n } from '../locale';
 import LinksSentence from './LinksSentence';
-import {
-  digestMopidyImages,
-  formatImages,
-} from '../util/format';
 import Thumbnail from './Thumbnail';
-
-const callServer = ({ server, method, params }) => new Promise((resolve, reject) => {
-  const body = {
-    jsonrpc: '2.0',
-    id: 1,
-    host: server.host,
-    port: server.port,
-    method,
-    params,
-  };
-  fetch(
-    `http://192.168.1.201:6680/iris/http/get_from_peer`,
-    {
-      method: 'POST',
-      body: JSON.stringify(body),
-    },
-  )
-  .then((response) => response.json())
-  .then(({ result }) => resolve(result))
-  .catch(() => reject());
-});
 
 const Server = ({
   server,

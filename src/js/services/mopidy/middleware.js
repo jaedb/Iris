@@ -479,11 +479,17 @@ const MopidyMiddleware = (function () {
         break;
 
       case 'MOPIDY_GET_SERVER_STATE': {
-        const server = store.getState().mopidy.servers[action.id];
+        let server = { ...store.getState().mopidy.servers[action.id] };
         fetch(`http://${server.host}:${server.port}/iris/http/get_server_state`)
           .then((response) => response.json())
-          .then(({ result }) => {
-            store.dispatch(mopidyActions.updateServer({ ...server, ...result }));
+          .then(({ result: { current_track, play_state } }) => {
+            if (current_track) {
+              const images = current_track.images
+                ? formatImages(digestMopidyImages(server, current_track.images))
+                : null;
+              server.current_track = formatTrack({ ...current_track, images });
+            }
+            store.dispatch(mopidyActions.updateServer({ ...server, play_state }));
           });
 
         break;
