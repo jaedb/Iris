@@ -613,3 +613,5 @@ modal:
       snapcast_mute: Toggle mute for Snapcast client (where n is 1-9)
   servers:
     title: Server selector
+    current: Current server
+    nothing_playing: Nothing playing

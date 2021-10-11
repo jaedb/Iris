@@ -279,10 +279,10 @@ const PusherMiddleware = (function () {
 
         clearTimeout(reconnectTimer);
         store.dispatch({ type: 'PUSHER_CONNECTING' });
-
-        socket = new WebSocket(
-          `ws${window.location.protocol === 'https:' ? 's' : ''}://${store.getState().mopidy.host}:${store.getState().mopidy.port}/iris/ws/`,
-        );
+        const { host, port, ssl } = store.getState().mopidy;
+        let endpoint = `ws${ssl || window.location.protocol === 'https:' ? 's' : ''}://`;
+        endpoint += `${host}:${port}/iris/ws/`;
+        socket = new WebSocket(endpoint);
 
         socket.onopen = () => {
           store.dispatch({

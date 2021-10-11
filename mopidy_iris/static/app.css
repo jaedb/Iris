@@ -10691,13 +10691,14 @@ main .track-view .lyrics-selector {
 .modal .content .list.small .list__item .thumbnail {
   float: left;
 }
-.modal .content .list.small .list__item__name, .modal .content .list.small .list__item__details {
-  padding-left: 70px;
-}
 .modal .content .list.small .list__item__name {
   padding-top: 0;
   margin-bottom: 5px;
-  display: block;
+  display: flex;
+  padding-left: 20px;
+}
+.modal .content .list.small .list__item__details {
+  padding-left: 70px;
 }
 .modal .content .list.small .list__item .source {
   position: static;

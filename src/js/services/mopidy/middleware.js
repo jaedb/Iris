@@ -480,16 +480,23 @@ const MopidyMiddleware = (function () {
 
       case 'MOPIDY_GET_SERVER_STATE': {
         let server = { ...store.getState().mopidy.servers[action.id] };
-        fetch(`http://${server.host}:${server.port}/iris/http/get_server_state`)
+        if (!server.host || !server.port || server.host === '' || server.port === '') break;
+
+        const host = `http${server.ssl ? 's' : ''}://${server.host}:${server.port}`;
+        fetch(`${host}/iris/http/get_server_state`)
           .then((response) => response.json())
-          .then(({ result: { current_track, play_state } }) => {
-            if (current_track) {
-              const images = current_track.images
-                ? formatImages(digestMopidyImages(server, current_track.images))
+          .then(({ result }) => {
+            server = { ...server, ...result };
+            if (result.current_track) {
+              const images = result.current_track.images
+                ? formatImages(digestMopidyImages(server, result.current_track.images))
                 : null;
-              server.current_track = formatTrack({ ...current_track, images });
+              server.current_track = formatTrack({ ...result.current_track, images });
             }
-            store.dispatch(mopidyActions.updateServer({ ...server, play_state }));
+            store.dispatch(mopidyActions.updateServer(server));
+          })
+          .catch((error) => {
+            store.dispatch(coreActions.handleException('Could not fetch server', error, host));
           });
 
         break;

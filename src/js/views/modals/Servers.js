@@ -13,6 +13,7 @@ const Servers = () => {
   const history = useHistory();
   const dispatch = useDispatch();
   const servers = indexToArray(useSelector((state) => state.mopidy.servers || {}));
+  const current_server = useSelector((state) => state.mopidy.current_server);
 
   useEffect(() => dispatch(uiActions.setWindowTitle(i18n('modal.servers.title'))), []);
   useEffect(() => {
@@ -48,12 +49,25 @@ const Servers = () => {
                 <Thumbnail images={current_track?.images} size="small" />
                 <h4 className="list__item__name">
                   {name}
-                  {playback_state ? ` (${playback_state})` : ''}
+                  {playback_state && (
+                    <span className="flag flag--default">{playback_state}</span>
+                  )}
+                  {id === current_server && (
+                    <span className="flag flag--blue">
+                      <I18n path="modal.servers.current" />
+                    </span>
+                  )}
                 </h4>
-                <ul className="list__item__details details">
-                  <li>{current_track?.name}</li>
-                  <li><LinksSentence items={current_track?.artists} type="artist" nolinks /></li>
-                </ul>
+                {current_track ? (
+                  <ul className="list__item__details details">
+                    <li>{current_track?.name}</li>
+                    <li><LinksSentence items={current_track?.artists} type="artist" nolinks /></li>
+                  </ul>
+                ) : (
+                  <div className="list__item__details details">
+                    <I18n path="modal.servers.nothing_playing" />
+                  </div>
+                )}
               </div>
             );
           })}

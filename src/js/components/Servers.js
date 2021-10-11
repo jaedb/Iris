@@ -1,50 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useStore, useDispatch } from 'react-redux';
 import Link from './Link';
 import Icon from './Icon';
 import TextField from './Fields/TextField';
 import { indexToArray } from '../util/arrays';
 import { Button } from './Button';
-import * as pusherActions from '../services/pusher/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import { iconFromKeyword } from '../util/helpers';
 import { I18n } from '../locale';
-import LinksSentence from './LinksSentence';
-import Thumbnail from './Thumbnail';
 
 const Server = ({
   server,
   current_server,
 }) => {
   if (!server) return null;
-  const { id, current_track, playback_state } = server;
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (id !== 'default') dispatch(mopidyActions.getServerState(id));
-  }, [id]);
   const remove = () => dispatch(mopidyActions.removeServer(server.id));
   const setAsCurrent = () => dispatch(mopidyActions.setCurrentServer(server));
+  const isCurrent = server.id === current_server;
 
   return (
     <div className="sub-tabs__content">
-      <label className="field">
-        <div className="name">
-          <I18n path="settings.servers.current_track" />
-          {playback_state ? ` (${playback_state})` : ''}
-        </div>
-        <div className="input">
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <Thumbnail images={current_track?.images} size="small" />
-            <div style={{ paddingLeft: '1rem' }}>
-              <div>{current_track?.name}</div>
-              <em>
-                <LinksSentence items={current_track?.artists} type="artist" nolinks />
-              </em>
-            </div>
-          </div>
-        </div>
-      </label>
       <label className="field">
         <div className="name">
           <I18n path="settings.servers.name" />
@@ -108,19 +84,19 @@ const Server = ({
       </div>
 
       <Button
-        type="primary"
+        type={isCurrent ? 'default' : 'primary'}
         onClick={setAsCurrent}
         tracking={{
           category: 'Servers',
           action: 'SetAsCurrent',
-          label: (server.id === current_server ? 'Reconnect' : 'Switch'),
+          label: (isCurrent ? 'Reconnect' : 'Switch'),
         }}
       >
-        <I18n path={`settings.servers.${server.id === current_server ? 'reconnect' : 'switch'}`} />
+        <I18n path={`settings.servers.${isCurrent ? 'reconnect' : 'switch'}`} />
       </Button>
       <Button
         type="destructive"
-        disabled={server.id === current_server}
+        disabled={isCurrent}
         onClick={remove}
         tracking={{ category: 'Servers', action: 'Delete' }}
       >

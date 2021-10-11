@@ -1164,8 +1164,6 @@ class IrisCore(pykka.ThreadingActor):
         if current_track:
             current_track = json.loads(json.dumps(current_track, cls=ModelJSONEncoder))
             images = self.core.library.get_images([current_track["uri"]]).get()
-            logger.error("-----------images")
-            logger.error(images)
             if images:
                 current_track["images"] = json.loads(
                     json.dumps(
