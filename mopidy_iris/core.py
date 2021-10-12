@@ -398,6 +398,7 @@ class IrisCore(pykka.ThreadingActor):
                 "snapcast_enabled": self.config["iris"]["snapcast_enabled"],
                 "snapcast_host": self.config["iris"]["snapcast_host"],
                 "snapcast_port": self.config["iris"]["snapcast_port"],
+                "snapcast_stream": self.config["iris"]["snapcast_stream"],
                 "spotify_authorization_url": self.config["iris"][
                     "spotify_authorization_url"
                 ],
@@ -1162,6 +1163,8 @@ class IrisCore(pykka.ThreadingActor):
         current_track = self.core.playback.get_current_track().get()
 
         if current_track:
+            # We dump the JSON to convert the Track to JSON, but we need to then loads back to JSON
+            # for the response.
             current_track = json.loads(json.dumps(current_track, cls=ModelJSONEncoder))
             images = self.core.library.get_images([current_track["uri"]]).get()
             if images:
@@ -1172,11 +1175,8 @@ class IrisCore(pykka.ThreadingActor):
                     )
                 )
 
-        
-
-        # We dump the JSON to convert the Track to JSON, but we need to then loads back to JSON
-        # for the response.
         response = {
+            "snapcast_stream": self.config["iris"]["snapcast_stream"],
             "playback_state": self.core.playback.get_state().get(),
             "current_track": current_track,
         }

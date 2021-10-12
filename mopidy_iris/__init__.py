@@ -30,6 +30,7 @@ class Extension(ext.Extension):
         schema["snapcast_enabled"] = config.Boolean()
         schema["snapcast_host"] = config.String()
         schema["snapcast_port"] = config.String()
+        schema["snapcast_stream"] = config.String()
         schema["spotify_authorization_url"] = config.String()
         schema["lastfm_authorization_url"] = config.String()
         schema["genius_authorization_url"] = config.String()
