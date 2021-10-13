@@ -9,13 +9,11 @@
 		}
 	}
 
-	&__items {
+	&__inner {
 		position: absolute;
 		bottom: 48px;
 		right: -150px;
 		width: 300px;
-		font-size: 14px;
-		font-weight: 600;
 		text-align: left;
 		border-radius: 3px;
 		box-shadow: 2px 3px 6px rgba(0,0,0,0.2);
@@ -60,67 +58,105 @@
 		}
 	}
 
-	&__item {
-		padding: 12px 18px 8px;
-		position: relative;
+	&__output {
+		padding-top: 1px;
 
-		&--commands {
-			@include clearfix();
-			//background: rgba(0,0,0,0.1);
-		}
-
-		&:not(:first-child) {
-			border-top: 1px solid rgba(0,0,0,0.05);
-		}
-
-		&__controls {
+		&__header {
+			margin: 0.8rem;
 			display: flex;
+			flex-flow: row;
 			align-items: center;
 
-			.dropdown-field {
-				flex-grow: 0;
+			.flag {
+				margin-right: 0;
+			}
 
-				&__label {
-					padding: 2px !important;
-					text-align: center;
+			&__thumbnail {
+				flex-shrink: 0;
+			}
 
-					.icon {
-						font-size: 0.9em;
+			&__title {
+				display: flex;
+				align-items: center;
+
+				.icon {
+					font-size: 1em;
+					padding-left: 0.4em;
+					opacity: 0.5;
+				}
+			}
+
+			&__content {
+				padding-left: 0.8rem;
+				overflow-x: hidden;
+
+				.details {
+					white-space: nowrap;
+				}
+			}
+		}
+
+		&__clients {
+			margin: 0.8rem;
+			border-radius: 3px;
+			background: rgba(0,0,0,0.2);
+
+			&__item {
+				padding-right: 1rem;
+				border-top: 1px solid rgba(255,255,255,0.2);
+
+				&:first-child {
+					border-top: none;
+				}
+
+				&__title {
+					padding: 0.8rem 0.8rem 0 0.8rem;
+				}
+
+				&__volume {
+					display: flex;
+					align-items: center;
+				}
+
+				&__controls {
+					display: flex;
+					align-items: center;
+		
+					.dropdown-field {
+						flex-grow: 0;
+		
+						&__label {
+							padding: 2px !important;
+							text-align: center;
+		
+							.icon {
+								font-size: 0.9em;
+							}
+						}
+		
+						&__options {
+							top: auto;
+							bottom: 20px;
+							right: auto;
+							left: 0px;
+		
+							&:before {
+								top: auto;
+								right: auto;
+								bottom: -3px;
+								left: 9px;
+							}
+						}
 					}
-        }
-
-        &__options {
-          top: auto;
-          bottom: 20px;
-          right: auto;
-          left: 0px;
-
-          &:before {
-            top: auto;
-            right: auto;
-            bottom: -3px;
-            left: 9px;
-          }
-        }
+				}
 			}
 		}
+	}
 
-		&__volume {
-			padding-top: 6px;
-			padding-left: 10px;
-			flex-grow: 1;
-		}
-
-		&__mute.control {
-			@include click_feedback(rgba(0,0,0,0.5));
-			padding: 2px;
-			float: left;
-			flex-grow: 0;
-
-			.icon {
-				font-size: 1em;
-			}
-		}
+	&__commands {
+		padding: 12px 18px 8px;
+		position: relative;
+		@include clearfix();
 	}
 
 	@include responsive($bp_medium){
