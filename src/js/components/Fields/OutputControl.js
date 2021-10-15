@@ -19,64 +19,39 @@ import { I18n } from '../../locale';
 
 const Header = ({ stream, server }) => {
   const dispatch = useDispatch();
-  if (server) {
-    const {
-      id,
-      name,
-      current_track,
-      playback_state,
-    } = server;
-    const current_server = useSelector((state) => state.mopidy.current_server);
-    let stateIcon = '';
-    switch (playback_state) {
-      case 'playing':
-        stateIcon = 'play_arrow';
-        break;
-      case 'paused':
-        stateIcon = 'pause';
-        break;
-      default:
-        stateIcon = 'stop';
-        break;
-    }
-    return (
-      <div className="output-control__output__header">
-        <Thumbnail
-          images={current_track?.images}
-          size="small"
-          className="output-control__output__header__thumbnail"
-        />
-        <div className="output-control__output__header__content">
-          <h5 className="output-control__output__header__title">
-            {name}
-            <Icon name={stateIcon} />
-            {id !== current_server && (
-              <span
-                className="flag flag--default"
-                onClick={() => dispatch(mopidyActions.setCurrentServer(server))}
-              >
-                SWITCH TO THIS SERVER
-              </span>
-            )}
-          </h5>
-          {current_track ? (
-            <ul className="details">
-              <li>{current_track?.name}</li>
-              <li><LinksSentence items={current_track?.artists} type="artist" nolinks /></li>
-            </ul>
-          ) : (
-            <div className="details">
-              <I18n path="modal.servers.nothing_playing" />
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  }
-
+  const current_server = useSelector((state) => state.mopidy.current_server);
+  const {
+    id,
+    name,
+    current_track,
+  } = server || {};
   return (
     <div className="output-control__output__header">
-      No server: {stream?.id}
+      <Thumbnail
+        images={current_track?.images}
+        size="small"
+        className="output-control__output__header__thumbnail"
+      />
+      <div className="output-control__output__header__content">
+        <h5 className="output-control__output__header__title">
+          {name || stream.id}
+          {stream.status === 'playing' && <Icon name="play_arrow" />}
+          {id && id !== current_server && (
+            <span
+              className="flag flag--default"
+              onClick={() => dispatch(mopidyActions.setCurrentServer(server))}
+            >
+              SWITCH TO THIS SERVER
+            </span>
+          )}
+        </h5>
+        {current_track && (
+          <ul className="details">
+            <li>{current_track?.name}</li>
+            <li><LinksSentence items={current_track?.artists} type="artist" nolinks /></li>
+          </ul>
+        )}
+      </div>
     </div>
   );
 }
@@ -160,74 +135,6 @@ const Outputs = () => {
         return <Group item={group} key={stream_id} />;
       })}
     </>
-  );
-}
-
-const SnapcastGroups = () => {
-  const dispatch = useDispatch();
-  const showAllClients = useSelector((state) => state.ui.snapcast_show_disconnected_clients);
-  const clients = useSelector((state) => state.snapcast.clients);
-  const groupsObj = useSelector((state) => state.snapcast.groups);
-  const streamsObj = useSelector((state) => state.snapcast.streams);
-
-  const groups = indexToArray(groupsObj);
-  if (groups.length <= 0) return null;
-
-  const streams = Object.keys(streamsObj).map((id) => ({ value: id, label: id }));
-
-  return (
-    <div>
-      {
-        sortItems(groups, 'name').map((simpleGroup) => {
-          const group = collate(simpleGroup, { clients });
-          let { clients: groupClients = [] } = group;
-          if (!showAllClients) {
-            groupClients = applyFilter('connected', true, groupClients);
-          }
-
-          if (!groupClients.length) return null;
-
-          const volume = groupClients.reduce(
-            (acc, client) => acc + (client.volume || 0),
-            0,
-          ) / groupClients.length;
-
-          return (
-            <div className="output-control__item outputs__item--snapcast" key={group.id}>
-              <div className="output-control__item__name">
-                {group.name}
-              </div>
-              <div className="output-control__item__controls">
-                <DropdownField
-                  name="Source"
-                  value={group.stream_id}
-                  icon="settings_input_component"
-                  options={streams}
-                  noLabel
-                  handleChange={(value) => dispatch(snapcastActions.setGroupStream(group.id, value))}
-                />
-                <MuteControl
-                  className="output-control__item__mute"
-                  noTooltip
-                  mute={group.mute}
-                  onMuteChange={(mute) => dispatch(snapcastActions.setGroupMute(group.id, mute))}
-                />
-                <VolumeControl
-                  className="output-control__item__volume"
-                  volume={volume}
-                  mute={group.mute}
-                  onVolumeChange={
-                    (percent, previousPercent) => dispatch(
-                      snapcastActions.setGroupVolume(group.id, percent, previousPercent)
-                    )
-                  }
-                />
-              </div>
-            </div>
-          );
-        })
-      }
-    </div>
   );
 }
 

@@ -6963,12 +6963,32 @@ h4 .loader {
 .output-control__output__clients {
   margin: 0.8rem;
   border-radius: 3px;
-  background: rgba(0, 0, 0, 0.2);
+  background: #F5F5F5;
 }
+.dark-theme .output-control__output__clients {
+  background: #383734;
+}
+
+@media (prefers-color-scheme: dark) {
+  .auto-theme .output-control__output__clients {
+    background: #383734;
+  }
+}
+
 .output-control__output__clients__item {
   padding-right: 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-top: 1px solid #FFFFFF;
 }
+.dark-theme .output-control__output__clients__item {
+  border-color: #51504e;
+}
+
+@media (prefers-color-scheme: dark) {
+  .auto-theme .output-control__output__clients__item {
+    border-color: #51504e;
+  }
+}
+
 .output-control__output__clients__item:first-child {
   border-top: none;
 }

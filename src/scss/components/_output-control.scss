@@ -99,11 +99,17 @@
 		&__clients {
 			margin: 0.8rem;
 			border-radius: 3px;
-			background: rgba(0,0,0,0.2);
+			background: colour('off_white');
+			@include theme('dark') {
+				background: colour('grey');
+			}
 
 			&__item {
 				padding-right: 1rem;
-				border-top: 1px solid rgba(255,255,255,0.2);
+				border-top: 1px solid colour('white');
+				@include theme('dark') {
+					border-color: colour('soft_grey');
+				}
 
 				&:first-child {
 					border-top: none;

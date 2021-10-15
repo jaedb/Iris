@@ -496,7 +496,7 @@ const MopidyMiddleware = (function () {
             store.dispatch(mopidyActions.updateServer(server));
           })
           .catch((error) => {
-            store.dispatch(coreActions.handleException('Could not fetch server', error, host));
+            store.dispatch(coreActions.handleException('Could not fetch server', error, host, false));
           });
 
         break;
