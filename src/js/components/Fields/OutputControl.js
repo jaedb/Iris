@@ -5,15 +5,14 @@ import { find, groupBy, map } from 'lodash';
 import VolumeControl from './VolumeControl';
 import MuteControl from './MuteControl';
 import Icon from '../Icon';
-import DropdownField from './DropdownField';
 import Thumbnail from '../Thumbnail';
 import LinksSentence from '../LinksSentence';
 import * as coreActions from '../../services/core/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as pusherActions from '../../services/pusher/actions';
 import * as snapcastActions from '../../services/snapcast/actions';
-import { sortItems, indexToArray, applyFilter } from '../../util/arrays';
-import { collate } from '../../util/format';
+import { sortItems, indexToArray } from '../../util/arrays';
+import { formatImages, digestMopidyImages } from '../../util/format';
 import { titleCase } from '../../util/helpers';
 import { I18n } from '../../locale';
 
@@ -22,18 +21,20 @@ const Header = ({ stream, server }) => {
   const current_server = useSelector((state) => state.mopidy.current_server);
   const {
     id,
-    name,
-    current_track,
-  } = server || {};
-  const canBeSelected = id && id !== current_server
+    meta,
+    status,
+  } = stream || {};
+  const canBeSelected = server?.id && server.id !== current_server;
   const onClick = () => {
     if (!canBeSelected) return;
     dispatch(mopidyActions.setCurrentServer(server));
   }
+  const images = meta?.images ? formatImages(digestMopidyImages(server, meta.images)) : null;
+  console.debug(images, meta.images)
   return (
     <div className="output-control__output__header">
       <Thumbnail
-        images={current_track?.images}
+        images={images}
         size="small"
         className="output-control__output__header__thumbnail"
       />
@@ -43,13 +44,13 @@ const Header = ({ stream, server }) => {
           onClick={onClick}
           style={{ cursor: canBeSelected ? 'pointer' : 'default' }}
         >
-          {name || stream.id}
-          {stream.status === 'playing' && <Icon name="play_arrow" />}
+          {server?.name || id}
+          {status === 'playing' && <Icon name="play_arrow" />}
         </h5>
-        {current_track && (
+        {meta && (
           <ul className="details">
-            <li>{current_track?.name}</li>
-            <li><LinksSentence items={current_track?.artists} type="artist" nolinks /></li>
+            <li>{meta?.name}</li>
+            <li><LinksSentence items={meta?.artists} type="artist" nolinks /></li>
           </ul>
         )}
       </div>
@@ -111,18 +112,11 @@ const Group = ({
 }
 
 const Outputs = () => {
-  const dispatch = useDispatch();
   const groups = indexToArray(useSelector((state) => state.snapcast.groups || {}));
   const clients = useSelector((state) => state.snapcast.clients || {});
   const streams = useSelector((state) => state.snapcast.streams || {});
   const servers = indexToArray(useSelector((state) => state.mopidy.servers || {}));
   const groupsByStream = groupBy(groups, 'stream_id');
-
-  useEffect(() => {
-    servers.forEach(({ id }) => {
-      dispatch(mopidyActions.getServerState(id));
-    });
-  }, []);
 
   return (
     <>

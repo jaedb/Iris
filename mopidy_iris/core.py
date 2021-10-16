@@ -1185,7 +1185,55 @@ class IrisCore(pykka.ThreadingActor):
             callback(response)
         else:
             return response
+
+    ##
+    # Send our current track data to the configured Snapcast server's stream
+    # Uses snapcast server and stream details as defined in configuration
+    ##
+    async def update_snapcast_meta(self, *args, **kwargs):
+        current_track = self.core.playback.get_current_track().get()
         
+        if current_track:
+            # We dump the JSON to convert the Track to JSON, but we need to then loads back to JSON
+            # for the response.
+            current_track = json.loads(json.dumps(current_track, cls=ModelJSONEncoder))
+            images = self.core.library.get_images([current_track["uri"]]).get()
+            if images:
+                current_track["images"] = json.loads(
+                    json.dumps(
+                        images[current_track["uri"]],
+                        cls=ModelJSONEncoder
+                    )
+                )
+
+        url = "http"
+        if self.config["iris"]["snapcast_ssl"]:
+            url += "s"
+        url += "://" + self.config["iris"]["snapcast_host"]
+        url += ":" + self.config["iris"]["snapcast_port"]
+        url += "/jsonrpc"
+        logger.info("Updating Snapcast stream metadata: " + url)
+        data = {
+            "id": 1,
+            "jsonrpc": "2.0",
+            "method": "Stream.SetMeta",
+            "params": {
+                "id": self.config["iris"]["snapcast_stream"],
+                "meta": current_track
+            }
+        }
+
+        try:
+            http_client = AsyncHTTPClient()
+            response = await http_client.fetch(
+                url, method="POST", body=json.dumps(data)
+            )
+        except (urllib.error.HTTPError, urllib.error.URLError) as e:
+            error = json.loads(e.read())
+            logger.error('Could not update Snapcast meta', error)
+        except Exception as e:
+            logger.error(e)
+            pass # Non-blocking error; TODO more elegantly catch exception without killing Mopidy
 
     ##
     # Simple test method to debug access to system tasks

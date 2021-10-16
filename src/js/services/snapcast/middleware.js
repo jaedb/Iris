@@ -99,6 +99,14 @@ const SnapcastMiddleware = (function () {
           store.dispatch(snapcastActions.groupLoaded(message.params));
           break;
 
+        case 'Stream.OnUpdate':
+          store.dispatch(snapcastActions.streamLoaded(message.params));
+          break;
+
+        case 'Stream.OnMetadata':
+          store.dispatch(snapcastActions.streamLoaded(message.params));
+          break;
+
         case 'Server.OnUpdate':
           store.dispatch(snapcastActions.serverLoaded(message.params.server.server));
           store.dispatch(snapcastActions.groupsLoaded(message.params.server.groups, true));
