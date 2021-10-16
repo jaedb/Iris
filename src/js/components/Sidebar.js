@@ -159,10 +159,6 @@ class Sidebar extends React.Component {
                 <I18n path="sidebar.settings" />
                 {this.renderStatusIcon()}
               </Link>
-              <Link to="/servers" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
-                <Icon name="dns" type="material" />
-                <I18n path="sidebar.servers" />
-              </Link>
             </section>
 
           </nav>

@@ -59,8 +59,6 @@
 	}
 
 	&__output {
-		padding-top: 1px;
-
 		&__header {
 			margin: 0.8rem;
 			display: flex;
@@ -160,9 +158,15 @@
 	}
 
 	&__commands {
-		padding: 12px 18px 8px;
-		position: relative;
+		padding: 12px 12px 8px 12px;
+		border-radius: 3px 3px 0 0;
+		position: relative;	
+		background: colour('off_white');
+		
 		@include clearfix();
+		@include theme('dark') {
+			background: colour('grey');
+		}
 	}
 
 	@include responsive($bp_medium){
@@ -176,7 +180,7 @@
 			display: none;
 		}
 
-		&__items {
+		&__inner {
 			top: auto;
 			right: 0;
 			bottom: 0;
@@ -184,7 +188,6 @@
 			width: auto;
 			padding: 0;
 			border-radius: 0;
-			max-height: 50vh;
 
 			@include theme('dark') {
 				box-shadow: 0 -5px 5px rgba(0, 0, 0, 0.6);
@@ -203,9 +206,9 @@
 			}
 		}
 
-		&__item {
+		&__output {
 			@include clearfix();
-			padding: 10px 18px 6px;
+			padding: 0;
 
 			&:not(:first-child){
 				border-color: rgba(128,128,128,0.05);

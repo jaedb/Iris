@@ -25,6 +25,11 @@ const Header = ({ stream, server }) => {
     name,
     current_track,
   } = server || {};
+  const canBeSelected = id && id !== current_server
+  const onClick = () => {
+    if (!canBeSelected) return;
+    dispatch(mopidyActions.setCurrentServer(server));
+  }
   return (
     <div className="output-control__output__header">
       <Thumbnail
@@ -33,17 +38,13 @@ const Header = ({ stream, server }) => {
         className="output-control__output__header__thumbnail"
       />
       <div className="output-control__output__header__content">
-        <h5 className="output-control__output__header__title">
+        <h5
+          className="output-control__output__header__title"
+          onClick={onClick}
+          style={{ cursor: canBeSelected ? 'pointer' : 'default' }}
+        >
           {name || stream.id}
           {stream.status === 'playing' && <Icon name="play_arrow" />}
-          {id && id !== current_server && (
-            <span
-              className="flag flag--default"
-              onClick={() => dispatch(mopidyActions.setCurrentServer(server))}
-            >
-              SWITCH TO THIS SERVER
-            </span>
-          )}
         </h5>
         {current_track && (
           <ul className="details">
