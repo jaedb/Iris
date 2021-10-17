@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
-import { useStore, useDispatch } from 'react-redux';
+import React from 'react';
+import { Route, Switch, useParams, useHistory } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import Link from './Link';
 import Icon from './Icon';
 import TextField from './Fields/TextField';
@@ -10,15 +11,18 @@ import { iconFromKeyword } from '../util/helpers';
 import { I18n } from '../locale';
 import { decodeUri, encodeUri } from '../util/format';
 
-const Server = ({
-  server,
-  current_server,
-}) => {
-  if (!server) return null;
+const Server = () => {
+  const { id } = useParams();
+  if (!id) return null;
+
   const dispatch = useDispatch();
-  const remove = () => dispatch(mopidyActions.removeServer(server.id));
+  const current_server = useSelector((state) => state.mopidy.current_server);
+  const server = useSelector((state) => state.mopidy.servers[id]);
+  if (!server) return null;
+
+  const remove = () => dispatch(mopidyActions.removeServer(id));
   const setAsCurrent = () => dispatch(mopidyActions.setCurrentServer(server));
-  const isCurrent = server.id === current_server;
+  const isCurrent = id === current_server;
 
   return (
     <div className="sub-tabs__content">
@@ -30,7 +34,7 @@ const Server = ({
           <TextField
             type="text"
             value={server.name}
-            onChange={(value) => dispatch(mopidyActions.updateServer({ id: server.id, name: value }))}
+            onChange={(value) => dispatch(mopidyActions.updateServer({ id, name: value }))}
             autosave
           />
         </div>
@@ -42,7 +46,7 @@ const Server = ({
         <div className="input">
           <TextField
             value={server.host}
-            onChange={(value) => dispatch(mopidyActions.updateServer({ id: server.id, host: value }))}
+            onChange={(value) => dispatch(mopidyActions.updateServer({ id, host: value }))}
             autosave
           />
         </div>
@@ -55,7 +59,7 @@ const Server = ({
           <TextField
             type="text"
             value={server.port}
-            onChange={(value) => dispatch(mopidyActions.updateServer({ id: server.id, port: value }))}
+            onChange={(value) => dispatch(mopidyActions.updateServer({ id, port: value }))}
             autosave
           />
         </div>
@@ -72,7 +76,7 @@ const Server = ({
               name="ssl"
               value={server.ssl}
               checked={server.ssl}
-              onChange={() => dispatch(mopidyActions.updateServer({ id: server.id, ssl: !server.ssl }))}
+              onChange={() => dispatch(mopidyActions.updateServer({ id, ssl: !server.ssl }))}
             />
             <span className="label tooltip">
               <I18n path="settings.servers.encryption.sublabel" />
@@ -107,36 +111,31 @@ const Server = ({
   );
 };
 
-const Servers = ({
-  match: { params: { id } },
-  history,
-}) => {
-  const serverId = decodeUri(id);
-  const store = useStore();
+const Menu = () => {
+  const history = useHistory();
   const dispatch = useDispatch();
+  const servers = indexToArray(useSelector((state) => state.mopidy.servers));
+
   const {
-    mopidy: {
-      servers,
-      current_server,
-      connected: mopidyConnected,
-      connecting: mopidyConnecting,
-    },
-    pusher: {
-      connected: pusherConnected,
-      connecting: pusherConnecting,
-    },
-  } = store.getState();
+    current_server,
+    connected: mopidyConnected,
+    connecting: mopidyConnecting,
+  } = useSelector((state) => state.mopidy);
+  const {
+    connected: pusherConnected,
+    connecting: pusherConnecting,
+  } = useSelector((state) => state.pusher);
 
   const addServer = () => {
     const action = mopidyActions.addServer();
     dispatch(action);
-    history.push(`/settings/servers/${encodeUri(action.server.id)}`);
+    history.push(`/settings/servers/${action.server.id}`);
   };
 
-  const Menu = () => (
+  return (
     <div className="sub-tabs__menu" id="servers-menu">
       <div className="menu__inner">
-        {indexToArray(servers).map((server) => {
+        {servers.map((server) => {
           let status = (
             <span className="status mid_grey-text">
               <I18n path="settings.servers.inactive" />
@@ -168,7 +167,7 @@ const Servers = ({
               history={history}
               className="menu-item"
               activeClassName="menu-item--active"
-              to={`/settings/servers/${encodeUri(server.id)}`}
+              to={`/settings/servers/${server.id}`}
               scrollTo="#servers-menu"
               key={server.id}
             >
@@ -199,16 +198,19 @@ const Servers = ({
       </div>
     </div>
   );
-
-  return (
-    <div className="sub-tabs sub-tabs--servers">
-      <Menu />
-      <Server
-        server={servers[serverId]}
-        current_server={current_server}
-      />
-    </div>
-  );
 };
+
+const Servers = () => (
+  <div className="sub-tabs sub-tabs--servers">
+    <Menu />
+    <Switch>
+      <Route
+        exact
+        path="/settings/servers/:id"
+        component={Server}
+      />
+    </Switch>
+  </div>
+);
 
 export default Servers;

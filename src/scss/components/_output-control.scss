@@ -103,7 +103,6 @@
 			}
 
 			&__item {
-				padding-right: 1rem;
 				border-top: 1px solid colour('white');
 				@include theme('dark') {
 					border-color: colour('soft_grey');
@@ -114,10 +113,37 @@
 				}
 
 				&__title {
-					padding: 0.8rem 0.8rem 0 0.8rem;
+					padding: 0.8rem 0 0 0.8rem;
+					display: flex;
+					flex-flow: row;
+
+					.dropdown-field {
+						margin-left: auto;
+
+						&__label {
+							padding: 0 !important;
+							text-align: center;
+		
+							.icon {
+								font-size: 1em;
+							}
+						}
+		
+						&__options {
+							top: auto;
+							bottom: 20px;
+							right: 0;
+		
+							&:before {
+								top: auto;
+								bottom: -3px;
+							}
+						}
+					}
 				}
 
 				&__volume {
+					padding-right: 1rem;
 					display: flex;
 					align-items: center;
 				}

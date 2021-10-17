@@ -7,6 +7,7 @@ import MuteControl from './MuteControl';
 import Icon from '../Icon';
 import Thumbnail from '../Thumbnail';
 import LinksSentence from '../LinksSentence';
+import DropdownField from './DropdownField';
 import * as coreActions from '../../services/core/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as pusherActions from '../../services/pusher/actions';
@@ -23,18 +24,26 @@ const Header = ({ stream, server }) => {
     meta,
     status,
   } = stream || {};
+  let {
+    control_url,
+    images,
+    name,
+    artists,
+  } = meta || {};
   const controlURL = meta?.control_url ? new URL(meta.control_url) : null;
   const controlServer = controlURL ? {
-    id: meta?.control_url,
+    url: controlURL,
     ssl: controlURL.protocol === 'https:',
     host: controlURL.hostname,
     port: controlURL.port || (controlURL.protocol === 'https:' ? '443' : '80'),
   } : null;
-  console.debug({ controlURL, controlServer });
-  const images = meta?.images ? formatImages(digestMopidyImages(controlServer, meta.images)) : null;
+  const current_server_id = useSelector((state) => state.mopidy.current_server);
+  const current_server = useSelector((state) => state.mopidy.servers[current_server_id]);
+  const isCurrentServer = control_url === current_server.url;
+  if (images) images = formatImages(digestMopidyImages(controlServer, images));
 
   const onClick = () => {
-    if (!controlServer) return;
+    if (!controlServer || isCurrentServer) return;
     dispatch(mopidyActions.setCurrentServer(controlServer));
   };
 
@@ -49,16 +58,17 @@ const Header = ({ stream, server }) => {
         <h5
           className="output-control__output__header__title tooltip"
           onClick={onClick}
-          style={{ cursor: controlServer ? 'pointer' : 'default' }}
+          style={{ cursor: isCurrentServer ? 'default' : 'pointer' }}
         >
           {server?.name || id}
+          {isCurrentServer && <Icon name="check" />}
           {status === 'playing' && <Icon name="play_arrow" />}
-          {controlURL && <div className="tooltip__content">{meta.control_url}</div>}
+          {control_url && <div className="tooltip__content">{control_url}</div>}
         </h5>
         {meta && (
           <ul className="details">
-            <li>{meta?.name}</li>
-            <li><LinksSentence items={meta?.artists} type="artist" nolinks /></li>
+            <li>{name}</li>
+            <li><LinksSentence items={artists} type="artist" nolinks /></li>
           </ul>
         )}
       </div>
@@ -66,7 +76,11 @@ const Header = ({ stream, server }) => {
   );
 }
 
-const Clients = ({ clients }) => {
+const Clients = ({
+  clients,
+  groups,
+  group_id,
+}) => {
   const dispatch = useDispatch();
 
   return (
@@ -81,7 +95,17 @@ const Clients = ({ clients }) => {
         return (
           <div className="output-control__output__clients__item" key={client.id}>
             <h5 className="output-control__output__clients__item__title">
-              {titleCase(name)}
+              <div>{titleCase(name)}</div>
+              <DropdownField
+                name="Group"
+                value={group_id}
+                icon="speaker_group"
+                options={groups.map((g) => ({ value: g.id, label: g.name }))}
+                noLabel
+                handleChange={
+                  (value) => dispatch(snapcastActions.setClientGroup(client.id, value))
+                }
+              />
             </h5>
             <div className="output-control__output__clients__item__volume">
               <MuteControl
@@ -102,10 +126,12 @@ const Clients = ({ clients }) => {
       })}
     </div>
   );
-}
+};
 
 const Group = ({
+  groups,
   item: {
+    id,
     stream,
     server,
     clients,
@@ -113,8 +139,15 @@ const Group = ({
 }) => {
   return (
     <div className="output-control__output">
-      <Header stream={stream} server={server} />
-      <Clients clients={clients} />
+      <Header
+        stream={stream}
+        server={server}
+      />
+      <Clients
+        clients={clients}
+        group_id={id}
+        groups={groups}
+      />
     </div>
   );
 }
@@ -128,14 +161,22 @@ const Outputs = () => {
 
   return (
     <>
-      {map(groupsByStream, (groups, stream_id) => {
-        const clients_ids = groups.reduce((acc, curr) => [...acc, ...curr.clients_ids], []);
+      {map(groupsByStream, (streamGroups, stream_id) => {
+        const clients_ids = streamGroups.reduce((acc, curr) => [...acc, ...curr.clients_ids], []);
         const group = {
+          id: streamGroups[0].id, // Technically multiple groups could be setup for the one stream
           stream: find(streams, (s) => s.id === stream_id),
           server: find(servers, (s) => s.snapcast_stream === stream_id),
           clients: clients_ids.map((id) => clients[id]).filter((c) => c.connected),
         };
-        return <Group item={group} key={stream_id} />;
+        return (
+          <Group
+            item={group}
+            key={stream_id}
+            groups={groups}
+            stream_id={stream_id}
+          />
+        );
       })}
     </>
   );

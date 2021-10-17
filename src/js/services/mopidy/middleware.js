@@ -1,7 +1,7 @@
 import ReactGA from 'react-ga';
 import Mopidy from 'mopidy';
 import { sha256 } from 'js-sha256';
-import { sampleSize, compact, chunk } from 'lodash';
+import { sampleSize, compact, chunk, find } from 'lodash';
 import { i18n } from '../../locale';
 import {
   generateGuid,
@@ -447,28 +447,37 @@ const MopidyMiddleware = (function () {
         break;
 
       case 'MOPIDY_UPDATE_SERVER':
-        const existingServers = store.getState().mopidy.servers;
-        const servers = {
-          ...existingServers,
-          [action.server.id]: {
-            ...existingServers[action.server.id] || {},
-            ...action.server,
-          },
+        const { servers } = store.getState().mopidy;
+        const server = {
+          ...servers[action.server.id] || {},
+          ...action.server,
         };
-        store.dispatch(mopidyActions.updateServers(servers));
+        server.url = `http${server.ssl ? 's' : ''}://${server.host}:${server.port}`;
+        store.dispatch(mopidyActions.updateServers({ ...servers, [server.id]: server }));
         break;
 
-      case 'MOPIDY_SET_CURRENT_SERVER':
-        const existingServer = action.server.id
-          ? store.getState().mopidy.servers[action.server.id]
-          : null;
-        if (!existingServer) store.dispatch(mopidyActions.addServer(action.server));
+      case 'MOPIDY_SET_CURRENT_SERVER': {
+        const { server } = action;
+        const { servers } = store.getState().mopidy;
+        let existingServer = null;
+        if (action.server.id) {
+          existingServer = servers[action.server.id] || undefined;
+        } else {
+          // No ID provided, see if we have a server setup with the same details already
+          existingServer = find(servers, (s) => s.url === server.url);
+        }
+
+        if (!existingServer) {
+          const create = mopidyActions.addServer(server);
+          store.dispatch(create);
+          existingServer = create.server;
+        }
 
         store.dispatch(mopidyActions.set({
-          current_server: action.server.id,
-          host: action.server.host,
-          port: action.server.port,
-          ssl: action.server.ssl,
+          current_server: server.id || existingServer?.id,
+          host: server.host,
+          port: server.port,
+          ssl: server.ssl,
           connected: false,
           connecting: false,
         }));
@@ -483,6 +492,7 @@ const MopidyMiddleware = (function () {
         );
         next(action);
         break;
+      }
 
       case 'MOPIDY_GET_SERVER_STATE': {
         let server = { ...store.getState().mopidy.servers[action.id] };

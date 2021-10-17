@@ -6973,7 +6973,6 @@ h4 .loader {
 }
 
 .output-control__output__clients__item {
-  padding-right: 1rem;
   border-top: 1px solid #FFFFFF;
 }
 .dark-theme .output-control__output__clients__item {
@@ -6990,9 +6989,31 @@ h4 .loader {
   border-top: none;
 }
 .output-control__output__clients__item__title {
-  padding: 0.8rem 0.8rem 0 0.8rem;
+  padding: 0.8rem 0 0 0.8rem;
+  display: flex;
+  flex-flow: row;
+}
+.output-control__output__clients__item__title .dropdown-field {
+  margin-left: auto;
+}
+.output-control__output__clients__item__title .dropdown-field__label {
+  padding: 0 !important;
+  text-align: center;
+}
+.output-control__output__clients__item__title .dropdown-field__label .icon {
+  font-size: 1em;
+}
+.output-control__output__clients__item__title .dropdown-field__options {
+  top: auto;
+  bottom: 20px;
+  right: 0;
+}
+.output-control__output__clients__item__title .dropdown-field__options:before {
+  top: auto;
+  bottom: -3px;
 }
 .output-control__output__clients__item__volume {
+  padding-right: 1rem;
   display: flex;
   align-items: center;
 }
@@ -8759,6 +8780,7 @@ main header.overlay {
   padding: 0;
   font-weight: bold;
   font-size: 16px;
+  line-height: 1em;
 }
 .sub-tabs__menu .menu-item:hover .menu-item__inner {
   background: #222222;
