@@ -27,6 +27,7 @@ class Extension(ext.Extension):
         schema["enabled"] = config.Boolean()
         schema["country"] = config.String()
         schema["locale"] = config.String()
+        schema["control_url"] = config.String()
         schema["snapcast_enabled"] = config.Boolean()
         schema["snapcast_host"] = config.String()
         schema["snapcast_port"] = config.String()

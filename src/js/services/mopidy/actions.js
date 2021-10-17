@@ -22,15 +22,21 @@ export function updateServers(servers) {
   };
 }
 
-export function addServer() {
+export function addServer(data) {
+  const server = {
+    host: window.location.hostname,
+    port: window.location.port
+      ? window.location.port
+      : (window.location.protocol === 'https:' ? '443' : '80'),
+    ssl: window.location.protocol === 'https:',
+    ...data,
+  };
   return {
     type: 'MOPIDY_UPDATE_SERVER',
     server: {
-      id: generateGuid(),
-      name: 'New server',
-      host: window.location.hostname,
-      port: (window.location.port ? window.location.port : (window.location.protocol === 'https:' ? '443' : '80')),
-      ssl: window.location.protocol === 'https:',
+      ...server,
+      id: `http${server.ssl ? 's' : ''}://${server.host}:${server.port}`,
+      name: `${server.host}${server.ssl ? ' 🔒' : ''}`,
     },
   };
 }

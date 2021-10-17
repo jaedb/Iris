@@ -8,6 +8,7 @@ import { Button } from './Button';
 import * as mopidyActions from '../services/mopidy/actions';
 import { iconFromKeyword } from '../util/helpers';
 import { I18n } from '../locale';
+import { decodeUri, encodeUri } from '../util/format';
 
 const Server = ({
   server,
@@ -107,9 +108,10 @@ const Server = ({
 };
 
 const Servers = ({
-  match: { params: { id: serverId } },
+  match: { params: { id } },
   history,
 }) => {
+  const serverId = decodeUri(id);
   const store = useStore();
   const dispatch = useDispatch();
   const {
@@ -128,7 +130,7 @@ const Servers = ({
   const addServer = () => {
     const action = mopidyActions.addServer();
     dispatch(action);
-    history.push(`/settings/servers/${action.server.id}`);
+    history.push(`/settings/servers/${encodeUri(action.server.id)}`);
   };
 
   const Menu = () => (
@@ -166,7 +168,7 @@ const Servers = ({
               history={history}
               className="menu-item"
               activeClassName="menu-item--active"
-              to={`/settings/servers/${server.id}`}
+              to={`/settings/servers/${encodeUri(server.id)}`}
               scrollTo="#servers-menu"
               key={server.id}
             >

@@ -1191,20 +1191,29 @@ class IrisCore(pykka.ThreadingActor):
     # Uses snapcast server and stream details as defined in configuration
     ##
     async def update_snapcast_meta(self, *args, **kwargs):
-        current_track = self.core.playback.get_current_track().get()
+        track = self.core.playback.get_current_track().get()
+        # Append our server details, so Iris UI can switch to this Mopidy instance
+        # This isn't a great way of doing this, but it works for now.
+        meta = {
+            "control_url": self.config["iris"]["control_url"],
+        }
         
-        if current_track:
+        if track:
             # We dump the JSON to convert the Track to JSON, but we need to then loads back to JSON
             # for the response.
-            current_track = json.loads(json.dumps(current_track, cls=ModelJSONEncoder))
-            images = self.core.library.get_images([current_track["uri"]]).get()
+            track = json.loads(json.dumps(track, cls=ModelJSONEncoder))
+            images = self.core.library.get_images([track["uri"]]).get()
             if images:
-                current_track["images"] = json.loads(
+                meta["images"] = json.loads(
                     json.dumps(
-                        images[current_track["uri"]],
+                        images[track["uri"]],
                         cls=ModelJSONEncoder
                     )
                 )
+            meta["name"] = track["name"]
+            meta["uri"] = track["uri"]
+            meta["artists"] = track["artists"]
+            meta["album"] = track["album"]
 
         url = "http"
         if self.config["iris"]["snapcast_ssl"]:
@@ -1219,7 +1228,7 @@ class IrisCore(pykka.ThreadingActor):
             "method": "Stream.SetMeta",
             "params": {
                 "id": self.config["iris"]["snapcast_stream"],
-                "meta": current_track
+                "meta": meta
             }
         }
 

@@ -18,19 +18,26 @@ import { I18n } from '../../locale';
 
 const Header = ({ stream, server }) => {
   const dispatch = useDispatch();
-  const current_server = useSelector((state) => state.mopidy.current_server);
   const {
     id,
     meta,
     status,
   } = stream || {};
-  const canBeSelected = server?.id && server.id !== current_server;
+  const controlURL = meta?.control_url ? new URL(meta.control_url) : null;
+  const controlServer = controlURL ? {
+    id: meta?.control_url,
+    ssl: controlURL.protocol === 'https:',
+    host: controlURL.hostname,
+    port: controlURL.port || (controlURL.protocol === 'https:' ? '443' : '80'),
+  } : null;
+  console.debug({ controlURL, controlServer });
+  const images = meta?.images ? formatImages(digestMopidyImages(controlServer, meta.images)) : null;
+
   const onClick = () => {
-    if (!canBeSelected) return;
-    dispatch(mopidyActions.setCurrentServer(server));
-  }
-  const images = meta?.images ? formatImages(digestMopidyImages(server, meta.images)) : null;
-  console.debug(images, meta.images)
+    if (!controlServer) return;
+    dispatch(mopidyActions.setCurrentServer(controlServer));
+  };
+
   return (
     <div className="output-control__output__header">
       <Thumbnail
@@ -40,12 +47,13 @@ const Header = ({ stream, server }) => {
       />
       <div className="output-control__output__header__content">
         <h5
-          className="output-control__output__header__title"
+          className="output-control__output__header__title tooltip"
           onClick={onClick}
-          style={{ cursor: canBeSelected ? 'pointer' : 'default' }}
+          style={{ cursor: controlServer ? 'pointer' : 'default' }}
         >
           {server?.name || id}
           {status === 'playing' && <Icon name="play_arrow" />}
+          {controlURL && <div className="tooltip__content">{meta.control_url}</div>}
         </h5>
         {meta && (
           <ul className="details">
