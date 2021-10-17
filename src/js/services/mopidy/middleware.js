@@ -459,6 +459,11 @@ const MopidyMiddleware = (function () {
         break;
 
       case 'MOPIDY_SET_CURRENT_SERVER':
+        const existingServer = action.server.id
+          ? store.getState().mopidy.servers[action.server.id]
+          : null;
+        if (!existingServer) store.dispatch(mopidyActions.addServer(action.server));
+
         store.dispatch(mopidyActions.set({
           current_server: action.server.id,
           host: action.server.host,
@@ -476,6 +481,7 @@ const MopidyMiddleware = (function () {
           },
           250,
         );
+        next(action);
         break;
 
       case 'MOPIDY_GET_SERVER_STATE': {

@@ -33,3 +33,9 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
             iris.ioloop.add_callback(
                 functools.partial(iris.clean_queue_metadata)
             )
+
+    def track_playback_started(self, tl_track):
+        if iris.ioloop:
+            iris.ioloop.add_callback(
+                functools.partial(iris.update_snapcast_meta)
+            )
