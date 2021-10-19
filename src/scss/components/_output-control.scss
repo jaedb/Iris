@@ -58,7 +58,7 @@
 		}
 	}
 
-	&__output {
+	&__stream {
 		&__header {
 			margin: 0.8rem;
 			display: flex;
@@ -93,89 +93,101 @@
 				}
 			}
 		}
+	}
 
-		&__clients {
-			margin: 0.8rem;
-			border-radius: 3px;
-			background: colour('off_white');
-			@include theme('dark') {
-				background: colour('grey');
+	&__group {
+		margin: 1rem 0.8rem 0.8rem 0.8rem;
+
+		&__title {
+			display: flex;
+			flex-flow: row;
+
+			.text {
+				opacity: 0.5;
 			}
 
-			&__item {
-				border-top: 1px solid colour('white');
-				@include theme('dark') {
-					border-color: colour('soft_grey');
-				}
+			.dropdown-field {
+				margin-left: auto;
 
-				&:first-child {
-					border-top: none;
-				}
+				&__label {
+					padding: 0 !important;
+					text-align: center;
+					opacity: 0.5;
 
-				&__title {
-					padding: 0.8rem 0 0 0.8rem;
-					display: flex;
-					flex-flow: row;
-
-					.dropdown-field {
-						margin-left: auto;
-
-						&__label {
-							padding: 0 !important;
-							text-align: center;
-		
-							.icon {
-								font-size: 1em;
-							}
-						}
-		
-						&__options {
-							top: auto;
-							bottom: 20px;
-							right: 0;
-		
-							&:before {
-								top: auto;
-								bottom: -3px;
-							}
-						}
+					.icon {
+						font-size: 1em;
 					}
 				}
 
-				&__volume {
-					padding-right: 1rem;
-					display: flex;
-					align-items: center;
-				}
+				&__options {
+					top: auto;
+					bottom: 20px;
+					right: 0;
 
-				&__controls {
-					display: flex;
-					align-items: center;
-		
-					.dropdown-field {
-						flex-grow: 0;
-		
-						&__label {
-							padding: 2px !important;
-							text-align: center;
-		
-							.icon {
-								font-size: 0.9em;
-							}
+					&:before {
+						top: auto;
+						bottom: -3px;
+					}
+				}
+			}
+		}
+	}
+
+	&__clients {
+		border-radius: 3px;
+		background: colour('off_white');
+		@include theme('dark') {
+			background: colour('grey');
+		}
+
+		&__item {
+			border-top: 1px solid colour('white');
+			@include theme('dark') {
+				border-color: colour('soft_grey');
+			}
+
+			&:first-child {
+				border-top: none;
+			}
+
+			&__title {
+				padding: 0.8rem 0 0 0.8rem;
+				margin-bottom: 0;
+			}
+
+			&__volume {
+				padding-right: 1rem;
+				display: flex;
+				align-items: center;
+			}
+
+			&__controls {
+				display: flex;
+				align-items: center;
+	
+				.dropdown-field {
+					flex-grow: 0;
+	
+					&__label {
+						padding: 2px !important;
+						text-align: center;
+	
+						.icon {
+							font-size: 0.9em;
 						}
-		
-						&__options {
+					}
+	
+					&__options {
+						top: auto;
+						bottom: 20px;
+						right: auto;
+						left: 0px;
+	
+						&:before {
 							top: auto;
-							bottom: 20px;
 							right: auto;
-							left: 0px;
-		
-							&:before {
-								top: auto;
-								right: auto;
-								bottom: -3px;
-								left: 9px;
-							}
+							bottom: -3px;
+							left: 9px;
 						}
 					}
 				}

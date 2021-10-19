@@ -1199,8 +1199,9 @@ class IrisCore(pykka.ThreadingActor):
         }
         
         if track:
-            # We dump the JSON to convert the Track to JSON, but we need to then loads back to JSON
-            # for the response.
+            # Convert the Track to JSON, but to make it a response-ready JSON we need to load it.
+            # Required because ModelJSONEncoder produces single-quote JSON, and we need standard
+            # double-quoted json.
             track = json.loads(json.dumps(track, cls=ModelJSONEncoder))
             images = self.core.library.get_images([track["uri"]]).get()
             if images:

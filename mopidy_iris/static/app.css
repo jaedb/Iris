@@ -6929,115 +6929,124 @@ h4 .loader {
   opacity: 0.5;
   font-weight: normal;
 }
-.output-control__output__header {
+.output-control__stream__header {
   margin: 0.8rem;
   display: flex;
   flex-flow: row;
   align-items: center;
 }
-.output-control__output__header .flag {
+.output-control__stream__header .flag {
   margin-right: 0;
 }
-.output-control__output__header__thumbnail {
+.output-control__stream__header__thumbnail {
   flex-shrink: 0;
 }
-.output-control__output__header__title {
+.output-control__stream__header__title {
   display: flex;
   align-items: center;
 }
-.output-control__output__header__title .icon {
+.output-control__stream__header__title .icon {
   font-size: 1em;
   padding-left: 0.4em;
   opacity: 0.5;
 }
-.output-control__output__header__content {
+.output-control__stream__header__content {
   padding-left: 0.8rem;
   overflow-x: hidden;
 }
-.output-control__output__header__content .details {
+.output-control__stream__header__content .details {
   white-space: nowrap;
 }
-.output-control__output__clients {
-  margin: 0.8rem;
-  border-radius: 3px;
-  background: #F5F5F5;
+.output-control__group {
+  margin: 1rem 0.8rem 0.8rem 0.8rem;
 }
-.dark-theme .output-control__output__clients {
-  background: #383734;
-}
-
-@media (prefers-color-scheme: dark) {
-  .auto-theme .output-control__output__clients {
-    background: #383734;
-  }
-}
-
-.output-control__output__clients__item {
-  border-top: 1px solid #FFFFFF;
-}
-.dark-theme .output-control__output__clients__item {
-  border-color: #51504e;
-}
-
-@media (prefers-color-scheme: dark) {
-  .auto-theme .output-control__output__clients__item {
-    border-color: #51504e;
-  }
-}
-
-.output-control__output__clients__item:first-child {
-  border-top: none;
-}
-.output-control__output__clients__item__title {
-  padding: 0.8rem 0 0 0.8rem;
+.output-control__group__title {
   display: flex;
   flex-flow: row;
 }
-.output-control__output__clients__item__title .dropdown-field {
+.output-control__group__title .text {
+  opacity: 0.5;
+}
+.output-control__group__title .dropdown-field {
   margin-left: auto;
 }
-.output-control__output__clients__item__title .dropdown-field__label {
+.output-control__group__title .dropdown-field__label {
   padding: 0 !important;
   text-align: center;
+  opacity: 0.5;
 }
-.output-control__output__clients__item__title .dropdown-field__label .icon {
+.output-control__group__title .dropdown-field__label .icon {
   font-size: 1em;
 }
-.output-control__output__clients__item__title .dropdown-field__options {
+.output-control__group__title .dropdown-field__options {
   top: auto;
   bottom: 20px;
   right: 0;
 }
-.output-control__output__clients__item__title .dropdown-field__options:before {
+.output-control__group__title .dropdown-field__options:before {
   top: auto;
   bottom: -3px;
 }
-.output-control__output__clients__item__volume {
+.output-control__clients {
+  border-radius: 3px;
+  background: #F5F5F5;
+}
+.dark-theme .output-control__clients {
+  background: #383734;
+}
+
+@media (prefers-color-scheme: dark) {
+  .auto-theme .output-control__clients {
+    background: #383734;
+  }
+}
+
+.output-control__clients__item {
+  border-top: 1px solid #FFFFFF;
+}
+.dark-theme .output-control__clients__item {
+  border-color: #51504e;
+}
+
+@media (prefers-color-scheme: dark) {
+  .auto-theme .output-control__clients__item {
+    border-color: #51504e;
+  }
+}
+
+.output-control__clients__item:first-child {
+  border-top: none;
+}
+.output-control__clients__item__title {
+  padding: 0.8rem 0 0 0.8rem;
+  margin-bottom: 0;
+}
+.output-control__clients__item__volume {
   padding-right: 1rem;
   display: flex;
   align-items: center;
 }
-.output-control__output__clients__item__controls {
+.output-control__clients__item__controls {
   display: flex;
   align-items: center;
 }
-.output-control__output__clients__item__controls .dropdown-field {
+.output-control__clients__item__controls .dropdown-field {
   flex-grow: 0;
 }
-.output-control__output__clients__item__controls .dropdown-field__label {
+.output-control__clients__item__controls .dropdown-field__label {
   padding: 2px !important;
   text-align: center;
 }
-.output-control__output__clients__item__controls .dropdown-field__label .icon {
+.output-control__clients__item__controls .dropdown-field__label .icon {
   font-size: 0.9em;
 }
-.output-control__output__clients__item__controls .dropdown-field__options {
+.output-control__clients__item__controls .dropdown-field__options {
   top: auto;
   bottom: 20px;
   right: auto;
   left: 0px;
 }
-.output-control__output__clients__item__controls .dropdown-field__options:before {
+.output-control__clients__item__controls .dropdown-field__options:before {
   top: auto;
   right: auto;
   bottom: -3px;

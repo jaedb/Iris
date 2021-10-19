@@ -23,6 +23,9 @@ const Header = ({ stream, server }) => {
     id,
     meta,
     status,
+    uri: {
+      path,
+    },
   } = stream || {};
   let {
     control_url,
@@ -32,7 +35,7 @@ const Header = ({ stream, server }) => {
   } = meta || {};
   const controlURL = meta?.control_url ? new URL(meta.control_url) : null;
   const controlServer = controlURL ? {
-    url: controlURL,
+    url: meta.control_url,
     ssl: controlURL.protocol === 'https:',
     host: controlURL.hostname,
     port: controlURL.port || (controlURL.protocol === 'https:' ? '443' : '80'),
@@ -40,142 +43,127 @@ const Header = ({ stream, server }) => {
   const current_server_id = useSelector((state) => state.mopidy.current_server);
   const current_server = useSelector((state) => state.mopidy.servers[current_server_id]);
   const isCurrentServer = control_url === current_server.url;
+  const isControlSwitchable = controlServer && !isCurrentServer;
   if (images) images = formatImages(digestMopidyImages(controlServer, images));
 
   const onClick = () => {
-    if (!controlServer || isCurrentServer) return;
-    dispatch(mopidyActions.setCurrentServer(controlServer));
+    if (isControlSwitchable) {
+      dispatch(mopidyActions.setCurrentServer(controlServer));
+    }
   };
 
   return (
-    <div className="output-control__output__header">
+    <div className="output-control__stream__header">
       <Thumbnail
         images={images}
         size="small"
-        className="output-control__output__header__thumbnail"
+        className="output-control__stream__header__thumbnail"
       />
-      <div className="output-control__output__header__content">
+      <div className="output-control__stream__header__content">
         <h5
-          className="output-control__output__header__title tooltip"
+          className="output-control__stream__header__title tooltip"
           onClick={onClick}
-          style={{ cursor: isCurrentServer ? 'default' : 'pointer' }}
+          style={{ cursor: isControlSwitchable ? 'pointer' : 'default' }}
         >
           {server?.name || id}
           {isCurrentServer && <Icon name="check" />}
           {status === 'playing' && <Icon name="play_arrow" />}
           {control_url && <div className="tooltip__content">{control_url}</div>}
         </h5>
-        {meta && (
-          <ul className="details">
-            <li>{name}</li>
-            <li><LinksSentence items={artists} type="artist" nolinks /></li>
-          </ul>
-        )}
+        <ul className="details">
+          <li>{name || path}</li>
+          {artists && <li><LinksSentence items={artists} type="artist" nolinks /></li>}
+        </ul>
       </div>
     </div>
   );
 }
 
-const Clients = ({
-  clients,
-  groups,
-  group_id,
+const Group = ({
+  group: {
+    id: groupId,
+    name: groupName,
+    stream_id,
+    clients_ids = [],
+  } = {},
 }) => {
+  const allClients = useSelector((state) => state.snapcast.clients || {});
+  const allStreams = indexToArray(useSelector((state) => state.snapcast.streams || {}));
+  const clients = clients_ids.length > 0 ? clients_ids.map((c) => allClients[c]) : [];
   const dispatch = useDispatch();
 
   return (
-    <div className="output-control__output__clients">
-      {clients.map((client) => {
-        const {
-          id,
-          name,
-          mute,
-          volume,
-        } = client;
-        return (
-          <div className="output-control__output__clients__item" key={client.id}>
-            <h5 className="output-control__output__clients__item__title">
-              <div>{titleCase(name)}</div>
-              <DropdownField
-                name="Group"
-                value={group_id}
-                icon="speaker_group"
-                options={groups.map((g) => ({ value: g.id, label: g.name }))}
-                noLabel
-                handleChange={
-                  (value) => dispatch(snapcastActions.setClientGroup(client.id, value))
-                }
-              />
-            </h5>
-            <div className="output-control__output__clients__item__volume">
-              <MuteControl
-                noTooltip
-                mute={mute}
-                onMuteChange={(value) => dispatch(snapcastActions.setClientMute(id, value))}
-              />
-              <VolumeControl
-                volume={volume}
-                mute={mute}
-                onVolumeChange={
-                  (value) => dispatch(snapcastActions.setClientVolume(id, value))
-                }
-              />
+    <div className="output-control__group">
+      <h5 className="output-control__group__title">
+        <div className="text">{titleCase(groupName)}</div>
+        <DropdownField
+          name="Stream"
+          value={stream_id}
+          icon="settings_input_component"
+          options={allStreams.map((s) => ({ value: s.id, label: titleCase(s.id) }))}
+          noLabel
+          handleChange={
+            (value) => dispatch(snapcastActions.setGroupStream(groupId, value))
+          }
+        />
+      </h5>
+      <div className="output-control__clients">
+        {clients.map((client) => {
+          const {
+            id: clientId,
+            name: clientName,
+            mute,
+            volume,
+          } = client;
+          return (
+            <div className="output-control__clients__item" key={clientId}>
+              <h5 className="output-control__clients__item__title">
+                {titleCase(clientName)}
+              </h5>
+              <div className="output-control__clients__item__volume">
+                <MuteControl
+                  noTooltip
+                  mute={mute}
+                  onMuteChange={
+                    (value) => dispatch(snapcastActions.setClientMute(clientId, value))
+                  }
+                />
+                <VolumeControl
+                  volume={volume}
+                  mute={mute}
+                  onVolumeChange={
+                    (value) => dispatch(snapcastActions.setClientVolume(clientId, value))
+                  }
+                />
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 };
 
-const Group = ({
-  groups,
-  item: {
-    id,
-    stream,
-    server,
-    clients,
-  },
-}) => {
-  return (
-    <div className="output-control__output">
-      <Header
-        stream={stream}
-        server={server}
-      />
-      <Clients
-        clients={clients}
-        group_id={id}
-        groups={groups}
-      />
-    </div>
-  );
-}
-
 const Outputs = () => {
-  const groups = indexToArray(useSelector((state) => state.snapcast.groups || {}));
-  const clients = useSelector((state) => state.snapcast.clients || {});
-  const streams = useSelector((state) => state.snapcast.streams || {});
-  const servers = indexToArray(useSelector((state) => state.mopidy.servers || {}));
-  const groupsByStream = groupBy(groups, 'stream_id');
+  const allGroups = indexToArray(useSelector((state) => state.snapcast.groups || {}));
+  const allStreams = useSelector((state) => state.snapcast.streams || {});
+  const allServers = indexToArray(useSelector((state) => state.mopidy.servers || {}));
+  const groupsByStream = groupBy(allGroups, 'stream_id');
 
   return (
     <>
-      {map(groupsByStream, (streamGroups, stream_id) => {
-        const clients_ids = streamGroups.reduce((acc, curr) => [...acc, ...curr.clients_ids], []);
-        const group = {
-          id: streamGroups[0].id, // Technically multiple groups could be setup for the one stream
-          stream: find(streams, (s) => s.id === stream_id),
-          server: find(servers, (s) => s.snapcast_stream === stream_id),
-          clients: clients_ids.map((id) => clients[id]).filter((c) => c.connected),
+      {map(groupsByStream, (groups, id) => {
+        const stream = {
+          id,
+          ...find(allStreams, (s) => s.id === id) || {},
+          server: find(allServers, (s) => s.snapcast_stream === id),
+          groups,
         };
         return (
-          <Group
-            item={group}
-            key={stream_id}
-            groups={groups}
-            stream_id={stream_id}
-          />
+          <div className="output-control__stream">
+            <Header stream={stream} />
+            {groups.map((group) => <Group group={group} /> )}
+          </div>
         );
       })}
     </>
