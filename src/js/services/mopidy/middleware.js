@@ -402,21 +402,23 @@ const MopidyMiddleware = (function () {
    * */
   return (store) => (next) => (action) => {
     switch (action.type) {
-      case 'MOPIDY_CONNECT':
-        if (socket != null) {
-          socket.close();
-        }
+      case 'MOPIDY_CONNECT': {
+        if (socket != null) socket.close();
 
         store.dispatch({ type: 'MOPIDY_CONNECTING' });
-        var state = store.getState();
+        const { ssl, host, port } = store.getState().mopidy;
+        try {
+          socket = new Mopidy({
+            webSocketUrl: `ws${ssl ? 's' : ''}://${host}:${port}/mopidy/ws/`,
+            callingConvention: 'by-position-or-by-name',
+          });
+          socket.on((type, data) => handleMessage(socket, store, type, data));
+        } catch (exception) {
+          console.error(exception);
+        }
 
-        socket = new Mopidy({
-          webSocketUrl: `ws${state.mopidy.ssl ? 's' : ''}://${state.mopidy.host}:${state.mopidy.port}/mopidy/ws/`,
-          callingConvention: 'by-position-or-by-name',
-        });
-
-        socket.on((type, data) => handleMessage(socket, store, type, data));
         break;
+      }
 
       case 'MOPIDY_CONNECTED':
         if (store.getState().ui.allow_reporting) {
