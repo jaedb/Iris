@@ -214,9 +214,11 @@ function refreshToken(dispatch, getState) {
       // Server-side authorized (with limited scope) so we need to refresh
       // using the Mopidy-Spotify credentials
     } else {
+      const { host, port, ssl } = getState().mopidy;
+      let url = `http${ssl ? 's' : ''}://${host}:${port}/iris/http/refresh_spotify_token`;
       var config = {
         method: 'GET',
-        url: `//${getState().mopidy.host}:${getState().mopidy.port}/iris/http/refresh_spotify_token`,
+        url,
         dataType: 'json',
         timeout: 10000,
       };

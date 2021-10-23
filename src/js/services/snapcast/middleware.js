@@ -99,6 +99,14 @@ const SnapcastMiddleware = (function () {
           store.dispatch(snapcastActions.groupLoaded(message.params));
           break;
 
+        case 'Stream.OnUpdate':
+          store.dispatch(snapcastActions.streamLoaded(message.params));
+          break;
+
+        case 'Stream.OnMetadata':
+          store.dispatch(snapcastActions.streamLoaded(message.params));
+          break;
+
         case 'Server.OnUpdate':
           store.dispatch(snapcastActions.serverLoaded(message.params.server.server));
           store.dispatch(snapcastActions.groupsLoaded(message.params.server.groups, true));
@@ -159,10 +167,16 @@ const SnapcastMiddleware = (function () {
         clearTimeout(reconnectTimer);
 
         store.dispatch({ type: 'SNAPCAST_CONNECTING' });
+        const { host, port, ssl } = store.getState().snapcast;
 
-        socket = new WebSocket(
-          `ws${window.location.protocol === 'https:' ? 's' : ''}://${store.getState().snapcast.host}:${store.getState().snapcast.port}/jsonrpc`,
-        );
+        try {
+          socket = new WebSocket(
+            `ws${ssl ? 's' : ''}://${host}:${port}/jsonrpc`,
+          );
+        } catch (exception) {
+          console.error(exception);
+          break;
+        }
 
         socket.onopen = () => {
           store.dispatch({

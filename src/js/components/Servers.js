@@ -1,5 +1,6 @@
 import React from 'react';
-import { useStore, useDispatch } from 'react-redux';
+import { Route, Switch, useParams, useHistory } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import Link from './Link';
 import Icon from './Icon';
 import TextField from './Fields/TextField';
@@ -9,25 +10,125 @@ import * as mopidyActions from '../services/mopidy/actions';
 import { iconFromKeyword } from '../util/helpers';
 import { I18n } from '../locale';
 
-const Servers = ({
-  match: { params: { id: serverId } },
-  history,
-}) => {
-  const store = useStore();
+const Server = () => {
+  const { id } = useParams();
+  if (!id) return null;
+
   const dispatch = useDispatch();
+  const current_server = useSelector((state) => state.mopidy.current_server);
+  const server = useSelector((state) => state.mopidy.servers[id]);
+  if (!server) return null;
+
+  const remove = () => dispatch(mopidyActions.removeServer(id));
+  const setAsCurrent = () => dispatch(mopidyActions.setCurrentServer(server));
+  const isCurrent = id === current_server;
+
+  return (
+    <div className="sub-tabs__content">
+      <label className="field">
+        <div className="name">
+          <I18n path="settings.servers.name" />
+        </div>
+        <div className="input">
+          <TextField
+            type="text"
+            value={server.name}
+            onChange={(value) => dispatch(mopidyActions.updateServer({ id, name: value }))}
+            autosave
+          />
+        </div>
+      </label>
+      <label className="field">
+        <div className="name">
+          <I18n path="settings.servers.host" />
+        </div>
+        <div className="input">
+          <TextField
+            value={server.host}
+            onChange={(value) => dispatch(mopidyActions.updateServer({ id, host: value }))}
+            autosave
+          />
+        </div>
+      </label>
+      <label className="field">
+        <div className="name">
+          <I18n path="settings.servers.port" />
+        </div>
+        <div className="input">
+          <TextField
+            type="text"
+            value={server.port}
+            onChange={(value) => dispatch(mopidyActions.updateServer({ id, port: value }))}
+            autosave
+          />
+        </div>
+      </label>
+
+      <div className="field checkbox">
+        <div className="name">
+          <I18n path="settings.servers.encryption.label" />
+        </div>
+        <div className="input">
+          <label>
+            <input
+              type="checkbox"
+              name="ssl"
+              value={server.ssl}
+              checked={server.ssl}
+              onChange={() => dispatch(mopidyActions.updateServer({ id, ssl: !server.ssl }))}
+            />
+            <span className="label tooltip">
+              <I18n path="settings.servers.encryption.sublabel" />
+              <span className="tooltip__content">
+                <I18n path="settings.servers.encryption.description" />
+              </span>
+            </span>
+            {!server.ssl && window.location.protocol === 'https:' && (
+              <span className="red-text">
+                <I18n path="settings.servers.encryption.incompatible" />
+              </span>
+            )}
+          </label>
+        </div>
+      </div>
+
+      <Button
+        type={isCurrent ? 'default' : 'primary'}
+        onClick={setAsCurrent}
+        tracking={{
+          category: 'Servers',
+          action: 'SetAsCurrent',
+          label: (isCurrent ? 'Reconnect' : 'Switch'),
+        }}
+      >
+        <I18n path={`settings.servers.${isCurrent ? 'reconnect' : 'switch'}`} />
+      </Button>
+      <Button
+        type="destructive"
+        disabled={isCurrent}
+        onClick={remove}
+        tracking={{ category: 'Servers', action: 'Delete' }}
+      >
+        <I18n path="actions.remove" />
+      </Button>
+    </div>
+  );
+};
+
+const Menu = () => {
+  const history = useHistory();
+  const dispatch = useDispatch();
+  const servers = indexToArray(useSelector((state) => state.mopidy.servers));
+
   const {
-    mopidy: {
-      servers,
-      current_server,
-      ssl,
-      connected: mopidyConnected,
-      connecting: mopidyConnecting,
-    },
-    pusher: {
-      connected: pusherConnected,
-      connecting: pusherConnecting,
-    },
-  } = store.getState();
+    current_server,
+    connected: mopidyConnected,
+    connecting: mopidyConnecting,
+  } = useSelector((state) => state.mopidy);
+  const {
+    connected: pusherConnected,
+    connecting: pusherConnecting,
+  } = useSelector((state) => state.pusher);
 
   const addServer = () => {
     const action = mopidyActions.addServer();
@@ -35,10 +136,10 @@ const Servers = ({
     history.push(`/settings/servers/${action.server.id}`);
   };
 
-  const renderMenu = () => (
+  return (
     <div className="sub-tabs__menu" id="servers-menu">
       <div className="menu__inner">
-        {indexToArray(servers).map((server) => {
+        {servers.map((server) => {
           let status = (
             <span className="status mid_grey-text">
               <I18n path="settings.servers.inactive" />
@@ -101,113 +202,19 @@ const Servers = ({
       </div>
     </div>
   );
-
-  const renderServer = () => {
-    if (!serverId) return null;
-    const server = servers[serverId];
-    if (!server) return null;
-
-    const remove = () => {
-      dispatch(mopidyActions.removeServer(server.id));
-    };
-
-    const setAsCurrent = () => {
-      dispatch(mopidyActions.setCurrentServer(server));
-    };
-
-    return (
-      <div className="sub-tabs__content">
-        <label className="field">
-          <div className="name">
-            <I18n path="settings.servers.name" />
-          </div>
-          <div className="input">
-            <TextField
-              type="text"
-              value={server.name}
-              onChange={(value) => dispatch(mopidyActions.updateServer({ id: server.id, name: value }))}
-              autosave
-            />
-          </div>
-        </label>
-        <label className="field">
-          <div className="name">
-            <I18n path="settings.servers.host" />
-          </div>
-          <div className="input">
-            <TextField
-              value={server.host}
-              onChange={(value) => dispatch(mopidyActions.updateServer({ id: server.id, host: value }))}
-              autosave
-            />
-          </div>
-        </label>
-        <label className="field">
-          <div className="name">
-            <I18n path="settings.servers.port" />
-          </div>
-          <div className="input">
-            <TextField
-              type="text"
-              value={server.port}
-              onChange={(value) => dispatch(mopidyActions.updateServer({ id: server.id, port: value }))}
-              autosave
-            />
-          </div>
-        </label>
-
-        <div className="field checkbox">
-          <div className="name">
-            <I18n path="settings.servers.encryption.label" />
-          </div>
-          <div className="input">
-            <label>
-              <input
-                type="checkbox"
-                name="ssl"
-                value={server.ssl}
-                checked={server.ssl}
-                onChange={() => dispatch(mopidyActions.updateServer({ id: server.id, ssl: !server.ssl }))}
-              />
-              <span className="label tooltip">
-                <I18n path="settings.servers.encryption.sublabel" />
-                <span className="tooltip__content">
-                  <I18n path="settings.servers.encryption.description" />
-                </span>
-              </span>
-            </label>
-          </div>
-        </div>
-
-        <Button
-          type="primary"
-          onClick={setAsCurrent}
-          tracking={{
-            category: 'Servers',
-            action: 'SetAsCurrent',
-            label: (server.id === current_server ? 'Reconnect' : 'Switch'),
-          }}
-        >
-          <I18n path={`settings.servers.${server.id === current_server ? 'reconnect' : 'switch'}`} />
-        </Button>
-        <Button
-          type="destructive"
-          disabled={server.id === current_server}
-          onClick={remove}
-          tracking={{ category: 'Servers', action: 'Delete' }}
-        >
-          <I18n path="actions.remove" />
-        </Button>
-      </div>
-    );
-  };
-
-  return (
-    <div className="sub-tabs sub-tabs--servers">
-      {renderMenu()}
-      {renderServer()}
-    </div>
-  );
 };
+
+const Servers = () => (
+  <div className="sub-tabs sub-tabs--servers">
+    <Menu />
+    <Switch>
+      <Route
+        exact
+        path="/settings/servers/:id"
+        component={Server}
+      />
+    </Switch>
+  </div>
+);
 
 export default Servers;

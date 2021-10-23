@@ -171,6 +171,7 @@ sidebar:
   tracks: Tracks
   browse: Browse
   settings: Settings
+  servers: Servers
   not_connected: '%{name} not connected'
   browser_offline: Browser offline
   update_available: Update available
@@ -216,6 +217,11 @@ snapcast:
   latency: Latency
   stream: Stream
   volume: Volume
+  encryption:
+    label: Encryption
+    sublabel: Use SSL
+    description: Requires a SSL proxy
+    incompatible: ' (required when connecting from a HTTPS browser session)'
 authentication:
   popup_blocked: Popup blocked. Please allow popups and try again.
   failed: Authorization failed. %{origin} is not the configured authorization_url.
@@ -424,6 +430,7 @@ settings:
     no_connections: No connections
     you: ' (you)'
   servers:
+    current_track: Current track
     inactive: Inactive
     connecting: Connecting
     disconnected: Disconnected
@@ -436,6 +443,7 @@ settings:
       label: Encryption
       sublabel: Use SSL
       description: Requires a SSL proxy
+      incompatible: ' (required when connecting from a HTTPS browser session)'
     switch: Switch to this server
     reconnect: Reconnect
   services:
@@ -609,3 +617,7 @@ modal:
       snapcast_volume_up: Volume up for Snapcast client (where n is 1-9)
       snapcast_volume_down: Volume down for Snapcast client (where n is 1-9)
       snapcast_mute: Toggle mute for Snapcast client (where n is 1-9)
+  servers:
+    title: Server selector
+    current: Current server
+    nothing_playing: Nothing playing

@@ -1,212 +1,282 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { connect, useSelector, useDispatch } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { find, groupBy, map } from 'lodash';
 import VolumeControl from './VolumeControl';
 import MuteControl from './MuteControl';
 import Icon from '../Icon';
+import Thumbnail from '../Thumbnail';
+import LinksSentence from '../LinksSentence';
 import DropdownField from './DropdownField';
 import * as coreActions from '../../services/core/actions';
+import * as mopidyActions from '../../services/mopidy/actions';
 import * as pusherActions from '../../services/pusher/actions';
 import * as snapcastActions from '../../services/snapcast/actions';
-import { sortItems, indexToArray, applyFilter } from '../../util/arrays';
-import { collate } from '../../util/format';
+import { sortItems, indexToArray } from '../../util/arrays';
+import { formatImages, digestMopidyImages } from '../../util/format';
+import { titleCase } from '../../util/helpers';
 import { I18n } from '../../locale';
 
-class OutputControl extends React.Component {
-  constructor(props) {
-    super(props);
+const Header = ({ stream, server }) => {
+  const dispatch = useDispatch();
+  const {
+    id,
+    meta: {
+      name,
+      artists,
+      images: rawImages,
+    } = {},
+    status,
+    uri: {
+      scheme,
+      query: {
+        control_url,
+      } = {},
+    },
+  } = stream || {};
+  const controlURL = control_url ? new URL(control_url) : null;
+  const controlServer = controlURL ? {
+    url: control_url,
+    ssl: controlURL.protocol === 'https:',
+    host: controlURL.hostname,
+    port: controlURL.port || (controlURL.protocol === 'https:' ? '443' : '80'),
+  } : null;
+  const images = rawImages ? formatImages(digestMopidyImages(controlServer, rawImages)) : null;
+  const current_server_id = useSelector((state) => state.mopidy.current_server);
+  const current_server = useSelector((state) => state.mopidy.servers[current_server_id]);
+  const isCurrentServer = control_url === current_server.url;
+  const isControlSwitchable = controlServer && !isCurrentServer;
 
-    this.state = {
-      expanded: false,
-    };
-
-    this.handleClick = this.handleClick.bind(this);
-  }
-
-  componentDidUpdate = ({
-    force_expanded: prev_force_expanded,
-  }) => {
-    const { force_expanded } = this.props;
-    if (!prev_force_expanded && force_expanded) this.setExpanded(true);
-  }
-
-  setExpanded(expanded = !this.state.expanded, props = this.props) {
-    if (expanded) {
-      this.setState({ expanded });
-      window.addEventListener('click', this.handleClick, false);
-
-      // Re-check our snapcast clients
-      // TODO: Once we have push events, remove this as it'll (marginally)
-      // slow down the reveal/render
-      if (props.pusher_connected && props.snapcast_enabled) {
-        this.props.snapcastActions.getServer();
-      }
-    } else {
-      this.setState({ expanded });
-      window.removeEventListener('click', this.handleClick, false);
+  const onClick = () => {
+    if (isControlSwitchable) {
+      dispatch(mopidyActions.setCurrentServer(controlServer));
     }
-  }
+  };
 
-  handleClick(e) {
-    if (!this.props.force_expanded && $(e.target).closest('.output-control').length <= 0) {
-      this.setExpanded(false);
-    }
-  }
+  return (
+    <div className="output-control__stream__header">
+      <Thumbnail
+        images={images}
+        size="small"
+        className="output-control__stream__header__thumbnail"
+      />
+      <div className="output-control__stream__header__content">
+        <h5
+          className="output-control__stream__header__title tooltip"
+          onClick={onClick}
+          style={{ cursor: isControlSwitchable ? 'pointer' : 'default' }}
+        >
+          {server?.name || id}
+          {isCurrentServer && <Icon name="check" />}
+          {status === 'playing' && <Icon name="play_arrow" />}
+          {control_url && <div className="tooltip__content">{control_url}</div>}
+        </h5>
+        <ul className="details">
+          <li>{name || scheme}</li>
+          {artists && <li><LinksSentence items={artists} type="artist" nolinks /></li>}
+        </ul>
+      </div>
+    </div>
+  );
+};
 
-  snapcastGroups() {
-    const {
-      snapcast_streams,
-      snapcastActions,
-      snapcast_groups,
-      snapcast_clients: clients,
-      show_disconnected_clients,
-    } = this.props;
+const Group = ({
+  group: {
+    id: groupId,
+    name: groupName,
+    stream_id,
+    clients_ids = [],
+  } = {},
+}) => {
+  const allClients = useSelector((state) => state.snapcast.clients || {});
+  const allStreams = indexToArray(useSelector((state) => state.snapcast.streams || {}));
+  const clients = clients_ids.length > 0 ? clients_ids.map((c) => allClients[c]) : [];
+  const dispatch = useDispatch();
 
-    const groups = indexToArray(snapcast_groups);
-    if (groups.length <= 0) return null;
-
-    const streams = Object.keys(snapcast_streams).map(
-      (id) => ({ value: id, label: id }),
-    );
-
-    return (
-      <div>
-        {
-          sortItems(groups, 'name').map((simpleGroup) => {
-            const group = collate(simpleGroup, { clients });
-            let { clients: groupClients = [] } = group;
-            if (!show_disconnected_clients) {
-              groupClients = applyFilter('connected', true, groupClients);
-            }
-
-            if (!groupClients.length) return null;
-
-            const volume = groupClients.reduce(
-              (acc, client) => acc + (client.volume || 0),
-              0,
-            ) / groupClients.length;
-
-            return (
-              <div className="output-control__item outputs__item--snapcast" key={group.id}>
-                <div className="output-control__item__name">
-                  {group.name}
-                </div>
-                <div className="output-control__item__controls">
-                  <DropdownField
-                    name="Source"
-                    value={group.stream_id}
-                    icon="settings_input_component"
-                    options={streams}
-                    noLabel
-                    handleChange={(value) => snapcastActions.setGroupStream(group.id, value)}
-                  />
-                  <MuteControl
-                    className="output-control__item__mute"
-                    noTooltip
-                    mute={group.mute}
-                    onMuteChange={(mute) => snapcastActions.setGroupMute(group.id, mute)}
-                  />
-                  <VolumeControl
-                    className="output-control__item__volume"
-                    volume={volume}
-                    mute={group.mute}
-                    onVolumeChange={(percent, previousPercent) => snapcastActions.setGroupVolume(group.id, percent, previousPercent)}
-                  />
-                </div>
+  return (
+    <div className="output-control__group">
+      <h5 className="output-control__group__title">
+        <div className="text">{titleCase(groupName)}</div>
+        <DropdownField
+          name="Stream"
+          value={stream_id}
+          icon="settings_input_component"
+          options={allStreams.map((s) => ({ value: s.id, label: titleCase(s.id) }))}
+          noLabel
+          handleChange={
+            (value) => dispatch(snapcastActions.setGroupStream(groupId, value))
+          }
+        />
+      </h5>
+      <div className="output-control__clients">
+        {clients.map((client) => {
+          const {
+            id: clientId,
+            name: clientName,
+            mute,
+            volume,
+          } = client;
+          return (
+            <div className="output-control__clients__item" key={clientId}>
+              <h5 className="output-control__clients__item__title">
+                {titleCase(clientName)}
+              </h5>
+              <div className="output-control__clients__item__volume">
+                <MuteControl
+                  noTooltip
+                  mute={mute}
+                  onMuteChange={
+                    (value) => dispatch(snapcastActions.setClientMute(clientId, value))
+                  }
+                />
+                <VolumeControl
+                  volume={volume}
+                  mute={mute}
+                  onVolumeChange={
+                    (value) => dispatch(snapcastActions.setClientVolume(clientId, value))
+                  }
+                />
               </div>
-            );
-          })
-        }
-      </div>
-    );
-  }
-
-  commands() {
-    const {
-      pusher_commands,
-      pusherActions,
-    } = this.props;
-
-    if (!pusher_commands) return null;
-
-    let items = indexToArray(pusher_commands);
-    if (items.length <= 0) return null;
-
-    items = sortItems(items, 'sort_order');
-
-    return (
-      <div className="output-control__item output-control__item--commands commands">
-        {
-          items.map((command) => (
-            <div
-              key={command.id}
-              className="commands__item commands__item--interactive"
-              onClick={(e) => pusherActions.runCommand(command.id)}
-            >
-              <Icon className="commands__item__icon" name={command.icon} />
-              <span className={`${command.colour}-background commands__item__background`} />
             </div>
-          ))
-        }
+          );
+        })}
       </div>
-    );
-  }
+    </div>
+  );
+};
 
-  renderOutputs() {
-    const snapcastGroups = this.snapcastGroups();
-    const commands = this.commands();
+const Outputs = () => {
+  const allGroups = indexToArray(useSelector((state) => state.snapcast.groups || {}));
+  const allStreams = useSelector((state) => state.snapcast.streams || {});
+  const allServers = indexToArray(useSelector((state) => state.mopidy.servers || {}));
+  const groupsByStream = groupBy(allGroups, 'stream_id');
 
-    if (!snapcastGroups && !commands) {
-      return (
-        <div className="output-control__items output-control__items--no-results">
-          <p className="no-results">
-            <I18n path="playback_controls.no_outputs" />
-          </p>
-        </div>
-      );
+  return (
+    <>
+      {map(groupsByStream, (groups, id) => {
+        const stream = {
+          id,
+          ...find(allStreams, (s) => s.id === id) || {},
+          server: find(allServers, (s) => s.snapcast_stream === id),
+          groups,
+        };
+        return (
+          <div className="output-control__stream" key={`stream_${id}`}>
+            <Header stream={stream} />
+            {groups.map((group) => <Group group={group} key={`group_${group.id}`} />)}
+          </div>
+        );
+      })}
+    </>
+  );
+}
+
+const Commands = () => {
+  const dispatch = useDispatch();
+  const commandsObj = useSelector((state) => state.pusher.commands || {});
+  if (!commandsObj) return null;
+
+  let items = indexToArray(commandsObj);
+  if (items.length <= 0) return null;
+
+  items = sortItems(items, 'sort_order');
+
+  return (
+    <div className="output-control__commands commands">
+      {
+        items.map((command) => (
+          <div
+            key={command.id}
+            className="commands__item commands__item--interactive"
+            onClick={() => dispatch(pusherActions.runCommand(command.id))}
+          >
+            <Icon className="commands__item__icon" name={command.icon} />
+            <span className={`${command.colour}-background commands__item__background`} />
+          </div>
+        ))
+      }
+    </div>
+  );
+};
+
+const OutputControl = ({
+  force_expanded,
+  pusher_commands,
+  snapcast_enabled,
+}) => {
+  const [expanded, setExpanded] = useState(false);
+  const handleClick = (e) => {
+    if (!force_expanded && $(e.target).closest('.output-control').length <= 0) {
+      setExpanded(false);
     }
+  };
+
+  useEffect(() => {
+    if (force_expanded && !expanded) {
+      setExpanded(true);
+    }
+  }, [force_expanded]);
+
+  useEffect(() => {
+    if (expanded) {
+      window.addEventListener('click', handleClick, false);
+    } else {
+      window.removeEventListener('click', handleClick, false);
+    }
+  }, [expanded]);
+
+  // No customisable outputs
+  if (!snapcast_enabled && !pusher_commands) {
     return (
-      <div className="output-control__items">
-        {commands}
-        {snapcastGroups}
-      </div>
-    );
-  }
-
-  render() {
-    if (this.state.expanded) {
-      return (
-        <span className="output-control">
-          <button className="control speakers active" onClick={(e) => this.setExpanded()}><Icon name="speaker" /></button>
-          {this.renderOutputs()}
-        </span>
-      );
-    }
-
-    // No customisable outputs
-    if (!this.props.snapcast_enabled && !this.props.pusher_commands) {
-      return (
-        <span className="output-control disabled">
-          <button className="control speakers"><Icon name="speaker" /></button>
-        </span>
-      );
-    }
-    return (
-      <span className="output-control">
-        <button className="control speakers" onClick={(e) => this.setExpanded()}><Icon name="speaker" /></button>
+      <span className="output-control disabled">
+        <button className="control speakers">
+          <Icon name="speaker" />
+        </button>
       </span>
     );
   }
+
+  if (expanded) {
+    const outputs = <Outputs />;
+    const commands = <Commands />;
+    return (
+      <span className="output-control">
+        <button
+          className="control speakers active"
+          onClick={() => setExpanded(false)}
+        >
+          <Icon name="speaker" />
+        </button>
+        {!outputs && !commands ? (
+          <div className="output-control__inner output-control__inner--no-results">
+            <p className="no-results">
+              <I18n path="playback_controls.no_outputs" />
+            </p>
+          </div>
+        ) : (
+          <div className="output-control__inner">
+            {commands}
+            {outputs}
+          </div>
+        )}
+      </span>
+    );
+  }
+  return (
+    <span className="output-control">
+      <button
+        className="control speakers"
+        onClick={() => setExpanded(true)}
+      >
+        <Icon name="speaker" />
+      </button>
+    </span>
+  );
 }
 
 const mapStateToProps = (state) => ({
   pusher_connected: state.pusher.connected,
   snapcast_enabled: (state.pusher.config ? state.pusher.config.snapcast_enabled : null),
-  show_disconnected_clients: state.ui.snapcast_show_disconnected_clients || false,
-  snapcast_clients: state.snapcast.clients,
-  snapcast_groups: state.snapcast.groups,
-  snapcast_streams: state.snapcast.streams,
-  pusher_commands: (state.pusher.commands ? state.pusher.commands : {}),
 });
 
 const mapDispatchToProps = (dispatch) => ({

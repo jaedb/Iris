@@ -9,13 +9,11 @@
 		}
 	}
 
-	&__items {
+	&__inner {
 		position: absolute;
 		bottom: 48px;
 		right: -150px;
 		width: 300px;
-		font-size: 14px;
-		font-weight: 600;
 		text-align: left;
 		border-radius: 3px;
 		box-shadow: 2px 3px 6px rgba(0,0,0,0.2);
@@ -60,66 +58,152 @@
 		}
 	}
 
-	&__item {
-		padding: 12px 18px 8px;
-		position: relative;
-
-		&--commands {
-			@include clearfix();
-			//background: rgba(0,0,0,0.1);
-		}
-
-		&:not(:first-child) {
-			border-top: 1px solid rgba(0,0,0,0.05);
-		}
-
-		&__controls {
+	&__stream {
+		&__header {
+			margin: 0.8rem;
 			display: flex;
+			flex-flow: row;
 			align-items: center;
 
+			.flag {
+				margin-right: 0;
+			}
+
+			&__thumbnail {
+				flex-shrink: 0;
+			}
+
+			&__title {
+				display: flex;
+				align-items: center;
+
+				.icon {
+					font-size: 1em;
+					padding-left: 0.4em;
+					opacity: 0.5;
+				}
+			}
+
+			&__content {
+				padding-left: 0.8rem;
+				overflow-x: hidden;
+
+				.details {
+					white-space: nowrap;
+				}
+			}
+		}
+	}
+
+	&__group {
+		margin: 1rem 0.8rem 0.8rem 0.8rem;
+
+		&__title {
+			display: flex;
+			flex-flow: row;
+
+			.text {
+				opacity: 0.5;
+			}
+
 			.dropdown-field {
-				flex-grow: 0;
+				margin-left: auto;
 
 				&__label {
-					padding: 2px !important;
+					padding: 0 !important;
 					text-align: center;
+					opacity: 0.5;
 
 					.icon {
-						font-size: 0.9em;
+						font-size: 1em;
 					}
-        }
+				}
 
-        &__options {
-          top: auto;
-          bottom: 20px;
-          right: auto;
-          left: 0px;
+				&__options {
+					top: auto;
+					bottom: 20px;
+					right: 0;
 
-          &:before {
-            top: auto;
-            right: auto;
-            bottom: -3px;
-            left: 9px;
-          }
-        }
+					&:before {
+						top: auto;
+						bottom: -3px;
+					}
+				}
 			}
 		}
+	}
 
-		&__volume {
-			padding-top: 6px;
-			padding-left: 10px;
-			flex-grow: 1;
+	&__clients {
+		border-radius: 3px;
+		background: colour('off_white');
+		@include theme('dark') {
+			background: colour('grey');
 		}
 
-		&__mute.control {
-			@include click_feedback(rgba(0,0,0,0.5));
-			padding: 2px;
-			float: left;
-			flex-grow: 0;
-
-			.icon {
-				font-size: 1em;
+		&__item {
+			border-top: 1px solid colour('white');
+			@include theme('dark') {
+				border-color: colour('soft_grey');
 			}
+
+			&:first-child {
+				border-top: none;
+			}
+
+			&__title {
+				padding: 0.8rem 0 0 0.8rem;
+				margin-bottom: 0;
+			}
+
+			&__volume {
+				padding-right: 1rem;
+				display: flex;
+				align-items: center;
+			}
+
+			&__controls {
+				display: flex;
+				align-items: center;
+	
+				.dropdown-field {
+					flex-grow: 0;
+	
+					&__label {
+						padding: 2px !important;
+						text-align: center;
+	
+						.icon {
+							font-size: 0.9em;
+						}
+					}
+	
+					&__options {
+						top: auto;
+						bottom: 20px;
+						right: auto;
+						left: 0px;
+	
+						&:before {
+							top: auto;
+							right: auto;
+							bottom: -3px;
+							left: 9px;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	&__commands {
+		padding: 12px 12px 8px 12px;
+		border-radius: 3px 3px 0 0;
+		position: relative;	
+		background: colour('off_white');
+		
+		@include clearfix();
+		@include theme('dark') {
+			background: colour('grey');
 		}
 	}
 
@@ -134,7 +218,7 @@
 			display: none;
 		}
 
-		&__items {
+		&__inner {
 			top: auto;
 			right: 0;
 			bottom: 0;
@@ -142,7 +226,6 @@
 			width: auto;
 			padding: 0;
 			border-radius: 0;
-			max-height: 50vh;
 
 			@include theme('dark') {
 				box-shadow: 0 -5px 5px rgba(0, 0, 0, 0.6);
@@ -161,9 +244,9 @@
 			}
 		}
 
-		&__item {
+		&__output {
 			@include clearfix();
-			padding: 10px 18px 6px;
+			padding: 0;
 
 			&:not(:first-child){
 				border-color: rgba(128,128,128,0.05);

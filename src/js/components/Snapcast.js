@@ -19,6 +19,7 @@ const Snapcast = (props) => {
     snapcast: {
       host,
       port,
+      ssl,
       enabled,
       streaming_enabled,
       connected,
@@ -30,10 +31,11 @@ const Snapcast = (props) => {
       snapcast_enabled = false,
       snapcast_host = 'localhost',
       snapcast_port = '1780',
+      snapcast_ssl = false,
     } = config || {};
 
     actions.setEnabled(snapcast_enabled);
-    actions.setConnection({ host: snapcast_host, port: snapcast_port });
+    actions.setConnection({ host: snapcast_host, port: snapcast_port, ssl: snapcast_ssl });
   }
 
   return (
@@ -108,6 +110,34 @@ const Snapcast = (props) => {
             onChange={(value) => actions.setConnection({ port: value })}
             autosave
           />
+        </div>
+      </div>
+
+      <div className="field checkbox">
+        <div className="name">
+          <I18n path="snapcast.encryption.label" />
+        </div>
+        <div className="input">
+          <label>
+            <input
+              type="checkbox"
+              name="ssl"
+              value={ssl}
+              checked={ssl}
+              onChange={() => actions.setConnection({ ssl: !ssl })}
+            />
+            <span className="label tooltip">
+              <I18n path="snapcast.encryption.sublabel" />
+              <span className="tooltip__content">
+                <I18n path="snapcast.encryption.description" />
+              </span>
+            </span>
+            {!ssl && window.location.protocol === 'https:' && (
+              <span className="red-text">
+                <I18n path="snapcast.encryption.incompatible" />
+              </span>
+            )}
+          </label>
         </div>
       </div>
 

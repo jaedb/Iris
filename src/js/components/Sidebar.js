@@ -1,11 +1,13 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { withRouter } from 'react-router';
 import Link from './Link';
 import Icon from './Icon';
 import Dropzones from './Fields/Dropzones';
 import PinList from './Fields/PinList';
+import DropdownField from './Fields/DropdownField';
+import Button from './Button';
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import { I18n, i18n } from '../locale';
@@ -89,7 +91,6 @@ class Sidebar extends React.Component {
       <aside className="sidebar">
         <div className="sidebar__liner">
           <nav className="sidebar__menu">
-
             <section className="sidebar__menu__section">
               <Link to="/queue" history={history} className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="play_arrow" type="material" />

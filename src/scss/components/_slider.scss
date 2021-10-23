@@ -4,6 +4,10 @@
 	cursor: pointer;
 	height: 20px;
 
+	&__wrapper {
+		flex-grow: 1;
+	}
+
 	&__input {
 		position: absolute;
 		top: 0;

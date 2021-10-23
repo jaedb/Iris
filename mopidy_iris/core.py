@@ -13,6 +13,7 @@ import pickle
 from pkg_resources import parse_version
 from tornado.escape import json_encode
 from tornado.httpclient import AsyncHTTPClient, HTTPRequest
+from mopidy.models.serialize import ModelJSONEncoder
 
 from . import Extension
 from .system import IrisSystemThread
@@ -397,6 +398,7 @@ class IrisCore(pykka.ThreadingActor):
                 "snapcast_enabled": self.config["iris"]["snapcast_enabled"],
                 "snapcast_host": self.config["iris"]["snapcast_host"],
                 "snapcast_port": self.config["iris"]["snapcast_port"],
+                "snapcast_stream": self.config["iris"]["snapcast_stream"],
                 "spotify_authorization_url": self.config["iris"][
                     "spotify_authorization_url"
                 ],
@@ -1149,6 +1151,95 @@ class IrisCore(pykka.ThreadingActor):
             )
             logger.debug(error)
             return error
+
+    ##
+    # Get a summary of this server's state.
+    # This is a collection of RPC-available requests, but those cannot be called via CORS, so this
+    # serves as a proxy for other Mopidy instances to be able to collect states.
+    ##
+    async def get_server_state(self, *args, **kwargs):
+        callback = kwargs.get("callback", False)
+        request = kwargs.get("request", False)
+        current_track = self.core.playback.get_current_track().get()
+
+        if current_track:
+            # We dump the JSON to convert the Track to JSON, but we need to then loads back to JSON
+            # for the response.
+            current_track = json.loads(json.dumps(current_track, cls=ModelJSONEncoder))
+            images = self.core.library.get_images([current_track["uri"]]).get()
+            if images:
+                current_track["images"] = json.loads(
+                    json.dumps(
+                        images[current_track["uri"]],
+                        cls=ModelJSONEncoder
+                    )
+                )
+
+        response = {
+            "snapcast_stream": self.config["iris"]["snapcast_stream"],
+            "playback_state": self.core.playback.get_state().get(),
+            "current_track": current_track,
+        }
+
+        if callback:
+            callback(response)
+        else:
+            return response
+
+    ##
+    # Send our current track data to the configured Snapcast server's stream
+    # Uses snapcast server and stream details as defined in configuration
+    ##
+    async def update_snapcast_meta(self, *args, **kwargs):
+        track = self.core.playback.get_current_track().get()
+        meta = {}
+        
+        if track:
+            # Convert the Track to JSON, but to make it a response-ready JSON we need to load it.
+            # Required because ModelJSONEncoder produces single-quote JSON, and we need standard
+            # double-quoted json.
+            track = json.loads(json.dumps(track, cls=ModelJSONEncoder))
+            images = self.core.library.get_images([track["uri"]]).get()
+            if images:
+                meta["images"] = json.loads(
+                    json.dumps(
+                        images[track["uri"]],
+                        cls=ModelJSONEncoder
+                    )
+                )
+            meta["name"] = track["name"]
+            meta["uri"] = track["uri"]
+            meta["artists"] = track["artists"]
+            meta["album"] = track["album"]
+
+        url = "http"
+        if self.config["iris"]["snapcast_ssl"]:
+            url += "s"
+        url += "://" + self.config["iris"]["snapcast_host"]
+        url += ":" + self.config["iris"]["snapcast_port"]
+        url += "/jsonrpc"
+        logger.info("Updating Snapcast stream metadata: " + url)
+        data = {
+            "id": 1,
+            "jsonrpc": "2.0",
+            "method": "Stream.SetMeta",
+            "params": {
+                "id": self.config["iris"]["snapcast_stream"],
+                "meta": meta
+            }
+        }
+
+        try:
+            http_client = AsyncHTTPClient()
+            response = await http_client.fetch(
+                url, method="POST", body=json.dumps(data)
+            )
+        except (urllib.error.HTTPError, urllib.error.URLError) as e:
+            error = json.loads(e.read())
+            logger.error('Could not update Snapcast meta', error)
+        except Exception as e:
+            logger.error(e)
+            pass # Non-blocking error; TODO more elegantly catch exception without killing Mopidy
 
     ##
     # Simple test method to debug access to system tasks

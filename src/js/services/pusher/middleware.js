@@ -1,6 +1,10 @@
 import ReactGA from 'react-ga';
 import { uriType, generateGuid } from '../../util/helpers';
 import { trackEvent } from '../../components/Trackable';
+import {
+  digestMopidyImages,
+  formatImages,
+} from '../../util/format';
 
 const coreActions = require('../core/actions');
 const uiActions = require('../ui/actions');
@@ -8,6 +12,7 @@ const pusherActions = require('./actions');
 const lastfmActions = require('../lastfm/actions');
 const geniusActions = require('../genius/actions');
 const spotifyActions = require('../spotify/actions');
+const mopidyActions = require('../mopidy/actions');
 
 const PusherMiddleware = (function () {
   // container for the actual websocket
@@ -274,10 +279,10 @@ const PusherMiddleware = (function () {
 
         clearTimeout(reconnectTimer);
         store.dispatch({ type: 'PUSHER_CONNECTING' });
-
-        socket = new WebSocket(
-          `ws${window.location.protocol === 'https:' ? 's' : ''}://${store.getState().mopidy.host}:${store.getState().mopidy.port}/iris/ws/`,
-        );
+        const { host, port, ssl } = store.getState().mopidy;
+        let endpoint = `ws${ssl || window.location.protocol === 'https:' ? 's' : ''}://`;
+        endpoint += `${host}:${port}/iris/ws/`;
+        socket = new WebSocket(endpoint);
 
         socket.onopen = () => {
           store.dispatch({

@@ -33,17 +33,17 @@ export default function reducer(snapcast = {}, action) {
       }
       return { ...snapcast, groups };
 
-    case 'SNAPCAST_STREAMS_LOADED':
-      if (action.flush) {
-        var streams = {};
-      } else {
-        var streams = { ...snapcast.streams };
-      }
+    case 'SNAPCAST_STREAMS_LOADED': {
+      const streams = action.flush ? {} : { ...snapcast.streams };
 
       for (const stream of action.streams) {
-        streams[stream.id] = stream;
+        streams[stream.id] = {
+          ...streams[stream.id] || {},
+          ...stream,
+        };
       }
       return { ...snapcast, streams };
+    }
 
     default:
       return snapcast;

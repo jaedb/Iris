@@ -53,6 +53,7 @@ import ImageZoom from './views/modals/ImageZoom';
 import HotkeysInfo from './views/modals/HotkeysInfo';
 import EditCommand from './views/modals/EditCommand';
 import Reset from './views/modals/Reset';
+import Servers from './views/modals/Servers';
 
 import { scrollTo, isTouchDevice } from './util/helpers';
 import storage from './util/storage';
@@ -312,6 +313,7 @@ export class App extends React.Component {
             <Route path="/hotkeys" component={HotkeysInfo} />
             <Route path="/share-configuration" component={ShareConfiguration} />
             <Route path="/reset" component={Reset} />
+            <Route path="/servers" component={Servers} />
             <Route path="/edit-command/:id?" component={EditCommand} />
 
             <Route path="/queue/radio" component={EditRadio} />
