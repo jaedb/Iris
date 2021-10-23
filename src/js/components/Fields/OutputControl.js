@@ -16,6 +16,7 @@ import { sortItems, indexToArray } from '../../util/arrays';
 import { formatImages, digestMopidyImages } from '../../util/format';
 import { titleCase } from '../../util/helpers';
 import { I18n } from '../../locale';
+import Link from '../Link';
 
 const Header = ({ stream, server }) => {
   const dispatch = useDispatch();
@@ -61,12 +62,12 @@ const Header = ({ stream, server }) => {
         className="output-control__stream__header__thumbnail"
       />
       <div className="output-control__stream__header__content">
-        <h5
-          className="output-control__stream__header__title tooltip"
-          onClick={onClick}
-          style={{ cursor: isControlSwitchable ? 'pointer' : 'default' }}
-        >
-          {server?.name || id}
+        <h5 className="output-control__stream__header__title tooltip">
+          {isControlSwitchable ? (
+            <a onClick={onClick} style={{ cursor: 'pointer' }}>
+              {server?.name || id}
+            </a>
+          ) : (server?.name || id)}
           {isCurrentServer && <Icon name="check" />}
           {status === 'playing' && <Icon name="play_arrow" />}
           {control_url && <div className="tooltip__content">{control_url}</div>}
@@ -96,7 +97,13 @@ const Group = ({
   return (
     <div className="output-control__group">
       <h5 className="output-control__group__title">
-        <div className="text">{titleCase(groupName)}</div>
+        <Link
+          className="text"
+          to={`/settings/services/snapcast/${groupId}`}
+          scrollTo="#services-snapcast-groups"
+        >
+          {titleCase(groupName)}
+        </Link>
         <DropdownField
           name="Stream"
           value={stream_id}
@@ -146,6 +153,15 @@ const Group = ({
 };
 
 const Outputs = () => {
+  const snapcastEnabled = useSelector((state) => state.snapcast.enabled);
+  if (!snapcastEnabled) {
+    return (
+      <p className="no-results">
+        <I18n path="playback_controls.snapcast_not_enabled" />
+      </p>
+    );
+  }
+
   const allGroups = indexToArray(useSelector((state) => state.snapcast.groups || {}));
   const allStreams = useSelector((state) => state.snapcast.streams || {});
   const allServers = indexToArray(useSelector((state) => state.mopidy.servers || {}));
@@ -199,11 +215,7 @@ const Commands = () => {
   );
 };
 
-const OutputControl = ({
-  force_expanded,
-  pusher_commands,
-  snapcast_enabled,
-}) => {
+const OutputControl = ({ force_expanded }) => {
   const [expanded, setExpanded] = useState(false);
   const handleClick = (e) => {
     if (!force_expanded && $(e.target).closest('.output-control').length <= 0) {
@@ -225,17 +237,6 @@ const OutputControl = ({
     }
   }, [expanded]);
 
-  // No customisable outputs
-  if (!snapcast_enabled && !pusher_commands) {
-    return (
-      <span className="output-control disabled">
-        <button className="control speakers">
-          <Icon name="speaker" />
-        </button>
-      </span>
-    );
-  }
-
   if (expanded) {
     const outputs = <Outputs />;
     const commands = <Commands />;
@@ -247,18 +248,10 @@ const OutputControl = ({
         >
           <Icon name="speaker" />
         </button>
-        {!outputs && !commands ? (
-          <div className="output-control__inner output-control__inner--no-results">
-            <p className="no-results">
-              <I18n path="playback_controls.no_outputs" />
-            </p>
-          </div>
-        ) : (
-          <div className="output-control__inner">
-            {commands}
-            {outputs}
-          </div>
-        )}
+        <div className="output-control__inner">
+          {commands}
+          {outputs}
+        </div>
       </span>
     );
   }
@@ -274,15 +267,4 @@ const OutputControl = ({
   );
 }
 
-const mapStateToProps = (state) => ({
-  pusher_connected: state.pusher.connected,
-  snapcast_enabled: (state.pusher.config ? state.pusher.config.snapcast_enabled : null),
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  coreActions: bindActionCreators(coreActions, dispatch),
-  snapcastActions: bindActionCreators(snapcastActions, dispatch),
-  pusherActions: bindActionCreators(pusherActions, dispatch),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(OutputControl);
+export default OutputControl;
