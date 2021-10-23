@@ -21,30 +21,31 @@ const Header = ({ stream, server }) => {
   const dispatch = useDispatch();
   const {
     id,
-    meta,
+    meta: {
+      name,
+      artists,
+      images: rawImages,
+    } = {},
     status,
     uri: {
-      path,
+      scheme,
+      query: {
+        control_url,
+      } = {},
     },
   } = stream || {};
-  let {
-    control_url,
-    images,
-    name,
-    artists,
-  } = meta || {};
-  const controlURL = meta?.control_url ? new URL(meta.control_url) : null;
+  const controlURL = control_url ? new URL(control_url) : null;
   const controlServer = controlURL ? {
-    url: meta.control_url,
+    url: control_url,
     ssl: controlURL.protocol === 'https:',
     host: controlURL.hostname,
     port: controlURL.port || (controlURL.protocol === 'https:' ? '443' : '80'),
   } : null;
+  const images = rawImages ? formatImages(digestMopidyImages(controlServer, rawImages)) : null;
   const current_server_id = useSelector((state) => state.mopidy.current_server);
   const current_server = useSelector((state) => state.mopidy.servers[current_server_id]);
   const isCurrentServer = control_url === current_server.url;
   const isControlSwitchable = controlServer && !isCurrentServer;
-  if (images) images = formatImages(digestMopidyImages(controlServer, images));
 
   const onClick = () => {
     if (isControlSwitchable) {
@@ -71,13 +72,13 @@ const Header = ({ stream, server }) => {
           {control_url && <div className="tooltip__content">{control_url}</div>}
         </h5>
         <ul className="details">
-          <li>{name || path}</li>
+          <li>{name || scheme}</li>
           {artists && <li><LinksSentence items={artists} type="artist" nolinks /></li>}
         </ul>
       </div>
     </div>
   );
-}
+};
 
 const Group = ({
   group: {
@@ -160,9 +161,9 @@ const Outputs = () => {
           groups,
         };
         return (
-          <div className="output-control__stream">
+          <div className="output-control__stream" key={`stream_${id}`}>
             <Header stream={stream} />
-            {groups.map((group) => <Group group={group} /> )}
+            {groups.map((group) => <Group group={group} key={`group_${group.id}`} />)}
           </div>
         );
       })}

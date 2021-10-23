@@ -1192,11 +1192,7 @@ class IrisCore(pykka.ThreadingActor):
     ##
     async def update_snapcast_meta(self, *args, **kwargs):
         track = self.core.playback.get_current_track().get()
-        # Append our server details, so Iris UI can switch to this Mopidy instance
-        # This isn't a great way of doing this, but it works for now.
-        meta = {
-            "control_url": self.config["iris"]["control_url"],
-        }
+        meta = {}
         
         if track:
             # Convert the Track to JSON, but to make it a response-ready JSON we need to load it.

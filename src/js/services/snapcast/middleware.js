@@ -167,9 +167,9 @@ const SnapcastMiddleware = (function () {
         clearTimeout(reconnectTimer);
 
         store.dispatch({ type: 'SNAPCAST_CONNECTING' });
-
+        const { host, port, ssl } = store.getState().snapcast;
         socket = new WebSocket(
-          `ws${window.location.protocol === 'https:' ? 's' : ''}://${store.getState().snapcast.host}:${store.getState().snapcast.port}/jsonrpc`,
+          `ws${ssl ? 's' : ''}://${host}:${port}/jsonrpc`,
         );
 
         socket.onopen = () => {

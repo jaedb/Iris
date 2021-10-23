@@ -106,6 +106,7 @@ let initialState = {
     connected: false,
     host: 'localhost',
     port: '1780',
+    ssl: false,
     streams: {},
     groups: {},
     clients: {},

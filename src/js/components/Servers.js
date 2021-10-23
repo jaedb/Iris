@@ -9,7 +9,6 @@ import { Button } from './Button';
 import * as mopidyActions from '../services/mopidy/actions';
 import { iconFromKeyword } from '../util/helpers';
 import { I18n } from '../locale';
-import { decodeUri, encodeUri } from '../util/format';
 
 const Server = () => {
   const { id } = useParams();
@@ -84,6 +83,11 @@ const Server = () => {
                 <I18n path="settings.servers.encryption.description" />
               </span>
             </span>
+            {!server.ssl && window.location.protocol === 'https:' && (
+              <span className="red-text">
+                <I18n path="settings.servers.encryption.incompatible" />
+              </span>
+            )}
           </label>
         </div>
       </div>
