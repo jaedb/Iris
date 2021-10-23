@@ -1,4 +1,4 @@
-FROM debian:stable
+FROM debian:buster
 
 # Switch to the root user while we do our changes
 USER root
@@ -38,7 +38,9 @@ RUN wget -q -O - https://apt.mopidy.com/mopidy.gpg \
 # Clone Iris from the repository and install in development mode.
 # This allows a binding at "/iris" to map to your local folder for development, rather than
 # installing using pip.
-RUN git clone https://github.com/jaedb/Iris.git /iris \
+# Note using ADD helps prevent caching issues. When HEAD changes, our cache is invalidated, whee!
+ADD https://api.github.com/repos/jaedb/Iris/git/refs/heads/master version.json
+RUN git clone -b master https://github.com/jaedb/Iris.git /iris \
  && cd /iris \
  && python3 setup.py develop \
  && mkdir -p /var/lib/mopidy/.config \
