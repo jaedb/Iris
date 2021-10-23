@@ -412,10 +412,12 @@ const MopidyMiddleware = (function () {
             webSocketUrl: `ws${ssl ? 's' : ''}://${host}:${port}/mopidy/ws/`,
             callingConvention: 'by-position-or-by-name',
           });
-          socket.on((type, data) => handleMessage(socket, store, type, data));
         } catch (exception) {
           console.error(exception);
+          break;
         }
+
+        socket.on((type, data) => handleMessage(socket, store, type, data));
 
         break;
       }

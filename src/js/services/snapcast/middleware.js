@@ -168,9 +168,15 @@ const SnapcastMiddleware = (function () {
 
         store.dispatch({ type: 'SNAPCAST_CONNECTING' });
         const { host, port, ssl } = store.getState().snapcast;
-        socket = new WebSocket(
-          `ws${ssl ? 's' : ''}://${host}:${port}/jsonrpc`,
-        );
+
+        try {
+          socket = new WebSocket(
+            `ws${ssl ? 's' : ''}://${host}:${port}/jsonrpc`,
+          );
+        } catch (exception) {
+          console.error(exception);
+          break;
+        }
 
         socket.onopen = () => {
           store.dispatch({
