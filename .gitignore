@@ -12,6 +12,7 @@ npm-debug.log
 .idea
 ._*
 venv
+docker/snapserver.conf
 docker/mopidy.conf
 docker/data/
 docker/jellyfin/
