@@ -200,7 +200,7 @@ playback_controls:
   consume: Consume
   shuffle: Shuffle
   repeat: Repeat
-  no_outputs: No outputs
+  snapcast_not_enabled: No streams (Snapcast disabled)
   mute: Mute
   unmute: Unmute
 snapcast:

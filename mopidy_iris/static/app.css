@@ -3767,6 +3767,22 @@ h5 {
   font-weight: 700;
 }
 
+h1 > a,
+h2 > a,
+h3 > a,
+h4 > a,
+h5 > a {
+  color: inherit;
+  text-decoration: none;
+}
+h1 > a:hover,
+h2 > a:hover,
+h3 > a:hover,
+h4 > a:hover,
+h5 > a:hover {
+  text-decoration: underline;
+}
+
 p a {
   color: inherit;
 }
@@ -3786,9 +3802,18 @@ p a:hover {
 .no-results {
   text-align: center;
   padding: 40px;
-  color: #383734;
+  color: #a3a19f;
   font-style: italic;
   font-size: 1.2rem;
+}
+.light-theme .no-results {
+  color: #383734;
+}
+
+@media (prefers-color-scheme: light) {
+  .auto-theme .no-results {
+    color: #383734;
+  }
 }
 
 .placeholder {

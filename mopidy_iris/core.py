@@ -1153,40 +1153,6 @@ class IrisCore(pykka.ThreadingActor):
             return error
 
     ##
-    # Get a summary of this server's state.
-    # This is a collection of RPC-available requests, but those cannot be called via CORS, so this
-    # serves as a proxy for other Mopidy instances to be able to collect states.
-    ##
-    async def get_server_state(self, *args, **kwargs):
-        callback = kwargs.get("callback", False)
-        request = kwargs.get("request", False)
-        current_track = self.core.playback.get_current_track().get()
-
-        if current_track:
-            # We dump the JSON to convert the Track to JSON, but we need to then loads back to JSON
-            # for the response.
-            current_track = json.loads(json.dumps(current_track, cls=ModelJSONEncoder))
-            images = self.core.library.get_images([current_track["uri"]]).get()
-            if images:
-                current_track["images"] = json.loads(
-                    json.dumps(
-                        images[current_track["uri"]],
-                        cls=ModelJSONEncoder
-                    )
-                )
-
-        response = {
-            "snapcast_stream": self.config["iris"]["snapcast_stream"],
-            "playback_state": self.core.playback.get_state().get(),
-            "current_track": current_track,
-        }
-
-        if callback:
-            callback(response)
-        else:
-            return response
-
-    ##
     # Send our current track data to the configured Snapcast server's stream
     # Uses snapcast server and stream details as defined in configuration
     ##

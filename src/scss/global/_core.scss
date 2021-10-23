@@ -333,6 +333,21 @@ h5 {
   font-weight: 700;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5 {
+  & > a {
+    color: inherit;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
 p {
   a {
     color: inherit;
@@ -355,9 +370,13 @@ p {
 .no-results {
   text-align: center;
   padding: 40px;
-  color: colour('grey');
+  color: colour('mid_grey');
   font-style: italic;
   font-size: 1.2rem;
+
+  @include theme('light') {
+    color: colour('grey');
+  }
 }
 
 .placeholder {
