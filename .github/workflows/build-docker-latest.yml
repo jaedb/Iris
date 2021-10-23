@@ -2,7 +2,7 @@ name: Build Docker
 
 on:
   push:
-    branches: [develop]
+    branches: [deploy/release,deploy/force-release]
 
 jobs:
   build-and-push-docker-image:
@@ -35,7 +35,7 @@ jobs:
         with:
           context: .
           tags: |
-            jaedb/iris:develop
+            jaedb/iris:latest
           # build on feature branches, push only on master branch
           push: ${{ github.ref == 'refs/heads/master' }}
 
