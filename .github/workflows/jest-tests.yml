@@ -1,0 +1,22 @@
+name: Jest tests
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install Code Climate test-reporter
+      run: |
+        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+        chmod +x ./cc-test-reporter
+    - name: Install modules
+      run: npm install
+    - name: Run tests
+      run: |
+        ./cc-test-reporter before-build
+        npm run test
+        ./cc-test-reporter after-build --exit-code $?
