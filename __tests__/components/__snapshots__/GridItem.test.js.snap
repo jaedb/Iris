@@ -5,7 +5,7 @@ exports[`<GridItem /> should handle album 1`] = `
   className="grid__item grid__item--album "
   data-qa-file="Link"
   data-qa-node="RouterLink"
-  href="/album/bG9jYWw6YWxidW06bWQ1OjY2ZmJlYTM1OTNiYTk2YTE1YTlkNDE4OGJlYmFiNTBi"
+  href="/album/bG9jYWw6YWxidW06bWQ1OjY2ZmJlYTM1OTNiYTk2YTE1YTlkNDE4OGJlYmFiNTBi/Sirens of the Sea"
   onClick={[Function]}
   onContextMenu={[Function]}
 >
@@ -165,7 +165,7 @@ exports[`<GridItem /> should handle playlist 1`] = `
   className="grid__item grid__item--playlist "
   data-qa-file="Link"
   data-qa-node="RouterLink"
-  href="/playlist/bTN1OkxvY2FsJTIwdGVzdGVyLm0zdTg="
+  href="/playlist/bTN1OkxvY2FsJTIwdGVzdGVyLm0zdTg=/Local tester"
   onClick={[Function]}
   onContextMenu={[Function]}
 >
