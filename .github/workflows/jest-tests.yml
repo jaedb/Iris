@@ -19,6 +19,8 @@ jobs:
     - name: Install modules
       run: npm ci
     - name: Run tests
+      env:
+        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
       run: |
         ./cc-test-reporter before-build
         npm run test
