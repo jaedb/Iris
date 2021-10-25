@@ -20,7 +20,7 @@ jobs:
     - name: Install dependencies
       run: |
         python3 -m pip install --upgrade pip
-        python3 -m pip install tox tox-gh-actions gi
+        python3 -m pip install tox tox-gh-actions python3-gi
         python3 -m pip install -e .
     - name: Test with tox
       run: tox
