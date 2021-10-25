@@ -1157,9 +1157,10 @@ class IrisCore(pykka.ThreadingActor):
     # Uses snapcast server and stream details as defined in configuration
     ##
     async def update_snapcast_meta(self, *args, **kwargs):
+        callback = kwargs.get("callback", False)
         track = self.core.playback.get_current_track().get()
         meta = {}
-        
+
         if track:
             # Convert the Track to JSON, but to make it a response-ready JSON we need to load it.
             # Required because ModelJSONEncoder produces single-quote JSON, and we need standard
@@ -1168,10 +1169,7 @@ class IrisCore(pykka.ThreadingActor):
             images = self.core.library.get_images([track["uri"]]).get()
             if images:
                 meta["images"] = json.loads(
-                    json.dumps(
-                        images[track["uri"]],
-                        cls=ModelJSONEncoder
-                    )
+                    json.dumps(images[track["uri"]], cls=ModelJSONEncoder)
                 )
             meta["name"] = track["name"]
             meta["uri"] = track["uri"]
@@ -1191,8 +1189,8 @@ class IrisCore(pykka.ThreadingActor):
             "method": "Stream.SetMeta",
             "params": {
                 "id": self.config["iris"]["snapcast_stream"],
-                "meta": meta
-            }
+                "meta": meta,
+            },
         }
 
         try:
@@ -1202,10 +1200,20 @@ class IrisCore(pykka.ThreadingActor):
             )
         except (urllib.error.HTTPError, urllib.error.URLError) as e:
             error = json.loads(e.read())
-            logger.error('Could not update Snapcast meta', error)
+            logger.error("Could not update Snapcast meta", error)
+            response = {
+                "message": "Could not update Snapcast meta",
+                error: error,
+            }
         except Exception as e:
             logger.error(e)
-            pass # Non-blocking error; TODO more elegantly catch exception without killing Mopidy
+            response = {"message": "Could not update Snapcast meta"}
+            pass  # Non-blocking error
+
+        if callback:
+            callback(response)
+        else:
+            return response
 
     ##
     # Simple test method to debug access to system tasks
