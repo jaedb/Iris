@@ -1200,7 +1200,7 @@ class IrisCore(pykka.ThreadingActor):
             )
         except (urllib.error.HTTPError, urllib.error.URLError) as e:
             error = json.loads(e.read())
-            logger.error("Could not update Snapcast meta", error)
+            logger.error("Could not update Snapcast meta")
             response = {
                 "message": "Could not update Snapcast meta",
                 error: error,
@@ -1208,7 +1208,6 @@ class IrisCore(pykka.ThreadingActor):
         except Exception as e:
             logger.error(e)
             response = {"message": "Could not update Snapcast meta"}
-            pass  # Non-blocking error
 
         if callback:
             callback(response)
