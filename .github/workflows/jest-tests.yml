@@ -12,16 +12,11 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: '12'
-    - name: Install Code Climate test-reporter
-      run: |
-        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-        chmod +x ./cc-test-reporter
     - name: Install modules
       run: npm ci
     - name: Run tests
       env:
         CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
-      run: |
-        ./cc-test-reporter before-build
-        npm run test
-        ./cc-test-reporter after-build --exit-code $?
+      run: npm run test
+    - name: Submit to Codecov
+      uses: codecov/codecov-action@v1
