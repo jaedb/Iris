@@ -1,0 +1,148 @@
+name: Release
+
+on:
+  push:
+    branches: [master,develop,deploy/release]
+
+jobs:
+  jest:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '12'
+
+    - name: Install modules
+      run: npm ci
+
+    - name: Run tests
+      run: npm run test
+
+    - name: Submit to Codecov
+      uses: codecov/codecov-action@v1
+
+  tox:
+    strategy:
+      fail-fast: false
+
+      matrix:
+        include:
+          - name: "Test: Python 3.7"
+            python: "3.7"
+            tox: py37
+            coverage: true
+
+          # - name: "Test: Python 3.8"
+          #   python: "3.8"
+          #   tox: py38
+
+          # - name: "Test: Python 3.9"
+          #   python: "3.9"
+          #   tox: py39
+
+          - name: "Lint: check-manifest"
+            python: "3.9"
+            tox: check-manifest
+
+          - name: "Lint: flake8"
+            python: "3.9"
+            tox: flake8
+
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-20.04
+    container: ghcr.io/mopidy/ci:latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Fix home dir permissions to enable pip caching
+        run: chown -R root /github/home
+
+      - name: Cache pip
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-${{ matrix.python }}-${{ matrix.tox }}-pip-${{ hashFiles('setup.cfg') }}-${{ hashFiles('tox.ini') }}
+          restore-keys: ${{ runner.os }}-${{ matrix.python }}-${{ matrix.tox }}-pip-
+
+      - run: python -m pip install pygobject tox
+
+      - run: python -m tox -e ${{ matrix.tox }}
+        if: ${{ ! matrix.coverage }}
+
+      - run: python -m tox -e ${{ matrix.tox }} -- --cov-report=xml
+        if: ${{ matrix.coverage }}
+
+      - uses: codecov/codecov-action@v1
+        if: ${{ matrix.coverage }}
+
+  deploy:
+    name: Build and publish to PyPi and DockerHub
+    runs-on: ubuntu-latest
+    needs: [jest, tox]
+    if: github.ref == 'refs/heads/deploy/release'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '12'
+
+      - name: Install JS dependencies
+        run: npm install
+
+      - name: Build JS
+        run: npm run build:prod
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.7'
+
+      - name: "Install Python dependencies"
+        run: python3 -m pip install build
+
+      - name: "Build Python package"
+        run: python3 -m build
+  
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to Github Packages
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_PAT }}
+      
+      - name: Build image and push to Docker Hub and GitHub Container Registry
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          tags: jaedb/iris:latest
+          push: ${{ github.ref == 'refs/heads/master' }}
+
+      - name: Publish to Pypi
+        uses: pypa/gh-action-pypi-publish@v1.4.1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_TOKEN }}
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
