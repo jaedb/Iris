@@ -91,8 +91,12 @@ const Group = ({
 }) => {
   const allClients = useSelector((state) => state.snapcast.clients || {});
   const allStreams = indexToArray(useSelector((state) => state.snapcast.streams || {}));
-  const clients = clients_ids.length > 0 ? clients_ids.map((c) => allClients[c]) : [];
+  const clients = clients_ids.length > 0
+    ? clients_ids.map((c) => allClients[c]).filter((c) => c.connected)
+    : [];
   const dispatch = useDispatch();
+
+  if (!clients || !clients.length) return null;
 
   return (
     <div className="output-control__group">
