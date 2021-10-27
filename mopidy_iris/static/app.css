@@ -6876,10 +6876,10 @@ h4 .loader {
     width: auto;
   }
   .playback-controls section.triggers {
-    width: 4rem;
+    width: 4.5rem;
   }
   .playback-controls section.triggers .icon {
-    font-size: 0.9rem;
+    font-size: 1.2rem;
   }
 }
 
@@ -7117,6 +7117,8 @@ h4 .loader {
     width: auto;
     padding: 0;
     border-radius: 0;
+    max-height: calc(100vh - 140px);
+    overflow-y: auto;
   }
   .dark-theme .output-control__inner {
     box-shadow: 0 -5px 5px rgba(0, 0, 0, 0.6);
