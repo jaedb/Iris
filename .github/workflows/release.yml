@@ -2,9 +2,78 @@ name: Release
 
 on:
   push:
-    branches: [deploy/release,deploy/force-release]
+    branches: [deploy/release]
 
 jobs:
+  jest-tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '12'
+
+    - name: Install modules
+      run: npm ci
+
+    - name: Run tests
+      run: npm run test
+
+    - name: Submit to Codecov
+      uses: codecov/codecov-action@v1
+
+  tox-tests:
+    strategy:
+      fail-fast: false
+
+      matrix:
+        include:
+          - name: "Test: Python 3.7"
+            python: "3.7"
+            tox: py37
+            coverage: true
+
+          - name: "Lint: check-manifest"
+            python: "3.9"
+            tox: check-manifest
+
+          - name: "Lint: flake8"
+            python: "3.9"
+            tox: flake8
+
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-20.04
+    container: ghcr.io/mopidy/ci:latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Fix home dir permissions to enable pip caching
+        run: chown -R root /github/home
+
+      - name: Cache pip
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-${{ matrix.python }}-${{ matrix.tox }}-pip-${{ hashFiles('setup.cfg') }}-${{ hashFiles('tox.ini') }}
+          restore-keys: ${{ runner.os }}-${{ matrix.python }}-${{ matrix.tox }}-pip-
+
+      - run: python -m pip install pygobject tox
+
+      - run: python -m tox -e ${{ matrix.tox }}
+        if: ${{ ! matrix.coverage }}
+
+      - run: python -m tox -e ${{ matrix.tox }} -- --cov-report=xml
+        if: ${{ matrix.coverage }}
+
+      - uses: codecov/codecov-action@v1
+        if: ${{ matrix.coverage }}
+
   build-and-push-docker-image:
     name: Build and publish to PyPi and DockerHub
     runs-on: ubuntu-latest
@@ -56,9 +125,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          tags: |
-            jaedb/iris:latest
-          # build on feature branches, push only on master branch
+          tags: jaedb/iris:latest
           push: ${{ github.ref == 'refs/heads/master' }}
 
       - name: Publish to Pypi
