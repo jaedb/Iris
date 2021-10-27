@@ -56,7 +56,6 @@ import Reset from './views/modals/Reset';
 import Servers from './views/modals/Servers';
 
 import { scrollTo, isTouchDevice } from './util/helpers';
-import storage from './util/storage';
 import * as coreActions from './services/core/actions';
 import * as uiActions from './services/ui/actions';
 import * as pusherActions from './services/pusher/actions';
@@ -122,6 +121,7 @@ export class App extends React.Component {
             case 'snapcast':
             case 'mopidy':
               this.props[`${key}Actions`].set(json);
+              console.info(`Applying preconfiguration for ${key}:`, value)
               break;
             default:
               break;
