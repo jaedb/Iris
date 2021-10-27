@@ -2,10 +2,10 @@ name: Release
 
 on:
   push:
-    branches: [deploy/release]
+    branches: [master,develop,deploy/release]
 
 jobs:
-  jest-tests:
+  jest:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -23,7 +23,7 @@ jobs:
     - name: Submit to Codecov
       uses: codecov/codecov-action@v1
 
-  tox-tests:
+  tox:
     strategy:
       fail-fast: false
 
@@ -74,9 +74,11 @@ jobs:
       - uses: codecov/codecov-action@v1
         if: ${{ matrix.coverage }}
 
-  build-and-push-docker-image:
+  deploy:
     name: Build and publish to PyPi and DockerHub
     runs-on: ubuntu-latest
+    needs: [jest-tests, tox-tests]
+    if: github.ref == 'refs/heads/deploy/release'
 
     steps:
       - name: Checkout code
