@@ -85,7 +85,7 @@ jobs:
   deploy:
     name: Build and publish to PyPi and DockerHub
     runs-on: ubuntu-latest
-    needs: [jest-tests, tox-tests]
+    needs: [jest, tox]
     if: github.ref == 'refs/heads/deploy/release'
 
     steps:
