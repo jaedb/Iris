@@ -398,6 +398,7 @@ class IrisCore(pykka.ThreadingActor):
                 "snapcast_enabled": self.config["iris"]["snapcast_enabled"],
                 "snapcast_host": self.config["iris"]["snapcast_host"],
                 "snapcast_port": self.config["iris"]["snapcast_port"],
+                "snapcast_ssl": self.config["iris"]["snapcast_ssl"],
                 "snapcast_stream": self.config["iris"]["snapcast_stream"],
                 "spotify_authorization_url": self.config["iris"][
                     "spotify_authorization_url"
