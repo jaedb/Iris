@@ -64,7 +64,7 @@
 			max-width: 100px;
 			opacity: 0.25;
 		}
-		#app-loading-loader {
+		#app-loading-loader.loading {
 			position: relative;
 			margin: 30px auto 0;
 			width: 80vw;
@@ -74,7 +74,7 @@
 			overflow: hidden;
 			background-color: #1A1A1A;
 		}
-		#app-loading-loader::before {
+		#app-loading-loader.loading::before {
 			position: absolute;
 			display: block;
 			content: '';
@@ -84,6 +84,13 @@
 		    animation-duration: 1.8s;
 		    animation-timing-function: ease-in-out;
 		    animation-iteration-count: infinite;
+		}
+		#app-loading-message {
+			color: white;
+			font-family: Arial, Helvetica, sans-serif;
+			font-size: 12px;
+			padding: 10px;
+			opacity: 0.5;
 		}
 	</style>
 
@@ -95,6 +102,7 @@
 		<div id="app-loading">
 			<img src="/iris/assets/app-icon.svg" id="app-loading-logo" />
 			<div id="app-loading-loader"></div>
+			<div id="app-loading-message"></div>
 		</div>
 	</div>
 
@@ -112,6 +120,18 @@
 </script>
 
 <script type="text/javascript">
+	var setMessage = function(message, append = false) {
+		var element = document.getElementById('app-loading-message');
+		if (append) {
+			element.innerHTML += message;
+		} else {
+			element.innerHTML = message;
+		}
+	}
+	var setLoading = function(loading) {
+		var element = document.getElementById('app-loading-loader');
+		element.className = loading ? 'loading' : '';
+	}
 
 	// Release details
 	// These are automatically injected to built HTML
@@ -137,6 +157,11 @@
 	} else {
 		window.test_mode = localStorage.getItem('test_mode');
 	}
+	if (window.test_mode) {
+		setMessage('Loading (TEST MODE)');
+	} else {
+		setMessage('Loading');
+}
 
 	// Test mode, use un-minified code
 	if (window.test_mode){
@@ -148,6 +173,19 @@
 	} else {
 		css.href = '/iris/app.min.css?v='+build;
 		js.src = '/iris/app.min.js?v='+build;
+	}
+
+	js.onload = function(){
+		setMessage('Initializing...');
+	}
+	js.onerror = function(){
+		setMessage('<br />Could not load javascript', true);
+	}
+	css.onload = function(){
+		setMessage('Initializing...');
+	}
+	css.onerror = function(){
+		setMessage('<br />Could not load CSS', true);
 	}
 
 	// And finally inject our CSS/JS tags
