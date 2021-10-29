@@ -101,8 +101,12 @@
 		<!-- ReactJS app gets injected here, replacing the loader -->
 		<div id="app-loading">
 			<img src="/iris/assets/app-icon.svg" id="app-loading-logo" />
-			<div id="app-loading-loader"></div>
-			<div id="app-loading-message"></div>
+			<div id="app-loading-loader" class="loading"></div>
+			<div id="app-loading-message">
+				<div id="app-loading-message-base"></div>
+				<div id="app-loading-message-js"></div>
+				<div id="app-loading-message-css"></div>
+			</div>
 		</div>
 	</div>
 
@@ -120,17 +124,17 @@
 </script>
 
 <script type="text/javascript">
-	var setMessage = function(message, append = false) {
-		var element = document.getElementById('app-loading-message');
-		if (append) {
-			element.innerHTML += message;
-		} else {
-			element.innerHTML = message;
+	var setMessage = function(type = '', content = '') {
+		var element = document.getElementById(`app-loading-message-${type}`);
+		if (element) {
+			element.innerHTML += content;
 		}
 	}
 	var setLoading = function(loading) {
 		var element = document.getElementById('app-loading-loader');
-		element.className = loading ? 'loading' : '';
+		if (element) {
+			element.className = loading ? 'loading' : '';
+		}
 	}
 
 	// Release details
@@ -158,34 +162,32 @@
 		window.test_mode = localStorage.getItem('test_mode');
 	}
 	if (window.test_mode) {
-		setMessage('Loading (TEST MODE)');
-	} else {
-		setMessage('Loading');
-}
+		setMessage('base', 'Test mode detected<br />');
+	}
 
-	// Test mode, use un-minified code
-	if (window.test_mode){
-		console.debug("Test mode enabled, using un-minified code");
+	if (window.test_mode){ // Test mode, use un-minified code
 		css.href = '/iris/app.css?v='+build;
 		js.src = '/iris/app.js?v='+build;
-
-	// Production-grade, minified app
-	} else {
+	} else { // Production-grade, minified app
 		css.href = '/iris/app.min.css?v='+build;
 		js.src = '/iris/app.min.js?v='+build;
 	}
 
+	setMessage('js', 'Loading core... ');
+	setMessage('css', 'Loading interface... ');
 	js.onload = function(){
-		setMessage('Initializing...');
+		setMessage('js', 'done');
 	}
 	js.onerror = function(){
-		setMessage('<br />Could not load javascript', true);
+		setLoading(false);
+		setMessage('js', 'failed');
 	}
 	css.onload = function(){
-		setMessage('Initializing...');
+		setMessage('css', 'done');
 	}
 	css.onerror = function(){
-		setMessage('<br />Could not load CSS', true);
+		setLoading(false);
+		setMessage('css', 'failed');
 	}
 
 	// And finally inject our CSS/JS tags
