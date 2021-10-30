@@ -88,10 +88,10 @@ const App = ({
   ...props
 }) => {
   const {
-    coreActions,
-    mopidyActions,
-    pusherActions,
-    uiActions,
+    mopidyActions: mopidy,
+    pusherActions: pusher,
+    uiActions: ui,
+    snapcastActions: snapcast,
   } = props;
   const {
     pathname,
@@ -187,17 +187,17 @@ const App = ({
         });
       }
 
-      mopidyActions.connect();
-      pusherActions.connect();
-      uiActions.getBroadcasts();
+      mopidy.connect();
+      pusher.connect();
+      ui.getBroadcasts();
       if (snapcast_enabled) {
-        snapcastActions.connect();
+        snapcast.connect();
       }
       if (!initial_setup_complete) {
         history.push('/initial-setup');
       }
     }
-  }, [isReady])
+  }, [isReady]);
 
   // Path changed (aka app navigation)
   useEffect(() => {
@@ -439,13 +439,9 @@ const mapStateToProps = (state) => {
       } = {},
       context_menu,
       debug_info,
-      test_mode,
     },
     snapcast: {
       enabled: snapcast_enabled,
-    },
-    spotify: {
-      authorization: spotify_authorized,
     },
   } = state;
 
@@ -464,9 +460,7 @@ const mapStateToProps = (state) => {
     dragging,
     context_menu,
     debug_info,
-    test_mode,
     snapcast_enabled,
-    spotify_authorized,
   };
 };
 
