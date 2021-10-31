@@ -147,10 +147,6 @@ services:
     title: LastFM
     love: Aimer
     unlove: Ne plus aimer
-  youtube:
-    title: YouTube
-  tidal:
-    title: Tidal
 
 ##
 # Components
