@@ -123,6 +123,7 @@ specs:
   edited_ago: 'Édité il y a %{time}'
   played_ago: 'Joué il y a %{time}'
 services:
+  restore_defaults: Réinitialiser
   mopidy:
     title: Mopidy
     local: Local
@@ -165,6 +166,7 @@ sidebar:
   tracks: Morceaux
   browse: Parcourir
   settings: Paramètres
+  servers: Serveurs
   not_connected: '%{name} non connecté'
   browser_offline: Parcourir hors ligne
   update_available: Mise à jour disponible
@@ -193,7 +195,7 @@ playback_controls:
   consume: Consommer
   shuffle: Aléatoire
   repeat: Répéter
-  no_outputs: Pas de sortie
+  snapcast_not_enabled: Pas de flux (Snapcast désactivé)
   mute: Muet
   unmute: Réactiver le son
 snapcast:
@@ -210,6 +212,11 @@ snapcast:
   latency: Latence
   stream: Flux
   volume: Volume
+  encryption:
+    label: Chiffrement
+    sublabel: Utiliser SSL
+    description: Requiert un proxy SSL
+    incompatible: ' (requis lorsque connecté depuis une session HTTPS)'
 authentication:
   popup_blocked: Popup bloquée. Autorisez les fenêtres popup et recommencez.
   failed: Échec de l''authorisation. %{origin} ne correspond pas à authorization_url.
@@ -336,6 +343,7 @@ track:
   title_window: '%{name} par %{artists} (morceau)'
   lyrics_origin: 'Source : '
   explicit: Paroles explicites
+  unplayable: Illisible
   disc_number: 'Disque %{number}'
   track_number: 'Morceau %{number}'
   unknown_album: Album inconnu
@@ -429,6 +437,7 @@ settings:
       label: Chiffrement
       sublabel: Utiliser SSL
       description: Nécessite un serveur mandataire (proxy) SSL
+      incompatible: ' (requis lorsque connecté depuis une session HTTPS)'
     switch: Basculer sur ce serveur
     reconnect: Reconnecter
   services:
@@ -602,3 +611,7 @@ modal:
       snapcast_volume_up: Augmenter le volume du client Snapcast
       snapcast_volume_down: Diminuer le volume du client Snapcast
       snapcast_mute: Client Snapcast muet
+  servers:
+    title: Sélecteur de serveur
+    current: Serveur actuel
+    nothing_playing: Pas de lecture en cours
