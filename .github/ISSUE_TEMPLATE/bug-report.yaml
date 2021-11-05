@@ -1,0 +1,59 @@
+name: Bug Report
+description: File a bug report
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Quality bug reports with all relevant information provided helps diagnose and resolve bugs faster, so please take the time to complete this form accurately.
+  - type: input
+    id: iris-version
+    attributes:
+      label: Iris version
+      description: You can find your version within Iris, under Settings / Advanced / Version
+      placeholder: ex. 3.50.1
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Windows
+        - MacOS
+        - iOS
+        - Android
+        - Linux
+        - Other
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      options:
+        - Firefox
+        - Chrome
+        - Edge
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Also tell us, what you expected to happen
+      placeholder: When I went to X, and clicked on Y, a thing happened.
+    validations:
+      required: true
+  - type: checkboxes
+    id: test-mode
+    attributes:
+      label: Prior to collecting logs, I enabled test mode (within Iris, Settings / Debug / Test mode)
+      options:
+        - label: Test mode enabled
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
