@@ -1,8 +1,16 @@
 name: I have a question
 description: Get help with using Iris
+labels: ["discussion/unactionable"]
 body:
   - type: markdown
     attributes:
       value: |
        STOP! QUESTIONS DON'T BELONG IN THE REPOSITORY ISSUE TRACKER.
        Please instead use the [Mopidy Discourse](https://discourse.mopidy.com/) forum.
+  - type: input
+    id: content
+    attributes:
+      label: Content
+      placeholder: This issue will be deleted, please read the above message.
+    validations:
+      required: true
