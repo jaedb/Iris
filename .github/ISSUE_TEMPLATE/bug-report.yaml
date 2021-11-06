@@ -42,11 +42,10 @@ body:
     id: description
     attributes:
       label: What happened?
-      description: Where did something go wrong, and what were you expecting to happen?
-      placeholder: |
-        When I went to X, and clicked on Y, a thing happened.
-
+      description: |
+        Where did something go wrong, and what were you expecting to happen?
         Tip: You can attach screenshots or supporting files by clicking this area to highlight it and then drag files in.
+      placeholder: When I went to X, and clicked on Y, a thing happened.
     validations:
       required: true
   - type: textarea
