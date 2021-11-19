@@ -8,10 +8,10 @@ import Thumbnail from '../components/Thumbnail';
 import Parallax from '../components/Parallax';
 import FollowButton from '../components/Fields/FollowButton';
 import ContextMenuTrigger from '../components/ContextMenuTrigger';
-import ArtistAbout from './subviews/ArtistAbout';
-import ArtistOverview from './subviews/ArtistOverview';
-import ArtistTracks from './subviews/ArtistTracks';
-import ArtistRelated from './subviews/ArtistRelated';
+import About from './Artist/About';
+import Overview from './Artist/Overview';
+import Tracks from './Artist/Tracks';
+import Related from './Artist/Related';
 import Loader from '../components/Loader';
 import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
@@ -23,7 +23,6 @@ import { encodeUri, decodeUri } from '../util/format';
 import { arrayOf } from '../util/arrays';
 import { i18n, I18n } from '../locale';
 import Button from '../components/Button';
-import { trackEvent } from '../components/Trackable';
 import {
   makeItemSelector,
   makeLoadingSelector,
@@ -186,16 +185,16 @@ const Artist = ({
       <div className="content-wrapper">
         <Switch>
           <Route exact path="/artist/:id/related-artists">
-            <ArtistRelated artist={artist} />
+            <Related artist={artist} />
           </Route>
           <Route exact path="/artist/:id/tracks">
-            <ArtistTracks artist={artist} />
+            <Tracks artist={artist} />
           </Route>
           <Route exact path="/artist/:id/about">
-            <ArtistAbout artist={artist} />
+            <About artist={artist} />
           </Route>
           <Route exact path="/artist/:id/:name?">
-            <ArtistOverview artist={artist} albums={albums} />
+            <Overview artist={artist} albums={albums} />
           </Route>
         </Switch>
       </div>

@@ -9,7 +9,7 @@ import {
 import { i18n, I18n } from '../../locale';
 import { nice_number } from '../../components/NiceNumber';
 
-const ArtistAbout = ({
+export default ({
   artist,
 }) => {
   const thumbnails = artist.images && Array.isArray(artist.images) && artist.images.map(
@@ -88,6 +88,4 @@ const ArtistAbout = ({
       </div>
     </div>
   );
-}
-
-export default ArtistAbout;
+};

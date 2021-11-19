@@ -28,18 +28,18 @@ import Debug from './views/Debug';
 import Search from './views/Search';
 import Settings from './views/Settings';
 
-import DiscoverRecommendations from './views/discover/DiscoverRecommendations';
-import DiscoverFeatured from './views/discover/DiscoverFeatured';
-import DiscoverCategories from './views/discover/DiscoverCategories';
-import DiscoverCategory from './views/discover/DiscoverCategory';
-import DiscoverNewReleases from './views/discover/DiscoverNewReleases';
+import DiscoverRecommendations from './views/Discover/DiscoverRecommendations';
+import DiscoverFeatured from './views/Discover/DiscoverFeatured';
+import DiscoverCategories from './views/Discover/DiscoverCategories';
+import DiscoverCategory from './views/Discover/DiscoverCategory';
+import DiscoverNewReleases from './views/Discover/DiscoverNewReleases';
 
-import LibraryArtists from './views/library/LibraryArtists';
-import LibraryAlbums from './views/library/LibraryAlbums';
-import LibraryTracks from './views/library/LibraryTracks';
-import LibraryPlaylists from './views/library/LibraryPlaylists';
-import LibraryBrowse from './views/library/LibraryBrowse';
-import LibraryBrowseDirectory from './views/library/LibraryBrowseDirectory';
+import LibraryArtists from './views/Library/LibraryArtists';
+import LibraryAlbums from './views/Library/LibraryAlbums';
+import LibraryTracks from './views/Library/LibraryTracks';
+import LibraryPlaylists from './views/Library/LibraryPlaylists';
+import LibraryBrowse from './views/Library/LibraryBrowse';
+import LibraryBrowseDirectory from './views/Library/LibraryBrowseDirectory';
 
 import EditPlaylist from './views/modals/EditPlaylist';
 import CreatePlaylist from './views/modals/CreatePlaylist';

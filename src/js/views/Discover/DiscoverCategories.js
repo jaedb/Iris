@@ -11,11 +11,8 @@ import * as uiActions from '../../services/ui/actions';
 import * as spotifyActions from '../../services/spotify/actions';
 import { encodeUri } from '../../util/format';
 import { i18n, I18n } from '../../locale';
-import { indexToArray } from '../../util/arrays';
+import { indexToArray, applyFilter } from '../../util/arrays';
 import { makeLoadingSelector } from '../../util/selectors';
-import { applyFilter } from '../../util/arrays';
-
-const SORT_KEY = 'discover_categories';
 
 const DiscoverCategories = ({
   loading,

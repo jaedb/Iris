@@ -1,14 +1,16 @@
 import React, { memo } from 'react';
+import { useDispatch } from 'react-redux';
 import ContextMenuTrigger from './ContextMenuTrigger';
+import { showContextMenu } from '../services/ui/actions';
 
 export default memo(({
   handleContextMenuTrigger,
   options,
   title,
-  uiActions,
   className,
   children,
 }) => {
+  const dispatch = useDispatch();
   const onTrigger = (e) => {
     if (handleContextMenuTrigger) return handleContextMenuTrigger(e);
 
@@ -19,7 +21,7 @@ export default memo(({
       title,
       options,
     };
-    uiActions.showContextMenu(data);
+    dispatch(showContextMenu(data));
     return true;
   };
 

@@ -1,65 +1,43 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import * as uiActions from '../../services/ui/actions';
+import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { uriType } from '../../util/helpers';
 import Icon from '../Icon';
 import { i18n } from '../../locale';
 import { encodeUri } from '../../util/format';
 
-class SearchForm extends React.Component {
-  constructor(props) {
-    super(props);
+const SearchForm = ({
+  term: termProp,
+  onBlur: doBlur,
+  onReset: doReset,
+  onSubmit: doSubmit,
+}) => {
+  const history = useHistory();
+  const [term, setTerm] = useState(termProp);
+  const [dirty, setDirty] = useState();
 
-    this.state = {
-      term: props.term,
-      pristine: true,
-    };
-  }
+  useEffect(
+    () => {
+      if (termProp && !dirty) setTerm(termProp);
+    },
+    [termProp],
+  );
 
-  static getDerivedStateFromProps(props, state) {
-    const { pristine, term } = state;
-    if (pristine && term === '' && term !== props.term) {
-      return {
-        term,
-        pristine: false,
-      };
-    }
-    return null;
-  }
+  const onChange = (e) => {
+    setTerm(e.target.value);
+    setDirty(true);
+  };
 
-  shouldComponentUpdate = (nextProps, nextState) => {
-    const { term: termProp } = this.props;
-    const { term: termState } = this.state;
-    if (nextProps.term !== termProp) return true;
-    if (nextState.term !== termState) return true;
-
-    return false;
-  }
-
-  onChange = (e) => {
-    this.setState({
-      term: e.target.value,
-      pristine: false,
-    });
-  }
-
-  onBlur = () => {
-    const { onBlur } = this.props;
-    const { term } = this.state;
-    this.setState({ pristine: false });
-    if (onBlur) {
-      onBlur(term);
+  const onBlur = () => {
+    setDirty(true);
+    if (doBlur) {
+      doBlur(term);
     }
   }
 
-  onFocus = () => {
-    this.setState({ pristine: false });
-  }
+  const onFocus = () => setDirty(true);
 
-  onSubmit = (e) => {
-    const { term } = this.state;
-    const { history } = this.props;
+  const onSubmit = (e) => {
     e.preventDefault();
 
     // check for uri type matching
@@ -81,52 +59,36 @@ class SearchForm extends React.Component {
         break;
 
       default:
-        this.props.onSubmit(term);
+        doSubmit(term);
         break;
     }
 
     return false;
+  };
+
+  const onReset = () => {
+    setDirty(false);
+    setTerm('');
+    if (doReset) doReset();
   }
 
-  onReset = () => {
-    const { onReset: doReset } = this.props;
+  return (
+    <form className="search-form" onSubmit={onSubmit}>
+      <label>
+        <input
+          type="text"
+          placeholder={i18n('fields.search')}
+          onChange={onChange}
+          onBlur={onBlur}
+          onFocus={onFocus}
+          value={term}
+        />
+      </label>
+      {term && (
+        <Icon name="close" className="search-form__reset" onClick={onReset} />
+      )}
+    </form>
+  );
+};
 
-    this.setState(
-      {
-        term: '',
-        pristine: true,
-      },
-      () => {
-        doReset();
-      },
-    );
-  }
-
-  render = () => {
-    const { term } = this.state;
-
-    return (
-      <form className="search-form" onSubmit={this.onSubmit}>
-        <label>
-          <input
-            type="text"
-            placeholder={i18n('fields.search')}
-            onChange={this.onChange}
-            onBlur={this.onBlur}
-            onFocus={this.onFocus}
-            value={term}
-          />
-        </label>
-        {term && (
-          <Icon name="close" className="search-form__reset" onClick={this.onReset} />
-        )}
-      </form>
-    );
-  }
-}
-
-const mapDispatchToProps = (dispatch) => ({
-  uiActions: bindActionCreators(uiActions, dispatch),
-});
-
-export default connect(mapDispatchToProps)(SearchForm);
+export default SearchForm;
