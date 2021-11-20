@@ -54,14 +54,6 @@ RUN python3 -m pip install --no-cache \
   mopidy-mpd \
   mopidy-spotify \
   mopidy-local \
-  Mopidy-TuneIn \
-  Mopidy-Youtube \
-  Mopidy-YTMusic \
-  Mopidy-SoundCloud \
-  Mopidy-Podcast \
-  Mopidy-dLeyna \
-  Mopidy-Jellyfin \
-  Mopidy-MusicBox-Webclient \
   dbus-python \
   # pip not up-to-date for Mopidy-Tidal (https://github.com/tehkillerbee/mopidy-tidal/issues/14)
   git+https://github.com/tehkillerbee/mopidy-tidal.git@master
