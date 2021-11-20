@@ -1195,13 +1195,8 @@ class IrisCore(pykka.ThreadingActor):
         }
 
         try:
-            http_client = AsyncHTTPClient()
-            response = await http_client.fetch(
-                url,
-                method="POST",
-                body=json.dumps(data)
-                validate_cert=self.config["iris"]["verify_certificates"]
-            )
+            http_client = AsyncHTTPClient(validate_cert=self.config["iris"]["verify_certificates"])
+            response = await http_client.fetch(url, method="POST",  body=json.dumps(data))
         except (urllib.error.HTTPError, urllib.error.URLError) as e:
             error = json.loads(e.read())
             logger.error("Could not update Snapcast meta")
