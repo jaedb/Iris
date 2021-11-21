@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { bindActionCreators } from 'redux';
-import { Route, Switch } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { Route, Switch, useLocation } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import ReactGA from 'react-ga';
 import * as Sentry from '@sentry/browser';
 
@@ -56,53 +55,36 @@ import Reset from './views/modals/Reset';
 import Servers from './views/modals/Servers';
 
 import { scrollTo, isTouchDevice } from './util/helpers';
-import * as coreActions from './services/core/actions';
 import * as uiActions from './services/ui/actions';
 import * as pusherActions from './services/pusher/actions';
 import * as mopidyActions from './services/mopidy/actions';
 import * as spotifyActions from './services/spotify/actions';
-import * as lastfmActions from './services/lastfm/actions';
-import * as geniusActions from './services/genius/actions';
 import * as snapcastActions from './services/snapcast/actions';
 import MediaSession from './components/MediaSession';
 import ErrorBoundary from './components/ErrorBoundary';
 
-const App = ({
-  language,
-  allow_reporting,
-  initial_setup_complete,
-  snapcast_enabled,
-  context_menu,
-  history,
-  location,
-  debug_info,
-  theme,
-  dragging,
-  touch_dragging,
-  sidebar_open,
-  slim_mode,
-  wide_scrollbar_enabled,
-  hide_scrollbars,
-  smooth_scrolling_enabled,
-  hotkeys_enabled,
-  ...props
-}) => {
-  const {
-    mopidyActions: mopidy,
-    pusherActions: pusher,
-    uiActions: ui,
-    snapcastActions: snapcast,
-  } = props;
-  const {
-    pathname,
-    state: {
-      scroll_position,
-    } = {},
-  } = location;
-
-  window.language = language;
+const App = () => {
   const [isReady, setIsReady] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
+  const { pathname, state: { scroll_position } = {} } = useLocation();
+  const dispatch = useDispatch();
+
+  const language = useSelector((state) => state.ui.language); 
+  window.language = language;
+  const theme = useSelector((state) => state.ui.theme);
+  const wide_scrollbar_enabled = useSelector((state) => state.ui.wide_scrollbar_enabled);
+  const hide_scrollbars = useSelector((state) => state.ui.hide_scrollbars);
+  const smooth_scrolling_enabled = useSelector((state) => state.ui.smooth_scrolling_enabled);
+  const hotkeys_enabled = useSelector((state) => state.ui.hotkeys_enabled);
+  const allow_reporting = useSelector((state) => state.ui.allow_reporting);
+  const touch_dragging = useSelector((state) => state.ui.touch_dragging);
+  const dragging = useSelector((state) => state.ui.dragger?.active);
+  const context_menu = useSelector((state) => state.ui.context_menu);
+  const initial_setup_complete = useSelector((state) => state.ui.initial_setup_complete);
+  const slim_mode = useSelector((state) => state.ui.slim_mode);
+  const sidebar_open = useSelector((state) => state.ui.sidebar_open);
+  const debug_info = useSelector((state) => state.ui.debug_info);
+  const snapcast_enabled = useSelector((state) => state.snapcast.enabled);
 
   // Accept incoming preconfiguration via URL parameters and inject into application state.
   // For example: iris?snapcast={"enabled":true,"host":"myserver.local"}
@@ -114,11 +96,23 @@ const App = ({
           const json = JSON.parse(value);
           switch (key) {
             case 'ui':
+              dispatch(uiActions.set(json));
+              console.info(`Applying preconfiguration for ${key}:`, value)
+              break;
             case 'spotify':
-            case 'pusher':
-            case 'snapcast':
+              dispatch(spotifyActions.set(json));
+              console.info(`Applying preconfiguration for ${key}:`, value)
+              break;
             case 'mopidy':
-              props[`${key}Actions`].set(json);
+              dispatch(mopidyActions.set(json));
+              console.info(`Applying preconfiguration for ${key}:`, value)
+              break;
+            case 'pusher':
+              dispatch(pusherActions.set(json));
+              console.info(`Applying preconfiguration for ${key}:`, value)
+              break;
+            case 'snapcast':
+              dispatch(snapcastActions.set(json));
               console.info(`Applying preconfiguration for ${key}:`, value)
               break;
             default:
@@ -187,11 +181,11 @@ const App = ({
         });
       }
 
-      mopidy.connect();
-      pusher.connect();
-      ui.getBroadcasts();
+      dispatch(mopidyActions.connect());
+      dispatch(pusherActions.connect());
+      dispatch(uiActions.getBroadcasts());
       if (snapcast_enabled) {
-        snapcast.connect();
+        dispatch(snapcastActions.connect());
       }
       if (!initial_setup_complete) {
         history.push('/initial-setup');
@@ -213,10 +207,10 @@ const App = ({
       scrollTo(parseInt(scroll_position, 10), false);
     }
 
-    uiActions.toggleSidebar(false);
-    uiActions.setSelectedTracks([]);
+    dispatch(uiActions.toggleSidebar(false));
+    dispatch(uiActions.setSelectedTracks([]));
     if (context_menu) {
-      uiActions.hideContextMenu();
+      dispatch(uiActions.hideContextMenu());
     }
   }, [pathname]);
 
@@ -230,14 +224,19 @@ const App = ({
    * @param e Event
    * */
   const handleFocusAndBlur = () => {
-    uiActions.setWindowFocus(document.hasFocus());
-  }
+    dispatch(uiActions.setWindowFocus(document.hasFocus()));
+  };
 
   const handleInstallPrompt = (e) => {
     e.preventDefault();
     console.log('Install prompt detected');
-    uiActions.installPrompt(e);
-  }
+    dispatch(uiActions.installPrompt(e));
+  };
+
+  const handleInteraction = () => {
+    if (hasInteracted) return;
+    setHasInteracted(true);
+  };
 
   let className = `${theme}-theme app-inner`;
   className += ` ${navigator.onLine ? 'online' : 'offline'}`;
@@ -274,8 +273,8 @@ const App = ({
   return (
     <div
       className={className}
-      onClick={() => hasInteracted ? null : setHasInteracted(true)}
-      onKeyDown={() => hasInteracted ? null : setHasInteracted(true)}
+      onClick={handleInteraction}
+      onKeyDown={handleInteraction}
     >
       <div className="body">
         <Switch>
@@ -296,16 +295,8 @@ const App = ({
 
           <Route>
             <div>
-              <Sidebar
-                location={location}
-                history={history}
-                tabIndex="3"
-              />
-              <PlaybackControls
-                history={history}
-                slim_mode={slim_mode}
-                tabIndex="2"
-              />
+              <Sidebar tabIndex="3" />
+              <PlaybackControls tabIndex="2"/>
 
               <main id="main" className="smooth-scroll" tabIndex="1">
                 <Switch>
@@ -405,11 +396,8 @@ const App = ({
         </Switch>
       </div>
 
-      <ResizeListener
-        uiActions={uiActions}
-        slim_mode={slim_mode}
-      />
-      {hotkeys_enabled && <Hotkeys history={history} />}
+      <ResizeListener />
+      {hotkeys_enabled && <Hotkeys />}
       <ContextMenu />
       <Dragger />
       <Notifications />
@@ -420,62 +408,4 @@ const App = ({
   );
 };
 
-const mapStateToProps = (state) => {
-  const {
-    ui: {
-      language,
-      theme,
-      wide_scrollbar_enabled,
-      hide_scrollbars,
-      smooth_scrolling_enabled,
-      hotkeys_enabled,
-      allow_reporting,
-      touch_dragging,
-      initial_setup_complete,
-      slim_mode,
-      sidebar_open,
-      dragger: {
-        active: dragging,
-      } = {},
-      context_menu,
-      debug_info,
-    },
-    snapcast: {
-      enabled: snapcast_enabled,
-    },
-  } = state;
-
-  return {
-    language,
-    theme,
-    wide_scrollbar_enabled,
-    hide_scrollbars,
-    smooth_scrolling_enabled,
-    hotkeys_enabled,
-    allow_reporting,
-    touch_dragging,
-    initial_setup_complete,
-    slim_mode,
-    sidebar_open,
-    dragging,
-    context_menu,
-    debug_info,
-    snapcast_enabled,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => ({
-  coreActions: bindActionCreators(coreActions, dispatch),
-  uiActions: bindActionCreators(uiActions, dispatch),
-  pusherActions: bindActionCreators(pusherActions, dispatch),
-  mopidyActions: bindActionCreators(mopidyActions, dispatch),
-  spotifyActions: bindActionCreators(spotifyActions, dispatch),
-  lastfmActions: bindActionCreators(lastfmActions, dispatch),
-  geniusActions: bindActionCreators(geniusActions, dispatch),
-  snapcastActions: bindActionCreators(snapcastActions, dispatch),
-});
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(App);
+export default App;

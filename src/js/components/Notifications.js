@@ -1,6 +1,5 @@
-import React, { Fragment } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import * as uiActions from '../services/ui/actions';
 import * as spotifyActions from '../services/spotify/actions';
@@ -15,280 +14,309 @@ import { i18n, I18n } from '../locale';
 import ErrorBoundary from './ErrorBoundary';
 import Button from './Button';
 
-class Notifications extends React.Component {
-  importConfiguration(notification_key, configuration) {
+const Notification = ({
+  item: {
+    key,
+    type,
+    level,
+    title,
+    content,
+    description,
+    links,
+    configuration,
+    duration,
+    closing,
+  },
+  importConfiguration,
+}) => {
+  const dispatch = useDispatch();
+  const { removeNotification } = uiActions;
+
+  switch (type) {
+    case 'shortcut':
+      return (
+        <div className="notification__wrapper">
+          <div className={`notification notification--shortcut${closing ? ' closing' : ''}`} data-duration={duration}>
+            <Icon name={content} />
+            {title && (
+              <h4 className="notification__title">{title}</h4>
+            )}
+          </div>
+        </div>
+      );
+
+    case 'share-configuration-received':
+      return (
+        <div className="notification__wrapper">
+          <div className="notification notification--info" data-duration={duration}>
+            <Icon
+              name="close"
+              className="notification__close-button"
+              onClick={() => dispatch(removeNotification(key, true))}
+            />
+            <h4 className="notification__title">
+              <I18n path="modal.share_configuration.import.title" />
+            </h4>
+            <div className="notification__content">
+              <p>
+                <I18n path="modal.share_configuration.import.subtitle" />
+              </p>
+              <ul>
+                {configuration.ui && (
+                  <li><I18n path="modal.share_configuration.interface" /></li>
+                )}
+                {configuration.spotify && (
+                  <li><I18n path="services.spotify.title" /></li>
+                )}
+                {configuration.lastfm && (
+                  <li><I18n path="services.lastfm.title" /></li>
+                )}
+                {configuration.genius && (
+                  <li><I18n path="services.genius.title" /></li>
+                )}
+                {configuration.snapcast && (
+                  <li><I18n path="services.snapcast.title" /></li>
+                )}
+              </ul>
+              <p>
+                <I18n path="modal.share_configuration.import.do_you_want_to_import" />
+              </p>
+            </div>
+            <div className="notification__actions">
+              <Button
+                className="notification__actions__item"
+                onClick={() => importConfiguration(key, configuration)}
+                tracking={{ category: 'ShareConfiguration', action: 'Import' }}
+              >
+                <I18n path="modal.share_configuration.import.import_now" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      );
+
+    default:
+      return (
+        <div className="notification__wrapper" key={key}>
+          <div
+            className={`notification notification--${level}${closing ? ' closing' : ''}`}
+            data-key={key}
+            data-duration={duration}
+          >
+            <Icon
+              name="close"
+              className="notification__close-button"
+              onClick={() => dispatch(removeNotification(key, true))}
+            />
+            {title && (
+              <h4 className="notification__title">
+                {title}
+              </h4>
+            )}
+            {content && (
+              <div className="notification__content">
+                {content}
+              </div>
+            )}
+            {description && (
+              <div className="notification__description">
+                {description}
+              </div>
+            )}
+            {links && (
+              <div className="notification__actions">
+                {
+                  links.map((link, i) => (
+                    <Button
+                      type="secondary"
+                      className="notification__actions__item"
+                      href={link.url}
+                      target={link.new_window ? '_blank' : 'self'}
+                      key={i}
+                      tracking={{ category: 'NotificationLink', action: 'Click', label: link.text }}
+                    >
+                      {link.text}
+                    </Button>
+                  ))
+                }
+              </div>
+            )}
+          </div>
+        </div>
+      );
+  }
+};
+
+const NotificationItems = () => {
+  const index = useSelector((state) => state.ui.notifications);
+  const items = indexToArray(index);
+  const dispatch = useDispatch();
+
+  const importConfiguration = (notification_key, configuration) => {
     if (configuration.ui) {
-      this.props.uiActions.set(configuration.ui);
+      dispatch(uiActions.set(configuration.ui));
     }
 
     if (configuration.spotify) {
-      this.props.spotifyActions.importAuthorization(configuration.spotify.authorization, configuration.spotify.me);
+      dispatch(spotifyActions.importAuthorization(
+        configuration.spotify.authorization,
+        configuration.spotify.me,
+      ));
     }
 
     if (configuration.snapcast) {
-      this.props.snapcastActions.set(configuration.snapcast);
-      setTimeout(() => this.props.snapcastActions.connect(), 100);
+      dispatch(snapcastActions.set(configuration.snapcast));
+      setTimeout(() => dispatch(snapcastActions.connect()), 100);
     }
 
     if (configuration.lastfm) {
-      this.props.lastfmActions.importAuthorization(configuration.lastfm.authorization, configuration.lastfm.me);
+      dispatch(lastfmActions.importAuthorization(
+        configuration.lastfm.authorization,
+        configuration.lastfm.me,
+      ));
     }
 
     if (configuration.genius) {
-      this.props.geniusActions.importAuthorization(configuration.genius.authorization, configuration.genius.me);
+      dispatch(geniusActions.importAuthorization(
+        configuration.genius.authorization,
+        configuration.genius.me,
+      ));
     }
 
-    this.props.uiActions.removeNotification(notification_key, true);
-    this.props.uiActions.createNotification({
+    dispatch(uiActions.removeNotification(notification_key, true));
+    dispatch(uiActions.createNotification({
       content: i18n('modal.share_configuration.import.successful'),
-    });
+    }));
   }
 
-  renderNotifications() {
-    if (!this.props.notifications || this.props.notifications.length <= 0) return null;
+  if (!items || !items.length) return null;
 
-    const notifications = indexToArray(this.props.notifications);
+  return (
+    <ErrorBoundary>
+      {items.map((item) => (
+        <Notification
+          key={`${item.key}_${item.status}`}
+          item={item}
+          importConfiguration={importConfiguration}
+        />
+      ))}
+    </ErrorBoundary>
+  );
+};
 
-    return (
-      <ErrorBoundary>
-        {
-          notifications.map((notification) => {
-            switch (notification.type) {
-              case 'shortcut':
-                return (
-                  <div className="notification__wrapper" key={notification.key}>
-                    <div className={`notification notification--shortcut${notification.closing ? ' closing' : ''}`} data-duration={notification.duration}>
-                      <Icon name={notification.content} />
-                      {notification.title && (
-                        <h4 className="notification__title">{notification.title}</h4>
-                      )}
-                    </div>
-                  </div>
-                );
+const Process = ({
+  item: {
+    total,
+    remaining,
+    level = 'info',
+    content,
+    description,
+    status,
+    closing,
+  },
+  cancelProcess,
+  closeProcess,
+}) => {
+  let progress = 0;
+  if (total && remaining) {
+    progress = ((total - remaining) / total).toFixed(4);
+  }
 
-              case 'share-configuration-received':
-                return (
-                  <div className="notification__wrapper" key={notification.key}>
-                    <div className="notification notification--info" key={notification.key} data-duration={notification.duration}>
-                      <Icon
-                        name="close"
-                        className="notification__close-button"
-                        onClick={(e) => this.props.uiActions.removeNotification(notification.key, true)}
-                      />
-                      <h4 className="notification__title">
-                        <I18n path="modal.share_configuration.import.title" />
-                      </h4>
-                      <div className="notification__content">
-                        <p>
-                          <I18n path="modal.share_configuration.import.subtitle" />
-                        </p>
-                        <ul>
-                          {notification.configuration.ui && (
-                            <li><I18n path="modal.share_configuration.interface" /></li>
-                          )}
-                          {notification.configuration.spotify && (
-                            <li><I18n path="services.spotify.title" /></li>
-                          )}
-                          {notification.configuration.lastfm && (
-                            <li><I18n path="services.lastfm.title" /></li>
-                          )}
-                          {notification.configuration.genius && (
-                            <li><I18n path="services.genius.title" /></li>
-                          )}
-                          {notification.configuration.snapcast && (
-                            <li><I18n path="services.snapcast.title" /></li>
-                          )}
-                        </ul>
-                        <p>
-                          <I18n path="modal.share_configuration.import.do_you_want_to_import" />
-                        </p>
-                      </div>
-                      <div className="notification__actions">
-                        <Button
-                          className="notification__actions__item"
-                          onClick={() => this.importConfiguration(notification.key, notification.configuration)}
-                          tracking={{ category: 'ShareConfiguration', action: 'Import' }}
-                        >
-                          <I18n path="modal.share_configuration.import.import_now" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                );
-
-              default:
-                return (
-                  <div className="notification__wrapper" key={notification.key}>
-                    <div
-                      className={`notification notification--${notification.level}${notification.closing ? ' closing' : ''}`}
-                      data-key={notification.key}
-                      data-duration={notification.duration}
-                    >
-                      <Icon
-                        name="close"
-                        className="notification__close-button"
-                        onClick={() => this.props.uiActions.removeNotification(notification.key, true)}
-                      />
-                      {notification.title && (
-                        <h4 className="notification__title">
-                          {notification.title}
-                        </h4>
-                      )}
-                      {notification.content && (
-                        <div className="notification__content">
-                          {notification.content}
-                        </div>
-                      )}
-                      {notification.description && (
-                        <div className="notification__description">
-                          {notification.description}
-                        </div>
-                      )}
-                      {notification.links && (
-                        <div className="notification__actions">
-                          {
-                            notification.links.map((link, i) => (
-                              <Button
-                                type="secondary"
-                                className="notification__actions__item"
-                                href={link.url}
-                                target={link.new_window ? '_blank' : 'self'}
-                                key={i}
-                                tracking={{ category: 'NotificationLink', action: 'Click', label: link.text }}
-                              >
-                                {link.text}
-                              </Button>
-                            ))
-                          }
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
+  switch (status) {
+    case 'running':
+      return (
+        <div className="notification__wrapper">
+          <div
+            className={
+              `notification notification--${level} notification--process${closing ? ' closing' : ''}`
             }
-          })
-        }
-      </ErrorBoundary>
-    );
-  }
-
-  renderProcess(process) {
-    const {
-      total,
-      remaining,
-      level = 'info',
-      content,
-      description,
-      status,
-      closing,
-      key,
-    } = process;
-    const { uiActions } = this.props;
-    let progress = 0;
-    if (total && remaining) {
-      progress = ((total - remaining) / total).toFixed(4);
-    }
-
-    switch (status) {
-      case 'running':
-        return (
-          <div className="notification__wrapper" key={key}>
-            <div
-              className={
-                `notification notification--${level} notification--process${closing ? ' closing' : ''}`
-              }
-            >
-              <Loader
-                progress={progress}
-                loading
-                mini
-                white
-              />
-              {content && content !== '' && <div className="notification__content">{content}</div>}
-              {description && description !== '' && <div className="notification__description">{description}</div>}
-              <Icon name="close" className="notification__close-button" onClick={() => { uiActions.cancelProcess(key); }} />
-            </div>
+          >
+            <Loader
+              progress={progress}
+              loading
+              mini
+              white
+            />
+            {content && content !== '' && <div className="notification__content">{content}</div>}
+            {description && description !== '' && <div className="notification__description">{description}</div>}
+            <Icon name="close" className="notification__close-button" onClick={cancelProcess} />
           </div>
-        );
-
-      case 'finished':
-        return (
-          <div className="notification__wrapper" key={key}>
-            <div
-              className={
-                `notification notification--${level} notification--process${closing ? ' closing' : ''}`
-              }
-            >
-              <Icon className="notification__icon" name={level === 'error' ? 'close' : 'check'} />
-              {content && content !== '' && <div className="notification__content">{content}</div>}
-              {description && description !== '' && <div className="notification__description">{description}</div>}
-              <Icon name="close" className="notification__close-button" onClick={() => { uiActions.closeProcess(key); }} />
-            </div>
+        </div>
+      );
+    case 'finished':
+      return (
+        <div className="notification__wrapper">
+          <div
+            className={
+              `notification notification--${level} notification--process${closing ? ' closing' : ''}`
+            }
+          >
+            <Icon className="notification__icon" name={level === 'error' ? 'close' : 'check'} />
+            {content && content !== '' && <div className="notification__content">{content}</div>}
+            {description && description !== '' && <div className="notification__description">{description}</div>}
+            <Icon name="close" className="notification__close-button" onClick={closeProcess} />
           </div>
-        );
-
-      case 'cancelling':
-        return (
-          <div className="notification__wrapper" key={key}>
-            <div
-              className={
-                `notification notification--${level} notification--process cancelling${closing ? ' closing' : ''}`
-              }
-            >
-              <Loader
-                progress={progress}
-                loading
-                mini
-                white
-              />
-              {content && content !== '' && <div className="notification__content">{content}</div>}
-              {description && description !== '' && <div className="notification__description">{description}</div>}
-              <Icon name="close" className="notification__close-button" />
-            </div>
+        </div>
+      );
+    case 'cancelling':
+      return (
+        <div className="notification__wrapper">
+          <div
+            className={
+              `notification notification--${level} notification--process cancelling${closing ? ' closing' : ''}`
+            }
+          >
+            <Loader
+              progress={progress}
+              loading
+              mini
+              white
+            />
+            {content && content !== '' && <div className="notification__content">{content}</div>}
+            {description && description !== '' && <div className="notification__description">{description}</div>}
+            <Icon name="close" className="notification__close-button" />
           </div>
-        );
-
-      case 'cancelled':
-      case 'completed':
-      default:
-        return null;
-    }
+        </div>
+      );
+    default:
+      return null;
   }
+};
 
-  renderProcesses = () => {
-    const { processes: processesObj } = this.props;
-    const processes = indexToArray(processesObj).filter((process) => process.notification);
-    if (!processes) return null;
+const ProcessItems = () => {
+  const dispatch = useDispatch();
+  const index = useSelector((state) => state.ui.processes);
+  const items = indexToArray(index).filter(
+    (p) => p.notification && p.status !== 'cancelled' && p.status !== 'completed',
+  );
+  if (!items || !items.length) return null;
 
-    return (
-      <>
-        {processes.map((process) => this.renderProcess(process))}
-      </>
-    );
-  }
+  const {
+    cancelProcess,
+    closeProcess,
+  } = uiActions;
 
-  render() {
-    return (
-      <div className="notifications">
-        {this.renderNotifications()}
-        {this.renderProcesses()}
-      </div>
-    );
-  }
-}
+  return (
+    <>
+      {items.map((item) => (
+        <Process
+          key={`${item.key}_${item.status}`}
+          item={item}
+          closeProcess={() => dispatch(closeProcess(item.key))}
+          cancelProcess={() => dispatch(cancelProcess(item.key))}
+        />
+      ))}
+    </>
+  );
+};
 
-const mapStateToProps = (state) => ({
-  broadcasts: (state.ui.broadcasts ? state.ui.broadcasts : []),
-  notifications: (state.ui.notifications ? state.ui.notifications : []),
-  processes: (state.ui.processes ? state.ui.processes : {}),
-});
+const Notifications = () => {
+  return (
+    <div className="notifications">
+      <NotificationItems />
+      <ProcessItems />
+    </div>
+  );
+};
 
-const mapDispatchToProps = (dispatch) => ({
-  uiActions: bindActionCreators(uiActions, dispatch),
-  spotifyActions: bindActionCreators(spotifyActions, dispatch),
-  geniusActions: bindActionCreators(geniusActions, dispatch),
-  lastfmActions: bindActionCreators(lastfmActions, dispatch),
-  snapcastActions: bindActionCreators(snapcastActions, dispatch),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Notifications);
+export default Notifications;

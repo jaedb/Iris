@@ -1,7 +1,6 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import Link from './Link';
 import ProgressSlider from './Fields/ProgressSlider';
 import VolumeControl from './Fields/VolumeControl';
@@ -12,367 +11,303 @@ import LinksSentence from './LinksSentence';
 import Thumbnail from './Thumbnail';
 import Icon from './Icon';
 import { scrollTo } from '../util/helpers';
-import * as uiActions from '../services/ui/actions';
-import * as coreActions from '../services/core/actions';
+import { showContextMenu, toggleSidebar } from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import { I18n } from '../locale';
+import { makeItemSelector } from '../util/selectors';
 
-class PlaybackControls extends React.Component {
-  constructor(props) {
-    super(props);
-    this.stream = null;
-    this.state = {
-      expanded: false,
-      current_track: null,
-      stream_title: null,
-      transition_track: null,
-      transition_direction: null,
-    };
-  }
+const PlaybackControls = () => {
+  const [expanded, setExpanded] = useState();
+  const [transitionTrack, setTransitionTrack] = useState();
+  const [transitionDirection, setTransitionDirection] = useState();
+  const [touchMeta, setTouchMeta] = useState({});
 
-  static getDerivedStateFromProps({ current_track, stream_title }, state) {
-    return {
-      ...state,
-      current_track,
-      stream_title,
-    };
-  }
+  const history = useHistory();
+  const dispatch = useDispatch();
+  const touch_enabled = useSelector((state) => state.ui.touch_enabled);
+  const sidebar_open = useSelector((state) => state.ui.sidebar_open);
+  const volume = useSelector((state) => state.mopidy.volume);
+  const mute = useSelector((state) => state.mopidy.mute);
+  const time_position = useSelector((state) => state.mopidy.time_position);
+  const play_state = useSelector((state) => state.mopidy.play_state);
+  const consume = useSelector((state) => state.mopidy.consume);
+  const random = useSelector((state) => state.mopidy.random);
+  const repeat = useSelector((state) => state.mopidy.repeat);
+  const streamTitle = useSelector((state) => state.core.streamTitle);
+  const currentTrackUri = useSelector((state) => state.core.current_track?.uri);
+  const currentTrack = useSelector(makeItemSelector(currentTrackUri));
+  const nextTrackUri = useSelector((state) => state.core.next_track_uri);
+  const nextTrack = useSelector(makeItemSelector(nextTrackUri));
 
-  setTransition(direction) {
-    this.setState({
-      transition_track: this.state.current_track,
-      transition_direction: direction,
-    });
+  const setTransition = (direction) => {
+    setTransitionTrack(currentTrack);
+    setTransitionDirection(direction);
 
     // Allow time for the animation to complete, then remove
     // the transitioning track from state
     setTimeout(() => {
-      this.setState({
-        transition_track: null,
-      });
+      setTransitionTrack(null);
     },
     250);
-  }
+  };
 
-  handleContextMenu = (e) => {
-    const {
-      current_track,
-    } = this.state;
-    const {
-      uiActions: {
-        showContextMenu,
-      },
-    } = this.props;
-
+  const handleContextMenu = (e) => {
     e.preventDefault();
 
-    showContextMenu({
-      e,
-      context: 'current-track',
-      items: [current_track],
-      uris: [current_track.uri],
-    });
-  }
+    dispatch(
+      showContextMenu({
+        e,
+        context: 'current-track',
+        items: [currentTrack],
+        uris: [currentTrack.uri],
+      }),
+    );
+  };
 
-  handleTouchStart = (e) => {
-    const { touch_enabled } = this.props;
+  const handleTouchStart = (e) => {
     if (!touch_enabled) return;
 
     const timestamp = Math.floor(Date.now());
 
     // Save touch start details
-    this.start_time = timestamp;
-    this.start_position = {
-      x: e.touches[0].clientX,
-    };
+    setTouchMeta({
+      start_time: timestamp,
+      start_position: {
+        x: e.touches[0].clientX,
+      },
+    });
 
     return false;
-  }
+  };
 
-  handleTouchEnd = (e) => {
-    const { touch_enabled } = this.props;
+  const handleTouchEnd = (e) => {
     if (!touch_enabled) return;
 
     const timestamp = Math.floor(Date.now());
-    const tap_distance_threshold = 10;		// Max distance (px) between touchstart and touchend to qualify as a tap
-    const tap_time_threshold = 200;			// Max time (ms) between touchstart and touchend to qualify as a tap
+    const tap_distance_threshold = 10; // Max distance (px) between touchstart and touchend to qualify as a tap
+    const tap_time_threshold = 200; // Max time (ms) between touchstart and touchend to qualify as a tap
     const end_position = {
       x: e.changedTouches[0].clientX,
     };
 
     // Too long between touchstart and touchend
-    if (this.start_time + tap_time_threshold < timestamp) {
+    if (touchMeta.start_time + tap_time_threshold < timestamp) {
       return false;
     }
 
     // Make sure there's enough distance between start and end before we handle
     // this event as a 'tap'
-    if (this.start_position.x + tap_distance_threshold > end_position.x
-			&& this.start_position.x - tap_distance_threshold < end_position.x) {
+    if (
+      touchMeta.start_position.x + tap_distance_threshold > end_position.x
+      && touchMeta.start_position.x - tap_distance_threshold < end_position.x
+    ) {
       // Scroll to top (without smooth_scroll)
       scrollTo(null, false);
-      this.props.history.push('/queue');
+      history.push('/queue');
     } else {
       // Swipe to the left = previous track
-      if (this.start_position.x < end_position.x) {
-        this.setTransition('previous');
-        this.props.mopidyActions.previous();
+      if (touchMeta.start_position.x < end_position.x) {
+        setTransition('previous');
+        dispatch(mopidyActions.previous());
 
         // Swipe to the right = skip track
-      } else if (this.start_position.x > end_position.x) {
-        this.setTransition('next');
-        this.props.mopidyActions.next();
+      } else if (touchMeta.start_position.x > end_position.x) {
+        setTransition('next');
+        dispatch(mopidyActions.next());
       }
     }
 
-    this.end_time = timestamp;
+    setTouchMeta((prev) => ({ ...prev, end_time: timestamp }));
     e.preventDefault();
-  }
+  };
 
-  renderPlayButton() {
-    let button = <button className="control play" onClick={() => this.props.mopidyActions.play()}><Icon name="play_circle_filled" type="material" /></button>;
-    if (this.props.play_state == 'playing') {
-      button = <button className="control play" onClick={() => this.props.mopidyActions.pause()}><Icon name="pause_circle_filled" type="material" /></button>;
-    }
-    return button;
-  }
+  return (
+    <div className={`playback-controls${expanded ? ' playback-controls--expanded' : ''}${touch_enabled ? ' playback-controls--touch-enabled' : ''}`}>
 
-  renderConsumeButton() {
-    let button = (
-      <button className="control tooltip" onClick={() => this.props.mopidyActions.setConsume(true)}>
-        <Icon name="restaurant" type="material" />
-        <span className="tooltip__content">
-          <I18n path="playback_controls.consume" />
-        </span>
-      </button>
-    );
-    if (this.props.consume) {
-      button = (
-        <button className="control control--active tooltip" onClick={() => this.props.mopidyActions.setConsume(false)}>
+      <div className="playback-controls__background" />
+
+      {nextTrack && nextTrack.images ? <Thumbnail className="hide" size="large" images={nextTrack.images} /> : null}
+
+      <div
+        className="current-track__wrapper"
+        transition={transitionTrack}
+        direction={transitionDirection}
+      >
+        {transitionTrack && transitionDirection && (
+          <div className="current-track current-track__outgoing">
+            <div className="text">
+              <div className="title">
+                {transitionTrack.name}
+              </div>
+              <div className="artist">
+                <LinksSentence items={transitionTrack.artists} type="artist" nolinks />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {currentTrack && (!transitionTrack || transitionTrack.tlid !== currentTrack.tlid) ? (
+          <div
+            className="current-track current-track__incoming"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+            onContextMenu={handleContextMenu}
+            tabIndex="-1"
+            key={currentTrack.tlid}
+          >
+            <Link className="thumbnail-wrapper" to="/kiosk-mode" tabIndex="-1">
+              <Thumbnail size="small" images={currentTrack.images} type="track" />
+            </Link>
+            <div className="text">
+              <div className="title">
+                {streamTitle && <span>{streamTitle}</span>}
+                {!streamTitle && currentTrack && <span>{currentTrack.name}</span>}
+                {!streamTitle && !currentTrack && <span>-</span>}
+              </div>
+              <div className="artist">
+                {
+                  (currentTrack && currentTrack.artists
+                      && <LinksSentence items={currentTrack.artists} type="artist" />)
+                  || (streamTitle && <span className="links-sentence">{streamTitle}</span>)
+                  || <LinksSentence />
+                }
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div
+            className="current-track"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+            tabIndex="-1"
+          >
+            <Link className="thumbnail-wrapper" to="/kiosk-mode" tabIndex="-1">
+              <Thumbnail size="small" type="track" />
+            </Link>
+            <div className="text">
+              <div className="title">&nbsp;</div>
+              <div className="artist">&nbsp;</div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <section className="playback">
+        <button
+          type="button"
+          className="control previous"
+          onClick={() => dispatch(mopidyActions.previous())}
+        >
+          <Icon name="navigate_before" type="material" />
+        </button>
+        {
+          play_state === 'playing' ? (
+            <button
+              type="button"
+              className="control play"
+              onClick={() => dispatch(mopidyActions.pause())}
+            >
+              <Icon name="pause_circle_filled" type="material" />
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="control play"
+              onClick={() => dispatch(mopidyActions.play())}
+            >
+              <Icon name="play_circle_filled" type="material" />
+            </button>
+          )
+        }
+        <button
+          type="button"
+          className="control next"
+          onClick={() => dispatch(mopidyActions.next())}
+        >
+          <Icon name="navigate_next" type="material" />
+        </button>
+      </section>
+
+      <section className="progress">
+        <div className="time time--current">
+          {time_position ? <Dater type="length" data={time_position} /> : '-'}
+        </div>
+        <ProgressSlider />
+        <div className="time time--total">
+          {currentTrack ? <Dater type="length" data={currentTrack.duration} /> : '-'}
+        </div>
+      </section>
+
+      <section className="settings">
+        <button
+          type="button"
+          className={`control${consume ? ' control--active' : ''} tooltip`}
+          onClick={() => dispatch(mopidyActions.setConsume(!consume))}
+        >
           <Icon name="restaurant" type="material" />
           <span className="tooltip__content">
             <I18n path="playback_controls.consume" />
           </span>
         </button>
-      );
-    }
-    return button;
-  }
-
-  renderRandomButton() {
-    let button = (
-      <button className="control tooltip" onClick={() => this.props.mopidyActions.setRandom(true)}>
-        <Icon name="shuffle" type="material" />
-        <span className="tooltip__content">
-          <I18n path="playback_controls.shuffle" />
-        </span>
-      </button>
-    );
-    if (this.props.random) {
-      button = (
-        <button className="control control--active tooltip" onClick={() => this.props.mopidyActions.setRandom(false)}>
+        <button
+          type="button"
+          className={`control${random ? ' control--active' : ''} tooltip`}
+          onClick={() => dispatch(mopidyActions.setRandom(!random))}
+        >
           <Icon name="shuffle" type="material" />
           <span className="tooltip__content">
             <I18n path="playback_controls.shuffle" />
           </span>
         </button>
-      );
-    }
-    return button;
-  }
-
-  renderRepeatButton() {
-    let button = (
-      <button className="control tooltip" onClick={() => this.props.mopidyActions.setRepeat(true)}>
-        <Icon name="repeat" />
-        <span className="tooltip__content">
-          <I18n path="playback_controls.repeat" />
-        </span>
-      </button>
-    );
-    if (this.props.repeat) {
-      button = (
-        <button className="control control--active tooltip" onClick={() => this.props.mopidyActions.setRepeat(false)}>
-          <Icon name="repeat" />
+        <button
+          type="button"
+          className={`control${repeat ? ' control--active' : ''} tooltip`}
+          onClick={() => dispatch(mopidyActions.setRepeat(!repeat))}
+        >
+          <Icon name="repeat" type="material" />
           <span className="tooltip__content">
             <I18n path="playback_controls.repeat" />
           </span>
         </button>
-      );
-    }
-    return button;
-  }
+        <OutputControl force_expanded={expanded} />
+      </section>
 
-  render() {
-    const {
-      next_track,
-      touch_enabled,
-      time_position,
-    } = this.props;
-    const {
-      current_track,
-      expanded,
-      stream_title,
-      transition_track,
-      transition_direction,
-    } = this.state;
+      <section className="volume">
+        <MuteControl
+          mute={mute}
+          onMuteChange={(value) => dispatch(mopidyActions.setMute(value))}
+        />
+        <VolumeControl
+          scrollWheel
+          volume={volume}
+          mute={mute}
+          onVolumeChange={(value) => dispatch(mopidyActions.setVolume(value))}
+        />
+      </section>
 
-    return (
-      <div className={`playback-controls${expanded ? ' playback-controls--expanded' : ''}${touch_enabled ? ' playback-controls--touch-enabled' : ''}`}>
-
-        <div className="playback-controls__background" />
-
-        {next_track && next_track.images ? <Thumbnail className="hide" size="large" images={next_track.images} /> : null}
-
-        <div
-          className="current-track__wrapper"
-          transition={transition_track}
-          direction={transition_direction}
+      <section className="triggers">
+        <button
+          type="button"
+          className="control expanded-controls"
+          onClick={() => setExpanded(!expanded)}
         >
-          {transition_track && transition_direction && (
-            <div className="current-track current-track__outgoing">
-              <div className="text">
-                <div className="title">
-                  {transition_track.name}
-                </div>
-                <div className="artist">
-                  <LinksSentence items={transition_track.artists} type="artist" nolinks />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {current_track && (!transition_track || transition_track.tlid !== current_track.tlid) ? (
-            <div
-              className="current-track current-track__incoming"
-              onTouchStart={this.handleTouchStart}
-              onTouchEnd={this.handleTouchEnd}
-              onContextMenu={this.handleContextMenu}
-              tabIndex="-1"
-              key={current_track.tlid}
-            >
-              <Link className="thumbnail-wrapper" to="/kiosk-mode" tabIndex="-1">
-                <Thumbnail size="small" images={current_track.images} type="track" />
-              </Link>
-              <div className="text">
-                <div className="title">
-                  {stream_title && <span>{stream_title}</span>}
-                  {!stream_title && current_track && <span>{current_track.name}</span>}
-                  {!stream_title && !current_track && <span>-</span>}
-                </div>
-                <div className="artist">
-                  {
-                    (current_track && current_track.artists
-                        && <LinksSentence items={current_track.artists} type="artist" />)
-                    || (stream_title && <span className="links-sentence">{stream_title}</span>)
-                    || <LinksSentence />
-                  }
-                </div>
-              </div>
-            </div>
+          {expanded ? (
+            <Icon name="expand_more" type="material" />
           ) : (
-            <div
-              className="current-track"
-              onTouchStart={this.handleTouchStart}
-              onTouchEnd={this.handleTouchEnd}
-              tabIndex="-1"
-            >
-              <Link className="thumbnail-wrapper" to="/kiosk-mode" tabIndex="-1">
-                <Thumbnail size="small" type="track" />
-              </Link>
-              <div className="text">
-                <div className="title">&nbsp;</div>
-                <div className="artist">&nbsp;</div>
-              </div>
-            </div>
+            <Icon name="expand_less" type="material" />
           )}
-        </div>
+        </button>
+        <button
+          type="button"
+          className={`control sidebar-toggle${sidebar_open ? ' open' : ''}`}
+          onClick={() => dispatch(toggleSidebar())}
+        >
+          <Icon className="open" name="menu" type="material" />
+        </button>
+      </section>
 
-        <section className="playback">
-          <button className="control previous" onClick={() => this.props.mopidyActions.previous()}>
-            <Icon name="navigate_before" type="material" />
-          </button>
-          { this.renderPlayButton() }
-          <button className="control next" onClick={() => this.props.mopidyActions.next()}>
-            <Icon name="navigate_next" type="material" />
-          </button>
-        </section>
-
-        <section className="progress">
-          <div className="time time--current">
-            {time_position ? <Dater type="length" data={time_position} /> : '-'}
-          </div>
-          <ProgressSlider />
-          <div className="time time--total">
-            {current_track ? <Dater type="length" data={current_track.duration} /> : '-'}
-          </div>
-        </section>
-
-        <section className="settings">
-          {this.renderConsumeButton()}
-          {this.renderRandomButton()}
-          {this.renderRepeatButton()}
-          <OutputControl force_expanded={this.state.expanded} />
-        </section>
-
-        <section className="volume">
-          <MuteControl
-            mute={this.props.mute}
-            onMuteChange={(mute) => this.props.mopidyActions.setMute(mute)}
-          />
-          <VolumeControl
-            scrollWheel
-            volume={this.props.volume}
-            mute={this.props.mute}
-            onVolumeChange={(percent) => this.props.mopidyActions.setVolume(percent)}
-          />
-        </section>
-
-        <section className="triggers">
-          <button className="control expanded-controls" onClick={(e) => this.setState({ expanded: !this.state.expanded })}>
-            {this.state.expanded ? <Icon name="expand_more" type="material" /> : <Icon name="expand_less" type="material" />}
-          </button>
-          <button className={`control sidebar-toggle${this.props.sidebar_open ? ' open' : ''}`} onClick={(e) => this.props.uiActions.toggleSidebar()}>
-            <Icon className="open" name="menu" type="material" />
-          </button>
-        </section>
-
-      </div>
-    );
-  }
+    </div>
+  );
 }
 
-const mapStateToProps = (state) => {
-  const {
-    items,
-    next_track_uri,
-    current_track,
-    stream_title,
-  } = state.core;
-
-  return {
-    snapcast_enabled: state.pusher.config.snapcast_enabled,
-    current_track: current_track ? items[current_track.uri] || current_track : null,
-    stream_title,
-    next_track: items[next_track_uri],
-    radio_enabled: (!!(state.ui.radio && state.ui.radio.enabled)),
-    play_state: state.mopidy.play_state,
-    time_position: state.mopidy.time_position,
-    consume: state.mopidy.consume,
-    repeat: state.mopidy.repeat,
-    random: state.mopidy.random,
-    volume: state.mopidy.volume,
-    mute: state.mopidy.mute,
-    sidebar_open: state.ui.sidebar_open,
-    slim_mode: state.ui.slim_mode,
-    touch_enabled: state.ui.playback_controls_touch_enabled,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => ({
-  coreActions: bindActionCreators(coreActions, dispatch),
-  uiActions: bindActionCreators(uiActions, dispatch),
-  mopidyActions: bindActionCreators(mopidyActions, dispatch),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(PlaybackControls);
+export default PlaybackControls;

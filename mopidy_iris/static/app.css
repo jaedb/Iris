@@ -79,6 +79,8 @@
   height: 1rem;
   position: relative;
   width: 100%; }
+
+/*# sourceMappingURL=index.css.map */
 @charset "UTF-8";
 /*!
  *  Font Awesome 4.7.0 by @davegandy - http://fontawesome.io - @fontawesome
@@ -6095,12 +6097,6 @@ h4 .loader {
   background-position: 50% 30%;
   opacity: 0;
   z-index: 1;
-}
-.parallax--animate .parallax__image {
-  -webkit-transition: all 0.5s ease-in-out;
-  -moz-transition: all 0.5s ease-in-out;
-  -o-transition: all 0.5s ease-in-out;
-  transition: all 0.5s ease-in-out;
 }
 .parallax__overlay {
   content: "";
