@@ -1,45 +1,30 @@
+import React from 'react';
+import ShallowRenderer from 'react-test-renderer/shallow'
+import App from '../src/js/App';
 
-import React from 'react';;
-import ReactDOM from 'react-dom';;
-import { Provider } from 'react-redux';
-import { createStore } from 'redux';
-import { BrowserRouter, Route, IndexRoute } from "react-router-dom";
-
-// Testing-specific
-import renderer from 'react-test-renderer';
-import { shallow, mount, render } from 'enzyme';
-
-// Test subjects
-import store from '../src/js/store';
-import * as coreActions from '../src/js/services/core/actions';
-import * as uiActions from '../src/js/services/ui/actions';
-import * as pusherActions from '../src/js/services/pusher/actions';
-import * as mopidyActions from '../src/js/services/mopidy/actions';
-import * as spotifyActions from '../src/js/services/spotify/actions';
-import * as lastfmActions from '../src/js/services/lastfm/actions';
-import * as geniusActions from '../src/js/services/genius/actions';
-import * as snapcastActions from '../src/js/services/snapcast/actions';
-import { App } from '../src/js/App';
+jest.mock('react-redux', () => ({
+  useSelector: jest.fn(),
+  useDispatch: () => jest.fn(),
+  connect: () => jest.fn(),
+}));
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useHistory: () => ({
+    location: {
+      pathname: 'iris.local:6680/iris',
+    },
+  }),
+  useLocation: () => ({
+    pathname: 'iris.local:6680/iris',
+  }),
+}));
 
 describe('<App />', () => {
-
-	it('should render', () => {
-		const dom = shallow(
-			<App
-				history={[]}
-				location={{}}
-				uiActions={uiActions}
-				coreActions={coreActions}
-				pusherActions={pusherActions}
-				mopidyActions={mopidyActions}
-				spotifyActions={spotifyActions}
-				lastfmActions={lastfmActions}
-				geniusActions={geniusActions}
-				snapcastActions={snapcastActions}
-			/>
-		);
-
-
-	});
+  it('should render', () => {
+    const renderer = new ShallowRenderer();
+    renderer.render(<App />);
+    const result = renderer.getRenderOutput();
+    expect(result.type).toEqual('div');
+    expect(Array.isArray(result.props.children)).toEqual(true);
+  });
 });
-
