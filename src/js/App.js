@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Route, Switch, useLocation } from 'react-router-dom';
+import { Route, Switch, useLocation, useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import ReactGA from 'react-ga';
 import * as Sentry from '@sentry/browser';
@@ -68,8 +68,9 @@ const App = () => {
   const [hasInteracted, setHasInteracted] = useState(false);
   const { pathname, state: { scroll_position } = {} } = useLocation();
   const dispatch = useDispatch();
+  const history = useHistory();
 
-  const language = useSelector((state) => state.ui.language); 
+  const language = useSelector((state) => state.ui.language);
   window.language = language;
   const theme = useSelector((state) => state.ui.theme);
   const wide_scrollbar_enabled = useSelector((state) => state.ui.wide_scrollbar_enabled);
@@ -133,7 +134,6 @@ const App = () => {
     }
   }, []);
 
-  // Event listeners
   useEffect(() => {
     window.addEventListener('beforeinstallprompt', handleInstallPrompt, false);
     window.addEventListener('focus', handleFocusAndBlur, false);
@@ -143,7 +143,7 @@ const App = () => {
       window.removeEventListener('beforeinstallprompt', handleInstallPrompt, false);
       window.removeEventListener('focus', handleFocusAndBlur, false);
       window.removeEventListener('blur', handleFocusAndBlur, false);
-    }
+    };
   }, []);
 
   // Primary engines
