@@ -11,6 +11,8 @@ services:
       - ./docker/snapserver.conf:/etc/snapserver.conf
   mopidy:
     image: jaedb/iris
+    environment:
+      - PIP_PACKAGES="Mopidy-SoundCloud Mopidy-MusicBox-Webclient"
     build:
       context: .
     depends_on:
