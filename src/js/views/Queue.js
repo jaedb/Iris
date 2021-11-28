@@ -38,7 +38,7 @@ const Artwork = ({
   return (
     <div className="current-track__artwork">
       <Thumbnail glow image={image} type="track">
-        <Link to="/kiosk-mode" className="thumbnail__actions__item">
+        <Link to="/modal/kiosk-mode" className="thumbnail__actions__item">
           <Icon name="expand" type="fontawesome" />
         </Link>
         <URILink type="album" uri={album_uri} className="thumbnail__actions__item">
@@ -162,7 +162,7 @@ const Queue = ({
   const options = (
     <>
       {spotify_enabled && (
-        <Button noHover discrete to="/queue/radio">
+        <Button noHover discrete to="/modal/radio">
           <Icon name="radio" />
           <I18n path="now_playing.context_actions.radio" />
         </Button>
@@ -171,7 +171,7 @@ const Queue = ({
         <Icon name="history" />
         <I18n path="now_playing.context_actions.history" />
       </Button>
-      <Button noHover discrete to="/queue/add-uri">
+      <Button noHover discrete to="/modal/add-uri">
         <Icon name="playlist_add" />
         <I18n path="actions.add" />
       </Button>

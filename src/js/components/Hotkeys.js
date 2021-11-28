@@ -95,7 +95,7 @@ const Hotkeys = () => {
       e,
       label: 'Hotkey info',
       callback: () => {
-        history.push('/hotkeys');
+        history.push('/modal/hotkeys');
       },
     });
   });

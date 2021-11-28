@@ -68,7 +68,7 @@ export default class Commands extends React.Component {
                           <a className="commands-setup__item__run-button action" onClick={(e) => this.props.runCommand(command.id, true)}>
                             <Icon name="play_arrow" />
                           </a>
-                          <Link className="commands-setup__item__edit-button action" to={`/edit-command/${command.id}`}>
+                          <Link className="commands-setup__item__edit-button action" to={`/modal/edit-command/${command.id}`}>
                             <Icon name="edit" />
                           </Link>
                         </div>

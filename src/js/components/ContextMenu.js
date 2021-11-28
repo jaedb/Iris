@@ -819,7 +819,7 @@ class ContextMenu extends React.Component {
           </a>
         </div>
         <div className="context-menu__item context-menu__item--functional">
-          <Link className="context-menu__item__link" to={`/playlist/create/${encodedUris}`}>
+          <Link className="context-menu__item__link" to={`/modal/create-playlist/${encodedUris}`}>
             <span className="context-menu__item__label">
               <Icon name="add" />
               <span>
@@ -1108,7 +1108,7 @@ class ContextMenu extends React.Component {
       <div className="context-menu__item">
         <Link
           className="context-menu__item__link"
-          to={`${buildLink(context.item.uri, 'playlist')}/edit`}
+          to={`modal/edit-playlist/${encodeUri(context.item.uri)}`}
         >
           <span className="context-menu__item__label">
             <I18n path="actions.edit" />

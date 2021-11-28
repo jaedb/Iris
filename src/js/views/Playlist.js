@@ -51,7 +51,7 @@ const Actions = ({
             <I18n path="actions.play" />
           </Button>
           <Button
-            to={`/playlist/${encodedUri}/edit`}
+            to={`/modal/edit-playlist/${encodedUri}`}
             tracking={{ category: 'Playlist', action: 'Edit' }}
           >
             <I18n path="actions.edit" />
@@ -73,7 +73,7 @@ const Actions = ({
               <I18n path="actions.play" />
             </Button>
             <Button
-              to={`/playlist/${encodedUri}/edit`}
+              to={`/modal/edit-playlist/${encodedUri}`}
               tracking={{ category: 'Playlist', action: 'Edit' }}
             >
               <I18n path="actions.edit" />

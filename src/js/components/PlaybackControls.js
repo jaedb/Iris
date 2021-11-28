@@ -155,7 +155,7 @@ const PlaybackControls = () => {
             tabIndex="-1"
             key={currentTrack.tlid}
           >
-            <Link className="thumbnail-wrapper" to="/kiosk-mode" tabIndex="-1">
+            <Link className="thumbnail-wrapper" to="/modal/kiosk-mode" tabIndex="-1">
               <Thumbnail size="small" images={currentTrack.images} type="track" />
             </Link>
             <div className="text">
@@ -181,7 +181,7 @@ const PlaybackControls = () => {
             onTouchEnd={handleTouchEnd}
             tabIndex="-1"
           >
-            <Link className="thumbnail-wrapper" to="/kiosk-mode" tabIndex="-1">
+            <Link className="thumbnail-wrapper" to="/modal/kiosk-mode" tabIndex="-1">
               <Thumbnail size="small" type="track" />
             </Link>
             <div className="text">

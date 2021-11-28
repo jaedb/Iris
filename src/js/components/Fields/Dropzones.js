@@ -53,10 +53,10 @@ const Dropzones = () => {
         dispatch(mopidyActions.enqueueURIs(uris, from_uri, true));
         break;
       case 'add_to_playlist':
-        history.push(`/add-to-playlist/${encodeUri(uris.join(','))}`);
+        history.push(`/modal/add-to-playlist/${encodeUri(uris.join(','))}`);
         break;
       case 'create_playlist_and_add':
-        history.push(`/playlist/create/${encodeUri(uris.join(','))}`);
+        history.push(`/modal/create-playlist/${encodeUri(uris.join(','))}`);
         break;
       default:
         break;

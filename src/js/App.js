@@ -28,20 +28,7 @@ import Search from './views/Search';
 import Settings from './views/Settings';
 import Discover from './views/Discover/Discover';
 import Library from './views/Library/Library';
-
-import EditPlaylist from './views/modals/EditPlaylist';
-import CreatePlaylist from './views/modals/CreatePlaylist';
-import EditRadio from './views/modals/EditRadio';
-import AddToQueue from './views/modals/AddToQueue';
-import InitialSetup from './views/modals/InitialSetup';
-import KioskMode from './views/modals/KioskMode';
-import ShareConfiguration from './views/modals/ShareConfiguration';
-import AddToPlaylist from './views/modals/AddToPlaylist';
-import ImageZoom from './views/modals/ImageZoom';
-import HotkeysInfo from './views/modals/HotkeysInfo';
-import EditCommand from './views/modals/EditCommand';
-import Reset from './views/modals/Reset';
-import Servers from './views/modals/Servers';
+import Modals from './views/Modals/Modals';
 
 import { scrollTo, isTouchDevice } from './util/helpers';
 import * as uiActions from './services/ui/actions';
@@ -177,7 +164,7 @@ const App = () => {
         dispatch(snapcastActions.connect());
       }
       if (!initial_setup_complete) {
-        history.push('/initial-setup');
+        history.push('/modal/initial-setup');
       }
     }
   }, [isReady]);
@@ -267,21 +254,10 @@ const App = () => {
     >
       <div className="body">
         <Switch>
-          <Route path="/initial-setup" component={InitialSetup} />
-          <Route path="/kiosk-mode" component={KioskMode} />
-          <Route path="/add-to-playlist/:uris" component={AddToPlaylist} />
-          <Route path="/image-zoom" component={ImageZoom} />
-          <Route path="/hotkeys" component={HotkeysInfo} />
-          <Route path="/share-configuration" component={ShareConfiguration} />
-          <Route path="/reset" component={Reset} />
-          <Route path="/servers" component={Servers} />
-          <Route path="/edit-command/:id?" component={EditCommand} />
-
-          <Route path="/queue/radio" component={EditRadio} />
-          <Route path="/queue/add-uri" component={AddToQueue} />
-          <Route path="/playlist/create/:uris?" component={CreatePlaylist} />
-          <Route path="/playlist/:uri/edit" component={EditPlaylist} />
-
+          <Route
+            path="/modal"
+            component={Modals}
+          />
           <Route>
             <div>
               <Sidebar tabIndex="3" />
