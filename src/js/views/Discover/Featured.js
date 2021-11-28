@@ -13,7 +13,7 @@ import Button from '../../components/Button';
 import { indexToArray } from '../../util/arrays';
 import { makeLoadingSelector } from '../../util/selectors';
 
-class DiscoverFeatured extends React.Component {
+class Featured extends React.Component {
   componentDidMount() {
     const {
       uris,
@@ -119,4 +119,4 @@ const mapDispatchToProps = (dispatch) => ({
   spotifyActions: bindActionCreators(spotifyActions, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(DiscoverFeatured);
+export default connect(mapStateToProps, mapDispatchToProps)(Featured);

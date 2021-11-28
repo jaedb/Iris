@@ -11,7 +11,7 @@ import { formatImages, encodeUri } from '../../util/format';
 import { I18n, i18n } from '../../locale';
 import { makeLoadingSelector } from '../../util/selectors';
 
-class LibraryBrowse extends React.Component {
+class Browse extends React.Component {
   componentDidMount() {
     this.loadDirectory();
     this.props.uiActions.setWindowTitle(i18n('library.browse.title'));
@@ -153,4 +153,4 @@ const mapDispatchToProps = (dispatch) => ({
   mopidyActions: bindActionCreators(mopidyActions, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(LibraryBrowse);
+export default connect(mapStateToProps, mapDispatchToProps)(Browse);

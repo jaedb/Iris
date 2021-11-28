@@ -7,13 +7,11 @@ import FilterField from '../../components/Fields/FilterField';
 import { Grid } from '../../components/Grid';
 import { List } from '../../components/List';
 import Icon from '../../components/Icon';
-import * as coreActions from '../../services/core/actions';
 import * as uiActions from '../../services/ui/actions';
-import * as mopidyActions from '../../services/mopidy/actions';
-import * as spotifyActions from '../../services/spotify/actions';
+import * as coreActions from '../../services/core/actions';
 import { sortItems, applyFilter } from '../../util/arrays';
+import { I18n, i18n } from '../../locale';
 import Button from '../../components/Button';
-import { i18n, I18n } from '../../locale';
 import Loader from '../../components/Loader';
 import {
   makeLibrarySelector,
@@ -23,13 +21,13 @@ import {
   getSortSelector,
 } from '../../util/selectors';
 
-const SORT_KEY = 'library_albums';
+const SORT_KEY = 'library_artists';
 const processKeys = [
-  'MOPIDY_GET_LIBRARY_ALBUMS',
-  'SPOTIFY_GET_LIBRARY_ALBUMS',
+  'MOPIDY_GET_LIBRARY_ARTISTS',
+  'SPOTIFY_GET_LIBRARY_ARTISTS',
 ];
 
-class LibraryAlbums extends React.Component {
+class Artists extends React.Component {
   constructor(props) {
     super(props);
 
@@ -45,7 +43,7 @@ class LibraryAlbums extends React.Component {
       },
     } = this.props;
 
-    setWindowTitle(i18n('library.albums.title'));
+    setWindowTitle(i18n('library.artists.title'));
     this.getLibraries();
   }
 
@@ -71,39 +69,6 @@ class LibraryAlbums extends React.Component {
     cancelProcess(processKeys);
   }
 
-  getLibraries = (forceRefetch = false) => {
-    const {
-      source,
-      providers,
-      coreActions: {
-        loadLibrary,
-      },
-    } = this.props;
-
-    let uris = [];
-    if (source === 'all') {
-      uris = providers.map((p) => p.uri);
-    } else {
-      uris.push(source);
-    }
-    uris.forEach((uri) => loadLibrary(uri, 'albums', { forceRefetch }));
-  };
-
-  handleContextMenu = (e, item) => {
-    const {
-      uiActions: {
-        showContextMenu,
-      },
-    } = this.props;
-
-    showContextMenu({
-      e,
-      context: 'album',
-      uris: [item.uri],
-      items: [item],
-    });
-  }
-
   onSortChange = (field) => {
     const {
       sortField,
@@ -123,6 +88,34 @@ class LibraryAlbums extends React.Component {
     hideContextMenu();
   }
 
+  handleContextMenu = (e, item) => {
+    const { uiActions: { showContextMenu } } = this.props;
+    showContextMenu({
+      e,
+      context: 'artist',
+      uris: [item.uri],
+      items: [item],
+    });
+  }
+
+  getLibraries = (forceRefetch = false) => {
+    const {
+      source,
+      providers,
+      coreActions: {
+        loadLibrary,
+      },
+    } = this.props;
+
+    let uris = [];
+    if (source === 'all') {
+      uris = providers.map((p) => p.uri);
+    } else {
+      uris.push(source);
+    }
+    uris.forEach((uri) => loadLibrary(uri, 'artists', { forceRefetch }));
+  };
+
   renderView = () => {
     const {
       sortField,
@@ -133,26 +126,28 @@ class LibraryAlbums extends React.Component {
     const {
       filter,
     } = this.state;
-    let { albums } = this.props;
+    let { artists } = this.props;
 
     if (loading_progress) {
-      return <Loader body loading progress={loading_progress} />;
+      return (
+        <Loader body loading progress={loading_progress} />
+      );
     }
 
     if (sortField) {
-      albums = sortItems(albums, sortField, sortReverse);
+      artists = sortItems(artists, sortField, sortReverse);
     }
 
-    if (filter && filter !== '') {
-      albums = applyFilter('name', filter, albums);
+    if (filter !== '') {
+      artists = applyFilter('name', filter, artists);
     }
 
     if (view === 'list') {
       return (
         <section className="content-wrapper">
           <List
-            items={albums}
-            details={['artists', 'tracks', 'followers']}
+            items={artists}
+            details={['albums', 'followers']}
             right_column={['source']}
             thumbnail
           />
@@ -161,25 +156,18 @@ class LibraryAlbums extends React.Component {
     }
     return (
       <section className="content-wrapper">
-        <Grid items={albums} />
+        <Grid items={artists} />
       </section>
     );
   }
 
   render = () => {
     const {
-      view,
-      source,
+      loading_progress,
       providers,
       sortField,
       sortReverse,
-      uiActions,
-      loading_progress,
     } = this.props;
-    const {
-      filter,
-      per_page,
-    } = this.state;
 
     const view_options = [
       {
@@ -202,29 +190,21 @@ class LibraryAlbums extends React.Component {
         label: i18n('fields.filters.name'),
       },
       {
-        value: 'artist',
-        label: i18n('fields.filters.artist'),
+        value: 'followers',
+        label: i18n('fields.filters.followers'),
       },
       {
-        value: 'last_modified',
-        label: i18n('fields.filters.updated'),
-      },
-      {
-        value: 'tracks',
-        label: i18n('fields.filters.tracks'),
-      },
-      {
-        value: 'uri',
-        label: i18n('fields.filters.source'),
+        value: 'popularity',
+        label: i18n('fields.filters.popularity'),
       },
     ];
 
     const options = (
       <>
         <FilterField
-          initialValue={filter}
-          handleChange={(value) => this.setState({ filter: value, limit: per_page })}
-          onSubmit={() => uiActions.hideContextMenu()}
+          initialValue={this.state.filter}
+          handleChange={(value) => this.setState({ filter: value, limit: this.state.per_page })}
+          onSubmit={(e) => this.props.uiActions.hideContextMenu()}
         />
         <DropdownField
           icon="swap_vert"
@@ -238,15 +218,15 @@ class LibraryAlbums extends React.Component {
         <DropdownField
           icon="visibility"
           name={i18n('fields.view')}
-          value={view}
+          value={this.props.view}
           valueAsLabel
           options={view_options}
-          handleChange={(val) => { uiActions.set({ library_albums_view: val }); uiActions.hideContextMenu(); }}
+          handleChange={(value) => { this.props.uiActions.set({ library_artists_view: value }); this.props.uiActions.hideContextMenu(); }}
         />
         <DropdownField
           icon="cloud"
           name={i18n('fields.source')}
-          value={source}
+          value={this.props.source}
           valueAsLabel
           options={[
             {
@@ -255,13 +235,13 @@ class LibraryAlbums extends React.Component {
             },
             ...providers.map((p) => ({ value: p.uri, label: p.title })),
           ]}
-          handleChange={(val) => { uiActions.set({ library_albums_source: val }); uiActions.hideContextMenu(); }}
+          handleChange={(value) => { this.props.uiActions.set({ library_artists_source: value }); this.props.uiActions.hideContextMenu(); }}
         />
         <Button
           noHover
           discrete
           onClick={loading_progress ? this.cancelRefresh : this.refresh}
-          tracking={{ category: 'LibraryAlbums', action: 'Refresh' }}
+          tracking={{ category: 'LibraryArtists', action: 'Refresh' }}
         >
           {loading_progress ? <Icon name="close" /> : <Icon name="refresh" /> }
           {loading_progress ? <I18n path="actions.cancel" /> : <I18n path="actions.refresh" /> }
@@ -270,10 +250,10 @@ class LibraryAlbums extends React.Component {
     );
 
     return (
-      <div className="view library-albums-view">
-        <Header options={options} uiActions={uiActions}>
-          <Icon name="album" type="material" />
-          <I18n path="library.albums.title" />
+      <div className="view library-artists-view">
+        <Header options={options} uiActions={this.props.uiActions}>
+          <Icon name="recent_actors" type="material" />
+          <I18n path="library.artists.title" />
         </Header>
         {this.renderView()}
       </div>
@@ -281,28 +261,27 @@ class LibraryAlbums extends React.Component {
   }
 }
 
-const librarySelector = makeLibrarySelector('albums');
+const librarySelector = makeLibrarySelector('artists');
 const processProgressSelector = makeProcessProgressSelector(processKeys);
-const providersSelector = makeProvidersSelector('albums');
+const providersSelector = makeProvidersSelector('artists');
 const mapStateToProps = (state) => {
   const [sortField, sortReverse] = getSortSelector(state, SORT_KEY, null);
 
   return {
     loading_progress: processProgressSelector(state),
     uri_schemes: state.mopidy.uri_schemes,
-    albums: librarySelector(state, 'albums'),
     providers: providersSelector(state),
-    view: state.ui.library_albums_view,
-    source: getLibrarySource(state, 'albums'),
+    artists: librarySelector(state, 'artists'),
+    source: getLibrarySource(state, 'artists'),
     sortField,
     sortReverse,
+    view: state.ui.library_artists_view,
   };
 };
+
 const mapDispatchToProps = (dispatch) => ({
-  coreActions: bindActionCreators(coreActions, dispatch),
   uiActions: bindActionCreators(uiActions, dispatch),
-  mopidyActions: bindActionCreators(mopidyActions, dispatch),
-  spotifyActions: bindActionCreators(spotifyActions, dispatch),
+  coreActions: bindActionCreators(coreActions, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(LibraryAlbums);
+export default connect(mapStateToProps, mapDispatchToProps)(Artists);

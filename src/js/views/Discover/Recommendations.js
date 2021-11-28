@@ -28,7 +28,7 @@ import { i18n, I18n } from '../../locale';
 import Button from '../../components/Button';
 import { decodeUri, encodeUri } from '../../util/format';
 
-class Discover extends React.Component {
+class Recommendations extends React.Component {
   constructor(props) {
     super(props);
 
@@ -588,4 +588,4 @@ const mapDispatchToProps = (dispatch) => ({
   coreActions: bindActionCreators(coreActions, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Discover);
+export default connect(mapStateToProps, mapDispatchToProps)(Recommendations);

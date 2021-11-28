@@ -17,7 +17,7 @@ import {
   makeLoadingSelector,
 } from '../../util/selectors';
 
-class DiscoverNewReleases extends React.Component {
+class NewReleases extends React.Component {
   componentDidMount() {
     const {
       new_releases,
@@ -171,4 +171,4 @@ const mapDispatchToProps = (dispatch) => ({
   spotifyActions: bindActionCreators(spotifyActions, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(DiscoverNewReleases);
+export default connect(mapStateToProps, mapDispatchToProps)(NewReleases);

@@ -64,7 +64,7 @@ const Subdirectories = ({ items, view }) => {
   );
 };
 
-class LibraryBrowseDirectory extends React.Component {
+class BrowseDirectory extends React.Component {
   constructor(props) {
     super(props);
 
@@ -269,4 +269,4 @@ const mapDispatchToProps = (dispatch) => ({
   spotifyActions: bindActionCreators(spotifyActions, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(LibraryBrowseDirectory);
+export default connect(mapStateToProps, mapDispatchToProps)(BrowseDirectory);

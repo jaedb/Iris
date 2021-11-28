@@ -16,7 +16,7 @@ import ErrorMessage from './components/ErrorMessage';
 import Stream from './components/Stream';
 
 import Album from './views/Album';
-import Artist from './views/Artist';
+import Artist from './views/Artist/Artist';
 import Playlist from './views/Playlist';
 import User from './views/User';
 import Track from './views/Track';
@@ -26,19 +26,8 @@ import QueueHistory from './views/QueueHistory';
 import Debug from './views/Debug';
 import Search from './views/Search';
 import Settings from './views/Settings';
-
-import DiscoverRecommendations from './views/Discover/DiscoverRecommendations';
-import DiscoverFeatured from './views/Discover/DiscoverFeatured';
-import DiscoverCategories from './views/Discover/DiscoverCategories';
-import DiscoverCategory from './views/Discover/DiscoverCategory';
-import DiscoverNewReleases from './views/Discover/DiscoverNewReleases';
-
-import LibraryArtists from './views/Library/LibraryArtists';
-import LibraryAlbums from './views/Library/LibraryAlbums';
-import LibraryTracks from './views/Library/LibraryTracks';
-import LibraryPlaylists from './views/Library/LibraryPlaylists';
-import LibraryBrowse from './views/Library/LibraryBrowse';
-import LibraryBrowseDirectory from './views/Library/LibraryBrowseDirectory';
+import Discover from './views/Discover/Discover';
+import Library from './views/Library/Library';
 
 import EditPlaylist from './views/modals/EditPlaylist';
 import CreatePlaylist from './views/modals/CreatePlaylist';
@@ -328,60 +317,13 @@ const App = () => {
                   <Route exact path="/uri/:uri/:name?" component={UriRedirect} />
 
                   <Route
-                    exact
-                    path="/discover/recommendations/:uri?"
-                    component={DiscoverRecommendations}
-                  />
-                  <Route
-                    exact
-                    path="/discover/featured"
-                    component={DiscoverFeatured}
-                  />
-                  <Route
-                    exact
-                    path="/discover/categories/:uri"
-                    component={DiscoverCategory}
-                  />
-                  <Route
-                    exact
-                    path="/discover/categories"
-                    component={DiscoverCategories}
-                  />
-                  <Route
-                    exact
-                    path="/discover/new-releases"
-                    component={DiscoverNewReleases}
+                    path="/discover"
+                    component={Discover}
                   />
 
                   <Route
-                    exact
-                    path="/library/artists"
-                    component={LibraryArtists}
-                  />
-                  <Route
-                    exact
-                    path="/library/albums"
-                    component={LibraryAlbums}
-                  />
-                  <Route
-                    exact
-                    path="/library/tracks"
-                    component={LibraryTracks}
-                  />
-                  <Route
-                    exact
-                    path="/library/playlists"
-                    component={LibraryPlaylists}
-                  />
-                  <Route
-                    exact
-                    path="/library/browse"
-                    component={LibraryBrowse}
-                  />
-                  <Route
-                    exact
-                    path="/library/browse/:name/:uri"
-                    component={LibraryBrowseDirectory}
+                    path="/library"
+                    component={Library}
                   />
 
                   <Route>

@@ -1,17 +1,19 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import TrackList from '../../components/TrackList';
 import Header from '../../components/Header';
 import DropdownField from '../../components/Fields/DropdownField';
 import FilterField from '../../components/Fields/FilterField';
-import { Grid } from '../../components/Grid';
-import { List } from '../../components/List';
+import LazyLoadListener from '../../components/LazyLoadListener';
 import Icon from '../../components/Icon';
-import * as uiActions from '../../services/ui/actions';
 import * as coreActions from '../../services/core/actions';
-import { sortItems, applyFilter } from '../../util/arrays';
-import { I18n, i18n } from '../../locale';
+import * as uiActions from '../../services/ui/actions';
+import * as mopidyActions from '../../services/mopidy/actions';
+import * as spotifyActions from '../../services/spotify/actions';
+import { sortItems, applyFilter, arrayOf } from '../../util/arrays';
 import Button from '../../components/Button';
+import { i18n, I18n } from '../../locale';
 import Loader from '../../components/Loader';
 import {
   makeLibrarySelector,
@@ -21,13 +23,13 @@ import {
   getSortSelector,
 } from '../../util/selectors';
 
-const SORT_KEY = 'library_artists';
+const SORT_KEY = 'library_tracks';
 const processKeys = [
-  'MOPIDY_GET_LIBRARY_ARTISTS',
-  'SPOTIFY_GET_LIBRARY_ARTISTS',
+  'MOPIDY_GET_LIBRARY_TRACKS',
+  'SPOTIFY_GET_LIBRARY_TRACKS',
 ];
 
-class LibraryArtists extends React.Component {
+class Tracks extends React.Component {
   constructor(props) {
     super(props);
 
@@ -43,7 +45,7 @@ class LibraryArtists extends React.Component {
       },
     } = this.props;
 
-    setWindowTitle(i18n('library.artists.title'));
+    setWindowTitle(i18n('library.tracks.title'));
     this.getLibraries();
   }
 
@@ -69,6 +71,39 @@ class LibraryArtists extends React.Component {
     cancelProcess(processKeys);
   }
 
+  getLibraries = (forceRefetch = false) => {
+    const {
+      source,
+      providers,
+      coreActions: {
+        loadLibrary,
+      },
+    } = this.props;
+
+    let uris = [];
+    if (source === 'all') {
+      uris = providers.map((p) => p.uri);
+    } else {
+      uris.push(source);
+    }
+    uris.forEach((uri) => loadLibrary(uri, 'tracks', { forceRefetch }));
+  };
+
+  handleContextMenu = (e, item) => {
+    const {
+      uiActions: {
+        showContextMenu,
+      },
+    } = this.props;
+
+    showContextMenu({
+      e,
+      context: 'album',
+      uris: [item.uri],
+      items: [item],
+    });
+  }
+
   onSortChange = (field) => {
     const {
       sortField,
@@ -88,97 +123,76 @@ class LibraryArtists extends React.Component {
     hideContextMenu();
   }
 
-  handleContextMenu = (e, item) => {
-    const { uiActions: { showContextMenu } } = this.props;
-    showContextMenu({
-      e,
-      context: 'artist',
-      uris: [item.uri],
-      items: [item],
-    });
-  }
-
-  getLibraries = (forceRefetch = false) => {
+  playAll = () => {
     const {
-      source,
-      providers,
-      coreActions: {
-        loadLibrary,
+      sortField,
+      sortReverse,
+      mopidyActions: {
+        playURIs,
+      },
+      uiActions: {
+        hideContextMenu,
       },
     } = this.props;
+    let { tracks } = this.props;
+    const { filter } = this.state;
 
-    let uris = [];
-    if (source === 'all') {
-      uris = providers.map((p) => p.uri);
-    } else {
-      uris.push(source);
+    if (!tracks || !tracks.length) return;
+
+    if (sortField) {
+      tracks = sortItems(tracks, sortField, sortReverse);
     }
-    uris.forEach((uri) => loadLibrary(uri, 'artists', { forceRefetch }));
-  };
+
+    if (filter && filter !== '') {
+      tracks = applyFilter('name', filter, tracks);
+    }
+
+    playURIs(arrayOf('uri', tracks));
+    hideContextMenu();
+  }
 
   renderView = () => {
     const {
       sortField,
       sortReverse,
-      view,
       loading_progress,
     } = this.props;
     const {
       filter,
     } = this.state;
-    let { artists } = this.props;
+    let { tracks } = this.props;
 
     if (loading_progress) {
-      return (
-        <Loader body loading progress={loading_progress} />
-      );
+      return <Loader body loading progress={loading_progress} />;
     }
 
     if (sortField) {
-      artists = sortItems(artists, sortField, sortReverse);
+      tracks = sortItems(tracks, sortField, sortReverse);
     }
 
-    if (filter !== '') {
-      artists = applyFilter('name', filter, artists);
+    if (filter && filter !== '') {
+      tracks = applyFilter('name', filter, tracks);
     }
 
-    if (view === 'list') {
-      return (
-        <section className="content-wrapper">
-          <List
-            items={artists}
-            details={['albums', 'followers']}
-            right_column={['source']}
-            thumbnail
-          />
-        </section>
-      );
-    }
     return (
       <section className="content-wrapper">
-        <Grid items={artists} />
+        <TrackList tracks={tracks} />
       </section>
     );
   }
 
   render = () => {
     const {
-      loading_progress,
+      source,
       providers,
       sortField,
       sortReverse,
+      uiActions,
+      loading_progress,
     } = this.props;
-
-    const view_options = [
-      {
-        value: 'thumbnails',
-        label: i18n('fields.filters.thumbnails'),
-      },
-      {
-        value: 'list',
-        label: i18n('fields.filters.list'),
-      },
-    ];
+    const {
+      filter,
+    } = this.state;
 
     const sort_options = [
       {
@@ -190,21 +204,21 @@ class LibraryArtists extends React.Component {
         label: i18n('fields.filters.name'),
       },
       {
-        value: 'followers',
-        label: i18n('fields.filters.followers'),
+        value: 'artist',
+        label: i18n('fields.filters.artist'),
       },
       {
-        value: 'popularity',
-        label: i18n('fields.filters.popularity'),
+        value: 'album',
+        label: i18n('fields.filters.album'),
       },
     ];
 
     const options = (
       <>
         <FilterField
-          initialValue={this.state.filter}
-          handleChange={(value) => this.setState({ filter: value, limit: this.state.per_page })}
-          onSubmit={(e) => this.props.uiActions.hideContextMenu()}
+          initialValue={filter}
+          handleChange={(value) => this.setState({ filter: value })}
+          onSubmit={() => uiActions.hideContextMenu()}
         />
         <DropdownField
           icon="swap_vert"
@@ -216,17 +230,9 @@ class LibraryArtists extends React.Component {
           handleChange={this.onSortChange}
         />
         <DropdownField
-          icon="visibility"
-          name={i18n('fields.view')}
-          value={this.props.view}
-          valueAsLabel
-          options={view_options}
-          handleChange={(value) => { this.props.uiActions.set({ library_artists_view: value }); this.props.uiActions.hideContextMenu(); }}
-        />
-        <DropdownField
           icon="cloud"
           name={i18n('fields.source')}
-          value={this.props.source}
+          value={source}
           valueAsLabel
           options={[
             {
@@ -235,13 +241,27 @@ class LibraryArtists extends React.Component {
             },
             ...providers.map((p) => ({ value: p.uri, label: p.title })),
           ]}
-          handleChange={(value) => { this.props.uiActions.set({ library_artists_source: value }); this.props.uiActions.hideContextMenu(); }}
+          handleChange={
+            (val) => {
+              uiActions.set({ library_tracks_source: val });
+              uiActions.hideContextMenu();
+            }
+          }
         />
+        <Button
+          onClick={this.playAll}
+          noHover
+          discrete
+          tracking={{ category: 'LibraryTracks', action: 'Play' }}
+        >
+          <Icon name="play_circle_filled" />
+          <I18n path="actions.play_all" />
+        </Button>
         <Button
           noHover
           discrete
           onClick={loading_progress ? this.cancelRefresh : this.refresh}
-          tracking={{ category: 'LibraryArtists', action: 'Refresh' }}
+          tracking={{ category: 'LibraryTracks', action: 'Refresh' }}
         >
           {loading_progress ? <Icon name="close" /> : <Icon name="refresh" /> }
           {loading_progress ? <I18n path="actions.cancel" /> : <I18n path="actions.refresh" /> }
@@ -250,10 +270,10 @@ class LibraryArtists extends React.Component {
     );
 
     return (
-      <div className="view library-artists-view">
-        <Header options={options} uiActions={this.props.uiActions}>
-          <Icon name="recent_actors" type="material" />
-          <I18n path="library.artists.title" />
+      <div className="view library-tracks-view">
+        <Header options={options} uiActions={uiActions}>
+          <Icon name="album" type="material" />
+          <I18n path="library.tracks.title" />
         </Header>
         {this.renderView()}
       </div>
@@ -261,27 +281,29 @@ class LibraryArtists extends React.Component {
   }
 }
 
-const librarySelector = makeLibrarySelector('artists');
+const librarySelector = makeLibrarySelector('tracks');
 const processProgressSelector = makeProcessProgressSelector(processKeys);
-const providersSelector = makeProvidersSelector('artists');
+const providersSelector = makeProvidersSelector('tracks');
 const mapStateToProps = (state) => {
   const [sortField, sortReverse] = getSortSelector(state, SORT_KEY, null);
 
   return {
     loading_progress: processProgressSelector(state),
-    uri_schemes: state.mopidy.uri_schemes,
+    mopidy_uri_schemes: state.mopidy.uri_schemes,
+    tracks: librarySelector(state, 'tracks'),
+    view: state.ui.library_tracks_view,
+    source: getLibrarySource(state, 'tracks'),
     providers: providersSelector(state),
-    artists: librarySelector(state, 'artists'),
-    source: getLibrarySource(state, 'artists'),
     sortField,
     sortReverse,
-    view: state.ui.library_artists_view,
   };
 };
 
 const mapDispatchToProps = (dispatch) => ({
-  uiActions: bindActionCreators(uiActions, dispatch),
   coreActions: bindActionCreators(coreActions, dispatch),
+  uiActions: bindActionCreators(uiActions, dispatch),
+  mopidyActions: bindActionCreators(mopidyActions, dispatch),
+  spotifyActions: bindActionCreators(spotifyActions, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(LibraryArtists);
+export default connect(mapStateToProps, mapDispatchToProps)(Tracks);

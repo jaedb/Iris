@@ -14,7 +14,7 @@ import { i18n, I18n } from '../../locale';
 import { indexToArray, applyFilter } from '../../util/arrays';
 import { makeLoadingSelector } from '../../util/selectors';
 
-const DiscoverCategories = ({
+const Categories = ({
   loading,
   categories: categoriesProp,
   spotifyActions: {
@@ -99,4 +99,4 @@ const mapDispatchToProps = (dispatch) => ({
   spotifyActions: bindActionCreators(spotifyActions, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(DiscoverCategories);
+export default connect(mapStateToProps, mapDispatchToProps)(Categories);

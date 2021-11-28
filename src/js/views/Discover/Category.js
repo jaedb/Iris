@@ -23,7 +23,7 @@ import { decodeUri } from '../../util/format';
 
 const SORT_KEY = 'discover_category';
 
-const DiscoverCategory = ({
+const Category = ({
   uri,
   category,
   loading,
@@ -170,4 +170,4 @@ const mapDispatchToProps = (dispatch) => ({
   spotifyActions: bindActionCreators(spotifyActions, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(DiscoverCategory);
+export default connect(mapStateToProps, mapDispatchToProps)(Category);

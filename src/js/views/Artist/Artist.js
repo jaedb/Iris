@@ -2,28 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Route, Switch, useParams, useHistory } from 'react-router-dom';
-import ErrorMessage from '../components/ErrorMessage';
-import Link from '../components/Link';
-import Thumbnail from '../components/Thumbnail';
-import Parallax from '../components/Parallax';
-import FollowButton from '../components/Fields/FollowButton';
-import ContextMenuTrigger from '../components/ContextMenuTrigger';
-import About from './Artist/About';
-import Overview from './Artist/Overview';
-import Tracks from './Artist/Tracks';
-import Related from './Artist/Related';
-import Loader from '../components/Loader';
-import * as coreActions from '../services/core/actions';
-import * as uiActions from '../services/ui/actions';
-import * as mopidyActions from '../services/mopidy/actions';
+import ErrorMessage from '../../components/ErrorMessage';
+import Link from '../../components/Link';
+import Thumbnail from '../../components/Thumbnail';
+import Parallax from '../../components/Parallax';
+import FollowButton from '../../components/Fields/FollowButton';
+import ContextMenuTrigger from '../../components/ContextMenuTrigger';
+import About from './About';
+import Overview from './Overview';
+import Tracks from './Tracks';
+import Related from './Related';
+import Loader from '../../components/Loader';
+import * as coreActions from '../../services/core/actions';
+import * as uiActions from '../../services/ui/actions';
+import * as mopidyActions from '../../services/mopidy/actions';
 import {
   uriSource,
-} from '../util/helpers';
-import { encodeUri, decodeUri } from '../util/format';
-import { arrayOf } from '../util/arrays';
-import { i18n, I18n } from '../locale';
-import Button from '../components/Button';
-import { makeItemSelector } from '../util/selectors';
+} from '../../util/helpers';
+import { encodeUri, decodeUri } from '../../util/format';
+import { arrayOf } from '../../util/arrays';
+import { i18n, I18n } from '../../locale';
+import Button from '../../components/Button';
+import { makeItemSelector } from '../../util/selectors';
 
 const Artist = () => {
   const history = useHistory();
