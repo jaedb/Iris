@@ -29,6 +29,7 @@ export default ({
   const [sortField, sortReverse] = useSelector(sortSelector);
   const {
     uri,
+    name,
     tracks,
     related_artists,
   } = artist;
@@ -100,7 +101,17 @@ export default ({
       <div className={`top-tracks col col--w${related_artists && related_artists.length > 0 ? '70' : '100'}`}>
         {tracks && <h4><I18n path="artist.overview.top_tracks" /></h4>}
         <div className="list-wrapper">
-          <TrackList className="artist-track-list" uri={uri} tracks={tracks ? tracks.slice(0, 10) : []} />
+          <TrackList
+            source={{
+              uri,
+              name,
+              type: 'artist',
+              context: 'artist',
+            }}
+            className="artist-track-list"
+            uri={uri}
+            tracks={tracks ? tracks.slice(0, 10) : []}
+          />
         </div>
       </div>
 

@@ -469,7 +469,15 @@ class Recommendations extends React.Component {
               </Button>
             </div>
           </h4>
-          <TrackList className="discover-track-list" uri={this.uri()} tracks={tracks} />
+          <TrackList
+            source={{
+              uri: this.uri(),
+              name: 'Recommendations',
+              type: 'recommendations',
+            }}
+            className="discover-track-list"
+            tracks={tracks}
+          />
         </section>
 
         <div className="col col--w5" />

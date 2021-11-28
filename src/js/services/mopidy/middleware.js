@@ -988,7 +988,7 @@ const MopidyMiddleware = (function () {
             .then(
               (response) => {
                 const tlids = response.map((track) => track.tlid);
-                store.dispatch(pusherActions.addQueueMetadata(tlids, action.from_uri));
+                store.dispatch(pusherActions.addQueueMetadata(tlids, action.from));
 
                 // Re-run the batch checker in 100ms. This allows a small window for other server
                 // requests before our next batch. A little crude but it means the server isn't
@@ -1030,7 +1030,7 @@ const MopidyMiddleware = (function () {
       }
 
       case 'MOPIDY_PLAY_URIS':
-        const { from_uri } = action;
+        const { from } = action;
         let urisToPlay = Object.assign([], action.uris);
 
         if (!urisToPlay || !urisToPlay.length) {
@@ -1072,7 +1072,7 @@ const MopidyMiddleware = (function () {
                 for (let i = 0; i < response.length; i++) {
                   tlids.push(response[i].tlid);
                 }
-                store.dispatch(pusherActions.addQueueMetadata(tlids, from_uri));
+                store.dispatch(pusherActions.addQueueMetadata(tlids, from));
               } else {
                 store.dispatch(coreActions.handleException(
                   'Mopidy: Failed to add some tracks',
@@ -1089,7 +1089,7 @@ const MopidyMiddleware = (function () {
                 // this means our UI feels snappier as the first track shows up quickly
                 setTimeout(
                   () => {
-                    store.dispatch(mopidyActions.enqueueURIs(urisToPlay, from_uri, null, 1));
+                    store.dispatch(mopidyActions.enqueueURIs(urisToPlay, from, null, 1));
                   },
                   100,
                 );

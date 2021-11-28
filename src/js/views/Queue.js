@@ -241,9 +241,13 @@ const Queue = ({
 
         <section className="list-wrapper">
           <TrackList
-            uri="iris:queue"
+            source={{
+              uri: 'iris:queue',
+              name: 'Queue',
+              type: 'queue',
+              context: 'queue',
+            }}
             show_source_icon
-            track_context="queue"
             className="queue-track-list"
             tracks={queue_tracks}
             removeTracks={onRemoveTracks}

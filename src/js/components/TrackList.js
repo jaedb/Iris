@@ -11,7 +11,7 @@ import { SmartList } from './SmartList';
 
 const TrackList = ({
   uri,
-  track_context,
+  source,
   className = '',
   show_source_icon,
   play_state,
@@ -113,7 +113,7 @@ const TrackList = ({
 
     dragStart(
       e,
-      track_context,
+      source.context,
       uri,
       nextSelectedTracks,
       nextSelectedTracks_indexes,
@@ -223,8 +223,8 @@ const TrackList = ({
 
     showContextMenu({
       e,
-      context: (track_context ? `${track_context}-track` : 'track'),
-      tracklist_uri: uri,
+      context: (source.context ? `${source.context}-track` : 'track'),
+      source,
       items: selected_tracks_digested,
       uris: selected_tracks_uris,
       indexes: selected_tracks_indexes,
@@ -318,7 +318,7 @@ const TrackList = ({
     key += `@@${track.tlid || 'none'}`;
     key += `@@${track.uri}`;
     key += `@@${uri || 'none'}`;
-    key += `@@${track_context || 'none'}`;
+    key += `@@${source.context || 'none'}`;
     return key;
   }
 
@@ -373,7 +373,7 @@ const TrackList = ({
 
   return (
     <SmartList
-      className={`list list--tracks ${track_context} ${className}`}
+      className={`list list--tracks ${source?.context} ${className}`}
       items={tracks}
       itemComponent={Track}
       itemProps={{
@@ -381,9 +381,9 @@ const TrackList = ({
         buildTrackKey,
         play_state,
         show_source_icon,
-        track_context,
+        track_context: source?.context,
         selected_tracks,
-        can_sort: track_context === 'queue' || track_context === 'editable-playlist',
+        can_sort: source.context === 'queue' || source.context === 'editable-playlist',
         mini_zones: slim_mode || isTouchDevice(),
         handleClick: onClick,
         handleDoubleClick: onDoubleClick,

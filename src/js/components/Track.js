@@ -35,7 +35,7 @@ const MiddleColumn = ({
     case 'queue': {
       content = (
         <AddedFrom
-          uri={added_from}
+          from={added_from}
           by={added_by}
           className="list__item__column__item list__item__column__item--added"
         />

@@ -217,10 +217,14 @@ const Album = () => {
           </div>
         </h4>
         <TrackList
+          source={{
+            uri: album.uri,
+            name: album.name,
+            type: 'album',
+            context: 'album',
+          }}
           className="album-track-list"
           tracks={tracks}
-          track_context="album"
-          uri={album.uri}
         />
       </section>
 

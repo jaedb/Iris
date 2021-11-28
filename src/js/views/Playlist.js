@@ -332,9 +332,13 @@ const Playlist = ({
 
       <section className="list-wrapper no-top-padding">
         <TrackList
-          uri={playlist.uri}
+          source={{
+            uri: playlist.uri,
+            name: playlist.name,
+            type: 'playlist',
+            context,
+          }}
           className="playlist-track-list"
-          track_context={context}
           tracks={tracks}
           removeTracks={removeTracks}
           reorderTracks={reorderTracks}

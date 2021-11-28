@@ -7,31 +7,16 @@ import {
   titleCase,
   uriType,
 } from '../util/helpers';
-import {
-  makeItemSelector,
-  makeLoadingSelector,
-} from '../util/selectors';
-import { loadUri } from '../services/core/actions';
 
 export default ({
   by,
-  uri,
+  from,
   className = '',
   inline,
 }) => {
-  if (!uri) return null;
-
-  const dispatch = useDispatch();
-  const from = useSelector(makeItemSelector(uri));
-  const loading = useSelector(makeLoadingSelector([`(.*)${uri}(.*)`]));
-
-  useEffect(() => {
-    if (uri && !from && !loading) {
-      dispatch(loadUri(uri));
-    }
-  }, []);
-
-  const type = from?.type || uriType(uri);
+  if (!from) return null;
+  const { uri, name } = from;
+  const type = uriType(uri);
   let link = null;
   switch (type) {
     case 'discover':
@@ -44,7 +29,7 @@ export default ({
 
     case 'browse':
       link = (
-        <URILink type={from?.type} uri={uri}>
+        <URILink type={type} uri={uri}>
           <I18n path="library.browse.title" />
         </URILink>
       );
@@ -52,7 +37,7 @@ export default ({
 
     case 'search':
       link = (
-        <URILink type={from?.type} uri={uri}>
+        <URILink type={type} uri={uri}>
           <I18n path="search.title" />
         </URILink>
       );
@@ -67,7 +52,7 @@ export default ({
       break;
 
     default:
-      link = <URILink type={type} uri={uri}>{from?.name || titleCase(type)}</URILink>;
+      link = <URILink type={type} uri={uri}>{name || titleCase(type)}</URILink>;
   }
 
   if (inline) {

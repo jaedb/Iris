@@ -226,8 +226,12 @@ class BrowseDirectory extends React.Component {
             <Subdirectories items={subdirectories} view={view} />
 
             <TrackList
+              source={{
+                uri: `iris:browse:${uri}`,
+                name: 'Browse',
+                type: 'browse',
+              }}
               tracks={tracks}
-              uri={`iris:browse:${uri}`}
               className="library-local-track-list"
             />
 

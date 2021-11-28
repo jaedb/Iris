@@ -176,7 +176,12 @@ class Tracks extends React.Component {
 
     return (
       <section className="content-wrapper">
-        <TrackList tracks={tracks} />
+        <TrackList
+          source={{
+            name: 'Tracks'
+          }}
+          tracks={tracks}
+        />
       </section>
     );
   }

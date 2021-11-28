@@ -334,12 +334,12 @@ class ContextMenu extends React.Component {
       },
       menu: {
         uris,
-        tracklist_uri,
+        source,
       } = {},
     } = this.props;
 
     hideContextMenu();
-    playURIs(uris, tracklist_uri);
+    playURIs(uris, source);
   }
 
   playPlaylist = () => {
@@ -420,12 +420,12 @@ class ContextMenu extends React.Component {
       },
       menu: {
         uris,
-        tracklist_uri,
+        source,
       } = {},
     } = this.props;
 
     hideContextMenu();
-    enqueueURIs(uris, tracklist_uri, play_next);
+    enqueueURIs(uris, source, play_next);
   }
 
   addTracksToPlaylist = (e, playlist_uri) => {
