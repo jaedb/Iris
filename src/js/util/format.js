@@ -315,6 +315,7 @@ const formatAlbum = function (data) {
   const album = { type: 'album' };
   const fields = [
     'uri',
+    'loading',
     'in_library',
     'provider',
     'name',
@@ -388,6 +389,7 @@ const formatArtist = function (data) {
   const artist = { type: 'artist' };
   const fields = [
     'uri',
+    'loading',
     'in_library',
     'provider',
     'mbid',
@@ -448,6 +450,7 @@ const formatPlaylist = function (data) {
   const playlist = { type: 'playlist' };
   const fields = [
     'uri',
+    'loading',
     'in_library',
     'snapshot_id',
     'provider',
@@ -535,6 +538,7 @@ const formatUser = function (data) {
   const user = { type: 'user' };
   const fields = [
     'id',
+    'loading',
     'in_library',
     'uri',
     'provider',
@@ -589,8 +593,8 @@ const formatUser = function (data) {
 const formatTrack = function (data) {
   const track = { type: 'track' };
   const fields = [
-    'loading',
     'uri',
+    'loading',
     'in_library',
     'is_playable',
     'tlid',

@@ -950,7 +950,10 @@ export function getArtist(uri, { full, forceRefetch } = {}) {
     }).then(
       (response) => {
         const artist = formatArtist(response);
-        dispatch(coreActions.itemLoaded(artist));
+        dispatch(coreActions.itemLoaded({
+          ...artist,
+          loading: full ? 'albums' : false,
+        }));
         dispatch(lastfmActions.getArtist(uri, artist.name, artist.mbid));
       },
     );
@@ -959,16 +962,20 @@ export function getArtist(uri, { full, forceRefetch } = {}) {
     if (full) {
       // All albums (gets all pages, may take some time to iterate them all)
       let albums = [];
+      let loading = 'albums';
       const fetchAlbums = (endpoint) => request({
         dispatch, getState, endpoint, uri,
       })
         .then((response) => {
           albums = [...albums, ...formatAlbums(response.items)];
           if (response.next) {
+            loading = 'albums';
             fetchAlbums(`${response.next}${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
           } else {
+            loading = false;
             dispatch(coreActions.itemLoaded({
               uri,
+              loading,
               albums_uris: arrayOf('uri', albums),
             }));
             dispatch(coreActions.itemsLoaded(albums));
@@ -987,6 +994,7 @@ export function getArtist(uri, { full, forceRefetch } = {}) {
           (response) => {
             dispatch(coreActions.itemLoaded({
               uri,
+              loading,
               tracks: formatTracks(response.tracks),
             }));
           },
@@ -1002,6 +1010,7 @@ export function getArtist(uri, { full, forceRefetch } = {}) {
           (response) => {
             dispatch(coreActions.itemLoaded({
               uri,
+              loading,
               related_artists: formatArtists(response.artists),
             }));
           },
@@ -1389,6 +1398,7 @@ export function getPlaylist(uri, options = {}) {
             // to accurately identify whether we've loaded *ALL* the tracks. Without this, it
             // doesn't know if we've loaded all tracks, or just the first page.
             tracks: null,
+            loading: full ? 'tracks' : null,
           }));
 
           if (full) {

@@ -215,6 +215,14 @@ export function removeFromLibrary(uri, itemUri) {
   };
 }
 
+export function setLoading(uri, loading) {
+  return {
+    type: 'SET_LOADING',
+    uri,
+    loading,
+  };
+}
+
 /**
  * Record loaders
  *

@@ -360,6 +360,7 @@ const CoreMiddleware = (function () {
             options,
           });
         });
+        next(action);
         break;
       }
 
@@ -649,8 +650,10 @@ const CoreMiddleware = (function () {
 
       case 'QUEUE_LOADED':
         store.dispatch(coreActions.tracksLoaded(action.tracks));
-        action.tracks = formatTracks(action.tracks);
-        next(action);
+        next({
+          ...action,
+          tracks: formatTracks(action.tracks),
+        });
         break;
 
       case 'ITEMS_LOADED':
@@ -658,11 +661,12 @@ const CoreMiddleware = (function () {
         action.items.forEach((item) => {
           mergedItems.push({
             ...core.items[item.uri] || {},
+            loading: false, // Action can still override this
             ...item,
           });
         });
 
-        store.dispatch(uiActions.stopLoading(arrayOf('uri', action.items)));
+        store.dispatch(uiActions.stopLoading(arrayOf('uri', action.items))); // TODO Deprecate
         store.dispatch(coreActions.updateColdStore(mergedItems));
         next({
           ...action,

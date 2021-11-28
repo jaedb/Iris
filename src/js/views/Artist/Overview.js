@@ -9,11 +9,12 @@ import RelatedArtists from '../../components/RelatedArtists';
 import { i18n, I18n } from '../../locale';
 import { sortItems, applyFilter } from '../../util/arrays';
 import { encodeUri } from '../../util/format';
-import { getSortSelector } from '../../util/selectors';
+import { makeSortSelector } from '../../util/selectors';
 import {
   hideContextMenu,
   setSort,
 } from '../../services/ui/actions';
+import Loader from '../../components/Loader';
 
 const SORT_KEY = 'artist_albums';
 
@@ -23,16 +24,16 @@ export default ({
 }) => {
   const dispatch = useDispatch();
   const [search, setSearch] = useState('');
-  const [type, setType] = useState('');
-  const [sortField, sortReverse] = useSelector(
-    (state) => getSortSelector(state, SORT_KEY, null),
-  );
+  const [type, setType] = useState(null);
+  const sortSelector = makeSortSelector(SORT_KEY, null);
+  const [sortField, sortReverse] = useSelector(sortSelector);
   const {
     uri,
     tracks,
     related_artists,
   } = artist;
   let albums = albumsProp;
+  const loadingAlbums = artist?.loading && artist.loading === 'albums';
 
   const onSortChange = (field) => {
     let reverse = false;
@@ -125,6 +126,7 @@ export default ({
       <div className="albums">
         <h4>
           <I18n path="artist.overview.albums" count={albums ? albums.length : 0} />
+          {loadingAlbums && <Loader loading mini />}
           <div className="actions-wrapper">
             <FilterField
               initialValue={search}

@@ -90,6 +90,7 @@ const ensureLoaded = ({
   // Forced refetch bypasses everything
   if (forceRefetch) {
     console.info(`Force-refetching "${uri}"`);
+    store.dispatch(coreActions.setLoading(uri, true));
     fetch();
     return;
   }
@@ -125,6 +126,7 @@ const ensureLoaded = ({
   // What about in the coldstore?
   localForage.getItem(uri).then((restoredItem) => {
     if (!restoredItem || missingDependents(restoredItem).length > 0) {
+      store.dispatch(coreActions.setLoading(uri, true));
       fetch();
       return;
     }

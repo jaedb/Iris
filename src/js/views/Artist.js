@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, useParams, useHistory } from 'react-router-dom';
 import ErrorMessage from '../components/ErrorMessage';
 import Link from '../components/Link';
 import Thumbnail from '../components/Thumbnail';
@@ -23,46 +23,43 @@ import { encodeUri, decodeUri } from '../util/format';
 import { arrayOf } from '../util/arrays';
 import { i18n, I18n } from '../locale';
 import Button from '../components/Button';
-import {
-  makeItemSelector,
-  makeLoadingSelector,
-} from '../util/selectors';
+import { makeItemSelector } from '../util/selectors';
 
-const Artist = ({
-  uri,
-  loading,
-  history,
-  artist: artistProp,
-  albums,
-  coreActions: {
-    loadArtist,
-  },
-  uiActions: {
+const Artist = () => {
+  const history = useHistory();
+  const dispatch = useDispatch();
+  const { uri: encodedUri } = useParams();
+  const uri = decodeUri(encodedUri);
+
+  const artistSelector = makeItemSelector(uri);
+  const artist = useSelector(artistSelector);
+  const albumSelector = makeItemSelector(artist?.albums_uris || []);
+  const albums = useSelector(albumSelector);
+
+  const loading = artist?.loading && artist.loading !== 'albums';
+
+  const { loadArtist } = coreActions;
+  const { playURIs } = mopidyActions;
+  const {
     setWindowTitle,
     showContextMenu,
     createNotification,
-  },
-  mopidyActions: {
-    playURIs,
-  },
-}) => {
-  const [artist, setArtist] = useState({});
+  } = uiActions;
 
   useEffect(
     () => {
-      if (uri) loadArtist(uri, { full: true });
+      if (uri) dispatch(loadArtist(uri, { full: true }));
     },
     [uri],
   );
 
   useEffect(() => {
-    if (artistProp) {
-      setWindowTitle(i18n('artist.title_window', { name: artistProp.name }));
+    if (artist) {
+      dispatch(setWindowTitle(i18n('artist.title_window', { name: artist.name })));
     } else {
-      setWindowTitle(i18n('artist.title'));
+      dispatch(setWindowTitle(i18n('artist.title')));
     }
-    setArtist(artistProp);
-  }, [artistProp]);
+  }, [artist]);
 
   const onPlayAll = () => {
     const {
@@ -71,20 +68,22 @@ const Artist = ({
     } = artist;
 
     if ((!albums_uris || !albums_uris.length) && (!tracks || !tracks.length)) {
-      createNotification({ content: i18n('errors.no_results'), level: 'warning' });
+      dispatch(createNotification({ content: i18n('errors.no_results'), level: 'warning' }));
       return;
     }
 
-    playURIs(arrayOf('uri', tracks) || albums_uris, uri);
-  }
+    dispatch(playURIs(arrayOf('uri', tracks) || albums_uris, uri));
+  };
 
-  const handleContextMenu = (e) => showContextMenu({
-    e,
-    context: 'artist',
-    items: [artist],
-    uris: [uri],
-    tracklist_uri: uri,
-  });
+  const handleContextMenu = (e) => dispatch(
+    showContextMenu({
+      e,
+      context: 'artist',
+      items: [artist],
+      uris: [uri],
+      tracklist_uri: uri,
+    }),
+  );
 
   if (loading) {
     return <Loader body loading />;
@@ -202,32 +201,4 @@ const Artist = ({
   );
 }
 
-const mapStateToProps = (state, props) => {
-  const uri = decodeUri(props.match.params.uri);
-  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`, '^((?!contains).)*$', '^((?!albums).)*$', '^((?!related-artists).)*$', '^((?!top-tracks).)*$', '^((?!following).)*$']);
-  const artistSelector = makeItemSelector(uri);
-  const artist = artistSelector(state);
-  let albums = null;
-  if (artist && artist.albums_uris) {
-    const albumsSelector = makeItemSelector(artist.albums_uris);
-    albums = albumsSelector(state);
-  }
-
-  return {
-    uri,
-    artist,
-    albums,
-    loading: loadingSelector(state),
-    theme: state.ui.theme,
-    slim_mode: state.ui.slim_mode,
-    spotify_authorized: state.spotify.authorization,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => ({
-  coreActions: bindActionCreators(coreActions, dispatch),
-  uiActions: bindActionCreators(uiActions, dispatch),
-  mopidyActions: bindActionCreators(mopidyActions, dispatch),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Artist);
+export default Artist;

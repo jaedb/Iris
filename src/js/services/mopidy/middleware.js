@@ -1242,6 +1242,12 @@ const MopidyMiddleware = (function () {
             type: 'playlist',
           });
           if (response.tracks && fetchTracks) {
+            store.dispatch(coreActions.itemLoaded({
+              ...playlist,
+              tracks: undefined,
+              loading: 'tracks',
+            }));
+
             request(store, 'library.lookup', { uris: arrayOf('uri', response.tracks) })
               .then((tracksResponse) => {
                 const tracks = response.tracks.map((simpleTrack) => {
