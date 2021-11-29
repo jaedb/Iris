@@ -35,9 +35,11 @@ const PlaybackControls = () => {
   const repeat = useSelector((state) => state.mopidy.repeat);
   const streamTitle = useSelector((state) => state.core.streamTitle);
   const currentTrackUri = useSelector((state) => state.core.current_track?.uri);
-  const currentTrack = useSelector(makeItemSelector(currentTrackUri));
+  const currentTrackSelector = makeItemSelector(currentTrackUri);
+  const currentTrack = useSelector(currentTrackSelector);
   const nextTrackUri = useSelector((state) => state.core.next_track_uri);
-  const nextTrack = useSelector(makeItemSelector(nextTrackUri));
+  const nextTrackSelector = makeItemSelector(nextTrackUri);
+  const nextTrack = useSelector(nextTrackSelector);
 
   const setTransition = (direction) => {
     setTransitionTrack(currentTrack);

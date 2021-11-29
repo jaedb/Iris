@@ -751,28 +751,22 @@ class IrisCore(pykka.ThreadingActor):
             self.add_radio_metadata(added)
 
     def add_radio_metadata(self, added):
-        seeds = ""
+        seeds = []
         if len(self.radio["seed_artists"]) > 0:
-            seeds = seeds + (",".join(self.radio["seed_artists"])).replace(
-                "spotify:artist:", "spotify_artist_"
-            )
+            seeds = seeds + self.radio["seed_artists"]
         if len(self.radio["seed_tracks"]) > 0:
-            if seeds != "":
-                seeds = seeds + ","
-            seeds = seeds + (",".join(self.radio["seed_tracks"])).replace(
-                "spotify:track:", "spotify_track_"
-            )
+            seeds = seeds + self.radio["seed_tracks"]
         if len(self.radio["seed_genres"]) > 0:
-            if seeds != "":
-                seeds = seeds + ","
-            seeds = seeds + (",".join(self.radio["seed_genres"])).replace(
-                "spotify:genre:", "spotify_genre_"
-            )
+            seeds = seeds + self.radio["seed_genres"]
 
         metadata = {
             "tlids": [],
             "added_by": "Radio",
-            "added_from": "iris:radio:" + seeds,
+            "added_from": {
+                "name": "Radio",
+                "type": "radio",
+                "seeds": seeds
+            }
         }
         for added_tltrack in added.get():
             metadata["tlids"].append(added_tltrack.tlid)
