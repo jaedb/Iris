@@ -5,7 +5,7 @@ import { SourceIcon } from './Icon';
 import Thumbnail from './Thumbnail';
 import LinksSentence from './LinksSentence';
 import { I18n } from '../locale';
-import { encodeUri } from '../util/format';
+import { encodeUri, formatSimpleObject } from '../util/format';
 
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
@@ -75,7 +75,7 @@ const GridItem = ({
     dispatch(
       uiActions.showContextMenu({
         e,
-        context: item.type,
+        source: formatSimpleObject(item),
         uris: [item.uri],
         items: [item],
         tracklist_uri: item.uri, // not needed?

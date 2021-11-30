@@ -206,6 +206,7 @@ const formatSimpleObject = function (data) {
   const fields = [
     'uri',
     'name',
+    'type',
   ];
 
   for (const field of fields) {

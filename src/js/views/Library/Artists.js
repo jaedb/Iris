@@ -20,6 +20,7 @@ import {
   makeProvidersSelector,
   getSortSelector,
 } from '../../util/selectors';
+import { formatSimpleObject } from '../../util/format';
 
 const SORT_KEY = 'library_artists';
 const processKeys = [
@@ -92,7 +93,7 @@ class Artists extends React.Component {
     const { uiActions: { showContextMenu } } = this.props;
     showContextMenu({
       e,
-      context: 'artist',
+      source: formatSimpleObject(item),
       uris: [item.uri],
       items: [item],
     });

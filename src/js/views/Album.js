@@ -23,7 +23,7 @@ import { uriSource } from '../util/helpers';
 import Button from '../components/Button';
 import { makeItemSelector, makeSortSelector } from '../util/selectors';
 import { applyFilter, sortItems } from '../util/arrays';
-import { decodeUri } from '../util/format';
+import { decodeUri, formatSimpleObject } from '../util/format';
 
 const SORT_KEY = 'album_tracks';
 
@@ -92,10 +92,22 @@ const Album = () => {
     );
   }
 
+  const play = () => {
+    dispatch(playURIs(
+      [uri],
+      {
+        uri,
+        name: album?.name,
+        type: 'album',
+        context: 'album',
+      },
+    ));
+  };
+
   const handleContextMenu = (e) => dispatch(
     showContextMenu({
       e,
-      context: 'album',
+      source: formatSimpleObject(album),
       items: [album],
       uris: [uri],
     }),
@@ -182,7 +194,7 @@ const Album = () => {
       <div className="actions">
         <Button
           type="primary"
-          onClick={() => dispatch(playURIs([uri], uri))}
+          onClick={play}
           tracking={{ category: 'Album', action: 'Play' }}
         >
           <I18n path="actions.play" />

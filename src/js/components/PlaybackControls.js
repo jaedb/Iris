@@ -15,6 +15,7 @@ import { showContextMenu, toggleSidebar } from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import { I18n } from '../locale';
 import { makeItemSelector } from '../util/selectors';
+import { formatSimpleObject } from '../util/format';
 
 const PlaybackControls = () => {
   const [expanded, setExpanded] = useState();
@@ -59,7 +60,10 @@ const PlaybackControls = () => {
     dispatch(
       showContextMenu({
         e,
-        context: 'current-track',
+        source: {
+          ...formatSimpleObject(currentTrack),
+          context: 'current-track',
+        },
         items: [currentTrack],
         uris: [currentTrack.uri],
       }),

@@ -24,7 +24,7 @@ import { uriSource } from '../util/helpers';
 import { i18n, I18n } from '../locale';
 import { makeItemSelector, makeSortSelector } from '../util/selectors';
 import { sortItems, applyFilter } from '../util/arrays';
-import { decodeUri, encodeUri } from '../util/format';
+import { decodeUri, encodeUri, formatSimpleObject } from '../util/format';
 
 const SORT_KEY = 'playlist_tracks';
 
@@ -170,7 +170,7 @@ const Playlist = ({
 
   const handleContextMenu = (e) => showContextMenu({
     e,
-    context: 'playlist',
+    source: formatSimpleObject(playlist),
     items: [{ name, ...playlist }],
     uris: [uri],
   });

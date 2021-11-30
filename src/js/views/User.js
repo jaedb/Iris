@@ -15,7 +15,7 @@ import * as spotifyActions from '../services/spotify/actions';
 import {
   getFromUri,
 } from '../util/helpers';
-import { decodeUri } from '../util/format';
+import { decodeUri, formatSimpleObject } from '../util/format';
 import { i18n, I18n } from '../locale';
 import {
   makeItemSelector,
@@ -62,7 +62,7 @@ class User extends React.Component {
 
     showContextMenu({
       e,
-      context: 'user',
+      source: formatSimpleObject(user),
       items: [user],
       uris: [uri],
     });

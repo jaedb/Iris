@@ -870,7 +870,11 @@ const MopidyMiddleware = (function () {
                   sortReverse,
                 ),
               ),
-              action.uri,
+              {
+                uri: playlist?.uri,
+                name: playlist?.name,
+                type: 'playlist',
+              },
               action.shuffle,
             ),
           );

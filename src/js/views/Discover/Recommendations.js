@@ -204,7 +204,12 @@ class Recommendations extends React.Component {
 
     showContextMenu({
       e,
-      context: 'track',
+      source: {
+        uri: 'TODO',
+        name: 'Recommendations',
+        type: 'recommendations',
+        context: 'track',
+      },
       items: tracks,
       uris: arrayOf('uri', tracks),
       tracklist_uri: this.uri(),

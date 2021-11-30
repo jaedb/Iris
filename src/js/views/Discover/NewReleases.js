@@ -16,6 +16,7 @@ import {
   makeItemSelector,
   makeLoadingSelector,
 } from '../../util/selectors';
+import { formatSimpleObject } from '../../util/format';
 
 class NewReleases extends React.Component {
   componentDidMount() {
@@ -79,7 +80,7 @@ class NewReleases extends React.Component {
     e.preventDefault();
     showContextMenu({
       e,
-      context: 'album',
+      source: formatSimpleObject(item),
       uris: [item.uri],
       items: [item],
     });

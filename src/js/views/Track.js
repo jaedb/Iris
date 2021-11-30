@@ -22,7 +22,7 @@ import { sourceIcon } from '../util/helpers';
 import { i18n, I18n } from '../locale';
 import Button from '../components/Button';
 import { makeLoadingSelector, makeItemSelector } from '../util/selectors';
-import { decodeUri, encodeUri } from '../util/format';
+import { decodeUri, encodeUri, formatSimpleObject } from '../util/format';
 import URILink from '../components/URILink';
 
 const LyricsSelector = ({
@@ -197,7 +197,7 @@ class Track extends React.Component {
 
     showContextMenu({
       e,
-      context: 'track',
+      source: formatSimpleObject(track),
       items: [track],
       uris: [uri],
     });
@@ -206,10 +206,21 @@ class Track extends React.Component {
   play = () => {
     const {
       uri,
+      track: {
+        name,
+      } = {},
       mopidyActions: { playURIs },
     } = this.props;
 
-    playURIs([uri], uri);
+    playURIs(
+      [uri],
+      {
+        uri,
+        name,
+        type: 'track',
+        context: 'track',
+      },
+    );
   }
 
   render = () => {

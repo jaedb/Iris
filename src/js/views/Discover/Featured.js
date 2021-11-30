@@ -12,6 +12,7 @@ import { i18n, I18n } from '../../locale';
 import Button from '../../components/Button';
 import { indexToArray } from '../../util/arrays';
 import { makeLoadingSelector } from '../../util/selectors';
+import { formatSimpleObject } from '../../util/format';
 
 class Featured extends React.Component {
   componentDidMount() {
@@ -52,7 +53,7 @@ class Featured extends React.Component {
     e.preventDefault();
     const data = {
       e,
-      context: 'playlist',
+      source: formatSimpleObject(item),
       uris: [item.uri],
       items: [item],
     };

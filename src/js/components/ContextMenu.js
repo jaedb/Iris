@@ -113,50 +113,22 @@ class ContextMenu extends React.Component {
 
   getContext(props = this.props) {
     const {
-      menu,
+      menu: {
+        items,
+      },
+      source = {},
     } = props;
-    const context = {
+    return {
       name: null,
-      nice_name: 'Unknown',
-      is_track: false,
+      source: uriSource(source.uri),
+      is_track: source.type === 'track',
+      is_loved: this.isLoved(source),
+      is_pinned: this.isPinned(source),
+      items_count: items.length,
+      item: items[0],
+      context: source?.context || source?.type,
+      ...source,
     };
-
-    if (menu && menu.context) {
-      context.name = menu.context;
-      context.nice_name = menu.context;
-
-      // handle ugly labels
-      switch (menu.context) {
-        case 'playlist':
-        case 'editable-playlist':
-          context.nice_name = 'playlist';
-          break;
-
-        case 'track':
-        case 'queue-track':
-        case 'playlist-track':
-        case 'editable-playlist-track':
-          context.nice_name = 'track';
-          context.is_track = true;
-          break;
-      }
-
-      // Consider the object(s) themselves
-      // We can only really accommodate the first item. The only instances where
-      // there is multiple is tracklists, when they're all of the same source (except search?)
-      if (menu.items && menu.items.length > 0) {
-        const item = menu.items[0];
-        context.item = item;
-        context.items_count = menu.items.length;
-        context.source = uriSource(item.uri);
-        context.type = uriType(item.uri);
-        context.in_library = item.in_library;
-        context.is_loved = this.isLoved(item);
-        context.is_pinned = this.isPinned(item);
-      }
-    }
-
-    return context;
   }
 
   handleScroll = () => {
@@ -680,7 +652,7 @@ class ContextMenu extends React.Component {
       return (
         <div className="context-menu__title">
           <div className="context-menu__title__text">
-            {`${context.items_count} ${context.nice_name}${context.items_count > 1 ? 's' : ''} selected`}
+            {`${context.items_count} ${context.name}${context.items_count > 1 ? 's' : ''} selected`}
             <span
               className="context-menu__title__deselect"
               onClick={() => {
@@ -1108,7 +1080,7 @@ class ContextMenu extends React.Component {
       <div className="context-menu__item">
         <Link
           className="context-menu__item__link"
-          to={`modal/edit-playlist/${encodeUri(context.item.uri)}`}
+          to={`modal/edit-playlist/${encodeUri(context.uri)}`}
         >
           <span className="context-menu__item__label">
             <I18n path="actions.edit" />
@@ -1189,7 +1161,7 @@ class ContextMenu extends React.Component {
             <div className="context-menu__divider" />
             {context.source === 'spotify' && go_to_user}
             {copy_uris}
-            {context.items_count === 1 && context.item.can_edit && (
+            {context.items_count === 1 && context.can_edit && (
               <div>
                 <div className="context-menu__divider" />
                 {edit_playlist}

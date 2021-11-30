@@ -10,7 +10,7 @@ import Icon, { SourceIcon } from './Icon';
 import Thumbnail from './Thumbnail';
 import Popularity from './Popularity';
 import { I18n } from '../locale';
-import { encodeUri } from '../util/format';
+import { encodeUri, formatSimpleObject } from '../util/format';
 import { updateScrollPosition } from './Link';
 
 import * as uiActions from '../services/ui/actions';
@@ -115,7 +115,7 @@ const ListItem = ({
     dispatch(
       uiActions.showContextMenu({
         e,
-        context: item.type,
+        source: formatSimpleObject(item),
         uris: [item.uri],
         items: [item],
         tracklist_uri: item.uri, // not needed?

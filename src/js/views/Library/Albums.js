@@ -98,7 +98,11 @@ class Albums extends React.Component {
 
     showContextMenu({
       e,
-      context: 'album',
+      source: {
+        uri: item?.uri,
+        name: item?.name,
+        type: 'album',
+      },
       uris: [item.uri],
       items: [item],
     });

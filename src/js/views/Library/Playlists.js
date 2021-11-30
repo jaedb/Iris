@@ -22,6 +22,7 @@ import {
   getLibrarySource,
   getSortSelector,
 } from '../../util/selectors';
+import { formatSimpleObject } from '../../util/format';
 
 const SORT_KEY = 'library_playlists';
 const processKeys = [
@@ -112,7 +113,7 @@ class Playlists extends React.Component {
   handleContextMenu(e, item) {
     const data = {
       e,
-      context: 'playlist',
+      source: formatSimpleObject(item),
       uris: [item.uri],
       items: [item],
     };

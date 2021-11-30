@@ -19,6 +19,7 @@ import {
   formatAlbums,
   formatImages,
   formatTrack,
+  formatSimpleObject,
   injectSortId,
 } from '../../util/format';
 import URILink from '../../components/URILink';
@@ -1045,7 +1046,7 @@ export function playArtistTopTracks(uri) {
     // Do we have this artist (and their tracks) in our index already?
     if (artist && artist.tracks) {
       const uris = arrayOf('uri', artist.tracks);
-      dispatch(mopidyActions.playURIs(uris, uri));
+      dispatch(mopidyActions.playURIs(uris, formatSimpleObject(artist)));
     } else {
       let endpoint = `artists/${getFromUri('artistid', uri)}`;
       endpoint += `/top-tracks?country=${getState().spotify.country}`;
@@ -1053,7 +1054,7 @@ export function playArtistTopTracks(uri) {
         .then(
           (response) => {
             const uris = arrayOf('uri', response.tracks);
-            dispatch(mopidyActions.playURIs(uris, uri));
+            dispatch(mopidyActions.playURIs(uris, formatSimpleObject(artist)));
           },
         );
     }
@@ -1338,7 +1339,10 @@ export function getPlaylistTracks(uri, { forceRefetch, callbackAction } = {}) {
               case 'enqueue':
                 dispatch(mopidyActions.enqueueURIs(
                   arrayOf('uri', tracks),
-                  uri,
+                  {
+                    uri,
+                    type: 'playlist',
+                  },
                   callbackAction.play_next,
                   callbackAction.at_position,
                   callbackAction.offset,
@@ -1347,7 +1351,10 @@ export function getPlaylistTracks(uri, { forceRefetch, callbackAction } = {}) {
               case 'play':
                 dispatch(mopidyActions.playURIs(
                   arrayOf('uri', tracks),
-                  uri,
+                  {
+                    uri,
+                    type: 'playlist',
+                  },
                   callbackAction.shuffle,
                 ));
                 break;

@@ -17,7 +17,9 @@ export default memo(({
     e.preventDefault();
     const data = {
       e,
-      context: 'custom',
+      source: {
+        context: 'custom',
+      },
       title,
       options,
     };

@@ -8,6 +8,7 @@ import { isTouchDevice } from '../util/helpers';
 import { arrayOf } from '../util/arrays';
 import { i18n } from '../locale';
 import { SmartList } from './SmartList';
+import { formatSimpleObject } from '../util/format';
 
 const TrackList = ({
   uri,
@@ -223,8 +224,10 @@ const TrackList = ({
 
     showContextMenu({
       e,
-      context: (source.context ? `${source.context}-track` : 'track'),
-      source,
+      source: {
+        context: (source.context ? `${source.context}-track` : 'track'),
+        ...formatSimpleObject(source),
+      },
       items: selected_tracks_digested,
       uris: selected_tracks_uris,
       indexes: selected_tracks_indexes,

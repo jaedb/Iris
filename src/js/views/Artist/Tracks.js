@@ -17,6 +17,7 @@ const SORT_KEY = 'artist_tracks';
 export default ({
   artist: {
     uri,
+    name,
     tracks: tracksProp,
   } = {},
 }) => {
@@ -85,9 +86,13 @@ export default ({
         </h4>
         <TrackList
           className="artist-track-list"
-          uri={uri}
+          source={{
+            uri,
+            name,
+            type: 'artist',
+            context: 'artist',
+          }}
           tracks={tracks}
-          track_context="artist"
         />
       </section>
     </div>
