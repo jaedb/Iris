@@ -115,8 +115,8 @@ class ContextMenu extends React.Component {
     const {
       menu: {
         items,
+        source = {},
       },
-      source = {},
     } = props;
     return {
       name: null,
@@ -616,16 +616,16 @@ class ContextMenu extends React.Component {
         uris,
       } = {},
     } = this.props;
-    const { nice_name } = this.getContext();
+    const { type } = this.getContext();
+    const uri = uris[0];
 
-    switch (nice_name) {
+    switch (type) {
       case 'artist':
       case 'album':
       case 'playlist':
       case 'track':
       case 'user':
-        const uri = uris[0];
-        actions[`load${titleCase(nice_name)}`](uri, { forceRefetch: true, full: true });
+        actions[`load${titleCase(type)}`](uri, { forceRefetch: true, full: true });
         break;
       default:
         actions.handleException(`Cannot refresh; unexpected URI: ${uri}`);
@@ -652,7 +652,7 @@ class ContextMenu extends React.Component {
       return (
         <div className="context-menu__title">
           <div className="context-menu__title__text">
-            {`${context.items_count} ${context.name}${context.items_count > 1 ? 's' : ''} selected`}
+            {`${context.items_count} ${context.type}${context.items_count > 1 ? 's' : ''} selected`}
             <span
               className="context-menu__title__deselect"
               onClick={() => {
@@ -667,7 +667,7 @@ class ContextMenu extends React.Component {
       );
     }
 
-    if (context.items_count === 1 && context.name === 'queue-track' && context.item !== undefined) {
+    if (context.items_count === 1 && context.context === 'queue-track' && context.item !== undefined) {
       if (queue_metadata[`tlid_${context.item.tlid}`] !== undefined) {
         const {
           added_from,
@@ -686,7 +686,7 @@ class ContextMenu extends React.Component {
       }
     }
 
-    if (context.name === 'custom') {
+    if (context.type === 'custom') {
       if (!title) return null;
 
       return (
@@ -1119,7 +1119,7 @@ class ContextMenu extends React.Component {
       </div>
     );
 
-    switch (context.name) {
+    switch (context.context) {
       case 'album':
         return (
           <div>
