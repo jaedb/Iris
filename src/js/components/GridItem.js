@@ -75,10 +75,8 @@ const GridItem = ({
     dispatch(
       uiActions.showContextMenu({
         e,
-        source: formatSimpleObject(item),
-        uris: [item.uri],
-        items: [item],
-        tracklist_uri: item.uri, // not needed?
+        type: item.type,
+        item,
       }),
     );
   };

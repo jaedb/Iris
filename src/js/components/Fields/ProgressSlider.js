@@ -3,7 +3,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setTimePosition } from '../../services/mopidy/actions';
 import { throttle } from '../../util/helpers';
 
-const ProgressSlider = () => {
+const ProgressSlider = ({
+  size,
+}) => {
   const dispatch = useDispatch();
   const connected = useSelector((state) => state.mopidy.connected);
   const time_position = useSelector((state) => state.mopidy.time_position);
@@ -35,8 +37,11 @@ const ProgressSlider = () => {
         className="slider__input"
         onChange={onChange}
       />
-      <div className="slider__track">
-        <div className="slider__track__progress" style={{ width: `${percent}%` }} />
+      <div className={`slider__track slider__track--${size}`}>
+        <div
+          className={`slider__track__progress slider__track__progress--${size}`}
+          style={{ width: `${percent}%` }}
+        />
       </div>
     </div>
   );

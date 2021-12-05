@@ -99,7 +99,6 @@ const Album = () => {
         uri,
         name: album?.name,
         type: 'album',
-        context: 'album',
       },
     ));
   };
@@ -107,9 +106,8 @@ const Album = () => {
   const handleContextMenu = (e) => dispatch(
     showContextMenu({
       e,
-      source: formatSimpleObject(album),
-      items: [album],
-      uris: [uri],
+      item: album,
+      type: 'album',
     }),
   );
 
@@ -229,12 +227,7 @@ const Album = () => {
           </div>
         </h4>
         <TrackList
-          source={{
-            uri: album.uri,
-            name: album.name,
-            type: 'album',
-            context: 'album',
-          }}
+          context={album}
           className="album-track-list"
           tracks={tracks}
         />

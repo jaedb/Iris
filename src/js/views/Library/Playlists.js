@@ -110,16 +110,6 @@ class Playlists extends React.Component {
     hideContextMenu();
   }
 
-  handleContextMenu(e, item) {
-    const data = {
-      e,
-      source: formatSimpleObject(item),
-      uris: [item.uri],
-      items: [item],
-    };
-    this.props.uiActions.showContextMenu(data);
-  }
-
   renderView = () => {
     const {
       sortField,
@@ -269,7 +259,7 @@ class Playlists extends React.Component {
           {loading_progress ? <I18n path="actions.cancel" /> : <I18n path="actions.refresh" /> }
         </Button>
         <Button
-          to="/playlist/create"
+          to="/modal/create-playlist"
           noHover
           discrete
           tracking={{ category: 'Playlist', action: 'Create' }}

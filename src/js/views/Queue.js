@@ -231,10 +231,10 @@ const Queue = ({
 
         <section className="list-wrapper">
           <TrackList
-            source={{
+            context={{
               uri: 'iris:queue',
               name: 'Queue',
-              type: 'queue',
+              type: 'track',
               context: 'queue',
             }}
             show_source_icon

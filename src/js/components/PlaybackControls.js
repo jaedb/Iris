@@ -42,18 +42,6 @@ const PlaybackControls = () => {
   const nextTrackSelector = makeItemSelector(nextTrackUri);
   const nextTrack = useSelector(nextTrackSelector);
 
-  const setTransition = (direction) => {
-    setTransitionTrack(currentTrack);
-    setTransitionDirection(direction);
-
-    // Allow time for the animation to complete, then remove
-    // the transitioning track from state
-    setTimeout(() => {
-      setTransitionTrack(null);
-    },
-    250);
-  };
-
   const handleContextMenu = (e) => {
     e.preventDefault();
 
@@ -70,63 +58,6 @@ const PlaybackControls = () => {
     );
   };
 
-  const handleTouchStart = (e) => {
-    if (!touch_enabled) return;
-
-    const timestamp = Math.floor(Date.now());
-
-    // Save touch start details
-    setTouchMeta({
-      start_time: timestamp,
-      start_position: {
-        x: e.touches[0].clientX,
-      },
-    });
-
-    return false;
-  };
-
-  const handleTouchEnd = (e) => {
-    if (!touch_enabled) return;
-
-    const timestamp = Math.floor(Date.now());
-    const tap_distance_threshold = 10; // Max distance (px) between touchstart and touchend to qualify as a tap
-    const tap_time_threshold = 200; // Max time (ms) between touchstart and touchend to qualify as a tap
-    const end_position = {
-      x: e.changedTouches[0].clientX,
-    };
-
-    // Too long between touchstart and touchend
-    if (touchMeta.start_time + tap_time_threshold < timestamp) {
-      return false;
-    }
-
-    // Make sure there's enough distance between start and end before we handle
-    // this event as a 'tap'
-    if (
-      touchMeta.start_position.x + tap_distance_threshold > end_position.x
-      && touchMeta.start_position.x - tap_distance_threshold < end_position.x
-    ) {
-      // Scroll to top (without smooth_scroll)
-      scrollTo(null, false);
-      history.push('/queue');
-    } else {
-      // Swipe to the left = previous track
-      if (touchMeta.start_position.x < end_position.x) {
-        setTransition('previous');
-        dispatch(mopidyActions.previous());
-
-        // Swipe to the right = skip track
-      } else if (touchMeta.start_position.x > end_position.x) {
-        setTransition('next');
-        dispatch(mopidyActions.next());
-      }
-    }
-
-    setTouchMeta((prev) => ({ ...prev, end_time: timestamp }));
-    e.preventDefault();
-  };
-
   return (
     <div className={`playback-controls${expanded ? ' playback-controls--expanded' : ''}${touch_enabled ? ' playback-controls--touch-enabled' : ''}`}>
 
@@ -134,32 +65,12 @@ const PlaybackControls = () => {
 
       {nextTrack && nextTrack.images ? <Thumbnail className="hide" size="large" images={nextTrack.images} /> : null}
 
-      <div
-        className="current-track__wrapper"
-        transition={transitionTrack}
-        direction={transitionDirection}
-      >
-        {transitionTrack && transitionDirection && (
-          <div className="current-track current-track__outgoing">
-            <div className="text">
-              <div className="title">
-                {transitionTrack.name}
-              </div>
-              <div className="artist">
-                <LinksSentence items={transitionTrack.artists} type="artist" nolinks />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {currentTrack && (!transitionTrack || transitionTrack.tlid !== currentTrack.tlid) ? (
+      <div className="current-track__wrapper">
+        {currentTrack ? (
           <div
-            className="current-track current-track__incoming"
-            onTouchStart={handleTouchStart}
-            onTouchEnd={handleTouchEnd}
+            className="current-track"
             onContextMenu={handleContextMenu}
             tabIndex="-1"
-            key={currentTrack.tlid}
           >
             <Link className="thumbnail-wrapper" to="/modal/kiosk-mode" tabIndex="-1">
               <Thumbnail size="small" images={currentTrack.images} type="track" />
@@ -183,8 +94,6 @@ const PlaybackControls = () => {
         ) : (
           <div
             className="current-track"
-            onTouchStart={handleTouchStart}
-            onTouchEnd={handleTouchEnd}
             tabIndex="-1"
           >
             <Link className="thumbnail-wrapper" to="/modal/kiosk-mode" tabIndex="-1">

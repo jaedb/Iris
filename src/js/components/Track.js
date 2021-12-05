@@ -18,7 +18,6 @@ const MiddleColumn = ({
   } = {},
 }) => {
   let content;
-
   switch (track_context) {
     case 'history': {
       content = (

@@ -54,13 +54,16 @@
 		left: 0;
 		margin-top: -3px;
 
+		&--small {
+			height: 2px;
+		}
+
 		&__progress {
 			position: absolute;
 			background: colour('turquoise');
 			pointer-events: none;
 			top: 0;
 			left: 0;
-			border-radius: 2px;
 			height: 100%;
 			max-width: 100%;
 			border-radius: 4px;
@@ -76,6 +79,15 @@
 				width: 4px;
 				height: 4px;
 				border-radius: 50%;
+			}
+
+			&--small {
+				border-radius: 2px;
+
+				&:after {
+					width: 2px;
+					height: 2px;
+				}
 			}
 		}
 	}

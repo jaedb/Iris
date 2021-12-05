@@ -35,7 +35,7 @@ const Artist = () => {
   const artist = useSelector(artistSelector);
   const albumSelector = makeItemSelector(artist?.albums_uris || []);
   const albums = useSelector(albumSelector);
-  const actionSource = {
+  const context = {
     uri,
     name: artist?.name,
     type: 'artist',
@@ -77,16 +77,15 @@ const Artist = () => {
       return;
     }
 
-    dispatch(playURIs(arrayOf('uri', tracks) || albums_uris, actionSource));
+    dispatch(playURIs(arrayOf('uri', tracks) || albums_uris, context));
   };
 
   const handleContextMenu = (e) => dispatch(
     showContextMenu({
       e,
-      source: actionSource,
-      items: [artist],
-      uris: [uri],
-      tracklist_uri: uri,
+      context,
+      type: 'artist',
+      item: artist,
     }),
   );
 

@@ -12,7 +12,7 @@ import { formatSimpleObject } from '../util/format';
 
 const TrackList = ({
   uri,
-  source,
+  context,
   className = '',
   show_source_icon,
   play_state,
@@ -114,7 +114,7 @@ const TrackList = ({
 
     dragStart(
       e,
-      source.context,
+      context?.type,
       uri,
       nextSelectedTracks,
       nextSelectedTracks_indexes,
@@ -218,19 +218,11 @@ const TrackList = ({
       setSelectedTracks(nextSelectedTracks);
     }
 
-    const selected_tracks_digested = digestTracksKeys(nextSelectedTracks);
-    const selected_tracks_uris = arrayOf('uri', selected_tracks_digested);
-    const selected_tracks_indexes = arrayOf('index', selected_tracks_digested);
-
     showContextMenu({
       e,
-      source: {
-        context: (source.context ? `${source.context}-track` : 'track'),
-        ...formatSimpleObject(source),
-      },
-      items: selected_tracks_digested,
-      uris: selected_tracks_uris,
-      indexes: selected_tracks_indexes,
+      context,
+      type: 'tracks',
+      items: digestTracksKeys(nextSelectedTracks),
     });
   }
 
@@ -321,7 +313,7 @@ const TrackList = ({
     key += `@@${track.tlid || 'none'}`;
     key += `@@${track.uri}`;
     key += `@@${uri || 'none'}`;
-    key += `@@${source.context || 'none'}`;
+    key += `@@${context?.type || 'none'}`;
     return key;
   }
 
@@ -376,7 +368,7 @@ const TrackList = ({
 
   return (
     <SmartList
-      className={`list list--tracks ${source?.context} ${className}`}
+      className={`list list--tracks ${className}`}
       items={tracks}
       itemComponent={Track}
       itemProps={{
@@ -384,9 +376,11 @@ const TrackList = ({
         buildTrackKey,
         play_state,
         show_source_icon,
-        track_context: source?.context,
+        track_context: context?.context,
         selected_tracks,
-        can_sort: source.context === 'queue' || source.context === 'editable-playlist',
+        can_sort: (
+          context?.context === 'queue' || (context?.context === 'playlist' && context?.can_edit)
+        ),
         mini_zones: slim_mode || isTouchDevice(),
         handleClick: onClick,
         handleDoubleClick: onDoubleClick,

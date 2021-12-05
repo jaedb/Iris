@@ -6311,13 +6311,15 @@ h4 .loader {
   left: 0;
   margin-top: -3px;
 }
+.slider__track--small {
+  height: 2px;
+}
 .slider__track__progress {
   position: absolute;
   background: #08d58f;
   pointer-events: none;
   top: 0;
   left: 0;
-  border-radius: 2px;
   height: 100%;
   max-width: 100%;
   border-radius: 4px;
@@ -6336,6 +6338,13 @@ h4 .loader {
   width: 4px;
   height: 4px;
   border-radius: 50%;
+}
+.slider__track__progress--small {
+  border-radius: 2px;
+}
+.slider__track__progress--small:after {
+  width: 2px;
+  height: 2px;
 }
 .slider--disabled .slider__track__progress, .slider--muted .slider__track__progress {
   background: #a3a19f;
@@ -6741,6 +6750,9 @@ h4 .loader {
   display: none;
 }
 @media (max-width: 800px) {
+  .playback-controls {
+    padding-top: 8px;
+  }
   .playback-controls--touch-enabled .control.next {
     display: none;
   }
@@ -6775,7 +6787,16 @@ h4 .loader {
   .playback-controls section.playback .control.previous, .playback-controls section.playback .control.stop {
     display: none;
   }
-  .playback-controls section.settings, .playback-controls section.volume, .playback-controls section.progress {
+  .playback-controls section.settings, .playback-controls section.volume {
+    display: none;
+  }
+  .playback-controls section.progress {
+    position: absolute;
+    top: -6px;
+    left: 0;
+    right: 0;
+  }
+  .playback-controls section.progress .time {
     display: none;
   }
   .playback-controls section.triggers {
@@ -6817,13 +6838,13 @@ h4 .loader {
     max-height: 100%;
   }
   .playback-controls--expanded .playback-controls__background {
-    height: 230px;
+    height: 210px;
   }
   .playback-controls--expanded section.settings {
     position: absolute;
     display: flex;
     right: 0;
-    bottom: 90px;
+    bottom: 70px;
     padding-right: 10px;
     text-align: right;
     width: 100px;
@@ -6834,7 +6855,7 @@ h4 .loader {
     display: flex;
     right: 100px;
     left: 10px;
-    bottom: 88px;
+    bottom: 68px;
   }
 }
 @media only screen and (max-width: 800px) and (-webkit-min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min--moz-device-pixel-ratio: 2), only screen and (max-width: 800px) and (-o-min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min-resolution: 192dpi), only screen and (max-width: 800px) and (min-resolution: 2dppx) {
@@ -6843,15 +6864,6 @@ h4 .loader {
   }
   .playback-controls--expanded section.volume .slider__wrapper {
     bottom: 9px;
-  }
-}
-@media (max-width: 800px) {
-  .playback-controls--expanded section.progress {
-    position: absolute;
-    display: flex;
-    bottom: 60px;
-    left: 0;
-    right: 0;
   }
 }
 @media only screen and (max-width: 800px) and (-webkit-min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min--moz-device-pixel-ratio: 2), only screen and (max-width: 800px) and (-o-min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min-resolution: 192dpi), only screen and (max-width: 800px) and (min-resolution: 2dppx) {
