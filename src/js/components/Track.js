@@ -10,7 +10,7 @@ import { I18n, i18n } from '../locale';
 import AddedFrom from './AddedFrom';
 
 const MiddleColumn = ({
-  track_context,
+  context,
   item: {
     added_from,
     added_by,
@@ -18,7 +18,7 @@ const MiddleColumn = ({
   } = {},
 }) => {
   let content;
-  switch (track_context) {
+  switch (context?.context) {
     case 'history': {
       content = (
         <div className="list__item__column__item list__item__column__item--played_at">
@@ -54,7 +54,7 @@ const MiddleColumn = ({
 
 const Track = ({
   item,
-  track_context,
+  context,
   stream_title,
   play_state,
   selected_tracks,
@@ -267,7 +267,7 @@ const Track = ({
     );
   }
 
-  const track_middle_column = <MiddleColumn track_context={track_context} item={item} />;
+  const track_middle_column = <MiddleColumn context={context} item={item} />;
   if (selected_tracks.includes(key)) className += ' list__item--selected';
   if (can_sort) className += ' list__item--can-sort';
   if (item.type !== undefined) className += ` list__item--${item.type}`;
@@ -308,7 +308,7 @@ const Track = ({
           {drag_zone}
           {item.is_explicit && <span className="flag flag--dark">{i18n('track.explicit').toUpperCase()}</span>}
           {item.is_playable === false && <span className="flag flag--dark">{i18n('track.unplayable').toUpperCase()}</span>}
-          {(track_context === 'album' || track_context === 'artist') && item.track_number && (
+          {(context?.type === 'album' || context?.type === 'artist') && item.track_number && (
             <span className="mid_grey-text list__item__column__item list__item__column__item--track-number">
               <span>
                 <I18n path="track.title" />

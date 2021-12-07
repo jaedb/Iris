@@ -90,21 +90,6 @@ class Albums extends React.Component {
     uris.forEach((uri) => loadLibrary(uri, 'albums', { forceRefetch }));
   };
 
-  handleContextMenu = (e, item) => {
-    const {
-      uiActions: {
-        showContextMenu,
-      },
-    } = this.props;
-
-    showContextMenu({
-      e,
-      source: formatSimpleObject(item),
-      uris: [item.uri],
-      items: [item],
-    });
-  }
-
   onSortChange = (field) => {
     const {
       sortField,

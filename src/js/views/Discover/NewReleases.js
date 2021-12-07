@@ -74,18 +74,6 @@ class NewReleases extends React.Component {
     getNewReleases(true);
   }
 
-  handleContextMenu(e, item) {
-    const { uriActions: { showContextMenu } } = this.props;
-
-    e.preventDefault();
-    showContextMenu({
-      e,
-      source: formatSimpleObject(item),
-      uris: [item.uri],
-      items: [item],
-    });
-  }
-
   renderIntro = ({ images: { large } = {} } = {}) => (
     <div className="intro preserve-3d">
       <Parallax image={large} blur />

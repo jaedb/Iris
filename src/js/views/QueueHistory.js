@@ -63,9 +63,10 @@ class QueueHistory extends React.Component {
         {tracks.length > 0 && (
           <section className="content-wrapper">
             <TrackList
-              source={{
+              context={{
                 uri: 'iris:queue-history',
                 name: 'Queue history',
+                type: 'track',
                 context: 'history',
               }}
               className="queue-history-track-list"

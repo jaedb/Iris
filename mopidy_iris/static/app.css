@@ -5041,6 +5041,11 @@ select option {
   display: block;
   overflow-x: hidden;
 }
+.context-menu__item--disabled {
+  pointer-events: none;
+  cursor: default;
+  opacity: 0.5;
+}
 .context-menu__item__link {
   position: relative;
   border-radius: 3px;

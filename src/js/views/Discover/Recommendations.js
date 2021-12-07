@@ -210,9 +210,8 @@ class Recommendations extends React.Component {
         type: 'recommendations',
         context: 'track',
       },
+      type: 'tracks',
       items: tracks,
-      uris: arrayOf('uri', tracks),
-      tracklist_uri: this.uri(),
     });
   }
 

@@ -194,6 +194,35 @@ const formatImages = function (data) {
 };
 
 /**
+ * Format an item into a context-ready item
+ * Typically a playlist, album or artist. We only need a few fields, but more than the simpleObject
+ *
+ * @param data obj
+ * @return obj
+ * */
+const formatContext = function (data) {
+  const context = {};
+  const fields = [
+    'uri',
+    'name',
+    'type',
+    'provider',
+    'context',
+  ];
+
+  for (const field of fields) {
+    if (data.hasOwnProperty(field)) {
+      context[field] = data[field];
+    }
+  }
+
+  // Default our 'context' to object type
+  if (!data.context && context.type) context.context = context.type;
+
+  return context;
+};
+
+/**
  * Format a simple object
  * This is a shell record containing only the bare essentials. Typically
  * a tracks' artists/album
@@ -981,6 +1010,7 @@ export {
   getTrackIcon,
   digestMopidyImages,
   formatImages,
+  formatContext,
   formatSimpleObject,
   formatSimpleObjects,
   formatAlbum,
@@ -1009,6 +1039,7 @@ export default {
   getTrackIcon,
   digestMopidyImages,
   formatImages,
+  formatContext,
   formatSimpleObject,
   formatSimpleObjects,
   formatAlbum,

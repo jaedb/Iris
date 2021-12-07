@@ -11,16 +11,16 @@ import {
   hideContextMenu,
   setSort,
 } from '../../services/ui/actions';
+import { formatContext } from '../../util/format';
 
 const SORT_KEY = 'artist_tracks';
 
-export default ({
-  artist: {
+export default ({ artist }) => {
+  const {
     uri,
     name,
     tracks: tracksProp,
-  } = {},
-}) => {
+  } = artist || {};
   const dispatch = useDispatch();
   const [search, setSearch] = useState('');
   const [sortField, sortReverse] = useSelector(
@@ -86,12 +86,7 @@ export default ({
         </h4>
         <TrackList
           className="artist-track-list"
-          source={{
-            uri,
-            name,
-            type: 'artist',
-            context: 'artist',
-          }}
+          context={formatContext(artist)}
           tracks={tracks}
         />
       </section>

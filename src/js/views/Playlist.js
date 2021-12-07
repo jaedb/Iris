@@ -24,7 +24,7 @@ import { uriSource } from '../util/helpers';
 import { i18n, I18n } from '../locale';
 import { makeItemSelector, makeSortSelector } from '../util/selectors';
 import { sortItems, applyFilter } from '../util/arrays';
-import { decodeUri, encodeUri, formatSimpleObject } from '../util/format';
+import { decodeUri, encodeUri, formatSimpleObject, formatContext } from '../util/format';
 
 const SORT_KEY = 'playlist_tracks';
 
@@ -170,9 +170,8 @@ const Playlist = ({
 
   const handleContextMenu = (e) => showContextMenu({
     e,
-    source: formatSimpleObject(playlist),
-    items: [{ name, ...playlist }],
-    uris: [uri],
+    item: playlist,
+    type: 'playlist',
   });
 
   const onChangeSort = (field) => {
@@ -332,12 +331,7 @@ const Playlist = ({
 
       <section className="list-wrapper no-top-padding">
         <TrackList
-          source={{
-            uri: playlist.uri,
-            name: playlist.name,
-            type: 'playlist',
-            context,
-          }}
+          context={formatContext({ ...playlist, context })}
           className="playlist-track-list"
           tracks={tracks}
           removeTracks={removeTracks}

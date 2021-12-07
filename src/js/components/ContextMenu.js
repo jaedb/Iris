@@ -36,6 +36,7 @@ import {
 } from '../util/selectors';
 import AddedFrom from './AddedFrom';
 import { ContextMenuItems } from './ContextMenu/ContextMenuItems';
+import PlaylistSubmenu from './ContextMenu/PlaylistSubmenu';
 
 const processKeys = [
   'MOPIDY_GET_LIBRARY_PLAYLISTS',
@@ -44,17 +45,15 @@ const processKeys = [
 
 const ContextMenu = ({
   context_menu,
-  items = [],
-  lastfm_authorized,
-  spotify_available,
-  spotifyActions,
-  lastfmActions,
+  loading_progress,  // to move to submenu
+  playlists, // to move to submenu
+  providers, // to move to submenu
   uiActions: {
     hideContextMenu,
   },
 }) => {
   const ref = useRef();
-  const [submenu, setSubmenu] = useState();
+  const [submenu, setSubmenu] = useState(false);
 
   const onScroll = () => hideContextMenu();
 
@@ -79,7 +78,7 @@ const ContextMenu = ({
   }, []);
 
   useEffect(() => {
-    setSubmenu(null);
+    setSubmenu(false);
   }, [context_menu]);
 
   if (!context_menu) return null;
@@ -109,9 +108,18 @@ const ContextMenu = ({
         {/* {this.renderTitle()} */}
         <ContextMenuItems
           context_menu={context_menu}
+          onSubmenu={() => setSubmenu(true)}
         />
       </div>
-      {/* {this.renderSubmenu()} */}
+      {submenu && (
+        <PlaylistSubmenu
+          context_menu={context_menu}
+          allPlaylists={playlists}
+          onClose={() => setSubmenu(false)}
+          loading={loading_progress}
+          providers={providers}
+        />
+      )}
       <div className="context-menu__background" onClick={hideContextMenu} />
     </div>
   );

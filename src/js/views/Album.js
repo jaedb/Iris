@@ -23,7 +23,7 @@ import { uriSource } from '../util/helpers';
 import Button from '../components/Button';
 import { makeItemSelector, makeSortSelector } from '../util/selectors';
 import { applyFilter, sortItems } from '../util/arrays';
-import { decodeUri, formatSimpleObject } from '../util/format';
+import { decodeUri, formatSimpleObject, formatContext } from '../util/format';
 
 const SORT_KEY = 'album_tracks';
 
@@ -227,7 +227,7 @@ const Album = () => {
           </div>
         </h4>
         <TrackList
-          context={album}
+          context={formatContext(album)}
           className="album-track-list"
           tracks={tracks}
         />

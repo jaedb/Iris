@@ -89,16 +89,6 @@ class Artists extends React.Component {
     hideContextMenu();
   }
 
-  handleContextMenu = (e, item) => {
-    const { uiActions: { showContextMenu } } = this.props;
-    showContextMenu({
-      e,
-      source: formatSimpleObject(item),
-      uris: [item.uri],
-      items: [item],
-    });
-  }
-
   getLibraries = (forceRefetch = false) => {
     const {
       source,

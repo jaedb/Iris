@@ -58,13 +58,12 @@ class User extends React.Component {
   }
 
   handleContextMenu = (e) => {
-    const { user, uri, uiActions: { showContextMenu } } = this.props;
+    const { user, uiActions: { showContextMenu } } = this.props;
 
     showContextMenu({
       e,
-      source: formatSimpleObject(user),
-      items: [user],
-      uris: [uri],
+      item: user,
+      type: 'user',
     });
   }
 

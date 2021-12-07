@@ -43,23 +43,6 @@ class Featured extends React.Component {
     getFeaturedPlaylists(true);
   }
 
-  handleContextMenu = (e, item) => {
-    const {
-      uiActions: {
-        showContextMenu,
-      },
-    } = this.props;
-
-    e.preventDefault();
-    const data = {
-      e,
-      source: formatSimpleObject(item),
-      uris: [item.uri],
-      items: [item],
-    };
-    showContextMenu(data);
-  }
-
   render = () => {
     const {
       loading,

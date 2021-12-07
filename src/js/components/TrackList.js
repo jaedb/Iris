@@ -376,7 +376,7 @@ const TrackList = ({
         buildTrackKey,
         play_state,
         show_source_icon,
-        track_context: context?.context,
+        context,
         selected_tracks,
         can_sort: (
           context?.context === 'queue' || (context?.context === 'playlist' && context?.can_edit)

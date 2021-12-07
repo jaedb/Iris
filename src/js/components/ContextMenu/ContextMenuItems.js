@@ -3,10 +3,12 @@ import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { I18n } from '../../locale';
 import Link from '../Link';
+import Icon from '../Icon';
 import {
   loadAlbum,
   loadArtist,
   loadTrack,
+  loadTracks,
   deletePlaylist,
 } from '../../services/core/actions';
 import {
@@ -18,6 +20,8 @@ import {
 } from '../../services/spotify/actions';
 import {
   startRadio,
+  addPinned,
+  removePinned,
 } from '../../services/pusher/actions';
 import {
   titleCase,
@@ -26,13 +30,19 @@ import { arrayOf } from '../../util/arrays';
 import { encodeUri } from '../../util/format';
 import { enqueueURIs, playURIs } from '../../services/mopidy/actions';
 
-const ContextMenuItems = ({ context_menu }) => {
+const ContextMenuItems = ({
+  context_menu,
+  onSubmenu,
+}) => {
   const {
     type,
     item,
     items,
     context,
   } = context_menu;
+  const {
+    provider,
+  } = context || item || {};
 
   switch (type) {
     case 'album': {
@@ -82,6 +92,8 @@ const ContextMenuItems = ({ context_menu }) => {
           <Play uris={[item.uri]} context={context} />
           <Enqueue uris={[item.uri]} context={context} next />
           <Enqueue uris={[item.uri]} context={context} />
+          <Library uri={item.uri} inLibrary={item.in_library} />
+          <Pin item={item} isPinned={item.is_pinned} />
           <Divider />
           {item.user && <GoTo type="user" uri={item.user.uri} />}
           <Copy uris={[item.uri]} />
@@ -102,14 +114,38 @@ const ContextMenuItems = ({ context_menu }) => {
           <Enqueue uris={[item.uri]} context={context} next />
           <Enqueue uris={[item.uri]} context={context} />
           <Divider />
-          {item.provider === 'spotify' && (
+          <AddToPlaylist uris={[item.uri]} onClick={onSubmenu} />
+          <Divider />
+          {provider === 'spotify' && (
             <>
               <Discover uris={[item.uri]} context={context} />
+              <GoTo type="track" uri={item.uri} />
               <Divider />
             </>
           )}
           <Copy uris={[item.uri]} />
-          <Refresh uri={item.uri} action={loadTrack} />
+        </>
+      );
+    }
+    case 'tracks': {
+      const uris = arrayOf('uri', items);
+      return (
+        <>
+          <Play uris={uris} context={context} />
+          <Enqueue uris={uris} context={context} next />
+          <Enqueue uris={uris} context={context} />
+          <Divider />
+          <AddToPlaylist uris={uris} onClick={onSubmenu} />
+          <Divider />
+          {provider === 'spotify' && (
+            <>
+              <Radio uris={uris} disabled={uris.length > 5} />
+              <Divider />
+              <Discover uris={uris} context={context} disabled={uris.length > 5} />
+              <Divider />
+            </>
+          )}
+          <Copy uris={uris} />
         </>
       );
     }
@@ -131,11 +167,12 @@ const Divider = () => <div className="context-menu__divider" />;
 
 const Refresh = ({
   uri,
+  uris,
   action,
 }) => {
   const dispatch = useDispatch();
   const onClick = () => {
-    dispatch(action(uri, { forceRefetch: true, full: true }));
+    dispatch(action(uri || uris, { forceRefetch: true, full: true }));
     dispatch(hideContextMenu());
   };
   return (
@@ -151,6 +188,7 @@ const Refresh = ({
 
 const Discover = ({
   uris,
+  disabled,
 }) => {
   const history = useHistory();
   const dispatch = useDispatch();
@@ -160,7 +198,7 @@ const Discover = ({
     history.push(`/discover/recommendations/${discoverUri}`);
   };
   return (
-    <div className="context-menu__item">
+    <div className={`context-menu__item ${disabled && 'context-menu__item--disabled'}`}>
       <a className="context-menu__item__link" onClick={onClick}>
         <span className="context-menu__item__label">
           <I18n path="context_menu.discover_similar" />
@@ -190,6 +228,30 @@ const Library = ({
   );
 };
 
+const Pin = ({
+  item,
+  isPinned,
+}) => {
+  const dispatch = useDispatch();
+  const onClick = () => {
+    dispatch(hideContextMenu());
+    if (isPinned) {
+      dispatch(removePinned(item.uri));
+    } else {
+      dispatch(addPinned(item));
+    }
+  };
+  return (
+    <div className="context-menu__item">
+      <a className="context-menu__item__link" onClick={onClick}>
+        <span className="context-menu__item__label">
+          <I18n path={`context_menu.${isPinned ? 'un' : ''}pin`} />
+        </span>
+      </a>
+    </div>
+  );
+};
+
 const GoTo = ({
   type,
   uri,
@@ -198,7 +260,6 @@ const GoTo = ({
   const dispatch = useDispatch();
   const onClick = () => {
     dispatch(hideContextMenu());
-    console.debug({uri})
     history.push(`/${type}/${encodeUri(uri)}`);
   };
   return (
@@ -291,8 +352,24 @@ const Enqueue = ({
   );
 };
 
+const AddToPlaylist = ({
+  onClick,
+}) => {
+  return (
+    <div className="context-menu__item context-menu__item--has-submenu">
+      <a className="context-menu__item__link" onClick={onClick}>
+        <span className="context-menu__item__label">
+          <I18n path="context_menu.add_to_playlist.title" />
+        </span>
+        <Icon className="submenu-icon" name="arrow_forward" />
+      </a>
+    </div>
+  );
+};
+
 const Radio = ({
   uris,
+  disabled,
 }) => {
   const dispatch = useDispatch();
   const onClick = () => {
@@ -300,7 +377,7 @@ const Radio = ({
     dispatch(startRadio(uris))
   };
   return (
-    <div className="context-menu__item">
+    <div className={`context-menu__item ${disabled && 'context-menu__item--disabled'}`}>
       <a className="context-menu__item__link" onClick={onClick}>
         <span className="context-menu__item__label">
           <I18n path="context_menu.start_radio" />

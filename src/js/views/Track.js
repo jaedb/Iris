@@ -197,9 +197,8 @@ class Track extends React.Component {
 
     showContextMenu({
       e,
-      source: formatSimpleObject(track),
-      items: [track],
-      uris: [uri],
+      item: track,
+      type: 'track',
     });
   }
 

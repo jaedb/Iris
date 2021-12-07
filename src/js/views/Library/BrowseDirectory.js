@@ -226,7 +226,7 @@ class BrowseDirectory extends React.Component {
             <Subdirectories items={subdirectories} view={view} />
 
             <TrackList
-              source={{
+              context={{
                 uri: `iris:browse:${uri}`,
                 name: 'Browse',
                 type: 'browse',
