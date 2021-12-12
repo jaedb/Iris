@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { I18n } from '../../locale';
@@ -9,6 +9,7 @@ import {
   loadArtist,
   loadTrack,
   loadTracks,
+  removeTracksFromPlaylist,
   deletePlaylist,
 } from '../../services/core/actions';
 import {
@@ -16,8 +17,16 @@ import {
   createNotification,
 } from '../../services/ui/actions';
 import {
+  removeTracks,
+} from '../../services/mopidy/actions';
+import {
   following,
 } from '../../services/spotify/actions';
+import {
+  getTrack,
+  loveTrack,
+  unloveTrack,
+} from '../../services/lastfm/actions';
 import {
   startRadio,
   addPinned,
@@ -40,9 +49,8 @@ const ContextMenuItems = ({
     items,
     context,
   } = context_menu;
-  const {
-    provider,
-  } = context || item || {};
+  const can_edit = context?.can_edit || item?.can_edit;
+  const provider = context?.provider || item?.provider;
 
   switch (type) {
     case 'album': {
@@ -95,15 +103,21 @@ const ContextMenuItems = ({
           <Library uri={item.uri} inLibrary={item.in_library} />
           <Pin item={item} isPinned={item.is_pinned} />
           <Divider />
-          {item.user && <GoTo type="user" uri={item.user.uri} />}
-          <Copy uris={[item.uri]} />
+          {item.user && (
+            <>
+              <GoTo type="user" uri={item.user.uri} />
+              <Divider />
+            </>
+          )}
           {item.can_edit && (
             <>
               <Edit uri={item.uri} type="playlist" />
               <Delete uri={item.uri} action={deletePlaylist} />
+              <Divider />
             </>
           )}
           <Refresh uri={item.uri} action={loadTrack} />
+          <Copy uris={[item.uri]} />
         </>
       );
     }
@@ -115,6 +129,8 @@ const ContextMenuItems = ({
           <Enqueue uris={[item.uri]} context={context} />
           <Divider />
           <AddToPlaylist uris={[item.uri]} onClick={onSubmenu} />
+          {provider === 'spotify' && <Library uri={item.uri} />}
+          <Love uri={item.uri} />
           <Divider />
           {provider === 'spotify' && (
             <>
@@ -124,6 +140,12 @@ const ContextMenuItems = ({
             </>
           )}
           <Copy uris={[item.uri]} />
+          {can_edit && (
+            <>
+              <Divider />
+              <Remove items={[item]} context={context} />
+            </>
+          )}
         </>
       );
     }
@@ -136,16 +158,22 @@ const ContextMenuItems = ({
           <Enqueue uris={uris} context={context} />
           <Divider />
           <AddToPlaylist uris={uris} onClick={onSubmenu} />
+          {/* No support for adding/removing/checking library for multiple URIs (yet) */}
           <Divider />
           {provider === 'spotify' && (
             <>
               <Radio uris={uris} disabled={uris.length > 5} />
-              <Divider />
               <Discover uris={uris} context={context} disabled={uris.length > 5} />
               <Divider />
             </>
           )}
           <Copy uris={uris} />
+          {can_edit && (
+            <>
+              <Divider />
+              <Remove items={items} context={context} />
+            </>
+          )}
         </>
       );
     }
@@ -210,18 +238,67 @@ const Discover = ({
 
 const Library = ({
   uri,
-  inLibrary,
+  inLibrary: inLibraryProp,
 }) => {
   const dispatch = useDispatch();
+  const [inLibrary, setInLibrary] = useState(inLibraryProp);
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    if (inLibraryProp === undefined) {
+      setLoading(true);
+      dispatch(following(
+        uri,
+        'GET',
+        (result) => {
+          setLoading(false);
+          setInLibrary(result);
+        },
+      ));
+    }
+  }, [uri]);
   const onClick = () => {
     dispatch(hideContextMenu());
     dispatch(following(uri, inLibrary ? 'DELETE' : 'PUT'));
   };
   return (
-    <div className="context-menu__item">
+    <div className={`context-menu__item ${loading && 'context-menu__item--disabled'}`}>
       <a className="context-menu__item__link" onClick={onClick}>
         <span className="context-menu__item__label">
           <I18n path={`actions.${inLibrary ? 'remove_from' : 'add_to'}_library`} />
+        </span>
+      </a>
+    </div>
+  );
+};
+
+const Love = ({
+  uri,
+  isLoved: isLovedProp,
+}) => {
+  const dispatch = useDispatch();
+  const [isLoved, setIsLoved] = useState(isLovedProp);
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    if (isLovedProp === undefined) {
+      setLoading(true);
+      dispatch(getTrack(
+        uri,
+        (result) => {
+          setLoading(false);
+          setIsLoved(result);
+        },
+      ));
+    }
+  }, [uri]);
+  const onClick = () => {
+    dispatch(hideContextMenu());
+    dispatch(isLoved ? unloveTrack(uri) : loveTrack(uri));
+  };
+  return (
+    <div className={`context-menu__item ${loading && 'context-menu__item--disabled'}`}>
+      <a className="context-menu__item__link" onClick={onClick}>
+        <span className="context-menu__item__label">
+          <I18n path={`context_menu.${isLoved ? 'un' : ''}love_track`} />
         </span>
       </a>
     </div>
@@ -362,6 +439,40 @@ const AddToPlaylist = ({
           <I18n path="context_menu.add_to_playlist.title" />
         </span>
         <Icon className="submenu-icon" name="arrow_forward" />
+      </a>
+    </div>
+  );
+};
+
+const Remove = ({
+  items,
+  context: {
+    type,
+    uri,
+  },
+}) => {
+  const dispatch = useDispatch();
+  const onClick = () => {
+    switch (type) {
+      case 'playlist': {
+        dispatch(removeTracksFromPlaylist(uri, arrayOf('index', items)));
+        break;
+      }
+      case 'queue': {
+        dispatch(removeTracks(arrayOf('tlid', items)));
+        break;
+      }
+      default:
+        break;
+    }
+    dispatch(hideContextMenu());
+  };
+  return (
+    <div className="context-menu__item">
+      <a className="context-menu__item__link" onClick={onClick}>
+        <span className="context-menu__item__label">
+          <I18n path="actions.remove" />
+        </span>
       </a>
     </div>
   );

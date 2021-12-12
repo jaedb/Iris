@@ -208,6 +208,7 @@ const formatContext = function (data) {
     'type',
     'provider',
     'context',
+    'can_edit',
   ];
 
   for (const field of fields) {

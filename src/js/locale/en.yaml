@@ -189,6 +189,7 @@ context_menu:
   unpin: Unpin
   go_to_artist: Go to artist
   go_to_user: Go to user
+  go_to_track: Go to track
   track_info: Track info
   discover_similar: Discover similar
   start_radio: Start radio

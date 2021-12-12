@@ -13,6 +13,9 @@ import {
   loadLibrary,
   addTracksToPlaylist,
 } from '../../services/core/actions';
+import {
+  hideContextMenu,
+} from '../../services/ui/actions';
 
 export default ({
   context_menu: {
@@ -36,6 +39,7 @@ export default ({
   const encodedUris = uris && uris.length > 0 ? encodeUri(uris.join(',')) : '';
 
   const onClick = (playlist_uri) => {
+    dispatch(hideContextMenu());
     dispatch(addTracksToPlaylist(playlist_uri, uris));
   };
 

@@ -177,7 +177,7 @@ export function getMe() {
   };
 }
 
-export function getTrack(uri) {
+export function getTrack(uri, callback) {
   return (dispatch, getState) => {
     const selector = makeItemSelector(uri);
     const track = selector(getState());
@@ -200,15 +200,13 @@ export function getTrack(uri) {
       .then(
         (response) => {
           if (response.track) {
-            dispatch(
-              coreActions.itemLoaded(
-                formatTrack({
-                  uri: track.uri,
-                  ...response.track,
-                  ...track,
-                }),
-              ),
-            );
+            const result = formatTrack({
+              uri: track.uri,
+              ...response.track,
+              ...track,
+            });
+            dispatch(coreActions.itemLoaded(result));
+            if (callback) callback(result);
           }
         },
       );

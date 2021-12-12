@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import Track from './Track';
 import * as mopidyActions from '../services/mopidy/actions';
 import * as uiActions from '../services/ui/actions';
-import { isTouchDevice } from '../util/helpers';
+import { isTouchDevice, uriSource } from '../util/helpers';
 import { arrayOf } from '../util/arrays';
 import { i18n } from '../locale';
 import { SmartList } from './SmartList';
@@ -218,11 +218,14 @@ const TrackList = ({
       setSelectedTracks(nextSelectedTracks);
     }
 
+    const items = digestTracksKeys(nextSelectedTracks);
     showContextMenu({
       e,
       context,
-      type: 'tracks',
-      items: digestTracksKeys(nextSelectedTracks),
+      ...(items.length === 1
+        ? { type: 'track', item: items[0] }
+        : { type: 'tracks', items }
+      ),
     });
   }
 
@@ -350,6 +353,7 @@ const TrackList = ({
           index: parseInt(key_components[0]),
           tlid: parseInt(key_components[1]),
           uri: key_components[2],
+          provider: uriSource(key_components[2]),
           context: key_components[3],
           context_uri: key_components[4],
         });

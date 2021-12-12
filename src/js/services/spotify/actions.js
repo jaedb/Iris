@@ -754,7 +754,7 @@ export function clearAutocompleteResults(field_id = null) {
   };
 }
 
-export function following(uri, method = 'GET') {
+export function following(uri, method = 'GET', callback) {
   return (dispatch, getState) => {
     const type = uriType(uri);
     let endpoint;
@@ -831,6 +831,7 @@ export function following(uri, method = 'GET') {
         } else {
           asset.in_library = is_following;
         }
+        if (callback) callback(asset.in_library);
 
         if (method === 'DELETE') {
           dispatch(coreActions.removeFromLibrary(`spotify:library:${type}s`, uri));

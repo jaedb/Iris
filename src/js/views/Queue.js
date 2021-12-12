@@ -234,8 +234,8 @@ const Queue = ({
             context={{
               uri: 'iris:queue',
               name: 'Queue',
-              type: 'track',
-              context: 'queue',
+              type: 'queue',
+              can_edit: true,
             }}
             show_source_icon
             className="queue-track-list"
