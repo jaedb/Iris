@@ -6306,6 +6306,12 @@ h4 .loader {
   right: -6px;
   background: #1af6ab;
 }
+.slider__input:focus + .slider__track .slider__track__progress--small:after {
+  width: 6px;
+  height: 6px;
+  top: -2px;
+  right: -3px;
+}
 .slider__track {
   position: absolute;
   background: rgba(0, 0, 0, 0.2);
@@ -6363,6 +6369,12 @@ h4 .loader {
   top: -4px;
   right: -6px;
   background: #1af6ab;
+}
+.slider:hover .slider__track__progress--small:after {
+  width: 10px;
+  height: 10px;
+  top: -4px;
+  right: -3px;
 }
 .slider__wrapper--vertical {
   height: 100%;
@@ -6797,7 +6809,7 @@ h4 .loader {
   }
   .playback-controls section.progress {
     position: absolute;
-    top: -6px;
+    top: -3px;
     left: 0;
     right: 0;
   }
@@ -7388,14 +7400,49 @@ h4 .loader {
   color: rgba(128, 128, 128, 0.5);
 }
 .sidebar .close {
+  position: relative;
+  display: inline-block;
   display: none;
   position: absolute;
   bottom: 4px;
   right: 4px;
-  padding: 10px 8px;
+  padding: 10px;
   display: inline-block;
-  opacity: 0.5;
   z-index: 99;
+  font-size: 1.2rem;
+}
+@keyframes click_feedback {
+  0% {
+    top: 50%;
+    left: 0;
+    width: 100%;
+    padding-bottom: 100%;
+    opacity: 1;
+  }
+  100% {
+    top: 25%;
+    left: -25%;
+    width: 150%;
+    padding-bottom: 150%;
+    opacity: 0;
+  }
+}
+.sidebar .close:after {
+  content: "";
+  display: block;
+  position: absolute;
+  background: rgba(128, 128, 128, 0.5);
+  z-index: 1;
+  opacity: 0;
+  border-radius: 50%;
+  margin-top: -50%;
+  pointer-events: none;
+}
+.sidebar .close:active:after {
+  animation-name: click_feedback;
+  animation-duration: 0.2s;
+  animation-timing-function: ease-out;
+  animation-iteration-count: 1;
 }
 .light-theme .sidebar .close {
   color: #121212;

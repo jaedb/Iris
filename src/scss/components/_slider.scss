@@ -34,12 +34,20 @@
 		}
 
 		&:focus + .slider__track {
-			.slider__track__progress:after {
-				width: 12px;
-				height: 12px;
-				top: -4px;
-				right: -6px;
-				background: lighten(colour('turquoise'), 10%);
+			.slider__track__progress {
+				&:after {
+					width: 12px;
+					height: 12px;
+					top: -4px;
+					right: -6px;
+					background: lighten(colour('turquoise'), 10%);
+				}
+				&--small:after {
+					width: 6px;
+					height: 6px;
+					top: -2px;
+					right: -3px;
+				}
 			}
 		}
 	}
@@ -112,6 +120,15 @@
 					top: -4px;
 					right: -6px;
 					background: lighten(colour('turquoise'), 10%);
+				}
+
+				&--small {
+					&:after {
+						width: 10px;
+						height: 10px;
+						top: -4px;
+						right: -3px;
+					}
 				}
 			}
 		}

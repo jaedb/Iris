@@ -19,14 +19,11 @@ import { formatSimpleObject } from '../util/format';
 
 const PlaybackControls = () => {
   const [expanded, setExpanded] = useState();
-  const [transitionTrack, setTransitionTrack] = useState();
-  const [transitionDirection, setTransitionDirection] = useState();
-  const [touchMeta, setTouchMeta] = useState({});
 
-  const history = useHistory();
   const dispatch = useDispatch();
   const touch_enabled = useSelector((state) => state.ui.touch_enabled);
   const sidebar_open = useSelector((state) => state.ui.sidebar_open);
+  const slim_mode = useSelector((state) => state.ui.slim_mode);
   const volume = useSelector((state) => state.mopidy.volume);
   const mute = useSelector((state) => state.mopidy.mute);
   const time_position = useSelector((state) => state.mopidy.time_position);
@@ -147,7 +144,7 @@ const PlaybackControls = () => {
         <div className="time time--current">
           {time_position ? <Dater type="length" data={time_position} /> : '-'}
         </div>
-        <ProgressSlider />
+        <ProgressSlider size={slim_mode && 'small'} />
         <div className="time time--total">
           {currentTrack ? <Dater type="length" data={currentTrack.duration} /> : '-'}
         </div>

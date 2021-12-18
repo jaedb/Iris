@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Link from './Link';
 import Icon from './Icon';
 import Dropzones from './Fields/Dropzones';
@@ -65,7 +65,10 @@ const StatusIcon = () => {
 }
 
 const Sidebar = () => {
+  const dispatch = useDispatch();
   const spotify_available = useSelector((state) => state.spotify.access_token);
+
+  const close = () => dispatch(toggleSidebar(false));
 
   return (
     <aside className="sidebar">
@@ -146,7 +149,7 @@ const Sidebar = () => {
 
       <Dropzones />
 
-      <div className="close" onClick={() => dispatch(toggleSidebar(false))}>
+      <div className="close" onClick={close}>
         <Icon name="close" />
       </div>
 
