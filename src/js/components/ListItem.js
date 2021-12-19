@@ -5,7 +5,7 @@ import LinksSentence from './LinksSentence';
 import { dater } from './Dater';
 import { nice_number } from './NiceNumber';
 import URILink from './URILink';
-import ContextMenuTrigger from './ContextMenuTrigger';
+import ContextMenuTrigger from './ContextMenu/ContextMenuTrigger';
 import Icon, { SourceIcon } from './Icon';
 import Thumbnail from './Thumbnail';
 import Popularity from './Popularity';

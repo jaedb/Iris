@@ -7,7 +7,7 @@ import Link from '../../components/Link';
 import Thumbnail from '../../components/Thumbnail';
 import Parallax from '../../components/Parallax';
 import FollowButton from '../../components/Fields/FollowButton';
-import ContextMenuTrigger from '../../components/ContextMenuTrigger';
+import ContextMenuTrigger from '../../components/ContextMenu/ContextMenuTrigger';
 import About from './About';
 import Overview from './Overview';
 import Tracks from './Tracks';

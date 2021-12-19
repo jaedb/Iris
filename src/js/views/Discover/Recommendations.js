@@ -10,7 +10,7 @@ import Parallax from '../../components/Parallax';
 import DropdownField from '../../components/Fields/DropdownField';
 import AddSeedField from '../../components/Fields/AddSeedField';
 import URILink from '../../components/URILink';
-import ContextMenuTrigger from '../../components/ContextMenuTrigger';
+import ContextMenuTrigger from '../../components/ContextMenu/ContextMenuTrigger';
 import RelatedArtists from '../../components/RelatedArtists';
 import Icon from '../../components/Icon';
 import * as uiActions from '../../services/ui/actions';

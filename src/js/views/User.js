@@ -21,7 +21,7 @@ import {
   makeItemSelector,
   makeLoadingSelector,
 } from '../util/selectors';
-import ContextMenuTrigger from '../components/ContextMenuTrigger';
+import ContextMenuTrigger from '../components/ContextMenu/ContextMenuTrigger';
 
 class User extends React.Component {
   componentDidMount() {

@@ -6,7 +6,7 @@ import * as Sentry from '@sentry/browser';
 
 import Sidebar from './components/Sidebar';
 import PlaybackControls from './components/PlaybackControls';
-import ContextMenu from './components/ContextMenu';
+import ContextMenu from './components/ContextMenu/ContextMenu';
 import Dragger from './components/Dragger';
 import Notifications from './components/Notifications';
 import ResizeListener from './components/ResizeListener';

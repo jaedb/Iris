@@ -9,7 +9,7 @@ import LinksSentence from '../components/LinksSentence';
 import LastfmLoveButton from '../components/Fields/LastfmLoveButton';
 import { Dater } from '../components/Dater';
 import SelectField from '../components/Fields/SelectField';
-import ContextMenuTrigger from '../components/ContextMenuTrigger';
+import ContextMenuTrigger from '../components/ContextMenu/ContextMenuTrigger';
 import Icon from '../components/Icon';
 import Loader from '../components/Loader';
 import * as coreActions from '../services/core/actions';

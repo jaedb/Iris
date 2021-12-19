@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
-import Icon from './Icon';
-import Button from './Button';
-import { trackEvent } from './Trackable';
+import Icon from '../Icon';
+import Button from '../Button';
+import { trackEvent } from '../Trackable';
 
 export default memo(({ onTrigger }) => {
   const handleClick = (e) => {

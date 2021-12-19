@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { useDispatch } from 'react-redux';
-import ContextMenuTrigger from './ContextMenuTrigger';
+import ContextMenuTrigger from './ContextMenu/ContextMenuTrigger';
 import { showContextMenu } from '../services/ui/actions';
 
 export default memo(({

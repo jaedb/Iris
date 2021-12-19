@@ -5,7 +5,7 @@ import Track from './Track';
 import * as mopidyActions from '../services/mopidy/actions';
 import * as uiActions from '../services/ui/actions';
 import { isTouchDevice, uriSource } from '../util/helpers';
-import { arrayOf } from '../util/arrays';
+import { arrayOf, indexToArray } from '../util/arrays';
 import { i18n } from '../locale';
 import { SmartList } from './SmartList';
 import { formatSimpleObject } from '../util/format';
@@ -34,18 +34,49 @@ const TrackList = ({
     playURIs,
   },
 }) => {
-  const [touchDraggingKeys, setTouchDraggingKeys] = useState(false);
+  const [selected, setSelected] = useState([]);
+
   useEffect(() => {
     window.addEventListener('keydown', onKeyDown, false);
-    window.addEventListener('touchmove', onTouchMove, false);
-    window.addEventListener('touchend', onTouchEnd, false);
+    // window.addEventListener('touchmove', onTouchMove, false);
+    // window.addEventListener('touchend', onTouchEnd, false);
 
     return () => {
       window.removeEventListener('keydown', onKeyDown, false);
-      window.removeEventListener('touchmove', onTouchMove, false);
-      window.removeEventListener('touchend', onTouchEnd, false);
+      // window.removeEventListener('touchmove', onTouchMove, false);
+      // window.removeEventListener('touchend', onTouchEnd, false);
     }
   }, [selected_tracks]);
+
+  const selectionIndexByItemIndex = (index) => (
+    selected && selected.length > 0
+      ? selected.findIndex(({ index: selectedIndex }) => selectedIndex === index)
+      : -1
+  );
+
+  const nextSelected = (prev, item, index, e, sticky = false) => {
+    const alreadySelected = selectionIndexByItemIndex(index);
+
+    if (e.shiftKey) {
+      const { index: lastSelectedIndex } = selected[selected.length-1] || { index };
+      const next = [...prev, { index, item }];
+      const from = lastSelectedIndex < index ? lastSelectedIndex : index;
+      const to = lastSelectedIndex > index ? lastSelectedIndex : index;
+      for (let i = from; i < to; i++) {
+        next.push({ index: i, item: tracks[i] });
+      }
+      return next;
+    }
+    if (e.ctrlKey) {
+      if (alreadySelected >= 0 && !sticky) {
+        const next = [...prev];
+        next.splice(alreadySelected, 1);
+        return next;
+      }
+      return [...prev, { item, index }];
+    }
+    return [{ item, index }];
+  }
 
   const onKeyDown = (e) => {
     const {
@@ -69,156 +100,58 @@ const TrackList = ({
       return;
     }
 
-    const tracks_keys = digestTracksKeys();
-
     switch (key.toLowerCase()) {
       case 'enter':
-        if (tracks_keys && tracks_keys.length > 0) {
+        if (selected.length > 0) {
           onPlayTracks();
         }
         e.preventDefault();
         break;
-
       case 'backspace':
       case 'delete':
-        if (tracks_keys && tracks_keys.length > 0) {
+        if (selected.length > 0) {
           onRemoveTracks();
         }
         e.preventDefault();
         break;
-
       case 'a':
-        var all_tracks = [];
-        for (let i = 0; i < this.props.tracks.length; i++) {
-          all_tracks.push(this.buildTrackKey(this.props.tracks[i], i));
-        }
-        this.props.uiActions.setSelectedTracks(all_tracks);
+        setSelected(tracks.map((item, index) => ({ item, index })));
         e.preventDefault();
+        break;
+      default:
         break;
     }
   }
 
-  const onDrag = (e, track_key) => {
-    let nextSelectedTracks = [];
+  const onClick = (item, index, e) => {
+    e.preventDefault();
+    e.persist();
 
-    // Dragging a non-selected track. We need to deselect everything
-    // else and select only this track
-    if (!selected_tracks.includes(track_key)) {
-      setSelectedTracks([track_key]);
-      nextSelectedTracks = digestTracksKeys([track_key]);
-    } else {
-      nextSelectedTracks = digestTracksKeys();
-    }
+    setSelected((prev) => nextSelected(prev, item, index, e));
+  };
 
-    const nextSelectedTracks_indexes = arrayOf('index', nextSelectedTracks);
+  const onDoubleClick = (item, index) => {
+    // if (context_menu) hideContextMenu();
+    setSelected([{ item, index }]);
+    playURIs([item.uri], context);
+  };
 
-    dragStart(
-      e,
-      context?.type,
-      uri,
-      nextSelectedTracks,
-      nextSelectedTracks_indexes,
-    );
-  }
-
-  const onDrop = (e, track_key) => {
-    if (dragger?.active && reorderTracks) {
-      const tracks = digestTracksKeys([track_key]);
-      return reorderTracks(dragger?.victims_indexes, tracks[0].index);
-    }
-    setTouchDraggingKeys(false);
-  }
-
-  const onTouchDrag = (e, track_key) => {
-    // Drag initiated on a selected track
-    if (selected_tracks.includes(track_key)) {
-      // They're all dragging
-      setTouchDraggingKeys(selected_tracks);
-
-      // Not already selected, so just dragging the one track
-    } else {
-      setTouchDraggingKeys([track_key]);
-      setSelectedTracks([track_key]);
-    }
-  }
-
-  const onTouchMove = (e) => {
-    if (touchDraggingKeys) {
-      const touch = e.touches[0];
-      let over = $(document.elementFromPoint(touch.clientX, touch.clientY));
-      if (!over.is('.track')) {
-        over = over.closest('.list__item--track');
-      }
-      $(document).find('.touch-drag-hover').removeClass('touch-drag-hover');
-      if (over.length > 0) {
-        over.addClass('touch-drag-hover');
-      }
-
-      e.returnValue = false;
-      e.cancelBubble = true;
-      e.preventDefault();
-      e.stopPropagation();
-	    return false;
-    }
-  }
-
-  const onTouchEnd = (e) => {
-    if (touchDraggingKeys) {
-      const touch = e.changedTouches[0];
-      let over = $(document.elementFromPoint(touch.clientX, touch.clientY));
-      if (!over.is('.list__item--track')) {
-        over = over.closest('.list__item--track');
-      }
-      if (over.length > 0) {
-        const siblings = over.parent().children('.list__item--track');
-        const dropped_at = siblings.index(over);
-
-        if (reorderTracks !== undefined) {
-          reorderTracks(arrayOf('index', digestTracksKeys()), dropped_at);
-          setSelectedTracks([]);
-        }
-      }
-
-      $(document).find('.touch-drag-hover').removeClass('touch-drag-hover');
-      $('body').removeClass('touch-dragging');
-      setTouchDraggingKeys(false);
-    }
-  }
-
-  const onTap = (e, track_key) => {
-    updateSelection(e, track_key, true);
-  }
-
-  const onDoubleTap = (e, track_key) => {
-    onPlayTracks([track_key]);
-    updateSelection(e, track_key);
-  }
-
-  const onClick = (e, track_key) => {
-    updateSelection(e, track_key);
-  }
-
-  const onDoubleClick = (e, track_key) => {
-    if (context_menu) hideContextMenu();
-    onPlayTracks([track_key]);
-    updateSelection(e, track_key);
-  }
-
-  const onContextMenu = (e, track_key = null) => {
+  const onContextMenu = (item, index, e) => {
     // Do our best to stop any flow-on events
     e.preventDefault();
     e.stopPropagation();
     e.cancelBubble = true;
 
-    let nextSelectedTracks = [...selected_tracks];
-
-    // Not already selected, so select it prior to triggering menu
-    if (track_key && !nextSelectedTracks.includes(track_key)) {
-      nextSelectedTracks = [track_key];
-      setSelectedTracks(nextSelectedTracks);
+    const alreadySelected = selectionIndexByItemIndex(index);
+    let items = [];
+    if (alreadySelected > -1) {
+      items = selected;
+    } else {
+      items = nextSelected(selected, item, index, e);
+      setSelected(items);
     }
+    items = items.map(({ item: selectedItem }) => selectedItem);
 
-    const items = digestTracksKeys(nextSelectedTracks);
     showContextMenu({
       e,
       context,
@@ -227,98 +160,19 @@ const TrackList = ({
         : { type: 'tracks', items }
       ),
     });
-  }
-
-  const updateSelection = (e, track_key, touched = false) => {
-    let nextSelectedTracks = [...selected_tracks];
-
-    if ((e.ctrlKey || e.metaKey) || touched) {
-      // Already selected, so unselect it
-      if (nextSelectedTracks.includes(track_key)) {
-        const index = nextSelectedTracks.indexOf(track_key);
-        nextSelectedTracks.splice(index, 1);
-
-        // Not selected, so add it
-      } else {
-        nextSelectedTracks.push(track_key);
-      }
-    } else if (e.shiftKey) {
-      const last_selected_track = digestTracksKeys(nextSelectedTracks[nextSelectedTracks.length - 1]);
-      const last_selected_track_index = last_selected_track.index;
-      const newly_selected_track = digestTracksKeys(track_key);
-      const newly_selected_track_index = newly_selected_track.index;
-
-      // We've selected a track further down the list,
-      // so proceed normally
-      if (last_selected_track_index < newly_selected_track_index) {
-        var start = last_selected_track_index + 1;
-        var end = newly_selected_track_index;
-
-        // Selected a track up the list, so
-        // our last selected is the END of our range
-      } else {
-        var start = newly_selected_track_index;
-        var end = last_selected_track_index - 1;
-      }
-
-      if (start !== false && start >= 0 && end !== false && end >= 0) {
-        for (let i = start; i <= end; i++) {
-          nextSelectedTracks.push(buildTrackKey(tracks[i], i));
-        }
-      }
-
-      // Regular, unmodified left click
-    } else {
-      nextSelectedTracks = [track_key];
-    }
-
-    setSelectedTracks(nextSelectedTracks);
-  }
-
-  const onPlayTracks = (tracks_keys = null) => {
-    const selectedKeys = tracks_keys !== null
-      ? digestTracksKeys(tracks_keys)
-      : digestTracksKeys();
-
-    if (selectedKeys.length <= 0) {
-      createNotification({ content: i18n('errors.nothing_selected'), level: 'error' });
-      return;
-    }
-
-    if (playTracks) {
-      playTracks(selectedKeys);
-      return;
-    }
-    playURIs(arrayOf('uri', selectedKeys), uri);
-  }
+  };
 
   const onRemoveTracks = () => {
-    const selectedKeys = digestTracksKeys();
-
     if (!removeTracks) {
-      createNotification({ content: `Cannot delete ${selectedKeys.length > 1 ? 'these tracks' : 'this track'}`, level: 'error' });
+      createNotification({
+        content: `Cannot delete ${selected.length > 1 ? 'these tracks' : 'this track'}`,
+        level: 'error',
+      });
       return;
     }
-    const selected_tracks_indexes = arrayOf('index', selectedKeys);
-    removeTracks(selected_tracks_indexes);
-  }
+    removeTracks(selected.map(({ index }) => index));
+  };
 
-  /**
-	 * Build the track key
-	 * This is our unique reference to a track in a particular tracklist
-	 *
-	 * @param track = Track obj
-	 * @param index = int (position of track in tracklist)
-	 * @return string
-	 * */
-  const buildTrackKey = (track, index) => {
-    let key = index;
-    key += `@@${track.tlid || 'none'}`;
-    key += `@@${track.uri}`;
-    key += `@@${uri || 'none'}`;
-    key += `@@${context?.type || 'none'}`;
-    return key;
-  }
 
   /**
 	 * Digest our selected tracks
@@ -327,48 +181,53 @@ const TrackList = ({
 	 * @param indexex_only = boolean (do we just want an array of indexes)
 	 * @return mixed
 	 * */
-  const digestTracksKeys = (keys = selected_tracks, indexes_only = false) => {
-    if (!keys) {
-      return false;
-    }
+  // const digestTracksKeys = (keys = selected_tracks, indexes_only = false) => {
+  //   if (!keys) {
+  //     return false;
+  //   }
 
-    // Accommodate a single key
-    let singleton = false;
-    if (!(keys instanceof Array)) {
-      singleton = true;
-      keys = [keys];
-    }
+  //   // Accommodate a single key
+  //   let singleton = false;
+  //   if (!(keys instanceof Array)) {
+  //     singleton = true;
+  //     keys = [keys];
+  //   }
 
-    // Construct a basic track object, based on our unique track key
-    // This is enough to perform interactions (dragging, selecting, etc)
-    const array = [];
-    for (const key of keys) {
-      const key_components = key.split('@@');
+  //   // Construct a basic track object, based on our unique track key
+  //   // This is enough to perform interactions (dragging, selecting, etc)
+  //   const array = [];
+  //   for (const key of keys) {
+  //     const key_components = key.split('@@');
 
-      if (indexes_only) {
-        array.push(key_components[0]);
-      } else {
-        array.push({
-          key,
-          index: parseInt(key_components[0]),
-          tlid: parseInt(key_components[1]),
-          uri: key_components[2],
-          provider: uriSource(key_components[2]),
-          context: key_components[3],
-          context_uri: key_components[4],
-        });
-      }
-    }
+  //     if (indexes_only) {
+  //       array.push(key_components[0]);
+  //     } else {
+  //       array.push({
+  //         key,
+  //         index: parseInt(key_components[0]),
+  //         tlid: parseInt(key_components[1]),
+  //         uri: key_components[2],
+  //         provider: uriSource(key_components[2]),
+  //         context: key_components[3],
+  //         context_uri: key_components[4],
+  //       });
+  //     }
+  //   }
 
-    if (singleton && array.length > 0) {
-      return array[0];
-    }
-    return array;
-  }
+  //   if (singleton && array.length > 0) {
+  //     return array[0];
+  //   }
+  //   return array;
+  // }
 
   if (!tracks || Object.prototype.toString.call(tracks) !== '[object Array]') {
     return null;
   }
+
+  const is_selected = (index) => {
+    if (selected.length <= 0) return false;
+    return selected.filter(({ index: selIndex }) => index === selIndex).length > 0;
+  };
 
   return (
     <SmartList
@@ -377,23 +236,16 @@ const TrackList = ({
       itemComponent={Track}
       itemProps={{
         dragger,
-        buildTrackKey,
         play_state,
         show_source_icon,
         context,
         selected_tracks,
-        can_sort: (
-          context?.context === 'queue' || (context?.context === 'playlist' && context?.can_edit)
-        ),
+        can_sort: context?.can_edit,
+        is_selected,
         mini_zones: slim_mode || isTouchDevice(),
-        handleClick: onClick,
-        handleDoubleClick: onDoubleClick,
-        handleContextMenu: onContextMenu,
-        handleDrag: onDrag,
-        handleDrop: onDrop,
-        handleTap: onTap,
-        handleDoubleTap: onDoubleTap,
-        handleTouchDrag: onTouchDrag,
+        onClick,
+        onContextMenu,
+        onDoubleClick,
       }}
     />
   );

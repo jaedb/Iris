@@ -11,7 +11,7 @@ import { nice_number } from '../components/NiceNumber';
 import { Dater, dater } from '../components/Dater';
 import FollowButton from '../components/Fields/FollowButton';
 import Loader from '../components/Loader';
-import ContextMenuTrigger from '../components/ContextMenuTrigger';
+import ContextMenuTrigger from '../components/ContextMenu/ContextMenuTrigger';
 import URILink from '../components/URILink';
 import { SourceIcon } from '../components/Icon';
 import DropdownField from '../components/Fields/DropdownField';

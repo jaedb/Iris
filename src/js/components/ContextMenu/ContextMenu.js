@@ -11,37 +11,91 @@ import {
   isLoading,
   throttle,
   titleCase,
-} from '../util/helpers';
+} from '../../util/helpers';
 import {
   arrayOf,
   sortItems,
-} from '../util/arrays';
-import Link from './Link';
-import Icon from './Icon';
-import Loader from './Loader';
-import URILink from './URILink';
+} from '../../util/arrays';
+import Link from '../Link';
+import Icon from '../Icon';
+import Loader from '../Loader';
+import URILink from '../URILink';
 
-import * as coreActions from '../services/core/actions';
-import * as uiActions from '../services/ui/actions';
-import * as pusherActions from '../services/pusher/actions';
-import * as mopidyActions from '../services/mopidy/actions';
-import * as lastfmActions from '../services/lastfm/actions';
-import * as spotifyActions from '../services/spotify/actions';
-import { I18n } from '../locale';
-import { encodeUri } from '../util/format';
+import * as coreActions from '../../services/core/actions';
+import * as uiActions from '../../services/ui/actions';
+import * as pusherActions from '../../services/pusher/actions';
+import * as mopidyActions from '../../services/mopidy/actions';
+import * as lastfmActions from '../../services/lastfm/actions';
+import * as spotifyActions from '../../services/spotify/actions';
+import { I18n } from '../../locale';
+import { encodeUri } from '../../util/format';
 import {
   makeProcessProgressSelector,
   makeProvidersSelector,
   makeLibrarySelector,
-} from '../util/selectors';
-import AddedFrom from './AddedFrom';
-import { ContextMenuItems } from './ContextMenu/ContextMenuItems';
-import PlaylistSubmenu from './ContextMenu/PlaylistSubmenu';
+} from '../../util/selectors';
+import AddedFrom from '../AddedFrom';
+import { ContextMenuItems } from './ContextMenuItems';
+import PlaylistSubmenu from './PlaylistSubmenu';
 
 const processKeys = [
   'MOPIDY_GET_LIBRARY_PLAYLISTS',
   'SPOTIFY_GET_LIBRARY_PLAYLISTS',
 ];
+
+const Title = ({
+  context_menu: {
+    title,
+    item,
+    items,
+    type,
+  },
+}) => {
+  if (items) {
+    return (
+      <div className="context-menu__title">
+        <div className="context-menu__title__text">
+          {`${items.length} ${type} selected`}
+          <span
+            className="context-menu__title__deselect"
+            onClick={() => {
+              // TODO: reset selected
+            }}
+          >
+            <Icon name="close" />
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  if (item) {
+    return (
+      <div className="context-menu__title">
+        <AddedFrom
+          from={item?.added_from}
+          by={item?.added_by}
+          className="context-menu__title__text"
+          inline
+        />
+      </div>
+    );
+  }
+
+  if (type === 'custom') {
+    if (!title) return null;
+
+    return (
+      <div className="context-menu__title">
+        <div className="context-menu__title__text">
+          {title}
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+};
 
 const ContextMenu = ({
   context_menu,
@@ -105,7 +159,9 @@ const ContextMenu = ({
   return (
     <div className={className} style={style} ref={ref}>
       <div className="context-menu__section context-menu__section--items">
-        {/* {this.renderTitle()} */}
+        <Title
+          context_menu={context_menu}
+        />
         <ContextMenuItems
           context_menu={context_menu}
           onSubmenu={() => setSubmenu(true)}

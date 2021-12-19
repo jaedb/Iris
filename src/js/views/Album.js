@@ -10,7 +10,7 @@ import Loader from '../components/Loader';
 import FollowButton from '../components/Fields/FollowButton';
 import { nice_number } from '../components/NiceNumber';
 import { Dater } from '../components/Dater';
-import ContextMenuTrigger from '../components/ContextMenuTrigger';
+import ContextMenuTrigger from '../components/ContextMenu/ContextMenuTrigger';
 import { SourceIcon } from '../components/Icon';
 import DropdownField from '../components/Fields/DropdownField';
 import FilterField from '../components/Fields/FilterField';
