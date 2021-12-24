@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import Link from './Link';
@@ -18,15 +18,13 @@ import { makeItemSelector } from '../util/selectors';
 import { formatSimpleObject } from '../util/format';
 
 const PlaybackControls = () => {
-  const [expanded, setExpanded] = useState();
-
   const dispatch = useDispatch();
+  const time_position = useSelector((state) => state.mopidy.time_position);
   const touch_enabled = useSelector((state) => state.ui.touch_enabled);
   const sidebar_open = useSelector((state) => state.ui.sidebar_open);
   const slim_mode = useSelector((state) => state.ui.slim_mode);
   const volume = useSelector((state) => state.mopidy.volume);
   const mute = useSelector((state) => state.mopidy.mute);
-  const time_position = useSelector((state) => state.mopidy.time_position);
   const play_state = useSelector((state) => state.mopidy.play_state);
   const consume = useSelector((state) => state.mopidy.consume);
   const random = useSelector((state) => state.mopidy.random);
@@ -38,6 +36,22 @@ const PlaybackControls = () => {
   const nextTrackUri = useSelector((state) => state.core.next_track_uri);
   const nextTrackSelector = makeItemSelector(nextTrackUri);
   const nextTrack = useSelector(nextTrackSelector);
+  const [expanded, setExpanded] = useState();
+  const [playbackPosition, setPlaybackPosition] = useState(time_position);
+
+  useEffect(() => {
+    const playbackPositionTimer = setInterval(
+      () => {
+        setPlaybackPosition((prev) => prev + 1000);
+      },
+      1000,
+    );
+    return () => clearInterval(playbackPositionTimer);
+  }, []);
+
+  useEffect(() => {
+    setPlaybackPosition(time_position);
+  }, [time_position]);
 
   const handleContextMenu = (e) => {
     e.preventDefault();
@@ -142,9 +156,12 @@ const PlaybackControls = () => {
 
       <section className="progress">
         <div className="time time--current">
-          {time_position ? <Dater type="length" data={time_position} /> : '-'}
+          {playbackPosition ? <Dater type="length" data={playbackPosition} /> : '-'}
         </div>
-        <ProgressSlider size={slim_mode && 'small'} />
+        <ProgressSlider
+          playbackPosition={playbackPosition}
+          size={slim_mode && 'small'}
+        />
         <div className="time time--total">
           {currentTrack ? <Dater type="length" data={currentTrack.duration} /> : '-'}
         </div>

@@ -177,10 +177,10 @@ export function getMe() {
   };
 }
 
-export function getTrack(uri, callback) {
+export function getTrack(uri, callback, alreadyLoadedTrack) {
   return (dispatch, getState) => {
     const selector = makeItemSelector(uri);
-    const track = selector(getState());
+    const track = alreadyLoadedTrack || selector(getState());
     if (!track || !track.artists) {
       dispatch(coreActions.handleException(
         'Could not get LastFM track',
@@ -394,10 +394,12 @@ export function loveTrack(uri) {
             userloved: true,
           }));
           dispatch(uiActions.createNotification({
-            content: <span>
-              Loved
-              <URILink type="track" uri={uri}>{asset ? asset.name : type}</URILink>
-                     </span>,
+            content: (
+              <span>
+                {'Loved '}
+                <URILink type="track" uri={uri}>{asset ? asset.name : type}</URILink>
+              </span>
+            ),
           }));
         },
       );
@@ -434,10 +436,12 @@ export function unloveTrack(uri) {
             userloved: false,
           }));
           dispatch(uiActions.createNotification({
-            content: <span>
-              Unloved
-              <URILink uri={uri}>{asset ? asset.name : type}</URILink>
-                     </span>,
+            content: (
+              <span>
+                {'Unloved '}
+                <URILink uri={uri}>{asset ? asset.name : type}</URILink>
+              </span>
+            ),
           }));
         },
       );

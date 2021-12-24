@@ -18,6 +18,12 @@ import {
 } from '../../services/ui/actions';
 import {
   removeTracks,
+  playURIs,
+  playAlbum,
+  playPlaylist,
+  enqueueURIs,
+  enqueueAlbum,
+  enqueuePlaylist,
 } from '../../services/mopidy/actions';
 import {
   following,
@@ -33,11 +39,10 @@ import {
   removePinned,
 } from '../../services/pusher/actions';
 import {
-  titleCase,
+  titleCase, uriSource,
 } from '../../util/helpers';
 import { arrayOf } from '../../util/arrays';
 import { encodeUri } from '../../util/format';
-import { enqueueURIs, playURIs } from '../../services/mopidy/actions';
 
 const ContextMenuItems = ({
   context_menu,
@@ -50,15 +55,15 @@ const ContextMenuItems = ({
     context,
   } = context_menu;
   const can_edit = context?.can_edit || item?.can_edit;
-  const provider = context?.provider || item?.provider;
+  const provider = context?.provider || item?.provider || uriSource(item?.uri);
 
   switch (type) {
     case 'album': {
       return (
         <>
-          <Play uris={[item.uri]} context={context} />
-          <Enqueue uris={[item.uri]} context={context} next />
-          <Enqueue uris={[item.uri]} context={context} />
+          <Play uri={item.uri} context={item} action={playAlbum} />
+          <Enqueue uri={item.uri} context={item} action={enqueueAlbum} next />
+          <Enqueue uri={item.uri} context={item} action={enqueueAlbum} />
           <Divider />
           {item.provider === 'spotify' && (
             <>
@@ -97,9 +102,10 @@ const ContextMenuItems = ({
     case 'playlist': {
       return (
         <>
-          <Play uris={[item.uri]} context={context} />
-          <Enqueue uris={[item.uri]} context={context} next />
-          <Enqueue uris={[item.uri]} context={context} />
+          <Play uri={item.uri} action={playPlaylist} context={item} />
+          <Play uri={item.uri} action={playPlaylist} context={item} shuffle />
+          <Enqueue uri={item.uri} action={enqueuePlaylist} context={item} next />
+          <Enqueue uri={item.uri} action={enqueuePlaylist} context={item} />
           <Library uri={item.uri} inLibrary={item.in_library} />
           <Pin item={item} isPinned={item.is_pinned} />
           <Divider />
@@ -130,7 +136,7 @@ const ContextMenuItems = ({
           <Divider />
           <AddToPlaylist uris={[item.uri]} onClick={onSubmenu} />
           {provider === 'spotify' && <Library uri={item.uri} />}
-          <Love uri={item.uri} />
+          <Love item={item} />
           <Divider />
           {provider === 'spotify' && (
             <>
@@ -154,6 +160,7 @@ const ContextMenuItems = ({
       return (
         <>
           <Play uris={uris} context={context} />
+          <Play uris={uris} context={context} shuffle />
           <Enqueue uris={uris} context={context} next />
           <Enqueue uris={uris} context={context} />
           <Divider />
@@ -271,22 +278,21 @@ const Library = ({
   );
 };
 
-const Love = ({
-  uri,
-  isLoved: isLovedProp,
-}) => {
+const Love = ({ item }) => {
+  const { uri, is_loved } = item;
   const dispatch = useDispatch();
-  const [isLoved, setIsLoved] = useState(isLovedProp);
+  const [isLoved, setIsLoved] = useState(item.is_loved);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
-    if (isLovedProp === undefined) {
+    if (is_loved === undefined) {
       setLoading(true);
       dispatch(getTrack(
         uri,
         (result) => {
           setLoading(false);
-          setIsLoved(result);
+          setIsLoved(result?.is_loved);
         },
+        item,
       ));
     }
   }, [uri]);
@@ -389,19 +395,22 @@ const Delete = ({
 };
 
 const Play = ({
+  uri,
   uris,
   context,
+  shuffle,
+  action = playURIs,
 }) => {
   const dispatch = useDispatch();
   const onClick = () => {
-    dispatch(playURIs(uris, context));
+    dispatch(action(uri || uris, context, shuffle));
     dispatch(hideContextMenu());
   };
   return (
     <div className="context-menu__item">
       <a className="context-menu__item__link" onClick={onClick}>
         <span className="context-menu__item__label">
-          <I18n path="actions.play" />
+          <I18n path={`actions.${shuffle ? 'shuffle_' : ''}play`} />
         </span>
       </a>
     </div>
@@ -409,13 +418,15 @@ const Play = ({
 };
 
 const Enqueue = ({
+  uri,
   uris,
   next,
   context,
+  action = enqueueURIs,
 }) => {
   const dispatch = useDispatch();
   const onClick = () => {
-    dispatch(enqueueURIs(uris, context, next));
+    dispatch(action(uri || uris, context, next));
     dispatch(hideContextMenu());
   };
   return (

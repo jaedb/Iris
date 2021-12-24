@@ -70,7 +70,6 @@ const MopidyMiddleware = (function () {
 
   // play position timer
   let progress_interval = null;
-  let progress_interval_counter = 0;
 
   // handle all manner of socket messages
   const handleMessage = (ws, store, type, data) => {
@@ -95,21 +94,15 @@ const MopidyMiddleware = (function () {
         store.dispatch(mopidyActions.getUriSchemes());
         store.dispatch(mopidyActions.getStreamTitle());
 
-        // Every 1s update our play position (when playing)
+        // Every 10s update our play position (when playing)
         progress_interval = setInterval(() => {
-          if (store.getState().mopidy.play_state === 'playing') {
-            // Every 10s get real position from server, provided we're in-focus
-            if (progress_interval_counter % 5 === 0 && store.getState().ui.window_focus === true) {
-              store.dispatch(mopidyActions.getTimePosition());
-
-              // Otherwise we just assume to add 1000ms every 1000ms of play time
-            } else {
-              store.dispatch(mopidyActions.timePosition(store.getState().mopidy.time_position + 1000));
-            }
-
-            progress_interval_counter += 1;
+          if (
+            store.getState().mopidy.play_state === 'playing'
+            && store.getState().ui.window_focus === true
+          ) {
+            store.dispatch(mopidyActions.getTimePosition());
           }
-        }, 1000);
+        }, 10000);
 
         break;
 
@@ -119,7 +112,6 @@ const MopidyMiddleware = (function () {
 
         // reset our playback interval timer
         clearInterval(progress_interval);
-        progress_interval_counter = 0;
         break;
 
       case 'event:tracklistChanged':
@@ -889,13 +881,47 @@ const MopidyMiddleware = (function () {
         break;
       }
 
+      case 'MOPIDY_PLAY_ALBUM': {
+        const album = store.getState().core.items[action.uri];
+        const { sortField, sortReverse } = getSortSelector(store.getState(), 'playlist_tracks');
+        if (album && album.tracks) {
+          store.dispatch(
+            mopidyActions.playURIs(
+              arrayOf(
+                'uri',
+                sortItems(
+                  album.tracks.filter((t) => t?.is_playable !== false),
+                  sortField,
+                  sortReverse,
+                ),
+              ),
+              {
+                uri: album?.uri,
+                name: album?.name,
+                type: 'album',
+              },
+              action.shuffle,
+            ),
+          );
+          break;
+        }
+        store.dispatch(
+          coreActions.loadAlbum(
+            action.uri,
+            { full: true, callbackAction: { name: 'play', shuffle: action.shuffle } },
+          ),
+        );
+        break;
+      }
+
       case 'MOPIDY_ENQUEUE_PLAYLIST': {
         const playlist = store.getState().core.items[action.uri];
         if (playlist && playlist.tracks) {
           store.dispatch(
             mopidyActions.enqueueURIs(
               arrayOf('uri', playlist.tracks),
-              action.uri,
+              action.from,
+              action.play_next,
               action.shuffle,
             ),
           );
@@ -908,6 +934,37 @@ const MopidyMiddleware = (function () {
             {
               name: 'enqueue',
               shuffle: action.shuffle,
+              from: action.from,
+              play_next: action.play_next,
+              at_position: action.at_position,
+              offset: action.offset,
+            },
+          ),
+        );
+        break;
+      }
+
+      case 'MOPIDY_ENQUEUE_ALBUM': {
+        const album = store.getState().core.items[action.uri];
+        if (album && album.tracks) {
+          store.dispatch(
+            mopidyActions.enqueueURIs(
+              arrayOf('uri', album.tracks),
+              action.from,
+              action.play_next,
+              action.shuffle,
+            ),
+          );
+          break;
+        }
+        store.dispatch(
+          coreActions.loadAlbum(
+            action.uri,
+            false,
+            {
+              name: 'enqueue',
+              shuffle: action.shuffle,
+              from: action.from,
               play_next: action.play_next,
               at_position: action.at_position,
               offset: action.offset,

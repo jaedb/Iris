@@ -628,6 +628,9 @@ const formatTrack = function (data) {
     'loading',
     'in_library',
     'is_playable',
+    'is_loved',
+    'is_explicit',
+    'is_local',
     'tlid',
     'provider',
     'name',
@@ -639,11 +642,8 @@ const formatTrack = function (data) {
     'duration',
     'followers',
     'popularity',
-    'userloved',
     'last_modified',
     'added_at',
-    'is_explicit',
-    'is_local',
     'lyrics',
     'lyrics_path',
     'lyrics_results',
@@ -705,6 +705,10 @@ const formatTrack = function (data) {
 
   if (track.explicit === undefined && data.explicit !== undefined) {
     track.is_explicit = data.explicit;
+  }
+
+  if (track.userloved === undefined && data.userloved !== undefined) {
+    track.is_loved = data.userloved === '1';
   }
 
   // Copy images from albums (if applicable)

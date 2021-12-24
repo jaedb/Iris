@@ -5,10 +5,10 @@ import { throttle } from '../../util/helpers';
 
 const ProgressSlider = ({
   size,
+  playbackPosition = 0,
 }) => {
   const dispatch = useDispatch();
   const connected = useSelector((state) => state.mopidy.connected);
-  const time_position = useSelector((state) => state.mopidy.time_position);
   const play_state = useSelector((state) => state.mopidy.play_state);
   const current_track = useSelector((state) => state.core.current_track);
 
@@ -19,8 +19,8 @@ const ProgressSlider = ({
   const onChange = throttle(onChangeThrottled, 250);
 
   let percent = 0;
-  if (connected && time_position && current_track && current_track.duration) {
-    percent = time_position / current_track.duration;
+  if (connected && playbackPosition && current_track && current_track.duration) {
+    percent = playbackPosition / current_track.duration;
     percent *= 100;
     if (percent > 1000) {
       percent = 100;
