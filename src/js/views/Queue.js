@@ -244,6 +244,7 @@ const Queue = ({
             playTracks={onPlayTracks}
             playTrack={onPlayTrack}
             reorderTracks={onReorderTracks}
+            sortable
           />
         </section>
       </div>

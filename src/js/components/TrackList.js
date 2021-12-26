@@ -33,6 +33,7 @@ const TrackList = ({
   mopidyActions: {
     playURIs,
   },
+  sortable,
 }) => {
   const [selected, setSelected] = useState([]);
 
@@ -145,13 +146,11 @@ const TrackList = ({
     const alreadySelected = selectionIndexByItemIndex(index);
     let items = [];
     if (alreadySelected > -1) {
-      console.debug('ALREADY')
       items = selected;
     } else {
       items = nextSelected(selected, item, index, e);
       setSelected(items);
     }
-    console.debug({ alreadySelected, items })
     items = items.map(({ item: selectedItem }) => selectedItem);
 
     showContextMenu({
@@ -175,53 +174,6 @@ const TrackList = ({
     removeTracks(selected.map(({ index }) => index));
   };
 
-
-  /**
-	 * Digest our selected tracks
-	 *
-	 * @param tracks = mixed (defaults to stored value)
-	 * @param indexex_only = boolean (do we just want an array of indexes)
-	 * @return mixed
-	 * */
-  // const digestTracksKeys = (keys = selected_tracks, indexes_only = false) => {
-  //   if (!keys) {
-  //     return false;
-  //   }
-
-  //   // Accommodate a single key
-  //   let singleton = false;
-  //   if (!(keys instanceof Array)) {
-  //     singleton = true;
-  //     keys = [keys];
-  //   }
-
-  //   // Construct a basic track object, based on our unique track key
-  //   // This is enough to perform interactions (dragging, selecting, etc)
-  //   const array = [];
-  //   for (const key of keys) {
-  //     const key_components = key.split('@@');
-
-  //     if (indexes_only) {
-  //       array.push(key_components[0]);
-  //     } else {
-  //       array.push({
-  //         key,
-  //         index: parseInt(key_components[0]),
-  //         tlid: parseInt(key_components[1]),
-  //         uri: key_components[2],
-  //         provider: uriSource(key_components[2]),
-  //         context: key_components[3],
-  //         context_uri: key_components[4],
-  //       });
-  //     }
-  //   }
-
-  //   if (singleton && array.length > 0) {
-  //     return array[0];
-  //   }
-  //   return array;
-  // }
-
   if (!tracks || Object.prototype.toString.call(tracks) !== '[object Array]') {
     return null;
   }
@@ -236,6 +188,7 @@ const TrackList = ({
       className={`list list--tracks ${className}`}
       items={tracks}
       itemComponent={Track}
+      onSort={reorderTracks}
       itemProps={{
         dragger,
         play_state,
@@ -249,6 +202,7 @@ const TrackList = ({
         onContextMenu,
         onDoubleClick,
       }}
+      sortable={sortable}
     />
   );
 }

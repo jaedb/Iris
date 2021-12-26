@@ -2,6 +2,11 @@ import React, { memo, useState, useEffect } from 'react';
 import handleViewport from 'react-in-viewport';
 import { chunk } from 'lodash';
 import ErrorBoundary from './ErrorBoundary';
+import { ReactSortable, Sortable } from 'react-sortablejs';
+import { MultiDrag } from "sortablejs";
+
+// mount whatever plugins you'd like to. These are the only current options.
+Sortable.mount(new MultiDrag());
 
 const SmartListBatch = handleViewport(
   ({
@@ -17,7 +22,13 @@ const SmartListBatch = handleViewport(
     className = '',
     isFirst,
     isLast,
+    sortable,
+    onSort,
   }) => {
+    const [list, setList] = useState(items);
+    const onChange = (nextList) => {
+      setList(nextList);
+    }
     // Listen for changes to our height, and pass it up to our Grid. This is then used to build the
     // placeholder elements when out of viewport. We only care about the first item because this
     // represents the same heights for everything else (in almost all circumstances).
@@ -33,12 +44,27 @@ const SmartListBatch = handleViewport(
       return ii + (chunkSize * bi);
     };
 
+    const handleSort = ({ newIndex, oldIndex, oldIndicies }) => {
+      if (oldIndicies?.length > 0) {
+        return onSort(oldIndicies.map(({ index }) => index), newIndex);
+      }
+      return onSort([oldIndex], newIndex);
+    }
+
+    const Container = sortable ? ReactSortable : 'div';
+
     return (
       <div className={`smart-list__batch ${className}`} ref={forwardedRef}>
         {inViewport || isFirst || isLast ? (
-          <div
+          <Container
+            list={list}
+            setList={onChange}
+            onSort={handleSort}
             className="smart-list__batch__inner"
             style={isFirst || isLast ? {} : { minHeight: itemHeight }}
+            selectedClass="list__item--selected"
+            multiDragKey="CTRL"
+            multiDrag
           >
             {
               items.map((item, index) => (
@@ -50,7 +76,7 @@ const SmartListBatch = handleViewport(
                 />
               ))
             }
-          </div>
+          </Container>
         ) : (
           <div style={{ height: itemHeight }} />
         )}
@@ -66,6 +92,8 @@ const SmartList = memo(({
   initialHeight = '50vh',
   itemProps,
   className,
+  sortable,
+  onSort,
 }) => {
   if (!items || !items.length) return null;
   if (!itemComponent) return null;
@@ -89,6 +117,8 @@ const SmartList = memo(({
             setItemHeight={setItemHeight}
             isFirst={index === 0}
             isLast={index === chunks.length - 1}
+            sortable={sortable}
+            onSort={onSort}
           />
         ))
       }
