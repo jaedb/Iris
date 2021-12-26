@@ -145,11 +145,13 @@ const TrackList = ({
     const alreadySelected = selectionIndexByItemIndex(index);
     let items = [];
     if (alreadySelected > -1) {
+      console.debug('ALREADY')
       items = selected;
     } else {
       items = nextSelected(selected, item, index, e);
       setSelected(items);
     }
+    console.debug({ alreadySelected, items })
     items = items.map(({ item: selectedItem }) => selectedItem);
 
     showContextMenu({

@@ -85,34 +85,6 @@
       }
     }
 
-    @include responsive($bp_medium) {
-      .current-track {
-        &__incoming,
-        &__outgoing {
-          animation-duration: .25s;
-          animation-timing-function: ease-in-out;
-          transform: translateX(0);
-        }
-      }
-      &[direction="previous"] {
-        .current-track__incoming {
-          animation-name: slide_from_right;
-        }
-        .current-track__outgoing {
-          animation-name: slide_right;
-        }
-      }
-
-      &[direction="next"] {
-        .current-track__incoming {
-          animation-name: slide_from_left;
-        }
-        .current-track__outgoing {
-          animation-name: slide_left;
-        }
-      }
-    }
-
     .current-track {
       width: 100%;
       display: flex;
@@ -269,11 +241,6 @@
 
       .slider {
         flex-grow: 1;
-        &__track {
-          &__progress {
-            @include animate(0.2s, linear);
-          }
-        }
       }
 
       .time {

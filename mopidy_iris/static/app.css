@@ -6516,25 +6516,6 @@ h4 .loader {
     opacity: 1;
   }
 }
-@media (max-width: 800px) {
-  .playback-controls .current-track__wrapper .current-track__incoming, .playback-controls .current-track__wrapper .current-track__outgoing {
-    animation-duration: 0.25s;
-    animation-timing-function: ease-in-out;
-    transform: translateX(0);
-  }
-  .playback-controls .current-track__wrapper[direction=previous] .current-track__incoming {
-    animation-name: slide_from_right;
-  }
-  .playback-controls .current-track__wrapper[direction=previous] .current-track__outgoing {
-    animation-name: slide_right;
-  }
-  .playback-controls .current-track__wrapper[direction=next] .current-track__incoming {
-    animation-name: slide_from_left;
-  }
-  .playback-controls .current-track__wrapper[direction=next] .current-track__outgoing {
-    animation-name: slide_left;
-  }
-}
 .playback-controls .current-track__wrapper .current-track {
   width: 100%;
   display: flex;
@@ -6731,12 +6712,6 @@ h4 .loader {
 }
 .playback-controls section.progress .slider {
   flex-grow: 1;
-}
-.playback-controls section.progress .slider__track__progress {
-  -webkit-transition: all 0.2s linear;
-  -moz-transition: all 0.2s linear;
-  -o-transition: all 0.2s linear;
-  transition: all 0.2s linear;
 }
 .playback-controls section.progress .time {
   font-size: 11px;

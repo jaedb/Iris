@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import { compact, uniq } from 'lodash';
 import { I18n } from '../../locale';
 import Link from '../Link';
 import Icon from '../Icon';
@@ -38,9 +39,7 @@ import {
   addPinned,
   removePinned,
 } from '../../services/pusher/actions';
-import {
-  titleCase, uriSource,
-} from '../../util/helpers';
+import { uriSource } from '../../util/helpers';
 import { arrayOf } from '../../util/arrays';
 import { encodeUri } from '../../util/format';
 
@@ -55,7 +54,7 @@ const ContextMenuItems = ({
     context,
   } = context_menu;
   const can_edit = context?.can_edit || item?.can_edit;
-  const provider = context?.provider || item?.provider || uriSource(item?.uri);
+  let provider = context?.provider || item?.provider || uriSource(item?.uri);
 
   switch (type) {
     case 'album': {
@@ -157,6 +156,10 @@ const ContextMenuItems = ({
     }
     case 'tracks': {
       const uris = arrayOf('uri', items);
+      if (!provider) {
+        const providers = uniq(items.map((i) => i.provider || uriSource(i.uri)));
+        if (providers.length === 1) provider = providers[0];
+      }
       return (
         <>
           <Play uris={uris} context={context} />

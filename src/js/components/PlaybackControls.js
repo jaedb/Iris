@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 import Link from './Link';
 import ProgressSlider from './Fields/ProgressSlider';
 import VolumeControl from './Fields/VolumeControl';
@@ -11,6 +10,7 @@ import LinksSentence from './LinksSentence';
 import Thumbnail from './Thumbnail';
 import Icon from './Icon';
 import { scrollTo } from '../util/helpers';
+import useTimer from '../util/useTimer';
 import { showContextMenu, toggleSidebar } from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import { I18n } from '../locale';
@@ -39,15 +39,13 @@ const PlaybackControls = () => {
   const [expanded, setExpanded] = useState();
   const [playbackPosition, setPlaybackPosition] = useState(time_position);
 
-  useEffect(() => {
-    const playbackPositionTimer = setInterval(
-      () => {
-        setPlaybackPosition((prev) => prev + 1000);
-      },
-      1000,
-    );
-    return () => clearInterval(playbackPositionTimer);
-  }, []);
+  useTimer(
+    () => {
+      if (play_state === 'playing') setPlaybackPosition((prev) => prev + 1000);
+    },
+    1000,
+    true,
+  );
 
   useEffect(() => {
     setPlaybackPosition(time_position);
