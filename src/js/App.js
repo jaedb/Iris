@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Route, Switch, useLocation, useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
 import ReactGA from 'react-ga';
 import * as Sentry from '@sentry/browser';
 
@@ -260,55 +262,57 @@ const App = () => {
           />
           <Route>
             <div>
-              <Sidebar tabIndex="3" />
-              <PlaybackControls tabIndex="2"/>
+              <DndProvider backend={HTML5Backend}>                  
+                <Sidebar tabIndex="3" />
+                <PlaybackControls tabIndex="2"/>
 
-              <main id="main" className="smooth-scroll" tabIndex="1">
-                <Switch>
-                  <Route exact path="/" component={Queue} />
+                <main id="main" className="smooth-scroll" tabIndex="1">
+                  <Switch>
+                    <Route exact path="/" component={Queue} />
 
-                  <Route exact path="/queue" component={Queue} />
-                  <Route
-                    exact
-                    path="/queue/history"
-                    component={QueueHistory}
-                  />
-                  <Route exact path="/settings/debug" component={Debug} />
-                  <Route path="/settings" component={Settings} />
+                    <Route exact path="/queue" component={Queue} />
+                    <Route
+                      exact
+                      path="/queue/history"
+                      component={QueueHistory}
+                    />
+                    <Route exact path="/settings/debug" component={Debug} />
+                    <Route path="/settings" component={Settings} />
 
-                  <Route
-                    exact
-                    path="/search/:type?/:term?"
-                    component={Search}
-                  />
-                  <Route
-                    exact
-                    path="/artist/:uri/:sub_view?"
-                    component={Artist}
-                  />
-                  <Route exact path="/album/:uri/:name?" component={Album} />
-                  <Route exact path="/playlist/:uri/:name?" component={Playlist} />
-                  <Route exact path="/user/:uri/:name?" component={User} />
-                  <Route exact path="/track/:uri/:name?" component={Track} />
-                  <Route exact path="/uri/:uri/:name?" component={UriRedirect} />
+                    <Route
+                      exact
+                      path="/search/:type?/:term?"
+                      component={Search}
+                    />
+                    <Route
+                      exact
+                      path="/artist/:uri/:sub_view?"
+                      component={Artist}
+                    />
+                    <Route exact path="/album/:uri/:name?" component={Album} />
+                    <Route exact path="/playlist/:uri/:name?" component={Playlist} />
+                    <Route exact path="/user/:uri/:name?" component={User} />
+                    <Route exact path="/track/:uri/:name?" component={Track} />
+                    <Route exact path="/uri/:uri/:name?" component={UriRedirect} />
 
-                  <Route
-                    path="/discover"
-                    component={Discover}
-                  />
+                    <Route
+                      path="/discover"
+                      component={Discover}
+                    />
 
-                  <Route
-                    path="/library"
-                    component={Library}
-                  />
+                    <Route
+                      path="/library"
+                      component={Library}
+                    />
 
-                  <Route>
-                    <ErrorMessage type="not-found" title="Not found">
-                      <p>Oops, that link could not be found</p>
-                    </ErrorMessage>
-                  </Route>
-                </Switch>
-              </main>
+                    <Route>
+                      <ErrorMessage type="not-found" title="Not found">
+                        <p>Oops, that link could not be found</p>
+                      </ErrorMessage>
+                    </Route>
+                  </Switch>
+                </main>
+              </DndProvider>
             </div>
           </Route>
         </Switch>

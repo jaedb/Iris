@@ -5612,6 +5612,9 @@ h4 .context-menu-trigger, h4 .context-menu-trigger:active {
   position: absolute;
   left: 0;
 }
+.list__item--dragging {
+  background: pink;
+}
 .list__item--loading {
   opacity: 0.5;
   cursor: wait !important;
