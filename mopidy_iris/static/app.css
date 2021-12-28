@@ -5506,6 +5506,7 @@ h4 .context-menu-trigger, h4 .context-menu-trigger:active {
   right: 0;
   height: 3px;
   background: #32b5f2;
+  border-radius: 100px;
   opacity: 0;
 }
 .list__item--no-interaction {
@@ -5698,6 +5699,9 @@ h4 .context-menu-trigger, h4 .context-menu-trigger:active {
   cursor: pointer;
 }
 :root .dragging .list--tracks .list__item:hover:before, :root .dragging .list--tracks .list__item--hover:before, .list--tracks .list__item.touch-drag-hover:before {
+  opacity: 1;
+}
+.list--tracks .list__item--dropping:before {
   opacity: 1;
 }
 .list--tracks .list__item.has-touch-drag-zone {

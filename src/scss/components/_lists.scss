@@ -39,6 +39,7 @@
 			right: 0;
 			height: 3px;
 			background: colour('blue');
+			border-radius: 100px;
 			opacity: 0;
 		}
 
@@ -282,6 +283,12 @@
 			:root .dragging &:hover,
 			:root .dragging &--hover,
 			&.touch-drag-hover {
+				&:before {
+					opacity: 1;
+				}
+			}
+
+			&--dropping {
 				&:before {
 					opacity: 1;
 				}
