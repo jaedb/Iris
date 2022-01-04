@@ -354,7 +354,7 @@ settings:
       label: Thema
       auto: Auto
       auto_tooltip: Detecteert jouw keuze in de browser of besturingssysteem
-      dark: Donkder
+      dark: Donker
       light: Licht
     behavior:
       label: Gedrag
