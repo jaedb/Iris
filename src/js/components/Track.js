@@ -58,7 +58,7 @@ const Track = ({
   stream_title,
   play_state,
   is_selected,
-  is_dropping,
+  // is_dropping,
   can_sort,
   show_source_icon,
   getItemIndex,
@@ -113,7 +113,7 @@ const Track = ({
 
   const track_middle_column = <MiddleColumn context={context} item={item} />;
   if (is_selected(index)) className += ' list__item--selected';
-  if (is_dropping(index)) className += ' list__item--dropping';
+  // if (is_dropping(index)) className += ' list__item--dropping';
   if (can_sort) className += ' list__item--can-sort';
   if (item.type !== undefined) className += ` list__item--${item.type}`;
   if (item.playing) className += ' list__item--playing';
@@ -126,21 +126,23 @@ const Track = ({
   const onDoubleClick = (e) => events.onDoubleClick(item, index, e);
   const onContextMenu = (e) => events.onContextMenu(item, index, e);
   const onDragStart = (e) => events.onDragStart(item, index, e);
+  const onDragEnd = (e) => events.onDragEnd(item, index, e);
+  const onDragOver = (e) => events.onDragOver(item, index, e);
   const onDragEnter = (e) => events.onDragEnter(item, index, e);
-  const onDragLeave = (e) => events.onDragLeave(item, index, e);
   const onDrop = (e) => events.onDrop(item, index, e);
 
   return (
     <ErrorBoundary>
       <div
-        className={className}
+        className={`${className} dropzone`}
         onClick={onClick}
         onDoubleClick={onDoubleClick}
         onContextMenu={onContextMenu}
         onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
+        onDragOver={onDragOver}
         onDragEnter={onDragEnter}
-        onDragLeave={onDragLeave}
-        onDrop={() => console.debug("DROP")}
+        onDrop={onDrop}
         draggable="true"
       >
         <div className="list__item__column list__item__column--name">

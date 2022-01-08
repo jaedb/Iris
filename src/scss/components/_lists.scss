@@ -288,7 +288,7 @@
 				}
 			}
 
-			&--dropping {
+			&.drag-over {
 				&:before {
 					opacity: 1;
 				}

@@ -33,6 +33,7 @@ class Dragger extends React.Component {
   handleMouseMove(e) {
     const { dragger, uiActions: { dragActive } } = this.props;
     const { target } = e;
+    console.debug('mouseMove', e)
     if (!dragger) return null;
 
     const threshold = 10;
@@ -48,11 +49,11 @@ class Dragger extends React.Component {
 
       const dropzones = document.getElementsByClassName('dropzone');
       for (let i = 0; i < dropzones.length; i++) {
-        dropzones[i].classList.remove('hover');
+        dropzones[i].classList.remove('drag-over');
       }
 
-      if (target.classList && target.classList.contains('dropzone') && !target.classList.contains('hover')) {
-        target.className += ' hover';
+      if (target.classList && target.classList.contains('dropzone') && !target.classList.contains('drag-over')) {
+        target.className += ' drag-over';
       }
 
       // if not already, activate

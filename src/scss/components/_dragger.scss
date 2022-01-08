@@ -34,7 +34,7 @@
 		background: colour('faint_grey');
 	}
 
-	.dropzone {
+	&__item {
 		@include animate();
 		@include gradient_overlay(3px,0);
 		margin: 15px;
@@ -61,7 +61,7 @@
 			width: 32px;
 		}
 
-		&.hover {
+		&.drag-over {
 			border-color: colour('blue');
 
 			&:before {

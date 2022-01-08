@@ -5701,7 +5701,7 @@ h4 .context-menu-trigger, h4 .context-menu-trigger:active {
 :root .dragging .list--tracks .list__item:hover:before, :root .dragging .list--tracks .list__item--hover:before, .list--tracks .list__item.touch-drag-hover:before {
   opacity: 1;
 }
-.list--tracks .list__item--dropping:before {
+.list--tracks .list__item.drag-over:before {
   opacity: 1;
 }
 .list--tracks .list__item.has-touch-drag-zone {
@@ -5888,7 +5888,7 @@ h4 .loader {
   }
 }
 
-.dropzones .dropzone {
+.dropzones__item {
   -webkit-transition: all 0.2s ease-in-out;
   -moz-transition: all 0.2s ease-in-out;
   -o-transition: all 0.2s ease-in-out;
@@ -5904,7 +5904,7 @@ h4 .loader {
   font-size: 18px;
   text-align: center;
 }
-.dropzones .dropzone:before {
+.dropzones__item:before {
   -webkit-transition: all 0.2s ease-in-out;
   -moz-transition: all 0.2s ease-in-out;
   -o-transition: all 0.2s ease-in-out;
@@ -5925,30 +5925,30 @@ h4 .loader {
   background: -o-linear-gradient(to bottom right, rgba(200, 200, 200, 0.75), #646464);
   background: linear-gradient(to bottom right, rgba(200, 200, 200, 0.75), #646464);
 }
-.light-theme .dropzones .dropzone {
+.light-theme .dropzones__item {
   background: #cecac4;
   color: #121212;
 }
 
 @media (prefers-color-scheme: light) {
-  .auto-theme .dropzones .dropzone {
+  .auto-theme .dropzones__item {
     background: #cecac4;
     color: #121212;
   }
 }
 
-.dropzones .dropzone * {
+.dropzones__item * {
   pointer-events: none;
 }
-.dropzones .dropzone .icon {
+.dropzones__item .icon {
   display: block;
   margin: 0 auto 10px;
   width: 32px;
 }
-.dropzones .dropzone.hover {
+.dropzones__item.drag-over {
   border-color: #32b5f2;
 }
-.dropzones .dropzone.hover:before {
+.dropzones__item.drag-over:before {
   opacity: 0.15;
 }
 

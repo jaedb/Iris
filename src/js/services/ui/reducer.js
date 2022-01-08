@@ -80,7 +80,7 @@ export default function reducer(ui = {}, action) {
         ...ui,
         dragger: {
           dragging: true,
-          active: false,
+          active: true,
           context: action.context,
           from_uri: action.from_uri,
           victims: action.victims,

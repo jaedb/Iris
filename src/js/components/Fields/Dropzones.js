@@ -1,51 +1,65 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import Dropzone from './Dropzone';
-import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
+import Icon from '../Icon';
 import { arrayOf } from '../../util/arrays';
 import { i18n } from '../../locale';
 import { encodeUri } from '../../util/format';
 
+const zones = [
+  {
+    action: 'enqueue',
+    title: i18n('actions.add_to_queue'),
+    icon: 'play_arrow',
+  },
+  {
+    action: 'enqueue_next',
+    title: i18n('actions.play_next'),
+    icon: 'play_arrow',
+  },
+  {
+    action: 'add_to_playlist',
+    title: i18n('actions.add_to_playlist'),
+    icon: 'playlist_add',
+    accepts: ['tltrack', 'track', 'album', 'playlist', 'artist'],
+  },
+  {
+    action: 'create_playlist_and_add',
+    title: i18n('modal.edit_playlist.create_playlist'),
+    icon: 'playlist_add',
+    accepts: ['tltrack', 'track', 'album', 'playlist', 'artist'],
+  },
+];
+
 const Dropzones = () => {
   const dispatch = useDispatch();
   const history = useHistory();
+  const [dropTarget, setDropTarget] = useState();
   const {
     victims,
     from_uri,
     active,
   } = useSelector((state) => state.ui.dragger || {});
-  const zones = [
-    {
-      title: i18n('actions.add_to_queue'),
-      icon: 'play_arrow',
-      action: 'enqueue',
-    },
-    {
-      title: i18n('actions.play_next'),
-      icon: 'play_arrow',
-      action: 'enqueue_next',
-    },
-    {
-      title: i18n('actions.add_to_playlist'),
-      icon: 'playlist_add',
-      action: 'add_to_playlist',
-      accepts: ['tltrack', 'track', 'album', 'playlist', 'artist'],
-    },
-    {
-      title: i18n('modal.edit_playlist.create_playlist'),
-      icon: 'playlist_add',
-      action: 'create_playlist_and_add',
-      accepts: ['tltrack', 'track', 'album', 'playlist', 'artist'],
-    },
-  ];
-
   if (!active) return null;
 
-  const handleMouseUp = (zone) => {
+  const onDragEnter = (e, action) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDropTarget(action);
+  }
+
+  const onDragOver = (e, action) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDropTarget(action);
+  }
+
+  const onDrop = (e, action) => {
+    e.preventDefault();
+    e.stopPropagation();
     const uris = arrayOf('uri', victims);
-    switch (zone.action) {
+    switch (action) {
       case 'enqueue':
         dispatch(mopidyActions.enqueueURIs(uris, from_uri));
         break;
@@ -65,15 +79,18 @@ const Dropzones = () => {
 
   return (
     <div className="dropzones">
-      {
-        zones.map((zone) => (
-          <Dropzone
-            key={zone.action}
-            data={zone}
-            handleMouseUp={handleMouseUp}
-          />
-        ))
-      }
+      {zones.map(({ title, icon, action }) => (
+        <div
+          key={action}
+          className={`dropzones__item ${dropTarget === action ? ' hover' : ''}`}
+          onDragEnter={(e) => onDragEnter(e, action)}
+          onDragOver={(e) => onDragOver(e, action)}
+          onDrop={(e) => onDrop(e, action)}
+        >
+          <Icon name={icon} />
+          <span className="title">{title}</span>
+        </div>
+      ))}
     </div>
   );
 };

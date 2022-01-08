@@ -29,6 +29,7 @@ const TrackList = ({
     createNotification,
     showContextMenu,
     dragStart,
+    dragEnd,
   },
   mopidyActions: {
     playURIs,
@@ -39,10 +40,10 @@ const TrackList = ({
 
   useEffect(() => {
     window.addEventListener('keydown', onKeyDown, false);
-    window.addEventListener('dragend', events.onDragEnd, false);
+    window.addEventListener('dragend', onDragEnd, false);
     return () => {
       window.removeEventListener('keydown', onKeyDown, false);
-      window.removeEventListener('dragend', events.onDragEnd, false);
+      window.removeEventListener('dragend', onDragEnd, false);
     };
   }, []);
 
@@ -94,25 +95,24 @@ const TrackList = ({
   const events = {
     onDragStart: (item, index, e) => {
       const items = getOrUpdateSelected(item, index, e).map(({ item: selectedItem }) => selectedItem);
-      console.debug('DRAGGING', items.length)
+      dragStart(e, context, context, items, selected);
     },
     onDrop: (item, index, e) => {
-      console.debug('DROP')
       reorderTracks(arrayOf('index', selected), index);
       setSelected([]);
     },
+    onDragEnd: (item, index, e) => {
+      dragEnd();
+    },
     onDragEnter: (item, index, e) => {
+      e.stopPropagation();
+      e.preventDefault();
       console.debug('onDragEnter', index);
       setDropTarget(index);
-      // e.preventDefault();
     },
-    onDragLeave: (item, index, e) => {
-      console.debug('onDragLeave', index);
-      // e.preventDefault();
-    },
-    onDragEnd: (e) => {
-      console.debug('onDragEnd');
-      setDropTarget(null);
+    onDragOver: (item, index, e) => {
+      e.stopPropagation();
+      e.preventDefault();
     },
     onClick: (item, index, e) => {
       // e.preventDefault();
@@ -140,6 +140,37 @@ const TrackList = ({
         ),
       });
     },
+  };
+
+  /**
+   * NEXT STEPS
+   * Collate these events into a coherant package, possibly using hooks?
+   * Create redux handlers to push dragging items into state. This allows a nice drag shadow and
+   *  activation of dropzones in sidebar.
+   * Figure out where to leave touch events. Perhaps dragging one-by-one with a simple handle is
+   *  sufficient.
+   * Apply drag-ability to other assets, like album tiles, etc.
+   * 
+   * Also, fix shuffle play; first track goes first, but all subsequent ones go to end of tracklist
+   */
+
+  const onDragLeave = (e) => {
+    e.persist();
+    const { target, relatedTarget } = e;
+    e.stopPropagation();
+    // The element that we just left is the element with the listener
+    // Unfortunately this event triggers for EVERY element that is 'left' during dragging, not just
+    // the one bound to the event. This check allows us to only act when we leave the bound element.
+    // if (relatedTarget.id === 'tracklist_container') {
+      console.debug('onDragLeave', e)
+    if (target.id === 'tracklist-container') {
+      console.debug('OUTSIDE, WHEE!');
+      setDropTarget(null);
+    }
+  };
+  const onDragEnd = (e) => {
+    console.debug('onDragEnd');
+    setDropTarget(null);
   };
 
   const onRemoveTracks = () => {
@@ -218,7 +249,7 @@ const TrackList = ({
         selected_tracks,
         can_sort: context?.can_edit,
         is_selected,
-        is_dropping,
+        // is_dropping,
         mini_zones: slim_mode || isTouchDevice(),
         events,
       }}
