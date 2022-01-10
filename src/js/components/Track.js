@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useRef } from 'react';
+import { useDrag, useDrop } from 'react-dnd';
 import Icon, { SourceIcon } from './Icon';
 import LinksSentence from './LinksSentence';
 import { Dater, dater } from './Dater';
@@ -18,7 +19,7 @@ const MiddleColumn = ({
   } = {},
 }) => {
   let content;
-  switch (context?.type) {
+  switch (context ?.type) {
     case 'history': {
       content = (
         <div className="list__item__column__item list__item__column__item--played_at">
@@ -58,13 +59,33 @@ const Track = ({
   stream_title,
   play_state,
   is_selected,
-  // is_dropping,
   can_sort,
   show_source_icon,
   getItemIndex,
+  getDragItem,
   events,
 }) => {
   const index = getItemIndex();
+  const ref = useRef(null);
+  const [{ handlerId, isOver }, drop] = useDrop({
+    accept: 'TRACK',
+    collect: (monitor) => ({
+      handlerId: monitor.getHandlerId(),
+      isOver: can_sort && monitor.isOver(),
+    }),
+    canDrop: () => can_sort,
+    drop: () => {
+      events.onDrop(index);
+    },
+  });
+  const [{ isDragging }, drag] = useDrag({
+    type: 'TRACK',
+    item: getDragItem(item, index),
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  });
+  drag(drop(ref));
 
   if (!item) return null;
 
@@ -113,7 +134,8 @@ const Track = ({
 
   const track_middle_column = <MiddleColumn context={context} item={item} />;
   if (is_selected(index)) className += ' list__item--selected';
-  // if (is_dropping(index)) className += ' list__item--dropping';
+  if (isOver) className += ' list__item--drag-over';
+  if (isDragging) className += ' list__item--dragging';
   if (can_sort) className += ' list__item--can-sort';
   if (item.type !== undefined) className += ` list__item--${item.type}`;
   if (item.playing) className += ' list__item--playing';
@@ -123,27 +145,19 @@ const Track = ({
   if (track_details.length > 0) className += ' list__item--has-details';
 
   const onClick = (e) => events.onClick(item, index, e);
+  const onMouseDown = (e) => events.onMouseDown(item, index, e);
   const onDoubleClick = (e) => events.onDoubleClick(item, index, e);
   const onContextMenu = (e) => events.onContextMenu(item, index, e);
-  const onDragStart = (e) => events.onDragStart(item, index, e);
-  const onDragEnd = (e) => events.onDragEnd(item, index, e);
-  const onDragOver = (e) => events.onDragOver(item, index, e);
-  const onDragEnter = (e) => events.onDragEnter(item, index, e);
-  const onDrop = (e) => events.onDrop(item, index, e);
 
   return (
     <ErrorBoundary>
       <div
-        className={`${className} dropzone`}
-        onClick={onClick}
+        className={className}
+        onMouseDown={onMouseDown}
         onDoubleClick={onDoubleClick}
         onContextMenu={onContextMenu}
-        onDragStart={onDragStart}
-        onDragEnd={onDragEnd}
-        onDragOver={onDragOver}
-        onDragEnter={onDragEnter}
-        onDrop={onDrop}
-        draggable="true"
+        ref={ref}
+        data-handler-id={handlerId}
       >
         <div className="list__item__column list__item__column--name">
           <div className="list__item__column__item--name">
@@ -161,7 +175,7 @@ const Track = ({
           {drag_zone}
           {item.is_explicit && <span className="flag flag--dark">{i18n('track.explicit').toUpperCase()}</span>}
           {item.is_playable === false && <span className="flag flag--dark">{i18n('track.unplayable').toUpperCase()}</span>}
-          {(context?.type === 'album' || context?.type === 'artist') && item.track_number && (
+          {(context ?.type === 'album' || context ?.type === 'artist') && item.track_number && (
             <span className="mid_grey-text list__item__column__item list__item__column__item--track-number">
               <span>
                 <I18n path="track.title" />

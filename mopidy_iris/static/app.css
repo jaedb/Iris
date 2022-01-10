@@ -5701,7 +5701,10 @@ h4 .context-menu-trigger, h4 .context-menu-trigger:active {
 :root .dragging .list--tracks .list__item:hover:before, :root .dragging .list--tracks .list__item--hover:before, .list--tracks .list__item.touch-drag-hover:before {
   opacity: 1;
 }
-.list--tracks .list__item.drag-over:before {
+.list--tracks .list__item--dragging {
+  opacity: 0.5;
+}
+.list--tracks .list__item--drag-over:before {
   opacity: 1;
 }
 .list--tracks .list__item.has-touch-drag-zone {
@@ -5945,10 +5948,10 @@ h4 .loader {
   margin: 0 auto 10px;
   width: 32px;
 }
-.dropzones__item.drag-over {
+.dropzones__item--drag-over {
   border-color: #32b5f2;
 }
-.dropzones__item.drag-over:before {
+.dropzones__item--drag-over:before {
   opacity: 0.15;
 }
 

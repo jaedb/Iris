@@ -8,7 +8,7 @@ import Button from '../../components/Button';
 import RelatedArtists from '../../components/RelatedArtists';
 import { i18n, I18n } from '../../locale';
 import { sortItems, applyFilter } from '../../util/arrays';
-import { encodeUri } from '../../util/format';
+import { encodeUri, formatContext } from '../../util/format';
 import { makeSortSelector } from '../../util/selectors';
 import {
   hideContextMenu,
@@ -29,7 +29,6 @@ export default ({
   const [sortField, sortReverse] = useSelector(sortSelector);
   const {
     uri,
-    name,
     tracks,
     related_artists,
   } = artist;
@@ -102,12 +101,7 @@ export default ({
         {tracks && <h4><I18n path="artist.overview.top_tracks" /></h4>}
         <div className="list-wrapper">
           <TrackList
-            source={{
-              uri,
-              name,
-              type: 'artist',
-              context: 'artist',
-            }}
+            context={formatContext(artist)}
             className="artist-track-list"
             uri={uri}
             tracks={tracks ? tracks.slice(0, 10) : []}

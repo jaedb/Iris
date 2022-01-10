@@ -40,10 +40,8 @@ const TrackList = ({
 
   useEffect(() => {
     window.addEventListener('keydown', onKeyDown, false);
-    window.addEventListener('dragend', onDragEnd, false);
     return () => {
       window.removeEventListener('keydown', onKeyDown, false);
-      window.removeEventListener('dragend', onDragEnd, false);
     };
   }, []);
 
@@ -97,27 +95,20 @@ const TrackList = ({
       const items = getOrUpdateSelected(item, index, e).map(({ item: selectedItem }) => selectedItem);
       dragStart(e, context, context, items, selected);
     },
-    onDrop: (item, index, e) => {
+    onDrop: (index) => {
       reorderTracks(arrayOf('index', selected), index);
       setSelected([]);
-    },
-    onDragEnd: (item, index, e) => {
-      dragEnd();
-    },
-    onDragEnter: (item, index, e) => {
-      e.stopPropagation();
-      e.preventDefault();
-      console.debug('onDragEnter', index);
-      setDropTarget(index);
-    },
-    onDragOver: (item, index, e) => {
-      e.stopPropagation();
-      e.preventDefault();
+      setDropTarget(null);
     },
     onClick: (item, index, e) => {
-      // e.preventDefault();
       e.persist();
       setSelected((prev) => nextSelected(prev, item, index, e));
+    },
+    onMouseDown: (item, index, e) => {
+      if (selectionIndexByItemIndex(index) === -1) {
+        e.persist();
+        setSelected((prev) => nextSelected(prev, item, index, e));
+      }
     },
     onDoubleClick: (item, index) => {
       // if (context_menu) hideContextMenu();
@@ -154,25 +145,6 @@ const TrackList = ({
    * Also, fix shuffle play; first track goes first, but all subsequent ones go to end of tracklist
    */
 
-  const onDragLeave = (e) => {
-    e.persist();
-    const { target, relatedTarget } = e;
-    e.stopPropagation();
-    // The element that we just left is the element with the listener
-    // Unfortunately this event triggers for EVERY element that is 'left' during dragging, not just
-    // the one bound to the event. This check allows us to only act when we leave the bound element.
-    // if (relatedTarget.id === 'tracklist_container') {
-      console.debug('onDragLeave', e)
-    if (target.id === 'tracklist-container') {
-      console.debug('OUTSIDE, WHEE!');
-      setDropTarget(null);
-    }
-  };
-  const onDragEnd = (e) => {
-    console.debug('onDragEnd');
-    setDropTarget(null);
-  };
-
   const onRemoveTracks = () => {
     if (!removeTracks) {
       createNotification({
@@ -205,7 +177,7 @@ const TrackList = ({
     return items;
   }
 
-  const nextSelected = (prev, item, index, e, sticky = false) => {
+  const nextSelected = (prev, item, index, e = {}, sticky = false) => {
     const alreadySelected = selectionIndexByItemIndex(index);
 
     if (e.shiftKey) {
@@ -234,7 +206,18 @@ const TrackList = ({
   }
 
   const is_selected = (index) => selected.find(({ index: i }) => index === i);
-  const is_dropping = (index) => dropTarget === index;
+  const is_drag_over = (index) => dropTarget === index;
+  const getDragItem = (item, index) => {
+    let selectedForDrag = selected;
+    if (selectionIndexByItemIndex(index) === -1) {
+      selectedForDrag = nextSelected(selected, item, index);
+      // setSelected(selectedForDrag);
+    }
+    return {
+      selected: selectedForDrag,
+      context,
+    };
+  };
 
   return (
     <SmartList
@@ -246,10 +229,10 @@ const TrackList = ({
         play_state,
         show_source_icon,
         context,
-        selected_tracks,
+        getDragItem,
         can_sort: context?.can_edit,
         is_selected,
-        // is_dropping,
+        is_drag_over,
         mini_zones: slim_mode || isTouchDevice(),
         events,
       }}

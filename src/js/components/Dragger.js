@@ -33,7 +33,7 @@ class Dragger extends React.Component {
   handleMouseMove(e) {
     const { dragger, uiActions: { dragActive } } = this.props;
     const { target } = e;
-    console.debug('mouseMove', e)
+    // console.debug('mouseMove', e)
     if (!dragger) return null;
 
     const threshold = 10;

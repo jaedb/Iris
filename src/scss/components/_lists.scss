@@ -288,7 +288,11 @@
 				}
 			}
 
-			&.drag-over {
+			&--dragging {
+				opacity: 0.5;
+			}
+
+			&--drag-over {
 				&:before {
 					opacity: 1;
 				}
