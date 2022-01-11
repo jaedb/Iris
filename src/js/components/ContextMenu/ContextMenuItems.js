@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { compact, uniq } from 'lodash';
+import { uniq } from 'lodash';
 import { I18n } from '../../locale';
 import Link from '../Link';
 import Icon from '../Icon';
@@ -25,6 +25,7 @@ import {
   enqueueURIs,
   enqueueAlbum,
   enqueuePlaylist,
+  reorderTracklist,
 } from '../../services/mopidy/actions';
 import {
   following,
@@ -130,8 +131,16 @@ const ContextMenuItems = ({
       return (
         <>
           <Play uris={[item.uri]} context={context} />
-          <Enqueue uris={[item.uri]} context={context} next />
-          <Enqueue uris={[item.uri]} context={context} />
+          {context?.type === 'queue' ? (
+            <>
+              <MoveToPlayNext items={[item]} />
+            </>
+          ) : (
+            <>
+              <Enqueue uris={[item.uri]} context={context} next />
+              <Enqueue uris={[item.uri]} context={context} />
+            </>
+          )}
           <Divider />
           <AddToPlaylist uris={[item.uri]} onClick={onSubmenu} />
           {provider === 'spotify' && <Library uri={item.uri} />}
@@ -163,9 +172,17 @@ const ContextMenuItems = ({
       return (
         <>
           <Play uris={uris} context={context} />
-          <Play uris={uris} context={context} shuffle />
-          <Enqueue uris={uris} context={context} next />
-          <Enqueue uris={uris} context={context} />
+          {context?.type === 'queue' ? (
+            <>
+              <MoveToPlayNext items={items} />
+            </>
+          ) : (
+            <>
+              <Play uris={uris} context={context} shuffle />
+              <Enqueue uris={uris} context={context} next />
+              <Enqueue uris={uris} context={context} />
+            </>
+          )}
           <Divider />
           <AddToPlaylist uris={uris} onClick={onSubmenu} />
           {/* No support for adding/removing/checking library for multiple URIs (yet) */}
@@ -437,6 +454,28 @@ const Enqueue = ({
       <a className="context-menu__item__link" onClick={onClick}>
         <span className="context-menu__item__label">
           <I18n path={next ? 'context_menu.play_next' : 'actions.add_to_queue'} />
+        </span>
+      </a>
+    </div>
+  );
+};
+
+const MoveToPlayNext = ({
+  items,
+}) => {
+  const dispatch = useDispatch();
+  const currentTlid = useSelector((state) => state.core.current_track?.tlid);
+  const queue = useSelector((state) => state.core.queue || []);
+  const current_track_index = queue.findIndex((q) => q.tlid === currentTlid);
+  const onClick = () => {
+    dispatch(reorderTracklist(arrayOf('index', items), current_track_index + 1));
+    dispatch(hideContextMenu());
+  };
+  return (
+    <div className="context-menu__item">
+      <a className="context-menu__item__link" onClick={onClick}>
+        <span className="context-menu__item__label">
+          <I18n path="context_menu.play_next" />
         </span>
       </a>
     </div>

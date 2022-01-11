@@ -59,6 +59,7 @@ const Track = ({
   stream_title,
   play_state,
   is_selected,
+  is_transforming,
   can_sort,
   show_source_icon,
   getItemIndex,
@@ -134,6 +135,7 @@ const Track = ({
 
   const track_middle_column = <MiddleColumn context={context} item={item} />;
   if (is_selected(index)) className += ' list__item--selected';
+  if (is_transforming(index)) className += ' list__item--transforming';
   if (isOver) className += ' list__item--drag-over';
   if (isDragging) className += ' list__item--dragging';
   if (can_sort) className += ' list__item--can-sort';
@@ -144,7 +146,7 @@ const Track = ({
   if (track_middle_column) className += ' list__item--has-middle-column';
   if (track_details.length > 0) className += ' list__item--has-details';
 
-  const onClick = (e) => events.onClick(item, index, e);
+  // Bind to mouseDown so we can trigger selection updates BEFORE drag starts
   const onMouseDown = (e) => events.onMouseDown(item, index, e);
   const onDoubleClick = (e) => events.onDoubleClick(item, index, e);
   const onContextMenu = (e) => events.onContextMenu(item, index, e);

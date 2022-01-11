@@ -5613,7 +5613,7 @@ h4 .context-menu-trigger, h4 .context-menu-trigger:active {
   position: absolute;
   left: 0;
 }
-.list__item--loading {
+.list__item--loading, .list__item--transforming {
   opacity: 0.5;
   cursor: wait !important;
 }

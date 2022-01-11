@@ -993,6 +993,7 @@ const MopidyMiddleware = (function () {
             queue,
           } = store.getState().core;
           if (current_track) {
+            // TODO: Refactor this to findIndex
             for (let i = 0; i < queue.length; i += 1) {
               if (queue[i].tlid === current_track.tlid) {
                 at_position = i + 1;
@@ -1001,6 +1002,8 @@ const MopidyMiddleware = (function () {
             }
           }
         }
+
+        console.debug({ at_position }, action)
 
         store.dispatch(uiActions.startProcess(
           action.type,

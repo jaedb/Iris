@@ -112,7 +112,7 @@ const ContextMenu = ({
   const onScroll = () => hideContextMenu();
 
   const onClick = (e) => {
-    if (ref && ref.current) {
+    if (ref && ref.current && e.which !== 3) {
       const { current } = ref;
       if (!current.contains(e.target)) {
         hideContextMenu();

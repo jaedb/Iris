@@ -37,6 +37,7 @@ const TrackList = ({
 }) => {
   const [selected, setSelected] = useState([]);
   const [dropTarget, setDropTarget] = useState(null);
+  const [transformingItems, setTransformingItems] = useState([]);
 
   useEffect(() => {
     window.addEventListener('keydown', onKeyDown, false);
@@ -91,18 +92,10 @@ const TrackList = ({
   }
 
   const events = {
-    onDragStart: (item, index, e) => {
-      const items = getOrUpdateSelected(item, index, e).map(({ item: selectedItem }) => selectedItem);
-      dragStart(e, context, context, items, selected);
-    },
     onDrop: (index) => {
       reorderTracks(arrayOf('index', selected), index);
       setSelected([]);
       setDropTarget(null);
-    },
-    onClick: (item, index, e) => {
-      e.persist();
-      setSelected((prev) => nextSelected(prev, item, index, e));
     },
     onMouseDown: (item, index, e) => {
       if (selectionIndexByItemIndex(index) === -1) {
@@ -120,7 +113,9 @@ const TrackList = ({
       e.preventDefault();
       e.stopPropagation();
       e.cancelBubble = true;
-      const items = getOrUpdateSelected(item, index, e).map(({ item: selectedItem }) => selectedItem);
+      const items = getOrUpdateSelected(item, index, e).map(
+        ({ index, item }) => ({ index, ...item }),
+      );
 
       showContextMenu({
         e,
@@ -206,7 +201,7 @@ const TrackList = ({
   }
 
   const is_selected = (index) => selected.find(({ index: i }) => index === i);
-  const is_drag_over = (index) => dropTarget === index;
+  const is_transforming = (index) => transformingItems.indexOf(index) > -1;
   const getDragItem = (item, index) => {
     let selectedForDrag = selected;
     if (selectionIndexByItemIndex(index) === -1) {
@@ -232,7 +227,7 @@ const TrackList = ({
         getDragItem,
         can_sort: context?.can_edit,
         is_selected,
-        is_drag_over,
+        is_transforming,
         mini_zones: slim_mode || isTouchDevice(),
         events,
       }}
