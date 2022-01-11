@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Route, Switch, useLocation, useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import ReactGA from 'react-ga';
-import { DndProvider } from 'react-dnd'
+import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { TouchBackend } from 'react-dnd-touch-backend';
 import * as Sentry from '@sentry/browser';
 
 import Sidebar from './components/Sidebar';
@@ -254,7 +255,10 @@ const App = () => {
       onClick={handleInteraction}
       onKeyDown={handleInteraction}
     >
-      <DndProvider backend={HTML5Backend}>
+      <DndProvider
+        backend={TouchBackend}
+        options={{ enableMouseEvents: true, delayTouchStart: 100 }}
+      >
         <div className="body">
           <Switch>
             <Route

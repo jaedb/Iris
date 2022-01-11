@@ -5516,7 +5516,7 @@ h4 .context-menu-trigger, h4 .context-menu-trigger:active {
 :root .notouch:not(.dragging) .list__item:not(.list__item--no-interaction) {
   cursor: pointer;
 }
-:root .notouch:not(.dragging) .list__item:not(.list__item--no-interaction):hover {
+:root .notouch:not(.dragging) .list__item:not(.list__item--no-interaction):hover:not(.list__item--drag-over) {
   cursor: pointer;
   background: rgba(255, 255, 255, 0.03);
 }
@@ -5697,9 +5697,6 @@ h4 .context-menu-trigger, h4 .context-menu-trigger:active {
 
 .list--tracks .list__item {
   cursor: pointer;
-}
-:root .dragging .list--tracks .list__item:hover:before, :root .dragging .list--tracks .list__item--hover:before, .list--tracks .list__item.touch-drag-hover:before {
-  opacity: 1;
 }
 .list--tracks .list__item--dragging {
   opacity: 0.5;

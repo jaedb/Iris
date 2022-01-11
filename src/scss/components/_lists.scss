@@ -51,7 +51,7 @@
 		:root .notouch:not(.dragging) &:not(.list__item--no-interaction){
 			cursor: pointer;
 
-			&:hover {
+			&:hover:not(.list__item--drag-over) {
 				cursor: pointer;
 				background: rgba(255,255,255,0.03);
 			}
@@ -280,14 +280,6 @@
 	&--tracks {
 		.list__item {
 			cursor: pointer;
-
-			:root .dragging &:hover,
-			:root .dragging &--hover,
-			&.touch-drag-hover {
-				&:before {
-					opacity: 1;
-				}
-			}
 
 			&--dragging {
 				opacity: 0.5;

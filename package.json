@@ -21,6 +21,7 @@
     "react": "^16.14.0",
     "react-dnd": "^14.0.5",
     "react-dnd-html5-backend": "^14.1.0",
+    "react-dnd-touch-backend": "^14.1.1",
     "react-dom": "^16.14.0",
     "react-fontawesome": "^1.7.1",
     "react-ga": "^3.3.0",
