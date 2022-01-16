@@ -158,8 +158,6 @@ context_menu:
   discover_similar: Ähnliches entdecken
   start_radio: Radio starten
   copy_uri: URI(s) kopieren
-dropzones:
-  dragging_things: 'Verschiebe %{count} Elemente'
 playback_controls:
   consume: Verbrauchen
   shuffle: Zufallswiedergabe

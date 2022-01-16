@@ -849,12 +849,13 @@ const MopidyMiddleware = (function () {
         break;
 
       case 'MOPIDY_PLAY_PLAYLIST': {
+        console.debug(action)
         const playlist = store.getState().core.items[action.uri];
         const { sortField, sortReverse } = getSortSelector(store.getState(), 'playlist_tracks');
         if (playlist && playlist.tracks) {
           store.dispatch(
-            mopidyActions.playURIs(
-              arrayOf(
+            mopidyActions.playURIs({
+              uris: arrayOf(
                 'uri',
                 sortItems(
                   playlist.tracks.filter((t) => t?.is_playable !== false),
@@ -862,13 +863,13 @@ const MopidyMiddleware = (function () {
                   sortReverse,
                 ),
               ),
-              {
+              from: {
                 uri: playlist?.uri,
                 name: playlist?.name,
                 type: 'playlist',
               },
-              action.shuffle,
-            ),
+              ...action,
+            }),
           );
           break;
         }
@@ -886,8 +887,8 @@ const MopidyMiddleware = (function () {
         const { sortField, sortReverse } = getSortSelector(store.getState(), 'playlist_tracks');
         if (album && album.tracks) {
           store.dispatch(
-            mopidyActions.playURIs(
-              arrayOf(
+            mopidyActions.playURIs({
+              uris: arrayOf(
                 'uri',
                 sortItems(
                   album.tracks.filter((t) => t?.is_playable !== false),
@@ -895,13 +896,13 @@ const MopidyMiddleware = (function () {
                   sortReverse,
                 ),
               ),
-              {
+              from: {
                 uri: album?.uri,
                 name: album?.name,
                 type: 'album',
               },
-              action.shuffle,
-            ),
+              ...action,
+            }),
           );
           break;
         }
@@ -918,12 +919,10 @@ const MopidyMiddleware = (function () {
         const playlist = store.getState().core.items[action.uri];
         if (playlist && playlist.tracks) {
           store.dispatch(
-            mopidyActions.enqueueURIs(
-              arrayOf('uri', playlist.tracks),
-              action.from,
-              action.play_next,
-              action.shuffle,
-            ),
+            mopidyActions.enqueueURIs({
+              uris: arrayOf('uri', playlist.tracks),
+              ...action,
+            }),
           );
           break;
         }
@@ -933,11 +932,7 @@ const MopidyMiddleware = (function () {
             false,
             {
               name: 'enqueue',
-              shuffle: action.shuffle,
-              from: action.from,
-              play_next: action.play_next,
-              at_position: action.at_position,
-              offset: action.offset,
+              ...action,
             },
           ),
         );
@@ -948,12 +943,10 @@ const MopidyMiddleware = (function () {
         const album = store.getState().core.items[action.uri];
         if (album && album.tracks) {
           store.dispatch(
-            mopidyActions.enqueueURIs(
-              arrayOf('uri', album.tracks),
-              action.from,
-              action.play_next,
-              action.shuffle,
-            ),
+            mopidyActions.enqueueURIs({
+              uris: arrayOf('uri', album.tracks),
+              ...action,
+            }),
           );
           break;
         }
@@ -963,11 +956,7 @@ const MopidyMiddleware = (function () {
             false,
             {
               name: 'enqueue',
-              shuffle: action.shuffle,
-              from: action.from,
-              play_next: action.play_next,
-              at_position: action.at_position,
-              offset: action.offset,
+              ...action,
             },
           ),
         );
@@ -975,6 +964,7 @@ const MopidyMiddleware = (function () {
       }
 
       case 'MOPIDY_ENQUEUE_URIS': {
+        console.debug(action)
         if (!action.uris || action.uris.length <= 0) {
           this.props.uiActions.createNotification({
             content: 'No URIs to enqueue',
@@ -1002,8 +992,6 @@ const MopidyMiddleware = (function () {
             }
           }
         }
-
-        console.debug({ at_position }, action)
 
         store.dispatch(uiActions.startProcess(
           action.type,
@@ -1153,7 +1141,11 @@ const MopidyMiddleware = (function () {
                 // this means our UI feels snappier as the first track shows up quickly
                 setTimeout(
                   () => {
-                    store.dispatch(mopidyActions.enqueueURIs(urisToPlay, from, null, 1));
+                    store.dispatch(mopidyActions.enqueueURIs({
+                      uris: urisToPlay,
+                      at_position: 1,
+                      from,
+                    }));
                   },
                   100,
                 );

@@ -211,15 +211,15 @@ class Track extends React.Component {
       mopidyActions: { playURIs },
     } = this.props;
 
-    playURIs(
-      [uri],
-      {
+    playURIs({
+      uris: [uri],
+      from: {
         uri,
         name,
         type: 'track',
         context: 'track',
       },
-    );
+    });
   }
 
   render = () => {

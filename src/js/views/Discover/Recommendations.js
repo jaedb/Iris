@@ -286,7 +286,7 @@ class Recommendations extends React.Component {
       },
     } = this.props;
 
-    playURIs(tracks_uris, this.uri());
+    playURIs({ uris: tracks_uris, from: { uri: this.uri() }});
   }
 
   removeSeed = (index) => {

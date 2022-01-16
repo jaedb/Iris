@@ -16,7 +16,6 @@ const Hotkeys = () => {
   const mute = useSelector((state) => state.mopidy.mute);
   const play_state = useSelector((state) => state.mopidy.play_state);
   const play_time_position = useSelector((state) => parseInt(state.mopidy.time_position, 10));
-  const dragging = useSelector((state) => state.ui.dragger?.dragging);
   const allow_reporting = useSelector((state) => state.ui.allow_reporting);
   const snapcast_groups = useSelector((state) => state.snapcast.groups);
   const snapcast_clients = useSelector((state) => state.snapcast.clients);
@@ -228,15 +227,12 @@ const Hotkeys = () => {
     e,
     label: 'Escape',
     callback: () => {
-      if (dragging) {
-        dispatch(uiActions.dragEnd());
-        e.preventDefault();
-      } else if ($('body').hasClass('modal-open')) {
+      if ($('body').hasClass('modal-open')) {
         window.history.back();
         e.preventDefault();
       }
     },
-  }), {}, [dragging]);
+  }), {}, []);
 
   return null;
 };

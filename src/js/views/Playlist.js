@@ -184,7 +184,7 @@ const Playlist = ({
     hideContextMenu();
   };
 
-  const onPlay = () => playPlaylist(uri);
+  const onPlay = () => playPlaylist({ uri });
 
   const reorderTracks = (indexes, index) => {
     const { snapshot_id, tracks } = playlist;

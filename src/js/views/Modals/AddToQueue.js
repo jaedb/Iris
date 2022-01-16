@@ -54,7 +54,7 @@ class AddToQueue extends React.Component {
     this.state = {
       text: '',
       error: '',
-      next: false,
+      play_next: false,
     };
   }
 
@@ -70,7 +70,7 @@ class AddToQueue extends React.Component {
 
   onSubmit = (e) => {
     const {
-      next,
+      play_next,
     } = this.state;
     const {
       mopidyActions: {
@@ -82,7 +82,7 @@ class AddToQueue extends React.Component {
     } = this.props;
 
     e.preventDefault();
-    enqueueURIs(uris, null, next);
+    enqueueURIs({ uris, play_next });
     this.reset();
     window.history.back();
   }
@@ -160,7 +160,7 @@ class AddToQueue extends React.Component {
     const {
       text,
       error,
-      next,
+      play_next,
     } = this.state;
 
     return (
@@ -224,9 +224,9 @@ class AddToQueue extends React.Component {
               <label>
                 <input
                   type="radio"
-                  name="next"
-                  checked={!next}
-                  onChange={() => this.setState({ next: false })}
+                  name="play_next"
+                  checked={!play_next}
+                  onChange={() => this.setState({ play_next: false })}
                 />
                 <span className="label">
                   <I18n path="modal.add_to_queue.position.end" />
@@ -235,9 +235,9 @@ class AddToQueue extends React.Component {
               <label>
                 <input
                   type="radio"
-                  name="next"
-                  checked={next}
-                  onChange={() => this.setState({ next: true })}
+                  name="play_next"
+                  checked={play_next}
+                  onChange={() => this.setState({ play_next: true })}
                 />
                 <span className="label">
                   <I18n path="modal.add_to_queue.position.next" />

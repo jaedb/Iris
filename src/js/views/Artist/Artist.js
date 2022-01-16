@@ -77,7 +77,10 @@ const Artist = () => {
       return;
     }
 
-    dispatch(playURIs(arrayOf('uri', tracks) || albums_uris, context));
+    dispatch(playURIs({
+      uris: arrayOf('uri', tracks) || albums_uris,
+      from: context,
+    }));
   };
 
   const handleContextMenu = (e) => dispatch(

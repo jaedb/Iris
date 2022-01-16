@@ -62,7 +62,7 @@ const ContextMenuItems = ({
       return (
         <>
           <Play uri={item.uri} context={item} action={playAlbum} />
-          <Enqueue uri={item.uri} context={item} action={enqueueAlbum} next />
+          <Enqueue uri={item.uri} context={item} action={enqueueAlbum} play_next />
           <Enqueue uri={item.uri} context={item} action={enqueueAlbum} />
           <Divider />
           {item.provider === 'spotify' && (
@@ -82,7 +82,7 @@ const ContextMenuItems = ({
       return (
         <>
           <Play uris={urisToPlay} context={context} />
-          <Enqueue uris={urisToPlay} context={context} next />
+          <Enqueue uris={urisToPlay} context={context} play_next />
           <Enqueue uris={urisToPlay} context={context} />
           {item.provider === 'spotify' && (
             <>
@@ -104,7 +104,7 @@ const ContextMenuItems = ({
         <>
           <Play uri={item.uri} action={playPlaylist} context={item} />
           <Play uri={item.uri} action={playPlaylist} context={item} shuffle />
-          <Enqueue uri={item.uri} action={enqueuePlaylist} context={item} next />
+          <Enqueue uri={item.uri} action={enqueuePlaylist} context={item} play_next />
           <Enqueue uri={item.uri} action={enqueuePlaylist} context={item} />
           <Library uri={item.uri} inLibrary={item.in_library} />
           <Pin item={item} isPinned={item.is_pinned} />
@@ -137,7 +137,7 @@ const ContextMenuItems = ({
             </>
           ) : (
             <>
-              <Enqueue uris={[item.uri]} context={context} next />
+              <Enqueue uris={[item.uri]} context={context} play_next />
               <Enqueue uris={[item.uri]} context={context} />
             </>
           )}
@@ -179,7 +179,7 @@ const ContextMenuItems = ({
           ) : (
             <>
               <Play uris={uris} context={context} shuffle />
-              <Enqueue uris={uris} context={context} next />
+              <Enqueue uris={uris} context={context} play_next />
               <Enqueue uris={uris} context={context} />
             </>
           )}
@@ -208,7 +208,7 @@ const ContextMenuItems = ({
       return (
         <>
           <Play uris={arrayOf('uri', items)} context={context} />
-          <Enqueue uris={arrayOf('uri', items)} context={context} next />
+          <Enqueue uris={arrayOf('uri', items)} context={context} play_next />
           <Enqueue uris={arrayOf('uri', items)} context={context} />
           <Divider />
           <Copy uris={arrayOf('uri', items)} />
@@ -423,7 +423,8 @@ const Play = ({
 }) => {
   const dispatch = useDispatch();
   const onClick = () => {
-    dispatch(action(uri || uris, context, shuffle));
+    console.debug({ uri, uris, context, shuffle, action })
+    dispatch(action({ uri, uris, from: context, shuffle }));
     dispatch(hideContextMenu());
   };
   return (
@@ -440,20 +441,20 @@ const Play = ({
 const Enqueue = ({
   uri,
   uris,
-  next,
+  play_next,
   context,
   action = enqueueURIs,
 }) => {
   const dispatch = useDispatch();
   const onClick = () => {
-    dispatch(action(uri || uris, context, next));
+    dispatch(action({ uris: uri ? [uri] : uris, context, play_next }));
     dispatch(hideContextMenu());
   };
   return (
     <div className="context-menu__item">
       <a className="context-menu__item__link" onClick={onClick}>
         <span className="context-menu__item__label">
-          <I18n path={next ? 'context_menu.play_next' : 'actions.add_to_queue'} />
+          <I18n path={play_next ? 'context_menu.play_next' : 'actions.add_to_queue'} />
         </span>
       </a>
     </div>

@@ -11,7 +11,6 @@ const getLibrary = (state, uri) => state.core.libraries[uri];
 const getLibraries = (state) => state.core.libraries;
 const getSearchResults = (state) => state.core.search_results;
 const getGridGlowEnabled = (state) => state.ui.grid_glow_enabled;
-const getDragger = (state) => state.ui.dragger;
 const getSorts = (state) => state.ui.sort;
 
 const makeItemSelector = (uri) => createSelector(
@@ -214,7 +213,6 @@ export {
   getLibrary,
   getGridGlowEnabled,
   getLibrarySource,
-  getDragger,
   makeItemSelector,
   makeArtistSelector,
   makeLibrarySelector,

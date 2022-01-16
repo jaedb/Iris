@@ -119,7 +119,13 @@ class BrowseDirectory extends React.Component {
 
     if (!tracks || !tracks.length) return;
 
-    playURIs(arrayOf('uri', sortItems(tracks, 'name')), `iris:browse:${uri}`);
+    playURIs({
+      uris: arrayOf('uri', sortItems(tracks, 'name')),
+      from: {
+        name: 'Directory',
+        uri: `iris:browse:${uri}`,
+      },
+    });
     hideContextMenu();
   }
 

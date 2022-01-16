@@ -1047,7 +1047,7 @@ export function playArtistTopTracks(uri) {
     // Do we have this artist (and their tracks) in our index already?
     if (artist && artist.tracks) {
       const uris = arrayOf('uri', artist.tracks);
-      dispatch(mopidyActions.playURIs(uris, formatSimpleObject(artist)));
+      dispatch(mopidyActions.playURIs({ uris, from: formatSimpleObject(artist) }));
     } else {
       let endpoint = `artists/${getFromUri('artistid', uri)}`;
       endpoint += `/top-tracks?country=${getState().spotify.country}`;
@@ -1055,7 +1055,7 @@ export function playArtistTopTracks(uri) {
         .then(
           (response) => {
             const uris = arrayOf('uri', response.tracks);
-            dispatch(mopidyActions.playURIs(uris, formatSimpleObject(artist)));
+            dispatch(mopidyActions.playURIs({ uris, from: formatSimpleObject(artist) }));
           },
         );
     }
@@ -1338,26 +1338,24 @@ export function getPlaylistTracks(uri, { forceRefetch, callbackAction } = {}) {
           if (callbackAction) {
             switch (callbackAction.name) {
               case 'enqueue':
-                dispatch(mopidyActions.enqueueURIs(
-                  arrayOf('uri', tracks),
-                  {
+                dispatch(mopidyActions.enqueueURIs({
+                  uris: arrayOf('uri', tracks),
+                  from: {
                     uri,
                     type: 'playlist',
                   },
-                  callbackAction.play_next,
-                  callbackAction.at_position,
-                  callbackAction.offset,
-                ));
+                  ...callbackAction,
+                }));
                 break;
               case 'play':
-                dispatch(mopidyActions.playURIs(
-                  arrayOf('uri', tracks),
-                  {
+                dispatch(mopidyActions.playURIs({
+                  uris: arrayOf('uri', tracks),
+                  from: {
                     uri,
                     type: 'playlist',
                   },
-                  callbackAction.shuffle,
-                ));
+                  ...callbackAction,
+                }));
                 break;
               default:
                 break;

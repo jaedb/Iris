@@ -147,7 +147,7 @@ class Tracks extends React.Component {
       tracks = applyFilter('name', filter, tracks);
     }
 
-    playURIs(arrayOf('uri', tracks));
+    playURIs({ uris: arrayOf('uri', tracks) });
     hideContextMenu();
   }
 

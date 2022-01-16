@@ -189,8 +189,6 @@ context_menu:
   start_radio: Démarrer la radio
   copy_uri: Copier l'URI
   refresh: Rafraîchir
-dropzones:
-  dragging_things: 'Déplacement de %{count} éléments'
 playback_controls:
   consume: Consommer
   shuffle: Aléatoire

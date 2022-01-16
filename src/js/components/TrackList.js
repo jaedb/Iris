@@ -23,20 +23,15 @@ const TrackList = ({
   removeTracks,
   playTracks,
   reorderTracks,
-  context_menu,
-  dragger,
   uiActions: {
     createNotification,
     showContextMenu,
-    dragStart,
-    dragEnd,
   },
   mopidyActions: {
     playURIs,
   },
 }) => {
   const [selected, setSelected] = useState([]);
-  const [dropTarget, setDropTarget] = useState(null);
   const [transformingItems, setTransformingItems] = useState([]);
 
   useEffect(() => {
@@ -70,6 +65,7 @@ const TrackList = ({
 
     switch (key.toLowerCase()) {
       case 'enter':
+        console.debug('ENTER', selected)
         if (selected.length > 0) {
           onPlayTracks();
         }
@@ -95,7 +91,6 @@ const TrackList = ({
     onDrop: (index) => {
       reorderTracks(arrayOf('index', selected), index);
       setSelected([]);
-      setDropTarget(null);
     },
     onMouseDown: (item, index, e) => {
       if (selectionIndexByItemIndex(index) === -1) {
@@ -108,9 +103,8 @@ const TrackList = ({
       setSelected((prev) => nextSelected(prev, item, index, e));
     },
     onDoubleClick: (item, index) => {
-      // if (context_menu) hideContextMenu();
       setSelected([{ item, index }]);
-      playURIs([item.uri], context);
+      playURIs({ uris: [item.uri], from: context });
     },
     onContextMenu: (item, index, e) => {
       // Do our best to stop any flow-on events
@@ -223,7 +217,6 @@ const TrackList = ({
       items={tracks}
       itemComponent={Track}
       itemProps={{
-        dragger,
         play_state,
         show_source_icon,
         context,
@@ -242,7 +235,6 @@ const mapStateToProps = (state) => ({
   play_state: state.mopidy.play_state,
   slim_mode: state.ui.slim_mode,
   selected_tracks: state.ui.selected_tracks,
-  dragger: state.ui.dragger,
   current_track: state.core.current_track,
   context_menu: state.ui.context_menu,
   stream_title: state.core.stream_title,

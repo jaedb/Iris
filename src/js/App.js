@@ -10,7 +10,6 @@ import * as Sentry from '@sentry/browser';
 import Sidebar from './components/Sidebar';
 import PlaybackControls from './components/PlaybackControls';
 import ContextMenu from './components/ContextMenu/ContextMenu';
-import Dragger from './components/Dragger';
 import Notifications from './components/Notifications';
 import ResizeListener from './components/ResizeListener';
 import Hotkeys from './components/Hotkeys';
@@ -57,8 +56,6 @@ const App = () => {
   const smooth_scrolling_enabled = useSelector((state) => state.ui.smooth_scrolling_enabled);
   const hotkeys_enabled = useSelector((state) => state.ui.hotkeys_enabled);
   const allow_reporting = useSelector((state) => state.ui.allow_reporting);
-  const touch_dragging = useSelector((state) => state.ui.touch_dragging);
-  const dragging = useSelector((state) => state.ui.dragger?.active);
   const context_menu = useSelector((state) => state.ui.context_menu);
   const initial_setup_complete = useSelector((state) => state.ui.initial_setup_complete);
   const slim_mode = useSelector((state) => state.ui.slim_mode);
@@ -222,14 +219,8 @@ const App = () => {
   if (wide_scrollbar_enabled) {
     className += ' wide-scrollbar';
   }
-  if (dragging) {
-    className += ' dragging';
-  }
   if (sidebar_open) {
     className += ' sidebar-open';
-  }
-  if (touch_dragging) {
-    className += ' touch-dragging';
   }
   if (context_menu) {
     className += ' context-menu-open';
@@ -324,7 +315,6 @@ const App = () => {
         <ResizeListener />
         {hotkeys_enabled && <Hotkeys />}
         <ContextMenu />
-        <Dragger />
         <Notifications />
         {hasInteracted && <ErrorBoundary silent><Stream /></ErrorBoundary>}
         {hasInteracted && ('mediaSession' in navigator) && <MediaSession />}

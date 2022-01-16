@@ -327,7 +327,11 @@ export function changeTrack(tlid) {
  * Playing assets
  * */
 
-export function playURIs(uris = [], from = null, shuffle = false) {
+export function playURIs({
+  uris = [],
+  from = null,
+  shuffle = false,
+}) {
   return {
     type: 'MOPIDY_PLAY_URIS',
     uris,
@@ -344,7 +348,7 @@ export function playAlbum(uri, from) {
   };
 }
 
-export function playPlaylist(uri, shuffle = false) {
+export function playPlaylist({ uri, shuffle = false }) {
   return {
     type: 'MOPIDY_PLAY_PLAYLIST',
     uri,
@@ -352,21 +356,21 @@ export function playPlaylist(uri, shuffle = false) {
   };
 }
 
-export function enqueueURIs(
+export function enqueueURIs({
   uris = [],
   from = null,
-  play_next = false,
   shuffle = false,
   at_position = null,
+  play_next = false,
   offset = 0,
-) {
+}) {
   return {
     type: 'MOPIDY_ENQUEUE_URIS',
     uris,
     from,
-    play_next,
     shuffle,
     at_position,
+    play_next,
     offset,
   };
 }

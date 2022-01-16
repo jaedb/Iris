@@ -48,7 +48,7 @@
 			background: none !important;
 		}
 
-		:root .notouch:not(.dragging) &:not(.list__item--no-interaction){
+		&:not(.list__item--no-interaction){
 			cursor: pointer;
 
 			&:hover:not(.list__item--drag-over) {
@@ -65,7 +65,7 @@
 			}
 		}
 
-		:root .light-theme.notouch:not(.dragging) &:not(.list__item--no-interaction){
+		&:not(.list__item--no-interaction){
 			&:hover {
 				background: rgba(0,0,0,0.03);
 			}
@@ -320,7 +320,7 @@
 	@include responsive($bp_medium){
 		&__item {
 
-			:root .notouch:not(.dragging) &:not(.list__item--no-interaction) {
+			&:not(.list__item--no-interaction) {
 				&:active,
 				&:focus {
 					@include noanimate();

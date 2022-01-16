@@ -185,8 +185,6 @@ context_menu:
   start_radio: Start radio
   copy_uri: URI('s) kopiëren
   refresh: Verversen
-dropzones:
-  dragging_things: 'Versleep %{count} dingen'
 playback_controls:
   consume: Consumeren
   shuffle: Willekeurig

@@ -93,14 +93,14 @@ const Album = () => {
   }
 
   const play = () => {
-    dispatch(playURIs(
-      [uri],
-      {
+    dispatch(playURIs({
+      uris: [uri],
+      from: {
         uri,
         name: album?.name,
         type: 'album',
       },
-    ));
+    }));
   };
 
   const handleContextMenu = (e) => dispatch(

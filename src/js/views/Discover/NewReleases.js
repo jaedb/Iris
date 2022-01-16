@@ -16,7 +16,7 @@ import {
   makeItemSelector,
   makeLoadingSelector,
 } from '../../util/selectors';
-import { formatSimpleObject } from '../../util/format';
+import { formatSimpleObject, formatContext } from '../../util/format';
 
 class NewReleases extends React.Component {
   componentDidMount() {
@@ -57,7 +57,7 @@ class NewReleases extends React.Component {
   playAlbum = (album) => {
     const { mopidyActions: { playURIs } } = this.props;
 
-    playURIs([album.uri], album.uri);
+    playURIs({ uris: [album.uri], from: formatContext(album) });
   }
 
   refresh = () => {

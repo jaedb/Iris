@@ -195,8 +195,6 @@ context_menu:
   start_radio: Start radio
   copy_uri: Copy URI(s)
   refresh: Refresh
-dropzones:
-  dragging_things: 'Dragging %{count} things'
 playback_controls:
   consume: Consume
   shuffle: Shuffle

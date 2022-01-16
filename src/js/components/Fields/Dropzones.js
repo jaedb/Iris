@@ -64,10 +64,10 @@ const Dropzone = ({
       const uris = selected.map(({ item: { uri } }) => uri);
       switch (action) {
         case 'enqueue':
-          dispatch(mopidyActions.enqueueURIs(uris, context));
+          dispatch(mopidyActions.enqueueURIs({ uris, from: context }));
           break;
         case 'enqueue_next':
-          dispatch(mopidyActions.enqueueURIs(uris, context, true));
+          dispatch(mopidyActions.enqueueURIs({ uris, from: context, play_next: true }));
           break;
         case 'add_to_playlist':
           history.push(`/modal/add-to-playlist/${encodeUri(uris.join(','))}`);
