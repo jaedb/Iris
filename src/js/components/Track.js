@@ -67,18 +67,6 @@ const Track = ({
   events,
 }) => {
   const index = getItemIndex();
-  const ref = useRef(null);
-  const [{ handlerId, isOver }, drop] = useDrop({
-    accept: 'TRACK',
-    collect: (monitor) => ({
-      handlerId: monitor.getHandlerId(),
-      isOver: can_sort && monitor.isOver(),
-    }),
-    canDrop: () => can_sort,
-    drop: () => {
-      events.onDrop(index);
-    },
-  });
   const [{ isDragging }, drag] = useDrag({
     type: 'TRACK',
     item: getDragItem(item, index),
@@ -86,7 +74,18 @@ const Track = ({
       isDragging: monitor.isDragging(),
     }),
   });
-  drag(drop(ref));
+  const [{ handlerId, isOver }, drop] = useDrop({
+    accept: 'TRACK',
+    collect: (monitor) => ({
+      handlerId: monitor.getHandlerId(),
+      isOver: can_sort && monitor.isOver() && !isDragging,
+    }),
+    canDrop: () => can_sort,
+    drop: () => {
+      if (isDragging) return; // Dropping on self should do nothing
+      events.onDrop(index);
+    },
+  });
 
   if (!item) return null;
 
@@ -120,17 +119,24 @@ const Track = ({
 
   // If we're touchable, and can sort this tracklist
   let drag_zone = null;
+  let wrapperRef = useRef(null);
   if (isTouchDevice() && can_sort) {
+    // Drag ref is our handler ONLY
+    // Drop ref is our whole row, so the whole row can be dropped on
+    wrapperRef = drop(wrapperRef);
     className += ' list__item--has-drag-zone';
-
     drag_zone = (
       <span
-        className="list__item__column__item list__item__column__item--drag-zone drag-zone touch-draggable mouse-draggable"
-        key="drag-zone"
+        className="list__item__column__item list__item__column__item--drag-zone drag-zone"
+        onTouchStart={(e) => events.onTouchStart(item, index, e)}
+        ref={drag}
       >
         <Icon name="drag_indicator" />
       </span>
     );
+  } else {
+    // Merge drag and drop refs
+    wrapperRef = drag(drop(wrapperRef));
   }
 
   const track_middle_column = <MiddleColumn context={context} item={item} />;
@@ -158,7 +164,7 @@ const Track = ({
         onMouseDown={onMouseDown}
         onDoubleClick={onDoubleClick}
         onContextMenu={onContextMenu}
-        ref={ref}
+        ref={wrapperRef}
         data-handler-id={handlerId}
       >
         <div className="list__item__column list__item__column--name">

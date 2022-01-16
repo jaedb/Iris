@@ -103,6 +103,10 @@ const TrackList = ({
         setSelected((prev) => nextSelected(prev, item, index, e));
       }
     },
+    onTouchStart: (item, index, e) => { // Only bound to the drag handler
+      e.persist();
+      setSelected((prev) => nextSelected(prev, item, index, e));
+    },
     onDoubleClick: (item, index) => {
       // if (context_menu) hideContextMenu();
       setSelected([{ item, index }]);
@@ -206,7 +210,6 @@ const TrackList = ({
     let selectedForDrag = selected;
     if (selectionIndexByItemIndex(index) === -1) {
       selectedForDrag = nextSelected(selected, item, index);
-      // setSelected(selectedForDrag);
     }
     return {
       selected: selectedForDrag,

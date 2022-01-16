@@ -62,7 +62,6 @@ const Dropzone = ({
     }),
     drop: ({ selected, context }) => {
       const uris = selected.map(({ item: { uri } }) => uri);
-      console.debug({ selected, context, uris })
       switch (action) {
         case 'enqueue':
           dispatch(mopidyActions.enqueueURIs(uris, context));

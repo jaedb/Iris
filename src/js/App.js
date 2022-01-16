@@ -256,8 +256,8 @@ const App = () => {
       onKeyDown={handleInteraction}
     >
       <DndProvider
-        backend={TouchBackend}
-        options={{ enableMouseEvents: true, delayTouchStart: 100 }}
+        backend={isTouchDevice() ? TouchBackend : HTML5Backend}
+        options={{ enableMouseEvents: true }}
       >
         <div className="body">
           <Switch>
