@@ -120,23 +120,25 @@ const Track = ({
   // If we're touchable, and can sort this tracklist
   let drag_zone = null;
   let wrapperRef = useRef(null);
-  if (isTouchDevice() && can_sort) {
-    // Drag ref is our handler ONLY
-    // Drop ref is our whole row, so the whole row can be dropped on
-    wrapperRef = drop(wrapperRef);
-    className += ' list__item--has-drag-zone';
-    drag_zone = (
-      <span
-        className="list__item__column__item list__item__column__item--drag-zone drag-zone"
-        onTouchStart={(e) => events.onTouchStart(item, index, e)}
-        ref={drag}
-      >
-        <Icon name="drag_indicator" />
-      </span>
-    );
-  } else {
-    // Merge drag and drop refs
-    wrapperRef = drag(drop(wrapperRef));
+  if (can_sort) {
+    if (isTouchDevice()) {
+      // Drag ref is our handler ONLY
+      // Drop ref is our whole row, so the whole row can be dropped on
+      wrapperRef = drop(wrapperRef);
+      className += ' list__item--has-drag-zone';
+      drag_zone = (
+        <span
+          className="list__item__column__item list__item__column__item--drag-zone drag-zone"
+          onTouchStart={(e) => events.onTouchStart(item, index, e)}
+          ref={drag}
+        >
+          <Icon name="drag_indicator" />
+        </span>
+      );
+    } else {
+      // Merge drag and drop refs
+      wrapperRef = drag(drop(wrapperRef));
+    }
   }
 
   const track_middle_column = <MiddleColumn context={context} item={item} />;
