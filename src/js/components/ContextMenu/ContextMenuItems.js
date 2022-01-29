@@ -58,6 +58,13 @@ const ContextMenuItems = ({
   let provider = context?.provider || item?.provider || uriSource(item?.uri);
 
   switch (type) {
+    case 'custom': {
+      return (
+        <>
+          {items}
+        </>
+      );
+    }
     case 'album': {
       return (
         <>

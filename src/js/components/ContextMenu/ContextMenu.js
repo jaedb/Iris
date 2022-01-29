@@ -159,9 +159,7 @@ const ContextMenu = ({
   return (
     <div className={className} style={style} ref={ref}>
       <div className="context-menu__section context-menu__section--items">
-        <Title
-          context_menu={context_menu}
-        />
+        {context_menu?.type !== 'custom' && <Title context_menu={context_menu} />}
         <ContextMenuItems
           context_menu={context_menu}
           onSubmenu={() => setSubmenu(true)}

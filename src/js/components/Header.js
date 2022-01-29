@@ -15,15 +15,14 @@ export default memo(({
     if (handleContextMenuTrigger) return handleContextMenuTrigger(e);
 
     e.preventDefault();
-    const data = {
-      e,
-      source: {
-        context: 'custom',
-      },
-      title,
-      options,
-    };
-    dispatch(showContextMenu(data));
+    dispatch(
+      showContextMenu({
+        e,
+        type: 'custom',
+        title,
+        items: options,
+      }),
+    );
     return true;
   };
 
