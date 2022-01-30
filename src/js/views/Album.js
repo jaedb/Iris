@@ -227,7 +227,7 @@ const Album = () => {
           </div>
         </h4>
         <TrackList
-          context={formatContext(album)}
+          context={formatContext({ ...album, can_drag: true })}
           className="album-track-list"
           tracks={tracks}
         />

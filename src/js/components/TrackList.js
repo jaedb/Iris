@@ -5,23 +5,18 @@ import { uniqBy } from 'lodash';
 import Track from './Track';
 import * as mopidyActions from '../services/mopidy/actions';
 import * as uiActions from '../services/ui/actions';
-import { isTouchDevice, uriSource } from '../util/helpers';
-import { arrayOf, indexToArray } from '../util/arrays';
-import { i18n } from '../locale';
+import { isTouchDevice } from '../util/helpers';
+import { arrayOf } from '../util/arrays';
 import { SmartList } from './SmartList';
-import { formatSimpleObject } from '../util/format';
 
 const TrackList = ({
-  uri,
   context,
   className = '',
   show_source_icon,
   play_state,
   slim_mode,
   tracks,
-  selected_tracks,
   removeTracks,
-  playTracks,
   reorderTracks,
   uiActions: {
     createNotification,
@@ -29,10 +24,14 @@ const TrackList = ({
   },
   mopidyActions: {
     playURIs,
+    changeTrack,
   },
 }) => {
   const [selected, setSelected] = useState([]);
-  const [transformingItems, setTransformingItems] = useState([]);
+
+  useEffect(() => {
+    setSelected([]);
+  }, [tracks.length]);
 
   useEffect(() => {
     window.addEventListener('keydown', onKeyDown, false);
@@ -104,7 +103,11 @@ const TrackList = ({
     },
     onDoubleClick: (item, index) => {
       setSelected([{ item, index }]);
-      playURIs({ uris: [item.uri], from: context });
+      if (context?.type === 'queue') {
+        changeTrack(item.tlid);
+      } else {
+        playURIs({ uris: [item.uri], from: context });
+      }
     },
     onContextMenu: (item, index, e) => {
       // Do our best to stop any flow-on events
@@ -125,18 +128,6 @@ const TrackList = ({
       });
     },
   };
-
-  /**
-   * NEXT STEPS
-   * Collate these events into a coherant package, possibly using hooks?
-   * Create redux handlers to push dragging items into state. This allows a nice drag shadow and
-   *  activation of dropzones in sidebar.
-   * Figure out where to leave touch events. Perhaps dragging one-by-one with a simple handle is
-   *  sufficient.
-   * Apply drag-ability to other assets, like album tiles, etc.
-   * 
-   * Also, fix shuffle play; first track goes first, but all subsequent ones go to end of tracklist
-   */
 
   const onRemoveTracks = () => {
     if (!removeTracks) {
@@ -199,7 +190,6 @@ const TrackList = ({
   }
 
   const is_selected = (index) => selected.find(({ index: i }) => index === i);
-  const is_transforming = (index) => transformingItems.indexOf(index) > -1;
   const getDragItem = (item, index) => {
     let selectedForDrag = selected;
     if (selectionIndexByItemIndex(index) === -1) {
@@ -223,7 +213,6 @@ const TrackList = ({
         getDragItem,
         can_sort: context?.can_edit,
         is_selected,
-        is_transforming,
         mini_zones: slim_mode || isTouchDevice(),
         events,
       }}

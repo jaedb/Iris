@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Modal from './Modal';
 import Thumbnail from '../../components/Thumbnail';
@@ -9,22 +9,20 @@ import ProgressSlider from '../../components/Fields/ProgressSlider';
 import * as uiActions from '../../services/ui/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as geniusActions from '../../services/genius/actions';
-import { isLoading } from '../../util/helpers';
 import { i18n, I18n } from '../../locale';
 import { makeItemSelector, makeLoadingSelector } from '../../util/selectors';
+import useTimer from '../../util/useTimer';
 
 const LyricsScroller = ({
   content = '',
-  time_position = 1,
-  duration = 100,
+  percent = 0,
 }) => {
-  const percent = ((time_position / duration) * 110).toFixed(4);
   return (
     <div className="lyrics">
       <div
         className="lyrics__content"
         dangerouslySetInnerHTML={{ __html: content }}
-        style={{ transform: `translateY(-${percent}%)` }}
+        style={{ transform: `translateY(-${(percent * 110).toFixed(4)}%)` }}
       />
     </div>
   );
@@ -32,7 +30,7 @@ const LyricsScroller = ({
 
 const Lyrics = ({
   show_lyrics,
-  time_position = null,
+  playbackPosition = 0,
   current_track,
 }) => {
   if (!show_lyrics) {
@@ -40,7 +38,7 @@ const Lyrics = ({
   }
   const loadingSelector = makeLoadingSelector(['genius_(.*)']);
   const loading = useSelector(loadingSelector);
-  const { lyrics, duration } = current_track || {};
+  const { lyrics, duration = 100 } = current_track || {};
 
   if (loading) {
     return (
@@ -53,8 +51,7 @@ const Lyrics = ({
     return (
       <LyricsScroller
         content={lyrics}
-        time_position={time_position}
-        duration={duration}
+        percent={playbackPosition / duration}
       />
     );
   }
@@ -73,6 +70,19 @@ const KioskMode = () => {
   const show_lyrics = useSelector((state) => state.ui.show_lyrics);
   const lyrics_enabled = show_lyrics && genius_available;
   const { images = [] } = current_track || {};
+  const [playbackPosition, setPlaybackPosition] = useState(time_position);
+
+  useTimer(
+    () => {
+      if (play_state === 'playing') setPlaybackPosition((prev) => prev + 1000);
+    },
+    1000,
+    true,
+  );
+
+  useEffect(() => {
+    setPlaybackPosition(time_position);
+  }, [time_position]);
 
   const setWindowTitle = () => {
     if (stream_title) {
@@ -210,7 +220,7 @@ const KioskMode = () => {
             </button>
           </div>
           <div className="playback__progress">
-            <ProgressSlider />
+            <ProgressSlider playbackPosition={playbackPosition} />
           </div>
         </div>
 
@@ -219,7 +229,7 @@ const KioskMode = () => {
       <Lyrics
         show_lyrics={lyrics_enabled}
         genius_authorized={genius_available}
-        time_position={time_position}
+        playbackPosition={playbackPosition}
         current_track={current_track}
       />
     </Modal>

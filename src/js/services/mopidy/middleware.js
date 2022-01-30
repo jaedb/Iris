@@ -964,7 +964,6 @@ const MopidyMiddleware = (function () {
       }
 
       case 'MOPIDY_ENQUEUE_URIS': {
-        console.debug(action)
         if (!action.uris || action.uris.length <= 0) {
           this.props.uiActions.createNotification({
             content: 'No URIs to enqueue',

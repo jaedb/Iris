@@ -121,11 +121,12 @@ const ContextMenu = ({
   };
 
   useEffect(() => {
-    document.getElementById('main').addEventListener('scroll', onScroll);
+    const main = document.getElementById('main');
+    if (main) main.addEventListener('scroll', onScroll);
     window.addEventListener('mousedown', onClick);
     window.addEventListener('touchstart', onClick);
     return () => {
-      document.getElementById('main').removeEventListener('scroll', onScroll);
+      if (main) main.removeEventListener('scroll', onScroll);
       window.removeEventListener('mousedown', onClick);
       window.removeEventListener('touchstart', onClick);
     };

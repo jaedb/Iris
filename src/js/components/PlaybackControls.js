@@ -9,7 +9,6 @@ import { Dater } from './Dater';
 import LinksSentence from './LinksSentence';
 import Thumbnail from './Thumbnail';
 import Icon from './Icon';
-import { scrollTo } from '../util/helpers';
 import useTimer from '../util/useTimer';
 import { showContextMenu, toggleSidebar } from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';

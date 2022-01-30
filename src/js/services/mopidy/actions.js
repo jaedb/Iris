@@ -375,7 +375,12 @@ export function enqueueURIs({
   };
 }
 
-export function enqueueAlbum(uri, from, play_next = false, at_position = null) {
+export function enqueueAlbum({
+  uri,
+  from,
+  play_next = false,
+  at_position = null,
+}) {
   return {
     type: 'MOPIDY_ENQUEUE_ALBUM',
     uri,
@@ -385,7 +390,12 @@ export function enqueueAlbum(uri, from, play_next = false, at_position = null) {
   };
 }
 
-export function enqueuePlaylist(uri, from, play_next = false, at_position = null) {
+export function enqueuePlaylist({
+  uri,
+  from,
+  play_next = false,
+  at_position = null,
+}) {
   return {
     type: 'MOPIDY_ENQUEUE_PLAYLIST',
     from,

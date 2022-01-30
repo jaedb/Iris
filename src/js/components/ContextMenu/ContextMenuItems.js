@@ -430,7 +430,6 @@ const Play = ({
 }) => {
   const dispatch = useDispatch();
   const onClick = () => {
-    console.debug({ uri, uris, context, shuffle, action })
     dispatch(action({ uri, uris, from: context, shuffle }));
     dispatch(hideContextMenu());
   };
@@ -454,7 +453,7 @@ const Enqueue = ({
 }) => {
   const dispatch = useDispatch();
   const onClick = () => {
-    dispatch(action({ uris: uri ? [uri] : uris, context, play_next }));
+    dispatch(action({ uris: uri ? [uri] : uris, uri, from: context, play_next }));
     dispatch(hideContextMenu());
   };
   return (

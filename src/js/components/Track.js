@@ -59,7 +59,6 @@ const Track = ({
   stream_title,
   play_state,
   is_selected,
-  is_transforming,
   can_sort,
   show_source_icon,
   getItemIndex,
@@ -120,8 +119,8 @@ const Track = ({
   // If we're touchable, and can sort this tracklist
   let drag_zone = null;
   let wrapperRef = useRef(null);
-  if (can_sort) {
-    if (isTouchDevice()) {
+  if (isTouchDevice()) {
+    if (can_sort) {
       // Drag ref is our handler ONLY
       // Drop ref is our whole row, so the whole row can be dropped on
       wrapperRef = drop(wrapperRef);
@@ -135,15 +134,14 @@ const Track = ({
           <Icon name="drag_indicator" />
         </span>
       );
-    } else {
-      // Merge drag and drop refs
-      wrapperRef = drag(drop(wrapperRef));
     }
+  } else {
+    // Merge drag and drop refs
+    wrapperRef = drag(drop(wrapperRef));
   }
 
   const track_middle_column = <MiddleColumn context={context} item={item} />;
   if (is_selected(index)) className += ' list__item--selected';
-  if (is_transforming(index)) className += ' list__item--transforming';
   if (isOver) className += ' list__item--drag-over';
   if (isDragging) className += ' list__item--dragging';
   if (can_sort) className += ' list__item--can-sort';
