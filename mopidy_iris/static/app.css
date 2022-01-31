@@ -9546,6 +9546,10 @@ main header.overlay {
 .dropzones__item--drag-over:before {
   opacity: 0.15;
 }
+.dropzones__item--disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
 
 .artist-view .body-loader:not(.lazy-loader) {
   padding: 15vh 0;

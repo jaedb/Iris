@@ -16,6 +16,7 @@ const TrackList = ({
   play_state,
   slim_mode,
   tracks,
+  playTracks,
   removeTracks,
   reorderTracks,
   uiActions: {
@@ -38,7 +39,7 @@ const TrackList = ({
     return () => {
       window.removeEventListener('keydown', onKeyDown, false);
     };
-  }, []);
+  }, [selected]);
 
   const onKeyDown = (e) => {
     const {
@@ -64,17 +65,12 @@ const TrackList = ({
 
     switch (key.toLowerCase()) {
       case 'enter':
-        console.debug('ENTER', selected)
-        if (selected.length > 0) {
-          onPlayTracks();
-        }
+        onPlayTracks();
         e.preventDefault();
         break;
       case 'backspace':
       case 'delete':
-        if (selected.length > 0) {
-          onRemoveTracks();
-        }
+        onRemoveTracks();
         e.preventDefault();
         break;
       case 'a':
@@ -129,7 +125,20 @@ const TrackList = ({
     },
   };
 
+  const onPlayTracks = () => {
+    if (!selected || !selected.length) return;
+
+    const selectedTracks = arrayOf('item', selected);
+    if (playTracks) {
+      playTracks(selectedTracks);
+    } else {
+      playURIs({ uris: arrayOf('uri', selectedTracks), from: context });
+    }
+  };
+
   const onRemoveTracks = () => {
+    if (!selected || !selected.length) return;
+
     if (!removeTracks) {
       createNotification({
         content: `Cannot delete ${selected.length > 1 ? 'these tracks' : 'this track'}`,
@@ -196,7 +205,7 @@ const TrackList = ({
       selectedForDrag = nextSelected(selected, item, index);
     }
     return {
-      selected: selectedForDrag,
+      items: selectedForDrag,
       context,
     };
   };

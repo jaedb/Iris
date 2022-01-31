@@ -1349,6 +1349,7 @@ const MopidyMiddleware = (function () {
       }
 
       case 'MOPIDY_ADD_PLAYLIST_TRACKS':
+        console.debug({ action })
         request(store, 'playlists.lookup', { uri: action.key })
           .then((response) => {
             if (!response) {

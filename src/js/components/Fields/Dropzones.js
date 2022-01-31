@@ -4,7 +4,6 @@ import { useHistory } from 'react-router-dom';
 import { useDragLayer, useDrop } from 'react-dnd';
 import * as mopidyActions from '../../services/mopidy/actions';
 import Icon from '../Icon';
-import { arrayOf } from '../../util/arrays';
 import { i18n } from '../../locale';
 import { encodeUri } from '../../util/format';
 
@@ -13,23 +12,25 @@ const zones = [
     action: 'enqueue',
     title: i18n('actions.add_to_queue'),
     icon: 'play_arrow',
+    accept: ['TRACK', 'ALBUM', 'PLAYLIST', 'ARTIST'],
   },
   {
     action: 'enqueue_next',
     title: i18n('actions.play_next'),
     icon: 'play_arrow',
+    accept: ['TRACK', 'ALBUM', 'PLAYLIST', 'ARTIST'],
   },
   {
     action: 'add_to_playlist',
     title: i18n('actions.add_to_playlist'),
     icon: 'playlist_add',
-    accepts: ['tltrack', 'track', 'album', 'playlist', 'artist'],
+    accept: ['TRACK', 'ALBUM', 'ARTIST'],
   },
   {
     action: 'create_playlist_and_add',
     title: i18n('modal.edit_playlist.create_playlist'),
     icon: 'playlist_add',
-    accepts: ['tltrack', 'track', 'album', 'playlist', 'artist'],
+    accept: ['TRACK', 'ALBUM', 'ARTIST'],
   },
 ];
 
@@ -51,17 +52,20 @@ const Dropzone = ({
   title,
   icon,
   action,
+  accept,
 }) => {
   const dispatch = useDispatch();
   const history = useHistory();
-  const [{ handlerId, isOver }, drop] = useDrop({
-    accept: 'TRACK',
+  const [{ handlerId, isOver, canDrop }, drop] = useDrop({
+    accept,
+    canDrop: () => true,
     collect: (monitor) => ({
       handlerId: monitor.getHandlerId(),
       isOver: monitor.isOver(),
+      canDrop: monitor.canDrop(),
     }),
-    drop: ({ selected, context }) => {
-      const uris = selected.map(({ item: { uri } }) => uri);
+    drop: ({ item, items, context }) => {
+      const uris = item ? [item.uri] : items.map(({ item: { uri } }) => uri);
       switch (action) {
         case 'enqueue':
           dispatch(mopidyActions.enqueueURIs({ uris, from: context }));
@@ -81,14 +85,15 @@ const Dropzone = ({
     },
   });
 
+  let className = 'dropzones__item';
+  if (isOver && canDrop) className += ' dropzones__item--drag-over';
+  if (!canDrop) className += ' dropzones__item--disabled';
+
   return (
     <div
       ref={drop}
       data-handler-id={handlerId}
-      className={`dropzones__item ${isOver ? 'dropzones__item--drag-over' : ''}`}
-      // onDragEnter={(e) => onDragEnter(e, action)}
-      // onDragOver={(e) => onDragOver(e, action)}
-      // onDrop={(e) => onDrop(e, action)}
+      className={className}
     >
       <Icon name={icon} />
       <span className="title">{title}</span>
