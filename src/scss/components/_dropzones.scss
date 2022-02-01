@@ -1,14 +1,20 @@
 .dropzones {
+	@include animate(0.1s);
 	position: absolute;
 	top: 0;
 	left: 0;
 	width: 100%;
 	height: 100%;
+	transform: translateX(-100%);
 	z-index: 98;
 	background: darken(colour('dark_grey'), 1%);
 
 	@include theme('light') {
 		background: colour('faint_grey');
+	}
+
+	&--dragging {
+		transform: translateX(0);
 	}
 
 	&__item {

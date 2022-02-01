@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
+import { useDrag } from 'react-dnd';
 import LinksSentence from './LinksSentence';
 import { dater } from './Dater';
 import { nice_number } from './NiceNumber';
@@ -10,12 +11,13 @@ import Icon, { SourceIcon } from './Icon';
 import Thumbnail from './Thumbnail';
 import Popularity from './Popularity';
 import { I18n } from '../locale';
-import { encodeUri, formatSimpleObject } from '../util/format';
+import { encodeUri } from '../util/format';
 import { updateScrollPosition } from './Link';
 
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
 import * as spotifyActions from '../services/spotify/actions';
+import { isTouchDevice } from '../util/helpers';
 
 const getValue = (item = {}, name = '') => {
   const { [name]: value } = item;
@@ -91,6 +93,10 @@ const ListItem = ({
   const spotify_available = useSelector((state) => state.spotify.access_token);
   const history = useHistory();
   const location = useLocation();
+  const [_, drag] = useDrag({
+    type: item?.type?.toUpperCase() || 'UNKNOWN',
+    item: { item, context: item },
+  });
 
   // Load images
   useEffect(() => {
@@ -159,6 +165,7 @@ const ListItem = ({
       className={className}
       onContextMenu={onContextMenu}
       onClick={onClick}
+      ref={isTouchDevice() ? undefined : drag}
     >
       {
         right_column && !nocontext && (

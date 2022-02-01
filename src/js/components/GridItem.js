@@ -7,6 +7,7 @@ import Thumbnail from './Thumbnail';
 import LinksSentence from './LinksSentence';
 import { I18n } from '../locale';
 import { encodeUri } from '../util/format';
+import { isTouchDevice } from '../util/helpers';
 
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
@@ -71,7 +72,7 @@ const GridItem = ({
   const grid_glow_enabled = useSelector((state) => state.ui.grid_glow_enabled);
   const spotify_available = useSelector((state) => state.spotify.access_token);
   const [_, drag] = useDrag({
-    type: item.type.toUpperCase(),
+    type: item?.type?.toUpperCase() || 'UNKNOWN',
     item: { item, context: item },
   });
 
@@ -120,7 +121,10 @@ const GridItem = ({
   }
 
   return (
-    <div ref={drag} className={`grid__item grid__item--${itemProp.type}`}>
+    <div
+      ref={isTouchDevice() ? undefined : drag}
+      className={`grid__item grid__item--${itemProp.type}`}
+    >
       <Link
         to={to}
         onContextMenu={onContextMenu}

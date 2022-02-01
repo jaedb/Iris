@@ -507,7 +507,7 @@ library:
 modal:
   add_to_playlist:
     title: Add to playlist
-    subtitle: 'Select playlist to add %{count} track%{plural} to'
+    subtitle: 'Select playlist to add %{count} item%{plural} to'
     no_playlists: No playlists available
     no_editable_playlists: No editable playlists
   add_to_queue:
@@ -522,7 +522,7 @@ modal:
   edit_playlist:
     title: Edit playlist
     title_create: Create playlist
-    subtitle: 'And add %{count} track%{plural}'
+    subtitle: 'And add %{count} item%{plural}'
     name_required: Name is required
     name: Name
     description: Description

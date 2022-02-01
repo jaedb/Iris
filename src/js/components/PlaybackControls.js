@@ -83,7 +83,7 @@ const PlaybackControls = () => {
             <Link className="thumbnail-wrapper" to="/modal/kiosk-mode" tabIndex="-1">
               <Thumbnail size="small" images={currentTrack.images} type="track" />
             </Link>
-            <div className="text">
+            <Link className="text" to="/queue">
               <div className="title">
                 {streamTitle && <span>{streamTitle}</span>}
                 {!streamTitle && currentTrack && <span>{currentTrack.name}</span>}
@@ -92,12 +92,12 @@ const PlaybackControls = () => {
               <div className="artist">
                 {
                   (currentTrack && currentTrack.artists
-                      && <LinksSentence items={currentTrack.artists} type="artist" />)
+                      && <LinksSentence items={currentTrack.artists} type="artist" nolinks />)
                   || (streamTitle && <span className="links-sentence">{streamTitle}</span>)
                   || <LinksSentence />
                 }
               </div>
-            </div>
+            </Link>
           </div>
         ) : (
           <div

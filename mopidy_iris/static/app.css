@@ -6375,66 +6375,11 @@ h4 .loader {
   z-index: 1;
   text-decoration: none;
 }
-@keyframes slide_left {
-  0% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(-15vw);
-    opacity: 0;
-  }
-}
-@keyframes slide_right {
-  0% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(15vw);
-    opacity: 0;
-  }
-}
-@keyframes slide_from_left {
-  0% {
-    transform: translateX(15vw);
-    opacity: 0;
-  }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-@keyframes slide_from_right {
-  0% {
-    transform: translateX(-15vw);
-    opacity: 0;
-  }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
 .playback-controls .current-track__wrapper .current-track {
   width: 100%;
   display: flex;
   position: relative;
   align-items: center;
-}
-.playback-controls .current-track__wrapper .current-track__outgoing {
-  z-index: 2;
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-}
-.playback-controls .current-track__wrapper .current-track__outgoing .text {
-  -webkit-transition: all 0.15s ease-in-out;
-  -moz-transition: all 0.15s ease-in-out;
-  -o-transition: all 0.15s ease-in-out;
-  transition: all 0.15s ease-in-out;
-  opacity: 0;
 }
 .playback-controls .current-track__wrapper .current-track .thumbnail {
   cursor: pointer;
@@ -6490,6 +6435,8 @@ h4 .loader {
   line-height: 1.1rem;
   font-size: 0.9rem;
   min-width: 0;
+  color: inherit;
+  text-decoration: none;
 }
 .playback-controls .current-track__wrapper .current-track .text .title {
   white-space: nowrap;
@@ -9465,11 +9412,16 @@ main header.overlay {
 }
 
 .dropzones {
+  -webkit-transition: all 0.1s ease-in-out;
+  -moz-transition: all 0.1s ease-in-out;
+  -o-transition: all 0.1s ease-in-out;
+  transition: all 0.1s ease-in-out;
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+  transform: translateX(-100%);
   z-index: 98;
   background: #151515;
 }
@@ -9483,6 +9435,9 @@ main header.overlay {
   }
 }
 
+.dropzones--dragging {
+  transform: translateX(0);
+}
 .dropzones__item {
   -webkit-transition: all 0.2s ease-in-out;
   -moz-transition: all 0.2s ease-in-out;

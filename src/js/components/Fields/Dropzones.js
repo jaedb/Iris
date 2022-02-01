@@ -24,13 +24,13 @@ const zones = [
     action: 'add_to_playlist',
     title: i18n('actions.add_to_playlist'),
     icon: 'playlist_add',
-    accept: ['TRACK', 'ALBUM', 'ARTIST'],
+    accept: ['TRACK'],
   },
   {
     action: 'create_playlist_and_add',
     title: i18n('modal.edit_playlist.create_playlist'),
     icon: 'playlist_add',
-    accept: ['TRACK', 'ALBUM', 'ARTIST'],
+    accept: ['TRACK'],
   },
 ];
 
@@ -39,10 +39,8 @@ const Dropzones = () => {
     isDragging: monitor.isDragging(),
   }));
 
-  if (!isDragging) return null;
-
   return (
-    <div className="dropzones">
+    <div className={`dropzones ${isDragging ? 'dropzones--dragging' : ''}`}>
       {zones.map((zone) => <Dropzone key={zone.action} {...zone} />)}
     </div>
   );
@@ -58,12 +56,13 @@ const Dropzone = ({
   const history = useHistory();
   const [{ handlerId, isOver, canDrop }, drop] = useDrop({
     accept,
-    canDrop: () => true,
-    collect: (monitor) => ({
-      handlerId: monitor.getHandlerId(),
-      isOver: monitor.isOver(),
-      canDrop: monitor.canDrop(),
-    }),
+    collect: (monitor) => {
+      return {
+        handlerId: monitor.getHandlerId(),
+        isOver: monitor.isOver(),
+        canDrop: monitor.canDrop(),
+      };
+    },
     drop: ({ item, items, context }) => {
       const uris = item ? [item.uri] : items.map(({ item: { uri } }) => uri);
       switch (action) {

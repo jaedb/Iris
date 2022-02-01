@@ -1349,7 +1349,6 @@ const MopidyMiddleware = (function () {
       }
 
       case 'MOPIDY_ADD_PLAYLIST_TRACKS':
-        console.debug({ action })
         request(store, 'playlists.lookup', { uri: action.key })
           .then((response) => {
             if (!response) {
@@ -1514,7 +1513,7 @@ const MopidyMiddleware = (function () {
             store.dispatch(uiActions.createNotification({
               content: i18n('actions.deleted', { name: i18n('playlist.title') }),
             }));
-            store.dispatch(coreActions.removeFromLibrary('mopidy:library:playlists', action.uri));
+            store.dispatch(coreActions.removeFromLibrary('m3u:playlists', action.uri));
           });
         break;
 
