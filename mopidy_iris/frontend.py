@@ -23,7 +23,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
         iris.stop()
 
     def track_playback_ended(self, tl_track, time_position):
-        if iris.ioloop:
+        if iris.ioloop and iris.config["spotify"]["enabled"]:
             iris.ioloop.add_callback(
                 functools.partial(iris.check_for_radio_update)
             )
@@ -35,7 +35,7 @@ class IrisFrontend(pykka.ThreadingActor, CoreListener):
             )
 
     def track_playback_started(self, tl_track):
-        if iris.ioloop:
+        if iris.ioloop and iris.config["iris"]["snapcast_enabled"]:
             iris.ioloop.add_callback(
                 functools.partial(iris.update_snapcast_meta)
             )
