@@ -21,6 +21,7 @@ import {
   formatTrack,
   formatSimpleObject,
   injectSortId,
+  formatContext,
 } from '../../util/format';
 import URILink from '../../components/URILink';
 import { i18n } from '../../locale';
@@ -1311,7 +1312,7 @@ export function savePlaylist(uri, name, description, is_public, is_collaborative
   };
 }
 
-export function getPlaylistTracks(uri, { forceRefetch, callbackAction } = {}) {
+export function getPlaylistTracks(uri, { forceRefetch, callbackAction } = {}, playlist) {
   return (dispatch, getState) => {
     let initialEndpoint = `playlists/${getFromUri('playlistid', uri)}/tracks`;
     initialEndpoint += `?market=${getState().spotify.country}`;
@@ -1340,20 +1341,14 @@ export function getPlaylistTracks(uri, { forceRefetch, callbackAction } = {}) {
               case 'enqueue':
                 dispatch(mopidyActions.enqueueURIs({
                   uris: arrayOf('uri', tracks),
-                  from: {
-                    uri,
-                    type: 'playlist',
-                  },
+                  from: formatContext(playlist),
                   ...callbackAction,
                 }));
                 break;
               case 'play':
                 dispatch(mopidyActions.playURIs({
                   uris: arrayOf('uri', tracks),
-                  from: {
-                    uri,
-                    type: 'playlist',
-                  },
+                  from: formatContext(playlist),
                   ...callbackAction,
                 }));
                 break;
@@ -1396,7 +1391,7 @@ export function getPlaylist(uri, options = {}) {
             description = description.split('<a href="spotify:user:').join('<a href="#' + '/user/spotify:user:');
           }
 
-          dispatch(coreActions.itemLoaded({
+          const playlist = {
             ...formatPlaylist(response),
             can_edit: (meId === response.owner.id),
             description,
@@ -1405,10 +1400,11 @@ export function getPlaylist(uri, options = {}) {
             // doesn't know if we've loaded all tracks, or just the first page.
             tracks: null,
             loading: full ? 'tracks' : null,
-          }));
+          };
+          dispatch(coreActions.itemLoaded(playlist));
 
           if (full) {
-            dispatch(getPlaylistTracks(uri, options));
+            dispatch(getPlaylistTracks(uri, options, playlist));
           }
         },
         (error) => {
