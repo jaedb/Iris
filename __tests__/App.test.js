@@ -25,6 +25,5 @@ describe('<App />', () => {
     renderer.render(<App />);
     const result = renderer.getRenderOutput();
     expect(result.type).toEqual('div');
-    expect(Array.isArray(result.props.children)).toEqual(true);
   });
 });
