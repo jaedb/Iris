@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import Thumbnail from './Thumbnail';
 import URILink from './URILink';
+import { formatSimpleObject } from '../util/format';
 
 export default memo(({ artists, uiActions: { showContextMenu } = {} }) => {
   if (!artists) return null;
@@ -10,7 +11,7 @@ export default memo(({ artists, uiActions: { showContextMenu } = {} }) => {
       e.preventDefault();
       showContextMenu({
         e,
-        context: 'artist',
+        source: formatSimpleObject(item),
         uris: [item.uri],
         items: [item],
       });

@@ -39,6 +39,7 @@
 			right: 0;
 			height: 3px;
 			background: colour('blue');
+			border-radius: 100px;
 			opacity: 0;
 		}
 
@@ -47,10 +48,10 @@
 			background: none !important;
 		}
 
-		:root .notouch:not(.dragging) &:not(.list__item--no-interaction){
+		&:not(.list__item--no-interaction){
 			cursor: pointer;
 
-			&:hover {
+			&:hover:not(.list__item--drag-over) {
 				cursor: pointer;
 				background: rgba(255,255,255,0.03);
 			}
@@ -64,7 +65,7 @@
 			}
 		}
 
-		:root .light-theme.notouch:not(.dragging) &:not(.list__item--no-interaction){
+		&:not(.list__item--no-interaction){
 			&:hover {
 				background: rgba(0,0,0,0.03);
 			}
@@ -186,7 +187,8 @@
 			}
 		}
 
-		&--loading {
+		&--loading,
+		&--transforming {
 			opacity: 0.5;
 			cursor: wait !important;
 		}
@@ -279,9 +281,11 @@
 		.list__item {
 			cursor: pointer;
 
-			:root .dragging &:hover,
-			:root .dragging &--hover,
-			&.touch-drag-hover {
+			&--dragging {
+				opacity: 0.5;
+			}
+
+			&--drag-over {
 				&:before {
 					opacity: 1;
 				}
@@ -316,7 +320,7 @@
 	@include responsive($bp_medium){
 		&__item {
 
-			:root .notouch:not(.dragging) &:not(.list__item--no-interaction) {
+			&:not(.list__item--no-interaction) {
 				&:active,
 				&:focus {
 					@include noanimate();

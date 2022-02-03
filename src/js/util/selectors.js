@@ -11,7 +11,7 @@ const getLibrary = (state, uri) => state.core.libraries[uri];
 const getLibraries = (state) => state.core.libraries;
 const getSearchResults = (state) => state.core.search_results;
 const getGridGlowEnabled = (state) => state.ui.grid_glow_enabled;
-const getDragger = (state) => state.ui.dragger;
+const getSorts = (state) => state.ui.sort;
 
 const makeItemSelector = (uri) => createSelector(
   [getItems],
@@ -192,6 +192,14 @@ const makeProvidersSelector = (context) => createSelector(
     return providers[context].filter((p) => schemes.indexOf(p.scheme) > -1);
   },
 );
+const makeSortSelector = (key, defaultField = 'sort_id') => createSelector(
+  [getSorts],
+  (sorts) => [
+    sorts[key]?.field || defaultField,
+    sorts[key]?.reverse || false,
+  ],
+);
+
 const getSortSelector = (state, key, defaultField = 'sort_id') => {
   const result = state.ui.sort[key];
   return [
@@ -205,7 +213,6 @@ export {
   getLibrary,
   getGridGlowEnabled,
   getLibrarySource,
-  getDragger,
   makeItemSelector,
   makeArtistSelector,
   makeLibrarySelector,
@@ -215,5 +222,6 @@ export {
   queueHistorySelector,
   makeProvidersSelector,
   getProvider,
+  makeSortSelector,
   getSortSelector,
 };

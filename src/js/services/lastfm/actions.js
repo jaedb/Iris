@@ -177,10 +177,10 @@ export function getMe() {
   };
 }
 
-export function getTrack(uri) {
+export function getTrack(uri, callback, alreadyLoadedTrack) {
   return (dispatch, getState) => {
     const selector = makeItemSelector(uri);
-    const track = selector(getState());
+    const track = alreadyLoadedTrack || selector(getState());
     if (!track || !track.artists) {
       dispatch(coreActions.handleException(
         'Could not get LastFM track',
@@ -200,15 +200,13 @@ export function getTrack(uri) {
       .then(
         (response) => {
           if (response.track) {
-            dispatch(
-              coreActions.itemLoaded(
-                formatTrack({
-                  uri: track.uri,
-                  ...response.track,
-                  ...track,
-                }),
-              ),
-            );
+            const result = formatTrack({
+              uri: track.uri,
+              ...response.track,
+              ...track,
+            });
+            dispatch(coreActions.itemLoaded(result));
+            if (callback) callback(result);
           }
         },
       );
@@ -396,10 +394,12 @@ export function loveTrack(uri) {
             userloved: true,
           }));
           dispatch(uiActions.createNotification({
-            content: <span>
-              Loved
-              <URILink type="track" uri={uri}>{asset ? asset.name : type}</URILink>
-                     </span>,
+            content: (
+              <span>
+                {'Loved '}
+                <URILink type="track" uri={uri}>{asset ? asset.name : type}</URILink>
+              </span>
+            ),
           }));
         },
       );
@@ -436,10 +436,12 @@ export function unloveTrack(uri) {
             userloved: false,
           }));
           dispatch(uiActions.createNotification({
-            content: <span>
-              Unloved
-              <URILink uri={uri}>{asset ? asset.name : type}</URILink>
-                     </span>,
+            content: (
+              <span>
+                {'Unloved '}
+                <URILink uri={uri}>{asset ? asset.name : type}</URILink>
+              </span>
+            ),
           }));
         },
       );

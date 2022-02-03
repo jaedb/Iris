@@ -1,25 +1,28 @@
 import React, { memo } from 'react';
-import ContextMenuTrigger from './ContextMenuTrigger';
+import { useDispatch } from 'react-redux';
+import ContextMenuTrigger from './ContextMenu/ContextMenuTrigger';
+import { showContextMenu } from '../services/ui/actions';
 
 export default memo(({
   handleContextMenuTrigger,
   options,
   title,
-  uiActions,
   className,
   children,
 }) => {
+  const dispatch = useDispatch();
   const onTrigger = (e) => {
     if (handleContextMenuTrigger) return handleContextMenuTrigger(e);
 
     e.preventDefault();
-    const data = {
-      e,
-      context: 'custom',
-      title,
-      options,
-    };
-    uiActions.showContextMenu(data);
+    dispatch(
+      showContextMenu({
+        e,
+        type: 'custom',
+        title,
+        items: options,
+      }),
+    );
     return true;
   };
 

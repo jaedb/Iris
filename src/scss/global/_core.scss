@@ -61,7 +61,6 @@ body {
   transform: translateZ(0px);
   transform-style: preserve-3d;
 
-  &.touch-dragging,
   &.no-scrollbars {
     overflow-y: hidden;
   }

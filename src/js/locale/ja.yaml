@@ -173,8 +173,6 @@ context_menu:
   discover_similar: 類似を発見
   start_radio: ラジオを開始
   copy_uri: URI(s)をコピー
-dropzones:
-  dragging_things: '%{count} 個をドラッグ中'
 playback_controls:
   consume: コンスーム
   shuffle: シャッフル

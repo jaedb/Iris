@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import sanitizeHtml from 'sanitize-html';
 import ErrorMessage from '../components/ErrorMessage';
 import TrackList from '../components/TrackList';
@@ -10,7 +10,7 @@ import Loader from '../components/Loader';
 import FollowButton from '../components/Fields/FollowButton';
 import { nice_number } from '../components/NiceNumber';
 import { Dater } from '../components/Dater';
-import ContextMenuTrigger from '../components/ContextMenuTrigger';
+import ContextMenuTrigger from '../components/ContextMenu/ContextMenuTrigger';
 import { SourceIcon } from '../components/Icon';
 import DropdownField from '../components/Fields/DropdownField';
 import FilterField from '../components/Fields/FilterField';
@@ -18,41 +18,37 @@ import { i18n, I18n } from '../locale';
 import * as coreActions from '../services/core/actions';
 import * as uiActions from '../services/ui/actions';
 import * as mopidyActions from '../services/mopidy/actions';
-import * as spotifyActions from '../services/spotify/actions';
 import * as lastfmActions from '../services/lastfm/actions';
 import { uriSource } from '../util/helpers';
 import Button from '../components/Button';
-import { makeLoadingSelector, makeItemSelector, getSortSelector } from '../util/selectors';
+import { makeItemSelector, makeSortSelector } from '../util/selectors';
 import { applyFilter, sortItems } from '../util/arrays';
-import { decodeUri } from '../util/format';
+import { decodeUri, formatSimpleObject, formatContext } from '../util/format';
 
 const SORT_KEY = 'album_tracks';
 
-const Album = ({
-  uri,
-  album: albumProp,
-  sortField,
-  sortReverse,
-  loading,
-  slim_mode,
-  coreActions: {
-    loadAlbum,
-  },
-  lastfmActions: {
-    getAlbum,
-  },
-  uiActions: {
+const Album = () => {
+  const { loadAlbum } = coreActions;
+  const { getAlbum } = lastfmActions;
+  const { playURIs } = mopidyActions;
+  const {
     setSort,
     setWindowTitle,
     showContextMenu,
     hideContextMenu,
-  },
-  mopidyActions: {
-    playURIs,
-  },
-}) => {
+  } = uiActions;
+  const dispatch = useDispatch();
+  const { uri: encodedUri } = useParams();
+  const uri = decodeUri(encodedUri);
+
+  const itemSelector = makeItemSelector(uri);
+  const album = useSelector(itemSelector);
+
+  const sortSelector = makeSortSelector(SORT_KEY, 'disc_track');
+  const [sortField, sortReverse] = useSelector(sortSelector);
+  const slim_mode = useSelector((state) => state.ui.slim_mode);
+
   const [filter, setFilter] = useState('');
-  const [album, setAlbum] = useState({});
 
   let tracks = album?.tracks || [];
   if (sortField && tracks) tracks = sortItems(tracks, sortField, sortReverse);
@@ -60,21 +56,16 @@ const Album = ({
 
   useEffect(
     () => {
-      if (uri) {
-        loadAlbum(uri, { full: true });
-      }
+      if (uri) dispatch(loadAlbum(uri, { full: true }));
     },
     [uri],
   );
 
   useEffect(() => {
-    if (albumProp && !album) {
-      if (albumProp.artists && albumProp.wiki === undefined) {
-        getAlbum(albumProp.uri, albumProp.artists[0].name, albumProp.name);
-      }
-    };
-    setAlbum(albumProp);
-  }, [albumProp]);
+    if (album?.artists && album?.wiki === undefined) {
+      dispatch(getAlbum(album.uri, album.artists[0].name, album.name));
+    }
+  }, [album]);
 
   useEffect(() => {
     if (album) {
@@ -87,7 +78,7 @@ const Album = ({
     }
   }, [album]);
 
-  if (loading) {
+  if (album?.loading) {
     return <Loader body loading />;
   }
 
@@ -101,12 +92,24 @@ const Album = ({
     );
   }
 
-  const handleContextMenu = (e) => showContextMenu({
-    e,
-    context: 'album',
-    items: [album],
-    uris: [uri],
-  });
+  const play = () => {
+    dispatch(playURIs({
+      uris: [uri],
+      from: {
+        uri,
+        name: album?.name,
+        type: 'album',
+      },
+    }));
+  };
+
+  const handleContextMenu = (e) => dispatch(
+    showContextMenu({
+      e,
+      item: album,
+      type: 'album',
+    }),
+  );
 
   const onChangeSort = (field) => {
     let reverse = false;
@@ -114,8 +117,8 @@ const Album = ({
       reverse = !sortReverse;
     }
 
-    setSort(SORT_KEY, field, reverse);
-    hideContextMenu();
+    dispatch(setSort(SORT_KEY, field, reverse));
+    dispatch(hideContextMenu());
   };
 
   const sort_options = [
@@ -189,7 +192,7 @@ const Album = ({
       <div className="actions">
         <Button
           type="primary"
-          onClick={() => playURIs([uri], uri)}
+          onClick={play}
           tracking={{ category: 'Album', action: 'Play' }}
         >
           <I18n path="actions.play" />
@@ -224,10 +227,9 @@ const Album = ({
           </div>
         </h4>
         <TrackList
+          context={formatContext({ ...album, can_drag: true })}
           className="album-track-list"
           tracks={tracks}
-          track_context="album"
-          uri={album.uri}
         />
       </section>
 
@@ -247,39 +249,4 @@ const Album = ({
   );
 }
 
-const mapStateToProps = (state, ownProps) => {
-  const uri = decodeUri(ownProps.match.params.uri);
-  const itemSelector = makeItemSelector(uri);
-  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`, '^((?!contains).)*$', '^((?!me\/albums).)*$', '^((?!followers).)*$']);
-  const [sortField, sortReverse] = getSortSelector(state, SORT_KEY, 'disc_track');
-
-  return {
-    uri,
-    slim_mode: state.ui.slim_mode,
-    theme: state.ui.theme,
-    album: itemSelector(state),
-    loading: loadingSelector(state),
-    spotify_library_albums: state.spotify.library_albums,
-    local_library_albums: state.mopidy.library_albums,
-    spotify_authorized: state.spotify.authorization,
-    sortField,
-    sortReverse,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => ({
-  coreActions: bindActionCreators(coreActions, dispatch),
-  uiActions: bindActionCreators(uiActions, dispatch),
-  mopidyActions: bindActionCreators(mopidyActions, dispatch),
-  spotifyActions: bindActionCreators(spotifyActions, dispatch),
-  lastfmActions: bindActionCreators(lastfmActions, dispatch),
-});
-
-export {
-  Album,
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(Album);
+export default Album;

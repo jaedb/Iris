@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
+import React, { Fragment, useEffect } from 'react';
+import { connect, useSelector, useDispatch } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Link from '../components/Link';
 import Icon from '../components/Icon';
@@ -15,13 +15,10 @@ import * as uiActions from '../services/ui/actions';
 import * as pusherActions from '../services/pusher/actions';
 import * as spotifyActions from '../services/spotify/actions';
 import * as mopidyActions from '../services/mopidy/actions';
-import {
-  getFromUri,
-  uriType,
-} from '../util/helpers';
 import { i18n, I18n } from '../locale';
 import Button from '../components/Button';
-import { indexToArray } from '../util/arrays';
+import { makeItemSelector } from '../util/selectors';
+import { uriType } from '../util/helpers';
 
 const Artwork = ({
   image,
@@ -38,7 +35,7 @@ const Artwork = ({
   return (
     <div className="current-track__artwork">
       <Thumbnail glow image={image} type="track">
-        <Link to="/kiosk-mode" className="thumbnail__actions__item">
+        <Link to="/modal/kiosk-mode" className="thumbnail__actions__item">
           <Icon name="expand" type="fontawesome" />
         </Link>
         <URILink type="album" uri={album_uri} className="thumbnail__actions__item">
@@ -49,58 +46,62 @@ const Artwork = ({
   );
 };
 
-const AddedFrom = ({
-  items,
-  added_from_uri,
-}) => {
-  if (!added_from_uri) return null;
+const AddedFromItem = ({ item: { uri, type, name } }) => {
+  const dispatch = useDispatch();
+  const itemSelector = makeItemSelector(uri);
+  const item = useSelector(itemSelector);
 
-  const uri_type = uriType(added_from_uri);
-  let addedFromItems = [];
+  useEffect(() => {
+    if (uri && !item) {
+      dispatch(coreActions.loadUri(uri));
+    }
+  }, [uri]);
 
-  // Radio nests it's seed URIs in an encoded URI format
-  switch (uri_type) {
-    case 'radio':
-      addedFromItems = indexToArray(items, getFromUri('seeds', added_from_uri));
-      break;
-    case 'search':
-      addedFromItems = [{
-        uri: added_from_uri,
-        name: `"${getFromUri('searchterm', added_from_uri)}" search`,
-      }];
-      break;
-    default:
-      addedFromItems = indexToArray(items, [added_from_uri]);
-      break;
-  }
+  return (
+    <URILink uri={uri} type={type}>{name || item?.name}</URILink>
+  );
+}
 
-  if (!addedFromItems.length) return null;
+const AddedFrom = ({ from }) => {
+  const items = from?.type === 'radio' && from?.seeds
+    ? from.seeds.map((uri) => ({
+      uri,
+      type: uriType(uri),
+    }))
+    : [from];
+  const { uri, type } = items[0];
+  const itemSelector = makeItemSelector(uri);
+  const item = useSelector(itemSelector);
+  const { images } = item || {};
 
   return (
     <div className="current-track__added-from">
-      {addedFromItems[0].images && addedFromItems[0].uri && (
+      {images && uri && (
         <URILink
-          uri={addedFromItems[0].uri}
-          type={addedFromItems[0].type}
+          uri={uri}
+          type={type}
           className="current-track__added-from__thumbnail"
         >
           <Thumbnail
-            images={addedFromItems[0].images}
+            images={images}
             size="small"
-            circle={uriType(addedFromItems[0].uri) === 'artist'}
+            circle={items[0].type === 'artist'}
             type="artist"
           />
         </URILink>
       )}
       <div className="current-track__added-from__text">
-        {'Playing from '}
-        <LinksSentence
-          items={addedFromItems}
-          type={addedFromItems[0].type}
-        />
-        {uri_type === 'radio' && (
+        <I18n path="now_playing.current_track.playing_from" />
+        <span>&nbsp;</span>
+        {items.map((i, index) => (
+          <Fragment key={i.uri}>
+            {index > 0 && <span>,&nbsp;</span>}
+            <AddedFromItem item={i} />
+          </Fragment>
+        ))}
+        {from?.type === 'radio' && (
           <span className="flag flag--blue">
-            {i18n('now_playing.current_track.radio')}
+            <I18n path="now_playing.current_track.radio" />
           </span>
         )}
       </div>
@@ -110,17 +111,13 @@ const AddedFrom = ({
 
 const Queue = ({
   queue_tracks,
-  items,
-  added_from_uri,
+  added_from,
   current_track,
   stream_title,
   theme,
   current_track_uri,
   spotify_enabled,
   uiActions: uiActionsProp, // TODO: Remove <Header>'s dependency on passing this
-  coreActions: {
-    loadUri,
-  },
   mopidyActions: {
     removeTracks,
     changeTrack,
@@ -130,10 +127,6 @@ const Queue = ({
   },
 }) => {
   useEffect(() => uiActionsProp.setWindowTitle(i18n('now_playing.title')), []);
-  useEffect(() => {
-    if (added_from_uri) loadUri(added_from_uri);
-  }, [added_from_uri])
-
   const onRemoveTracks = (track_indexes) => {
     const tlids = [];
     for (let i = 0; i < track_indexes.length; i++) {
@@ -162,7 +155,7 @@ const Queue = ({
   const options = (
     <>
       {spotify_enabled && (
-        <Button noHover discrete to="/queue/radio">
+        <Button noHover discrete to="/modal/radio">
           <Icon name="radio" />
           <I18n path="now_playing.context_actions.radio" />
         </Button>
@@ -171,7 +164,7 @@ const Queue = ({
         <Icon name="history" />
         <I18n path="now_playing.context_actions.history" />
       </Button>
-      <Button noHover discrete to="/queue/add-uri">
+      <Button noHover discrete to="/modal/add-uri">
         <Icon name="playlist_add" />
         <I18n path="actions.add" />
       </Button>
@@ -209,10 +202,7 @@ const Queue = ({
               items={current_track ? current_track.artists : null}
             />
 
-            <AddedFrom
-              items={items}
-              added_from_uri={added_from_uri}
-            />
+            {added_from && <AddedFrom from={added_from} />}
 
             <div className="current-track__queue-details">
               <ul className="details">
@@ -241,9 +231,13 @@ const Queue = ({
 
         <section className="list-wrapper">
           <TrackList
-            uri="iris:queue"
+            context={{
+              uri: 'iris:queue',
+              name: 'Queue',
+              type: 'queue',
+              can_edit: true,
+            }}
             show_source_icon
-            track_context="queue"
             className="queue-track-list"
             tracks={queue_tracks}
             removeTracks={onRemoveTracks}
@@ -308,11 +302,10 @@ const mapStateToProps = (state) => {
     spotify_enabled: state.spotify.enabled,
     radio: state.core.radio,
     radio_enabled: !!(state.core.radio && state.core.radio.enabled),
-    items,
     queue_tracks,
     current_track_uri: state.core.current_track_uri,
     current_track,
-    added_from_uri:
+    added_from:
       current_track && current_track.added_from
         ? current_track.added_from
         : null,

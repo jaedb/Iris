@@ -15,13 +15,13 @@ import * as spotifyActions from '../services/spotify/actions';
 import {
   getFromUri,
 } from '../util/helpers';
-import { decodeUri } from '../util/format';
+import { decodeUri, formatSimpleObject } from '../util/format';
 import { i18n, I18n } from '../locale';
 import {
   makeItemSelector,
   makeLoadingSelector,
 } from '../util/selectors';
-import ContextMenuTrigger from '../components/ContextMenuTrigger';
+import ContextMenuTrigger from '../components/ContextMenu/ContextMenuTrigger';
 
 class User extends React.Component {
   componentDidMount() {
@@ -58,13 +58,12 @@ class User extends React.Component {
   }
 
   handleContextMenu = (e) => {
-    const { user, uri, uiActions: { showContextMenu } } = this.props;
+    const { user, uiActions: { showContextMenu } } = this.props;
 
     showContextMenu({
       e,
-      context: 'user',
-      items: [user],
-      uris: [uri],
+      item: user,
+      type: 'user',
     });
   }
 

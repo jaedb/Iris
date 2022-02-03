@@ -60,6 +60,32 @@ export default function reducer(core = {}, action) {
          * These actions are only ever called by middleware after we've digested one more many assets
          * and appended to their relevant index.
          * */
+    case 'LOAD_ITEMS': {
+      const items = { ...core.items };
+      action.uris.forEach((uri) => {
+        items[uri] = {
+          ...core.items[uri] || { uri },
+          loading: true,
+        };
+      });
+      return {
+        ...core,
+        items,
+      };
+    }
+
+    case 'SET_LOADING': {
+      return {
+        ...core,
+        items: {
+          ...core.items,
+          [action.uri]: {
+            ...core.items[action.uri] || { uri: action.uri },
+            loading: action.loading,
+          },
+        },
+      };
+    }
 
     case 'ITEM_LOADED':
       return {
@@ -101,17 +127,14 @@ export default function reducer(core = {}, action) {
       };
     }
 
-    case 'USER_PLAYLISTS_LOADED':
-      var users = { ...core.users };
-      var existing_playlists_uris = [];
+    case 'USER_PLAYLISTS_LOADED': {
+      const users = { ...core.users };
+      let existing_playlists_uris = [];
       if (users[action.uri] && users[action.uri].playlists_uris) {
-            	existing_playlists_uris = users[action.uri].playlists_uris;
+        existing_playlists_uris = users[action.uri].playlists_uris;
       }
-
-      var playlists_uris = [...existing_playlists_uris, ...arrayOf('uri', action.playlists)];
-
-      var user = {
-
+      const playlists_uris = [...existing_playlists_uris, ...arrayOf('uri', action.playlists)];
+      const user = {
         ...users[action.uri],
         playlists_uris,
         playlists_more: action.more,
@@ -119,6 +142,7 @@ export default function reducer(core = {}, action) {
       };
       users[action.uri] = user;
       return { ...core, users };
+    }
 
     case 'RESTORE_LIBRARY_FROM_COLD_STORE':
       const libraries = { ...core.libraries };

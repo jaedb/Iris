@@ -19,7 +19,9 @@ import {
   formatAlbums,
   formatImages,
   formatTrack,
+  formatSimpleObject,
   injectSortId,
+  formatContext,
 } from '../../util/format';
 import URILink from '../../components/URILink';
 import { i18n } from '../../locale';
@@ -753,7 +755,7 @@ export function clearAutocompleteResults(field_id = null) {
   };
 }
 
-export function following(uri, method = 'GET') {
+export function following(uri, method = 'GET', callback) {
   return (dispatch, getState) => {
     const type = uriType(uri);
     let endpoint;
@@ -830,6 +832,7 @@ export function following(uri, method = 'GET') {
         } else {
           asset.in_library = is_following;
         }
+        if (callback) callback(asset.in_library);
 
         if (method === 'DELETE') {
           dispatch(coreActions.removeFromLibrary(`spotify:library:${type}s`, uri));
@@ -950,7 +953,10 @@ export function getArtist(uri, { full, forceRefetch } = {}) {
     }).then(
       (response) => {
         const artist = formatArtist(response);
-        dispatch(coreActions.itemLoaded(artist));
+        dispatch(coreActions.itemLoaded({
+          ...artist,
+          loading: full ? 'albums' : false,
+        }));
         dispatch(lastfmActions.getArtist(uri, artist.name, artist.mbid));
       },
     );
@@ -959,16 +965,20 @@ export function getArtist(uri, { full, forceRefetch } = {}) {
     if (full) {
       // All albums (gets all pages, may take some time to iterate them all)
       let albums = [];
+      let loading = 'albums';
       const fetchAlbums = (endpoint) => request({
         dispatch, getState, endpoint, uri,
       })
         .then((response) => {
           albums = [...albums, ...formatAlbums(response.items)];
           if (response.next) {
+            loading = 'albums';
             fetchAlbums(`${response.next}${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
           } else {
+            loading = false;
             dispatch(coreActions.itemLoaded({
               uri,
+              loading,
               albums_uris: arrayOf('uri', albums),
             }));
             dispatch(coreActions.itemsLoaded(albums));
@@ -987,6 +997,7 @@ export function getArtist(uri, { full, forceRefetch } = {}) {
           (response) => {
             dispatch(coreActions.itemLoaded({
               uri,
+              loading,
               tracks: formatTracks(response.tracks),
             }));
           },
@@ -1002,6 +1013,7 @@ export function getArtist(uri, { full, forceRefetch } = {}) {
           (response) => {
             dispatch(coreActions.itemLoaded({
               uri,
+              loading,
               related_artists: formatArtists(response.artists),
             }));
           },
@@ -1036,7 +1048,7 @@ export function playArtistTopTracks(uri) {
     // Do we have this artist (and their tracks) in our index already?
     if (artist && artist.tracks) {
       const uris = arrayOf('uri', artist.tracks);
-      dispatch(mopidyActions.playURIs(uris, uri));
+      dispatch(mopidyActions.playURIs({ uris, from: formatSimpleObject(artist) }));
     } else {
       let endpoint = `artists/${getFromUri('artistid', uri)}`;
       endpoint += `/top-tracks?country=${getState().spotify.country}`;
@@ -1044,7 +1056,7 @@ export function playArtistTopTracks(uri) {
         .then(
           (response) => {
             const uris = arrayOf('uri', response.tracks);
-            dispatch(mopidyActions.playURIs(uris, uri));
+            dispatch(mopidyActions.playURIs({ uris, from: formatSimpleObject(artist) }));
           },
         );
     }
@@ -1300,7 +1312,7 @@ export function savePlaylist(uri, name, description, is_public, is_collaborative
   };
 }
 
-export function getPlaylistTracks(uri, { forceRefetch, callbackAction } = {}) {
+export function getPlaylistTracks(uri, { forceRefetch, callbackAction } = {}, playlist) {
   return (dispatch, getState) => {
     let initialEndpoint = `playlists/${getFromUri('playlistid', uri)}/tracks`;
     initialEndpoint += `?market=${getState().spotify.country}`;
@@ -1327,20 +1339,18 @@ export function getPlaylistTracks(uri, { forceRefetch, callbackAction } = {}) {
           if (callbackAction) {
             switch (callbackAction.name) {
               case 'enqueue':
-                dispatch(mopidyActions.enqueueURIs(
-                  arrayOf('uri', tracks),
-                  uri,
-                  callbackAction.play_next,
-                  callbackAction.at_position,
-                  callbackAction.offset,
-                ));
+                dispatch(mopidyActions.enqueueURIs({
+                  uris: arrayOf('uri', tracks),
+                  from: formatContext(playlist),
+                  ...callbackAction,
+                }));
                 break;
               case 'play':
-                dispatch(mopidyActions.playURIs(
-                  arrayOf('uri', tracks),
-                  uri,
-                  callbackAction.shuffle,
-                ));
+                dispatch(mopidyActions.playURIs({
+                  uris: arrayOf('uri', tracks),
+                  from: formatContext(playlist),
+                  ...callbackAction,
+                }));
                 break;
               default:
                 break;
@@ -1381,7 +1391,7 @@ export function getPlaylist(uri, options = {}) {
             description = description.split('<a href="spotify:user:').join('<a href="#' + '/user/spotify:user:');
           }
 
-          dispatch(coreActions.itemLoaded({
+          const playlist = {
             ...formatPlaylist(response),
             can_edit: (meId === response.owner.id),
             description,
@@ -1389,10 +1399,12 @@ export function getPlaylist(uri, options = {}) {
             // to accurately identify whether we've loaded *ALL* the tracks. Without this, it
             // doesn't know if we've loaded all tracks, or just the first page.
             tracks: null,
-          }));
+            loading: full ? 'tracks' : null,
+          };
+          dispatch(coreActions.itemLoaded(playlist));
 
           if (full) {
-            dispatch(getPlaylistTracks(uri, options));
+            dispatch(getPlaylistTracks(uri, options, playlist));
           }
         },
         (error) => {

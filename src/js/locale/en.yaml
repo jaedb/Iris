@@ -189,13 +189,12 @@ context_menu:
   unpin: Unpin
   go_to_artist: Go to artist
   go_to_user: Go to user
+  go_to_track: Go to track
   track_info: Track info
   discover_similar: Discover similar
   start_radio: Start radio
   copy_uri: Copy URI(s)
   refresh: Refresh
-dropzones:
-  dragging_things: 'Dragging %{count} things'
 playback_controls:
   consume: Consume
   shuffle: Shuffle
@@ -508,7 +507,7 @@ library:
 modal:
   add_to_playlist:
     title: Add to playlist
-    subtitle: 'Select playlist to add %{count} track%{plural} to'
+    subtitle: 'Select playlist to add %{count} item%{plural} to'
     no_playlists: No playlists available
     no_editable_playlists: No editable playlists
   add_to_queue:
@@ -523,7 +522,7 @@ modal:
   edit_playlist:
     title: Edit playlist
     title_create: Create playlist
-    subtitle: 'And add %{count} track%{plural}'
+    subtitle: 'And add %{count} item%{plural}'
     name_required: Name is required
     name: Name
     description: Description

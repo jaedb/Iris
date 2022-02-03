@@ -4,8 +4,7 @@ import TestRenderer from 'react-test-renderer';
 import { Album } from '../../src/js/views/Album';
 import * as uiActions from '../../src/js/services/ui/actions';
 import * as coreActions from '../../src/js/services/core/actions';
-
-const state = require('../state');
+import state from '../state';
 
 jest.mock('react-redux', () => ({
   useSelector: jest.fn(),

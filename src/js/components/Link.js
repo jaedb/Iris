@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link as RouterLink, useHistory, useLocation } from 'react-router-dom';
 import { scrollTo } from '../util/helpers';
-import { decodeUri } from '../util/format';
 
 const updateScrollPosition = ({
   retainScroll = false,

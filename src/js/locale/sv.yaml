@@ -186,8 +186,6 @@ context_menu:
   start_radio: Starta radio
   copy_uri: Kopiera URI(s)
   refresh: Refresh
-dropzones:
-  dragging_things: 'Drar %{count} saker'
 playback_controls:
   consume: Konsumera
   shuffle: blanda

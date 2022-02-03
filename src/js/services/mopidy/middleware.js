@@ -70,7 +70,6 @@ const MopidyMiddleware = (function () {
 
   // play position timer
   let progress_interval = null;
-  let progress_interval_counter = 0;
 
   // handle all manner of socket messages
   const handleMessage = (ws, store, type, data) => {
@@ -95,21 +94,15 @@ const MopidyMiddleware = (function () {
         store.dispatch(mopidyActions.getUriSchemes());
         store.dispatch(mopidyActions.getStreamTitle());
 
-        // Every 1s update our play position (when playing)
+        // Every 10s update our play position (when playing)
         progress_interval = setInterval(() => {
-          if (store.getState().mopidy.play_state === 'playing') {
-            // Every 10s get real position from server, provided we're in-focus
-            if (progress_interval_counter % 5 === 0 && store.getState().ui.window_focus === true) {
-              store.dispatch(mopidyActions.getTimePosition());
-
-              // Otherwise we just assume to add 1000ms every 1000ms of play time
-            } else {
-              store.dispatch(mopidyActions.timePosition(store.getState().mopidy.time_position + 1000));
-            }
-
-            progress_interval_counter += 1;
+          if (
+            store.getState().mopidy.play_state === 'playing'
+            && store.getState().ui.window_focus === true
+          ) {
+            store.dispatch(mopidyActions.getTimePosition());
           }
-        }, 1000);
+        }, 10000);
 
         break;
 
@@ -119,7 +112,6 @@ const MopidyMiddleware = (function () {
 
         // reset our playback interval timer
         clearInterval(progress_interval);
-        progress_interval_counter = 0;
         break;
 
       case 'event:tracklistChanged':
@@ -857,12 +849,13 @@ const MopidyMiddleware = (function () {
         break;
 
       case 'MOPIDY_PLAY_PLAYLIST': {
+        console.debug(action)
         const playlist = store.getState().core.items[action.uri];
         const { sortField, sortReverse } = getSortSelector(store.getState(), 'playlist_tracks');
         if (playlist && playlist.tracks) {
           store.dispatch(
-            mopidyActions.playURIs(
-              arrayOf(
+            mopidyActions.playURIs({
+              uris: arrayOf(
                 'uri',
                 sortItems(
                   playlist.tracks.filter((t) => t?.is_playable !== false),
@@ -870,9 +863,13 @@ const MopidyMiddleware = (function () {
                   sortReverse,
                 ),
               ),
-              action.uri,
-              action.shuffle,
-            ),
+              from: {
+                uri: playlist?.uri,
+                name: playlist?.name,
+                type: 'playlist',
+              },
+              ...action,
+            }),
           );
           break;
         }
@@ -885,15 +882,47 @@ const MopidyMiddleware = (function () {
         break;
       }
 
+      case 'MOPIDY_PLAY_ALBUM': {
+        const album = store.getState().core.items[action.uri];
+        const { sortField, sortReverse } = getSortSelector(store.getState(), 'playlist_tracks');
+        if (album && album.tracks) {
+          store.dispatch(
+            mopidyActions.playURIs({
+              uris: arrayOf(
+                'uri',
+                sortItems(
+                  album.tracks.filter((t) => t?.is_playable !== false),
+                  sortField,
+                  sortReverse,
+                ),
+              ),
+              from: {
+                uri: album?.uri,
+                name: album?.name,
+                type: 'album',
+              },
+              ...action,
+            }),
+          );
+          break;
+        }
+        store.dispatch(
+          coreActions.loadAlbum(
+            action.uri,
+            { full: true, callbackAction: { name: 'play', shuffle: action.shuffle } },
+          ),
+        );
+        break;
+      }
+
       case 'MOPIDY_ENQUEUE_PLAYLIST': {
         const playlist = store.getState().core.items[action.uri];
         if (playlist && playlist.tracks) {
           store.dispatch(
-            mopidyActions.enqueueURIs(
-              arrayOf('uri', playlist.tracks),
-              action.uri,
-              action.shuffle,
-            ),
+            mopidyActions.enqueueURIs({
+              uris: arrayOf('uri', playlist.tracks),
+              ...action,
+            }),
           );
           break;
         }
@@ -903,10 +932,31 @@ const MopidyMiddleware = (function () {
             false,
             {
               name: 'enqueue',
-              shuffle: action.shuffle,
-              play_next: action.play_next,
-              at_position: action.at_position,
-              offset: action.offset,
+              ...action,
+            },
+          ),
+        );
+        break;
+      }
+
+      case 'MOPIDY_ENQUEUE_ALBUM': {
+        const album = store.getState().core.items[action.uri];
+        if (album && album.tracks) {
+          store.dispatch(
+            mopidyActions.enqueueURIs({
+              uris: arrayOf('uri', album.tracks),
+              ...action,
+            }),
+          );
+          break;
+        }
+        store.dispatch(
+          coreActions.loadAlbum(
+            action.uri,
+            false,
+            {
+              name: 'enqueue',
+              ...action,
             },
           ),
         );
@@ -932,6 +982,7 @@ const MopidyMiddleware = (function () {
             queue,
           } = store.getState().core;
           if (current_track) {
+            // TODO: Refactor this to findIndex
             for (let i = 0; i < queue.length; i += 1) {
               if (queue[i].tlid === current_track.tlid) {
                 at_position = i + 1;
@@ -988,7 +1039,7 @@ const MopidyMiddleware = (function () {
             .then(
               (response) => {
                 const tlids = response.map((track) => track.tlid);
-                store.dispatch(pusherActions.addQueueMetadata(tlids, action.from_uri));
+                store.dispatch(pusherActions.addQueueMetadata(tlids, action.from));
 
                 // Re-run the batch checker in 100ms. This allows a small window for other server
                 // requests before our next batch. A little crude but it means the server isn't
@@ -1030,7 +1081,7 @@ const MopidyMiddleware = (function () {
       }
 
       case 'MOPIDY_PLAY_URIS':
-        const { from_uri } = action;
+        const { from } = action;
         let urisToPlay = Object.assign([], action.uris);
 
         if (!urisToPlay || !urisToPlay.length) {
@@ -1072,7 +1123,7 @@ const MopidyMiddleware = (function () {
                 for (let i = 0; i < response.length; i++) {
                   tlids.push(response[i].tlid);
                 }
-                store.dispatch(pusherActions.addQueueMetadata(tlids, from_uri));
+                store.dispatch(pusherActions.addQueueMetadata(tlids, from));
               } else {
                 store.dispatch(coreActions.handleException(
                   'Mopidy: Failed to add some tracks',
@@ -1089,7 +1140,11 @@ const MopidyMiddleware = (function () {
                 // this means our UI feels snappier as the first track shows up quickly
                 setTimeout(
                   () => {
-                    store.dispatch(mopidyActions.enqueueURIs(urisToPlay, from_uri, null, 1));
+                    store.dispatch(mopidyActions.enqueueURIs({
+                      uris: urisToPlay,
+                      at_position: 1,
+                      from,
+                    }));
                   },
                   100,
                 );
@@ -1242,6 +1297,12 @@ const MopidyMiddleware = (function () {
             type: 'playlist',
           });
           if (response.tracks && fetchTracks) {
+            store.dispatch(coreActions.itemLoaded({
+              ...playlist,
+              tracks: undefined,
+              loading: 'tracks',
+            }));
+
             request(store, 'library.lookup', { uris: arrayOf('uri', response.tracks) })
               .then((tracksResponse) => {
                 const tracks = response.tracks.map((simpleTrack) => {
@@ -1452,7 +1513,7 @@ const MopidyMiddleware = (function () {
             store.dispatch(uiActions.createNotification({
               content: i18n('actions.deleted', { name: i18n('playlist.title') }),
             }));
-            store.dispatch(coreActions.removeFromLibrary('mopidy:library:playlists', action.uri));
+            store.dispatch(coreActions.removeFromLibrary('m3u:playlists', action.uri));
           });
         break;
 

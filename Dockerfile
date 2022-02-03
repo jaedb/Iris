@@ -32,7 +32,7 @@ RUN wget -q -O - https://apt.mopidy.com/mopidy.gpg \
   | APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn apt-key add - \
   && wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/buster.list \
   && apt-get update \
-  && apt-get install -y libspotify-dev \
+  && apt-get install -y libspotify-dev mopidy-spotify \
   && rm -rf /var/lib/apt/lists/*
 
 # Clone Iris from the repository and install in development mode.
@@ -52,16 +52,7 @@ RUN git clone -b master https://github.com/jaedb/Iris.git /iris \
 RUN python3 -m pip install --no-cache \
   tox \
   mopidy-mpd \
-  mopidy-spotify \
   mopidy-local \
-  Mopidy-TuneIn \
-  Mopidy-Youtube \
-  Mopidy-YTMusic \
-  Mopidy-SoundCloud \
-  Mopidy-Podcast \
-  Mopidy-dLeyna \
-  Mopidy-Jellyfin \
-  Mopidy-MusicBox-Webclient \
   dbus-python \
   # pip not up-to-date for Mopidy-Tidal (https://github.com/tehkillerbee/mopidy-tidal/issues/14)
   git+https://github.com/tehkillerbee/mopidy-tidal.git@master
@@ -79,7 +70,7 @@ COPY docker/pulse-client.conf /etc/pulse/client.conf
 COPY VERSION /
 
 # Allows any user to run mopidy, but runs by default as a randomly generated UID/GID.
-RUN useradd -ms /bin/bash mopidy
+# RUN useradd -ms /bin/bash mopidy
 ENV HOME=/var/lib/mopidy
 RUN set -ex \
  && usermod -G audio,sudo mopidy \

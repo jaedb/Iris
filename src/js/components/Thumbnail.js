@@ -83,7 +83,7 @@ export default memo((props) => {
         {props.canZoom && image && (
           <Link
             className="thumbnail__actions__item thumbnail__actions__item--zoom"
-            to={`/image-zoom?url=${image}`}
+            to={`/modal/image-zoom?url=${image}`}
           >
             <Icon name="search" />
           </Link>

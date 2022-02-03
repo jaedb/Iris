@@ -194,6 +194,36 @@ const formatImages = function (data) {
 };
 
 /**
+ * Format an item into a context-ready item
+ * Typically a playlist, album or artist. We only need a few fields, but more than the simpleObject
+ *
+ * @param data obj
+ * @return obj
+ * */
+const formatContext = function (data) {
+  const context = {};
+  const fields = [
+    'uri',
+    'name',
+    'type',
+    'provider',
+    'context',
+    'can_edit',
+  ];
+
+  for (const field of fields) {
+    if (data.hasOwnProperty(field)) {
+      context[field] = data[field];
+    }
+  }
+
+  // Default our 'context' to object type
+  if (!data.context && context.type) context.context = context.type;
+
+  return context;
+};
+
+/**
  * Format a simple object
  * This is a shell record containing only the bare essentials. Typically
  * a tracks' artists/album
@@ -206,6 +236,7 @@ const formatSimpleObject = function (data) {
   const fields = [
     'uri',
     'name',
+    'type',
   ];
 
   for (const field of fields) {
@@ -315,6 +346,7 @@ const formatAlbum = function (data) {
   const album = { type: 'album' };
   const fields = [
     'uri',
+    'loading',
     'in_library',
     'provider',
     'name',
@@ -388,6 +420,7 @@ const formatArtist = function (data) {
   const artist = { type: 'artist' };
   const fields = [
     'uri',
+    'loading',
     'in_library',
     'provider',
     'mbid',
@@ -448,6 +481,7 @@ const formatPlaylist = function (data) {
   const playlist = { type: 'playlist' };
   const fields = [
     'uri',
+    'loading',
     'in_library',
     'snapshot_id',
     'provider',
@@ -535,6 +569,7 @@ const formatUser = function (data) {
   const user = { type: 'user' };
   const fields = [
     'id',
+    'loading',
     'in_library',
     'uri',
     'provider',
@@ -589,10 +624,13 @@ const formatUser = function (data) {
 const formatTrack = function (data) {
   const track = { type: 'track' };
   const fields = [
-    'loading',
     'uri',
+    'loading',
     'in_library',
     'is_playable',
+    'is_loved',
+    'is_explicit',
+    'is_local',
     'tlid',
     'provider',
     'name',
@@ -604,11 +642,8 @@ const formatTrack = function (data) {
     'duration',
     'followers',
     'popularity',
-    'userloved',
     'last_modified',
     'added_at',
-    'is_explicit',
-    'is_local',
     'lyrics',
     'lyrics_path',
     'lyrics_results',
@@ -670,6 +705,10 @@ const formatTrack = function (data) {
 
   if (track.explicit === undefined && data.explicit !== undefined) {
     track.is_explicit = data.explicit;
+  }
+
+  if (track.userloved === undefined && data.userloved !== undefined) {
+    track.is_loved = data.userloved === '1';
   }
 
   // Copy images from albums (if applicable)
@@ -976,6 +1015,7 @@ export {
   getTrackIcon,
   digestMopidyImages,
   formatImages,
+  formatContext,
   formatSimpleObject,
   formatSimpleObjects,
   formatAlbum,
@@ -1004,6 +1044,7 @@ export default {
   getTrackIcon,
   digestMopidyImages,
   formatImages,
+  formatContext,
   formatSimpleObject,
   formatSimpleObjects,
   formatAlbum,

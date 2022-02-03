@@ -39,7 +39,6 @@ const Parallax = ({
   className += ` parallax--${fixedHeight ? 'fixed' : 'flexible'}-height`;
   if (blur && inViewport) className += ' parallax--blur';
   if (isLoaded) className += ' parallax--loaded';
-  if (animate) className += ' parallax--animate';
 
   const style = isLoaded && currentUrl ? { backgroundImage: `url("${currentUrl}")` } : {};
 

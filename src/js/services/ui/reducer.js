@@ -73,31 +73,6 @@ export default function reducer(ui = {}, action) {
       return { ...ui, touch_context_menu: null };
 
       /**
-         * Dragging
-         * */
-    case 'DRAG_START':
-      return {
-        ...ui,
-        dragger: {
-          dragging: true,
-          active: false,
-          context: action.context,
-          from_uri: action.from_uri,
-          victims: action.victims,
-          victims_indexes: action.victims_indexes,
-          start_x: action.start_x,
-          start_y: action.start_y,
-        },
-      };
-
-    case 'DRAG_ACTIVE':
-      var dragger = { ...ui.dragger, active: true };
-      return { ...ui, dragger };
-
-    case 'DRAG_END':
-      return { ...ui, dragger: false };
-
-      /**
          * Modals
          * */
     case 'OPEN_MODAL':
@@ -130,10 +105,15 @@ export default function reducer(ui = {}, action) {
          * Loading and processes
          * */
 
-    case 'START_LOADING':
-      var load_queue = { ...(ui.load_queue ? ui.load_queue : {}) };
-      load_queue[action.key] = action.source || action.key;
-      return { ...ui, load_queue };
+    case 'START_LOADING': {
+      return {
+        ...ui,
+        load_queue: {
+          ...ui.load_queue || {},
+          [action.key]: action.source || action.key,
+        },
+      };
+    }
 
     case 'STOP_LOADING':
       return {

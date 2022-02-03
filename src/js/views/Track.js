@@ -9,7 +9,7 @@ import LinksSentence from '../components/LinksSentence';
 import LastfmLoveButton from '../components/Fields/LastfmLoveButton';
 import { Dater } from '../components/Dater';
 import SelectField from '../components/Fields/SelectField';
-import ContextMenuTrigger from '../components/ContextMenuTrigger';
+import ContextMenuTrigger from '../components/ContextMenu/ContextMenuTrigger';
 import Icon from '../components/Icon';
 import Loader from '../components/Loader';
 import * as coreActions from '../services/core/actions';
@@ -22,7 +22,7 @@ import { sourceIcon } from '../util/helpers';
 import { i18n, I18n } from '../locale';
 import Button from '../components/Button';
 import { makeLoadingSelector, makeItemSelector } from '../util/selectors';
-import { decodeUri, encodeUri } from '../util/format';
+import { decodeUri, encodeUri, formatSimpleObject } from '../util/format';
 import URILink from '../components/URILink';
 
 const LyricsSelector = ({
@@ -197,19 +197,29 @@ class Track extends React.Component {
 
     showContextMenu({
       e,
-      context: 'track',
-      items: [track],
-      uris: [uri],
+      item: track,
+      type: 'track',
     });
   }
 
   play = () => {
     const {
       uri,
+      track: {
+        name,
+      } = {},
       mopidyActions: { playURIs },
     } = this.props;
 
-    playURIs([uri], uri);
+    playURIs({
+      uris: [uri],
+      from: {
+        uri,
+        name,
+        type: 'track',
+        context: 'track',
+      },
+    });
   }
 
   render = () => {

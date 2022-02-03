@@ -197,7 +197,6 @@ const uiPersistConfig = {
     'processes',
     'context_menu',
     'current_track_transition',
-    'dragger',
     'selected_tracks',
     'sidebar_open',
     'window_focus',

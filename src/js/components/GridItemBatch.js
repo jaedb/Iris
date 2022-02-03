@@ -27,9 +27,9 @@ const GridItemBatchIndex = ({
       {inViewport || isFirst ? (
         <ErrorBoundary>
           {
-            items.map((item, index) => (
+            items.map((item) => (
               <GridItem
-                key={`${index}_${item.uri || item.name}`}
+                key={`uri-${item.uri}__name-${item.name}__tlid-${item.tlid}`}
                 item={item}
                 getLink={getLink}
               />

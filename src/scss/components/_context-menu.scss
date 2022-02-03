@@ -58,6 +58,12 @@
 		display: block;
 		overflow-x: hidden;
 
+		&--disabled {
+			pointer-events: none;
+			cursor: default;
+			opacity: 0.5;
+		}
+
 		&__link {
 			@include gradient_overlay(3px);
 			cursor: pointer;

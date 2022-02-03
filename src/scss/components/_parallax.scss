@@ -39,12 +39,6 @@ $parallax: 'parallax';
 		z-index: 1;
 	}
 
-	&--animate {
-		.#{$parallax}__image {
-			@include animate(0.5s);
-		}
-	}
-
 	&__overlay {
 		content: '';
 		display: block;

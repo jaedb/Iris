@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
+import { useParams, useHistory } from 'react-router-dom';
+import { connect, useSelector } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import ErrorMessage from '../components/ErrorMessage';
 import Button from '../components/Button';
@@ -10,7 +11,7 @@ import { nice_number } from '../components/NiceNumber';
 import { Dater, dater } from '../components/Dater';
 import FollowButton from '../components/Fields/FollowButton';
 import Loader from '../components/Loader';
-import ContextMenuTrigger from '../components/ContextMenuTrigger';
+import ContextMenuTrigger from '../components/ContextMenu/ContextMenuTrigger';
 import URILink from '../components/URILink';
 import { SourceIcon } from '../components/Icon';
 import DropdownField from '../components/Fields/DropdownField';
@@ -21,9 +22,9 @@ import * as mopidyActions from '../services/mopidy/actions';
 import * as spotifyActions from '../services/spotify/actions';
 import { uriSource } from '../util/helpers';
 import { i18n, I18n } from '../locale';
-import { makeItemSelector, makeLoadingSelector, getSortSelector } from '../util/selectors';
+import { makeItemSelector, makeSortSelector } from '../util/selectors';
 import { sortItems, applyFilter } from '../util/arrays';
-import { decodeUri, encodeUri } from '../util/format';
+import { decodeUri, encodeUri, formatSimpleObject, formatContext } from '../util/format';
 
 const SORT_KEY = 'playlist_tracks';
 
@@ -50,7 +51,7 @@ const Actions = ({
             <I18n path="actions.play" />
           </Button>
           <Button
-            to={`/playlist/${encodedUri}/edit`}
+            to={`/modal/edit-playlist/${encodedUri}`}
             tracking={{ category: 'Playlist', action: 'Edit' }}
           >
             <I18n path="actions.edit" />
@@ -72,7 +73,7 @@ const Actions = ({
               <I18n path="actions.play" />
             </Button>
             <Button
-              to={`/playlist/${encodedUri}/edit`}
+              to={`/modal/edit-playlist/${encodedUri}`}
               tracking={{ category: 'Playlist', action: 'Edit' }}
             >
               <I18n path="actions.edit" />
@@ -118,16 +119,7 @@ const Actions = ({
 }
 
 const Playlist = ({
-  loading,
-  loading_tracks,
   slim_mode,
-  history,
-  uri,
-  encodedUri,
-  name,
-  playlist: playlistProp,
-  sortField,
-  sortReverse,
   coreActions: {
     loadPlaylist,
     reorderPlaylistTracks,
@@ -144,8 +136,16 @@ const Playlist = ({
     playPlaylist,
   },
 }) => {
-  const [playlist, setPlaylist] = useState({});
+  const history = useHistory();
+  const { uri: encodedUri, name } = useParams();
+  const uri = decodeUri(encodedUri);
   const [filter, setFilter] = useState('');
+  const sortSelector = makeSortSelector(SORT_KEY);
+  const [sortField, sortReverse] = useSelector(sortSelector);
+  const itemSelector = makeItemSelector(uri);
+  const playlist = useSelector(itemSelector);
+  const loading = playlist?.loading && playlist?.loading !== 'tracks';
+  const loadingTracks = playlist?.loading === 'tracks';
 
   useEffect(
     () => {
@@ -155,25 +155,23 @@ const Playlist = ({
   );
 
   useEffect(() => {
-    if (playlistProp && playlist && playlistProp.moved_to !== playlist.moved_to) {
-      history.push(`/playlist/${encodeUri(playlistProp.moved_to)}`);
+    if (playlist && playlist.moved_to) {
+      history.push(`/playlist/${encodeUri(playlist.moved_to)}/${encodeURIComponent(playlist.name.replace('%', ''))}`);
     }
-  }, [playlistProp])
+  }, [playlist]);
 
   useEffect(() => {
-    if (playlistProp) {
-      setWindowTitle(i18n('playlist.title_window', { name: playlistProp.name }));
+    if (playlist) {
+      setWindowTitle(i18n('playlist.title_window', { name: playlist.name }));
     } else {
       setWindowTitle(i18n('playlist.title'));
     }
-    setPlaylist(playlistProp);
-  }, [playlistProp]);
+  }, [playlist]);
 
   const handleContextMenu = (e) => showContextMenu({
     e,
-    context: 'playlist',
-    items: [{ name, ...playlist }],
-    uris: [uri],
+    item: playlist,
+    type: 'playlist',
   });
 
   const onChangeSort = (field) => {
@@ -186,7 +184,7 @@ const Playlist = ({
     hideContextMenu();
   };
 
-  const onPlay = () => playPlaylist(uri);
+  const onPlay = () => playPlaylist({ uri });
 
   const reorderTracks = (indexes, index) => {
     const { snapshot_id, tracks } = playlist;
@@ -312,7 +310,7 @@ const Playlist = ({
 
       <h4 className="no-bottom-margin">
         <I18n path="playlist.tracks.title" />
-        {loading_tracks && <Loader loading mini />}
+        {loadingTracks && <Loader loading mini />}
         <div className="actions-wrapper">
           <FilterField
             initialValue={filter}
@@ -333,9 +331,8 @@ const Playlist = ({
 
       <section className="list-wrapper no-top-padding">
         <TrackList
-          uri={playlist.uri}
+          context={formatContext({ ...playlist, context })}
           className="playlist-track-list"
-          track_context={context}
           tracks={tracks}
           removeTracks={removeTracks}
           reorderTracks={reorderTracks}
@@ -362,28 +359,15 @@ const mapStateToProps = (state, ownProps) => {
     } = {},
   } = state;
 
-  const uri = decodeUri(ownProps.match.params.uri);
-  const itemSelector = makeItemSelector(uri);
-  const loadingSelector = makeLoadingSelector([`(.*)${uri}(.*)`, '^((?!contains).)*$', '^((?!tracks).)*$', '^((?!followers).)*$']);
-  const loadingTracksSelector = makeLoadingSelector([`(.*)${uri}(.*)tracks(.*)`]);
-  const [sortField, sortReverse] = getSortSelector(state, SORT_KEY);
 
   return {
-    uri,
-    encodedUri: ownProps.match.params.uri,
-    name: ownProps.match.params.name,
     allow_reporting,
     slim_mode,
     theme,
-    loading: loadingSelector(state),
-    loading_tracks: loadingTracksSelector(state),
-    playlist: itemSelector(state),
     spotify_library_playlists,
     local_library_playlists,
     spotify_authorized,
     spotify_userid: (me && me.id) || null,
-    sortField,
-    sortReverse,
   };
 };
 

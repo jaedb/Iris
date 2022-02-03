@@ -1,55 +1,67 @@
-import React from 'react';
-import Sortable from 'react-sortablejs';
+import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { ReactSortable } from 'react-sortablejs';
+import { set as uiSet } from '../../services/ui/actions';
 import Icon from '../Icon';
 import { titleCase } from '../../util/helpers';
 
-export default class SourcesPriority extends React.Component {
-  handleSort(order) {
-    this.props.uiActions.set({ uri_schemes_priority: order });
-  }
+const SourcesPriority = ({
+  uri_schemes,
+  uri_schemes_priority,
+}) => {
+  const [list, setList] = useState([]);
+  const dispatch = useDispatch();
 
-  render() {
-    const className = 'sources-priority-field';
-    const ordered_schemes = [];
-    const unordered_schemes = [];
+  useEffect(() => {
+    processList();
+  }, []);
 
-    for (var i = 0; i < this.props.uri_schemes.length; i++) {
-      const index = this.props.uri_schemes_priority.indexOf(this.props.uri_schemes[i]);
+  useEffect(() => {
+    processList();
+  }, [uri_schemes]);
 
+  const processList = () => {
+    let seen = [];
+    let unseen = [];
+    uri_schemes.forEach((uri) => {
+      const index = uri_schemes_priority.indexOf(uri);
       if (index > -1) {
-        ordered_schemes[index] = this.props.uri_schemes[i];
+        seen[index] = { uri };
       } else {
-        unordered_schemes.push(this.props.uri_schemes[i]);
+        unseen.push({ uri });
       }
-    }
-
-    for (var i = 0; i < unordered_schemes.length; i++) {
-      ordered_schemes.push(unordered_schemes[i]);
-    }
-
-    return (
-      <Sortable
-        options={{
-				  animation: 150,
-        }}
-        className={className}
-        onChange={(order, sortable, e) => {
-				  this.handleSort(order);
-        }}
-      >
-        {
-						ordered_schemes.map((scheme) => {
-						  const name = titleCase(scheme.replace(':', '').replace('+', ' '));
-
-						  return (
-  <span className="source flag flag--grey" key={scheme} data-id={scheme}>
-    <Icon name="drag_indicator" />
-    {name}
-  </span>
-						  );
-						})
-					}
-      </Sortable>
-    );
+    });
+    setList([ ...seen, ...unseen ]);
   }
+
+  const onSort = () => {
+    dispatch(uiSet({ uri_schemes_priority: list.map(({ uri }) => uri) }));
+  }
+
+  return (
+    <ReactSortable
+      options={{
+        animation: 150,
+      }}
+      className="sources-priority-field"
+      list={list}
+      setList={setList}
+      onSort={onSort}
+    >
+      {
+        list.map(({ uri }) => {
+          const name = titleCase(uri.replace(':', '').replace('+', ' '));
+
+          return (
+            <span className="source flag flag--grey" key={`uri_scheme_${uri}`}>
+              <Icon name="drag_indicator" />
+              {name}
+            </span>
+          );
+        })
+      }
+    </ReactSortable>
+  );
 }
+
+export default SourcesPriority;

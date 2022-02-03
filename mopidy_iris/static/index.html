@@ -64,7 +64,7 @@
 			max-width: 100px;
 			opacity: 0.25;
 		}
-		#app-loading-loader {
+		#app-loading-loader.loading {
 			position: relative;
 			margin: 30px auto 0;
 			width: 80vw;
@@ -74,7 +74,7 @@
 			overflow: hidden;
 			background-color: #1A1A1A;
 		}
-		#app-loading-loader::before {
+		#app-loading-loader.loading::before {
 			position: absolute;
 			display: block;
 			content: '';
@@ -85,6 +85,14 @@
 		    animation-timing-function: ease-in-out;
 		    animation-iteration-count: infinite;
 		}
+		#app-loading-message {
+			color: white;
+			font-family: Arial, Helvetica, sans-serif;
+			font-size: 12px;
+			line-height: 20px;
+			padding: 10px;
+			opacity: 0.3;
+		}
 	</style>
 
 </head>
@@ -94,7 +102,12 @@
 		<!-- ReactJS app gets injected here, replacing the loader -->
 		<div id="app-loading">
 			<img src="/iris/assets/app-icon.svg" id="app-loading-logo" />
-			<div id="app-loading-loader"></div>
+			<div id="app-loading-loader" class="loading"></div>
+			<div id="app-loading-message">
+				<div id="app-loading-message-base"></div>
+				<div id="app-loading-message-js"></div>
+				<div id="app-loading-message-css"></div>
+			</div>
 		</div>
 	</div>
 
@@ -112,10 +125,22 @@
 </script>
 
 <script type="text/javascript">
+	var setMessage = function(type = '', content = '') {
+		var element = document.getElementById(`app-loading-message-${type}`);
+		if (element) {
+			element.innerHTML += content;
+		}
+	}
+	var setLoading = function(loading) {
+		var element = document.getElementById('app-loading-loader');
+		if (element) {
+			element.className = loading ? 'loading' : '';
+		}
+	}
 
 	// Release details
 	// These are automatically injected to built HTML
-	var build = "1635321372";
+	var build = "1643777120";
 	var version = "3.60.1";
 
 	// Construct the script tag
@@ -137,17 +162,33 @@
 	} else {
 		window.test_mode = localStorage.getItem('test_mode');
 	}
+	if (window.test_mode) {
+		setMessage('base', 'Test mode detected<br />');
+	}
 
-	// Test mode, use un-minified code
-	if (window.test_mode){
-		console.debug("Test mode enabled, using un-minified code");
+	if (window.test_mode){ // Test mode, use un-minified code
 		css.href = '/iris/app.css?v='+build;
 		js.src = '/iris/app.js?v='+build;
-
-	// Production-grade, minified app
-	} else {
+	} else { // Production-grade, minified app
 		css.href = '/iris/app.min.css?v='+build;
 		js.src = '/iris/app.min.js?v='+build;
+	}
+
+	setMessage('js', 'Loading core... ');
+	setMessage('css', 'Loading interface... ');
+	js.onload = function(){
+		setMessage('js', 'done');
+	}
+	js.onerror = function(){
+		setLoading(false);
+		setMessage('js', 'failed');
+	}
+	css.onload = function(){
+		setMessage('css', 'done');
+	}
+	css.onerror = function(){
+		setLoading(false);
+		setMessage('css', 'failed');
 	}
 
 	// And finally inject our CSS/JS tags

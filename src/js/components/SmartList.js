@@ -43,7 +43,7 @@ const SmartListBatch = handleViewport(
             {
               items.map((item, index) => (
                 <ItemComponent
-                  key={`${index}_${item.uri || item.name}`}
+                  key={`uri-${item.uri}__name-${item.name}__tlid-${item.tlid}`}
                   item={item}
                   getItemIndex={() => itemIndex(batchIndex, index)}
                   {...itemProps}

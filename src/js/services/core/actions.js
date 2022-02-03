@@ -138,8 +138,8 @@ export function loadItems(itemType, uris = [], options = {}) {
   };
 }
 
-export function loadItem(uri, options = {}) {
-  return loadItems([uri], options);
+export function loadItem(itemType, uri, options = {}) {
+  return loadItems(itemType, [uri], options);
 }
 
 export function loadTrack(uri, options = {}) {
@@ -212,6 +212,14 @@ export function removeFromLibrary(uri, itemUri) {
     type: 'REMOVE_FROM_LIBRARY',
     uri,
     itemUri,
+  };
+}
+
+export function setLoading(uri, loading) {
+  return {
+    type: 'SET_LOADING',
+    uri,
+    loading,
   };
 }
 

@@ -376,7 +376,7 @@ class Settings extends React.Component {
                 runCommand={(id, notify) => runCommand(id, notify)}
                 onChange={(commands) => setCommands(commands)}
               />
-              <Button to="/edit-command">
+              <Button to="/modal/edit-command">
                 <I18n path="actions.add" />
               </Button>
             </div>
@@ -499,7 +499,7 @@ class Settings extends React.Component {
 
           <div className="field">
             {this.renderLocalScanButton()}
-            <Button to="/share-configuration">
+            <Button to="/modal/share-configuration">
               <I18n path="settings.advanced.share_configuration" />
             </Button>
           </div>
@@ -523,7 +523,7 @@ class Settings extends React.Component {
               <I18n path="settings.advanced.restart" />
             </Button>
             <Button
-              to="/reset"
+              to="/modal/reset"
               type="destructive"
             >
               <I18n path="settings.advanced.reset" />

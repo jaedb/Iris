@@ -123,6 +123,7 @@ specs:
   edited_ago: 'Édité il y a %{time}'
   played_ago: 'Joué il y a %{time}'
 services:
+  restore_defaults: Réinitialiser
   mopidy:
     title: Mopidy
     local: Local
@@ -165,12 +166,14 @@ sidebar:
   tracks: Morceaux
   browse: Parcourir
   settings: Paramètres
+  servers: Serveurs
   not_connected: '%{name} non connecté'
   browser_offline: Parcourir hors ligne
   update_available: Mise à jour disponible
 context_menu:
   add_to_playlist:
     title: Ajouter à la liste de lecture
+    new_playlist: Créer une liste de lecture
     no_playlists: Aucune liste de lecture éditable
   play_next: Lire après le morceau en cours
   play_top_tracks: Lire les meilleurs morceaux
@@ -186,13 +189,11 @@ context_menu:
   start_radio: Démarrer la radio
   copy_uri: Copier l'URI
   refresh: Rafraîchir
-dropzones:
-  dragging_things: 'Déplacement de %{count} éléments'
 playback_controls:
   consume: Consommer
   shuffle: Aléatoire
   repeat: Répéter
-  no_outputs: Pas de sortie
+  snapcast_not_enabled: Pas de flux (Snapcast désactivé)
   mute: Muet
   unmute: Réactiver le son
 snapcast:
@@ -209,6 +210,11 @@ snapcast:
   latency: Latence
   stream: Flux
   volume: Volume
+  encryption:
+    label: Chiffrement
+    sublabel: Utiliser SSL
+    description: Requiert un proxy SSL
+    incompatible: ' (requis lorsque connecté depuis une session HTTPS)'
 authentication:
   popup_blocked: Popup bloquée. Autorisez les fenêtres popup et recommencez.
   failed: Échec de l''authorisation. %{origin} ne correspond pas à authorization_url.
@@ -335,6 +341,7 @@ track:
   title_window: '%{name} par %{artists} (morceau)'
   lyrics_origin: 'Source : '
   explicit: Paroles explicites
+  unplayable: Illisible
   disc_number: 'Disque %{number}'
   track_number: 'Morceau %{number}'
   unknown_album: Album inconnu
@@ -363,12 +370,15 @@ settings:
       clear_tracklist: Nettoyer les morceaux en attente à la lecture d'URI(s)
       clear_tracklist_tooltip: Lire une ou plusieurs URIs nettoiera la file d'attente
       hotkeys: Activer les touches de raccourci
-      smooth_scrolling: Activer le défilement doux
       touch_events: Activer les événements tactiles sur commandes de lecture
       touch_events_tooltip: Autoriser les changements de morceau par balayage de l'écran
-      wide_scrollbars: Utiliser des barres de défilement larges
       grid_glow: Effet incandescent sur les vignettes
       grid_glow_tooltip: Désactiver l'effet sur les appareils à faible puissance ou les anciens navigateurs
+    scrolling:
+      label: Barres de défilement
+      wide: Larges
+      hidden: Cachées
+      smooth_scrolling: Défilement doux
     sources_priority:
       label: Priorité des sources
       description: Glisser-déposer pour réordonner les sources et les résultats
@@ -425,6 +435,7 @@ settings:
       label: Chiffrement
       sublabel: Utiliser SSL
       description: Nécessite un serveur mandataire (proxy) SSL
+      incompatible: ' (requis lorsque connecté depuis une session HTTPS)'
     switch: Basculer sur ce serveur
     reconnect: Reconnecter
   services:
@@ -504,6 +515,7 @@ modal:
   edit_playlist:
     title: Éditer la liste de lecture
     title_create: Créer une liste de lecture
+    subtitle: 'Et ajouter ${count} morceau%{plural}'
     name_required: Nom requis
     name: Nom
     description: Description
@@ -520,7 +532,7 @@ modal:
     title: Éditer une commande
     title_create: Créer une commande
     name: Nom
-    colour: Coleur
+    colour: Couleur
     icon: Icône
     url: URL
     method:
@@ -594,6 +606,10 @@ modal:
       volume_up: Augmenter le volume de 5%
       volume_down: Diminuer le volume de 5%
       mute: Muet
-      kiosk: Mode Kiosk
-      now_playing: Lecture en cours
-      search: Rechercher
+      snapcast_volume_up: Augmenter le volume du client Snapcast
+      snapcast_volume_down: Diminuer le volume du client Snapcast
+      snapcast_mute: Client Snapcast muet
+  servers:
+    title: Sélecteur de serveur
+    current: Serveur actuel
+    nothing_playing: Pas de lecture en cours

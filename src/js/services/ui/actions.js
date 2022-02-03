@@ -164,11 +164,11 @@ export function toggleSidebar(new_state = 'toggle') {
   return action;
 }
 
-export function dragStart(e, context, from_uri = null, victims, victims_indexes = null) {
+export function dragStart(e, context, source = null, victims, victims_indexes = null) {
   return {
     type: 'DRAG_START',
     context,
-    from_uri,
+    source,
     victims,
     victims_indexes,
     start_x: e.clientX,

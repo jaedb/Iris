@@ -515,8 +515,8 @@ const PusherMiddleware = (function () {
         break;
 
       case 'PUSHER_ADD_PINNED':
-        var pinned = [...pusher.pinned, action.item];
-        store.dispatch(pusherActions.setPinned(pinned));
+        store.dispatch(pusherActions.setPinned([...pusher.pinned, action.item]));
+        store.dispatch(coreActions.itemLoaded({ uri: action.item.uri, is_pinned: true }));
         break;
 
       case 'PUSHER_SET_PINNED':
@@ -536,8 +536,9 @@ const PusherMiddleware = (function () {
         next(action);
         break;
 
-      case 'PUSHER_REMOVE_PINNED':
-        var pinned = pusher.pinned.filter((item) => item.uri !== action.uri);
+      case 'PUSHER_REMOVE_PINNED': {
+        const pinned = pusher.pinned.filter((item) => item.uri !== action.uri);
+        store.dispatch(coreActions.itemLoaded({ uri: action.uri, is_pinned: false }));
 
         request(store, 'set_pinned', { pinned })
           .then(
@@ -554,6 +555,7 @@ const PusherMiddleware = (function () {
 
         next(action);
         break;
+      }
 
       /**
        * Commands
