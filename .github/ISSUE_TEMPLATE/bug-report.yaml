@@ -1,0 +1,56 @@
+name: Bug report
+description: You've found a bug, let's fix it together
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Quality bug reports with all relevant information provided helps diagnose and resolve bugs faster, so please take the time to complete this form accurately.
+  - type: input
+    id: iris-version
+    attributes:
+      label: Iris version
+      description: You can find your version within Iris, under Settings / Advanced / Version
+      placeholder: eg. 3.50.1
+    validations:
+      required: true
+  - type: checkboxes
+    id: os
+    attributes:
+      label: Operating system(s) affected
+      options:
+        - label: Windows
+        - label: MacOS
+        - label: iOS
+        - label: Android
+        - label: Linux
+        - label: Other
+    validations:
+      required: true
+  - type: checkboxes
+    id: browser
+    attributes:
+      label: Browser(s) affected
+      options:
+        - label: Firefox
+        - label: Chrome
+        - label: Edge
+        - label: Other
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: |
+        Where did something go wrong, and what were you expecting to happen?
+        Tip: You can attach screenshots or supporting files by clicking this area to highlight it and then drag files in.
+      placeholder: When I went to X, and clicked on Y, a thing happened.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
