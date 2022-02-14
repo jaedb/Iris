@@ -17,6 +17,7 @@ import { formatImages, digestMopidyImages } from '../../util/format';
 import { titleCase } from '../../util/helpers';
 import { I18n } from '../../locale';
 import Link from '../Link';
+import ErrorBoundary from '../ErrorBoundary';
 
 const Header = ({ stream, server }) => {
   const dispatch = useDispatch();
@@ -73,7 +74,7 @@ const Header = ({ stream, server }) => {
           {control_url && <div className="tooltip__content">{control_url}</div>}
         </h5>
         <ul className="details">
-          <li>{name || scheme}</li>
+          <li>{name || scheme || 'Unknown'}</li>
           {artists && <li><LinksSentence items={artists} type="artist" nolinks /></li>}
         </ul>
       </div>
@@ -172,7 +173,7 @@ const Outputs = () => {
   const groupsByStream = groupBy(allGroups, 'stream_id');
 
   return (
-    <>
+    <ErrorBoundary>
       {map(groupsByStream, (groups, id) => {
         const stream = {
           id,
@@ -187,7 +188,7 @@ const Outputs = () => {
           </div>
         );
       })}
-    </>
+    </ErrorBoundary>
   );
 }
 
@@ -202,20 +203,22 @@ const Commands = () => {
   items = sortItems(items, 'sort_order');
 
   return (
-    <div className="output-control__commands commands">
-      {
-        items.map((command) => (
-          <div
-            key={command.id}
-            className="commands__item commands__item--interactive"
-            onClick={() => dispatch(pusherActions.runCommand(command.id))}
-          >
-            <Icon className="commands__item__icon" name={command.icon} />
-            <span className={`${command.colour}-background commands__item__background`} />
-          </div>
-        ))
-      }
-    </div>
+    <ErrorBoundary>
+      <div className="output-control__commands commands">
+        {
+          items.map((command) => (
+            <div
+              key={command.id}
+              className="commands__item commands__item--interactive"
+              onClick={() => dispatch(pusherActions.runCommand(command.id))}
+            >
+              <Icon className="commands__item__icon" name={command.icon} />
+              <span className={`${command.colour}-background commands__item__background`} />
+            </div>
+          ))
+        }
+      </div>
+    </ErrorBoundary>
   );
 };
 
