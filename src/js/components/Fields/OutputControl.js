@@ -34,7 +34,7 @@ const Header = ({ stream, server }) => {
       query: {
         control_url,
       } = {},
-    },
+    } = {},
   } = stream || {};
   const controlURL = control_url ? new URL(control_url) : null;
   const controlServer = controlURL ? {
