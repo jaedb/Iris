@@ -100,10 +100,7 @@ const SnapcastMiddleware = (function () {
           break;
 
         case 'Stream.OnUpdate':
-          store.dispatch(snapcastActions.streamLoaded(message.params));
-          break;
-
-        case 'Stream.OnMetadata':
+        case 'Stream.OnProperties':
           store.dispatch(snapcastActions.streamLoaded(message.params));
           break;
 
@@ -650,6 +647,24 @@ const SnapcastMiddleware = (function () {
           volume: action.percent,
         }));
         break;
+
+      case 'SNAPCAST_CONTROL_STREAM': {
+        const { id, command } = action;
+        request(store, 'Stream.Control', { id, command })
+          .then(
+            () => {
+              // No response body
+            },
+            (error) => {
+              store.dispatch(coreActions.handleException(
+                'Could not control stream',
+                error,
+                error.message,
+              ));
+            },
+          );
+        break;
+      }
 
       default:
         return next(action);

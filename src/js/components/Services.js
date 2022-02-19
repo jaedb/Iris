@@ -336,6 +336,35 @@ class Services extends React.Component {
         <div className="menu__inner">
           <Link
             history={history}
+            className="menu-item menu-item--snapcast"
+            activeClassName="menu-item--active"
+            to="/settings/services/snapcast"
+            scrollTo="#services-menu"
+          >
+            <div className="menu-item__inner">
+              <Icon className="menu-item__icon" name="devices" />
+              <div className="menu-item__title">
+                <I18n path="services.snapcast.title" />
+              </div>
+              {!snapcastEnabled && (
+                <span className="status mid_grey-text">
+                  <I18n path="settings.services.disabled" />
+                </span>
+              )}
+              {snapcastEnabled && !snapcastConnected && (
+                <span className="status red-text">
+                  <I18n path="settings.services.disconnected" />
+                </span>
+              )}
+              {snapcastEnabled && snapcastConnected && (
+                <span className="status green-text">
+                  <I18n path="settings.services.connected" />
+                </span>
+              )}
+            </div>
+          </Link>
+          <Link
+            history={history}
             className="menu-item menu-item--spotify"
             activeClassName="menu-item--active"
             to="/settings/services/spotify"
@@ -399,35 +428,6 @@ class Services extends React.Component {
               ) : (
                 <span className="status mid_grey-text">
                   <I18n path="settings.services.unauthorized" />
-                </span>
-              )}
-            </div>
-          </Link>
-          <Link
-            history={history}
-            className="menu-item menu-item--snapcast"
-            activeClassName="menu-item--active"
-            to="/settings/services/snapcast"
-            scrollTo="#services-menu"
-          >
-            <div className="menu-item__inner">
-              <Icon className="menu-item__icon" name="devices" />
-              <div className="menu-item__title">
-                <I18n path="services.snapcast.title" />
-              </div>
-              {!snapcastEnabled && (
-                <span className="status mid_grey-text">
-                  <I18n path="settings.services.disabled" />
-                </span>
-              )}
-              {snapcastEnabled && !snapcastConnected && (
-                <span className="status red-text">
-                  <I18n path="settings.services.disconnected" />
-                </span>
-              )}
-              {snapcastEnabled && snapcastConnected && (
-                <span className="status green-text">
-                  <I18n path="settings.services.connected" />
                 </span>
               )}
             </div>
