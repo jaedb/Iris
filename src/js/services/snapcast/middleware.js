@@ -80,22 +80,14 @@ const SnapcastMiddleware = (function () {
           break;
 
         case 'Client.OnVolumeChanged':
-          store.dispatch(snapcastActions.clientLoaded(message.params));
-          break;
-
         case 'Client.OnLatencyChanged':
-          store.dispatch(snapcastActions.clientLoaded(message.params));
-          break;
-
         case 'Client.OnNameChanged':
           store.dispatch(snapcastActions.clientLoaded(message.params));
           break;
 
         case 'Group.OnMute':
-          store.dispatch(snapcastActions.groupLoaded(message.params));
-          break;
-
         case 'Group.OnNameChanged':
+        case 'Group.OnStreamChanged':
           store.dispatch(snapcastActions.groupLoaded(message.params));
           break;
 
