@@ -155,10 +155,7 @@ const PlaybackControls = () => {
         <div className="time time--current">
           {playbackPosition ? <Dater type="length" data={playbackPosition} /> : '-'}
         </div>
-        <ProgressSlider
-          playbackPosition={playbackPosition}
-          size={slim_mode && 'small'}
-        />
+        <ProgressSlider playbackPosition={playbackPosition} />
         <div className="time time--total">
           {currentTrack ? <Dater type="length" data={currentTrack.duration} /> : '-'}
         </div>
