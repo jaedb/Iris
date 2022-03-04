@@ -223,12 +223,15 @@
 		&__client {
 			width: 50%;
 		}
+	}
 
-		&__groups {
-			.menu {
-				margin: 0 -20px;
-			}
+	@include responsive($bp_medium){
+		&__groups,
+		&__client {
+			margin-left: 0;
+			margin-right: 0;
 		}
+
 	}
 
 	@include responsive($bp_small){
