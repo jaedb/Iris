@@ -100,7 +100,7 @@ const Group = ({
 }) => {
   const allClients = useSelector((state) => state.snapcast.clients || {});
   const allStreams = indexToArray(useSelector((state) => state.snapcast.streams || {}));
-  const clients = clients_ids.length > 0
+  const clients = clients_ids.length > 0 && Object.keys(allClients).length > 0
     ? clients_ids.map((c) => allClients[c]).filter((c) => c.connected)
     : [];
   const dispatch = useDispatch();
