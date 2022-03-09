@@ -18,6 +18,12 @@ export default function reducer(snapcast = {}, action) {
     case 'SNAPCAST_CLIENTS_LOADED':
       return { ...snapcast, clients: action.clients };
 
+    case 'SNAPCAST_CLIENT_DELETED': {
+      const clients = { ...snapcast.clients };
+      delete clients[action.key];
+      return { ...snapcast, clients };
+    }
+
     case 'SNAPCAST_GROUPS_LOADED':
       if (action.flush) {
         var groups = {};

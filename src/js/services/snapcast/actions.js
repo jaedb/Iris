@@ -150,6 +150,14 @@ export function calculateGroupVolume(id, clients) {
   };
 }
 
+export function controlStream(id, command) {
+  return {
+    type: 'SNAPCAST_CONTROL_STREAM',
+    id,
+    command,
+  };
+}
+
 export function serverLoaded(server) {
   return {
     type: 'SNAPCAST_SERVER_LOADED',

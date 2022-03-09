@@ -11,9 +11,10 @@
   align-content: center;
 
   &__background {
-    height: 100%;
-    width: 100%;
     position: absolute;
+    width: 100%;
+    height: 100%;
+    bottom: 0;
     z-index: -1;
   }
 
@@ -225,7 +226,8 @@
   }
 
   @include responsive($bp_medium) {
-    padding-top: 8px;
+    padding-top: 2px;
+    padding-bottom: 4px;
 
     &--touch-enabled .control.next {
       display: none;
@@ -280,9 +282,18 @@
 
       &.progress {
         position: absolute;
-        top: -3px;
+        top: auto;
+        bottom: -10px;
         left: 0;
         right: 0;
+
+        .slider__track {
+          border-radius: 0;
+
+          &__progress {
+            border-radius: 0;
+          }
+        }
 
         .time {
           display: none;
@@ -337,7 +348,7 @@
           position: absolute;
           display: flex;
           right: 0;
-          bottom: 70px;
+          bottom: 60px;
           padding-right: 10px;
           text-align: right;
           width: 100px;
@@ -349,7 +360,7 @@
           display: flex;
           right: 100px;
           left: 10px;
-          bottom: 68px;
+          bottom: 58px;
 
           @include resolution(2) {
             right: 115px;

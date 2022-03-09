@@ -58,6 +58,11 @@ common:
   filter: Filter
   by: ' by '
   loading_library: 'Loading %{provider} %{type}'
+  play_state:
+    playing: Playing
+    paused: Paused
+    stopped: Stopped
+    idle: Idle
 fields:
   start_typing: 'Start typing...'
   search: 'Search...'
@@ -216,6 +221,7 @@ snapcast:
   latency: Latency
   stream: Stream
   volume: Volume
+  not_controllable: Not controllable
   encryption:
     label: Encryption
     sublabel: Use SSL

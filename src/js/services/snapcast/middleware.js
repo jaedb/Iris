@@ -80,30 +80,19 @@ const SnapcastMiddleware = (function () {
           break;
 
         case 'Client.OnVolumeChanged':
-          store.dispatch(snapcastActions.clientLoaded(message.params));
-          break;
-
         case 'Client.OnLatencyChanged':
-          store.dispatch(snapcastActions.clientLoaded(message.params));
-          break;
-
         case 'Client.OnNameChanged':
           store.dispatch(snapcastActions.clientLoaded(message.params));
           break;
 
         case 'Group.OnMute':
-          store.dispatch(snapcastActions.groupLoaded(message.params));
-          break;
-
         case 'Group.OnNameChanged':
+        case 'Group.OnStreamChanged':
           store.dispatch(snapcastActions.groupLoaded(message.params));
           break;
 
         case 'Stream.OnUpdate':
-          store.dispatch(snapcastActions.streamLoaded(message.params));
-          break;
-
-        case 'Stream.OnMetadata':
+        case 'Stream.OnProperties':
           store.dispatch(snapcastActions.streamLoaded(message.params));
           break;
 
@@ -521,11 +510,9 @@ const SnapcastMiddleware = (function () {
       case 'SNAPCAST_DELETE_CLIENT':
         request(store, 'Server.DeleteClient', { id: action.id })
           .then(
-            () => {
-              store.dispatch({
-                type: 'SNAPCAST_CLIENT_REMOVED',
-                key: action.data.params.id,
-              });
+            (response) => {
+              // Groups contain clients
+              store.dispatch(snapcastActions.groupsLoaded(response.server.groups, true));
             },
             (error) => {
               store.dispatch(coreActions.handleException(
@@ -650,6 +637,24 @@ const SnapcastMiddleware = (function () {
           volume: action.percent,
         }));
         break;
+
+      case 'SNAPCAST_CONTROL_STREAM': {
+        const { id, command } = action;
+        request(store, 'Stream.Control', { id, command })
+          .then(
+            () => {
+              // No response body
+            },
+            (error) => {
+              store.dispatch(coreActions.handleException(
+                'Could not control stream',
+                error,
+                error.message,
+              ));
+            },
+          );
+        break;
+      }
 
       default:
         return next(action);

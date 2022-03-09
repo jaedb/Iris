@@ -40,6 +40,7 @@ const Link = ({
   retainScroll,
   scrollTo: scrollTarget,
   onContextMenu,
+  onClick,
   className = '',
   activeClassName,
   to,
@@ -49,9 +50,12 @@ const Link = ({
   if (!to) return <span className={className}>{children}</span>;
   const history = useHistory();
   const location = useLocation();
-  const onClick = () => updateScrollPosition({
-    history, location, retainScroll, scrollTarget,
-  });
+  const handleClick = (e) => {
+    updateScrollPosition({
+      history, location, retainScroll, scrollTarget,
+    });
+    if (onClick) onClick(e);
+  }
 
   // Decode both links. This handles issues where one link is encoded and the other isn't, but
   // they're otherwise identical
@@ -63,7 +67,7 @@ const Link = ({
   const active = history && isLinkActive ? (activeClassName || 'active') : '';
   return (
     <RouterLink
-      onClick={onClick}
+      onClick={handleClick}
       onContextMenu={onContextMenu}
       className={`${className} ${active}`}
       to={to}

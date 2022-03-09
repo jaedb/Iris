@@ -115,16 +115,17 @@ const SnapcastGroups = (props) => {
 
   const renderMenuItem = (simpleGroup) => {
     const group = collate(simpleGroup, { clients });
-    const anyClients = (
-      !show_disconnected_clients && (
-        !group.clients
-        || !group.clients.length
-        || !group.clients.filter((client) => client.connected).length
-      )
+    const noClients = (
+      !group.clients
+      || !group.clients.length
+      || !group.clients.filter((client) => client.connected).length
     );
+
+    if (noClients && !show_disconnected_clients) return null;
+
     return (
       <Link
-        className={`snapcast__groups__menu-item menu-item${anyClients ? ' menu-item--no-clients' : ''}`}
+        className={`snapcast__groups__menu-item menu-item${noClients ? ' menu-item--no-clients' : ''}`}
         activeClassName="menu-item--active"
         key={group.id}
         history={history}

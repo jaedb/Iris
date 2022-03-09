@@ -8,8 +8,7 @@ import Icon from '../Icon';
 import {
   loadAlbum,
   loadArtist,
-  loadTrack,
-  loadTracks,
+  loadPlaylist,
   removeTracksFromPlaylist,
   deletePlaylist,
 } from '../../services/core/actions';
@@ -129,7 +128,7 @@ const ContextMenuItems = ({
               <Divider />
             </>
           )}
-          <Refresh uri={item.uri} action={loadTrack} />
+          <Refresh uri={item.uri} action={loadPlaylist} />
           <Copy uris={[item.uri]} />
         </>
       );

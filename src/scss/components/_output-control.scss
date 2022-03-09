@@ -69,8 +69,65 @@
 				margin-right: 0;
 			}
 
-			&__thumbnail {
+			&__art {
 				flex-shrink: 0;
+				width: 50px;
+				position: relative;
+				cursor: pointer;
+
+        &:before {
+          @include animate();
+					content: "\f04b";
+          display: block;
+          font-family: "FontAwesome";
+          position: absolute;
+          top: 50%;
+          left: 0;
+          bottom: 0;
+          right: 0;
+          margin-top: -9px;
+          text-align: center;
+          font-size: 18px;
+          color: colour('white');
+          z-index: 3;
+					opacity: 0;
+        }
+
+        &:after {
+          @include animate();
+          content: "";
+          display: block;
+          background: rgba(0, 0, 0, 0.75);
+          position: absolute;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          right: 0;
+          border-radius: 3px;
+          opacity: 0;
+          z-index: 2;
+        }
+
+        &:hover {
+					&:before,
+          &:after {
+            opacity: 1;
+          }
+				}
+				
+				&--disabled {
+					cursor: default;
+					&:before,
+          &:after {
+						display: none;
+					}
+				}
+
+				&--playing {
+					&:before {
+						content: "\f04c";
+					}
+				}
 			}
 
 			&__title {

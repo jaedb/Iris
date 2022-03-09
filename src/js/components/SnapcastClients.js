@@ -5,6 +5,7 @@ import LatencyControl from './Fields/LatencyControl';
 import TextField from './Fields/TextField';
 import SelectField from './Fields/SelectField';
 import { I18n, i18n } from '../locale';
+import Link from './Link';
 
 const SnapcastClients = ({
   actions, group, clients, groups,
@@ -77,14 +78,17 @@ const SnapcastClients = ({
                     value={client.latency}
                     onChange={(value) => actions.setClientLatency(client.id, parseInt(value))}
                   />
-                  <TextField
-                    className="tiny"
-                    type="number"
-                    onChange={(value) => actions.setClientLatency(client.id, parseInt(value))}
-                    value={String(client.latency)}
-                    autosave
-                  />
                 </div>
+              </div>
+              <div>
+                <Link
+                  className="button button--destructive button--small"
+                  onClick={() => actions.deleteClient(client.id)}
+                  to="/settings/services/snapcast/"
+                  scrollTo="#services-menu"
+                >
+                  <I18n path="actions.delete" />
+                </Link>
               </div>
               <div className="snapcast__client__volume field field--condensed">
                 <VolumeControl

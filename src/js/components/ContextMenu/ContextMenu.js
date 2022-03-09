@@ -158,7 +158,7 @@ const ContextMenu = ({
   }
 
   return (
-    <div className={className} style={style} ref={ref}>
+    <div id="context-menu" className={className} style={style} ref={ref}>
       <div className="context-menu__section context-menu__section--items">
         {context_menu?.type !== 'custom' && <Title context_menu={context_menu} />}
         <ContextMenuItems

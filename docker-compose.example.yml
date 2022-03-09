@@ -7,7 +7,7 @@ services:
       - 1705:1705
       - 1780:1780
     volumes:
-      - HOST_SNAPCAST_TEMP:/tmp
+      - /tmp/snapserver:/tmp
       - ./docker/snapserver.conf:/etc/snapserver.conf
   mopidy:
     image: jaedb/iris
@@ -26,5 +26,5 @@ services:
       #- ./IRIS_VERSION:/iris/IRIS_VERSION
       - ./docker/data:/var/lib/mopidy/iris
       - ./docker/mopidy.conf:/config/mopidy.conf
-      - HOST_MUSIC_DIRECTORY:/var/lib/mopidy/media
-      - HOST_SNAPCAST_TEMP:/tmp
+      - /mnt/Music:/var/lib/mopidy/media
+      - /tmp/snapserver:/tmp

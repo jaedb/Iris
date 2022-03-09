@@ -129,7 +129,7 @@
 
 	&__client {
 		@include clearfix();
-		padding: 10px 10px 10px 60px;
+		padding: 10px 10px 30px 60px;
 		position: relative;
 		margin: 0;
 		width: 25%;
@@ -178,16 +178,14 @@
 
 		&__latency {
 			input[type="number"] {
-				width: 20%;
+				max-width: 70px;
 			}
 
 			.latency-control {
-				display: inline-block;
-				vertical-align: middle;
-				padding-top: 4px;
-				width: 80%;
-				padding-right: 10px;
-				box-sizing: border-box;
+				display: flex;
+				flex-flow: row;
+				align-items: center;
+				gap: 10px;
 
 				.zero {
 					position: absolute;
@@ -225,12 +223,15 @@
 		&__client {
 			width: 50%;
 		}
+	}
 
-		&__groups {
-			.menu {
-				margin: 0 -20px;
-			}
+	@include responsive($bp_medium){
+		&__groups,
+		&__client {
+			margin-left: 0;
+			margin-right: 0;
 		}
+
 	}
 
 	@include responsive($bp_small){

@@ -13,69 +13,78 @@ import * as mopidyActions from '../../services/mopidy/actions';
 import * as pusherActions from '../../services/pusher/actions';
 import * as snapcastActions from '../../services/snapcast/actions';
 import { sortItems, indexToArray } from '../../util/arrays';
-import { formatImages, digestMopidyImages } from '../../util/format';
 import { titleCase } from '../../util/helpers';
-import { I18n } from '../../locale';
+import { I18n, i18n } from '../../locale';
 import Link from '../Link';
+import ErrorBoundary from '../ErrorBoundary';
 
-const Header = ({ stream, server }) => {
+const Header = ({
+  stream,
+  server,
+}) => {
   const dispatch = useDispatch();
   const {
     id,
-    meta: {
-      name,
-      artists,
-      images: rawImages,
-    } = {},
     status,
-    uri: {
-      scheme,
-      query: {
-        control_url,
+    properties: {
+      playbackStatus,
+      canPlay,
+      canPause,
+      canControl,
+      metadata: {
+        title,
+        artist: artists = [],
+        artUrl,
       } = {},
-    },
+    } = {},
   } = stream || {};
-  const controlURL = control_url ? new URL(control_url) : null;
-  const controlServer = controlURL ? {
-    url: control_url,
-    ssl: controlURL.protocol === 'https:',
-    host: controlURL.hostname,
-    port: controlURL.port || (controlURL.protocol === 'https:' ? '443' : '80'),
-  } : null;
-  const images = rawImages ? formatImages(digestMopidyImages(controlServer, rawImages)) : null;
-  const current_server_id = useSelector((state) => state.mopidy.current_server);
-  const current_server = useSelector((state) => state.mopidy.servers[current_server_id]);
-  const isCurrentServer = control_url === current_server.url;
-  const isControlSwitchable = controlServer && !isCurrentServer;
-
-  const onClick = () => {
-    if (isControlSwitchable) {
-      dispatch(mopidyActions.setCurrentServer(controlServer));
-    }
-  };
+  let onClick = null;
+  switch (playbackStatus) {
+    case 'playing':
+      if (canPause) onClick = () => dispatch(snapcastActions.controlStream(id, 'pause'));
+      break;
+    default:
+      if (canPlay) onClick = () => dispatch(snapcastActions.controlStream(id, 'play'));
+      break;
+  }
 
   return (
     <div className="output-control__stream__header">
-      <Thumbnail
-        images={images}
-        size="small"
-        className="output-control__stream__header__thumbnail"
-      />
+      <div
+        className={[
+          'output-control__stream__header__art',
+          `output-control__stream__header__art--${onClick !== null ? playbackStatus : 'disabled'}`
+        ].join(' ')}
+        onClick={onClick}
+      >
+        <Thumbnail
+          image={artUrl}
+          size="small"
+        />
+      </div>
       <div className="output-control__stream__header__content">
         <h5 className="output-control__stream__header__title tooltip">
-          {isControlSwitchable ? (
-            <a onClick={onClick} style={{ cursor: 'pointer' }}>
-              {server?.name || id}
-            </a>
-          ) : (server?.name || id)}
-          {isCurrentServer && <Icon name="check" />}
-          {status === 'playing' && <Icon name="play_arrow" />}
-          {control_url && <div className="tooltip__content">{control_url}</div>}
+          {server?.name || id}
+          {!canControl && (
+            <span className="flag">
+              {i18n('snapcast.not_controllable').toUpperCase()}
+            </span>
+          )}
         </h5>
-        <ul className="details">
-          <li>{name || scheme}</li>
-          {artists && <li><LinksSentence items={artists} type="artist" nolinks /></li>}
-        </ul>
+        {!title && !artists?.length ? (
+          <div className="details">
+            <I18n path={`common.play_state.${playbackStatus || status}`} />
+          </div>
+        ) : (
+          <ul className="details">
+            <li>{title}</li>
+            {artists && (
+              <li>
+                <LinksSentence items={artists.map((name) => ({ name }))} type="artist" nolinks />
+              </li>
+            )}
+          </ul>
+        )}
       </div>
     </div>
   );
@@ -91,7 +100,7 @@ const Group = ({
 }) => {
   const allClients = useSelector((state) => state.snapcast.clients || {});
   const allStreams = indexToArray(useSelector((state) => state.snapcast.streams || {}));
-  const clients = clients_ids.length > 0
+  const clients = clients_ids.length > 0 && Object.keys(allClients).length > 0
     ? clients_ids.map((c) => allClients[c]).filter((c) => c.connected)
     : [];
   const dispatch = useDispatch();
@@ -172,7 +181,7 @@ const Outputs = () => {
   const groupsByStream = groupBy(allGroups, 'stream_id');
 
   return (
-    <>
+    <ErrorBoundary>
       {map(groupsByStream, (groups, id) => {
         const stream = {
           id,
@@ -187,7 +196,7 @@ const Outputs = () => {
           </div>
         );
       })}
-    </>
+    </ErrorBoundary>
   );
 }
 
@@ -202,20 +211,22 @@ const Commands = () => {
   items = sortItems(items, 'sort_order');
 
   return (
-    <div className="output-control__commands commands">
-      {
-        items.map((command) => (
-          <div
-            key={command.id}
-            className="commands__item commands__item--interactive"
-            onClick={() => dispatch(pusherActions.runCommand(command.id))}
-          >
-            <Icon className="commands__item__icon" name={command.icon} />
-            <span className={`${command.colour}-background commands__item__background`} />
-          </div>
-        ))
-      }
-    </div>
+    <ErrorBoundary>
+      <div className="output-control__commands commands">
+        {
+          items.map((command) => (
+            <div
+              key={command.id}
+              className="commands__item commands__item--interactive"
+              onClick={() => dispatch(pusherActions.runCommand(command.id))}
+            >
+              <Icon className="commands__item__icon" name={command.icon} />
+              <span className={`${command.colour}-background commands__item__background`} />
+            </div>
+          ))
+        }
+      </div>
+    </ErrorBoundary>
   );
 };
 
