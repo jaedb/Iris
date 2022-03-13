@@ -148,5 +148,3 @@ jobs:
           tags:
             - jaedb/iris:latest
             - '*'
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
