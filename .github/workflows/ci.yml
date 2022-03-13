@@ -145,6 +145,4 @@ jobs:
         with:
           context: .
           push: true
-          tags:
-            - jaedb/iris:latest
-            - '*'
+          tags: jaedb/iris:latest
