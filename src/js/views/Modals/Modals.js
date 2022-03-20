@@ -7,6 +7,7 @@ import AddToQueue from './AddToQueue';
 import InitialSetup from './InitialSetup';
 import KioskMode from './KioskMode';
 import ShareConfiguration from './ShareConfiguration';
+import ImportConfiguration from './ImportConfiguration';
 import AddToPlaylist from './AddToPlaylist';
 import ImageZoom from './ImageZoom';
 import HotkeysInfo from './HotkeysInfo';
@@ -22,6 +23,7 @@ export default () => (
     <Route path="/modal/image-zoom" component={ImageZoom} />
     <Route path="/modal/hotkeys" component={HotkeysInfo} />
     <Route path="/modal/share-configuration" component={ShareConfiguration} />
+    <Route path="/modal/import-configuration" component={ImportConfiguration} />
     <Route path="/modal/reset" component={Reset} />
     <Route path="/modal/servers" component={Servers} />
     <Route path="/modal/edit-command/:id?" component={EditCommand} />

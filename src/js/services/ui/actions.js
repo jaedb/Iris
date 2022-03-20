@@ -265,6 +265,14 @@ export function removeNotification(key, manual = false) {
   };
 }
 
+export function openModal(name, data) {
+  return {
+    type: 'OPEN_MODAL',
+    name,
+    data,
+  };
+}
+
 /**
  * Loaders
  * */

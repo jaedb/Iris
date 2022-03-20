@@ -1,319 +1,329 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Modal from './Modal';
-import * as uiActions from '../../services/ui/actions';
-import * as pusherActions from '../../services/pusher/actions';
+import { setWindowTitle } from '../../services/ui/actions';
+import { deliverMessage } from '../../services/pusher/actions';
 import { i18n, I18n } from '../../locale';
 import Button from '../../components/Button';
+import { indexToArray } from '../../util/arrays';
 
-class ShareConfiguration extends React.Component {
-  constructor(props) {
-    super(props);
+const RecipientsList = ({
+  selected,
+  onChange,
+}) => {
+  const {
+    connection_id: currentConnectionId,
+    connections,
+  } = useSelector((state) => state.pusher);
+  const connectionsArray = indexToArray(connections).filter(
+    ({ connection_id }) => connection_id !== currentConnectionId,
+  );
 
-    this.state = {
-      recipients: [],
-      spotify: false,
-      lastfm: false,
-      genius: false,
-      ui: false,
-    };
+  return (
+    <div className="input checkbox-group">
+      <div className="checkbox-group__item">
+        <label>
+          <input
+            type="checkbox"
+            name="connection_server"
+            checked={selected.includes('server')}
+            onChange={() => onChange('server')}
+          />
+          <div className="label">
+            <div>
+              <div className="title">
+                <I18n path="modal.share_configuration.server.title" />
+              </div>
+              <div className="description mid_grey-text">
+                <I18n path="modal.share_configuration.server.description" />
+              </div>
+            </div>
+          </div>
+        </label>
+      </div>
+      {
+        connectionsArray.map(({ connection_id, username, ip }) => (
+          <div key={connection_id} className="checkbox-group__item">
+            <label>
+              <input
+                type="checkbox"
+                name={`connection_${connection_id}`}
+                checked={selected.includes(connection_id)}
+                onChange={() => onChange(connection_id)}
+              />
+              <div className="label">
+                <div>
+                  <div className="title">{username}</div>
+                  <div className="description mid_grey-text">{ip}</div>
+                </div>
+              </div>
+            </label>
+          </div>
+        ))
+      }
+    </div>
+  );
+}
+
+const ShareConfiguration = () => {
+  const dispatch = useDispatch();
+  const [recipients, setRecipients] = useState([]);
+  const [configuration, setConfiguration] = useState({});
+  const spotify = useSelector((state) => state.spotify);
+  const genius = useSelector((state) => state.genius);
+  const lastfm = useSelector((state) => state.lastfm);
+  const ui = useSelector((state) => state.ui);
+  const snapcast = useSelector((state) => state.snapcast);
+
+  useEffect(() => {
+    setWindowTitle(i18n('modal.share_configuration.title'));
+  }, []);
+
+  const onRecipientChanged = (id) => {
+    setRecipients((prev) => {
+      const next = [...prev];
+      if (next.includes(id)) {
+        const index = next.indexOf(id);
+        next.splice(index, 1);
+      } else {
+        next.push(id);
+      }
+      return next;
+    });
   }
 
-  componentDidMount() {
-    this.props.uiActions.setWindowTitle(i18n('modal.share_configuration.title'));
+  const onConfigurationChanged = (id) => {
+    setConfiguration((prev) => {
+      const next = { ...prev };
+
+      if (next.id) {
+        delete next[id];
+      } else {
+        switch (id) {
+          case 'spotify':
+            next.spotify = {
+              authorization: spotify.authorization,
+              me: spotify.me,
+            };
+            break;
+          case 'genius':
+            next.genius = {
+              authorization: genius.authorization,
+              me: genius.me,
+            };
+            break;
+          case 'lastfm':
+            next.lastfm = {
+              authorization: lastfm.authorization,
+              me: lastfm.me,
+            };
+            break;
+          case 'ui':
+            next.ui = ui;
+            break;
+          case 'snapcast':
+            next.snapcast = {
+              enabled: snapcast.enabled,
+              host: snapcast.host,
+              port: snapcast.port,
+            };
+            break;
+          default:
+            break;
+        }
+      }
+      return next;
+    });
   }
 
-  toggleRecipient(id) {
-    const { recipients } = this.state;
-    if (recipients.includes(id)) {
-      const index = recipients.indexOf(id);
-      recipients.splice(index, 1);
-    } else {
-      recipients.push(id);
-    }
-    this.setState({ recipients });
-  }
-
-  handleSubmit(e) {
+  const onSubmit = (e) => {
     e.preventDefault();
 
-    const configuration = {};
-    if (this.state.spotify) {
-      configuration.spotify = {
-        authorization: this.props.spotify_authorization,
-        me: this.props.spotify_me,
-      };
-    }
-    if (this.state.genius) {
-      configuration.genius = {
-        authorization: this.props.genius_authorization,
-        me: this.props.genius_me,
-      };
-    }
-    if (this.state.lastfm) {
-      configuration.lastfm = {
-        authorization: this.props.lastfm_authorization,
-        me: this.props.lastfm_me,
-      };
-    }
-    if (this.state.ui) {
-      configuration.ui = this.props.ui;
-    }
-    if (this.state.snapcast) {
-      configuration.snapcast = {
-        enabled: this.props.snapcast.enabled,
-        host: this.props.snapcast.host,
-        port: this.props.snapcast.port,
-      };
-    }
-
-    for (const recipient of this.state.recipients) {
-      this.props.pusherActions.deliverMessage(
-        recipient,
-        'share_configuration_received',
-        configuration,
+    for (const recipient of recipients) {
+      dispatch(
+        deliverMessage(
+          recipient,
+          'share_configuration_received',
+          configuration,
+        ),
       );
     }
 
     window.history.back();
   }
 
-  render() {
-    const connections = [];
-    for (const connection_id in this.props.connections) {
-      if (this.props.connections.hasOwnProperty(connection_id) && connection_id != this.props.connection_id) {
-        connections.push(this.props.connections[connection_id]);
-      }
-    }
+  return (
+    <Modal className="modal--share-configuration">
 
-    if (connections.length > 0) {
-      var recipients = (
-        <div className="input checkbox-group">
-          {
-            connections.map((connection, index) => (
-              <div key={connection.connection_id} className="checkbox-group__item">
-                <label>
-                  <input
-                    type="checkbox"
-                    name={`connection_${connection.connection_id}`}
-                    checked={this.state.recipients.includes(connection.connection_id)}
-                    onChange={(e) => this.toggleRecipient(connection.connection_id)}
-                  />
-                  <div className="label">
-                    <div>
-                      <div className="title">{connection.username}</div>
-                      <div className="description mid_grey-text">
-                        (
-                        {connection.ip}
-                        )
-                      </div>
-                    </div>
-                  </div>
-                </label>
-              </div>
-            ))
-          }
-        </div>
-      );
-    } else {
-      var recipients = (
-        <div className="input text">
-          <span className="mid_grey-text">
-            <I18n path="modal.share_configuration.no_peers" />
-          </span>
-        </div>
-      );
-    }
+      <h1>
+        <I18n path="modal.share_configuration.title" />
+      </h1>
+      <h2>
+        <I18n path="modal.share_configuration.subtitle" />
+      </h2>
 
-    return (
-      <Modal className="modal--share-configuration">
-
-        <h1>
-          <I18n path="modal.share_configuration.title" />
-        </h1>
-        <h2>
-          <I18n path="modal.share_configuration.subtitle" />
-        </h2>
-
-        <form onSubmit={(e) => this.handleSubmit(e)}>
-          <div className="field checkbox white">
-            <div className="name">
-              <I18n path="modal.share_configuration.recipients" />
-            </div>
-            {recipients}
+      <form onSubmit={onSubmit}>
+        <div className="field checkbox white">
+          <div className="name">
+            <I18n path="modal.share_configuration.recipients" />
           </div>
+          <RecipientsList
+            selected={recipients}
+            onChange={onRecipientChanged}
+          />
+        </div>
 
-          <div className="field checkbox checkbox--block">
-            <div className="name">
-              <I18n path="modal.share_configuration.configurations" />
-            </div>
-            <div className="input">
+        <div className="field checkbox checkbox--block">
+          <div className="name">
+            <I18n path="modal.share_configuration.configurations" />
+          </div>
+          <div className="input">
 
-              {this.props.spotify_me && this.props.spotify_authorization && (
-                <div className="checkbox-group__item">
-                  <label>
-                    <input
-                      type="checkbox"
-                      name="spotify"
-                      checked={this.state.spotify}
-                      onChange={(e) => this.setState({ spotify: !this.state.spotify })}
-                    />
-                    <div className="label">
-                      <div>
-                        <div className="title">
-                          <I18n
-                            path="modal.share_configuration.authorization"
-                            service={i18n('services.spotify.title')}
-                          />
-                        </div>
-                        <div className="description mid_grey-text">
-                          <I18n
-                            path="modal.share_configuration.logged_in_as"
-                            name={this.props.spotify_me.name}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </label>
-                </div>
-              )}
-
-              {this.props.lastfm_me && this.props.lastfm_authorization && (
-                <div className="checkbox-group__item">
-                  <label>
-                    <input
-                      type="checkbox"
-                      name="lastfm_authorization"
-                      checked={this.state.lastfm}
-                      onChange={(e) => this.setState({ lastfm: !this.state.lastfm })}
-                    />
-                    <div className="label">
-                      <div>
-                        <div className="title">
-                          <I18n
-                            path="modal.share_configuration.authorization"
-                            service={i18n('services.lastfm.title')}
-                          />
-                        </div>
-                        <div className="description mid_grey-text">
-                          <I18n
-                            path="modal.share_configuration.logged_in_as"
-                            name={this.props.lastfm_me.name}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </label>
-                </div>
-              )}
-
-              {this.props.genius_me && this.props.genius_authorization && (
-                <div className="checkbox-group__item">
-                  <label>
-                    <input
-                      type="checkbox"
-                      name="genius_authorization"
-                      checked={this.state.genius}
-                      onChange={(e) => this.setState({ genius: !this.state.genius })}
-                    />
-                    <div className="label">
-                      <div>
-                        <div className="title">
-                          <I18n
-                            path="modal.share_configuration.authorization"
-                            service={i18n('services.genius.title')}
-                          />
-                        </div>
-                        <div className="description mid_grey-text">
-                          <I18n
-                            path="modal.share_configuration.logged_in_as"
-                            name={this.props.genius_me.name}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </label>
-                </div>
-              )}
-
+            {spotify?.authorization && (
               <div className="checkbox-group__item">
                 <label>
                   <input
                     type="checkbox"
-                    name="snapcast"
-                    checked={this.state.snapcast}
-                    onChange={() => this.setState({ snapcast: !this.state.snapcast })}
+                    name="spotify"
+                    checked={configuration.spotify}
+                    onChange={() => onConfigurationChanged('spotify')}
                   />
                   <div className="label">
                     <div>
                       <div className="title">
-                        <I18n path="services.snapcast.title" />
+                        <I18n
+                          path="modal.share_configuration.authorization"
+                          service={i18n('services.spotify.title')}
+                        />
                       </div>
                       <div className="description mid_grey-text">
-                        <I18n path="modal.share_configuration.snapcast_description" />
+                        <I18n
+                          path="modal.share_configuration.logged_in_as"
+                          name={spotify.me?.name}
+                        />
                       </div>
                     </div>
                   </div>
                 </label>
               </div>
+            )}
 
+            {lastfm?.authorization && (
               <div className="checkbox-group__item">
                 <label>
                   <input
                     type="checkbox"
-                    name="interface"
-                    checked={this.state.ui}
-                    onChange={(e) => this.setState({ ui: !this.state.ui })}
+                    name="lastfm_authorization"
+                    checked={configuration.lastfm}
+                    onChange={() => onConfigurationChanged('lastfm')}
                   />
                   <div className="label">
                     <div>
                       <div className="title">
-                        <I18n path="modal.share_configuration.interface" />
+                        <I18n
+                          path="modal.share_configuration.authorization"
+                          service={i18n('services.lastfm.title')}
+                        />
                       </div>
                       <div className="description mid_grey-text">
-                        <I18n path="modal.share_configuration.interface_description" />
+                        <I18n
+                          path="modal.share_configuration.logged_in_as"
+                          name={lastfm.me?.name}
+                        />
                       </div>
                     </div>
                   </div>
                 </label>
               </div>
+            )}
+
+            {genius?.authorization && (
+              <div className="checkbox-group__item">
+                <label>
+                  <input
+                    type="checkbox"
+                    name="genius_authorization"
+                    checked={configuration.genius}
+                    onChange={() => onConfigurationChanged('genius')}
+                  />
+                  <div className="label">
+                    <div>
+                      <div className="title">
+                        <I18n
+                          path="modal.share_configuration.authorization"
+                          service={i18n('services.genius.title')}
+                        />
+                      </div>
+                      <div className="description mid_grey-text">
+                        <I18n
+                          path="modal.share_configuration.logged_in_as"
+                          name={genius?.me?.name || 'Unknown'}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </label>
+              </div>
+            )}
+
+            <div className="checkbox-group__item">
+              <label>
+                <input
+                  type="checkbox"
+                  name="snapcast"
+                  checked={configuration.snapcast}
+                  onChange={() => onConfigurationChanged('snapcast')}
+                />
+                <div className="label">
+                  <div>
+                    <div className="title">
+                      <I18n path="services.snapcast.title" />
+                    </div>
+                    <div className="description mid_grey-text">
+                      <I18n path="modal.share_configuration.snapcast_description" />
+                    </div>
+                  </div>
+                </div>
+              </label>
+            </div>
+
+            <div className="checkbox-group__item">
+              <label>
+                <input
+                  type="checkbox"
+                  name="interface"
+                  checked={configuration.ui}
+                  onChange={() => onConfigurationChanged('ui')}
+                />
+                <div className="label">
+                  <div>
+                    <div className="title">
+                      <I18n path="modal.share_configuration.interface" />
+                    </div>
+                    <div className="description mid_grey-text">
+                      <I18n path="modal.share_configuration.interface_description" />
+                    </div>
+                  </div>
+                </div>
+              </label>
             </div>
           </div>
+        </div>
 
-          <div className="actions centered-text">
-            <Button
-              type="primary"
-              size="large"
-              disabled={this.state.recipients.length <= 0}
-              onClick={(e) => this.handleSubmit(e)}
-              tracking={{ category: 'ShareConfiguration', action: 'Send' }}
-            >
-              <I18n path="actions.send" />
-            </Button>
-          </div>
-        </form>
-      </Modal>
-    );
-  }
+        <div className="actions centered-text">
+          <Button
+            type="primary"
+            size="large"
+            disabled={recipients.length <= 0}
+            onClick={onSubmit}
+            tracking={{ category: 'ShareConfiguration', action: 'Send' }}
+          >
+            <I18n path="actions.send" />
+          </Button>
+        </div>
+      </form>
+    </Modal>
+  );
 }
 
-const mapStateToProps = (state) => ({
-  spotify_authorization: state.spotify.authorization,
-  spotify_me: state.spotify.me,
-  genius_authorization: state.genius.authorization,
-  genius_me: state.genius.me,
-  lastfm_authorization: state.lastfm.authorization,
-  lastfm_me: state.lastfm.me,
-  ui: state.ui,
-  snapcast: state.snapcast,
-  connection_id: state.pusher.connection_id,
-  connections: state.pusher.connections,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  pusherActions: bindActionCreators(pusherActions, dispatch),
-  uiActions: bindActionCreators(uiActions, dispatch),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(ShareConfiguration);
+export default ShareConfiguration;

@@ -76,10 +76,7 @@ export default function reducer(ui = {}, action) {
          * Modals
          * */
     case 'OPEN_MODAL':
-      return { ...ui, modal: action.modal };
-
-    case 'CLOSE_MODAL':
-      return { ...ui, modal: false };
+      return { ...ui, modal: action.data };
 
       /**
          * Notifications
