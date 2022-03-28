@@ -42,6 +42,7 @@ class IrisCore(pykka.ThreadingActor):
     data = {
         "commands": [],
         "pinned": [],
+        "client_config": {},
     }
     ioloop = None
 
@@ -60,9 +61,9 @@ class IrisCore(pykka.ThreadingActor):
     def start(self):
         logger.info("Starting Iris " + Extension.version)
 
-        # Load our commands and pinned items from file
         self.data["commands"] = self.load_from_file("commands")
         self.data["pinned"] = self.load_from_file("pinned")
+        self.data["shared_config"] = self.load_from_file("shared_config")
 
     ##
     # Mopidy is shutting down
@@ -409,6 +410,7 @@ class IrisCore(pykka.ThreadingActor):
                 "genius_authorization_url": self.config["iris"][
                     "genius_authorization_url"
                 ],
+                "shared_config": self.data["shared_config"],
             }
         }
 
@@ -878,6 +880,13 @@ class IrisCore(pykka.ThreadingActor):
 
     def set_pinned(self, *args, **kwargs):
         return self.set_data("pinned", *args, **kwargs)
+
+    ##
+    # Portable configuration template for other users to import
+    ##
+
+    def set_shared_config(self, *args, **kwargs):
+        return self.set_data("shared_config", *args, **kwargs)
 
     ##
     # Commands
