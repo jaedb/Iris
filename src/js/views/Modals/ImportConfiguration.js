@@ -2,7 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { pick } from 'lodash';
 import Modal from './Modal';
-import { setWindowTitle, set as setUi, createNotification } from '../../services/ui/actions';
+import {
+  setWindowTitle,
+  set as setUi,
+  createNotification,
+  closeModal,
+} from '../../services/ui/actions';
 import * as spotifyActions from '../../services/spotify/actions';
 import * as snapcastActions from '../../services/snapcast/actions';
 import * as lastfmActions from '../../services/lastfm/actions';
@@ -61,7 +66,7 @@ const ImportConfiguration = () => {
       content: i18n('modal.share_configuration.import.successful'),
     }));
 
-    window.history.back();
+    dispatch(closeModal());
   }
 
   return (

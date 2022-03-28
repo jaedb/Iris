@@ -106,6 +106,13 @@ export function getConfig() {
   };
 }
 
+export function setSharedConfig(shared_config) {
+  return {
+    type: 'PUSHER_SET_SHARED_CONFIG',
+    shared_config,
+  };
+}
+
 export function getVersion() {
   return {
     type: 'PUSHER_GET_VERSION',

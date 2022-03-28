@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { pick } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import Modal from './Modal';
-import { setWindowTitle } from '../../services/ui/actions';
-import { deliverMessage } from '../../services/pusher/actions';
+import { setWindowTitle, closeModal } from '../../services/ui/actions';
+import { deliverMessage, setSharedConfig } from '../../services/pusher/actions';
 import { i18n, I18n } from '../../locale';
 import Button from '../../components/Button';
 import { indexToArray } from '../../util/arrays';
@@ -26,8 +27,8 @@ const RecipientsList = ({
           <input
             type="checkbox"
             name="connection_server"
-            checked={selected.includes('server')}
-            onChange={() => onChange('server')}
+            checked={selected.includes('SERVER')}
+            onChange={() => onChange('SERVER')}
           />
           <div className="label">
             <div>
@@ -68,7 +69,7 @@ const RecipientsList = ({
 const ShareConfiguration = () => {
   const dispatch = useDispatch();
   const [recipients, setRecipients] = useState([]);
-  const [configuration, setConfiguration] = useState({});
+  const [selectedConfigs, setSelectedConfigs] = useState([]);
   const spotify = useSelector((state) => state.spotify);
   const genius = useSelector((state) => state.genius);
   const lastfm = useSelector((state) => state.lastfm);
@@ -92,64 +93,79 @@ const ShareConfiguration = () => {
     });
   }
 
-  const onConfigurationChanged = (id) => {
-    setConfiguration((prev) => {
-      const next = { ...prev };
-
-      if (next.id) {
-        delete next[id];
+  const onSelectedConfigChanged = (id) => {
+    setSelectedConfigs((prev) => {
+      const next = [...prev];
+      if (next.includes(id)) {
+        const index = next.indexOf(id);
+        next.splice(index, 1);
       } else {
-        switch (id) {
-          case 'spotify':
-            next.spotify = {
-              authorization: spotify.authorization,
-              me: spotify.me,
-            };
-            break;
-          case 'genius':
-            next.genius = {
-              authorization: genius.authorization,
-              me: genius.me,
-            };
-            break;
-          case 'lastfm':
-            next.lastfm = {
-              authorization: lastfm.authorization,
-              me: lastfm.me,
-            };
-            break;
-          case 'ui':
-            next.ui = ui;
-            break;
-          case 'snapcast':
-            next.snapcast = {
-              enabled: snapcast.enabled,
-              host: snapcast.host,
-              port: snapcast.port,
-            };
-            break;
-          default:
-            break;
-        }
+        next.push(id);
       }
       return next;
     });
   }
 
+  const collateConfig = () => {
+    const obj = {};
+    selectedConfigs.forEach((name) => {
+      switch (name) {
+        case 'spotify':
+          obj.spotify = pick(spotify, ['authorization', 'me']);
+          break;
+        case 'genius':
+          obj.genius = pick(genius, ['authorization', 'me']);
+          break;
+        case 'lastfm':
+          obj.lastfm = pick(lastfm, ['authorization', 'me']);
+          break;
+        case 'snapcast':
+          obj.snapcast = pick(snapcast, ['enabled', 'host', 'port', 'ssl']);
+          break;
+        case 'ui':
+          obj.ui = pick(
+            ui,
+            [
+              'language',
+              'theme',
+              'smooth_scrolling_enabled',
+              'hotkeys_enabled',
+              'allow_reporting',
+              'wide_scrollbars_enabled',
+              'hide_scrollbars',
+              'grid_glow_enabled',
+              'sort',
+              'initial_setup_complete',
+              'uri_schemes_search_enabled',
+            ],
+          );
+          break;
+        default:
+          break;
+      }
+    });
+    return obj;
+  };
+
   const onSubmit = (e) => {
     e.preventDefault();
+    const configuration = collateConfig();
 
     for (const recipient of recipients) {
-      dispatch(
-        deliverMessage(
-          recipient,
-          'share_configuration_received',
-          configuration,
-        ),
-      );
+      if (recipient === 'SERVER') {
+        dispatch(setSharedConfig(configuration));
+      } else {
+        dispatch(
+          deliverMessage(
+            recipient,
+            'share_configuration_received',
+            configuration,
+          ),
+        );
+      }
     }
 
-    window.history.back();
+    dispatch(closeModal());
   }
 
   return (
@@ -185,8 +201,8 @@ const ShareConfiguration = () => {
                   <input
                     type="checkbox"
                     name="spotify"
-                    checked={configuration.spotify}
-                    onChange={() => onConfigurationChanged('spotify')}
+                    checked={selectedConfigs.indexOf('spotify') > -1}
+                    onChange={() => onSelectedConfigChanged('spotify')}
                   />
                   <div className="label">
                     <div>
@@ -214,8 +230,8 @@ const ShareConfiguration = () => {
                   <input
                     type="checkbox"
                     name="lastfm_authorization"
-                    checked={configuration.lastfm}
-                    onChange={() => onConfigurationChanged('lastfm')}
+                    checked={selectedConfigs.indexOf('lastfm') > -1}
+                    onChange={() => onSelectedConfigChanged('lastfm')}
                   />
                   <div className="label">
                     <div>
@@ -243,8 +259,8 @@ const ShareConfiguration = () => {
                   <input
                     type="checkbox"
                     name="genius_authorization"
-                    checked={configuration.genius}
-                    onChange={() => onConfigurationChanged('genius')}
+                    checked={selectedConfigs.indexOf('genius') > -1}
+                    onChange={() => onSelectedConfigChanged('genius')}
                   />
                   <div className="label">
                     <div>
@@ -271,8 +287,8 @@ const ShareConfiguration = () => {
                 <input
                   type="checkbox"
                   name="snapcast"
-                  checked={configuration.snapcast}
-                  onChange={() => onConfigurationChanged('snapcast')}
+                  checked={selectedConfigs.indexOf('snapcast') > -1}
+                  onChange={() => onSelectedConfigChanged('snapcast')}
                 />
                 <div className="label">
                   <div>
@@ -292,8 +308,8 @@ const ShareConfiguration = () => {
                 <input
                   type="checkbox"
                   name="interface"
-                  checked={configuration.ui}
-                  onChange={() => onConfigurationChanged('ui')}
+                  checked={selectedConfigs.indexOf('ui') > -1}
+                  onChange={() => onSelectedConfigChanged('ui')}
                 />
                 <div className="label">
                   <div>

@@ -96,7 +96,7 @@ class EditRadio extends React.Component {
 
     if (valid_seeds) {
       this.props.pusherActions.startRadio(this.state.seeds);
-      window.history.back();
+      this.props.uiActions.closeModal();
     } else {
       this.setState({ error_message: i18n('modal.edit_radio.invalid_seed_uri') });
     }
@@ -116,7 +116,7 @@ class EditRadio extends React.Component {
 
     if (valid_seeds) {
       this.props.pusherActions.updateRadio(this.state.seeds);
-      window.history.back();
+      this.props.uiActions.closeModal();
     } else {
       this.setState({ error_message: i18n('modal.edit_radio.invalid_seed_uri') });
     }

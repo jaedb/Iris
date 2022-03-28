@@ -269,7 +269,17 @@ export function openModal(name, data) {
   return {
     type: 'OPEN_MODAL',
     name,
-    data,
+    data: {
+      name,
+      ...data,
+    },
+  };
+}
+
+export function closeModal(url) {
+  return {
+    type: 'CLOSE_MODAL',
+    url,
   };
 }
 

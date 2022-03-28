@@ -471,6 +471,25 @@ const PusherMiddleware = (function () {
           );
         break;
 
+      case 'PUSHER_SET_SHARED_CONFIG': {
+        const { shared_config } = action;
+        request(store, 'set_shared_config', { shared_config })
+          .then(
+            () => {
+              // No action required, the change will be broadcast
+            },
+            (error) => {
+              store.dispatch(coreActions.handleException(
+                'Could not share to server',
+                error,
+              ));
+            },
+          );
+
+        next(action);
+        break;
+      }
+
       case 'PUSHER_GET_CONNECTIONS':
         request(store, 'get_connections')
           .then(

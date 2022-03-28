@@ -36,11 +36,12 @@ const UIMiddleware = (function () {
         next(action);
         break;
 
-      case 'OPEN_MODAL':
-        const { name } = action;
-        window.location = `/iris/modal/${name}`;
-        console.debug(action);
-        next(action); // Save data to state
+      case 'CLOSE_MODAL':
+        if (action.url) {
+          window.location = action.url;
+        } else {
+          window.history.back();
+        }
         break;
 
       case 'HIDE_CONTEXT_MENU':
