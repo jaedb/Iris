@@ -1,0 +1,628 @@
+name: Русский
+
+##
+# Common and reusable phrases
+##
+errors:
+   uri_not_found: 'URI% {uri} не распознан'
+  could_not_load: 'Не удалось загрузить %{name}'
+  could_not_load_library: 'Не удалось загрузить %{name} из %{provider}'
+  no_results: Ничего не найдено
+  authorization_required: 'Сначала вам нужно авторизовать %{provider}'
+  enable_first: 'Сначала включите %{provider}'
+  no_service_worker: Неподдерживаемый сервис
+  required: Требуется
+  unknown_error: Неизвестная ошибка
+  need_to_be_online: Вы должны быть онлайн, чтобы загрузить этот ресурс
+  nothing_selected: ичего не выбрано
+  cannot_reorder:
+    title: Невозможно изменить порядок элементов
+    description: Удалить сортировку/фильтры и повторить попытку
+actions:
+ play: Играть
+  play_all: Воспроизвести все
+  play_next: Играть дальше
+  shuffle_play: Играть в случайном порядке
+  pause: Пауза
+  stop: Стоп
+  add_to_playlist: Добавить в плейлист
+  add_to_library: Добавить в библиотеку
+  add_tracks_to: 'Добавлено %{count} треков в '
+  remove_from_library: Удалить из библиотеки
+  add_to_queue: Добавить в очередь
+  reset: Сброс
+  back: Отменить
+  refresh: Oбновить
+  enable: Включить
+  disable: Выключить
+  send: Отправить
+  save: Сохранить
+  start: Старт
+  edit: Редактировать
+  add: Добавить
+  confirm: Вы уверены?
+  delete: Удалить
+  remove: Удалить
+  cancel: Отменить
+  created: Создано %{name}
+  saved: Сохранено %{name}
+  deleted: Удалено %{name}
+common:
+   popularity: Популярность
+  name: Имя
+  artist: Исполнитель
+  duration: Продолжительность
+  source: Источник
+  sources: Источники
+  sort: Сортировать
+  filter: Фильтр
+  by: 'после'
+  loading_library: 'Загружается %{provider} %{type}'
+  play_state:
+    playing: Играет
+    paused: Приостановлено
+    stopped: Остановлено
+    idle: Бездействие
+fields:
+  start_typing: 'Начните печатать...'
+  search: 'Искать...'
+  sort: Сортировать
+  view: Просмотр
+  source: Источник
+  uri: URI(s)
+  items_to_add:
+    label: Элементы для добавления
+    placeholder: Нет элементов
+  filter: Фильтр
+  filters:
+    all: Все
+    thumbnails: Миниатюры
+    list: Список
+    as_loaded: Как загружено
+    name: Имя
+    artist: Исполнитель
+    album: Альбом
+    updated: Обновлено
+    tracks: Треки
+    source: Источник
+    editable: Редактируемый
+    owner: Владелец
+    followers: Последователи
+    popularity: Популярность
+time:
+  seconds:
+    short: сек
+    singular: секунда
+    plural: секунды
+  minutes:
+    short: мин
+    singular: минута
+    plural: минут
+  hours:
+    short: час
+    singular: час
+    plural: часов
+  days:
+    short: дни
+    singular: день
+    plural: дней
+  weeks:
+    short: нд
+    singular: неделя
+    plural: недели
+  years:
+    short: год
+    singular: год
+    plural: лет
+specs:
+  tracks: '%{count} треков'
+  albums: '%{count} альбомов'
+  followers: '%{count} последователей'
+  listeners: '%{count} слушателей'
+  playlists: '%{count} плейлистов'
+  plays: '%{count} играет'
+  popularity: '%{percent}% популярности'
+  added_from: 'Добавлено из'
+  added_by: 'Добавлен пользователем %{by}'
+  added_ago: 'Добавлено %{time} назад'
+  edited: 'Отредактировано '
+  edited_ago: 'Отредактировано %{time} назад'
+  played_ago: 'Играло %{time} назад'
+services:
+  restore_defaults: Восстановить значения по умолчанию
+  mopidy:
+    title: Mopidy
+    local: Local
+    adding_uris: 'Добавление %{count} URI(s)'
+    adding_uris_broadcast: '%{username} добавил %{count} URI(s)'
+    searching: 'Поиск %{provider} %{type}'
+    searching_providers: 'Поиск %{count} провайдеров Mopidy'
+    loading_albums: 'Загружается %{count} локальных альбомов'
+  spotify:
+    title: Spotify
+  pusher:
+    title: Pusher
+  snapcast:
+    title: Snapcast
+  genius:
+    title: Genius
+    switch_lyrics_result: Переключиться на другой результат поиска
+    want_lyrics: 'Хотите текст песни? Авторизовать Genius в '
+  google:
+    title: Google
+  lastfm:
+    title: LastFM
+    love: Love
+    unlove: Unlove
+  youtube:
+    title: YouTube
+  tidal:
+    title: Tidal
+
+##
+# Components
+##
+sidebar:
+  now_playing: Сейчас играет
+  search: Поиск
+  discover: Обнаружить
+  genre: Жанр / Настроение
+  featured_playlists: Избранные плейлисты.
+  new_releases: Новые релизы
+  my_music: Моя музыка
+  playlists: Плейлисты
+  artists: Исполнитель
+  albums: Альбомы
+  tracks: Треки
+  browse: Смотреть
+  settings: Настройки
+  servers: Серверы
+  not_connected: '%{name} не подключен'
+  browser_offline: Браузер отключен
+  update_available: Доступно обновление
+context_menu:
+  add_to_playlist:
+    title: Добавить в плейлист
+    new_playlist: Создать плейлист
+    no_playlists: Нет доступных для записи плейлистов
+  play_next: Играть дальше
+  play_top_tracks: Воспроизвести лучшие треки
+  play_all_tracks: Воспроизвести все треки
+  love_track: Любимые треки
+  unlove_track: Нелюбимые треки
+  pin: Закрепить
+  unpin: Открепить
+  go_to_artist: Перейти к исполнителю
+  go_to_user: Перейти к пользователю
+  go_to_track: Перейти к треку
+  track_info: Информация о треке
+  discover_similar: Найти похожие
+  start_radio: Включить радио
+  copy_uri: Копировать URI(s)
+  refresh: Обновить
+playback_controls:
+  consume: Потреблять
+  shuffle: Перемешать
+  repeat: Повторить
+  snapcast_not_enabled: Нет потоков (Snapcast отключен)
+  mute: Без звука
+  unmute: Включить звук
+snapcast:
+  enabled: Включено
+  streaming_enabled: Потоковая передача включена
+  show_disconnected_clients: Показать отключенные клиенты
+  no_connected_clients: Нет подключенных клиентов
+  host: Host
+  port: Port
+  name: Имя
+  name_disconnected: Имя (Отключен)
+  group: Группа
+  new_group: '+ Новая группа'
+  latency: Задержка
+  stream: Поток
+  volume: Громкость
+  not_controllable: Неконтролируемый
+  encryption:
+    label: Шифрование
+    sublabel: Использовать SSL
+    description: Требуется SSL-прокси
+    incompatible: ' (требуется при подключении из сеанса браузера HTTPS)'
+authentication:
+  popup_blocked: Всплывающее окно заблокировано. Разрешите всплывающие окна и повторите попытку.
+  failed: Авторизация не удалась. %{origin} is not the configured authorization_url.
+  log_out: Log out
+  log_in: Log in
+
+
+##
+# Views
+##
+now_playing:
+  title: Сейчас играет
+  context_actions:
+    radio: Радио
+    history: История
+    add_uri: Добавить URI
+  current_track:
+    playing_from: Воспроизведение с
+    shuffle: Перемешать
+    clear: Очистить
+    radio: Радио
+album:
+  title: Альбом
+  title_window: '%{name} by %{artist} (album)'
+  wiki:
+    title: О
+    published: 'Опубликовано: %{date}'
+  tracks:
+    title: Треке
+    sort:
+      disc_track: Номер трека
+      name: Имя
+artist:
+  title: Исполнитель
+  title_window: '%{name} (исполнитель)'
+  overview:
+    title: Обзор
+    top_tracks: Лучшие треки
+    albums: 'Альбомы (%{count})'
+    related_artists:
+      title: Похожие исполнители
+      more: Все связанные исполнители
+  tracks:
+    title: Треки
+    sort:
+      disc_track: Номер трека
+      name: Имя
+      album: Альбом
+  related_artists:
+    title: Похожие исполнители
+  about:
+    title: О
+    source: '%{source} исполнителе'
+    wiki:
+      published: 'Опубликовано: %{date}'
+      origin: 'Оригинал: '
+  albums:
+    sort:
+      default: По умолчанию
+      name: Имя
+      release_date: Дата
+      track_count: Треки
+    filter:
+      all: Все
+      albums: Альбомы
+      singles: Синглы
+      compilations: Сборники
+debug:
+  title: Отладка
+  ui:
+    title: Пользовательский интерфейс
+  debug:
+    title: Отладка
+    overlay: Show debug overlay
+  logging:
+    title: Ведение журнала
+    mopidy: Журнал Mopidy
+    pusher: Журнал Pusher
+    actions: Журнал Actions
+    snapcast: Журнал Snapcast
+  create_notification: Создать уведомление
+  create_process: Создать уведомление о процессе
+  run_test: Запустить тестовый процесс
+  call: Call
+  data: Data
+  examples: Examples
+playlist:
+  title: Плейлист
+  title_window: '%{name} (playlist)'
+  title_plural: Плейлисты
+  tracks:
+    title: Треки
+    sort:
+      default: По умолчанию
+      sort_id: Как загружено
+      added_at: Дата добавления
+      name: Имя
+      artist: Исполнитель
+      album: Альбом
+queue_history:
+  title: История воспроизведения
+search:
+  title: Поиск
+  title_window: 'Поиск: %{term}'
+  context_actions:
+    sort: Сортировать
+    source: 'Источники (%{count})'
+  placeholder: Поиск
+  all:
+    title: Все
+  artists:
+    title: Исполнители
+    more: 'Все исполнители (%{count})'
+  albums:
+    title: Альбомы
+    more: 'Все альбомы (%{count})'
+  playlists:
+    title: Плейлисты
+    more: 'Все плейлисты (%{count})'
+  tracks:
+    title: Треки
+track:
+  title: Трек
+  title_window: '%{name} by %{artists} (track)'
+  lyrics_origin: 'Оригинал: '
+  explicit: Явный
+  unplayable: Не воспроизводится
+  disc_number: 'Диск %{number}'
+  track_number: 'Трек %{number}'
+  unknown_album: Неизвестный альбом
+  want_lyrics: 'Хотите текст песни? Авторизуйте Genius в разделе '
+  lyrics: Текст песни
+settings:
+  title: Настройки
+  help: Помощь
+  server:
+    title: Сервер
+    username:
+      label: Имя пользователя
+      description: неуникальная строка, используемая для идентификации этого клиента (без специальных символов).
+  interface:
+    title: Интерфейс
+    language:
+      label: Язык
+    theme:
+      label: Тема
+      auto: Авто
+      auto_tooltip: Определяет предпочтения вашего браузера или ОС.
+      dark: Dark
+      light: Light
+    behavior:
+      label: Поведение
+      clear_tracklist: очистить список треков при воспроизведении URI(ов)
+      clear_tracklist_tooltip: Воспроизведение одного или нескольких URI сначала очистит текущую очередь воспроизведения.
+      hotkeys: Включить горячие клавиши
+      touch_events: Включить сенсорные события в элементах управления воспроизведением.
+      touch_events_tooltip: Позволяет свапать влево и вправо для переключения дорожек
+      grid_glow: Эффект свечения миниатюры
+      grid_glow_tooltip: Отключить эффект для маломощных устройств или старых браузеров.
+    scrolling:
+      label: Прокрутка
+      wide: Широкие полосы прокрутки
+      hidden: Скрытые полосы прокрутки
+      smooth_scrolling: Плавная прокрутка
+    sources_priority:
+      label: Приоритет источников
+      description: Перетаскивание для определения приоритетов поисковых систем и результатов
+    reporting:
+      label: Отчетность
+      sublabel: Разрешить отчеты об анонимной статистике использования
+      description: 'Эти анонимные данные об использовании важны для выявления ошибок и потенциальных функций, которые делают Iris лучше для всех. Хотите узнать больше? Прочитайте'
+      privacy_policy: политика конфиденциальности
+      are_you_sure: Вы уверены, что не хотите это поддерживать?
+    commands:
+      label: Команды
+  advanced:
+    title: Продвинутый
+    start_local_scan: Начать локальное сканирование
+    artist_uri:
+      label: URI библиотеки исполнителей
+      description: URI, используемый для сбора библиотек исполнителей
+    album_uri:
+      label: URI библиотеки альбомов
+      description: URI, используемый для сбора альбомов библиотеки
+    track_uri:
+      label: URI библиотеки дорожек
+      description: URI, используемый для сбора библиотек треков
+    connections:
+      label: Соединения
+    version:
+      label: Версия
+      upgrade_available: 'Доступно обновление (%{version})'
+      upgrade: 'Обновить до %{version}'
+      up_to_date: Актуально
+    share_configuration: Поделиться конфигурацией
+    restart: Перезапустить сервер
+    reset: Сброс настроек
+  about:
+    title: О
+    blurb_1: ' это проект с открытым исходным кодом от '
+    blurb_2: '. It is provided free and with absolutely no warranty. If you paid someone for this software, please let me know.'
+    donate: Donate
+    github: GitHub
+  pusher_connection_list:
+    not_connected: Не подключен
+    no_connections: Нет соединений
+    you: ' (вы)'
+  servers:
+    current_track: Текущий трек
+    inactive: Неактивный
+    connecting: Подключение
+    disconnected: Отключено
+    connected: Подключено
+    new_server: Новый сервер
+    name: Имя
+    host: Host
+    port: Port
+    encryption:
+      label: Шифрование
+      sublabel: Использовать SSL
+      description: Требуется SSL-прокси
+      incompatible: '(требуется при подключении из сеанса браузера HTTPS)'
+    switch: Переключиться на этот сервер
+    reconnect: Переподключиться
+  services:
+    title: Сервисы
+    limited_access: Ограниченный доступ
+    unknown: Неизвестно
+    current_user: Текущий пользователь
+    authorization: Авторизация
+    refresh_token: RОбновить токен
+    authorized: Авторизованный
+    read_only: Только для чтения
+    unauthorized: Неавторизованный
+    enabled: Включено
+    disabled: Отключено
+    connected: Подключено
+    disconnected: Отключено
+    spotify:
+      mopidy_spotify_not_running: расширение Mopidy-Spotify не запущено — вы не сможете воспроизводить треки Spotify.
+      country:
+        label: Страна
+        description: Код страны ISO 3166-1 alpha-2 (например, «NZ»).
+      locale:
+        title: Локализация
+        description: код языка ISO 639 в нижнем регистре и код страны в формате ISO 3166-1 alpha-2 в верхнем регистре, соединенные символом подчеркивания (например, 'en_NZ')
+user:
+  title: Пользователь
+  title_window: '%{name} (пользователь)'
+  you: Вы
+discover:
+  title: Справочник
+  categories:
+    title: 'Жанр / Настроение'
+  category:
+    title: 'Жанр / Настроение'
+    category: Категория
+  featured:
+    title: Избранные плейлисты
+  new_releases:
+    title: Новые выпуски
+  recommendations:
+    title: Справочник
+    tracks: Треки
+    artists: Исполнители
+    albums: Альбомы
+    body_title: Исследуйте новую музыку
+    body_subtitle: Добавьте ниже предпочтения и музыкальные свойства, чтобы создать свой звук
+    too_many_seeds: Слишком много предпочтений! Всего можно использовать до 5 исходных треков, исполнителей и жанров.
+    find_recommendations: Найти рекомендации
+library:
+  albums:
+    title: Мои альбомы
+  artists:
+    title: Мои исполнители
+  browse:
+    title: Обзор
+  browse_directory:
+    title: Справочник
+  playlists:
+    title: Мои плейлисты
+  tracks:
+    title: Мои треки
+modal:
+  add_to_playlist:
+    title: Добавить в плейлист
+    subtitle: 'Выберите плейлист, чтобы добавить %{count} элементов%{plural} в'
+    no_playlists: Нет доступных плейлистов
+    no_editable_playlists: Нет редактируемых плейлистов
+  add_to_queue:
+    title: Добавить в очередь
+    subtitle: Добавить список URI через запятую в очередь воспроизведения
+    uris: URI(s)
+    add_random: Найти случайные треки
+    position:
+      label: Позиция
+      end: Конец
+      next: После текущего трека
+  edit_playlist:
+    title: Редактировать плейлист
+    title_create: Создать плейлист
+    subtitle: 'И добавьте%{count} элементов%{plural}'
+    name_required: Требуется имя
+    name: Имя
+    description: Описание
+    provider: Провайдер
+    image:
+      label: Изображение обложки
+      description: олько JPEG, макс. 256 КБ. Оставьте пустым, чтобы сохранить обложку неизменной.
+    options:
+      label: Опции
+      public: Публичный
+      collaborative: Совместный
+    create_playlist: Создать плейлист
+  edit_command:
+    title: Изменить команду
+    title_create: Создать команду
+    name: Имя
+    colour: Цвет
+    icon: Иконка
+    url: URL
+    method:
+      label: Метод
+      get: GET
+      post: POST
+    data: Data
+    headers: Дополнительные заголовки
+  edit_radio:
+    title: Радио
+    subtitle: Добавляйте и удаляйте предпочтения, чтобы формировать звук вашего радио. Радио использует механизм рекомендаций Spotify, чтобы предлагать треки, похожие на ваши предпочтения.
+    invalid_seed_uri: Неверный(е) начальный(е) URI
+    too_many_seeds: Предоставлено более 5 предпочтений, остальные игнорируются.
+    only_spotify_uris: Поддерживаются только URI Spotify.
+    already_added: URI уже добавлен
+    no_seeds: Нет предпочтений
+  initial_setup:
+    title: Добро пожаловать в Ирис
+    username: Пользователь
+  kiosk:
+    title: Сейчас играет
+    title_window: '%{name} by %{artist} (сейчас воспроизводится)'
+    lyrics: Текст песни
+  share_configuration:
+    title: Поделиться конфигурацией
+    subtitle: Передайте свои авторизации и настройки интерфейса другому подключенному пользователю
+    no_peers: Нет peer подключений
+    recipients: Получатели
+    configurations: Конфигурации
+    authorization: '%{service} авторизация'
+    logged_in_as: 'Вы вошли как %{name}'
+    snapcast_description: Детали подключения к серверу
+    interface: Настройки интерфейса
+    interface_description: Тема, сортировка, фильтры и т. д.
+    import:
+      title: Конфигурация предоставлена
+      subtitle: 'Другой пользователь поделился с вами своей конфигурацией. Это включает в себя:'
+      do_you_want_to_import: Вы хотите импортировать это?
+      import_now: Импортировать
+      successful: Импорт выполнен успешно
+  reset:
+    title: Reset Iris
+    subtitle: Очистите локальную конфигурацию, информацию о хранилище или кеш
+    items: Сброс настроек по умолчанию
+    preferences:
+      label: Настройки
+      description: Настройка интерфейса
+    database:
+      label: База данных
+      description: Локальная браузерная база данных библиотек и активов
+    service_worker:
+      label: Service Worker
+      description: Переустановить Service Worker
+    cache:
+      label: Получить кеш
+      description: Кэш запросов внешнего API (требуется Service Worker)
+    test_mode:
+      label: Тестовый режим
+      description: Подробное ведение журнала для диагностики проблем
+  hotkeys_info:
+    title: Горячие клавиши
+    keys:
+      info: Информация о горячих клавишах
+      exit: Отменить текущее взаимодействие
+      play_pause: Воспроизведение/пауза
+      stop: Стоп
+      next: Следующий трек
+      previous: Предыдущий трек
+      rewind: Перемотка назад на 30 секунд
+      fastforward: Перемотка вперед на 30 секунд
+      volume_up: Увеличение громкости на 5%
+      volume_down: Уменьшение громкости на 5%
+      mute: Отключение звука
+      snapcast_volume_up: Увеличение громкости для клиента Snapcast (где n равно 1-9)
+      snapcast_volume_down: уменьшить громкость для клиента Snapcast (где n равно 1-9)
+      snapcast_mute: отключить звук для клиента Snapcast (где n — 1–9).
+  servers:
+    title: Выбор сервера
+    current: Текущий сервер
+    nothing_playing: Ничего не воспроизводится
