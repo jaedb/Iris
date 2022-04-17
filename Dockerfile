@@ -40,7 +40,7 @@ RUN wget -q -O - https://apt.mopidy.com/mopidy.gpg \
 # installing using pip.
 # Note using ADD helps prevent caching issues. When HEAD changes, our cache is invalidated, whee!
 ADD https://api.github.com/repos/jaedb/Iris/git/refs/heads/master version.json
-RUN git clone -b master https://github.com/jaedb/Iris.git /iris \
+RUN git clone --depth 1 -b master https://github.com/jaedb/Iris.git /iris \
  && cd /iris \
  && python3 setup.py develop \
  && mkdir -p /var/lib/mopidy/.config \
