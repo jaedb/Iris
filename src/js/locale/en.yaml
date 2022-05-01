@@ -421,7 +421,10 @@ settings:
       upgrade_available: 'Upgrade available (%{version})'
       upgrade: 'Upgrade to %{version}'
       up_to_date: Up to date
-    share_configuration: Share configuration
+    shared_configuration:
+      label: Share configuration
+      share: Export/share
+      import: Import from server
     restart: Restart server
     reset: Reset settings
   about:
@@ -571,8 +574,12 @@ modal:
     lyrics: Lyrics
   import_configuration:
     title: Import configuration
-    subtitle: Import third-party authorizations and other settings
-    subtitle_push: Another user has shared their configuration with you
+    pushed:
+      title: Configuration received
+      subtitle: Another user has shared their configuration with you
+    server:
+      title: Import configuration
+      subtitle: Import third-party authorizations and other settings
     configurations: Configurations to import
     import_now: Import now
   share_configuration:

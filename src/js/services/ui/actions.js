@@ -265,13 +265,13 @@ export function removeNotification(key, manual = false) {
   };
 }
 
-export function openModal(name, data) {
+export function openModal(name, props) {
   return {
     type: 'OPEN_MODAL',
     name,
-    data: {
+    modal_state: {
       name,
-      ...data,
+      props,
     },
   };
 }

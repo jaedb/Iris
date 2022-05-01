@@ -113,6 +113,20 @@ class Settings extends React.Component {
     localScan();
   }
 
+  doImportSharedConfig = () => {
+    const {
+      uiActions: {
+        openModal,
+      },
+      pusher: {
+        config: {
+          shared_config: configuration,
+        },
+      },
+    } = this.props;
+    openModal('import-configuration', { context: 'server', configuration });
+  }
+
   renderLocalScanButton = () => {
     const {
       ui: { processes },
@@ -471,20 +485,29 @@ class Settings extends React.Component {
                   )}
                 </span>
                 {pusher.version.upgrade_available ? (
-                  <a
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flag flag--dark"
-                    href={`https://github.com/jaedb/Iris/releases/tag/${pusher.version.latest}`}
-                  >
-                    <Icon name="cloud_download" className="blue-text" />
-                    <I18n
-                      path="settings.advanced.version.upgrade_available"
-                      version={pusher.version.latest}
+                  <>
+                    <a
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flag flag--dark"
+                      href={`https://github.com/jaedb/Iris/releases/tag/${pusher.version.latest}`}
                     >
-                      {' '}
-                    </I18n>
-                  </a>
+                      <Icon name="cloud_download" className="blue-text" />
+                      <I18n
+                        path="settings.advanced.version.upgrade_available"
+                        version={pusher.version.latest}
+                      >
+                        {' '}
+                      </I18n>
+                    </a>
+                    <Button
+                      type="secondary"
+                      onClick={this.doUpgrade}
+                      tracking={{ category: 'System', action: 'Upgrade', label: pusher.version.latest }}
+                    >
+                      <I18n path="settings.advanced.version.upgrade" version={pusher.version.latest} />
+                    </Button>
+                  </>
                 ) : (
                   <span className="flag flag--dark">
                     <Icon name="check" className="green-text" />
@@ -498,22 +521,23 @@ class Settings extends React.Component {
           </div>
 
           <div className="field">
-            {this.renderLocalScanButton()}
-            <Button to="/modal/share-configuration">
-              <I18n path="settings.advanced.share_configuration" />
-            </Button>
+            <div className="name">
+              <I18n path="settings.advanced.shared_configuration.label" />
+            </div>
+            <div className="input">
+              <Button to="/modal/share-configuration">
+                <I18n path="settings.advanced.shared_configuration.share" />
+              </Button>
+              {pusher.config?.shared_config && (
+                <Button onClick={this.doImportSharedConfig}>
+                  <I18n path="settings.advanced.shared_configuration.import" />
+                </Button>
+              )}
+            </div>
           </div>
 
           <div className="field">
-            {pusher.version.upgrade_available && (
-              <Button
-                type="secondary"
-                onClick={this.doUpgrade}
-                tracking={{ category: 'System', action: 'Upgrade', label: pusher.version.latest }}
-              >
-                <I18n path="settings.advanced.version.upgrade" version={pusher.version.latest} />
-              </Button>
-            )}
+            {this.renderLocalScanButton()}
             <Button
               type="destructive"
               working={mopidy.restarting}

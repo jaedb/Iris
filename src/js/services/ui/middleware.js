@@ -37,6 +37,7 @@ const UIMiddleware = (function () {
         break;
 
       case 'CLOSE_MODAL':
+        next(action);
         if (action.url) {
           window.location = action.url;
         } else {

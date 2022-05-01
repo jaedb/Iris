@@ -51,9 +51,6 @@ export default function reducer(ui = {}, action) {
     case 'INSTALL_PROMPT':
       return { ...ui, install_prompt: action.event };
 
-      /**
-         * Context menu
-         * */
     case 'SHOW_CONTEXT_MENU':
       return { ...ui, context_menu: action.data };
 
@@ -72,18 +69,12 @@ export default function reducer(ui = {}, action) {
     case 'REMOVE_TOUCH_CONTEXT_MENU':
       return { ...ui, touch_context_menu: null };
 
-      /**
-         * Modals
-         * */
     case 'OPEN_MODAL':
-      return { ...ui, modal: action.data };
+      return { ...ui, modal: action.modal_state };
 
     case 'CLOSE_MODAL':
       return { ...ui, modal: null };
 
-      /**
-         * Notifications
-         * */
     case 'CREATE_NOTIFICATION':
       var notifications = { ...ui.notifications };
       notifications[action.notification.key] = action.notification;
@@ -100,10 +91,6 @@ export default function reducer(ui = {}, action) {
       var notifications = { ...ui.notifications };
       delete notifications[action.key];
       return { ...ui, notifications };
-
-      /**
-         * Loading and processes
-         * */
 
     case 'START_LOADING': {
       return {

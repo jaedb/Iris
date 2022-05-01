@@ -19,7 +19,10 @@ import { titleCase } from '../../util/helpers';
 const ImportConfiguration = () => {
   const dispatch = useDispatch();
   const [selected, setSelected] = useState([]);
-  const configuration = useSelector((state) => state.ui?.modal || {});
+  const {
+    configuration = {},
+    context = 'server',
+  } = useSelector((state) => state.ui.modal?.props || {});
 
   useEffect(() => {
     setWindowTitle(i18n('modal.import_configuration.title'));
@@ -72,10 +75,10 @@ const ImportConfiguration = () => {
   return (
     <Modal className="modal--share-configuration">
       <h1>
-        <I18n path="modal.import_configuration.title" />
+        <I18n path={`modal.import_configuration.${context}.title`} />
       </h1>
       <h2>
-        <I18n path="modal.import_configuration.subtitle" />
+        <I18n path={`modal.import_configuration.${context}.subtitle`} />
       </h2>
 
       <form onSubmit={onSubmit}>
@@ -85,12 +88,12 @@ const ImportConfiguration = () => {
           </div>
           <div className="input">
 
-            {Object.keys(configuration).map((name) => (
-              <div className="checkbox-group__item">
+            {Object.keys(configuration).filter((i) => i !== 'name').map((name) => (
+              <div className="checkbox-group__item" key={`configuration_${name}`}>
                 <label>
                   <input
                     type="checkbox"
-                    name={`configuration_to_import${name}`}
+                    name={`configuration_to_import_${name}`}
                     checked={selected.indexOf(name) > -1}
                     onChange={() => onSelectedChanged(name)}
                   />
