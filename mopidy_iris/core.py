@@ -39,11 +39,7 @@ class IrisCore(pykka.ThreadingActor):
         "seed_tracks": [],
         "results": [],
     }
-    data = {
-        "commands": [],
-        "pinned": [],
-        "client_config": {},
-    }
+    data = {}
     ioloop = None
 
     @classmethod
@@ -884,6 +880,9 @@ class IrisCore(pykka.ThreadingActor):
     ##
     # Portable configuration template for other users to import
     ##
+
+    def get_shared_config(self, *args, **kwargs):
+        return self.get_data("shared_config", *args, **kwargs)
 
     def set_shared_config(self, *args, **kwargs):
         return self.set_data("shared_config", *args, **kwargs)

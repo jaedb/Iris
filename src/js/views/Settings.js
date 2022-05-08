@@ -113,20 +113,6 @@ class Settings extends React.Component {
     localScan();
   }
 
-  doImportSharedConfig = () => {
-    const {
-      uiActions: {
-        openModal,
-      },
-      pusher: {
-        config: {
-          shared_config: configuration,
-        },
-      },
-    } = this.props;
-    openModal('import-configuration', { context: 'server', configuration });
-  }
-
   renderLocalScanButton = () => {
     const {
       ui: { processes },
@@ -525,11 +511,11 @@ class Settings extends React.Component {
               <I18n path="settings.advanced.shared_configuration.label" />
             </div>
             <div className="input">
-              <Button to="/modal/share-configuration">
+              <Button to="/modal/share-config">
                 <I18n path="settings.advanced.shared_configuration.share" />
               </Button>
-              {pusher.config?.shared_config && (
-                <Button onClick={this.doImportSharedConfig}>
+              {pusher.shared_config && (
+                <Button to="/modal/import-config/server">
                   <I18n path="settings.advanced.shared_configuration.import" />
                 </Button>
               )}

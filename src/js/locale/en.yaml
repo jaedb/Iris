@@ -574,20 +574,45 @@ modal:
     lyrics: Lyrics
   import_configuration:
     title: Import configuration
+    configurations: Configurations to import
+    import_now: Import now
+  shared_config:
+    no_peers: No peer connections
+    recipients: Recipients
+    configurations: Configurations
+    import_now: Import now
+    imported: Import successful
+    share: Share now
+    shared: Share successful
+    push:
+      title: Share configuration
+      subtitle: Push your authorizations and interface settings to another, connected user
     pushed:
       title: Configuration received
       subtitle: Another user has shared their configuration with you
     server:
       title: Import configuration
       subtitle: Import third-party authorizations and other settings
-    configurations: Configurations to import
-    import_now: Import now
+    config:
+      label: Configurations
+      ui:
+        label: User interface
+        description: Theme, sorting, filters, etc
+      spotify:
+        label: Spotify authorisation
+        description: 'Logged in as %{name}'
+      lastfm:
+        label: LastFM authorisation
+        description: 'Logged in as %{name}'
+      genius:
+        label: Genius authorisation
+        description: 'Logged in as %{name}'
+      snapcast:
+        label: Snapcast
+        description: Server connection details
   share_configuration:
     title: Share configuration
     subtitle: Push your authorizations and interface settings to another, connected user
-    no_peers: No peer connections
-    recipients: Recipients
-    configurations: Configurations
     authorization: '%{service} authorization'
     logged_in_as: 'Logged in as %{name}'
     snapcast_description: Server connection details

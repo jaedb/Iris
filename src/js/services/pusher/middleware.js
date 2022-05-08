@@ -91,13 +91,16 @@ const PusherMiddleware = (function () {
         case 'spotify_token_changed':
           store.dispatch(spotifyActions.tokenChanged(params.spotify_token));
           break;
-        case 'share_configuration_received':
+        case 'share_config_received':
           store.dispatch(
             uiActions.openModal(
-              'import-configuration',
-              { context: 'pushed', configuration: params },
+              'import-config',
+              { context: 'pushed', config: params },
             ),
           );
+          break;
+        case 'shared_config_changed':
+          store.dispatch(pusherActions.sharedConfig(params.shared_config));
           break;
         case 'notification':
           store.dispatch(uiActions.createNotification(params.notification));
@@ -326,6 +329,7 @@ const PusherMiddleware = (function () {
         clearTimeout(reconnectTimer);
         store.dispatch(pusherActions.updateConnection());
         store.dispatch(pusherActions.getConfig());
+        store.dispatch(pusherActions.getSharedConfig());
         store.dispatch(pusherActions.getRadio());
         store.dispatch(pusherActions.getCommands());
         store.dispatch(pusherActions.getPinned());
@@ -470,6 +474,24 @@ const PusherMiddleware = (function () {
             (error) => {
               store.dispatch(coreActions.handleException(
                 'Could not load config',
+                error,
+              ));
+            },
+          );
+        break;
+
+      case 'PUSHER_GET_SHARED_CONFIG':
+        request(store, 'get_shared_config')
+          .then(
+            (response) => {
+              store.dispatch({
+                type: 'PUSHER_SHARED_CONFIG',
+                shared_config: response.shared_config,
+              });
+            },
+            (error) => {
+              store.dispatch(coreActions.handleException(
+                'Could not load shared config',
                 error,
               ));
             },
