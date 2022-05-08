@@ -593,6 +593,8 @@ modal:
     server:
       title: Import configuration
       subtitle: Import third-party authorizations and other settings
+      label: Server
+      description: Save to server for any user to import
     config:
       label: Configurations
       ui:
@@ -610,23 +612,6 @@ modal:
       snapcast:
         label: Snapcast
         description: Server connection details
-  share_configuration:
-    title: Share configuration
-    subtitle: Push your authorizations and interface settings to another, connected user
-    authorization: '%{service} authorization'
-    logged_in_as: 'Logged in as %{name}'
-    snapcast_description: Server connection details
-    interface: Interface settings
-    interface_description: Theme, sorting, filters, etc
-    server:
-      title: Server
-      description: Make available for any user to import
-    import:
-      title: Configuration shared
-      subtitle: 'Another user has shared their configuration with you. This includes:'
-      do_you_want_to_import: Do you want to import this?
-      import_now: Import now
-      successful: Import successful
   reset:
     title: Reset Iris
     subtitle: Clear your local configuration, storage information or cache

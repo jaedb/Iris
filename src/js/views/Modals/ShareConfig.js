@@ -37,10 +37,10 @@ const RecipientsList = ({
           <div className="label">
             <div>
               <div className="title">
-                <I18n path="modal.share_configuration.server.title" />
+                <I18n path="modal.shared_config.server.label" />
               </div>
               <div className="description mid_grey-text">
-                <I18n path="modal.share_configuration.server.description" />
+                <I18n path="modal.shared_config.server.description" />
               </div>
             </div>
           </div>
@@ -81,7 +81,7 @@ const ShareConfig = () => {
   const snapcast = useSelector((state) => state.snapcast);
 
   useEffect(() => {
-    setWindowTitle(i18n('modal.share_configuration.title'));
+    setWindowTitle(i18n('modal.shared_config.title'));
   }, []);
 
   const onRecipientChanged = (id) => {
@@ -161,10 +161,10 @@ const ShareConfig = () => {
     <Modal className="modal--share-configuration">
 
       <h1>
-        <I18n path="modal.share_configuration.title" />
+        <I18n path="modal.shared_config.push.title" />
       </h1>
       <h2>
-        <I18n path="modal.share_configuration.subtitle" />
+        <I18n path="modal.shared_config.push.subtitle" />
       </h2>
 
       <form onSubmit={onSubmit}>

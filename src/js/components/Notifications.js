@@ -135,7 +135,7 @@ const NotificationItems = () => {
 
     dispatch(uiActions.removeNotification(notification_key, true));
     dispatch(uiActions.createNotification({
-      content: i18n('modal.share_configuration.import.successful'),
+      content: i18n('modal.shared_config.imported'),
     }));
   }
 
