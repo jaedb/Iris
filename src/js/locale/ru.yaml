@@ -4,7 +4,7 @@ name: Русский
 # Common and reusable phrases
 ##
 errors:
-   uri_not_found: 'URI% {uri} не распознан'
+  uri_not_found: 'URI% {uri} не распознан'
   could_not_load: 'Не удалось загрузить %{name}'
   could_not_load_library: 'Не удалось загрузить %{name} из %{provider}'
   no_results: Ничего не найдено
@@ -19,7 +19,7 @@ errors:
     title: Невозможно изменить порядок элементов
     description: Удалить сортировку/фильтры и повторить попытку
 actions:
- play: Играть
+  play: Играть
   play_all: Воспроизвести все
   play_next: Играть дальше
   shuffle_play: Играть в случайном порядке
@@ -48,7 +48,7 @@ actions:
   saved: Сохранено %{name}
   deleted: Удалено %{name}
 common:
-   popularity: Популярность
+  popularity: Популярность
   name: Имя
   artist: Исполнитель
   duration: Продолжительность
