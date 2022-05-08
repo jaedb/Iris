@@ -111,6 +111,9 @@ class EditPlaylist extends React.Component {
       coreActions: {
         savePlaylist,
       },
+      uiActions: {
+        closeModal,
+      },
     } = this.props;
 
     e.preventDefault();
@@ -127,7 +130,7 @@ class EditPlaylist extends React.Component {
       collaborative,
       image,
     );
-    window.history.back();
+    closeModal();
     return false;
   }
 

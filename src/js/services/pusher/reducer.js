@@ -65,6 +65,9 @@ export default function reducer(pusher = {}, action) {
     case 'PUSHER_CONFIG':
       return { ...pusher, config: action.config };
 
+    case 'PUSHER_SHARED_CONFIG':
+      return { ...pusher, shared_config: action.shared_config };
+
     case 'PUSHER_PINNED_UPDATED':
       return { ...pusher, pinned: action.pinned };
 

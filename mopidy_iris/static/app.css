@@ -6328,9 +6328,10 @@ h4 .loader {
   align-content: center;
 }
 .playback-controls__background {
-  height: 100%;
-  width: 100%;
   position: absolute;
+  width: 100%;
+  height: 100%;
+  bottom: 0;
   z-index: -1;
 }
 .dark-theme .playback-controls {
@@ -6589,7 +6590,8 @@ h4 .loader {
 }
 @media (max-width: 800px) {
   .playback-controls {
-    padding-top: 8px;
+    padding-top: 2px;
+    padding-bottom: 4px;
   }
   .playback-controls--touch-enabled .control.next {
     display: none;
@@ -6630,9 +6632,16 @@ h4 .loader {
   }
   .playback-controls section.progress {
     position: absolute;
-    top: -3px;
+    top: auto;
+    bottom: -10px;
     left: 0;
     right: 0;
+  }
+  .playback-controls section.progress .slider__track {
+    border-radius: 0;
+  }
+  .playback-controls section.progress .slider__track__progress {
+    border-radius: 0;
   }
   .playback-controls section.progress .time {
     display: none;
@@ -6682,7 +6691,7 @@ h4 .loader {
     position: absolute;
     display: flex;
     right: 0;
-    bottom: 70px;
+    bottom: 60px;
     padding-right: 10px;
     text-align: right;
     width: 100px;
@@ -6693,7 +6702,7 @@ h4 .loader {
     display: flex;
     right: 100px;
     left: 10px;
-    bottom: 68px;
+    bottom: 58px;
   }
 }
 @media only screen and (max-width: 800px) and (-webkit-min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min--moz-device-pixel-ratio: 2), only screen and (max-width: 800px) and (-o-min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min-resolution: 192dpi), only screen and (max-width: 800px) and (min-resolution: 2dppx) {
@@ -6807,8 +6816,60 @@ h4 .loader {
 .output-control__stream__header .flag {
   margin-right: 0;
 }
-.output-control__stream__header__thumbnail {
+.output-control__stream__header__art {
   flex-shrink: 0;
+  width: 50px;
+  position: relative;
+  cursor: pointer;
+}
+.output-control__stream__header__art:before {
+  -webkit-transition: all 0.2s ease-in-out;
+  -moz-transition: all 0.2s ease-in-out;
+  -o-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+  content: "";
+  display: block;
+  font-family: "FontAwesome";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  margin-top: -9px;
+  text-align: center;
+  font-size: 18px;
+  color: #FFFFFF;
+  z-index: 3;
+  opacity: 0;
+}
+.output-control__stream__header__art:after {
+  -webkit-transition: all 0.2s ease-in-out;
+  -moz-transition: all 0.2s ease-in-out;
+  -o-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+  content: "";
+  display: block;
+  background: rgba(0, 0, 0, 0.75);
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  border-radius: 3px;
+  opacity: 0;
+  z-index: 2;
+}
+.output-control__stream__header__art:hover:before, .output-control__stream__header__art:hover:after {
+  opacity: 1;
+}
+.output-control__stream__header__art--disabled {
+  cursor: default;
+}
+.output-control__stream__header__art--disabled:before, .output-control__stream__header__art--disabled:after {
+  display: none;
+}
+.output-control__stream__header__art--playing:before {
+  content: "";
 }
 .output-control__stream__header__title {
   display: flex;
@@ -9003,7 +9064,7 @@ main header.overlay {
   background: rgba(128, 128, 128, 0.05);
 }
 .snapcast__client {
-  padding: 10px 10px 10px 60px;
+  padding: 10px 10px 30px 60px;
   position: relative;
   margin: 0;
   width: 25%;
@@ -9049,15 +9110,13 @@ main header.overlay {
   height: auto;
 }
 .snapcast__client__latency input[type=number] {
-  width: 20%;
+  max-width: 70px;
 }
 .snapcast__client__latency .latency-control {
-  display: inline-block;
-  vertical-align: middle;
-  padding-top: 4px;
-  width: 80%;
-  padding-right: 10px;
-  box-sizing: border-box;
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  gap: 10px;
 }
 .snapcast__client__latency .latency-control .zero {
   position: absolute;
@@ -9084,8 +9143,11 @@ main header.overlay {
   .snapcast__client {
     width: 50%;
   }
-  .snapcast__groups .menu {
-    margin: 0 -20px;
+}
+@media (max-width: 800px) {
+  .snapcast__groups, .snapcast__client {
+    margin-left: 0;
+    margin-right: 0;
   }
 }
 @media (max-width: 500px) {

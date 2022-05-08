@@ -45,56 +45,6 @@ const Notification = ({
         </div>
       );
 
-    case 'share-configuration-received':
-      return (
-        <div className="notification__wrapper">
-          <div className="notification notification--info" data-duration={duration}>
-            <Icon
-              name="close"
-              className="notification__close-button"
-              onClick={() => dispatch(removeNotification(key, true))}
-            />
-            <h4 className="notification__title">
-              <I18n path="modal.share_configuration.import.title" />
-            </h4>
-            <div className="notification__content">
-              <p>
-                <I18n path="modal.share_configuration.import.subtitle" />
-              </p>
-              <ul>
-                {configuration.ui && (
-                  <li><I18n path="modal.share_configuration.interface" /></li>
-                )}
-                {configuration.spotify && (
-                  <li><I18n path="services.spotify.title" /></li>
-                )}
-                {configuration.lastfm && (
-                  <li><I18n path="services.lastfm.title" /></li>
-                )}
-                {configuration.genius && (
-                  <li><I18n path="services.genius.title" /></li>
-                )}
-                {configuration.snapcast && (
-                  <li><I18n path="services.snapcast.title" /></li>
-                )}
-              </ul>
-              <p>
-                <I18n path="modal.share_configuration.import.do_you_want_to_import" />
-              </p>
-            </div>
-            <div className="notification__actions">
-              <Button
-                className="notification__actions__item"
-                onClick={() => importConfiguration(key, configuration)}
-                tracking={{ category: 'ShareConfiguration', action: 'Import' }}
-              >
-                <I18n path="modal.share_configuration.import.import_now" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      );
-
     default:
       return (
         <div className="notification__wrapper" key={key}>

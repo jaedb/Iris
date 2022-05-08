@@ -91,12 +91,16 @@ const PusherMiddleware = (function () {
         case 'spotify_token_changed':
           store.dispatch(spotifyActions.tokenChanged(params.spotify_token));
           break;
-        case 'share_configuration_received':
-          store.dispatch(uiActions.createNotification({
-            type: 'share-configuration-received',
-            configuration: params,
-            sticky: true,
-          }));
+        case 'share_config_received':
+          store.dispatch(
+            uiActions.openModal(
+              'import-config',
+              { context: 'pushed', config: params },
+            ),
+          );
+          break;
+        case 'shared_config_changed':
+          store.dispatch(pusherActions.sharedConfig(params.shared_config));
           break;
         case 'notification':
           store.dispatch(uiActions.createNotification(params.notification));
@@ -325,6 +329,7 @@ const PusherMiddleware = (function () {
         clearTimeout(reconnectTimer);
         store.dispatch(pusherActions.updateConnection());
         store.dispatch(pusherActions.getConfig());
+        store.dispatch(pusherActions.getSharedConfig());
         store.dispatch(pusherActions.getRadio());
         store.dispatch(pusherActions.getCommands());
         store.dispatch(pusherActions.getPinned());
@@ -474,6 +479,43 @@ const PusherMiddleware = (function () {
             },
           );
         break;
+
+      case 'PUSHER_GET_SHARED_CONFIG':
+        request(store, 'get_shared_config')
+          .then(
+            (response) => {
+              store.dispatch({
+                type: 'PUSHER_SHARED_CONFIG',
+                shared_config: response.shared_config,
+              });
+            },
+            (error) => {
+              store.dispatch(coreActions.handleException(
+                'Could not load shared config',
+                error,
+              ));
+            },
+          );
+        break;
+
+      case 'PUSHER_SET_SHARED_CONFIG': {
+        const { shared_config } = action;
+        request(store, 'set_shared_config', { shared_config })
+          .then(
+            () => {
+              // No action required, the change will be broadcast
+            },
+            (error) => {
+              store.dispatch(coreActions.handleException(
+                'Could not share to server',
+                error,
+              ));
+            },
+          );
+
+        next(action);
+        break;
+      }
 
       case 'PUSHER_GET_CONNECTIONS':
         request(store, 'get_connections')

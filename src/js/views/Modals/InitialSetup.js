@@ -69,6 +69,7 @@ class InitialSetup extends React.Component {
 
     // Wait a jiffy to allow changes to apply to store
     setTimeout(() => {
+      self.props.uiActions.closeModal();
       // We've changed a connection setting, so need to reload
       if (self.state.host !== self.props.host || self.state.port !== self.props.port) {
         window.location = '/';

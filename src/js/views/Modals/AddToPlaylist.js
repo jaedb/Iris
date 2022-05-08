@@ -52,10 +52,13 @@ class AddToPlaylist extends React.Component {
       coreActions: {
         addTracksToPlaylist,
       },
+      uiActions: {
+        closeModal,
+      },
       uris,
     } = this.props;
     addTracksToPlaylist(playlist_uri, uris);
-    window.history.back();
+    closeModal();
   }
 
   renderList = () => {
