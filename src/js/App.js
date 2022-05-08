@@ -30,6 +30,7 @@ import Search from './views/Search';
 import Settings from './views/Settings';
 import Discover from './views/Discover/Discover';
 import Library from './views/Library/Library';
+import ModalStateListener from './components/ModalStateListener';
 import Modals from './views/Modals/Modals';
 
 import { scrollTo, isTouchDevice } from './util/helpers';
@@ -251,6 +252,7 @@ const App = () => {
         options={{ enableMouseEvents: true }}
       >
         <div className="body">
+          <ModalStateListener />
           <Switch>
             <Route
               path="/modal"

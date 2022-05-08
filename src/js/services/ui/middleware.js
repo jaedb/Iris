@@ -1,5 +1,3 @@
-import ReactGA from 'react-ga';
-
 const uiActions = require('./actions.js');
 
 const UIMiddleware = (function () {
@@ -38,22 +36,13 @@ const UIMiddleware = (function () {
         next(action);
         break;
 
-      case 'OPEN_MODAL':
-        if (store.getState().ui.allow_reporting) {
-          ReactGA.event({ category: 'Modal', action: 'Opened', label: action.modal.name });
-        }
-        $('body').addClass('modal-open');
-        store.dispatch(uiActions.hideContextMenu());
-        store.dispatch(uiActions.hideTouchContextMenu());
-        next(action);
-        break;
-
       case 'CLOSE_MODAL':
-        if (store.getState().ui.allow_reporting) {
-          ReactGA.event({ category: 'Modal', action: 'Closed', label: null });
-        }
-        $('body').removeClass('modal-open');
         next(action);
+        if (action.url) {
+          window.location = action.url;
+        } else {
+          window.history.back();
+        }
         break;
 
       case 'HIDE_CONTEXT_MENU':
