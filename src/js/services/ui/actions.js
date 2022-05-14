@@ -265,6 +265,24 @@ export function removeNotification(key, manual = false) {
   };
 }
 
+export function openModal(name, props) {
+  return {
+    type: 'OPEN_MODAL',
+    name,
+    modal_state: {
+      name,
+      props,
+    },
+  };
+}
+
+export function closeModal(url) {
+  return {
+    type: 'CLOSE_MODAL',
+    url,
+  };
+}
+
 /**
  * Loaders
  * */

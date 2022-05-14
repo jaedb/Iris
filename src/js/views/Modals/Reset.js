@@ -31,6 +31,9 @@ class Reset extends React.Component {
       coreActions: {
         resetState,
       },
+      uiActions: {
+        closeModal,
+      },
     } = this.props;
     const {
       preferences,
@@ -137,7 +140,7 @@ class Reset extends React.Component {
       console.log('Reset complete, refreshing...');
       resetState(stateKeysToReset);
       setTimeout(
-        () => window.location = `/iris/settings${test_mode ? '?test_mode=0' : ''}`,
+        () => closeModal(window.location = `/iris/settings${test_mode ? '?test_mode=0' : ''}`),
         1000,
       );
     });

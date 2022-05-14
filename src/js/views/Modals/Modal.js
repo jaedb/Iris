@@ -1,48 +1,44 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { closeModal } from '../../services/ui/actions';
 import Icon from '../../components/Icon';
 
-class Modal extends React.Component {
-  componentDidMount() {
+const Modal = ({
+  extraControls,
+  noclose,
+  children,
+  className = '',
+}) => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
     $('body').addClass('modal-open');
+    return () => {
+      $('body').removeClass('modal-open');
+    }
+  }, []);
+
+  const onClose = () => {
+    dispatch(closeModal());
   }
 
-  componentWillUnmount() {
-    $('body').removeClass('modal-open');
-  }
+  return (
+    <div className={`modal ${className}`}>
 
-  render() {
-    const {
-      extraControls = null,
-      noclose = false,
-      children,
-      className = '',
-    } = this.props;
-
-    return (
-      <div className={`modal ${className}`}>
-
-        <div className="controls">
-          {extraControls}
-          {!noclose && (
-            <div className="control close" onClick={(e) => window.history.back()}>
-              <Icon name="close" className="white" />
-            </div>
-          )}
-        </div>
-
-        <div className="content">
-          {children}
-        </div>
+      <div className="controls">
+        {extraControls}
+        {!noclose && (
+          <div className="control close" onClick={onClose}>
+            <Icon name="close" className="white" />
+          </div>
+        )}
       </div>
-    );
-  }
+
+      <div className="content">
+        {children}
+      </div>
+    </div>
+  );
 }
 
-const mapStateToProps = (state, ownProps) => ({
-  shortkeys_enabled: state.ui.shortkeys_enabled,
-});
-
-const mapDispatchToProps = (dispatch) => ({});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Modal);
+export default Modal;

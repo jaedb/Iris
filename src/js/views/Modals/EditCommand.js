@@ -40,7 +40,7 @@ class EditCommand extends React.Component {
 
     this.props.pusherActions.setCommand(this.state);
 
-    window.history.back();
+    this.props.uiActions.closeModal();
 
     // A bit hacky, but wait for a moment to allow the back navigation
     // and then scroll down to our commands list

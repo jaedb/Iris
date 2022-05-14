@@ -12,6 +12,7 @@ const getLibraries = (state) => state.core.libraries;
 const getSearchResults = (state) => state.core.search_results;
 const getGridGlowEnabled = (state) => state.ui.grid_glow_enabled;
 const getSorts = (state) => state.ui.sort;
+const getMopidySettings = (state) => state.mopidy;
 
 const makeItemSelector = (uri) => createSelector(
   [getItems],
@@ -119,7 +120,7 @@ const providers = {
   albums: [
     {
       scheme: 'local:',
-      uri: 'local:directory?type=album',
+      setting_name: 'library_albums_uri',
       title: i18n('services.mopidy.local'),
     },
     {
@@ -146,7 +147,7 @@ const providers = {
   artists: [
     {
       scheme: 'local:',
-      uri: 'local:directory?type=artist&role=albumartist',
+      setting_name: 'library_artists_uri',
       title: i18n('services.mopidy.local'),
     },
     {
@@ -173,7 +174,7 @@ const providers = {
   tracks: [
     {
       scheme: 'local:',
-      uri: 'local:directory?type=track',
+      setting_name: 'library_tracks_uri',
       title: i18n('services.mopidy.local'),
     },
     {
@@ -185,11 +186,18 @@ const providers = {
 };
 const getProvider = (type, scheme) => providers[type]?.find((p) => p.scheme === scheme);
 const getUriSchemes = (state) => state.mopidy.uri_schemes || [];
+const applyUriSettingToProviders = (filteredProviders, mopidySettings) => filteredProviders.map(
+  ({ setting_name, ...rest }) => ({
+    uri: setting_name ? mopidySettings[setting_name] : undefined,
+    ...rest,
+  }),
+);
 const makeProvidersSelector = (context) => createSelector(
-  [getUriSchemes],
-  (schemes) => {
+  [getUriSchemes, getMopidySettings],
+  (schemes, mopidySettings) => {
     if (!providers[context]) return [];
-    return providers[context].filter((p) => schemes.indexOf(p.scheme) > -1);
+    const results = providers[context].filter((p) => schemes.indexOf(p.scheme) > -1);
+    return applyUriSettingToProviders(results, mopidySettings);
   },
 );
 const makeSortSelector = (key, defaultField = 'sort_id') => createSelector(

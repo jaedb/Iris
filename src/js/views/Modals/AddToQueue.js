@@ -76,6 +76,9 @@ class AddToQueue extends React.Component {
       mopidyActions: {
         enqueueURIs,
       },
+      uiActions: {
+        closeModal,
+      },
       view: {
         uris = [],
       },
@@ -83,8 +86,7 @@ class AddToQueue extends React.Component {
 
     e.preventDefault();
     enqueueURIs({ uris, play_next });
-    this.reset();
-    window.history.back();
+    closeModal();
   }
 
   onChange = (text) => {

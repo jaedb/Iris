@@ -38,7 +38,7 @@ const CreatePlaylist = () => {
     dispatch(
       coreActions.createPlaylist({ ...playlist, tracks_uris }),
     );
-    window.history.back();
+    dispatch(uiActions.closeModal());
     return false;
   };
 

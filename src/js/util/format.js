@@ -738,7 +738,7 @@ const formatTrack = function (data) {
 
   // Remove lower-case encoding of ':'
   // See https://github.com/tkem/mopidy-dleyna/issues/72
-  track.uri = track.uri.replace('%3a', '%3A');
+  track.uri = track.uri?.replace('%3a', '%3A');
 
   return track;
 };
