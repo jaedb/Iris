@@ -116,6 +116,11 @@ const providers = {
       uri: 'tidal:my_playlists',
       title: i18n('services.tidal.title'),
     },
+    {
+      scheme: 'jellyfin:',
+      uri: 'jellyfin:playlists',
+      title: i18n('services.jellyfin.title'),
+    },
   ],
   albums: [
     {
@@ -143,6 +148,11 @@ const providers = {
       uri: 'ytmusic:album',
       title: i18n('services.youtube.title'),
     },
+    {
+      scheme: 'jellyfin:',
+      uri: 'jellyfin:albums',
+      title: i18n('services.jellyfin.title'),
+    },
   ],
   artists: [
     {
@@ -169,6 +179,11 @@ const providers = {
       scheme: 'ytmusic:',
       uri: 'ytmusic:artist',
       title: i18n('services.youtube.title'),
+    },
+    {
+      scheme: 'jellyfin:',
+      uri: 'jellyfin:artists',
+      title: i18n('services.jellyfin.title'),
     },
   ],
   tracks: [

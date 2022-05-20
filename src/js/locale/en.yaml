@@ -158,6 +158,8 @@ services:
     title: YouTube
   tidal:
     title: Tidal
+  jellyfin:
+    title: Jellyfin
 
 ##
 # Components

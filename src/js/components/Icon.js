@@ -72,6 +72,7 @@ const SourceIcon = ({
   switch (source) {
     case 'genius':
     case 'tidal':
+    case 'jellyfin':
       return <Icon name={source} type="svg" className="source" {...rest} />;
     default:
       return <Icon name={source} type="fontawesome" className="source" {...rest} />;
