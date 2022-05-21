@@ -421,10 +421,10 @@ export function getFeaturedPlaylists(forceRefetch = false) {
   };
 }
 
-export function getCategories() {
+export function getLibraryMoods() {
   return (dispatch, getState) => {
     const loaderId = generateGuid();
-    dispatch(uiActions.startLoading(loaderId, 'spotify_categories'));
+    dispatch(uiActions.startLoading(loaderId, 'spotify_moods'));
 
     let endpoint = 'browse/categories';
     endpoint += '?limit=50';

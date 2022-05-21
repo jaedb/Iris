@@ -22,6 +22,7 @@ const SecondaryLine = ({
     tracks = [],
     followers,
     albums_uris = [],
+    playlists_uris = [],
     artists,
   } = {},
 }) => {
@@ -31,6 +32,9 @@ const SecondaryLine = ({
 
   const items = () => {
     switch (type) {
+      case 'mood':
+      case 'playlist_group':
+        return null;
       case 'playlist':
         return <li><I18n path="specs.tracks" count={trackCount} /></li>;
       case 'artist':
@@ -97,6 +101,7 @@ const GridItem = ({
           }
           break;
         case 'album':
+        case 'playlist':
           dispatch(mopidyActions.getImages([item.uri]));
           break;
         default:

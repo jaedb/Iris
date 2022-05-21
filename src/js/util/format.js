@@ -289,6 +289,13 @@ const formatUsers = function (records = []) {
   }
   return formatted;
 };
+const formatPlaylistGroups = function (records = []) {
+  const formatted = [];
+  for (const record of records) {
+	    formatted.push(formatPlaylistGroup(record));
+  }
+  return formatted;
+};
 const formatCategories = function (records = []) {
   const formatted = [];
   for (const record of records) {
@@ -839,6 +846,28 @@ const formatCategory = function (data) {
   return category;
 };
 
+const formatPlaylistGroup = function (data) {
+  const playlistGroup = { type: 'playlist_group' };
+  const fields = [
+    'id',
+    'uri',
+    'name',
+    'playlists_uris',
+  ];
+
+  for (const field of fields) {
+    if (data.hasOwnProperty(field)) {
+      playlistGroup[field] = data[field];
+    }
+  }
+
+  if (data.icons) {
+    playlistGroup.images = formatImages(data.icons);
+  }
+
+  return playlistGroup;
+};
+
 /**
  * Format a snapcast client object into a universal format
  *
@@ -1030,6 +1059,8 @@ export {
   formatTracks,
   formatClient,
   formatGroup,
+  formatPlaylistGroup,
+  formatPlaylistGroups,
   formatCategory,
   formatCategories,
   collate,
@@ -1059,6 +1090,8 @@ export default {
   formatTracks,
   formatClient,
   formatGroup,
+  formatPlaylistGroup,
+  formatPlaylistGroups,
   formatCategory,
   formatCategories,
   collate,

@@ -15,12 +15,15 @@ import {
   formatAlbum,
   formatTrack,
   formatTracks,
-  formatSimpleObject,
+  formatPlaylists,
+  formatPlaylistGroup,
+  formatPlaylistGroups,
   getTrackIcon,
   formatArtists,
   formatArtist,
   formatPlaylist,
   injectSortId,
+  formatSimpleObject,
 } from '../../util/format';
 import {
   arrayOf,
@@ -1769,6 +1772,8 @@ const MopidyMiddleware = (function () {
             Object.keys(response).forEach((uri) => {
               const images = response[uri];
 
+              console.debug({ images })
+
               if (images) {
                 itemsWithImages.push({
                   uri,
@@ -1950,6 +1955,57 @@ const MopidyMiddleware = (function () {
           });
         break;
 
+      case 'MOPIDY_GET_LIBRARY_MOODS': {
+        store.dispatch(uiActions.startProcess(action.type, { notification: false }));
+
+        request(store, 'library.browse', { uri: action.uri })
+          .then((response) => {
+            const moods = response.map((mood) => ({
+              ...formatSimpleObject(mood),
+              type: 'mood',
+            }));
+
+            store.dispatch(
+              uiActions.updateProcess(
+                action.type,
+                {
+                  total: moods.length,
+                  remaining: moods.length,
+                },
+              ),
+            );
+
+            store.dispatch(coreActions.libraryLoaded({
+              uri: action.uri,
+              type: 'moods',
+              items_uris: arrayOf('uri', moods),
+            }));
+            store.dispatch(coreActions.itemsLoaded(moods));
+            store.dispatch(uiActions.stopLoading(action.uri));
+            store.dispatch(uiActions.processFinished(action.type));
+          });
+        break;
+      }
+
+      case 'MOPIDY_GET_PLAYLIST_GROUP': {
+        const decodedUri = action.uri ? decodeURIComponent(action.uri) : null;
+        store.dispatch(coreActions.itemLoaded({
+          uri: decodedUri,
+          loading: true,
+        }));
+        request(store, 'library.browse', { uri: action.uri })
+          .then((browse) => {
+            const playlists = formatPlaylists(browse);
+            const playlists_uris = arrayOf('uri', playlists);
+            store.dispatch(coreActions.itemsLoaded(playlists));
+            store.dispatch(coreActions.itemLoaded({
+              uri: decodedUri,
+              loading: false,
+              playlists_uris,
+            }));
+          })
+        break;
+      }
       case 'MOPIDY_GET_LIBRARY_PLAYLISTS': {
         store.dispatch(uiActions.startProcess(action.type, { notification: false }));
 

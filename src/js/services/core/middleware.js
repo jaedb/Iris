@@ -500,6 +500,29 @@ const CoreMiddleware = (function () {
         break;
       }
 
+      case 'LOAD_PLAYLIST_GROUP': {
+        const fetch = () => {
+          console.debug('fetching', action)
+          switch (uriSource(action.uri)) {
+            case 'spotify':
+              store.dispatch(spotifyActions.getCategory(action.uri, action.options));
+              break;
+            default:
+              store.dispatch(mopidyActions.getPlaylistGroup(action.uri, action.options));
+              break;
+          }
+        };
+        ensureLoaded({
+          store,
+          action,
+          fetch,
+          dependents: ['playlist_uris', 'playlists'],
+          type: 'playlist_group',
+        });
+        next(action);
+        break;
+      }
+
       case 'LOAD_USER': {
         const fetch = () => {
           switch (uriSource(action.uri)) {

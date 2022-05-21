@@ -94,6 +94,10 @@ const Sidebar = () => {
                 <Icon name="explore" type="material" />
                 <I18n path="sidebar.discover" />
               </Link>
+              <Link to="/discover/moods" className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
+                <Icon name="mood" type="material" />
+                <I18n path="sidebar.moods" />
+              </Link>
               <Link to="/discover/categories" className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="mood" type="material" />
                 <I18n path="sidebar.genre" />

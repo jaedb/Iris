@@ -65,7 +65,7 @@
     }
   }
 
-  &--tiles {
+  &--tile {
     .grid__item {
       position: relative;
 
@@ -79,6 +79,18 @@
         font-weight: 600;
         color: colour('white');
         z-index: 2;
+      }
+
+      .source {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 0;
+        font-size: 1.5rem;
+
+        img {
+          max-width: 1em;
+        }
       }
     }
 

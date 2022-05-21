@@ -5,6 +5,8 @@ import Featured from './Featured';
 import Categories from './Categories';
 import Category from './Category';
 import NewReleases from './NewReleases';
+import Moods from './Moods';
+import PlaylistGroup from './PlaylistGroup';
 
 export default () => (
   <Switch>
@@ -12,6 +14,16 @@ export default () => (
       exact
       path="/discover/recommendations/:uri?"
       component={Recommendations}
+    />
+    <Route
+      exact
+      path="/discover/moods"
+      component={Moods}
+    />
+    <Route
+      exact
+      path="/discover/moods/:uri/:name?"
+      component={PlaylistGroup}
     />
     <Route
       exact

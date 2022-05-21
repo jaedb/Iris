@@ -166,7 +166,7 @@ sidebar:
   now_playing: Now playing
   search: Search
   discover: Discover
-  genre: Genre / Mood
+  moods: Genre / Mood
   featured_playlists: Featured playlists
   new_releases: New releases
   my_music: My music
@@ -482,11 +482,8 @@ user:
   you: You
 discover:
   title: Discover
-  categories:
+  moods:
     title: 'Genre / Mood'
-  category:
-    title: 'Genre / Mood'
-    category: Category
   featured:
     title: Featured playlists
   new_releases:

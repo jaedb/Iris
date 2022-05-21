@@ -53,9 +53,7 @@ RUN python3 -m pip install --no-cache \
   tox \
   mopidy-mpd \
   mopidy-local \
-  dbus-python \
-  # pip not up-to-date for Mopidy-Tidal (https://github.com/tehkillerbee/mopidy-tidal/issues/14)
-  git+https://github.com/tehkillerbee/mopidy-tidal.git@master
+  dbus-python
 
 # Start helper script.
 COPY docker/entrypoint.sh /entrypoint.sh

@@ -477,10 +477,25 @@ export function deletePlaylist(uri) {
   };
 }
 
+export function getLibraryMoods(uri) {
+  return {
+    type: 'MOPIDY_GET_LIBRARY_MOODS',
+    uri,
+  };
+}
+
 export function getLibraryPlaylists(uri) {
   return {
     type: 'MOPIDY_GET_LIBRARY_PLAYLISTS',
     uri,
+  };
+}
+
+export function getPlaylistGroup(uri, options) {
+  return {
+    type: 'MOPIDY_GET_PLAYLIST_GROUP',
+    uri,
+    options,
   };
 }
 
