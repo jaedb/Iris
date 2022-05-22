@@ -760,6 +760,7 @@ const formatClient = function (data) {
   const client = { type: 'client' };
   const fields = [
     'id',
+    'loading',
     'connected',
     'name',
     'host_name',
@@ -825,6 +826,7 @@ const formatCategory = function (data) {
   const fields = [
     'id',
     'uri',
+    'loading',
     'name',
     'playlists_uris',
   ];
@@ -851,6 +853,7 @@ const formatPlaylistGroup = function (data) {
   const fields = [
     'id',
     'uri',
+    'loading',
     'name',
     'playlists_uris',
   ];
@@ -859,6 +862,10 @@ const formatPlaylistGroup = function (data) {
     if (data.hasOwnProperty(field)) {
       playlistGroup[field] = data[field];
     }
+  }
+
+  if (data.id) {
+    playlistGroup.uri = `spotify:category:${data.id}`
   }
 
   if (data.icons) {
@@ -879,6 +886,7 @@ const formatGroup = function (data) {
   const fields = [
     'id',
     'name',
+    'loading',
     'mute',
     'stream_id',
     'clients_ids',

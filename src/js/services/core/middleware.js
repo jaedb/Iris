@@ -504,7 +504,7 @@ const CoreMiddleware = (function () {
         const fetch = () => {
           switch (uriSource(action.uri)) {
             case 'spotify':
-              store.dispatch(spotifyActions.getCategory(action.uri, action.options));
+              store.dispatch(spotifyActions.getMood(action.uri, action.options));
               break;
             default:
               store.dispatch(mopidyActions.getPlaylistGroup(action.uri, action.options));
@@ -516,7 +516,7 @@ const CoreMiddleware = (function () {
           action,
           fetch,
           dependents: ['playlists_uris'],
-          type: 'playlist', // Refers to dependent's type
+          type: 'playlist',
         });
         next(action);
         break;
@@ -546,28 +546,6 @@ const CoreMiddleware = (function () {
         next(action);
         break;
       }
-
-      case 'LOAD_CATEGORY':
-        const fetch = () => {
-          switch (uriSource(action.uri)) {
-            case 'spotify':
-              store.dispatch(spotifyActions.getCategory(action.uri, action.options));
-              break;
-            default:
-              // No mopidy category model
-              break;
-          }
-        };
-        ensureLoaded({
-          store,
-          action,
-          fetch,
-          fullDependents: ['playlists_uris'],
-          type: 'category',
-        });
-
-        next(action);
-        break;
 
       case 'LOAD_LIBRARY':
         store.dispatch(uiActions.startLoading(action.uri, action.uri));

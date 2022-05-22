@@ -72,7 +72,7 @@ const PlaylistGroup = ({
     hideContextMenu();
   }
 
-  if (loading || playlistGroup?.loading) {
+  if (loading) {
     return <Loader body loading />;
   }
 
@@ -138,11 +138,22 @@ const PlaylistGroup = ({
         <Icon name="mood" type="material" />
         {playlistGroup.name || name}
       </Header>
-      <div className="content-wrapper">
-        <section className="grid-wrapper">
-          <Grid items={playlists} />
-        </section>
-      </div>
+      {playlistGroup?.loading ? (
+        <Loader
+          progress={{
+            remaining: playlistGroup?.playlists_uris?.length,
+            total: playlistGroup?.playlists_uris?.length,
+          }}
+          body
+          loading
+        />
+      ) : (
+        <div className="content-wrapper">
+          <section className="grid-wrapper">
+            <Grid items={playlists} />
+          </section>
+        </div>
+      )}
     </div>
   );
 }

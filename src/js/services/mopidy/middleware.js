@@ -1996,13 +1996,27 @@ const MopidyMiddleware = (function () {
           .then((browse) => {
             const playlists = formatPlaylists(browse);
             const playlists_uris = arrayOf('uri', playlists);
-            store.dispatch(coreActions.itemsLoaded(playlists));
-            store.dispatch(coreActions.itemLoaded({
-              ...playlistGroup,
-              loading: false,
-              playlists_uris,
-            }));
-          })
+            request(store, 'library.getImages', { uris: playlists_uris })
+              .then((response) => {
+                const playlistsWithImages = playlists.map((playlist) => {
+                  let images = response[playlist.uri] || [];
+                  if (images) {
+                    images = formatImages(digestMopidyImages(store.getState().mopidy, images));
+                  }
+                  return {
+                    ...playlist,
+                    images,
+                  };
+                });
+
+                store.dispatch(coreActions.itemsLoaded(playlistsWithImages));
+                store.dispatch(coreActions.itemLoaded({
+                  ...playlistGroup,
+                  loading: false,
+                  playlists_uris,
+                }));
+              });
+          });
         break;
       }
       case 'MOPIDY_GET_LIBRARY_PLAYLISTS': {
