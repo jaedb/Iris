@@ -85,33 +85,31 @@ const Sidebar = () => {
             </Link>
           </section>
 
-          {spotify_available && (
-            <section className="sidebar__menu__section">
-              <title className="sidebar__menu__section__title">
-                <I18n path="sidebar.discover" />
-              </title>
-              <Link to="/discover/recommendations" className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
-                <Icon name="explore" type="material" />
-                <I18n path="sidebar.discover" />
-              </Link>
-              <Link to="/discover/moods" className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
-                <Icon name="mood" type="material" />
-                <I18n path="sidebar.moods" />
-              </Link>
-              <Link to="/discover/categories" className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
-                <Icon name="mood" type="material" />
-                <I18n path="sidebar.genre" />
-              </Link>
-              <Link to="/discover/featured" className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
-                <Icon name="star" type="material" />
-                <I18n path="sidebar.featured_playlists" />
-              </Link>
-              <Link to="/discover/new-releases" className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
-                <Icon name="new_releases" type="material" />
-                <I18n path="sidebar.new_releases" />
-              </Link>
-            </section>
-          )}
+          <section className="sidebar__menu__section">
+            <title className="sidebar__menu__section__title">
+              <I18n path="sidebar.discover" />
+            </title>
+            <Link to="/discover/recommendations" className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
+              <Icon name="explore" type="material" />
+              <I18n path="sidebar.discover" />
+            </Link>
+            <Link to="/discover/moods" className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
+              <Icon name="mood" type="material" />
+              <I18n path="sidebar.moods" />
+            </Link>
+            <Link to="/discover/categories" className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
+              <Icon name="mood" type="material" />
+              <I18n path="sidebar.genre" />
+            </Link>
+            <Link to="/discover/featured" className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
+              <Icon name="star" type="material" />
+              <I18n path="sidebar.featured_playlists" />
+            </Link>
+            <Link to="/discover/new-releases" className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
+              <Icon name="new_releases" type="material" />
+              <I18n path="sidebar.new_releases" />
+            </Link>
+          </section>
 
           <section className="sidebar__menu__section">
             <title className="sidebar__menu__section__title">

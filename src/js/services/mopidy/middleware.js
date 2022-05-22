@@ -1772,8 +1772,6 @@ const MopidyMiddleware = (function () {
             Object.keys(response).forEach((uri) => {
               const images = response[uri];
 
-              console.debug({ images })
-
               if (images) {
                 itemsWithImages.push({
                   uri,
@@ -1989,17 +1987,18 @@ const MopidyMiddleware = (function () {
 
       case 'MOPIDY_GET_PLAYLIST_GROUP': {
         const decodedUri = action.uri ? decodeURIComponent(action.uri) : null;
-        store.dispatch(coreActions.itemLoaded({
+        const playlistGroup = formatPlaylistGroup({
           uri: decodedUri,
           loading: true,
-        }));
+        });
+        store.dispatch(coreActions.itemLoaded(playlistGroup));
         request(store, 'library.browse', { uri: action.uri })
           .then((browse) => {
             const playlists = formatPlaylists(browse);
             const playlists_uris = arrayOf('uri', playlists);
             store.dispatch(coreActions.itemsLoaded(playlists));
             store.dispatch(coreActions.itemLoaded({
-              uri: decodedUri,
+              ...playlistGroup,
               loading: false,
               playlists_uris,
             }));

@@ -50,9 +50,12 @@ const PlaylistGroup = ({
     }
   }, [playlistGroup]);
 
-  useEffect(() => {
-    loadPlaylistGroup(uri);
-  }, []);
+  useEffect(
+    () => {
+      if (uri) loadPlaylistGroup(uri);
+    },
+    [uri],
+  );
 
   const refresh = () => {
     hideContextMenu();

@@ -22,7 +22,6 @@ const SecondaryLine = ({
     tracks = [],
     followers,
     albums_uris = [],
-    playlists_uris = [],
     artists,
   } = {},
 }) => {
@@ -93,15 +92,15 @@ const GridItem = ({
 
   // Load images
   useEffect(() => {
-    if (!item.images) {
+    if (!item.images && !item.loading) {
       switch (item.type) {
         case 'artist':
           if (spotify_available) {
             dispatch(spotifyActions.getArtistImages(item));
           }
           break;
-        case 'album':
         case 'playlist':
+        case 'album':
           dispatch(mopidyActions.getImages([item.uri]));
           break;
         default:

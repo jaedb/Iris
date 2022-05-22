@@ -502,7 +502,6 @@ const CoreMiddleware = (function () {
 
       case 'LOAD_PLAYLIST_GROUP': {
         const fetch = () => {
-          console.debug('fetching', action)
           switch (uriSource(action.uri)) {
             case 'spotify':
               store.dispatch(spotifyActions.getCategory(action.uri, action.options));
@@ -516,8 +515,8 @@ const CoreMiddleware = (function () {
           store,
           action,
           fetch,
-          dependents: ['playlist_uris', 'playlists'],
-          type: 'playlist_group',
+          dependents: ['playlists_uris'],
+          type: 'playlist', // Refers to dependent's type
         });
         next(action);
         break;
