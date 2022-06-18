@@ -7456,10 +7456,10 @@ h4 .loader {
   -webkit-transform: scale(0.98);
   transform: scale(0.98);
 }
-.grid--tiles .grid__item {
+.grid--tile .grid__item {
   position: relative;
 }
-.grid--tiles .grid__item__name {
+.grid--tile .grid__item__name {
   position: absolute;
   bottom: 15%;
   left: 0;
@@ -7470,8 +7470,18 @@ h4 .loader {
   color: #FFFFFF;
   z-index: 2;
 }
+.grid--tile .grid__item .source {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 0;
+  font-size: 1.5rem;
+}
+.grid--tile .grid__item .source img {
+  max-width: 1em;
+}
 @media (min-width: 1001px) {
-  .grid--tiles .grid__item__name {
+  .grid--tile .grid__item__name {
     font-size: 16px;
   }
 }

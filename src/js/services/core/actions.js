@@ -174,6 +174,14 @@ export function loadPlaylist(uri, options = {}) {
   };
 }
 
+export function loadPlaylistGroup(uri, options = {}) {
+  return {
+    type: 'LOAD_PLAYLIST_GROUP',
+    uri,
+    options,
+  };
+}
+
 export function loadUser(uri, options = {}) {
   return {
     type: 'LOAD_USER',

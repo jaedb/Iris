@@ -31,6 +31,9 @@ const SecondaryLine = ({
 
   const items = () => {
     switch (type) {
+      case 'mood':
+      case 'playlist_group':
+        return null;
       case 'playlist':
         return <li><I18n path="specs.tracks" count={trackCount} /></li>;
       case 'artist':
@@ -75,6 +78,7 @@ const GridItem = ({
     type: item?.type?.toUpperCase() || 'UNKNOWN',
     item: { item, context: item },
   });
+  const tile = ['playlist_group', 'mood', 'directory', 'category'].indexOf(item?.type) > -1
 
   const onContextMenu = (e) => {
     e.preventDefault();
@@ -89,13 +93,14 @@ const GridItem = ({
 
   // Load images
   useEffect(() => {
-    if (!item.images) {
+    if (!item.images && !item.loading) {
       switch (item.type) {
         case 'artist':
           if (spotify_available) {
             dispatch(spotifyActions.getArtistImages(item));
           }
           break;
+        // case 'playlist':
         case 'album':
           dispatch(mopidyActions.getImages([item.uri]));
           break;
@@ -123,7 +128,7 @@ const GridItem = ({
   return (
     <div
       ref={isTouchDevice() ? undefined : drag}
-      className={`grid__item grid__item--${itemProp.type}`}
+      className={`grid__item grid__item--${itemProp.type} ${tile ? 'grid__item--tile' : ''}`}
     >
       <Link
         to={to}

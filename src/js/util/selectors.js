@@ -198,6 +198,40 @@ const providers = {
       title: i18n('services.spotify.title'),
     },
   ],
+  moods: [
+    {
+      scheme: 'spotify:',
+      uri: 'spotify:categories',
+      title: i18n('services.spotify.title'),
+    },
+    {
+      scheme: 'tidal:',
+      uri: 'tidal:moods',
+      title: i18n('services.tidal.title'),
+    },
+    {
+      scheme: 'tidal:',
+      uri: 'tidal:genres',
+      title: i18n('services.tidal.title'),
+    },
+    {
+      scheme: 'ytmusic:',
+      uri: 'ytmusic:mood',
+      title: i18n('services.youtube.title'),
+    },
+  ],
+  featured_playlists: [
+    {
+      scheme: 'spotify:',
+      uri: 'spotify:featured',
+      title: i18n('services.spotify.title'),
+    },
+    {
+      scheme: 'ytmusic:',
+      uri: 'ytmusic:auto',
+      title: i18n('services.youtube.title'),
+    },
+  ],
 };
 const getProvider = (type, scheme) => providers[type]?.find((p) => p.scheme === scheme);
 const getUriSchemes = (state) => state.mopidy.uri_schemes || [];

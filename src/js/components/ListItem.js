@@ -30,6 +30,13 @@ const getValue = (item = {}, name = '') => {
       if (!total && !value) return null;
       return <I18n path="specs.tracks" count={nice_number(total || value.length)} />;
     }
+    case 'playlists': {
+      const {
+        playlists_uris: array = [],
+      } = item;
+      if (!array.length) return null;
+      return <I18n path="specs.playlists" count={nice_number(array.length)} />;
+    }
     case 'artists': {
       const {
         artists_total: total,

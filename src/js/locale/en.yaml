@@ -138,6 +138,7 @@ services:
     searching: 'Searching %{provider} %{type}'
     searching_providers: 'Searching %{count} Mopidy providers'
     loading_albums: 'Loading %{count} local albums'
+    loading_artwork: 'Loading artwork'
   spotify:
     title: Spotify
   pusher:
@@ -168,7 +169,7 @@ sidebar:
   now_playing: Now playing
   search: Search
   discover: Discover
-  genre: Genre / Mood
+  moods: Genre / Mood
   featured_playlists: Featured playlists
   new_releases: New releases
   my_music: My music
@@ -484,12 +485,9 @@ user:
   you: You
 discover:
   title: Discover
-  categories:
+  moods:
     title: 'Genre / Mood'
-  category:
-    title: 'Genre / Mood'
-    category: Category
-  featured:
+  featured_playlists:
     title: Featured playlists
   new_releases:
     title: New releases

@@ -5,7 +5,7 @@ import { GridItem } from './GridItem';
 const Grid = memo(({
   items,
   className = '',
-  mini = false,
+  mini,
   getLink,
   sourceIcon,
 }) => {
@@ -16,7 +16,10 @@ const Grid = memo(({
       className={`grid grid--${items[0].type}s ${className} ${mini ? 'grid--mini' : ''}`}
       items={items}
       itemComponent={GridItem}
-      itemProps={{ getLink, sourceIcon }}
+      itemProps={{
+        getLink,
+        sourceIcon,
+      }}
     />
   );
 });
