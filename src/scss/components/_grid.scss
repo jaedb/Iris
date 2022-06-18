@@ -18,7 +18,8 @@
     &__thumbnail {
       @include animate();
       max-width: 100%;
-      
+      z-index: unset;
+
       &__image {
         transform: scale(0.98);
       }
@@ -36,6 +37,41 @@
 
       .source {
         padding-right: 6px;
+      }
+    }
+    
+
+    &--tile {
+      position: relative;
+      
+      .grid__item__name {
+        position: absolute;
+        bottom: 15%;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 14px;
+        font-weight: 600;
+        color: colour('white');
+        z-index: 2;
+      }
+
+      .source {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 0;
+        font-size: 1.5rem;
+
+        img {
+          max-width: 1em;
+        }
+      }
+    }
+
+    @include responsive(null, $bp_wide) {
+      .grid__item__name {
+        font-size: 16px;
       }
     }
 
@@ -60,32 +96,6 @@
           -moz-transform: scale(0.98);
           -webkit-transform: scale(0.98);
           transform: scale(0.98);
-        }
-      }
-    }
-  }
-
-  &--tiles {
-    .grid__item {
-      position: relative;
-
-      &__name {
-        position: absolute;
-        bottom: 15%;
-        left: 0;
-        right: 0;
-        text-align: center;
-        font-size: 14px;
-        font-weight: 600;
-        color: colour('white');
-        z-index: 2;
-      }
-    }
-
-    @include responsive(null, $bp_wide) {
-      .grid__item {
-        &__name {
-          font-size: 16px;
         }
       }
     }

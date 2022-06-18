@@ -7420,6 +7420,7 @@ h4 .loader {
   -o-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out;
   max-width: 100%;
+  z-index: unset;
 }
 .grid__item__thumbnail__image {
   transform: scale(0.98);
@@ -7440,6 +7441,35 @@ h4 .loader {
 .grid__item__secondary .source {
   padding-right: 6px;
 }
+.grid__item--tile {
+  position: relative;
+}
+.grid__item--tile .grid__item__name {
+  position: absolute;
+  bottom: 15%;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #FFFFFF;
+  z-index: 2;
+}
+.grid__item--tile .source {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 0;
+  font-size: 1.5rem;
+}
+.grid__item--tile .source img {
+  max-width: 1em;
+}
+@media (min-width: 1001px) {
+  .grid__item .grid__item__name {
+    font-size: 16px;
+  }
+}
 .grid__item:hover .thumbnail__image {
   transform: scale(1.01);
 }
@@ -7455,25 +7485,6 @@ h4 .loader {
   -moz-transform: scale(0.98);
   -webkit-transform: scale(0.98);
   transform: scale(0.98);
-}
-.grid--tiles .grid__item {
-  position: relative;
-}
-.grid--tiles .grid__item__name {
-  position: absolute;
-  bottom: 15%;
-  left: 0;
-  right: 0;
-  text-align: center;
-  font-size: 14px;
-  font-weight: 600;
-  color: #FFFFFF;
-  z-index: 2;
-}
-@media (min-width: 1001px) {
-  .grid--tiles .grid__item__name {
-    font-size: 16px;
-  }
 }
 @media (min-width: 1851px) {
   .grid--mini .grid__item {

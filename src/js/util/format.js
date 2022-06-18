@@ -289,6 +289,13 @@ const formatUsers = function (records = []) {
   }
   return formatted;
 };
+const formatPlaylistGroups = function (records = []) {
+  const formatted = [];
+  for (const record of records) {
+	    formatted.push(formatPlaylistGroup(record));
+  }
+  return formatted;
+};
 const formatCategories = function (records = []) {
   const formatted = [];
   for (const record of records) {
@@ -753,6 +760,7 @@ const formatClient = function (data) {
   const client = { type: 'client' };
   const fields = [
     'id',
+    'loading',
     'connected',
     'name',
     'host_name',
@@ -818,6 +826,7 @@ const formatCategory = function (data) {
   const fields = [
     'id',
     'uri',
+    'loading',
     'name',
     'playlists_uris',
   ];
@@ -839,6 +848,33 @@ const formatCategory = function (data) {
   return category;
 };
 
+const formatPlaylistGroup = function (data) {
+  const playlistGroup = { type: 'playlist_group' };
+  const fields = [
+    'id',
+    'uri',
+    'loading',
+    'name',
+    'playlists_uris',
+  ];
+
+  for (const field of fields) {
+    if (data.hasOwnProperty(field)) {
+      playlistGroup[field] = data[field];
+    }
+  }
+
+  if (data.id) {
+    playlistGroup.uri = `spotify:category:${data.id}`
+  }
+
+  if (data.icons) {
+    playlistGroup.images = formatImages(data.icons);
+  }
+
+  return playlistGroup;
+};
+
 /**
  * Format a snapcast client object into a universal format
  *
@@ -850,6 +886,7 @@ const formatGroup = function (data) {
   const fields = [
     'id',
     'name',
+    'loading',
     'mute',
     'stream_id',
     'clients_ids',
@@ -1030,6 +1067,8 @@ export {
   formatTracks,
   formatClient,
   formatGroup,
+  formatPlaylistGroup,
+  formatPlaylistGroups,
   formatCategory,
   formatCategories,
   collate,
@@ -1059,6 +1098,8 @@ export default {
   formatTracks,
   formatClient,
   formatGroup,
+  formatPlaylistGroup,
+  formatPlaylistGroups,
   formatCategory,
   formatCategories,
   collate,

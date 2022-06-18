@@ -12,7 +12,7 @@ services:
   mopidy:
     image: jaedb/iris
     environment:
-      - PIP_PACKAGES="Mopidy-SoundCloud Mopidy-MusicBox-Webclient"
+      - PIP_PACKAGES=Mopidy-YTMusic Mopidy-Tidal Mopidy-SoundCloud Mopidy-MusicBox-Webclient
     build:
       context: .
     depends_on:

@@ -40,7 +40,7 @@ RUN mkdir -p /usr/local/share/keyrings \
 # installing using pip.
 # Note using ADD helps prevent caching issues. When HEAD changes, our cache is invalidated, whee!
 ADD https://api.github.com/repos/jaedb/Iris/git/refs/heads/master version.json
-RUN git clone -b master https://github.com/jaedb/Iris.git /iris \
+RUN git clone --depth 1 -b master https://github.com/jaedb/Iris.git /iris \
  && cd /iris \
  && python3 setup.py develop \
  && mkdir -p /var/lib/mopidy/.config \
@@ -53,9 +53,7 @@ RUN python3 -m pip install --no-cache \
   tox \
   mopidy-mpd \
   mopidy-local \
-  dbus-python \
-  # pip not up-to-date for Mopidy-Tidal (https://github.com/tehkillerbee/mopidy-tidal/issues/14)
-  git+https://github.com/tehkillerbee/mopidy-tidal.git@master
+  dbus-python
 
 # Start helper script.
 COPY docker/entrypoint.sh /entrypoint.sh

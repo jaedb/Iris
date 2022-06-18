@@ -7,8 +7,8 @@ import {
   upgradeSpotifyPlaylistUris,
 } from '../../util/helpers';
 import {
-  formatCategory,
-  formatCategories,
+  formatPlaylistGroup,
+  formatPlaylistGroups,
   formatTracks,
   formatPlaylist,
   formatPlaylists,
@@ -362,9 +362,10 @@ export function getTrack(uri, { forceRefetch, full, lyrics }) {
   };
 }
 
-export function getFeaturedPlaylists(forceRefetch = false) {
+export function getLibraryFeaturedPlaylists(forceRefetch = false) {
   return (dispatch, getState) => {
-    dispatch({ type: 'SPOTIFY_FEATURED_PLAYLISTS_LOADED', data: false });
+    const processKey = 'SPOTIFY_GET_LIBRARY_FEATURED_PLAYLISTS';
+    dispatch({ type: processKey, data: false });
 
     const date = new Date();
     date.setHours(date.getHours());
@@ -402,9 +403,13 @@ export function getFeaturedPlaylists(forceRefetch = false) {
         );
 
         dispatch(coreActions.itemsLoaded(playlists));
-
+        dispatch(coreActions.libraryLoaded({
+          uri: 'spotify:featured',
+          type: 'featured_playlists',
+          items_uris: arrayOf('uri', playlists),
+        }));
         dispatch({
-          type: 'SPOTIFY_FEATURED_PLAYLISTS_LOADED',
+          type: processKey,
           data: {
             message: response.message,
             uris: upgradeSpotifyPlaylistUris(arrayOf('uri', playlists)),
@@ -421,68 +426,69 @@ export function getFeaturedPlaylists(forceRefetch = false) {
   };
 }
 
-export function getCategories() {
+export function getLibraryMoods(forceRefetch) {
   return (dispatch, getState) => {
-    const loaderId = generateGuid();
-    dispatch(uiActions.startLoading(loaderId, 'spotify_categories'));
+    const {
+      spotify: {
+        country,
+        locale,
+      } = {},
+    } = getState();
+    const processKey = 'SPOTIFY_GET_LIBRARY_MOODS';
+    dispatch(uiActions.startProcess(processKey, { notification: false }));
 
-    let endpoint = 'browse/categories';
-    endpoint += '?limit=50';
-    endpoint += `&country=${getState().spotify.country}`;
-    endpoint += `&locale=${getState().spotify.locale}`;
+    let libraryItems = [];
+    const fetch = (endpoint) => request({ dispatch, getState, endpoint })
+      .then((response) => {
+        const processor = getState().ui.processes[processKey];
+        if (processor && processor.status === 'cancelling') {
+          dispatch(uiActions.stopLoading('spotify:library:moods'));
+          dispatch(uiActions.processCancelled(processKey));
+          return;
+        }
 
-    request({ dispatch, getState, endpoint })
-      .then(
-        (response) => {
-          let results = formatCategories(response.categories.items);
+        dispatch(uiActions.updateProcess(
+          processKey,
+          { total: response.total, remaining: response.total - libraryItems.length },
+        ));
 
-          const fetchResults = (resultsEndpoint) => request({
-            dispatch,
-            getState,
-            endpoint: resultsEndpoint,
-          }).then((response) => {
-            results = [
-              ...results,
-              ...formatCategories(response.categories.items),
-            ];
-            if (response.categories.next) {
-              fetchResults(response.categories.next);
-            } else {
-              dispatch({
-                type: 'SPOTIFY_CATEGORIES_LOADED',
-                categories: results,
-              });
-              dispatch(uiActions.stopLoading(loaderId));
-            }
-          });
-          fetchResults(endpoint);
-        },
-        (error) => {
-          dispatch(uiActions.stopLoading(loaderId));
-          dispatch(coreActions.handleException(
-            'Could not load categories',
-            error,
-          ));
-        },
-      );
+        const items = formatPlaylistGroups(response.categories.items);
+        libraryItems = [...libraryItems, ...items];
+        if (response.next) {
+          fetch(`${response.next}${forceRefetch ? `&refetch=${Date.now()}` : ''}`);
+        } else {
+          dispatch(uiActions.processFinished(processKey));
+          dispatch(coreActions.itemsLoaded(libraryItems));
+          dispatch(coreActions.libraryLoaded({
+            uri: 'spotify:categories',
+            type: 'moods',
+            items_uris: arrayOf('uri', libraryItems),
+          }));
+        }
+      });
+
+    let endpoint = `browse/categories?limit=50&country=${country}&locale=${locale}`;
+    if (forceRefetch) endpoint += `&refetch=${Date.now()}`;
+    fetch(endpoint);
   };
 }
 
-export function getCategory(uri, { forceRefetch } = {}) {
+export function getMood(uri, { forceRefetch } = {}) {
   return (dispatch, getState) => {
+    const {
+      spotify: {
+        country,
+        locale,
+      } = {},
+    } = getState();
     const loaderId = generateGuid();
-    dispatch(uiActions.startLoading(loaderId, `spotify_category_${uri}`));
+    dispatch(uiActions.startLoading(loaderId, `spotify_mood_${uri}`));
 
     const id = getFromUri('categoryid', uri);
-    let endpoint = `browse/categories/${id}`;
-    endpoint += `?country=${getState().spotify.country}`;
-    endpoint += `&locale=${getState().spotify.locale}`;
+    let endpoint = `browse/categories/${id}?country=${country}&locale=${locale}`;
     if (forceRefetch) endpoint += `&refetch=${Date.now()}`;
 
-    let plEndpoint = `browse/categories/${id}/playlists`;
-    plEndpoint += '?limit=50';
-    plEndpoint += `&country=${getState().spotify.country}`;
-    plEndpoint += `&locale=${getState().spotify.locale}`;
+    let plEndpoint = `browse/categories/${id}/playlists?limit=50&country=${country}&locale=${locale}`;
     if (forceRefetch) plEndpoint += `&refetch=${Date.now()}`;
 
     request({
@@ -492,7 +498,7 @@ export function getCategory(uri, { forceRefetch } = {}) {
       uri,
     }).then(
       (response) => {
-        const category = formatCategory(response);
+        const playlistGroup = formatPlaylistGroup(response);
 
         let playlists = [];
         const fetchPlaylists = (plEndpoint) => request({
@@ -505,7 +511,7 @@ export function getCategory(uri, { forceRefetch } = {}) {
             fetchPlaylists(response.playlists.next);
           } else {
             dispatch(coreActions.itemLoaded({
-              ...category,
+              ...playlistGroup,
               playlists_uris: arrayOf('uri', playlists),
             }));
             dispatch(coreActions.itemsLoaded(playlists));

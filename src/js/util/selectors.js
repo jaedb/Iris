@@ -116,6 +116,11 @@ const providers = {
       uri: 'tidal:my_playlists',
       title: i18n('services.tidal.title'),
     },
+    {
+      scheme: 'jellyfin:',
+      uri: 'jellyfin:playlists',
+      title: i18n('services.jellyfin.title'),
+    },
   ],
   albums: [
     {
@@ -142,6 +147,11 @@ const providers = {
       scheme: 'ytmusic:',
       uri: 'ytmusic:album',
       title: i18n('services.youtube.title'),
+    },
+    {
+      scheme: 'jellyfin:',
+      uri: 'jellyfin:albums',
+      title: i18n('services.jellyfin.title'),
     },
   ],
   artists: [
@@ -170,6 +180,11 @@ const providers = {
       uri: 'ytmusic:artist',
       title: i18n('services.youtube.title'),
     },
+    {
+      scheme: 'jellyfin:',
+      uri: 'jellyfin:artists',
+      title: i18n('services.jellyfin.title'),
+    },
   ],
   tracks: [
     {
@@ -181,6 +196,40 @@ const providers = {
       scheme: 'spotify:',
       uri: 'spotify:library:tracks',
       title: i18n('services.spotify.title'),
+    },
+  ],
+  moods: [
+    {
+      scheme: 'spotify:',
+      uri: 'spotify:categories',
+      title: i18n('services.spotify.title'),
+    },
+    {
+      scheme: 'tidal:',
+      uri: 'tidal:moods',
+      title: i18n('services.tidal.title'),
+    },
+    {
+      scheme: 'tidal:',
+      uri: 'tidal:genres',
+      title: i18n('services.tidal.title'),
+    },
+    {
+      scheme: 'ytmusic:',
+      uri: 'ytmusic:mood',
+      title: i18n('services.youtube.title'),
+    },
+  ],
+  featured_playlists: [
+    {
+      scheme: 'spotify:',
+      uri: 'spotify:featured',
+      title: i18n('services.spotify.title'),
+    },
+    {
+      scheme: 'ytmusic:',
+      uri: 'ytmusic:auto',
+      title: i18n('services.youtube.title'),
     },
   ],
 };

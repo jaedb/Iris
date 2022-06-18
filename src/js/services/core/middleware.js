@@ -500,6 +500,28 @@ const CoreMiddleware = (function () {
         break;
       }
 
+      case 'LOAD_PLAYLIST_GROUP': {
+        const fetch = () => {
+          switch (uriSource(action.uri)) {
+            case 'spotify':
+              store.dispatch(spotifyActions.getMood(action.uri, action.options));
+              break;
+            default:
+              store.dispatch(mopidyActions.getPlaylistGroup(action.uri, action.options));
+              break;
+          }
+        };
+        ensureLoaded({
+          store,
+          action,
+          fetch,
+          dependents: ['playlists_uris'],
+          type: 'playlist',
+        });
+        next(action);
+        break;
+      }
+
       case 'LOAD_USER': {
         const fetch = () => {
           switch (uriSource(action.uri)) {
@@ -525,30 +547,9 @@ const CoreMiddleware = (function () {
         break;
       }
 
-      case 'LOAD_CATEGORY':
-        const fetch = () => {
-          switch (uriSource(action.uri)) {
-            case 'spotify':
-              store.dispatch(spotifyActions.getCategory(action.uri, action.options));
-              break;
-            default:
-              // No mopidy category model
-              break;
-          }
-        };
-        ensureLoaded({
-          store,
-          action,
-          fetch,
-          fullDependents: ['playlists_uris'],
-          type: 'category',
-        });
-
-        next(action);
-        break;
-
       case 'LOAD_LIBRARY':
         store.dispatch(uiActions.startLoading(action.uri, action.uri));
+        console.debug(action);
         const fetchLibrary = () => {
           switch (uriSource(action.uri)) {
             case 'spotify':
