@@ -94,8 +94,12 @@ const ContextMenuItems = ({
             <>
               <Radio uris={[item.uri]} />
               <Divider />
-              <Library uri={item.uri} inLibrary={item.in_library} />
-              <Divider />
+              {item.provider === 'spotify' && (
+                <>
+                  <Library uri={item.uri} inLibrary={item.in_library} />
+                  <Divider />
+                </>
+              )}
               <Discover uris={[item.uri]} context={context} />
               <Divider />
             </>
@@ -112,7 +116,7 @@ const ContextMenuItems = ({
           <Play uri={item.uri} action={playPlaylist} context={item} shuffle />
           <Enqueue uri={item.uri} action={enqueuePlaylist} context={item} play_next />
           <Enqueue uri={item.uri} action={enqueuePlaylist} context={item} />
-          <Library uri={item.uri} inLibrary={item.in_library} />
+          {item.provider === 'spotify' && <Library uri={item.uri} inLibrary={item.in_library} />}
           <Pin item={item} isPinned={item.is_pinned} />
           <Divider />
           {item.user && (
@@ -207,6 +211,15 @@ const ContextMenuItems = ({
               <Remove items={items} context={context} />
             </>
           )}
+        </>
+      );
+    }
+    case 'playlist_group':
+    case 'mood':
+    case 'category': {
+      return (
+        <>
+          <Copy uris={[item.uri]} />
         </>
       );
     }
