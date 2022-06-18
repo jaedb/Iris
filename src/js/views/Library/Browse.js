@@ -83,8 +83,16 @@ class Browse extends React.Component {
             subdirectory.icons = ['/iris/assets/backgrounds/browse-itunes.jpg'];
             break;
 
-          case 'Soma FM':
+          case 'SomaFM':
             subdirectory.icons = ['/iris/assets/backgrounds/browse-somafm.jpg'];
+            break;
+			
+	  case 'Jellyfin':
+            subdirectory.icons = ['/iris/assets/backgrounds/browse-jellyfin.jpg'];
+            break;
+			
+          case 'Podcasts':
+            subdirectory.icons = ['/iris/assets/backgrounds/browse-podcasts.jpg'];
             break;
 
           case 'Tidal':
