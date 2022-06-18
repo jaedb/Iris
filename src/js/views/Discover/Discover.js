@@ -1,12 +1,11 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import Recommendations from './Recommendations';
-import Featured from './Featured';
-import Categories from './Categories';
-import Category from './Category';
+import FeaturedPlaylists from './FeaturedPlaylists';
 import NewReleases from './NewReleases';
 import Moods from './Moods';
 import PlaylistGroup from './PlaylistGroup';
+import Playlist from '../Playlist';
 
 export default () => (
   <Switch>
@@ -27,18 +26,18 @@ export default () => (
     />
     <Route
       exact
-      path="/discover/featured"
-      component={Featured}
+      path="/discover/featured-playlists"
+      component={FeaturedPlaylists}
     />
     <Route
       exact
-      path="/discover/categories/:uri"
-      component={Category}
+      path="/discover/featured-playlists/playlist/:uri/:name?"
+      component={Playlist}
     />
     <Route
       exact
-      path="/discover/categories"
-      component={Categories}
+      path="/discover/featured-playlists/playlist_group/:uri/:name?"
+      component={PlaylistGroup}
     />
     <Route
       exact

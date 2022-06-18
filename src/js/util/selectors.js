@@ -205,6 +205,18 @@ const providers = {
       title: i18n('services.youtube.title'),
     },
   ],
+  featured_playlists: [
+    {
+      scheme: 'spotify:',
+      uri: 'spotify:featured',
+      title: i18n('services.spotify.title'),
+    },
+    {
+      scheme: 'ytmusic:',
+      uri: 'ytmusic:auto',
+      title: i18n('services.youtube.title'),
+    },
+  ],
 };
 const getProvider = (type, scheme) => providers[type]?.find((p) => p.scheme === scheme);
 const getUriSchemes = (state) => state.mopidy.uri_schemes || [];

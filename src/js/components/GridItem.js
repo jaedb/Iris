@@ -78,6 +78,7 @@ const GridItem = ({
     type: item?.type?.toUpperCase() || 'UNKNOWN',
     item: { item, context: item },
   });
+  const tile = ['playlist_group', 'mood', 'directory', 'category'].indexOf(item?.type) > -1
 
   const onContextMenu = (e) => {
     e.preventDefault();
@@ -127,7 +128,7 @@ const GridItem = ({
   return (
     <div
       ref={isTouchDevice() ? undefined : drag}
-      className={`grid__item grid__item--${itemProp.type}`}
+      className={`grid__item grid__item--${itemProp.type} ${tile ? 'grid__item--tile' : ''}`}
     >
       <Link
         to={to}

@@ -138,6 +138,7 @@ services:
     searching: 'Searching %{provider} %{type}'
     searching_providers: 'Searching %{count} Mopidy providers'
     loading_albums: 'Loading %{count} local albums'
+    loading_artwork: 'Loading artwork'
   spotify:
     title: Spotify
   pusher:
@@ -484,7 +485,7 @@ discover:
   title: Discover
   moods:
     title: 'Genre / Mood'
-  featured:
+  featured_playlists:
     title: Featured playlists
   new_releases:
     title: New releases

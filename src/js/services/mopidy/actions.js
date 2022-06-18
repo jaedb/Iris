@@ -484,6 +484,13 @@ export function getLibraryMoods(uri) {
   };
 }
 
+export function getLibraryFeaturedPlaylists(uri) {
+  return {
+    type: 'MOPIDY_GET_LIBRARY_FEATURED_PLAYLISTS',
+    uri,
+  };
+}
+
 export function getLibraryPlaylists(uri) {
   return {
     type: 'MOPIDY_GET_LIBRARY_PLAYLISTS',

@@ -18,7 +18,8 @@
     &__thumbnail {
       @include animate();
       max-width: 100%;
-      
+      z-index: unset;
+
       &__image {
         transform: scale(0.98);
       }
@@ -38,38 +39,12 @@
         padding-right: 6px;
       }
     }
+    
 
-    &:hover {
-      .thumbnail {
-        &__image {
-          transform: scale(1.01);
-
-          &--glow {
-            /*@include blur(20px);*/
-            transform: rotateX(6deg);
-          }
-        }
-      }
-    }
-
-    &:active,
-    &:focus {
-      .thumbnail {
-        &__image {
-          @include noanimate();
-          -moz-transform: scale(0.98);
-          -webkit-transform: scale(0.98);
-          transform: scale(0.98);
-        }
-      }
-    }
-  }
-
-  &--tile {
-    .grid__item {
+    &--tile {
       position: relative;
-
-      &__name {
+      
+      .grid__item__name {
         position: absolute;
         bottom: 15%;
         left: 0;
@@ -95,9 +70,32 @@
     }
 
     @include responsive(null, $bp_wide) {
-      .grid__item {
-        &__name {
-          font-size: 16px;
+      .grid__item__name {
+        font-size: 16px;
+      }
+    }
+
+    &:hover {
+      .thumbnail {
+        &__image {
+          transform: scale(1.01);
+
+          &--glow {
+            /*@include blur(20px);*/
+            transform: rotateX(6deg);
+          }
+        }
+      }
+    }
+
+    &:active,
+    &:focus {
+      .thumbnail {
+        &__image {
+          @include noanimate();
+          -moz-transform: scale(0.98);
+          -webkit-transform: scale(0.98);
+          transform: scale(0.98);
         }
       }
     }

@@ -362,9 +362,10 @@ export function getTrack(uri, { forceRefetch, full, lyrics }) {
   };
 }
 
-export function getFeaturedPlaylists(forceRefetch = false) {
+export function getLibraryFeaturedPlaylists(forceRefetch = false) {
   return (dispatch, getState) => {
-    dispatch({ type: 'SPOTIFY_FEATURED_PLAYLISTS_LOADED', data: false });
+    const processKey = 'SPOTIFY_GET_LIBRARY_FEATURED_PLAYLISTS';
+    dispatch({ type: processKey, data: false });
 
     const date = new Date();
     date.setHours(date.getHours());
@@ -402,9 +403,13 @@ export function getFeaturedPlaylists(forceRefetch = false) {
         );
 
         dispatch(coreActions.itemsLoaded(playlists));
-
+        dispatch(coreActions.libraryLoaded({
+          uri: 'spotify:featured',
+          type: 'featured_playlists',
+          items_uris: arrayOf('uri', playlists),
+        }));
         dispatch({
-          type: 'SPOTIFY_FEATURED_PLAYLISTS_LOADED',
+          type: processKey,
           data: {
             message: response.message,
             uris: upgradeSpotifyPlaylistUris(arrayOf('uri', playlists)),

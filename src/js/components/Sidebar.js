@@ -104,7 +104,7 @@ const Sidebar = () => {
               <I18n path="sidebar.moods" />
             </Link>
             {spotify_available && (
-              <Link to="/discover/featured" className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
+              <Link to="/discover/featured-playlists" className="sidebar__menu__item" activeClassName="sidebar__menu__item--active">
                 <Icon name="star" type="material" />
                 <I18n path="sidebar.featured_playlists" />
               </Link>

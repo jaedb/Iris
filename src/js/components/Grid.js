@@ -6,7 +6,6 @@ const Grid = memo(({
   items,
   className = '',
   mini,
-  tile,
   getLink,
   sourceIcon,
 }) => {
@@ -14,13 +13,12 @@ const Grid = memo(({
 
   return (
     <SmartList
-      className={`grid grid--${items[0].type}s ${className} ${mini ? 'grid--mini' : ''} ${tile ? 'grid--tile' : ''}`}
+      className={`grid grid--${items[0].type}s ${className} ${mini ? 'grid--mini' : ''}`}
       items={items}
       itemComponent={GridItem}
       itemProps={{
         getLink,
         sourceIcon,
-        tile,
       }}
     />
   );

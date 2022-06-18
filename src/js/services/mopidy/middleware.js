@@ -1899,7 +1899,7 @@ const MopidyMiddleware = (function () {
               } = response;
 
               // Not all endpoints give us tracks/subdirectories to library.lookup
-              if (!results.length || uri.startsWith('file:')) {
+              if (!results.length || uri.startsWith('file:') || uri.startsWith('ytmusic:')) {
                 console.info(`No 'library.lookup' results for ${uri}, trying 'library.browse'`);
                 getBrowse();
               } else {
@@ -1985,37 +1985,107 @@ const MopidyMiddleware = (function () {
         break;
       }
 
+      case 'MOPIDY_GET_LIBRARY_FEATURED_PLAYLISTS': {
+        store.dispatch(uiActions.startProcess(action.type, { notification: false }));
+
+        request(store, 'library.browse', { uri: action.uri })
+          .then((response) => {
+            const moods = response.map((mood) => ({
+              ...formatSimpleObject(mood),
+              type: 'playlist_group',
+            }));
+
+            store.dispatch(
+              uiActions.updateProcess(
+                action.type,
+                {
+                  total: moods.length,
+                  remaining: moods.length,
+                },
+              ),
+            );
+
+            store.dispatch(coreActions.libraryLoaded({
+              uri: action.uri,
+              type: 'featured_playlists',
+              items_uris: arrayOf('uri', moods),
+            }));
+            store.dispatch(coreActions.itemsLoaded(moods));
+            store.dispatch(uiActions.stopLoading(action.uri));
+            store.dispatch(uiActions.processFinished(action.type));
+          });
+        break;
+      }
+
       case 'MOPIDY_GET_PLAYLIST_GROUP': {
+        const processKey = `playlist_group_${action.uri}`;
         const decodedUri = action.uri ? decodeURIComponent(action.uri) : null;
         const playlistGroup = formatPlaylistGroup({
           uri: decodedUri,
           loading: true,
         });
+        store.dispatch(uiActions.startProcess(
+          processKey,
+          { content: i18n('services.mopidy.loading_artwork') },
+        ));
         store.dispatch(coreActions.itemLoaded(playlistGroup));
         request(store, 'library.browse', { uri: action.uri })
           .then((browse) => {
-            const playlists = formatPlaylists(browse);
+            const playlists = browse.map((item) => formatPlaylist({
+              ...item,
+              images: [], // Images is a playlist dependency, so this prevents triggering full load
+            }));
             const playlists_uris = arrayOf('uri', playlists);
-            request(store, 'library.getImages', { uris: playlists_uris })
-              .then((response) => {
-                const playlistsWithImages = playlists.map((playlist) => {
-                  let images = response[playlist.uri] || [];
-                  if (images) {
-                    images = formatImages(digestMopidyImages(store.getState().mopidy, images));
-                  }
-                  return {
-                    ...playlist,
-                    images,
-                  };
-                });
+            const allUris = [...playlists_uris];
+            store.dispatch(coreActions.itemLoaded({
+              ...playlistGroup,
+              loading: false,
+              playlists_uris,
+            }));
+            store.dispatch(coreActions.itemsLoaded(playlists));
+            store.dispatch(
+              uiActions.updateProcess(
+                processKey,
+                {
+                  total: allUris.length,
+                  remaining: allUris.length,
+                },
+              ),
+            );
 
-                store.dispatch(coreActions.itemsLoaded(playlistsWithImages));
-                store.dispatch(coreActions.itemLoaded({
-                  ...playlistGroup,
-                  loading: false,
-                  playlists_uris,
-                }));
-              });
+            const run = () => {
+              if (allUris.length) {
+                const uris = allUris.splice(0, 5);
+                const processor = store.getState().ui.processes[processKey];
+                if (processor && processor.status === 'cancelling') {
+                  store.dispatch(uiActions.processCancelled(processKey));
+                  return;
+                }
+                store.dispatch(uiActions.updateProcess(processKey, { remaining: allUris.length }));
+
+                request(store, 'library.getImages', { uris })
+                  .then(
+                    (response) => {
+                      const withImages = uris.map((uri) => {
+                        let images = response[uri] || [];
+                        if (images) {
+                          images = formatImages(digestMopidyImages(store.getState().mopidy, images));
+                        }
+                        return {
+                          uri,
+                          images,
+                        };
+                      });
+                      store.dispatch(coreActions.itemsLoaded(withImages));
+                      run();
+                    },
+                  );
+              } else {
+                store.dispatch(uiActions.processFinished(processKey));
+              }
+            };
+
+            run();
           });
         break;
       }
