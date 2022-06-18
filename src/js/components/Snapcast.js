@@ -15,7 +15,6 @@ const Snapcast = (props) => {
     uiActions,
     match,
     history,
-    config,
     snapcast: {
       host,
       port,
@@ -25,18 +24,6 @@ const Snapcast = (props) => {
       connected,
     },
   } = props;
-
-  const restoreDefaults = () => {
-    const {
-      snapcast_enabled = false,
-      snapcast_host = 'localhost',
-      snapcast_port = '1780',
-      snapcast_ssl = false,
-    } = config || {};
-
-    actions.setEnabled(snapcast_enabled);
-    actions.setConnection({ host: snapcast_host, port: snapcast_port, ssl: snapcast_ssl });
-  }
 
   return (
     <div className="snapcast">
@@ -80,9 +67,6 @@ const Snapcast = (props) => {
               <I18n path="snapcast.show_disconnected_clients" />
             </span>
           </label>
-          <Button onClick={restoreDefaults} size="small" className="no-margin">
-            <I18n path="services.restore_defaults" />
-          </Button>
         </div>
       </div>
 
@@ -148,7 +132,6 @@ const Snapcast = (props) => {
 
 const mapStateToProps = (state) => ({
   snapcast: state.snapcast,
-  config: state.pusher.config,
   show_disconnected_clients: (
     state.ui.snapcast_show_disconnected_clients !== undefined
       ? state.ui.snapcast_show_disconnected_clients
