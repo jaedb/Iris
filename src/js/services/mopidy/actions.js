@@ -340,7 +340,7 @@ export function playURIs({
   };
 }
 
-export function playAlbum(uri, from) {
+export function playAlbum({ uri, from }) {
   return {
     type: 'MOPIDY_PLAY_ALBUM',
     uri,
