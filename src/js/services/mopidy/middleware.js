@@ -15,9 +15,7 @@ import {
   formatAlbum,
   formatTrack,
   formatTracks,
-  formatPlaylists,
   formatPlaylistGroup,
-  formatPlaylistGroups,
   getTrackIcon,
   formatArtists,
   formatArtist,
@@ -412,7 +410,17 @@ const MopidyMiddleware = (function () {
           break;
         }
 
-        socket.on((type, data) => handleMessage(socket, store, type, data));
+        socket.on('state:online', (data) => handleMessage(socket, store, 'state:online', data));
+        socket.on('state:offline', (data) => handleMessage(socket, store, 'state:offline', data));
+        socket.on('event:tracklistChanged', (data) => handleMessage(socket, store, 'event:tracklistChanged', data));
+        socket.on('event:playbackStateChanged', (data) => handleMessage(socket, store, 'event:playbackStateChanged', data));
+        socket.on('event:seeked', (data) => handleMessage(socket, store, 'event:seeked', data));
+        socket.on('event:trackPlaybackEnded', (data) => handleMessage(socket, store, 'event:trackPlaybackEnded', data));
+        socket.on('event:trackPlaybackStarted', (data) => handleMessage(socket, store, 'event:trackPlaybackStarted', data));
+        socket.on('event:volumeChanged', (data) => handleMessage(socket, store, 'event:volumeChanged', data));
+        socket.on('event:muteChanged', (data) => handleMessage(socket, store, 'event:muteChanged', data));
+        socket.on('event:optionsChanged', (data) => handleMessage(socket, store, 'event:optionsChanged', data));
+        socket.on('event:streamTitleChanged', (data) => handleMessage(socket, store, 'event:streamTitleChanged', data));
 
         break;
       }

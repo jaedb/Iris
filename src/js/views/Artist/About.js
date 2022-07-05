@@ -6,7 +6,7 @@ import {
   uriSource,
   titleCase,
 } from '../../util/helpers';
-import { i18n, I18n } from '../../locale';
+import { I18n } from '../../locale';
 import { nice_number } from '../../components/NiceNumber';
 
 export default ({

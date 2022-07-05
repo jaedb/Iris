@@ -6,15 +6,12 @@ import SnapcastGroups from './SnapcastGroups';
 import * as uiActions from '../services/ui/actions';
 import * as actions from '../services/snapcast/actions';
 import { I18n } from '../locale';
-import Button from './Button';
 
 const Snapcast = (props) => {
   const {
     actions,
     show_disconnected_clients,
     uiActions,
-    match,
-    history,
     snapcast: {
       host,
       port,
@@ -125,7 +122,7 @@ const Snapcast = (props) => {
         </div>
       </div>
 
-      {connected && enabled && <SnapcastGroups match={match} history={history} />}
+      {connected && enabled && <SnapcastGroups />}
     </div>
   );
 };

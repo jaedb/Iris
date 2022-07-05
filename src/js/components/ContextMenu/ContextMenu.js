@@ -1,25 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { withRouter } from 'react-router';
-import { compact } from 'lodash';
-import {
-  uriSource,
-  uriType,
-  getFromUri,
-  buildLink,
-  isLoading,
-  throttle,
-  titleCase,
-} from '../../util/helpers';
-import {
-  arrayOf,
-  sortItems,
-} from '../../util/arrays';
-import Link from '../Link';
 import Icon from '../Icon';
-import Loader from '../Loader';
-import URILink from '../URILink';
 
 import * as coreActions from '../../services/core/actions';
 import * as uiActions from '../../services/ui/actions';
@@ -27,8 +9,6 @@ import * as pusherActions from '../../services/pusher/actions';
 import * as mopidyActions from '../../services/mopidy/actions';
 import * as lastfmActions from '../../services/lastfm/actions';
 import * as spotifyActions from '../../services/spotify/actions';
-import { I18n } from '../../locale';
-import { encodeUri } from '../../util/format';
 import {
   makeProcessProgressSelector,
   makeProvidersSelector,
@@ -207,4 +187,4 @@ const mapDispatchToProps = (dispatch) => ({
   mopidyActions: bindActionCreators(mopidyActions, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(ContextMenu));
+export default connect(mapStateToProps, mapDispatchToProps)(ContextMenu);

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { uniq } from 'lodash';
 import { I18n } from '../../locale';
 import Link from '../Link';
@@ -264,12 +264,12 @@ const Discover = ({
   uris,
   disabled,
 }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const onClick = () => {
     dispatch(hideContextMenu());
     const discoverUri = encodeUri(`iris:discover:${uris.map((uri) => encodeUri(uri)).join(',')}`);
-    history.push(`/discover/recommendations/${discoverUri}`);
+    navigate(`/discover/recommendations/${discoverUri}`);
   };
   return (
     <div className={`context-menu__item ${disabled && 'context-menu__item--disabled'}`}>
@@ -378,11 +378,11 @@ const GoTo = ({
   type,
   uri,
 }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const onClick = () => {
     dispatch(hideContextMenu());
-    history.push(`/${type}/${encodeUri(uri)}`);
+    navigate(`/${type}/${encodeUri(uri)}`);
   };
   return (
     <div className="context-menu__item">

@@ -4,6 +4,7 @@ import * as selectors from './selectors';
 import * as storage from './storage';
 import * as format from './format';
 import * as debug from './debug';
+import withRouter from './withRouter';
 
 export {
   debug,
@@ -12,6 +13,7 @@ export {
   selectors,
   storage,
   format,
+  withRouter,
 };
 
 export default {
@@ -21,4 +23,5 @@ export default {
   selectors,
   storage,
   format,
+  withRouter,
 };

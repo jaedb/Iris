@@ -1,13 +1,13 @@
 import { useSelector } from 'react-redux';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const ModalStateListener = () => {
   const { name } = useSelector((state) => state.ui.modal || {});
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
 
   if (name && location.pathname.indexOf(`modal/${name}`) < 0) {
-    history.push(`modal/${name}`);
+    navigate(`modal/${name}`);
   }
 
   return null;

@@ -18,6 +18,7 @@ import * as mopidyActions from '../services/mopidy/actions';
 import * as pusherActions from '../services/pusher/actions';
 import * as spotifyActions from '../services/spotify/actions';
 import * as lastfmActions from '../services/lastfm/actions';
+import { withRouter } from '../util';
 import * as geniusActions from '../services/genius/actions';
 import { I18n, i18n } from '../locale';
 import Button from './Button';
@@ -291,7 +292,6 @@ class Services extends React.Component {
         me: geniusUser,
         authorization: geniusAuthorization,
       },
-      history,
       snapcast: {
         enabled: snapcastEnabled,
         connected: snapcastConnected,
@@ -335,7 +335,6 @@ class Services extends React.Component {
       <div className="sub-tabs__menu menu" id="services-menu">
         <div className="menu__inner">
           <Link
-            history={history}
             className="menu-item menu-item--snapcast"
             activeClassName="menu-item--active"
             to="/settings/services/snapcast"
@@ -364,7 +363,6 @@ class Services extends React.Component {
             </div>
           </Link>
           <Link
-            history={history}
             className="menu-item menu-item--spotify"
             activeClassName="menu-item--active"
             to="/settings/services/spotify"
@@ -387,7 +385,6 @@ class Services extends React.Component {
             </div>
           </Link>
           <Link
-            history={history}
             className="menu-item menu-item--lastfm"
             activeClassName="menu-item--active"
             to="/settings/services/lastfm"
@@ -410,7 +407,6 @@ class Services extends React.Component {
             </div>
           </Link>
           <Link
-            history={history}
             className="menu-item menu-item--genius"
             activeClassName="menu-item--active"
             to="/settings/services/genius"
@@ -438,8 +434,8 @@ class Services extends React.Component {
   }
 
   renderService() {
-    const { match } = this.props;
-    switch (match.params.service) {
+    const { params } = this.props;
+    switch (params.service) {
       case 'spotify':
         return <div className="sub-tabs__content">{this.renderSpotify()}</div>;
       case 'lastfm':
@@ -447,7 +443,7 @@ class Services extends React.Component {
       case 'genius':
         return <div className="sub-tabs__content">{this.renderGenius()}</div>;
       case 'snapcast':
-        return <div className="sub-tabs__content"><Snapcast match={this.props.match} /></div>;
+        return <div className="sub-tabs__content"><Snapcast params={params} /></div>;
       default:
         return null;
     }
@@ -475,4 +471,4 @@ const mapDispatchToProps = (dispatch) => ({
   geniusActions: bindActionCreators(geniusActions, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Services);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Services));
