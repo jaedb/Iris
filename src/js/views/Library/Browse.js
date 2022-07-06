@@ -109,8 +109,17 @@ class Browse extends React.Component {
             subdirectory.icons = ['/iris/assets/backgrounds/browse-youtube.jpg'];
             break;
 
-          default:
+          case 'bandcamp':
+          case 'Bandcamp':
             subdirectory.icons = ['/iris/assets/backgrounds/browse-default.jpg'];
+            break;
+
+          default:
+            if (subdirectory.images?.medium) {
+              subdirectory.icons = [subdirectory.images?.medium];
+            } else {
+              subdirectory.icons = ['/iris/assets/backgrounds/browse-default.jpg'];
+            }
         }
 
         grid_items.push({
