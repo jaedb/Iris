@@ -17,11 +17,7 @@ import { i18n } from '../locale';
 class Search extends React.Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      type: props.type || 'all',
-      term: props.term || '',
-    };
+    this.state = { term: props.term || '' };
   }
 
   componentDidMount = () => {
@@ -38,24 +34,15 @@ class Search extends React.Component {
     this.digestUri();
   }
 
-  componentDidUpdate = ({
-    type: prevType,
-    term: prevTerm,
-  }) => {
-    const {
-      type: typeProp,
-      term: termProp,
-    } = this.props;
-    const { type, term } = this.state;
-
-    if (prevType !== typeProp || prevTerm !== termProp) {
-      this.search(type, term);
+  componentDidUpdate = ({ term: prevTerm }) => {
+    const { term: termProp } = this.props;
+    if (prevTerm !== termProp) {
+      this.search();
     }
   }
 
   onSubmit = (term) => {
-    const { type } = this.state;
-    const { navigate } = this.props;
+    const { navigate, type } = this.props;
     const encodedTerm = encodeURIComponent(term);
 
     this.setState(
@@ -93,16 +80,10 @@ class Search extends React.Component {
   };
 
   digestUri = () => {
-    const {
-      type,
-      term,
-    } = this.props;
-
-    if (type && term) {
-      this.setState({ type, term }, () => {
-        this.search();
-      });
-    } else if (!term || term === '') {
+    const { term } = this.props;
+    if (term) {
+      this.setState({ term }, this.search);
+    } else {
       this.clearSearch();
     }
   }
@@ -130,11 +111,9 @@ class Search extends React.Component {
         type: existingType,
         term: existingTerm,
       },
-    } = this.props;
-    const {
       type,
-      term,
-    } = this.state;
+    } = this.props;
+    const { term } = this.state;
 
     setWindowTitle(i18n('search.title_window', { term: decodeURIComponent(term) }));
 
@@ -163,17 +142,14 @@ class Search extends React.Component {
   }
 
   render = () => {
-    const {
-      term,
-      type,
-    } = this.state;
+    const { term } = this.state;
     const {
       uri_schemes,
       sort,
       sort_reverse,
-      navigate,
       uri_schemes_search_enabled,
       uiActions,
+      type,
     } = this.props;
 
     const sort_options = [
@@ -280,7 +256,7 @@ const mapStateToProps = (state, ownProps) => {
     },
     navigation,
   } = ownProps;
-  console.log(ownProps);
+
   const {
     mopidy: {
       uri_schemes = [],
@@ -298,7 +274,7 @@ const mapStateToProps = (state, ownProps) => {
   } = state;
 
   return {
-    type,
+    type: type || 'all',
     term,
     navigation,
     uri_schemes,
