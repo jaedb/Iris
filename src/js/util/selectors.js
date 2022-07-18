@@ -197,6 +197,11 @@ const providers = {
       uri: 'spotify:library:tracks',
       title: i18n('services.spotify.title'),
     },
+    {
+      scheme: 'tidal:',
+      uri: 'tidal:my_tracks',
+      title: i18n('services.tidal.title'),
+    },
   ],
   moods: [
     {
