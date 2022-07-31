@@ -17,6 +17,7 @@ docker/mopidy.conf
 docker/data/
 docker/jellyfin/
 docker/icecast2.xml
+docker/meta_mopidy.py
 docker-compose.yml
 /.tox/
 /__tests__/__pycache__/
