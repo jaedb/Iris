@@ -6324,8 +6324,6 @@ h4 .loader {
   transform-style: preserve-3d;
   display: flex;
   flex-flow: row;
-  align-items: center;
-  align-content: center;
 }
 .playback-controls__background {
   position: absolute;
@@ -6529,74 +6527,89 @@ h4 .loader {
 .playback-controls .control:hover, .playback-controls .control:focus {
   opacity: 1;
 }
-.playback-controls section.playback {
+.playback-controls .main-group {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  align-content: center;
+}
+.playback-controls .main-group section.playback {
   display: flex;
   align-items: center;
 }
-.playback-controls section.playback .control {
+.playback-controls .main-group section.playback .control {
   padding: 4px;
 }
-.playback-controls section.playback .control .icon {
+.playback-controls .main-group section.playback .control .icon {
   font-size: 1.3rem;
 }
-.light-theme .playback-controls section.playback .control.play {
+.light-theme .playback-controls .main-group section.playback .control.play {
   color: #08d58f;
 }
 
 @media (prefers-color-scheme: light) {
-  .auto-theme .playback-controls section.playback .control.play {
+  .auto-theme .playback-controls .main-group section.playback .control.play {
     color: #08d58f;
   }
 }
 
-.playback-controls section.playback .control.play .icon {
+.playback-controls .main-group section.playback .control.play .icon {
   font-size: 3rem;
 }
-.playback-controls section.progress {
+.playback-controls .main-group section.progress {
   flex-grow: 1;
   display: flex;
   align-items: center;
 }
-.playback-controls section.progress .slider {
+.playback-controls .main-group section.progress .slider {
   flex-grow: 1;
 }
-.playback-controls section.progress .time {
+.playback-controls .main-group section.progress .time {
   font-size: 11px;
   width: 40px;
 }
-.playback-controls section.progress .time--current {
+.playback-controls .main-group section.progress .time--current {
   text-align: right;
   padding-right: 10px;
 }
-.playback-controls section.progress .time--total {
+.playback-controls .main-group section.progress .time--total {
   padding-left: 10px;
 }
-.playback-controls section.settings {
+.playback-controls .main-group section.triggers {
+  display: none;
+}
+.playback-controls .settings-group {
+  display: flex;
+  align-items: center;
+  align-content: center;
+}
+.playback-controls .settings-group section.settings {
   text-align: center;
   padding: 0 30px;
 }
-.playback-controls section.volume {
+.playback-controls .settings-group section.volume {
   font-size: 18px;
   width: 10rem;
   padding-right: 30px;
   display: flex;
   align-items: center;
 }
-.playback-controls section.volume .slider__wrapper {
+.playback-controls .settings-group section.volume .slider__wrapper {
   flex-grow: 1;
-}
-.playback-controls section.triggers {
-  display: none;
 }
 @media (max-width: 800px) {
   .playback-controls {
     padding-top: 2px;
     padding-bottom: 4px;
+    flex-flow: column-reverse;
   }
   .playback-controls--touch-enabled .control.next {
     display: none;
   }
-  .playback-controls .current-track__wrapper {
+  .playback-controls .main-group {
+    width: 100%;
+  }
+  .playback-controls .main-group .current-track__wrapper {
     order: 2;
     flex-grow: 1;
     text-align: center;
@@ -6606,69 +6619,66 @@ h4 .loader {
     padding: 0;
     display: flex;
   }
-  .playback-controls .current-track__wrapper .text {
+  .playback-controls .main-group .current-track__wrapper .text {
     padding: 0;
     flex-grow: 1;
   }
-  .playback-controls .current-track__wrapper .text .title,
-.playback-controls .current-track__wrapper .text .artist {
+  .playback-controls .main-group .current-track__wrapper .text .title,
+.playback-controls .main-group .current-track__wrapper .text .artist {
     padding-top: 0;
   }
-  .playback-controls .current-track__wrapper .thumbnail-wrapper {
+  .playback-controls .main-group .current-track__wrapper .thumbnail-wrapper {
     display: none;
   }
-  .playback-controls section.playback {
+  .playback-controls .main-group section.playback {
     order: 1;
     width: 6rem;
   }
-  .playback-controls section.playback .control.play {
+  .playback-controls .main-group section.playback .control.play {
     padding: 4px;
   }
-  .playback-controls section.playback .control.previous, .playback-controls section.playback .control.stop {
+  .playback-controls .main-group section.playback .control.previous, .playback-controls .main-group section.playback .control.stop {
     display: none;
   }
-  .playback-controls section.settings, .playback-controls section.volume {
-    display: none;
-  }
-  .playback-controls section.progress {
+  .playback-controls .main-group section.progress {
     position: absolute;
     top: auto;
     bottom: -10px;
     left: 0;
     right: 0;
   }
-  .playback-controls section.progress .slider__track {
+  .playback-controls .main-group section.progress .slider__track {
     border-radius: 0;
   }
-  .playback-controls section.progress .slider__track__progress {
+  .playback-controls .main-group section.progress .slider__track__progress {
     border-radius: 0;
   }
-  .playback-controls section.progress .time {
+  .playback-controls .main-group section.progress .time {
     display: none;
   }
-  .playback-controls section.triggers {
+  .playback-controls .main-group section.triggers {
     display: block;
     width: 6rem;
     order: 3;
     text-align: center;
   }
-  .playback-controls section.triggers .icon {
+  .playback-controls .main-group section.triggers .icon {
     font-size: 1.2rem;
   }
 }
 @media only screen and (max-width: 800px) and (-webkit-min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min--moz-device-pixel-ratio: 2), only screen and (max-width: 800px) and (-o-min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min-resolution: 192dpi), only screen and (max-width: 800px) and (min-resolution: 2dppx) {
-  .playback-controls section.triggers {
+  .playback-controls .main-group section.triggers {
     bottom: 4px;
   }
-  .playback-controls section.triggers .icon {
+  .playback-controls .main-group section.triggers .icon {
     font-size: 1.4rem;
   }
 }
 @media (max-width: 800px) {
-  .playback-controls section.triggers .sidebar-toggle.open {
+  .playback-controls .main-group section.triggers .sidebar-toggle.open {
     opacity: 1 !important;
   }
-  .playback-controls section.triggers .sidebar-toggle.open:before {
+  .playback-controls .main-group section.triggers .sidebar-toggle.open:before {
     background: rgba(0, 0, 0, 0.8);
     content: "";
     display: block;
@@ -6681,36 +6691,38 @@ h4 .loader {
   }
 }
 @media (max-width: 800px) {
+  .playback-controls .settings-group {
+    display: none;
+  }
+}
+@media (max-width: 800px) {
   .playback-controls--expanded {
     max-height: 100%;
   }
-  .playback-controls--expanded .playback-controls__background {
-    height: 210px;
-  }
-  .playback-controls--expanded section.settings {
-    position: absolute;
+  .playback-controls--expanded .settings-group {
+    width: 100%;
     display: flex;
-    right: 0;
-    bottom: 60px;
+    flex-flow: row-reverse;
+  }
+  .playback-controls--expanded .settings-group section.settings {
+    display: flex;
     padding-right: 10px;
     text-align: right;
     width: 100px;
   }
-  .playback-controls--expanded section.volume {
-    position: absolute;
+  .playback-controls--expanded .settings-group section.volume {
     width: auto;
     display: flex;
-    right: 100px;
-    left: 10px;
-    bottom: 58px;
+    flex-grow: 1;
+    padding-left: 10px;
   }
 }
 @media only screen and (max-width: 800px) and (-webkit-min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min--moz-device-pixel-ratio: 2), only screen and (max-width: 800px) and (-o-min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min-resolution: 192dpi), only screen and (max-width: 800px) and (min-resolution: 2dppx) {
-  .playback-controls--expanded section.volume {
-    right: 115px;
+  .playback-controls--expanded .settings-group section.volume {
+    padding-right: 115px;
   }
-  .playback-controls--expanded section.volume .slider__wrapper {
-    bottom: 9px;
+  .playback-controls--expanded .settings-group section.volume .slider__wrapper {
+    padding-bottom: 9px;
   }
 }
 @media only screen and (max-width: 800px) and (-webkit-min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min--moz-device-pixel-ratio: 2), only screen and (max-width: 800px) and (-o-min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min-device-pixel-ratio: 2), only screen and (max-width: 800px) and (min-resolution: 192dpi), only screen and (max-width: 800px) and (min-resolution: 2dppx) {
@@ -7050,7 +7062,7 @@ h4 .loader {
   }
 }
 @media (max-width: 800px) {
-  .output-control__inner--no-results {
+  .output-control__inner .no-results {
     display: none;
   }
 }
