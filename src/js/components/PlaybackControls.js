@@ -71,162 +71,166 @@ const PlaybackControls = () => {
 
       <div className="playback-controls__background" />
 
-      {nextTrack && nextTrack.images ? <Thumbnail className="hide" size="large" images={nextTrack.images} /> : null}
+      <section className="main-group">
+        {nextTrack && nextTrack.images ? <Thumbnail className="hide" size="large" images={nextTrack.images} /> : null}
 
-      <div className="current-track__wrapper">
-        {currentTrack ? (
-          <div
-            className="current-track"
-            onContextMenu={handleContextMenu}
-            tabIndex="-1"
-          >
-            <Link className="thumbnail-wrapper" to="/modal/kiosk-mode" tabIndex="-1">
-              <Thumbnail size="small" images={currentTrack.images} type="track" />
-            </Link>
-            <Link className="text" to="/queue">
-              <div className="title">
-                {streamTitle && <span>{streamTitle}</span>}
-                {!streamTitle && currentTrack && <span>{currentTrack.name}</span>}
-                {!streamTitle && !currentTrack && <span>-</span>}
-              </div>
-              <div className="artist">
-                {
-                  (currentTrack && currentTrack.artists
-                      && <LinksSentence items={currentTrack.artists} type="artist" nolinks />)
-                  || (streamTitle && <span className="links-sentence">{streamTitle}</span>)
-                  || <LinksSentence />
-                }
-              </div>
-            </Link>
-          </div>
-        ) : (
-          <div
-            className="current-track"
-            tabIndex="-1"
-          >
-            <Link className="thumbnail-wrapper" to="/modal/kiosk-mode" tabIndex="-1">
-              <Thumbnail size="small" type="track" />
-            </Link>
-            <div className="text">
-              <div className="title">&nbsp;</div>
-              <div className="artist">&nbsp;</div>
+        <div className="current-track__wrapper">
+          {currentTrack ? (
+            <div
+              className="current-track"
+              onContextMenu={handleContextMenu}
+              tabIndex="-1"
+            >
+              <Link className="thumbnail-wrapper" to="/modal/kiosk-mode" tabIndex="-1">
+                <Thumbnail size="small" images={currentTrack.images} type="track" />
+              </Link>
+              <Link className="text" to="/queue">
+                <div className="title">
+                  {streamTitle && <span>{streamTitle}</span>}
+                  {!streamTitle && currentTrack && <span>{currentTrack.name}</span>}
+                  {!streamTitle && !currentTrack && <span>-</span>}
+                </div>
+                <div className="artist">
+                  {
+                    (currentTrack && currentTrack.artists
+                        && <LinksSentence items={currentTrack.artists} type="artist" nolinks />)
+                    || (streamTitle && <span className="links-sentence">{streamTitle}</span>)
+                    || <LinksSentence />
+                  }
+                </div>
+              </Link>
             </div>
-          </div>
-        )}
-      </div>
-
-      <section className="playback">
-        <button
-          type="button"
-          className="control previous"
-          onClick={() => dispatch(mopidyActions.previous())}
-        >
-          <Icon name="navigate_before" type="material" />
-        </button>
-        {
-          play_state === 'playing' ? (
-            <button
-              type="button"
-              className="control play"
-              onClick={() => dispatch(mopidyActions.pause())}
-            >
-              <Icon name="pause_circle_filled" type="material" />
-            </button>
           ) : (
-            <button
-              type="button"
-              className="control play"
-              onClick={() => dispatch(mopidyActions.play())}
+            <div
+              className="current-track"
+              tabIndex="-1"
             >
-              <Icon name="play_circle_filled" type="material" />
-            </button>
-          )
-        }
-        <button
-          type="button"
-          className="control next"
-          onClick={() => dispatch(mopidyActions.next())}
-        >
-          <Icon name="navigate_next" type="material" />
-        </button>
-      </section>
-
-      <section className="progress">
-        <div className="time time--current">
-          {playbackPosition ? <Dater type="length" data={playbackPosition} /> : '-'}
-        </div>
-        <ProgressSlider playbackPosition={playbackPosition} />
-        <div className="time time--total">
-          {currentTrack ? <Dater type="length" data={currentTrack.duration} /> : '-'}
-        </div>
-      </section>
-
-      <section className="settings">
-        <button
-          type="button"
-          className={`control${consume ? ' control--active' : ''} tooltip`}
-          onClick={() => dispatch(mopidyActions.setConsume(!consume))}
-        >
-          <Icon name="restaurant" type="material" />
-          <span className="tooltip__content">
-            <I18n path="playback_controls.consume" />
-          </span>
-        </button>
-        <button
-          type="button"
-          className={`control${random ? ' control--active' : ''} tooltip`}
-          onClick={() => dispatch(mopidyActions.setRandom(!random))}
-        >
-          <Icon name="shuffle" type="material" />
-          <span className="tooltip__content">
-            <I18n path="playback_controls.shuffle" />
-          </span>
-        </button>
-        <button
-          type="button"
-          className={`control${repeat ? ' control--active' : ''} tooltip`}
-          onClick={() => dispatch(mopidyActions.setRepeat(!repeat))}
-        >
-          <Icon name="repeat" type="material" />
-          <span className="tooltip__content">
-            <I18n path="playback_controls.repeat" />
-          </span>
-        </button>
-        <OutputControl force_expanded={expanded} />
-      </section>
-
-      <section className="volume">
-        <MuteControl
-          mute={mute}
-          onMuteChange={(value) => dispatch(mopidyActions.setMute(value))}
-        />
-        <VolumeControl
-          scrollWheel
-          volume={volume}
-          mute={mute}
-          onVolumeChange={(value) => dispatch(mopidyActions.setVolume(value))}
-        />
-      </section>
-
-      <section className="triggers">
-        <button
-          type="button"
-          className="control expanded-controls"
-          onClick={() => setExpanded(!expanded)}
-        >
-          {expanded ? (
-            <Icon name="expand_more" type="material" />
-          ) : (
-            <Icon name="expand_less" type="material" />
+              <Link className="thumbnail-wrapper" to="/modal/kiosk-mode" tabIndex="-1">
+                <Thumbnail size="small" type="track" />
+              </Link>
+              <div className="text">
+                <div className="title">&nbsp;</div>
+                <div className="artist">&nbsp;</div>
+              </div>
+            </div>
           )}
-        </button>
-        <button
-          type="button"
-          className={`control sidebar-toggle${sidebar_open ? ' open' : ''}`}
-          onClick={() => dispatch(toggleSidebar())}
-        >
-          <Icon className="open" name="menu" type="material" />
-        </button>
+        </div>
+
+        <section className="playback">
+          <button
+            type="button"
+            className="control previous"
+            onClick={() => dispatch(mopidyActions.previous())}
+          >
+            <Icon name="navigate_before" type="material" />
+          </button>
+          {
+            play_state === 'playing' ? (
+              <button
+                type="button"
+                className="control play"
+                onClick={() => dispatch(mopidyActions.pause())}
+              >
+                <Icon name="pause_circle_filled" type="material" />
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="control play"
+                onClick={() => dispatch(mopidyActions.play())}
+              >
+                <Icon name="play_circle_filled" type="material" />
+              </button>
+            )
+          }
+          <button
+            type="button"
+            className="control next"
+            onClick={() => dispatch(mopidyActions.next())}
+          >
+            <Icon name="navigate_next" type="material" />
+          </button>
+        </section>
+
+        <section className="progress">
+          <div className="time time--current">
+            {playbackPosition ? <Dater type="length" data={playbackPosition} /> : '-'}
+          </div>
+          <ProgressSlider playbackPosition={playbackPosition} />
+          <div className="time time--total">
+            {currentTrack ? <Dater type="length" data={currentTrack.duration} /> : '-'}
+          </div>
+        </section>
+
+        <section className="triggers">
+          <button
+            type="button"
+            className="control expanded-controls"
+            onClick={() => setExpanded(!expanded)}
+          >
+            {expanded ? (
+              <Icon name="expand_more" type="material" />
+            ) : (
+              <Icon name="expand_less" type="material" />
+            )}
+          </button>
+          <button
+            type="button"
+            className={`control sidebar-toggle${sidebar_open ? ' open' : ''}`}
+            onClick={() => dispatch(toggleSidebar())}
+          >
+            <Icon className="open" name="menu" type="material" />
+          </button>
+        </section>
+      </section>
+
+      <section className="settings-group">
+        <section className="settings">
+          <button
+            type="button"
+            className={`control${consume ? ' control--active' : ''} tooltip`}
+            onClick={() => dispatch(mopidyActions.setConsume(!consume))}
+          >
+            <Icon name="restaurant" type="material" />
+            <span className="tooltip__content">
+              <I18n path="playback_controls.consume" />
+            </span>
+          </button>
+          <button
+            type="button"
+            className={`control${random ? ' control--active' : ''} tooltip`}
+            onClick={() => dispatch(mopidyActions.setRandom(!random))}
+          >
+            <Icon name="shuffle" type="material" />
+            <span className="tooltip__content">
+              <I18n path="playback_controls.shuffle" />
+            </span>
+          </button>
+          <button
+            type="button"
+            className={`control${repeat ? ' control--active' : ''} tooltip`}
+            onClick={() => dispatch(mopidyActions.setRepeat(!repeat))}
+          >
+            <Icon name="repeat" type="material" />
+            <span className="tooltip__content">
+              <I18n path="playback_controls.repeat" />
+            </span>
+          </button>
+          <OutputControl force_expanded={expanded} />
+        </section>
+
+        <section className="volume">
+          <MuteControl
+            mute={mute}
+            onMuteChange={(value) => dispatch(mopidyActions.setMute(value))}
+          />
+          <VolumeControl
+            scrollWheel
+            volume={volume}
+            mute={mute}
+            onVolumeChange={(value) => dispatch(mopidyActions.setVolume(value))}
+          />
+        </section>
       </section>
 
     </div>
