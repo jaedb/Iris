@@ -277,7 +277,7 @@ class Tracks extends React.Component {
     return (
       <div className="view library-tracks-view">
         <Header options={options} uiActions={uiActions}>
-          <Icon name="album" type="material" />
+          <Icon name="music_note" type="material" />
           <I18n path="library.tracks.title" />
         </Header>
         {this.renderView()}
