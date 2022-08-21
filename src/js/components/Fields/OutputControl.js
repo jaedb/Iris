@@ -167,6 +167,10 @@ const Group = ({
 
 const Outputs = () => {
   const snapcastEnabled = useSelector((state) => state.snapcast.enabled);
+  const allGroups = indexToArray(useSelector((state) => state.snapcast.groups || {}));
+  const allStreams = useSelector((state) => state.snapcast.streams || {});
+  const allServers = indexToArray(useSelector((state) => state.mopidy.servers || {}));
+  const groupsByStream = groupBy(allGroups, 'stream_id');
   if (!snapcastEnabled) {
     return (
       <p className="no-results">
@@ -174,11 +178,6 @@ const Outputs = () => {
       </p>
     );
   }
-
-  const allGroups = indexToArray(useSelector((state) => state.snapcast.groups || {}));
-  const allStreams = useSelector((state) => state.snapcast.streams || {});
-  const allServers = indexToArray(useSelector((state) => state.mopidy.servers || {}));
-  const groupsByStream = groupBy(allGroups, 'stream_id');
 
   return (
     <ErrorBoundary>
